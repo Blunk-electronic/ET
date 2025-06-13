@@ -138,20 +138,21 @@ package body et_schematic_ops is
 	
 
 	
--- 	procedure delete_ports (
--- 		module			: in pac_generic_modules.cursor;		-- the module
--- 		device			: in type_device_name;			-- the device
--- 		ports			: in pac_ports.map := pac_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
--- 		sheets			: in pac_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
--- 		log_threshold	: in type_log_level) 
--- 	is
--- 		dedicated_ports : boolean := false; -- goes true if "ports" contains something.
--- 		
--- 		procedure query_nets (
--- 			module_name	: in pac_module_name.bounded_string;
--- 			module		: in out type_generic_module) is
--- 
--- 			
+	procedure delete_ports (
+		module			: in pac_generic_modules.cursor;-- the module
+		device			: in type_device_name;			-- the device
+		ports			: in pac_ports.map := pac_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
+		sheets			: in pac_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
+		log_threshold	: in type_log_level) 
+	is
+		dedicated_ports : boolean := false; -- goes true if "ports" contains something.
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
 -- 			procedure query_net (net_cursor : in pac_nets.cursor) is
 -- 				use pac_nets;
 -- 
@@ -244,8 +245,8 @@ package body et_schematic_ops is
 -- 				begin -- query_strands
 -- 					iterate (net.strands, query_strand'access);
 -- 				end query_strands;
--- 
--- 				
+
+				
 -- 			begin -- query_net
 -- 				log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 -- 
@@ -255,115 +256,47 @@ package body et_schematic_ops is
 -- 					process		=> query_strands'access);
 -- 				
 -- 			end query_net;				
--- 
--- 			
--- 		begin -- query_nets
--- 			pac_nets.iterate (module.nets, query_net'access);
--- 		end query_nets;
--- 		
--- 		
--- 	begin -- delete_ports
--- 		log (text => "deleting device ports in nets ...", level => log_threshold);
--- 
--- 		-- If ports are provided, we have to delete exactly those in list "ports".
--- 		-- The flag dedicated_ports is later required in order to do this job:
--- 		if pac_ports.length (ports) > 0 then
--- 			dedicated_ports := true;
--- 		end if;
--- 		
--- 		log_indentation_up;
--- 		
--- 		update_element (
--- 			container	=> generic_modules,
--- 			position	=> module,
--- 			process		=> query_nets'access);
--- 
--- 		log_indentation_down;
--- 	end delete_ports;
 
-
-
-	
-	
-	procedure delete_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- IC45
-		log_threshold	: in type_log_level) 
-	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-
-		
-		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			use pac_devices_sch;
-			device_cursor : pac_devices_sch.cursor;
-
-			-- temporarily storage of unit coordinates:
-			position_of_units : pac_unit_positions.map;
 			
-		begin -- query_devices
-			if contains (module.devices, device_name) then
-
-				-- Before the actual deletion, the coordinates of the
-				-- units must be fetched. These coordinates will later assist
-				-- in deleting the port names from connected net segments.
-				device_cursor := find (module.devices, device_name); -- the device should be there
-				position_of_units := get_unit_positions (device_cursor);
-
-				log_indentation_up;
-				log_unit_positions (position_of_units, log_threshold + 1);
-
-				log_package_position (device_cursor, log_threshold + 1);
-
-				-- Delete the targeted device:
-				delete (module.devices, device_name);
-
-				-- Delete all ports of the targeted device from module.nets
-				-- CS
-				-- delete_ports (
-				-- 	module			=> module_cursor,
-				-- 	device			=> device_name,
-				-- 	sheets			=> position_of_units, -- the sheets to look at
-				-- 	log_threshold	=> log_threshold + 1);
-
-				update_ratsnest (module_cursor, log_threshold + 1);
-				
-				log_indentation_down;				
-			else
-				device_not_found (device_name);
-			end if;
-		end query_devices;
-
+		begin
+			null;
+			-- CS
+			-- pac_nets.iterate (module.nets, query_net'access);
+		end query_module;
 		
-	begin -- delete_device
-		log (text => "module " & to_string (module_name) &
-			 " deleting " & to_string (device_name) & " ...", level => log_threshold);
+		
+	begin
+		log (text => "deleting device ports in nets ...", level => log_threshold);
 
-		-- locate module
-		module_cursor := locate_module (module_name);
+		-- If ports are provided, we have to delete exactly those in list "ports".
+		-- The flag dedicated_ports is later required in order to do this job:
+		if pac_ports.length (ports) > 0 then
+			dedicated_ports := true;
+		end if;
+		
+		log_indentation_up;
 		
 		update_element (
 			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_devices'access);
+			position	=> module,
+			process		=> query_module'access);
 
-	end delete_device;
-
-	
-
+		log_indentation_down;
+	end delete_ports;
 
 
--- 	procedure insert_ports (
--- 		module			: in pac_generic_modules.cursor;		-- the module
--- 		device			: in type_device_name;					-- the device
--- 		unit			: in pac_unit_name.bounded_string;	-- the unit name like A, C, PWR
--- 		ports			: in pac_ports.map; -- the ports to be inserted
--- 		sheet			: in type_sheet;				-- the sheet to look at
--- 		log_threshold	: in type_log_level)
--- 	is
--- 
+
+
+
+	procedure insert_ports (
+		module			: in pac_generic_modules.cursor;		-- the module
+		device			: in type_device_name;					-- the device
+		unit			: in pac_unit_name.bounded_string;	-- the unit name like A, C, PWR
+		ports			: in pac_ports.map; -- the ports to be inserted
+		sheet			: in type_sheet;				-- the sheet to look at
+		log_threshold	: in type_log_level)
+	is
+
 -- 		procedure query_nets (
 -- 			module_name	: in pac_module_name.bounded_string;
 -- 			module		: in out type_generic_module) is
@@ -504,26 +437,96 @@ package body et_schematic_ops is
 -- 		begin -- query_nets
 -- 			pac_nets.iterate (module.nets, query_net'access);
 -- 		end query_nets;
--- 
--- 		
--- 	begin --insert_ports
--- 		log (text => "inserting device ports in nets on sheet" & 
--- 			 to_string (sheet) & " ...", level => log_threshold);
--- 		log_indentation_up;
--- 		
--- 		update_element (
--- 			container	=> generic_modules,
--- 			position	=> module,
--- 			process		=> query_nets'access);
--- 
--- 		log_indentation_down;
--- 	end insert_ports;
+
+		
+	begin --insert_ports
+		log (text => "inserting device ports in nets on sheet" & 
+			 to_string (sheet) & " ...", level => log_threshold);
+		log_indentation_up;
+
+		-- CS
+		-- update_element (
+		-- 	container	=> generic_modules,
+		-- 	position	=> module,
+		-- 	process		=> query_nets'access);
+
+		log_indentation_down;
+	end insert_ports;
 	
 
 	
 
+	
+	procedure delete_device (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC45
+		log_threshold	: in type_log_level) 
+	is
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
+
+		
+		procedure query_devices (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_devices_sch;
+			device_cursor : pac_devices_sch.cursor;
+
+			-- temporarily storage of unit coordinates:
+			position_of_units : pac_unit_positions.map;
+			
+		begin -- query_devices
+			if contains (module.devices, device_name) then
+
+				-- Before the actual deletion, the coordinates of the
+				-- units must be fetched. These coordinates will later assist
+				-- in deleting the port names from connected net segments.
+				device_cursor := find (module.devices, device_name); -- the device should be there
+				position_of_units := get_unit_positions (device_cursor);
+
+				log_indentation_up;
+				log_unit_positions (position_of_units, log_threshold + 1);
+
+				log_package_position (device_cursor, log_threshold + 1);
+
+				-- Delete the targeted device:
+				delete (module.devices, device_name);
+
+				-- Delete all ports of the targeted device from module.nets
+				-- CS
+				-- delete_ports (
+				-- 	module			=> module_cursor,
+				-- 	device			=> device_name,
+				-- 	sheets			=> position_of_units, -- the sheets to look at
+				-- 	log_threshold	=> log_threshold + 1);
+
+				update_ratsnest (module_cursor, log_threshold + 1);
+				
+				log_indentation_down;				
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+
+		
+	begin -- delete_device
+		log (text => "module " & to_string (module_name) &
+			 " deleting " & to_string (device_name) & " ...", level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+	end delete_device;
+
+	
 
 
+	
 	
 	
 	function get_active_assembly_variant (
@@ -1005,16 +1008,16 @@ package body et_schematic_ops is
 
 
 	
--- 	procedure rename_device (
--- 		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
--- 		device_name_before	: in type_device_name; -- IC1
--- 		device_name_after	: in type_device_name; -- IC23
--- 		log_threshold		: in type_log_level) 
--- 	is
--- 
--- 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
--- 
--- 		
+	procedure rename_device (
+		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name_before	: in type_device_name; -- IC1
+		device_name_after	: in type_device_name; -- IC23
+		log_threshold		: in type_log_level) 
+	is
+
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
+
+		
 -- 		procedure query_devices (
 -- 			module_name	: in pac_module_name.bounded_string;
 -- 			module		: in out type_generic_module) 
@@ -1076,38 +1079,39 @@ package body et_schematic_ops is
 -- 		end query_devices;
 -- 		
 -- 
--- 	begin -- rename_device
--- 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
--- 			" renaming device " & to_string (device_name_before) & " to " & 
--- 			to_string (device_name_after),
--- 			level => log_threshold);
--- 
--- 		log_indentation_up;
--- 
--- 		-- The old and new name must not be the same:
--- 		if device_name_after /= device_name_before then
--- 
--- 			-- The old and new prefix must be the same in order to
--- 			-- prevent an inadvertently category change:
--- 			if same_prefix (device_name_after, device_name_before) then
--- 			
--- 				-- locate module
--- 				module_cursor := locate_module (module_name);
--- 
--- 				update_element (
--- 					container	=> generic_modules,
--- 					position	=> module_cursor,
--- 					process		=> query_devices'access);
--- 
--- 			else
--- 				raise semantic_error_1 with "ERROR: Changing the prefix is not allowed !";
--- 			end if;
--- 		else
--- 			raise semantic_error_1 with "ERROR: Old and new device name are equal !";
--- 		end if;
--- 		
--- 		log_indentation_down;
--- 	end rename_device;
+	begin -- rename_device
+		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+			" renaming device " & to_string (device_name_before) & " to " & 
+			to_string (device_name_after),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		-- The old and new name must not be the same:
+		if device_name_after /= device_name_before then
+
+			-- The old and new prefix must be the same in order to
+			-- prevent an inadvertently category change:
+			if same_prefix (device_name_after, device_name_before) then
+			
+				-- locate module
+				module_cursor := locate_module (module_name);
+
+				-- CS
+				-- update_element (
+				-- 	container	=> generic_modules,
+				-- 	position	=> module_cursor,
+				-- 	process		=> query_devices'access);
+
+			else
+				raise semantic_error_1 with "ERROR: Changing the prefix is not allowed !";
+			end if;
+		else
+			raise semantic_error_1 with "ERROR: Old and new device name are equal !";
+		end if;
+		
+		log_indentation_down;
+	end rename_device;
 
 
 
@@ -1821,6 +1825,7 @@ package body et_schematic_ops is
 
 
 
+	
 
 	function get_alternative_device (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
@@ -1879,6 +1884,7 @@ package body et_schematic_ops is
 
 		use et_assembly_variants;
 
+		
 		procedure create (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) is
@@ -1898,7 +1904,8 @@ package body et_schematic_ops is
 				raise constraint_error;
 			end if;
 		end create;
-			
+
+		
 	begin -- create_assembly_variant
 		log (text => "module " & to_string (module_name) &
 			" creating new assembly variant " & enclose_in_quotes (to_variant (variant_name)),
@@ -1929,6 +1936,7 @@ package body et_schematic_ops is
 
 		use et_assembly_variants;
 
+		
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) is
@@ -1948,6 +1956,7 @@ package body et_schematic_ops is
 				assembly_variant_not_found (variant_name);
 			end if;
 		end delete;
+
 		
 	begin -- delete_assembly_variant
 		log (text => "module " & to_string (module_name) &
@@ -1966,6 +1975,7 @@ package body et_schematic_ops is
 
 
 
+	
 
 	
 	procedure describe_assembly_variant (
@@ -1973,8 +1983,8 @@ package body et_schematic_ops is
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost											
 		description		: in et_assembly_variants.type_description; -- "this is the low budget variant"
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_assembly_variants;
@@ -1991,6 +2001,7 @@ package body et_schematic_ops is
 			begin
 				variant.description := description;
 			end assign_description;
+
 			
 		begin -- describe
 			-- before describing, the variant must be located
@@ -2009,6 +2020,7 @@ package body et_schematic_ops is
 
 		end describe;
 
+		
 	begin -- describe_assembly_variant
 		log (text => "module " & to_string (module_name) &
 			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
@@ -2287,6 +2299,7 @@ package body et_schematic_ops is
 
 		end remove;
 
+		
 	begin -- remove_device
 		log (text => "module " & to_string (module_name) &
 			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
@@ -2655,6 +2668,8 @@ package body et_schematic_ops is
 				raise;
 			
 		end renumber;
+
+
 		
 	begin -- renumber_devices
 		log (text => "module " & to_string (module_name) &

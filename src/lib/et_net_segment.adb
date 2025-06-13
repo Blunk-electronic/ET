@@ -368,8 +368,49 @@ package body et_net_segment is
 	end delete_submodule_port;
 
 
-		
 
+	
+
+	procedure delete_submodule_ports (
+		segment	: in out type_net_segment;
+		module	: in pac_module_instance_name.bounded_string)
+	is
+		use pac_submodule_ports;
+		port_cursor : pac_submodule_ports.cursor;
+		port : type_submodule_port;
+
+		use pac_module_instance_name;
+	begin
+		-- Delete at A end:
+		port_cursor := segment.ports.A.submodules.first;
+
+		while has_element (port_cursor) loop
+			port := element (port_cursor);
+			
+			if port.module_name = module then
+				segment.ports.A.submodules.delete (port);
+			end if;
+			next (port_cursor);
+		end loop;
+
+
+		-- Delete at B end:
+		port_cursor := segment.ports.B.submodules.first;
+
+		while has_element (port_cursor) loop
+			port := element (port_cursor);
+			
+			if port.module_name = module then
+				segment.ports.B.submodules.delete (port);
+			end if;
+			next (port_cursor);
+		end loop;		
+	end delete_submodule_ports;
+
+
+
+
+	
 	function has_ports (
 		segment : in type_net_segment;
 		AB_end	: in type_start_end_point)				   

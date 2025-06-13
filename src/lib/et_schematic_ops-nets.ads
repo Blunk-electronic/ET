@@ -595,13 +595,13 @@ package et_schematic_ops.nets is
 	--    net_name will be created.
 	-- 5. After this procedure net_cursor points to the net that has just
 	--    been created or extended by segment_new.
-	-- procedure insert_segment (
-	-- 	module_cursor	: in pac_generic_modules.cursor;
-	-- 	net_cursor		: in out pac_nets.cursor;
-	-- 	sheet			: in type_sheet;
-	-- 	net_name		: in pac_net_name.bounded_string;
-	-- 	segment_new		: in type_net_segment;
-	-- 	log_threshold	: in type_log_level);
+	procedure insert_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in out pac_nets.cursor;
+		sheet			: in type_sheet;
+		net_name		: in pac_net_name.bounded_string;
+		segment_new		: in type_net_segment;
+		log_threshold	: in type_log_level);
 
 
 

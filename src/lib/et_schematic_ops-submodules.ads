@@ -236,6 +236,15 @@ package et_schematic_ops.submodules is
 		size			: in et_submodules.type_submodule_size; -- the size of the box in x and y
 		log_threshold	: in type_log_level);
 
+
+	-- Deletes all references to the given submodule
+	-- instance in the nets:
+	procedure delete_ports (
+		module_cursor	: in pac_generic_modules.cursor;
+		instance		: in pac_module_instance_name.bounded_string;
+		position		: in type_object_position; -- the location in the schematic (only sheet matters)
+		log_threshold	: in type_log_level);
+
 	
 
 	-- Removes a submodule instance from the schematic.

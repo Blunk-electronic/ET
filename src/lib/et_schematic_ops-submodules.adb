@@ -3101,17 +3101,11 @@ package body et_schematic_ops.submodules is
 					use pac_net_segments;
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
-					procedure change_segment (segment : in out type_net_segment) is
-						use pac_module_instance_name;
-						use pac_submodule_ports;
-						port_cursor : pac_submodule_ports.cursor := segment.ports.submodules.first;
-					begin
-						while port_cursor /= pac_submodule_ports.no_element loop
-							if element (port_cursor).module_name = instance then -- OSC1
-								delete (segment.ports.submodules, port_cursor);
-							end if;
-							next (port_cursor);
-						end loop;
+					
+					procedure change_segment (
+						segment : in out type_net_segment) 
+					is begin
+						delete_submodule_ports (segment, instance);
 					end change_segment;
 
 					
@@ -3186,6 +3180,7 @@ package body et_schematic_ops.submodules is
 			process		=> query_nets'access);
 
 	end delete_ports;
+
 
 	
 
@@ -3408,6 +3403,7 @@ package body et_schematic_ops.submodules is
 
 	
 
+	
 
 
 	procedure drag_submodule (
@@ -3751,6 +3747,7 @@ package body et_schematic_ops.submodules is
 	end copy_submodule;
 
 	
+
 	
 	
 	procedure rename_submodule (
@@ -3873,6 +3870,7 @@ package body et_schematic_ops.submodules is
 
 
 
+	
 	procedure mount_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		variant_parent	: in pac_assembly_variant_name.bounded_string; -- low_cost								  
@@ -3971,6 +3969,7 @@ package body et_schematic_ops.submodules is
 		
 	end mount_submodule;
 
+	
 
 
 	
@@ -4091,6 +4090,7 @@ package body et_schematic_ops.submodules is
 	end submodule_instance_exists;
 
 
+	
 
 
 
@@ -4162,6 +4162,8 @@ package body et_schematic_ops.submodules is
 	end assembly_variant_exists;
 
 
+
+	
 
 
 	function get_alternative_submodule (
@@ -4487,6 +4489,7 @@ package body et_schematic_ops.submodules is
 							procedure query_segment (segment_cursor : in pac_net_segments.cursor) is
 
 								procedure query_ports_devices (segment : in type_net_segment) is
+									
 									procedure query_port (port_cursor : in pac_device_ports.cursor) is 
 										use et_symbols;
 									begin
@@ -4508,14 +4511,17 @@ package body et_schematic_ops.submodules is
 										collect_device_port (port => element (port_cursor), net => net_name);
 									end query_port;
 										
-								begin -- query_ports_devices
+								begin
 									log_indentation_up;
-									iterate (segment.ports.devices, query_port'access);
+									iterate (segment.ports.A.devices, query_port'access);
+									iterate (segment.ports.B.devices, query_port'access);
 									log_indentation_down;
 								end query_ports_devices;
 
+
 								
 								procedure query_ports_submodules (segment : in type_net_segment) is
+									
 									procedure query_port (port_cursor : in pac_submodule_ports.cursor) is begin
 										log (text => "submodule " & to_string (element (port_cursor).module_name) &
 											 " port " & pac_net_name.to_string (element (port_cursor).port_name), level => log_threshold + 4);
@@ -4535,11 +4541,13 @@ package body et_schematic_ops.submodules is
 										collect_submodule_port (port => element (port_cursor), net => net_name);
 									end query_port;
 									
-								begin -- query_ports_submodules
+								begin
 									log_indentation_up;
-									iterate (segment.ports.submodules, query_port'access);
+									iterate (segment.ports.A.submodules, query_port'access);
+									iterate (segment.ports.B.submodules, query_port'access);
 									log_indentation_down;
 								end query_ports_submodules;
+
 
 								
 								procedure query_ports_netchangers (segment : in type_net_segment) is
@@ -4563,9 +4571,10 @@ package body et_schematic_ops.submodules is
 									end query_port;
 
 									
-								begin -- query_ports_netchangers
+								begin
 									log_indentation_up;
-									iterate (segment.ports.netchangers, query_port'access);
+									iterate (segment.ports.A.netchangers, query_port'access);
+									iterate (segment.ports.B.netchangers, query_port'access);
 									log_indentation_down;
 								end query_ports_netchangers;
 

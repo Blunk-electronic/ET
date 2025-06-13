@@ -296,8 +296,28 @@ is
 			when others => command_incomplete;
 		end case;
 
-
 	end add_device;
+
+
+	
+
+	procedure rename_device is 
+	begin
+		case cmd_field_count is
+			when 6 =>
+				rename_device
+					(
+					module_name 		=> module,
+					device_name_before	=> to_device_name (f (5)), -- IC1
+					device_name_after	=> to_device_name (f (6)), -- IC23
+					log_threshold		=> log_threshold + 1
+					);
+
+			when 7 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case; 
+	end rename_device;
 
 
 	
@@ -2159,20 +2179,7 @@ is
 			when VERB_RENAME =>
 				case noun is
 					when NOUN_DEVICE =>
-						case cmd_field_count is
-							when 6 =>
-								rename_device
-									(
-									module_name 		=> module,
-									device_name_before	=> to_device_name (f (5)), -- IC1
-									device_name_after	=> to_device_name (f (6)), -- IC23
-									log_threshold		=> log_threshold + 1
-									);
-
-							when 7 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case; 
+						rename_device;
 
 						
 					when NOUN_SUBMODULE =>

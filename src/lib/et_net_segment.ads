@@ -226,7 +226,12 @@ package et_net_segment is
 		port	: in type_submodule_port;
 		deleted : out boolean);
 
-	
+
+	-- Deletes all ports belonging to a
+	-- given submodule:
+	procedure delete_submodule_ports (
+		segment	: in out type_net_segment;
+		module	: in pac_module_instance_name.bounded_string);
 	
 	
 	-- Returns true if the net segment

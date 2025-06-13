@@ -3585,14 +3585,14 @@ package body et_schematic_ops.nets is
 	
 	
 	
--- 	procedure insert_segment (
--- 		module_cursor	: in pac_generic_modules.cursor;
--- 		net_cursor		: in out pac_nets.cursor;
--- 		sheet			: in type_sheet;
--- 		net_name		: in pac_net_name.bounded_string;
--- 		segment_new		: in type_net_segment;
--- 		log_threshold	: in type_log_level)
--- 	is 
+	procedure insert_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in out pac_nets.cursor;
+		sheet			: in type_sheet;
+		net_name		: in pac_net_name.bounded_string;
+		segment_new		: in type_net_segment;
+		log_threshold	: in type_log_level)
+	is 
 -- 		-- The segment being processed.
 -- 		-- Initially it is just a copy of the given bare segment. 
 -- 		-- In the course of this procedure ports of devices, submodules 
@@ -4204,10 +4204,13 @@ package body et_schematic_ops.nets is
 -- 			end if;
 -- 			
 -- 		end extend_net;
--- 
--- 		
--- 	begin -- insert_segment
--- 
+
+		
+	begin -- insert_segment
+
+		null;
+		-- CS
+		
 -- 		-- If no net named after net_name exists yet, notify operator that a 
 -- 		-- new net will be created.
 -- 		-- If the net already exists, extend it by the given net segment segment_new.
@@ -4249,7 +4252,7 @@ package body et_schematic_ops.nets is
 -- 			log_indentation_down;
 -- 		end if;
 -- 
--- 	end insert_segment;
+	end insert_segment;
 
 
 
