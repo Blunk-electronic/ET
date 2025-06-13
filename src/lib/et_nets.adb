@@ -165,14 +165,20 @@ package body et_nets is
 		segment	: in type_net_segment;
 		AB_end	: in type_start_end_point)
 	is 
+		-- If a segment is to be split, then this cursor
+		-- will be pointing to it:
 		target_to_split		: pac_net_segments.cursor;
+
+		-- If a segment is to be extended, then this cursor
+		-- will be pointing to it:
 		target_to_extend	: type_segment_to_extend;
 
+		
 		-- This is the place at which theh given
 		-- segment will be joined with the given strand:
 		point : type_vector_model;
 
-		-- There are several ways to attach the given segment
+		-- There are several ways to connect the given segment
 		-- with the strand:
 		
 		type type_mode is (
@@ -216,26 +222,34 @@ package body et_nets is
 		mode : type_mode := MODE_MAKE_BEND;
 
 
-		procedure split_segment is 
+		-- Splits the segment indicated by cursor target_to_split
+		-- in two segments. 
+		-- Deletes the segment indicated by target_to_split because it
+		-- will be replaced by the two new segments:
+		-- Appends the two fragments to the strand.
+		-- Appends the given segment to the strand:
+		procedure split_segment is
+			fragments : type_split_segment := split_segment (target_to_split, point);
+			-- CS: There should be two fragments. Otherwise
+			-- exception arises here.
 
-			seg_1, seg_2 : type_net_segment;
-			
-			procedure query_segment (target : in out type_net_segment) is
-				-- Split the given segment:
-				fragments : type_split_segment := split_segment (target, point);
-			begin
-				null;
-				-- if fragments.count = 2 then
-				-- 	seg_1 := fragments.segments (1);
-				-- 	seg_2 := fragments.segments (2);
-    -- 
-				-- else
-				-- 	null; -- CS should never happen
-				-- end if;
-			end query_segment;
-			
+			-- Take a copy of the given segment because
+			-- a junction will be activated:
+			segment_new : type_net_segment := segment;
 		begin
-			strand.segments.update_element (target_to_split, query_segment'access);
+			strand.segments.delete (target_to_split);
+
+			strand.segments.append (fragments.segments (1));
+			strand.segments.append (fragments.segments (2));
+
+			-- Activate a junction depending on the end
+			-- to be attached:
+			case AB_end is
+				when A => segment_new.junctions.A := true;
+				when B => segment_new.junctions.B := true;
+			end case;
+			
+			strand.segments.append (segment_new);
 		end split_segment;
 
 		
@@ -255,7 +269,7 @@ package body et_nets is
 
 		procedure append_segment is
 		begin
-			null;
+			strand.segments.append (segment);
 		end append_segment;
 		
 		
@@ -806,6 +820,90 @@ package body et_nets is
 	
 
 
+	
+
+	function get_strands (
+		net				: in type_net;
+		primary			: in type_net_segment;
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level)
+		return pac_strand_segment_cursors.list
+	is
+		result : pac_strand_segment_cursors.list;
+
+		
+		strand_cursor : pac_strands.cursor := net.strands.first;
+		
+		
+		procedure query_strand (strand : in type_strand) is
+			segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+			-- As soon as a segment has been found, then
+			-- this flag is cleared so that no more segments
+			-- are tested:
+			proceed : boolean := true;
+			
+			-- Tests whether the candidate segment s ends
+			-- either with its A end or its B end on the 
+			-- given primary segment:
+			procedure query_segment (s : in type_net_segment) is begin
+				-- Test the A end of the candidate segment:
+				if between_A_and_B (
+					primary		=> primary, 
+					AB_end		=> A,
+					secondary	=> s)
+				then
+					log (text => "match on " & to_string (A) & " end", level => log_threshold + 3);
+					
+					-- Append the segment to the result:
+					result.append ((strand_cursor, segment_cursor, A));
+					proceed := false; -- no more probing required
+				end if;
+
+				-- Test the B end of the candidate segment:
+				if between_A_and_B (
+					primary		=> primary, 
+					AB_end		=> B,
+					secondary	=> s)
+				then
+					log (text => "match on " & to_string (B) & " end", level => log_threshold + 3);
+					
+					-- Append the segment to the result:
+					result.append ((strand_cursor, segment_cursor, B));
+					proceed := false; -- no more probing required
+				end if;
+			end query_segment;
+
+				
+		begin
+			-- Iterate through the segments:
+			while has_element (segment_cursor) and proceed loop
+				log (text => "segment " & to_string (segment_cursor), level => log_threshold + 2);
+				log_indentation_up;
+				query_element (segment_cursor, query_segment'access);
+				log_indentation_down;
+				next (segment_cursor);
+			end loop;
+		end query_strand;
+
+		
+	begin
+		-- Iterate through the strands:
+		while has_element (strand_cursor) loop
+			
+			-- We pick out only the strands on the given sheet:
+			if get_sheet (strand_cursor) = sheet then
+				query_element (strand_cursor, query_strand'access);					
+			end if;
+			
+			next (strand_cursor);
+		end loop;
+
+		return result;
+	end get_strands;
+
+
+	
 	
 
 	procedure delete_strands (

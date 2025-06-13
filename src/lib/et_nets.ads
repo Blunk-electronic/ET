@@ -408,10 +408,34 @@ package et_nets is
 	function get_strands (
 		net		: in type_net;
 		place	: in type_object_position)
+		-- CS log_threshold	: in type_log_level)
 		return pac_strand_cursors.list;
 
 
+
 	
+	type type_strand_segment_cursor is record
+		strand_cursor	: pac_strands.cursor;
+		segment_cursor	: pac_net_segments.cursor;
+		AB_end			: type_start_end_point;
+	end record;
+
+	package pac_strand_segment_cursors is new 
+		doubly_linked_lists (type_strand_segment_cursor);
+
+
+	-- Returns for a given primary net segment a list of strands
+	-- having a segment that ends between A and B of the given segment:
+	function get_strands (
+		net				: in type_net;
+		primary			: in type_net_segment;
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level)
+		return pac_strand_segment_cursors.list;
+
+
+		
+		
 	
 
 	-- Deletes the given list of strands in the given net:

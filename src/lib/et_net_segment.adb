@@ -496,12 +496,55 @@ package body et_net_segment is
 		point	: in type_vector_model)
 		return type_split_segment
 	is
-		result : type_split_segment (count => 2);
-		--function do_it 
+		-- Prepare return for two cases:
+
+		-- CASE 1: No split because point is on A or B end of segment:
+		result_no_split	: type_split_segment (count => 1);
+
+		-- CASE 2: The segment will be split in two fragments:
+		result_split	: type_split_segment (count => 2);
+
+		-- Treat the segment as a regular line and split it.
+		-- Depending on the result we decide how to proceed further:
 		fragments : type_split_line := split_line (segment, point);
+
+		
+		procedure do_it is
+			segment_1, segment_2 : type_net_segment;
+		begin
+			segment_1 := (fragments.segments (1) with others => <>);
+			segment_1.ports.A := segment.ports.A;
+			segment_1.junctions.A := segment.junctions.A;
+			segment_1.tag_labels.A := segment.tag_labels.A;
+			-- CS labels. Currently simple labels are discarded.
+			
+			segment_2 := (fragments.segments (2) with others => <>);
+			segment_2.ports.B := segment.ports.B;
+			segment_2.junctions.B := segment.junctions.B;
+			segment_2.tag_labels.B := segment.tag_labels.B;
+			-- CS labels. Currently simple labels are discarded.
+
+			result_split.segments (1) := segment_1;
+			result_split.segments (2) := segment_2;
+		end do_it;
+
+		
 	begin
-		-- CS
-		return result;
+		-- Evaluate the fragments:
+		case fragments.count is
+			when 1 =>
+				-- No splitting because point sits 
+				-- on A or B of given segment. The given
+				-- segment is returned as it is:
+				result_no_split.segments (1) := segment;
+				return result_no_split;
+
+			when 2 =>
+				do_it;
+				return result_split;
+
+			when others => raise constraint_error; -- CS should never happen
+		end case;
 	end split_segment;
 
 
@@ -556,6 +599,29 @@ package body et_net_segment is
 
 		return result;
 	end get_connect_status;
+
+
+
+
+
+
+	function between_A_and_B (
+		secondary	: in type_net_segment;
+		AB_end		: in type_start_end_point;
+		primary		: in type_net_segment)
+		return boolean
+	is
+		point : type_vector_model;
+	begin		
+		case AB_end is
+			when A => point := get_A (secondary);
+			when B => point := get_B (secondary);
+		end case;
+
+		return between_A_and_B (primary, point);
+	end between_A_and_B;
+
+
 
 	
 	
@@ -818,6 +884,16 @@ package body et_net_segment is
 	
 
 
+
+
+	function split_segment (
+		segment	: in pac_net_segments.cursor;
+		point	: in type_vector_model)
+		return type_split_segment
+	is begin		
+		return split_segment (element (segment), point);
+	end;
+
 	
 
 	
@@ -837,6 +913,8 @@ package body et_net_segment is
 		return result;
 	end get_connect_status;
 	
+
+
 	
 end et_net_segment;
 

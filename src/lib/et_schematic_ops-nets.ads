@@ -313,6 +313,18 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level)
 		return pac_strand_cursors.list;
 
+
+	
+	-- Returns for a given primary net segment a list of strands
+	-- having a segment that ends between A and B of the given segment:
+	function get_strands (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in pac_nets.cursor;
+		primary			: in type_net_segment;
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level)
+		return pac_strand_segment_cursors.list;
+
 	
 	
 	-- Returns a list of strands which cross
@@ -605,6 +617,8 @@ package et_schematic_ops.nets is
 
 
 
+	-- Inserts the give net segment in the given segment
+	-- on the given sheet:
 	procedure insert_net_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in pac_nets.cursor;

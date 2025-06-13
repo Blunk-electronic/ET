@@ -1691,6 +1691,68 @@ package body et_schematic_ops.nets is
 
 
 
+
+
+	function get_strands (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in pac_nets.cursor;
+		primary			: in type_net_segment;
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level)
+		return pac_strand_segment_cursors.list
+	is
+		result : pac_strand_segment_cursors.list;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net)
+			is begin
+				log (text => "net " & to_string (net_name), level => log_threshold + 1);
+				log_indentation_up;
+				result := get_strands (net, primary, sheet, log_threshold + 2);
+				log_indentation_down;
+			end query_net;
+
+			
+		begin
+			query_element (net_cursor, query_net'access);
+		end query_module;
+		
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " looking up strands of net " & get_net_name (net_cursor)
+			 & " on sheet " & to_string (sheet)
+			 & " between A and B of primary segment " & to_string (primary),
+			 level => log_threshold);
+
+		log_indentation_up;
+		query_element (module_cursor, query_module'access);
+
+		-- Usually in a correct design strands of the same net
+		-- do not cross each other. In such a strange case,
+		-- a warning should be output.
+		-- Issue a warning if more than one strand has been found:
+		if result.length > 1 then
+			log (text => " WARNING. More than one strand found at "
+				 & to_string (primary) & " on sheet " & to_string (sheet) & " !", 
+				 level => log_threshold);
+		end if;
+		
+		log_indentation_down;
+
+		return result;
+	end get_strands;
+
+	
 	
 	
 
@@ -1783,6 +1845,7 @@ package body et_schematic_ops.nets is
 
 	
 
+	
 
 	procedure reset_strands (
 		module_cursor	: in pac_generic_modules.cursor;

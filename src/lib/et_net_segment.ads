@@ -278,8 +278,9 @@ package et_net_segment is
 	-- the given segment, the resulting segments may run in 
 	-- to different directions.
 	-- If either A or B of the given segment is the same
-	-- as the given split point, then the result is
-	-- a single segment, namely the given segment without any change:	
+	-- as the given split point, then there is nothing
+	-- to do. The result is a single segment, namely the 
+	-- given segment without any change:	
 	function split_segment (
 		segment	: in type_net_segment;
 		point	: in type_vector_model)
@@ -324,7 +325,19 @@ package et_net_segment is
 
 
 
+	-- Returns true if given secondary segment
+	-- starts or ends between A and B of the primary
+	-- segment.
+	-- AB_end indicates which end of the secondary segment
+	-- is to be tested:
+	function between_A_and_B (
+		secondary	: in type_net_segment;
+		AB_end		: in type_start_end_point;
+		primary		: in type_net_segment)
+		return boolean;
 
+
+	
 	
 	
 	
@@ -405,7 +418,9 @@ package et_net_segment is
 		return boolean;
 
 
-		
+
+
+	
 	
 	-- Returns the orientation of a net segment.
 	function get_segment_orientation (
@@ -432,6 +447,16 @@ package et_net_segment is
 
 
 
+	-- Splits a segment. See details in comments
+	-- of function split_segment above:
+	function split_segment (
+		segment	: in pac_net_segments.cursor;
+		point	: in type_vector_model)
+		return type_split_segment;
+
+
+
+	
 	-- Similar to function get_connect_status (see above), 
 	-- but takes cursors to the primary and secondary segment:
 	function get_connect_status (
@@ -441,6 +466,7 @@ package et_net_segment is
 		return type_connect_status;
 	
 
+	
 
 	
 	net_line_width : constant type_distance_positive := 0.2;
