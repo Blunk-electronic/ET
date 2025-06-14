@@ -1030,6 +1030,26 @@ package body et_geometry_2a is
 
 
 
+
+	procedure sort_by_distance (
+		points		: in out pac_points.list;
+		reference	: in type_vector_model;
+		mode		: in type_sort_mode := SORT_ASCENDING)
+	is
+		-- Convert the given points to vectors:
+		vectors : pac_vectors.list := to_vectors (points);				
+	begin
+		-- Sort the vectors by their distance to 
+		-- the reference point (in ascending order):
+		sort_by_distance (vectors, to_vector (reference));
+		
+		-- Convert the vectors back to model vectors:
+		points := to_points (vectors);
+	end sort_by_distance;
+		
+	
+
+
 	function get_length (
 		points : in pac_points.list)
 		return natural
@@ -1155,6 +1175,29 @@ package body et_geometry_2a is
 		points.iterate (query_point'access);
 		return result;
 	end to_vectors;
+
+
+
+
+	
+	function to_points (
+		vectors : in pac_vectors.list)
+		return pac_points.list
+	is
+		result : pac_points.list;
+
+		use pac_vectors;
+		
+		procedure query_vector (c : in pac_vectors.cursor) is begin
+			result.append (to_vector_model (element (c)));
+		end;
+		
+	begin
+		vectors.iterate (query_vector'access);
+		return result;
+	end to_points;
+
+
 
 	
 
@@ -2027,14 +2070,64 @@ end;
 	is
 		fragment_count : natural;
 
+		-- In case the given list of points is
+		-- empty, then nothing is to do and this
+		-- will be returned:
 		result_no_split : type_split_line (count => 1);
+
 		
 		function do_it return type_split_line is
 			result : type_split_line (count => fragment_count);
+			points_sorted : pac_points.list := points;
+
+			use pac_points;
+
+			-- This index points to the fragment being built:
+			i : natural := 1;
+			
+			procedure query_point (c : in pac_points.cursor) is
+				p : type_vector_model renames element (c);
+				l : type_line;
+			begin
+				-- CS if p = get_A (line) or p = get_B (line) then
+				-- 	null; -- skip
+
+				if i = 1 then
+					-- Build the first line. It starts where
+					-- the given line starts. It ends at p:
+					set_A (l, get_A (line));
+					set_B (l, p);
+
+				elsif i = fragment_count then
+					-- Build the last line. It starts where 
+					-- its predecessor ends. It ends where the given
+					-- line ends:
+					set_A (l, get_B (result.segments (i - 1)));
+					set_B (l, get_B (line));
+
+				else
+					-- Build an intermediate line. It starts where
+					-- its predecessor ends. It ends at p:
+					set_A (l, get_B (result.segments (i - 1)));
+					set_B (l, p);
+				end if;
+
+				-- Assign the temporaily line to the result:
+				result.segments (i) := l;
+
+				i := i + 1; -- prepare next segment
+			end query_point;
+
+			
 		begin
-			-- CS
+			-- Sort the given points by their increasing distance
+			-- to the A end of the line:
+			sort_by_distance (points => points_sorted, reference => get_A (line));
+
+			-- Iterate the points and build a line fragment:
+			points_sorted.iterate (query_point'access);
 			return result;
-		end;
+		end do_it;
 		
 			
 	begin

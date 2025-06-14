@@ -626,11 +626,15 @@ package et_geometry_1 is
 		vectors_2 : in pac_vectors.list); -- vectors to be removed
 	
 
+
+	type type_sort_mode is (SORT_ASCENDING, SORT_DESCENDING);
+	
 	-- Sorts the list of vectors by the distance of the vectors
 	-- to the given reference point. Nearest comes first:
 	procedure sort_by_distance (
 		vectors		: in out pac_vectors.list;
 		reference	: in type_vector);
+		-- CS add sort mode
 
 
 	-- Returns the location vector that is

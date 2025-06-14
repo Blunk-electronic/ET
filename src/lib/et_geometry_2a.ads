@@ -524,6 +524,17 @@ package et_geometry_2a is
 	package pac_points is new doubly_linked_lists (type_vector_model);
 
 
+
+	
+	-- Sorts points by their distance to the reference point:
+	procedure sort_by_distance (
+		points		: in out pac_points.list;
+		reference	: in type_vector_model;
+		mode		: in type_sort_mode := SORT_ASCENDING);
+		-- CS currently mode is ignored. sort ascending is default.
+	
+	
+	
 	-- Returns the number of points that the given list contains:
 	function get_length (
 		points : in pac_points.list)
@@ -558,6 +569,12 @@ package et_geometry_2a is
 	function to_vectors (
 		points : in pac_points.list)
 		return pac_vectors.list;
+
+
+	-- Converts a list of vectors to points:
+	function to_points (
+		vectors : in pac_vectors.list)
+		return pac_points.list;
 
 	
 	-- Removes points which are stored multiple times
@@ -1088,7 +1105,12 @@ package et_geometry_2a is
 
 	-- This function splits a line into two or more
 	-- shorter segments. The given list of points
-	-- specifies the places where the line is to be split:
+	-- specifies the places where the line is to be split.
+	-- Since the given points are not required to be on 
+	-- the given line, the resulting line fragments may run in 
+	-- to different directions.
+	-- CS: Currently it is assumed that none of the given
+	-- split points is equal to the A or B end of the line:
 	function split_line (
 		line 	: in type_line;
 		points	: in pac_points.list)
