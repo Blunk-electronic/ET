@@ -4329,13 +4329,17 @@ package body et_schematic_ops.nets is
 		segment			: in type_net_segment;
 		log_threshold	: in type_log_level)
 	is
+		-- The segment to be inserted can touch
+		-- with its ends other already existing strands. So we need two lists:
+		-- One for the strands found at the A end of the segment,
+		-- and another for the strands found at the B end:
 		use pac_strand_cursors;
 		strands_at_A, strands_at_B : pac_strand_cursors.list;
-
+		
 		-- This procedure searches for strands (of the given
 		-- net) that run across the A or B end of the
 		-- given segment:
-		procedure get_strands_AB is
+		procedure get_strands_at_AB is
 			place : type_object_position;
 		begin
 			place := to_position (get_A (segment), sheet);			
@@ -4343,8 +4347,26 @@ package body et_schematic_ops.nets is
 
 			place := to_position (get_B (segment), sheet);
 			strands_at_B := get_strands (module_cursor, net_cursor, place, log_threshold + 1);
-		end get_strands_AB;
+		end get_strands_at_AB;
 
+
+		
+		-- The segment to be inserted can run across the ends of
+		-- other already existing strands. The ends of the existing
+		-- segments lie between the A and B end of the segment to be inserted.
+		-- So we need a list of the strands and segments that end between
+		-- A and B of the segment to be inserted:
+		use pac_strand_segment_cursors;
+		strands_between_AB : pac_strand_segment_cursors.list;
+
+		-- This procedure searches for strands (of the given net)
+		-- that start or end between A and B of the given segment:
+		procedure get_strands_between_AB is begin
+			strands_between_AB := get_strands (
+				module_cursor, net_cursor, segment, sheet, log_threshold + 1);
+		end;
+
+		
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -4356,10 +4378,22 @@ package body et_schematic_ops.nets is
 				net			: in out type_net)
 			is
 				type type_insert_mode is (
-					NEW_STRAND,	-- the given segment has no connection with any strand
-					ATTACH_A,	-- the segment will be connected at its A end
-					ATTACH_B);	-- the segment will be connected at its B end
+					-- The given segment has no connection with any strand.
+					-- For the given segment a new strand will be created:
+					NEW_STRAND,	
 
+					-- The given segment will be connected at its A end
+					-- with an existing strand:
+					ATTACH_A,
+				
+					-- The given segment will be connected at its B end
+					-- with an existing strand:
+					ATTACH_B); 
+										
+
+				-- The insert_mode will be determined after
+				-- evaluation of the lists strands_at_A/B and
+				-- strands_between_AB:
 				insert_mode : type_insert_mode;
 
 				-- In case the segment is to be connected with a strand,
@@ -4445,7 +4479,14 @@ package body et_schematic_ops.nets is
 
 		log_indentation_up;
 
-		get_strands_AB;
+		get_strands_between_AB;
+
+		get_strands_at_AB;
+		
+		-- The given segment will be split in
+		-- two or more shorter fragments:
+		-- SPLIT_NEW_SEGMENT
+
 
 		generic_modules.update_element (module_cursor, query_module'access);
 		

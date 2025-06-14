@@ -903,6 +903,72 @@ package body et_nets is
 	end get_strands;
 
 
+
+
+
+
+	function split_segment (
+		primary			: in type_net_segment;
+		nodes			: in pac_strand_segment_cursors.list;
+		log_threshold	: in type_log_level)
+		return pac_net_segments.list
+	is
+		result : pac_net_segments.list;
+		
+		-- Here we collect all split points:
+		split_points : pac_points.list;
+
+		
+		-- This procedure computes from a given node
+		-- a split point:
+		procedure query_node (c : in pac_strand_segment_cursors.cursor) is
+			use pac_strand_segment_cursors;
+			node : type_strand_segment_cursor renames element (c);
+			point : type_vector_model; -- split point
+		begin
+			case node.AB_end is
+				when A => point := get_A (node.segment_cursor);
+				when B => point := get_B (node.segment_cursor);
+			end case;
+
+			-- Add the point to the list of split points:
+			split_points.append (point);
+		end query_node;
+
+
+		
+		procedure make_segments is
+			-- Split the given primary segment at
+			-- the split points and store the fragments here:			
+			f : type_split_line := split_line (primary, split_points);
+
+			-- A candidate segment:
+			s : type_net_segment;
+		begin
+			-- Iterate the fragments and build from each of
+			-- them a secondary net segment:
+			for i in f.segments'first .. f.segments'last loop
+
+				s := (f.segments (i) with others => <>);
+				-- CS activate junction ?
+
+				result.append (s);
+			end loop;
+		end make_segments;
+
+		
+		
+	begin
+		-- Iterate the nodes and build a list of split points:
+		nodes.iterate (query_node'access);
+
+		make_segments;
+		
+		return result;
+	end split_segment;
+
+	
+
 	
 	
 

@@ -434,8 +434,15 @@ package et_nets is
 		return pac_strand_segment_cursors.list;
 
 
-		
-		
+	-- Breaks down a given primary segment in
+	-- shortes fragments. The nodes are
+	-- the places where other segments start or end
+	-- between A and B of the primary segment:
+	function split_segment (
+		primary			: in type_net_segment;
+		nodes			: in pac_strand_segment_cursors.list;
+		log_threshold	: in type_log_level)
+		return pac_net_segments.list;
 	
 
 	-- Deletes the given list of strands in the given net:

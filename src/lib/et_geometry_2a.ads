@@ -1058,7 +1058,7 @@ package et_geometry_2a is
 
 
 
-	-- When a line is to be split in two
+	-- When a line is to be split in two or more
 	-- fragments, then this type should be used for
 	-- the output of a split operation.
 	-- It is a parameterized type because the split
@@ -1086,8 +1086,13 @@ package et_geometry_2a is
 
 	
 
-
-
+	-- This function splits a line into two or more
+	-- shorter segments. The given list of points
+	-- specifies the places where the line is to be split:
+	function split_line (
+		line 	: in type_line;
+		points	: in pac_points.list)
+		return type_split_line;
 	
 	
 -- ARC

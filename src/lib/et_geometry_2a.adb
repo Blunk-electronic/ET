@@ -2018,6 +2018,45 @@ end;
 
 
 	
+
+
+	function split_line (
+		line 	: in type_line;
+		points	: in pac_points.list)
+		return type_split_line
+	is
+		fragment_count : natural;
+
+		result_no_split : type_split_line (count => 1);
+		
+		function do_it return type_split_line is
+			result : type_split_line (count => fragment_count);
+		begin
+			-- CS
+			return result;
+		end;
+		
+			
+	begin
+		-- We will always have one more fragment than split points:
+		fragment_count := 1 + natural (points.length);
+
+		case fragment_count is
+			when 0 => raise constraint_error;
+			when 1 =>
+				-- If the outcome will be just a single segment,
+				-- then the given line will be returned as it is:
+				result_no_split.segments (1) := line;
+				return result_no_split;
+				
+			when others =>
+				return do_it;
+		end case;
+		
+	end split_line;
+	
+
+	
 	
 -- ARC:
 
