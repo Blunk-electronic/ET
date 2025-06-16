@@ -853,7 +853,7 @@ package body et_nets is
 					AB_end		=> A,
 					secondary	=> s)
 				then
-					log (text => "match on " & to_string (A) & " end", level => log_threshold + 3);
+					log (text => "match on " & to_string (A) & " end", level => log_threshold + 1);
 					
 					-- Append the segment to the result:
 					result.append ((strand_cursor, segment_cursor, A));
@@ -866,7 +866,7 @@ package body et_nets is
 					AB_end		=> B,
 					secondary	=> s)
 				then
-					log (text => "match on " & to_string (B) & " end", level => log_threshold + 3);
+					log (text => "match on " & to_string (B) & " end", level => log_threshold + 1);
 					
 					-- Append the segment to the result:
 					result.append ((strand_cursor, segment_cursor, B));
@@ -878,7 +878,7 @@ package body et_nets is
 		begin
 			-- Iterate through the segments:
 			while has_element (segment_cursor) and proceed loop
-				log (text => "segment " & to_string (segment_cursor), level => log_threshold + 2);
+				log (text => "segment " & to_string (segment_cursor), level => log_threshold);
 				log_indentation_up;
 				query_element (segment_cursor, query_segment'access);
 				log_indentation_down;

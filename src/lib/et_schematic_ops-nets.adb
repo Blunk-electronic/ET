@@ -1741,11 +1741,18 @@ package body et_schematic_ops.nets is
 		-- do not cross each other. In such a strange case,
 		-- a warning should be output.
 		-- Issue a warning if more than one strand has been found:
-		if result.length > 1 then
-			log (text => " WARNING. More than one strand found at "
-				 & to_string (primary) & " on sheet " & to_string (sheet) & " !", 
-				 level => log_threshold);
-		end if;
+		case result.length is
+			when 0 =>
+				log (text => "Nothing found.", level => log_threshold + 1);
+
+			when 1 =>
+				log (text => "One strand found.", level => log_threshold + 1);
+
+			when others =>
+				log (text => "WARNING. More than one strand found at "
+					& to_string (primary) & " on sheet " & to_string (sheet) & " !", 
+					level => log_threshold + 1);
+		end case;
 		
 		log_indentation_down;
 
@@ -4361,9 +4368,15 @@ package body et_schematic_ops.nets is
 
 		-- This procedure searches for strands (of the given net)
 		-- that start or end between A and B of the given segment:
-		procedure get_strands_between_AB is begin
+		procedure get_strands_between_AB is 
+			new_segments : pac_net_segments.list;
+		begin
 			strands_between_AB := get_strands (
 				module_cursor, net_cursor, segment, sheet, log_threshold + 1);
+
+			if strands_between_AB.length > 0 then
+				new_segments := split_segment (segment, strands_between_AB, log_threshold + 1);
+			end if;
 		end;
 
 		
@@ -4490,6 +4503,8 @@ package body et_schematic_ops.nets is
 
 		generic_modules.update_element (module_cursor, query_module'access);
 		
+
+
 		-- update_strand_positions (module_cursor, log_threshold + 2);
 		
 		-- update_ratsnest (module_cursor, log_threshold + 2);

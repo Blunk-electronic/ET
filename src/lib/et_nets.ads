@@ -435,7 +435,7 @@ package et_nets is
 
 
 	-- Breaks down a given primary segment in
-	-- shortes fragments. The nodes are
+	-- shorter fragments. The nodes are
 	-- the places where other segments start or end
 	-- between A and B of the primary segment:
 	function split_segment (
