@@ -108,6 +108,13 @@ package body et_nets is
 	is
 		result : type_segment_to_extend;
 
+		-- In case no suitable segment has been found,
+		-- then we returns this:
+		result_no_segment : constant type_segment_to_extend := (
+			cursor	=> pac_net_segments.no_element,
+			AB_end	=> A);													   
+		
+
 		proceed : aliased boolean := true;
 
 		-- The point where the given segment will be attached:
@@ -145,6 +152,29 @@ package body et_nets is
 				end if;
 			end if;
 		end query_segment;
+
+
+		
+		function other_segments_here return boolean is
+			r : boolean := false;
+			
+			procedure query_segment (c : in pac_net_segments.cursor) is
+			begin
+				if c /= result.cursor then
+					if get_A (c) = point or get_B (c) = point then
+						r := true;
+					end if;
+
+					-- CS test ports
+				end if;
+			end query_segment;
+			
+		begin
+			segments.iterate (query_segment'access);
+			return r;
+		end other_segments_here;
+
+
 		
 	begin		
 		-- Iterate the given segments. Abort on the
@@ -152,7 +182,16 @@ package body et_nets is
 		-- then the result is no_element:
 		iterate (segments, query_segment'access, proceed'access);
 
-		return result;
+		if has_element (result.cursor) then
+			if other_segments_here then
+				return result_no_segment;
+			else
+				return result;
+			end if;
+		else
+			return result_no_segment;
+		end if;
+		
 	end get_segment_to_extend;
 
 	
