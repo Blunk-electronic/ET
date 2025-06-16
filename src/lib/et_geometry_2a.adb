@@ -2068,7 +2068,7 @@ end;
 		points	: in pac_points.list)
 		return type_split_line
 	is
-		debug : boolean := true;
+		debug : boolean := false;
 		
 		fragment_count : natural;
 
@@ -2104,13 +2104,6 @@ end;
 					set_A (l, get_A (line));
 					set_B (l, p);
 
-				elsif i = fragment_count then
-					-- Build the last line. It starts where 
-					-- its predecessor ends. It ends where the given
-					-- line ends:
-					set_A (l, get_B (result.segments (i - 1)));
-					set_B (l, get_B (line));
-
 				else
 					-- Build an intermediate line. It starts where
 					-- its predecessor ends. It ends at p:
@@ -2129,6 +2122,10 @@ end;
 			-- Sort the given points by their increasing distance
 			-- to the A end of the line:
 			sort_by_distance (points => points_sorted, reference => get_A (line));
+
+			-- The last point is "artificially" in order
+			-- to compute the last segment:
+			points_sorted.append (get_B (line));
 
 			-- Iterate the points and build a line fragment:
 			points_sorted.iterate (query_point'access);
