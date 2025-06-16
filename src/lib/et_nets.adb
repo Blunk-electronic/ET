@@ -931,6 +931,8 @@ package body et_nets is
 				when B => point := get_B (node.segment_cursor);
 			end case;
 
+			log (text => "split point: " & to_string (point), level => log_threshold + 2);
+			
 			-- Add the point to the list of split points:
 			split_points.append (point);
 		end query_node;
@@ -950,6 +952,8 @@ package body et_nets is
 			for i in f.segments'first .. f.segments'last loop
 
 				s := (f.segments (i) with others => <>);
+				log (text => to_string (s), level => log_threshold + 2);
+
 				-- CS activate junction ?
 
 				result.append (s);
@@ -959,11 +963,21 @@ package body et_nets is
 		
 		
 	begin
-		-- Iterate the nodes and build a list of split points:
-		nodes.iterate (query_node'access);
+		log (text => "split segment: " & to_string (primary), level => log_threshold);
+		log_indentation_up;
 
+		-- Iterate the nodes and build a list of split points:
+		log (text => "split points: ", level => log_threshold + 1);
+		log_indentation_up;
+		nodes.iterate (query_node'access);
+		log_indentation_down;
+
+		log (text => "create new segments: ", level => log_threshold + 1);
+		log_indentation_up;
 		make_segments;
+		log_indentation_down;
 		
+		log_indentation_down;
 		return result;
 	end split_segment;
 

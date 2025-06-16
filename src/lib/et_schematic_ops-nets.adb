@@ -4327,6 +4327,175 @@ package body et_schematic_ops.nets is
 
 
 
+
+	procedure insert_net_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in pac_nets.cursor;
+		sheet			: in type_sheet;
+		segments		: in pac_net_segments.list;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_segment (c : in pac_net_segments.cursor) is
+			segment : type_net_segment renames element (c);
+
+			-- The segment to be inserted can touch
+			-- with its ends other already existing strands. So we need two lists:
+			-- One for the strands found at the A end of the segment,
+			-- and another for the strands found at the B end:
+			use pac_strand_cursors;
+			strands_at_A, strands_at_B : pac_strand_cursors.list;
+			
+
+			-- This procedure searches for strands (of the given
+			-- net) that run across the A or B end of the
+			-- given segment:
+			procedure get_strands_at_AB is
+				place : type_object_position;
+			begin
+				place := to_position (get_A (segment), sheet);			
+				strands_at_A := get_strands (module_cursor, net_cursor, place, log_threshold + 2);
+
+				place := to_position (get_B (segment), sheet);
+				strands_at_B := get_strands (module_cursor, net_cursor, place, log_threshold + 2);
+			end get_strands_at_AB;
+
+
+
+			procedure query_module (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in out type_generic_module) 
+			is
+
+				procedure query_net (
+					net_name	: in pac_net_name.bounded_string;
+					net			: in out type_net)
+				is
+					type type_insert_mode is (
+						-- The given segment has no connection with any strand.
+						-- For the given segment a new strand will be created:
+						NEW_STRAND,	
+
+						-- The given segment will be connected at its A end
+						-- with an existing strand:
+						ATTACH_A,
+					
+						-- The given segment will be connected at its B end
+						-- with an existing strand:
+						ATTACH_B); 
+											
+
+					-- The insert_mode will be determined after
+					-- evaluation of the lists strands_at_A/B and
+					-- strands_between_AB:
+					insert_mode : type_insert_mode;
+
+					-- In case the segment is to be connected with a strand,
+					-- then this cursor will point to the target strand:
+					strand_cursor : pac_strands.cursor;
+
+
+					procedure query_strand (strand : in out type_strand) is
+					begin
+						if insert_mode = ATTACH_A then
+							attach_segment (strand, segment, A);
+						end if;
+							
+						if insert_mode = ATTACH_B then
+							attach_segment (strand, segment, B);
+						end if;
+					end;
+
+					
+				begin
+					-- CASE 1:
+					-- The new segment has no connection with any other strand.
+					-- If no strands exist on any end of the 
+					-- new segment, then a new strand must be created.
+					-- The new strand will then contain the given segment:
+					if is_empty (strands_at_A) and is_empty (strands_at_B) then
+						insert_mode := NEW_STRAND;
+					end if;
+
+					-- CASE 2:
+					-- The new segment starts (A) at an existing strand.
+					-- The end (B) is open (no connections with any strand):
+					if not is_empty (strands_at_A) and is_empty (strands_at_B) then
+						insert_mode := ATTACH_A;
+					end if;
+
+					-- CASE 3:
+					-- The new segment ends (B) at an existing strand.
+					-- The start (A) is open (no connections with any strand):
+					if is_empty (strands_at_A) and not is_empty (strands_at_B) then
+						insert_mode := ATTACH_B;
+					end if;
+
+
+					case insert_mode is
+						when NEW_STRAND => -- CASE 1
+							-- Create a new strand that contains the given segment:
+							log (text => "Create new strand.", level => log_threshold + 3);
+							create_strand (net, segment);
+
+						when ATTACH_A => -- CASE 2
+							-- Take the first strand that has been located at
+							-- the A end of the segment and insert the segment
+							-- in that strand:
+							log (text => "Attach A end of segment to strand.", level => log_threshold + 3);
+							strand_cursor := first_element (strands_at_A);
+							net.strands.update_element (strand_cursor, query_strand'access);
+
+						when ATTACH_B => -- CASE 3
+							-- Take the first strand that has been located at
+							-- the B end of the segment and insert the segment
+							-- in that strand:
+							log (text => "Attach B end of segment to strand.", level => log_threshold + 3);
+							strand_cursor := first_element (strands_at_B);
+							net.strands.update_element (strand_cursor, query_strand'access);
+
+					end case;
+				end query_net;
+			
+		
+			begin
+				module.nets.update_element (net_cursor, query_net'access);
+			end query_module;
+
+
+
+		begin
+			log (text => "Insert segment " & to_string (segment), level => log_threshold + 1);
+			log_indentation_up;
+
+			get_strands_at_AB;
+			generic_modules.update_element (module_cursor, query_module'access);
+
+			log_indentation_down;
+		end query_segment;
+
+
+
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " insert net segments " -- CS & to_string (segments)
+			 & " in net " & get_net_name (net_cursor)
+			 & " on sheet " & to_string (sheet),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		segments.iterate (query_segment'access);
+
+		-- update_strand_positions (module_cursor, log_threshold + 2);
+		
+		-- update_ratsnest (module_cursor, log_threshold + 2);
+
+		log_indentation_down;
+	end insert_net_segments;
+
+
+
 	
 
 	procedure insert_net_segment (
@@ -4336,27 +4505,6 @@ package body et_schematic_ops.nets is
 		segment			: in type_net_segment;
 		log_threshold	: in type_log_level)
 	is
-		-- The segment to be inserted can touch
-		-- with its ends other already existing strands. So we need two lists:
-		-- One for the strands found at the A end of the segment,
-		-- and another for the strands found at the B end:
-		use pac_strand_cursors;
-		strands_at_A, strands_at_B : pac_strand_cursors.list;
-		
-		-- This procedure searches for strands (of the given
-		-- net) that run across the A or B end of the
-		-- given segment:
-		procedure get_strands_at_AB is
-			place : type_object_position;
-		begin
-			place := to_position (get_A (segment), sheet);			
-			strands_at_A := get_strands (module_cursor, net_cursor, place, log_threshold + 1);
-
-			place := to_position (get_B (segment), sheet);
-			strands_at_B := get_strands (module_cursor, net_cursor, place, log_threshold + 1);
-		end get_strands_at_AB;
-
-
 		
 		-- The segment to be inserted can run across the ends of
 		-- other already existing strands. The ends of the existing
@@ -4366,120 +4514,44 @@ package body et_schematic_ops.nets is
 		use pac_strand_segment_cursors;
 		strands_between_AB : pac_strand_segment_cursors.list;
 
+		new_segments : pac_net_segments.list;
+
 		-- This procedure searches for strands (of the given net)
 		-- that start or end between A and B of the given segment:
 		procedure get_strands_between_AB is 
-			new_segments : pac_net_segments.list;
+			strand_count : count_type;
+			fragment_count : natural;
 		begin
 			strands_between_AB := get_strands (
 				module_cursor, net_cursor, segment, sheet, log_threshold + 1);
 
-			if strands_between_AB.length > 0 then
-				new_segments := split_segment (segment, strands_between_AB, log_threshold + 1);
-			end if;
+			strand_count := strands_between_AB.length;
+
+			fragment_count := 1 + natural (strand_count);
+
+			log (text => "Strands found: " & count_type'image (strand_count),
+				level => log_threshold + 1);
+
+
+			case fragment_count is
+				when 0 =>
+					log (text => "The given segment will be inserted as it is.",
+						level => log_threshold + 1);
+
+					new_segments.append (segment);
+
+				-- CS when 1 =>
+				when others =>
+					log (text => "The given segment will be split in " 
+						& natural'image (fragment_count) & " segments.",
+						level => log_threshold + 1);
+
+					new_segments := split_segment (segment, strands_between_AB, log_threshold + 1);
+
+			end case;
+
+			insert_net_segments (module_cursor, net_cursor, sheet, new_segments, log_threshold + 2);
 		end;
-
-		
-		
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-
-			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net)
-			is
-				type type_insert_mode is (
-					-- The given segment has no connection with any strand.
-					-- For the given segment a new strand will be created:
-					NEW_STRAND,	
-
-					-- The given segment will be connected at its A end
-					-- with an existing strand:
-					ATTACH_A,
-				
-					-- The given segment will be connected at its B end
-					-- with an existing strand:
-					ATTACH_B); 
-										
-
-				-- The insert_mode will be determined after
-				-- evaluation of the lists strands_at_A/B and
-				-- strands_between_AB:
-				insert_mode : type_insert_mode;
-
-				-- In case the segment is to be connected with a strand,
-				-- then this cursor will point to the target strand:
-				strand_cursor : pac_strands.cursor;
-
-
-				procedure query_strand (strand : in out type_strand) is
-				begin
-					if insert_mode = ATTACH_A then
-						attach_segment (strand, segment, A);
-					end if;
-						
-					if insert_mode = ATTACH_B then
-						attach_segment (strand, segment, B);
-					end if;
-				end;
-
-				
-			begin
-				-- CASE 1:
-				-- The new segment has no connection with any other strand.
-				-- If no strands exist on any end of the 
-				-- new segment, then a new strand must be created.
-				-- The new strand will then contain the given segment:
-				if is_empty (strands_at_A) and is_empty (strands_at_B) then
-					insert_mode := NEW_STRAND;
-				end if;
-
-				-- CASE 2:
-				-- The new segment starts (A) at an existing strand.
-				-- The end (B) is open (no connections with any strand):
-				if not is_empty (strands_at_A) and is_empty (strands_at_B) then
-					insert_mode := ATTACH_A;
-				end if;
-
-				-- CASE 3:
-				-- The new segment ends (B) at an existing strand.
-				-- The start (A) is open (no connections with any strand):
-				if is_empty (strands_at_A) and not is_empty (strands_at_B) then
-					insert_mode := ATTACH_B;
-				end if;
-
-
-				case insert_mode is
-					when NEW_STRAND => -- CASE 1
-						-- Create a new strand that contains the given segment:
-						log (text => "Create new strand.", level => log_threshold + 1);
-						create_strand (net, segment);
-
-					when ATTACH_A => -- CASE 2
-						-- Take the first strand that has been located at
-						-- the A end of the segment and insert the segment
-						-- in that strand:
-						log (text => "Attach A end of segment to strand.", level => log_threshold + 1);
-						strand_cursor := first_element (strands_at_A);
-						net.strands.update_element (strand_cursor, query_strand'access);
-
-					when ATTACH_B => -- CASE 3
-						-- Take the first strand that has been located at
-						-- the B end of the segment and insert the segment
-						-- in that strand:
-						log (text => "Attach B end of segment to strand.", level => log_threshold + 1);
-						strand_cursor := first_element (strands_at_B);
-						net.strands.update_element (strand_cursor, query_strand'access);
-
-				end case;
-			end query_net;
-			
-		begin
-			module.nets.update_element (net_cursor, query_net'access);
-		end query_module;
-		
 
 
 		
@@ -4493,21 +4565,6 @@ package body et_schematic_ops.nets is
 		log_indentation_up;
 
 		get_strands_between_AB;
-
-		get_strands_at_AB;
-		
-		-- The given segment will be split in
-		-- two or more shorter fragments:
-		-- SPLIT_NEW_SEGMENT
-
-
-		generic_modules.update_element (module_cursor, query_module'access);
-		
-
-
-		-- update_strand_positions (module_cursor, log_threshold + 2);
-		
-		-- update_ratsnest (module_cursor, log_threshold + 2);
 
 		log_indentation_down;
 	end insert_net_segment;

@@ -2068,6 +2068,8 @@ end;
 		points	: in pac_points.list)
 		return type_split_line
 	is
+		debug : boolean := true;
+		
 		fragment_count : natural;
 
 		-- In case the given list of points is
@@ -2089,6 +2091,10 @@ end;
 				p : type_vector_model renames element (c);
 				l : type_line;
 			begin
+				if debug then
+					put_line ("i:" & natural'image (i));
+				end if;
+				
 				-- CS if p = get_A (line) or p = get_B (line) then
 				-- 	null; -- skip
 
