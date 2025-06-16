@@ -4397,13 +4397,17 @@ package body et_schematic_ops.nets is
 
 					procedure query_strand (strand : in out type_strand) is
 					begin
+						log_indentation_up;
+
 						if insert_mode = ATTACH_A then
-							attach_segment (strand, segment, A);
+							attach_segment (strand, segment, A, log_threshold + 4);
 						end if;
 							
 						if insert_mode = ATTACH_B then
-							attach_segment (strand, segment, B);
+							attach_segment (strand, segment, B, log_threshold + 4);
 						end if;
+
+						log_indentation_down;
 					end;
 
 					

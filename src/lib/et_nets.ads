@@ -164,9 +164,10 @@ package et_nets is
 	-- AB_end indicates which end of the segment is 
 	-- to be connected:
 	procedure attach_segment (
-		strand	: in out type_strand;
-		segment	: in type_net_segment;
-		AB_end	: in type_start_end_point);
+		strand			: in out type_strand;
+		segment			: in type_net_segment;
+		AB_end			: in type_start_end_point;
+		log_threshold	: in type_log_level);
 
 
 	

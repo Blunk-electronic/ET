@@ -161,9 +161,10 @@ package body et_nets is
 	
 
 	procedure attach_segment (
-		strand	: in out type_strand;
-		segment	: in type_net_segment;
-		AB_end	: in type_start_end_point)
+		strand			: in out type_strand;
+		segment			: in type_net_segment;
+		AB_end			: in type_start_end_point;
+		log_threshold	: in type_log_level)
 	is 
 		-- If a segment is to be split, then this cursor
 		-- will be pointing to it:
@@ -274,10 +275,20 @@ package body et_nets is
 		
 		
 	begin
+		log (text => "attach segment " & to_string (segment) 
+			 & " with " & to_string (AB_end) & " end"
+			 & " to strand.", level => log_threshold);
+
+		log_indentation_up;
+
+		
 		-- Build the point at which the segment
 		-- will be attached:
 		point := get_end_point (segment, AB_end);
+		log (text => "attach point: " & to_string (point), level => log_threshold + 1);
 
+
+		
 		-- Test case MODE_SPLIT: 
 		target_to_split := get_segment_to_split (strand.segments, point);
 
@@ -297,11 +308,16 @@ package body et_nets is
 
 
 	<<label_attach>>
+
+		log (text => "mode: " & type_mode'image (mode), level => log_threshold + 1);
+		
 		case mode is 
 			when MODE_SPLIT => split_segment;
 			when MODE_EXTEND => extend_segment;
 			when others => append_segment;
 		end case;
+
+		log_indentation_down;
 	end attach_segment;
 
 
