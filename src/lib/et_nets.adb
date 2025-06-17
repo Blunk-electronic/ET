@@ -98,6 +98,55 @@ package body et_nets is
 
 
 
+
+
+	function other_segments_exist (
+		segments	: in pac_net_segments.list;
+		except		: in pac_net_segments.cursor;
+		point		: in type_vector_model)
+		return boolean
+	is
+		-- This flag goes false as soon as a segment
+		-- has been found at the given point:
+		proceed : aliased boolean := true;
+
+		
+		-- Query a net segment. Skip the segment indicated
+		-- by "except":
+		procedure query_segment (c : in pac_net_segments.cursor) is begin
+			if c /= except then -- do not probe "except"
+
+				-- If either A or B of the candidate segment
+				-- is at the given point, then abort the iteration
+				-- and return true:
+				if get_A (c) = point or get_B (c) = point then
+					proceed := false;
+				end if;
+			end if;
+		end query_segment;
+		
+
+	begin
+		-- Iterate the given segments:
+		iterate (segments, query_segment'access, proceed'access);
+	
+		return not proceed;
+	end other_segments_exist;
+
+	
+
+
+
+	function has_element (
+		segment : in type_segment_to_extend)
+		return boolean
+	is begin
+		return has_element (segment.cursor);
+	end;
+
+
+
+	
 	
 
 	function get_segment_to_extend (
@@ -155,39 +204,28 @@ package body et_nets is
 
 
 		
-		function other_segments_here return boolean is
-			r : boolean := false;
-			
-			procedure query_segment (c : in pac_net_segments.cursor) is
-			begin
-				if c /= result.cursor then
-					if get_A (c) = point or get_B (c) = point then
-						r := true;
-					end if;
-
-					-- CS test ports
-				end if;
-			end query_segment;
-			
-		begin
-			segments.iterate (query_segment'access);
-			return r;
-		end other_segments_here;
-
-
-		
 	begin		
 		-- Iterate the given segments. Abort on the
 		-- first matching segment. If no segment found,
 		-- then the result is no_element:
 		iterate (segments, query_segment'access, proceed'access);
 
-		if has_element (result.cursor) then
-			if other_segments_here then
+		-- If segment has been found, then it must be tested
+		-- whether other segments exist a the attach point:
+		if has_element (result) then
+			
+			if other_segments_exist (
+				segments	=> segments,
+				except		=> result.cursor,
+				point		=> point)
+			then
 				return result_no_segment;
 			else
 				return result;
 			end if;
+
+			-- CS test ports
+			
 		else
 			return result_no_segment;
 		end if;

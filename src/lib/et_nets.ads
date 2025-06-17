@@ -136,20 +136,38 @@ package et_nets is
 		return pac_net_segments.cursor;
 
 
+		
+	-- Tests whether at the givne point exist other
+	-- net segments except the one indicated by "except":
+	function other_segments_exist (
+		segments	: in pac_net_segments.list;
+		except		: in pac_net_segments.cursor;
+		point		: in type_vector_model)
+		return boolean;
+		
 	
 	type type_segment_to_extend is record
 		cursor	: pac_net_segments.cursor;
 		AB_end	: type_start_end_point;
 	end record;
 	
+	
+	-- Returns true if selector "cursor" of
+	-- the given segment points to a segment:
+	function has_element (
+		segment : in type_segment_to_extend)
+		return boolean;
+		
 
 	-- Returns the first segment (among the given segments)
 	-- and its end (A/B)
 	-- which will be extended by the the given segment.
 	-- AB_end indicates which end of the given segment is to 
-	-- be connected. A segment can only be extended if
-	-- it runs in the same direction as the given segment
-	-- AND if no ports exist at the attach point.
+	-- be connected. A segment can only be extended if all those
+	-- criteria are met:
+	-- 1. It runs in the same direction as the given segment.
+	-- 2. No ports exist at the attach point.
+	-- 3. No other segments start or end at the attach point.
 	-- If no suitable segment has been found, then the return
 	-- is no_element:
 	function get_segment_to_extend (
