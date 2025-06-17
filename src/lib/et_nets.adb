@@ -351,7 +351,7 @@ package body et_nets is
 		end append_segment;
 		
 		
-	begin
+	begin -- attach_segment
 		log (text => "attach segment " & to_string (segment) 
 			 & " with " & to_string (AB_end) & " end"
 			 & " to strand.", level => log_threshold);
