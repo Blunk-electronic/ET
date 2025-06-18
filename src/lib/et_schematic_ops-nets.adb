@@ -4395,39 +4395,94 @@ package body et_schematic_ops.nets is
 					strand_cursor : pac_strands.cursor;
 
 
-					procedure query_strand (strand : in out type_strand) is
+					-- This procedure connects the open ends (both A and B)
+					-- of the segment with ports of devices, netchangers and
+					-- submodules that might exist there. Since the segment
+					-- is the seed for a new strand, both ends of the segment
+					-- are assumed to be open (means not conneted yet with anything):
+					procedure create_new_strand is
+						-- Take a copy of the candidate segment:
 						s : type_net_segment := segment;
+
+						-- This is the place where ports are searched for:
 						place : type_object_position;
+
+						-- Here the ports will be stored Temporarily:
 						ports : type_ports;
 					begin
 						log_indentation_up;
 
+						-- Set the sheet for the place to search for ports:
+						set_sheet (place, sheet);
+
+						-- Search for ports on both ends of the segment:
+
+						-- Get the ports of devices, netchangers and submodules
+						-- at the B end. Assign the ports to the B end:
+						set_place (place, get_B (segment));
+						ports := get_ports (module_cursor, place, log_threshold + 4);
+						s.ports.B := ports;
+
+						-- Get the ports of devices, netchangers and submodules
+						-- at the A end. Assign the ports to the A end:
+						set_place (place, get_A (segment));
+						ports := get_ports (module_cursor, place, log_threshold + 4);
+						s.ports.A := ports;
+
+						-- Create the new strand with the new segment:
+						create_strand (net, s);
+
+						log_indentation_down;
+					end create_new_strand;
+
+
+					-- This procedure attaches the candidate segment with the
+					-- A or B end to the given strands. 
+					-- It also connects the open end (opposide of the end to be connected)
+					-- of the segment with ports of devices, netchangers and
+					-- submodules that might exist there.
+					-- The opposide end is always assumed as open (means there is nothing
+					-- connected with it yet):
+					procedure query_strand (strand : in out type_strand) is
+						-- Take a copy of the candidate segment:
+						s : type_net_segment := segment;
+
+						-- This is the place where ports are searched for:
+						place : type_object_position;
+
+						-- Here the ports will be stored Temporarily:
+						ports : type_ports;
+					begin
+						log_indentation_up;
+
+						-- Set the sheet for the place to search for ports:
 						set_sheet (place, sheet);
 
 						if insert_mode = ATTACH_A then
 							-- Get the ports of devices, netchangers and submodules
-							-- at end opposide of the attach point.
-							-- Assign the ports to the opposide end.
-							-- The opposide end is open (means there is nothing
-							-- connected with it):
+							-- at the B end. Assign the ports to the B end:
 							set_place (place, get_B (segment));
 							ports := get_ports (module_cursor, place, log_threshold + 4);
 							s.ports.B := ports;
 
+							-- Attach the segment to the strand:
 							attach_segment (strand, s, A, log_threshold + 4);
 						end if;
 
 							
 						if insert_mode = ATTACH_B then
+							-- Get the ports of devices, netchangers and submodules
+							-- at the A end. Assign the ports to the A end:
 							set_place (place, get_A (segment));
 							ports := get_ports (module_cursor, place, log_threshold + 4);
 							s.ports.A := ports;
 
+							-- Attach the segment to the strand:
 							attach_segment (strand, s, B, log_threshold + 4);
 						end if;
 
 						log_indentation_down;
-					end;
+					end query_strand;
 
 					
 				begin
@@ -4459,9 +4514,7 @@ package body et_schematic_ops.nets is
 						when NEW_STRAND => -- CASE 1
 							-- Create a new strand that contains the given segment:
 							log (text => "Create new strand.", level => log_threshold + 3);
-
-							-- CS search for ports on both ends of the segment
-							create_strand (net, segment);
+							create_new_strand;
 
 						when ATTACH_A => -- CASE 2
 							-- Take the first strand that has been located at

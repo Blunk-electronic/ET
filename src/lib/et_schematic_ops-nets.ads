@@ -616,6 +616,16 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
+	-- Inserts a list of net segments in the given net.
+	-- Connects the segments with strands and ports of
+	-- devices, netchangers and submodules:
+	procedure insert_net_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in pac_nets.cursor;
+		sheet			: in type_sheet;
+		segments		: in pac_net_segments.list;
+		log_threshold	: in type_log_level);
+	
 
 	-- Inserts the give net segment in the given segment
 	-- on the given sheet:
