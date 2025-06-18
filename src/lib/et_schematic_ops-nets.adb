@@ -4396,15 +4396,34 @@ package body et_schematic_ops.nets is
 
 
 					procedure query_strand (strand : in out type_strand) is
+						s : type_net_segment := segment;
+						place : type_object_position;
+						ports : type_ports;
 					begin
 						log_indentation_up;
 
+						set_sheet (place, sheet);
+
 						if insert_mode = ATTACH_A then
-							attach_segment (strand, segment, A, log_threshold + 4);
+							-- Get the ports of devices, netchangers and submodules
+							-- at end opposide of the attach point.
+							-- Assign the ports to the opposide end.
+							-- The opposide end is open (means there is nothing
+							-- connected with it):
+							set_place (place, get_B (segment));
+							ports := get_ports (module_cursor, place, log_threshold + 4);
+							s.ports.B := ports;
+
+							attach_segment (strand, s, A, log_threshold + 4);
 						end if;
+
 							
 						if insert_mode = ATTACH_B then
-							attach_segment (strand, segment, B, log_threshold + 4);
+							set_place (place, get_A (segment));
+							ports := get_ports (module_cursor, place, log_threshold + 4);
+							s.ports.A := ports;
+
+							attach_segment (strand, s, B, log_threshold + 4);
 						end if;
 
 						log_indentation_down;
@@ -4440,6 +4459,8 @@ package body et_schematic_ops.nets is
 						when NEW_STRAND => -- CASE 1
 							-- Create a new strand that contains the given segment:
 							log (text => "Create new strand.", level => log_threshold + 3);
+
+							-- CS search for ports on both ends of the segment
 							create_strand (net, segment);
 
 						when ATTACH_A => -- CASE 2

@@ -1426,6 +1426,20 @@ package body et_geometry_2a is
 
 
 
+	
+	function get_opposide_end (
+		AB_end	: in type_start_end_point)
+		return type_start_end_point
+	is begin
+		case AB_end is 
+			when A => return B;
+			when B => return A;
+		end case;
+	end;
+
+
+
+	
 
 	function to_string (
 		point : in type_start_end_point)

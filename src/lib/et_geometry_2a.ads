@@ -714,6 +714,13 @@ package et_geometry_2a is
 
 	type type_start_end_point is (A, B);
 
+
+	-- If A given, then the return is B and vise versa:
+	function get_opposide_end (
+		AB_end	: in type_start_end_point)
+		return type_start_end_point;
+	
+	
 	function to_string (
 		point : in type_start_end_point)
 		return string;
