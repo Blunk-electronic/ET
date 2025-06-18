@@ -238,6 +238,33 @@ package body et_net_segment is
 
 
 
+
+
+	procedure set_junction (
+		segment	: in out type_net_segment;
+		AB_end	: in type_start_end_point)
+	is begin
+		case AB_end is
+			when A => segment.junctions.A := true;
+			when B => segment.junctions.B := true;
+		end case;
+	end;
+
+	
+
+	procedure clear_junction (
+		segment	: in out type_net_segment;
+		AB_end	: in type_start_end_point)
+	is begin
+		case AB_end is
+			when A => segment.junctions.A := false;
+			when B => segment.junctions.B := false;
+		end case;
+	end;
+
+
+
+	
 	
 
 	function is_connected (

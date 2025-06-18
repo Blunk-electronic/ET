@@ -133,8 +133,39 @@ package body et_nets is
 		return not proceed;
 	end other_segments_exist;
 
+
+
+
 	
 
+
+	function get_segment_count (
+		strand	: in type_strand;
+		point	: in type_vector_model)
+		return natural
+	is
+		result : natural := 0;
+
+		
+		procedure query_segment (c : in pac_net_segments.cursor) is begin
+			-- If either A or B of the candidate segment
+			-- is at the given point, then increment the result:
+			if get_A (c) = point or get_B (c) = point then
+				result := result + 1;
+			end if;
+		end query_segment;
+
+
+	begin
+		-- Iterate the segments:
+		iterate (strand.segments, query_segment'access);
+	
+		return result;
+	end get_segment_count;
+
+
+	
+	
 
 
 	function has_element (
@@ -201,7 +232,6 @@ package body et_nets is
 				end if;
 			end if;
 		end query_segment;
-
 
 		
 	begin		
@@ -280,21 +310,20 @@ package body et_nets is
 			-- to the other segments of the strand:
 			MODE_MAKE_BEND,
 
-			-- The given segment will be attached to
-			-- an already existing joint where at least
-			-- two existing segments form a bend point.
-			-- At least two of the existing segments run
-			-- perpedicular to each other.
-			-- The given segment will simply be added
-			-- to the other segments of the strand:
-			MODE_JOIN_BEND,
+			-- The given segment will be attached at the joint
+			-- of two already existing segments which run 
+			-- run perpedicular to each other.
+			-- The given segment will be attached as third segment
+			-- to the bend point the two existing segments.
+			-- A junction will be set at the affected end of the
+			-- given segment:
+			MODE_JOIN_BEND_WITH_JUNCTION,
 
-			-- The given segment will be attached to
-			-- an already existing segment that is
-			-- connected with a port.
-			-- The given segment will simply be added
-			-- to the other segments of the strand:
-			MODE_JOIN_PORT);
+			-- The given segment will be attached at the joint
+			-- of three (or more) already existing segments.
+			-- The given segment will be attached
+			-- to the joint of the existing segments:
+			MODE_JOIN_BEND);
 
 
 		mode : type_mode := MODE_MAKE_BEND;
@@ -337,6 +366,7 @@ package body et_nets is
 			procedure query_segment (target : in out type_net_segment) is
 			begin
 				null;
+				-- CS
 			end query_segment;
 			
 		begin
@@ -345,11 +375,25 @@ package body et_nets is
 
 
 
+		-- Attaches the given segment to the strand
+		-- and sets a junction at the attach point:
+		procedure append_segment_with_junction is
+			s : type_net_segment := segment;
+		begin
+			set_junction (s, AB_end);
+			strand.segments.append (s);
+		end append_segment_with_junction;
+
+
+		
+		-- Attaches the given segment to the strand:
 		procedure append_segment is
 		begin
 			strand.segments.append (segment);
 		end append_segment;
 		
+
+
 		
 	begin -- attach_segment
 		log (text => "attach segment " & to_string (segment) 
@@ -378,12 +422,28 @@ package body et_nets is
 		-- Test case MODE_EXTEND: 
 		target_to_extend := get_segment_to_extend (strand.segments, segment, AB_end);
 
-		if has_element (target_to_extend.cursor) then
+		if has_element (target_to_extend) then
 			mode := MODE_EXTEND;
 			goto label_attach;
 		end if;
 
 
+		-- Test case MODE_JOIN_BEND and MODE_JOIN_BEND_WITH_JUNCTION:
+		case get_segment_count (strand, point) is
+			when 0 => 
+				-- This case should never happen:
+				raise constraint_error;
+			
+			when 2 =>
+				mode := MODE_JOIN_BEND_WITH_JUNCTION;
+				
+			when others =>
+				-- One or more than two segments at the
+				-- attach point:
+				mode := MODE_JOIN_BEND;
+		end case;
+		
+		
 	<<label_attach>>
 
 		log (text => "mode: " & type_mode'image (mode), level => log_threshold + 1);
@@ -391,6 +451,7 @@ package body et_nets is
 		case mode is 
 			when MODE_SPLIT => split_segment;
 			when MODE_EXTEND => extend_segment;
+			when MODE_JOIN_BEND_WITH_JUNCTION => append_segment_with_junction;
 			when others => append_segment;
 		end case;
 

@@ -145,7 +145,17 @@ package et_nets is
 		point		: in type_vector_model)
 		return boolean;
 		
-	
+
+	-- This function returns the number of segments
+	-- of the given strand that start or end at the
+	-- given point:
+	function get_segment_count (
+		strand	: in type_strand;
+		point	: in type_vector_model)
+		return natural;
+
+		
+		
 	type type_segment_to_extend is record
 		cursor	: pac_net_segments.cursor;
 		AB_end	: type_start_end_point;

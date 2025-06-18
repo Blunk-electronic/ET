@@ -188,6 +188,19 @@ package et_net_segment is
 		return type_net_segment;
 
 
+	-- Activates a junction at the given end:
+	procedure set_junction (
+		segment	: in out type_net_segment;
+		AB_end	: in type_start_end_point);
+
+	
+	-- Removes a junction at the given end:	
+	procedure clear_junction (
+		segment	: in out type_net_segment;
+		AB_end	: in type_start_end_point);
+
+
+	
 	-- Returns true if the given netchanger port
 	-- is connected with the given segment:
 	function is_connected (
