@@ -148,9 +148,10 @@ package et_net_segment is
 		point : in type_object_position);
 	
 	
-	-- A net junction is where segments and ports meet each other.	
+	-- A net junction is where segments are connected with each other.
 	type type_junctions is record
-		A	: boolean := false;
+		A	: boolean := false; -- CS dedicated type like type_junction_active 
+								-- and value like JUNCTION_ON, JUNCTION_OFF
 		B	: boolean := false;
 	end record;
 
@@ -200,6 +201,13 @@ package et_net_segment is
 		AB_end	: in type_start_end_point);
 
 
+	-- Returns the status of a junction at the specified
+	-- end of the segment:
+	function get_junction_status (
+		segment	: in type_net_segment;
+		AB_end	: in type_start_end_point)
+		return boolean;
+	
 	
 	-- Returns true if the given netchanger port
 	-- is connected with the given segment:
@@ -263,6 +271,14 @@ package et_net_segment is
 		return boolean;
 
 
+	-- Returns the ports that are connected with
+	-- the given end of a segment:
+	function get_ports (
+		segment : in type_net_segment;
+		AB_end	: in type_start_end_point)				   
+		return type_ports;
+
+	
 	-- Appends to a segment the given ports at the given
 	-- end (A/B):
 	procedure append_ports (
@@ -300,8 +316,22 @@ package et_net_segment is
 		return type_split_segment;
 
 
-
-
+	-- Merges secondary net segment with primary segment.
+	-- 1. Assumes that both segments run into the same direction.
+	-- 2. Assumes that both join each other on a common end point (A or B).
+	-- 3. If the joint is connected with any ports, the a constraint error
+	--    is raised.
+	-- 4. The ports connected with the open ends of the two segments
+	--    are kept.
+	-- 5. Simple net labels of both segments are kept.
+	-- 6. The status of the junctions at the open ends of the two 
+	--    segments are kept.
+	-- 7. CS: Tag labels ? Remove all on all ends ?
+	procedure merge_segments (
+		primary			: in out type_net_segment;
+		primary_end		: in type_start_end_point; -- the end of the primary segment	 
+		secondary		: in type_net_segment;
+		secondary_end	: in type_start_end_point); -- the end of the secondary segment
 	
 	
 	-- Reset status flags of segment, junctions and labels:

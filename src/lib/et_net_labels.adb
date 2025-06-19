@@ -232,6 +232,17 @@ package body et_net_labels is
 
 	
 
+	procedure merge_labels (
+		primary		: in out pac_net_labels.list;
+		secondary	: in out pac_net_labels.list)
+	is 
+		pos : pac_net_labels.cursor;
+	begin
+		-- Add the secondary list at the end of the primary list:
+		primary.splice (source => secondary, before => pos);
+	end;
+
+	
 
 
 	procedure modify_status (

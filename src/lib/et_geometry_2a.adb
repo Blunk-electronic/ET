@@ -2166,6 +2166,32 @@ end;
 	end split_line;
 	
 
+
+
+	procedure merge_lines (
+		primary			: in out type_line;
+		primary_end		: in type_start_end_point;
+		secondary		: in type_line;
+		secondary_end	: in type_start_end_point)
+	is begin
+		case primary_end is
+			when A =>
+				-- Modify the A end of the primary line:
+				case secondary_end is
+					when A => primary.A := secondary.B;
+					when B => primary.A := secondary.A;
+				end case;
+
+			when B =>
+				-- Modify the B end of the primary line:
+				case secondary_end is
+					when A => primary.B := secondary.B;
+					when B => primary.B := secondary.A;
+				end case;
+		end case;
+	end merge_lines;
+
+	
 	
 	
 -- ARC:

@@ -177,6 +177,24 @@ package body et_nets is
 
 
 
+
+	function get_segment (
+		segment	: in type_segment_to_extend)
+		return pac_net_segments.cursor
+	is begin
+		return segment.cursor;
+	end;
+
+		
+
+	function get_end (
+		segment	: in type_segment_to_extend)
+		return type_start_end_point
+	is begin
+		return segment.AB_end;
+	end;
+
+
 	
 	
 
@@ -361,16 +379,22 @@ package body et_nets is
 
 		
 
+		-- This procedure merges the segment target_to_extend with
+		-- the given segment to a single one:
 		procedure extend_segment is 
 
-			procedure query_segment (target : in out type_net_segment) is
-			begin
-				null;
-				-- CS
+			procedure query_segment (target : in out type_net_segment) is begin
+				merge_segments (
+					primary			=> target, 
+					primary_end		=> get_end (target_to_extend),
+					secondary		=> segment,
+					secondary_end	=> AB_end);
 			end query_segment;
 			
 		begin
-			strand.segments.update_element (target_to_extend.cursor, query_segment'access);
+			strand.segments.update_element (
+				position	=> get_segment (target_to_extend),
+				process		=> query_segment'access);
 		end extend_segment;
 
 

@@ -1122,6 +1122,22 @@ package et_geometry_2a is
 		line 	: in type_line;
 		points	: in pac_points.list)
 		return type_split_line;
+
+
+	-- Merges secondary line with primary line.
+	-- The ends that are to be connected must be specified
+	-- by primary_end and secondary_end. The other end of
+	-- the lines are open. It is not required that primary
+	-- and secondary line join each other in a common point.
+	-- Nor is it required that both lines run into the same direction.
+	-- So, the result is a line that runs from the open end
+	-- of the primary line to the open end of the secondary line:
+	procedure merge_lines (
+		primary			: in out type_line;
+		primary_end		: in type_start_end_point; -- the end of the primary line
+		secondary		: in type_line;
+		secondary_end	: in type_start_end_point); -- the end of the secondary line
+
 	
 	
 -- ARC

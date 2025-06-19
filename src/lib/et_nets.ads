@@ -156,7 +156,7 @@ package et_nets is
 
 		
 		
-	type type_segment_to_extend is record
+	type type_segment_to_extend is record -- CS make private
 		cursor	: pac_net_segments.cursor;
 		AB_end	: type_start_end_point;
 	end record;
@@ -167,6 +167,22 @@ package et_nets is
 	function has_element (
 		segment : in type_segment_to_extend)
 		return boolean;
+		
+		
+	-- Returns the cursor to a net segment that is
+	-- to be extended:
+	function get_segment (
+		segment	: in type_segment_to_extend)
+		return pac_net_segments.cursor;
+
+		
+	-- Retruns the end point (A/B) of a net segment
+	-- that is to be extended:
+	function get_end (
+		segment	: in type_segment_to_extend)
+		return type_start_end_point;
+
+		
 		
 
 	-- Returns the first segment (among the given segments)

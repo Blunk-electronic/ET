@@ -204,8 +204,12 @@ package et_net_labels is
 		return boolean;
 
 
-
-
+	-- Appends the list of secondary labels to
+	-- the list of primary labels:
+	procedure merge_labels (
+		primary		: in out pac_net_labels.list;
+		secondary	: in out pac_net_labels.list);
+		
 
 
 -- TAG LABEL:	
