@@ -395,6 +395,11 @@ package et_net_segment is
 		return boolean;
 
 
+	function has_ports (
+		segment : in pac_net_segments.cursor;
+		AB_end	: in type_start_end_point)				   
+		return boolean;
+	
 	
 	function is_selected (
 		segment : in pac_net_segments.cursor)

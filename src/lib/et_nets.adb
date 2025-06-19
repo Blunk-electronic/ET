@@ -230,23 +230,40 @@ package body et_nets is
 			-- the given segment:
 			if o = orientation then
 
-				-- Test the A end of the candidate segment:
+				-- Test the A and B end of the candidate segment.
+				-- It must be at the attach point
+				-- AND it must not have any ports
+				-- AND no other segments must exist at the attach point:
+
+				-- A end:
 				if get_A (c) = point then
-					result.cursor := c;
-					result.AB_end := A;
-
-					-- CS test ports
+					if not other_segments_exist (
+						segments	=> segments,
+						except		=> c,
+						point		=> point)
+					then					
+						if not has_ports (c, A) then
+							result.cursor := c;
+							result.AB_end := A;
+							
+							proceed := false; -- no more tests required
+						end if;
+					end if;
 					
-					proceed := false; -- no more test required
-
-				-- Test the B end of the candidate segment:
+				-- B end:
 				elsif get_B (c) = point then
-					result.cursor := c;
-					result.AB_end := B;
-
-					-- CS test ports
+					if not other_segments_exist (
+						segments	=> segments,
+						except		=> c,
+						point		=> point)
+					then
+						if not has_ports (c, B) then
+							result.cursor := c;
+							result.AB_end := B;
 					
-					proceed := false; -- no more test required
+							proceed := false; -- no more tests required
+						end if;
+					end if;
 				end if;
 			end if;
 		end query_segment;
@@ -258,26 +275,13 @@ package body et_nets is
 		-- then the result is no_element:
 		iterate (segments, query_segment'access, proceed'access);
 
-		-- If segment has been found, then it must be tested
-		-- whether other segments exist a the attach point:
+		-- If a segment has been found, then return
+		-- the result. Otherwise return no_element:
 		if has_element (result) then
-			
-			if other_segments_exist (
-				segments	=> segments,
-				except		=> result.cursor,
-				point		=> point)
-			then
-				return result_no_segment;
-			else
-				return result;
-			end if;
-
-			-- CS test ports
-			
+			return result;
 		else
 			return result_no_segment;
-		end if;
-		
+		end if;		
 	end get_segment_to_extend;
 
 	

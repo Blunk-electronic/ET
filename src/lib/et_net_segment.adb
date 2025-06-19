@@ -817,6 +817,19 @@ package body et_net_segment is
 
 
 
+
+	function has_ports (
+		segment : in pac_net_segments.cursor;
+		AB_end	: in type_start_end_point)				   
+		return boolean
+	is
+		s : type_net_segment := element (segment);
+	begin
+		return has_ports (s, AB_end);
+	end;
+
+
+	
 	
 
 	function is_selected (
