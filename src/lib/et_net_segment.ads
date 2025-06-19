@@ -318,7 +318,7 @@ package et_net_segment is
 
 	-- Merges secondary net segment with primary segment.
 	-- 1. Assumes that both segments run into the same direction.
-	-- 2. Assumes that both join each other on a common end point (A or B).
+	-- 2. Assumes that both segments join each other at a common end point (A or B).
 	-- 3. If the joint is connected with any ports, the a constraint error
 	--    is raised.
 	-- 4. The ports connected with the open ends of the two segments
