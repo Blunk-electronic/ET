@@ -4612,13 +4612,13 @@ package body et_schematic_ops.nets is
 
 
 			case fragment_count is
-				when 0 =>
+				when 1 =>
 					log (text => "The given segment will be inserted as it is.",
 						level => log_threshold + 1);
 
 					new_segments.append (segment);
 
-				-- CS when 1 =>
+
 				when others =>
 					log (text => "The given segment will be split in " 
 						& natural'image (fragment_count) & " segments.",
