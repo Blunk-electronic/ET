@@ -240,34 +240,6 @@ package body et_canvas_schematic_nets is
 
 
 
-	
-	
-	function between_A_and_B_of_sloping_segment (
-		point		: in type_vector_model;
-		segments	: in pac_proposed_segments.list)
-		return boolean 
-	is 
-		result : boolean := false;
-		
-		procedure query_segment (c : in pac_proposed_segments.cursor) is 
-			s : type_selected_segment := element (c);
-		begin
-			if between_A_and_B (set_catch_zone (point, 0.0), s.segment) then
-
-				if get_segment_orientation (s.segment) = ORIENT_SLOPING then
-					result := true;
-				end if;
-				
-			end if;
-		end query_segment;
-		
-	begin
-		iterate (segments, query_segment'access);
-
-		return result;
-	end between_A_and_B_of_sloping_segment;
-	
-
 
 
 	
