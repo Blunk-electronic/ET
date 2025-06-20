@@ -123,23 +123,7 @@ package et_canvas_schematic_nets is
 		return pac_net_name.bounded_string; -- RESET_N, MASTER_CLOCK
 
 	
-	-- Returns true if segments contains more than one segment:
-	function more_than_one (
-		segments : in pac_proposed_segments.list)
-		return boolean;
-
 	
-
-	
-	-- Collects all net segments in the vicinity of the given point:
-	function collect_segments (
-		module			: in pac_generic_modules.cursor;
-		place			: in type_object_position; -- sheet/x/y
-		zone			: in type_zone_radius := type_zone_radius'first; -- the circular area around the place
-		log_threshold	: in type_log_level)
-		return pac_proposed_segments.list;
-
-
 
 	
 -- DELETE SEGMENT
@@ -281,14 +265,7 @@ package et_canvas_schematic_nets is
 	--procedure rename_selected_net;
 
 
-	
-	
-	-- Locates all net segments in the vicinity of given point.
-	-- If more than one segment near point found, then it sets the
-	-- cursor selected_segment to the first segment and requests
-	-- for clarification.
-	procedure find_segments (point : in type_vector_model);
-
+		
 
 	-- This procedure is required in order to clarify
 	-- which object among the proposed objects is meant.

@@ -756,7 +756,8 @@ is
 
 					when NOUN_NET =>
 						if not clarification_pending then
-							find_segments (get_cursor_position);
+							-- CS 
+							null;
 						else
 							et_canvas_schematic_nets.window_set_property;
 						end if;
