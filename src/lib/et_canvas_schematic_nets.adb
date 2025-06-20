@@ -660,50 +660,6 @@ package body et_canvas_schematic_nets is
 
 	
 	
-	function valid_for_net_segment (
-		point			: in type_vector_model;
-		log_threshold	: in type_log_level)
-		return boolean 
-	is
-		result : boolean := false;
-		
-		use et_schematic_ops.nets;
-		segments : pac_proposed_segments.list;
-
-		choose : constant string := "Choose another place for the junction !";
-	begin
-		segments := collect_segments (
-			module			=> active_module,
-			place			=> to_position (point, active_sheet),
-			log_threshold	=> log_threshold); 
-
-		-- If there are no segments at given point, then the point is valid:
-		if is_empty (segments) then
-			result := true;
-		else
-			-- Test if all segments here belong to the same net then the 
-			-- point is valid:
-			if all_belong_to_same_net (segments) then 
-
-				-- Test for sloping segments here:
-				if between_A_and_B_of_sloping_segment (point, segments) then
-					set_status ("Junction in sloping segment not allowed. " & choose);
-					result := false;
-				else
-					-- no sloping segments here
-					result := true;
-				end if;
-
-			else
-				-- point invalid because more than one net found here:
-				set_status ("More than one net here. " & choose);
-				result := false;
-			end if;
-		end if;
-
-		return result;
-	end valid_for_net_segment;
-
 
 
 	
