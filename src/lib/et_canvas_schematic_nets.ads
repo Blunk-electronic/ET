@@ -195,7 +195,7 @@ package et_canvas_schematic_nets is
 
 
 	
-	-- Inserts a net segment in the module.
+	-- Adds a net segment to the module on the given sheet.
 	-- Deduces the name of the net to be extended by the
 	-- start or end point of the segment. 
 	-- 1. If the segment does not touch any other net, then an anonymous
@@ -209,9 +209,10 @@ package et_canvas_schematic_nets is
 	-- 4. The start and end points of the segment to be inserted must
 	--    have been validated beforehand  
 	--    (via function valid_for_net_segment. see below.).
+	--    CS: Probably no longer reqired ?
 	-- 5. Calls et_schematic_ops.nets.insert_segment for the final
 	--    insertion of the segment in the targeted net.
-	procedure insert_net_segment (
+	procedure add_net_segment (
 		module			: in pac_generic_modules.cursor;
 		net_name_given	: in pac_net_name.bounded_string; -- RESET_N
 		sheet			: in type_sheet;

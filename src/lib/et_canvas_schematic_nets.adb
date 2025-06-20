@@ -451,7 +451,7 @@ package body et_canvas_schematic_nets is
 					if valid_for_net_segment (live_path.B, log_threshold + 3) then
 
 						-- Insert a single net segment:
-						insert_net_segment (
+						add_net_segment (
 							module			=> active_module,
 							sheet			=> active_sheet,
 							net_name_given	=> object_net_name, -- RESET_N, or empty
@@ -469,7 +469,7 @@ package body et_canvas_schematic_nets is
 					if valid_for_net_segment (live_path.bend_point, log_threshold + 3) then
 
 						-- Insert first segment of the path:
-						insert_net_segment (
+						add_net_segment (
 							module			=> active_module,
 							sheet			=> active_sheet,
 							net_name_given	=> object_net_name, -- RESET_N, or empty
@@ -485,7 +485,7 @@ package body et_canvas_schematic_nets is
 						if valid_for_net_segment (live_path.B, log_threshold + 3) then
 
 							-- Insert second segment of the path:
-							insert_net_segment (
+							add_net_segment (
 								module			=> active_module,
 								sheet			=> active_sheet,
 								net_name_given	=> object_net_name, -- RESET_N, or empty
@@ -508,10 +508,12 @@ package body et_canvas_schematic_nets is
 	end make_path;
 
 
+
+	
 	
 
 
-	procedure insert_net_segment (
+	procedure add_net_segment (
 		module			: in pac_generic_modules.cursor;
 		net_name_given	: in pac_net_name.bounded_string; -- RESET_N
 		sheet			: in type_sheet;
@@ -521,51 +523,54 @@ package body et_canvas_schematic_nets is
 		A : constant type_object_position := to_position (get_A (segment), sheet);
 		B : constant type_object_position := to_position (get_B (segment), sheet);
 
-		use et_schematic_ops.nets;
-		segments_at_A : pac_proposed_segments.list;
-		segments_at_B : pac_proposed_segments.list;
+		-- When a net segment is added to the drawing, then
+		-- it may become connected with already existing segments of other nets.
+		-- These lists will contain the net names of affected nets:
+		nets_at_A, nets_at_B : pac_net_names.list;
 
-		use pac_nets;
-		net_cursor	: pac_nets.cursor;
+		-- If no net name was specified by the caller (net_name_given), then
+		-- an anonymous net with an auto-generated name will be created:		
+		net_name_auto_generated	: pac_net_name.bounded_string; -- like N$1
 
-		net_name_auto_generated	: pac_net_name.bounded_string; -- N$234
-		net_name_start, net_name_end : pac_net_name.bounded_string;
-
-		-- Extends the given net (named after net_name) by the given segment.
-		-- Outputs a message if an explicit net_name_given was provided stating
-		-- that this net_name_given will be ignored.
-		-- Calls et_schematic_ops.nets.insert_segment to do the actual insertion
-		-- of the segment in the targeted net:
+		
+		-- This procedure extends a net that exists at the A or B end of
+		-- the given segment by the given segment:
 		procedure extend_net (net_name : in pac_net_name.bounded_string) is begin
-			log (text => "attaching start point of new segment to net "
-				& enclose_in_quotes (to_string (net_name)),
-				level => log_threshold + 1);
+			-- log (text => "attaching start point of new segment to net "
+			-- 	& enclose_in_quotes (to_string (net_name)),
+			-- 	level => log_threshold + 1);
 			
 			log_indentation_up;
 
-			net_cursor := locate_net (module, net_name);
+			insert_net_segment (
+				module_cursor	=> module,
+				net_name		=> net_name, 
+				A				=> to_position (get_A (segment), sheet),
+				B				=> get_B (segment),
+				log_threshold	=> log_threshold + 1);
 			
-			-- Extend the existing net by the given segment:
-			et_schematic_ops.nets.insert_segment (
-				module, net_cursor, sheet, net_name, segment, log_threshold + 2);
-
 			status_clear;
 			
 			log_indentation_down;
 
+			-- CS
+			-- Outputs a message if an explicit net_name_given was provided stating
+			-- that this net_name_given will be ignored.
+			
 			-- If an explicit net name was given AND if it does
 			-- NOT match the name of the net being extended,
 			-- then output a message:
-			if not is_empty (net_name_given) then -- explicit name given
-				if net_name_given /= net_name then -- names do NOT match
 
-					set_status ("WARNING ! Given net name " 
-						& enclose_in_quotes (to_string (net_name_given))
-						& " ignored while extending net " 
-						& enclose_in_quotes (to_string (net_name)) & " !");
-					
-				end if;
-			end if;
+-- 			if not is_empty (net_name_given) then -- explicit name given
+-- 				if net_name_given /= net_name then -- names do NOT match
+-- 
+-- 					set_status ("WARNING ! Given net name " 
+-- 						& enclose_in_quotes (to_string (net_name_given))
+-- 						& " ignored while extending net " 
+-- 						& enclose_in_quotes (to_string (net_name)) & " !");
+-- 					
+-- 				end if;
+-- 			end if;
 		end extend_net;
 
 
@@ -573,8 +578,9 @@ package body et_canvas_schematic_nets is
 		use et_commit;
 
 		
-	begin -- insert_net_segment
-		log (text => "adding net segment on sheet " & to_string (sheet) & to_string (segment), 
+	begin
+		log (text => "adding net segment on sheet " & to_string (sheet) 
+			 & " " & to_string (segment), 
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -583,82 +589,71 @@ package body et_canvas_schematic_nets is
 		commit (PRE, verb, noun, log_threshold + 1);
 		
 
-		-- Look for already existing nets at the start of the segment:
-		segments_at_A := collect_segments (
-			module			=> module,
-			place			=> A,
-			log_threshold	=> log_threshold + 2);
-
-		-- We assume there are either no segments at all or 
-		-- segments belonging to the same net at the start point:
-		net_name_start := first_net (segments_at_A);
+		-- Look for already existing nets on the A and B end
+		-- of the given segment:
+		nets_at_A := get_nets_at_place (module, A, log_threshold + 2);
+		nets_at_B := get_nets_at_place (module, B, log_threshold + 2);
 		
-		-- Look for already existing nets at the end of the segment:
-		segments_at_B := collect_segments (
-			module			=> module,
-			place			=> B,
-			log_threshold	=> log_threshold + 2);
-
-		-- We assume there are either no segments at all or 
-		-- segments belonging to the same net at the end point:
-		net_name_end := first_net (segments_at_B);
 		
-		-- If no nets at BOTH start AND end point, then
-		-- an anonymous net or an explicit named net will be generated:
-		if is_empty (net_name_start) and is_empty (net_name_end) then
+		-- If no nets at BOTH the A AND the B end, then
+		-- a new strand will be generated:
+		if nets_at_A.is_empty and nets_at_B.is_empty then
 
-			if is_empty (net_name_given) then -- no explicit net name provided
+			-- If no explict net name was specified by the caller,
+			-- then a name will be auto-generated:
+			if is_empty (net_name_given) then
 
 				-- Create a new anonymous net with a name like N$234:
 				net_name_auto_generated := get_lowest_available_anonymous_net (module); -- N$234
 				
-				log (text => "creating new anonymous net " 
-					 & to_string (net_name_auto_generated),
+				log (text => "auto-generated net name is: " & to_string (net_name_auto_generated),
 					 level => log_threshold + 1);
 				
 				log_indentation_up;
 
-				-- Create the new net with this single segment in the module:
-				et_schematic_ops.nets.insert_segment (
-					module, net_cursor, sheet, net_name_auto_generated, segment, log_threshold + 2);
-
-				status_clear;
+				insert_net_segment (
+					module_cursor	=> module,
+					net_name		=> net_name_auto_generated, 
+					A				=> to_position (get_A (segment), sheet),
+					B				=> get_B (segment),
+					log_threshold	=> log_threshold + 2);
 				
+				status_clear;
 				log_indentation_down;
 				
+				
 			else -- explicit net name provided
-				log (text => "explicit net name is " 
-					& to_string (net_name_given),
+				log (text => "explicitly given net name is: " & to_string (net_name_given),
 					level => log_threshold + 1);
 				
 				log_indentation_up;
 
-				net_cursor := locate_net (module, net_name_given);
-
-				-- If net_cursor is no_element then a new explicit named net will be generated.
-				-- If net_cursor points to an existing net, then the existing net will be
-				-- extended by the segment:
-				et_schematic_ops.nets.insert_segment (
-					module, net_cursor, sheet, net_name_given, segment, log_threshold + 2);
-
-				status_clear;
+				insert_net_segment (
+					module_cursor	=> module,
+					net_name		=> net_name_given, 
+					A				=> to_position (get_A (segment), sheet),
+					B				=> get_B (segment),
+					log_threshold	=> log_threshold + 2);
 				
+				status_clear;
 				log_indentation_down;
 			end if;
 		end if;
 
-		-- If net at start point AND no net at end point then
-		-- the net at the start point is extended by the new segment:
-		if not is_empty (net_name_start) and is_empty (net_name_end) then
-			extend_net (net_name_start);
+		
+		-- If nets exist at the A end AND if no nets exist at the B end,
+		-- then the first net at the A end will be extended by the new segment:
+		if not nets_at_A.is_empty and nets_at_B.is_empty then
+			extend_net (nets_at_A.first_element);
 		end if;
 
-		-- If net at end point AND no net at start point then
-		-- the net at the end point is extended by the new segment:
-		if not is_empty (net_name_end) and is_empty (net_name_start) then
-			extend_net (net_name_end);
+		-- If no nets exist at the A end AND if nets exist at the B end,
+		-- then the first net at the B end will be extended by the new segment:
+		if nets_at_A.is_empty and not nets_at_B.is_empty then
+			extend_net (nets_at_B.first_element);
 		end if;
-		
+
+-- CS		
 		-- If net at start point AND at end point then extend the
 		-- net at the start point by the segment. We could extend the net
 		-- at the end point as well. It does not matter.
@@ -666,17 +661,17 @@ package body et_canvas_schematic_nets is
 		-- net names must be equal.
 		-- The verification that the net names match is done by
 		-- et_schematic_ops.nets.insert_segment.
-		if not is_empty (net_name_end) and not is_empty (net_name_start) then
-			extend_net (net_name_start);
-		end if;
-
-		et_board_ops.ratsnest.update_ratsnest (module, log_threshold + 1);
+		-- if not is_empty (net_name_end) and not is_empty (net_name_start) then
+		-- 	extend_net (net_name_start);
+		-- end if;
 
 		-- Commit the new state of the design:
 		commit (POST, verb, noun, log_threshold + 1);
 		
 		log_indentation_down;
-	end insert_net_segment;
+	end add_net_segment;
+
+
 
 
 
