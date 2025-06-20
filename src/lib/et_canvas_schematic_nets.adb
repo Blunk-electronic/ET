@@ -169,30 +169,6 @@ package body et_canvas_schematic_nets is
 
 
 
-	
-	function first_net (
-		segments : in pac_proposed_segments.list) 
-		return pac_net_name.bounded_string -- RESET_N, MASTER_CLOCK
-	is
-		seg : type_selected_segment;
-		c	: pac_proposed_segments.cursor;
-		net : pac_net_name.bounded_string; -- to be returned
-	begin
-		if is_empty (segments) then
-			return net; -- empty string
-		else
-			-- Get the first segment of given list of segments.
-			seg := element (segments.first);
-
-			-- get the name of the net
-			net := key (seg.net);
-		end if;
-
-		return net;
-	end first_net;
-
-
-	
 
 	
 

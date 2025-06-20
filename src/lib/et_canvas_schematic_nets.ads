@@ -114,16 +114,6 @@ package et_canvas_schematic_nets is
 
 	
 
-	
-	-- Returns the net name of the first segment in 
-	-- given list of net segments.
-	-- If the given list is empty then an empty net name will be returned.
-	function first_net (
-		segments : in pac_proposed_segments.list) 
-		return pac_net_name.bounded_string; -- RESET_N, MASTER_CLOCK
-
-	
-	
 
 	
 -- DELETE SEGMENT
