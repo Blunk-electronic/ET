@@ -424,17 +424,12 @@ package body et_canvas_schematic_nets is
 			-- Set start point:
 			live_path.A := point;
 					
-			-- Before processing the start point further, it must be validated:
-			if valid_for_net_segment (live_path.A, log_threshold + 3) then
-
-				-- Allow drawing of the path:
-				set_edit_process_running;
-				
-				set_status (status_A & to_string (live_path.A) & ". " &
-					status_press_space & status_set_B & status_hint_for_abort);
-			end if;
+			-- Allow drawing of the path:
+			set_edit_process_running;
 			
-
+			set_status (status_A & to_string (live_path.A) & ". " &
+				status_press_space & status_set_B & status_hint_for_abort);
+			
 		else -- preliminary_segment IS ready
 
 			-- Start a new path only if the given point differs from 
@@ -447,53 +442,41 @@ package body et_canvas_schematic_nets is
 				if live_path.bended = NO then				
 					live_path.B := point;
 
-					-- Before processing the end point further, it must be validated:
-					if valid_for_net_segment (live_path.B, log_threshold + 3) then
-
-						-- Insert a single net segment:
-						add_net_segment (
-							module			=> active_module,
-							sheet			=> active_sheet,
-							net_name_given	=> object_net_name, -- RESET_N, or empty
-							segment			=> to_net_segment (live_path.A, live_path.B),
-							log_threshold	=> log_threshold + 1);
-
-					end if;
+					-- Insert a single net segment:
+					add_net_segment (
+						module			=> active_module,
+						sheet			=> active_sheet,
+						net_name_given	=> object_net_name, -- RESET_N, or empty
+						segment			=> to_net_segment (live_path.A, live_path.B),
+						log_threshold	=> log_threshold + 1);
 
 				else
 					-- The path is bended. The bend point has been computed
 					-- interactively while moving the mouse or the cursor.
 					-- See procedure draw_path in et_canvas_schematic-draw_nets.
 					
-					-- Before processing the BEND point further, it must be validated:
-					if valid_for_net_segment (live_path.bend_point, log_threshold + 3) then
 
-						-- Insert first segment of the path:
-						add_net_segment (
-							module			=> active_module,
-							sheet			=> active_sheet,
-							net_name_given	=> object_net_name, -- RESET_N, or empty
-							segment			=> to_net_segment (live_path.A, live_path.bend_point),
-							log_threshold	=> log_threshold + 1);
+					-- Insert first segment of the path:
+					add_net_segment (
+						module			=> active_module,
+						sheet			=> active_sheet,
+						net_name_given	=> object_net_name, -- RESET_N, or empty
+						segment			=> to_net_segment (live_path.A, live_path.bend_point),
+						log_threshold	=> log_threshold + 1);
 
+					
+					-- END POINT:
+					live_path.B := point;
+					
 
+					-- Insert second segment of the path:
+					add_net_segment (
+						module			=> active_module,
+						sheet			=> active_sheet,
+						net_name_given	=> object_net_name, -- RESET_N, or empty
+						segment			=> to_net_segment (live_path.bend_point, live_path.B),
+						log_threshold	=> log_threshold + 1);
 						
-						-- END POINT:
-						live_path.B := point;
-						
-						-- Before processing the END point further, it must be validated:
-						if valid_for_net_segment (live_path.B, log_threshold + 3) then
-
-							-- Insert second segment of the path:
-							add_net_segment (
-								module			=> active_module,
-								sheet			=> active_sheet,
-								net_name_given	=> object_net_name, -- RESET_N, or empty
-								segment			=> to_net_segment (live_path.bend_point, live_path.B),
-								log_threshold	=> log_threshold + 1);
-						
-						end if;
-					end if;
 
 				end if;
 

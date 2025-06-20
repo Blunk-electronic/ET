@@ -220,18 +220,6 @@ package et_canvas_schematic_nets is
 		log_threshold	: in type_log_level);
 
 	
-	-- Returns true if the given point qualifies as start or end point
-	-- of a net segment.
-	-- The point is considered as suitable if:
-	-- - there are no segments at all or
-	-- - if all segments there belong to the same net.
-	-- If a sloping segment exists there, the return is false.
-	function valid_for_net_segment (
-		point			: in type_vector_model;
-		log_threshold	: in type_log_level)
-		return boolean;
-
-	
 
 
 	-- This procedure:
