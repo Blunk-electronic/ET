@@ -129,14 +129,6 @@ package et_canvas_schematic_nets is
 		return boolean;
 
 	
-	-- Tests if all given segments belong to the same net. 
-	-- Returns false if net names differ.
-	function all_belong_to_same_net (
-		segments	: in pac_proposed_segments.list)
-		return boolean;
-
-
-
 
 	
 	-- Collects all net segments in the vicinity of the given point:

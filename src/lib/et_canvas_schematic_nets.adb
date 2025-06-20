@@ -206,40 +206,6 @@ package body et_canvas_schematic_nets is
 
 
 
-	
-	function all_belong_to_same_net (
-		segments	: in pac_proposed_segments.list)
-		return boolean 
-	is 
-		result : boolean := true;
-		
-		net_name : pac_net_name.bounded_string;
-		net_names_differ : boolean := false;
-		
-		procedure query_segment (c : in pac_proposed_segments.cursor) is 
-			use pac_nets;
-			use pac_net_name;
-			
-			s : type_selected_segment := element (c);
-		begin
-			if c = segments.first then
-				net_name := key (s.net);
-				result := true;
-			else
-				if key (s.net) /= net_name then
-					result := false;
-				end if;
-			end if;
-		end query_segment;
-		
-	begin
-		iterate (segments, query_segment'access);
-
-		return result;
-	end all_belong_to_same_net;
-
-
-
 
 
 	
