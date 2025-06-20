@@ -339,8 +339,6 @@ package body et_nets is
 		-- segment will be joined with the given strand:
 		point : type_vector_model;
 		
-		-- The number of ports at the attach point:
-		port_count : natural := 0;
 
 		
 		-- There are several ways to connect the given segment
@@ -362,7 +360,7 @@ package body et_nets is
 			-- The given segment will be attached 
 			-- to the target segment. The joint
 			-- is a bend point. Both segments run perpedicular
-			-- to each other.
+			-- to each other. No junction is requred.
 			-- The given segment will simply be added
 			-- to the other segments of the strand:
 			MODE_MAKE_BEND,
@@ -374,7 +372,7 @@ package body et_nets is
 			-- to the bend point the two existing segments.
 			-- A junction will be set at the affected end of the
 			-- given segment:
-			MODE_JOIN_BEND_WITH_JUNCTION,
+			MODE_JOIN_BEND_AND_ADD_JUNCTION,
 
 			-- The given segment will be attached at the joint
 			-- of three (or more) already existing segments.
@@ -478,6 +476,7 @@ package body et_nets is
 		target_to_split := get_segment_to_split (strand.segments, point);
 
 		if has_element (target_to_split) then
+			-- CASE 1:
 			mode := MODE_SPLIT;
 			goto label_attach;
 		end if;
@@ -487,30 +486,52 @@ package body et_nets is
 		target_to_extend := get_segment_to_extend (strand.segments, segment, AB_end);
 
 		if has_element (target_to_extend) then
+			-- CASE 2:
 			mode := MODE_EXTEND;
 			goto label_attach;
 		end if;
 
 
 		-- Now, depending on how many segments start or end
-		-- at the attach point, we proceed further.
-
-		port_count := get_port_count (strand, point);
-
-		
+		-- at the attach point, we proceed further.		
 		
 		-- Test case MODE_JOIN_BEND and MODE_JOIN_BEND_WITH_JUNCTION:
 		case get_segment_count (strand, point) is
 			when 0 => 
 				-- This case should never happen:
 				raise constraint_error;
-			
-			when 2 =>
-				mode := MODE_JOIN_BEND_WITH_JUNCTION;
+
 				
+			when 1 =>
+				-- CASE 3:
+				-- Only one segment already exists at the attach point.
+				-- Then the new segment will simply be added so that both
+				-- segments form a bend (the segments are perpedicular to each other).
+				-- A junction is not required.
+				mode := MODE_MAKE_BEND;
+
+				-- CASE 3.a:
+				-- If ports of devices, netchangers or submodules exist
+				-- that the attach point, then a junction is required:
+				if get_port_count (strand, point) > 0 then
+					mode := MODE_JOIN_BEND_AND_ADD_JUNCTION;
+				end if;
+				
+				
+			when 2 =>
+				-- CASE 4:
+				-- A bend consisting of two segments (perpedicular to each other)
+				-- already exists. 
+				-- The new segment will be attached at the bend point.
+				-- A junction will be activated on the new segment:
+				mode := MODE_JOIN_BEND_AND_ADD_JUNCTION;
+				
+
 			when others =>
-				-- One or more than two segments at the
-				-- attach point:
+				-- CASE 5:
+				-- More than three segments already exist at the attach point,
+				-- It is assumed that a junction is already there.
+				-- So a junction is not required.
 				mode := MODE_JOIN_BEND;
 		end case;
 		
@@ -522,7 +543,7 @@ package body et_nets is
 		case mode is 
 			when MODE_SPLIT => split_segment;
 			when MODE_EXTEND => extend_segment;
-			when MODE_JOIN_BEND_WITH_JUNCTION => append_segment_with_junction;
+			when MODE_JOIN_BEND_AND_ADD_JUNCTION => append_segment_with_junction;
 			when others => append_segment;
 		end case;
 
