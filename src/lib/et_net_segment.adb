@@ -517,6 +517,25 @@ package body et_net_segment is
 	end;
 
 
+
+	function get_port_count (
+		segment : in type_net_segment;
+		AB_end	: in type_start_end_point)				   
+		return natural
+	is 
+		ports : type_ports;
+		count : count_type := 0;
+	begin
+		ports := get_ports (segment, AB_end);
+
+		count := ports.devices.length;
+		count := count + ports.netchangers.length;
+		count := count + ports.submodules.length;
+
+		return natural (count);		
+	end;
+
+
 	
 
 	procedure append_ports (

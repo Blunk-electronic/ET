@@ -69,6 +69,38 @@ package body et_nets is
 
 
 
+	
+	function get_port_count (
+		strand	: in type_strand;
+		point	: in type_vector_model)
+		return natural
+	is
+		result : natural := 0;
+
+		procedure query_segment (c : in pac_net_segments.cursor) is
+			segment : type_net_segment renames element (c);
+			count : natural;
+		begin
+			if get_A (segment) = point then
+				count := get_port_count (segment, A);
+				
+			elsif get_B (segment) = point then
+				count := get_port_count (segment, B);
+			end if;
+
+			result := result + count;
+		end;
+
+		
+	begin
+		strand.segments.iterate (query_segment'access);
+		return result;
+	end get_port_count;
+		
+
+
+
+	
 
 	function get_segment_to_split (
 		segments	: in pac_net_segments.list;
@@ -302,12 +334,15 @@ package body et_nets is
 		-- If a segment is to be extended, then this cursor
 		-- will be pointing to it:
 		target_to_extend	: type_segment_to_extend;
-
 		
 		-- This is the place at which theh given
 		-- segment will be joined with the given strand:
 		point : type_vector_model;
+		
+		-- The number of ports at the attach point:
+		port_count : natural := 0;
 
+		
 		-- There are several ways to connect the given segment
 		-- with the strand:
 		
@@ -404,7 +439,8 @@ package body et_nets is
 
 
 		-- Attaches the given segment to the strand
-		-- and sets a junction at the attach point:
+		-- and sets on the given segment a junction
+		-- at the attach point:
 		procedure append_segment_with_junction is
 			s : type_net_segment := segment;
 		begin
@@ -456,6 +492,13 @@ package body et_nets is
 		end if;
 
 
+		-- Now, depending on how many segments start or end
+		-- at the attach point, we proceed further.
+
+		port_count := get_port_count (strand, point);
+
+		
+		
 		-- Test case MODE_JOIN_BEND and MODE_JOIN_BEND_WITH_JUNCTION:
 		case get_segment_count (strand, point) is
 			when 0 => 

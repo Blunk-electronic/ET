@@ -128,6 +128,18 @@ package et_nets is
 		return boolean;
 
 
+	-- This function returns the number of ports
+	-- of the given strand that exist at the given point.
+	-- This implies that point lies somewhere on the strand,
+	-- otherwise zero will be returned:
+	function get_port_count (
+		strand	: in type_strand;
+		point	: in type_vector_model)
+		return natural;
+
+
+	
+
 	-- Returns the first segment (among the given segments)
 	-- on which the given point sits between A and B end:
 	function get_segment_to_split (
@@ -204,7 +216,9 @@ package et_nets is
 	
 	-- Attaches the given segment to the given strand.
 	-- AB_end indicates which end of the segment is 
-	-- to be connected:
+	-- to be connected.
+	-- In case a junction is required, then the junction
+	-- will be set on the given segment only:
 	procedure attach_segment (
 		strand			: in out type_strand;
 		segment			: in type_net_segment;

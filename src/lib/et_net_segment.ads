@@ -278,7 +278,15 @@ package et_net_segment is
 		AB_end	: in type_start_end_point)				   
 		return type_ports;
 
-	
+
+	-- Returns the number of ports connected with
+	-- the given end of a segment:
+	function get_port_count (
+		segment : in type_net_segment;
+		AB_end	: in type_start_end_point)   
+		return natural;
+
+								
 	-- Appends to a segment the given ports at the given
 	-- end (A/B):
 	procedure append_ports (
