@@ -271,6 +271,7 @@ package et_schematic_ops.nets is
 	-- If the segment meets a port, then the port will be connected with the net.
 	-- NOTE: If the segment meets another net, then these two nets will NOT be connected.
 	--       CS: The resulting overlapping segments should be detected by the ERC.
+	-- CS: This procedure is currently not used:
 	procedure drag_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		primary_segment	: in type_object_segment;
@@ -593,32 +594,12 @@ package et_schematic_ops.nets is
 		return pac_net_names.list; -- CS return a list of cursors ?
 
 
-	
-	-- Inserts a net segment in the module.
-	-- 1. If the start or end point of the new segment
-	--    meets a port then the port will be connected with the segment.
-	-- 2. If the segment_new collides with a foreign net, an error is raised.
-	-- 3. If the net_name is a name of an already existing net, then the
-	--    given net segment_new will be added to the existing net.
-	--    net_cursor must point to the existing net.
-	--    A junction will automatically be placed where the new segment 
-	--    meets the existing net.
-	-- 4. If net_cursor equals no_element then a new net named after 
-	--    net_name will be created.
-	-- 5. After this procedure net_cursor points to the net that has just
-	--    been created or extended by segment_new.
-	procedure insert_segment (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_cursor		: in out pac_nets.cursor;
-		sheet			: in type_sheet;
-		net_name		: in pac_net_name.bounded_string;
-		segment_new		: in type_net_segment;
-		log_threshold	: in type_log_level);
-
 
 	-- Inserts a list of net segments in the given net.
 	-- Connects the segments with strands and ports of
-	-- devices, netchangers and submodules:
+	-- devices, netchangers and submodules.
+	-- If any of the given segments starts or ends
+	-- on a foreign net, then ALL given segments are rejected:
 	procedure insert_net_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in pac_nets.cursor;
@@ -627,8 +608,11 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 	
 
-	-- Inserts the give net segment in the given segment
-	-- on the given sheet:
+	
+	-- Inserts the given net segment in the given net
+	-- on the given sheet. If the segment runs across the
+	-- ends of other segments (of the same strand) then
+	-- it will be broken down into smaller segments:
 	procedure insert_net_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in pac_nets.cursor;
@@ -641,7 +625,8 @@ package et_schematic_ops.nets is
 	-- Inserts a net segment to a given net. If the given net does
 	-- not exist, then the net will be created.
 	-- Find more details in description of procedure insert_net_segment
-	-- above:
+	-- above.
+	-- Updates strand positions and the ratsnest:
 	procedure insert_net_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
