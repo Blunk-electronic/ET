@@ -138,6 +138,39 @@ package et_nets is
 		return natural;
 
 
+
+
+	
+	type type_connected_segment is record
+		segment	: pac_net_segments.cursor;
+		AB_end	: type_start_end_point;
+	end record;
+
+
+	-- Returns true if the given connected segment
+	-- has any ports of devices, netchangers or submodules
+	-- at its end:
+	function has_ports (
+		segment	: in type_connected_segment)
+		return boolean;
+
+	
+	package pac_connected_segments is new 
+		doubly_linked_lists (type_connected_segment);
+
+		
+	-- Returns the net segments which are connected
+	-- with the given primary segment at the given end (A/B).
+	-- NOTE; The primary segment must belong to the given strand.	
+	function get_connected_segments (
+		primary 	: in pac_net_segments.cursor;
+		AB_end		: in type_start_end_point;
+		strand		: in type_strand)
+		return pac_connected_segments.list;
+
+
+
+
 	
 
 	-- Returns the first segment (among the given segments)
@@ -287,6 +320,19 @@ package et_nets is
 	function get_position (
 		strand : in type_strand)
 		return string;
+
+
+
+	-- Returns true if the given primary segment is movable
+	-- at the given end. Queries also attached secondary
+	-- segments:
+	function is_movable (
+		strand	: in type_strand;
+		segment	: in pac_net_segments.cursor;
+		AB_end	: in type_start_end_point)
+		return boolean;
+
+
 
 	
 	

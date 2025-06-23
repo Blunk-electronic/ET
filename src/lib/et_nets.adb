@@ -100,6 +100,61 @@ package body et_nets is
 
 
 
+
+
+	function has_ports (
+		segment	: in type_connected_segment)
+		return boolean
+	is begin
+		return has_ports (segment.segment, segment.AB_end);
+	end;
+
+	
+
+
+	
+	function get_connected_segments (
+		primary 	: in pac_net_segments.cursor;
+		AB_end		: in type_start_end_point;
+		strand		: in type_strand)
+		return pac_connected_segments.list
+	is
+		result : pac_connected_segments.list;
+
+		-- Test a candidate secondary segment whether is
+		-- is connected with the given end of the primary segment:
+		procedure query_segment (secondary : in pac_net_segments.cursor) is
+			sts : type_connect_status;
+		begin
+			-- Since the primary segment is a member of
+			-- the given strand, it must not be tested against itself
+			-- and thus must be skipped:
+			if secondary /= primary then
+
+				-- Get the connect status of primary and secondary segment:
+				sts := get_connect_status (primary, AB_end, secondary);
+
+				-- Depending on the connect status we
+				-- collect the secondary segment and its end (A/B)
+				-- in the resulting list:
+				case sts is
+					when CON_STS_A => result.append ((secondary, A));
+					when CON_STS_B => result.append ((secondary, B));
+					when CON_STS_NONE => null;
+				end case;
+			end if;
+		end;
+		
+	begin
+		-- Iterate through all segments of the given strand:
+		strand.segments.iterate (query_segment'access);
+		
+		return result;
+	end get_connected_segments;
+
+
+	
+
 	
 
 	function get_segment_to_split (
@@ -660,6 +715,71 @@ package body et_nets is
 	end;
 
 
+
+
+
+	function is_movable (
+		strand	: in type_strand;
+		segment	: in pac_net_segments.cursor;
+		AB_end	: in type_start_end_point)
+		return boolean
+	is
+		result : boolean := true;
+
+		primary_has_ports : boolean;
+
+		-- Segments attached with the given segment
+		-- are so called "secondary" segments:
+		use pac_connected_segments;
+		secondary_segments : pac_connected_segments.list;
+
+		secondary_segments_cursor : pac_connected_segments.cursor;
+		
+		
+		procedure query_segment (c : in type_connected_segment) is begin
+			if has_ports (c) then
+				result := false;
+			end if;
+		end query_segment;
+		
+	begin
+		primary_has_ports := has_ports (segment, AB_end);
+
+		if primary_has_ports then
+			result := false;
+		else
+			
+			-- Get the secondary segments which are connected with 
+			-- the given primary segment at the given AB_end:
+			secondary_segments := get_connected_segments (
+				primary	=> segment,
+				AB_end	=> AB_end,
+				strand	=> strand);
+
+			-- Iterate through the secondary segments
+			-- and abort on the first segment which is connected
+			-- with any port:
+			secondary_segments_cursor := secondary_segments.first;
+
+			-- CS use a nice iterator procedure
+			
+			while has_element (secondary_segments_cursor) loop
+				query_element (secondary_segments_cursor, query_segment'access);
+				if result = false then
+					exit;
+				end if;
+				next (secondary_segments_cursor);
+			end loop;
+
+		end if;
+		
+		return result;
+	end is_movable;
+
+
+	
+
+	
 
 	function has_segments (
 		strand : in pac_strands.cursor)

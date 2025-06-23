@@ -882,6 +882,20 @@ package body et_net_segment is
 	end;
 
 
+
+	function get_end_point (
+		segment : in pac_net_segments.cursor;
+		AB_end	: in type_start_end_point)				   
+		return type_vector_model
+	is begin
+		case AB_end is
+			when A => return get_A (segment);
+			when B => return get_B (segment);
+		end case;
+	end;
+
+	
+	
 	
 	function is_moving (
 		segment : in pac_net_segments.cursor)
@@ -1058,6 +1072,9 @@ package body et_net_segment is
 	
 
 
+
+
+	
 	
 end et_net_segment;
 

@@ -365,8 +365,17 @@ package et_net_segment is
 
 	-- Tests whether the given primary segment is 
 	-- connected with the given secondary segment.
-	-- Starting at the primary segment and its end (A/B)
-	-- the ends of the secondary segment are tested:
+	-- Starting at the primary segment and its end (A/B),
+	-- the ends of the secondary segment are tested.
+	-- The reference point P to be tested is determined by the
+	-- given AB_end of the primary segment.
+	-- The return is as follows:
+	-- 1. If the A end of the secondary segment is
+	--    at P, then the result is CON_STS_A.
+	-- 2. If the B end of the secondary segment is
+	--    at P, then the result is CON_STS_B.
+	-- 3. If neither condition 1 nor 2 is met, then
+	--    the return is CON_STS_NONE:
 	function get_connect_status (
 		primary 	: in type_net_segment;
 		AB_end		: in type_start_end_point;
@@ -424,6 +433,12 @@ package et_net_segment is
 		segment : in pac_net_segments.cursor)
 		return type_vector_model;
 
+
+	function get_end_point (
+		segment : in pac_net_segments.cursor;
+		AB_end	: in type_start_end_point)				   
+		return type_vector_model;
+		
 
 	function is_moving (
 		segment : in pac_net_segments.cursor)
@@ -522,8 +537,8 @@ package et_net_segment is
 		return type_connect_status;
 	
 
-	
 
+	
 	
 	net_line_width : constant type_distance_positive := 0.2;
 	-- CS rename to net_linewidth ?
