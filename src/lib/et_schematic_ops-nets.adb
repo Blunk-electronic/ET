@@ -741,15 +741,10 @@ package body et_schematic_ops.nets is
 				net			: in type_net)
 			is
 
-				procedure query_strand (strand : in type_strand) is
-					sheet : type_sheet := get_sheet (strand);
-
-					procedure query_segment (seg : in type_net_segment) is begin
-						result := not has_ports (seg, AB_end);
-					end query_segment;
-					
-				begin
-					query_element (segment.segment_cursor, query_segment'access);
+				procedure query_strand (strand : in type_strand) is begin
+					-- Test the given segment and all connected secondary
+					-- segments whether they are movable:
+					result := is_movable (strand, segment.segment_cursor, AB_end);
 				end query_strand;
 				
 			begin

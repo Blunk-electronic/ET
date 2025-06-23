@@ -735,7 +735,9 @@ package body et_nets is
 
 		secondary_segments_cursor : pac_connected_segments.cursor;
 		
-		
+		-- Test a secondary candidate segment whether it has
+		-- any ports. If so, then set the result to false.
+		-- This aborts the iteration:
 		procedure query_segment (c : in type_connected_segment) is begin
 			if has_ports (c) then
 				result := false;
@@ -743,11 +745,17 @@ package body et_nets is
 		end query_segment;
 		
 	begin
+		-- At first we test whether the given primary segment
+		-- can be moved. If it has ports at the given end, then
+		-- it can not be moved. The result is set to false and no
+		-- more probing of other segments is required:
 		primary_has_ports := has_ports (segment, AB_end);
 
 		if primary_has_ports then
 			result := false;
 		else
+			-- If the primary segment has no ports then we test
+			-- the segments connected with the primary segment:
 			
 			-- Get the secondary segments which are connected with 
 			-- the given primary segment at the given AB_end:
