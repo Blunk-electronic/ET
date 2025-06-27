@@ -576,6 +576,15 @@ package et_nets is
 
 
 
+	-- Returns true if the given net has a segment that
+	-- starts or ends at the given place:
+	function has_end_point (
+		net		: in type_net;
+		place	: in type_object_position)
+		return boolean;
+
+	
+
 	-- Many nets are to be collected in maps:
 	package pac_nets is new ordered_maps (
 		key_type		=> pac_net_name.bounded_string, -- RESET_N

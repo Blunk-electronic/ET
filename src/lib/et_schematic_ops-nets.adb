@@ -3646,8 +3646,113 @@ package body et_schematic_ops.nets is
 
 
 
+
+
+
+
 	
-	
+	function segments_touch_foreign_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in pac_nets.cursor;
+		sheet			: in type_sheet;
+		segments		: in pac_net_segments.list;
+		log_threshold	: in type_log_level)
+		return boolean
+	is
+		-- If none of the given segments touches a foreign
+		-- net, then this flag remains set until the end of this
+		-- function. So this flag will be negated on return:
+		proceed : aliased boolean := true;
+
+
+		-- This procedure takes a candidate segment (that is to be inserted)
+		-- and tests its A and B end whether it meets a foreign net:
+		procedure test_segment (c : in pac_net_segments.cursor) is
+
+			-- This is the actual place where the test is performed:
+			place : type_object_position;
+
+
+			-- This procedure iterates the nets of the module,
+			-- but skips the given target net:
+			procedure query_module (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in type_generic_module) 
+			is
+
+				procedure query_net (n : in pac_nets.cursor) is
+					net : type_net renames element (n);
+				begin
+					if n /= net_cursor then -- skip the given target net
+						log (text => "foreign net " & get_net_name (n), level => log_threshold + 2);
+
+						-- Test whether the candidate net has a segment that
+						-- starts or ends at the given place.
+						-- If that is the case, then no more tests are
+						-- required. The flag "proceed" is cleared
+						-- so that all iterators are stopped:
+						if has_end_point (net, place) then
+							log (text => " segment found at " & to_string (place),
+								level => log_threshold + 2);
+							proceed := false;
+						end if;
+					end if;
+				end query_net;
+
+			begin
+				log_indentation_up;
+				iterate (module.nets, query_net'access, proceed'access);
+				log_indentation_down;
+			end query_module;
+
+
+		begin
+			log (text => "probing segment: " & to_string (c), level => log_threshold + 1);
+			log_indentation_up;
+
+			-- Test the A end of the candidate segment:
+			log (text => "A end: " & to_string (get_A (c)), level => log_threshold + 2);
+			set_sheet (place, sheet);
+			set_place (place, get_A (c));
+
+			-- Iterate the nets of the module. Skip the given net.
+			query_element (module_cursor, query_module'access);
+
+			-- If no touching segment found, then test the B end 
+			-- of the candidate segment:
+			if proceed then
+				log (text => "B end: " & to_string (get_B (c)), level => log_threshold + 2);
+				set_sheet (place, sheet);
+				set_place (place, get_B (c));
+
+				-- Iterate the nets of the module. Skip the given net.
+				query_element (module_cursor, query_module'access);
+			end if;
+
+			log_indentation_down;
+		end test_segment;
+			
+
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " test segments of net " & get_net_name (net_cursor)
+			& " on sheet " & to_string (sheet)
+			& " against foreign nets.",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		-- Iterate the given segments. For each segment, its start
+		-- and end point is tested whether it meeets a segment of a
+		-- foreign net:
+		iterate (segments, test_segment'access, proceed'access);
+
+		log_indentation_down;
+
+		return not proceed;
+	end segments_touch_foreign_net;
+
+
 
 
 
@@ -3888,7 +3993,7 @@ package body et_schematic_ops.nets is
 
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			 & " insert net segments " -- CS & to_string (segments)
+			 & " insert net segments" -- CS & to_string (segments)
 			 & " in net " & get_net_name (net_cursor)
 			 & " on sheet " & to_string (sheet),
 			 level => log_threshold);
@@ -3896,11 +4001,16 @@ package body et_schematic_ops.nets is
 		log_indentation_up;
 
 
-		-- CS test existence of foreign nets here
-		-- and reject the given segments
-
-		-- Iterate through the given segments:
-		segments.iterate (query_segment'access);
+		-- Test existence of foreign nets here
+		-- and reject all the given segments
+		if segments_touch_foreign_net (module_cursor, net_cursor,
+			sheet, segments, log_threshold + 1)
+		then
+			log (text => "segments rejected due to foreign net segments.", level => log_threshold);
+		else
+			-- Iterate through the given segments:
+			segments.iterate (query_segment'access);
+		end if;
 
 		log_indentation_down;
 	end insert_net_segments;

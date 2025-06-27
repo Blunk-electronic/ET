@@ -1479,8 +1479,60 @@ package body et_nets is
 	end merge_nets;
 
 
+
+
+
+	function has_end_point (
+		net		: in type_net;
+		place	: in type_object_position)
+		return boolean
+	is
+		-- If the given net has no segment that starts
+		-- or ends at the given place, then this flag remains set.
+		-- So the negated value will be returned to the caller of
+		-- this function:
+		proceed : aliased boolean := true;
+
+		-- Extract sheet number and location vector from
+		-- the given place:
+		sheet : constant type_sheet := get_sheet (place);
+		point : constant type_vector_model := get_place (place);
+		
+
+		procedure query_strand (s : in pac_strands.cursor) is
+			strand : type_strand renames element (s);
+			all_points_of_strand : pac_points.list;
+		begin
+			-- Look at strands that are on the given sheet only:
+			if get_sheet (strand) = sheet then
+
+				-- Get all end points of the candidate strand:
+				all_points_of_strand := get_end_points (strand.segments);
+
+				-- If the given point is among the points
+				-- of the strand, then abort the iteration of strands:
+				if all_points_of_strand.contains (point) then
+		
+					-- No more probing required:
+					proceed := false;
+				end if;
+				
+			end if;
+		end query_strand;
+		
+	begin
+		-- Iterate the strands of the given net. Abort on the first
+		-- strand that has a matching segment.
+		-- By the way, only one strand can exist at the given place anyway:
+		iterate (net.strands, query_strand'access, proceed'access);
+
+		return not proceed;
+	end has_end_point;
+
+	
 	
 
+	
 
 
 	function is_proposed (

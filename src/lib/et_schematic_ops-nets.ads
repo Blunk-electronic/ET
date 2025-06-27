@@ -586,7 +586,7 @@ package et_schematic_ops.nets is
 
 	
 	
-	-- Returns lists of nets that cross the given place.
+	-- Returns a lists of nets that cross the given place.
 	function get_nets_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_object_position;
@@ -594,6 +594,21 @@ package et_schematic_ops.nets is
 		return pac_net_names.list; -- CS return a list of cursors ?
 
 
+	-- Before inserting net segments into a net, it must
+	-- be ensured, that none of them collides with a foreign net.
+	-- This function returns true if any of the given segments of 
+	-- the given net on the given sheet touches a foreign net.
+	-- Only matching A and B ends of segments are tested.
+	-- Segments that cross each other between their A or B ends
+	-- are ignored:
+	function segments_touch_foreign_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in pac_nets.cursor; -- the target net
+		sheet			: in type_sheet;
+		segments		: in pac_net_segments.list; -- the segments to be inserted
+		log_threshold	: in type_log_level)
+		return boolean;
+	
 
 	-- Inserts a list of net segments in the given net.
 	-- Connects the segments with strands and ports of

@@ -219,6 +219,7 @@ Nets and Net Labels
 	.. code-block::
 
 		draw net [RESET_N]
+.. CS not working. fix it.
 
 
 	To draw a segment of a net on a given sheet starting
@@ -298,6 +299,8 @@ Nets and Net Labels
 	
 	A segment which is connected with a port can not be dragged away 
 	anymore.
+
+	If the segment meets another net, then these two nets will NOT be connected.
 
 	This example command searches for a net segment
 	on sheet 1 that crosses the position 80/100 in a zone of
