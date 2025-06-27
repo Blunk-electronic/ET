@@ -1074,6 +1074,41 @@ package body et_net_segment is
 
 
 
+	function get_end_points (
+		segments	: in pac_net_segments.list)
+		return pac_points.list
+	is
+		result : pac_points.list;
+
+		
+		procedure query_segment (c : in pac_net_segments.cursor) is
+			A, B : type_vector_model;
+		begin
+			-- Append the A end of the candidate segment
+			-- to the result if it has not already been appended:
+			A := get_A (c);
+
+			if not result.contains (A) then
+				result.append (A);
+			end if;
+			
+			-- Append the B end of the candidate segment
+			-- to the result if it has not already been appended:
+			B := get_B (c);
+
+			if not result.contains (B) then
+				result.append (B);
+			end if;
+		end query_segment;
+
+		
+	begin
+		segments.iterate (query_segment'access);
+		return result;
+	end get_end_points;
+
+	
+
 	
 	
 end et_net_segment;

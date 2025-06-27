@@ -538,6 +538,14 @@ package et_net_segment is
 	
 
 
+	-- Returns all points where the given
+	-- net segments start or end.
+	-- With other words: Returns all points occupied
+	-- by the start or end points of the given net segments:
+	function get_end_points (
+		segments	: in pac_net_segments.list)
+		return pac_points.list;
+
 	
 	
 	net_line_width : constant type_distance_positive := 0.2;
