@@ -3812,7 +3812,9 @@ package body et_schematic_ops.nets is
 					
 						-- The given segment will be connected at its B end
 						-- with an existing strand:
-						ATTACH_B); 
+						ATTACH_B,
+
+						ATTACH_A_AND_B);
 											
 
 					-- The insert_mode will be determined after
@@ -3867,7 +3869,7 @@ package body et_schematic_ops.nets is
 
 
 					-- This procedure attaches the candidate segment with the
-					-- A or B end to the given strands. 
+					-- A or B end to the given strand. 
 					-- It also connects the open end (opposide of the end to be connected)
 					-- of the segment with ports of devices, netchangers and
 					-- submodules that might exist there.
@@ -3880,7 +3882,7 @@ package body et_schematic_ops.nets is
 						-- This is the place where ports are searched for:
 						place : type_object_position;
 
-						-- Here the ports will be stored Temporarily:
+						-- Here the ports will be stored temporarily:
 						ports : type_ports;
 					begin
 						log_indentation_up;
@@ -3914,7 +3916,38 @@ package body et_schematic_ops.nets is
 						log_indentation_down;
 					end query_strand;
 
-					
+
+
+					procedure attach_segment_at_both_ends is
+						strand_at_A, strand_at_B : pac_strands.cursor;
+
+						-- procedure query_strand (strand : in out type_strand) is begin
+						-- 	attach_segment (strand, segment, log_threshold + 4);
+						-- end;
+
+					begin
+						log (text => "Attach A and B end of segment to strand.", level => log_threshold + 3);
+
+						-- Take the first strand of the strands at the
+						-- A end of the new segment:
+						strand_at_A := first_element (strands_at_A);
+
+						-- Take the first strand of the strands at the
+						-- B end of the new segment:
+						strand_at_B := first_element (strands_at_B);
+
+						if strand_at_A = strand_at_B then
+							-- Both strands are equal then CASE 4.a applies:
+							-- The new segment will be rejected.
+							log (text => "Segment rejected (Would cause a loop.) !", level => log_threshold + 3);
+							-- CS Output a warning.
+						else
+							-- Different strands. CASE 4.b applies:
+							null;
+						end if;
+					end attach_segment_at_both_ends;
+
+
 				begin
 					-- CASE 1:
 					-- The new segment has no connection with any other strand.
@@ -3939,12 +3972,16 @@ package body et_schematic_ops.nets is
 						insert_mode := ATTACH_B;
 					end if;
 
-					-- CS
 					-- CASE 4:
-					-- The new segment connects two existing strands:
-					-- if not is_empty (strands_at_A) and not is_empty (strands_at_B) then
-					-- 	insert_mode := MERGE_STRANDS;
-					-- end if;
+					-- The new segment will be attached with A and B end.
+					-- This includes two cases:
+					-- CASE 4.a: The new segment connects segments that belong to
+					--           the same strand.
+					-- CASE 4.b: The new segment connects segments that belong to
+					--           two different strands.
+					if not is_empty (strands_at_A) and not is_empty (strands_at_B) then
+						insert_mode := ATTACH_A_AND_B;
+					end if;
 
 
 					case insert_mode is
@@ -3968,6 +4005,9 @@ package body et_schematic_ops.nets is
 							log (text => "Attach B end of segment to strand.", level => log_threshold + 3);
 							strand_cursor := first_element (strands_at_B);
 							net.strands.update_element (strand_cursor, query_strand'access);
+
+						when ATTACH_A_AND_B => -- CASE 4
+							attach_segment_at_both_ends;
 
 					end case;
 				end query_net;
