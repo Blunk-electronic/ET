@@ -79,7 +79,7 @@ package body et_nets is
 
 		procedure query_segment (c : in pac_net_segments.cursor) is
 			segment : type_net_segment renames element (c);
-			count : natural;
+			count : natural := 0;
 		begin
 			if get_A (segment) = point then
 				count := get_port_count (segment, A);
@@ -569,6 +569,7 @@ package body et_nets is
 				-- If ports of devices, netchangers or submodules exist
 				-- that the attach point, then a junction is required:
 				if get_port_count (strand, point) > 0 then
+					log (text => "ports at attach point found", level => log_threshold + 1);
 					mode := MODE_JOIN_BEND_AND_ADD_JUNCTION;
 				end if;
 				
