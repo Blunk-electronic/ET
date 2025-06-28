@@ -219,7 +219,6 @@ Nets and Net Labels
 	.. code-block::
 
 		draw net [RESET_N]
-.. CS not working. fix it.
 
 
 	To draw a segment of a net on a given sheet starting
@@ -232,7 +231,10 @@ Nets and Net Labels
 
 		draw net GND  1  30 100  50 100
 
-	
+	* A net segment is rejected if
+
+	#. it causes a loop inside a strand,
+	#. it causes a connection between two different nets.
 
 
 #. Showing and finding nets
