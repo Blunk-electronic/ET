@@ -2882,7 +2882,7 @@ package body et_schematic_ops.nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is begin
-				merge_strands (net, strands_on_sheet);
+				add_strands (net, strands_on_sheet);
 			end move_strands;
 
 			
@@ -2960,7 +2960,7 @@ package body et_schematic_ops.nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is begin
-				merge_strand (net, strand_temp);
+				add_strand (net, strand_temp);
 			end move_strand;
 
 			

@@ -554,15 +554,15 @@ package et_nets is
 		strands	: in pac_strands.list);
 
 	
-	-- Appends a strand to the strands of net:
-	procedure merge_strand (
+	-- Adds a strand to the strands of net:
+	procedure add_strand (
 		net		: in out type_net;
 		strand	: in type_strand);
 	
 
 	-- Merges strands into the strands of net
 	-- NOTE: The given list of strands will be cleared:
-	procedure merge_strands (
+	procedure add_strands (
 		net		: in out type_net;
 		strands	: in out pac_strands.list);
 	

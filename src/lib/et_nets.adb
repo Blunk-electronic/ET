@@ -1388,18 +1388,18 @@ package body et_nets is
 
 	
 
-	procedure merge_strand (
+	procedure add_strand (
 		net		: in out type_net;
 		strand	: in type_strand)
 	is begin
 		append (net.strands, strand);
-	end merge_strand;
+	end add_strand;
 
 
 
 	
 
-	procedure merge_strands (
+	procedure add_strands (
 		net		: in out type_net;
 		strands	: in out pac_strands.list)
 	is begin
@@ -1407,7 +1407,7 @@ package body et_nets is
 			target	=> net.strands,
 			before	=> pac_strands.no_element,
 			source	=> strands);
-	end merge_strands;
+	end add_strands;
 
 
 
