@@ -138,7 +138,50 @@ package et_nets is
 		return natural;
 
 
+	-- Calculates and sets the lowest x/y position of the given strand.	
+	-- Leaves the sheet number of the strand as it is.	
+	procedure set_strand_position (
+		strand : in out type_strand);
 
+
+
+	-- If strands are to be joined (or merged) with each other
+	-- then the connection can be:
+	-- 1. At a single point. When a strand is moved so that it
+	--    meets another strand at a certain place.
+	-- 2. A single net segment that serves as a bridge between
+	--    two strands.
+	-- For this reason this controlled type specifies how the
+	-- two strands are joined:
+	type type_strand_joint (point : boolean) is record
+		case point is
+			when TRUE =>
+				joint : type_vector_model;
+
+			when FALSE =>
+				segment : type_net_segment;
+		end case;
+	end record;
+				
+	
+	-- Merges strand "source" in strand "target".
+	-- The joint specifies how the two strands are connected.
+	-- - If joint is a single point, then the strands will be
+	--   connected at this place. CS: NOT IMPLEMENTED YET !
+	-- - If joint is a segment, then its A end will be connected
+	--   with the target and its B end will be connected with the source.
+	--   As a result overlapping segments will occur. 
+	--   An optimization procedure irons this overlapping segments out
+	--   so that only a single segment remains.
+	-- Updates the position of target.
+	-- Leaves status of target unchanged:
+	procedure merge_strands (
+		target			: in out type_strand;						
+		source			: in type_strand;
+		joint			: in type_strand_joint;
+		log_threshold	: in type_log_level);
+
+	
 
 	
 	type type_connected_segment is record
@@ -375,10 +418,6 @@ package et_nets is
 
 
 	
-	
-	-- Calculates and sets the lowest x/y position of the given strand.	
-	-- Leaves the sheet number of the strand as it is.	
-	procedure set_strand_position (strand : in out type_strand);
 
 
 	
@@ -565,6 +604,22 @@ package et_nets is
 	procedure add_strands (
 		net		: in out type_net;
 		strands	: in out pac_strands.list);
+
+
+
+	-- Merges in the given net strand "source" in
+	-- strand "target".
+	-- See comments on procedure merge_strands above.
+	-- Deletes the strand indicated by "source"
+	-- so that "source" points to no_element afterward:
+	procedure merge_strands (
+		net				: in out type_net;
+		target			: in pac_strands.cursor;
+		source			: in out pac_strands.cursor;
+		joint			: in type_strand_joint;
+		log_threshold	: in type_log_level);
+
+
 	
 	
 	-- Merges net_2 into net_1.

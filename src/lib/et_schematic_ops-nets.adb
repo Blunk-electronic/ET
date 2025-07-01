@@ -3920,11 +3920,6 @@ package body et_schematic_ops.nets is
 
 					procedure attach_segment_at_both_ends is
 						strand_at_A, strand_at_B : pac_strands.cursor;
-
-						-- procedure query_strand (strand : in out type_strand) is begin
-						-- 	attach_segment (strand, segment, log_threshold + 4);
-						-- end;
-
 					begin
 						log (text => "Attach A and B end of segment to strand.", level => log_threshold + 3);
 
@@ -3943,7 +3938,20 @@ package body et_schematic_ops.nets is
 							-- CS Output a warning.
 						else
 							-- Different strands. CASE 4.b applies:
-							null;
+							log (text => "Merge strand on B end with strand on A end.", level => log_threshold + 3);
+							log_indentation_up;
+
+							-- Merge the strand at the B end with the strand at the A end.
+							-- The given segment serves a joint between the two strands.
+							-- The strand at the B end will be removed:
+							merge_strands (
+								net				=> net,
+								target			=> strand_at_A,
+								source			=> strand_at_B,
+								joint			=> ((point => false, segment => segment)),
+								log_threshold	=> log_threshold + 4);
+
+							log_indentation_down;
 						end if;
 					end attach_segment_at_both_ends;
 

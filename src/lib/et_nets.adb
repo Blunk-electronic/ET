@@ -102,6 +102,98 @@ package body et_nets is
 
 
 
+	procedure set_strand_position (
+		strand : in out type_strand) 
+	is
+		point_1, point_2 : type_vector_model;
+	
+		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
+
+		procedure query_strand (cursor : in pac_net_segments.cursor) is begin
+			-- Test start point of segment. 
+			-- if closer to orign than point_1 keep start point
+			point_2	:= get_A (cursor);
+			if get_distance_absolute (point_2, origin) < get_distance_absolute (point_1, origin) then
+				point_1 := point_2;
+			end if;
+
+			-- Test start point of segment.
+			-- if closer to orign than point_1 keep end point
+			point_2	:= get_B (cursor);
+			if get_distance_absolute (point_2, origin) < get_distance_absolute (point_1, origin) then
+				point_1 := point_2;
+			end if;
+		end query_strand;
+
+		
+	begin
+		--log (text => "set strand position");
+		
+		-- init point_1 as the farest possible point from drawing origin
+		point_1 := type_vector_model (set (
+					x => type_position_axis'last,
+					y => type_position_axis'last));
+
+		-- loop through segments and keep the nearest point to origin
+		iterate (strand.segments, query_strand'access);
+
+		-- build and assign the final strand position from point_1
+		strand.position.set (point_1);
+		
+	end set_strand_position;
+
+
+	
+
+	
+	
+
+	procedure merge_strands (
+		target			: in out type_strand;						
+		source			: in type_strand;
+		joint			: in type_strand_joint;
+		log_threshold	: in type_log_level)
+	is
+		source_copy : type_strand := source;
+	begin
+		case joint.point is
+			when TRUE =>
+				null; -- CS 
+
+			when FALSE =>
+
+				-- Attach the given segment with its
+				-- A end to the target strand:
+				attach_segment (
+					strand			=> target,
+					segment			=> joint.segment,
+					AB_end			=> A,
+					log_threshold	=> log_threshold);
+
+				-- Attach the given segment with its
+				-- B end to the source strand:
+				attach_segment (
+					strand			=> source_copy,
+					segment			=> joint.segment,
+					AB_end			=> B,
+					log_threshold	=> log_threshold);
+
+				-- Splice target and source segments:
+				splice (
+					target	=> target.segments,
+					before	=> pac_net_segments.no_element,
+					source	=> source_copy.segments);
+
+				-- CS optimize target
+		end case;
+		
+		set_strand_position (target);
+	end merge_strands;
+
+
+	
+
+
 	function has_ports (
 		segment	: in type_connected_segment)
 		return boolean
@@ -844,49 +936,6 @@ package body et_nets is
 
 
 
-	
-	
-	procedure set_strand_position (
-		strand : in out type_strand) 
-	is
-		point_1, point_2 : type_vector_model;
-	
-		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
-
-		procedure query_strand (cursor : in pac_net_segments.cursor) is begin
-			-- Test start point of segment. 
-			-- if closer to orign than point_1 keep start point
-			point_2	:= get_A (cursor);
-			if get_distance_absolute (point_2, origin) < get_distance_absolute (point_1, origin) then
-				point_1 := point_2;
-			end if;
-
-			-- Test start point of segment.
-			-- if closer to orign than point_1 keep end point
-			point_2	:= get_B (cursor);
-			if get_distance_absolute (point_2, origin) < get_distance_absolute (point_1, origin) then
-				point_1 := point_2;
-			end if;
-		end query_strand;
-
-		
-	begin
-		--log (text => "set strand position");
-		
-		-- init point_1 as the farest possible point from drawing origin
-		point_1 := type_vector_model (set (
-					x => type_position_axis'last,
-					y => type_position_axis'last));
-
-		-- loop through segments and keep the nearest point to origin
-		iterate (strand.segments, query_strand'access);
-
-		-- build and assign the final strand position from point_1
-		strand.position.set (point_1);
-		
-	end set_strand_position;
-
-
 
 
 	
@@ -1410,6 +1459,46 @@ package body et_nets is
 	end add_strands;
 
 
+	
+
+	procedure merge_strands (
+		net				: in out type_net;
+		target			: in pac_strands.cursor;
+		source			: in out pac_strands.cursor;
+		joint			: in type_strand_joint;
+		log_threshold	: in type_log_level)
+	is
+		procedure query_strand (target : in out type_strand) is begin
+			merge_strands (
+				target			=> target, 
+				source			=> element (source),
+				joint			=> joint,
+				log_threshold	=> log_threshold + 1);
+		end query_strand;
+		
+	begin
+		log (text => "merge strands", level => log_threshold);
+		log_indentation_up;
+
+		if joint.point then
+			log (text => "join at point: " & to_string (joint.joint), level => log_threshold);
+		else
+			log (text => "join via segment: " & to_string (joint.segment), level => log_threshold);
+		end if;
+			
+		-- Locate the target strand in the given net
+		-- and merge it with the source strand:
+		net.strands.update_element (target, query_strand'access);
+
+		-- The source strand is no longer needed.
+		-- Delete the source strand in the net.
+		net.strands.delete (source);
+
+		-- Cursor "source" now points to no_element.
+		log_indentation_down;
+	end merge_strands;
+
+	
 
 	
 
@@ -1437,6 +1526,7 @@ package body et_nets is
 			target => net_1.strands, 
 			before => pac_strands.no_element,
 			source => net_2.strands);
+		-- CS: not good. use procedure merge_strands ?
 
 		-- BOARD:
 		
