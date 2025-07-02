@@ -145,6 +145,104 @@ package body et_nets is
 
 	
 
+
+
+	procedure optimize_strand (
+		strand	: in out type_strand)
+	is
+		segments_have_been_merged : boolean := true;
+
+		subtype type_safety_counter is natural range 0 .. 10;
+		safety_counter : type_safety_counter := 0;
+		
+
+		-- This procedure searches for a net segment (called primary) that
+		-- overlap another segment (called secondary).
+		-- Once an overlap has been found:
+		-- 1. The search is aborted.
+		-- 2. Primary and secondary segment are merged to a new segment.
+		-- 3. The secondary segment is removed.
+		-- 4. The primary segment is replaced by the new segment.
+		procedure search_overlap is
+
+			-- This flag is cleared once an overlap has been found:
+			proceed : aliased boolean := true;
+
+			-- After an overlap has been found, these cursors point to the
+			-- affected primary and secondary segment:
+			primary, secondary : pac_net_segments.cursor;
+
+			-- After merging primary and secondary segment, here the
+			-- resulting segment will be stored:
+			new_segment : type_net_segment;
+			
+			
+			procedure query_primary (p : in pac_net_segments.cursor) is
+
+				procedure query_secondary (s : in pac_net_segments.cursor) is begin
+					-- We do not test the primary segment against itself.
+					-- For this reason we compare primary and secondary cursors:
+					if s /= p then
+						-- Do the actual overlap test. If positive, then
+						-- store the cursors of primary and secondary segment
+						-- and clear the proceed-flag so that all iterators stop:
+						if segments_overlap (s, p) then
+							primary := p;
+							secondary := s;
+
+							proceed := false;
+						end if;
+					end if;
+				end query_secondary;
+
+			begin
+				-- Iterate the secondary segments:
+				iterate (strand.segments, query_secondary'access, proceed'access);
+			end query_primary;
+
+			
+		begin
+			-- Iterate the primary segments. Abort when an overlap has been found:
+			iterate (strand.segments, query_primary'access, proceed'access);
+
+			-- If no overlap has been found, then the proceed-flag is still
+			-- set. So we notify the caller that nothing has been merged:
+			if proceed then
+				segments_have_been_merged := false;
+			else
+				-- If an overlap has been found, then the proceed-flag is cleared.
+				-- In this case we merge the two segments:
+
+				-- Merge primary and secondary segment:
+				new_segment := merge_segments (element (primary), element (secondary));
+				
+				-- Delete secondary segment, because it is no longer needed:
+				strand.segments.delete (secondary);
+
+				-- Replace the primary segment by the new segment:
+				strand.segments.replace_element (primary, new_segment);
+
+				-- Notify the caller that a merge took place:
+				segments_have_been_merged := true;
+			end if;
+		end search_overlap;
+			
+		
+	begin
+		-- Call procedure search_overlap as many times
+		-- as optimzing is required:
+		
+		while segments_have_been_merged loop
+			
+			-- Count the loops and raise exception on overflow:
+			safety_counter := safety_counter + 1;
+			
+			search_overlap;
+		end loop;
+	end optimize_strand;
+
+
+	
 	
 	
 
@@ -184,7 +282,8 @@ package body et_nets is
 					before	=> pac_net_segments.no_element,
 					source	=> source_copy.segments);
 
-				-- CS optimize target
+				-- Optimize target due to overlapping segments:
+				optimize_strand (target);
 		end case;
 		
 		set_strand_position (target);

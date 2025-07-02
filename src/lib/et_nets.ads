@@ -144,6 +144,12 @@ package et_nets is
 		strand : in out type_strand);
 
 
+	-- Searches for net segments that run into the same direction
+	-- and overlap each other. Replaces such segments by a single 
+	-- segment:
+	procedure optimize_strand (
+		strand	: in out type_strand);
+	
 
 	-- If strands are to be joined (or merged) with each other
 	-- then the connection can be:
