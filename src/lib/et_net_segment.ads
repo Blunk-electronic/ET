@@ -398,11 +398,18 @@ package et_net_segment is
 
 
 	
+	-- Merges two overlapping segments to a single one.
+	-- "Overlapping" means that both have same orientation
+	-- and do overlap in some way:
+	function merge_segments (
+		primary, secondary : in type_net_segment)
+		return type_net_segment;
 	
 	
 	
 	package pac_net_segments is new doubly_linked_lists (type_net_segment);
 	use pac_net_segments;
+
 	
 
 	-- Returns true if the net segment
@@ -489,8 +496,8 @@ package et_net_segment is
 		return boolean;
 
 
-
-
+	
+	
 	
 	
 	-- Returns the orientation of a net segment.
@@ -499,6 +506,18 @@ package et_net_segment is
 		return type_line_orientation;
 
 
+	-- Returns true if the given two net segments
+	-- overlap each other.
+	-- It is assumed that none of the given segments
+	-- is a slope. If any of the segments is sloping, then
+	-- the return is always false:
+	function segments_overlap (
+		s1, s2 : in pac_net_segments.cursor)
+		return boolean;
+
+
+	
+	
 
 	-- Returns true if given center of a zone in on the given segment.
 	-- The catch zone is a means of reducing the accuracy. The greater the zone

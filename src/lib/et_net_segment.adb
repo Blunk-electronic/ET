@@ -753,6 +753,21 @@ package body et_net_segment is
 
 
 
+
+
+	function merge_segments (
+		primary, secondary : in type_net_segment)
+		return type_net_segment
+	is
+		result : type_net_segment;
+	begin
+		-- CS 
+		null;
+
+		return result;
+	end;
+
+	
 	
 	
 	
@@ -997,6 +1012,18 @@ package body et_net_segment is
 
 
 
+	function segments_overlap (
+		s1, s2 : in pac_net_segments.cursor)
+		return boolean
+	is begin
+		return lines_overlap (element (s1), element (s2));
+	end;
+
+
+
+
+
+	
 
 	
 	function on_segment (
