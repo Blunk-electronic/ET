@@ -1431,7 +1431,7 @@ package body et_canvas is
 	
 
 	procedure shift_swin (
-		direction	: type_direction;
+		direction	: type_direction_RLUD;
 		distance	: type_distance)
 	is
 		
@@ -2286,10 +2286,10 @@ package body et_canvas is
 
 
 	procedure move_cursor (
-		direction : type_direction)
+		direction : type_direction_RLUD)
 	is begin
 		-- Move the cursor by the grid spacing into the given direction:
-		-- put_line ("move cursor " & type_direction'image (direction));
+		-- put_line ("move cursor " & type_direction_RLUD'image (direction));
 		
 		case direction is
 			when DIR_RIGHT =>

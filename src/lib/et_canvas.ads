@@ -717,7 +717,7 @@ package et_canvas is
 	-- Likewise, this applies if the scrolled window is moved left,
 	-- down or up:
 	procedure shift_swin (
-		direction	: type_direction;
+		direction	: type_direction_RLUD;
 		distance	: type_distance);
 
 
@@ -912,7 +912,7 @@ package et_canvas is
 	-- This procedure moves the cursor into 
 	-- the given direction by the current grid spacing:
 	procedure move_cursor (
-		direction : type_direction);
+		direction : type_direction_RLUD);
 
 
 	-- This procedure moves the cursor by

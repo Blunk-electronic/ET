@@ -78,11 +78,7 @@ package et_geometry_2a is
 	function get_info (editor: in string)
 		return string;
 
-
 	
-	-- The directions into which the an object can be moved
-	-- by means of the cursor keys (arrow keys):
-	type type_direction is (DIR_RIGHT, DIR_LEFT, DIR_UP, DIR_DOWN);
 
 
 
@@ -780,6 +776,23 @@ package et_geometry_2a is
 		AB_end	: in type_start_end_point)
 		return type_vector_model;
 
+
+	-- Returns for a given direction the end of a line.
+	-- If the line orientation is horizontal:
+	-- 1. If side is west, then it returns the end point that 
+	--    is on the west end of the line.
+	-- 2. If side is east, then it returns the end point that 
+	--    is on the east end of the line.
+	-- If the line orientation is vertical:
+	-- 1. If side is north, then it returns the end point that 
+	--    is on the north end of the line.
+	-- 2. If side is south, then it returns the end point that 
+	--    is on the south end of the line.
+	function get_NSWE_end (
+		line	: in type_line;
+		side	: in type_direction_NSWE)
+		return type_start_end_point;
+	
 	
 
 	-- Returns the start point of the given line:

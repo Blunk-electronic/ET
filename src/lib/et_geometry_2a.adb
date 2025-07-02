@@ -1522,6 +1522,36 @@ end;
 	end;
 
 
+
+
+	function get_NSWE_end (
+		line	: in type_line;
+		side	: in type_direction_NSWE)
+		return type_start_end_point
+	is
+		result : type_start_end_point;
+
+		orientation : type_line_orientation;
+	begin
+		orientation := get_orientation (line);
+
+		case orientation is
+			when ORIENT_HORIZONTAL =>
+				null;
+
+			when ORIENT_VERTICAL =>
+				null;
+
+			when ORIENT_SLOPING =>
+				null;
+		end case;
+		
+		return result;
+	end get_NSWE_end;
+
+	
+
+
 	
 
 	function get_A (

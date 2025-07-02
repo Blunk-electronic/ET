@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -38,7 +38,17 @@
 
 
 package et_primitive_objects is
-		
+
+	-- CS: move everything related to a direction to a separate package like et_directions.
+	
+	
+	-- The directions into which the an object can be moved
+	-- for example by means of the cursor keys (arrow keys):
+	type type_direction_RLUD is (DIR_RIGHT, DIR_LEFT, DIR_UP, DIR_DOWN);
+
+	
+	type type_direction_NSWE is (DIR_NORTH, DIR_SOUTH, DIR_WEST, DIR_EAST);
+	
 
 	type type_direction_of_rotation is (
 		CW,		-- clockwise
