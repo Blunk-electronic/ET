@@ -2299,7 +2299,7 @@ end;
 	function merge_lines (
 		primary			: in type_line;
 		secondary		: in type_line)
-		return type_line
+		return type_line'class
 	is
 		result : type_line;
 

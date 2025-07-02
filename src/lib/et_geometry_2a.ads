@@ -1169,7 +1169,7 @@ package et_geometry_2a is
 	function merge_lines (
 		primary			: in type_line;
 		secondary		: in type_line)
-		return type_line;
+		return type_line'class;
 	
 	
 -- ARC
