@@ -783,11 +783,19 @@ package et_geometry_2a is
 	--    is on the west end of the line.
 	-- 2. If side is east, then it returns the end point that 
 	--    is on the east end of the line.
+	-- 3. Only west or east end can be inquired. 
+	--    Otherwise an exception is raised.
+	--
 	-- If the line orientation is vertical:
-	-- 1. If side is north, then it returns the end point that 
+	-- 3. If side is north, then it returns the end point that 
 	--    is on the north end of the line.
-	-- 2. If side is south, then it returns the end point that 
+	-- 4. If side is south, then it returns the end point that 
 	--    is on the south end of the line.
+	-- 5. Only north or south end can be inquired. 
+	--    Otherwise an exception is raised.
+	--
+	-- If the line orientation is sloping then all four ends
+	-- can be inquired:
 	function get_NSWE_end (
 		line	: in type_line;
 		side	: in type_direction_NSWE)

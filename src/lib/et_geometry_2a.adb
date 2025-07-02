@@ -1523,27 +1523,109 @@ end;
 
 
 
+	
 
 	function get_NSWE_end (
 		line	: in type_line;
 		side	: in type_direction_NSWE)
 		return type_start_end_point
 	is
-		result : type_start_end_point;
+		result : type_start_end_point := A;
 
 		orientation : type_line_orientation;
+
+		
+		procedure test_x is begin
+			case side is
+				when DIR_WEST =>
+					if line.A.x < line.B.x then -- A is west of B
+						result := A;
+					else
+						result := B;
+					end if;
+
+				when DIR_EAST =>
+					if line.A.x > line.B.x then -- A is east of B
+						result := A;
+					else
+						result := B;
+					end if;
+
+				when others =>
+					raise constraint_error;
+			end case;
+		end test_x;
+
+
+		procedure test_y is begin
+			case side is
+				when DIR_NORTH =>
+					if line.A.y > line.B.y then -- A is north of B
+						result := A;
+					else
+						result := B;
+					end if;
+
+				when DIR_SOUTH =>
+					if line.A.y < line.B.y then -- A is south of B
+						result := A;
+					else
+						result := B;
+					end if;
+
+				when others =>
+					raise constraint_error;
+			end case;
+		end test_y;
+
+
+		procedure test_xy is begin
+			case side is
+				when DIR_WEST =>
+					if line.A.x < line.B.x then -- A is west of B
+						result := A;
+					else
+						result := B;
+					end if;
+
+				when DIR_EAST =>
+					if line.A.x > line.B.x then -- A is east of B
+						result := A;
+					else
+						result := B;
+					end if;
+
+				when DIR_NORTH =>
+					if line.A.y > line.B.y then -- A is north of B
+						result := A;
+					else
+						result := B;
+					end if;
+
+				when DIR_SOUTH =>
+					if line.A.y < line.B.y then -- A is south of B
+						result := A;
+					else
+						result := B;
+					end if;
+
+			end case;
+		end test_xy;
+
+		
+		
 	begin
 		orientation := get_orientation (line);
 
 		case orientation is
 			when ORIENT_HORIZONTAL =>
-				null;
-
+				test_x;
+				
 			when ORIENT_VERTICAL =>
-				null;
+				test_y;
 
 			when ORIENT_SLOPING =>
-				null;
+				test_xy;
 		end case;
 		
 		return result;
