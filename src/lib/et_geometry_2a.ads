@@ -102,6 +102,15 @@ package et_geometry_2a is
 	package pac_distances_sorting is new pac_distances.generic_sorting;
 
 
+	-- Returns true if the given value is 
+	-- greater or equal than lower AND if
+	-- less or equal upper:
+	function in_range (
+		lower, upper	: in type_distance;
+		value			: in type_distance)
+		return boolean;
+
+	
 	
 	-- Returns the greatest of the given distances. 
 	-- If both are equal then "right" will be returned.
@@ -1081,6 +1090,17 @@ package et_geometry_2a is
 		return type_line_orientation;
 
 
+
+	-- Returns true if the given lines overlap each other
+	-- and if they have the same orientation.
+	-- The return is always false if any of the given lines
+	-- has orientation ORIENT_SLOPING. In this case we assume
+	-- they are not overlapping:
+	function lines_overlap (
+		line_1, line_2 : in type_line)
+		return boolean;
+	
+	
 
 	-- When a line is to be split in two or more
 	-- fragments, then this type should be used for

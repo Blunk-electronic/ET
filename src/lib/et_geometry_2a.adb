@@ -124,6 +124,21 @@ package body et_geometry_2a is
 -- DISTANCE:
 
 
+	function in_range (
+		lower, upper	: in type_distance;
+		value			: in type_distance)
+		return boolean
+	is begin
+		if value >= lower and value <= upper then
+			return true;
+		else
+			return false;
+		end if;
+	end in_range;
+
+
+	
+
 	function get_greatest (
 		left, right : in type_distance)
 		return type_distance
@@ -2035,6 +2050,88 @@ end;
 
 	
 
+
+	
+
+
+	function lines_overlap (
+		line_1, line_2 : in type_line)
+		return boolean
+	is
+		result : boolean := false;
+
+		O1 : constant type_line_orientation := get_orientation (line_1);
+		O2 : constant type_line_orientation := get_orientation (line_2);
+
+		-- x and y component of A and B end of line 1:
+		L1_Ax : type_distance renames line_1.A.x;
+		L1_Ay : type_distance renames line_1.A.y;
+		
+		L1_Bx : type_distance renames line_1.B.x;
+		L1_By : type_distance renames line_1.B.y;
+		
+		-- x and y component of A and B end of line 2:
+		L2_Ax : type_distance renames line_2.A.x;
+		L2_Ay : type_distance renames line_2.A.y;
+		
+		L2_Bx : type_distance renames line_2.B.x;
+		L2_By : type_distance renames line_2.B.y;
+
+		
+	begin
+		if O1 = ORIENT_SLOPING or O2 = ORIENT_SLOPING then
+			return false;
+		end if;
+
+		if O1 = O2 then
+			case O1 is
+				when ORIENT_HORIZONTAL =>
+					-- The y values must be equal:
+					if L1_Ay = L2_Ay then
+
+						-- CASE H1: Line 1 runs from left to right:
+						if in_range (lower => L1_Ax, upper => L1_Bx, value => L2_Ax)
+						or in_range (lower => L1_Ax, upper => L1_Bx, value => L2_Bx)
+
+						-- CASE H2: Line 1 runs from right to left:					
+						or in_range (lower => L1_Bx, upper => L1_Ax, value => L2_Ax)
+						or in_range (lower => L1_Bx, upper => L1_Ax, value => L2_Bx)
+
+						then
+							result := true;
+						end if;
+					end if;
+
+					
+				when ORIENT_VERTICAL =>
+					-- The x values must be equal:
+					if L1_Ax = L2_Ax then
+
+						-- CASE V1: Line 1 runs from down to up:
+						if in_range (lower => L1_Ay, upper => L1_By, value => L2_Ay)
+						or in_range (lower => L1_Ay, upper => L1_By, value => L2_By)
+
+						-- CASE V2: Line 1 runs from up to down:					
+						or in_range (lower => L1_By, upper => L1_Ay, value => L2_Ay)
+						or in_range (lower => L1_By, upper => L1_Ay, value => L2_By)
+
+						then
+							result := true;
+						end if;
+					end if;
+					
+
+				when ORIENT_SLOPING =>
+					raise constraint_error; -- CS should never happen
+					
+			end case;
+		end if;
+		
+		return result;
+	end lines_overlap;
+
+
+	
 
 
 	function split_line (
