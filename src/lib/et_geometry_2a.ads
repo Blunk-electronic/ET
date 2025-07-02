@@ -1158,6 +1158,18 @@ package et_geometry_2a is
 		secondary		: in type_line;
 		secondary_end	: in type_start_end_point); -- the end of the secondary line
 
+
+
+	-- Merges two overlapping lines to a single one.
+	-- "Overlapping" means that both have same orientation
+	-- and do overlap in some way.
+	-- An exception is raised if:
+	-- 1. any of the given lines is a slope
+	-- 2. the two lines have different orientation
+	function merge_lines (
+		primary			: in type_line;
+		secondary		: in type_line)
+		return type_line;
 	
 	
 -- ARC

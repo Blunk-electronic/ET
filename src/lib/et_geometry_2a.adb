@@ -2265,6 +2265,8 @@ end;
 
 
 
+	
+
 	procedure merge_lines (
 		primary			: in out type_line;
 		primary_end		: in type_start_end_point;
@@ -2288,6 +2290,85 @@ end;
 		end case;
 	end merge_lines;
 
+	
+
+
+
+	
+
+	function merge_lines (
+		primary			: in type_line;
+		secondary		: in type_line)
+		return type_line
+	is
+		result : type_line;
+
+		-- Get the orientation of the two segments.
+		OP : constant type_line_orientation := get_orientation (primary);
+		OS : constant type_line_orientation := get_orientation (secondary);
+
+		-- The two given lines may run into various 
+		-- directions (upwards, downwards, right, left).
+		-- We need their smallest and greatest extension along
+		-- the x and y axis. So the function get_bounding_box seems
+		-- appropiate for this purpose. Since we are dealing with lines
+		-- that do not have linewidth, the width is set to zero:
+		AP : type_area := get_bounding_box (primary,   0.0);
+		AS : type_area := get_bounding_box (secondary, 0.0);
+
+	begin
+		-- If any of the given lines is a slope then
+		-- raise an exception:
+		if OP = ORIENT_SLOPING or OS = ORIENT_SLOPING then
+			raise constraint_error;
+		end if;
+
+		-- If the orientation of the lines differs, then
+		-- raise an exception:
+		if OP /= OS then
+			raise constraint_error;
+		end if;
+
+		
+		-- Merge both bounding boxes. The outcome is stored in AP:
+		merge_areas (AP, AS);
+
+		-- Now, depending on the orientation we set the resulting line.
+		-- Since both lines have the same orientation it is sufficient
+		-- to just test the primary line:
+		case OP is
+			when ORIENT_HORIZONTAL =>
+				-- X-values are relevant.
+				-- The resulting line runs from left to right:
+				result.A.x := AP.position.x;
+				result.B.x := AP.position.x + AP.width;
+
+				-- Y-value remains is equal on both ends:
+				result.A.y := AP.position.y;
+				result.B.y := AP.position.y;
+
+				
+			when ORIENT_VERTICAL =>
+				-- Y-values are relevant.
+				-- The resulting line runs from bottom to top:
+				result.A.y := AP.position.y;
+				result.B.y := AP.position.y + AP.height;
+
+				-- X-value remains is equal on both ends:
+				result.A.x := AP.position.x;
+				result.B.x := AP.position.x;
+
+  
+			when ORIENT_SLOPING =>
+				raise constraint_error; -- CS should never happen
+		end case;
+		
+
+		return result;
+	end merge_lines;
+	
+
+	
 	
 	
 	
