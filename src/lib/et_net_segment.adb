@@ -760,10 +760,11 @@ package body et_net_segment is
 		return type_net_segment
 	is
 		result : type_net_segment;
-	begin
-		-- CS 
-		null;
 
+		line : type_line;
+	begin
+		line := type_line (merge_lines (primary, secondary));
+		
 		return result;
 	end;
 
