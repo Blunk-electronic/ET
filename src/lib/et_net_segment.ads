@@ -93,6 +93,14 @@ package et_net_segment is
 		AB_end	: in type_start_end_point)
 		return boolean;
 	
+
+	-- Returns the status of a junction at the specified
+	-- NSWE end of a segment:
+	function get_junction_status (
+		segment		: in type_net_segment;
+		NSWE_end	: in type_direction_NSWE)
+		return boolean;
+
 	
 	-- Returns true if the given netchanger port
 	-- is connected with the given segment:

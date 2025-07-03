@@ -95,6 +95,26 @@ package body et_net_segment is
 
 
 	
+
+	function get_junction_status (
+		segment		: in type_net_segment;
+		NSWE_end	: in type_direction_NSWE)
+		return boolean
+	is
+		result : boolean;
+		AB_end : type_start_end_point;
+	begin
+		-- Map from the given NSWE end to the AB end:
+		AB_end := get_NSWE_end (segment, NSWE_end);
+
+		-- Get the junction statuss on the AB end:
+		result := get_junction_status (segment, AB_end);
+		return result;
+	end get_junction_status;
+	
+
+
+	
 	
 
 	function is_connected (
@@ -462,6 +482,7 @@ package body et_net_segment is
 
 
 	
+	
 
 	procedure merge_segments (
 		primary			: in out type_net_segment;
@@ -600,75 +621,147 @@ package body et_net_segment is
 	is
 		result : type_net_segment;
 
-		line : type_line;
-
 		-- Get the orientation of the two lines.
 		-- Both should be equal and none of the should be sloping:
 		OP : constant type_line_orientation := get_orientation (primary);
 		OS : constant type_line_orientation := get_orientation (secondary);
 
+
+
+		procedure precheck is begin
+			-- If any of the given lines is a slope then
+			-- raise an exception:
+			if OP = ORIENT_SLOPING or OS = ORIENT_SLOPING then
+				raise constraint_error;
+			end if;
+
+			-- If the orientation of the lines differs, then
+			-- raise an exception:
+			if OP /= OS then
+				raise constraint_error;
+			end if;
+		end precheck;
+
 		
-		-- Ports at the A and B end of the primary segment:
-		PPA, PPB : type_ports;
 		
-		-- Ports at the A and B end of the secondary segment:
-		PSA, PSB : type_ports;
 
 		-- Ports at A and B end of the resulting segment:
 		PRA, PRB : type_ports;
+
+
+		procedure merge_ports is 
+			-- Ports at the A and B end of the primary segment:
+			PPA, PPB : type_ports;
+			
+			-- Ports at the A and B end of the secondary segment:
+			PSA, PSB : type_ports;
+		begin
+			-- The orientation determines whether to collect
+			-- the ports from the west and east ends or
+			-- from the south and north ends:
+			case OP is
+				when ORIENT_HORIZONTAL =>
+
+					-- Collect the ports from the west ends:
+					PPA := get_ports (primary,   DIR_WEST);
+					PSA := get_ports (secondary, DIR_WEST);
+					
+					-- Collect the ports from the east ends:
+					PPB := get_ports (primary,   DIR_EAST);
+					PSB := get_ports (secondary, DIR_EAST);
+					
+					
+				when ORIENT_VERTICAL =>
+					-- Collect the ports from the south ends:
+					PPA := get_ports (primary,   DIR_SOUTH);
+					PSA := get_ports (secondary, DIR_SOUTH);
+
+					-- Collect the ports from the north ends:
+					PPB := get_ports (primary,  DIR_NORTH);
+					PSB := get_ports (secondary, DIR_NORTH);
+
+					
+				when ORIENT_SLOPING =>
+					raise constraint_error; -- CS should never happen
+			end case;
+
+
+			-- Union the ports on the A end:
+			PRA := merge_ports (PPA, PSA);
+
+			-- Union the ports on the B end:
+			PRB := merge_ports (PPB, PSB);	
+			
+		end merge_ports;
+
+
+		
+		
+		-- Junction status at A and B end of the resulting segment:
+		JRA, JRB : boolean;
+
+		
+		procedure merge_junctions is		
+			-- Junction status at the A and B end of the primary segment;
+			JPA, JPB : boolean;
+
+			-- Junction status at the A and B end of the secondary segment;
+			JSA, JSB : boolean;
+		begin
+			-- The orientation determines whether to collect
+			-- the ports from the west and east ends or
+			-- from the south and north ends:
+			case OP is
+				when ORIENT_HORIZONTAL =>
+					-- Get the junction status from the west ends:
+					JPA := get_junction_status (primary,   DIR_WEST);
+					JSA := get_junction_status (secondary, DIR_WEST);
+
+					-- Get the junction status from the east ends:
+					JPB := get_junction_status (primary,   DIR_EAST);
+					JSB := get_junction_status (secondary, DIR_EAST);
+
+					
+					
+				when ORIENT_VERTICAL =>
+					-- Get the junction status from the south ends:
+					JPA := get_junction_status (primary,   DIR_SOUTH);
+					JSA := get_junction_status (secondary, DIR_SOUTH);
+
+					-- Get the junction status from the north ends:
+					JPB := get_junction_status (primary,   DIR_NORTH);
+					JSB := get_junction_status (secondary, DIR_NORTH);
+
+					
+				when ORIENT_SLOPING =>
+					raise constraint_error; -- CS should never happen
+			end case;
+
+			-- Union the junctions on the A end:
+			JRA := JPA or JSA;
+
+			-- Union the junctions on the B end:
+			JRB := JPB or JSB;
+			
+		end merge_junctions;
+
+		
+
+		line : type_line;
 		
 	begin
-		-- If any of the given lines is a slope then
-		-- raise an exception:
-		if OP = ORIENT_SLOPING or OS = ORIENT_SLOPING then
-			raise constraint_error;
-		end if;
+		precheck;
+		
+		merge_ports;
 
-		-- If the orientation of the lines differs, then
-		-- raise an exception:
-		if OP /= OS then
-			raise constraint_error;
-		end if;
-
-		-- The orientation determines whether to collect
-		-- the ports from the west and east ends or
-		-- from the south and north ends:
-		case OP is
-			when ORIENT_HORIZONTAL =>
-				-- Collect the ports from the west ends:
-				PPA := get_ports (primary,   DIR_WEST);
-				PSA := get_ports (secondary, DIR_WEST);
-				
-				-- Collect the ports from the east ends:
-				PPB := get_ports (primary,   DIR_EAST);
-				PSB := get_ports (secondary, DIR_EAST);
-
-				
-			when ORIENT_VERTICAL =>
-				-- Collect the ports from the south ends:
-				PPA := get_ports (primary,   DIR_SOUTH);
-				PSA := get_ports (secondary, DIR_SOUTH);
-
-				-- Collect the ports from the north ends:
-				PPB := get_ports (primary,  DIR_NORTH);
-				PSB := get_ports (secondary, DIR_NORTH);
-
-				
-			when ORIENT_SLOPING =>
-				raise constraint_error; -- CS should never happen
-		end case;
-
-
-		-- Union the ports:
-		PRA := merge_ports (PPA, PSA);
-
-		-- Union the ports:
-		PRB := merge_ports (PPB, PSB);
-
-
+		merge_junctions;
+		
 		line := type_line (merge_lines (primary, secondary));
 
-		result := (line with ports => (PRA, PRB), others => <>);
+		result := (line with 
+				   ports => (PRA, PRB), 
+				   junctions => (JRA, JRB), 
+				   others => <>);
 
 		return result;
 	end merge_segments;
