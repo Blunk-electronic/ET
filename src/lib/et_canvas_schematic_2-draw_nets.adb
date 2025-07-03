@@ -45,6 +45,7 @@
 with et_text;								use et_text;
 with et_alignment;
 with et_nets;								use et_nets;
+with et_net_junction;						use et_net_junction;
 with et_net_segment;						use et_net_segment;
 with et_net_labels;							use et_net_labels;
 with et_net_names;							use et_net_names;

@@ -42,17 +42,6 @@ with ada.text_io;				use ada.text_io;
 package body et_net_segment is
 	
 
-	procedure junction_in_sloping_segment (
-		point : in type_object_position) 
-	is begin
-		log (ERROR, "Junction not allowed in a sloping net segment at" 
-			 & to_string (point),
-			 console => true);
-		raise constraint_error;
-	end;
-
-	
-
 	function to_net_segment (
 		A, B : in type_vector_model)
 		return type_net_segment

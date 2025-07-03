@@ -46,6 +46,7 @@ with et_logging;				use et_logging;
 with et_net_names;				use et_net_names;
 with et_net_labels;				use et_net_labels;
 with et_net_ports;				use et_net_ports;
+with et_net_junction;			use et_net_junction;
 with et_netlists;
 with et_primitive_objects;		use et_primitive_objects;
 
@@ -54,37 +55,6 @@ package et_net_segment is
 
 	use pac_geometry_2;
 
-	
-
-	
--- JUNCTIONS:
-	
-	procedure junction_in_sloping_segment (
-		point : in type_object_position);
-	
-	
-	-- A net junction is where segments are connected with each other.
-	type type_junctions is record
-		A	: boolean := false; -- CS dedicated type like type_junction_active 
-								-- and value like JUNCTION_ON, JUNCTION_OFF
-		B	: boolean := false;
-	end record;
-
-	
-	-- GUI relevant only: In the schematic editor, the junction is drawn as follows:
-	junction_radius : constant type_distance_positive := 0.5;
-	
-
-	
-	junction_symbol : type_circle := type_circle (to_circle (
-			center	=> origin,
-			radius 	=> junction_radius));
-
-
-
-
-
--- SEGMENTS:
 	
 	type type_net_segment is new type_line with record		
 		labels		: pac_net_labels.list;

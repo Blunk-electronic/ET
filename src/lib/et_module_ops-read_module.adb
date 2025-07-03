@@ -56,6 +56,7 @@ with et_axes;						use et_axes;
 with et_module_instance;			use et_module_instance;
 with et_nets;
 with et_net_names;					use et_net_names;
+with et_net_junction;
 with et_net_ports;
 with et_net_segment;
 with et_net_labels;
@@ -760,7 +761,7 @@ is
 	
 	net_segments	: et_net_segment.pac_net_segments.list;
 	net_segment		: et_net_segment.type_net_segment;
-	net_junctions	: et_net_segment.type_junctions;
+	net_junctions	: et_net_junction.type_junctions;
 	net_tag_labels	: et_net_labels.type_tag_labels;
 
 	

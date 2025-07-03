@@ -48,6 +48,7 @@ with gnat.source_info;
 
 with et_nets;
 with et_net_labels;
+with et_net_junction;
 with et_net_ports;
 with et_net_segment;
 with et_net_class;
@@ -3007,9 +3008,9 @@ package body et_kicad_to_native is
 				-- are reduced to a single junction (without warning).
 				-- CS: NOTE: Misleading warnings may be issued here due to improper junction processing
 				-- in procedure et_kicad.schematic.process_junctions.
-					return et_net_segment.type_junctions 
+					return et_net_junction.type_junctions 
 				is
-					junctions : et_net_segment.type_junctions; -- to be returned
+					junctions : et_net_junction.type_junctions; -- to be returned
 
 					use et_schematic_coordinates.pac_geometry_2;
 					use et_kicad_coordinates;
