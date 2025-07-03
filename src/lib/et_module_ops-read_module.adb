@@ -56,6 +56,7 @@ with et_axes;						use et_axes;
 with et_module_instance;			use et_module_instance;
 with et_nets;
 with et_net_names;					use et_net_names;
+with et_net_ports;
 with et_net_segment;
 with et_net_labels;
 with et_net_class;
@@ -895,16 +896,16 @@ is
 
 
 	
-	net_device_port : et_net_segment.type_device_port;
+	net_device_port : et_net_ports.type_device_port;
 	-- net_device_ports : et_net_segment.pac_device_ports.set;
 
-	net_submodule_port : et_net_segment.type_submodule_port;
+	net_submodule_port : et_net_ports.type_submodule_port;
 	-- net_submodule_ports : et_net_segment.pac_submodule_ports.set;
 
 	net_netchanger_port : et_netlists.type_port_netchanger;
 	-- net_netchanger_ports : et_netlists.pac_netchanger_ports.set;
 
-	net_segment_ports : et_net_segment.type_ports_AB;
+	net_segment_ports : et_net_ports.type_ports_AB;
 	
 	
 	-- read port parameters

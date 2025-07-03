@@ -45,6 +45,7 @@ with et_board_coordinates;
 with et_generic_stacks;
 with et_device_appearance;
 with et_package_names;
+with et_net_ports;
 with et_module_ops;
 with et_schematic_ops.units;		use et_schematic_ops.units;
 with et_schematic_ops.nets;
@@ -2285,7 +2286,7 @@ package body et_schematic_ops.submodules is
 				ports : type_ports;
 				port : type_port_netchanger;
 
-				use et_net_segment.pac_submodule_ports;
+				use et_net_ports.pac_submodule_ports;
 				use pac_device_ports;
 				use pac_netchanger_ports;
 				use et_schematic_ops.nets;

@@ -48,6 +48,7 @@ with gnat.source_info;
 
 with et_nets;
 with et_net_labels;
+with et_net_ports;
 with et_net_segment;
 with et_net_class;
 with et_units;
@@ -2879,7 +2880,7 @@ package body et_kicad_to_native is
 				net_segment_native : et_net_segment.type_net_segment;
 
 				use et_net_labels.pac_net_labels;
-				use et_net_segment.pac_device_ports;
+				use et_net_ports.pac_device_ports;
 
 				
 				-- Copies from the given kicad net segment all simple and tag labels and returns
@@ -3052,14 +3053,14 @@ package body et_kicad_to_native is
 				function read_ports (
 					segment : in et_kicad.schematic.type_net_segment;
 					AB_end	: in et_schematic_coordinates.pac_geometry_2.type_start_end_point)
-					return et_net_segment.pac_device_ports.set 
+					return et_net_ports.pac_device_ports.set 
 				is
 					use et_kicad.schematic;
 					use et_kicad.schematic.pac_ports_with_reference;
 					port_cursor_kicad	: pac_ports_with_reference.cursor;
 					all_ports_of_net	: pac_ports_with_reference.set;
 					
-					ports_of_segment : et_net_segment.pac_device_ports.set; -- to be returned
+					ports_of_segment : et_net_ports.pac_device_ports.set; -- to be returned
 
 					use et_sheets;
 					use et_schematic_coordinates;
@@ -3126,7 +3127,7 @@ package body et_kicad_to_native is
 										when A =>
 											if get_A (line) = position then
 												
-												et_net_segment.pac_device_ports.insert (
+												et_net_ports.pac_device_ports.insert (
 													container	=> ports_of_segment,
 													new_item	=> (
 														device_name	=> element (port_cursor_kicad).reference,
@@ -3138,7 +3139,7 @@ package body et_kicad_to_native is
 										when B =>
 											if get_B (line) = position then
 
-												et_net_segment.pac_device_ports.insert (
+												et_net_ports.pac_device_ports.insert (
 													container	=> ports_of_segment,
 													new_item	=> (
 														device_name	=> element (port_cursor_kicad).reference,

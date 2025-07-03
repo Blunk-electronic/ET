@@ -51,6 +51,7 @@ with et_netlists;
 with et_pcb;
 with et_commit;
 with et_sheets;					use et_sheets;
+with et_net_ports;				use et_net_ports;
 with et_net_segment;			use et_net_segment;
 with et_object_status;			use et_object_status;
 

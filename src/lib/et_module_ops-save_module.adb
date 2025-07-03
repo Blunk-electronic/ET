@@ -54,6 +54,7 @@ with et_design_rules_board;			use et_design_rules_board;
 with et_primitive_objects;			use et_primitive_objects;
 with et_nets;
 with et_net_names;
+with et_net_ports;
 with et_net_segment;
 with et_net_labels;
 with et_net_class;
@@ -502,6 +503,7 @@ is
 
 			
 			procedure query_segments (strand : in type_strand) is
+				use et_net_ports;
 				use et_net_segment;
 				use pac_net_segments;
 				segment_cursor : pac_net_segments.cursor := strand.segments.first;

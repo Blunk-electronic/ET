@@ -47,7 +47,7 @@ with et_board_ops.board_contour;	use et_board_ops.board_contour;
 with et_thermal_relief;				use et_thermal_relief;
 with et_devices_electrical; 		use et_devices_electrical;
 with et_devices_non_electrical;		use et_devices_non_electrical;
-with et_net_segment;
+with et_net_ports;
 
 
 separate (et_board_ops.conductors)
@@ -270,7 +270,7 @@ is
 			
 			result : pac_polygon_list.list; -- a list of polygons to be returned
 
-			use et_net_segment;
+			use et_net_ports;
 			use pac_device_ports;
 			ports : type_ports;
 
