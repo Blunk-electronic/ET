@@ -133,6 +133,8 @@ package et_net_ports is
 		return boolean;
 
 
+	-- These are the ports which may exist
+	-- at the A or B end of a net segment:
 	type type_ports_AB is record
 		A, B : type_ports;
 	end record;
