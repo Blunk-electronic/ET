@@ -51,6 +51,7 @@ with et_logging;				use et_logging;
 with et_net_names;				use et_net_names;
 with et_net_labels;				use et_net_labels;
 with et_netlists;
+with et_primitive_objects;		use et_primitive_objects;
 
 
 package et_net_segment is
@@ -61,6 +62,8 @@ package et_net_segment is
 
 
 -- PORTS:
+
+	-- CS separate package et_net_ports ?
 	
 	
 	-- This is the port of a device as it appears in a net segment:
@@ -104,13 +107,21 @@ package et_net_segment is
 
 
 	
-	type type_ports is record
+	type type_ports is record -- CS rename to type_port_group ?
 		devices		: pac_device_ports.set;
 		submodules	: pac_submodule_ports.set;
 		netchangers	: et_netlists.pac_netchanger_ports.set;
 	end record;
 
 
+
+	-- Merges the given two port groups to a
+	-- single one:
+	function merge_ports (
+		right, left : in type_ports)
+		return type_ports;
+
+	
 
 	-- Returns true if the given netchanger port
 	-- is among the given ports:
@@ -278,6 +289,15 @@ package et_net_segment is
 		AB_end	: in type_start_end_point)				   
 		return type_ports;
 
+
+	-- Returns the ports that are connected with
+	-- the given NSWE end of a segment:
+	function get_ports (
+		segment 	: in type_net_segment;
+		NSWE_end	: in type_direction_NSWE)				   
+		return type_ports;
+
+	
 
 	-- Returns the number of ports connected with
 	-- the given end of a segment:

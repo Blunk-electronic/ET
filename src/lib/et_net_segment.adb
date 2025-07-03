@@ -135,6 +135,27 @@ package body et_net_segment is
 
 
 
+
+	function merge_ports (
+		right, left : in type_ports)
+		return type_ports
+	is
+		use pac_device_ports;
+		use pac_submodule_ports;
+		use et_netlists.pac_netchanger_ports;
+		
+		result : type_ports := left;
+
+	begin
+		union (result.devices, right.devices);
+		union (result.submodules, right.submodules);
+		union (result.netchangers, right.netchangers);
+		
+		return result;
+	end merge_ports;
+
+
+	
 	
 
 	function in_ports (
@@ -516,7 +537,29 @@ package body et_net_segment is
 		end case;
 	end;
 
+	
 
+
+	function get_ports (
+		segment 	: in type_net_segment;
+		NSWE_end	: in type_direction_NSWE)				   
+		return type_ports
+	is
+		result : type_ports;
+		AB_end : type_start_end_point;
+	begin
+		-- Map from the given NSWE end to the AB end:
+		AB_end := get_NSWE_end (segment, NSWE_end);
+
+		-- Get the ports on the AB end:
+		result := get_ports (segment, AB_end);
+		return result;
+	end get_ports;
+	
+
+	
+
+	
 
 	function get_port_count (
 		segment : in type_net_segment;
@@ -762,11 +805,77 @@ package body et_net_segment is
 		result : type_net_segment;
 
 		line : type_line;
-	begin
-		line := type_line (merge_lines (primary, secondary));
+
+		-- Get the orientation of the two lines.
+		-- Both should be equal and none of the should be sloping:
+		OP : constant type_line_orientation := get_orientation (primary);
+		OS : constant type_line_orientation := get_orientation (secondary);
+
 		
+		-- Ports at the A and B end of the primary segment:
+		PPA, PPB : type_ports;
+		
+		-- Ports at the A and B end of the secondary segment:
+		PSA, PSB : type_ports;
+
+		-- Ports at A and B end of the resulting segment:
+		PRA, PRB : type_ports;
+		
+	begin
+		-- If any of the given lines is a slope then
+		-- raise an exception:
+		if OP = ORIENT_SLOPING or OS = ORIENT_SLOPING then
+			raise constraint_error;
+		end if;
+
+		-- If the orientation of the lines differs, then
+		-- raise an exception:
+		if OP /= OS then
+			raise constraint_error;
+		end if;
+
+		-- The orientation determines whether to collect
+		-- the ports from the west and east ends or
+		-- from the south and north ends:
+		case OP is
+			when ORIENT_HORIZONTAL =>
+				-- Collect the ports from the west ends:
+				PPA := get_ports (primary,   DIR_WEST);
+				PSA := get_ports (secondary, DIR_WEST);
+				
+				-- Collect the ports from the east ends:
+				PPB := get_ports (primary,   DIR_EAST);
+				PSB := get_ports (secondary, DIR_EAST);
+
+				
+			when ORIENT_VERTICAL =>
+				-- Collect the ports from the south ends:
+				PPA := get_ports (primary,   DIR_SOUTH);
+				PSA := get_ports (secondary, DIR_SOUTH);
+
+				-- Collect the ports from the north ends:
+				PPB := get_ports (primary,  DIR_NORTH);
+				PSB := get_ports (secondary, DIR_NORTH);
+
+				
+			when ORIENT_SLOPING =>
+				raise constraint_error; -- CS should never happen
+		end case;
+
+
+		-- Union the ports:
+		PRA := merge_ports (PPA, PSA);
+
+		-- Union the ports:
+		PRB := merge_ports (PPB, PSB);
+
+
+		line := type_line (merge_lines (primary, secondary));
+
+		result := (line with ports => (PRA, PRB), others => <>);
+
 		return result;
-	end;
+	end merge_segments;
 
 	
 	
