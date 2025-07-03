@@ -98,12 +98,17 @@ package et_geometry_2a is
 	package pac_distances_sorting is new pac_distances.generic_sorting;
 
 
-	-- Returns true if the given value is 
-	-- greater or equal than lower AND if
-	-- less or equal upper:
+	-- Tests whether the given value is in the given range.
+	-- 1. If include_limits is true then:
+	--    Returns true if the given value is greater or equal than lower 
+	--    AND if less or equal upper.
+	-- 2. If include_limits is false then:
+	--    Returns true if the given value is greater than lower 
+	--    AND if less than upper.
 	function in_range (
 		lower, upper	: in type_distance;
-		value			: in type_distance)
+		value			: in type_distance;
+		include_limits	: in boolean)
 		return boolean;
 
 	
@@ -797,8 +802,8 @@ package et_geometry_2a is
 	-- If the line orientation is sloping then all four ends
 	-- can be inquired:
 	function get_NSWE_end (
-		line	: in type_line;
-		side	: in type_direction_NSWE)
+		line		: in type_line;
+		NSWE_end	: in type_direction_NSWE)
 		return type_start_end_point;
 	
 	

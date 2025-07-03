@@ -126,14 +126,25 @@ package body et_geometry_2a is
 
 	function in_range (
 		lower, upper	: in type_distance;
-		value			: in type_distance)
+		value			: in type_distance;
+		include_limits	: in boolean)
 		return boolean
 	is begin
-		if value >= lower and value <= upper then
-			return true;
-		else
-			return false;
-		end if;
+		case include_limits is
+			when TRUE =>
+				if value >= lower and value <= upper then
+					return true;
+				else
+					return false;
+				end if;
+
+			when FALSE =>
+				if value > lower and value < upper then
+					return true;
+				else
+					return false;
+				end if;
+		end case;
 	end in_range;
 
 
@@ -1526,8 +1537,8 @@ end;
 	
 
 	function get_NSWE_end (
-		line	: in type_line;
-		side	: in type_direction_NSWE)
+		line		: in type_line;
+		NSWE_end	: in type_direction_NSWE)
 		return type_start_end_point
 	is
 		result : type_start_end_point := A;
@@ -1536,7 +1547,7 @@ end;
 
 		
 		procedure test_x is begin
-			case side is
+			case NSWE_end is
 				when DIR_WEST =>
 					if line.A.x < line.B.x then -- A is west of B
 						result := A;
@@ -1558,7 +1569,7 @@ end;
 
 
 		procedure test_y is begin
-			case side is
+			case NSWE_end is
 				when DIR_NORTH =>
 					if line.A.y > line.B.y then -- A is north of B
 						result := A;
@@ -1580,7 +1591,7 @@ end;
 
 
 		procedure test_xy is begin
-			case side is
+			case NSWE_end is
 				when DIR_WEST =>
 					if line.A.x < line.B.x then -- A is west of B
 						result := A;
@@ -2202,12 +2213,12 @@ end;
 					if L1_Ay = L2_Ay then
 
 						-- CASE H1: Line 1 runs from left to right:
-						if in_range (lower => L1_Ax, upper => L1_Bx, value => L2_Ax)
-						or in_range (lower => L1_Ax, upper => L1_Bx, value => L2_Bx)
+						if in_range (lower => L1_Ax, upper => L1_Bx, value => L2_Ax, include_limits => FALSE)
+						or in_range (lower => L1_Ax, upper => L1_Bx, value => L2_Bx, include_limits => FALSE)
 
 						-- CASE H2: Line 1 runs from right to left:					
-						or in_range (lower => L1_Bx, upper => L1_Ax, value => L2_Ax)
-						or in_range (lower => L1_Bx, upper => L1_Ax, value => L2_Bx)
+						or in_range (lower => L1_Bx, upper => L1_Ax, value => L2_Ax, include_limits => FALSE)
+						or in_range (lower => L1_Bx, upper => L1_Ax, value => L2_Bx, include_limits => FALSE)
 
 						then
 							result := true;
@@ -2220,12 +2231,12 @@ end;
 					if L1_Ax = L2_Ax then
 
 						-- CASE V1: Line 1 runs from down to up:
-						if in_range (lower => L1_Ay, upper => L1_By, value => L2_Ay)
-						or in_range (lower => L1_Ay, upper => L1_By, value => L2_By)
+						if in_range (lower => L1_Ay, upper => L1_By, value => L2_Ay, include_limits => FALSE)
+						or in_range (lower => L1_Ay, upper => L1_By, value => L2_By, include_limits => FALSE)
 
 						-- CASE V2: Line 1 runs from up to down:					
-						or in_range (lower => L1_By, upper => L1_Ay, value => L2_Ay)
-						or in_range (lower => L1_By, upper => L1_Ay, value => L2_By)
+						or in_range (lower => L1_By, upper => L1_Ay, value => L2_Ay, include_limits => FALSE)
+						or in_range (lower => L1_By, upper => L1_Ay, value => L2_By, include_limits => FALSE)
 
 						then
 							result := true;
@@ -2415,7 +2426,7 @@ end;
 	is
 		result : type_line;
 
-		-- Get the orientation of the two segments.
+		-- Get the orientation of the two lines:
 		OP : constant type_line_orientation := get_orientation (primary);
 		OS : constant type_line_orientation := get_orientation (secondary);
 
