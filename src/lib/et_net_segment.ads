@@ -101,6 +101,23 @@ package et_net_segment is
 		NSWE_end	: in type_direction_NSWE)
 		return boolean;
 
+
+
+	-- Returns the status of a tag label at the specified
+	-- end of a segment:
+	function get_tag_label_status (
+		segment	: in type_net_segment;
+		AB_end	: in type_start_end_point)
+		return boolean;
+
+	
+	-- Returns the status of a tag label at the specified
+	-- NSWE end of a segment:
+	function get_tag_label_status (
+		segment		: in type_net_segment;
+		NSWE_end	: in type_direction_NSWE)
+		return boolean;
+
 	
 	-- Returns true if the given netchanger port
 	-- is connected with the given segment:

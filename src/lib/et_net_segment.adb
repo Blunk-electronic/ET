@@ -114,6 +114,40 @@ package body et_net_segment is
 	
 
 
+
+
+	function get_tag_label_status (
+		segment	: in type_net_segment;
+		AB_end	: in type_start_end_point)
+		return boolean
+	is begin
+		case AB_end is
+			when A => return is_active (segment.tag_labels.A);
+			when B => return is_active (segment.tag_labels.B);
+		end case;
+	end;
+
+
+
+	
+
+	function get_tag_label_status (
+		segment		: in type_net_segment;
+		NSWE_end	: in type_direction_NSWE)
+		return boolean
+	is
+		result : boolean;
+		AB_end : type_start_end_point;
+	begin
+		-- Map from the given NSWE end to the AB end:
+		AB_end := get_NSWE_end (segment, NSWE_end);
+
+		-- Get the junction statuss on the AB end:
+		result := get_tag_label_status (segment, AB_end);
+		return result;
+	end get_tag_label_status;
+
+	
 	
 	
 
@@ -747,6 +781,7 @@ package body et_net_segment is
 
 
 		
+		
 		-- The simple labels of the resulting segment:
 		LR : pac_net_labels.list;
 
@@ -763,6 +798,8 @@ package body et_net_segment is
 			LR := primary_labels;
 		end merge_simple_labels;
 			
+
+
 		
 		line : type_line;
 		
