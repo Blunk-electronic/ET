@@ -245,6 +245,26 @@ package body et_net_labels is
 	
 
 
+	function get_direction (
+		label	: in type_net_label_tag)
+		return type_net_label_direction
+	is begin
+		return label.direction;
+	end;
+
+
+	function get_direction (
+		label	: in type_net_label_tag)
+		return string
+	is begin
+		return to_string (get_direction (label));
+	end;
+
+
+	
+
+	
+
 	procedure modify_status (
 		label 		: in out type_net_label_tag;
 		operation	: in type_status_operation)

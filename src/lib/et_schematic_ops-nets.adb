@@ -5667,7 +5667,6 @@ package body et_schematic_ops.nets is
 							module_cursor, net_name, position, log_threshold + 1);
 
 						t : type_net_label_tag;
-						r : type_rotation_relative;
 					begin
 						-- A tag label can be attached to a stub only.
 						-- So we test wheter the given position matches either
@@ -5680,9 +5679,7 @@ package body et_schematic_ops.nets is
 								-- Enable the tag label on the A end:
 								log (text => "attach label to A end of segment", level => log_threshold + 2);
 								
-								-- Derive the label rotation from the stub direction:
-								r := to_label_rotation (stub.direction);
-								t := (active => true, rotation => r, direction => direction, others => <>); -- CS size, ...
+								t := (active => true, direction => direction, others => <>); -- CS size, ...
 								segment.tag_labels.A := t;
 							end if;
 
@@ -5690,9 +5687,7 @@ package body et_schematic_ops.nets is
 								-- Enable the tag label on the B end:
 								log (text => "attach label to B end of segment", level => log_threshold + 2);
 								
-								-- Derive the label rotation from the stub direction:
-								r := to_label_rotation (stub.direction);
-								t := (active => true, rotation => r, direction => direction, others => <>); -- CS size, ...
+								t := (active => true, direction => direction, others => <>); -- CS size, ...
 								segment.tag_labels.B := t;
 							end if;
 

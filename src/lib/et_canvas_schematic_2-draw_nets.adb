@@ -273,6 +273,11 @@ procedure draw_nets is
 					-- depending on which end has a tag lablel:
 					position : type_vector_model;
 
+					-- The rotation of the tag label must be deduced
+					-- from the orientation of the net segment:
+					rotation : type_rotation_relative := 0.0;
+					-- CS currently fixed to zero.
+					
 					
 					-- This procedure draws a tag label:
 					procedure draw_tag (label : in type_net_label_tag) is
@@ -321,7 +326,7 @@ procedure draw_nets is
 						make_box;
 
 						
-						if label.rotation = zero_rotation then
+						if rotation = zero_rotation then
 					
 							box.position := set (
 								get_x (position), 
@@ -335,7 +340,7 @@ procedure draw_nets is
 						end if;
 
 						
-						if label.rotation = 90.0 then
+						if rotation = 90.0 then
 
 							box.position := set (
 								get_x (position) - box.height * 0.5,
@@ -351,7 +356,7 @@ procedure draw_nets is
 						end if;
 
 						
-						if label.rotation = 180.0 then
+						if rotation = 180.0 then
 
 							box.position := set (
 								get_x (position) - box.width,
@@ -365,7 +370,7 @@ procedure draw_nets is
 						end if;
 
 						
-						if label.rotation = -90.0 then
+						if rotation = -90.0 then
 
 							box.position := set (
 								get_x (position) - box.height * 0.5,

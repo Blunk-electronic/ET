@@ -215,6 +215,12 @@ package et_net_labels is
 -- TAG LABEL:	
 
 	
+	-- A tag label can only be attached to a stub of a net, means to a 
+	-- dead end of a net segment.
+	-- The rotation of the label depends on the direction of the stub.
+	-- However, the shown text inside the label (net name and coordinates) 
+	-- is always readable from the front or from the right.
+	
 	type type_net_label_tag (active : boolean := false) is record
 	-- is new type_net_label_base with record
 		case active is
@@ -228,19 +234,24 @@ package et_net_labels is
 				
 				direction	: type_net_label_direction := net_label_direction_default;
 
-				-- A tag label can only be attached to a stub of a net, means to a dead end of a net segment.
-				-- The rotation of the label should depend on the direction of the stub. 
-				-- The rotation is about its own position. 
-				-- However, the shown text inside the label (net name and coordinates) is always readable
-				-- from the front or from the right.
-				rotation	: type_rotation_relative := 0.0;
-				-- CS probably no need ?
-
 			when FALSE => null;
 		end case;
 	end record;
 
 
+
+	function get_direction (
+		label	: in type_net_label_tag)
+		return type_net_label_direction;
+
+
+	function get_direction (
+		label	: in type_net_label_tag)
+		return string;
+
+
+
+	
 	
 	procedure modify_status (
 		label 		: in out type_net_label_tag;

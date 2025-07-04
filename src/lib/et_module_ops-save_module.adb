@@ -549,9 +549,7 @@ is
 					procedure write_label (l : in type_net_label_tag) is begin
 						if is_active (l) then
 							write (keyword => keyword_tag_label, 
-								parameters => keyword_start 
-									& space & get_direction (l)
-									& space & get_rotation (l));
+								parameters => keyword_start & space & get_direction (l));
 						end if;
 					end write_label;
 

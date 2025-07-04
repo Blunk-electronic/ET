@@ -743,7 +743,7 @@ package body et_net_segment is
 			JSA, JSB : boolean;
 		begin
 			-- The orientation determines whether to collect
-			-- the ports from the west and east ends or
+			-- the junctions from the west and east ends or
 			-- from the south and north ends:
 			case OP is
 				when ORIENT_HORIZONTAL =>
@@ -800,6 +800,60 @@ package body et_net_segment is
 			
 
 
+
+
+		-- Tag label status at A and B end of the resulting segment:
+		TRA, TRB : boolean;
+
+		
+		procedure merge_tag_labels is		
+			-- Label status at the A and B end of the primary segment;
+			TPA, TPB : boolean;
+
+			-- Label status at the A and B end of the secondary segment;
+			TSA, TSB : boolean;
+		begin
+			-- The orientation determines whether to collect
+			-- the tag labels from the west and east ends or
+			-- from the south and north ends:
+			case OP is
+				when ORIENT_HORIZONTAL =>
+					-- Get the label status from the west ends:
+					TPA := get_tag_label_status (primary,   DIR_WEST);
+					TSA := get_tag_label_status (secondary, DIR_WEST);
+
+					-- Get the label status from the east ends:
+					TPB := get_tag_label_status (primary,   DIR_EAST);
+					TSB := get_tag_label_status (secondary, DIR_EAST);
+
+					
+					
+				when ORIENT_VERTICAL =>
+					-- Get the label status from the south ends:
+					TPA := get_tag_label_status (primary,   DIR_SOUTH);
+					TSA := get_tag_label_status (secondary, DIR_SOUTH);
+
+					-- Get the label status from the north ends:
+					TPB := get_tag_label_status (primary,   DIR_NORTH);
+					TSB := get_tag_label_status (secondary, DIR_NORTH);
+
+					
+				when ORIENT_SLOPING =>
+					raise constraint_error; -- CS should never happen
+			end case;
+
+			-- Union the label status on the A end:
+			TRA := TPA or TSA;
+
+			-- Union the label status on the B end:
+			TRB := TPB or TSB;
+			
+		end merge_tag_labels;
+
+
+
+
+		
 		
 		line : type_line;
 		
