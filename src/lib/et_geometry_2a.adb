@@ -2202,6 +2202,15 @@ end;
 
 		
 	begin
+		-- If both lines are equal, then they do overlap.
+		-- The orientation does not matter in this case:
+		if line_1 = line_2 then
+			return true;
+		end if;
+
+		-- For further tests, the orientation must not be
+		-- sloping. If any line is a slope then we regard them
+		-- as not overlapping:
 		if O1 = ORIENT_SLOPING or O2 = ORIENT_SLOPING then
 			return false;
 		end if;

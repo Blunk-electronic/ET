@@ -1119,7 +1119,9 @@ package et_geometry_2a is
 
 	-- Returns true if the given lines overlap each other
 	-- and if they have the same orientation.
-	-- The return is always false if any of the given lines
+	-- If both lines are equal in their A and B ends, then
+	-- we regard them as overlapping.
+	-- Otherwise, the return is always false if any of the given lines
 	-- has orientation ORIENT_SLOPING. In this case we assume
 	-- they are not overlapping:
 	function lines_overlap (
