@@ -543,14 +543,21 @@ is
 
 
 				
-				procedure query_tag_labels (segment : in type_net_segment) is begin
-					if is_active (segment.tag_labels.A) then
-						write (keyword => keyword_tag_label, parameters => keyword_start); -- CS direction and rotation
-					end if;
+				procedure query_tag_labels (segment : in type_net_segment) is 
 
-					if is_active (segment.tag_labels.B) then
-						write (keyword => keyword_tag_label, parameters => keyword_end); -- CS direction and rotation
-					end if;
+					-- Writes the given tag label:
+					procedure write_label (l : in type_net_label_tag) is begin
+						if is_active (l) then
+							write (keyword => keyword_tag_label, 
+								parameters => keyword_start 
+									& space & get_direction (l)
+									& space & get_rotation (l));
+						end if;
+					end write_label;
+
+				begin
+					write_label (segment.tag_labels.A);
+					write_label (segment.tag_labels.B);
 				end query_tag_labels;
 
 
