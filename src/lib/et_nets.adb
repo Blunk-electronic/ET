@@ -148,10 +148,14 @@ package body et_nets is
 
 
 	procedure optimize_strand (
-		strand	: in out type_strand)
+		strand			: in out type_strand;
+		log_threshold	: in type_log_level)
 	is
 		segments_have_been_merged : boolean := true;
 
+		-- The optimization process may require several passes.
+		-- In order to avoid a forever-loop this counter is required.
+		-- CS: Increase the upper limit if required:
 		subtype type_safety_counter is natural range 0 .. 10;
 		safety_counter : type_safety_counter := 0;
 		
@@ -201,15 +205,19 @@ package body et_nets is
 			end query_primary;
 
 			
-		begin
+		begin			
 			-- Iterate the primary segments. Abort when an overlap has been found:
 			iterate (strand.segments, query_primary'access, proceed'access);
 
 			-- If no overlap has been found, then the proceed-flag is still
 			-- set. So we notify the caller that nothing has been merged:
 			if proceed then
+				log (text => "nothing to do", level => log_threshold + 1);
+				
 				segments_have_been_merged := false;
 			else
+				log (text => "overlapping segments found", level => log_threshold + 1);
+				
 				-- If an overlap has been found, then the proceed-flag is cleared.
 				-- In this case we merge the two segments:
 
@@ -229,6 +237,9 @@ package body et_nets is
 			
 		
 	begin
+		log (text => "optimize strand", level => log_threshold);
+		log_indentation_up;
+		
 		-- Call procedure search_overlap as many times
 		-- as optimzing is required:
 		
@@ -236,9 +247,15 @@ package body et_nets is
 			
 			-- Count the loops and raise exception on overflow:
 			safety_counter := safety_counter + 1;
+
+			log (text => "pass" & natural'image (safety_counter), level => log_threshold + 1);
 			
+			log_indentation_up;			
 			search_overlap;
+			log_indentation_down;
 		end loop;
+
+		log_indentation_down;
 	end optimize_strand;
 
 
@@ -254,12 +271,17 @@ package body et_nets is
 	is
 		source_copy : type_strand := source;
 	begin
+		log (text => "merge strands", level => log_threshold);
+		log_indentation_up;
+		
 		case joint.point is
 			when TRUE =>
+				log (text => "join at point", level => log_threshold + 1);
 				null; -- CS 
 
 			when FALSE =>
-
+				log (text => "join via segment", level => log_threshold + 1);
+				
 				-- Attach the given segment with its
 				-- A end to the target strand:
 				attach_segment (
@@ -283,10 +305,12 @@ package body et_nets is
 					source	=> source_copy.segments);
 
 				-- Optimize target due to overlapping segments:
-				optimize_strand (target);
+				optimize_strand (target, log_threshold);
 		end case;
 		
 		set_strand_position (target);
+
+		log_indentation_down;
 	end merge_strands;
 
 
@@ -1558,6 +1582,8 @@ package body et_nets is
 	end add_strands;
 
 
+
+	
 	
 
 	procedure merge_strands (

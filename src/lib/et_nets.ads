@@ -149,9 +149,10 @@ package et_nets is
 	-- and overlap each other. Replaces such segments by a single 
 	-- segment:
 	procedure optimize_strand (
-		strand	: in out type_strand);
-	
+		strand			: in out type_strand;
+		log_threshold	: in type_log_level);
 
+	
 	-- If strands are to be joined (or merged) with each other
 	-- then the connection can be:
 	-- 1. At a single point. When a strand is moved so that it
