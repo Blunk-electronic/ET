@@ -247,7 +247,9 @@ package et_net_labels is
 		operation	: in type_status_operation);
 
 
-	
+
+	-- This type models the tag labels of
+	-- a net segment:
 	type type_tag_labels is record
 		A : type_net_label_tag; --(active => false);
 		B : type_net_label_tag; -- (active => false);

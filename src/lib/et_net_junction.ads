@@ -51,6 +51,7 @@ package et_net_junction is
 	
 	
 	-- A net junction is where segments are connected with each other.
+	-- This type models the junctionss of a net segment:
 	type type_junctions is record
 		A	: boolean := false; -- CS dedicated type like type_junction_active 
 								-- and value like JUNCTION_ON, JUNCTION_OFF
