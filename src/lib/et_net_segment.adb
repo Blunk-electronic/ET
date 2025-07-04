@@ -745,8 +745,25 @@ package body et_net_segment is
 			
 		end merge_junctions;
 
-		
 
+		
+		-- The simple labels of the resulting segment:
+		LR : pac_net_labels.list;
+
+		procedure merge_simple_labels is 
+			use pac_net_labels;
+			primary_labels : pac_net_labels.list := primary.labels;
+			secondary_labels : pac_net_labels.list := secondary.labels;
+		begin
+			splice (
+				target		=> primary_labels,
+				before		=> pac_net_labels.no_element,
+				source		=> secondary_labels);
+
+			LR := primary_labels;
+		end merge_simple_labels;
+			
+		
 		line : type_line;
 		
 	begin
@@ -755,12 +772,16 @@ package body et_net_segment is
 		merge_ports;
 
 		merge_junctions;
+
+		merge_simple_labels;
+		
 		
 		line := type_line (merge_lines (primary, secondary));
 
 		result := (line with 
 				   ports => (PRA, PRB), 
 				   junctions => (JRA, JRB), 
+				   labels	=> LR,
 				   others => <>);
 
 		return result;
