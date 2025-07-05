@@ -105,7 +105,7 @@ package body et_net_segment is
 		AB_end : type_start_end_point;
 	begin
 		-- Map from the given NSWE end to the AB end:
-		AB_end := get_NSWE_end (segment, NSWE_end);
+		AB_end := to_AB_end (segment, NSWE_end);
 
 		-- Get the junction statuss on the AB end:
 		result := get_junction_status (segment, AB_end);
@@ -140,7 +140,7 @@ package body et_net_segment is
 		AB_end : type_start_end_point;
 	begin
 		-- Map from the given NSWE end to the AB end:
-		AB_end := get_NSWE_end (segment, NSWE_end);
+		AB_end := to_AB_end (segment, NSWE_end);
 
 		-- Get the junction statuss on the AB end:
 		result := get_tag_label_status (segment, AB_end);
@@ -399,7 +399,7 @@ package body et_net_segment is
 		AB_end : type_start_end_point;
 	begin
 		-- Map from the given NSWE end to the AB end:
-		AB_end := get_NSWE_end (segment, NSWE_end);
+		AB_end := to_AB_end (segment, NSWE_end);
 
 		-- Get the ports on the AB end:
 		result := get_ports (segment, AB_end);
