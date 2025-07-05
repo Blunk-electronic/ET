@@ -5674,6 +5674,7 @@ package body et_schematic_ops.nets is
 						if stub.is_stub then
 							log (text => "stub found", level => log_threshold + 1);
 							log_indentation_up;
+
 							
 							if get_place (position) = get_A (segment) then
 								-- Enable the tag label on the A end:
@@ -5681,7 +5682,11 @@ package body et_schematic_ops.nets is
 								
 								t := (active => true, direction => direction, others => <>); -- CS size, ...
 								segment.tag_labels.A := t;
+
+								-- Signal iterations in upper level to cancel:
+								segment_found := true;						
 							end if;
+
 
 							if get_place (position) = get_B (segment) then
 								-- Enable the tag label on the B end:
@@ -5689,6 +5694,9 @@ package body et_schematic_ops.nets is
 								
 								t := (active => true, direction => direction, others => <>); -- CS size, ...
 								segment.tag_labels.B := t;
+
+								-- Signal iterations in upper level to cancel:
+								segment_found := true;						
 							end if;
 
 							log_indentation_down;
@@ -5698,8 +5706,6 @@ package body et_schematic_ops.nets is
 							log (text => "No stub found. No label placed.", level => log_threshold + 1);
 						end if;
 
-						-- signal iterations in upper level to cancel
-						segment_found := true;						
 					end query_segment;
 
 					
