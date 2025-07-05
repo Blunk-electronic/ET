@@ -783,13 +783,15 @@ package et_geometry_2a is
 
 
 	-- Returns for a given direction the end of a line.
+	-- IMPORTANT: The orientation of the line must be known beforehand.
 	-- If the line orientation is horizontal:
 	-- 1. If side is west, then it returns the end point that 
 	--    is on the west end of the line.
 	-- 2. If side is east, then it returns the end point that 
 	--    is on the east end of the line.
 	-- 3. Only west or east end can be inquired. 
-	--    Otherwise an exception is raised.
+	--    Otherwise an exception is raised because a horizontal line
+	--    has no north or south end.
 	--
 	-- If the line orientation is vertical:
 	-- 3. If side is north, then it returns the end point that 
@@ -797,16 +799,39 @@ package et_geometry_2a is
 	-- 4. If side is south, then it returns the end point that 
 	--    is on the south end of the line.
 	-- 5. Only north or south end can be inquired. 
-	--    Otherwise an exception is raised.
+	--    Otherwise an exception is raised because a vertical line
+	--    has no west or east end.
 	--
 	-- If the line orientation is sloping then all four ends
 	-- can be inquired:
-	function get_NSWE_end (
+	function to_AB_end (
 		line		: in type_line;
 		NSWE_end	: in type_direction_NSWE)
 		return type_start_end_point;
 	
-	
+
+	-- This is the reverse of to_AB_end. 
+	-- This function maps from a given A/B end to the
+	-- north, south, west east end.
+	-- If the line is horizontal, then the return is west or east.
+	-- If the line is vertical, then the return is north or south.
+	-- CS: If the line is a slope, then it will be handled like
+	-- a horizontal line:
+	function to_NSWE_end (
+		line		: in type_line;
+		AB_end		: in type_start_end_point)
+		return type_direction_NSWE;
+
+
+	-- Maps from the A/B end of a line to a rotation.
+	-- The rotation is a multiple of 90 degrees.
+	-- It bases on the function to_NSWE_end and translates
+	-- the NSWE_end to an angle. See body for details:
+	function to_rotation (
+		line		: in type_line;
+		AB_end		: in type_start_end_point)
+		return type_rotation;
+							 
 
 	-- Returns the start point of the given line:
 	function get_A (

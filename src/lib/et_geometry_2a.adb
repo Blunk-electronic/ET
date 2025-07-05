@@ -1520,6 +1520,7 @@ end;
 	end;
 
 
+	
 
 	function get_end_point (
 		line 	: in type_line;
@@ -1535,8 +1536,9 @@ end;
 
 
 	
+	
 
-	function get_NSWE_end (
+	function to_AB_end (
 		line		: in type_line;
 		NSWE_end	: in type_direction_NSWE)
 		return type_start_end_point
@@ -1640,11 +1642,102 @@ end;
 		end case;
 		
 		return result;
-	end get_NSWE_end;
+	end to_AB_end;
 
 	
 
 
+	
+
+	function to_NSWE_end (
+		line		: in type_line;
+		AB_end		: in type_start_end_point)
+		return type_direction_NSWE
+	is
+		result : type_direction_NSWE;
+
+		orientation : type_line_orientation;
+
+		procedure test_x is begin
+			case AB_end is
+				when A =>
+					if line.A.x < line.B.x then  -- A is west of B
+						result := DIR_WEST;
+					else
+						result := DIR_EAST;
+					end if;
+					
+				when B =>
+					if line.B.x < line.A.x then  -- B is west of A
+						result := DIR_WEST;
+					else
+						result := DIR_EAST;
+					end if;
+			end case;
+		end test_x;
+		
+
+		procedure test_y is begin
+			case AB_end is
+				when A =>
+					if line.A.y < line.B.y then  -- A is south of B
+						result := DIR_SOUTH;
+					else
+						result := DIR_NORTH;
+					end if;
+					
+				when B =>
+					if line.B.y < line.A.y then  -- B is south of A
+						result := DIR_SOUTH;
+					else
+						result := DIR_NORTH;
+					end if;
+			end case;
+		end test_y;
+
+		
+	begin
+		orientation := get_orientation (line);
+
+		case orientation is
+			when ORIENT_HORIZONTAL	=> test_x;
+			when ORIENT_VERTICAL	=> test_y;
+
+			-- CS: Per default handle line as
+			-- if it were horizontal. Control via additional argument ?
+			when ORIENT_SLOPING		=> test_x;
+		end case;
+		
+		return result;
+	end to_NSWE_end;
+
+
+
+
+	
+	function to_rotation (
+		line		: in type_line;
+		AB_end		: in type_start_end_point)
+		return type_rotation
+	is
+		result : type_rotation;
+
+		NSWE_end : type_direction_NSWE;
+	begin
+		NSWE_end := to_NSWE_end (line, AB_end);
+
+		case NSWE_end is
+			when DIR_EAST	=> result :=   0.0;
+			when DIR_WEST	=> result := 180.0;
+			when DIR_NORTH	=> result :=  90.0;
+			when DIR_SOUTH	=> result := 270.0;
+		end case;
+			
+		return result;
+	end to_rotation;	
+
+
+	
 	
 
 	function get_A (
