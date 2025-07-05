@@ -272,11 +272,11 @@ procedure draw_nets is
 					-- It will be taken from the A or B end of the segment,
 					-- depending on which end has a tag lablel:
 					position : type_vector_model;
-
+					
 					-- The rotation of the tag label must be deduced
-					-- from the orientation of the net segment:
-					rotation : type_rotation_relative := 0.0;
-					-- CS currently fixed to zero.
+					-- from the orientation and affected A/B end
+					-- of the net segment:
+					rotation : type_rotation := 0.0;
 					
 					
 					-- This procedure draws a tag label:
@@ -325,6 +325,10 @@ procedure draw_nets is
 					begin
 						make_box;
 
+						-- Depending on the rotation the box
+						-- is drawn either vertically or horizontally.
+						-- Moreover the position, alignment and rotation of the text
+						-- inside the box depends on the rotation:
 						
 						if rotation = zero_rotation then
 					
@@ -370,7 +374,7 @@ procedure draw_nets is
 						end if;
 
 						
-						if rotation = -90.0 then
+						if rotation = 270.0 then
 
 							box.position := set (
 								get_x (position) - box.height * 0.5,
@@ -418,14 +422,17 @@ procedure draw_nets is
 
 					
 				begin
-					--put_line ("draw tag labels");
-					--put_line (to_string (segment));
+					-- put_line ("draw tag labels");
  					
-					-- Draw the label on the A end (if it exists):
+					-- Draw the label on the A end (if it is active):
 					if is_active (segment.tag_labels.A) then
 						--put_line ("A is active");
 						position := get_A (segment);
 
+						-- Deduce the rotation of the label from
+						-- the segment and the affected A end:
+						rotation := to_rotation (segment, A);
+						
 						-- If the parent segment is moving
 						-- with its A end, then move the label accordingly
 						-- by the current object_displacement:
@@ -437,10 +444,14 @@ procedure draw_nets is
 					end if;
 
 					
-					-- Draw the label on the B end (if it exists):
+					-- Draw the label on the B end (if it is active):
 					if is_active (segment.tag_labels.B) then
 						--put_line ("B is active");
 						position := get_B (segment);
+
+						-- Deduce the rotation of the label from
+						-- the segment and the affected B end:
+						rotation := to_rotation (segment, B);
 
 						-- If the parent segment is moving
 						-- with its B end, then move the label accordingly
