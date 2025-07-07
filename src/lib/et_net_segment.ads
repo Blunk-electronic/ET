@@ -118,6 +118,14 @@ package et_net_segment is
 		NSWE_end	: in type_direction_NSWE)
 		return boolean;
 
+
+	-- Returns the tag label at the specified
+	-- end of a segment:
+	function get_tag_label (
+		segment	: in type_net_segment;
+		AB_end	: in type_start_end_point)
+		return type_net_label_tag;
+
 	
 	-- Returns true if the given netchanger port
 	-- is connected with the given segment:
@@ -243,6 +251,7 @@ package et_net_segment is
 		return type_split_segment;
 
 
+	
 	-- Merges secondary net segment with primary segment.
 	-- 1. Assumes that both segments run into the same direction.
 	-- 2. Assumes that both segments join each other at a common end point (A or B).
@@ -252,13 +261,19 @@ package et_net_segment is
 	--    are kept.
 	-- 5. Simple net labels of both segments are kept.
 	-- 6. The status of the junctions at the open ends of the two 
-	--    segments are kept.
-	-- 7. CS: Tag labels ? Remove all on all ends ?
+	--    segments are kept, whereas the junctions at the joint are removed.
+	-- 7. Tag labels at the open ends of the two segments are kept,
+	--    whereas tag labels at the joint are removed.
 	procedure merge_segments (
+		-- The primary segment and its end to be connected:
 		primary			: in out type_net_segment;
-		primary_end		: in type_start_end_point; -- the end of the primary segment	 
+		primary_end		: in type_start_end_point; 
+		
+		-- The secondary segment and its end to be connected:
 		secondary		: in type_net_segment;
-		secondary_end	: in type_start_end_point); -- the end of the secondary segment
+		secondary_end	: in type_start_end_point);
+
+
 	
 	
 	-- Reset status flags of segment, junctions and labels:

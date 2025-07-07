@@ -149,6 +149,23 @@ package body et_net_segment is
 
 	
 	
+
+
+
+	function get_tag_label (
+		segment	: in type_net_segment;
+		AB_end	: in type_start_end_point)
+		return type_net_label_tag
+	is begin
+		case AB_end is
+			when A => return segment.tag_labels.A;
+			when B => return segment.tag_labels.B;
+		end case;
+	end;
+
+
+
+
 	
 
 	function is_connected (
@@ -525,22 +542,43 @@ package body et_net_segment is
 		secondary_end	: in type_start_end_point)
 	is 
 		labels_primary, labels_secondary : pac_net_labels.list;
-		-- CS labels_primary_tag, labels_secondary_tag : type_tag_labels;
 		
 		ports : type_ports_AB;
 		junctions : type_junctions;
-	begin
-		-- The ends where the segments are to be merged
-		-- must not have ports. As a safety measure this
-		-- check is required:
-		if has_ports (primary, primary_end) then
-			raise constraint_error;
-		end if;
-		
-		if has_ports (secondary, secondary_end) then
-			raise constraint_error;
-		end if;
 
+
+		procedure precheck is begin
+			-- The ends where the segments are to be merged
+			-- must not have ports. As a safety measure this
+			-- check is required:
+			if has_ports (primary, primary_end) then
+				raise constraint_error;
+			end if;
+			
+			if has_ports (secondary, secondary_end) then
+				raise constraint_error;
+			end if;
+		end precheck;
+		
+
+		
+		procedure merge_tag_labels is
+			-- Backup the tag labels at the open end of the two segments:
+			tag_A : type_net_label_tag := 
+				get_tag_label (primary,   get_opposide_end (primary_end));
+			
+			tag_B : type_net_label_tag := 
+				get_tag_label (secondary, get_opposide_end (secondary_end));
+		begin
+			-- Overwrite the tags labels of the given primary segment
+			-- with the new tag labels:
+			primary.tag_labels := (tag_A, tag_B);
+		end;
+
+		
+	begin
+		precheck;
+		
 
 		-- Backup the ports at the open ends of the two segments:
 		ports.A := get_ports (primary,   get_opposide_end (primary_end));
@@ -568,9 +606,12 @@ package body et_net_segment is
 		-- Assign the simple labels to the resulting segment:
 		primary.labels := labels_primary;
 
+		merge_tag_labels;
+		
 	end merge_segments;
 
 
+	
 
 	
 	
