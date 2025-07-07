@@ -126,6 +126,15 @@ package et_net_segment is
 		AB_end	: in type_start_end_point)
 		return type_net_label_tag;
 
+
+	-- Returns the tag label at the specified
+	-- NSWE end of a segment:
+	function get_tag_label (
+		segment		: in type_net_segment;
+		NSWE_end	: in type_direction_NSWE)
+		return type_net_label_tag;
+
+	
 	
 	-- Returns true if the given netchanger port
 	-- is connected with the given segment:
@@ -335,10 +344,16 @@ package et_net_segment is
 	-- Merges two overlapping segments to a single one.
 	-- "Overlapping" means that both have same orientation
 	-- and do overlap in some way.
-	-- If any of the segments is a slope then an exception
-	-- is raised.
-	-- If the orientations of the two segments differ then
-	-- an exception is raised:
+	-- 1. If any of the segments is a slope then an exception
+	--    is raised.
+	-- 2. If the orientations of the two segments differ then
+	--    an exception is raised.
+	-- 3. If their orientation is horizontal, then the
+	--    resulting net segment has the A end in the WEST and
+	--    the B end in the EAST.
+	-- 4. If their orientation is vertical, then the
+	--    resulting net segment has the A end in the SOUTH and
+	--    the B end in the NORTH.
 	function merge_overlapping_segments (
 		primary, secondary : in type_net_segment)
 		return type_net_segment;

@@ -142,7 +142,7 @@ package body et_net_segment is
 		-- Map from the given NSWE end to the AB end:
 		AB_end := to_AB_end (segment, NSWE_end);
 
-		-- Get the junction statuss on the AB end:
+		-- Get the junction status on the AB end:
 		result := get_tag_label_status (segment, AB_end);
 		return result;
 	end get_tag_label_status;
@@ -165,6 +165,22 @@ package body et_net_segment is
 
 
 
+
+
+	function get_tag_label (
+		segment		: in type_net_segment;
+		NSWE_end	: in type_direction_NSWE)
+		return type_net_label_tag
+	is
+		AB_end : type_start_end_point;
+	begin
+		-- Map from the given NSWE end to the AB end:
+		AB_end := to_AB_end (segment, NSWE_end);
+
+		return get_tag_label (segment, AB_end);
+	end;
+
+	
 
 	
 
@@ -689,6 +705,8 @@ package body et_net_segment is
 
 
 
+	
+
 
 	function merge_overlapping_segments (
 		primary, secondary : in type_net_segment)
@@ -843,59 +861,70 @@ package body et_net_segment is
 
 
 
-		-- Tag label status at A and B end of the resulting segment:
-		TRA, TRB : boolean;
+		-- Tag labels at A and B end of the resulting segment:
+		TRA, TRB : type_net_label_tag;
 
 		
 		procedure merge_tag_labels is		
-			-- Label status at the A and B end of the primary segment;
-			TPA, TPB : boolean;
+			-- Labels at the A and B end of the primary segment;
+			TPA, TPB : type_net_label_tag;
 
-			-- Label status at the A and B end of the secondary segment;
-			TSA, TSB : boolean;
+			-- Labels at the A and B end of the secondary segment;
+			TSA, TSB : type_net_label_tag;
 		begin
 			-- The orientation determines whether to collect
 			-- the tag labels from the west and east ends or
 			-- from the south and north ends:
 			case OP is
 				when ORIENT_HORIZONTAL =>
-					-- Get the label status from the west ends:
-					TPA := get_tag_label_status (primary,   DIR_WEST);
-					TSA := get_tag_label_status (secondary, DIR_WEST);
+					-- Get the labels from the west ends:
+					TPA := get_tag_label (primary,   DIR_WEST);
+					TSA := get_tag_label (secondary, DIR_WEST);
 
 					-- Get the label status from the east ends:
-					TPB := get_tag_label_status (primary,   DIR_EAST);
-					TSB := get_tag_label_status (secondary, DIR_EAST);
+					TPB := get_tag_label (primary,   DIR_EAST);
+					TSB := get_tag_label (secondary, DIR_EAST);
 
 					
 					
 				when ORIENT_VERTICAL =>
-					-- Get the label status from the south ends:
-					TPA := get_tag_label_status (primary,   DIR_SOUTH);
-					TSA := get_tag_label_status (secondary, DIR_SOUTH);
+					-- Get the labels from the south ends:
+					TPA := get_tag_label (primary,   DIR_SOUTH);
+					TSA := get_tag_label (secondary, DIR_SOUTH);
 
 					-- Get the label status from the north ends:
-					TPB := get_tag_label_status (primary,   DIR_NORTH);
-					TSB := get_tag_label_status (secondary, DIR_NORTH);
+					TPB := get_tag_label (primary,   DIR_NORTH);
+					TSB := get_tag_label (secondary, DIR_NORTH);
 
 					
 				when ORIENT_SLOPING =>
 					raise constraint_error; -- CS should never happen
 			end case;
 
-			-- Union the label status on the A end:
-			TRA := TPA or TSA;
+			-- Union the labels on the A end.
+			-- If the label on the A end of the primary segment
+			-- is active, then copy this label to the resulting segment:
+			if is_active (TPA) then
+				TRA := TPA;
+			elsif is_active (TSA) then
+				TRA := TSA;
+			end if;
 
-			-- Union the label status on the B end:
-			TRB := TPB or TSB;
+			-- Union the labels on the B end.
+			-- If the label on the B end of the primary segment
+			-- is active, then copy this label to the resulting segment:
+			if is_active (TPB) then
+				TRB := TPB;
+			elsif is_active (TSB) then
+				TRB := TSB;
+			end if;
 			
 		end merge_tag_labels;
 
-
-
-
 		
-		
+
+		-- A temporarily line used when the segments
+		-- are merged to a single line:
 		line : type_line;
 		
 	begin
@@ -906,21 +935,26 @@ package body et_net_segment is
 		merge_junctions;
 
 		merge_simple_labels;
+
+		merge_tag_labels;
+
 		
-		
+		-- Merge the actual line segments to a single line:
 		line := type_line (merge_lines (primary, secondary));
 
+		-- The result is a single net segment with ports, junctions and labels:
 		result := (line with 
-				   ports => (PRA, PRB), 
-				   junctions => (JRA, JRB), 
-				   labels	=> LR,
-				   others => <>);
+			ports 		=> (PRA, PRB), 
+			junctions	=> (JRA, JRB), 
+			labels		=> LR,
+			tag_labels	=> (TRA, TRB));
 
 		return result;
 	end merge_overlapping_segments;
 
 	
 	
+
 	
 	
 -- 	procedure move_net_labels (
