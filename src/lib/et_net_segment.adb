@@ -690,7 +690,7 @@ package body et_net_segment is
 
 
 
-	function merge_segments (
+	function merge_overlapping_segments (
 		primary, secondary : in type_net_segment)
 		return type_net_segment
 	is
@@ -917,7 +917,7 @@ package body et_net_segment is
 				   others => <>);
 
 		return result;
-	end merge_segments;
+	end merge_overlapping_segments;
 
 	
 	

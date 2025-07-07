@@ -222,7 +222,7 @@ package body et_nets is
 				-- In this case we merge the two segments:
 
 				-- Merge primary and secondary segment:
-				new_segment := merge_segments (element (primary), element (secondary));
+				new_segment := merge_overlapping_segments (element (primary), element (secondary));
 				
 				-- Delete secondary segment, because it is no longer needed:
 				strand.segments.delete (secondary);

@@ -334,8 +334,12 @@ package et_net_segment is
 	
 	-- Merges two overlapping segments to a single one.
 	-- "Overlapping" means that both have same orientation
-	-- and do overlap in some way:
-	function merge_segments (
+	-- and do overlap in some way.
+	-- If any of the segments is a slope then an exception
+	-- is raised.
+	-- If the orientations of the two segments differ then
+	-- an exception is raised:
+	function merge_overlapping_segments (
 		primary, secondary : in type_net_segment)
 		return type_net_segment;
 	
