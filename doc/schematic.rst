@@ -237,6 +237,8 @@ Nets and Net Labels
 	#. it causes a connection between two different nets.
 
 
+
+
 #. Showing and finding nets
 
 	- To show a net:
@@ -373,6 +375,7 @@ Nets and Net Labels
 	
 	|VNS| del N
 	
+
 	
 	
 #. Placing Simple Net Labels
@@ -390,7 +393,7 @@ Nets and Net Labels
 		
 	.. code-block::
 
-		demo place label  1  30 100  1 1  0
+		demo place label  1  30 100  0 1  0
 
 	
 	
