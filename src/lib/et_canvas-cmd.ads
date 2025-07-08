@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -66,26 +66,7 @@ package et_canvas.cmd is
 
 	-- noun : type_canvas_noun := type_canvas_noun'first;
 	
-
-
-	-- The number of fields of the given command:
-	cmd_field_count : type_field_count;
-
-
-	-- This function is a shortcut to get a single field
-	-- from the current command:
-	-- function f (place : in type_field_count) 
-	-- 	return string;
-
 	
-	procedure command_too_long (
-		cmd		: in type_fields_of_line;
-		from	: in type_field_count);
-
-
-	-- This procedure is a shortcut. Call it in case
-	-- the given command is too long:
-	procedure too_long;
 
 	
 	procedure command_incomplete;

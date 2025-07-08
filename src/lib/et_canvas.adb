@@ -3507,12 +3507,6 @@ package body et_canvas is
 	
 
 
--- COMMAND STATUS:
-
-	procedure reset_single_cmd_status is begin
-		single_cmd_status := (others => <>);
-	end reset_single_cmd_status;
-
 	
 	
 	

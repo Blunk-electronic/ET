@@ -88,6 +88,7 @@ with et_canvas_board_tracks;
 with et_canvas_board_conductors;
 
 with et_canvas_board_preliminary_object;
+with et_cmd_sts;						use et_cmd_sts;
 
 with et_undo_redo;
 

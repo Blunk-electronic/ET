@@ -1230,15 +1230,6 @@ package et_canvas is
 
 
 
-	
-
-
--- COMMAND STATUS:
-
-	-- The status of the single command entered on the console:
-	single_cmd_status : type_single_cmd_status;
-
-	procedure reset_single_cmd_status;
 
 
 

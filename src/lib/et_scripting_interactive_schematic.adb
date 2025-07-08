@@ -63,6 +63,8 @@ with et_canvas_schematic_units;		use et_canvas_schematic_units;
 with et_device_placeholders;		use et_device_placeholders;
 
 with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
+with et_cmd_sts;								use et_cmd_sts;
+
 
 
 package body et_scripting_interactive_schematic is

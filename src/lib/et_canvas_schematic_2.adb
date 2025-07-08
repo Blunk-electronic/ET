@@ -81,7 +81,7 @@ with et_system_info;
 with et_project_name;
 with et_module_ops;
 with et_canvas_schematic_preliminary_object;
-
+with et_cmd_sts;						use et_cmd_sts;
 
 
 package body et_canvas_schematic_2 is

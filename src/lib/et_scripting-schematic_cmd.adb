@@ -349,6 +349,7 @@ is
 	end add_netchanger;
 	
 
+	
 
 	procedure move_netchanger is
 		use et_schematic_ops.submodules;
@@ -375,6 +376,7 @@ is
 	end move_netchanger;
 		
 	
+
 	
 	procedure delete_netchanger is
 		use et_schematic_ops.submodules;
@@ -393,6 +395,7 @@ is
 		end case;
 	end delete_netchanger;
 	
+
 	
 
 	procedure drag_netchanger is
@@ -417,6 +420,8 @@ is
 	end drag_netchanger;
 
 
+
+	
 	
 	procedure rotate_netchanger is
 		use et_schematic_ops.submodules;
@@ -437,6 +442,7 @@ is
 		end case;
 	end rotate_netchanger;
 	
+
 	
 	
 	procedure add_port_to_submodule is
@@ -465,6 +471,8 @@ is
 	end add_port_to_submodule;
 
 
+
+	
 	
 	procedure drag_port_of_submodule is
 		use et_schematic_ops.submodules;
@@ -489,6 +497,8 @@ is
 	end drag_port_of_submodule;
 	
 
+
+	
 	
 	procedure delete_port_of_submodule is
 		use et_schematic_ops.submodules;
@@ -511,6 +521,8 @@ is
 	
 
 
+
+	
 	procedure move_port_of_submodule is 
 		use et_schematic_ops.submodules;
 	begin
@@ -534,6 +546,8 @@ is
 	end move_port_of_submodule;
 	
 	
+
+
 	
 	procedure add_submodule is
 		use et_schematic_ops.submodules;
@@ -568,6 +582,8 @@ is
 
 
 
+
+	
 	procedure move_submodule is
 		use et_schematic_ops.submodules;
 	begin
@@ -590,6 +606,7 @@ is
 		end case;
 	end move_submodule;
 		
+
 
 	
 	
@@ -614,6 +631,9 @@ is
 		end case;
 	end drag_submodule;
 	
+
+
+
 
 	
 	procedure copy_submodule is
@@ -645,6 +665,8 @@ is
 	
 
 
+
+	
 	procedure delete_submodule is
 		use et_schematic_ops.submodules;
 	begin
@@ -662,6 +684,8 @@ is
 		end case;
 	end delete_submodule;
 
+
+	
 	
 
 	procedure rename_submodule is
@@ -683,6 +707,8 @@ is
 	end rename_submodule;
 
 
+
+	
 
 	procedure mount_submodule is
 		use et_schematic_ops.submodules;
@@ -707,6 +733,7 @@ is
 	
 	
 
+	
 
 	procedure remove_submodule is
 		use et_schematic_ops.submodules;
@@ -726,6 +753,7 @@ is
 			when others => command_incomplete;
 		end case;
 	end remove_submodule;
+
 
 	
 
@@ -748,6 +776,8 @@ is
 		end case;
 	end set_submodule_file;
 
+
+
 	
 	
 	procedure build_submodules_tree is
@@ -768,6 +798,8 @@ is
 	
 
 
+	
+
 	procedure check_integrity is
 		use et_schematic_ops.submodules;
 	begin
@@ -785,6 +817,8 @@ is
 
 
 
+	
+
 	procedure make_boms is
 		use et_schematic_ops.submodules;
 	begin
@@ -801,6 +835,7 @@ is
 		end case;
 	end make_boms;
 		
+
 	
 
 	procedure copy_device is
@@ -980,6 +1015,7 @@ is
 	end show_device;
 
 
+	
 
 	procedure delete_device is begin
 		case cmd_field_count is
@@ -994,6 +1030,7 @@ is
 			when others => command_incomplete;
 		end case;
 	end delete_device;
+
 
 	
 
@@ -1289,6 +1326,7 @@ is
 
 
 
+	
 
 	procedure place_net_label is
 	begin
@@ -1393,6 +1431,7 @@ is
 	end delete_net_label;
 
 
+	
 
 	procedure delete_net is
 	begin

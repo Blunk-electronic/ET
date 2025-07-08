@@ -41,7 +41,21 @@ with ada.containers;
 
 package body et_cmd_sts is
 
-	procedure dummy is begin null; end;
+
+	
+	function f (place : in type_field_count) 
+		return string 
+	is begin
+		return get_field (single_cmd_status.cmd, place);
+	end;
+
+
+	
+
+	procedure reset_single_cmd_status is begin
+		single_cmd_status := (others => <>);
+	end reset_single_cmd_status;
+
 
 	
 end et_cmd_sts;

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -184,6 +184,14 @@ package body et_scripting is
 			 & type_field_count'image (from) & " ignored !",
 			 console => true);
 	end;
+
+
+
+	
+	procedure too_long is begin
+		command_too_long (single_cmd_status.cmd, cmd_field_count - 1);
+	end;
+
 
 	
 
@@ -457,6 +465,7 @@ package body et_scripting is
 		end project_cmd;
 
 		
+		
 	begin -- execute_command
 		log (text => "cmd --> " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
 		log_indentation_up;
@@ -552,6 +561,8 @@ package body et_scripting is
 		-- 	raise;
 		
 	end execute_command;
+
+
 
 
 	
@@ -655,6 +666,9 @@ package body et_scripting is
 			return ERROR;
 		
 	end execute_script;
+
+
+
 	
 end et_scripting;
 	

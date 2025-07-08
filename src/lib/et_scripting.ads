@@ -84,6 +84,12 @@ package et_scripting is
 		cmd		: in type_fields_of_line;
 		from	: in type_field_count);
 
+
+	-- This procedure is a shortcut. Call it in case
+	-- the given command is too long:
+	procedure too_long;
+
+
 	
 	procedure skipped_in_this_runmode (log_threshold : in type_log_level);
 	

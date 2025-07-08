@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -65,6 +65,23 @@ package et_cmd_sts is
 	end record;	
 
 
+
+	
+	-- The status of the single command entered on the console:
+	single_cmd_status : type_single_cmd_status;
+
+
+	-- The number of fields of the given command:
+	cmd_field_count : type_field_count;
+
+	
+
+	procedure reset_single_cmd_status;
+
+
+
+	
+
 	-- In graphical mode, scripts can be nested.
 	-- In script mode we register only the first
 	-- exception regardless of the nesting depth.
@@ -90,9 +107,6 @@ package et_cmd_sts is
 	-- IN HEADLESS MODE THIS STUFF HAS NO MEANING !
 	script_cmd_status : type_script_cmd_status;
 	
-
-
-	procedure dummy;
 
 	
 end et_cmd_sts;

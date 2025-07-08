@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -41,6 +41,7 @@ with et_modes;						use et_modes;
 with et_keywords;					use et_keywords;
 with et_exceptions;					use et_exceptions;
 
+with et_scripting;					use et_scripting;
 
 
 package body et_canvas.cmd is
@@ -55,28 +56,8 @@ package body et_canvas.cmd is
 	end;
 
 
-	procedure command_too_long (
-		cmd		: in type_fields_of_line;
-		from	: in type_field_count) 
-	is begin
-		log (WARNING, "command " & enclose_in_quotes (to_string (cmd)) 
-			 & " too long !",
-			 console => true);
-		
-		log (text => " -> Excessive arguments after no." 
-			 & type_field_count'image (from) & " ignored !",
-			 console => true);
-	end;
-
 
 	
-
-	-- This procedure is a shortcut. Call it in case
-	-- the given command is too long:
-	procedure too_long is begin
-		command_too_long (single_cmd_status.cmd, cmd_field_count - 1);
-	end;
-
 	
 	procedure command_incomplete is begin
 		if runmode /= MODE_HEADLESS and cmd_entry_mode = SINGLE_CMD then
@@ -87,6 +68,7 @@ package body et_canvas.cmd is
 	end command_incomplete;
 
 
+	
 
 	procedure invalid_noun (
 		noun : in string) 
@@ -97,12 +79,15 @@ package body et_canvas.cmd is
 	end invalid_noun;
 
 
+
+	
 	procedure skipped_in_this_runmode (
 		log_threshold : in type_log_level) 
 	is begin
 		log (text => "skipped in current runmode "
 			& to_string (runmode), level => log_threshold);
 	end skipped_in_this_runmode;
+
 
 	
 
@@ -113,6 +98,7 @@ package body et_canvas.cmd is
 		return type_canvas_noun'image (noun);
 	end to_string;
 
+	
 	
 
 
@@ -131,6 +117,7 @@ package body et_canvas.cmd is
 			zoom_to (get_cursor_position, l);
 		end set_zoom;
 
+		
 
 		-- Zooms on a given point and places the cursor
 		-- at the given point:
@@ -149,6 +136,7 @@ package body et_canvas.cmd is
 		end zoom_to_point;
 		
 
+		
 		-- Sets the cursor at a given place:
 		procedure set_cursor is
 			c : type_vector_model := type_vector_model (set (
@@ -163,6 +151,8 @@ package body et_canvas.cmd is
 		end set_cursor;
 
 
+
+		
 		-- Sets the scale, the grid according to the new scale,
 		-- updates the scale and grid display:
 		procedure set_scale is
@@ -187,6 +177,8 @@ package body et_canvas.cmd is
 			update_scale_display;
 		end set_scale;
 
+
+		
 
 		procedure move_cursor is
 			c : type_vector_model := type_vector_model (set (
@@ -325,6 +317,7 @@ package body et_canvas.cmd is
 				when others => invalid_noun (to_string (noun));
 			end case;
 		end evaluate_on_verb_move;
+
 		
 		
 	begin
