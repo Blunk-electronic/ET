@@ -36,8 +36,6 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-
 with et_string_processing;		use et_string_processing;
 with et_script_names;			use et_script_names;
 
@@ -76,9 +74,16 @@ package et_cmd_sts is
 
 	
 
+	-- This function is a shortcut to get a single field
+	-- from the current command:
+	function f (place : in type_field_count) 
+		return string;
+
+	
 	procedure reset_single_cmd_status;
 
 
+	
 
 	
 

@@ -36,13 +36,6 @@
 --   history of changes:
 --
 
-with ada.text_io;					use ada.text_io;
-
-with et_string_processing;			use et_string_processing;
-with et_logging;					use et_logging;
-
-with et_cmd_sts;
-
 
 
 generic
@@ -65,8 +58,6 @@ package et_canvas.cmd is
 
 
 	-- noun : type_canvas_noun := type_canvas_noun'first;
-	
-	
 
 	
 	procedure command_incomplete;
@@ -76,9 +67,7 @@ package et_canvas.cmd is
 		noun : in string);
 
 
-	
 
-	
 
 	-- This procedure parses a canvas related command.
 	-- If the runmode is non-graphical (like headless) then

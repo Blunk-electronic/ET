@@ -37,25 +37,19 @@
 --
 
 with ada.characters.handling;		use ada.characters.handling;
+
+with ada.text_io;					use ada.text_io;
+with et_string_processing;			use et_string_processing;
 with et_modes;						use et_modes;
 with et_keywords;					use et_keywords;
 with et_exceptions;					use et_exceptions;
-
+with et_logging;					use et_logging;
 with et_scripting;					use et_scripting;
+
+with et_cmd_sts;					use et_cmd_sts;
 
 
 package body et_canvas.cmd is
-
-
-	-- This function is a shortcut to get a single field
-	-- from the current command:
-	function f (place : in type_field_count) 
-		return string 
-	is begin
-		return get_field (single_cmd_status.cmd, place);
-	end;
-
-
 
 	
 	
@@ -99,6 +93,7 @@ package body et_canvas.cmd is
 	end to_string;
 
 	
+
 	
 
 
@@ -109,7 +104,7 @@ package body et_canvas.cmd is
 		
 		-- Zooms on the current cursor position:
 		procedure set_zoom is 
-			l : type_zoom_factor := to_zoom_factor (f (5));
+			l : type_zoom_factor := to_zoom_factor (et_cmd_sts.f (5));
 		begin
 			log (text => "set zoom factor " & to_string (l),
 				level => log_threshold + 1);					
@@ -123,10 +118,10 @@ package body et_canvas.cmd is
 		-- at the given point:
 		procedure zoom_to_point is
 			c : type_vector_model := type_vector_model (set (
-				x => to_distance (f (5)),
-				y => to_distance (f (6))));
+				x => to_distance (et_cmd_sts.f (5)),
+				y => to_distance (et_cmd_sts.f (6))));
 
-			l : type_zoom_factor := to_zoom_factor (f (7));
+			l : type_zoom_factor := to_zoom_factor (et_cmd_sts.f (7));
 		begin
 			log (text => "zoom to point " & to_string (c) 
 				& " zoom factor" & to_string (l),
@@ -140,8 +135,8 @@ package body et_canvas.cmd is
 		-- Sets the cursor at a given place:
 		procedure set_cursor is
 			c : type_vector_model := type_vector_model (set (
-				x => to_distance (f (5)),
-				y => to_distance (f (6))));
+				x => to_distance (et_cmd_sts.f (5)),
+				y => to_distance (et_cmd_sts.f (6))));
 
 		begin
 			log (text => "zoom to point " & to_string (c),
@@ -156,7 +151,7 @@ package body et_canvas.cmd is
 		-- Sets the scale, the grid according to the new scale,
 		-- updates the scale and grid display:
 		procedure set_scale is
-			M_new : type_scale := type_scale'value (f (5));		
+			M_new : type_scale := type_scale'value (et_cmd_sts.f (5));		
 			-- CS do a proper range check. exception handler ?
 		begin
 			M := M_new;
@@ -182,8 +177,8 @@ package body et_canvas.cmd is
 
 		procedure move_cursor is
 			c : type_vector_model := type_vector_model (set (
-				x => to_distance (f (5)),
-				y => to_distance (f (6))));
+				x => to_distance (et_cmd_sts.f (5)),
+				y => to_distance (et_cmd_sts.f (6))));
 
 		begin
 			log (text => "move cursor by " & to_string (c),
@@ -202,34 +197,34 @@ package body et_canvas.cmd is
 					case cmd_field_count is
 
 						when 5 =>
-							if to_lower (f (5)) = keyword_on then
+							if to_lower (et_cmd_sts.f (5)) = keyword_on then
 							-- schematic led_driver set grid on/off
 
 								grid.on_off := ON;
 								
-							elsif to_lower (f (5)) = keyword_off then
+							elsif to_lower (et_cmd_sts.f (5)) = keyword_off then
 								grid.on_off := OFF;
 							end if;
 							
 								
 						when 6 =>
-							if to_lower (f (5)) = keyword_spacing then
+							if to_lower (et_cmd_sts.f (5)) = keyword_spacing then
 							-- schematic led_driver set grid spacing 5
 								
 								grid.spacing := (
-									x => to_distance (f (6)),
-									y => to_distance (f (6)));
+									x => to_distance (et_cmd_sts.f (6)),
+									y => to_distance (et_cmd_sts.f (6)));
 
 								set_grid_to_scale;
 								update_grid_display;
 								
 								
-							elsif to_lower (f (5)) = keyword_style then
+							elsif to_lower (et_cmd_sts.f (5)) = keyword_style then
 							-- schematic led_driver set grid style dots/lines
 
-								if to_lower (f (6)) = keyword_dots then
+								if to_lower (et_cmd_sts.f (6)) = keyword_dots then
 									grid.style := DOTS;
-								elsif to_lower (f (6)) = keyword_lines then
+								elsif to_lower (et_cmd_sts.f (6)) = keyword_lines then
 									grid.style := LINES;
 								end if;
 								
@@ -237,12 +232,12 @@ package body et_canvas.cmd is
 
 							
 						when 7 =>
-							if to_lower (f (5)) = keyword_spacing then
+							if to_lower (et_cmd_sts.f (5)) = keyword_spacing then
 							-- schematic led_driver set grid spacing 5 5
 								
 								grid.spacing := (
-									x => to_distance (f (6)),
-									y => to_distance (f (7)));
+									x => to_distance (et_cmd_sts.f (6)),
+									y => to_distance (et_cmd_sts.f (7)));
 
 								set_grid_to_scale;
 								update_grid_display;
