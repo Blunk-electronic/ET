@@ -52,25 +52,20 @@ with et_cmd_sts;					use et_cmd_sts;
 package body et_canvas.cmd is
 
 	
-	
-	procedure command_incomplete is begin
-		if runmode /= MODE_HEADLESS and cmd_entry_mode = SINGLE_CMD then
-			single_cmd_status.complete := false;
-		else
-			raise exception_command_incomplete with "command not complete";
-		end if;
-	end command_incomplete;
+	-- CS: Currently, if a canvas command is incomplete, nothing
+	-- happens. In the future further actions should be proposed to the operator.
+	procedure canvas_command_incomplete is begin
+		null;
+		-- if runmode /= MODE_HEADLESS and cmd_entry_mode = SINGLE_CMD then
+		-- CS: In the canvas, the runmode is always not MODE_HEADLESS.
+		-- CS: In the canvas, the entry mode is always SINGLE_CMD ?	
+			-- single_cmd_status.complete := false;
+		-- else
+			-- raise exception_command_incomplete with "Canvas command not complete !";
+		-- end if;
+	end;
 
 
-	
-
-	procedure invalid_noun (
-		noun : in string) 
-	is begin
-		raise semantic_error_1 with
-			"ERROR: Noun " & enclose_in_quotes (noun) 
-			& " invalid for this operation !";
-	end invalid_noun;
 
 
 
@@ -247,7 +242,7 @@ package body et_canvas.cmd is
 						when 8 .. type_field_count'last => too_long;
 
 						
-						when others => command_incomplete;
+						when others => canvas_command_incomplete;
 					end case;
 					
 					
@@ -259,7 +254,7 @@ package body et_canvas.cmd is
 
 						when 6 .. type_field_count'last => too_long;
 
-						when others => command_incomplete;
+						when others => canvas_command_incomplete;
 					end case;
 
 
@@ -274,7 +269,7 @@ package body et_canvas.cmd is
 
 						when 8 .. type_field_count'last => too_long;
 
-						when others => command_incomplete;
+						when others => canvas_command_incomplete;
 					end case;
 
 					
@@ -286,7 +281,7 @@ package body et_canvas.cmd is
 
 						when 6 .. type_field_count'last => too_long;
 
-						when others => command_incomplete;
+						when others => canvas_command_incomplete;
 					end case;
 
 					
@@ -305,7 +300,7 @@ package body et_canvas.cmd is
 
 						when 7 .. type_field_count'last => too_long;
 
-						when others => command_incomplete;
+						when others => canvas_command_incomplete;
 					end case;
 
 				
@@ -334,6 +329,12 @@ package body et_canvas.cmd is
 
 				end case;
 
+
+			-- CS:
+			-- if not single_cmd_status.complete then
+			-- 	propose_arguments;
+			-- end if;
+				
 			
 			when others =>
 				skipped_in_this_runmode (log_threshold + 1);

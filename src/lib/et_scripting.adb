@@ -161,16 +161,24 @@ package body et_scripting is
 	end log_command_incomplete;
 
 
+
 	
 	procedure command_incomplete is begin
-		--if runmode /= MODE_HEADLESS and cmd_entry_mode = SINGLE_CMD then
-			--single_cmd_status.complete := false;
-		--else
-			raise exception_command_incomplete with "command not complete";
-		--end if;
+		if cmd_entry_mode = SINGLE_CMD then
+			-- If a single command is given, then
+			-- clear the "complete" flag so that further
+			-- actions are proposed to the operator:
+			single_cmd_status.complete := false;
+		else
+			-- If command is executed via script then
+			-- raise exception so that the script execution
+			-- is stopped:
+			raise exception_command_incomplete with "Command not complete !";
+		end if;
 	end command_incomplete;
 
 
+	
 	
 	procedure command_too_long (
 		cmd		: in type_fields_of_line;

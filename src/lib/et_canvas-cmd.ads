@@ -60,11 +60,9 @@ package et_canvas.cmd is
 	-- noun : type_canvas_noun := type_canvas_noun'first;
 
 	
-	procedure command_incomplete;
+	procedure canvas_command_incomplete;
 
 	
-	procedure invalid_noun (
-		noun : in string);
 
 
 

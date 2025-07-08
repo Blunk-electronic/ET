@@ -3324,6 +3324,7 @@ is
 		end case;
 	end propose_arguments;
 
+
 	
 begin -- schematic_cmd
 	log (text => "given command: " 
@@ -3355,8 +3356,11 @@ begin -- schematic_cmd
 		when others => noun := to_noun (f (4)); -- read noun from field 4
 	end case;
 
-	-- Parse the command:
+	-- Parse the command:	
 	parse;
+	-- CS evaluate success of command and return a dedicated code
+	-- to the caller ?
+	
 
 	-- In graphical mode and cmd_entry_mode SINGLE_CMD the flag
 	-- single_cmd_status.complete can change to false. In that case
@@ -3365,7 +3369,7 @@ begin -- schematic_cmd
 		propose_arguments;
 	end if;
 
-	-- After every command (regardless if it is complete or not)
+	-- After each command (regardless if it is complete or not)
 	-- set the focus to the canvas:
 	-- CS: remove ?
 	-- if runmode /= MODE_HEADLESS then
