@@ -687,7 +687,8 @@ package body et_nets is
 		
 
 		-- This procedure merges the segment target_to_extend with
-		-- the given segment to a single one:
+		-- the given segment to a single one. Both segments have
+		-- the same orientation:
 		procedure extend_segment is 
 
 			procedure query_segment (target : in out type_net_segment) is begin
@@ -722,6 +723,8 @@ package body et_nets is
 		procedure append_segment is
 		begin
 			strand.segments.append (segment);
+			-- CS: delete tag labels at attach point
+			-- in target strand
 		end append_segment;
 		
 
@@ -812,9 +815,15 @@ package body et_nets is
 		log (text => "mode: " & type_mode'image (mode), level => log_threshold + 1);
 		
 		case mode is 
-			when MODE_SPLIT => split_segment;
-			when MODE_EXTEND => extend_segment;
-			when MODE_JOIN_BEND_AND_ADD_JUNCTION => append_segment_with_junction;
+			when MODE_SPLIT	=> 
+				split_segment;
+				
+			when MODE_EXTEND =>
+				extend_segment;
+				
+			when MODE_JOIN_BEND_AND_ADD_JUNCTION =>
+				append_segment_with_junction;
+				
 			when others => append_segment;
 		end case;
 
