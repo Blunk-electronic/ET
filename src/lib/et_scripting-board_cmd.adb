@@ -135,7 +135,7 @@ is
 	-- This function is a shortcut to get a single field
 	-- from the current command:
 	function f (place : in type_field_count) return string is begin
-		return get_field (single_cmd_status.cmd, place);
+		return get_field (single_cmd.cmd, place);
 	end;
 
 	
@@ -524,7 +524,7 @@ is
 		-- Extract from the given command the polygon arguments (everything after "outline"):
 		-- example command: board demo draw outline line 0 0 line 50 0 line 50 50 line 0 50
 		arguments : constant type_fields_of_line := 
-			remove_field (single_cmd_status.cmd, 1, 4);
+			remove_field (single_cmd.cmd, 1, 4);
 
 		-- Build a basic contour from the arguments:
 		c : constant type_contour := type_contour (to_contour (arguments));
@@ -542,7 +542,7 @@ is
 		-- Extract from the given command the polygon arguments (everything after "hole"):
 		-- example command: board demo draw hole line 2 9 line 2 1 line 8 9
 		arguments : constant type_fields_of_line := 
-			remove_field (single_cmd_status.cmd, 1, 4);
+			remove_field (single_cmd.cmd, 1, 4);
 
 		-- Build a basic contour from the arguments:
 		c : constant type_contour := type_contour (to_contour (arguments));
@@ -567,7 +567,7 @@ is
 		-- board demo draw keepout top zone line 0 0 line 10 0 line 10 10 line 0 10
 		procedure build_zone is
 			arguments : constant type_fields_of_line := 
-				remove_field (single_cmd_status.cmd, 1, 6);
+				remove_field (single_cmd.cmd, 1, 6);
 			
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
@@ -661,7 +661,7 @@ is
 		-- example command: board demo draw silkscreen top zone line 0 0 line 50 0 line 50 50 line 0 50
 		procedure build_zone is
 			arguments : constant type_fields_of_line := 
-				remove_field (single_cmd_status.cmd, 1, 6);
+				remove_field (single_cmd.cmd, 1, 6);
 			
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
@@ -787,7 +787,7 @@ is
 		-- example command: board demo draw assy top zone line 0 0 line 50 0 line 50 50 line 0 50
 		procedure build_zone is
 			arguments : constant type_fields_of_line := 
-				remove_field (single_cmd_status.cmd, 1, 6);
+				remove_field (single_cmd.cmd, 1, 6);
 			
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
@@ -913,7 +913,7 @@ is
 		-- example command: board demo draw route_restrict [1] zone line 0 0 line 50 0 line 50 50 line 0 50
 		procedure build_zone is
 			arguments : constant type_fields_of_line := 
-				remove_field (single_cmd_status.cmd, 1, 6);
+				remove_field (single_cmd.cmd, 1, 6);
 			
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
@@ -1067,7 +1067,7 @@ is
 		-- example command: board demo draw via_restrict [1] zone line 0 0 line 50 0 line 50 50 line 0 50
 		procedure build_zone is
 			arguments : constant type_fields_of_line := 
-				remove_field (single_cmd_status.cmd, 1, 6);
+				remove_field (single_cmd.cmd, 1, 6);
 			
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
@@ -1105,7 +1105,7 @@ is
 		-- example command: board demo draw stop top zone line 0 0 line 50 0 line 50 50 line 0 50
 		procedure build_zone is
 			arguments : constant type_fields_of_line := 
-				remove_field (single_cmd_status.cmd, 1, 6);
+				remove_field (single_cmd.cmd, 1, 6);
 			
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
@@ -1221,7 +1221,7 @@ is
 		-- board demo draw stencil top zone line 0 0 line 10 0 line 10 10 line 0 10
 		procedure build_zone is
 			arguments : constant type_fields_of_line := 
-				remove_field (single_cmd_status.cmd, 1, 6);
+				remove_field (single_cmd.cmd, 1, 6);
 			
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
@@ -2178,7 +2178,7 @@ is
 			use et_fill_zones;
 			
 			arguments : constant type_fields_of_line := 
-				remove_field (single_cmd_status.cmd, 1, 6);
+				remove_field (single_cmd.cmd, 1, 6);
 			
 			ps : type_floating_solid;
 			ph : type_floating_hatched;
@@ -2311,7 +2311,7 @@ is
 			
 			-- Extract from the given command the polygon arguments (everything after "zone"):
 			arguments : constant type_fields_of_line := 
-				remove_field (single_cmd_status.cmd, 1, 7);
+				remove_field (single_cmd.cmd, 1, 7);
 
 			-- Build a basic polygon from the arguments:
 			p0 : constant type_contour := type_contour (to_contour (arguments));
@@ -3401,11 +3401,11 @@ is
 
 	
 	
-	-- Parses the single_cmd_status.cmd:
+	-- Parses the single_cmd.cmd:
 	procedure parse is 
 	begin
 		log (text => "parsing command: " 
-			& enclose_in_quotes (to_string (single_cmd_status.cmd)),
+			& enclose_in_quotes (to_string (single_cmd.cmd)),
 			level => log_threshold);
 
 		-- Clear the status bar if we are in graphical mode:
@@ -3835,13 +3835,13 @@ is
 				case noun is
 					when NOUN_TEXT =>
 						show_text_properties;
-						single_cmd_status.finalization_pending := true;
+						single_cmd.finalization_pending := true;
 
 					when NOUN_VIA =>
 						case cmd_field_count is
 							when 4 => -- place via
 								show_via_properties;
-								single_cmd_status.finalization_pending := true;
+								single_cmd.finalization_pending := true;
 
 							when 5 => -- place via RESET_N
 								-- Preset the net name so that it is visible
@@ -3849,7 +3849,7 @@ is
 								object_net_name := to_net_name (f (5));
 
 								show_via_properties;
-								single_cmd_status.finalization_pending := true;
+								single_cmd.finalization_pending := true;
 
 							when others => null;
 						end case;
@@ -3872,11 +3872,11 @@ begin -- board_cmd
 	-- Make a copy of the given command. In case the given command is incomplete
 	-- and we are in graphical mode (non-headless) then
 	-- this procedure interactively proposes arguments and completes the command.
-	single_cmd_status := (cmd => cmd_in, others => <>);
+	single_cmd := (cmd => cmd_in, others => <>);
 
-	-- single_cmd_status.cmd will now be processed and interactively completed
+	-- single_cmd.cmd will now be processed and interactively completed
 
-	cmd_field_count := get_field_count (single_cmd_status.cmd);
+	cmd_field_count := get_field_count (single_cmd.cmd);
 
 	
 
@@ -3900,9 +3900,9 @@ begin -- board_cmd
 	
 	
 	-- In graphical mode and cmd_entry_mode SINGLE_CMD the flag
-	-- single_cmd_status.complete can change to false. In that case
+	-- single_cmd.complete can change to false. In that case
 	-- the interactive completiton starts here. 
-	if not single_cmd_status.complete then
+	if not single_cmd.complete then
 		propose_arguments;
 	end if;
 

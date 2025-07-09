@@ -187,7 +187,7 @@ package body et_scripting is
 			-- Prepare the handling of the exception in case the script fails.
 			-- See procedures schematic_cmd.evaluate_exception or
 			-- board_cmd.evaluate_exception for example.
-			cmd_entry_mode := VIA_SCRIPT;
+			cmd_entry_mode := MODE_VIA_SCRIPT;
 			
 			-- read the file line by line
 			while not end_of_file loop

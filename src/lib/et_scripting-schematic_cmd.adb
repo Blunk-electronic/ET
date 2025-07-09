@@ -113,7 +113,7 @@ is
 	-- This function is a shortcut to get a single field
 	-- from the current command:
 	function f (place : in type_field_count) return string is begin
-		return get_field (single_cmd_status.cmd, place);
+		return get_field (single_cmd.cmd, place);
 	end;
 
 
@@ -1847,13 +1847,13 @@ is
 
 
 	
-	-- Parses the single_cmd_status.cmd:
+	-- Parses the single_cmd.cmd:
 	procedure parse is 
 		use et_device_placeholders;
 		use et_assembly_variants;
 	begin
 		log (text => "parsing command: " 
-			& enclose_in_quotes (to_string (single_cmd_status.cmd)),
+			& enclose_in_quotes (to_string (single_cmd.cmd)),
 			level => log_threshold);
 
 		-- Clear the status bar if we are in graphical mode:
@@ -2614,6 +2614,8 @@ is
 
 
 
+
+	
 	
 	procedure propose_arguments is
 		use et_scripting_interactive_schematic;
@@ -2926,7 +2928,7 @@ is
 											
 											set_edit_process_running;
 
-											single_cmd_status.finalization_pending := true;
+											single_cmd.finalization_pending := true;
 											-- CS redraw;
 
 										else
@@ -2953,7 +2955,7 @@ is
 							when 4 =>
 								-- no net name given -> anonymous net will be drawn
 								set_status (et_canvas_schematic_nets.status_draw_net);
-								single_cmd_status.finalization_pending := true;
+								single_cmd.finalization_pending := true;
 								
 							when 5 => -- like "draw net RESET_N"
 								-- explicit net name given
@@ -2962,7 +2964,7 @@ is
 								object_net_name := to_net_name (f (5));
 
 								set_status (et_canvas_schematic_nets.status_draw_net);
-								single_cmd_status.finalization_pending := true;
+								single_cmd.finalization_pending := true;
 
 							when others => null;								
 						end case;
@@ -3041,7 +3043,7 @@ is
 									
 										set_edit_process_running;
 
-										single_cmd_status.finalization_pending := true;
+										single_cmd.finalization_pending := true;
 										-- CS redraw;
 										
 									else
@@ -3334,11 +3336,11 @@ begin -- schematic_cmd
 	-- Make a copy of the given command. In case the given command is incomplete
 	-- AND we are in graphical mode (non-headless) then
 	-- this procedure interactively proposes arguments and completes the command.
-	single_cmd_status := (cmd => cmd_in, others => <>);
+	single_cmd := (cmd => cmd_in, others => <>);
 
-	-- single_cmd_status.cmd will now be processed and interactively completed
+	-- single_cmd.cmd will now be processed and interactively completed
 
-	cmd_field_count := get_field_count (single_cmd_status.cmd);
+	cmd_field_count := get_field_count (single_cmd.cmd);
 	
 
 	module := to_module_name (f (2)); -- motor_driver (without extension *.mod)
@@ -3363,9 +3365,9 @@ begin -- schematic_cmd
 	
 
 	-- In graphical mode and cmd_entry_mode SINGLE_CMD the flag
-	-- single_cmd_status.complete can change to false. In that case
+	-- single_cmd.complete can change to false. In that case
 	-- the interactive completiton starts here. 
-	if not single_cmd_status.complete then
+	if not single_cmd.complete then
 		propose_arguments;
 	end if;
 

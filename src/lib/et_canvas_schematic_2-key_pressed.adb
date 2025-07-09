@@ -804,8 +804,8 @@ begin -- key_pressed
 			-- waiting for finalization. This can be done by pressing the SPACE key.
 			-- Then we call the corresponding subprogram for the actual job right away here:
 			
-			--if single_cmd_status.finalization_pending and primary_tool = KEYBOARD then
-			if single_cmd_status.finalization_pending then
+			--if single_cmd.finalization_pending and primary_tool = KEYBOARD then
+			if single_cmd.finalization_pending then
 			
 				if key = key_space then
 						

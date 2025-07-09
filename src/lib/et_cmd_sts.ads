@@ -52,9 +52,10 @@ package et_cmd_sts is
 	-- If the command is waiting for finalization (like pressing space key
 	-- to place a unit or to draw a net) then the flag 
 	-- finalization_pending goes true.
-	type type_single_cmd_status is record
+	type type_single_cmd is record
 
-		-- the command to be executed like "schematic blood_sample_analyzer set value C1 100n"
+		-- The command to be executed like 
+		-- "schematic blood_sample_analyzer set value C1 100n"
 		cmd			: type_fields_of_line;
 
 		-- Goes false if too few arguments given via console:
@@ -68,8 +69,8 @@ package et_cmd_sts is
 
 
 	
-	-- The status of the single command entered on the console:
-	single_cmd_status : type_single_cmd_status;
+	-- The single command entered on the console:
+	single_cmd : type_single_cmd;
 
 
 	-- The number of fields of the given command:
@@ -81,11 +82,11 @@ package et_cmd_sts is
 	-- - the console in the GUI as single command.
 	-- - via a script (a batch of commands)
 	type type_cmd_entry_mode is (
-		SINGLE_CMD,
-		VIA_SCRIPT
-		);
+		MODE_SINGLE_CMD,
+		MODE_VIA_SCRIPT);
 
-	cmd_entry_mode_default : constant type_cmd_entry_mode := SINGLE_CMD;
+	
+	cmd_entry_mode_default : constant type_cmd_entry_mode := MODE_SINGLE_CMD;
 
 	cmd_entry_mode : type_cmd_entry_mode := cmd_entry_mode_default;
 	
@@ -125,12 +126,12 @@ package et_cmd_sts is
 	
 
 	-- This function is a shortcut to get a single field
-	-- from the current single_cmd_status command:
+	-- from the current single_cmd command:
 	function f (place : in type_field_count) 
 		return string;
 
 	
-	procedure reset_single_cmd_status;
+	procedure reset_single_cmd;
 
 
 	

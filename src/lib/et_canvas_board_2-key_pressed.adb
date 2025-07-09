@@ -740,7 +740,7 @@ begin -- key_pressed
 			-- If the command is waiting for finalization, usually by pressing
 			-- the space key, AND the primary tool is the keyboard, then
 			-- we call the corresponding subprogram right away here:
-			if single_cmd_status.finalization_pending and primary_tool = KEYBOARD then
+			if single_cmd.finalization_pending and primary_tool = KEYBOARD then
 				case verb is
 					when VERB_PLACE		=> place;
 					when others			=> null;

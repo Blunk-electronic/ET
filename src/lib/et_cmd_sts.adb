@@ -75,11 +75,11 @@ package body et_cmd_sts is
 
 	
 	procedure command_incomplete is begin
-		if cmd_entry_mode = SINGLE_CMD then
+		if cmd_entry_mode = MODE_SINGLE_CMD then
 			-- If a single command is given, then
 			-- clear the "complete" flag so that further
 			-- actions are proposed to the operator:
-			single_cmd_status.complete := false;
+			single_cmd.complete := false;
 		else
 			-- If command is executed via script then
 			-- raise exception so that the script execution
@@ -111,7 +111,7 @@ package body et_cmd_sts is
 
 	
 	procedure too_long is begin
-		command_too_long (single_cmd_status.cmd, cmd_field_count - 1);
+		command_too_long (single_cmd.cmd, cmd_field_count - 1);
 	end;
 	
 	
@@ -119,15 +119,15 @@ package body et_cmd_sts is
 	function f (place : in type_field_count) 
 		return string 
 	is begin
-		return get_field (single_cmd_status.cmd, place);
+		return get_field (single_cmd.cmd, place);
 	end;
 
 
 	
 
-	procedure reset_single_cmd_status is begin
-		single_cmd_status := (others => <>);
-	end reset_single_cmd_status;
+	procedure reset_single_cmd is begin
+		single_cmd := (others => <>);
+	end reset_single_cmd;
 
 
 	

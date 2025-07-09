@@ -214,7 +214,7 @@ package body et_scripting_interactive_schematic is
 		-- Allow drawing the unit:
 		unit_add.via_fetch := true;
 
-		single_cmd_status.finalization_pending := true;
+		single_cmd.finalization_pending := true;
 		
 		-- CS redraw;
 	end unit_selected_on_fetch;
@@ -274,7 +274,7 @@ package body et_scripting_interactive_schematic is
 				-- Allow drawing the unit:
 				unit_add.via_fetch := true;
 
-				single_cmd_status.finalization_pending := true;
+				single_cmd.finalization_pending := true;
 				
 				-- CS redraw;
 
@@ -381,13 +381,13 @@ package body et_scripting_interactive_schematic is
 				-- Allow drawing the unit:
 				set_edit_process_running;
 
-				single_cmd_status.finalization_pending := true;
+				single_cmd.finalization_pending := true;
 				
 			when VERB_MOVE => 
 				-- Allow drawing the unit:
 				set_edit_process_running;
 
-				single_cmd_status.finalization_pending := true;
+				single_cmd.finalization_pending := true;
 				
 			when VERB_ROTATE =>
 				-- rotate_selected_unit;
@@ -418,7 +418,7 @@ package body et_scripting_interactive_schematic is
 				-- Allow drawing the placeholder:
 				placeholder_move.being_moved := true;
 
-				single_cmd_status.finalization_pending := true;
+				single_cmd.finalization_pending := true;
 
 			when VERB_ROTATE =>
 				rotate_selected_placeholder (placeholder_move.category);

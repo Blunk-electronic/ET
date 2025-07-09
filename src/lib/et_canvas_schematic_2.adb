@@ -491,7 +491,7 @@ package body et_canvas_schematic_2 is
 		
 		reset_placeholder; -- after moving a placeholder
 
-		reset_single_cmd_status;
+		reset_single_cmd;
 		
 		-- reset_activate_counter;
 
@@ -1045,7 +1045,7 @@ package body et_canvas_schematic_2 is
 		cur_dir_bak : constant string := current_directory;
 		
 	begin
-		cmd_entry_mode := VIA_SCRIPT;
+		cmd_entry_mode := MODE_VIA_SCRIPT;
 
 		log (text => "executing script (in schematic domain) " 
 			 & enclose_in_quotes (line_as_typed_by_operator), 
@@ -1133,7 +1133,7 @@ package body et_canvas_schematic_2 is
 		-- Backup the current directory (like /home/user/my_projects):
 		cur_dir_bak : constant string := current_directory;
 	begin
-		cmd_entry_mode := SINGLE_CMD;
+		cmd_entry_mode := MODE_SINGLE_CMD;
 				
 		log (text => "executing command " & enclose_in_quotes (get_text (self)), level => log_threshold);
 		log_indentation_up;
