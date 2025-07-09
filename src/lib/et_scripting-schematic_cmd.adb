@@ -77,7 +77,9 @@ with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary
 
 
 separate (et_scripting)
-	
+
+
+
 procedure schematic_cmd (
 	module_cursor	: in pac_generic_modules.cursor;
 	fields			: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
@@ -110,8 +112,17 @@ is
 	here : constant string := ".";
 
 
+	-- Contains the number of fields given by the caller of this procedure:
+	cmd_field_count : type_field_count;
 
 
+	-- This procedure is a shortcut. Call it in case the given command is too long:
+	procedure too_long is begin
+		command_too_long (single_cmd.fields, cmd_field_count - 1);
+	end;
+
+
+	
 	-- This procedure parses a zoom related command.
 	-- If the runmode is non-graphical (like headless) then
 	-- nothing will be done here:
@@ -1809,6 +1820,8 @@ is
 	end delete_module;
 
 
+
+	
 	
 	-- Actions to save a module:
 	procedure save_module is 
@@ -3322,8 +3335,11 @@ is
 	end propose_arguments;
 
 
+
+	
 	
 begin -- schematic_cmd
+	
 	log (text => "given command: " 
 		 & enclose_in_quotes (to_string (fields)),
 		 level => log_threshold);
@@ -3334,7 +3350,8 @@ begin -- schematic_cmd
 	-- this procedure interactively proposes arguments and completes the command.
 	single_cmd := (fields => fields, others => <>);
 
-	-- single_cmd.fields will now be processed and interactively completed
+	-- The fields in single_cmd will now be processed and interactively completed.
+	-- A field is fetched from the single_cmd by the function "get_field".
 
 	cmd_field_count := get_field_count (single_cmd.fields);
 	

@@ -71,8 +71,6 @@ package et_cmd_sts is
 	single_cmd : type_single_cmd;
 
 
-	-- The number of fields of the given command:
-	cmd_field_count : type_field_count;
 
 
 
@@ -117,9 +115,7 @@ package et_cmd_sts is
 		from	: in type_field_count);
 
 
-	-- This procedure is a shortcut. Call it in case
-	-- the given command is too long:
-	procedure too_long;
+
 	
 	
 	

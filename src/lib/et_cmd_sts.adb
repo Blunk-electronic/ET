@@ -110,12 +110,6 @@ package body et_cmd_sts is
 	end;
 
 
-
-
-	
-	procedure too_long is begin
-		command_too_long (single_cmd.fields, cmd_field_count - 1);
-	end;
 	
 	
 	

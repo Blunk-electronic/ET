@@ -98,7 +98,9 @@ with et_canvas_board_preliminary_object;
 
 
 separate (et_scripting)
-	
+
+
+
 procedure board_cmd (
 	module_cursor	: in pac_generic_modules.cursor;
 	fields			: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
@@ -131,6 +133,17 @@ is
 
 	
 	module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+
+	
+	-- Contains the number of fields given by the caller of this procedure:
+	cmd_field_count : type_field_count;
+
+
+	-- This procedure is a shortcut. Call it in case the given command is too long:
+	procedure too_long is begin
+		command_too_long (single_cmd.fields, cmd_field_count - 1);
+	end;
+
 
 	
 	
@@ -3790,6 +3803,7 @@ is
 
 	
 	
+	
 	procedure propose_arguments is
 		use et_canvas_board_devices;
 		use et_canvas_board_texts;
@@ -3857,8 +3871,11 @@ is
 	end propose_arguments;
 
 	
+
+
 	
 begin -- board_cmd
+	
 	log (text => "given command: " 
 		 & enclose_in_quotes (to_string (fields)),
 		 level => log_threshold);
@@ -3869,7 +3886,8 @@ begin -- board_cmd
 	-- this procedure interactively proposes arguments and completes the command.
 	single_cmd := (fields => fields, others => <>);
 
-	-- single_cmd.fields will now be processed and interactively completed
+	-- The fields in single_cmd will now be processed and interactively completed.
+	-- A field is fetched from the single_cmd by the function "get_field".
 
 	cmd_field_count := get_field_count (single_cmd.fields);
 

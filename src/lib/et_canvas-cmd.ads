@@ -45,6 +45,8 @@
 --   history of changes:
 --
 
+with et_cmd_sts;					use et_cmd_sts;
+
 
 generic
 
@@ -75,7 +77,8 @@ package et_canvas.cmd is
 
 
 
-	-- This procedure parses a canvas related command.
+	-- This procedure parses a canvas related command
+	-- stored in the global variable "single_cmd" (see package et_cmd_sts).
 	-- If the runmode is non-graphical (like headless) then
 	-- nothing will be done here:
 	procedure parse_canvas_command (

@@ -46,8 +46,6 @@ with et_exceptions;					use et_exceptions;
 with et_logging;					use et_logging;
 with et_scripting;					use et_scripting;
 
-with et_cmd_sts;					use et_cmd_sts;
-
 
 package body et_canvas.cmd is
 
@@ -89,6 +87,17 @@ package body et_canvas.cmd is
 		verb	: in type_canvas_verb;
 		noun	: in type_canvas_noun)
 	is
+
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : type_field_count;
+
+
+		-- This procedure is a shortcut. Call it in case the given command is too long:
+		procedure too_long is begin
+			command_too_long (single_cmd.fields, cmd_field_count - 1);
+		end;
+
+		
 		
 		-- Zooms on the current cursor position:
 		procedure set_zoom is 
@@ -305,6 +314,10 @@ package body et_canvas.cmd is
 		
 	begin
 		log (text => "parse canvas command ...", level => log_threshold + 1);
+
+		cmd_field_count := get_field_count (single_cmd.fields);
+
+		
 
 		-- Canvas commands can only be executed 
 		-- in a graphical runmode:
