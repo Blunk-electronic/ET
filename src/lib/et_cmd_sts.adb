@@ -51,8 +51,11 @@ package body et_cmd_sts is
 
 
 
-	procedure invalid_keyword (field : in count_type) is begin
-		log (ERROR, "invalid keyword in field no." & count_type'image (field) & " !",
+	procedure invalid_keyword (
+		field : in type_field_count) 
+	is begin
+		log (ERROR, "invalid keyword in field no." 
+			 & type_field_count'image (field) & " !",
 			 console => true);
 		raise constraint_error;
 	end;

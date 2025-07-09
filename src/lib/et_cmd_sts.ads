@@ -36,8 +36,6 @@
 --   history of changes:
 --
 
-with ada.containers;			use ada.containers;
-
 with et_string_processing;		use et_string_processing;
 with et_script_names;			use et_script_names;
 with et_logging;				use et_logging;
@@ -95,7 +93,8 @@ package et_cmd_sts is
 
 
 
-	procedure invalid_keyword (field : in count_type); -- CS use type natural ?
+	procedure invalid_keyword (
+		field : in type_field_count);
 	
 	
 
