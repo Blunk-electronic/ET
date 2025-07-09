@@ -2726,36 +2726,59 @@ is
 			end insert_net_class;
 			
 
+
 			
-			procedure add_board_layer (
-				module_name	: in pac_module_name.bounded_string;
-				module		: in out type_generic_module) 
-			is
-				use et_pcb_stack;
-			begin
-				log (text => "board layer stack", level => log_threshold + 1);
 
-				-- Copy the collected layers (except the bottom conductor layer) into the module:
-				module.board.stack.layers := board_layers;
-
-				-- If the last entry was "conductor n t" then we assume that this
-				-- was the bottom conductor layer (it does not have a dielectric layer underneath).
-				if not dielectric_found then
-					module.board.stack.bottom.thickness := conductor_thickness;
-				else
-					log (ERROR, "dielectric not allowed underneath the bottom conductor layer !", console => true);
-					raise constraint_error;
-				end if;
+			procedure add_board_layer is 
+				use et_board_ops;
 				
-				-- reset layer values:
-				dielectric_found := false;
-				conductor_layer := et_pcb_stack.type_signal_layer'first;
-				dielectric_layer := et_pcb_stack.type_signal_layer'first;
-				conductor_thickness := et_pcb_stack.conductor_thickness_outer_default;
-				board_layer := (others => <>);
-				package_layers.clear (board_layers);
+
+				procedure do_it (
+					module_name	: in pac_module_name.bounded_string;
+					module		: in out type_generic_module) 
+				is
+					use et_pcb_stack;
+				begin
+					log (text => "board layer stack", level => log_threshold + 1);
+
+					-- Copy the collected layers (except the bottom conductor layer) into the module:
+					module.board.stack.layers := board_layers;
+
+					-- If the last entry was "conductor n t" then we assume that this
+					-- was the bottom conductor layer (it does not have a dielectric layer underneath).
+					if not dielectric_found then
+						module.board.stack.bottom.thickness := conductor_thickness;
+					else
+						log (ERROR, "dielectric not allowed underneath the bottom conductor layer !", console => true);
+						raise constraint_error;
+					end if;
+					
+					-- reset layer values:
+					dielectric_found := false;
+					conductor_layer := et_pcb_stack.type_signal_layer'first;
+					dielectric_layer := et_pcb_stack.type_signal_layer'first;
+					conductor_thickness := et_pcb_stack.conductor_thickness_outer_default;
+					board_layer := (others => <>);
+					package_layers.clear (board_layers);
+
+				end do_it;
+
+
+			begin							 
+				update_element (
+					container	=> generic_modules,
+					position	=> module_cursor,
+					process		=> do_it'access);
+
+				-- Now that the board layer stack is complete,
+				-- we assign the deepest layer to check_layers.
+				check_layers.deepest_layer := 
+					get_deepest_conductor_layer (module_cursor);
 
 			end add_board_layer;
+			
+			
+
 
 
 			
@@ -5159,19 +5182,9 @@ is
 					
 				when SEC_BOARD_LAYER_STACK =>
 					case stack.parent is
-						when SEC_INIT =>  -- CS clean up. separate procedures required
+						when SEC_INIT =>
+							add_board_layer;
 
-							-- add board layer
-							update_element (
-								container	=> generic_modules,
-								position	=> module_cursor,
-								process		=> add_board_layer'access);
-
-							-- Now that the board layer stack is complete,
-							-- we assign the deepest layer to check_layers.
-							check_layers.deepest_layer := 
-								et_pcb_stack.deepest_layer (element (module_cursor).board.stack);
-							
 						when others => invalid_section;
 					end case;
 

@@ -820,14 +820,30 @@ package body et_board_ops is
 
 
 
+	
+
 	function get_deepest_conductor_layer (
-		module	: in pac_generic_modules.cursor) -- the module like motor_driver
+		module	: in pac_generic_modules.cursor)
 		return et_pcb_stack.type_signal_layer 
-	is begin
-		return et_pcb_stack.deepest_layer (pac_generic_modules.element (module).board.stack);
+	is 
+		result : et_pcb_stack.type_signal_layer;
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is begin
+			result := get_deepest_layer (module.board.stack);
+		end query_module;
+		
+		
+	begin
+		query_element (module, query_module'access);
+		return result;
 	end get_deepest_conductor_layer;
 
 
+
+	
 
 
 	function get_net_class (

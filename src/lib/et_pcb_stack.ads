@@ -170,8 +170,10 @@ package et_pcb_stack is
 
 	
 	-- Returns the index of the deepest conductor layer:
-	function deepest_layer (stack : in type_stack) return type_signal_layer;
-	-- CS rename to get_deepest_layer
+	function get_deepest_layer (
+		stack : in type_stack) 
+		return type_signal_layer;
+
 	
 
 	-- If conductor layers must be checked against the deepest layer of the pcb, use

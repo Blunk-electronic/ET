@@ -157,7 +157,7 @@ package et_board_ops is
 
 	-- Returns the index of the deepest conductor layer of the given module:
 	function get_deepest_conductor_layer (
-		module	: in pac_generic_modules.cursor) -- the module like motor_driver
+		module	: in pac_generic_modules.cursor)
 		return et_pcb_stack.type_signal_layer;
 
 

@@ -289,12 +289,16 @@ package body et_pcb_stack is
 
 	
 	
-	function deepest_layer (stack : in type_stack) return type_signal_layer is begin
+	function get_deepest_layer (
+		stack : in type_stack) 
+		return type_signal_layer
+	is begin
 		-- Because the bottom layer is always there, we add 1:
 		return stack.layers.last_index + 1;
-	end deepest_layer;
+	end get_deepest_layer;
 
 	
+
 	
 	function signal_layer_valid (
 		signal_layer 	: in et_pcb_stack.type_signal_layer;
