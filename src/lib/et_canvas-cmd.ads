@@ -33,9 +33,17 @@
 --   info@blunk-electronic.de
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
+--
+-- DESCRIPTION
+-- -----------
+-- Canvas commands are of general nature. They affect things
+-- like grid, zoom, cursor.
+-- These commands are independend on the domain like schematic, 
+-- baord, symbol or package editor.
+--
+--
 --   history of changes:
 --
-
 
 
 generic

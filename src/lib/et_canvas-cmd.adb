@@ -56,13 +56,6 @@ package body et_canvas.cmd is
 	-- happens. In the future further actions should be proposed to the operator.
 	procedure canvas_command_incomplete is begin
 		null;
-		-- if runmode /= MODE_HEADLESS and cmd_entry_mode = SINGLE_CMD then
-		-- CS: In the canvas, the runmode is always not MODE_HEADLESS.
-		-- CS: In the canvas, the entry mode is always SINGLE_CMD ?	
-			-- single_cmd_status.complete := false;
-		-- else
-			-- raise exception_command_incomplete with "Canvas command not complete !";
-		-- end if;
 	end;
 
 
