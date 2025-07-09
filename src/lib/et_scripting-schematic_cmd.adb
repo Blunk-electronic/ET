@@ -109,12 +109,7 @@ is
 	-- apply to the current sheet, we use the UNIX-bash-like period character:
 	here : constant string := ".";
 
-	
-	-- This function is a shortcut to get a single field
-	-- from the current command:
-	function f (place : in type_field_count) return string is begin
-		return get_field (single_cmd.cmd, place);
-	end;
+
 
 
 	-- This procedure parses a zoom related command.
@@ -196,7 +191,7 @@ is
 				create_assembly_variant
 					(
 					module_name		=> module,
-					variant_name	=> to_variant (f (5)),
+					variant_name	=> to_variant (get_field (5)),
 					log_threshold	=> log_threshold + 1);
 				
 			when 6 .. type_field_count'last => too_long;
@@ -215,7 +210,7 @@ is
 				delete_assembly_variant
 					(
 					module_name		=> module,
-					variant_name	=> to_variant (f (5)),
+					variant_name	=> to_variant (get_field (5)),
 					log_threshold	=> log_threshold + 1);
 				
 			when 6 .. type_field_count'last => too_long;
@@ -235,8 +230,8 @@ is
 				describe_assembly_variant
 					(
 					module_name		=> module,
-					variant_name	=> to_variant (f (5)), -- low_cost
-					description		=> et_assembly_variants.to_unbounded_string (f (6)), -- "the cheap version"
+					variant_name	=> to_variant (get_field (5)), -- low_cost
+					description		=> et_assembly_variants.to_unbounded_string (get_field (6)), -- "the cheap version"
 					log_threshold	=> log_threshold + 1);
 				
 			when 7 .. type_field_count'last => too_long;
@@ -257,16 +252,16 @@ is
 				-- If a virtual device is added, then no variant is required.
 				add_device (
 					module_name 	=> module,
-					device_model	=> to_file_name (f (5)),
+					device_model	=> to_file_name (get_field (5)),
 					destination		=> to_position 
 						(
-						sheet => to_sheet (f (6)),
+						sheet => to_sheet (get_field (6)),
 						point => type_vector_model (set 
 									(
-									x => to_distance (f (7)),
-									y => to_distance (f (8))
+									x => to_distance (get_field (7)),
+									y => to_distance (get_field (8))
 									)),
-						rotation => to_rotation (f (9))
+						rotation => to_rotation (get_field (9))
 						),
 					variant			=> to_variant_name (""),
 					log_threshold	=> log_threshold + 1
@@ -276,18 +271,18 @@ is
 				-- A real device requires specification of a package variant.
 				add_device (
 					module_name 	=> module,
-					device_model	=> to_file_name (f (5)),
+					device_model	=> to_file_name (get_field (5)),
 					destination		=> to_position 
 						(
-						sheet => to_sheet (f (6)),
+						sheet => to_sheet (get_field (6)),
 						point => type_vector_model (set 
 									(
-									x => to_distance (f (7)),
-									y => to_distance (f (8))
+									x => to_distance (get_field (7)),
+									y => to_distance (get_field (8))
 									)),
-						rotation		=> to_rotation (f (9))
+						rotation		=> to_rotation (get_field (9))
 						),
-					variant			=> to_variant_name (f (10)),
+					variant			=> to_variant_name (get_field (10)),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -308,8 +303,8 @@ is
 				rename_device
 					(
 					module_name 		=> module,
-					device_name_before	=> to_device_name (f (5)), -- IC1
-					device_name_after	=> to_device_name (f (6)), -- IC23
+					device_name_before	=> to_device_name (get_field (5)), -- IC1
+					device_name_after	=> to_device_name (get_field (6)), -- IC23
 					log_threshold		=> log_threshold + 1
 					);
 
@@ -331,13 +326,13 @@ is
 					module_name 	=> module,
 					place			=> to_position 
 						(
-						sheet => to_sheet (f (5)),
+						sheet => to_sheet (get_field (5)),
 						point => type_vector_model (set 
 									(
-									x => to_distance (f (6)),
-									y => to_distance (f (7))
+									x => to_distance (get_field (6)),
+									y => to_distance (get_field (7))
 									)),
-						rotation		=> to_rotation (f (8))
+						rotation		=> to_rotation (get_field (8))
 						),
 					log_threshold	=> log_threshold + 1
 					);
@@ -359,12 +354,12 @@ is
 				move_netchanger
 					(
 					module_name 	=> module,
-					index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3, ...
-					coordinates		=> to_coordinates (f (6)),  -- relative/absolute
-					sheet			=> to_sheet_relative (f (7)),
+					index			=> et_submodules.to_netchanger_id (get_field (5)), -- 1,2,3, ...
+					coordinates		=> to_coordinates (get_field (6)),  -- relative/absolute
+					sheet			=> to_sheet_relative (get_field (7)),
 					point			=> type_vector_model (set (
-										x => to_distance (f (8)),
-										y => to_distance (f (9)))),
+										x => to_distance (get_field (8)),
+										y => to_distance (get_field (9)))),
 						
 					log_threshold	=> log_threshold + 1
 					);
@@ -386,7 +381,7 @@ is
 				delete_netchanger
 					(
 					module_name		=> module,
-					index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
+					index			=> et_submodules.to_netchanger_id (get_field (5)), -- 1,2,3,...
 					log_threshold		=> log_threshold + 1);
 
 			when 6 .. type_field_count'last => too_long;
@@ -405,11 +400,11 @@ is
 			when 8 =>
 				drag_netchanger (
 					module_name 	=> module,
-					index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
-					coordinates		=> to_coordinates (f (6)), -- relative/absolute
+					index			=> et_submodules.to_netchanger_id (get_field (5)), -- 1,2,3,...
+					coordinates		=> to_coordinates (get_field (6)), -- relative/absolute
 					point			=> type_vector_model (set (
-										x => to_distance (f (7)),
-										y => to_distance (f (8)))),
+										x => to_distance (get_field (7)),
+										y => to_distance (get_field (8)))),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -430,9 +425,9 @@ is
 			when 7 =>
 				rotate_netchanger (
 					module_name 	=> module,
-					index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
-					coordinates		=> to_coordinates (f (6)), -- relative/absolute
-					rotation		=> to_rotation (f (7)), -- 90
+					index			=> et_submodules.to_netchanger_id (get_field (5)), -- 1,2,3,...
+					coordinates		=> to_coordinates (get_field (6)), -- relative/absolute
+					rotation		=> to_rotation (get_field (7)), -- 90
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -452,14 +447,14 @@ is
 			when 9 =>
 				add_port (
 					module_name 	=> module,
-					instance		=> to_instance_name (f (5)),
-					port_name		=> to_net_name (f (6)),
+					instance		=> to_instance_name (get_field (5)),
+					port_name		=> to_net_name (get_field (6)),
 					position		=> type_vector_model (set 
 								(
-								x => to_distance (f (7)),
-								y => to_distance (f (8))
+								x => to_distance (get_field (7)),
+								y => to_distance (get_field (8))
 								)),
-					direction		=> et_submodules.to_port_name (f (9)),
+					direction		=> et_submodules.to_port_name (get_field (9)),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -481,12 +476,12 @@ is
 			when 9 =>
 				drag_port (
 					module_name 	=> module,
-					instance		=> to_instance_name (f (5)),
-					port_name		=> to_net_name (f (6)),
-					coordinates		=> to_coordinates (f (7)),  -- relative/absolute
+					instance		=> to_instance_name (get_field (5)),
+					port_name		=> to_net_name (get_field (6)),
+					coordinates		=> to_coordinates (get_field (7)),  -- relative/absolute
 					point			=> type_vector_model (set (
-								x => to_distance (f (8)),
-								y => to_distance (f (9)))),
+								x => to_distance (get_field (8)),
+								y => to_distance (get_field (9)))),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -508,8 +503,8 @@ is
 				delete_port
 					(
 					module_name 	=> module,
-					instance		=> to_instance_name (f (5)),
-					port_name		=> to_net_name (f (6)),
+					instance		=> to_instance_name (get_field (5)),
+					port_name		=> to_net_name (get_field (6)),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -530,12 +525,12 @@ is
 			when 9 =>
 				move_port (
 					module_name 	=> module,
-					instance		=> to_instance_name (f (5)),
-					port_name		=> to_net_name (f (6)),
-					coordinates		=> to_coordinates (f (7)),  -- relative/absolute
+					instance		=> to_instance_name (get_field (5)),
+					port_name		=> to_net_name (get_field (6)),
+					coordinates		=> to_coordinates (get_field (7)),  -- relative/absolute
 					point			=> type_vector_model (set (
-								x => to_distance (f (8)),
-								y => to_distance (f (9)))),
+								x => to_distance (get_field (8)),
+								y => to_distance (get_field (9)))),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -556,20 +551,20 @@ is
 			when 11 =>
 				add_submodule (
 					module_name 	=> module, -- parent module (where the submodule is to be inserted)
-					file			=> et_submodules.to_submodule_path (f (5)),
-					instance		=> to_instance_name (f (6)), -- submodule instance name
+					file			=> et_submodules.to_submodule_path (get_field (5)),
+					instance		=> to_instance_name (get_field (6)), -- submodule instance name
 					position		=> to_position 
 						(
-						sheet => to_sheet (f (7)),
+						sheet => to_sheet (get_field (7)),
 						point => type_vector_model (set 
 									(
-									x => to_distance (f (8)),
-									y => to_distance (f (9))
+									x => to_distance (get_field (8)),
+									y => to_distance (get_field (9))
 									))
 						),
 					size => (
-						x => to_distance (f (10)),
-						y => to_distance (f (11))
+						x => to_distance (get_field (10)),
+						y => to_distance (get_field (11))
 						),
 					log_threshold	=> log_threshold + 1
 					);
@@ -591,12 +586,12 @@ is
 			when 9 =>
 				move_submodule (
 					module_name 	=> module,
-					instance		=> to_instance_name (f (5)),
-					coordinates		=> to_coordinates (f (6)),  -- relative/absolute
-					sheet			=> to_sheet_relative (f (7)),
+					instance		=> to_instance_name (get_field (5)),
+					coordinates		=> to_coordinates (get_field (6)),  -- relative/absolute
+					sheet			=> to_sheet_relative (get_field (7)),
 					point			=> type_vector_model (set (
-								x => to_distance (f (8)),
-								y => to_distance (f (9)))),
+								x => to_distance (get_field (8)),
+								y => to_distance (get_field (9)))),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -617,11 +612,11 @@ is
 			when 8 =>
 				drag_submodule (
 					module_name 	=> module,
-					instance		=> to_instance_name (f (5)),
-					coordinates		=> to_coordinates (f (6)),  -- relative/absolute
+					instance		=> to_instance_name (get_field (5)),
+					coordinates		=> to_coordinates (get_field (6)),  -- relative/absolute
 					point			=> type_vector_model (set (
-								x => to_distance (f (7)),
-								y => to_distance (f (8)))),
+								x => to_distance (get_field (7)),
+								y => to_distance (get_field (8)))),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -643,15 +638,15 @@ is
 			when 9 =>
 				copy_submodule (
 					module_name 	=> module, -- parent module (where the submodule is to be copied)
-					instance_origin	=> to_instance_name (f (5)), -- submodule instance name
-					instance_new	=> to_instance_name (f (6)), -- submodule instance name
+					instance_origin	=> to_instance_name (get_field (5)), -- submodule instance name
+					instance_new	=> to_instance_name (get_field (6)), -- submodule instance name
 					destination		=> to_position 
 						(
-						sheet => to_sheet (f (7)),
+						sheet => to_sheet (get_field (7)),
 						point => type_vector_model (set
 									(
-									x => to_distance (f (8)),
-									y => to_distance (f (9))
+									x => to_distance (get_field (8)),
+									y => to_distance (get_field (9))
 									))
 						),
 					log_threshold	=> log_threshold + 1
@@ -674,7 +669,7 @@ is
 			when 5 =>
 				delete_submodule (
 					module_name 	=> module, -- parent module (where the submodule is to be deleted)
-					instance		=> to_instance_name (f (5)), -- submodule instance name
+					instance		=> to_instance_name (get_field (5)), -- submodule instance name
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -696,8 +691,8 @@ is
 				rename_submodule
 					(
 					module_name		=> module,
-					instance_old	=> to_instance_name (f (5)), -- OSC1
-					instance_new	=> to_instance_name (f (6)), -- OSC2
+					instance_old	=> to_instance_name (get_field (5)), -- OSC1
+					instance_new	=> to_instance_name (get_field (6)), -- OSC2
 					log_threshold	=> log_threshold + 1);
 
 			when 7 .. type_field_count'last => too_long;
@@ -719,9 +714,9 @@ is
 				mount_submodule
 					(
 					module_name		=> module,
-					variant_parent	=> to_variant (f (5)), -- low_cost
-					instance		=> to_instance_name (f (6)), -- OSC1
-					variant_submod	=> to_variant (f (7)), -- fixed_frequency
+					variant_parent	=> to_variant (get_field (5)), -- low_cost
+					instance		=> to_instance_name (get_field (6)), -- OSC1
+					variant_submod	=> to_variant (get_field (7)), -- fixed_frequency
 					log_threshold	=> log_threshold + 1);
 
 			when 8 .. type_field_count'last => too_long;
@@ -744,8 +739,8 @@ is
 				remove_submodule
 					(
 					module_name		=> module,
-					variant_parent	=> to_variant (f (5)),
-					instance		=> to_instance_name (f (6)), -- OSC1
+					variant_parent	=> to_variant (get_field (5)),
+					instance		=> to_instance_name (get_field (6)), -- OSC1
 					log_threshold	=> log_threshold + 1);
 
 			when 7 .. type_field_count'last => too_long;
@@ -765,8 +760,8 @@ is
 			when 6 =>
 				set_submodule_file (
 					module_name 	=> module,
-					instance		=> to_instance_name (f (5)),
-					file			=> et_submodules.to_submodule_path (f (6)),
+					instance		=> to_instance_name (get_field (5)),
+					file			=> et_submodules.to_submodule_path (get_field (6)),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -844,16 +839,16 @@ is
 			when 9 =>
 				copy_device (
 					module_name 	=> module,
-					device_name		=> to_device_name (f (5)),
+					device_name		=> to_device_name (get_field (5)),
 					destination		=> to_position 
 						(
-						sheet => to_sheet (f (6)),
+						sheet => to_sheet (get_field (6)),
 						point => type_vector_model (set
 									(
-									x => to_distance (f (7)),
-									y => to_distance (f (8))
+									x => to_distance (get_field (7)),
+									y => to_distance (get_field (8))
 									)),
-						rotation		=> to_rotation (f (9))
+						rotation		=> to_rotation (get_field (9))
 						),
 					log_threshold	=> log_threshold + 1
 					);
@@ -1022,7 +1017,7 @@ is
 			when 5 =>
 				delete_device (
 					module_name 	=> module,
-					device_name		=> to_device_name (f (5)),
+					device_name		=> to_device_name (get_field (5)),
 					log_threshold	=> log_threshold + 1);
 
 			when 6 .. type_field_count'last => too_long; 
@@ -1040,8 +1035,8 @@ is
 			when 6 =>
 				delete_unit (
 					module_cursor 	=> active_module,
-					device_name		=> to_device_name (f (5)),
-					unit_name		=> to_unit_name (f (6)),
+					device_name		=> to_device_name (get_field (5)),
+					unit_name		=> to_unit_name (get_field (6)),
 					log_threshold	=> log_threshold + 1);
 
 			when 7 .. type_field_count'last => too_long; 
@@ -1059,12 +1054,12 @@ is
 			when 9 =>
 				drag_unit (
 					module_cursor 	=> active_module,
-					device_name		=> to_device_name (f (5)),
-					unit_name		=> to_unit_name (f (6)),
-					coordinates		=> to_coordinates (f (7)), -- relative/absolute
+					device_name		=> to_device_name (get_field (5)),
+					unit_name		=> to_unit_name (get_field (6)),
+					coordinates		=> to_coordinates (get_field (7)), -- relative/absolute
 					destination		=> type_vector_model (set (
-										x => to_distance (f (8)),
-										y => to_distance (f (9)))),
+										x => to_distance (get_field (8)),
+										y => to_distance (get_field (9)))),
 					log_threshold	=> log_threshold + 1);
 
 			when 10 .. type_field_count'last => too_long; 
@@ -1082,13 +1077,13 @@ is
 			when 10 =>
 				move_unit (
 					module_cursor 	=> active_module,
-					device_name		=> to_device_name (f (5)), -- IC1
-					unit_name		=> to_unit_name (f (6)), -- A
-					coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-					sheet			=> to_sheet_relative (f (8)),
+					device_name		=> to_device_name (get_field (5)), -- IC1
+					unit_name		=> to_unit_name (get_field (6)), -- A
+					coordinates		=> to_coordinates (get_field (7)),  -- relative/absolute
+					sheet			=> to_sheet_relative (get_field (8)),
 					destination		=> type_vector_model (set (
-										x => to_distance (f (9)),
-										y => to_distance (f (10)))),
+										x => to_distance (get_field (9)),
+										y => to_distance (get_field (10)))),
 						
 					log_threshold	=> log_threshold + 1);
 
@@ -1106,10 +1101,10 @@ is
 			when 8 =>
 				rotate_unit (
 					module_cursor 	=> active_module,
-					device_name		=> to_device_name (f (5)), -- IC1
-					unit_name		=> to_unit_name (f (6)), -- A
-					coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-					rotation		=> to_rotation (f (8)), -- 90
+					device_name		=> to_device_name (get_field (5)), -- IC1
+					unit_name		=> to_unit_name (get_field (6)), -- A
+					coordinates		=> to_coordinates (get_field (7)),  -- relative/absolute
+					rotation		=> to_rotation (get_field (8)), -- 90
 					log_threshold	=> log_threshold + 1);
 
 			when 9 .. type_field_count'last => too_long; 
@@ -1127,17 +1122,17 @@ is
 			when 10 =>
 				fetch_unit (
 					module_cursor	=> active_module,
-					device_name		=> to_device_name (f (5)),
-					unit_name		=> to_unit_name (f (6)),
+					device_name		=> to_device_name (get_field (5)),
+					unit_name		=> to_unit_name (get_field (6)),
 					destination		=> to_position 
 						(
-						sheet => to_sheet (f (7)),
+						sheet => to_sheet (get_field (7)),
 						point => type_vector_model (set
 									(
-									x => to_distance (f (8)),
-									y => to_distance (f (9))
+									x => to_distance (get_field (8)),
+									y => to_distance (get_field (9))
 									)),
-						rotation		=> to_rotation (f (10))
+						rotation		=> to_rotation (get_field (10))
 						),
 					log_threshold	=> log_threshold + 1
 					);
@@ -1160,9 +1155,9 @@ is
 				when 7 =>
 					rotate_unit_placeholder (
 						module_cursor 	=> active_module,
-						device_name		=> to_device_name (f (5)), -- IC1
-						unit_name		=> to_unit_name (f (6)), -- A
-						rotation		=> to_rotation_doc (f (7)), -- 90
+						device_name		=> to_device_name (get_field (5)), -- IC1
+						unit_name		=> to_unit_name (get_field (6)), -- A
+						rotation		=> to_rotation_doc (get_field (7)), -- 90
 						meaning			=> meaning,
 						log_threshold	=> log_threshold + 1);
 
@@ -1205,12 +1200,12 @@ is
 				when 9 =>
 					move_unit_placeholder (
 						module_cursor 	=> active_module,
-						device_name		=> to_device_name (f (5)), -- IC1
-						unit_name		=> to_unit_name (f (6)), -- A
-						coordinates		=> to_coordinates (f (7)),  -- relative/absolute
+						device_name		=> to_device_name (get_field (5)), -- IC1
+						unit_name		=> to_unit_name (get_field (6)), -- A
+						coordinates		=> to_coordinates (get_field (7)),  -- relative/absolute
 						point			=> type_vector_model (set (
-											x => to_distance (f (8)),
-											y => to_distance (f (9)))),
+											x => to_distance (get_field (8)),
+											y => to_distance (get_field (9)))),
 						meaning			=> meaning,
 						log_threshold	=> log_threshold + 1);
 
@@ -1339,15 +1334,15 @@ is
 					module_cursor		=> active_module,
 					segment_position	=> to_position (
 											point => type_vector_model (set (
-												x => to_distance (f (6)),
-												y => to_distance (f (7)))),
-											sheet => to_sheet (f (5))), -- sheet number
+												x => to_distance (get_field (6)),
+												y => to_distance (get_field (7)))),
+											sheet => to_sheet (get_field (5))), -- sheet number
     
 					label_position		=> type_vector_model (set (
-												x => to_distance (f (8)),
-												y => to_distance (f (9)))),
+												x => to_distance (get_field (8)),
+												y => to_distance (get_field (9)))),
     
-					rotation			=> to_rotation (f (10)), -- 0 / 90
+					rotation			=> to_rotation (get_field (10)), -- 0 / 90
 					log_threshold		=> log_threshold + 1);
 
 				
@@ -1359,12 +1354,12 @@ is
 					module_cursor	=> active_module,
 					position		=> to_position (
 											point => type_vector_model (set (
-												x => to_distance (f (6)),
-												y => to_distance (f (7)))),
-											sheet => to_sheet (f (5))), -- sheet number
+												x => to_distance (get_field (6)),
+												y => to_distance (get_field (7)))),
+											sheet => to_sheet (get_field (5))), -- sheet number
     
 					-- A tag label requires specification of signal direction:
-					direction		=> to_direction (f (8)), -- INPUT, OUTPUT, PASSIVE, ...
+					direction		=> to_direction (get_field (8)), -- INPUT, OUTPUT, PASSIVE, ...
 					log_threshold	=> log_threshold + 1);
 
 				
@@ -1386,14 +1381,14 @@ is
 		case cmd_field_count is
 			when 10 =>
 				A := to_position (
-					point => to_vector_model (f (7), f (8)), -- x/y
-					sheet => to_sheet (f (6))); -- sheet number
+					point => to_vector_model (get_field (7), get_field (8)), -- x/y
+					sheet => to_sheet (get_field (6))); -- sheet number
 
-				B := to_vector_model (f (9), f (10)); -- x/y
+				B := to_vector_model (get_field (9), get_field (10)); -- x/y
 										 
 				insert_net_segment (
 					module_cursor	=> active_module,
-					net_name		=> to_net_name (f (5)), -- RESET
+					net_name		=> to_net_name (get_field (5)), -- RESET
 					A				=> A,					
 					B 				=> B,					
 					log_threshold	=> log_threshold + 1);
@@ -1418,9 +1413,9 @@ is
 
 					position		=> to_position (
 										point => type_vector_model (set (
-											x => to_distance (f (6)),
-											y => to_distance (f (7)))),
-										sheet => to_sheet (f (5))), -- sheet number
+											x => to_distance (get_field (6)),
+											y => to_distance (get_field (7)))),
+										sheet => to_sheet (get_field (5))), -- sheet number
 					
 					log_threshold	=> log_threshold + 1);
 				
@@ -1442,7 +1437,7 @@ is
 			when 5 =>
 				delete_net (
 					module_cursor		=> active_module,
-					net_name			=> to_net_name (f (5)), -- RESET_N
+					net_name			=> to_net_name (get_field (5)), -- RESET_N
 					sheet				=> 1, -- no meaning
 					all_sheets			=> TRUE,
 					log_threshold		=> log_threshold + 1);
@@ -1450,8 +1445,8 @@ is
 			when 6 =>
 				delete_net (
 					module_cursor		=> active_module,
-					net_name			=> to_net_name (f (5)), -- RESET
-					sheet				=> to_sheet (f (6)),
+					net_name			=> to_net_name (get_field (5)), -- RESET
+					sheet				=> to_sheet (get_field (6)),
 					log_threshold		=> log_threshold + 1);
 			
 			when 7 .. type_field_count'last => too_long;
@@ -1470,12 +1465,12 @@ is
 			-- example: "delete segment 1 97 99 2"
 			when 8 =>
 				catch_zone := set_catch_zone (
-					center	=> to_vector_model (f (6), f (7)),
-					radius	=> to_zone_radius (f (8)));
+					center	=> to_vector_model (get_field (6), get_field (7)),
+					radius	=> to_zone_radius (get_field (8)));
 				
 				delete_segment (
 					module_cursor	=> active_module,
-					sheet			=> to_sheet (f (5)),
+					sheet			=> to_sheet (get_field (5)),
 					catch_zone		=> catch_zone,
 					log_threshold	=> log_threshold + 1);
 
@@ -1495,12 +1490,12 @@ is
 			-- example: "delete strand 1 97 99 2"
 			when 8 =>
 				catch_zone := set_catch_zone (
-					center	=> to_vector_model (f (6), f (7)),
-					radius	=> to_zone_radius (f (8)));
+					center	=> to_vector_model (get_field (6), get_field (7)),
+					radius	=> to_zone_radius (get_field (8)));
 				
 				delete_strand (
 					module_cursor	=> active_module,
-					sheet			=> to_sheet (f (5)),
+					sheet			=> to_sheet (get_field (5)),
 					catch_zone		=> catch_zone,
 					log_threshold	=> log_threshold + 1);
 
@@ -1522,15 +1517,15 @@ is
 			when 11 =>
 
 				catch_zone := set_catch_zone (
-					center	=> to_vector_model (f (6), f (7)),
-					radius	=> to_zone_radius (f (8)));
+					center	=> to_vector_model (get_field (6), get_field (7)),
+					radius	=> to_zone_radius (get_field (8)));
 				
 				drag_segment (
 					module_cursor	=> active_module,
-					sheet			=> to_sheet (f (5)),
+					sheet			=> to_sheet (get_field (5)),
 					catch_zone		=> catch_zone,					
-					coordinates		=> to_coordinates (f (9)), -- relative/absolute					
-					destination		=> to_vector_model (f (10), f (11)),
+					coordinates		=> to_coordinates (get_field (9)), -- relative/absolute					
+					destination		=> to_vector_model (get_field (10), get_field (11)),
 					log_threshold	=> log_threshold + 1);
 					
 
@@ -1550,7 +1545,7 @@ is
 
 		procedure show is
 		begin
-			sheet := to_sheet (f (5));
+			sheet := to_sheet (get_field (5));
 
 			-- CS test whether sheet exists
 			
@@ -1603,7 +1598,7 @@ is
 		
 	begin
 		case cmd_field_count is
-			when 5 => do_it (to_module_name (f (5)));
+			when 5 => do_it (to_module_name (get_field (5)));
 			when 6 .. type_field_count'last => too_long;
 			when others => command_incomplete;
 		end case;
@@ -1628,7 +1623,7 @@ is
 		
 		-- Sets the active module and first sheet.
 		procedure module_and_first_sheet is begin
-			module := to_module_name (f (5));
+			module := to_module_name (get_field (5));
 			set_module (module);
 			active_sheet := sheet;
 			
@@ -1640,13 +1635,13 @@ is
 
 		-- Sets the active module and sheet.
 		procedure module_and_random_sheet is begin
-			module := to_module_name (f (5));
+			module := to_module_name (get_field (5));
 			set_module (module);
 
 			log (text => "sheet " & to_string (sheet), 
 				level => log_threshold + 1);
 			
-			sheet := to_sheet (f (6));
+			sheet := to_sheet (get_field (6));
 			active_sheet := sheet;
 
 			update_schematic_editor;
@@ -1716,7 +1711,7 @@ is
 	begin
 		case cmd_field_count is
 			when 4 => do_it (noun); -- if status is omitted
-			when 5 => do_it (noun, f (5));
+			when 5 => do_it (noun, get_field (5));
 			when 6 .. type_field_count'last => too_long; 
 			when others => command_incomplete;
 		end case;
@@ -1807,7 +1802,7 @@ is
 	begin
 		case cmd_field_count is
 			when 4 => delete_active;								
-			when 5 => delete_explicit (to_module_name (f (5)));
+			when 5 => delete_explicit (to_module_name (get_field (5)));
 			when 6 .. type_field_count'last => too_long;								
 			when others => command_incomplete;
 		end case;
@@ -1832,7 +1827,7 @@ is
 				-- Save the module with a different name:
 				save_module (
 					module_cursor	=> active_module,
-					save_as_name	=> to_module_name (f (5)), -- led_driver_test
+					save_as_name	=> to_module_name (get_field (5)), -- led_driver_test
 					log_threshold	=> log_threshold + 1);
 				
 			when 6 .. type_field_count'last => too_long;
@@ -2021,7 +2016,7 @@ is
 						case cmd_field_count is
 							when 5 => 
 								execute_nested_script (
-									file			=> f (5),
+									file			=> get_field (5),
 									log_threshold	=> log_threshold + 1);
 
 							when 6 .. type_field_count'last => too_long;								
@@ -2111,10 +2106,10 @@ is
 							purpose : pac_device_purpose.bounded_string; -- brightness_control
 						begin
 							-- validate value
-							value := to_value_with_check (f (7));
+							value := to_value_with_check (get_field (7));
 
 							-- validate partcode
-							partcode := to_partcode (f (8));
+							partcode := to_partcode (get_field (8));
 							
 							case cmd_field_count is
 								when 8 =>
@@ -2122,21 +2117,21 @@ is
 									mount_device
 										(
 										module_name		=> module,
-										variant_name	=> to_variant (f (5)), -- low_cost
-										device			=> to_device_name (f (6)), -- R1
+										variant_name	=> to_variant (get_field (5)), -- low_cost
+										device			=> to_device_name (get_field (6)), -- R1
 										value			=> value, -- 220R
 										partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
 										log_threshold	=> log_threshold + 1);
 
 								when 9 =>
 									-- optionally the purpose can be set also
-									purpose := to_purpose (f (9)); -- brightness_control
+									purpose := to_purpose (get_field (9)); -- brightness_control
 												
 									mount_device
 										(
 										module_name		=> module,
-										variant_name	=> to_variant (f (5)), -- low_cost
-										device			=> to_device_name (f (6)), -- R1
+										variant_name	=> to_variant (get_field (5)), -- low_cost
+										device			=> to_device_name (get_field (6)), -- R1
 										value			=> value, -- 220R
 										partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
 										purpose			=> purpose, -- brightness_control
@@ -2167,10 +2162,10 @@ is
 									module_cursor 	=> active_module,
 									place			=> to_position 
 														(
-														sheet => to_sheet (f (5)),
+														sheet => to_sheet (get_field (5)),
 														point => type_vector_model (set (
-																	x => to_distance (f (6)),
-																	y => to_distance (f (7))
+																	x => to_distance (get_field (6)),
+																	y => to_distance (get_field (7))
 																	))
 														),
 										
@@ -2198,8 +2193,8 @@ is
 								remove_device -- from assembly variant
 									(
 									module_name		=> module,
-									variant_name	=> to_variant (f (5)), -- low_cost
-									device			=> to_device_name (f (6)), -- R1
+									variant_name	=> to_variant (get_field (5)), -- low_cost
+									device			=> to_device_name (get_field (6)), -- R1
 									log_threshold	=> log_threshold + 1);
 
 							when 7 .. type_field_count'last => too_long;
@@ -2235,8 +2230,8 @@ is
 								rename_net
 									(
 									module_cursor		=> active_module,
-									net_name_before		=> to_net_name (f (5)), -- RESET
-									net_name_after		=> to_net_name (f (6)), -- RESET_N
+									net_name_before		=> to_net_name (get_field (5)), -- RESET
+									net_name_after		=> to_net_name (get_field (6)), -- RESET_N
 									scope				=> EVERYWHERE,
 									place				=> to_position (
 															point => origin,
@@ -2250,12 +2245,12 @@ is
 								rename_net
 									(
 									module_cursor		=> active_module,
-									net_name_before		=> to_net_name (f (5)), -- RESET
-									net_name_after		=> to_net_name (f (6)), -- RESET_N
+									net_name_before		=> to_net_name (get_field (5)), -- RESET
+									net_name_after		=> to_net_name (get_field (6)), -- RESET_N
 									scope				=> SHEET,
 									place				=> to_position (
 															point => origin,
-															sheet => to_sheet (f (7))), -- sheet number
+															sheet => to_sheet (get_field (7))), -- sheet number
 									log_threshold		=> log_threshold + 1);
 
 							-- If the statement has 9 fields, the net scope is STRAND.
@@ -2264,14 +2259,14 @@ is
 								rename_net
 									(
 									module_cursor		=> active_module,
-									net_name_before		=> to_net_name (f (5)), -- RESET
-									net_name_after		=> to_net_name (f (6)), -- RESET_N
+									net_name_before		=> to_net_name (get_field (5)), -- RESET
+									net_name_after		=> to_net_name (get_field (6)), -- RESET_N
 									scope				=> STRAND,
 									place				=> to_position (
 															point => type_vector_model (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
-															sheet => to_sheet (f (7))), -- sheet number
+																x => to_distance (get_field (8)),
+																y => to_distance (get_field (9)))),
+															sheet => to_sheet (get_field (7))), -- sheet number
 									log_threshold		=> log_threshold + 1);
 
 								
@@ -2292,7 +2287,7 @@ is
 								renumber_devices
 									(
 									module_name 	=> module,
-									step_width		=> to_index (f (5)), -- 100
+									step_width		=> to_index (get_field (5)), -- 100
 									log_threshold	=> log_threshold + 1
 									);
 
@@ -2340,8 +2335,8 @@ is
 								-- schematic led_driver set class GND pwr
 								set_net_class (
 									module_cursor	=> active_module,
-									net_name		=> to_net_name (f (5)),
-									net_class		=> to_net_class_name (f (6)),
+									net_name		=> to_net_name (get_field (5)),
+									net_class		=> to_net_class_name (get_field (6)),
 									log_threshold	=> log_threshold + 1);
 								
 							when 7 .. type_field_count'last => too_long;
@@ -2369,13 +2364,13 @@ is
 								declare
 									partcode : pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 								begin
-									partcode := to_partcode (f (6));
+									partcode := to_partcode (get_field (6));
 
 									-- set the purpose
 									set_partcode
 										(
 										module_name 	=> module,
-										device_name		=> to_device_name (f (5)), -- R1
+										device_name		=> to_device_name (get_field (5)), -- R1
 										partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
 										log_threshold	=> log_threshold + 1
 										);
@@ -2393,13 +2388,13 @@ is
 								declare
 									purpose : pac_device_purpose.bounded_string; -- brightness_control
 								begin
-									purpose := to_purpose (f (6));
+									purpose := to_purpose (get_field (6));
 									
 									-- set the purpose
 									set_purpose
 										(
 										module_name 	=> module,
-										device_name		=> to_device_name (f (5)), -- R1
+										device_name		=> to_device_name (get_field (5)), -- R1
 										purpose			=> purpose, -- brightness_control
 										log_threshold	=> log_threshold + 1
 										);
@@ -2416,8 +2411,8 @@ is
 							when 6 =>
 								set_scope (
 									module_cursor 	=> active_module,
-									net_name		=> to_net_name (f (5)),
-									scope			=> et_netlists.to_net_scope (f (6)),
+									net_name		=> to_net_name (get_field (5)),
+									scope			=> et_netlists.to_net_scope (get_field (6)),
 									log_threshold	=> log_threshold + 1
 									);
 
@@ -2438,13 +2433,13 @@ is
 									value : pac_device_value.bounded_string; -- 470R
 								begin
 									-- validate value
-									value := to_value_with_check (f (6));
+									value := to_value_with_check (get_field (6));
 
 									-- set the value
 									set_value
 										(
 										module_name 	=> module,
-										device_name		=> to_device_name (f (5)), -- R1
+										device_name		=> to_device_name (get_field (5)), -- R1
 										value			=> value, -- 470R
 										log_threshold	=> log_threshold + 1
 										);
@@ -2464,15 +2459,15 @@ is
 									variant : pac_package_variant_name.bounded_string; -- N, D
 								begin
 									-- validate variant
-									check_variant_name_length (f (6));
-									variant := to_variant_name (f (6));
+									check_variant_name_length (get_field (6));
+									variant := to_variant_name (get_field (6));
 									check_variant_name_characters (variant);
 									
 									-- set the variant
 									set_variant
 										(
 										module			=> module,
-										device			=> to_device_name (f (5)), -- IC1
+										device			=> to_device_name (get_field (5)), -- IC1
 										variant			=> variant, -- N, D
 										log_threshold	=> log_threshold + 1
 										);
@@ -2500,7 +2495,7 @@ is
 					when NOUN_DEVICE =>
 						case cmd_field_count is
 							when 5 => show_device ( -- show device R1
-									device	=> to_device_name (f (5)), -- R1, IC1
+									device	=> to_device_name (get_field (5)), -- R1, IC1
 									mode	=> FIRST_UNIT);
 							
 							when 6 =>
@@ -2508,14 +2503,14 @@ is
 								-- the unit is to be shown on the current active sheet.
 								-- Otherwise the field provides an explicit
 								-- unit name:
-								if f (6) = here then
+								if get_field (6) = here then
 									show_device ( -- show device IC1 .
-										device	=> to_device_name (f (5)), -- IC1
+										device	=> to_device_name (get_field (5)), -- IC1
 										mode	=> FIRST_UNIT_ON_CURRENT_SHEET);
 								else
 									show_device ( -- show device IC1 A
-										device	=> to_device_name (f (5)), -- IC1
-										unit	=> to_unit_name (f (6)), -- A
+										device	=> to_device_name (get_field (5)), -- IC1
+										unit	=> to_unit_name (get_field (6)), -- A
 										mode	=> BY_UNIT_NAME);
 								end if;
 								
@@ -2530,7 +2525,7 @@ is
 					when NOUN_NET =>
 						case cmd_field_count is
 							when 5 => show_net ( -- show net RESET_N
-									net		=> to_net_name (f (5)), -- RESET_N
+									net		=> to_net_name (get_field (5)), -- RESET_N
 									mode	=> FIRST_NET);
 							
 							when 6 =>
@@ -2538,9 +2533,9 @@ is
 								-- the net is to be shown on the current active sheet.
 								-- If the 6th field is not a period, then we
 								-- threat this field as excessive argument.
-								if f (6) = here then
+								if get_field (6) = here then
 									show_net ( -- show net RESET_N
-										net		=> to_net_name (f (5)), -- RESET_N
+										net		=> to_net_name (get_field (5)), -- RESET_N
 										mode	=> NET_ON_CURRENT_SHEET);
 								else
 									too_long;
@@ -2566,8 +2561,8 @@ is
 								unmount_device
 									(
 									module_name		=> module,
-									variant_name	=> to_variant (f (5)), -- low_cost
-									device			=> to_device_name (f (6)), -- R1
+									variant_name	=> to_variant (get_field (5)), -- low_cost
+									device			=> to_device_name (get_field (6)), -- R1
 									log_threshold	=> log_threshold + 1);
 
 							when 7 .. type_field_count'last => too_long;
@@ -2703,7 +2698,7 @@ is
 				when 5 => -- like "fetch unit IC1"
 					unit_name_missing;
 
-					device_name := to_device_name (f (5));
+					device_name := to_device_name (get_field (5));
 
 					if exists (active_module, device_name) then
 
@@ -2729,7 +2724,7 @@ is
 
 					
 				when 6 => -- like "fetch unit IC1 B"
-					device_name := to_device_name (f (5));
+					device_name := to_device_name (get_field (5));
 
 					if exists (active_module, device_name) then
 
@@ -2741,7 +2736,7 @@ is
 						unit_add.total		:= get_unit_count (unit_add.device);
 						unit_add.device_pre	:= device_name;
 						
-						unit_name := to_unit_name (f (6));
+						unit_name := to_unit_name (get_field (6));
 
 						-- test existence AND availability of unit:
 						if provides_unit (unit_add.device, unit_name) then
@@ -2808,7 +2803,7 @@ is
 							when 5 => -- like "delete unit IC1"
 								unit_name_missing;
 
-								device_name := to_device_name (f (5));
+								device_name := to_device_name (get_field (5));
 
 								if exists (active_module, device_name) then
 
@@ -2831,13 +2826,13 @@ is
 
 								
 							when 6 => -- like "delete unit IC1 B"
-								device_name := to_device_name (f (5));
+								device_name := to_device_name (get_field (5));
 								
 								if exists (active_module, device_name) then
 									
 									--unit_delete.device := device_name;
 
-									unit_name := to_unit_name (f (6));
+									unit_name := to_unit_name (get_field (6));
 
 									-- Test whether the unit is deployed on the 
 									-- current active sheet.
@@ -2884,7 +2879,7 @@ is
 							when 5 => -- like "drag unit IC1"
 								unit_name_missing;
 
-								device_name := to_device_name (f (5));
+								device_name := to_device_name (get_field (5));
 
 								if exists (active_module, device_name) then
 									object_device_name := device_name;
@@ -2903,13 +2898,13 @@ is
 								end if;
 								
 							when 6 => -- like "drag unit IC1 B"
-								device_name := to_device_name (f (5));
+								device_name := to_device_name (get_field (5));
 								
 								if exists (active_module, device_name) then
 									
 									object_device_name := device_name;
 
-									unit_name := to_unit_name (f (6));
+									unit_name := to_unit_name (get_field (6));
 
 									-- Test whether the unit is deployed on the current active sheet.
 									-- Dragging is possible if it is deployed and if it is on the current sheet.
@@ -2959,9 +2954,9 @@ is
 								
 							when 5 => -- like "draw net RESET_N"
 								-- explicit net name given
-								check_net_name_length (f (5));
-								check_net_name_characters (to_net_name (f (5)));
-								object_net_name := to_net_name (f (5));
+								check_net_name_length (get_field (5));
+								check_net_name_characters (to_net_name (get_field (5)));
+								object_net_name := to_net_name (get_field (5));
 
 								set_status (et_canvas_schematic_nets.status_draw_net);
 								single_cmd.finalization_pending := true;
@@ -2992,7 +2987,7 @@ is
 							when 5 => -- like "move unit IC1"
 								unit_name_missing;
 
-								device_name := to_device_name (f (5));
+								device_name := to_device_name (get_field (5));
 
 								if exists (active_module, device_name) then
 									object_device_name := device_name;
@@ -3011,13 +3006,13 @@ is
 								end if;
 								
 							when 6 => -- like "move unit IC1 B"
-								device_name := to_device_name (f (5));
+								device_name := to_device_name (get_field (5));
 								
 								if exists (active_module, device_name) then
 									
 									object_device_name := device_name;
 
-									unit_name := to_unit_name (f (6));
+									unit_name := to_unit_name (get_field (6));
 
 									-- Test whether the unit is deployed.
 									-- If it is deployed somewhere (whatever sheet) then it will be 
@@ -3065,7 +3060,7 @@ is
 							when 5 => -- like "move name R1"
 								unit_name_missing;
 
-								device_name := to_device_name (f (5));
+								device_name := to_device_name (get_field (5));
 
 								if exists (active_module, device_name) then
 
@@ -3085,13 +3080,13 @@ is
 								end if;
 
 							when 6 => -- like "move name IC1 B"
-								device_name := to_device_name (f (5));
+								device_name := to_device_name (get_field (5));
 								
 								if exists (active_module, device_name) then
 
 									placeholder_move.device := device_name;
 									
-									unit_name := to_unit_name (f (6));
+									unit_name := to_unit_name (get_field (6));
 
 									-- Test whether the unit is deployed on the current active sheet.
 									-- Moving the placeholder is possible if the unit it is deployed 
@@ -3131,7 +3126,7 @@ is
 							when 5 => -- like "rotate unit IC1"
 								unit_name_missing;
 
-								device_name := to_device_name (f (5));
+								device_name := to_device_name (get_field (5));
 
 								if exists (active_module, device_name) then
 									object_device_name := device_name;
@@ -3150,13 +3145,13 @@ is
 								end if;
 								
 							when 6 => -- like "rotate unit IC1 B"
-								device_name := to_device_name (f (5));
+								device_name := to_device_name (get_field (5));
 								
 								if exists (active_module, device_name) then
 									
 									object_device_name := device_name;
 
-									unit_name := to_unit_name (f (6));
+									unit_name := to_unit_name (get_field (6));
 
 									-- Test whether the unit is deployed on the current active sheet.
 									-- Rotating is possible if it is deployed and if it is on the current sheet.
@@ -3189,7 +3184,7 @@ is
 							when 5 => -- like "rotate name R1"
 								unit_name_missing;
 
-								device_name := to_device_name (f (5));
+								device_name := to_device_name (get_field (5));
 
 								if exists (active_module, device_name) then
 
@@ -3209,13 +3204,13 @@ is
 								end if;
 
 							when 6 => -- like "rotate name IC1 B"
-								device_name := to_device_name (f (5));
+								device_name := to_device_name (get_field (5));
 								
 								if exists (active_module, device_name) then
 
 									placeholder_move.device := device_name;
 									
-									unit_name := to_unit_name (f (6));
+									unit_name := to_unit_name (get_field (6));
 
 									-- Test whether the unit is deployed on the current active sheet.
 									-- Rotating the placeholder is possible if the unit it is deployed 
@@ -3253,7 +3248,7 @@ is
 							when 4 => device_name_missing;
 								
 							when 5 => -- like "set value/partcode/purpose IC1"
-								device_name := to_device_name (f (5));
+								device_name := to_device_name (get_field (5));
 
 								if exists (active_module, device_name) then
 									set_property (device_name);
@@ -3269,7 +3264,7 @@ is
 							when 4 => device_name_missing;
 								
 							when 5 => -- like "set variant IC1"
-								device_name := to_device_name (f (5));
+								device_name := to_device_name (get_field (5));
 
 								if exists (active_module, device_name) then
 									set_variant (device_name);
@@ -3343,19 +3338,19 @@ begin -- schematic_cmd
 	cmd_field_count := get_field_count (single_cmd.cmd);
 	
 
-	module := to_module_name (f (2)); -- motor_driver (without extension *.mod)
+	module := to_module_name (get_field (2)); -- motor_driver (without extension *.mod)
 	-- CS: Becomes obsolete once all board ops use the
 	-- given module_cursor.
 
 	
 	-- read the verb from field 3
-	verb := to_verb (f (3));
+	verb := to_verb (get_field (3));
 
 	-- There are some very short commands which do not require a verb.
 	-- For such commands we do not read the noun.
 	case verb is
 		when VERB_EXIT | VERB_QUIT => null; -- no noun
-		when others => noun := to_noun (f (4)); -- read noun from field 4
+		when others => noun := to_noun (get_field (4)); -- read noun from field 4
 	end case;
 
 	-- Parse the command:	

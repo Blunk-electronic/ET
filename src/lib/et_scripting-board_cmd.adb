@@ -132,12 +132,6 @@ is
 	
 	module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 
-	-- This function is a shortcut to get a single field
-	-- from the current command:
-	function f (place : in type_field_count) return string is begin
-		return get_field (single_cmd.cmd, place);
-	end;
-
 	
 	
 	-- This procedure parses a zoom related command.
@@ -255,7 +249,7 @@ is
 	begin
 		case cmd_field_count is
 			when 4 => display; -- if status is omitted
-			when 5 => display (f (5));
+			when 5 => display (get_field (5));
 			when 6 .. type_field_count'last => too_long;
 			when others => command_incomplete;
 		end case;
@@ -299,7 +293,7 @@ is
 	begin
 		case cmd_field_count is
 			when 4 => display; -- if status is omitted
-			when 5 => display (f (5));
+			when 5 => display (get_field (5));
 			when 6 .. type_field_count'last => too_long;
 			when others => command_incomplete;
 		end case;
@@ -378,8 +372,8 @@ is
 		
 	begin
 		case cmd_field_count is
-			when 5 => display (noun, f (5)); -- if status is omitted
-			when 6 => display (noun, f (5), f (6));
+			when 5 => display (noun, get_field (5)); -- if status is omitted
+			when 6 => display (noun, get_field (5), get_field (6));
 			when 7 .. type_field_count'last => too_long;
 			when others => command_incomplete;
 		end case;
@@ -427,8 +421,8 @@ is
 		
 	begin
 		case cmd_field_count is
-			when 5 => display (f (5)); -- if status is omitted
-			when 6 => display (f (5), f (6));
+			when 5 => display (get_field (5)); -- if status is omitted
+			when 6 => display (get_field (5), get_field (6));
 			when 7 .. type_field_count'last => too_long;
 			when others => command_incomplete;
 		end case;
@@ -574,7 +568,7 @@ is
 
 			face : type_face;
 		begin
-			face := to_face (f (5));
+			face := to_face (get_field (5));
 			
 			add_zone (
 				module_cursor	=> module_cursor,
@@ -589,7 +583,7 @@ is
 		-- Convert the contour to a keepout zone
 		-- and assign it to the module:
 
-		if f (6) = keyword_zone then
+		if get_field (6) = keyword_zone then
 			build_zone;
 		else
 			null;
@@ -609,8 +603,8 @@ is
 				-- delete a segment of the outer board contour:
 
 				catch_zone := set_catch_zone (
-					center	=> to_vector_model (f (5), f (6)),
-					radius	=> to_zone_radius (f (7)));
+					center	=> to_vector_model (get_field (5), get_field (6)),
+					radius	=> to_zone_radius (get_field (7)));
 					
 				delete_outer_segment (
 					module_cursor 	=> module_cursor,
@@ -635,8 +629,8 @@ is
 				-- delete a segment of a hole
 
 				catch_zone := set_catch_zone (
-					center	=> to_vector_model (f (5), f (6)),
-					radius	=> to_zone_radius (f (7)));
+					center	=> to_vector_model (get_field (5), get_field (6)),
+					radius	=> to_zone_radius (get_field (7)));
 
 				delete_hole_segment (
 					module_cursor 	=> module_cursor,
@@ -668,7 +662,7 @@ is
 
 			face : type_face;
 		begin
-			face := to_face (f (5));
+			face := to_face (get_field (5));
 			
 			add_zone (
 				module_cursor	=> module_cursor,
@@ -693,15 +687,15 @@ is
 				when LINE =>
 					case cmd_field_count is
 						when 11 =>
-							width_tmp := to_distance (f (7));
+							width_tmp := to_distance (get_field (7));
 							
 							line_tmp := type_line (to_line (
-								A => to_vector_model (f (8), f (9)),
-								B => to_vector_model (f (10), f (11))));
+								A => to_vector_model (get_field (8), get_field (9)),
+								B => to_vector_model (get_field (10), get_field (11))));
 							
 							add_line (
 								module_name 	=> module,
-								face			=> to_face (f (5)),
+								face			=> to_face (get_field (5)),
 								line			=> (line_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1
 								);
@@ -717,17 +711,17 @@ is
 				when ARC =>
 					case cmd_field_count is
 						when 14 =>
-							width_tmp := to_distance (f (7));
+							width_tmp := to_distance (get_field (7));
 							
 							arc_tmp := type_arc (to_arc (
-								center		=> to_vector_model (f (8), f (9)),
-								A			=> to_vector_model (f (10), f (11)),
-								B			=> to_vector_model (f (12), f (13)),
-								direction	=> to_direction (f (14))));
+								center		=> to_vector_model (get_field (8), get_field (9)),
+								A			=> to_vector_model (get_field (10), get_field (11)),
+								B			=> to_vector_model (get_field (12), get_field (13)),
+								direction	=> to_direction (get_field (14))));
 							
 							add_arc (
 								module_name 	=> module,
-								face			=> to_face (f (5)),
+								face			=> to_face (get_field (5)),
 								arc				=> (arc_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1);
 
@@ -742,15 +736,15 @@ is
 				when CIRCLE =>
 					case cmd_field_count is						
 						when 10 =>
-							width_tmp := to_distance (f (7));
+							width_tmp := to_distance (get_field (7));
 							
 							circle_tmp := type_circle (to_circle (
-								center		=> to_vector_model (f (8), f (9)),
-								radius		=> to_radius (f (10))));
+								center		=> to_vector_model (get_field (8), get_field (9)),
+								radius		=> to_radius (get_field (10))));
 													  
 							add_circle (
 								module_name 	=> module,
-								face			=> to_face (f (5)),
+								face			=> to_face (get_field (5)),
 								circle			=> (circle_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1);
 							
@@ -767,10 +761,10 @@ is
 		
 
 	begin
-		if f (6) = keyword_zone then
+		if get_field (6) = keyword_zone then
 			build_zone;
 		else
-			shape := to_shape (f (6));
+			shape := to_shape (get_field (6));
 			draw_shape;
 		end if;		
 	end draw_silkscreen;
@@ -794,7 +788,7 @@ is
 
 			face : type_face;
 		begin
-			face := to_face (f (5));
+			face := to_face (get_field (5));
 			
 			add_zone (
 				module_cursor	=> module_cursor,
@@ -819,15 +813,15 @@ is
 				when LINE =>
 					case cmd_field_count is
 						when 11 =>
-							width_tmp := to_distance (f (7));
+							width_tmp := to_distance (get_field (7));
 
 							line_tmp := type_line (to_line (
-								A => to_vector_model (f (8), f (9)),
-								B => to_vector_model (f (10), f (11))));
+								A => to_vector_model (get_field (8), get_field (9)),
+								B => to_vector_model (get_field (10), get_field (11))));
 								
 							add_line (
 								module_name 	=> module,
-								face			=> to_face (f (5)),
+								face			=> to_face (get_field (5)),
 								line			=> (line_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1);
 
@@ -842,17 +836,17 @@ is
 				when ARC =>
 					case cmd_field_count is
 						when 14 =>
-							width_tmp := to_distance (f (7));
+							width_tmp := to_distance (get_field (7));
 							
 							arc_tmp := type_arc (to_arc (
-								center	=> to_vector_model (f (8), f (9)),
-								A		=> to_vector_model (f (10), f (11)),
-								B		=> to_vector_model (f (12), f (13)),
-								direction	=> to_direction (f (14))));
+								center	=> to_vector_model (get_field (8), get_field (9)),
+								A		=> to_vector_model (get_field (10), get_field (11)),
+								B		=> to_vector_model (get_field (12), get_field (13)),
+								direction	=> to_direction (get_field (14))));
 															
 							add_arc (
 								module_name 	=> module,
-								face			=> to_face (f (5)),
+								face			=> to_face (get_field (5)),
 								arc				=> (arc_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1
 								);
@@ -868,15 +862,15 @@ is
 				when CIRCLE =>
 					case cmd_field_count is
 						when 10 =>
-							width_tmp := to_distance (f (7));
+							width_tmp := to_distance (get_field (7));
 							
 							circle_tmp := type_circle (to_circle (
-								center		=> to_vector_model (f (8), f (9)),
-								radius		=> to_radius (f (10))));
+								center		=> to_vector_model (get_field (8), get_field (9)),
+								radius		=> to_radius (get_field (10))));
 										
 							add_circle (
 								module_name 	=> module,
-								face			=> to_face (f (5)),
+								face			=> to_face (get_field (5)),
 								circle			=> (circle_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1);
 							
@@ -893,10 +887,10 @@ is
 		
 
 	begin
-		if f (6) = keyword_zone then
+		if get_field (6) = keyword_zone then
 			build_zone;
 		else
-			shape := to_shape (f (6));
+			shape := to_shape (get_field (6));
 			draw_shape;
 		end if;		
 	end draw_assy_doc;
@@ -920,7 +914,7 @@ is
 
 			l : type_signal_layers.set;
 		begin
-			l := to_layers (f (5));
+			l := to_layers (get_field (5));
 			
 			draw_zone (
 				module_cursor	=> module_cursor,
@@ -940,10 +934,10 @@ is
 	begin
 		-- put_line ("draw_route_restrict");
 
-		if f (6) = keyword_zone then
+		if get_field (6) = keyword_zone then
 			build_zone;
 		else
-			shape := to_shape (f (6));
+			shape := to_shape (get_field (6));
 			-- CS apply assigment to shape to all similar procedures !			
 
 			
@@ -961,10 +955,10 @@ is
 							-- Do so with all objects in route and via restrict.
 
 							line_tmp := type_line (to_line (
-								A => to_vector_model (f (7), f  (8)),
-								B => to_vector_model (f (9), f (10))));
+								A => to_vector_model (get_field (7), get_field  (8)),
+								B => to_vector_model (get_field (9), get_field (10))));
 
-							layers_tmp := to_layers (f (5)); -- [1,3,5-9]
+							layers_tmp := to_layers (get_field (5)); -- [1,3,5-9]
 							
 							draw_route_restrict_line (
 								module_name 	=> module,
@@ -982,13 +976,13 @@ is
 						when 13 =>							
 							-- board led_driver draw route_restrict [1,3,5-9] arc 50 50 0 50 100 0 cw
 
-							layers_tmp := to_layers (f (5)); -- [1,3,5-9]
+							layers_tmp := to_layers (get_field (5)); -- [1,3,5-9]
 							
 							arc_tmp := type_arc (to_arc (
-								center		=> to_vector_model (f  (7), f  (8)),
-								A			=> to_vector_model (f  (9), f (10)),
-								B			=> to_vector_model (f (11), f (12)),
-								direction	=> to_direction (f (13))));
+								center		=> to_vector_model (get_field  (7), get_field  (8)),
+								A			=> to_vector_model (get_field  (9), get_field (10)),
+								B			=> to_vector_model (get_field (11), get_field (12)),
+								direction	=> to_direction (get_field (13))));
 															
 							draw_route_restrict_arc (
 								module_name 	=> module,
@@ -1005,13 +999,13 @@ is
 					case cmd_field_count is
 						when 9 =>
 							-- board led_driver draw route_restrict [1,3,5-9] circle 20 50 40
-							-- if is_number (f (7)) then -- 20
+							-- if is_number (get_field (7)) then -- 20
 
-							layers_tmp := to_layers (f (5)); -- [1,3,5-9]
+							layers_tmp := to_layers (get_field (5)); -- [1,3,5-9]
 
 							circle_tmp := type_circle (to_circle (
-								center	=> to_vector_model (f (7), f (8)),
-								radius	=> to_radius (f (9)))); -- 40
+								center	=> to_vector_model (get_field (7), get_field (8)),
+								radius	=> to_radius (get_field (9)))); -- 40
 																	 
 								-- Circle is not filled.
 								draw_route_restrict_circle (
@@ -1026,17 +1020,17 @@ is
 						--when 10 =>
 							---- Circle is filled.
 							---- board led_driver draw route_restrict [1,3,5-9] circle filled 20 50 40
-							--if f (7) = keyword_filled then
+							--if get_field (7) = keyword_filled then
 
 								---- Circle is filled.
 								--draw_route_restrict_circle (
 									--module_name 	=> module,
 									--circle			=> 
 												--(
-												--layers		=> to_layers (f (5)), -- [1,3,5-9]
+												--layers		=> to_layers (get_field (5)), -- [1,3,5-9]
 												--filled		=> YES,
-												--center	=> to_vector_model (f (8), f (9))),
-												--radius	=> to_radius (f (10)) -- 40
+												--center	=> to_vector_model (get_field (8), get_field (9))),
+												--radius	=> to_radius (get_field (10)) -- 40
 												--),
 												
 									--log_threshold	=> log_threshold + 1);
@@ -1074,7 +1068,7 @@ is
 
 			l : type_signal_layers.set;
 		begin
-			l := to_layers (f (5));
+			l := to_layers (get_field (5));
 			
 			draw_zone (
 				module_cursor	=> module_cursor,
@@ -1085,7 +1079,7 @@ is
 
 		
 	begin
-		if f (6) = keyword_zone then
+		if get_field (6) = keyword_zone then
 			build_zone;
 		else
 			null;
@@ -1112,7 +1106,7 @@ is
 
 			face : type_face;
 		begin
-			face := to_face (f (5));
+			face := to_face (get_field (5));
 			
 			add_zone (
 				module_cursor	=> module_cursor,
@@ -1137,15 +1131,15 @@ is
 				when LINE =>
 					case cmd_field_count is
 						when 11 =>
-							width_tmp := to_distance (f (7));
+							width_tmp := to_distance (get_field (7));
 
 							line_tmp := type_line (to_line (
-								A => to_vector_model (f (8), f (9)),
-								B => to_vector_model (f (10), f (11))));
+								A => to_vector_model (get_field (8), get_field (9)),
+								B => to_vector_model (get_field (10), get_field (11))));
 															   
 							add_line (
 								module_name 	=> module,
-								face			=> to_face (f (5)),
+								face			=> to_face (get_field (5)),
 								line			=> (line_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1);
 
@@ -1158,17 +1152,17 @@ is
 				when ARC =>
 					case cmd_field_count is
 						when 14 =>
-							width_tmp := to_distance (f (7));
+							width_tmp := to_distance (get_field (7));
 							
 							arc_tmp := type_arc (to_arc (
-								center		=> to_vector_model (f (8), f (9)),
-								A			=> to_vector_model (f (10), f (11)),
-								B			=> to_vector_model (f (12), f (13)),
-								direction	=> to_direction (f (14))));
+								center		=> to_vector_model (get_field (8), get_field (9)),
+								A			=> to_vector_model (get_field (10), get_field (11)),
+								B			=> to_vector_model (get_field (12), get_field (13)),
+								direction	=> to_direction (get_field (14))));
 															
 							add_arc (
 								module_name 	=> module,
-								face			=> to_face (f (5)),
+								face			=> to_face (get_field (5)),
 								arc				=> (arc_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1);
 
@@ -1181,15 +1175,15 @@ is
 				when CIRCLE =>
 					case cmd_field_count is
 						when 10 =>
-							width_tmp := to_distance (f (7));
+							width_tmp := to_distance (get_field (7));
 							
 							circle_tmp := type_circle (to_circle (
-								center			=> to_vector_model (f (8), f (9)),
-								radius			=> to_radius (f (10))));
+								center			=> to_vector_model (get_field (8), get_field (9)),
+								radius			=> to_radius (get_field (10))));
 																	 
 							add_circle (
 								module_name 	=> module,
-								face			=> to_face (f (5)),
+								face			=> to_face (get_field (5)),
 								circle			=> (circle_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1);
 							
@@ -1202,10 +1196,10 @@ is
 
 		
 	begin
-		if f (6) = keyword_zone then
+		if get_field (6) = keyword_zone then
 			build_zone;
 		else
-			shape := to_shape (f (6));
+			shape := to_shape (get_field (6));
 			draw_shape;
 		end if;		
 	end draw_stop_mask;
@@ -1228,7 +1222,7 @@ is
 
 			face : type_face;
 		begin
-			face := to_face (f (5));
+			face := to_face (get_field (5));
 			
 			draw_zone (
 				module_cursor	=> module_cursor,
@@ -1253,15 +1247,15 @@ is
 				when LINE =>
 					case cmd_field_count is
 						when 11 =>
-							width_tmp := to_distance (f (7));
+							width_tmp := to_distance (get_field (7));
 
 							line_tmp := type_line (to_line (
-								A => to_vector_model (f (8), f (9)),
-								B => to_vector_model (f (10), f (11))));
+								A => to_vector_model (get_field (8), get_field (9)),
+								B => to_vector_model (get_field (10), get_field (11))));
 							
 							add_line (
 								module_name 	=> module,
-								face			=> to_face (f (5)),
+								face			=> to_face (get_field (5)),
 								line			=> (line_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1);
 
@@ -1274,17 +1268,17 @@ is
 				when ARC =>
 					case cmd_field_count is
 						when 14 =>
-							width_tmp := to_distance (f (7));
+							width_tmp := to_distance (get_field (7));
 							
 							arc_tmp := type_arc (to_arc (
-								center	=> to_vector_model (f (8), f (9)),
-								A		=> to_vector_model (f (10), f (11)),
-								B		=> to_vector_model (f (12), f (13)),
-								direction	=> to_direction (f (14))));
+								center	=> to_vector_model (get_field (8), get_field (9)),
+								A		=> to_vector_model (get_field (10), get_field (11)),
+								B		=> to_vector_model (get_field (12), get_field (13)),
+								direction	=> to_direction (get_field (14))));
 															
 							add_arc (
 								module_name 	=> module,
-								face			=> to_face (f (5)),
+								face			=> to_face (get_field (5)),
 								arc				=> (arc_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1);
 
@@ -1297,15 +1291,15 @@ is
 				when CIRCLE =>
 					case cmd_field_count is
 						when 10 =>
-							width_tmp := to_distance (f (7));
+							width_tmp := to_distance (get_field (7));
 							
 							circle_tmp := type_circle (to_circle (
-								center		=> to_vector_model (f (8), f (9)),
-								radius		=> to_radius (f (10))));
+								center		=> to_vector_model (get_field (8), get_field (9)),
+								radius		=> to_radius (get_field (10))));
 																	 
 							add_circle (
 								module_name 	=> module,
-								face			=> to_face (f (5)),
+								face			=> to_face (get_field (5)),
 								circle			=> (circle_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1);
 
@@ -1322,10 +1316,10 @@ is
 		
 		
 	begin
-		if f (6) = keyword_zone then
+		if get_field (6) = keyword_zone then
 			build_zone;
 		else
-			shape := to_shape (f (6));
+			shape := to_shape (get_field (6));
 			draw_shape;
 		end if;
 	end draw_stencil;
@@ -1386,7 +1380,7 @@ is
 			use et_board_ops.conductors;
 			signal_layer	: type_signal_layer;
 		begin
-			signal_layer := to_signal_layer (f (6));  -- 5 
+			signal_layer := to_signal_layer (get_field (6));  -- 5 
 							
 			-- This procedure automatically cares for mirroring:
 			add_text (
@@ -1406,16 +1400,16 @@ is
 		
 		case cmd_field_count is
 			when 12 =>
-				layer_category := to_layer_category (f (5));
-				text.line_width := to_distance (f (7)); -- 0.15
-				text.size := to_distance (f (8)); -- 1
+				layer_category := to_layer_category (get_field (5));
+				text.line_width := to_distance (get_field (7)); -- 0.15
+				text.size := to_distance (get_field (8)); -- 1
 				
-				pos_xy := to_vector_model (f (9), f (10));
+				pos_xy := to_vector_model (get_field (9), get_field (10));
 
-				rotation := to_rotation (f (11)); -- 0
+				rotation := to_rotation (get_field (11)); -- 0
 				text.position := type_position (to_position (pos_xy, rotation));
 				
-				text.content := to_content (f (12));
+				text.content := to_content (get_field (12));
 				-- CS check length
 
 				
@@ -1423,17 +1417,17 @@ is
 
 					case layer_category is
 						when LAYER_CAT_ASSY =>
-							face := to_face (f (6)); -- top/bottom
+							face := to_face (get_field (6)); -- top/bottom
 							place_in_assy_doc;
 
 							
 						when LAYER_CAT_SILKSCREEN =>
-							face := to_face (f (6)); -- top/bottom
+							face := to_face (get_field (6)); -- top/bottom
 							place_in_silkscreen;
 
 							
 						when LAYER_CAT_STOPMASK =>						
-							face := to_face (f (6)); -- top/bottom
+							face := to_face (get_field (6)); -- top/bottom
 							place_in_stopmask;
 
 							
@@ -1481,7 +1475,7 @@ is
 			use et_board_ops.assy_doc;
 			ph : type_text_placeholder; -- non conductor layers
 		begin
-			ph.meaning := to_meaning (f (12));
+			ph.meaning := to_meaning (get_field (12));
 			ph.position := type_position (to_position (pos_xy, rotation));
 			ph.line_width := linewidth;
 			ph.size := size;
@@ -1500,7 +1494,7 @@ is
 			use et_board_ops.silkscreen;
 			ph : type_text_placeholder; -- non conductor layers
 		begin
-			ph.meaning := to_meaning (f (12));
+			ph.meaning := to_meaning (get_field (12));
 			ph.position := type_position (to_position (pos_xy, rotation));
 			ph.line_width := linewidth;
 			ph.size := size;
@@ -1519,7 +1513,7 @@ is
 			use et_board_ops.stopmask;
 			ph : type_text_placeholder; -- non conductor layers
 		begin
-			ph.meaning := to_meaning (f (12));
+			ph.meaning := to_meaning (get_field (12));
 			ph.position := type_position (to_position (pos_xy, rotation));
 			ph.line_width := linewidth;
 			ph.size := size;
@@ -1537,8 +1531,8 @@ is
 		procedure place_in_conductor_layer is
 			ph : type_text_placeholder_conductors; -- conductor layers
 		begin
-			ph.layer := to_signal_layer (f (6));  -- 5 
-			ph.meaning := to_meaning (f (12));
+			ph.layer := to_signal_layer (get_field (6));  -- 5 
+			ph.meaning := to_meaning (get_field (12));
 			ph.position := type_position (to_position (pos_xy, rotation));
 			ph.line_width := linewidth;
 			ph.size := size;
@@ -1561,37 +1555,37 @@ is
 
 		case cmd_field_count is
 			when 12 =>
-				layer_category := to_layer_category (f (5));
+				layer_category := to_layer_category (get_field (5));
 
 				-- Get the linewidth of the placeholder:
-				linewidth := to_distance (f (7)); -- 0.15
+				linewidth := to_distance (get_field (7)); -- 0.15
 				validate_text_line_width (linewidth);
 
 				-- Get the size of the placeholder:
-				size := to_distance (f (8)); -- 1
+				size := to_distance (get_field (8)); -- 1
 				validate_text_size (size);
 				
 				-- Get the position of the placeholder:
-				pos_xy := to_vector_model (f (9), f (10));
-				rotation := to_rotation (f (11)); -- 0
+				pos_xy := to_vector_model (get_field (9), get_field (10));
+				rotation := to_rotation (get_field (11)); -- 0
 				
 				
 				case layer_category is
 					when LAYER_CAT_ASSY =>
 
-						face := to_face (f (6)); -- top/bottom
+						face := to_face (get_field (6)); -- top/bottom
 						place_in_assy_doc;
 
 
 					when LAYER_CAT_SILKSCREEN =>
 
-						face := to_face (f (6)); -- top/bottom
+						face := to_face (get_field (6)); -- top/bottom
 						place_in_silkscreen;
 
 
 					when LAYER_CAT_STOPMASK =>
 
-						face := to_face (f (6)); -- top/bottom
+						face := to_face (get_field (6)); -- top/bottom
 						place_in_stopmask;
 
 					
@@ -1650,7 +1644,7 @@ is
 			module		: in out type_generic_module)
 		is begin
 			module.board.user_settings.vias.drill.active := true;
-			module.board.user_settings.vias.drill.size := to_distance (f (6));
+			module.board.user_settings.vias.drill.size := to_distance (get_field (6));
 		end activate_drill;
 
 		
@@ -1667,7 +1661,7 @@ is
 			module		: in out type_generic_module)
 		is begin
 			module.board.user_settings.vias.restring_inner.active := true;
-			module.board.user_settings.vias.restring_inner.width := to_distance (f (7));
+			module.board.user_settings.vias.restring_inner.width := to_distance (get_field (7));
 		end activate_inner_restring;
 
 		
@@ -1684,7 +1678,7 @@ is
 			module		: in out type_generic_module)
 		is begin
 			module.board.user_settings.vias.restring_outer.active := true;
-			module.board.user_settings.vias.restring_outer.width := to_distance (f (7));
+			module.board.user_settings.vias.restring_outer.width := to_distance (get_field (7));
 		end activate_outer_restring;
 
 		
@@ -1692,8 +1686,8 @@ is
 		case cmd_field_count is
 			when 6 => 
 				-- board demo set via drill 0.3/dru
-				if f (5) = kw_drill then
-					if f (6) = kw_dru then
+				if get_field (5) = kw_drill then
+					if get_field (6) = kw_dru then
 						update_element (generic_modules, module_cursor, deactivate_drill'access);
 					else
 						update_element (generic_modules, module_cursor, activate_drill'access);
@@ -1706,12 +1700,12 @@ is
 
 			when 7 => 
 				-- board demo set via restring inner/outer 0.2
-				if f (5) = kw_restring then
+				if get_field (5) = kw_restring then
 
 					-- board demo set via restring inner 0.2
 					-- board demo set via restring inner dru
-					if f (6) = kw_inner then
-						if f (7) = kw_dru then
+					if get_field (6) = kw_inner then
+						if get_field (7) = kw_dru then
 							update_element (generic_modules, module_cursor, deactivate_inner_restring'access);
 						else
 							update_element (generic_modules, module_cursor, activate_inner_restring'access);
@@ -1721,8 +1715,8 @@ is
 
 					-- board demo set via restring outer 0.2
 					-- board demo set via restring outer dru
-					elsif f (6) = kw_outer then
-						if f (7) = kw_dru then
+					elsif get_field (6) = kw_outer then
+						if get_field (7) = kw_dru then
 							update_element (generic_modules, module_cursor, deactivate_outer_restring'access);
 						else
 							update_element (generic_modules, module_cursor, activate_outer_restring'access);
@@ -1769,12 +1763,12 @@ is
 		
 		procedure set_net_name is begin
 			-- CS check net name: characters, length, existence of net
-			net_name := to_net_name (f (5));
+			net_name := to_net_name (get_field (5));
 		end set_net_name;
 
 		
 		procedure set_position is begin
-			drill.position := to_vector_model (f (6), f (7));
+			drill.position := to_vector_model (get_field (6), get_field (7));
 
 			-- CS check position: must be inside board area
 		end set_position;
@@ -1886,31 +1880,31 @@ is
 
 				
 			when 10 =>				
-				if f (8) = keyword_buried then
+				if get_field (8) = keyword_buried then
 					-- example: board demo place via RESET_N 10 14 buried 2 15					
 					update_mode_display;
 					set_net_name;
 					set_position;
 					buried_layers := to_buried_layers (
-								upper	=> f (9), 
-								lower	=> f (10),
+								upper	=> get_field (9), 
+								lower	=> get_field (10),
 								bottom	=> get_deepest_conductor_layer (module_cursor));
 					buried;
 
 					
-				elsif f (8) = keyword_blind then
+				elsif get_field (8) = keyword_blind then
 					-- example: board demo place via RESET_N 10 14 blind top 5
 					-- example: board demo place via RESET_N 10 14 blind bottom 2
 					set_net_name;
 					set_position;
 
-					if f (9) = keyword_top then
-						lower_layer := to_signal_layer (f (10));
+					if get_field (9) = keyword_top then
+						lower_layer := to_signal_layer (get_field (10));
 						update_mode_display;
 						blind_top;
 						
-					elsif f (9) = keyword_bottom then
-						upper_layer := to_signal_layer (f (10));
+					elsif get_field (9) = keyword_bottom then
+						upper_layer := to_signal_layer (get_field (10));
 						update_mode_display;
 						blind_bottom;
 						
@@ -1997,7 +1991,7 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is begin
-			module.board.user_settings.polygons_conductor.fill_style := to_fill_style (f (6));
+			module.board.user_settings.polygons_conductor.fill_style := to_fill_style (get_field (6));
 		end set_fill_style;
 
 		
@@ -2005,7 +1999,7 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is begin
-			module.board.user_settings.polygons_conductor.linewidth := to_distance (f (6));
+			module.board.user_settings.polygons_conductor.linewidth := to_distance (get_field (6));
 		end set_linewidth;
 
 		
@@ -2013,7 +2007,7 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is begin
-			module.board.user_settings.polygons_conductor.isolation := to_distance (f (6));
+			module.board.user_settings.polygons_conductor.isolation := to_distance (get_field (6));
 		end set_iso;
 
 		
@@ -2021,7 +2015,7 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is begin
-			module.board.user_settings.polygons_conductor.priority_level := to_priority (f (6));
+			module.board.user_settings.polygons_conductor.priority_level := to_priority (get_field (6));
 		end set_priority;
 
 		
@@ -2029,7 +2023,7 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is begin
-			module.board.user_settings.polygons_conductor.easing.style := to_easing_style (f (7));
+			module.board.user_settings.polygons_conductor.easing.style := to_easing_style (get_field (7));
 		end set_easing_style;
 
 		
@@ -2037,7 +2031,7 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is begin
-			module.board.user_settings.polygons_conductor.easing.radius := to_distance (f (7));
+			module.board.user_settings.polygons_conductor.easing.radius := to_distance (get_field (7));
 		end set_easing_radius;	
 
 		
@@ -2045,7 +2039,7 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is begin
-			module.board.user_settings.polygons_conductor.connection := to_pad_connection (f (6));
+			module.board.user_settings.polygons_conductor.connection := to_pad_connection (get_field (6));
 		end set_connection;	
 
 		
@@ -2053,7 +2047,7 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is begin
-			module.board.user_settings.polygons_conductor.spacing := to_distance (f (6));
+			module.board.user_settings.polygons_conductor.spacing := to_distance (get_field (6));
 		end set_hatching_spacing;	
 
 		
@@ -2061,7 +2055,7 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is begin
-			module.board.user_settings.polygons_conductor.thermal.width_min := to_distance (f (7));
+			module.board.user_settings.polygons_conductor.thermal.width_min := to_distance (get_field (7));
 		end set_thermal_width;	
 
 		
@@ -2069,7 +2063,7 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is begin
-			module.board.user_settings.polygons_conductor.thermal.gap_max := to_distance (f (7));
+			module.board.user_settings.polygons_conductor.thermal.gap_max := to_distance (get_field (7));
 		end set_thermal_gap;	
 
 		
@@ -2077,32 +2071,32 @@ is
 		case cmd_field_count is
 			when 6 => 
 				-- board demo set zone fill solid/hatched
-				if f (5) = keyword_fill then
+				if get_field (5) = keyword_fill then
 					update_element (generic_modules, module_cursor, set_fill_style'access);
 
 				-- board demo set zone linewidth 0.25
-				elsif f (5) = keyword_linewidth then
+				elsif get_field (5) = keyword_linewidth then
 					update_element (generic_modules, module_cursor, set_linewidth'access);
 
 				-- board demo set zone spacing 0.3
-				elsif f (5) = keyword_spacing then
+				elsif get_field (5) = keyword_spacing then
 					update_element (generic_modules, module_cursor, set_hatching_spacing'access);
 					
 				-- board demo set zone isolaton 0.4
-				elsif f (5) = keyword_isolation then
+				elsif get_field (5) = keyword_isolation then
 					update_element (generic_modules, module_cursor, set_iso'access);
 					
 				-- board demo set zone priority 2
-				elsif f (5) = keyword_priority then
+				elsif get_field (5) = keyword_priority then
 					update_element (generic_modules, module_cursor, set_priority'access);
 
 				-- board demo set zone connection thermal/solid
-				elsif f (5) = keyword_connection then
+				elsif get_field (5) = keyword_connection then
 					update_element (generic_modules, module_cursor, set_connection'access);
 
 				-- board demo set zone log NORMAL/HIGH/INSANE
-				elsif f (5) = kw_log then
-					polygon_log_category := to_log_category (f (6));
+				elsif get_field (5) = kw_log then
+					polygon_log_category := to_log_category (get_field (6));
 				else
 					expect_keywords;
 				end if;
@@ -2110,12 +2104,12 @@ is
 				
 			when 7 =>
 				-- board demo set zone easing style none/chamfer/fillet
-				if f (5) = keyword_easing then
+				if get_field (5) = keyword_easing then
 
-					if f (6) = keyword_style then
+					if get_field (6) = keyword_style then
 						update_element (generic_modules, module_cursor, set_easing_style'access);
 
-					elsif f (6) = keyword_radius then
+					elsif get_field (6) = keyword_radius then
 						update_element (generic_modules, module_cursor, set_easing_radius'access);
 
 					else
@@ -2128,12 +2122,12 @@ is
 
 
 				-- board demo set zone relief width_min/ gap_max 0.3
-				elsif f (5) = keyword_relief then
+				elsif get_field (5) = keyword_relief then
 
-					if f (6) = keyword_width_min then
+					if get_field (6) = keyword_width_min then
 						update_element (generic_modules, module_cursor, set_thermal_width'access);
 
-					elsif f (6) = keyword_gap_max then
+					elsif get_field (6) = keyword_gap_max then
 						update_element (generic_modules, module_cursor, set_thermal_gap'access);
 
 					-- CS technology ?	
@@ -2167,7 +2161,7 @@ is
 	
 	
 	procedure route_freetrack is
-		shape : constant type_track_shape := type_track_shape'value (f (6));
+		shape : constant type_track_shape := type_track_shape'value (get_field (6));
 
 		-- get the user specific settings of the board
 		settings : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
@@ -2194,7 +2188,7 @@ is
 						linewidth	=> settings.polygons_conductor.linewidth,
 						isolation	=> settings.polygons_conductor.isolation,
 						properties	=> (
-							layer 			=> to_signal_layer (f (5)),
+							layer 			=> to_signal_layer (get_field (5)),
 							priority_level	=> settings.polygons_conductor.priority_level,
 							others			=> <>),
 
@@ -2212,7 +2206,7 @@ is
 						linewidth	=> settings.polygons_conductor.linewidth,
 						isolation	=> settings.polygons_conductor.isolation,
 						properties	=> (
-							layer 			=> to_signal_layer (f (5)),
+							layer 			=> to_signal_layer (get_field (5)),
 							priority_level	=> settings.polygons_conductor.priority_level,
 							others			=> <>),
 
@@ -2236,12 +2230,12 @@ is
 				case cmd_field_count is
 					when 11 =>
 						-- draw a freetrack
-						layer_tmp := to_signal_layer (f (5));
-						width_tmp := to_distance (f (7));
+						layer_tmp := to_signal_layer (get_field (5));
+						width_tmp := to_distance (get_field (7));
 
 						line_tmp := type_line (to_line (
-							A => to_vector_model (f (8), f (9)),
-							B => to_vector_model (f (10), f (11))));
+							A => to_vector_model (get_field (8), get_field (9)),
+							B => to_vector_model (get_field (10), get_field (11))));
 														   
 						add_line (
 							module_name 	=> module,
@@ -2260,14 +2254,14 @@ is
 			when ARC =>
 				case cmd_field_count is
 					when 14 =>
-						layer_tmp := to_signal_layer (f (5));
-						width_tmp := to_distance (f (7));
+						layer_tmp := to_signal_layer (get_field (5));
+						width_tmp := to_distance (get_field (7));
 
 						arc_tmp := type_arc (to_arc (
-							center		=> to_vector_model (f (8), f (9)),
-							A			=> to_vector_model (f (10), f (11)),
-							B			=> to_vector_model (f (12), f (13)),
-							direction	=> to_direction (f (14))));
+							center		=> to_vector_model (get_field (8), get_field (9)),
+							A			=> to_vector_model (get_field (10), get_field (11)),
+							B			=> to_vector_model (get_field (12), get_field (13)),
+							direction	=> to_direction (get_field (14))));
 														
 						-- draw a freetrack
 						add_arc (
@@ -2300,7 +2294,7 @@ is
 	
 	procedure route_net is 
 		use et_terminals;
-		shape : constant type_track_shape := type_track_shape'value (f (7));
+		shape : constant type_track_shape := type_track_shape'value (get_field (7));
 
 		-- get the user specific settings of the board
 		settings : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
@@ -2332,7 +2326,7 @@ is
 					connection			=> THERMAL,
 					relief_properties	=> settings.polygons_conductor.thermal,
 					properties		=> (
-						layer 			=> to_signal_layer (f (6)),
+						layer 			=> to_signal_layer (get_field (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,
 						others			=> <>),
 					others				=> <>);
@@ -2340,7 +2334,7 @@ is
 				add_zone (
 					module_cursor	=> module_cursor,
 					zone			=> p2,
-					net_name		=> to_net_name (f (5)),
+					net_name		=> to_net_name (get_field (5)),
 					log_threshold	=> log_threshold + 1);
 				
 			end make_solid_thermal;
@@ -2361,7 +2355,7 @@ is
 					connection	=> SOLID,
 					technology	=> SMT_AND_THT, -- CS settings.polygons_conductor.technology,
 					properties	=> (
-						layer 			=> to_signal_layer (f (6)),
+						layer 			=> to_signal_layer (get_field (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,
 						others			=> <>),
 					others				=> <>);
@@ -2369,7 +2363,7 @@ is
 				add_zone (
 					module_cursor	=> module_cursor,
 					zone			=> p2,
-					net_name		=> to_net_name (f (5)),
+					net_name		=> to_net_name (get_field (5)),
 					log_threshold	=> log_threshold + 1);
 
 			end make_solid_solid;
@@ -2391,7 +2385,7 @@ is
 					connection		=> THERMAL,
 					relief_properties	=> settings.polygons_conductor.thermal,
 					properties		=> (
-						layer 			=> to_signal_layer (f (6)),
+						layer 			=> to_signal_layer (get_field (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,
 						others			=> <>),
 					others				=> <>);
@@ -2399,7 +2393,7 @@ is
 				add_zone (
 					module_cursor	=> module_cursor,
 					zone			=> p2,
-					net_name		=> to_net_name (f (5)),
+					net_name		=> to_net_name (get_field (5)),
 					log_threshold	=> log_threshold + 1);
 				
 			end make_hatched_thermal;
@@ -2421,7 +2415,7 @@ is
 					connection	=> SOLID,
 					technology	=> SMT_AND_THT, -- CS settings.polygons_conductor.technology,
 					properties	=> (
-						layer 			=> to_signal_layer (f (6)),
+						layer 			=> to_signal_layer (get_field (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,
 						others			=> <>),
 					others				=> <>);
@@ -2429,7 +2423,7 @@ is
 				add_zone (
 					module_cursor	=> module_cursor,
 					zone			=> p2,
-					net_name		=> to_net_name (f (5)),
+					net_name		=> to_net_name (get_field (5)),
 					log_threshold	=> log_threshold + 1);
 				
 			end make_hatched_solid;
@@ -2463,23 +2457,23 @@ is
 	begin -- route_net
 		case shape is
 			when LINE =>
-				if is_number (f (9)) then -- 33.4 or IC4
+				if is_number (get_field (9)) then -- 33.4 or IC4
 					
 					-- THE TRACK STARTS AT A DEDICATED POINT AT X/Y:
 					
 					-- board motor_driver route net NET_1 2 line 0.25 0 0 160 0
 					case cmd_field_count is
 						when 12 =>
-							layer_tmp := to_signal_layer (f (6));
-							width_tmp := to_distance (f (8));
+							layer_tmp := to_signal_layer (get_field (6));
+							width_tmp := to_distance (get_field (8));
 							
 							line_tmp := type_line (to_line (
-								A => to_vector_model (f  (9), f (10)),
-								B => to_vector_model (f (11), f (12))));
+								A => to_vector_model (get_field  (9), get_field (10)),
+								B => to_vector_model (get_field (11), get_field (12))));
 														   
 							add_line (
 								module_name 	=> module,
-								net_name		=> to_net_name (f (5)),
+								net_name		=> to_net_name (get_field (5)),
 								line			=> (line_tmp with width_tmp, layer_tmp),								
 								log_threshold	=> log_threshold + 1);
 
@@ -2491,11 +2485,11 @@ is
 				else
 					-- THE TRACK STARTS AT A TERMINAL:
 					
-					if f (11) = keyword_to then
+					if get_field (11) = keyword_to then
 						-- board motor_driver route net NET_1 1 line 0.25 R1 1 to 35 40
 						-- board motor_driver route net NET_1 1 line 0.25 R1 1 to x 5
 						
-						if is_number (f (12)) then
+						if is_number (get_field (12)) then
 							-- THE TRACK ENDS AT A DEDICATED POINT X/Y
 							
 							-- board motor_driver route net NET_1 1 line 0.25 R1 1 to 35 40
@@ -2503,12 +2497,12 @@ is
 								when 13 =>
 									add_line (
 										module_name 	=> module,
-										net_name		=> to_net_name (f (5)),
-										layer			=> to_signal_layer (f (6)),
-										width			=> to_distance (f (8)),
-										device			=> to_device_name (f (9)),
-										terminal		=> to_terminal_name (f (10)),
-										end_point		=> to_vector_model (f (12), f (13)), -- 35 40
+										net_name		=> to_net_name (get_field (5)),
+										layer			=> to_signal_layer (get_field (6)),
+										width			=> to_distance (get_field (8)),
+										device			=> to_device_name (get_field (9)),
+										terminal		=> to_terminal_name (get_field (10)),
+										end_point		=> to_vector_model (get_field (12), get_field (13)), -- 35 40
 										log_threshold	=> log_threshold + 1);
 									
 								when 14 .. type_field_count'last =>
@@ -2522,18 +2516,18 @@ is
 							-- THE TRACK ENDS ON A GRID LINE ALONG A GIVEN AXIS:
 							
 							-- board motor_driver route net NET_1 1 line 0.25 R1 1 to x 5
-							if f (12) = to_string (AXIS_X) or f (12) = to_string (AXIS_Y) then
+							if get_field (12) = to_string (AXIS_X) or get_field (12) = to_string (AXIS_Y) then
 								case cmd_field_count is
 									when 13 =>
 										add_line (
 											module_name => module,
-											net_name	=> to_net_name (f (5)),
-											layer		=> to_signal_layer (f (6)),
-											width		=> to_distance (f (8)),
-											device		=> to_device_name (f (9)),
-											terminal	=> to_terminal_name (f (10)),
-											axis		=> to_axis (f (12)),
-											notches		=> to_notches (f (13)), -- 5
+											net_name	=> to_net_name (get_field (5)),
+											layer		=> to_signal_layer (get_field (6)),
+											width		=> to_distance (get_field (8)),
+											device		=> to_device_name (get_field (9)),
+											terminal	=> to_terminal_name (get_field (10)),
+											axis		=> to_axis (get_field (12)),
+											notches		=> to_notches (get_field (13)), -- 5
 											
 											log_threshold	=> log_threshold + 1
 											);
@@ -2551,10 +2545,10 @@ is
 						end if;
 						
 						
-					elsif f (11) = keyword_direction then
+					elsif get_field (11) = keyword_direction then
 						-- THE TRACK RUNS INTO GIVEN DIRECTION SPECIFIED BY AN ANGLE
 						
-						if is_number (f (13)) then
+						if is_number (get_field (13)) then
 							-- THE TRACK ENDS AFTER A GIVEN DISTANCE (it has a given length)
 							
 							-- board motor_driver route net NET_1 1 line 0.25 R1 1 direction 45 50
@@ -2563,13 +2557,13 @@ is
 								when 13 =>
 									add_line (
 										module_name => module,
-										net_name	=> to_net_name (f (5)),
-										layer		=> to_signal_layer (f (6)),
-										width		=> to_distance (f (8)),
-										device		=> to_device_name (f (9)),
-										terminal	=> to_terminal_name (f (10)),
-										direction	=> to_rotation (f (12)), -- 45 degree
-										length		=> to_distance (f (13)), -- 50mm
+										net_name	=> to_net_name (get_field (5)),
+										layer		=> to_signal_layer (get_field (6)),
+										width		=> to_distance (get_field (8)),
+										device		=> to_device_name (get_field (9)),
+										terminal	=> to_terminal_name (get_field (10)),
+										direction	=> to_rotation (get_field (12)), -- 45 degree
+										length		=> to_distance (get_field (13)), -- 50mm
 										
 										log_threshold	=> log_threshold + 1
 										);
@@ -2585,20 +2579,20 @@ is
 							-- THE TRACK ENDS AT A GIVEN GRID LINE ALONG A GIVEN AXIS
 							
 							-- board motor_driver route net NET_1 1 line 0.25 R1 1 direction 45 x 5
-							if f (13) = to_string (AXIS_X) or f (13) = to_string (AXIS_Y) then
+							if get_field (13) = to_string (AXIS_X) or get_field (13) = to_string (AXIS_Y) then
 								
 								case cmd_field_count is
 									when 14 =>
 										add_line (
 											module_name => module,
-											net_name	=> to_net_name (f (5)),
-											layer		=> to_signal_layer (f (6)),
-											width		=> to_distance (f (8)),
-											device		=> to_device_name (f (9)),
-											terminal	=> to_terminal_name (f (10)),
-											direction	=> to_rotation (f (12)), -- 45 degree
-											axis		=> to_axis (f (13)),
-											notches		=> to_notches (f (14)), -- 5
+											net_name	=> to_net_name (get_field (5)),
+											layer		=> to_signal_layer (get_field (6)),
+											width		=> to_distance (get_field (8)),
+											device		=> to_device_name (get_field (9)),
+											terminal	=> to_terminal_name (get_field (10)),
+											direction	=> to_rotation (get_field (12)), -- 45 degree
+											axis		=> to_axis (get_field (13)),
+											notches		=> to_notches (get_field (14)), -- 5
 											
 											log_threshold	=> log_threshold + 1
 											);
@@ -2625,23 +2619,23 @@ is
 					when 15 =>
 						arc_tmp := type_arc (to_arc (
 							center		=> type_vector_model (set (
-								x => to_distance (dd => f (9)),
-								y => to_distance (dd => f (10)))),
+								x => to_distance (dd => get_field (9)),
+								y => to_distance (dd => get_field (10)))),
 							A	=> type_vector_model (set (
-								x => to_distance (dd => f (11)),
-								y => to_distance (dd => f (12)))),
+								x => to_distance (dd => get_field (11)),
+								y => to_distance (dd => get_field (12)))),
 							B	=> type_vector_model (set (
-								x => to_distance (dd => f (13)),
-								y => to_distance (dd => f (14)))),
-							direction	=> to_direction (f (15))));
+								x => to_distance (dd => get_field (13)),
+								y => to_distance (dd => get_field (14)))),
+							direction	=> to_direction (get_field (15))));
 														
 						-- draw a named track
 						add_arc (
 							module_name => module,
-							net_name	=> to_net_name (f (5)),
+							net_name	=> to_net_name (get_field (5)),
 							arc			=> (arc_tmp with
-								layer	=> to_signal_layer (f (6)),
-								width	=> to_distance (f (8))),
+								layer	=> to_signal_layer (get_field (6)),
+								width	=> to_distance (get_field (8))),
 							log_threshold	=> log_threshold + 1
 							);
 						
@@ -2684,8 +2678,8 @@ is
 		begin
 			update_mode_display;
 			
-			layer.conductor.thickness := to_distance (f (5));
-			layer.dielectric.thickness := to_distance (f (6));
+			layer.conductor.thickness := to_distance (get_field (5));
+			layer.dielectric.thickness := to_distance (get_field (6));
 			
 			add_layer (
 				module_name 	=> module,
@@ -2717,7 +2711,7 @@ is
 			
 			delete_layer (
 				module_name 	=> module,
-				layer			=> to_signal_layer (f (5)),									
+				layer			=> to_signal_layer (get_field (5)),									
 				log_threshold	=> log_threshold + 1);
 
 		end do_it;
@@ -2746,12 +2740,12 @@ is
 			use et_package_names;
 			use et_device_prefix;
 			
-			model : constant pac_package_model_file_name.bounded_string := to_file_name (f (5));
-			prefix : constant pac_device_prefix.bounded_string := to_prefix (f (6));
+			model : constant pac_package_model_file_name.bounded_string := to_file_name (get_field (5));
+			prefix : constant pac_device_prefix.bounded_string := to_prefix (get_field (6));
 
 			xy : constant type_vector_model := type_vector_model (set (
-					x => to_distance (dd => f (7)),
-					y => to_distance (dd => f (8))));
+					x => to_distance (dd => get_field (7)),
+					y => to_distance (dd => get_field (8))));
 
 		begin
 			case cmd_field_count is
@@ -2778,7 +2772,7 @@ is
 						position		=> to_package_position
 							(
 							point		=> xy,
-							rotation	=> to_rotation (f (9))
+							rotation	=> to_rotation (get_field (9))
 							),
 						prefix			=> prefix,
 						log_threshold	=> log_threshold + 1);
@@ -2793,8 +2787,8 @@ is
 						position		=> to_package_position
 							(
 							point		=> xy,
-							rotation	=> to_rotation (f (9)),
-							face		=> to_face (f (10))
+							rotation	=> to_rotation (get_field (9)),
+							face		=> to_face (get_field (10))
 							),
 						prefix			=> prefix,
 						log_threshold	=> log_threshold + 1);
@@ -2832,7 +2826,7 @@ is
 			
 			delete_device (
 				module_cursor	=> active_module,
-				device_name		=> to_device_name (f (5)),
+				device_name		=> to_device_name (get_field (5)),
 				log_threshold	=> log_threshold + 1);
 		end do_it;
 		
@@ -2856,11 +2850,11 @@ is
 			when 8 =>
 				et_board_ops.devices.move_device (
 					module_cursor 	=> active_module,
-					device_name		=> to_device_name (f (5)), -- IC1
-					coordinates		=> to_coordinates (f (6)),  -- relative/absolute
+					device_name		=> to_device_name (get_field (5)), -- IC1
+					coordinates		=> to_coordinates (get_field (6)),  -- relative/absolute
 					point			=> type_vector_model (set (
-										x => to_distance (dd => f (7)),
-										y => to_distance (dd => f (8)))),
+										x => to_distance (dd => get_field (7)),
+										y => to_distance (dd => get_field (8)))),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -2886,8 +2880,8 @@ is
 			
 			rename_device (
 				module_cursor		=> active_module,
-				device_name_before	=> to_device_name (f (5)),
-				device_name_after	=> to_device_name (f (6)),
+				device_name_before	=> to_device_name (get_field (5)),
+				device_name_after	=> to_device_name (get_field (6)),
 				log_threshold		=> log_threshold + 1);
 
 		end do_it;
@@ -2912,8 +2906,8 @@ is
 			when 6 =>
 				et_board_ops.devices.flip_device (
 					module_cursor 	=> active_module,
-					device_name		=> to_device_name (f (5)), -- IC1
-					face			=> to_face  (f (6)),  -- top/bottom
+					device_name		=> to_device_name (get_field (5)), -- IC1
+					face			=> to_face  (get_field (6)),  -- top/bottom
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -2938,12 +2932,12 @@ is
 			update_mode_display;
 
 			catch_zone := set_catch_zone (
-				center	=> to_vector_model (f (6), f (7)),
-				radius	=> to_zone_radius (f (8)));
+				center	=> to_vector_model (get_field (6), get_field (7)),
+				radius	=> to_zone_radius (get_field (8)));
 				
 			delete_object (
 				module_name 	=> module,
-				face			=> to_face (f (5)),
+				face			=> to_face (get_field (5)),
 				catch_zone		=> catch_zone,
 				log_threshold	=> log_threshold + 1);
 			
@@ -2970,12 +2964,12 @@ is
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
-				center	=> to_vector_model (f (6), f (7)),
-				radius	=> to_zone_radius (f (8)));
+				center	=> to_vector_model (get_field (6), get_field (7)),
+				radius	=> to_zone_radius (get_field (8)));
 				
 			delete_object (
 				module_name 	=> module,
-				face			=> to_face (f (5)),
+				face			=> to_face (get_field (5)),
 				catch_zone		=> catch_zone,
 				log_threshold	=> log_threshold + 1);
 
@@ -3012,12 +3006,12 @@ is
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
-				center	=> to_vector_model (f (6), f (7)),
-				radius	=> to_zone_radius (f (8)));
+				center	=> to_vector_model (get_field (6), get_field (7)),
+				radius	=> to_zone_radius (get_field (8)));
 
 			delete_object (
 				module_name 	=> module,
-				face			=> to_face (f (5)),
+				face			=> to_face (get_field (5)),
 				catch_zone		=> catch_zone,
 				log_threshold	=> log_threshold + 1);
 
@@ -3044,12 +3038,12 @@ is
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
-				center	=> to_vector_model (f (6), f (7)),
-				radius	=> to_zone_radius (f (8)));
+				center	=> to_vector_model (get_field (6), get_field (7)),
+				radius	=> to_zone_radius (get_field (8)));
 				
 			delete_object (
 				module_name 	=> module,
-				face			=> to_face (f (5)),
+				face			=> to_face (get_field (5)),
 				catch_zone		=> catch_zone,				
 				log_threshold	=> log_threshold + 1);
 
@@ -3076,8 +3070,8 @@ is
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
-				center	=> to_vector_model (f (5), f (6)),
-				radius	=> to_zone_radius (f (7)));
+				center	=> to_vector_model (get_field (5), get_field (6)),
+				radius	=> to_zone_radius (get_field (7)));
 											 
 			delete_route_restrict (
 				module_name 	=> module,
@@ -3111,9 +3105,9 @@ is
 -- 			delete_via_restrict (
 -- 				module_name 	=> module,
 -- 				point			=> type_vector_model (set (
--- 						x => to_distance (dd => f (5)),
--- 						y => to_distance (dd => f (6)))),
--- 				accuracy		=> to_accuracy (f (7)),
+-- 						x => to_distance (dd => get_field (5)),
+-- 						y => to_distance (dd => get_field (6)))),
+-- 				accuracy		=> to_accuracy (get_field (7)),
 -- 				
 -- 				log_threshold	=> log_threshold + 1);
 		end do_it;
@@ -3139,13 +3133,13 @@ is
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
-				center	=> to_vector_model (f (6), f (7)),
-				radius	=> to_zone_radius (f (8)));
+				center	=> to_vector_model (get_field (6), get_field (7)),
+				radius	=> to_zone_radius (get_field (8)));
 				
 			delete_track (
 				module_name 	=> module,
 				net_name		=> to_net_name (""),
-				layer			=> to_signal_layer (f (5)),
+				layer			=> to_signal_layer (get_field (5)),
 				catch_zone		=> catch_zone,
 				log_threshold	=> log_threshold + 1);
 
@@ -3171,13 +3165,13 @@ is
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
-				center	=> to_vector_model (f (7), f (8)),
-				radius	=> to_zone_radius (f (9)));
+				center	=> to_vector_model (get_field (7), get_field (8)),
+				radius	=> to_zone_radius (get_field (9)));
 		
 			delete_track (
 				module_name 	=> module,
-				net_name		=> to_net_name (f (5)),
-				layer			=> to_signal_layer (f (6)),
+				net_name		=> to_net_name (get_field (5)),
+				layer			=> to_signal_layer (get_field (6)),
 				catch_zone		=> catch_zone,				
 				log_threshold	=> log_threshold + 1);
 
@@ -3210,7 +3204,7 @@ is
 
 				-- collect the optional net names in list "nets":
 				for place in 5 .. cmd_field_count loop
-					nets.append (to_net_name (f (place)));
+					nets.append (to_net_name (get_field (place)));
 				end loop;
 
 				fill_zones (module_cursor, polygon_log_category, log_threshold + 1, nets);
@@ -3239,7 +3233,7 @@ is
 
 				-- collect the optional net names in list "nets":
 				for place in 5 .. cmd_field_count loop
-					nets.append (to_net_name (f (place)));
+					nets.append (to_net_name (get_field (place)));
 				end loop;
 
 				clear_zones (module_cursor, log_threshold + 1, nets);
@@ -3281,10 +3275,10 @@ is
 	begin
 		case cmd_field_count is
 			when 7 => -- board led_driver move frame absolute -20 -50
-				c := to_coordinates (f (5));   -- relative/absolute
+				c := to_coordinates (get_field (5));   -- relative/absolute
 				
-				p.x := et_frames.to_distance (f (6));
-				p.y := et_frames.to_distance (f (7));
+				p.x := et_frames.to_distance (get_field (6));
+				p.y := et_frames.to_distance (get_field (7));
 
 				move_drawing_frame (
 					module_cursor 	=> module_cursor,
@@ -3322,7 +3316,7 @@ is
 				-- Save the module with a different name:
 				save_module (
 					module_cursor	=> active_module,
-					save_as_name	=> to_module_name (f (5)), -- led_driver_test
+					save_as_name	=> to_module_name (get_field (5)), -- led_driver_test
 					log_threshold	=> log_threshold + 1);
 				
 			when 6 .. type_field_count'last => too_long;
@@ -3353,7 +3347,7 @@ is
 			use et_canvas_schematic_2;
 			use et_schematic_coordinates;
 		begin
-			module := to_module_name (f (5));
+			module := to_module_name (get_field (5));
 			set_module (module);
 			active_sheet := sheet;
 			
@@ -3368,13 +3362,13 @@ is
 			use et_canvas_schematic_2;
 			use et_schematic_coordinates;
 		begin
-			module := to_module_name (f (5));
+			module := to_module_name (get_field (5));
 			set_module (module);
 
 			log (text => "sheet " & to_string (sheet), 
 				level => log_threshold + 1);
 			
-			sheet := to_sheet (f (6));
+			sheet := to_sheet (get_field (6));
 			active_sheet := sheet;
 
 			et_canvas_schematic_2.update_schematic_editor;
@@ -3503,19 +3497,19 @@ is
 						
 					when NOUN_RESTRICT => -- like "board led_driver display restrict route/via 2 [on/off]"
 						case cmd_field_count is
-							when 6 => display_restrict_layer (f (5), f (6)); -- if status is omitted
-							when 7 => display_restrict_layer (f (5), f (6), f (7));
+							when 6 => display_restrict_layer (get_field (5), get_field (6)); -- if status is omitted
+							when 7 => display_restrict_layer (get_field (5), get_field (6), get_field (7));
 							when 8 .. type_field_count'last => too_long;
 							when others => command_incomplete;
 						end case;
 
 					when NOUN_VIAS => -- like "board led_driver display vias [on/off]"
 						case cmd_field_count is
-							--when 5 => display_vias (f (5)); -- if status is omitted
-							--when 6 => display_vias (f (5), f (6));
+							--when 5 => display_vias (get_field (5)); -- if status is omitted
+							--when 6 => display_vias (get_field (5), get_field (6));
 							--when 7 .. type_field_count'last => too_long;
 							when 4 => display_vias; -- if status is omitted
-							when 5 => display_vias (f (5));
+							when 5 => display_vias (get_field (5));
 							when 6 .. type_field_count'last => too_long;
 							when others => command_incomplete;
 						end case;
@@ -3563,7 +3557,7 @@ is
 						case cmd_field_count is
 							when 5 => 
 								execute_nested_script (
-									file			=> f (5),
+									file			=> get_field (5),
 									log_threshold	=> log_threshold + 1);
 
 							when 6 .. type_field_count'last => too_long;								
@@ -3636,11 +3630,11 @@ is
 							when 8 =>
 								move_submodule (
 									module_name 	=> module,
-									instance		=> to_instance_name (f (5)), -- OSC1
-									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
+									instance		=> to_instance_name (get_field (5)), -- OSC1
+									coordinates		=> to_coordinates (get_field (6)),  -- relative/absolute
 									point			=> type_vector_model (set (
-														x => to_distance (dd => f (7)),
-														y => to_distance (dd => f (8)))),
+														x => to_distance (dd => get_field (7)),
+														y => to_distance (dd => get_field (8)))),
 									log_threshold	=> log_threshold + 1
 									);
 
@@ -3695,9 +3689,9 @@ is
 							when 7 =>
 								et_board_ops.devices.rotate_device (
 									module_cursor 	=> active_module,
-									device_name		=> to_device_name (f (5)), -- IC1
-									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
-									rotation		=> to_rotation (f (7)),
+									device_name		=> to_device_name (get_field (5)), -- IC1
+									coordinates		=> to_coordinates (get_field (6)),  -- relative/absolute
+									rotation		=> to_rotation (get_field (7)),
 									log_threshold	=> log_threshold + 1
 									);
 
@@ -3846,7 +3840,7 @@ is
 							when 5 => -- place via RESET_N
 								-- Preset the net name so that it is visible
 								-- in the via properties bar:
-								object_net_name := to_net_name (f (5));
+								object_net_name := to_net_name (get_field (5));
 
 								show_via_properties;
 								single_cmd.finalization_pending := true;
@@ -3880,18 +3874,18 @@ begin -- board_cmd
 
 	
 
-	module := to_module_name (f (2)); -- motor_driver (without extension *.mod)
+	module := to_module_name (get_field (2)); -- motor_driver (without extension *.mod)
 	-- CS: Becomes obsolete once all board ops use the
 	-- given module_cursor.
 
 	-- read the verb from field 3
-	verb := to_verb (f (3));
+	verb := to_verb (get_field (3));
 	
 	-- There are some very short commands which do not require a noun.
 	-- For such commands we do not read the noun.
 	case verb is
 		when VERB_EXIT | VERB_QUIT => null; -- no noun
-		when others => noun := to_noun (f (4)); -- read noun from field 4
+		when others => noun := to_noun (get_field (4)); -- read noun from field 4
 	end case;
 
 	

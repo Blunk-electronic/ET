@@ -56,7 +56,7 @@ package et_cmd_sts is
 
 		-- The command to be executed like 
 		-- "schematic blood_sample_analyzer set value C1 100n"
-		cmd			: type_fields_of_line;
+		cmd			: type_fields_of_line; -- CS rename to "fields"
 
 		-- Goes false if too few arguments given via console:
 		complete	: boolean := true;
@@ -127,7 +127,7 @@ package et_cmd_sts is
 
 	-- This function is a shortcut to get a single field
 	-- from the current single_cmd command:
-	function f (place : in type_field_count) 
+	function get_field (place : in type_field_count) 
 		return string;
 
 	

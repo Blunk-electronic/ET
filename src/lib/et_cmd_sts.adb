@@ -116,7 +116,7 @@ package body et_cmd_sts is
 	
 	
 	
-	function f (place : in type_field_count) 
+	function get_field (place : in type_field_count) 
 		return string 
 	is begin
 		return get_field (single_cmd.cmd, place);
