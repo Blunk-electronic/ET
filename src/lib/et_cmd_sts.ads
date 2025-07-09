@@ -36,8 +36,11 @@
 --   history of changes:
 --
 
+with ada.containers;			use ada.containers;
+
 with et_string_processing;		use et_string_processing;
 with et_script_names;			use et_script_names;
+with et_logging;				use et_logging;
 
 
 package et_cmd_sts is
@@ -72,10 +75,57 @@ package et_cmd_sts is
 	-- The number of fields of the given command:
 	cmd_field_count : type_field_count;
 
+
+
+	-- Commands can be entered via:
+	-- - the console in the GUI as single command.
+	-- - via a script (a batch of commands)
+	type type_cmd_entry_mode is (
+		SINGLE_CMD,
+		VIA_SCRIPT
+		);
+
+	cmd_entry_mode_default : constant type_cmd_entry_mode := SINGLE_CMD;
+
+	cmd_entry_mode : type_cmd_entry_mode := cmd_entry_mode_default;
+	
+	function to_string (entry_mode : in type_cmd_entry_mode) return string;
+
+
+
+
+	procedure invalid_keyword (field : in count_type); -- CS use type natural ?
+	
+	
+
+	incomplete		: constant string := "Command incomplete ! ";
+	
+
+	procedure log_command_incomplete (
+		field_count		: in type_field_count;
+		log_threshold	: in type_log_level);
+
+
+	procedure command_incomplete;
+	
+
+
+	
+
+	procedure command_too_long (
+		cmd		: in type_fields_of_line;
+		from	: in type_field_count);
+
+
+	-- This procedure is a shortcut. Call it in case
+	-- the given command is too long:
+	procedure too_long;
+	
+	
 	
 
 	-- This function is a shortcut to get a single field
-	-- from the current command:
+	-- from the current single_cmd_status command:
 	function f (place : in type_field_count) 
 		return string;
 

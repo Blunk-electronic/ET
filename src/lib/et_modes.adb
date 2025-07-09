@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,6 +36,10 @@
 --   history of changes:
 --
 
+with et_exceptions;					use et_exceptions;
+
+
+
 package body et_modes is
 
 	function to_runmode (mode : in string) return type_runmode is begin
@@ -50,9 +54,18 @@ package body et_modes is
 
 
 
-	function to_string (entry_mode : in type_cmd_entry_mode) return string is begin
-		return type_cmd_entry_mode'image (entry_mode);
-	end to_string;
+	procedure skipped_in_this_runmode (log_threshold : in type_log_level) is begin
+		log (text => "skipped in current runmode "
+			& to_string (runmode), level => log_threshold);
+	end skipped_in_this_runmode;
+
+
+	
+
+	procedure invalid_noun (noun : in string) is begin
+		raise semantic_error_1 with
+			"ERROR: Noun " & enclose_in_quotes (noun) & " invalid for this operation !";
+	end invalid_noun;
 
 	
 end et_modes;

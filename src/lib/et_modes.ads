@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -43,6 +43,8 @@ with et_logging;				use et_logging;
 
 package et_modes is
 
+	-- CS: Separate package et_runmode
+	
 	-- Prefixes before enumeration types prevent clashes with gnat keywords
 	-- and package names:	
 	runmode_prefix : constant string := "MODE_";
@@ -64,21 +66,10 @@ package et_modes is
 	function to_string (mode : in type_runmode) return string;
 
 
-	-- Commands can be entered via:
-	-- - the console in the GUI as single command.
-	-- - via a script (a batch of commands)
-	type type_cmd_entry_mode is (
-		SINGLE_CMD,
-		VIA_SCRIPT
-		);
-
-	cmd_entry_mode_default : constant type_cmd_entry_mode := SINGLE_CMD;
-
-	cmd_entry_mode : type_cmd_entry_mode := cmd_entry_mode_default;
 	
-	function to_string (entry_mode : in type_cmd_entry_mode) return string;
-	
+	procedure skipped_in_this_runmode (log_threshold : in type_log_level);
 
+	
 	
 	
 	-- Prefixes before enumeration types prevent clashes with gnat keywords
@@ -96,6 +87,11 @@ package et_modes is
 	expect_entry_default : constant type_expect_entry := EXP_VERB;
 		
 
+
+	
+	procedure invalid_noun (noun : in string);
+
+	
 	
 end et_modes;
 

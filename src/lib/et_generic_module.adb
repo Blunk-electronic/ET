@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -88,6 +88,18 @@ package body et_generic_module is
 		return pac_generic_modules.contains (generic_modules, module);
 	end;
 
+
+
+	procedure validate_module_name (
+		module : in pac_module_name.bounded_string) 
+	is begin
+		if not generic_module_exists (module) then
+			log (ERROR, "module " & to_string (module) &
+				" not found !", console => true);
+			raise constraint_error;
+		end if;
+	end;
+	
 
 	
 	function locate_module (name : in pac_module_name.bounded_string) -- motor_driver (without extension *.mod)

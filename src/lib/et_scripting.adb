@@ -116,12 +116,6 @@ package body et_scripting is
 	end;
 
 
-	
-	procedure invalid_keyword (field : in count_type) is begin
-		log (ERROR, "invalid keyword in field no." & count_type'image (field) & " !",
-			 console => true);
-		raise constraint_error;
-	end;
 
 
 	
@@ -142,83 +136,7 @@ package body et_scripting is
 
 
 	
-	procedure invalid_noun (noun : in string) is begin
-		raise semantic_error_1 with
-			"ERROR: Noun " & enclose_in_quotes (noun) & " invalid for this operation !";
-	end invalid_noun;
 
-
-	
-	procedure log_command_incomplete (
-		field_count		: in type_field_count;
-		log_threshold	: in type_log_level)
-	is begin
-		log (text => incomplete 
-			& "Only" & type_field_count'image (field_count) 
-			& " arguments provided. "
-			& "Proposing arguments ...", 
-			level => log_threshold);
-	end log_command_incomplete;
-
-
-
-	
-	procedure command_incomplete is begin
-		if cmd_entry_mode = SINGLE_CMD then
-			-- If a single command is given, then
-			-- clear the "complete" flag so that further
-			-- actions are proposed to the operator:
-			single_cmd_status.complete := false;
-		else
-			-- If command is executed via script then
-			-- raise exception so that the script execution
-			-- is stopped:
-			raise exception_command_incomplete with "Command not complete !";
-		end if;
-	end command_incomplete;
-
-
-	
-	
-	procedure command_too_long (
-		cmd		: in type_fields_of_line;
-		from	: in type_field_count) 
-	is begin
-		log (WARNING, "command " & enclose_in_quotes (to_string (cmd)) 
-			 & " too long !",
-			 console => true);
-		
-		log (text => " -> Excessive arguments after no." 
-			 & type_field_count'image (from) & " ignored !",
-			 console => true);
-	end;
-
-
-
-	
-	procedure too_long is begin
-		command_too_long (single_cmd_status.cmd, cmd_field_count - 1);
-	end;
-
-
-	
-
-	procedure skipped_in_this_runmode (log_threshold : in type_log_level) is begin
-		log (text => "skipped in current runmode "
-			& to_string (runmode), level => log_threshold);
-	end skipped_in_this_runmode;
-
-
-	
-	procedure validate_module_name (
-		module : in pac_module_name.bounded_string) 
-	is begin
-		if not generic_module_exists (module) then
-			log (ERROR, "module " & to_string (module) &
-				" not found !", console => true);
-			raise constraint_error;
-		end if;
-	end;
 
 
 

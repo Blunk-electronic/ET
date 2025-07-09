@@ -59,6 +59,7 @@ with et_design_rules;
 with et_net_class;					use et_net_class;
 with et_devices_electrical;			use et_devices_electrical;
 with et_devices_non_electrical;		use et_devices_non_electrical;
+with et_logging;					use et_logging;
 
 
 package et_generic_module is
@@ -181,7 +182,8 @@ package et_generic_module is
 	function get_active_module return string;
 
 
-	
+
+
 	
 	-- Returns true if the module with the given name exists in container modules.
 	function generic_module_exists (
@@ -189,6 +191,11 @@ package et_generic_module is
 		return boolean;
 
 
+	procedure validate_module_name (
+		module : in pac_module_name.bounded_string);
+
+
+	
 	
 	-- Locates the given module in the global container "modules".
 	function locate_module (name : in pac_module_name.bounded_string) -- motor_driver (without extension *.mod)

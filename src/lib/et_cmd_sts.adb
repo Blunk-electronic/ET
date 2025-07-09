@@ -36,13 +36,85 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
+with ada.text_io;					use ada.text_io;
+
+with et_exceptions;					use et_exceptions;
 
 
 
 package body et_cmd_sts is
 
 
+	function to_string (entry_mode : in type_cmd_entry_mode) return string is begin
+		return type_cmd_entry_mode'image (entry_mode);
+	end to_string;
+
+
+
+	procedure invalid_keyword (field : in count_type) is begin
+		log (ERROR, "invalid keyword in field no." & count_type'image (field) & " !",
+			 console => true);
+		raise constraint_error;
+	end;
+
+	
+
+	
+	procedure log_command_incomplete (
+		field_count		: in type_field_count;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => incomplete 
+			& "Only" & type_field_count'image (field_count) 
+			& " arguments provided. "
+			& "Proposing arguments ...", 
+			level => log_threshold);
+	end log_command_incomplete;
+
+
+
+	
+	procedure command_incomplete is begin
+		if cmd_entry_mode = SINGLE_CMD then
+			-- If a single command is given, then
+			-- clear the "complete" flag so that further
+			-- actions are proposed to the operator:
+			single_cmd_status.complete := false;
+		else
+			-- If command is executed via script then
+			-- raise exception so that the script execution
+			-- is stopped:
+			raise exception_command_incomplete with "Command not complete !";
+		end if;
+	end command_incomplete;
+
+
+	
+
+
+	
+	procedure command_too_long (
+		cmd		: in type_fields_of_line;
+		from	: in type_field_count) 
+	is begin
+		log (WARNING, "command " & enclose_in_quotes (to_string (cmd)) 
+			 & " too long !",
+			 console => true);
+		
+		log (text => " -> Excessive arguments after no." 
+			 & type_field_count'image (from) & " ignored !",
+			 console => true);
+	end;
+
+
+
+
+	
+	procedure too_long is begin
+		command_too_long (single_cmd_status.cmd, cmd_field_count - 1);
+	end;
+	
+	
 	
 	function f (place : in type_field_count) 
 		return string 

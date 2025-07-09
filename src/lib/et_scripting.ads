@@ -66,32 +66,14 @@ package et_scripting is
 	script_name : pac_script_name.bounded_string;
 
 
-	
-	procedure invalid_noun (noun : in string);
 
-	incomplete		: constant string := "Command incomplete ! ";
+
 	device_missing	: constant string := "Device name missing !";
 	module_missing	: constant string := "Module name missing !";
 	net_missing		: constant string := "Net name missing !";
 
-	
-	procedure log_command_incomplete (
-		field_count		: in type_field_count;
-		log_threshold	: in type_log_level);
 
 	
-	procedure command_too_long (
-		cmd		: in type_fields_of_line;
-		from	: in type_field_count);
-
-
-	-- This procedure is a shortcut. Call it in case
-	-- the given command is too long:
-	procedure too_long;
-
-
-	
-	procedure skipped_in_this_runmode (log_threshold : in type_log_level);
 	
 	type type_exit_code is (
 		SUCCESSFUL,
