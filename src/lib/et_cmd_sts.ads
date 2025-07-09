@@ -54,9 +54,9 @@ package et_cmd_sts is
 	-- finalization_pending goes true.
 	type type_single_cmd is record
 
-		-- The command to be executed like 
+		-- The text fields of the command to be executed like 
 		-- "schematic blood_sample_analyzer set value C1 100n"
-		cmd			: type_fields_of_line; -- CS rename to "fields"
+		fields		: type_fields_of_line;
 
 		-- Goes false if too few arguments given via console:
 		complete	: boolean := true;
@@ -114,7 +114,7 @@ package et_cmd_sts is
 	
 
 	procedure command_too_long (
-		cmd		: in type_fields_of_line;
+		fields	: in type_fields_of_line;
 		from	: in type_field_count);
 
 
@@ -146,12 +146,13 @@ package et_cmd_sts is
 	-- The failed script will then be output in the status bar.
 	-- IN HEADLESS MODE THIS STUFF HAS NO MEANING !
 	-- For this reason this type is provided:
-	type type_script_cmd_status is record
+	type type_script_cmd is record
 		-- the name of the script file like "rename_power_nets.scr":
 		script_name	: pac_script_name.bounded_string;
 
-		-- the command to be executed like "schematic blood_sample_analyzer set value C1 100n"
-		cmd			: type_fields_of_line;
+		-- The text fields of the command to be executed like 
+		-- "schematic blood_sample_analyzer set value C1 100n"
+		fields		: type_fields_of_line;
 
 		-- the flag that indicates whether the command failed
 		failed		: boolean := false;
@@ -161,7 +162,7 @@ package et_cmd_sts is
 	-- The global variable that stores the status of the latest
 	-- script command.
 	-- IN HEADLESS MODE THIS STUFF HAS NO MEANING !
-	script_cmd_status : type_script_cmd_status;
+	script_cmd : type_script_cmd;
 	
 
 	

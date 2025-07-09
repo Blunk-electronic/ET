@@ -110,7 +110,7 @@ package et_scripting is
 	-- Assumes that the targeted module (like motor_driver) exists.
 	procedure schematic_cmd (
 		module_cursor	: in pac_generic_modules.cursor;
-		cmd_in			: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
+		fields			: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
 		log_threshold	: in type_log_level);
 
 
@@ -123,26 +123,32 @@ package et_scripting is
 	-- Assumes that the targeted module (like motor_driver) exists.
 	procedure board_cmd (
 		module_cursor	: in pac_generic_modules.cursor;
-		cmd_in			: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
+		fields			: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
 		log_threshold	: in type_log_level);
 
+
+	
 	
 	-- Executes a script command like 
 	-- "schematic motor_driver draw net motor_on 1 150 100 150 130".
 	-- This procedure is called by function execute_script (see below) or
 	-- by procedure execute_nested_script.
 	-- Ensures that the targeted module (like motor_driver) exists.
-	-- Dispatches the command either schematic, board or project.
+	-- Dispatches further to the execution of either schematic, 
+	-- board or project commands.
 	-- When called, the current working directory must be the
 	-- project like my_projects/blood_sample_analyzer.
 	procedure execute_command (
 		-- The script file that contains the command. for debug messages only:
-		file_name		: in pac_script_name.bounded_string; 
-		-- The command like "schematic motor_driver draw net motor_on 1 150 100 150 130":
-		cmd				: in type_fields_of_line;
+		script_name		: in pac_script_name.bounded_string; 
+		-- The text fields like "schematic motor_driver draw net motor_on 1 150 100 150 130":
+		fields			: in type_fields_of_line;
 		log_threshold	: in type_log_level);
 
-	-- Executes the given script file.
+
+
+	
+	-- Executes the given script file like "dummy_module/my_script.scr".
 	-- Changes into the directory where the script lives and starts
 	-- execution there.
 	-- NOTE: This function should be called to execute a script on launching
@@ -150,7 +156,7 @@ package et_scripting is
 	-- is to be executed from inside a script !
 	-- To be used in in headless mode only.
 	function execute_script (
-		file_name		: in pac_script_name.bounded_string;
+		script_name		: in pac_script_name.bounded_string;
 		log_threshold	: in type_log_level)
 		return type_exit_code;
 

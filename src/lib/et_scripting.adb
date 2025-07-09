@@ -156,10 +156,11 @@ package body et_scripting is
 		
 		file_handle : ada.text_io.file_type;
 
-		-- The command read from the script:
-		cmd : type_fields_of_line;
+		-- The text fields of a single command read from the script:
+		fields : type_fields_of_line;
 
 		script_name : pac_script_name.bounded_string := to_script_name (file);
+		
 	begin
 		log (text => "current directory: " & enclose_in_quotes (current_directory),
 			 level => log_threshold);
@@ -182,17 +183,18 @@ package body et_scripting is
 
 			-- Prepare the script command status in case a command
 			-- in the script fails:
-			script_cmd_status := (script_name => script_name, others => <>);
+			script_cmd := (script_name => script_name, others => <>);
 
 			-- Prepare the handling of the exception in case the script fails.
 			-- See procedures schematic_cmd.evaluate_exception or
 			-- board_cmd.evaluate_exception for example.
 			cmd_entry_mode := MODE_VIA_SCRIPT;
+
 			
 			-- read the file line by line
 			while not end_of_file loop
 				
-				cmd := read_line (
+				fields := read_line (
 					line 			=> get_line,
 					number			=> positive (ada.text_io.line (current_input)),
 					comment_mark 	=> comment_mark,
@@ -200,16 +202,16 @@ package body et_scripting is
 					ifs 			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
-				if get_field_count (cmd) > 0 then
+				if get_field_count (fields) > 0 then
 
 					-- Backup the command to be executed in the script command status
 					-- in case the command fails:
-					script_cmd_status.cmd := cmd;
+					script_cmd.fields := fields;
 					
-					execute_command (script_name, cmd, log_threshold + 1);
+					execute_command (script_name, fields, log_threshold + 1);
 					-- Procedure execute_command dispatches to subprograms
 					-- that execute the command according to the 
-					-- targeted domain (first field in cmd) like project, 
+					-- targeted domain (first field in fields) like project, 
 					-- schematic, board, ...
 					-- If the command fails and thus raises an exception,
 					-- then the flag script_cmd_status.failed
@@ -225,6 +227,7 @@ package body et_scripting is
 
 			--log (text => "closing script file " & enclose_in_quotes (to_string (script_name)), level => log_threshold + 1);
 			close (file_handle);
+
 			
 		else -- script file not found
 			log_indentation_down;
@@ -253,38 +256,45 @@ package body et_scripting is
 			raise;
 	end execute_nested_script;
 
+
+
+	
 	
 	
 	procedure schematic_cmd (
 		module_cursor	: in pac_generic_modules.cursor;
-		cmd_in			: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
+		fields			: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
 		log_threshold	: in type_log_level)
 	is separate;
 
 
+
+	
 	
 	procedure board_cmd (
 		module_cursor	: in pac_generic_modules.cursor;
-		cmd_in			: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
+		fields			: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
 		log_threshold	: in type_log_level)
 	is separate;
 
 
+
+	
 	
 	procedure execute_command (
-		file_name		: in pac_script_name.bounded_string; -- for debug messages only
-		cmd				: in type_fields_of_line;
+		script_name		: in pac_script_name.bounded_string;
+		fields			: in type_fields_of_line;
 		log_threshold	: in type_log_level)
 	is
 
 		-- This function is a shortcut to get a single field
 		-- from the given command:
 		function f (place : in type_field_count) return string is begin
-			return get_field (cmd, place);
+			return get_field (fields, place);
 		end;
 
 		-- Get the number of fields of the given command:
-		field_count : constant type_field_count := get_field_count (cmd);
+		field_count : constant type_field_count := get_field_count (fields);
 
 		use et_domains;
 		use et_project;
@@ -316,7 +326,7 @@ package body et_scripting is
 										);
 
 								when 5 .. type_field_count'last =>
-									command_too_long (cmd, field_count - 1);
+									command_too_long (fields, field_count - 1);
 									
 								when others => 
 									command_incomplete;
@@ -337,7 +347,7 @@ package body et_scripting is
 										);
 
 								when 5 .. type_field_count'last =>
-									command_too_long (cmd, field_count - 1);
+									command_too_long (fields, field_count - 1);
 									
 								when others => 
 									command_incomplete;
@@ -358,7 +368,7 @@ package body et_scripting is
 										);
 
 								when 5 .. type_field_count'last =>
-									command_too_long (cmd, field_count - 1);
+									command_too_long (fields, field_count - 1);
 									
 								when others => 
 									command_incomplete;
@@ -379,7 +389,7 @@ package body et_scripting is
 										);
 
 								when 5 .. type_field_count'last =>
-									command_too_long (cmd, field_count - 1);
+									command_too_long (fields, field_count - 1);
 									
 								when others => 
 									command_incomplete;
@@ -393,7 +403,7 @@ package body et_scripting is
 		
 		
 	begin -- execute_command
-		log (text => "cmd --> " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
+		log (text => "cmd --> " & enclose_in_quotes (to_string (fields)), level => log_threshold);
 		log_indentation_up;
 
 		-- The command must have at least two fields:
@@ -423,7 +433,7 @@ package body et_scripting is
 						
 						schematic_cmd (
 							module_cursor	=> locate_module (module),
-							cmd_in			=> cmd,
+							fields			=> fields,
 							log_threshold	=> log_threshold + 1);
 
 						log (text => "schematic command done", level => log_threshold);
@@ -451,7 +461,7 @@ package body et_scripting is
 						
 						board_cmd (
 							module_cursor	=> locate_module (module),
-							cmd_in			=> cmd,
+							fields			=> fields,
 							log_threshold	=> log_threshold + 1);
 
 						log (text => "board command done", level => log_threshold);
@@ -492,8 +502,10 @@ package body et_scripting is
 
 
 	
+
+	
 	function execute_script (
-		file_name		: in pac_script_name.bounded_string; -- dummy_module/my_script.scr
+		script_name		: in pac_script_name.bounded_string;
 		log_threshold	: in type_log_level)
 		return type_exit_code 
 	is
@@ -514,13 +526,13 @@ package body et_scripting is
 	begin -- execute_script
 		log (text => row_separator_double, level => log_threshold);
 		log (text => "executing script " 
-			 & enclose_in_quotes (to_string (file_name)),
+			 & enclose_in_quotes (to_string (script_name)),
 			 --& "in mode " & to_string (cmd_entry_mode),
 			 level => log_threshold, console => true);
 		log_indentation_up;
 
 		-- build the directory where the script is located:
-		script_directory := to_script_name (full_name (to_string (file_name)));
+		script_directory := to_script_name (full_name (to_string (script_name)));
 		script_directory := to_script_name (containing_directory (to_string (script_directory)));
 		
 		-- backup the current working directory
@@ -534,13 +546,13 @@ package body et_scripting is
 		set_directory (to_string (script_directory));
 
 		-- make sure the script file exists:
-		if exists (simple_name (to_string (file_name))) then
+		if exists (simple_name (to_string (script_name))) then
 
 			-- open script file
 			open (
 				file => file_handle,
 				mode => in_file, 
-				name => simple_name (to_string (file_name))); -- demo.scr
+				name => simple_name (to_string (script_name))); -- demo.scr
 
 			set_input (file_handle);
 			
@@ -558,7 +570,7 @@ package body et_scripting is
 				if get_field_count (line) > 0 then
 
 					-- execute the line as command
-					execute_command (file_name, line, log_threshold + 1);
+					execute_command (script_name, line, log_threshold + 1);
 					
 				end if;
 			end loop;
@@ -566,7 +578,7 @@ package body et_scripting is
 			
 		else -- script file not found
 			log (ERROR, "script file " & 
-				 enclose_in_quotes (simple_name (to_string (file_name))) &
+				 enclose_in_quotes (simple_name (to_string (script_name))) &
 				 " not found !", console => true);
 			raise constraint_error;
 		end if;

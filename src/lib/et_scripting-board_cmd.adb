@@ -101,7 +101,7 @@ separate (et_scripting)
 	
 procedure board_cmd (
 	module_cursor	: in pac_generic_modules.cursor;
-	cmd_in			: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
+	fields			: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
 	log_threshold	: in type_log_level)
 is
 	use et_board_ops;
@@ -518,7 +518,7 @@ is
 		-- Extract from the given command the polygon arguments (everything after "outline"):
 		-- example command: board demo draw outline line 0 0 line 50 0 line 50 50 line 0 50
 		arguments : constant type_fields_of_line := 
-			remove_field (single_cmd.cmd, 1, 4);
+			remove_field (single_cmd.fields, 1, 4);
 
 		-- Build a basic contour from the arguments:
 		c : constant type_contour := type_contour (to_contour (arguments));
@@ -536,7 +536,7 @@ is
 		-- Extract from the given command the polygon arguments (everything after "hole"):
 		-- example command: board demo draw hole line 2 9 line 2 1 line 8 9
 		arguments : constant type_fields_of_line := 
-			remove_field (single_cmd.cmd, 1, 4);
+			remove_field (single_cmd.fields, 1, 4);
 
 		-- Build a basic contour from the arguments:
 		c : constant type_contour := type_contour (to_contour (arguments));
@@ -561,7 +561,7 @@ is
 		-- board demo draw keepout top zone line 0 0 line 10 0 line 10 10 line 0 10
 		procedure build_zone is
 			arguments : constant type_fields_of_line := 
-				remove_field (single_cmd.cmd, 1, 6);
+				remove_field (single_cmd.fields, 1, 6);
 			
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
@@ -655,7 +655,7 @@ is
 		-- example command: board demo draw silkscreen top zone line 0 0 line 50 0 line 50 50 line 0 50
 		procedure build_zone is
 			arguments : constant type_fields_of_line := 
-				remove_field (single_cmd.cmd, 1, 6);
+				remove_field (single_cmd.fields, 1, 6);
 			
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
@@ -781,7 +781,7 @@ is
 		-- example command: board demo draw assy top zone line 0 0 line 50 0 line 50 50 line 0 50
 		procedure build_zone is
 			arguments : constant type_fields_of_line := 
-				remove_field (single_cmd.cmd, 1, 6);
+				remove_field (single_cmd.fields, 1, 6);
 			
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
@@ -907,7 +907,7 @@ is
 		-- example command: board demo draw route_restrict [1] zone line 0 0 line 50 0 line 50 50 line 0 50
 		procedure build_zone is
 			arguments : constant type_fields_of_line := 
-				remove_field (single_cmd.cmd, 1, 6);
+				remove_field (single_cmd.fields, 1, 6);
 			
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
@@ -1061,7 +1061,7 @@ is
 		-- example command: board demo draw via_restrict [1] zone line 0 0 line 50 0 line 50 50 line 0 50
 		procedure build_zone is
 			arguments : constant type_fields_of_line := 
-				remove_field (single_cmd.cmd, 1, 6);
+				remove_field (single_cmd.fields, 1, 6);
 			
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
@@ -1099,7 +1099,7 @@ is
 		-- example command: board demo draw stop top zone line 0 0 line 50 0 line 50 50 line 0 50
 		procedure build_zone is
 			arguments : constant type_fields_of_line := 
-				remove_field (single_cmd.cmd, 1, 6);
+				remove_field (single_cmd.fields, 1, 6);
 			
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
@@ -1215,7 +1215,7 @@ is
 		-- board demo draw stencil top zone line 0 0 line 10 0 line 10 10 line 0 10
 		procedure build_zone is
 			arguments : constant type_fields_of_line := 
-				remove_field (single_cmd.cmd, 1, 6);
+				remove_field (single_cmd.fields, 1, 6);
 			
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
@@ -2172,7 +2172,7 @@ is
 			use et_fill_zones;
 			
 			arguments : constant type_fields_of_line := 
-				remove_field (single_cmd.cmd, 1, 6);
+				remove_field (single_cmd.fields, 1, 6);
 			
 			ps : type_floating_solid;
 			ph : type_floating_hatched;
@@ -2305,7 +2305,7 @@ is
 			
 			-- Extract from the given command the polygon arguments (everything after "zone"):
 			arguments : constant type_fields_of_line := 
-				remove_field (single_cmd.cmd, 1, 7);
+				remove_field (single_cmd.fields, 1, 7);
 
 			-- Build a basic polygon from the arguments:
 			p0 : constant type_contour := type_contour (to_contour (arguments));
@@ -3395,11 +3395,11 @@ is
 
 	
 	
-	-- Parses the single_cmd.cmd:
+	-- Parses the single_cmd.fields:
 	procedure parse is 
 	begin
 		log (text => "parsing command: " 
-			& enclose_in_quotes (to_string (single_cmd.cmd)),
+			& enclose_in_quotes (to_string (single_cmd.fields)),
 			level => log_threshold);
 
 		-- Clear the status bar if we are in graphical mode:
@@ -3860,17 +3860,18 @@ is
 	
 begin -- board_cmd
 	log (text => "given command: " 
-		 & enclose_in_quotes (to_string (cmd_in)),
+		 & enclose_in_quotes (to_string (fields)),
 		 level => log_threshold);
 
-	-- Make a copy of the given command. In case the given command is incomplete
+	-- Copy of the given command fields to the actual command.
+	-- In case the given command is incomplete
 	-- and we are in graphical mode (non-headless) then
 	-- this procedure interactively proposes arguments and completes the command.
-	single_cmd := (cmd => cmd_in, others => <>);
+	single_cmd := (fields => fields, others => <>);
 
-	-- single_cmd.cmd will now be processed and interactively completed
+	-- single_cmd.fields will now be processed and interactively completed
 
-	cmd_field_count := get_field_count (single_cmd.cmd);
+	cmd_field_count := get_field_count (single_cmd.fields);
 
 	
 

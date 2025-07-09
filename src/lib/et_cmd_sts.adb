@@ -94,10 +94,10 @@ package body et_cmd_sts is
 
 	
 	procedure command_too_long (
-		cmd		: in type_fields_of_line;
+		fields	: in type_fields_of_line;
 		from	: in type_field_count) 
 	is begin
-		log (WARNING, "command " & enclose_in_quotes (to_string (cmd)) 
+		log (WARNING, "command " & enclose_in_quotes (to_string (fields)) 
 			 & " too long !",
 			 console => true);
 		
@@ -111,7 +111,7 @@ package body et_cmd_sts is
 
 	
 	procedure too_long is begin
-		command_too_long (single_cmd.cmd, cmd_field_count - 1);
+		command_too_long (single_cmd.fields, cmd_field_count - 1);
 	end;
 	
 	
@@ -119,7 +119,7 @@ package body et_cmd_sts is
 	function get_field (place : in type_field_count) 
 		return string 
 	is begin
-		return get_field (single_cmd.cmd, place);
+		return get_field (single_cmd.fields, place);
 	end;
 
 
