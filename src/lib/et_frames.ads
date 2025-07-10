@@ -400,8 +400,14 @@ package et_frames is
 	
 -- GENERAL FRAME:
 
+	-- Prefixes before enumeration types prevent clashes with gnat keywords
+	-- and package names:
+	domain_prefix : constant string := ("DOMAIN_");
+
+
+	
 	-- The frame may be used in a schematic drawing or a layout drawing:
-	type type_domain is (SCHEMATIC, PCB);
+	type type_domain is (DOMAIN_SCHEMATIC, DOMAIN_PCB);
 
 	function to_string (domain : in type_domain) return string;
 	function to_domain (domain : in string) return type_domain;
@@ -436,10 +442,10 @@ package et_frames is
 	-- The used title block depends on the domain.
 	type type_frame (domain : type_domain) is new type_frame_general with record
 		case domain is
-			when SCHEMATIC =>
+			when DOMAIN_SCHEMATIC =>
 				title_block_schematic : type_title_block_schematic;
 
-			when PCB =>
+			when DOMAIN_PCB =>
 				title_block_pcb : type_title_block_pcb;
 		end case;
 	end record;
@@ -463,13 +469,18 @@ package et_frames is
 		template	: pac_template_name.bounded_string := template_pcb_default;
 			-- like $ET_FRAMES/drawing_frame_A3_landscape.frb
 
-		frame		: type_frame (PCB) := make_default_frame (PCB);
+		frame		: type_frame (DOMAIN_PCB) := make_default_frame (DOMAIN_PCB);
 	end record;
 
 	
 
 
 -- THE FINAL FRAME IN A SCHEMATIC
+
+	-- Prefixes before enumeration types prevent clashes with gnat keywords
+	-- and package names:
+	category_prefix : constant string := ("CAT_");
+	-- CS apply prefix !
 	
 	type type_schematic_sheet_category is (
 		DEVELOPMENT,
@@ -477,16 +488,22 @@ package et_frames is
 		PRODUCT
 		);
 
+	
 	schematic_sheet_category_default : constant type_schematic_sheet_category := DEVELOPMENT;
 
+	
 	function to_string (cat : in type_schematic_sheet_category) return string;
+
 	function to_category (cat : in string) return type_schematic_sheet_category;
+
 	
 	type type_schematic_description is record
 		content		: pac_text_content.bounded_string := to_content ("no description");
 		category	: type_schematic_sheet_category := schematic_sheet_category_default;
 	end record;
-		
+
+
+	
 	-- For each sheet of a schematic a description is required. 
 	-- The descriptions are ordered by the sheet numbers:
 	package pac_schematic_descriptions is new ordered_maps (
@@ -494,12 +511,13 @@ package et_frames is
 		element_type	=> type_schematic_description);
 
 
+	
 	-- The final drawing frames:
 	type type_frames_schematic is record
 		template		: pac_template_name.bounded_string := template_schematic_default;
 			-- like $ET_FRAMES/drawing_frame_A4_landscape.frs
 
-		frame			: type_frame (SCHEMATIC) := make_default_frame (SCHEMATIC);
+		frame			: type_frame (DOMAIN_SCHEMATIC) := make_default_frame (DOMAIN_SCHEMATIC);
 		
 		descriptions	: pac_schematic_descriptions.map;
 	end record;

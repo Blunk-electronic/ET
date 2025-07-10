@@ -2940,7 +2940,7 @@ is
 					-- read the frame template file
 					module.frames.frame := et_frame_rw.read_frame (
 						file_name		=> frame_template_schematic,
-						domain			=> SCHEMATIC,
+						domain			=> DOMAIN_SCHEMATIC,
 						log_threshold	=> log_threshold + 2);
 					
 				end do_it;
@@ -3000,7 +3000,7 @@ is
 					-- read the frame template file
 					module.board.frame.frame := et_frame_rw.read_frame (
 						file_name		=> frame_template_board,
-						domain			=> PCB,
+						domain			=> DOMAIN_PCB,
 						log_threshold	=> log_threshold + 2);
 
 					-- Set the frame position:

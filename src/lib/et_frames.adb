@@ -185,20 +185,30 @@ package body et_frames is
 	function to_string (name : in pac_template_name.bounded_string) return string is begin
 		return pac_template_name.to_string (name);
 	end;
+
+
 	
 	function to_template_name (name : in string) return pac_template_name.bounded_string is begin
 		return pac_template_name.to_bounded_string (name);
 	end;
 
-	function to_string (domain : in type_domain) return string is begin
-		return to_lower (type_domain'image (domain));
+
+	
+	function to_string (domain : in type_domain) return string is
+		s : string := type_domain'image (domain);
+	begin
+		return s (domain_prefix'length + 1 .. s'last);
 	end;
 
+
+	
 	function to_domain (domain : in string) return type_domain is begin
-		return type_domain'value (domain);
+		return type_domain'value (domain_prefix & domain);
 	end;
 
 
+
+	
 	procedure set_position (
 		frame 		: in out type_frame_general;
 		position	: in type_position)
@@ -207,6 +217,8 @@ package body et_frames is
 	end set_position;
 
 
+
+	
 	function get_position (
 		frame 		: in type_frame_general)
 		return type_position
@@ -321,7 +333,7 @@ package body et_frames is
 		
 	begin -- apply_defaults
 		case frame.domain is
-			when SCHEMATIC =>
+			when DOMAIN_SCHEMATIC =>
 				-- type_title_bock (basic stuff):
 				frame.title_block_schematic.position										:= ( 55,  6);
 				frame.title_block_schematic.lines := make_lines (lines_sch);
@@ -348,7 +360,7 @@ package body et_frames is
 				frame.title_block_schematic.placeholders_additional.sheet_description.position 	:= ( 90, 30);
 				frame.title_block_schematic.placeholders_additional.sheet_category.position 	:= (105, 21);
 
-			when PCB =>
+			when DOMAIN_PCB =>
 				-- type_title_bock (basic stuff):
 				frame.title_block_pcb.position												:= ( 55,  6);
 				frame.title_block_pcb.lines := make_lines (lines_pcb);
@@ -392,6 +404,8 @@ package body et_frames is
 				frame.title_block_pcb.cam_markers.via_restrict.position 					:= (170, 21);
 		end case;
 	end apply_defaults;
+
+
 	
 	function make_default_frame (domain : in type_domain) 
 		return type_frame
@@ -401,11 +415,15 @@ package body et_frames is
 		apply_defaults (f);
 		return f;
 	end make_default_frame;
+
+
 	
 	function to_string (cat : in type_schematic_sheet_category) return string is begin
 		return type_schematic_sheet_category'image (cat);
 	end;
 
+
+	
 	function to_category (cat : in string) return type_schematic_sheet_category is begin
 		return type_schematic_sheet_category'value (cat);
 	end;

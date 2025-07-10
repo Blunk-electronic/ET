@@ -401,10 +401,10 @@ package body et_frame_rw is
 		
 		-- write general things of title block (standard placeholders, texts, lines):
 		case frame.domain is 
-			when SCHEMATIC =>
+			when DOMAIN_SCHEMATIC =>
 				write_title_block (frame.title_block_schematic);
 
-			when PCB =>
+			when DOMAIN_PCB =>
 				write_title_block (frame.title_block_pcb);
 		end case;
 
@@ -433,6 +433,10 @@ package body et_frame_rw is
 			raise;
 
 	end write;
+
+
+
+
 	
 	procedure create_frame (
 	-- Creates and saves a frame in given file_name.
@@ -450,6 +454,11 @@ package body et_frame_rw is
 		
 		log_indentation_down;
 	end create_frame;
+
+
+
+
+	
 	
 	procedure save_frame (
 	-- Saves the given frame in file_name.
@@ -466,15 +475,23 @@ package body et_frame_rw is
 		log_indentation_down;
 	end save_frame;
 
-	function read_frame (
+
+
+	
+
+	
 	-- Reads a frame from given file_name and returns a parameterized type_frame.
 	-- CS add more log messages on level 1 and 2.
+	function read_frame (
 		file_name		: in pac_template_name.bounded_string;
 		domain			: in et_frames.type_domain;
 		log_threshold	: in type_log_level)
-		return type_frame is
+		return type_frame 
+	is
 
 		frame : type_frame (domain); -- to be returned
+		-- frame : type_frame_general;
+		-- dom_sc
 
 		file_handle : ada.text_io.file_type;
 
@@ -485,11 +502,13 @@ package body et_frame_rw is
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
 		max_section_depth : constant positive := 4; -- incl. section init
 
+		
 		package stack is new et_general_rw.stack_lifo (
 			item	=> type_section,
 			max 	=> max_section_depth);
 
 		use ada.characters.handling;
+
 		
 		function to_string (section : in type_section) return string is
 		-- Converts a section like SEC_PROJECT_NAME to a string "project_name".
@@ -498,12 +517,16 @@ package body et_frame_rw is
 			return to_lower (type_section'image (section) (5..len));
 		end to_string;
 
+
+		
 		procedure invalid_domain is begin
 			log (ERROR, text => "invalid domain ", console => true);
 			-- CS improve message
 			raise constraint_error;
 		end;
 
+
+		
 		procedure read_general_stuff is
 			kw : string := f (line, 1);
 		begin
@@ -572,6 +595,7 @@ package body et_frame_rw is
 			end if;
 		end;
 
+
 		
 		procedure read_line_properties is
 			kw : constant string := f (line, 1);
@@ -588,6 +612,7 @@ package body et_frame_rw is
 				invalid_keyword (kw);
 			end if;
 		end;
+
 
 		
 		procedure read_text_properties is
@@ -612,6 +637,7 @@ package body et_frame_rw is
 			end if;
 		end;
 
+
 		
 		procedure read_cam_marker_properties is
 			use et_text; -- for keywords only
@@ -635,6 +661,7 @@ package body et_frame_rw is
 			end if;
 		end;
 
+		
 		
 		procedure read_placeholder_properties is
 			use et_text; -- for keywords only
@@ -665,7 +692,7 @@ package body et_frame_rw is
 			use pac_static_texts;
 		begin								
 			case domain is
-				when SCHEMATIC => 
+				when DOMAIN_SCHEMATIC => 
 					frame.title_block_schematic.position := tb_position;
 					frame.title_block_schematic.lines := tb_lines;
 					frame.title_block_schematic.static_texts := tb_texts;
@@ -676,7 +703,7 @@ package body et_frame_rw is
 							sheet_description	=> tb_sheet_description,
 							sheet_category		=> tb_sheet_category);
 					
-				when PCB =>
+				when DOMAIN_PCB =>
 					frame.title_block_pcb.position := tb_position;
 					frame.title_block_pcb.lines := tb_lines;
 					frame.title_block_pcb.static_texts := tb_texts;
@@ -705,6 +732,8 @@ package body et_frame_rw is
 			end if;
 		end set_content;
 
+
+		
 		
 		procedure process_line is 
 
@@ -870,7 +899,7 @@ package body et_frame_rw is
 						case stack.parent is
 							when SEC_PLACEHOLDERS =>
 								case domain is
-									when SCHEMATIC => tb_sheet_number := tb_placeholder;
+									when DOMAIN_SCHEMATIC => tb_sheet_number := tb_placeholder;
 									when others => invalid_section;
 								end case;
 							when others => invalid_section;
@@ -880,7 +909,7 @@ package body et_frame_rw is
 						case stack.parent is
 							when SEC_PLACEHOLDERS =>
 								case domain is
-									when SCHEMATIC => tb_sheet_description := tb_placeholder;
+									when DOMAIN_SCHEMATIC => tb_sheet_description := tb_placeholder;
 									when others => invalid_section;
 								end case;
 							when others => invalid_section;
@@ -890,7 +919,7 @@ package body et_frame_rw is
 						case stack.parent is
 							when SEC_PLACEHOLDERS =>
 								case domain is
-									when SCHEMATIC => tb_sheet_category := tb_placeholder;
+									when DOMAIN_SCHEMATIC => tb_sheet_category := tb_placeholder;
 									when others => invalid_section;
 								end case;
 							when others => invalid_section;
@@ -898,7 +927,7 @@ package body et_frame_rw is
 
 					when SEC_FACE => -- NOTE: this section exists in pcb only !
 						case domain is
-							when PCB =>
+							when DOMAIN_PCB =>
 								
 								case stack.parent is
 									when SEC_PLACEHOLDERS => tb_face := tb_placeholder;
@@ -918,7 +947,7 @@ package body et_frame_rw is
 
 					when SEC_SIGNAL_LAYER => -- NOTE: this section exists in pcb only !
 						case domain is
-							when PCB =>
+							when DOMAIN_PCB =>
 								
 								case stack.parent is
 									when SEC_PLACEHOLDERS => tb_signal_layer := tb_placeholder;
@@ -938,7 +967,7 @@ package body et_frame_rw is
 
 					when SEC_SILK_SCREEN => -- NOTE: this section exists in pcb only !
 						case domain is
-							when PCB =>
+							when DOMAIN_PCB =>
 								
 								case stack.parent is
 									when SEC_CAM_MARKERS => 
@@ -957,7 +986,7 @@ package body et_frame_rw is
 
 					when SEC_STENCIL => -- NOTE: this section exists in pcb only !
 						case domain is
-							when PCB =>
+							when DOMAIN_PCB =>
 								
 								case stack.parent is
 									when SEC_CAM_MARKERS => 
@@ -976,7 +1005,7 @@ package body et_frame_rw is
 
 					when SEC_STOP_MASK => -- NOTE: this section exists in pcb only !
 						case domain is
-							when PCB =>
+							when DOMAIN_PCB =>
 								
 								case stack.parent is
 									when SEC_CAM_MARKERS => 
@@ -995,7 +1024,7 @@ package body et_frame_rw is
 						
 					when SEC_ASSY_DOC => -- NOTE: this section exists in pcb only !
 						case domain is
-							when PCB =>
+							when DOMAIN_PCB =>
 								
 								case stack.parent is
 									when SEC_CAM_MARKERS => 
@@ -1014,7 +1043,7 @@ package body et_frame_rw is
 
 					when SEC_KEEPOUT => -- NOTE: this section exists in pcb only !
 						case domain is
-							when PCB =>
+							when DOMAIN_PCB =>
 								
 								case stack.parent is
 									when SEC_CAM_MARKERS =>
@@ -1033,7 +1062,7 @@ package body et_frame_rw is
 
 					when SEC_PLATED_MILLINGS => -- NOTE: this section exists in pcb only !
 						case domain is
-							when PCB =>
+							when DOMAIN_PCB =>
 								
 								case stack.parent is
 									when SEC_CAM_MARKERS => 
@@ -1052,7 +1081,7 @@ package body et_frame_rw is
 
 					when SEC_PCB_OUTLINE => -- NOTE: this section exists in pcb only !
 						case domain is
-							when PCB =>
+							when DOMAIN_PCB =>
 								
 								case stack.parent is
 									when SEC_CAM_MARKERS =>
@@ -1071,7 +1100,7 @@ package body et_frame_rw is
 						
 					when SEC_ROUTE_RESTRICT => -- NOTE: this section exists in pcb only !
 						case domain is
-							when PCB =>
+							when DOMAIN_PCB =>
 								
 								case stack.parent is
 									when SEC_CAM_MARKERS =>
@@ -1090,7 +1119,7 @@ package body et_frame_rw is
 
 					when SEC_VIA_RESTRICT => -- NOTE: this section exists in pcb only !
 						case domain is
-							when PCB =>
+							when DOMAIN_PCB =>
 								
 								case stack.parent is
 									when SEC_CAM_MARKERS =>
@@ -1112,6 +1141,7 @@ package body et_frame_rw is
 				end case;
 
 			end execute_section;
+
 
 			
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
@@ -1246,7 +1276,7 @@ package body et_frame_rw is
 						case stack.parent is
 							when SEC_PLACEHOLDERS => 
 								case domain is
-									when SCHEMATIC => read_placeholder_properties;
+									when DOMAIN_SCHEMATIC => read_placeholder_properties;
 									when others => invalid_section;
 								end case;
 							when others => invalid_section;
@@ -1254,7 +1284,7 @@ package body et_frame_rw is
 						
 					when SEC_FACE => -- NOTE: this section exists in pcb only !
 						case domain is
-							when PCB =>
+							when DOMAIN_PCB =>
 								
 								case stack.parent is
 									when SEC_PLACEHOLDERS => read_placeholder_properties;
@@ -1267,7 +1297,7 @@ package body et_frame_rw is
 
 					when SEC_SIGNAL_LAYER => -- NOTE: this section exists in pcb only !
 						case domain is
-							when PCB =>
+							when DOMAIN_PCB =>
 								
 								case stack.parent is
 									when SEC_PLACEHOLDERS => read_placeholder_properties;
@@ -1282,7 +1312,7 @@ package body et_frame_rw is
 						SEC_PCB_OUTLINE | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
 						SEC_STENCIL | SEC_STOP_MASK => -- NOTE: these sections exists in pcb only !
 						case domain is
-							when PCB =>
+							when DOMAIN_PCB =>
 								
 								case stack.parent is
 									when SEC_CAM_MARKERS => read_cam_marker_properties;
@@ -1305,6 +1335,8 @@ package body et_frame_rw is
 		
 		previous_input : ada.text_io.file_type renames current_input;
 
+
+		
 		function is_dummy_frame return boolean is
 			use pac_template_name;
 		begin
@@ -1318,18 +1350,24 @@ package body et_frame_rw is
 
 		
 		use et_directory_and_file_ops;
+
 		
 		
 	begin -- read_frame
-		log (text => "reading frame " & to_string (file_name) & " ...", level => log_threshold);
+		log (text => "read frame " & to_string (file_name) 
+			 & " domain " & to_string (domain),
+			 level => log_threshold);
+		
 		log_indentation_up;
-		log (text => "domain " & to_string (domain) & " ...", level => log_threshold);
 
 		-- If the frame template is a dummy, don't read it:
 		if is_dummy_frame then
-			log (NOTE, "Using built-in default frame ...");
+			log (text => "Use built-in default frame.", level => log_threshold + 1);
 			apply_defaults (frame);
+			
 		else
+			log (text => "Use template.", level => log_threshold + 1);
+			
 			-- open the frame template file:
 			open (
 				file => file_handle,
@@ -1368,9 +1406,11 @@ package body et_frame_rw is
 		end if;
 		
 		log_indentation_down;
+		log_indentation_down;
 
 		return frame;
 
+		
 		exception when event: others =>
 			if is_open (file_handle) then 
 				set_input (previous_input);
