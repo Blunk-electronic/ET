@@ -144,6 +144,7 @@ package et_frame_rw is
 		domain			: in et_frames.type_domain;							   
 		log_threshold	: in type_log_level);
 
+	-- CS separate between create frame schematic and board
 	
 	-- Saves the given frame in file_name.
 	procedure save_frame (
@@ -151,15 +152,26 @@ package et_frame_rw is
 		file_name		: in pac_template_name.bounded_string;							 
 		log_threshold	: in type_log_level);
 
+	-- CS separate between save frame schematic and board
+
 	
-	-- Reads a frame from given file_name and returns a parameterized type_frame.
-	function read_frame (
+	-- Reads a frame template for the board as given by file_name and returns
+	-- a schematic frame.
+	function read_frame_board (
 		file_name		: in pac_template_name.bounded_string;
-		domain			: in et_frames.type_domain;
 		log_threshold	: in type_log_level)
-		return type_frame;
+		return type_frame_pcb_pre;
 
 
+	
+	-- Reads a frame template for the schematic as given by file_name and returns
+	-- a schematic frame.
+	function read_frame_schematic (
+		file_name		: in pac_template_name.bounded_string;
+		log_threshold	: in type_log_level)
+		return type_frame_schematic;
+
+	
 
 	function to_position (
 		line : in et_string_processing.type_fields_of_line; -- position x -100 y -150

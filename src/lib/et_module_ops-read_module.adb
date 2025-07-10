@@ -2925,7 +2925,8 @@ is
 				is
 					use et_frames;
 				begin
-					log (text => "drawing frame schematic " & to_string (frame_template_schematic), level => log_threshold + 1);
+					log (text => "drawing frame schematic " & to_string (frame_template_schematic), 
+						 level => log_threshold + 1);
 
 					-- set the frame template name
 					module.frames.template := frame_template_schematic;
@@ -2938,11 +2939,10 @@ is
 					pac_schematic_descriptions.clear (sheet_descriptions);
 					
 					-- read the frame template file
-					module.frames.frame := et_frame_rw.read_frame (
+					module.frames.frame := et_frame_rw.read_frame_schematic (
 						file_name		=> frame_template_schematic,
-						domain			=> DOMAIN_SCHEMATIC,
 						log_threshold	=> log_threshold + 2);
-					
+
 				end do_it;
 				
 
@@ -2981,7 +2981,7 @@ is
 				sheet_description_text := to_content("");
 			end add_sheet_description;
 
-
+	
 			
 
 			procedure set_frame_board is
@@ -2998,9 +2998,8 @@ is
 					module.board.frame.template := frame_template_board;
 
 					-- read the frame template file
-					module.board.frame.frame := et_frame_rw.read_frame (
+					module.board.frame.frame := et_frame_rw.read_frame_board (
 						file_name		=> frame_template_board,
-						domain			=> DOMAIN_PCB,
 						log_threshold	=> log_threshold + 2);
 
 					-- Set the frame position:
@@ -3031,6 +3030,7 @@ is
 			end insert_schematic_text;
 
 
+			
 			
 			procedure insert_package_placeholder is
 				use et_device_placeholders.packages;

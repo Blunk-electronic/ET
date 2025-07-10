@@ -52,6 +52,10 @@ with et_fonts;					use et_fonts;
 package et_frames is
 
 
+	-- CS separate schematc and board frame stuff in 
+	-- child packages ?
+	
+
 -- PAPER SIZES
 	
     type type_paper_size is (A3, A4); -- CS: others ?
@@ -440,6 +444,7 @@ package et_frames is
 -- PARAMETERIZED FRAME:
 	
 	-- The used title block depends on the domain.
+	-- CS: remove this type. It is replaced by type_frame_schematic and type_frame_pcb_pre.
 	type type_frame (domain : type_domain) is new type_frame_general with record
 		case domain is
 			when DOMAIN_SCHEMATIC =>
@@ -451,15 +456,35 @@ package et_frames is
 	end record;
 
 
-	-- Applies defaults to given frame:
-	procedure apply_defaults (frame : in out type_frame);
+	type type_frame_schematic is new type_frame_general with record
+		title_block_schematic : type_title_block_schematic;
+	end record;
 
 	
+	type type_frame_pcb_pre is new type_frame_general with record
+		title_block_pcb : type_title_block_pcb;
+	end record;
+	-- CS: find a more reasonable type name.
+
+
+	
+	-- Applies defaults to given frame:
+	procedure apply_defaults_schematic (frame : in out type_frame_schematic);
+
+	procedure apply_defaults_board (frame : in out type_frame_pcb_pre);
+
+	
+	
 	-- Generates a default frame for the given domain:
-	function make_default_frame (domain : in type_domain) 
-		return type_frame;
+	-- function make_default_frame (domain : in type_domain) 
+	-- 	return type_frame;
 
+	function make_default_frame_pcb
+		return type_frame_pcb_pre;
 
+	function make_default_frame_schematic
+		return type_frame_schematic;
+	
 	
 	
 -- THE FINAL FRAME IN A PCB DRAWING
@@ -469,7 +494,8 @@ package et_frames is
 		template	: pac_template_name.bounded_string := template_pcb_default;
 			-- like $ET_FRAMES/drawing_frame_A3_landscape.frb
 
-		frame		: type_frame (DOMAIN_PCB) := make_default_frame (DOMAIN_PCB);
+		--frame		: type_frame (DOMAIN_PCB) := make_default_frame (DOMAIN_PCB);
+		frame		: type_frame_pcb_pre := make_default_frame_pcb;
 	end record;
 
 	
@@ -517,7 +543,8 @@ package et_frames is
 		template		: pac_template_name.bounded_string := template_schematic_default;
 			-- like $ET_FRAMES/drawing_frame_A4_landscape.frs
 
-		frame			: type_frame (DOMAIN_SCHEMATIC) := make_default_frame (DOMAIN_SCHEMATIC);
+		--frame			: type_frame (DOMAIN_SCHEMATIC) := make_default_frame (DOMAIN_SCHEMATIC);
+		frame			: type_frame_schematic := make_default_frame_schematic;
 		
 		descriptions	: pac_schematic_descriptions.map;
 	end record;

@@ -479,19 +479,16 @@ package body et_frame_rw is
 
 	
 
-	
-	-- Reads a frame from given file_name and returns a parameterized type_frame.
-	-- CS add more log messages on level 1 and 2.
-	function read_frame (
-		file_name		: in pac_template_name.bounded_string;
-		domain			: in et_frames.type_domain;
-		log_threshold	: in type_log_level)
-		return type_frame 
-	is
 
-		frame : type_frame (domain); -- to be returned
-		-- frame : type_frame_general;
-		-- dom_sc
+	
+	function read_frame_schematic (
+		file_name		: in pac_template_name.bounded_string;
+		log_threshold	: in type_log_level)
+		return type_frame_schematic
+	is
+		-- CS add more log messages on level 1 and 2.
+
+		frame : type_frame_schematic; -- to be returned
 
 		file_handle : ada.text_io.file_type;
 
@@ -535,7 +532,7 @@ package body et_frame_rw is
 				expect_field_count (line, 2);
 
 				-- The given domain must match the domain specified in the frame:
-				if to_domain (f (line, 2)) /= domain then
+				if to_domain (f (line, 2)) /= DOMAIN_SCHEMATIC then
 					invalid_domain;
 				end if;
 
@@ -578,11 +575,633 @@ package body et_frame_rw is
 		tb_placeholder	: type_placeholder;
 		tb_placeholders_common	: type_placeholders_common;
 		tb_placeholders_basic	: type_placeholders_basic;
-		tb_sheet_number			: type_placeholder; -- for schematic only
-		tb_sheet_description 	: type_placeholder; -- for schematic only
-		tb_sheet_category		: type_placeholder; -- for schematic only
-		tb_face					: type_placeholder; -- for pcb only
-		tb_signal_layer			: type_placeholder; -- for pcb only
+		tb_sheet_number			: type_placeholder;
+		tb_sheet_description 	: type_placeholder;
+		tb_sheet_category		: type_placeholder;
+
+		
+		procedure read_title_block_position is
+			kw : constant string := f (line, 1);
+		begin
+			if kw = keyword_position then -- position x 100 y 200
+				expect_field_count (line, 5);
+				tb_position := to_position (line);
+			end if;
+		end;
+
+
+		
+		procedure read_line_properties is
+			kw : constant string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_start then -- start x 220 y 239
+				expect_field_count (line, 5);
+				tb_line.A := to_position (line);
+
+			elsif kw = keyword_end then -- end x 250 y 239
+				expect_field_count (line, 5);
+				tb_line.B := to_position (line);
+			else
+				invalid_keyword (kw);
+			end if;
+		end;
+
+
+		
+		procedure read_text_properties is
+			use et_text; -- for keywords only
+			kw : constant string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_position then -- position x 220 y 239
+				expect_field_count (line, 5);
+				tb_text.position := to_position (line);
+
+			elsif kw = keyword_size then -- size 12
+				expect_field_count (line, 2);
+				tb_text.size := to_distance (f (line, 2));
+
+			elsif kw = keyword_content then -- content "some text"
+				expect_field_count (line, 2);
+				tb_text.content := to_content (f (line, 2));
+
+			else
+				invalid_keyword (kw);
+			end if;
+		end;
+
+
+		
+		
+		procedure read_placeholder_properties is
+			use et_text; -- for keywords only
+			kw : constant string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_position then -- position x 220 y 239
+				expect_field_count (line, 5);
+				tb_placeholder.position := to_position (line);
+
+			elsif kw = keyword_size then -- size 12
+				expect_field_count (line, 2);
+				tb_placeholder.size := to_distance (f (line, 2));
+
+			else
+				invalid_keyword (kw);
+			end if;
+		end;
+
+		
+		procedure reset_placeholder is begin tb_placeholder := (others => <>); end;
+
+		
+		
+		procedure assemble_title_block is 
+			use pac_lines;
+			use pac_static_texts;
+		begin								
+			frame.title_block_schematic.position := tb_position;
+			frame.title_block_schematic.lines := tb_lines;
+			frame.title_block_schematic.static_texts := tb_texts;
+			frame.title_block_schematic.placeholders_common := tb_placeholders_common;
+			frame.title_block_schematic.placeholders_additional := (
+				tb_placeholders_basic with 
+					sheet_number 		=> tb_sheet_number,
+					sheet_description	=> tb_sheet_description,
+					sheet_category		=> tb_sheet_category);
+
+			-- clean up (even if there is no further title block)
+			tb_position := (others => <>);
+			clear (tb_lines);
+			clear (tb_texts);
+			tb_placeholders_common := (others => <>);
+		end;
+
+		
+
+		
+		
+		procedure process_line is 
+
+			procedure execute_section is
+			-- Once a section concludes, the temporarily variables are read, evaluated
+			-- and finally assembled to actual objects:
+				use pac_lines;
+				use pac_static_texts;
+				
+			begin -- execute_section
+				case stack.current is
+
+					when SEC_TITLE_BLOCK => 
+						case stack.parent is
+							when SEC_INIT => assemble_title_block;
+
+							when others => invalid_section;
+						end case;
+
+						
+					when SEC_LINES | SEC_TEXTS | SEC_PLACEHOLDERS | SEC_CAM_MARKERS =>
+						case stack.parent is
+							when SEC_TITLE_BLOCK => null;
+							when others => invalid_section;
+						end case;
+
+						
+					when SEC_LINE =>
+						case stack.parent is
+							when SEC_LINES =>
+								-- append the title block line to the collection of lines
+								append (tb_lines, tb_line);
+
+								-- clean up for next title block line
+								tb_line := (others => <>);
+								
+							when others => invalid_section;
+						end case;
+
+						
+					when SEC_TEXT =>
+						case stack.parent is
+							when SEC_TEXTS =>
+								-- append the title block text to the collection of texts
+								append (tb_texts, tb_text);
+
+								-- clean up for next title block text
+								tb_text := (others => <>);
+								
+							when others => invalid_section;
+						end case;
+
+						
+					when SEC_PROJECT_NAME =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_common.project_name := tb_placeholder;
+								reset_placeholder;
+							when others => invalid_section;
+						end case;
+
+					when SEC_MODULE_FILE_NAME =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_common.module_file_name := tb_placeholder;
+								reset_placeholder;
+							when others => invalid_section;
+						end case;
+
+					when SEC_ACTIVE_ASSEMBLY_VARIANT =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_common.active_assembly_variant := tb_placeholder;
+								reset_placeholder;
+							when others => invalid_section;
+						end case;
+
+					when SEC_COMPANY =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.company := tb_placeholder;
+								reset_placeholder;
+							when others => invalid_section;
+						end case;
+
+					when SEC_CUSTOMER =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.customer := tb_placeholder;
+								reset_placeholder;
+							when others => invalid_section;
+						end case;
+
+					when SEC_PARTCODE =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.partcode := tb_placeholder;
+								reset_placeholder;
+							when others => invalid_section;
+						end case;
+
+					when SEC_DRAWING_NUMBER =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.drawing_number := tb_placeholder;
+								reset_placeholder;
+							when others => invalid_section;
+						end case;
+
+					when SEC_REVISION =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.revision := tb_placeholder;
+								reset_placeholder;
+							when others => invalid_section;
+						end case;
+
+					when SEC_DRAWN_BY =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.drawn_by := tb_placeholder;
+								reset_placeholder;
+							when others => invalid_section;
+						end case;
+
+					when SEC_DRAWN_DATE =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.drawn_date := tb_placeholder;
+								reset_placeholder;
+							when others => invalid_section;
+						end case;
+						
+					when SEC_CHECKED_BY =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.checked_by := tb_placeholder;
+								reset_placeholder;
+							when others => invalid_section;
+						end case;
+
+					when SEC_CHECKED_DATE =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.checked_date := tb_placeholder;
+								reset_placeholder;
+							when others => invalid_section;
+						end case;
+
+					when SEC_APPROVED_BY =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.approved_by := tb_placeholder;
+								reset_placeholder;
+							when others => invalid_section;
+						end case;
+
+					when SEC_APPROVED_DATE =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.approved_date := tb_placeholder;
+								reset_placeholder;
+							when others => invalid_section;
+						end case;
+
+					when SEC_SHEET_NUMBER =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS =>
+								tb_sheet_number := tb_placeholder;
+							when others => invalid_section;
+						end case;
+						
+					when SEC_SHEET_DESCRIPTION =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS =>
+								tb_sheet_description := tb_placeholder;
+							when others => invalid_section;
+						end case;
+
+					when SEC_SHEET_CATEGORY =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS =>
+								tb_sheet_category := tb_placeholder;
+							when others => invalid_section;
+						end case;
+
+						
+					when SEC_INIT => null; -- CS: should never happen
+
+					when others => null; -- CS raise exception ?
+				end case;
+			end execute_section;
+
+
+			
+			-- Tests if the current line is a section header or footer. Returns true in both cases.
+			-- Returns false if the current line is neither a section header or footer.
+			-- If it is a header, the section name is pushed onto the sections stack.
+			-- If it is a footer, the latest section name is popped from the stack.
+			function set (
+				section_keyword	: in string;
+				section			: in type_section) -- SEC_PROJECT_NAME
+				return boolean is 
+			begin
+				if f (line, 1) = section_keyword then -- section name detected in field 1
+					if f (line, 2) = section_begin then -- section header detected in field 2
+						stack.push (section);
+						log (text => write_enter_section & to_string (section), level => log_threshold + 3);
+						return true;
+
+					elsif f (line, 2) = section_end then -- section footer detected in field 2
+
+						-- The section name in the footer must match the name
+						-- of the current section. Otherwise abort.
+						if section /= stack.current then
+							log_indentation_reset;
+							invalid_section;
+						end if;
+						
+						-- Now that the section ends, the data collected in temporarily
+						-- variables is processed.
+						execute_section;
+						
+						stack.pop;
+						if stack.empty then
+							log (text => write_top_level_reached, level => log_threshold + 3);
+						else
+							log (text => write_return_to_section & to_string (stack.current), level => log_threshold + 3);
+						end if;
+						return true;
+
+					else
+						log (ERROR, write_missing_begin_end, console => true);
+						raise constraint_error;
+					end if;
+
+				else -- neither a section header nor footer
+					return false;
+				end if;
+			end set;
+
+			
+		begin -- process_line
+			if set (section_active_assembly_variant, SEC_ACTIVE_ASSEMBLY_VARIANT) then null;			
+			elsif set (section_approved_by, SEC_APPROVED_BY) then null;								
+			elsif set (section_approved_date, SEC_APPROVED_DATE) then null;
+			elsif set (section_assy_doc, SEC_ASSY_DOC) then null;
+			elsif set (section_cam_markers, SEC_CAM_MARKERS) then null;
+			elsif set (section_checked_by, SEC_CHECKED_BY) then null;
+			elsif set (section_checked_date, SEC_CHECKED_DATE) then null;
+			elsif set (section_company, SEC_COMPANY) then null;
+			elsif set (section_customer, SEC_CUSTOMER) then null;
+			elsif set (section_drawing_number, SEC_DRAWING_NUMBER) then null;
+			elsif set (section_drawn_by, SEC_DRAWN_BY) then null;
+			elsif set (section_drawn_date, SEC_DRAWN_DATE) then null;
+			elsif set (section_line, SEC_LINE) then null;
+			elsif set (section_lines, SEC_LINES) then null;
+			elsif set (section_module_file_name, SEC_MODULE_FILE_NAME) then null;
+			elsif set (section_partcode, SEC_PARTCODE) then null;
+			elsif set (section_placeholders, SEC_PLACEHOLDERS) then null;
+			elsif set (section_project_name, SEC_PROJECT_NAME) then null;
+			elsif set (section_revision, SEC_REVISION) then null;
+			elsif set (section_sheet_category, SEC_SHEET_CATEGORY) then null;
+			elsif set (section_sheet_description, SEC_SHEET_DESCRIPTION) then null;			
+			elsif set (section_sheet_number, SEC_SHEET_NUMBER) then null;
+			elsif set (section_text, SEC_TEXT) then null;	
+			elsif set (section_texts, SEC_TEXTS) then null;
+			elsif set (section_title_block, SEC_TITLE_BLOCK) then null;
+			else
+				-- The line contains something else -> the payload data. 
+				-- Temporarily this data is stored in corresponding variables.
+
+				log (text => "frame line --> " & to_string (line), level => log_threshold + 3);
+		
+				case stack.current is
+
+					when SEC_INIT =>
+						read_general_stuff;
+
+					when SEC_TITLE_BLOCK => 
+						case stack.parent is
+							when SEC_INIT => read_title_block_position;
+							when others => invalid_section;
+						end case;
+
+					when SEC_LINES | SEC_TEXTS | SEC_PLACEHOLDERS | SEC_CAM_MARKERS =>
+						case stack.parent is
+							when SEC_TITLE_BLOCK => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_LINE =>
+						case stack.parent is
+							when SEC_LINES => read_line_properties;
+							when others => invalid_section;
+						end case;
+						
+					when SEC_TEXT =>
+						case stack.parent is
+							when SEC_TEXTS => read_text_properties;
+							when others => invalid_section;
+						end case;
+						
+					when SEC_PROJECT_NAME | SEC_MODULE_FILE_NAME | SEC_ACTIVE_ASSEMBLY_VARIANT |
+						SEC_COMPANY | SEC_CUSTOMER | SEC_PARTCODE | SEC_DRAWING_NUMBER | SEC_REVISION |
+						SEC_DRAWN_BY | SEC_DRAWN_DATE | SEC_CHECKED_BY | SEC_CHECKED_DATE | 
+						SEC_APPROVED_BY | SEC_APPROVED_DATE =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => read_placeholder_properties;
+							when others => invalid_section;
+						end case;
+
+					when SEC_SHEET_NUMBER | SEC_SHEET_DESCRIPTION | SEC_SHEET_CATEGORY => 
+						case stack.parent is
+							when SEC_PLACEHOLDERS => 
+								read_placeholder_properties;
+							when others => invalid_section;
+						end case;
+
+					when others => null; -- CS
+				end case;
+			end if;
+
+			exception when event: others =>
+				log (text => "file " & to_string (file_name) & space 
+					 & get_affected_line (line) & to_string (line), console => true);
+				raise;
+			
+		end process_line;
+
+		
+		
+		previous_input : ada.text_io.file_type renames current_input;
+
+
+		
+		function is_dummy_frame return boolean is
+			use pac_template_name;
+		begin
+			if file_name = template_schematic_default then
+				return true;
+			else
+				return false;
+			end if;
+		end is_dummy_frame;
+
+		
+		use et_directory_and_file_ops;
+
+		
+		
+	begin -- read_frame_schematic
+		
+		log (text => "read frame schematic " & to_string (file_name),
+			 level => log_threshold);
+		
+		log_indentation_up;
+
+		-- If the frame template is a dummy, don't read it:
+		if is_dummy_frame then
+			log (text => "Use built-in default frame.", level => log_threshold + 1);
+			apply_defaults_schematic (frame);
+			
+		else
+			log (text => "Use template.", level => log_threshold + 1);
+			
+			-- open the frame template file:
+			open (
+				file => file_handle,
+				mode => in_file, 
+				name => expand (to_string (file_name)));
+
+			set_input (file_handle);
+			
+			-- Init section stack.
+			stack.init;
+			stack.push (SEC_INIT);
+
+			-- read the file line by line
+			while not end_of_file loop
+				line := read_line (
+					line 			=> get_line,
+					number			=> positive (ada.text_io.line (current_input)),
+					comment_mark 	=> comment_mark,
+					delimiter_wrap	=> true, -- strings are enclosed in quotations
+					ifs 			=> space); -- fields are separated by space
+
+				-- we are interested in lines that contain something. emtpy lines are skipped:
+				if get_field_count (line) > 0 then
+					process_line;
+				end if;
+			end loop;
+
+			-- As a safety measure the top section must be reached finally.
+			if stack.depth > 1 then 
+				log (WARNING, write_section_stack_not_empty);
+			end if;
+
+			set_input (previous_input);
+			close (file_handle);
+
+		end if;
+		
+		log_indentation_down;
+		log_indentation_down;
+
+		return frame;
+
+		
+		exception when event: others =>
+			if is_open (file_handle) then 
+				set_input (previous_input);
+				close (file_handle); 
+			end if;
+			raise;
+		
+	end read_frame_schematic;
+
+
+
+	
+	
+
+
+
+	function read_frame_board (
+		file_name		: in pac_template_name.bounded_string;
+		log_threshold	: in type_log_level)
+		return type_frame_pcb_pre 
+	is
+		-- CS add more log messages on level 1 and 2.
+		
+		frame : type_frame_pcb_pre; -- to be returned
+
+		file_handle : ada.text_io.file_type;
+
+		line : type_fields_of_line;
+
+		-- This is the section stack of the frame.
+		-- Here we track the sections. On entering a section, its name is
+		-- pushed onto the stack. When leaving a section the latest section name is popped.
+		max_section_depth : constant positive := 4; -- incl. section init
+
+		
+		package stack is new et_general_rw.stack_lifo (
+			item	=> type_section,
+			max 	=> max_section_depth);
+
+		use ada.characters.handling;
+
+		
+		function to_string (section : in type_section) return string is
+		-- Converts a section like SEC_PROJECT_NAME to a string "project_name".
+			len : positive := type_section'image (section)'length;
+		begin
+			return to_lower (type_section'image (section) (5..len));
+		end to_string;
+
+
+		
+		procedure invalid_domain is begin
+			log (ERROR, text => "invalid domain ", console => true);
+			-- CS improve message
+			raise constraint_error;
+		end;
+
+
+		
+		procedure read_general_stuff is
+			kw : string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_domain then -- domain schematic/pcb
+				expect_field_count (line, 2);
+
+				-- The given domain must match the domain specified in the frame:
+				if to_domain (f (line, 2)) /= DOMAIN_PCB then
+					invalid_domain;
+				end if;
+
+			elsif kw = keyword_paper_size then -- paper_size A4
+				expect_field_count (line, 2);
+				frame.paper := to_paper_size (f (line, 2));
+
+			elsif kw = keyword_orientation then -- orientation landscape/portrait
+				expect_field_count (line, 2);
+				frame.orientation := to_orientation (f (line, 2));
+
+			elsif kw = keyword_border_width then -- border_width 8
+				expect_field_count (line, 2);
+				frame.border_width := to_distance (f (line, 2));
+
+			elsif kw = keyword_size then -- size x 280 y 200
+				expect_field_count (line, 5);
+				frame.size.x := to_distance (f (line, 3));
+				frame.size.y := to_distance (f (line, 5));
+				-- CS check position of x and y character
+
+			elsif kw = keyword_sectors then -- sectors rows 7 columns 10
+				expect_field_count (line, 5);
+				frame.sectors.rows := to_rows (f (line, 3));
+				frame.sectors.columns := to_columns (f (line, 5));
+				-- CS check position of keywords row and column
+
+			else
+				invalid_keyword (kw);
+			end if;
+		end;
+
+		
+		-- TEMPORARILY VARIABLES AND CONTAINERS
+		tb_position 	: type_position;
+		tb_line 		: type_line;
+		tb_lines		: pac_lines.list;
+		tb_text			: type_static_text;
+		tb_texts		: pac_static_texts.list;
+		tb_placeholder	: type_placeholder;
+		tb_placeholders_common	: type_placeholders_common;
+		tb_placeholders_basic	: type_placeholders_basic;
+		tb_face					: type_placeholder;
+		tb_signal_layer			: type_placeholder;
 		tb_cam_marker			: type_cam_marker;
 
 		
@@ -691,28 +1310,14 @@ package body et_frame_rw is
 			use pac_lines;
 			use pac_static_texts;
 		begin								
-			case domain is
-				when DOMAIN_SCHEMATIC => 
-					frame.title_block_schematic.position := tb_position;
-					frame.title_block_schematic.lines := tb_lines;
-					frame.title_block_schematic.static_texts := tb_texts;
-					frame.title_block_schematic.placeholders_common := tb_placeholders_common;
-					frame.title_block_schematic.placeholders_additional := (
-						tb_placeholders_basic with 
-							sheet_number 		=> tb_sheet_number,
-							sheet_description	=> tb_sheet_description,
-							sheet_category		=> tb_sheet_category);
-					
-				when DOMAIN_PCB =>
-					frame.title_block_pcb.position := tb_position;
-					frame.title_block_pcb.lines := tb_lines;
-					frame.title_block_pcb.static_texts := tb_texts;
-					frame.title_block_pcb.placeholders_common := tb_placeholders_common;
-					frame.title_block_pcb.placeholders_additional := (
-						tb_placeholders_basic with 
-							face			=> tb_face,
-							signal_layer	=> tb_signal_layer);
-			end case;
+			frame.title_block_pcb.position := tb_position;
+			frame.title_block_pcb.lines := tb_lines;
+			frame.title_block_pcb.static_texts := tb_texts;
+			frame.title_block_pcb.placeholders_common := tb_placeholders_common;
+			frame.title_block_pcb.placeholders_additional := (
+				tb_placeholders_basic with 
+					face			=> tb_face,
+					signal_layer	=> tb_signal_layer);
 
 			-- clean up (even if there is no further title block)
 			tb_position := (others => <>);
@@ -895,251 +1500,168 @@ package body et_frame_rw is
 							when others => invalid_section;
 						end case;
 
-					when SEC_SHEET_NUMBER => -- NOTE: this placeholder exists in schematic only !
+
+					when SEC_FACE =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS =>
-								case domain is
-									when DOMAIN_SCHEMATIC => tb_sheet_number := tb_placeholder;
-									when others => invalid_section;
-								end case;
+							when SEC_PLACEHOLDERS => tb_face := tb_placeholder;
+							when SEC_CAM_MARKERS =>
+
+								-- If no content provided, use default content of cam marker:
+								set_content (frame.title_block_pcb.cam_markers.face.content);
+								
+								frame.title_block_pcb.cam_markers.face := tb_cam_marker;
+								reset_cam_marker;
+								
 							when others => invalid_section;
 						end case;
+
 						
-					when SEC_SHEET_DESCRIPTION => -- NOTE: this placeholder exists in schematic only !
+					when SEC_SIGNAL_LAYER =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS =>
-								case domain is
-									when DOMAIN_SCHEMATIC => tb_sheet_description := tb_placeholder;
-									when others => invalid_section;
-								end case;
+							when SEC_PLACEHOLDERS => tb_signal_layer := tb_placeholder;
+							when SEC_CAM_MARKERS =>
+
+								-- If no content provided, use default content of cam marker:
+								set_content (frame.title_block_pcb.cam_markers.signal_layer.content);
+								
+								frame.title_block_pcb.cam_markers.signal_layer := tb_cam_marker;
+								reset_cam_marker;
+								
 							when others => invalid_section;
 						end case;
 
-					when SEC_SHEET_CATEGORY => -- NOTE: this placeholder exists in schematic only !
+
+					when SEC_SILK_SCREEN =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS =>
-								case domain is
-									when DOMAIN_SCHEMATIC => tb_sheet_category := tb_placeholder;
-									when others => invalid_section;
-								end case;
-							when others => invalid_section;
-						end case;
+							when SEC_CAM_MARKERS => 
 
-					when SEC_FACE => -- NOTE: this section exists in pcb only !
-						case domain is
-							when DOMAIN_PCB =>
+								-- If no content provided, use default content of cam marker:
+								set_content (frame.title_block_pcb.cam_markers.silk_screen.content);
 								
-								case stack.parent is
-									when SEC_PLACEHOLDERS => tb_face := tb_placeholder;
-									when SEC_CAM_MARKERS =>
-
-										-- If no content provided, use default content of cam marker:
-										set_content (frame.title_block_pcb.cam_markers.face.content);
-										
-										frame.title_block_pcb.cam_markers.face := tb_cam_marker;
-										reset_cam_marker;
-										
-									when others => invalid_section;
-								end case;
-
-							when others => invalid_section;
-						end case;
-
-					when SEC_SIGNAL_LAYER => -- NOTE: this section exists in pcb only !
-						case domain is
-							when DOMAIN_PCB =>
+								frame.title_block_pcb.cam_markers.silk_screen := tb_cam_marker;
+								reset_cam_marker;
 								
-								case stack.parent is
-									when SEC_PLACEHOLDERS => tb_signal_layer := tb_placeholder;
-									when SEC_CAM_MARKERS =>
-
-										-- If no content provided, use default content of cam marker:
-										set_content (frame.title_block_pcb.cam_markers.signal_layer.content);
-										
-										frame.title_block_pcb.cam_markers.signal_layer := tb_cam_marker;
-										reset_cam_marker;
-										
-									when others => invalid_section;
-								end case;
-
 							when others => invalid_section;
 						end case;
 
-					when SEC_SILK_SCREEN => -- NOTE: this section exists in pcb only !
-						case domain is
-							when DOMAIN_PCB =>
+
+					when SEC_STENCIL =>								
+						case stack.parent is
+							when SEC_CAM_MARKERS => 
+
+								-- If no content provided, use default content of cam marker:
+								set_content (frame.title_block_pcb.cam_markers.stencil.content);
 								
-								case stack.parent is
-									when SEC_CAM_MARKERS => 
-
-										-- If no content provided, use default content of cam marker:
-										set_content (frame.title_block_pcb.cam_markers.silk_screen.content);
-										
-										frame.title_block_pcb.cam_markers.silk_screen := tb_cam_marker;
-										reset_cam_marker;
-										
-									when others => invalid_section;
-								end case;
-
-							when others => invalid_section;
-						end case;
-
-					when SEC_STENCIL => -- NOTE: this section exists in pcb only !
-						case domain is
-							when DOMAIN_PCB =>
+								frame.title_block_pcb.cam_markers.stencil := tb_cam_marker;
+								reset_cam_marker;
 								
-								case stack.parent is
-									when SEC_CAM_MARKERS => 
-
-										-- If no content provided, use default content of cam marker:
-										set_content (frame.title_block_pcb.cam_markers.stencil.content);
-										
-										frame.title_block_pcb.cam_markers.stencil := tb_cam_marker;
-										reset_cam_marker;
-										
-									when others => invalid_section;
-								end case;
-
 							when others => invalid_section;
 						end case;
 
-					when SEC_STOP_MASK => -- NOTE: this section exists in pcb only !
-						case domain is
-							when DOMAIN_PCB =>
+
+					when SEC_STOP_MASK =>								
+						case stack.parent is
+							when SEC_CAM_MARKERS => 
+
+								-- If no content provided, use default content of cam marker:
+								set_content (frame.title_block_pcb.cam_markers.stop_mask.content);
 								
-								case stack.parent is
-									when SEC_CAM_MARKERS => 
-
-										-- If no content provided, use default content of cam marker:
-										set_content (frame.title_block_pcb.cam_markers.stop_mask.content);
-										
-										frame.title_block_pcb.cam_markers.stop_mask := tb_cam_marker;
-										reset_cam_marker;
-										
-									when others => invalid_section;
-								end case;
-
+								frame.title_block_pcb.cam_markers.stop_mask := tb_cam_marker;
+								reset_cam_marker;
+								
 							when others => invalid_section;
 						end case;
+
 						
-					when SEC_ASSY_DOC => -- NOTE: this section exists in pcb only !
-						case domain is
-							when DOMAIN_PCB =>
+					when SEC_ASSY_DOC =>
+						case stack.parent is
+							when SEC_CAM_MARKERS => 
+
+								-- If no content provided, use default content of cam marker:
+								set_content (frame.title_block_pcb.cam_markers.assy_doc.content);
 								
-								case stack.parent is
-									when SEC_CAM_MARKERS => 
-
-										-- If no content provided, use default content of cam marker:
-										set_content (frame.title_block_pcb.cam_markers.assy_doc.content);
-										
-										frame.title_block_pcb.cam_markers.assy_doc := tb_cam_marker;
-										reset_cam_marker;
-										
-									when others => invalid_section;
-								end case;
-
+								frame.title_block_pcb.cam_markers.assy_doc := tb_cam_marker;
+								reset_cam_marker;
+								
 							when others => invalid_section;
 						end case;
 
-					when SEC_KEEPOUT => -- NOTE: this section exists in pcb only !
-						case domain is
-							when DOMAIN_PCB =>
+
+					when SEC_KEEPOUT =>
+						case stack.parent is
+							when SEC_CAM_MARKERS =>
+
+								-- If no content provided, use default content of cam marker:
+								set_content (frame.title_block_pcb.cam_markers.keepout.content);
 								
-								case stack.parent is
-									when SEC_CAM_MARKERS =>
-
-										-- If no content provided, use default content of cam marker:
-										set_content (frame.title_block_pcb.cam_markers.keepout.content);
-										
-										frame.title_block_pcb.cam_markers.keepout := tb_cam_marker;
-										reset_cam_marker;
-										
-									when others => invalid_section;
-								end case;
-
+								frame.title_block_pcb.cam_markers.keepout := tb_cam_marker;
+								reset_cam_marker;
+								
 							when others => invalid_section;
 						end case;
 
-					when SEC_PLATED_MILLINGS => -- NOTE: this section exists in pcb only !
-						case domain is
-							when DOMAIN_PCB =>
+
+					when SEC_PLATED_MILLINGS =>
+						case stack.parent is
+							when SEC_CAM_MARKERS => 
+
+								-- If no content provided, use default content of cam marker:
+								set_content (frame.title_block_pcb.cam_markers.plated_millings.content);
 								
-								case stack.parent is
-									when SEC_CAM_MARKERS => 
-
-										-- If no content provided, use default content of cam marker:
-										set_content (frame.title_block_pcb.cam_markers.plated_millings.content);
-										
-										frame.title_block_pcb.cam_markers.plated_millings := tb_cam_marker;
-										reset_cam_marker;
-										
-									when others => invalid_section;
-								end case;
-
+								frame.title_block_pcb.cam_markers.plated_millings := tb_cam_marker;
+								reset_cam_marker;
+								
 							when others => invalid_section;
 						end case;
 
-					when SEC_PCB_OUTLINE => -- NOTE: this section exists in pcb only !
-						case domain is
-							when DOMAIN_PCB =>
+
+					when SEC_PCB_OUTLINE =>
+						case stack.parent is
+							when SEC_CAM_MARKERS =>
+
+								-- If no content provided, use default content of cam marker:
+								set_content (frame.title_block_pcb.cam_markers.pcb_outline.content);
 								
-								case stack.parent is
-									when SEC_CAM_MARKERS =>
-
-										-- If no content provided, use default content of cam marker:
-										set_content (frame.title_block_pcb.cam_markers.pcb_outline.content);
-										
-										frame.title_block_pcb.cam_markers.pcb_outline := tb_cam_marker;
-										reset_cam_marker;
-										
-									when others => invalid_section;
-								end case;
-
+								frame.title_block_pcb.cam_markers.pcb_outline := tb_cam_marker;
+								reset_cam_marker;
+								
 							when others => invalid_section;
 						end case;
+
 						
-					when SEC_ROUTE_RESTRICT => -- NOTE: this section exists in pcb only !
-						case domain is
-							when DOMAIN_PCB =>
+					when SEC_ROUTE_RESTRICT =>
+						case stack.parent is
+							when SEC_CAM_MARKERS =>
+
+								-- If no content provided, use default content of cam marker:
+								set_content (frame.title_block_pcb.cam_markers.route_restrict.content);
 								
-								case stack.parent is
-									when SEC_CAM_MARKERS =>
-
-										-- If no content provided, use default content of cam marker:
-										set_content (frame.title_block_pcb.cam_markers.route_restrict.content);
-										
-										frame.title_block_pcb.cam_markers.route_restrict := tb_cam_marker;
-										reset_cam_marker;
-										
-									when others => invalid_section;
-								end case;
-
+								frame.title_block_pcb.cam_markers.route_restrict := tb_cam_marker;
+								reset_cam_marker;
+								
 							when others => invalid_section;
 						end case;
 
-					when SEC_VIA_RESTRICT => -- NOTE: this section exists in pcb only !
-						case domain is
-							when DOMAIN_PCB =>
+
+					when SEC_VIA_RESTRICT =>
+						case stack.parent is
+							when SEC_CAM_MARKERS =>
+
+								-- If no content provided, use default content of cam marker:
+								set_content (frame.title_block_pcb.cam_markers.via_restrict.content);
 								
-								case stack.parent is
-									when SEC_CAM_MARKERS =>
-
-										-- If no content provided, use default content of cam marker:
-										set_content (frame.title_block_pcb.cam_markers.via_restrict.content);
-										
-										frame.title_block_pcb.cam_markers.via_restrict := tb_cam_marker;
-										reset_cam_marker;
-										
-									when others => invalid_section;
-								end case;
-
+								frame.title_block_pcb.cam_markers.via_restrict := tb_cam_marker;
+								reset_cam_marker;
+								
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_INIT => null; -- CS: should never happen
 
-				end case;
+					when others => null; -- CS raise exception ?
 
+				end case;
 			end execute_section;
 
 
@@ -1216,9 +1738,6 @@ package body et_frame_rw is
 			elsif set (section_project_name, SEC_PROJECT_NAME) then null;
 			elsif set (section_revision, SEC_REVISION) then null;
 			elsif set (section_route_restrict, SEC_ROUTE_RESTRICT) then null;
-			elsif set (section_sheet_category, SEC_SHEET_CATEGORY) then null;
-			elsif set (section_sheet_description, SEC_SHEET_DESCRIPTION) then null;			
-			elsif set (section_sheet_number, SEC_SHEET_NUMBER) then null;
 			elsif set (section_signal_layer, SEC_SIGNAL_LAYER) then null;
 			elsif set (section_silk_screen, SEC_SILK_SCREEN) then null;
 			elsif set (section_stencil, SEC_STENCIL) then null;
@@ -1271,60 +1790,34 @@ package body et_frame_rw is
 							when others => invalid_section;
 						end case;
 
-					when SEC_SHEET_NUMBER | SEC_SHEET_DESCRIPTION | SEC_SHEET_CATEGORY => 
-						-- NOTE: these placeholders exists in schematic only !
-						case stack.parent is
-							when SEC_PLACEHOLDERS => 
-								case domain is
-									when DOMAIN_SCHEMATIC => read_placeholder_properties;
-									when others => invalid_section;
-								end case;
-							when others => invalid_section;
-						end case;
 						
-					when SEC_FACE => -- NOTE: this section exists in pcb only !
-						case domain is
-							when DOMAIN_PCB =>
-								
-								case stack.parent is
-									when SEC_PLACEHOLDERS => read_placeholder_properties;
-									when SEC_CAM_MARKERS => read_cam_marker_properties;
-									when others => invalid_section;
-								end case;
-
+					when SEC_FACE =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => read_placeholder_properties;
+							when SEC_CAM_MARKERS => read_cam_marker_properties;
 							when others => invalid_section;
 						end case;
 
-					when SEC_SIGNAL_LAYER => -- NOTE: this section exists in pcb only !
-						case domain is
-							when DOMAIN_PCB =>
-								
-								case stack.parent is
-									when SEC_PLACEHOLDERS => read_placeholder_properties;
-									when SEC_CAM_MARKERS => read_cam_marker_properties;
-									when others => invalid_section;
-								end case;
-
+					when SEC_SIGNAL_LAYER =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => read_placeholder_properties;
+							when SEC_CAM_MARKERS => read_cam_marker_properties;
 							when others => invalid_section;
 						end case;
 
 					when SEC_SILK_SCREEN | SEC_ASSY_DOC | SEC_KEEPOUT | SEC_PLATED_MILLINGS |
 						SEC_PCB_OUTLINE | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
-						SEC_STENCIL | SEC_STOP_MASK => -- NOTE: these sections exists in pcb only !
-						case domain is
-							when DOMAIN_PCB =>
-								
-								case stack.parent is
-									when SEC_CAM_MARKERS => read_cam_marker_properties;
-									when others => invalid_section;
-								end case;
-
+						SEC_STENCIL | SEC_STOP_MASK =>
+						case stack.parent is
+							when SEC_CAM_MARKERS => read_cam_marker_properties;
 							when others => invalid_section;
 						end case;
-						
+
+					when others => null; -- CS raise exception ?
 				end case;
 			end if;
 
+			
 			exception when event: others =>
 				log (text => "file " & to_string (file_name) & space 
 					 & get_affected_line (line) & to_string (line), console => true);
@@ -1340,8 +1833,7 @@ package body et_frame_rw is
 		function is_dummy_frame return boolean is
 			use pac_template_name;
 		begin
-			if file_name = template_schematic_default 
-			or file_name = template_pcb_default then
+			if file_name = template_pcb_default then
 				return true;
 			else
 				return false;
@@ -1353,9 +1845,9 @@ package body et_frame_rw is
 
 		
 		
-	begin -- read_frame
-		log (text => "read frame " & to_string (file_name) 
-			 & " domain " & to_string (domain),
+	begin -- read_frame_board
+		
+		log (text => "read frame board " & to_string (file_name),
 			 level => log_threshold);
 		
 		log_indentation_up;
@@ -1363,7 +1855,7 @@ package body et_frame_rw is
 		-- If the frame template is a dummy, don't read it:
 		if is_dummy_frame then
 			log (text => "Use built-in default frame.", level => log_threshold + 1);
-			apply_defaults (frame);
+			apply_defaults_board (frame);
 			
 		else
 			log (text => "Use template.", level => log_threshold + 1);
@@ -1418,11 +1910,12 @@ package body et_frame_rw is
 			end if;
 			raise;
 		
-	end read_frame;
+	end read_frame_board;
 
 
+	
 
-
+	
 
 
 	function to_position (

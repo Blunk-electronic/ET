@@ -707,14 +707,16 @@ procedure et is
 				declare
 					use et_frames;
 					use et_frame_rw;
-					frame : type_frame (frame_domain);
+					-- CS frame : type_frame (frame_domain);
 				begin
-					frame := read_frame (frame_name_open, frame_domain, log_threshold => 0);
+					null;
+					-- CS frame := read_frame (frame_name_open, frame_domain, log_threshold => 0);
 
 					-- optionally the framc can be saved under a different name				
-					if length (frame_name_save_as) > 0 then
-						save_frame (frame, frame_name_save_as, log_threshold => 0);
-					end if;
+					-- CS
+					-- if length (frame_name_save_as) > 0 then
+					-- 	save_frame (frame, frame_name_save_as, log_threshold => 0);
+					-- end if;
 				end;
 
 			end if;

@@ -228,8 +228,11 @@ package body et_frames is
 
 
 
+
 	
-	procedure apply_defaults (frame : in out type_frame) is
+	
+	
+	procedure apply_defaults_schematic (frame : in out type_frame_schematic) is
 
 		-- LINES OF TITLE BLOCK
 		type type_lines is array (positive range <>) of type_line;
@@ -250,20 +253,6 @@ package body et_frames is
 			(( 89, 25),(220, 25))  -- horizontal
 			);
 		
-		lines_pcb : constant type_lines (1 .. 8) := (
-			-- outer lines
-			((  0,  0),(220,  0)),
-			((220,  0),(220, 50)),
-			((220, 50),(  0, 50)),
-			((  0, 50),(  0,  0)),
-
-			-- inner lines
-			(( 89,  0),( 89, 50)), -- vertical
-			((119, 15),(119,  0)), -- vertical
-			((150, 15),(150,  0)), -- vertical
-			(( 89, 15),(220, 15)) -- horizontal
-			--(( 89, 20),(220, 20)) -- horizontal
-			);
 
 		-- Collects the lines of the given array and returns them as a list:
 		function make_lines (lines : in type_lines) return pac_lines.list is
@@ -301,6 +290,91 @@ package body et_frames is
 			(position => ( 90, 21), size => 3, content => to_content ("CAT:"))
 			);
 
+		
+		-- Collects the texts of the given array and returns them as a list:
+		function make_texts (texts : in type_texts) return pac_static_texts.list is
+			use pac_static_texts;
+			result : pac_static_texts.list;
+		begin
+			for i in texts'first .. texts'last loop
+				result.append (texts (i));
+			end loop;
+			return result;
+		end make_texts;
+		
+		
+	begin -- apply_defaults_schematic
+		-- type_title_bock (basic stuff):
+		frame.title_block_schematic.position										:= ( 55,  6);
+		frame.title_block_schematic.lines := make_lines (lines_sch);
+		frame.title_block_schematic.placeholders_common.project_name.position 				:= ( 30, 31);
+		frame.title_block_schematic.placeholders_common.module_file_name.position 			:= ( 30, 26);
+		frame.title_block_schematic.placeholders_common.active_assembly_variant.position	:= ( 30, 21);
+		frame.title_block_schematic.static_texts := make_texts (texts_sch);
+
+		frame.title_block_schematic.placeholders_additional.company.position 		:= ( 30, 36);
+		frame.title_block_schematic.placeholders_additional.customer.position 		:= ( 30, 16);
+		frame.title_block_schematic.placeholders_additional.partcode.position 		:= ( 30, 11);
+		frame.title_block_schematic.placeholders_additional.drawing_number.position	:= ( 30,  6);
+		frame.title_block_schematic.placeholders_additional.revision.position 		:= ( 30,  1);
+
+		frame.title_block_schematic.placeholders_additional.drawn_by.position 		:= (152, 11);
+		frame.title_block_schematic.placeholders_additional.checked_by.position 	:= (152,  6);
+		frame.title_block_schematic.placeholders_additional.approved_by.position 	:= (152,  1);
+
+		frame.title_block_schematic.placeholders_additional.drawn_date.position 	:= (120, 11);
+		frame.title_block_schematic.placeholders_additional.checked_date.position 	:= (120,  6);
+		frame.title_block_schematic.placeholders_additional.approved_date.position 	:= (120,  1);
+	
+		frame.title_block_schematic.placeholders_additional.sheet_number.position 		:= (210, 21);
+		frame.title_block_schematic.placeholders_additional.sheet_description.position 	:= ( 90, 30);
+		frame.title_block_schematic.placeholders_additional.sheet_category.position 	:= (105, 21);
+
+	end apply_defaults_schematic;
+
+	
+
+
+	
+
+	procedure apply_defaults_board (frame : in out type_frame_pcb_pre) is
+
+		-- LINES OF TITLE BLOCK
+		type type_lines is array (positive range <>) of type_line;
+
+		
+		lines_pcb : constant type_lines (1 .. 8) := (
+			-- outer lines
+			((  0,  0),(220,  0)),
+			((220,  0),(220, 50)),
+			((220, 50),(  0, 50)),
+			((  0, 50),(  0,  0)),
+
+			-- inner lines
+			(( 89,  0),( 89, 50)), -- vertical
+			((119, 15),(119,  0)), -- vertical
+			((150, 15),(150,  0)), -- vertical
+			(( 89, 15),(220, 15)) -- horizontal
+			--(( 89, 20),(220, 20)) -- horizontal
+			);
+
+		
+		-- Collects the lines of the given array and returns them as a list:
+		function make_lines (lines : in type_lines) return pac_lines.list is
+			use pac_lines;
+			result : pac_lines.list;
+		begin
+			for i in lines'first .. lines'last loop
+				result.append (lines (i));
+			end loop;
+			return result;
+		end make_lines;
+		----------------------------------
+
+		-- TEXTS IN TITLE BLOCK
+		type type_texts is array (positive range <>) of type_static_text;
+
+		
 		texts_pcb : constant type_texts (1 .. 11) := (
 			(position => (  2, 36), size => 3, content => to_content ("Company:")),
 			(position => (  2, 31), size => 3, content => to_content ("Project:")),
@@ -331,92 +405,90 @@ package body et_frames is
 		end make_texts;
 		
 		
-	begin -- apply_defaults
-		case frame.domain is
-			when DOMAIN_SCHEMATIC =>
-				-- type_title_bock (basic stuff):
-				frame.title_block_schematic.position										:= ( 55,  6);
-				frame.title_block_schematic.lines := make_lines (lines_sch);
-				frame.title_block_schematic.placeholders_common.project_name.position 				:= ( 30, 31);
-				frame.title_block_schematic.placeholders_common.module_file_name.position 			:= ( 30, 26);
-				frame.title_block_schematic.placeholders_common.active_assembly_variant.position	:= ( 30, 21);
-				frame.title_block_schematic.static_texts := make_texts (texts_sch);
+	begin -- apply_defaults_board
 
-				frame.title_block_schematic.placeholders_additional.company.position 		:= ( 30, 36);
-				frame.title_block_schematic.placeholders_additional.customer.position 		:= ( 30, 16);
-				frame.title_block_schematic.placeholders_additional.partcode.position 		:= ( 30, 11);
-				frame.title_block_schematic.placeholders_additional.drawing_number.position	:= ( 30,  6);
-				frame.title_block_schematic.placeholders_additional.revision.position 		:= ( 30,  1);
+		-- type_title_bock (basic stuff):
+		frame.title_block_pcb.position												:= ( 55,  6);
+		frame.title_block_pcb.lines := make_lines (lines_pcb);
+		frame.title_block_pcb.placeholders_common.project_name.position				:= ( 30, 31);
+		frame.title_block_pcb.placeholders_common.module_file_name.position			:= ( 30, 26);
+		frame.title_block_pcb.placeholders_common.active_assembly_variant.position	:= ( 30, 21);
+		frame.title_block_pcb.static_texts := make_texts (texts_pcb);
 
-				frame.title_block_schematic.placeholders_additional.drawn_by.position 		:= (152, 11);
-				frame.title_block_schematic.placeholders_additional.checked_by.position 	:= (152,  6);
-				frame.title_block_schematic.placeholders_additional.approved_by.position 	:= (152,  1);
+		frame.title_block_pcb.placeholders_additional.company.position 				:= ( 30, 36);
+		frame.title_block_pcb.placeholders_additional.customer.position 			:= ( 30, 16);
+		frame.title_block_pcb.placeholders_additional.partcode.position 			:= ( 30, 11);
+		frame.title_block_pcb.placeholders_additional.drawing_number.position		:= ( 30,  6);
+		frame.title_block_pcb.placeholders_additional.revision.position 			:= ( 30,  1);
 
-				frame.title_block_schematic.placeholders_additional.drawn_date.position 	:= (120, 11);
-				frame.title_block_schematic.placeholders_additional.checked_date.position 	:= (120,  6);
-				frame.title_block_schematic.placeholders_additional.approved_date.position 	:= (120,  1);
-			
-				frame.title_block_schematic.placeholders_additional.sheet_number.position 		:= (210, 21);
-				frame.title_block_schematic.placeholders_additional.sheet_description.position 	:= ( 90, 30);
-				frame.title_block_schematic.placeholders_additional.sheet_category.position 	:= (105, 21);
+		frame.title_block_pcb.placeholders_additional.drawn_by.position 			:= (152, 11);
+		frame.title_block_pcb.placeholders_additional.checked_by.position 			:= (152,  6);
+		frame.title_block_pcb.placeholders_additional.approved_by.position 			:= (152,  1);
 
-			when DOMAIN_PCB =>
-				-- type_title_bock (basic stuff):
-				frame.title_block_pcb.position												:= ( 55,  6);
-				frame.title_block_pcb.lines := make_lines (lines_pcb);
-				frame.title_block_pcb.placeholders_common.project_name.position				:= ( 30, 31);
-				frame.title_block_pcb.placeholders_common.module_file_name.position			:= ( 30, 26);
-				frame.title_block_pcb.placeholders_common.active_assembly_variant.position	:= ( 30, 21);
-				frame.title_block_pcb.static_texts := make_texts (texts_pcb);
+		frame.title_block_pcb.placeholders_additional.drawn_date.position 			:= (120, 11);
+		frame.title_block_pcb.placeholders_additional.checked_date.position 		:= (120,  6);
+		frame.title_block_pcb.placeholders_additional.approved_date.position 		:= (120,  1);
 
-				frame.title_block_pcb.placeholders_additional.company.position 				:= ( 30, 36);
-				frame.title_block_pcb.placeholders_additional.customer.position 			:= ( 30, 16);
-				frame.title_block_pcb.placeholders_additional.partcode.position 			:= ( 30, 11);
-				frame.title_block_pcb.placeholders_additional.drawing_number.position		:= ( 30,  6);
-				frame.title_block_pcb.placeholders_additional.revision.position 			:= ( 30,  1);
+		frame.title_block_pcb.placeholders_additional.face.position 				:= (120, 46);
+		frame.title_block_pcb.placeholders_additional.signal_layer.position 		:= (120, 41);
 
-				frame.title_block_pcb.placeholders_additional.drawn_by.position 			:= (152, 11);
-				frame.title_block_pcb.placeholders_additional.checked_by.position 			:= (152,  6);
-				frame.title_block_pcb.placeholders_additional.approved_by.position 			:= (152,  1);
+		-- cam markers
+		frame.title_block_pcb.cam_markers.face.position 							:= ( 90, 46);
+		frame.title_block_pcb.cam_markers.signal_layer.position 					:= ( 90, 41);
+		
+		frame.title_block_pcb.cam_markers.silk_screen.position 						:= (120, 36);
+		frame.title_block_pcb.cam_markers.assy_doc.position 						:= (155, 36);
+		frame.title_block_pcb.cam_markers.keepout.position 							:= (185, 36);
+		
+		frame.title_block_pcb.cam_markers.stop_mask.position 						:= (120, 31);
+		frame.title_block_pcb.cam_markers.stencil.position 							:= (155, 31);
 
-				frame.title_block_pcb.placeholders_additional.drawn_date.position 			:= (120, 11);
-				frame.title_block_pcb.placeholders_additional.checked_date.position 		:= (120,  6);
-				frame.title_block_pcb.placeholders_additional.approved_date.position 		:= (120,  1);
+		frame.title_block_pcb.cam_markers.pcb_outline.position 						:= (120, 26);
+		frame.title_block_pcb.cam_markers.plated_millings.position					:= (155, 26);
 
-				frame.title_block_pcb.placeholders_additional.face.position 				:= (120, 46);
-				frame.title_block_pcb.placeholders_additional.signal_layer.position 		:= (120, 41);
+		frame.title_block_pcb.cam_markers.route_restrict.position 					:= (120, 21);
+		frame.title_block_pcb.cam_markers.via_restrict.position 					:= (170, 21);
 
-				-- cam markers
-				frame.title_block_pcb.cam_markers.face.position 							:= ( 90, 46);
-				frame.title_block_pcb.cam_markers.signal_layer.position 					:= ( 90, 41);
-				
-				frame.title_block_pcb.cam_markers.silk_screen.position 						:= (120, 36);
-				frame.title_block_pcb.cam_markers.assy_doc.position 						:= (155, 36);
-				frame.title_block_pcb.cam_markers.keepout.position 							:= (185, 36);
-				
-				frame.title_block_pcb.cam_markers.stop_mask.position 						:= (120, 31);
-				frame.title_block_pcb.cam_markers.stencil.position 							:= (155, 31);
+	end apply_defaults_board;
 
-				frame.title_block_pcb.cam_markers.pcb_outline.position 						:= (120, 26);
-				frame.title_block_pcb.cam_markers.plated_millings.position					:= (155, 26);
 
-				frame.title_block_pcb.cam_markers.route_restrict.position 					:= (120, 21);
-				frame.title_block_pcb.cam_markers.via_restrict.position 					:= (170, 21);
-		end case;
-	end apply_defaults;
 
 
 	
-	function make_default_frame (domain : in type_domain) 
-		return type_frame
+	
+	-- function make_default_frame (domain : in type_domain) 
+	-- 	return type_frame
+	-- is
+	-- 	f : type_frame (domain);
+	-- begin
+	-- 	apply_defaults (f);
+	-- 	return f;
+	-- end make_default_frame;
+
+
+	
+	function make_default_frame_pcb
+		return type_frame_pcb_pre
 	is
-		f : type_frame (domain);
+		f : type_frame_pcb_pre;
 	begin
-		apply_defaults (f);
+		apply_defaults_board (f);
 		return f;
-	end make_default_frame;
+	end make_default_frame_pcb;
 
 
+
+	function make_default_frame_schematic
+		return type_frame_schematic
+	is
+		f : type_frame_schematic;
+	begin
+		apply_defaults_schematic (f);
+		return f;
+	end make_default_frame_schematic;
+
+
+	
 	
 	function to_string (cat : in type_schematic_sheet_category) return string is begin
 		return type_schematic_sheet_category'image (cat);
