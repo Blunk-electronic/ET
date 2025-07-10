@@ -2914,32 +2914,48 @@ is
 			end insert_submodule;
 
 			
+
 			
-			procedure set_frame_schematic (
-				module_name	: in pac_module_name.bounded_string;
-				module		: in out type_generic_module) 
-			is
-				use et_frames;
-			begin
-				log (text => "drawing frame schematic " & to_string (frame_template_schematic), level => log_threshold + 1);
 
-				-- set the frame template name
-				module.frames.template := frame_template_schematic;
+			procedure set_frame_schematic is
 
-				-- assign the sheet descriptions:
-				module.frames.descriptions := sheet_descriptions;
+				procedure do_it (
+					module_name	: in pac_module_name.bounded_string;
+					module		: in out type_generic_module) 
+				is
+					use et_frames;
+				begin
+					log (text => "drawing frame schematic " & to_string (frame_template_schematic), level => log_threshold + 1);
 
-				-- Clean up sheet descriptions even if
-				-- there should not be another section for sheet descriptions:
-				pac_schematic_descriptions.clear (sheet_descriptions);
+					-- set the frame template name
+					module.frames.template := frame_template_schematic;
+
+					-- assign the sheet descriptions:
+					module.frames.descriptions := sheet_descriptions;
+
+					-- Clean up sheet descriptions even if
+					-- there should not be another section for sheet descriptions:
+					pac_schematic_descriptions.clear (sheet_descriptions);
+					
+					-- read the frame template file
+					module.frames.frame := et_frame_rw.read_frame (
+						file_name		=> frame_template_schematic,
+						domain			=> SCHEMATIC,
+						log_threshold	=> log_threshold + 2);
+					
+				end do_it;
 				
-				-- read the frame template file
-				module.frames.frame := et_frame_rw.read_frame (
-					file_name		=> frame_template_schematic,
-					domain			=> SCHEMATIC,
-					log_threshold	=> log_threshold + 2);
+
+			begin
+				-- set schematic frame template
+				update_element (
+					container	=> generic_modules,
+					position	=> module_cursor,
+					process		=> do_it'access);
 				
 			end set_frame_schematic;
+
+			
 
 
 			
@@ -2967,25 +2983,37 @@ is
 
 
 			
-			procedure set_frame_board (
-				module_name	: in pac_module_name.bounded_string;
-				module		: in out type_generic_module) 
-			is
-				use et_frames;
+
+			procedure set_frame_board is
+
+				procedure do_it (
+					module_name	: in pac_module_name.bounded_string;
+					module		: in out type_generic_module) 
+				is
+					use et_frames;
+				begin
+					log (text => "drawing frame board " & to_string (frame_template_board), level => log_threshold + 1);
+
+					-- set the frame template name
+					module.board.frame.template := frame_template_board;
+
+					-- read the frame template file
+					module.board.frame.frame := et_frame_rw.read_frame (
+						file_name		=> frame_template_board,
+						domain			=> PCB,
+						log_threshold	=> log_threshold + 2);
+
+					-- Set the frame position:
+					module.board.frame.frame.position := frame_board_position;
+				end do_it;
+
 			begin
-				log (text => "drawing frame board " & to_string (frame_template_board), level => log_threshold + 1);
+				-- set board/layout frame template
+				update_element (
+					container	=> generic_modules,
+					position	=> module_cursor,
+					process		=> do_it'access);
 
-				-- set the frame template name
-				module.board.frame.template := frame_template_board;
-
-				-- read the frame template file
-				module.board.frame.frame := et_frame_rw.read_frame (
-					file_name		=> frame_template_board,
-					domain			=> PCB,
-					log_threshold	=> log_threshold + 2);
-
-				-- Set the frame position:
-				module.board.frame.frame.position := frame_board_position;
 			end set_frame_board;
 
 
@@ -5564,12 +5592,8 @@ is
 				when SEC_SCHEMATIC =>
 					case stack.parent is
 						when SEC_DRAWING_FRAMES =>
+							set_frame_schematic;
 
-							-- set schematic frame template
-							update_element (
-								container	=> generic_modules,
-								position	=> module_cursor,
-								process		=> set_frame_schematic'access);
 
 						when SEC_DRAWING_GRID => null; -- nothing to do
 
@@ -5597,13 +5621,9 @@ is
 						when SEC_INIT => null;
 
 						when SEC_DRAWING_FRAMES =>
-							
-							-- set board/layout frame template
-							update_element (
-								container	=> generic_modules,
-								position	=> module_cursor,
-								process		=> set_frame_board'access);
+							set_frame_board;
 
+							
 						when SEC_DRAWING_GRID => null; -- nothing to do
 
 						when SEC_META =>
