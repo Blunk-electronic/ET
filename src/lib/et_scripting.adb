@@ -403,9 +403,16 @@ package body et_scripting is
 		
 		
 	begin -- execute_command
-		log (text => "cmd --> " & enclose_in_quotes (to_string (fields)), level => log_threshold);
+		log (text => "execute command", level => log_threshold);
+		log_indentation_up;
+		
+		log (text => "command entry mode: " & to_string (cmd_entry_mode), level => log_threshold + 1);
+		log_indentation_up;
+		
+		log (text => "fields: " & enclose_in_quotes (to_string (fields)), level => log_threshold + 2);
 		log_indentation_up;
 
+		
 		-- The command must have at least two fields:
 		if field_count >= 2 then
 
@@ -425,7 +432,7 @@ package body et_scripting is
 					-- its real location.
 					read_module (
 						file_name		=> append_extension (to_string (module)), 
-						log_threshold	=> log_threshold + 1); 
+						log_threshold	=> log_threshold + 4); 
 
 					
 					-- The command must have at least three fields.
@@ -434,9 +441,9 @@ package body et_scripting is
 						schematic_cmd (
 							module_cursor	=> locate_module (module),
 							fields			=> fields,
-							log_threshold	=> log_threshold + 1);
+							log_threshold	=> log_threshold + 3);
 
-						log (text => "schematic command done", level => log_threshold);
+						-- log (text => "schematic command done", level => log_threshold);
 					else
 						command_incomplete;
 					end if;
@@ -453,7 +460,7 @@ package body et_scripting is
 					-- its real location.
 					read_module (
 						file_name		=> append_extension (to_string (module)), 
-						log_threshold	=> log_threshold + 1); 
+						log_threshold	=> log_threshold + 4); 
 
 					
 					-- The command must have at least three fields.
@@ -462,9 +469,9 @@ package body et_scripting is
 						board_cmd (
 							module_cursor	=> locate_module (module),
 							fields			=> fields,
-							log_threshold	=> log_threshold + 1);
+							log_threshold	=> log_threshold + 3);
 
-						log (text => "board command done", level => log_threshold);
+						-- log (text => "board command done", level => log_threshold);
 					else
 						command_incomplete;
 					end if;
@@ -484,12 +491,15 @@ package body et_scripting is
 		else
 			command_incomplete;
 		end if;
+
 		
+		log_indentation_down;
+		log_indentation_down;
 		log_indentation_down;
 
 		-- put_line ("execute_command done");
 
-		log (text => "done", level => log_threshold);
+		-- log (text => "done", level => log_threshold);
 		
 		-- exception when event: others => 
   -- 
