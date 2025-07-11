@@ -36,22 +36,14 @@
 --   history of changes:
 --
 
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.containers; 			use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.directories;			use ada.directories;
 
-with et_axes;					use et_axes;
-with et_text;					use et_text;
-with et_sheets;					use et_sheets;
-with et_fonts;					use et_fonts;
+with ada.directories;				use ada.directories;
 
 
 package et_drawing_frame.board is
 
-	template_pcb_extension			: constant string := "frb"; -- $ET_FRAMES/drawing_frame_version_1.frb
+	-- file extension:
+	template_pcb_extension : constant string := "frb"; -- $ET_FRAMES/drawing_frame_version_1.frb
 
 
 	template_pcb_default : constant pac_template_name.bounded_string := 
@@ -64,7 +56,7 @@ package et_drawing_frame.board is
 
 
 
--- TEXT PLACEHOLDERS AND TITLE BLOCKS
+-- TEXT PLACEHOLDERS AND TITLE BLOCK
 	
 
 	
@@ -127,7 +119,7 @@ package et_drawing_frame.board is
 
 	
 	
--- THE FINAL FRAME IN A PCB DRAWING
+-- THE FINAL FRAME
 	
 	-- This is the drawing frame used in a pcb layout:
 	type type_frame_pcb is record

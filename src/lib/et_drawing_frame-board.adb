@@ -36,11 +36,6 @@
 --   history of changes:
 --
 
-with ada.strings;				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.characters;			use ada.characters;
-with ada.characters.handling;	use ada.characters.handling;
-
 
 package body et_drawing_frame.board is
 	

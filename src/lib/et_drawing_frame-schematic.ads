@@ -36,25 +36,18 @@
 --   history of changes:
 --
 
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.containers; 			use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.directories;			use ada.directories;
 
-with et_axes;					use et_axes;
-with et_text;					use et_text;
-with et_sheets;					use et_sheets;
-with et_fonts;					use et_fonts;
+with ada.directories;				use ada.directories;
+with ada.containers.ordered_maps;
+
+with et_sheets;						use et_sheets;
+
 
 
 package et_drawing_frame.schematic is
 
-
-
-	-- extensions:
-	template_schematic_extension	: constant string := "frs"; -- $ET_FRAMES/drawing_frame_version_1.frs
+	-- file extension:
+	template_schematic_extension : constant string := "frs"; -- $ET_FRAMES/drawing_frame_version_1.frs
 
 
 	-- default file names:
@@ -69,10 +62,10 @@ package et_drawing_frame.schematic is
 
 	
 	
--- TEXT PLACEHOLDERS AND TITLE BLOCKS
+-- TEXT PLACEHOLDERS AND TITLE BLOCK
+
 	
-	-- SCHEMATIC:
-	
+
 	-- The set of basic placeholders is extended by other things which are
 	-- required in the schematic:
 	type type_placeholders_schematic is new type_placeholders_basic with record
@@ -112,7 +105,7 @@ package et_drawing_frame.schematic is
 	
 
 
--- THE FINAL FRAME IN A SCHEMATIC
+-- THE FINAL FRAME:
 
 	-- Prefixes before enumeration types prevent clashes with gnat keywords
 	-- and package names:
