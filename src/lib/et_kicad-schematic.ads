@@ -78,7 +78,7 @@ with et_device_placeholders;
 with et_device_placeholders.packages;
 with et_device_placeholders.symbols;
 
-with et_frames;
+with et_drawing_frame;
 
 with et_kicad_libraries;		use et_kicad_libraries;
 with et_kicad_packages;			--use et_kicad_packages;
@@ -982,9 +982,9 @@ package et_kicad.schematic is
 
 	
 	--type type_frame is new et_schematic_sheets.pac_frames.type_frame with record
-	--type type_frame is new et_frames.type_frame with record		
+	--type type_frame is new et_drawing_frame.type_frame with record		
 	type type_frame is record
-		paper		: et_frames.type_paper_size := et_frames.paper_size_default;
+		paper		: et_drawing_frame.type_paper_size := et_drawing_frame.paper_size_default;
 		coordinates : et_kicad_coordinates.type_position; -- the position of the frame -- CS rename to position
 	end record;
 

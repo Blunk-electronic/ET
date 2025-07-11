@@ -76,7 +76,7 @@ with et_devices_electrical;
 with et_schematic_rw;
 with et_device_rw;
 with et_frame_rw;
-with et_frames;
+with et_drawing_frame;
 with et_sheets;
 with et_devices_non_electrical;
 with et_pcb;
@@ -1301,8 +1301,8 @@ is
 	
 	procedure query_frames is 
 		use et_frame_rw;
-		use et_frames;		
-		use et_frames.pac_template_name;
+		use et_drawing_frame;		
+		use et_drawing_frame.pac_template_name;
 
 
 		-- This procedure writes the stuff related to the
@@ -1349,7 +1349,7 @@ is
 			-- Write the schematic frame template like "template ../frames/dummy.frs":
 			write (
 				keyword 	=> keyword_template, 
-				parameters	=> et_frames.to_string (element (module_cursor).frames.template));
+				parameters	=> et_drawing_frame.to_string (element (module_cursor).frames.template));
 			
 			write_sheet_descriptions;
 
@@ -1365,7 +1365,7 @@ is
 			use et_board_coordinates;
 			use pac_geometry_2;
 			
-			frame_pos : et_frames.type_position;
+			frame_pos : et_drawing_frame.type_position;
 
 			use et_board_ops.frame;
 		begin
@@ -1374,7 +1374,7 @@ is
 			-- Write the frame template like "template ../frames/dummy.frb":
 			write (
 				keyword		=> keyword_template, 
-				parameters	=> et_frames.to_string (element (module_cursor).board.frame.template));
+				parameters	=> et_drawing_frame.to_string (element (module_cursor).board.frame.template));
 
 			
 			-- Write the frame position like "position x 40 y 60"

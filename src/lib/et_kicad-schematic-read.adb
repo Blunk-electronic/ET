@@ -1170,6 +1170,8 @@ is
 
 	end make_sheet_header;
 
+
+	
 	procedure make_drawing_frame (
 	-- Builds the drawing frame.
 	-- CS: Read lines and position of text placeholders from
@@ -1178,7 +1180,7 @@ is
 		lines 			: in pac_lines_of_file.list;
 		log_threshold	: in type_log_level) is
 
-		use et_frames;
+		use et_drawing_frame;
 		
 		frame : type_frame; -- a single drawing frame. see type in et_kicad.ads
 	

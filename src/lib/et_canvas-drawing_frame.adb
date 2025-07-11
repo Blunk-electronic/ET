@@ -50,7 +50,7 @@ package body et_canvas.drawing_frame is
 
 	
 	function to_distance (
-		d : in et_frames.type_distance)
+		d : in et_drawing_frame.type_distance)
 		return pac_geometry.type_distance
 	is begin
 		return pac_geometry.type_distance (d);
@@ -59,7 +59,7 @@ package body et_canvas.drawing_frame is
 
 	
 	function to_vector (
-		p : in et_frames.type_position)
+		p : in et_drawing_frame.type_position)
 		return type_vector_model
 	is
 		r : type_vector_model;
@@ -73,7 +73,7 @@ package body et_canvas.drawing_frame is
 
 
 	function to_line (
-		l : in et_frames.type_line)
+		l : in et_drawing_frame.type_line)
 		return pac_geometry.type_line
 	is
 		result : pac_geometry.type_line;

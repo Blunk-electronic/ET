@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               FRAMES                                     --
+--                           DRAWING FRAME                                  --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -49,7 +49,7 @@ with et_sheets;					use et_sheets;
 with et_fonts;					use et_fonts;
 
 
-package et_frames is
+package et_drawing_frame is
 
 
 	-- CS separate schematc and board frame stuff in 
@@ -551,7 +551,7 @@ package et_frames is
 
 	
 	
-end et_frames;
+end et_drawing_frame;
 
 -- Soli Deo Gloria
 

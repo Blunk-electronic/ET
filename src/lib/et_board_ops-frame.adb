@@ -43,7 +43,7 @@ package body et_board_ops.frame is
 	procedure move_drawing_frame (
 		module_cursor	: in pac_generic_modules.cursor;
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in et_frames.type_position; -- x/y
+		point			: in et_drawing_frame.type_position; -- x/y
 		log_threshold	: in type_log_level) 
 	is
 		
@@ -51,21 +51,21 @@ package body et_board_ops.frame is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is 
-			p1 : et_frames.type_position;
+			p1 : et_drawing_frame.type_position;
 		begin
 			case coordinates is
 				when ABSOLUTE =>
-					et_frames.set_position (module.board.frame.frame, point);
+					et_drawing_frame.set_position (module.board.frame.frame, point);
 
 				when RELATIVE =>
-					p1 := et_frames.get_position (module.board.frame.frame);
+					p1 := et_drawing_frame.get_position (module.board.frame.frame);
 					-- CS
 					-- move_by (module.board.frame.position, to_distance_relative (point));
 			end case;
 		end set_origin;
 
 		
-		use et_frames;
+		use et_drawing_frame;
 		
 	begin
 		case coordinates is
@@ -95,16 +95,16 @@ package body et_board_ops.frame is
 	function get_frame_position (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)								
-		return et_frames.type_position
+		return et_drawing_frame.type_position
 	is
-		result : et_frames.type_position;
+		result : et_drawing_frame.type_position;
 
 		
 		procedure get_origin (
 			module_name	: in pac_module_name.bounded_string;
 			module 		: in type_generic_module) 
 		is begin
-			result := et_frames.get_position (module.board.frame.frame);
+			result := et_drawing_frame.get_position (module.board.frame.frame);
 		end get_origin;
 
 		
@@ -126,10 +126,10 @@ package body et_board_ops.frame is
 
 	procedure set_frame_position (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in et_frames.type_position;
+		position		: in et_drawing_frame.type_position;
 		log_threshold	: in type_log_level)
 	is
-		use et_frames;
+		use et_drawing_frame;
 
 		
 		procedure set_origin (

@@ -38,7 +38,7 @@
 --   ToDo: 
 
 
-with et_frames;					use et_frames;
+with et_drawing_frame;					use et_drawing_frame;
 
 
 package et_schematic_ops.sheets is

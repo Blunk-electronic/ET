@@ -73,7 +73,7 @@ with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_device_value;					use et_device_value;
 with et_device_name;					use et_device_name;
 with et_packages;
-with et_frames;
+with et_drawing_frame;
 with et_design_rules_board;			use et_design_rules_board;
 
 with et_fill_zones;					use et_fill_zones;
@@ -703,7 +703,7 @@ package et_kicad.pcb is
 		general		: type_general_board_info;
 		setup		: type_board_setup; -- DRC stuff
 		plot		: type_plot_setup; -- CAM job (there is only one)
-		paper_size 	: et_frames.type_paper_size;
+		paper_size 	: et_drawing_frame.type_paper_size;
 		layers		: type_layers.map;
 		netlist		: type_netlist.set;
 		net_classes	: type_net_classes.map;
@@ -752,7 +752,7 @@ package et_kicad.pcb is
 
 	-- This is general board stuff:
 	type type_board_with_paper_size is new et_pcb.type_board with record
-		paper_size	: et_frames.type_paper_size;
+		paper_size	: et_drawing_frame.type_paper_size;
 	end record;
 
 	

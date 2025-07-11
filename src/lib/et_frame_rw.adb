@@ -52,7 +52,6 @@ with et_directory_and_file_ops;
 with et_primitive_objects;			use et_primitive_objects;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_text;
-with et_frames;						use et_frames;
 with et_string_processing;			use et_string_processing;
 with et_time;						use et_time;
 with et_general_rw;					use et_general_rw;
@@ -441,9 +440,9 @@ package body et_frame_rw is
 	procedure create_frame (
 	-- Creates and saves a frame in given file_name.
 		file_name		: in pac_template_name.bounded_string;
-		domain			: in et_frames.type_domain;							   
-		log_threshold	: in type_log_level) is
-
+		domain			: in type_domain;							   
+		log_threshold	: in type_log_level) 
+	is
 		frame : type_frame (domain);
 	begin
 		log (text => "creating frame " & to_string (file_name) & " ...", level => log_threshold);

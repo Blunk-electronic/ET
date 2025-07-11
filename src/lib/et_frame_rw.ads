@@ -46,7 +46,7 @@ with et_string_processing;
 with et_logging;				use et_logging;
 with et_schematic_coordinates;
 with et_text;
-with et_frames;					use et_frames;
+with et_drawing_frame;			use et_drawing_frame;
 
 
 package et_frame_rw is
@@ -141,7 +141,7 @@ package et_frame_rw is
 	-- Creates and saves a frame in given file_name.
 	procedure create_frame (
 		file_name		: in pac_template_name.bounded_string;
-		domain			: in et_frames.type_domain;							   
+		domain			: in type_domain;							   
 		log_threshold	: in type_log_level);
 
 	-- CS separate between create frame schematic and board

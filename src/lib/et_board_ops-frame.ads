@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -38,7 +38,7 @@
 --   ToDo: 
 
 
-with et_frames;						use et_frames;
+with et_drawing_frame;						use et_drawing_frame;
 
 
 package et_board_ops.frame is
@@ -49,7 +49,7 @@ package et_board_ops.frame is
 	procedure move_drawing_frame (
 		module_cursor	: in pac_generic_modules.cursor;
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in et_frames.type_position; -- x/y
+		point			: in et_drawing_frame.type_position; -- x/y
 		log_threshold	: in type_log_level);
 
 
@@ -58,14 +58,14 @@ package et_board_ops.frame is
 	function get_frame_position (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)								
-		return et_frames.type_position;
+		return et_drawing_frame.type_position;
 	
 
 	-- Sets the position of the lower-left corner
 	-- of the drawing frame:
 	procedure set_frame_position (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in et_frames.type_position;
+		position		: in et_drawing_frame.type_position;
 		log_threshold	: in type_log_level);
 
 

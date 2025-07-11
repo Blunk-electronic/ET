@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -41,7 +41,7 @@ with et_text;
 with et_alignment;
 with et_schematic_ops;
 with et_schematic_ops.sheets;
-with et_frames;
+with et_drawing_frame;
 
 
 separate (et_canvas_schematic_2)
@@ -49,7 +49,7 @@ separate (et_canvas_schematic_2)
 procedure draw_drawing_frame is
 
 	use et_colors.schematic;
-	use et_frames;
+	use et_drawing_frame;
 	use pac_drawing_frame;
 	
 
@@ -80,7 +80,7 @@ procedure draw_drawing_frame is
 		use pac_lines;
 	
 		procedure query_line (c : in pac_lines.cursor) is
-			l1 : et_frames.type_line renames element (c);
+			l1 : et_drawing_frame.type_line renames element (c);
 			l2 : pac_geometry.type_line;
 		begin
 			l2 := to_line (l1);

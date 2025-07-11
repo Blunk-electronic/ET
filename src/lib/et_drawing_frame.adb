@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               FRAMES                                     --
+--                           DRAWING FRAME                                  --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -42,7 +42,7 @@ with ada.characters;			use ada.characters;
 with ada.characters.handling;	use ada.characters.handling;
 
 
-package body et_frames is
+package body et_drawing_frame is
 
 	function to_paper_size (paper_size : in string) return type_paper_size is begin
 		return type_paper_size'value (paper_size);
@@ -500,7 +500,7 @@ package body et_frames is
 		return type_schematic_sheet_category'value (cat);
 	end;
 	
-end et_frames;
+end et_drawing_frame;
 
 -- Soli Deo Gloria
 

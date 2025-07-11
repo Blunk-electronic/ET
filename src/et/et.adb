@@ -82,7 +82,7 @@ with et_device_library;			use et_device_library;
 with et_device_model_names;		use et_device_model_names;
 with et_device_rw;
 
-with et_frames;
+with et_drawing_frame;
 with et_frame_rw;
 
 with et_sheets;
@@ -122,10 +122,10 @@ procedure et is
 	device_name_save_as		: pac_device_model_file.bounded_string; -- the device to be saved as
 	device_appearance		: et_device_appearance.type_appearance := et_device_appearance.APPEARANCE_PCB; -- virtual/pcb. mostly pcb.
 
-	frame_name_create		: et_frames.pac_template_name.bounded_string; -- the frame to be created like lib/frames/A3_landscape.frs
-	frame_name_open			: et_frames.pac_template_name.bounded_string;
-	frame_name_save_as		: et_frames.pac_template_name.bounded_string;
-	frame_domain			: et_frames.type_domain := et_frames.DOMAIN_SCHEMATIC;
+	frame_name_create		: et_drawing_frame.pac_template_name.bounded_string; -- the frame to be created like lib/frames/A3_landscape.frs
+	frame_name_open			: et_drawing_frame.pac_template_name.bounded_string;
+	frame_name_save_as		: et_drawing_frame.pac_template_name.bounded_string;
+	frame_domain			: et_drawing_frame.type_domain := et_drawing_frame.DOMAIN_SCHEMATIC;
 	
 	script_name				: pac_script_name.bounded_string;
 	
@@ -289,33 +289,33 @@ procedure et is
 					-- frame schematic
 					elsif full_switch = switch_frame_schematic_create then
 						log (text => arg & full_switch & space & parameter);
-						frame_name_create := et_frames.to_template_name (parameter);
-						frame_domain := et_frames.DOMAIN_SCHEMATIC;
+						frame_name_create := et_drawing_frame.to_template_name (parameter);
+						frame_domain := et_drawing_frame.DOMAIN_SCHEMATIC;
 						
 					elsif full_switch = switch_frame_schematic_open then
 						log (text => arg & full_switch & space & parameter);
-						frame_name_open := et_frames.to_template_name (parameter);
-						frame_domain := et_frames.DOMAIN_SCHEMATIC;
+						frame_name_open := et_drawing_frame.to_template_name (parameter);
+						frame_domain := et_drawing_frame.DOMAIN_SCHEMATIC;
 						
 					elsif full_switch = switch_frame_schematic_save_as then
 						log (text => arg & full_switch & space & parameter);
-						frame_name_save_as := et_frames.to_template_name (parameter);
+						frame_name_save_as := et_drawing_frame.to_template_name (parameter);
 
 
 					-- frame pcb
 					elsif full_switch = switch_frame_pcb_create then
 						log (text => arg & full_switch & space & parameter);
-						frame_name_create := et_frames.to_template_name (parameter);
-						frame_domain := et_frames.DOMAIN_PCB;
+						frame_name_create := et_drawing_frame.to_template_name (parameter);
+						frame_domain := et_drawing_frame.DOMAIN_PCB;
 
 					elsif full_switch = switch_frame_pcb_open then
 						log (text => arg & full_switch & space & parameter);
-						frame_name_open := et_frames.to_template_name (parameter);
-						frame_domain := et_frames.DOMAIN_PCB;
+						frame_name_open := et_drawing_frame.to_template_name (parameter);
+						frame_domain := et_drawing_frame.DOMAIN_PCB;
 						
 					elsif full_switch = switch_frame_pcb_save_as then
 						log (text => arg & full_switch & space & parameter);
-						frame_name_save_as := et_frames.to_template_name (parameter);
+						frame_name_save_as := et_drawing_frame.to_template_name (parameter);
 						
 					-- script
 					elsif full_switch = switch_execute_script then
@@ -553,7 +553,7 @@ procedure et is
 		use pac_package_model_file_name;
 		use et_symbols.pac_symbol_model_file;
 		use pac_device_model_file;
-		use et_frames.pac_template_name;
+		use et_drawing_frame.pac_template_name;
 
 		exit_code_script : et_scripting.type_exit_code;
 		
@@ -705,7 +705,7 @@ procedure et is
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for frame editing
 				
 				declare
-					use et_frames;
+					use et_drawing_frame;
 					use et_frame_rw;
 					-- CS frame : type_frame (frame_domain);
 				begin

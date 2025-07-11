@@ -97,7 +97,7 @@ with et_device_name;				--use et_device_name;
 with et_device_model_names;			use et_device_model_names;
 with et_device_prefix;				use et_device_prefix;
 with et_device_partcode;			use et_device_partcode;
-with et_frames;	
+with et_drawing_frame;	
 with et_fill_zones;					use et_fill_zones;
 with et_fill_zones.boards;	
 with et_conductor_text;				use et_conductor_text;
@@ -155,10 +155,10 @@ package body et_kicad_to_native is
 		-- Returns for a given sheet number the respective paper size.
 		function paper_size_of_schematic_sheet (
 			sheet_number : in et_sheets.type_sheet)
-			return et_frames.type_paper_size 
+			return et_drawing_frame.type_paper_size 
 		is
 			use et_sheets;
-			use et_frames;
+			use et_drawing_frame;
 
 			-- This is to be returned. In case no paper size was found, use the default value of type_paper_size.
 			size : type_paper_size := paper_size_default;
@@ -215,7 +215,7 @@ package body et_kicad_to_native is
 			use pac_geometry_2;
 			
 			sheet_number 		: type_sheet;
-			sheet_paper_size	: et_frames.type_paper_size;
+			sheet_paper_size	: et_drawing_frame.type_paper_size;
 			sheet_height		: type_distance_positive;
 			new_y				: type_position_axis;
 		begin -- move
@@ -227,7 +227,7 @@ package body et_kicad_to_native is
 
 			-- get the paper height of the sheet
 			--sheet_height		:= et_schematic_sheets.pac_frames.paper_dimension (axis => Y, paper_size => sheet_paper_size);
-			sheet_height		:= type_distance_positive (et_frames.paper_dimension (
+			sheet_height		:= type_distance_positive (et_drawing_frame.paper_dimension (
 									axis => AXIS_Y, paper_size => sheet_paper_size));
 
 			-- calculate the new y position
@@ -253,7 +253,7 @@ package body et_kicad_to_native is
 			use pac_geometry_2;
 			
 			sheet_number 		: type_sheet;
-			sheet_paper_size	: et_frames.type_paper_size;
+			sheet_paper_size	: et_drawing_frame.type_paper_size;
 			sheet_height		: type_distance_positive;
 			new_y				: type_position_axis;
 		begin -- move
@@ -265,7 +265,7 @@ package body et_kicad_to_native is
 
 			-- get the paper height of the sheet
 			--sheet_height		:= et_schematic_sheets.pac_frames.paper_dimension (axis => Y, paper_size => sheet_paper_size);
-			sheet_height		:= type_distance_positive (et_frames.paper_dimension (
+			sheet_height		:= type_distance_positive (et_drawing_frame.paper_dimension (
 									axis => AXIS_Y, paper_size => sheet_paper_size));
 			
 			-- calculate the new y position
@@ -286,7 +286,7 @@ package body et_kicad_to_native is
 		procedure prepare_layout_y_movements is
 			use et_board_coordinates;
 			use pac_geometry_2;
-			use et_frames;
+			use et_drawing_frame;
 			
 			-- The paper size of a board/layout drawing:
 			board_paper_size : type_paper_size;
@@ -305,7 +305,7 @@ package body et_kicad_to_native is
 			--  axis => Y, paper_size => board_paper_size);
 
 			layout_sheet_height := pac_geometry_2.type_distance_positive (
-				et_frames.paper_dimension (axis => AXIS_Y, paper_size => board_paper_size));
+				et_drawing_frame.paper_dimension (axis => AXIS_Y, paper_size => board_paper_size));
 		end prepare_layout_y_movements;
 
 
@@ -3308,7 +3308,7 @@ package body et_kicad_to_native is
 		-- CS: not completed yet.
 		-- For the time being the native module gets dummy templates assigned.
 		procedure copy_frames is
-			use et_frames;
+			use et_drawing_frame;
 		begin
 			-- schematic frames:
 			module.frames.template := template_schematic_default;

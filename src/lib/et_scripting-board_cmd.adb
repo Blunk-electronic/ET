@@ -81,7 +81,7 @@ with et_board_ops.grid;
 
 with et_canvas.cmd;
 
-with et_frames;
+with et_drawing_frame;
 
 with et_terminals;
 with et_package_names;
@@ -3283,15 +3283,15 @@ is
 		use et_board_ops.frame;
 		use pac_drawing_frame;
 
-		p : et_frames.type_position;
+		p : et_drawing_frame.type_position;
 		c : type_coordinates;
 	begin
 		case cmd_field_count is
 			when 7 => -- board led_driver move frame absolute -20 -50
 				c := to_coordinates (get_field (5));   -- relative/absolute
 				
-				p.x := et_frames.to_distance (get_field (6));
-				p.y := et_frames.to_distance (get_field (7));
+				p.x := et_drawing_frame.to_distance (get_field (6));
+				p.y := et_drawing_frame.to_distance (get_field (7));
 
 				move_drawing_frame (
 					module_cursor 	=> module_cursor,

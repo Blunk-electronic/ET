@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -38,7 +38,7 @@
 
 -- with et_logging;				use et_logging;
 
-with et_frames;					use et_frames;
+with et_drawing_frame;			use et_drawing_frame;
 with et_canvas.text;
 with et_meta;
 
@@ -53,21 +53,21 @@ package et_canvas.drawing_frame is
 	-- Converts a type_distance (used with frames) to
 	-- a distance in the model domain:
 	function to_distance (
-		d : in et_frames.type_distance)
+		d : in et_drawing_frame.type_distance)
 		return pac_geometry.type_distance;
 
 	
 	-- Converts a type_position (used with frames) to
 	-- a model vector:
 	function to_vector (
-		p : in et_frames.type_position)
+		p : in et_drawing_frame.type_position)
 		return type_vector_model;
 
 
 	-- Converts a line of the frame domain to 
 	-- a line in the model domain:
 	function to_line (
-		l : in et_frames.type_line)
+		l : in et_drawing_frame.type_line)
 		return pac_geometry.type_line;
 
 	

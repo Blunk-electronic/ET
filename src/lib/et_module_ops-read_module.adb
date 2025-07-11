@@ -81,7 +81,7 @@ with et_symbol_rw;
 with et_schematic_text;
 with et_schematic_rw;
 with et_device_rw;
-with et_frames;
+with et_drawing_frame;
 with et_frame_rw;
 with et_sheets;
 with et_devices_electrical;
@@ -1064,24 +1064,24 @@ is
 	route		: et_pcb.type_route;
 
 	
-	sheet_descriptions			: et_frames.pac_schematic_descriptions.map;
-	sheet_description_category	: et_frames.type_schematic_sheet_category := 
-		et_frames.schematic_sheet_category_default; -- product/develpment/routing
+	sheet_descriptions			: et_drawing_frame.pac_schematic_descriptions.map;
+	sheet_description_category	: et_drawing_frame.type_schematic_sheet_category := 
+		et_drawing_frame.schematic_sheet_category_default; -- product/develpment/routing
 	
 	sheet_description_number	: et_sheets.type_sheet := et_sheets.type_sheet'first; -- 1, 2. 3, ...
 	sheet_description_text		: et_text.pac_text_content.bounded_string;		-- "voltage regulator"
 
 	-- CS frame_count_schematic		: et_schematic_coordinates.type_submodule_sheet_number := et_schematic_coordinates.type_submodule_sheet_number'first; -- 10 frames
-	frame_template_schematic	: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frs
-	frame_template_board		: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frb
-	frame_board_position		: et_frames.type_position; -- x 0 y 0
+	frame_template_schematic	: et_drawing_frame.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frs
+	frame_template_board		: et_drawing_frame.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frb
+	frame_board_position		: et_drawing_frame.type_position; -- x 0 y 0
 
 
 	
 	-- Reads the name of the schematic frame template.
 	procedure read_frame_template_schematic is
 		use et_frame_rw;
-		use et_frames;
+		use et_drawing_frame;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -1099,7 +1099,7 @@ is
 	-- Reads the name of the board frame template.
 	-- Reads the position of the frame:
 	procedure read_frame_template_board is
-		use et_frames;
+		use et_drawing_frame;
 		use et_frame_rw;
 		kw : constant string := f (line, 1);
 	begin
@@ -1121,7 +1121,7 @@ is
 	-- Reads the description of a schematic sheet:
 	procedure read_sheet_description is
 		use et_schematic_coordinates;	
-		use et_frames;
+		use et_drawing_frame;
 		use et_sheets;
 		kw : constant string := f (line, 1);
 	begin
@@ -2923,7 +2923,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out type_generic_module) 
 				is
-					use et_frames;
+					use et_drawing_frame;
 				begin
 					log (text => "drawing frame schematic " & to_string (frame_template_schematic), 
 						 level => log_threshold + 1);
@@ -2961,7 +2961,7 @@ is
 			
 			procedure add_sheet_description is 
 				use et_schematic_coordinates;	
-				use et_frames;
+				use et_drawing_frame;
 				use et_sheets;
 				use pac_schematic_descriptions;
 				inserted : boolean;
@@ -2990,7 +2990,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out type_generic_module) 
 				is
-					use et_frames;
+					use et_drawing_frame;
 				begin
 					log (text => "drawing frame board " & to_string (frame_template_board), level => log_threshold + 1);
 

@@ -49,7 +49,7 @@ with ada.strings.fixed;				use ada.strings.fixed;
 with ada.exceptions;				use ada.exceptions;
 with ada.containers;
 
-with et_frames;
+with et_drawing_frame;
 with et_devices_electrical;
 with et_nets;
 with et_pcb;
@@ -114,7 +114,7 @@ is
 	-- all other objects of the frame are definitely inside
 	-- the outer border:
 	procedure parse_drawing_frame is
-		use et_frames;
+		use et_drawing_frame;
 		
 		b : type_area; -- the bounding-box of the frame
 
@@ -123,7 +123,7 @@ is
 			element (active_module).board.frame.frame.size;
 
 		-- Get the position of the frame:
-		p : constant et_frames.type_position :=
+		p : constant et_drawing_frame.type_position :=
 			get_position (element (active_module).board.frame.frame);
 		
 		use pac_drawing_frame;
@@ -1828,11 +1828,11 @@ is
 
 
 	procedure add_margin is
-		-- use et_frames;
+		-- use et_drawing_frame;
 
 		-- Get the margin between outer border of the frame
 		-- and the edge of the paper:
-		margin : constant et_frames.type_border_width := 
+		margin : constant et_drawing_frame.type_border_width := 
 			element (active_module).board.frame.frame.border_width;
 		
 		-- The offset due to the margin:

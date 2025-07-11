@@ -53,7 +53,7 @@ with et_module_names;				use et_module_names;
 with et_meta;
 with et_commit;
 with et_text;
-with et_frames;
+with et_drawing_frame;
 with et_numbering;
 with et_design_rules;
 with et_net_class;					use et_net_class;
@@ -80,7 +80,7 @@ package et_generic_module is
 		description		: et_text.pac_text_content.bounded_string; -- a short description of the module
 
 		-- schematic frame template and descriptions of individual schematic frames:
-		frames			: et_frames.type_frames_schematic;
+		frames			: et_drawing_frame.type_frames_schematic;
 		
 		grid			: et_schematic_coordinates.pac_grid.type_grid; -- the drawing grid of the schematic
 
