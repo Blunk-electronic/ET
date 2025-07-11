@@ -83,7 +83,7 @@ with et_device_model_names;		use et_device_model_names;
 with et_device_rw;
 
 with et_drawing_frame;
-with et_frame_rw;
+with et_drawing_frame_rw;
 
 with et_sheets;
 with et_schematic_coordinates;
@@ -699,14 +699,14 @@ procedure et is
 			elsif length (frame_name_create) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for frame editing
 				
-				et_frame_rw.create_frame (frame_name_create, frame_domain, log_threshold => 0); -- incl. save to file
+				et_drawing_frame_rw.create_frame (frame_name_create, frame_domain, log_threshold => 0); -- incl. save to file
 
 			elsif length (frame_name_open) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for frame editing
 				
 				declare
 					use et_drawing_frame;
-					use et_frame_rw;
+					use et_drawing_frame_rw;
 					-- CS frame : type_frame (frame_domain);
 				begin
 					null;

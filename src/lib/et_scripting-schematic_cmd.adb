@@ -82,7 +82,7 @@ separate (et_scripting)
 
 procedure schematic_cmd (
 	module_cursor	: in pac_generic_modules.cursor;
-	fields			: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
+	cmd				: in type_single_cmd;
 	log_threshold	: in type_log_level)
 is
 	use et_project;
@@ -3340,20 +3340,19 @@ is
 	
 begin -- schematic_cmd
 	
-	log (text => "given command: " 
-		 & enclose_in_quotes (to_string (fields)),
+	log (text => "given command: " & enclose_in_quotes (get_all_fields (cmd)),
 		 level => log_threshold);
 
-	-- Copy of the given command fields to the actual command.
+	-- Copy the given command to the actual command.
 	-- In case the given command is incomplete
 	-- AND we are in graphical mode (non-headless) then
 	-- this procedure interactively proposes arguments and completes the command.
-	single_cmd := (fields => fields, others => <>);
+	single_cmd := cmd;
 
 	-- The fields in single_cmd will now be processed and interactively completed.
 	-- A field is fetched from the single_cmd by the function "get_field".
 
-	cmd_field_count := get_field_count (single_cmd.fields);
+	cmd_field_count := get_field_count (single_cmd);
 	
 
 	module := to_module_name (get_field (2)); -- motor_driver (without extension *.mod)

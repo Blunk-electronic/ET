@@ -1189,7 +1189,7 @@ package body et_canvas_board_2 is
 			"execute" & space & "script" & space &
 			to_string (script); -- "my_script.scr"
 		
-		cmd : et_string_processing.type_fields_of_line;
+		fields : et_string_processing.type_fields_of_line;
 
 		-- The command launches a script. Change into the project directory. 
 		-- The current directory is the parent directory of the active project. 
@@ -1212,7 +1212,7 @@ package body et_canvas_board_2 is
 		-- Store the command in the command history:
 		console.prepend_text (line_as_typed_by_operator);
 
-		cmd := read_line (
+		fields := read_line (
 			line 			=> line_as_typed_by_operator,
 			number			=> 1,  -- this is the one and only line
 			comment_mark 	=> et_scripting.comment_mark,
@@ -1224,7 +1224,7 @@ package body et_canvas_board_2 is
 		set_directory (to_string (active_project));
 		
 		-- execute the board command
-		board_cmd (active_module, cmd, log_threshold);
+		board_cmd (active_module, to_single_cmd (fields), log_threshold);
 
 		-- Return to previous directory (like  /home/user/my_projects):
 		set_directory (cur_dir_bak);
@@ -1278,7 +1278,7 @@ package body et_canvas_board_2 is
 			get_active_module & space &
 			get_text (self);
 		
-		cmd : et_string_processing.type_fields_of_line;
+		fields : et_string_processing.type_fields_of_line;
 
 		-- The command might launch a script. To prepare for this case we must change
 		-- into the project directory. The current directory is the parent directory
@@ -1298,7 +1298,7 @@ package body et_canvas_board_2 is
 		-- Store the latest command in the command history:
 		console.prepend_text (get_text (self));
 		
-		cmd := read_line (
+		fields := read_line (
 			line 			=> line_as_typed_by_operator,
 			number			=> 1, -- this is the one and only line
 			comment_mark 	=> et_scripting.comment_mark,
@@ -1314,7 +1314,7 @@ package body et_canvas_board_2 is
 		set_directory (to_string (active_project));
 		
 		-- execute the board command
-		board_cmd (active_module, cmd, log_threshold);
+		board_cmd (active_module, to_single_cmd (fields), log_threshold);
 		
 		-- Return to previous directory (like  /home/user/my_projects):
 		log (text => "returning to directory " & enclose_in_quotes (cur_dir_bak) & " ...",

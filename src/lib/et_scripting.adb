@@ -208,7 +208,11 @@ package body et_scripting is
 					-- in case the command fails:
 					script_cmd.fields := fields;
 					
-					execute_command (script_name, fields, log_threshold + 1);
+					execute_command (
+						script_name		=> script_name, 
+						cmd				=> to_single_cmd (fields),
+						log_threshold	=> log_threshold + 1);
+					
 					-- Procedure execute_command dispatches to subprograms
 					-- that execute the command according to the 
 					-- targeted domain (first field in fields) like project, 
@@ -263,7 +267,7 @@ package body et_scripting is
 	
 	procedure schematic_cmd (
 		module_cursor	: in pac_generic_modules.cursor;
-		fields			: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
+		cmd				: in type_single_cmd;
 		log_threshold	: in type_log_level)
 	is separate;
 
@@ -273,7 +277,7 @@ package body et_scripting is
 	
 	procedure board_cmd (
 		module_cursor	: in pac_generic_modules.cursor;
-		fields			: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
+		cmd				: in type_single_cmd;
 		log_threshold	: in type_log_level)
 	is separate;
 
@@ -283,18 +287,18 @@ package body et_scripting is
 	
 	procedure execute_command (
 		script_name		: in pac_script_name.bounded_string;
-		fields			: in type_fields_of_line;
+		cmd				: in type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 
 		-- This function is a shortcut to get a single field
 		-- from the given command:
-		function f (place : in type_field_count) return string is begin
-			return get_field (fields, place);
-		end;
+		-- function f (place : in type_field_count) return string is begin
+		-- 	return get_field (fields, place);
+		-- end;
 
 		-- Get the number of fields of the given command:
-		field_count : constant type_field_count := get_field_count (fields);
+		field_count : constant natural := get_field_count (cmd);
 
 		use et_domains;
 		use et_project;
@@ -306,99 +310,99 @@ package body et_scripting is
 		noun_project	: type_noun_project;
 
 		
-		procedure project_cmd (
-			verb : in type_verb_project;
-			noun : in type_noun_project) 
-		is begin
-			case verb is
-				when VERB_OPEN =>
-					case noun is
-						when NOUN_MODULE =>
-							case field_count is
-								when 4 =>
-									-- The script command provides the module name only.
-									-- The extension must be added here:
-									read_module (
-										file_name		=> ada.directories.compose (
-															name		=> f (4),
-															extension	=> module_file_name_extension),
-										log_threshold	=> log_threshold + 1
-										);
-
-								when 5 .. type_field_count'last =>
-									command_too_long (fields, field_count - 1);
-									
-								when others => 
-									command_incomplete;
-							end case;							
-						when others => invalid_noun (to_string (noun));
-					end case;
-
-					
-				when VERB_CREATE =>
-					case noun is
-						when NOUN_MODULE =>
-							case field_count is
-								when 4 =>
-
-									create_module (
-										module_name		=> to_module_name (f (4)),
-										log_threshold	=> log_threshold + 1
-										);
-
-								when 5 .. type_field_count'last =>
-									command_too_long (fields, field_count - 1);
-									
-								when others => 
-									command_incomplete;
-							end case;							
-						when others => invalid_noun (to_string (noun));
-					end case;
-
-					
-				when VERB_SAVE =>
-					case noun is
-						when NOUN_MODULE =>
-							case field_count is
-								when 4 =>
-
-									save_module (
-										module_name		=> to_module_name (f (4)),
-										log_threshold	=> log_threshold + 1
-										);
-
-								when 5 .. type_field_count'last =>
-									command_too_long (fields, field_count - 1);
-									
-								when others => 
-									command_incomplete;
-							end case;							
-						when others => invalid_noun (to_string (noun));
-					end case;
-
-					
-				when VERB_DELETE =>
-					case noun is
-						when NOUN_MODULE =>
-							case field_count is
-								when 4 =>
-
-									delete_module (
-										module_name		=> to_module_name (f (4)),
-										log_threshold	=> log_threshold + 1
-										);
-
-								when 5 .. type_field_count'last =>
-									command_too_long (fields, field_count - 1);
-									
-								when others => 
-									command_incomplete;
-							end case;							
-						when others => invalid_noun (to_string (noun));
-					end case;
-					
-			end case;
-		end project_cmd;
+-- 		procedure project_cmd (
+-- 			verb : in type_verb_project;
+-- 			noun : in type_noun_project) 
+-- 		is begin
+-- 			case verb is
+-- 				when VERB_OPEN =>
+-- 					case noun is
+-- 						when NOUN_MODULE =>
+-- 							case field_count is
+-- 								when 4 =>
+-- 									-- The script command provides the module name only.
+-- 									-- The extension must be added here:
+-- 									read_module (
+-- 										file_name		=> ada.directories.compose (
+-- 															name		=> f (4),
+-- 															extension	=> module_file_name_extension),
+-- 										log_threshold	=> log_threshold + 1
+-- 										);
+-- 
+-- 								when 5 .. type_field_count'last =>
+-- 									command_too_long (fields, field_count - 1);
+-- 									
+-- 								when others => 
+-- 									command_incomplete;
+-- 							end case;							
+-- 						when others => invalid_noun (to_string (noun));
+-- 					end case;
+-- 
+-- 					
+-- 				when VERB_CREATE =>
+-- 					case noun is
+-- 						when NOUN_MODULE =>
+-- 							case field_count is
+-- 								when 4 =>
+-- 
+-- 									create_module (
+-- 										module_name		=> to_module_name (f (4)),
+-- 										log_threshold	=> log_threshold + 1
+-- 										);
+-- 
+-- 								when 5 .. type_field_count'last =>
+-- 									command_too_long (fields, field_count - 1);
+-- 									
+-- 								when others => 
+-- 									command_incomplete;
+-- 							end case;							
+-- 						when others => invalid_noun (to_string (noun));
+-- 					end case;
+-- 
+-- 					
+-- 				when VERB_SAVE =>
+-- 					case noun is
+-- 						when NOUN_MODULE =>
+-- 							case field_count is
+-- 								when 4 =>
+-- 
+-- 									save_module (
+-- 										module_name		=> to_module_name (f (4)),
+-- 										log_threshold	=> log_threshold + 1
+-- 										);
+-- 
+-- 								when 5 .. type_field_count'last =>
+-- 									command_too_long (fields, field_count - 1);
+-- 									
+-- 								when others => 
+-- 									command_incomplete;
+-- 							end case;							
+-- 						when others => invalid_noun (to_string (noun));
+-- 					end case;
+-- 
+-- 					
+-- 				when VERB_DELETE =>
+-- 					case noun is
+-- 						when NOUN_MODULE =>
+-- 							case field_count is
+-- 								when 4 =>
+-- 
+-- 									delete_module (
+-- 										module_name		=> to_module_name (f (4)),
+-- 										log_threshold	=> log_threshold + 1
+-- 										);
+-- 
+-- 								when 5 .. type_field_count'last =>
+-- 									command_too_long (fields, field_count - 1);
+-- 									
+-- 								when others => 
+-- 									command_incomplete;
+-- 							end case;							
+-- 						when others => invalid_noun (to_string (noun));
+-- 					end case;
+-- 					
+-- 			end case;
+-- 		end project_cmd;
 
 		
 		
@@ -409,7 +413,7 @@ package body et_scripting is
 		log (text => "command entry mode: " & to_string (cmd_entry_mode), level => log_threshold + 1);
 		log_indentation_up;
 		
-		log (text => "fields: " & enclose_in_quotes (to_string (fields)), level => log_threshold + 2);
+		log (text => "fields: " & enclose_in_quotes (get_all_fields (cmd)), level => log_threshold + 2);
 		log_indentation_up;
 
 		
@@ -417,12 +421,12 @@ package body et_scripting is
 		if field_count >= 2 then
 
 			-- field 1 contains the domain of operation
-			domain := to_domain (f (1));
+			domain := to_domain (get_field (cmd, 1));
 
 			-- Dispatch the command to schematic, board or project:
 			case domain is
 				when DOM_SCHEMATIC =>
-					module := to_module_name (f (2));
+					module := to_module_name (get_field (cmd, 2));
 					-- CS character and length check
 
 					-- We are inside the project directory right now.
@@ -440,7 +444,7 @@ package body et_scripting is
 						
 						schematic_cmd (
 							module_cursor	=> locate_module (module),
-							fields			=> fields,
+							cmd				=> cmd,
 							log_threshold	=> log_threshold + 3);
 
 						-- log (text => "schematic command done", level => log_threshold);
@@ -450,7 +454,7 @@ package body et_scripting is
 
 					
 				when DOM_BOARD =>
-					module := to_module_name (f (2));
+					module := to_module_name (get_field (cmd, 2));
 					-- CS character and length check
 
 					-- We are inside the project directory right now.
@@ -468,7 +472,7 @@ package body et_scripting is
 						
 						board_cmd (
 							module_cursor	=> locate_module (module),
-							fields			=> fields,
+							cmd				=> cmd,
 							log_threshold	=> log_threshold + 3);
 
 						-- log (text => "board command done", level => log_threshold);
@@ -481,11 +485,11 @@ package body et_scripting is
 
 					-- CS test minimum field count
 					
-					verb_project := to_verb (f (2));
-					noun_project := to_noun (f (3));
+					verb_project := to_verb (get_field (cmd, 2));
+					noun_project := to_noun (get_field (cmd, 3));
 					
 					-- execute rig command
-					project_cmd (verb_project, noun_project);
+					-- CS project_cmd (verb_project, noun_project);
 			end case;
 
 		else
@@ -580,7 +584,7 @@ package body et_scripting is
 				if get_field_count (line) > 0 then
 
 					-- execute the line as command
-					execute_command (script_name, line, log_threshold + 1);
+					execute_command (script_name, to_single_cmd (line), log_threshold + 1);
 					
 				end if;
 			end loop;

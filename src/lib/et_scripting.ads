@@ -110,7 +110,7 @@ package et_scripting is
 	-- Assumes that the targeted module (like motor_driver) exists.
 	procedure schematic_cmd (
 		module_cursor	: in pac_generic_modules.cursor;
-		fields			: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
+		cmd				: in type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -123,7 +123,7 @@ package et_scripting is
 	-- Assumes that the targeted module (like motor_driver) exists.
 	procedure board_cmd (
 		module_cursor	: in pac_generic_modules.cursor;
-		fields			: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
+		cmd				: in type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -142,7 +142,7 @@ package et_scripting is
 		-- The script file that contains the command. for debug messages only:
 		script_name		: in pac_script_name.bounded_string; 
 		-- The text fields like "schematic motor_driver draw net motor_on 1 150 100 150 130":
-		fields			: in type_fields_of_line;
+		cmd				: in type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

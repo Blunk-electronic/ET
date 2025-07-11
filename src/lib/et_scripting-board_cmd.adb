@@ -103,7 +103,7 @@ separate (et_scripting)
 
 procedure board_cmd (
 	module_cursor	: in pac_generic_modules.cursor;
-	fields			: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
+	cmd				: in type_single_cmd;
 	log_threshold	: in type_log_level)
 is
 	use et_board_ops;
@@ -3876,20 +3876,19 @@ is
 	
 begin -- board_cmd
 	
-	log (text => "given command: " 
-		 & enclose_in_quotes (to_string (fields)),
+	log (text => "given command: " & enclose_in_quotes (get_all_fields (cmd)),
 		 level => log_threshold);
 
-	-- Copy of the given command fields to the actual command.
+	-- Copy the given command to the actual command.
 	-- In case the given command is incomplete
 	-- and we are in graphical mode (non-headless) then
 	-- this procedure interactively proposes arguments and completes the command.
-	single_cmd := (fields => fields, others => <>);
+	single_cmd := cmd;
 
 	-- The fields in single_cmd will now be processed and interactively completed.
 	-- A field is fetched from the single_cmd by the function "get_field".
 
-	cmd_field_count := get_field_count (single_cmd.fields);
+	cmd_field_count := get_field_count (single_cmd);
 
 	
 

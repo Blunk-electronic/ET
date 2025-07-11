@@ -46,6 +46,17 @@ package body et_cmd_sts is
 
 
 
+	function to_single_cmd (
+		fields	: in type_fields_of_line)
+		return type_single_cmd
+	is 
+		cmd : type_single_cmd := (fields => fields, others => <>);
+	begin
+		return cmd;
+	end;
+
+	
+
 	procedure set_fields (
 		cmd		: in out type_single_cmd;
 		fields	: in type_fields_of_line)
@@ -62,6 +73,26 @@ package body et_cmd_sts is
 	is begin
 		return get_field (cmd.fields, place);
 	end;
+
+
+	
+	function get_all_fields (
+		cmd		: in type_single_cmd)
+		return string
+	is begin
+		return to_string (cmd.fields);
+	end;
+
+
+	
+
+	function get_field_count (
+		cmd		: in type_single_cmd)
+		return natural
+	is begin
+		return natural (get_field_count (cmd.fields));
+	end;
+
 
 	
 

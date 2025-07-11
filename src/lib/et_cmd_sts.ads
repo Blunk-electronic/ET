@@ -65,7 +65,11 @@ package et_cmd_sts is
 	end record;	
 
 
-
+	function to_single_cmd (
+		fields	: in type_fields_of_line)
+		return type_single_cmd;
+	
+		
 	procedure set_fields (
 		cmd		: in out type_single_cmd;
 		fields	: in type_fields_of_line);
@@ -75,6 +79,18 @@ package et_cmd_sts is
 		cmd		: in type_single_cmd;
 		place	: in type_field_count)
 		return string;
+
+
+	function get_all_fields (
+		cmd		: in type_single_cmd)
+		return string;
+
+
+	
+	function get_field_count (
+		cmd		: in type_single_cmd)
+		return natural;
+
 
 	
 	function is_complete (
