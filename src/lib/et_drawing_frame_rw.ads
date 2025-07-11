@@ -51,7 +51,7 @@ with et_drawing_frame.schematic;	use et_drawing_frame.schematic;
 with et_drawing_frame.board;		use et_drawing_frame.board;
 
 
-package et_frame_rw is
+package et_drawing_frame_rw is
 	
 -- GENERAL SECTIONS:
 	
@@ -190,7 +190,7 @@ package et_frame_rw is
 		return type_position;
 
 	
-end et_frame_rw;
+end et_drawing_frame_rw;
 
 -- Soli Deo Gloria
 

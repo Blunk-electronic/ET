@@ -75,7 +75,7 @@ with et_schematic_text;
 with et_devices_electrical;
 with et_schematic_rw;
 with et_device_rw;
-with et_frame_rw;
+with et_drawing_frame_rw;
 with et_drawing_frame;
 with et_drawing_frame.schematic;
 with et_sheets;
@@ -1301,7 +1301,7 @@ is
 
 	
 	procedure query_frames is 
-		use et_frame_rw;
+		use et_drawing_frame_rw;
 		use et_drawing_frame;		
 		use et_drawing_frame.pac_template_name;
 

@@ -59,7 +59,7 @@ with et_system_info;
 with et_keywords;					use et_keywords;
 
 
-package body et_frame_rw is
+package body et_drawing_frame_rw is
 
 	
 	function to_position (line : in type_fields_of_line)
@@ -2213,7 +2213,7 @@ package body et_frame_rw is
 
 
 	
-end et_frame_rw;
+end et_drawing_frame_rw;
 
 -- Soli Deo Gloria
 

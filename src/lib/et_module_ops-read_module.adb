@@ -83,7 +83,7 @@ with et_schematic_rw;
 with et_device_rw;
 with et_drawing_frame;
 with et_drawing_frame.schematic;
-with et_frame_rw;
+with et_drawing_frame_rw;
 with et_sheets;
 with et_devices_electrical;
 with et_devices_non_electrical;
@@ -1081,7 +1081,7 @@ is
 	
 	-- Reads the name of the schematic frame template.
 	procedure read_frame_template_schematic is
-		use et_frame_rw;
+		use et_drawing_frame_rw;
 		use et_drawing_frame;
 		kw : constant string := f (line, 1);
 	begin
@@ -1101,7 +1101,7 @@ is
 	-- Reads the position of the frame:
 	procedure read_frame_template_board is
 		use et_drawing_frame;
-		use et_frame_rw;
+		use et_drawing_frame_rw;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -1111,7 +1111,7 @@ is
 
 		elsif kw = keyword_position then -- position x 40 y 60
 			expect_field_count (line, 5);
-			frame_board_position := et_frame_rw.to_position (line, 2);
+			frame_board_position := et_drawing_frame_rw.to_position (line, 2);
 		else
 			invalid_keyword (kw);
 		end if;
@@ -2926,6 +2926,7 @@ is
 				is
 					use et_drawing_frame;
 					use et_drawing_frame.schematic;
+					use et_drawing_frame_rw;
 				begin
 					log (text => "drawing frame schematic " & to_string (frame_template_schematic), 
 						 level => log_threshold + 1);
@@ -2941,7 +2942,7 @@ is
 					pac_schematic_descriptions.clear (sheet_descriptions);
 					
 					-- read the frame template file
-					module.frames.frame := et_frame_rw.read_frame_schematic (
+					module.frames.frame := read_frame_schematic (
 						file_name		=> frame_template_schematic,
 						log_threshold	=> log_threshold + 2);
 
@@ -2993,6 +2994,7 @@ is
 					module		: in out type_generic_module) 
 				is
 					use et_drawing_frame;
+					use et_drawing_frame_rw;
 				begin
 					log (text => "drawing frame board " & to_string (frame_template_board), level => log_threshold + 1);
 
@@ -3000,7 +3002,7 @@ is
 					module.board.frame.template := frame_template_board;
 
 					-- read the frame template file
-					module.board.frame.frame := et_frame_rw.read_frame_board (
+					module.board.frame.frame := read_frame_board (
 						file_name		=> frame_template_board,
 						log_threshold	=> log_threshold + 2);
 
