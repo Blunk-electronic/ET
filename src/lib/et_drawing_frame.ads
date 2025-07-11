@@ -52,9 +52,6 @@ with et_fonts;					use et_fonts;
 package et_drawing_frame is
 
 
-	-- CS separate schematc and board frame stuff in 
-	-- child packages ?
-	
 
 -- PAPER SIZES
 	
@@ -116,8 +113,9 @@ package et_drawing_frame is
 	-- We use whole numbers as this accurary is sufficient
 	-- for everything related to a drawing frame:
 	type type_distance is new integer range -10_000 .. 10_000;
+	-- CS rename to type_distance_frame ?
 
-	subtype type_distance_positive is 
+	subtype type_distance_positive is -- CS rename to type_distance_frame_positive ?
 		type_distance range 0 .. type_distance'last;
 	
 
@@ -320,26 +318,11 @@ package et_drawing_frame is
 
 -- FILE NAMES
 
-	-- extensions:
-	template_schematic_extension	: constant string := "frs"; -- $ET_FRAMES/drawing_frame_version_1.frs
-	template_pcb_extension			: constant string := "frb"; -- $ET_FRAMES/drawing_frame_version_1.frb
+
 
 	package pac_template_name is new generic_bounded_length (template_file_name_length_max);
 
-	-- default file names:
-	template_schematic_default : constant pac_template_name.bounded_string := 
-		pac_template_name.to_bounded_string (
-			compose (
-				name		=> template_file_name_dummy,
-				extension	=> template_schematic_extension)
-				);
 
-	template_pcb_default : constant pac_template_name.bounded_string := 
-		pac_template_name.to_bounded_string (
-			compose (
-				name		=> template_file_name_dummy,
-				extension	=> template_pcb_extension)
-				);
 	
 	function to_string (name : in pac_template_name.bounded_string) return string;
 	function to_template_name (name : in string) return pac_template_name.bounded_string;
@@ -347,57 +330,6 @@ package et_drawing_frame is
 
 	
 	
--- TEXT PLACEHOLDERS AND TITLE BLOCKS
-	
-	-- SCHEMATIC:
-	
-	-- The set of basic placeholders is extended by other things which are
-	-- required in the schematic:
-	type type_placeholders_schematic is new type_placeholders_basic with record
-		sheet_number		: type_placeholder;
-		sheet_description	: type_placeholder;
-		sheet_category		: type_placeholder; -- development, routing, product
-	end record;
-	
-	type type_title_block_schematic is new type_title_block with record
-		placeholders_additional : type_placeholders_schematic;
-	end record;
-
-
-	
-	-- PCB:
-	
-	-- CAM markers are required for CAM output and visualization.
-	-- They are texts in the title block that indicate what it is about.
-	-- Depending on the structures being displayed or exported, they are displayed or not.
-	-- Their content may be specified by the operator in the respective sections in the frame file (*.frb).
-	-- The content specified in the frame file overrides the default content. 
-	-- If they are not specified by the frame file, default position, size and content is used (see below).
-	type type_cam_marker is new type_static_text with null record;
-
-	type type_cam_markers is record
-		face			: type_cam_marker := (content => to_content ("FACE:"), others => <>);
-		silk_screen		: type_cam_marker := (content => to_content ("SILKSCREEN"), others => <>);
-		assy_doc		: type_cam_marker := (content => to_content ("ASSEMBLY"), others => <>);
-		keepout			: type_cam_marker := (content => to_content ("KEEPOUT"), others => <>);
-		plated_millings	: type_cam_marker := (content => to_content ("PLTD_MILLGS"), others => <>); 
-		pcb_outline 	: type_cam_marker := (content => to_content ("OUTLINE"), others => <>);
-		route_restrict	: type_cam_marker := (content => to_content ("ROUTE_RESTRICT"), others => <>);
-		via_restrict	: type_cam_marker := (content => to_content ("VIA_RESTRICT"), others => <>);		
-		signal_layer	: type_cam_marker := (content => to_content ("SGNL_LYR:"), others => <>);
-		stencil			: type_cam_marker := (content => to_content ("STENCIL"), others => <>);		
-		stop_mask		: type_cam_marker := (content => to_content ("STOP_MASK"), others => <>);
-	end record;
-	
-	type type_placeholders_pcb is new type_placeholders_basic with record
-		face			: type_placeholder; -- to be filled with the word "TOP" or "BOTTOM"
-		signal_layer	: type_placeholder; -- to be filled with the signal layer id like 1,2,3, 8..16
-	end record;
-	
-	type type_title_block_pcb is new type_title_block with record
-		placeholders_additional	: type_placeholders_pcb;
-		cam_markers				: type_cam_markers;
-	end record;
 
 
 
@@ -439,117 +371,6 @@ package et_drawing_frame is
 		return type_position;
 
 
-	
-
--- PARAMETERIZED FRAME:
-	
-	-- The used title block depends on the domain.
-	-- CS: remove this type. It is replaced by type_frame_schematic and type_frame_pcb_pre.
-	type type_frame (domain : type_domain) is new type_frame_general with record
-		case domain is
-			when DOMAIN_SCHEMATIC =>
-				title_block_schematic : type_title_block_schematic;
-
-			when DOMAIN_PCB =>
-				title_block_pcb : type_title_block_pcb;
-		end case;
-	end record;
-
-
-	type type_frame_schematic is new type_frame_general with record
-		title_block_schematic : type_title_block_schematic;
-	end record;
-
-	
-	type type_frame_pcb_pre is new type_frame_general with record
-		title_block_pcb : type_title_block_pcb;
-	end record;
-	-- CS: find a more reasonable type name.
-
-
-	
-	-- Applies defaults to given frame:
-	procedure apply_defaults_schematic (frame : in out type_frame_schematic);
-
-	procedure apply_defaults_board (frame : in out type_frame_pcb_pre);
-
-	
-	
-	-- Generates a default frame for the given domain:
-	-- function make_default_frame (domain : in type_domain) 
-	-- 	return type_frame;
-
-	function make_default_frame_pcb
-		return type_frame_pcb_pre;
-
-	function make_default_frame_schematic
-		return type_frame_schematic;
-	
-	
-	
--- THE FINAL FRAME IN A PCB DRAWING
-	
-	-- This is the drawing frame used in a pcb layout:
-	type type_frame_pcb is record
-		template	: pac_template_name.bounded_string := template_pcb_default;
-			-- like $ET_FRAMES/drawing_frame_A3_landscape.frb
-
-		--frame		: type_frame (DOMAIN_PCB) := make_default_frame (DOMAIN_PCB);
-		frame		: type_frame_pcb_pre := make_default_frame_pcb;
-	end record;
-
-	
-
-
--- THE FINAL FRAME IN A SCHEMATIC
-
-	-- Prefixes before enumeration types prevent clashes with gnat keywords
-	-- and package names:
-	category_prefix : constant string := ("CAT_");
-	-- CS apply prefix !
-	
-	type type_schematic_sheet_category is (
-		DEVELOPMENT,
-		ROUTING,
-		PRODUCT
-		);
-
-	
-	schematic_sheet_category_default : constant type_schematic_sheet_category := DEVELOPMENT;
-
-	
-	function to_string (cat : in type_schematic_sheet_category) return string;
-
-	function to_category (cat : in string) return type_schematic_sheet_category;
-
-	
-	type type_schematic_description is record
-		content		: pac_text_content.bounded_string := to_content ("no description");
-		category	: type_schematic_sheet_category := schematic_sheet_category_default;
-	end record;
-
-
-	
-	-- For each sheet of a schematic a description is required. 
-	-- The descriptions are ordered by the sheet numbers:
-	package pac_schematic_descriptions is new ordered_maps (
-		key_type		=> type_sheet,
-		element_type	=> type_schematic_description);
-
-
-	
-	-- The final drawing frames:
-	type type_frames_schematic is record
-		template		: pac_template_name.bounded_string := template_schematic_default;
-			-- like $ET_FRAMES/drawing_frame_A4_landscape.frs
-
-		--frame			: type_frame (DOMAIN_SCHEMATIC) := make_default_frame (DOMAIN_SCHEMATIC);
-		frame			: type_frame_schematic := make_default_frame_schematic;
-		
-		descriptions	: pac_schematic_descriptions.map;
-	end record;
-
-	
 	
 end et_drawing_frame;
 

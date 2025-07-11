@@ -82,6 +82,7 @@ with et_schematic_text;
 with et_schematic_rw;
 with et_device_rw;
 with et_drawing_frame;
+with et_drawing_frame.schematic;
 with et_frame_rw;
 with et_sheets;
 with et_devices_electrical;
@@ -1064,9 +1065,9 @@ is
 	route		: et_pcb.type_route;
 
 	
-	sheet_descriptions			: et_drawing_frame.pac_schematic_descriptions.map;
-	sheet_description_category	: et_drawing_frame.type_schematic_sheet_category := 
-		et_drawing_frame.schematic_sheet_category_default; -- product/develpment/routing
+	sheet_descriptions			: et_drawing_frame.schematic.pac_schematic_descriptions.map;
+	sheet_description_category	: et_drawing_frame.schematic.type_schematic_sheet_category := 
+		et_drawing_frame.schematic.schematic_sheet_category_default; -- product/develpment/routing
 	
 	sheet_description_number	: et_sheets.type_sheet := et_sheets.type_sheet'first; -- 1, 2. 3, ...
 	sheet_description_text		: et_text.pac_text_content.bounded_string;		-- "voltage regulator"
@@ -1121,7 +1122,7 @@ is
 	-- Reads the description of a schematic sheet:
 	procedure read_sheet_description is
 		use et_schematic_coordinates;	
-		use et_drawing_frame;
+		use et_drawing_frame.schematic;
 		use et_sheets;
 		kw : constant string := f (line, 1);
 	begin
@@ -2924,6 +2925,7 @@ is
 					module		: in out type_generic_module) 
 				is
 					use et_drawing_frame;
+					use et_drawing_frame.schematic;
 				begin
 					log (text => "drawing frame schematic " & to_string (frame_template_schematic), 
 						 level => log_threshold + 1);
@@ -2961,7 +2963,7 @@ is
 			
 			procedure add_sheet_description is 
 				use et_schematic_coordinates;	
-				use et_drawing_frame;
+				use et_drawing_frame.schematic;
 				use et_sheets;
 				use pac_schematic_descriptions;
 				inserted : boolean;

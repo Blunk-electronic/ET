@@ -91,9 +91,270 @@ package body et_frame_rw is
 	end; 
 
 
+
 	
-	procedure write (
-		frame			: in type_frame;
+	
+	procedure write_schematic (
+		frame			: in type_frame_schematic;
+		file_name		: in pac_template_name.bounded_string;
+		log_threshold	: in type_log_level) 
+	is
+		file_handle : ada.text_io.file_type;
+
+		
+		procedure write_lines (lines : in pac_lines.list) is
+			use pac_lines;
+
+			
+			procedure write (cursor : in pac_lines.cursor) is 
+				l : type_line renames element (cursor);
+			begin
+				section_mark (section_line, HEADER);
+
+				-- start point
+				write (
+					keyword		=> keyword_start, 
+					parameters	=> to_string (l.A, FORMAT_2)); -- start x 180 x 10
+
+				-- end point
+				write (
+					keyword		=> keyword_end, 
+					parameters	=> to_string (l.B, FORMAT_2)); -- end x 180 x 10
+
+				-- CS in the future, if a line has a width, write it here
+				section_mark (section_line, FOOTER);
+			end;
+
+			
+		begin -- write lines
+			section_mark (section_lines, HEADER);
+			iterate (lines, write'access);
+			section_mark (section_lines, FOOTER);
+		end;
+
+		
+		procedure write_placeholder (ph : in type_placeholder) is begin
+			-- position
+			write (keyword => keyword_position, parameters	=> to_string (ph.position)); -- position x 220 y 40
+
+			-- size
+			write (keyword => keyword_size, parameters => to_string (ph.size)); -- size 20
+		end;
+
+		
+		procedure write_text (text : in type_static_text) is begin
+			section_mark (section_text, HEADER);
+			
+			-- position
+			write (keyword => keyword_position, parameters	=> to_string (text.position)); -- position x 220 y 40
+
+			-- size
+			write (keyword => keyword_size, parameters => to_string (text.size)); -- size 20
+
+			-- content
+			write (keyword => keyword_content, wrap => true,
+				   parameters => et_text.to_string (text.content)); -- content "motor driver"
+
+			section_mark (section_text, FOOTER);
+		end;
+
+	
+		
+		procedure write_texts (texts : in pac_static_texts.list) is
+			use pac_static_texts;
+
+			procedure write (cursor : in pac_static_texts.cursor) is begin
+				write_text (element (cursor));
+			end;
+			
+		begin -- write_texts
+			iterate (texts, write'access);
+		end write_texts;
+
+		
+		procedure write_placeholders_common (ph : in type_placeholders_common) is begin
+			section_mark (section_project_name, HEADER);
+			write_placeholder (ph.project_name);
+			section_mark (section_project_name, FOOTER);
+
+			section_mark (section_module_file_name, HEADER);			
+			write_placeholder (ph.module_file_name);
+			section_mark (section_module_file_name, FOOTER);
+
+			section_mark (section_active_assembly_variant, HEADER);
+			write_placeholder (ph.active_assembly_variant);
+			section_mark (section_active_assembly_variant, FOOTER);			
+		end write_placeholders_common;
+
+		
+		procedure write_placeholders_basic (ph : in type_placeholders_basic) is begin
+			section_mark (section_company, HEADER);
+			write_placeholder (ph.company);
+			section_mark (section_company, FOOTER);
+
+			section_mark (section_customer, HEADER);			
+			write_placeholder (ph.customer);
+			section_mark (section_customer, FOOTER);			
+
+			section_mark (section_partcode, HEADER);			
+			write_placeholder (ph.partcode);
+			section_mark (section_partcode, FOOTER);			
+
+			section_mark (section_drawing_number, HEADER);			
+			write_placeholder (ph.drawing_number);
+			section_mark (section_drawing_number, FOOTER);
+
+			section_mark (section_revision, HEADER);			
+			write_placeholder (ph.revision);
+			section_mark (section_revision, FOOTER);						
+
+			section_mark (section_drawn_by, HEADER);			
+			write_placeholder (ph.drawn_by);
+			section_mark (section_drawn_by, FOOTER);			
+
+			section_mark (section_checked_by, HEADER);
+			write_placeholder (ph.checked_by);
+			section_mark (section_checked_by, FOOTER);
+
+			section_mark (section_approved_by, HEADER);
+			write_placeholder (ph.approved_by);
+			section_mark (section_approved_by, FOOTER);
+
+			section_mark (section_drawn_date, HEADER);
+			write_placeholder (ph.drawn_date);
+			section_mark (section_drawn_date, FOOTER);
+
+			section_mark (section_checked_date, HEADER);
+			write_placeholder (ph.checked_date);
+			section_mark (section_checked_date, FOOTER);
+
+			section_mark (section_approved_date, HEADER);			
+			write_placeholder (ph.approved_date);
+			section_mark (section_approved_date, FOOTER);			
+		end;
+
+		
+		procedure write_placeholders_schematic (ph : in type_placeholders_schematic) is begin
+			write_placeholders_basic (type_placeholders_basic (ph));
+
+			section_mark (section_sheet_number, HEADER);
+			write_placeholder (ph.sheet_number);
+			section_mark (section_sheet_number, FOOTER);
+
+			section_mark (section_sheet_description, HEADER);			
+			write_placeholder (ph.sheet_description);
+			section_mark (section_sheet_description, FOOTER);
+
+			section_mark (section_sheet_category, HEADER);						
+			write_placeholder (ph.sheet_category);
+			section_mark (section_sheet_category, FOOTER);			
+		end;
+
+
+
+		
+		procedure write_title_block is
+			block : type_title_block_schematic renames frame.title_block_schematic;
+			ps : type_placeholders_schematic;
+		begin
+			write (keyword => keyword_position, parameters => to_string (block.position)); -- position x 180 x 10
+
+			-- LINES
+			-- write lines. they are basic elements of a title block:
+			write_lines (block.lines);
+
+
+			-- TEXTS
+			-- write static texts (with content). they are basic elements of a title block
+			section_mark (section_texts, HEADER);
+			write_texts (block.static_texts);
+			section_mark (section_texts, FOOTER);
+			
+			-- PLACEHOLDERS
+			section_mark (section_placeholders, HEADER);
+			write_placeholders_common (block.placeholders_common);
+
+			ps := type_title_block_schematic (block).placeholders_additional;
+			write_placeholders_schematic (ps);
+				
+			section_mark (section_placeholders, FOOTER);
+		end write_title_block;
+
+		
+		
+	begin -- write_schematic
+		create (
+			file 	=> file_handle,
+			mode	=> out_file,
+			name	=> to_string (file_name));
+
+		set_output (file_handle);
+
+		-- write a nice header
+		put_line (comment_mark & space & et_system_info.system_name 
+				  & space & "drawing frame template");
+		
+		put_line (comment_mark & space & get_date);
+		put_line (comment_mark & space & row_separator_double);
+		new_line;
+
+		
+		write (keyword => keyword_domain, parameters => to_string (DOMAIN_SCHEMATIC));
+		write (keyword => keyword_paper_size, parameters => to_string (frame.paper));
+		write (keyword => keyword_orientation, parameters => to_string (frame.orientation));
+		write (keyword => keyword_border_width, parameters => to_string (frame.border_width));
+		write (keyword => keyword_size, parameters => 
+			keyword_x & space & to_string (frame.size.x) & space &
+			keyword_y & space & to_string (frame.size.y)); -- size x 240 x 200
+
+		write (keyword => keyword_sectors, parameters => 
+			keyword_rows & space & to_string (frame.sectors.rows) & space &
+			keyword_columns & space & to_string (frame.sectors.columns)); -- sectors rows 5 columns 10
+
+
+
+		
+		-- title block
+		section_mark (section_title_block, HEADER);
+		
+		-- write general things of title 
+		-- block (standard placeholders, texts, lines):
+		write_title_block;
+
+		
+		section_mark (section_title_block, FOOTER);		
+
+
+		
+		-- write footer
+		new_line;		
+		put_line (comment_mark & space & row_separator_double);
+		put_line (comment_mark & space & "drawing frame template file end");
+		new_line;
+		
+		reset_tab_depth;		
+
+
+		set_output (standard_output);
+		close (file_handle);
+
+		exception when event: others =>
+			log (text => ada.exceptions.exception_message (event));
+			if is_open (file_handle) then
+				close (file_handle);
+			end if;
+			raise;
+
+	end write_schematic;
+
+
+
+	
+
+
+
+	procedure write_board (
+		frame			: in type_frame_pcb_pre;
 		file_name		: in pac_template_name.bounded_string;
 		log_threshold	: in type_log_level) 
 	is
@@ -244,23 +505,6 @@ package body et_frame_rw is
 		end;
 
 		
-		procedure write_placeholders_schematic (ph : in type_placeholders_schematic) is begin
-			write_placeholders_basic (type_placeholders_basic (ph));
-
-			section_mark (section_sheet_number, HEADER);
-			write_placeholder (ph.sheet_number);
-			section_mark (section_sheet_number, FOOTER);
-
-			section_mark (section_sheet_description, HEADER);			
-			write_placeholder (ph.sheet_description);
-			section_mark (section_sheet_description, FOOTER);
-
-			section_mark (section_sheet_category, HEADER);						
-			write_placeholder (ph.sheet_category);
-			section_mark (section_sheet_category, FOOTER);			
-		end;
-
-		
 		procedure write_placeholders_pcb (ph : in type_placeholders_pcb) is begin
 			write_placeholders_basic (type_placeholders_basic (ph));
 
@@ -317,10 +561,9 @@ package body et_frame_rw is
 		end;
 
 		
-		procedure write_title_block (block : in type_title_block'class) is 
-			use ada.tags;
+		procedure write_title_block is 
+			block : type_title_block_pcb renames frame.title_block_pcb;
 			pp : type_placeholders_pcb;
-			ps : type_placeholders_schematic;
 		begin
 			write (keyword => keyword_position, parameters => to_string (block.position)); -- position x 180 x 10
 
@@ -339,29 +582,18 @@ package body et_frame_rw is
 			section_mark (section_placeholders, HEADER);
 			write_placeholders_common (block.placeholders_common);
 
-			if block'tag = type_title_block_schematic'tag then
-				ps := type_title_block_schematic (block).placeholders_additional;
-				write_placeholders_schematic (ps);
-				
-			elsif block'tag = type_title_block_pcb'tag then
-				pp := type_title_block_pcb (block).placeholders_additional;
-				write_placeholders_pcb (pp);
-			else
-				null; -- CS
-			end if;
+
+			pp := type_title_block_pcb (block).placeholders_additional;
+			write_placeholders_pcb (pp);
 
 			section_mark (section_placeholders, FOOTER);
 
-			-- CAM MARKERS (pcb only)
-			-- if the given title block belongs to a layout frame, write cam markers:
-			if block'tag = type_title_block_pcb'tag then
-				write_cam_markers (type_title_block_pcb (block).cam_markers);
-			end if;
-			
+			-- CAM MARKERS
+			write_cam_markers (type_title_block_pcb (block).cam_markers);
 		end write_title_block;
 
 		
-	begin -- write
+	begin -- write_board
 		create (
 			file 	=> file_handle,
 			mode	=> out_file,
@@ -378,9 +610,8 @@ package body et_frame_rw is
 		new_line;
 
 
-
 		
-		write (keyword => keyword_domain, parameters => to_string (frame.domain));
+		write (keyword => keyword_domain, parameters => to_string (DOMAIN_PCB));
 		write (keyword => keyword_paper_size, parameters => to_string (frame.paper));
 		write (keyword => keyword_orientation, parameters => to_string (frame.orientation));
 		write (keyword => keyword_border_width, parameters => to_string (frame.border_width));
@@ -393,23 +624,16 @@ package body et_frame_rw is
 			keyword_columns & space & to_string (frame.sectors.columns)); -- sectors rows 5 columns 10
 
 
-
 		
 		-- title block
 		section_mark (section_title_block, HEADER);
 		
-		-- write general things of title block (standard placeholders, texts, lines):
-		case frame.domain is 
-			when DOMAIN_SCHEMATIC =>
-				write_title_block (frame.title_block_schematic);
-
-			when DOMAIN_PCB =>
-				write_title_block (frame.title_block_pcb);
-		end case;
+		-- write general things of title 
+		-- block (standard placeholders, texts, lines):
+		write_title_block;
 
 		
 		section_mark (section_title_block, FOOTER);		
-
 
 		
 		-- write footer
@@ -431,25 +655,47 @@ package body et_frame_rw is
 			end if;
 			raise;
 
-	end write;
+	end write_board;
+
+
+
 
 
 
 
 	
+
+	
 	procedure create_frame (
-	-- Creates and saves a frame in given file_name.
 		file_name		: in pac_template_name.bounded_string;
 		domain			: in type_domain;							   
 		log_threshold	: in type_log_level) 
-	is
-		frame : type_frame (domain);
-	begin
-		log (text => "creating frame " & to_string (file_name) & " ...", level => log_threshold);
-		log_indentation_up;
-		log (text => "domain " & to_string (domain) & " ...", level => log_threshold);
+	is 
 
-		write (frame, file_name, log_threshold + 1);
+		procedure do_schematic is
+			frame : type_frame_schematic;
+		begin
+			write_schematic (frame, file_name, log_threshold + 1);
+		end;
+
+
+		procedure do_board is
+			frame : type_frame_pcb_pre;
+		begin
+			write_board (frame, file_name, log_threshold + 1);
+		end;
+
+		
+	begin
+		log (text => "create drawing frame " & to_string (file_name), level => log_threshold);
+		log_indentation_up;
+
+		log (text => "domain " & to_string (domain), level => log_threshold + 1);
+
+		case domain is 
+			when DOMAIN_SCHEMATIC	=> do_schematic;
+			when DOMAIN_PCB 		=> do_board;
+		end case;
 		
 		log_indentation_down;
 	end create_frame;
@@ -459,25 +705,39 @@ package body et_frame_rw is
 
 	
 	
-	procedure save_frame (
-	-- Saves the given frame in file_name.
-		frame			: in type_frame;
+	procedure save_frame_schematic (
+		frame			: in type_frame_schematic;
 		file_name		: in pac_template_name.bounded_string;
-		log_threshold	: in type_log_level) is
-	begin
-		log (text => "saving frame as " & to_string (file_name) & " ...", level => log_threshold);
+		log_threshold	: in type_log_level) 
+	is begin
+		log (text => "save schematic frame as " & to_string (file_name), level => log_threshold);
 		log_indentation_up;
-		log (text => "domain " & to_string (frame.domain) & " ...", level => log_threshold);
 
-		write (frame, file_name, log_threshold + 1);
+		write_schematic (frame, file_name, log_threshold + 1);
 		
 		log_indentation_down;
-	end save_frame;
+	end save_frame_schematic;
 
 
 
 	
 
+	procedure save_frame_board (
+		frame			: in type_frame_pcb_pre;
+		file_name		: in pac_template_name.bounded_string;
+		log_threshold	: in type_log_level) 
+	is begin
+		log (text => "save board frame as " & to_string (file_name), level => log_threshold);
+		log_indentation_up;
+
+		write_board (frame, file_name, log_threshold + 1);
+		
+		log_indentation_down;
+	end save_frame_board;
+
+
+
+	
 
 	
 	function read_frame_schematic (
@@ -1033,7 +1293,7 @@ package body et_frame_rw is
 		
 	begin -- read_frame_schematic
 		
-		log (text => "read frame schematic " & to_string (file_name),
+		log (text => "read schematic frame " & to_string (file_name),
 			 level => log_threshold);
 		
 		log_indentation_up;
@@ -1846,7 +2106,7 @@ package body et_frame_rw is
 		
 	begin -- read_frame_board
 		
-		log (text => "read frame board " & to_string (file_name),
+		log (text => "read board frame " & to_string (file_name),
 			 level => log_threshold);
 		
 		log_indentation_up;

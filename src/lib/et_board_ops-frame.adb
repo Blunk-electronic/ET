@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -55,10 +55,10 @@ package body et_board_ops.frame is
 		begin
 			case coordinates is
 				when ABSOLUTE =>
-					et_drawing_frame.set_position (module.board.frame.frame, point);
+					set_position (module.board.frame.frame, point);
 
 				when RELATIVE =>
-					p1 := et_drawing_frame.get_position (module.board.frame.frame);
+					p1 := get_position (module.board.frame.frame);
 					-- CS
 					-- move_by (module.board.frame.position, to_distance_relative (point));
 			end case;
@@ -104,7 +104,7 @@ package body et_board_ops.frame is
 			module_name	: in pac_module_name.bounded_string;
 			module 		: in type_generic_module) 
 		is begin
-			result := et_drawing_frame.get_position (module.board.frame.frame);
+			result := get_position (module.board.frame.frame);
 		end get_origin;
 
 		

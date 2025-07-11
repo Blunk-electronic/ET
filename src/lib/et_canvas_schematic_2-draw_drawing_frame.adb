@@ -42,6 +42,7 @@ with et_alignment;
 with et_schematic_ops;
 with et_schematic_ops.sheets;
 with et_drawing_frame;
+with et_drawing_frame.schematic;
 
 
 separate (et_canvas_schematic_2)
@@ -50,6 +51,7 @@ procedure draw_drawing_frame is
 
 	use et_colors.schematic;
 	use et_drawing_frame;
+	use et_drawing_frame.schematic;
 	use pac_drawing_frame;
 	
 

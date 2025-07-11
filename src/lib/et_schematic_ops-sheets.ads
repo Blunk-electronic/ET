@@ -39,6 +39,7 @@
 
 
 with et_drawing_frame;					use et_drawing_frame;
+with et_drawing_frame.schematic;		use et_drawing_frame.schematic;
 
 
 package et_schematic_ops.sheets is

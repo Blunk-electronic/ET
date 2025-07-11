@@ -50,6 +50,7 @@ with ada.exceptions;				use ada.exceptions;
 with ada.containers;
 
 with et_drawing_frame;
+with et_drawing_frame.board;
 with et_devices_electrical;
 with et_nets;
 with et_pcb;
@@ -115,6 +116,7 @@ is
 	-- the outer border:
 	procedure parse_drawing_frame is
 		use et_drawing_frame;
+		use et_drawing_frame.board;
 		
 		b : type_area; -- the bounding-box of the frame
 

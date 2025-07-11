@@ -98,6 +98,8 @@ with et_device_model_names;			use et_device_model_names;
 with et_device_prefix;				use et_device_prefix;
 with et_device_partcode;			use et_device_partcode;
 with et_drawing_frame;	
+with et_drawing_frame.schematic;
+with et_drawing_frame.board;
 with et_fill_zones;					use et_fill_zones;
 with et_fill_zones.boards;	
 with et_conductor_text;				use et_conductor_text;
@@ -3308,7 +3310,8 @@ package body et_kicad_to_native is
 		-- CS: not completed yet.
 		-- For the time being the native module gets dummy templates assigned.
 		procedure copy_frames is
-			use et_drawing_frame;
+			use et_drawing_frame.schematic;
+			use et_drawing_frame.board;
 		begin
 			-- schematic frames:
 			module.frames.template := template_schematic_default;

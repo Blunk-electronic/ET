@@ -55,6 +55,7 @@ with et_drills;							use et_drills;
 with et_vias;							use et_vias;
 with et_pcb_stack;						use et_pcb_stack;
 with et_drawing_frame;
+with et_drawing_frame.board;
 with et_design_rules_board;				use et_design_rules_board;
 
 with et_fill_zones;						use et_fill_zones;
@@ -300,7 +301,7 @@ package et_pcb is
 	
 	-- This is non-electical board stuff:
 	type type_board is tagged record
-		frame			: et_drawing_frame.type_frame_pcb; -- incl. template name
+		frame			: et_drawing_frame.board.type_frame_pcb; -- incl. template name
 		grid			: pac_grid.type_grid;  -- the drawing grid of the board
 		stack			: et_pcb_stack.type_stack;	-- the layer stack
 		silkscreen		: type_silkscreen_both_sides;

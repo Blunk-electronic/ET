@@ -39,6 +39,7 @@
 with ada.text_io;				use ada.text_io;
 with et_text;
 with et_drawing_frame;
+with et_drawing_frame.board;
 with et_alignment;
 
 
@@ -48,6 +49,7 @@ procedure draw_drawing_frame is
 
 	use et_colors.board;
 	use et_drawing_frame;
+	use et_drawing_frame.board;
 	use pac_drawing_frame;
 	
 

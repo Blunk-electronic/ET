@@ -46,7 +46,9 @@ with et_string_processing;
 with et_logging;				use et_logging;
 with et_schematic_coordinates;
 with et_text;
-with et_drawing_frame;			use et_drawing_frame;
+with et_drawing_frame;				use et_drawing_frame;
+with et_drawing_frame.schematic;	use et_drawing_frame.schematic;
+with et_drawing_frame.board;		use et_drawing_frame.board;
 
 
 package et_frame_rw is
@@ -144,16 +146,31 @@ package et_frame_rw is
 		domain			: in type_domain;							   
 		log_threshold	: in type_log_level);
 
-	-- CS separate between create frame schematic and board
+
 	
-	-- Saves the given frame in file_name.
-	procedure save_frame (
-		frame			: in type_frame;
+	-- Saves the given schematic frame in file_name.
+	procedure save_frame_schematic (
+		frame			: in type_frame_schematic;
 		file_name		: in pac_template_name.bounded_string;							 
 		log_threshold	: in type_log_level);
 
-	-- CS separate between save frame schematic and board
+	
+	-- Saves the given board frame in file_name.
+	procedure save_frame_board (
+		frame			: in type_frame_pcb_pre;
+		file_name		: in pac_template_name.bounded_string;							 
+		log_threshold	: in type_log_level);
 
+
+
+	-- Reads a frame template for the schematic as given by file_name and returns
+	-- a schematic frame.
+	function read_frame_schematic (
+		file_name		: in pac_template_name.bounded_string;
+		log_threshold	: in type_log_level)
+		return type_frame_schematic;
+
+	
 	
 	-- Reads a frame template for the board as given by file_name and returns
 	-- a schematic frame.
@@ -164,12 +181,6 @@ package et_frame_rw is
 
 
 	
-	-- Reads a frame template for the schematic as given by file_name and returns
-	-- a schematic frame.
-	function read_frame_schematic (
-		file_name		: in pac_template_name.bounded_string;
-		log_threshold	: in type_log_level)
-		return type_frame_schematic;
 
 	
 

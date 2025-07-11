@@ -77,6 +77,7 @@ with et_schematic_rw;
 with et_device_rw;
 with et_frame_rw;
 with et_drawing_frame;
+with et_drawing_frame.schematic;
 with et_sheets;
 with et_devices_non_electrical;
 with et_pcb;
@@ -1308,7 +1309,8 @@ is
 		-- This procedure writes the stuff related to the
 		-- drawing frames of the schematic:
 		procedure schematic is
-
+			use et_drawing_frame.schematic;
+			
 		
 			procedure write_sheet_descriptions is
 				use pac_schematic_descriptions;

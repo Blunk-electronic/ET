@@ -39,6 +39,7 @@
 
 
 with et_drawing_frame;						use et_drawing_frame;
+with et_drawing_frame.board;				use et_drawing_frame.board;
 
 
 package et_board_ops.frame is
