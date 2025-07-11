@@ -66,6 +66,33 @@ package et_cmd_sts is
 
 
 
+	procedure set_fields (
+		cmd		: in out type_single_cmd;
+		fields	: in type_fields_of_line);
+
+
+	function get_field (
+		cmd		: in type_single_cmd;
+		place	: in type_field_count)
+		return string;
+
+	
+	function is_complete (
+		cmd		: in type_single_cmd)
+		return boolean;
+
+
+	function finalization_is_pending (
+		cmd		: in type_single_cmd)
+		return boolean;
+
+
+	procedure reset_cmd (
+		cmd		: in out type_single_cmd);
+
+	
+	
+	
 	
 	-- The single command entered on the console:
 	single_cmd : type_single_cmd;

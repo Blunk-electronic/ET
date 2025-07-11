@@ -45,6 +45,54 @@ with et_exceptions;					use et_exceptions;
 package body et_cmd_sts is
 
 
+
+	procedure set_fields (
+		cmd		: in out type_single_cmd;
+		fields	: in type_fields_of_line)
+	is begin
+		cmd.fields := fields;
+	end;
+
+
+
+	function get_field (
+		cmd		: in type_single_cmd;
+		place	: in type_field_count)
+		return string
+	is begin
+		return get_field (cmd.fields, place);
+	end;
+
+	
+
+	function is_complete (
+		cmd		: in type_single_cmd)
+		return boolean
+	is begin
+		return cmd.complete;
+	end;
+
+
+
+
+	function finalization_is_pending (
+		cmd		: in type_single_cmd)
+		return boolean
+	is begin
+		return cmd.finalization_pending;
+	end;
+
+
+
+	procedure reset_cmd (
+		cmd		: in out type_single_cmd)
+	is begin
+		cmd := (others => <>);
+	end;
+
+	
+	
+
 	function to_string (entry_mode : in type_cmd_entry_mode) return string is begin
 		return type_cmd_entry_mode'image (entry_mode);
 	end to_string;
