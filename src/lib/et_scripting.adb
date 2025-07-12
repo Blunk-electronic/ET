@@ -192,7 +192,7 @@ package body et_scripting is
 			-- Prepare the handling of the exception in case the script fails.
 			-- See procedures schematic_cmd.evaluate_exception or
 			-- board_cmd.evaluate_exception for example.
-			cmd_entry_mode := MODE_VIA_SCRIPT;
+			-- cmd_entry_mode := MODE_VIA_SCRIPT;
 			
 			
 			-- read the file line by line
@@ -212,9 +212,12 @@ package body et_scripting is
 					-- in case the command fails:
 					script_cmd.fields := fields;
 
-					-- Set the fields in the command to be executed:
-					set_fields (single_cmd, fields);
-
+					
+					-- Compose and execute the command to be executed.
+					-- Since it is launched via a script, its origin
+					-- is set accordingly:
+					single_cmd := to_single_cmd (fields, MODE_VIA_SCRIPT);
+					
 					execute_command (
 						script_name		=> script_name, 
 						cmd				=> single_cmd,
@@ -425,7 +428,7 @@ package body et_scripting is
 		log (text => "execute command", level => log_threshold);
 		log_indentation_up;
 		
-		log (text => "command entry mode: " & to_string (cmd_entry_mode), level => log_threshold + 1);
+		log (text => "command entry mode: " & get_origin (cmd), level => log_threshold + 1);
 		log_indentation_up;
 		
 		log (text => "fields: " & enclose_in_quotes (get_all_fields (cmd)), level => log_threshold + 2);
@@ -562,10 +565,11 @@ package body et_scripting is
 		file_handle : ada.text_io.file_type;
 		line : type_fields_of_line;
 
-		-- The single command to be executed:
+		-- The command to be executed:
 		single_cmd : type_single_cmd;
 		
 	begin
+		
 		log (text => row_separator_double, level => log_threshold);
 		log (text => "executing script " 
 			 & enclose_in_quotes (to_string (script_name)),
@@ -611,10 +615,15 @@ package body et_scripting is
 				-- we are interested in lines that contain something. emtpy lines are skipped:
 				if get_field_count (line) > 0 then
 
-					-- Set the fields of the command to be executed:
-					set_fields (single_cmd, line);
+					-- Compose and execute the command to be executed.
+					-- Since it is launched via a script, its origin
+					-- is set accordingly:
+					single_cmd := to_single_cmd (line, MODE_VIA_SCRIPT);
 					
-					execute_command (script_name, single_cmd, log_threshold + 1);					
+					execute_command (
+						script_name		=> script_name, 
+						cmd				=> single_cmd,
+						log_threshold	=> log_threshold + 1);
 				end if;
 			end loop;
 

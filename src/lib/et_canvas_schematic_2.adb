@@ -1048,7 +1048,6 @@ package body et_canvas_schematic_2 is
 		cur_dir_bak : constant string := current_directory;
 		
 	begin
-		cmd_entry_mode := MODE_VIA_SCRIPT;
 
 		log (text => "executing script (in schematic domain) " 
 			 & enclose_in_quotes (line_as_typed_by_operator), 
@@ -1070,8 +1069,11 @@ package body et_canvas_schematic_2 is
 
 		set_directory (to_string (active_project));
 		
-		-- Execute the schematic command:
+		-- Execute the schematic command.
+		-- Since the command is launched from inside the schematic
+		-- editor, its origin must be set accordingly:
 		set_fields (single_cmd, fields);
+		set_origin (single_cmd, MODE_SINGLE_CMD);
 		schematic_cmd (active_module, single_cmd, log_threshold);
 
 		-- Return to previous directory (like  /home/user/my_projects):
@@ -1141,7 +1143,6 @@ package body et_canvas_schematic_2 is
 		-- Backup the current directory (like /home/user/my_projects):
 		cur_dir_bak : constant string := current_directory;
 	begin
-		cmd_entry_mode := MODE_SINGLE_CMD;
 				
 		log (text => "executing command " & enclose_in_quotes (get_text (self)), level => log_threshold);
 		log_indentation_up;
@@ -1164,8 +1165,11 @@ package body et_canvas_schematic_2 is
 		
 		set_directory (to_string (active_project));
 		
-		-- Execute the schematic command
+		-- Compose and execute the schematic command.
+		-- Since it is launched from inside the board editor
+		-- its origin is set accordingly:
 		set_fields (single_cmd, fields);
+		set_origin (single_cmd, MODE_SINGLE_CMD);
 		schematic_cmd (active_module, single_cmd, log_threshold);
 
 		-- Return to previous directory (like  /home/user/my_projects):

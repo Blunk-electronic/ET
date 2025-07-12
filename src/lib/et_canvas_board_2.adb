@@ -1169,6 +1169,8 @@ package body et_canvas_board_2 is
 	end connect_console;
 
 	
+
+
 	
 
 	procedure execute_script (
@@ -1204,7 +1206,6 @@ package body et_canvas_board_2 is
 		cur_dir_bak : constant string := current_directory;
 		
 	begin
-		cmd_entry_mode := MODE_VIA_SCRIPT;
 		
 		log (text => "executing script (in board domain) " 
 			 & enclose_in_quotes (line_as_typed_by_operator), 
@@ -1226,8 +1227,10 @@ package body et_canvas_board_2 is
 
 		set_directory (to_string (active_project));
 		
-		-- Execute the board command:
+		-- Execute the board command. Since it is launched from
+		-- inside the board editor, its origin must be set accordingly:
 		set_fields (single_cmd, fields);
+		set_origin (single_cmd, MODE_SINGLE_CMD);
 		board_cmd (active_module, single_cmd, log_threshold);
 
 		-- Return to previous directory (like  /home/user/my_projects):
@@ -1259,6 +1262,7 @@ package body et_canvas_board_2 is
 	
 		log_indentation_down;
 	end execute_script;
+
 
 
 	
@@ -1297,8 +1301,7 @@ package body et_canvas_board_2 is
 		-- Backup the current directory (like /home/user/my_projects):
 		cur_dir_bak : constant string := current_directory;
 	begin
-		cmd_entry_mode := MODE_SINGLE_CMD;
-		
+
 		log (text => "executing command " & enclose_in_quotes (get_text (self)), level => log_threshold);
 		log_indentation_up;
 
@@ -1320,8 +1323,11 @@ package body et_canvas_board_2 is
 		
 		set_directory (to_string (active_project));
 		
-		-- Execute the board command:
+		-- Compose and execute the board command.
+		-- Since it is launched from inside the board editor
+		-- its origin is set accordingly:
 		set_fields (single_cmd, fields);
+		set_origin (single_cmd, MODE_SINGLE_CMD);
 		board_cmd (active_module, single_cmd, log_threshold);
 		
 		-- Return to previous directory (like  /home/user/my_projects):

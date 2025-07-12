@@ -52,8 +52,30 @@ package et_cmd_sts is
 	-- dispatches the command to sub processors for other domains
 	-- like project, rig, schematic, board, device, symbol, package, ...
 	--
-	type type_single_cmd is record
 
+	-- Commands can be entered via:
+	-- - the console in the GUI as single command.
+	-- - via a script (a batch of commands)
+	type type_cmd_entry_mode is (
+		MODE_SINGLE_CMD,
+		MODE_VIA_SCRIPT);
+
+	
+	cmd_entry_mode_default : constant type_cmd_entry_mode := MODE_SINGLE_CMD;
+
+
+	
+	function to_string (
+		origin : in type_cmd_entry_mode) 
+		return string;
+
+
+	
+
+	
+	type type_single_cmd is record
+		origin		: type_cmd_entry_mode := cmd_entry_mode_default;
+		
 		-- The text fields of the command to be executed like 
 		-- "schematic blood_sample_analyzer set value C1 100n"
 		fields		: type_fields_of_line;
@@ -67,10 +89,28 @@ package et_cmd_sts is
 	end record;	
 
 
+
+
+	procedure set_origin (
+		cmd		: in out type_single_cmd;
+		origin	: in type_cmd_entry_mode);
 	
 
+	function get_origin (
+		cmd		: in type_single_cmd)
+		return type_cmd_entry_mode;
+
+
+
+	function get_origin (
+		cmd		: in type_single_cmd)
+		return string;
+
+	
+	
 	function to_single_cmd (
-		fields	: in type_fields_of_line)
+		fields	: in type_fields_of_line;
+		origin	: in type_cmd_entry_mode)
 		return type_single_cmd;
 	
 		
@@ -124,19 +164,6 @@ package et_cmd_sts is
 	
 
 
-	-- Commands can be entered via:
-	-- - the console in the GUI as single command.
-	-- - via a script (a batch of commands)
-	type type_cmd_entry_mode is (
-		MODE_SINGLE_CMD,
-		MODE_VIA_SCRIPT);
-
-	
-	cmd_entry_mode_default : constant type_cmd_entry_mode := MODE_SINGLE_CMD;
-
-	cmd_entry_mode : type_cmd_entry_mode := cmd_entry_mode_default;
-	
-	function to_string (entry_mode : in type_cmd_entry_mode) return string;
 
 
 

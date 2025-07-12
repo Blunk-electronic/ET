@@ -45,12 +45,55 @@ with et_exceptions;					use et_exceptions;
 package body et_cmd_sts is
 
 
+	
 
+	function to_string (
+		origin : in type_cmd_entry_mode) 
+		return string
+	is begin
+		return type_cmd_entry_mode'image (origin);
+	end to_string;
+
+
+
+	procedure set_origin (
+		cmd		: in out type_single_cmd;
+		origin	: in type_cmd_entry_mode)
+	is begin
+		cmd.origin := origin;
+	end;
+	
+
+
+	
+	function get_origin (
+		cmd		: in type_single_cmd)
+		return type_cmd_entry_mode
+	is begin
+		return cmd.origin;
+	end;
+
+
+
+	function get_origin (
+		cmd		: in type_single_cmd)
+		return string
+	is begin
+		return to_string (cmd.origin);
+	end;
+
+	
+
+	
 	function to_single_cmd (
-		fields	: in type_fields_of_line)
+		fields	: in type_fields_of_line;
+		origin	: in type_cmd_entry_mode)
 		return type_single_cmd
 	is 
-		cmd : type_single_cmd := (fields => fields, others => <>);
+		cmd : type_single_cmd := (
+			fields => fields, 
+			origin	=> origin,						 
+			others => <>);
 	begin
 		return cmd;
 	end;
@@ -138,16 +181,10 @@ package body et_cmd_sts is
 	procedure reset_cmd (
 		cmd		: in out type_single_cmd)
 	is begin
-		cmd := (others => <>);
+		cmd := (others	=> <>);
 	end;
 
 	
-	
-
-	function to_string (entry_mode : in type_cmd_entry_mode) return string is begin
-		return type_cmd_entry_mode'image (entry_mode);
-	end to_string;
-
 
 
 	procedure invalid_keyword (
@@ -179,7 +216,7 @@ package body et_cmd_sts is
 	procedure command_incomplete (
 		cmd : in out type_single_cmd)
 	is begin
-		case cmd_entry_mode is
+		case cmd.origin is
 			when MODE_SINGLE_CMD =>
 				-- If a single command is given, then
 				-- clear the "complete" flag so that further
