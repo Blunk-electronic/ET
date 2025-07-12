@@ -491,8 +491,6 @@ package body et_canvas_schematic_2 is
 		
 		reset_placeholder; -- after moving a placeholder
 
-		reset_single_cmd;
-		
 		-- reset_activate_counter;
 
 		reset_zoom_area; -- abort zoom-to-area operation
@@ -1014,6 +1012,8 @@ package body et_canvas_schematic_2 is
 	end connect_console;
 
 
+
+	
 	
 	procedure execute_script (
 		script : in pac_script_name.bounded_string) 
@@ -1035,6 +1035,9 @@ package body et_canvas_schematic_2 is
 		
 		fields : et_string_processing.type_fields_of_line;
 
+		-- The single command to be executed:
+		single_cmd : type_single_cmd;
+		
 		-- The command launches a script. Change into the project directory. 
 		-- The current directory is the parent directory of the active project. 
 		-- Example: The current directory is /home/user/my_projects . The directory
@@ -1067,8 +1070,9 @@ package body et_canvas_schematic_2 is
 
 		set_directory (to_string (active_project));
 		
-		-- execute the schematic command
-		schematic_cmd (active_module, to_single_cmd (fields), log_threshold);
+		-- Execute the schematic command:
+		set_fields (single_cmd, fields);
+		schematic_cmd (active_module, single_cmd, log_threshold);
 
 		-- Return to previous directory (like  /home/user/my_projects):
 		set_directory (cur_dir_bak);
@@ -1103,6 +1107,7 @@ package body et_canvas_schematic_2 is
 
 
 	
+	
 	procedure execute_command (self : access gtk_entry_record'class) is 
 		use ada.directories;	
 		use et_project_name;
@@ -1123,6 +1128,9 @@ package body et_canvas_schematic_2 is
 		
 		fields : et_string_processing.type_fields_of_line;
 
+		-- The command to be executed:
+		single_cmd : type_single_cmd;
+		
 		-- The command might launch a script. To prepare for this case we must change
 		-- into the project directory. The current directory is the parent directory
 		-- of the active project. 
@@ -1156,8 +1164,9 @@ package body et_canvas_schematic_2 is
 		
 		set_directory (to_string (active_project));
 		
-		-- execute the schematic command
-		schematic_cmd (active_module, to_single_cmd (fields), log_threshold);
+		-- Execute the schematic command
+		set_fields (single_cmd, fields);
+		schematic_cmd (active_module, single_cmd, log_threshold);
 
 		-- Return to previous directory (like  /home/user/my_projects):
 		log (text => "returning to directory " & enclose_in_quotes (cur_dir_bak) & " ...",

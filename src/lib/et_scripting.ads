@@ -55,7 +55,7 @@ with et_cmd_sts;				use et_cmd_sts;
 with et_script_names;			use et_script_names;
 
 
-package et_scripting is
+package et_scripting is -- CS rename to et_command_processor
 
 	use pac_net_name;
 
@@ -110,7 +110,7 @@ package et_scripting is
 	-- Assumes that the targeted module (like motor_driver) exists.
 	procedure schematic_cmd (
 		module_cursor	: in pac_generic_modules.cursor;
-		cmd				: in type_single_cmd;
+		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -123,7 +123,7 @@ package et_scripting is
 	-- Assumes that the targeted module (like motor_driver) exists.
 	procedure board_cmd (
 		module_cursor	: in pac_generic_modules.cursor;
-		cmd				: in type_single_cmd;
+		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
@@ -138,11 +138,11 @@ package et_scripting is
 	-- board or project commands.
 	-- When called, the current working directory must be the
 	-- project like my_projects/blood_sample_analyzer.
-	procedure execute_command (
+	procedure execute_command ( -- CS rename to execute_script_command
 		-- The script file that contains the command. for debug messages only:
 		script_name		: in pac_script_name.bounded_string; 
 		-- The text fields like "schematic motor_driver draw net motor_on 1 150 100 150 130":
-		cmd				: in type_single_cmd;
+		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 

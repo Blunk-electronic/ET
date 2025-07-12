@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -75,6 +75,17 @@ package body et_cmd_sts is
 	end;
 
 
+
+	
+	function get_fields (
+		cmd		: in type_single_cmd)
+		return type_fields_of_line
+	is begin
+		return cmd.fields;
+	end;
+
+
+	
 	
 	function get_all_fields (
 		cmd		: in type_single_cmd)
@@ -114,6 +125,15 @@ package body et_cmd_sts is
 	end;
 
 
+
+	procedure set_finalization_pending (
+		cmd		: in out type_single_cmd)
+	is begin
+		cmd.finalization_pending := true;
+	end;
+	
+
+	
 
 	procedure reset_cmd (
 		cmd		: in out type_single_cmd)
@@ -156,18 +176,22 @@ package body et_cmd_sts is
 
 
 	
-	procedure command_incomplete is begin
-		if cmd_entry_mode = MODE_SINGLE_CMD then
-			-- If a single command is given, then
-			-- clear the "complete" flag so that further
-			-- actions are proposed to the operator:
-			single_cmd.complete := false;
-		else
-			-- If command is executed via script then
-			-- raise exception so that the script execution
-			-- is stopped:
-			raise exception_command_incomplete with "Command not complete !";
-		end if;
+	procedure command_incomplete (
+		cmd : in out type_single_cmd)
+	is begin
+		case cmd_entry_mode is
+			when MODE_SINGLE_CMD =>
+				-- If a single command is given, then
+				-- clear the "complete" flag so that further
+				-- actions are proposed to the operator:
+				cmd.complete := false;
+
+			when MODE_VIA_SCRIPT =>
+				-- If command is executed via script then
+				-- raise exception so that the script execution
+				-- is stopped:
+				raise exception_command_incomplete with "Command not complete !";
+		end case;
 	end command_incomplete;
 
 
@@ -188,22 +212,6 @@ package body et_cmd_sts is
 			 console => true);
 	end;
 
-
-	
-	
-	
-	function get_field (place : in type_field_count) 
-		return string 
-	is begin
-		return get_field (single_cmd.fields, place);
-	end;
-
-
-	
-
-	procedure reset_single_cmd is begin
-		single_cmd := (others => <>);
-	end reset_single_cmd;
 
 
 	

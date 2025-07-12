@@ -38,7 +38,7 @@
 -- -----------
 -- Canvas commands are of general nature. They affect things
 -- like grid, zoom, cursor.
--- These commands are independend on the domain like schematic, 
+-- These commands are independend of the domain like schematic, 
 -- baord, symbol or package editor.
 --
 --
@@ -70,18 +70,15 @@ package et_canvas.cmd is
 	-- noun : type_canvas_noun := type_canvas_noun'first;
 
 	
-	procedure canvas_command_incomplete;
-
-	
 
 
 
 
-	-- This procedure parses a canvas related command
-	-- stored in the global variable "single_cmd" (see package et_cmd_sts).
+	-- This procedure parses a canvas related command.
 	-- If the runmode is non-graphical (like headless) then
 	-- nothing will be done here:
 	procedure parse_canvas_command (
+		cmd		: in out type_single_cmd;
 		verb	: in type_canvas_verb;
 		noun	: in type_canvas_noun);
 

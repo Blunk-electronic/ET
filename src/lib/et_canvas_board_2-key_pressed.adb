@@ -736,17 +736,20 @@ begin -- key_pressed
 	case key is
 			
 		when others =>
+
+			-- CS: The following block seems not relevant any more and 
+			-- thus has been put in comments for the time being:
 			
 			-- If the command is waiting for finalization, usually by pressing
 			-- the space key, AND the primary tool is the keyboard, then
 			-- we call the corresponding subprogram right away here:
-			if single_cmd.finalization_pending and primary_tool = KEYBOARD then
-				case verb is
-					when VERB_PLACE		=> place;
-					when others			=> null;
-				end case;
-		
-			else
+-- 			if finalization_is_pending (cmd) and primary_tool = KEYBOARD then
+-- 				case verb is
+-- 					when VERB_PLACE		=> place;
+-- 					when others			=> null;
+-- 				end case;
+-- 		
+-- 			else
 			-- Evaluate the verb and noun (as typed on the keyboard):
 				
 				case expect_entry is
@@ -838,7 +841,7 @@ begin -- key_pressed
 						
 				end case;
 
-			end if;
+			-- end if;
 	end case;
 
 	

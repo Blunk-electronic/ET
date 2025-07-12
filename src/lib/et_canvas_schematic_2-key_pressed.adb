@@ -800,27 +800,30 @@ begin -- key_pressed
 			
 		when others =>
 
+			-- CS: The following block seems not relevant any more and 
+			-- thus has been put in comments for the time being:
+			
 			-- If an imcomplete command has been entered via console then it starts
 			-- waiting for finalization. This can be done by pressing the SPACE key.
 			-- Then we call the corresponding subprogram for the actual job right away here:
 			
 			--if single_cmd.finalization_pending and primary_tool = KEYBOARD then
-			if single_cmd.finalization_pending then
-			
-				if key = key_space then
-						
-					case verb is
-						when VERB_DELETE	=> delete;
-						when VERB_DRAG		=> drag;
-						when VERB_DRAW		=> draw;
-						when VERB_FETCH		=> fetch;
-						when VERB_MOVE		=> move;
-						when VERB_PLACE		=> place;							
-						when others			=> null;
-					end case;
-
-				end if;
-			else
+-- 			if finalization_is_pending (cmd) then
+-- 			
+-- 				if key = key_space then
+-- 						
+-- 					case verb is
+-- 						when VERB_DELETE	=> delete;
+-- 						when VERB_DRAG		=> drag;
+-- 						when VERB_DRAW		=> draw;
+-- 						when VERB_FETCH		=> fetch;
+-- 						when VERB_MOVE		=> move;
+-- 						when VERB_PLACE		=> place;							
+-- 						when others			=> null;
+-- 					end case;
+-- 
+-- 				end if;
+-- 			else
 			-- Evaluate the verb and noun (as typed on the keyboard):
 				
 				case expect_entry is
@@ -913,7 +916,7 @@ begin -- key_pressed
 						
 				end case;
 
-			end if;		
+			-- end if;		
 	end case;
 
 	redraw;

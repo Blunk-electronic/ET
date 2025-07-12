@@ -49,16 +49,6 @@ with et_scripting;					use et_scripting;
 
 package body et_canvas.cmd is
 
-	
-	-- CS: Currently, if a canvas command is incomplete, nothing
-	-- happens. In the future further actions should be proposed to the operator.
-	procedure canvas_command_incomplete is begin
-		null;
-	end;
-
-
-
-
 
 	
 	procedure skipped_in_this_runmode (
@@ -84,17 +74,34 @@ package body et_canvas.cmd is
 
 
 	procedure parse_canvas_command (
+		cmd		: in out type_single_cmd;
 		verb	: in type_canvas_verb;
 		noun	: in type_canvas_noun)
 	is
 
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : type_field_count;
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
 		-- This procedure is a shortcut. Call it in case the given command is too long:
 		procedure too_long is begin
-			command_too_long (single_cmd.fields, cmd_field_count - 1);
+			command_too_long (cmd.fields, cmd_field_count - 1);
+		end;
+
+
+		-- This procedure is a shortcut. 
+		-- Call it in case the given command is incomplete:
+		procedure command_incomplete is begin
+			command_incomplete (cmd);
+		end;
+
+
+		
+
+		function get_field (place : in type_field_count) 
+			return string 
+		is begin
+			return get_field (cmd, place);
 		end;
 
 		
@@ -244,7 +251,7 @@ package body et_canvas.cmd is
 						when 8 .. type_field_count'last => too_long;
 
 						
-						when others => canvas_command_incomplete;
+						when others => command_incomplete;
 					end case;
 					
 					
@@ -256,7 +263,7 @@ package body et_canvas.cmd is
 
 						when 6 .. type_field_count'last => too_long;
 
-						when others => canvas_command_incomplete;
+						when others => command_incomplete;
 					end case;
 
 
@@ -271,7 +278,7 @@ package body et_canvas.cmd is
 
 						when 8 .. type_field_count'last => too_long;
 
-						when others => canvas_command_incomplete;
+						when others => command_incomplete;
 					end case;
 
 					
@@ -283,7 +290,7 @@ package body et_canvas.cmd is
 
 						when 6 .. type_field_count'last => too_long;
 
-						when others => canvas_command_incomplete;
+						when others => command_incomplete;
 					end case;
 
 					
@@ -302,7 +309,7 @@ package body et_canvas.cmd is
 
 						when 7 .. type_field_count'last => too_long;
 
-						when others => canvas_command_incomplete;
+						when others => command_incomplete;
 					end case;
 
 				
@@ -314,8 +321,6 @@ package body et_canvas.cmd is
 		
 	begin
 		log (text => "parse canvas command ...", level => log_threshold + 1);
-
-		cmd_field_count := get_field_count (single_cmd.fields);
 
 		
 
@@ -336,10 +341,15 @@ package body et_canvas.cmd is
 				end case;
 
 
-			-- CS:
-			-- if not single_cmd_status.complete then
-			-- 	propose_arguments;
-			-- end if;
+		-- CS do something if command is incomplete and if it
+		-- was executed as single command.
+		-- like
+		-- if not is_complete (cmd) then
+		-- 	propose_arguments;
+		-- end if;
+
+		-- CS exception handler if command is incomplete
+		-- and if it was executed from inside a script
 				
 			
 			when others =>

@@ -82,7 +82,7 @@ separate (et_scripting)
 
 procedure schematic_cmd (
 	module_cursor	: in pac_generic_modules.cursor;
-	cmd				: in type_single_cmd;
+	cmd				: in out type_single_cmd;
 	log_threshold	: in type_log_level)
 is
 	use et_project;
@@ -113,14 +113,31 @@ is
 
 
 	-- Contains the number of fields given by the caller of this procedure:
-	cmd_field_count : type_field_count;
+	cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
 	-- This procedure is a shortcut. Call it in case the given command is too long:
 	procedure too_long is begin
-		command_too_long (single_cmd.fields, cmd_field_count - 1);
+		command_too_long (cmd.fields, cmd_field_count - 1);
 	end;
 
+
+	-- This procedure is a shortcut. 
+	-- Call it in case the given command is incomplete:
+	procedure command_incomplete is begin
+		command_incomplete (cmd);
+	end;
+	
+	
+	-- This function is a shortcut to get a single field
+	-- from the given command:
+	function get_field (place : in type_field_count) 
+		return string 
+	is begin
+		return get_field (cmd, place);
+	end;
+
+	
 
 	
 	-- This procedure parses a zoom related command.
@@ -165,7 +182,7 @@ is
 		use et_schematic_ops.grid;
 	begin
 		-- Set the grid on the canvas:
-		parse_canvas_command (VERB_SET, NOUN_GRID);
+		parse_canvas_command (cmd, VERB_SET, NOUN_GRID);
 
 		-- The global variable "grid" has now been set
 		-- as requested by the operator.
@@ -182,7 +199,7 @@ is
 
 	procedure set_scale is begin
 
-		parse_canvas_command (VERB_SET, NOUN_SCALE);
+		parse_canvas_command (cmd, VERB_SET, NOUN_SCALE);
 		
 		-- The global scale variable "M" has now been set
 		-- as requested by the operator.
@@ -1861,7 +1878,7 @@ is
 		use et_assembly_variants;
 	begin
 		log (text => "parsing command: " 
-			& enclose_in_quotes (to_string (single_cmd.fields)),
+			& enclose_in_quotes (get_all_fields (cmd)),
 			level => log_threshold);
 
 		-- Clear the status bar if we are in graphical mode:
@@ -2058,7 +2075,7 @@ is
 			when VERB_MOVE =>
 				case noun is
 					when NOUN_CURSOR =>
-						parse_canvas_command (VERB_MOVE, NOUN_CURSOR);
+						parse_canvas_command (cmd, VERB_MOVE, NOUN_CURSOR);
 
 						
 					when NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE =>
@@ -2361,10 +2378,10 @@ is
 						set_grid;
 
 					when NOUN_CURSOR =>
-						parse_canvas_command (VERB_SET, NOUN_CURSOR);
+						parse_canvas_command (cmd, VERB_SET, NOUN_CURSOR);
 
 					when NOUN_ZOOM =>
-						parse_canvas_command (VERB_SET, NOUN_ZOOM);
+						parse_canvas_command (cmd, VERB_SET, NOUN_ZOOM);
 						
 					when NOUN_SCALE =>
 						set_scale;
@@ -2936,7 +2953,7 @@ is
 											
 											set_edit_process_running;
 
-											single_cmd.finalization_pending := true;
+											set_finalization_pending (cmd);
 											-- CS redraw;
 
 										else
@@ -2963,7 +2980,7 @@ is
 							when 4 =>
 								-- no net name given -> anonymous net will be drawn
 								set_status (et_canvas_schematic_nets.status_draw_net);
-								single_cmd.finalization_pending := true;
+								set_finalization_pending (cmd);
 								
 							when 5 => -- like "draw net RESET_N"
 								-- explicit net name given
@@ -2972,7 +2989,7 @@ is
 								object_net_name := to_net_name (get_field (5));
 
 								set_status (et_canvas_schematic_nets.status_draw_net);
-								single_cmd.finalization_pending := true;
+								set_finalization_pending (cmd);
 
 							when others => null;								
 						end case;
@@ -3051,7 +3068,7 @@ is
 									
 										set_edit_process_running;
 
-										single_cmd.finalization_pending := true;
+										set_finalization_pending (cmd);
 										-- CS redraw;
 										
 									else
@@ -3347,12 +3364,12 @@ begin -- schematic_cmd
 	-- In case the given command is incomplete
 	-- AND we are in graphical mode (non-headless) then
 	-- this procedure interactively proposes arguments and completes the command.
-	single_cmd := cmd;
+	-- single_cmd := cmd;
 
 	-- The fields in single_cmd will now be processed and interactively completed.
 	-- A field is fetched from the single_cmd by the function "get_field".
 
-	cmd_field_count := get_field_count (single_cmd);
+	-- cmd_field_count := get_field_count (single_cmd);
 	
 
 	module := to_module_name (get_field (2)); -- motor_driver (without extension *.mod)
@@ -3379,7 +3396,7 @@ begin -- schematic_cmd
 	-- In graphical mode and cmd_entry_mode SINGLE_CMD the flag
 	-- single_cmd.complete can change to false. In that case
 	-- the interactive completiton starts here. 
-	if not single_cmd.complete then
+	if not is_complete (cmd) then
 		propose_arguments;
 	end if;
 

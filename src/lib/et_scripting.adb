@@ -149,7 +149,6 @@ package body et_scripting is
 		log_threshold	: in type_log_level) 
 	is
 		use ada.directories;
-		-- use et_canvas_schematic_2;
 
 		-- Backup previous input:
 		previous_input : ada.text_io.file_type renames current_input;
@@ -159,7 +158,12 @@ package body et_scripting is
 		-- The text fields of a single command read from the script:
 		fields : type_fields_of_line;
 
+		-- The single command to be executed:
+		single_cmd : type_single_cmd;
+
+		
 		script_name : pac_script_name.bounded_string := to_script_name (file);
+
 		
 	begin
 		log (text => "current directory: " & enclose_in_quotes (current_directory),
@@ -189,7 +193,7 @@ package body et_scripting is
 			-- See procedures schematic_cmd.evaluate_exception or
 			-- board_cmd.evaluate_exception for example.
 			cmd_entry_mode := MODE_VIA_SCRIPT;
-
+			
 			
 			-- read the file line by line
 			while not end_of_file loop
@@ -207,10 +211,13 @@ package body et_scripting is
 					-- Backup the command to be executed in the script command status
 					-- in case the command fails:
 					script_cmd.fields := fields;
-					
+
+					-- Set the fields in the command to be executed:
+					set_fields (single_cmd, fields);
+
 					execute_command (
 						script_name		=> script_name, 
-						cmd				=> to_single_cmd (fields),
+						cmd				=> single_cmd,
 						log_threshold	=> log_threshold + 1);
 					
 					-- Procedure execute_command dispatches to subprograms
@@ -267,7 +274,7 @@ package body et_scripting is
 	
 	procedure schematic_cmd (
 		module_cursor	: in pac_generic_modules.cursor;
-		cmd				: in type_single_cmd;
+		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is separate;
 
@@ -277,7 +284,7 @@ package body et_scripting is
 	
 	procedure board_cmd (
 		module_cursor	: in pac_generic_modules.cursor;
-		cmd				: in type_single_cmd;
+		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is separate;
 
@@ -287,7 +294,7 @@ package body et_scripting is
 	
 	procedure execute_command (
 		script_name		: in pac_script_name.bounded_string;
-		cmd				: in type_single_cmd;
+		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 
@@ -300,6 +307,14 @@ package body et_scripting is
 		-- Get the number of fields of the given command:
 		field_count : constant natural := get_field_count (cmd);
 
+
+		-- This procedure is a shortcut. 
+		-- Call it in case the given command is incomplete:
+		procedure command_incomplete is begin
+			command_incomplete (cmd);
+		end;
+
+		
 		use et_domains;
 		use et_project;
 		
@@ -496,6 +511,16 @@ package body et_scripting is
 			command_incomplete;
 		end if;
 
+
+		-- CS do something if command is incomplete and if it
+		-- was executed as single command.
+		-- like
+		-- if not is_complete (cmd) then
+		-- 	propose_arguments;
+		-- end if;
+
+		-- CS exception handler if command is incomplete
+		-- and if it was executed from inside a script
 		
 		log_indentation_down;
 		log_indentation_down;
@@ -536,8 +561,11 @@ package body et_scripting is
 		
 		file_handle : ada.text_io.file_type;
 		line : type_fields_of_line;
+
+		-- The single command to be executed:
+		single_cmd : type_single_cmd;
 		
-	begin -- execute_script
+	begin
 		log (text => row_separator_double, level => log_threshold);
 		log (text => "executing script " 
 			 & enclose_in_quotes (to_string (script_name)),
@@ -583,9 +611,10 @@ package body et_scripting is
 				-- we are interested in lines that contain something. emtpy lines are skipped:
 				if get_field_count (line) > 0 then
 
-					-- execute the line as command
-					execute_command (script_name, to_single_cmd (line), log_threshold + 1);
+					-- Set the fields of the command to be executed:
+					set_fields (single_cmd, line);
 					
+					execute_command (script_name, single_cmd, log_threshold + 1);					
 				end if;
 			end loop;
 

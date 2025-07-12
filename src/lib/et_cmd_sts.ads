@@ -43,13 +43,15 @@ with et_logging;				use et_logging;
 
 package et_cmd_sts is
 
-	-- In graphical mode (other than runmode headless) and 
-	-- single command entry mode (cmd_entry_mode) a command may be
-	-- incomplete. It will then be completed via an interactive
-	-- graphical completition process.
-	-- If the command is waiting for finalization (like pressing space key
-	-- to place a unit or to draw a net) then the flag 
-	-- finalization_pending goes true.
+	-- A commandline command consists of text fields.
+	-- It can be entered via:
+	-- 1. a script (batch of commands)
+	-- 2. the console in the GUI
+	--
+	-- It is passed to the command processor which in turn
+	-- dispatches the command to sub processors for other domains
+	-- like project, rig, schematic, board, device, symbol, package, ...
+	--
 	type type_single_cmd is record
 
 		-- The text fields of the command to be executed like 
@@ -64,6 +66,8 @@ package et_cmd_sts is
 		finalization_pending : boolean := false;
 	end record;	
 
+
+	
 
 	function to_single_cmd (
 		fields	: in type_fields_of_line)
@@ -81,6 +85,11 @@ package et_cmd_sts is
 		return string;
 
 
+	function get_fields (
+		cmd		: in type_single_cmd)
+		return type_fields_of_line;
+
+	
 	function get_all_fields (
 		cmd		: in type_single_cmd)
 		return string;
@@ -103,18 +112,16 @@ package et_cmd_sts is
 		return boolean;
 
 
+	procedure set_finalization_pending (
+		cmd		: in out type_single_cmd);
+
+										   
 	procedure reset_cmd (
 		cmd		: in out type_single_cmd);
 
 	
 	
 	
-	
-	-- The single command entered on the console:
-	single_cmd : type_single_cmd;
-
-
-
 
 
 	-- Commands can be entered via:
@@ -147,7 +154,15 @@ package et_cmd_sts is
 		log_threshold	: in type_log_level);
 
 
-	procedure command_incomplete;
+
+	-- A command can be incomplete. 
+	-- Depending on the entry mode these actions will be done:
+	-- 1. If entry mode is MODE_SINGLE_CMD, then the flag "incomplete" is set
+	--    so that further measures can be taken.
+	-- 2. If entry mode is MODE_VIA_SCRIPT, then an exception is raised
+	--    so that the execution of the current script is aborted.
+	procedure command_incomplete (
+		cmd	: in out type_single_cmd);
 	
 
 
@@ -157,19 +172,6 @@ package et_cmd_sts is
 		fields	: in type_fields_of_line;
 		from	: in type_field_count);
 
-
-
-	
-	
-	
-
-	-- This function is a shortcut to get a single field
-	-- from the current single_cmd command:
-	function get_field (place : in type_field_count) 
-		return string;
-
-	
-	procedure reset_single_cmd;
 
 
 	
