@@ -48,17 +48,17 @@ package body et_cmd_sts is
 	
 
 	function to_string (
-		origin : in type_cmd_entry_mode) 
+		origin : in type_cmd_origin) 
 		return string
 	is begin
-		return type_cmd_entry_mode'image (origin);
+		return type_cmd_origin'image (origin);
 	end to_string;
 
 
 
 	procedure set_origin (
 		cmd		: in out type_single_cmd;
-		origin	: in type_cmd_entry_mode)
+		origin	: in type_cmd_origin)
 	is begin
 		cmd.origin := origin;
 	end;
@@ -68,7 +68,7 @@ package body et_cmd_sts is
 	
 	function get_origin (
 		cmd		: in type_single_cmd)
-		return type_cmd_entry_mode
+		return type_cmd_origin
 	is begin
 		return cmd.origin;
 	end;
@@ -87,7 +87,7 @@ package body et_cmd_sts is
 	
 	function to_single_cmd (
 		fields	: in type_fields_of_line;
-		origin	: in type_cmd_entry_mode)
+		origin	: in type_cmd_origin)
 		return type_single_cmd
 	is 
 		cmd : type_single_cmd := (
@@ -217,13 +217,13 @@ package body et_cmd_sts is
 		cmd : in out type_single_cmd)
 	is begin
 		case cmd.origin is
-			when MODE_SINGLE_CMD =>
+			when ORIGIN_CONSOLE =>
 				-- If a single command is given, then
 				-- clear the "complete" flag so that further
 				-- actions are proposed to the operator:
 				cmd.complete := false;
 
-			when MODE_VIA_SCRIPT =>
+			when ORIGIN_SCRIPT =>
 				-- If command is executed via script then
 				-- raise exception so that the script execution
 				-- is stopped:

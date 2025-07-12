@@ -56,17 +56,18 @@ package et_cmd_sts is
 	-- Commands can be entered via:
 	-- - the console in the GUI as single command.
 	-- - via a script (a batch of commands)
-	type type_cmd_entry_mode is (
-		MODE_SINGLE_CMD,
-		MODE_VIA_SCRIPT);
+	-- So a command can have different origins:
+	type type_cmd_origin is (
+		ORIGIN_CONSOLE,
+		ORIGIN_SCRIPT);
 
 	
-	cmd_entry_mode_default : constant type_cmd_entry_mode := MODE_SINGLE_CMD;
+	cmd_origin_default : constant type_cmd_origin := ORIGIN_CONSOLE;
 
 
 	
 	function to_string (
-		origin : in type_cmd_entry_mode) 
+		origin : in type_cmd_origin) 
 		return string;
 
 
@@ -74,7 +75,7 @@ package et_cmd_sts is
 
 	
 	type type_single_cmd is record
-		origin		: type_cmd_entry_mode := cmd_entry_mode_default;
+		origin		: type_cmd_origin := cmd_origin_default;
 		
 		-- The text fields of the command to be executed like 
 		-- "schematic blood_sample_analyzer set value C1 100n"
@@ -93,12 +94,12 @@ package et_cmd_sts is
 
 	procedure set_origin (
 		cmd		: in out type_single_cmd;
-		origin	: in type_cmd_entry_mode);
+		origin	: in type_cmd_origin);
 	
 
 	function get_origin (
 		cmd		: in type_single_cmd)
-		return type_cmd_entry_mode;
+		return type_cmd_origin;
 
 
 
@@ -110,7 +111,7 @@ package et_cmd_sts is
 	
 	function to_single_cmd (
 		fields	: in type_fields_of_line;
-		origin	: in type_cmd_entry_mode)
+		origin	: in type_cmd_origin)
 		return type_single_cmd;
 	
 		
@@ -184,9 +185,9 @@ package et_cmd_sts is
 
 	-- A command can be incomplete. 
 	-- Depending on the entry mode these actions will be done:
-	-- 1. If entry mode is MODE_SINGLE_CMD, then the flag "incomplete" is set
+	-- 1. If entry mode is ORIGIN_CONSOLE, then the flag "incomplete" is set
 	--    so that further measures can be taken.
-	-- 2. If entry mode is MODE_VIA_SCRIPT, then an exception is raised
+	-- 2. If entry mode is ORIGIN_SCRIPT, then an exception is raised
 	--    so that the execution of the current script is aborted.
 	procedure command_incomplete (
 		cmd	: in out type_single_cmd);

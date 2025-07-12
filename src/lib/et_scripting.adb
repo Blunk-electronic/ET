@@ -192,7 +192,7 @@ package body et_scripting is
 			-- Prepare the handling of the exception in case the script fails.
 			-- See procedures schematic_cmd.evaluate_exception or
 			-- board_cmd.evaluate_exception for example.
-			-- cmd_entry_mode := MODE_VIA_SCRIPT;
+			-- cmd_entry_mode := ORIGIN_SCRIPT;
 			
 			
 			-- read the file line by line
@@ -216,7 +216,7 @@ package body et_scripting is
 					-- Compose and execute the command to be executed.
 					-- Since it is launched via a script, its origin
 					-- is set accordingly:
-					single_cmd := to_single_cmd (fields, MODE_VIA_SCRIPT);
+					single_cmd := to_single_cmd (fields, ORIGIN_SCRIPT);
 					
 					execute_command (
 						script_name		=> script_name, 
@@ -618,7 +618,7 @@ package body et_scripting is
 					-- Compose and execute the command to be executed.
 					-- Since it is launched via a script, its origin
 					-- is set accordingly:
-					single_cmd := to_single_cmd (line, MODE_VIA_SCRIPT);
+					single_cmd := to_single_cmd (line, ORIGIN_SCRIPT);
 					
 					execute_command (
 						script_name		=> script_name, 

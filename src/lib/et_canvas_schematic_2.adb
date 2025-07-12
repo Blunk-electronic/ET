@@ -1073,7 +1073,7 @@ package body et_canvas_schematic_2 is
 		-- Since the command is launched from inside the schematic
 		-- editor, its origin must be set accordingly:
 		set_fields (single_cmd, fields);
-		set_origin (single_cmd, MODE_SINGLE_CMD);
+		set_origin (single_cmd, ORIGIN_CONSOLE);
 		schematic_cmd (active_module, single_cmd, log_threshold);
 
 		-- Return to previous directory (like  /home/user/my_projects):
@@ -1169,7 +1169,7 @@ package body et_canvas_schematic_2 is
 		-- Since it is launched from inside the board editor
 		-- its origin is set accordingly:
 		set_fields (single_cmd, fields);
-		set_origin (single_cmd, MODE_SINGLE_CMD);
+		set_origin (single_cmd, ORIGIN_CONSOLE);
 		schematic_cmd (active_module, single_cmd, log_threshold);
 
 		-- Return to previous directory (like  /home/user/my_projects):
