@@ -1402,12 +1402,32 @@ is
 
 	
 
-	procedure insert_net_segment is
+	-- Parses a command like:
+	-- "schematic demo draw net RESET_N 1 90 100  100 100"
+	procedure draw_net is
 		A : type_object_position; -- start point of segment
 		B : type_vector_model; -- end point of segment
 	begin
 		case cmd_field_count is
+			when 4 => -- like "draw net"
+				-- no net name given -> anonymous net will be drawn
+				set_status (et_canvas_schematic_nets.status_draw_net);
+				object_net_name := et_net_names.no_name;
+
+				
+			when 5 => -- like "draw net RESET_N"
+				-- explicit net name given
+				-- CS use name_tmp
+				check_net_name_length (get_field (5));
+				check_net_name_characters (to_net_name (get_field (5)));
+				object_net_name := to_net_name (get_field (5));
+
+				set_status (et_canvas_schematic_nets.status_draw_net);
+
+			
 			when 10 =>
+				object_net_name := to_net_name (get_field (5)); -- RESET_N
+						
 				A := to_position (
 					point => to_vector_model (get_field (7), get_field (8)), -- x/y
 					sheet => to_sheet (get_field (6))); -- sheet number
@@ -1416,7 +1436,7 @@ is
 										 
 				insert_net_segment (
 					module_cursor	=> active_module,
-					net_name		=> to_net_name (get_field (5)), -- RESET
+					net_name		=> object_net_name,
 					A				=> A,					
 					B 				=> B,					
 					log_threshold	=> log_threshold + 1);
@@ -1425,7 +1445,7 @@ is
 				
 			when others => command_incomplete;
 		end case;
-	end insert_net_segment;
+	end draw_net;
 
 
 
@@ -2051,7 +2071,7 @@ is
 				
 			when VERB_DRAW =>
 				case noun is
-					when NOUN_NET => insert_net_segment;
+					when NOUN_NET => draw_net;
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
@@ -2985,23 +3005,25 @@ is
 			when VERB_DRAW =>
 				case noun is
 					when NOUN_NET =>
-						case cmd_field_count is
-							when 4 =>
-								-- no net name given -> anonymous net will be drawn
-								set_status (et_canvas_schematic_nets.status_draw_net);
-								set_finalization_pending (cmd);
-								
-							when 5 => -- like "draw net RESET_N"
-								-- explicit net name given
-								check_net_name_length (get_field (5));
-								check_net_name_characters (to_net_name (get_field (5)));
-								object_net_name := to_net_name (get_field (5));
-
-								set_status (et_canvas_schematic_nets.status_draw_net);
-								set_finalization_pending (cmd);
-
-							when others => null;								
-						end case;
+						null;
+						-- CS the following stuff is no longer required
+-- 						case cmd_field_count is
+-- 							when 4 =>
+-- 								-- no net name given -> anonymous net will be drawn
+-- 								set_status (et_canvas_schematic_nets.status_draw_net);
+-- 								set_finalization_pending (cmd);
+-- 								
+-- 							when 5 => -- like "draw net RESET_N"
+-- 								-- explicit net name given
+-- 								check_net_name_length (get_field (5));
+-- 								check_net_name_characters (to_net_name (get_field (5)));
+-- 								object_net_name := to_net_name (get_field (5));
+-- 
+-- 								set_status (et_canvas_schematic_nets.status_draw_net);
+-- 								set_finalization_pending (cmd);
+-- 
+-- 							when others => null;								
+-- 						end case;
 						
 					when others => null;
 				end case;
