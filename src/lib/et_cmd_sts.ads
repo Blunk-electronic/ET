@@ -237,6 +237,12 @@ private
 		-- Indicates that the command is in progress,
 		-- but not finalized yet:
 		finalization_pending : boolean := false;
+
+		-- CS status like
+		-- error, failed, success
+
+		-- CS
+		-- line number if origin is script
 	end record;	
 
 	
