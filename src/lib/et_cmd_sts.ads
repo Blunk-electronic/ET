@@ -201,23 +201,23 @@ package et_cmd_sts is
 	-- The failed script will then be output in the status bar.
 	-- IN HEADLESS MODE THIS STUFF HAS NO MEANING !
 	-- For this reason this type is provided:
-	type type_script_cmd is record
-		-- the name of the script file like "rename_power_nets.scr":
-		script_name	: pac_script_name.bounded_string;
-
-		-- The text fields of the command to be executed like 
-		-- "schematic blood_sample_analyzer set value C1 100n"
-		fields		: type_fields_of_line;
-
-		-- the flag that indicates whether the command failed
-		failed		: boolean := false;
-	end record;
+	-- type type_script_cmd is record
+	-- 	-- the name of the script file like "rename_power_nets.scr":
+	-- 	script_name	: pac_script_name.bounded_string;
+ -- 
+	-- 	-- The text fields of the command to be executed like 
+	-- 	-- "schematic blood_sample_analyzer set value C1 100n"
+	-- 	fields		: type_fields_of_line;
+ -- 
+	-- 	-- the flag that indicates whether the command failed
+	-- 	failed		: boolean := false;
+	-- end record;
 	
 
 	-- The global variable that stores the status of the latest
 	-- script command.
 	-- IN HEADLESS MODE THIS STUFF HAS NO MEANING !
-	script_cmd : type_script_cmd;
+	-- script_cmd : type_script_cmd;
 	
 
 

@@ -106,30 +106,41 @@ package et_scripting is -- CS rename to et_command_processor
 
 
 
+
+	-- Used when executing a script from inside a script
+	-- or
+	-- when executing a script from inside the GUI.
+	-- Calls procedure execute_command in the course of
+	-- executing the given script:
+	procedure execute_nested_script (
+		file			: in string; -- like "rename_nets.scr"
+		log_threshold	: in type_log_level);
+
+	
+	
 	-- Executes a schematic command.
-	-- Assumes that the targeted module (like motor_driver) exists.
-	procedure schematic_cmd (
+	-- Is calld by procedure execute_command whenever a
+	-- schematic related command is to be executed:
+	procedure schematic_cmd ( -- CS rename to execute_schematic_command
 		module_cursor	: in pac_generic_modules.cursor;
 		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level);
-
-
 
 	
 	polygon_log_category : type_log_category := log_category_default;
 	
 	
 	-- Executes a board command.
-	-- Assumes that the targeted module (like motor_driver) exists.
-	procedure board_cmd (
+	-- Is calld by procedure execute_command whenever a
+	-- board related command is to be executed:
+	procedure board_cmd ( -- CS rename to execute_board_command
 		module_cursor	: in pac_generic_modules.cursor;
 		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-
 	
 	
-	-- Executes a script command like 
+	-- Executes a command like 
 	-- "schematic motor_driver draw net motor_on 1 150 100 150 130".
 	-- This procedure is called by function execute_script (see below) or
 	-- by procedure execute_nested_script.
@@ -151,10 +162,11 @@ package et_scripting is -- CS rename to et_command_processor
 	-- Executes the given script file like "dummy_module/my_script.scr".
 	-- Changes into the directory where the script lives and starts
 	-- execution there.
-	-- NOTE: This function should be called to execute a script on launching
-	-- ET via command line. This function must NOT be called when a script
-	-- is to be executed from inside a script !
-	-- To be used in in headless mode only.
+	-- 1. This function should be called to execute a script on launching
+	--    ET via command line. 
+	-- 2. This function is NOT intended to launch a script
+	--    from inside a script ! This would be a nested script.
+	--    For this mode the procedure execute_nested_script is provided.
 	function execute_script (
 		script_name		: in pac_script_name.bounded_string;
 		log_threshold	: in type_log_level)

@@ -636,4 +636,15 @@ Modules
 	|VNS| |NI| (and dangerous ...)
 
 
+
 		
++++++++++++++++++
+Executing Scripts
++++++++++++++++++
+
+#. Execute a Script
+
+	.. code-block::
+
+		execute script set_grid.scr
+

@@ -1871,6 +1871,23 @@ is
 	
 
 
+	procedure execute_script is begin
+		case cmd_field_count is
+			when 5 => 
+
+				execute_nested_script (
+					file			=> get_field (5),
+					log_threshold	=> log_threshold + 1);
+
+			when 6 .. type_field_count'last => too_long;								
+			when others => command_incomplete;
+		end case;
+	end execute_script;
+
+
+
+	
+
 	
 	-- Parses the single_cmd.fields:
 	procedure parse is 
@@ -2043,15 +2060,7 @@ is
 			when VERB_EXECUTE =>
 				case noun is
 					when NOUN_SCRIPT =>
-						case cmd_field_count is
-							when 5 => 
-								execute_nested_script (
-									file			=> get_field (5),
-									log_threshold	=> log_threshold + 1);
-
-							when 6 .. type_field_count'last => too_long;								
-							when others => command_incomplete;
-						end case;
+						execute_script;
 							
 					when others => invalid_noun (to_string (noun));
 				end case;

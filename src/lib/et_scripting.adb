@@ -187,7 +187,7 @@ package body et_scripting is
 
 			-- Prepare the script command status in case a command
 			-- in the script fails:
-			script_cmd := (script_name => script_name, others => <>);
+			-- script_cmd := (script_name => script_name, others => <>);
 
 			-- Prepare the handling of the exception in case the script fails.
 			-- See procedures schematic_cmd.evaluate_exception or
@@ -210,7 +210,7 @@ package body et_scripting is
 
 					-- Backup the command to be executed in the script command status
 					-- in case the command fails:
-					script_cmd.fields := fields;
+					-- script_cmd.fields := fields;
 
 					
 					-- Compose and execute the command to be executed.
@@ -235,6 +235,10 @@ package body et_scripting is
 					-- In case of a nested script, the exception itself is further 
 					-- propagated to the top level where the parent script
 					-- has been started.
+
+
+					-- CS evaluate cmd status and output line number, hints, etc.
+					-- line provides the affected line number
 					
 				end if;
 			end loop;
@@ -624,6 +628,9 @@ package body et_scripting is
 						script_name		=> script_name, 
 						cmd				=> single_cmd,
 						log_threshold	=> log_threshold + 1);
+
+					-- CS evaluate cmd status and output line number, hints, etc.
+					-- line provides the affected line number
 				end if;
 			end loop;
 
