@@ -3366,7 +3366,7 @@ is
 	
 begin -- schematic_cmd
 	
-	log (text => "given command: " & enclose_in_quotes (get_all_fields (cmd)),
+	log (text => "execute schematic command: " & enclose_in_quotes (get_all_fields (cmd)),
 		 level => log_threshold);
 
 	-- Copy the given command to the actual command.

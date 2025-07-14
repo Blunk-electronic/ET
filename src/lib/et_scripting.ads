@@ -119,7 +119,7 @@ package et_scripting is -- CS rename to et_command_processor
 	
 	
 	-- Executes a schematic command.
-	-- Is calld by procedure execute_command whenever a
+	-- Is called by procedure execute_command whenever a
 	-- schematic related command is to be executed:
 	procedure schematic_cmd ( -- CS rename to execute_schematic_command
 		module_cursor	: in pac_generic_modules.cursor;
@@ -131,14 +131,23 @@ package et_scripting is -- CS rename to et_command_processor
 	
 	
 	-- Executes a board command.
-	-- Is calld by procedure execute_command whenever a
+	-- Is called by procedure execute_command whenever a
 	-- board related command is to be executed:
 	procedure board_cmd ( -- CS rename to execute_board_command
 		module_cursor	: in pac_generic_modules.cursor;
 		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-	
+
+	-- Executes a project command.
+	-- Is called by procedure execute_command whenever a
+	-- project related command is to be executed:
+	procedure execute_project_command (
+		cmd				: in out type_single_cmd;
+		verb			: in type_verb_project;
+		noun 			: in type_noun_project;
+		log_threshold	: in type_log_level);
+										  
 	
 	-- Executes a command like 
 	-- "schematic motor_driver draw net motor_on 1 150 100 150 130".
