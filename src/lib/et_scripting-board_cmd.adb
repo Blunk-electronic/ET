@@ -142,7 +142,7 @@ is
 	-- This procedure is a shortcut. 
 	-- Call it in case the given command is too long:
 	procedure too_long is begin
-		command_too_long (cmd.fields, cmd_field_count - 1);
+		command_too_long (get_fields (cmd), cmd_field_count - 1);
 	end;
 
 

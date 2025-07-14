@@ -83,9 +83,10 @@ package body et_canvas.cmd is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 
-		-- This procedure is a shortcut. Call it in case the given command is too long:
+		-- This procedure is a shortcut. 
+		-- Call it in case the given command is too long:
 		procedure too_long is begin
-			command_too_long (cmd.fields, cmd_field_count - 1);
+			command_too_long (get_fields (cmd), cmd_field_count - 1);
 		end;
 
 

@@ -71,23 +71,10 @@ package et_cmd_sts is
 		return string;
 
 
+
+	type type_single_cmd is private;
 	
 
-	
-	type type_single_cmd is record
-		origin		: type_cmd_origin := cmd_origin_default;
-		
-		-- The text fields of the command to be executed like 
-		-- "schematic blood_sample_analyzer set value C1 100n"
-		fields		: type_fields_of_line;
-
-		-- Goes false if too few arguments given via console:
-		complete	: boolean := true;
-
-		-- Indicates that the command is in progress,
-		-- but not finalized yet:
-		finalization_pending : boolean := false;
-	end record;	
 
 
 
@@ -233,6 +220,26 @@ package et_cmd_sts is
 	script_cmd : type_script_cmd;
 	
 
+
+
+private
+	
+	type type_single_cmd is record
+		origin		: type_cmd_origin := cmd_origin_default;
+		
+		-- The text fields of the command to be executed like 
+		-- "schematic blood_sample_analyzer set value C1 100n"
+		fields		: type_fields_of_line;
+
+		-- Goes false if too few arguments given via console:
+		complete	: boolean := true;
+
+		-- Indicates that the command is in progress,
+		-- but not finalized yet:
+		finalization_pending : boolean := false;
+	end record;	
+
+	
 	
 end et_cmd_sts;
 
