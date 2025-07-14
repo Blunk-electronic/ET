@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                          SCRIPTING IN BOARD                              --
+--                        EXECUTE BOARD COMMNAD                             --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -101,7 +101,7 @@ separate (et_scripting)
 
 
 
-procedure board_cmd (
+procedure execute_board_command (
 	module_cursor	: in pac_generic_modules.cursor;
 	cmd				: in out type_single_cmd;
 	log_threshold	: in type_log_level)
@@ -3971,7 +3971,7 @@ begin -- board_cmd
 
 			-- raise;
 	
-end board_cmd;
+end execute_board_command;
 	
 -- Soli Deo Gloria
 

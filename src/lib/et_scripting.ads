@@ -121,7 +121,7 @@ package et_scripting is -- CS rename to et_command_processor
 	-- Executes a schematic command.
 	-- Is called by procedure execute_command whenever a
 	-- schematic related command is to be executed:
-	procedure schematic_cmd ( -- CS rename to execute_schematic_command
+	procedure execute_schematic_command (
 		module_cursor	: in pac_generic_modules.cursor;
 		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level);
@@ -133,7 +133,7 @@ package et_scripting is -- CS rename to et_command_processor
 	-- Executes a board command.
 	-- Is called by procedure execute_command whenever a
 	-- board related command is to be executed:
-	procedure board_cmd ( -- CS rename to execute_board_command
+	procedure execute_board_command (
 		module_cursor	: in pac_generic_modules.cursor;
 		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level);

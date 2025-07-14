@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                        SCRIPTING IN SCHEMATIC                            --
+--                        EXECUTE SCHEMATIC COMMNAD                         --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -80,7 +80,7 @@ separate (et_scripting)
 
 
 
-procedure schematic_cmd (
+procedure execute_schematic_command (
 	module_cursor	: in pac_generic_modules.cursor;
 	cmd				: in out type_single_cmd;
 	log_threshold	: in type_log_level)
@@ -3425,7 +3425,7 @@ begin -- schematic_cmd
 
 			-- raise;
 			
-end schematic_cmd;
+end execute_schematic_command;
 	
 -- Soli Deo Gloria
 

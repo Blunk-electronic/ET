@@ -279,7 +279,7 @@ package body et_scripting is
 	
 	
 	
-	procedure schematic_cmd (
+	procedure execute_schematic_command (
 		module_cursor	: in pac_generic_modules.cursor;
 		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level)
@@ -289,7 +289,7 @@ package body et_scripting is
 
 	
 	
-	procedure board_cmd (
+	procedure execute_board_command (
 		module_cursor	: in pac_generic_modules.cursor;
 		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level)
@@ -374,7 +374,7 @@ package body et_scripting is
 					-- The command must have at least three fields.
 					if field_count >= 3 then
 						
-						schematic_cmd (
+						execute_schematic_command (
 							module_cursor	=> locate_module (module),
 							cmd				=> cmd,
 							log_threshold	=> log_threshold + 3);
@@ -404,7 +404,7 @@ package body et_scripting is
 					-- The command must have at least three fields.
 					if field_count >= 3 then
 						
-						board_cmd (
+						execute_board_command (
 							module_cursor	=> locate_module (module),
 							cmd				=> cmd,
 							log_threshold	=> log_threshold + 3);

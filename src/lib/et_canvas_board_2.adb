@@ -1231,7 +1231,7 @@ package body et_canvas_board_2 is
 		-- inside the board editor, its origin must be set accordingly:
 		set_fields (single_cmd, fields);
 		set_origin (single_cmd, ORIGIN_CONSOLE);
-		board_cmd (active_module, single_cmd, log_threshold);
+		execute_board_command (active_module, single_cmd, log_threshold);
 
 		-- Return to previous directory (like  /home/user/my_projects):
 		set_directory (cur_dir_bak);
@@ -1328,7 +1328,7 @@ package body et_canvas_board_2 is
 		-- its origin is set accordingly:
 		set_fields (single_cmd, fields);
 		set_origin (single_cmd, ORIGIN_CONSOLE);
-		board_cmd (active_module, single_cmd, log_threshold);
+		execute_board_command (active_module, single_cmd, log_threshold);
 		
 		-- Return to previous directory (like  /home/user/my_projects):
 		log (text => "returning to directory " & enclose_in_quotes (cur_dir_bak) & " ...",
