@@ -1404,47 +1404,100 @@ is
 
 	-- Parses a command like:
 	-- "schematic demo draw net RESET_N 1 90 100  100 100"
+	-- The command can be shorter than the above example, because
+	-- the operator is not required to type everything:
 	procedure draw_net is
-		A : type_object_position; -- start point of segment
-		B : type_vector_model; -- end point of segment
-	begin
+		use et_canvas_schematic_nets;
+		
+		procedure no_name_given is begin
+			-- If this is the first net right after system start,
+			-- then an anonymous net will be used.
+			-- Otherwise the net name used last will be applied
+			-- as it is stored in object_net_name.
+			if is_empty (object_net_name) then -- after system start
+				object_net_name := get_lowest_available_anonymous_net (module_cursor);
+				log (text => "apply anonymous name: " & to_string (object_net_name),
+					 level => log_threshold + 2);
+			else
+				log (text => "apply name used last: " & to_string (object_net_name),
+					 level => log_threshold + 2);
+			end if;
+
+			set_status (status_draw_net & " of net " & to_string (object_net_name));
+		end;
+
+		
+		procedure explicit_name_given is
+			name_s : constant string := get_field (5); -- RESET_N
+			name_b : pac_net_name.bounded_string;
+		begin
+			-- Validate the given net name:
+			check_net_name_length (name_s);
+			name_b := to_net_name (name_s);
+			check_net_name_characters (name_b);
+
+			-- Assign the net name:
+			object_net_name := name_b;
+
+			set_status (status_draw_net & " of net " & to_string (object_net_name));
+		end explicit_name_given;
+
+
+		
+		procedure segment_given is
+			name_s : constant string := get_field (5); -- RESET_N
+			name_b : pac_net_name.bounded_string;
+
+			A : type_object_position; -- start point of segment
+			B : type_vector_model; -- end point of segment
+		begin
+			-- Validate the given net name:
+			check_net_name_length (name_s);
+			name_b := to_net_name (name_s);
+			check_net_name_characters (name_b);
+
+			-- Assign the net name:
+			object_net_name := name_b;
+
+			-- Assign the start and end of the segment:
+			A := to_position (
+				point => to_vector_model (get_field (7), get_field (8)), -- x/y
+				sheet => to_sheet (get_field (6))); -- sheet number
+
+			B := to_vector_model (get_field (9), get_field (10)); -- x/y
+
+			-- Insert the net segment in the database:
+			insert_net_segment (
+				module_cursor	=> active_module,
+				net_name		=> object_net_name,
+				A				=> A,					
+				B 				=> B,					
+				log_threshold	=> log_threshold + 1);
+		end segment_given;
+		
+		
+	begin		
+		log_indentation_up;
+		
 		case cmd_field_count is
 			when 4 => -- like "draw net"
-				-- no net name given -> anonymous net will be drawn
-				set_status (et_canvas_schematic_nets.status_draw_net);
-				object_net_name := et_net_names.no_name;
-
+				log (text => "no name given", level => log_threshold + 1);
+				log_indentation_up;
+				no_name_given;
+				log_indentation_down;
 				
 			when 5 => -- like "draw net RESET_N"
-				-- explicit net name given
-				-- CS use name_tmp
-				check_net_name_length (get_field (5));
-				check_net_name_characters (to_net_name (get_field (5)));
-				object_net_name := to_net_name (get_field (5));
-
-				set_status (et_canvas_schematic_nets.status_draw_net);
-
+				explicit_name_given;
 			
-			when 10 =>
-				object_net_name := to_net_name (get_field (5)); -- RESET_N
-						
-				A := to_position (
-					point => to_vector_model (get_field (7), get_field (8)), -- x/y
-					sheet => to_sheet (get_field (6))); -- sheet number
-
-				B := to_vector_model (get_field (9), get_field (10)); -- x/y
-										 
-				insert_net_segment (
-					module_cursor	=> active_module,
-					net_name		=> object_net_name,
-					A				=> A,					
-					B 				=> B,					
-					log_threshold	=> log_threshold + 1);
+			when 10 => -- like "draw net RESET_N 1 90 100  100 100"
+				segment_given;
 
 			when 11 .. type_field_count'last => too_long; 
 				
 			when others => command_incomplete;
 		end case;
+
+		log_indentation_down;
 	end draw_net;
 
 
