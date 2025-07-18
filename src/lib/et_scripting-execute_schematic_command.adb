@@ -3006,24 +3006,6 @@ is
 				case noun is
 					when NOUN_NET =>
 						null;
-						-- CS the following stuff is no longer required
--- 						case cmd_field_count is
--- 							when 4 =>
--- 								-- no net name given -> anonymous net will be drawn
--- 								set_status (et_canvas_schematic_nets.status_draw_net);
--- 								set_finalization_pending (cmd);
--- 								
--- 							when 5 => -- like "draw net RESET_N"
--- 								-- explicit net name given
--- 								check_net_name_length (get_field (5));
--- 								check_net_name_characters (to_net_name (get_field (5)));
--- 								object_net_name := to_net_name (get_field (5));
--- 
--- 								set_status (et_canvas_schematic_nets.status_draw_net);
--- 								set_finalization_pending (cmd);
--- 
--- 							when others => null;								
--- 						end case;
 						
 					when others => null;
 				end case;
