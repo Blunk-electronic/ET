@@ -467,7 +467,7 @@ package body et_canvas_schematic_nets is
 		-- live_path := (bend_style => live_path.bend_style, -- no change
 					-- others => <>);
 
-		object_net_name := no_name;
+		-- object_net_name := no_name;
 		object_point_of_attack := origin;
 		reset_finalizing_granted;
 		
