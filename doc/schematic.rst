@@ -215,7 +215,17 @@ Nets and Net Labels
 	|VNS| d n
 
 	change bend style: left mouse click or key b
+
+	The equivalent to this shortcut is the command
+
+	.. code-block::
+
+		draw net
+
+
 	
+	To specify the net name type this command:
+
 	.. code-block::
 
 		draw net [RESET_N]
