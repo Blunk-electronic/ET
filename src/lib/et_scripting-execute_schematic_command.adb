@@ -103,7 +103,28 @@ is
 
 	package pac_canvas_cmd is new et_canvas_schematic_2.pac_canvas.cmd;
 	use pac_canvas_cmd;
+
 	
+
+	-- Updates the verb-noun display depending on the 
+	-- origin of the command and the runmode:
+	procedure update_verb_noun_display is begin
+		case get_origin (cmd) is
+			when ORIGIN_CONSOLE => update_mode_display;
+
+			when ORIGIN_SCRIPT =>
+				-- put_line ("script");
+			
+				if runmode = MODE_MODULE then
+					-- put_line ("module");
+					-- log (text => "update verb-noun-display", level => log_threshold + 1);
+					update_mode_display;
+				end if;
+
+		end case;
+	end update_verb_noun_display;
+	
+
 	
 	module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 
@@ -1656,8 +1677,6 @@ is
 			
 	begin
 		log (text => "set sheet" & to_string (sheet), level => log_threshold + 1); 
-
-		update_mode_display;
 		
 		case cmd_field_count is
 			when 5 => show;
@@ -1755,8 +1774,6 @@ is
 			 & enclose_in_quotes (to_string (module)),
 			 level => log_threshold + 1);
 
-		update_mode_display;
-		
 		case cmd_field_count is
 			when 5 => module_and_first_sheet; -- show module LED-driver
 			when 6 => module_and_random_sheet; -- show module LED-driver 2
@@ -3453,6 +3470,10 @@ begin -- schematic_cmd
 		when others => noun := to_noun (get_field (4)); -- read noun from field 4
 	end case;
 
+
+	update_verb_noun_display;
+	
+	
 	-- Parse the command:	
 	parse;
 	-- CS evaluate success of command and return a dedicated code

@@ -131,6 +131,26 @@ is
 	package pac_canvas_cmd is new et_canvas_board_2.pac_canvas.cmd;
 	use pac_canvas_cmd;
 
+
+	-- Updates the verb-noun display depending on the 
+	-- origin of the command and the runmode:
+	procedure update_verb_noun_display is begin
+		case get_origin (cmd) is
+			when ORIGIN_CONSOLE => update_mode_display;
+
+			when ORIGIN_SCRIPT =>
+				-- put_line ("script");
+			
+				if runmode = MODE_MODULE then
+					-- put_line ("module");
+					-- log (text => "update verb-noun-display", level => log_threshold + 1);
+					update_mode_display;
+				end if;
+
+		end case;
+	end update_verb_noun_display;
+
+	
 	
 	module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 
@@ -179,7 +199,6 @@ is
 						case cmd_field_count is
 							when 4 => 
 								log (text => "zoom all", level => log_threshold + 1);
-								update_mode_display;
 								zoom_to_fit_all;
 
 							when 5 .. type_field_count'last => too_long;
@@ -208,8 +227,6 @@ is
 	procedure set_grid is 
 		use et_board_ops.grid;
 	begin
-		update_mode_display;
-		
 		-- Set the grid on the canvas:
 		parse_canvas_command (cmd, VERB_SET, NOUN_GRID);
 
@@ -230,7 +247,6 @@ is
 	-- This procedure parses the command to set the scale.
 	-- CS: It is currently not complete.
 	procedure set_scale is begin
-		update_mode_display;
 		parse_canvas_command (cmd, VERB_SET, NOUN_SCALE);
 
 		-- The global scale variable "M" has now been set
@@ -256,8 +272,6 @@ is
 		is 
 			ls : type_layer_status;
 		begin
-			update_mode_display;
-			
 			-- Convert the given status to type_layer_status.
 			-- If no status given, assume status ON:
 			if status = "" then
@@ -300,8 +314,6 @@ is
 		is 
 			ls : type_layer_status;
 		begin
-			update_mode_display;
-			
 			-- Convert the given status to type_layer_status.
 			-- If no status given, assume status ON:
 			if status = "" then
@@ -348,8 +360,6 @@ is
 			ls : type_layer_status;
 			fc : type_face;
 		begin
-			update_mode_display;
-			
 			-- Convert the given status to type_layer_status.
 			-- If no status given, assume status ON:
 			if status = "" then
@@ -425,9 +435,7 @@ is
 		is 
 			ls : type_layer_status;
 			ly : type_signal_layer;
-		begin
-			update_mode_display;
-			
+		begin			
 			-- Convert the given status to type_layer_status.
 			-- If no status given, assume status ON:
 			if status = "" then
@@ -1907,7 +1915,6 @@ is
 		case cmd_field_count is
 			when 7 => 
 				-- example: board demo place via RESET_N 10 14
-				update_mode_display;
 				set_net_name;
 				set_position;
 				through;
@@ -1916,7 +1923,6 @@ is
 			when 10 =>				
 				if get_field (8) = keyword_buried then
 					-- example: board demo place via RESET_N 10 14 buried 2 15					
-					update_mode_display;
 					set_net_name;
 					set_position;
 					buried_layers := to_buried_layers (
@@ -1934,12 +1940,10 @@ is
 
 					if get_field (9) = keyword_top then
 						lower_layer := to_signal_layer (get_field (10));
-						update_mode_display;
 						blind_top;
 						
 					elsif get_field (9) = keyword_bottom then
 						upper_layer := to_signal_layer (get_field (10));
-						update_mode_display;
 						blind_bottom;
 						
 					else
@@ -1974,7 +1978,7 @@ is
 	-- CS: Currently this procedure does not many things.	
 	procedure move_via is
 	begin
-		update_mode_display;
+		null;
 	end move_via;
 		
 	
@@ -1984,7 +1988,7 @@ is
 	-- CS: Currently this procedure does not many things.	
 	procedure delete_via is
 	begin
-		update_mode_display;
+		null;
 	end delete_via;
 
 
@@ -2714,8 +2718,6 @@ is
 			use et_pcb_stack;
 			layer : type_layer;
 		begin
-			update_mode_display;
-			
 			layer.conductor.thickness := to_distance (get_field (5));
 			layer.dielectric.thickness := to_distance (get_field (6));
 			
@@ -2746,8 +2748,7 @@ is
 	procedure delete_signal_layer is
 
 		procedure do_it is begin
-			update_mode_display;
-			
+		
 			delete_layer (
 				module_name 	=> module,
 				layer			=> to_signal_layer (get_field (5)),									
@@ -2789,8 +2790,6 @@ is
 		begin
 			case cmd_field_count is
 				when 8 =>
-					update_mode_display;
-					
 					add_device (
 						module_cursor	=> active_module,
 						package_model	=> model,
@@ -2803,8 +2802,6 @@ is
 
 					
 				when 9 =>
-					update_mode_display;
-					
 					add_device (
 						module_cursor	=> active_module,
 						package_model	=> model,
@@ -2818,8 +2815,6 @@ is
 
 					
 				when 10 =>
-					update_mode_display;
-					
 					add_device (
 						module_cursor	=> active_module,
 						package_model	=> model,
@@ -2861,8 +2856,6 @@ is
 
 		
 		procedure do_it is begin
-			update_mode_display;
-			
 			delete_device (
 				module_cursor	=> active_module,
 				device_name		=> to_device_name (get_field (5)),
@@ -2915,8 +2908,6 @@ is
 
 		
 		procedure do_it is begin
-			update_mode_display;
-			
 			rename_device (
 				module_cursor		=> active_module,
 				device_name_before	=> to_device_name (get_field (5)),
@@ -2968,8 +2959,6 @@ is
 			use et_board_ops.silkscreen;
 			catch_zone : type_catch_zone;
 		begin
-			update_mode_display;
-
 			catch_zone := set_catch_zone (
 				center	=> to_vector_model (get_field (6), get_field (7)),
 				radius	=> to_zone_radius (get_field (8)));
@@ -3420,8 +3409,6 @@ is
 			 & enclose_in_quotes (to_string (module)),
 			 level => log_threshold + 1);
 
-		update_mode_display;
-		
 		case cmd_field_count is
 			when 5 => module_and_first_sheet; -- show module LED-driver
 			when 6 => module_and_random_sheet; -- show module LED-driver 2
@@ -3942,9 +3929,14 @@ begin -- board_cmd
 	end case;
 
 	
+
+	update_verb_noun_display;
+	
+	
 	-- parse the command:
 	parse;
-	
+
+
 	
 	-- In graphical mode and cmd_entry_mode SINGLE_CMD the flag
 	-- single_cmd.complete can change to false. In that case
