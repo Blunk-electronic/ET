@@ -119,6 +119,10 @@ package et_net_names is
 	function anonymous (net_name : in pac_net_name.bounded_string) return boolean;
 
 
+	-- Changes the given net name to an empty string:
+	procedure clear_net_name (
+		net_name : in out pac_net_name.bounded_string);
+	
 	
 	-- Net names can also be collected in simple lists:
 	package pac_net_names is new doubly_linked_lists (pac_net_name.bounded_string);

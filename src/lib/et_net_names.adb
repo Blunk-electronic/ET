@@ -175,6 +175,16 @@ package body et_net_names is
 	end anonymous;
 
 
+
+	
+
+	procedure clear_net_name (
+		net_name : in out pac_net_name.bounded_string)
+	is begin
+		net_name := no_name;
+	end;
+
+	
 	
 
 	function to_string (
