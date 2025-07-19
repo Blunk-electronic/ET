@@ -159,7 +159,7 @@ package body et_scripting is
 		fields : type_fields_of_line;
 
 		-- The single command to be executed:
-		single_cmd : type_single_cmd;
+		cmd : type_single_cmd;
 
 		
 		script_name : pac_script_name.bounded_string := to_script_name (file);
@@ -216,11 +216,13 @@ package body et_scripting is
 					-- Compose and execute the command to be executed.
 					-- Since it is launched via a script, its origin
 					-- is set accordingly:
-					single_cmd := to_single_cmd (fields, ORIGIN_SCRIPT);
+					cmd := to_single_cmd (fields, ORIGIN_SCRIPT);
+
+					log (text => "A cmd: " & get_all_fields (cmd));
 					
 					execute_command (
 						script_name		=> script_name, 
-						cmd				=> single_cmd,
+						cmd				=> cmd,
 						log_threshold	=> log_threshold + 1);
 					
 					-- Procedure execute_command dispatches to subprograms
@@ -239,11 +241,28 @@ package body et_scripting is
 
 					-- CS evaluate cmd status and output line number, hints, etc.
 					-- line provides the affected line number
+					case get_exit_code (cmd) is
+						when 0 => null; -- no error
+						when 1 =>
+							log (ERROR, "Command incomplete A !"); -- CS output line number
+							log (text => "cmd: " & get_all_fields (cmd));
+							exit; -- abort script execution
+							
+						when 2 =>
+							log (ERROR, "Command too long !"); -- CS output line number
+							exit; -- abort script execution
+
+						when 3 =>
+							log (ERROR, "Other error."); -- CS output line number
+							exit; -- abort script execution
+
+					end case;
+					
 					
 				end if;
 			end loop;
 
-			--log (text => "closing script file " & enclose_in_quotes (to_string (script_name)), level => log_threshold + 1);
+			log (text => "close script file " & enclose_in_quotes (to_string (script_name)), level => log_threshold + 1);
 			close (file_handle);
 
 			
@@ -448,7 +467,7 @@ package body et_scripting is
 
 		-- put_line ("execute_command done");
 
-		-- log (text => "done", level => log_threshold);
+		log (text => "done", level => log_threshold);
 		
 		-- exception when event: others => 
   -- 
@@ -483,7 +502,7 @@ package body et_scripting is
 		line : type_fields_of_line;
 
 		-- The command to be executed:
-		single_cmd : type_single_cmd;
+		cmd : type_single_cmd;
 		
 	begin
 		
@@ -535,15 +554,30 @@ package body et_scripting is
 					-- Compose and execute the command to be executed.
 					-- Since it is launched via a script, its origin
 					-- is set accordingly:
-					single_cmd := to_single_cmd (line, ORIGIN_SCRIPT);
+					cmd := to_single_cmd (line, ORIGIN_SCRIPT);
 					
 					execute_command (
 						script_name		=> script_name, 
-						cmd				=> single_cmd,
+						cmd				=> cmd,
 						log_threshold	=> log_threshold + 1);
 
 					-- CS evaluate cmd status and output line number, hints, etc.
 					-- line provides the affected line number
+					case get_exit_code (cmd) is
+						when 0 => null; -- no error
+						when 1 =>
+							log (ERROR, "Command incomplete ! B "); -- CS output line number
+							exit; -- abort script execution
+							
+						when 2 =>
+							log (ERROR, "Command too long !"); -- CS output line number
+							exit; -- abort script execution
+
+						when 3 =>
+							log (ERROR, "Other error."); -- CS output line number
+							exit; -- abort script execution
+
+					end case;
 				end if;
 			end loop;
 

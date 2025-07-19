@@ -135,6 +135,15 @@ package et_cmd_sts is
 		return boolean;
 
 
+	procedure set_complete (
+		cmd		: in out type_single_cmd);
+
+	
+	procedure set_incomplete (
+		cmd		: in out type_single_cmd);
+
+	
+
 	function finalization_is_pending (
 		cmd		: in type_single_cmd)
 		return boolean;
@@ -143,7 +152,27 @@ package et_cmd_sts is
 	procedure set_finalization_pending (
 		cmd		: in out type_single_cmd);
 
-										   
+
+
+	subtype type_exit_code is natural range 0 .. 3;
+		-- 0 -> success
+		-- 1 -> too few arguments given
+		-- 2 -> too many arguments given
+		-- 3 -> other error
+		-- CS others ?
+
+
+	function get_exit_code (
+		cmd		: in type_single_cmd)
+		return type_exit_code;
+
+
+	procedure set_exit_code (
+		cmd		: in out type_single_cmd;
+		code	: in type_exit_code);
+
+
+	
 	procedure reset_cmd (
 		cmd		: in out type_single_cmd);
 
@@ -231,15 +260,19 @@ private
 		-- "schematic blood_sample_analyzer set value C1 100n"
 		fields		: type_fields_of_line;
 
-		-- Goes false if too few arguments given via console:
+		-- Goes false if too few arguments given via console.
+		-- An incomplete commmand does not necessairly mean
+		-- that the command execution has failed. If the commmand
+		-- origin is the console, then further arguments can be
+		-- proposed by the command processor to complete the command:
 		complete	: boolean := true;
 
 		-- Indicates that the command is in progress,
 		-- but not finalized yet:
 		finalization_pending : boolean := false;
 
-		-- CS status like
-		-- error, failed, success
+		-- Indicates the final result of the command execution:
+		exit_code	: type_exit_code := 0;
 
 		-- CS
 		-- line number if origin is script

@@ -159,6 +159,20 @@ package body et_cmd_sts is
 
 
 
+	procedure set_complete (
+		cmd		: in out type_single_cmd)
+	is begin
+		cmd.complete := true;
+	end;
+	
+
+	procedure set_incomplete (
+		cmd		: in out type_single_cmd)
+	is begin
+		cmd.complete := false;
+	end;
+	
+
 
 	function finalization_is_pending (
 		cmd		: in type_single_cmd)
@@ -175,6 +189,25 @@ package body et_cmd_sts is
 		cmd.finalization_pending := true;
 	end;
 	
+
+
+	function get_exit_code (
+		cmd		: in type_single_cmd)
+		return type_exit_code
+	is begin
+		return cmd.exit_code;
+	end;
+
+
+	
+
+	procedure set_exit_code (
+		cmd		: in out type_single_cmd;
+		code	: in type_exit_code)
+	is begin
+		cmd.exit_code := code;
+	end;
+
 
 	
 

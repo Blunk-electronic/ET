@@ -3835,6 +3835,8 @@ is
 		end if;
 
 
+
+		
 		exception
 			when event: others =>
 				-- log (text => ada.exceptions.exception_information (event), console => true);
@@ -3946,10 +3948,16 @@ begin -- board_cmd
 	-- parse the command:
 	parse;
 
-	
+
+	-- If the command is incomplete and if it was entered
+	-- via the console, then further arguments are proposed.
+	-- Otherwise nothing happens here:
 	propose_arguments;
 
 
+	log (text => "exit code" & natural'image (get_exit_code (cmd)), level => log_threshold);
+
+	
 	-- After every command (regardless if it is complete or not)
 	-- set the focus to the canvas:
 	-- CS: remove ?

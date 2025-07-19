@@ -1518,26 +1518,73 @@ is
 		
 	begin		
 		log_indentation_up;
-		
-		case cmd_field_count is
-			when 4 => -- like "draw net"
-				log (text => "no name given", level => log_threshold + 1);
-				log_indentation_up;
-				no_name_given;
-				log_indentation_down;
-				
-			when 5 => -- like "draw net RESET_N"
-				explicit_name_given;
-			
-			when 10 => -- like "draw net RESET_N 1 90 100  100 100"
-				segment_given;
 
-			when 11 .. type_field_count'last => too_long; 
+		case get_origin (cmd) is
+			when ORIGIN_CONSOLE =>
+
+				-- The command may contain more or less arguments
+				-- and can still be valid.
+				-- However a minimum of arguments must be ensured
+				-- and a maximum must not be exceeded:
+				case cmd_field_count is
+					when 4 => -- like "draw net"
+						log (text => "no name given", level => log_threshold + 1);
+						log_indentation_up;
+						no_name_given;
+						log_indentation_down;
+						
+					when 5 => -- like "draw net RESET_N"
+						explicit_name_given;
+					
+					when 10 => -- like "draw net RESET_N 1 90 100  100 100"
+						segment_given;
+
+					when 11 .. type_field_count'last => 
+						too_long; 
+
+						-- In console mode, too long a command is not accepted.
+						-- The "failed" status must be set accordingly:
+						set_exit_code (cmd, 2);
+					
+					when others =>
+						set_incomplete (cmd);
+
+						-- NOTE: This is not a failure. For this reason
+						-- we do not set an exit code here.
+				end case;
+
 				
-			when others => command_incomplete;
+				
+			when ORIGIN_SCRIPT =>
+
+				-- The command MUST contain a certain number of
+				-- arguments:
+				case cmd_field_count is
+					when 10 => -- like "draw net RESET_N 1 90 100  100 100"
+						segment_given;
+
+					when 11 .. type_field_count'last => 
+						too_long; 
+
+						-- In script mode, too long a command is not accepted.
+						-- The "failed" status must be set accordingly:
+						set_exit_code (cmd, 2);
+
+						
+					when others => 
+						set_incomplete (cmd);
+						
+						-- In script mode, an incomplete command is not accepted.
+						-- The "failed" status must be set accordingly:
+						set_exit_code (cmd, 1);
+				end case;
+
 		end case;
-
+		
 		log_indentation_down;
+
+		-- CS exception handler
+		-- CS set_exit_code (cmd, 3);
 	end draw_net;
 
 
@@ -2743,11 +2790,11 @@ is
 		
 		-- Update GUI if we are in graphical mode:
 		if runmode /= MODE_HEADLESS then
-			null;
-			
+			null;			
 		end if;
 
-
+		
+		
 		exception
 			when event: others =>
 				-- log (text => ada.exceptions.exception_information (event), console => true);
@@ -3488,9 +3535,14 @@ begin -- schematic_cmd
 	parse;
 	
 
+	-- If the command is incomplete and if it was entered
+	-- via the console, then further arguments are proposed.
+	-- Otherwise nothing happens here:	
 	propose_arguments;
 
 
+	log (text => "exit code" & natural'image (get_exit_code (cmd)), level => log_threshold);
+	
 	-- After each command (regardless if it is complete or not)
 	-- set the focus to the canvas:
 	-- CS: remove ?

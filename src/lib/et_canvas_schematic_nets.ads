@@ -140,8 +140,8 @@ package et_canvas_schematic_nets is
 		status_click_left 
 		& "or "
 		& status_press_space
-		& status_set_A 
-		& status_hint_for_abort;
+		& status_set_A;
+		-- & status_hint_for_abort;
 
 	
 	-- Builds a live net path. This procedure requires to be called twice:
