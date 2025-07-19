@@ -54,6 +54,8 @@ with et_module_names;				use et_module_names;
 
 package body et_gui_2 is
 
+
+	
 	procedure init_schematic (
 		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
@@ -175,6 +177,9 @@ package body et_gui_2 is
 
 	end init_schematic;
 
+
+
+
 	
 	
 	procedure init_board (
@@ -264,6 +269,9 @@ package body et_gui_2 is
 	end init_board;
 
 
+
+
+	
 	
 	procedure single_module (
 		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
@@ -309,23 +317,25 @@ package body et_gui_2 is
 		-- If a script was given on startup as argument, execute it now:
 		-- NOTE 1: The script execution must start AFTER BOTH schematic and board 
 		--         have been completely displayed.
-		-- NOTE 2: The procedure execute_script is available in gui_board and gui_schematic.
+		-- NOTE 2: The procedure execute_script_console is available 
+		--         in et_canvas_schematic_2 and et_canvas_board_2.
 		--         Both launch the script in the same way. But in case there is no board
 		--         available, it is more reasonable to launch the script from the schematic.
 		if pac_script_name.length (script) > 0 then
   
 			--et_gui.schematic_callbacks.execute_script (script);
-			et_canvas_schematic_2.execute_script (script);
+			et_canvas_schematic_2.execute_script_console (script);
 			-- 1. Composes a command that executes the script
 			--    like "schematic motor_driver execute script my_script.scr"
 			--    as if it was entered by the operator as an ordinary command.
-			-- 2. Launches the script via procedure et_scripting.schematic_cmd.
-			-- 3. Procedure et_scripting.schematic_cmd in turn calls 
+			-- 2. Launches the script via procedure et_scripting.execute_schematic_command.
+			-- 3. Procedure et_scripting.execute_schematic_command in turn calls 
 			--    et_scripting.execute_nested_script.
 			-- 4. et_scripting.execute_nested_script reads the script line per line
 			--    and calls for each line et_scripting.execute_command.
-			-- 5. et_scripting.execute_command parses the command and dispatches
-			--    to procedure schematic_cmd, board_cmd or project_cmd.
+			-- 5. et_scripting.execute_script_command parses the command and dispatches
+			--    to procedure execute_schematic_command, execute_board_command 
+			--    or execute_project_command.
 		end if;
   
 

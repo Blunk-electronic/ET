@@ -158,7 +158,7 @@ package et_scripting is -- CS rename to et_command_processor
 	-- board or project commands.
 	-- When called, the current working directory must be the
 	-- project like my_projects/blood_sample_analyzer.
-	procedure execute_command ( -- CS rename to execute_script_command
+	procedure execute_script_command (
 		-- The script file that contains the command. for debug messages only:
 		script_name		: in pac_script_name.bounded_string; 
 		-- The text fields like "schematic motor_driver draw net motor_on 1 150 100 150 130":

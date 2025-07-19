@@ -340,7 +340,7 @@ package et_canvas_board_2 is
 	-- and sends it to procedure et_scripting.board_cmd
 	-- to be executed.
 	-- Resets verb and noun in all domains:
-	procedure execute_script (
+	procedure execute_script_console (
 		script : in pac_script_name.bounded_string);	
 
 	

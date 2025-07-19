@@ -341,14 +341,14 @@ package et_canvas_schematic_2 is
 	-- and sends it to procedure et_scripting.schematic_cmd
 	-- to be executed.
 	-- Resets verb and noun in all domains:
-	procedure execute_script (
+	procedure execute_script_console (
 		script : in pac_script_name.bounded_string);	
 
 	
 	-- Executes a command as typed on the console by the operator
 	-- like "rename device R1 R2".
 	-- Changes into the directory as indicated by current_active_module.
-	-- Calls et_scripting.schematic_cmd for the actual execution.	
+	-- Calls et_scripting.execute_schematic_command for the actual execution.	
 	procedure execute_command (self : access gtk_entry_record'class);
 
 

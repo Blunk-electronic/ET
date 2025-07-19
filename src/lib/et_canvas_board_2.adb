@@ -1173,7 +1173,7 @@ package body et_canvas_board_2 is
 
 	
 
-	procedure execute_script (
+	procedure execute_script_console (
 		script : in pac_script_name.bounded_string) 
 	is
 		use ada.directories;
@@ -1261,7 +1261,7 @@ package body et_canvas_board_2 is
 		set_directory (cur_dir_bak);
 	
 		log_indentation_down;
-	end execute_script;
+	end execute_script_console;
 
 
 

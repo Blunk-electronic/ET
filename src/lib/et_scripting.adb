@@ -220,23 +220,15 @@ package body et_scripting is
 
 					log (text => "A cmd: " & get_all_fields (cmd));
 					
-					execute_command (
+					execute_script_command (
 						script_name		=> script_name, 
 						cmd				=> cmd,
 						log_threshold	=> log_threshold + 1);
 					
-					-- Procedure execute_command dispatches to subprograms
+					-- Procedure execute_script_command dispatches to subprograms
 					-- that execute the command according to the 
 					-- targeted domain (first field in fields) like project, 
 					-- schematic, board, ...
-					-- If the command fails and thus raises an exception,
-					-- then the flag script_cmd_status.failed
-					-- is set and the error registered. See procedures 
-					-- schematic_cmd.evaluate_exception or board_cmd.evaluate_exception
-					-- for example.
-					-- In case of a nested script, the exception itself is further 
-					-- propagated to the top level where the parent script
-					-- has been started.
 
 
 					-- CS evaluate cmd status and output line number, hints, etc.
@@ -327,7 +319,7 @@ package body et_scripting is
 	
 	
 	
-	procedure execute_command (
+	procedure execute_script_command (
 		script_name		: in pac_script_name.bounded_string;
 		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level)
@@ -355,7 +347,7 @@ package body et_scripting is
 
 		
 		
-	begin -- execute_command
+	begin -- execute_script_command
 		log (text => "execute command", level => log_threshold);
 		log_indentation_up;
 		
@@ -474,7 +466,7 @@ package body et_scripting is
 		-- 	log_indentation_down;
 		-- 	raise;
 		
-	end execute_command;
+	end execute_script_command;
 
 
 
@@ -556,7 +548,7 @@ package body et_scripting is
 					-- is set accordingly:
 					cmd := to_single_cmd (line, ORIGIN_SCRIPT);
 					
-					execute_command (
+					execute_script_command (
 						script_name		=> script_name, 
 						cmd				=> cmd,
 						log_threshold	=> log_threshold + 1);
