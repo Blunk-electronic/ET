@@ -482,7 +482,7 @@ package body et_scripting is
 	
 
 	
-	function execute_script (
+	function execute_script_headless (
 		script_name		: in pac_script_name.bounded_string;
 		log_threshold	: in type_log_level)
 		return type_exit_code 
@@ -507,7 +507,7 @@ package body et_scripting is
 	begin
 		
 		log (text => row_separator_double, level => log_threshold);
-		log (text => "executing script " 
+		log (text => "executing script in headless mode" 
 			 & enclose_in_quotes (to_string (script_name)),
 			 --& "in mode " & to_string (cmd_entry_mode),
 			 level => log_threshold, console => true);
@@ -566,7 +566,7 @@ package body et_scripting is
 					case get_exit_code (cmd) is
 						when 0 => null; -- no error
 						when 1 =>
-							log (ERROR, "Command incomplete ! B "); -- CS output line number
+							log (ERROR, "Command incomplete !"); -- CS output line number
 							exit; -- abort script execution
 							
 						when 2 =>
@@ -609,7 +609,7 @@ package body et_scripting is
 			
 			return ERROR;
 		
-	end execute_script;
+	end execute_script_headless;
 
 
 

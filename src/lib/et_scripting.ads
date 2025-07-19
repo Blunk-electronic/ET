@@ -168,15 +168,16 @@ package et_scripting is -- CS rename to et_command_processor
 
 
 	
-	-- Executes the given script file like "dummy_module/my_script.scr".
+	-- Executes the given script file like "dummy_module/my_script.scr"
+	-- in headless mode.
 	-- Changes into the directory where the script lives and starts
 	-- execution there.
 	-- 1. This function should be called to execute a script on launching
-	--    ET via command line. 
+	--    ET via command line in headless mode.
 	-- 2. This function is NOT intended to launch a script
 	--    from inside a script ! This would be a nested script.
 	--    For this mode the procedure execute_nested_script is provided.
-	function execute_script (
+	function execute_script_headless (
 		script_name		: in pac_script_name.bounded_string;
 		log_threshold	: in type_log_level)
 		return type_exit_code;
