@@ -356,6 +356,8 @@ procedure et is
 		projects_root_dir := to_bounded_string (current_directory);
 	end;
 
+
+	
 	
 	procedure restore_projects_root_directory is
 		use et_project;
@@ -367,6 +369,8 @@ procedure et is
 		set_directory (to_string (projects_root_dir));
 	end;
 	
+
+
 	
 	procedure create_work_directory is
 		use et_system_info;
@@ -387,6 +391,8 @@ procedure et is
 	end;
 
 
+
+	
 	
 	procedure import_project is -- CS move to et_import ?
 	-- As a result of the import, a native project is created in the work_directory (ET/...).
@@ -441,6 +447,9 @@ procedure et is
 
 	end import_project;
 
+
+
+	
 	
 	procedure save_package_as is 
 		use et_packages;
@@ -461,6 +470,8 @@ procedure et is
 
 
 	
+
+	
 	procedure save_symbol_as is 
 		use et_symbols.pac_symbol_model_file;
 	begin
@@ -475,6 +486,9 @@ procedure et is
 	end;
 
 
+
+
+	
 	
 	procedure save_device_as is 
 		use pac_device_model_file;
@@ -490,6 +504,9 @@ procedure et is
 	end;
 
 
+
+
+	
 	
 	procedure launch_schematic_and_board_editor is 
 		use ada.containers;
@@ -548,16 +565,19 @@ procedure et is
 
 	
 
+
+	
 	procedure process_commandline_arguments is
 		use et_conventions.pac_file_name;
 		use pac_package_model_file_name;
 		use et_symbols.pac_symbol_model_file;
 		use pac_device_model_file;
 		use et_drawing_frame.pac_template_name;
+		use et_scripting;
 
 		exit_code_script : et_scripting.type_exit_code;
 		
-	begin -- process_commandline_arguments
+	begin
 		-- The arguments are processed according to a certain priority.
 		-- 1. create conventions file
 		-- 2. import foreign project
@@ -608,7 +628,7 @@ procedure et is
 
 							--cmd_entry_mode := SCRIPT_ON_STARTUP;
 							
-							exit_code_script := et_scripting.execute_script (script_name, log_threshold => 0);
+							exit_code_script := execute_script_headless (script_name, log_threshold => 0);
 
 							-- evaluate exit code
 							case exit_code_script is
@@ -646,10 +666,14 @@ procedure et is
 				-- optionally the package can be saved under a different name
 				save_package_as;  -- if package_name_save_as is empty nothing happens
 
+
+				
 			elsif length (package_name_import) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for package editing
 				null; -- CS
 
+
+				
 			elsif length (package_name_open) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for package editing
 				
