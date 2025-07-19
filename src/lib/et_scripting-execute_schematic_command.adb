@@ -106,6 +106,35 @@ is
 
 	
 
+	-- This function is a shortcut to get a single field
+	-- from the given command:
+	function get_field (place : in type_field_count) 
+		return string 
+	is begin
+		return get_field (cmd, place);
+	end;
+
+	
+	-- This procedure sets the verb and the noun:
+	procedure set_verb_and_noun is begin
+		-- Set the verb.
+		-- Read it from field 3:
+		verb := to_verb (get_field (3));
+
+		
+		-- There are some very short commands which do not require a noun.
+		-- For such commands we do not read the noun.
+		case verb is
+			when VERB_EXIT | VERB_QUIT => null; -- no noun
+			
+			-- Set the noun. Read it from field 4:		
+			when others => noun := to_noun (get_field (4));
+		end case;
+	end set_verb_and_noun;
+
+
+
+	
 	-- Updates the verb-noun display depending on the 
 	-- origin of the command and the runmode:
 	procedure update_verb_noun_display is begin
@@ -148,16 +177,6 @@ is
 	procedure command_incomplete is begin
 		command_incomplete (cmd);
 	end;
-	
-	
-	-- This function is a shortcut to get a single field
-	-- from the given command:
-	function get_field (place : in type_field_count) 
-		return string 
-	is begin
-		return get_field (cmd, place);
-	end;
-
 	
 
 	
@@ -2740,7 +2759,8 @@ is
 
 
 	
-	
+
+	-- This procedure proposes missing arguments:	
 	procedure propose_arguments is
 		use et_scripting_interactive_schematic;
 		use et_canvas_schematic_units;
@@ -2895,543 +2915,550 @@ is
 		
 		
 	begin -- propose_arguments
-		log_command_incomplete (cmd_field_count, log_threshold);
-
-		-- There might be objects such as net segments or units selected.
-		-- They must be de-selected:
-		clear_proposed_objects;
 		
-		case verb is
-			when VERB_ADD =>
-				case noun is
-					when NOUN_DEVICE =>
-						set_status (et_canvas_schematic_units.status_add);
+		-- Missing arguments are to be proposed only if
+		-- the command origin is the console.
+		-- Otherwise nothing happens here.
+		if not is_complete (cmd) and get_origin (cmd) = ORIGIN_CONSOLE then
+			
+			log_command_incomplete (cmd_field_count, log_threshold);
 
-						-- open device model selection
-						add_device; 
+			-- There might be objects such as net segments or units selected.
+			-- They must be de-selected:
+			clear_proposed_objects; -- CS remove
+			
+			case verb is
+				when VERB_ADD =>
+					case noun is
+						when NOUN_DEVICE =>
+							set_status (et_canvas_schematic_units.status_add);
 
-					when others => null; -- CS
-				end case;
-				
+							-- open device model selection
+							add_device; 
 
-			when VERB_CREATE =>
-				case noun is
-					when NOUN_MODULE => module_name_missing;
-					when others => null; -- CS
-				end case;
-				
-				
-			when VERB_DELETE =>
-				case noun is
-					when NOUN_UNIT =>
-						case cmd_field_count is
-							when 4 =>
-								device_name_missing;
+						when others => null; -- CS
+					end case;
+					
 
-								
-							when 5 => -- like "delete unit IC1"
-								unit_name_missing;
+				when VERB_CREATE =>
+					case noun is
+						when NOUN_MODULE => module_name_missing;
+						when others => null; -- CS
+					end case;
+					
+					
+				when VERB_DELETE =>
+					case noun is
+						when NOUN_UNIT =>
+							case cmd_field_count is
+								when 4 =>
+									device_name_missing;
 
-								device_name := to_device_name (get_field (5));
-
-								if exists (active_module, device_name) then
-
-									-- unit_delete.device := device_name;
-
-									-- Propose units that are on the current active sheet:
-									menu_propose_units_on_delete (
-										-- device			=> unit_delete.device,
-										device			=> device_name,
-										units			=> get_units_on_sheet (
-															active_module,
-															device_name,
-															active_sheet,
-															log_threshold + 1),
-										log_threshold	=> log_threshold + 1);
-
-								else
-									device_not_found;
-								end if;
-
-								
-							when 6 => -- like "delete unit IC1 B"
-								device_name := to_device_name (get_field (5));
-								
-								if exists (active_module, device_name) then
 									
-									--unit_delete.device := device_name;
+								when 5 => -- like "delete unit IC1"
+									unit_name_missing;
 
-									unit_name := to_unit_name (get_field (6));
+									device_name := to_device_name (get_field (5));
 
-									-- Test whether the unit is deployed on the 
-									-- current active sheet.
-									-- Deleting is possible if it is deployed 
-									-- and if it is on the current sheet.
-									if is_deployed (active_module, device_name, unit_name) then
+									if exists (active_module, device_name) then
 
-										-- unit_delete.unit := unit_name;
-										
-										if get_sheet (active_module, device_name, unit_name) = active_sheet then
+										-- unit_delete.device := device_name;
 
-											delete_unit (
-												module_cursor	=> active_module,
-												device_name		=> device_name,
-												unit_name		=> unit_name,
-												log_threshold	=> log_threshold + 1);
-											
-											-- CS redraw;
+										-- Propose units that are on the current active sheet:
+										menu_propose_units_on_delete (
+											-- device			=> unit_delete.device,
+											device			=> device_name,
+											units			=> get_units_on_sheet (
+																active_module,
+																device_name,
+																active_sheet,
+																log_threshold + 1),
+											log_threshold	=> log_threshold + 1);
 
-										else
-											unit_not_on_this_sheet;
-										end if;
 									else
-										unit_not_deployed;
-									end if; 
-								else
-									device_not_found;
-								end if;
-													
-							when others => null;
-						end case;
+										device_not_found;
+									end if;
 
-					when others => null; -- CS
-				end case;
-
-				
-			when VERB_DRAG =>
-				case noun is
-					when NOUN_UNIT =>
-						case cmd_field_count is
-							when 4 =>
-								device_name_missing;
-								
-							when 5 => -- like "drag unit IC1"
-								unit_name_missing;
-
-								device_name := to_device_name (get_field (5));
-
-								if exists (active_module, device_name) then
-									object_device_name := device_name;
-
-									-- Propose units that are on the current active sheet:
-									menu_propose_units_on_move (
-										units			=> get_units_on_sheet (
-															active_module,
-															device_name,
-															active_sheet,
-															log_threshold + 1),
-										log_threshold	=> log_threshold + 1);
-
-								else
-									device_not_found;
-								end if;
-								
-							when 6 => -- like "drag unit IC1 B"
-								device_name := to_device_name (get_field (5));
-								
-								if exists (active_module, device_name) then
 									
-									object_device_name := device_name;
-
-									unit_name := to_unit_name (get_field (6));
-
-									-- Test whether the unit is deployed on the current active sheet.
-									-- Dragging is possible if it is deployed and if it is on the current sheet.
-									-- It will then be attached to the cursor or mouse pointer.
-									if is_deployed (active_module, object_device_name, unit_name) then
-
-										object_unit_name := unit_name;
+								when 6 => -- like "delete unit IC1 B"
+									device_name := to_device_name (get_field (5));
+									
+									if exists (active_module, device_name) then
 										
-										if get_sheet (active_module, object_device_name, object_unit_name) = active_sheet then
+										--unit_delete.device := device_name;
+
+										unit_name := to_unit_name (get_field (6));
+
+										-- Test whether the unit is deployed on the 
+										-- current active sheet.
+										-- Deleting is possible if it is deployed 
+										-- and if it is on the current sheet.
+										if is_deployed (active_module, device_name, unit_name) then
+
+											-- unit_delete.unit := unit_name;
+											
+											if get_sheet (active_module, device_name, unit_name) = active_sheet then
+
+												delete_unit (
+													module_cursor	=> active_module,
+													device_name		=> device_name,
+													unit_name		=> unit_name,
+													log_threshold	=> log_threshold + 1);
+												
+												-- CS redraw;
+
+											else
+												unit_not_on_this_sheet;
+											end if;
+										else
+											unit_not_deployed;
+										end if; 
+									else
+										device_not_found;
+									end if;
+														
+								when others => null;
+							end case;
+
+						when others => null; -- CS
+					end case;
+
+					
+				when VERB_DRAG =>
+					case noun is
+						when NOUN_UNIT =>
+							case cmd_field_count is
+								when 4 =>
+									device_name_missing;
+									
+								when 5 => -- like "drag unit IC1"
+									unit_name_missing;
+
+									device_name := to_device_name (get_field (5));
+
+									if exists (active_module, device_name) then
+										object_device_name := device_name;
+
+										-- Propose units that are on the current active sheet:
+										menu_propose_units_on_move (
+											units			=> get_units_on_sheet (
+																active_module,
+																device_name,
+																active_sheet,
+																log_threshold + 1),
+											log_threshold	=> log_threshold + 1);
+
+									else
+										device_not_found;
+									end if;
+									
+								when 6 => -- like "drag unit IC1 B"
+									device_name := to_device_name (get_field (5));
+									
+									if exists (active_module, device_name) then
+										
+										object_device_name := device_name;
+
+										unit_name := to_unit_name (get_field (6));
+
+										-- Test whether the unit is deployed on the current active sheet.
+										-- Dragging is possible if it is deployed and if it is on the current sheet.
+										-- It will then be attached to the cursor or mouse pointer.
+										if is_deployed (active_module, object_device_name, unit_name) then
+
+											object_unit_name := unit_name;
+											
+											if get_sheet (active_module, object_device_name, object_unit_name) = active_sheet then
+												select_unit_for_move;
+												
+												-- use the current primary tool for moving the unit:
+												object_tool := primary_tool;
+
+												find_attached_segments;
+												
+												set_edit_process_running;
+
+												set_finalization_pending (cmd);
+												-- CS redraw;
+
+											else
+												unit_not_on_this_sheet;
+											end if;
+										else
+											unit_not_deployed;
+										end if; 
+									else
+										device_not_found;
+									end if;
+														
+								when others => null;								
+							end case;
+
+						when others => null; -- CS
+					end case;
+
+					
+				when VERB_DRAW =>
+					case noun is
+						when NOUN_NET =>
+							null;
+							
+						when others => null;
+					end case;
+
+					
+				when VERB_FETCH =>
+					case noun is
+						when NOUN_UNIT =>
+							fetch_unit;
+
+						when others => null; -- CS
+					end case;
+
+					
+				when VERB_MOVE =>
+					case noun is
+						when NOUN_UNIT =>
+							case cmd_field_count is
+								when 4 =>
+									device_name_missing;
+									
+								when 5 => -- like "move unit IC1"
+									unit_name_missing;
+
+									device_name := to_device_name (get_field (5));
+
+									if exists (active_module, device_name) then
+										object_device_name := device_name;
+
+										-- Propose units that are on the current active sheet:
+										menu_propose_units_on_move (
+											units			=> get_units_on_sheet (
+																active_module,
+																device_name,
+																active_sheet,
+																log_threshold + 1),
+											log_threshold	=> log_threshold + 1);
+
+									else
+										device_not_found;
+									end if;
+									
+								when 6 => -- like "move unit IC1 B"
+									device_name := to_device_name (get_field (5));
+									
+									if exists (active_module, device_name) then
+										
+										object_device_name := device_name;
+
+										unit_name := to_unit_name (get_field (6));
+
+										-- Test whether the unit is deployed.
+										-- If it is deployed somewhere (whatever sheet) then it will be 
+										-- attached to the cursor or mouse pointer.
+										if is_deployed (active_module, object_device_name, unit_name) then
+
+											object_unit_name := unit_name;
+											
+											-- If the unit is not on the active_sheet then notify the
+											-- GUI that the sheet changes. This way the unit is drawn
+											-- on the current visible sheet independed of its original sheet number.
+											-- See et_canvas_schematic.draw_units.
+											if get_sheet (active_module, object_device_name, object_unit_name) /= active_sheet then
+												object_sheet_changes := true;
+
+												--set_status ("Moving unit from another sheet");
+											end if;
+
 											select_unit_for_move;
 											
 											-- use the current primary tool for moving the unit:
 											object_tool := primary_tool;
-
-											find_attached_segments;
-											
+										
 											set_edit_process_running;
 
 											set_finalization_pending (cmd);
 											-- CS redraw;
-
+											
 										else
-											unit_not_on_this_sheet;
-										end if;
+											unit_not_deployed;
+										end if; 
 									else
-										unit_not_deployed;
-									end if; 
-								else
-									device_not_found;
-								end if;
-													
-							when others => null;								
-						end case;
+										device_not_found;
+									end if;
+														
+								when others => null;								
+							end case;
 
-					when others => null; -- CS
-				end case;
-
-				
-			when VERB_DRAW =>
-				case noun is
-					when NOUN_NET =>
-						null;
-						
-					when others => null;
-				end case;
-
-				
-			when VERB_FETCH =>
-				case noun is
-					when NOUN_UNIT =>
-						fetch_unit;
-
-					when others => null; -- CS
-				end case;
-
-				
-			when VERB_MOVE =>
-				case noun is
-					when NOUN_UNIT =>
-						case cmd_field_count is
-							when 4 =>
-								device_name_missing;
-								
-							when 5 => -- like "move unit IC1"
-								unit_name_missing;
-
-								device_name := to_device_name (get_field (5));
-
-								if exists (active_module, device_name) then
-									object_device_name := device_name;
-
-									-- Propose units that are on the current active sheet:
-									menu_propose_units_on_move (
-										units			=> get_units_on_sheet (
-															active_module,
-															device_name,
-															active_sheet,
-															log_threshold + 1),
-										log_threshold	=> log_threshold + 1);
-
-								else
-									device_not_found;
-								end if;
-								
-							when 6 => -- like "move unit IC1 B"
-								device_name := to_device_name (get_field (5));
-								
-								if exists (active_module, device_name) then
+						-- moving placeholders for unit name, purpose and value:
+						when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
+							case cmd_field_count is
+								when 4 => -- like "move name"
+									device_name_missing;
 									
-									object_device_name := device_name;
+								when 5 => -- like "move name R1"
+									unit_name_missing;
 
-									unit_name := to_unit_name (get_field (6));
+									device_name := to_device_name (get_field (5));
 
-									-- Test whether the unit is deployed.
-									-- If it is deployed somewhere (whatever sheet) then it will be 
-									-- attached to the cursor or mouse pointer.
-									if is_deployed (active_module, object_device_name, unit_name) then
+									if exists (active_module, device_name) then
 
-										object_unit_name := unit_name;
-										
-										-- If the unit is not on the active_sheet then notify the
-										-- GUI that the sheet changes. This way the unit is drawn
-										-- on the current visible sheet independed of its original sheet number.
-										-- See et_canvas_schematic.draw_units.
-										if get_sheet (active_module, object_device_name, object_unit_name) /= active_sheet then
-											object_sheet_changes := true;
+										placeholder_move.device := device_name;
 
-											--set_status ("Moving unit from another sheet");
-										end if;
+										-- Propose units that are on the current active sheet:
+										menu_propose_units_on_move (
+											units			=> get_units_on_sheet (
+																active_module,
+																device_name,
+																active_sheet,
+																log_threshold + 1),
+											log_threshold	=> log_threshold + 1);
 
-										select_unit_for_move;
-										
-										-- use the current primary tool for moving the unit:
-										object_tool := primary_tool;
-									
-										set_edit_process_running;
-
-										set_finalization_pending (cmd);
-										-- CS redraw;
-										
 									else
-										unit_not_deployed;
-									end if; 
-								else
-									device_not_found;
-								end if;
-													
-							when others => null;								
-						end case;
+										device_not_found;
+									end if;
 
-					-- moving placeholders for unit name, purpose and value:
-					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
-						case cmd_field_count is
-							when 4 => -- like "move name"
-								device_name_missing;
-								
-							when 5 => -- like "move name R1"
-								unit_name_missing;
-
-								device_name := to_device_name (get_field (5));
-
-								if exists (active_module, device_name) then
-
-									placeholder_move.device := device_name;
-
-									-- Propose units that are on the current active sheet:
-									menu_propose_units_on_move (
-										units			=> get_units_on_sheet (
-															active_module,
-															device_name,
-															active_sheet,
-															log_threshold + 1),
-										log_threshold	=> log_threshold + 1);
-
-								else
-									device_not_found;
-								end if;
-
-							when 6 => -- like "move name IC1 B"
-								device_name := to_device_name (get_field (5));
-								
-								if exists (active_module, device_name) then
-
-									placeholder_move.device := device_name;
+								when 6 => -- like "move name IC1 B"
+									device_name := to_device_name (get_field (5));
 									
-									unit_name := to_unit_name (get_field (6));
+									if exists (active_module, device_name) then
 
-									-- Test whether the unit is deployed on the current active sheet.
-									-- Moving the placeholder is possible if the unit it is deployed 
-									-- and if it is on the current sheet.
-									-- The placeholder will then be attached to the cursor or mouse pointer.
-									if is_deployed (active_module, placeholder_move.device, unit_name) then
-
-										placeholder_move.unit := unit_name;
+										placeholder_move.device := device_name;
 										
-										if get_sheet (active_module, placeholder_move.device, placeholder_move.unit) = active_sheet then
-											finish_placeholder_move;
+										unit_name := to_unit_name (get_field (6));
+
+										-- Test whether the unit is deployed on the current active sheet.
+										-- Moving the placeholder is possible if the unit it is deployed 
+										-- and if it is on the current sheet.
+										-- The placeholder will then be attached to the cursor or mouse pointer.
+										if is_deployed (active_module, placeholder_move.device, unit_name) then
+
+											placeholder_move.unit := unit_name;
+											
+											if get_sheet (active_module, placeholder_move.device, placeholder_move.unit) = active_sheet then
+												finish_placeholder_move;
+											else
+												unit_not_on_this_sheet;
+											end if;
 										else
-											unit_not_on_this_sheet;
-										end if;
+											unit_not_deployed;
+										end if; 
 									else
-										unit_not_deployed;
-									end if; 
-								else
-									device_not_found;
-								end if;
-													
-							when others => null;								
+										device_not_found;
+									end if;
+														
+								when others => null;								
 
-								
-						end case;
-						
-					when others => null; -- CS
-				end case;
-
-				
-			when VERB_ROTATE =>
-				case noun is
-					when NOUN_UNIT =>
-						case cmd_field_count is
-							when 4 => device_name_missing;
-								
-							when 5 => -- like "rotate unit IC1"
-								unit_name_missing;
-
-								device_name := to_device_name (get_field (5));
-
-								if exists (active_module, device_name) then
-									object_device_name := device_name;
-
-									-- Propose units that are on the current active sheet:
-									menu_propose_units_on_move (
-										units			=> get_units_on_sheet (
-															active_module,
-															device_name,
-															active_sheet,
-															log_threshold + 1),
-										log_threshold	=> log_threshold + 1);
-
-								else
-									device_not_found;
-								end if;
-								
-							when 6 => -- like "rotate unit IC1 B"
-								device_name := to_device_name (get_field (5));
-								
-								if exists (active_module, device_name) then
 									
-									object_device_name := device_name;
+							end case;
+							
+						when others => null; -- CS
+					end case;
 
-									unit_name := to_unit_name (get_field (6));
-
-									-- Test whether the unit is deployed on the current active sheet.
-									-- Rotating is possible if it is deployed and if it is on the current sheet.
-									-- It will then be attached to the cursor or mouse pointer.
-									if is_deployed (active_module, object_device_name, unit_name) then
-
-										object_unit_name := unit_name;
-										
-										if get_sheet (active_module, object_device_name, object_unit_name) = active_sheet then
-											finish_unit_move;
-										else
-											unit_not_on_this_sheet;
-										end if;
-									else
-										unit_not_deployed;
-									end if; 
-								else
-									device_not_found;
-								end if;
-													
-							when others => null;								
-						end case;
-
-					-- rotating placeholders for unit name, purpose and value:
-					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
-						case cmd_field_count is
-							when 4 => -- like "rotate name"
-								device_name_missing;
-								
-							when 5 => -- like "rotate name R1"
-								unit_name_missing;
-
-								device_name := to_device_name (get_field (5));
-
-								if exists (active_module, device_name) then
-
-									placeholder_move.device := device_name;
-
-									-- Propose units that are on the current active sheet:
-									menu_propose_units_on_move (
-										units			=> get_units_on_sheet (
-															active_module,
-															device_name,
-															active_sheet,
-															log_threshold + 1),
-										log_threshold	=> log_threshold + 1);
-
-								else
-									device_not_found;
-								end if;
-
-							when 6 => -- like "rotate name IC1 B"
-								device_name := to_device_name (get_field (5));
-								
-								if exists (active_module, device_name) then
-
-									placeholder_move.device := device_name;
+					
+				when VERB_ROTATE =>
+					case noun is
+						when NOUN_UNIT =>
+							case cmd_field_count is
+								when 4 => device_name_missing;
 									
-									unit_name := to_unit_name (get_field (6));
+								when 5 => -- like "rotate unit IC1"
+									unit_name_missing;
 
-									-- Test whether the unit is deployed on the current active sheet.
-									-- Rotating the placeholder is possible if the unit it is deployed 
-									-- and if it is on the current sheet.
-									-- The placeholder will then be attached to the cursor or mouse pointer.
-									if is_deployed (active_module, placeholder_move.device, unit_name) then
+									device_name := to_device_name (get_field (5));
 
-										placeholder_move.unit := unit_name;
-										
-										if get_sheet (active_module, placeholder_move.device, placeholder_move.unit) = active_sheet then
-											finish_placeholder_move;
-										else
-											unit_not_on_this_sheet;
-										end if;
+									if exists (active_module, device_name) then
+										object_device_name := device_name;
+
+										-- Propose units that are on the current active sheet:
+										menu_propose_units_on_move (
+											units			=> get_units_on_sheet (
+																active_module,
+																device_name,
+																active_sheet,
+																log_threshold + 1),
+											log_threshold	=> log_threshold + 1);
+
 									else
-										unit_not_deployed;
-									end if; 
-								else
-									device_not_found;
-								end if;
-													
-							when others => null;								
+										device_not_found;
+									end if;
+									
+								when 6 => -- like "rotate unit IC1 B"
+									device_name := to_device_name (get_field (5));
+									
+									if exists (active_module, device_name) then
+										
+										object_device_name := device_name;
 
-								
-						end case;
-						
-					when others => null; -- CS
-				end case;
+										unit_name := to_unit_name (get_field (6));
 
-				
-			when VERB_SET =>
-				case noun is
-					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE =>
-						case cmd_field_count is
-							when 4 => device_name_missing;
-								
-							when 5 => -- like "set value/partcode/purpose IC1"
-								device_name := to_device_name (get_field (5));
+										-- Test whether the unit is deployed on the current active sheet.
+										-- Rotating is possible if it is deployed and if it is on the current sheet.
+										-- It will then be attached to the cursor or mouse pointer.
+										if is_deployed (active_module, object_device_name, unit_name) then
 
-								if exists (active_module, device_name) then
-									set_property (device_name);
-								else
-									device_not_found;
-								end if;
+											object_unit_name := unit_name;
+											
+											if get_sheet (active_module, object_device_name, object_unit_name) = active_sheet then
+												finish_unit_move;
+											else
+												unit_not_on_this_sheet;
+											end if;
+										else
+											unit_not_deployed;
+										end if; 
+									else
+										device_not_found;
+									end if;
+														
+								when others => null;								
+							end case;
 
-							when others => null;
-						end case;
+						-- rotating placeholders for unit name, purpose and value:
+						when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
+							case cmd_field_count is
+								when 4 => -- like "rotate name"
+									device_name_missing;
+									
+								when 5 => -- like "rotate name R1"
+									unit_name_missing;
 
-					when NOUN_VARIANT =>
-						case cmd_field_count is
-							when 4 => device_name_missing;
-								
-							when 5 => -- like "set variant IC1"
-								device_name := to_device_name (get_field (5));
+									device_name := to_device_name (get_field (5));
 
-								if exists (active_module, device_name) then
-									set_variant (device_name);
-								else
-									device_not_found;
-								end if;
+									if exists (active_module, device_name) then
 
-							when others => null;
-						end case;
+										placeholder_move.device := device_name;
 
-					when others => null; -- CS
-				end case;
+										-- Propose units that are on the current active sheet:
+										menu_propose_units_on_move (
+											units			=> get_units_on_sheet (
+																active_module,
+																device_name,
+																active_sheet,
+																log_threshold + 1),
+											log_threshold	=> log_threshold + 1);
 
-				
-			when VERB_SHOW =>
-				case noun is
-					when NOUN_DEVICE =>
-						case cmd_field_count is
-							when 4 =>
-								-- request operator to click on a unit:
-								set_status (status_show_device);
-								
-							when others => null;
-						end case;
+									else
+										device_not_found;
+									end if;
 
-					when NOUN_MODULE =>
-						case cmd_field_count is
-							when 4 => module_name_missing;
-							-- CS request operator to click on the module.
-							when others => null;
-						end case;
+								when 6 => -- like "rotate name IC1 B"
+									device_name := to_device_name (get_field (5));
+									
+									if exists (active_module, device_name) then
 
-					when NOUN_NET =>
-						case cmd_field_count is
-							when 4 =>
-								-- request operator to click on a net:
-								set_status (status_show_net);
+										placeholder_move.device := device_name;
+										
+										unit_name := to_unit_name (get_field (6));
 
-							when others => null;
-						end case;
-						
-					when NOUN_SHEET =>
-						case cmd_field_count is
-							when 4 => sheet_number_missing;
-							when others => null;
-						end case;
+										-- Test whether the unit is deployed on the current active sheet.
+										-- Rotating the placeholder is possible if the unit it is deployed 
+										-- and if it is on the current sheet.
+										-- The placeholder will then be attached to the cursor or mouse pointer.
+										if is_deployed (active_module, placeholder_move.device, unit_name) then
 
-					when others => null;
-				end case;
+											placeholder_move.unit := unit_name;
+											
+											if get_sheet (active_module, placeholder_move.device, placeholder_move.unit) = active_sheet then
+												finish_placeholder_move;
+											else
+												unit_not_on_this_sheet;
+											end if;
+										else
+											unit_not_deployed;
+										end if; 
+									else
+										device_not_found;
+									end if;
+														
+								when others => null;								
+
+									
+							end case;
+							
+						when others => null; -- CS
+					end case;
+
+					
+				when VERB_SET =>
+					case noun is
+						when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE =>
+							case cmd_field_count is
+								when 4 => device_name_missing;
+									
+								when 5 => -- like "set value/partcode/purpose IC1"
+									device_name := to_device_name (get_field (5));
+
+									if exists (active_module, device_name) then
+										set_property (device_name);
+									else
+										device_not_found;
+									end if;
+
+								when others => null;
+							end case;
+
+						when NOUN_VARIANT =>
+							case cmd_field_count is
+								when 4 => device_name_missing;
+									
+								when 5 => -- like "set variant IC1"
+									device_name := to_device_name (get_field (5));
+
+									if exists (active_module, device_name) then
+										set_variant (device_name);
+									else
+										device_not_found;
+									end if;
+
+								when others => null;
+							end case;
+
+						when others => null; -- CS
+					end case;
+
+					
+				when VERB_SHOW =>
+					case noun is
+						when NOUN_DEVICE =>
+							case cmd_field_count is
+								when 4 =>
+									-- request operator to click on a unit:
+									set_status (status_show_device);
+									
+								when others => null;
+							end case;
+
+						when NOUN_MODULE =>
+							case cmd_field_count is
+								when 4 => module_name_missing;
+								-- CS request operator to click on the module.
+								when others => null;
+							end case;
+
+						when NOUN_NET =>
+							case cmd_field_count is
+								when 4 =>
+									-- request operator to click on a net:
+									set_status (status_show_net);
+
+								when others => null;
+							end case;
+							
+						when NOUN_SHEET =>
+							case cmd_field_count is
+								when 4 => sheet_number_missing;
+								when others => null;
+							end case;
+
+						when others => null;
+					end case;
 
 
-			when others => null; -- CS error message in status bar for other 
-							-- incomplete commands such as zoom, position, ...
-		end case;
+				when others => null; -- CS error message in status bar for other 
+								-- incomplete commands such as zoom, position, ...
+			end case;
+		end if;
 	end propose_arguments;
 
 
@@ -3443,49 +3470,26 @@ begin -- schematic_cmd
 	log (text => "execute schematic command: " & enclose_in_quotes (get_all_fields (cmd)),
 		 level => log_threshold);
 
-	-- Copy the given command to the actual command.
-	-- In case the given command is incomplete
-	-- AND we are in graphical mode (non-headless) then
-	-- this procedure interactively proposes arguments and completes the command.
-	-- single_cmd := cmd;
-
-	-- The fields in single_cmd will now be processed and interactively completed.
-	-- A field is fetched from the single_cmd by the function "get_field".
-
-	-- cmd_field_count := get_field_count (single_cmd);
-	
 
 	module := to_module_name (get_field (2)); -- motor_driver (without extension *.mod)
 	-- CS: Becomes obsolete once all board ops use the
 	-- given module_cursor.
-
 	
-	-- read the verb from field 3
-	verb := to_verb (get_field (3));
 
-	-- There are some very short commands which do not require a verb.
-	-- For such commands we do not read the noun.
-	case verb is
-		when VERB_EXIT | VERB_QUIT => null; -- no noun
-		when others => noun := to_noun (get_field (4)); -- read noun from field 4
-	end case;
+	set_verb_and_noun;
+	
 
-
+	-- Once verb and noun are known, they must be shown
+	-- in the verb-noun-display:
 	update_verb_noun_display;
 	
 	
 	-- Parse the command:	
 	parse;
-	-- CS evaluate success of command and return a dedicated code
-	-- to the caller ?
 	
 
-	-- In graphical mode and cmd_entry_mode SINGLE_CMD the flag
-	-- single_cmd.complete can change to false. In that case
-	-- the interactive completiton starts here. 
-	if not is_complete (cmd) then
-		propose_arguments;
-	end if;
+	propose_arguments;
+
 
 	-- After each command (regardless if it is complete or not)
 	-- set the focus to the canvas:

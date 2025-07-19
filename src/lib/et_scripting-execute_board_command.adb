@@ -132,6 +132,34 @@ is
 	use pac_canvas_cmd;
 
 
+	-- This function is a shortcut to get a single field
+	-- from the given command:
+	function get_field (place : in type_field_count) 
+		return string 
+	is begin
+		return get_field (cmd, place);
+	end;
+
+	
+	-- This procedure sets the verb and the noun:
+	procedure set_verb_and_noun is begin
+		-- Set the verb.
+		-- Read it from field 3:
+		verb := to_verb (get_field (3));
+
+		
+		-- There are some very short commands which do not require a noun.
+		-- For such commands we do not read the noun.
+		case verb is
+			when VERB_EXIT | VERB_QUIT => null; -- no noun
+			
+			-- Set the noun. Read it from field 4:		
+			when others => noun := to_noun (get_field (4));
+		end case;
+	end set_verb_and_noun;
+
+	
+
 	-- Updates the verb-noun display depending on the 
 	-- origin of the command and the runmode:
 	procedure update_verb_noun_display is begin
@@ -172,14 +200,6 @@ is
 		command_incomplete (cmd);
 	end;
 
-	
-	-- This function is a shortcut to get a single field
-	-- from the given command:
-	function get_field (place : in type_field_count) 
-		return string 
-	is begin
-		return get_field (cmd, place);
-	end;
 	
 	
 	
@@ -3825,7 +3845,8 @@ is
 
 	
 	
-	
+
+	-- This procedure proposes missing arguments:
 	procedure propose_arguments is
 		use et_canvas_board_devices;
 		use et_canvas_board_texts;
@@ -3858,38 +3879,45 @@ is
 
 		
 	begin -- propose_arguments
-		log_command_incomplete (cmd_field_count, log_threshold);
 
-		case verb is
-			when VERB_PLACE =>
-				case noun is
-					when NOUN_TEXT =>
-						show_text_properties;
-						set_finalization_pending (cmd);
-
-					when NOUN_VIA =>
-						case cmd_field_count is
-							when 4 => -- place via
-								show_via_properties;
-								set_finalization_pending (cmd);
-
-							when 5 => -- place via RESET_N
-								-- Preset the net name so that it is visible
-								-- in the via properties bar:
-								object_net_name := to_net_name (get_field (5));
-
-								show_via_properties;
-								set_finalization_pending (cmd);
-
-							when others => null;
-						end case;
-						
-					when others => null; -- CS
-				end case;
-
-			when others => null; -- CS
-		end case;
+		-- Missing arguments are to be proposed only if
+		-- the command origin is the console.
+		-- Otherwise nothing happens here.
+		if not is_complete (cmd) and get_origin (cmd) = ORIGIN_CONSOLE then
 		
+			log_command_incomplete (cmd_field_count, log_threshold);
+
+			case verb is
+				when VERB_PLACE =>
+					case noun is
+						when NOUN_TEXT =>
+							show_text_properties;
+							set_finalization_pending (cmd);
+
+						when NOUN_VIA =>
+							case cmd_field_count is
+								when 4 => -- place via
+									show_via_properties;
+									set_finalization_pending (cmd);
+
+								when 5 => -- place via RESET_N
+									-- Preset the net name so that it is visible
+									-- in the via properties bar:
+									object_net_name := to_net_name (get_field (5));
+
+									show_via_properties;
+									set_finalization_pending (cmd);
+
+								when others => null;
+							end case;
+							
+						when others => null; -- CS
+					end case;
+
+				when others => null; -- CS
+			end case;
+			
+		end if;
 	end propose_arguments;
 
 	
@@ -3900,50 +3928,27 @@ begin -- board_cmd
 	
 	log (text => "execute board command: " & enclose_in_quotes (get_all_fields (cmd)),
 		 level => log_threshold);
-
-	-- Copy the given command to the actual command.
-	-- In case the given command is incomplete
-	-- and we are in graphical mode (non-headless) then
-	-- this procedure interactively proposes arguments and completes the command.
-	-- single_cmd := cmd;
-
-	-- The fields in single_cmd will now be processed and interactively completed.
-	-- A field is fetched from the single_cmd by the function "get_field".
-
-	-- cmd_field_count := get_field_count (single_cmd);
-
 	
 
 	module := to_module_name (get_field (2)); -- motor_driver (without extension *.mod)
 	-- CS: Becomes obsolete once all board ops use the
 	-- given module_cursor.
 
-	-- read the verb from field 3
-	verb := to_verb (get_field (3));
-	
-	-- There are some very short commands which do not require a noun.
-	-- For such commands we do not read the noun.
-	case verb is
-		when VERB_EXIT | VERB_QUIT => null; -- no noun
-		when others => noun := to_noun (get_field (4)); -- read noun from field 4
-	end case;
 
+	set_verb_and_noun;
 	
 
+	-- Once verb and noun are known, they must be shown
+	-- in the verb-noun-display:
 	update_verb_noun_display;
 	
 	
 	-- parse the command:
 	parse;
 
-
 	
-	-- In graphical mode and cmd_entry_mode SINGLE_CMD the flag
-	-- single_cmd.complete can change to false. In that case
-	-- the interactive completiton starts here. 
-	if not is_complete (cmd) then
-		propose_arguments;
-	end if;
+	propose_arguments;
+
 
 	-- After every command (regardless if it is complete or not)
 	-- set the focus to the canvas:

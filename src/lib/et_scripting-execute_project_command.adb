@@ -174,12 +174,8 @@ begin -- execute_project_command
 	parse;
 	
 	
-	-- In graphical mode and cmd_entry_mode SINGLE_CMD the flag
-	-- single_cmd.complete can change to false. In that case
-	-- the interactive completiton starts here. 
-	-- if not is_complete (cmd) then
-	-- 	propose_arguments;
-	-- end if;
+	-- CS propose_arguments;
+
 
 	
 end execute_project_command;
