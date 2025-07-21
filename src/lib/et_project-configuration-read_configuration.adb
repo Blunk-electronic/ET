@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -69,6 +69,8 @@ is
 
 	-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 	conventions_file_name : et_conventions.pac_file_name.bounded_string;
+
+
 	
 	procedure read_rules is
 		use et_conventions;
@@ -86,6 +88,8 @@ is
 		end if;
 	end read_rules;
 
+
+	
 	procedure set_rules is 
 		use et_conventions.pac_file_name;
 	begin
@@ -99,6 +103,9 @@ is
 		end if;
 	end set_rules;
 
+
+
+	
 	procedure do_it is
 	
 		procedure process_line is
@@ -122,6 +129,8 @@ is
 				end case;
 						
 			end execute_section;
+
+
 			
 			function set (
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
@@ -168,6 +177,9 @@ is
 					return false;
 				end if;
 			end set;
+
+
+
 			
 		begin -- process_line
 			if set (section_environment_variables, SEC_ENVIRONMENT_VARIABLES) then null;
@@ -192,6 +204,7 @@ is
 				end case;
 			end if;
 
+			
 			exception when event: others =>
 				log (text => "file " & enclose_in_quotes (file_name) 
 					 & space & get_affected_line (line) 
@@ -200,6 +213,8 @@ is
 			
 		end process_line;
 
+
+		
 	begin -- do_it
 		
 		-- read the file line by line
@@ -218,11 +233,16 @@ is
 		end loop;
 		
 	end do_it;
+
+
 	
-begin -- read_configuration
-	log (text => "reading project configuration file " & enclose_in_quotes (file_name) & " ...",
-		 level => log_threshold, console => true);
+begin
+	log (text => "read project configuration file " 
+		 & enclose_in_quotes (file_name),
+		 level => log_threshold);
+	
 	log_indentation_up;
+
 	
 	if exists (file_name) then
 
@@ -256,6 +276,9 @@ begin -- read_configuration
 	end if;
 
 	log_indentation_down;
+
+
+	-- log (text => "done", level => log_threshold);
 
 	
 	exception when event:
