@@ -37,7 +37,6 @@
 --
 --   ToDo: 
 
-with ada.text_io;				use ada.text_io;
 with ada.containers;			use ada.containers;
 with ada.exceptions;			use ada.exceptions;
 
@@ -105,13 +104,23 @@ package et_scripting is -- CS rename to et_command_processor
 
 
 
+	-- Reads a given script file in the current
+	-- working directory.
+	-- The caller must care for changing into the proper
+	-- directory before:
+	procedure read_script (
+		file			: in string; -- like "rename_nets.scr"
+		log_threshold	: in type_log_level);
 
 
+	
 	-- Used when executing a script from inside a script
 	-- or
 	-- when executing a script from inside the GUI.
 	-- Calls procedure execute_command in the course of
-	-- executing the given script:
+	-- executing the given script.
+	-- The caller must care for changing into the proper
+	-- directory before:
 	procedure execute_nested_script (
 		file			: in string; -- like "rename_nets.scr"
 		log_threshold	: in type_log_level);
