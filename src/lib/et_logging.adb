@@ -35,6 +35,8 @@
 --
 --   history of changes:
 
+
+
 with ada.strings;				use ada.strings;
 with ada.strings.unbounded; 	use ada.strings.unbounded;
 
@@ -71,27 +73,37 @@ package body et_logging is
 		end if;
 	end to_string;
 
+
+
+
 	
-	procedure log_indentation_up is
-	begin
+	procedure log_indentation_up is begin
 		log_indentation := log_indentation + 1;
+		
 		exception
 			when constraint_error =>
-				put_line ("WARNING ! Maximum log indentation reached !");
+				put_line (report_handle, "WARNING ! Maximum log indentation reached !");
 				log_indentation := type_indentation_level'last;
+				
 			when others => null;
 	end log_indentation_up;
 
+
 	
-	procedure log_indentation_down is
-	begin
+
+	
+	procedure log_indentation_down is begin
 		log_indentation := log_indentation - 1;
+		
 		exception
-			when constraint_error =>
-				put_line ("WARNING ! Minimum log indentation reached !");
+			when constraint_error =>				
+				put_line (report_handle, "WARNING ! Minimum log indentation reached !");
 				log_indentation := type_indentation_level'first;
+				
 			when others => null;
 	end log_indentation_down;
+
+
 
 	
 	procedure log_indentation_reset is
@@ -105,11 +117,15 @@ package body et_logging is
 -- 		null;
 -- 	end log_indentation_operation;
 
+
+
 	
 	function indent (width : in type_indentation_level) return string is
 	begin
 		return (natural(width) * latin_1.space);
 	end indent;
+
+
 
 	
 	procedure log (

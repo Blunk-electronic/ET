@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,6 +35,8 @@
 --
 --   history of changes:
 
+
+with ada.text_io;				use ada.text_io;
 with ada.directories;			use ada.directories;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.strings.fixed; 		use ada.strings.fixed;
@@ -42,7 +44,6 @@ with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings.maps;			use ada.strings.maps;
-with ada.text_io;				use ada.text_io;
 
 with et_string_processing;		use et_string_processing;
 
