@@ -185,15 +185,6 @@ package body et_scripting is
 
 			set_input (file_handle);
 
-			-- Prepare the script command status in case a command
-			-- in the script fails:
-			-- script_cmd := (script_name => script_name, others => <>);
-
-			-- Prepare the handling of the exception in case the script fails.
-			-- See procedures schematic_cmd.evaluate_exception or
-			-- board_cmd.evaluate_exception for example.
-			-- cmd_entry_mode := ORIGIN_SCRIPT;
-			
 			
 			-- read the file line by line
 			while not end_of_file loop
@@ -208,17 +199,12 @@ package body et_scripting is
 				-- we are interested in lines that contain something. emtpy lines are skipped:
 				if get_field_count (fields) > 0 then
 
-					-- Backup the command to be executed in the script command status
-					-- in case the command fails:
-					-- script_cmd.fields := fields;
-
-					
 					-- Compose and execute the command to be executed.
 					-- Since it is launched via a script, its origin
 					-- is set accordingly:
 					cmd := to_single_cmd (fields, ORIGIN_SCRIPT);
 
-					log (text => "A cmd: " & get_all_fields (cmd));
+					-- log (text => "A cmd: " & get_all_fields (cmd));
 					
 					execute_script_command (
 						script_name		=> script_name, 
@@ -236,8 +222,8 @@ package body et_scripting is
 					case get_exit_code (cmd) is
 						when 0 => null; -- no error
 						when 1 =>
-							log (ERROR, "Command incomplete A !"); -- CS output line number
-							log (text => "cmd: " & get_all_fields (cmd));
+							log (ERROR, "Command incomplete !"); -- CS output line number
+							--log (text => "cmd: " & get_all_fields (cmd));
 							exit; -- abort script execution
 							
 						when 2 =>
