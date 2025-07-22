@@ -139,10 +139,13 @@ package body et_scripting is
 	
 
 
-	procedure read_script (
+	function read_script (
 		file			: in string; -- like "rename_nets.scr"
 		log_threshold	: in type_log_level) 
+		return type_exit_code
 	is
+		exit_code : type_exit_code := ERROR;
+		
 		use ada.directories;
 		
 		file_handle : file_type;
@@ -212,10 +215,13 @@ package body et_scripting is
 					-- CS evaluate cmd status and output line number, hints, etc.
 					-- line provides the affected line number
 					case get_exit_code (cmd) is
-						when 0 => null; -- no error
+						when 0 => 
+							exit_code := SUCCESSFUL; -- no error
+							
 						when 1 =>
 							log (ERROR, "Command incomplete !"); -- CS output line number
 							--log (text => "cmd: " & get_all_fields (cmd));
+							
 							exit; -- abort script execution
 							
 						when 2 =>
@@ -257,6 +263,8 @@ package body et_scripting is
 
 		-- log (text => "done", level => log_threshold);
 
+		return exit_code;
+		
 		
 		exception when event: others =>
 			log_indentation_down;
@@ -265,9 +273,11 @@ package body et_scripting is
 			if is_open (file_handle) then 
 				close (file_handle); 
 			end if;
-		
+
+			return exit_code;
 	end read_script;
 
+	
 	
 
 	
@@ -275,10 +285,13 @@ package body et_scripting is
 	-- Used when executing a script from inside a script
 	-- or
 	-- when executing a script from inside the GUI:
-	procedure execute_nested_script (
+	function execute_nested_script (
 		file			: in string; -- like "rename_nets.scr"
 		log_threshold	: in type_log_level) 
+		return type_exit_code
 	is
+		exit_code : type_exit_code := ERROR;
+		
 		use ada.directories;
 
 		-- Backup previous input:
@@ -294,7 +307,7 @@ package body et_scripting is
 		
 		log_indentation_up;
 
-		read_script (file, log_threshold + 1);
+		exit_code := read_script (file, log_threshold + 1);
 						
 
 		-- A script can be executed from inside a script (nested scripts).
@@ -305,15 +318,21 @@ package body et_scripting is
 			--log (text => "reset to previous input " & name (previous_input) & " ...", level => log_threshold + 1);
 			set_input (previous_input);
 		end if;
+
 		
 		log_indentation_down;
 
+		return exit_code;
+		
+
 		exception when event: others =>
+			log (text => ada.exceptions.exception_information (event));
+	
 			if is_open (previous_input) then
 				set_input (previous_input);
 			end if;
   
-			raise;
+			return exit_code;
 	end execute_nested_script;
 
 
@@ -510,7 +529,7 @@ package body et_scripting is
 		log_threshold	: in type_log_level)
 		return type_exit_code 
 	is		
-		exit_code : type_exit_code := SUCCESSFUL; -- to be returned
+		exit_code : type_exit_code := ERROR;
 
 		use ada.directories;
 
@@ -545,7 +564,7 @@ package body et_scripting is
 
 		-- Do the actual execution of the script:
 		log_indentation_up;
-		read_script (simple_name (to_string (script_name)), log_threshold + 2);
+		exit_code := read_script (simple_name (to_string (script_name)), log_threshold + 2);
 		log_indentation_down;
 		
 		log (text => "return to directory " 
@@ -569,7 +588,7 @@ package body et_scripting is
 			log (text => exception_name (event), console => true);
 			log (text => exception_message (event), console => true);
 			
-			return ERROR;
+			return exit_code;
 		
 	end execute_script_headless;
 

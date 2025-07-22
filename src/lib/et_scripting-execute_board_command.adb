@@ -3440,12 +3440,16 @@ is
 
 
 
+	
 
-	procedure execute_script is begin
+
+	procedure execute_script is 
+		exit_code : type_exit_code;
+	begin
 		case cmd_field_count is
 			when 5 => 
 
-				execute_nested_script (
+				exit_code := execute_nested_script (
 					file			=> get_field (5),
 					log_threshold	=> log_threshold + 1);
 

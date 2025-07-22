@@ -74,7 +74,7 @@ package et_scripting is -- CS rename to et_command_processor
 
 	
 	
-	type type_exit_code is (
+	type type_exit_code is ( -- CS rename to type_exit_code_script
 		SUCCESSFUL,
 		WARNINGS,
 		ERROR
@@ -108,9 +108,10 @@ package et_scripting is -- CS rename to et_command_processor
 	-- working directory.
 	-- The caller must care for changing into the proper
 	-- directory before:
-	procedure read_script (
+	function read_script (
 		file			: in string; -- like "rename_nets.scr"
-		log_threshold	: in type_log_level);
+		log_threshold	: in type_log_level)
+		return type_exit_code;
 
 
 	
@@ -121,9 +122,10 @@ package et_scripting is -- CS rename to et_command_processor
 	-- executing the given script.
 	-- The caller must care for changing into the proper
 	-- directory before:
-	procedure execute_nested_script (
+	function execute_nested_script (
 		file			: in string; -- like "rename_nets.scr"
-		log_threshold	: in type_log_level);
+		log_threshold	: in type_log_level)
+		return type_exit_code;
 
 	
 	

@@ -154,7 +154,7 @@ package et_cmd_sts is
 
 
 
-	subtype type_exit_code is natural range 0 .. 3;
+	subtype type_exit_code is natural range 0 .. 3; -- CS rename to type_exit_code_command
 		-- 0 -> success
 		-- 1 -> too few arguments given
 		-- 2 -> too many arguments given

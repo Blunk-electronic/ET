@@ -1548,7 +1548,6 @@ is
 					
 					when others =>
 						set_incomplete (cmd);
-
 						-- NOTE: This is not a failure. For this reason
 						-- we do not set an exit code here.
 				end case;
@@ -2026,17 +2025,83 @@ is
 	
 	
 
+	-- This procedure parses a command that launches
+	-- a script like:
+	-- "execute script demo.scr"
+	procedure execute_script is 
 
-	procedure execute_script is begin
-		case cmd_field_count is
-			when 5 => 
+		-- This procedure is to be called when the command is complete.
+		-- It lauches the given script and sets the exit code of
+		-- the command according to the outcome of the script execution:
+		procedure command_complete is
+			exit_code : type_exit_code;
+		begin
+			exit_code := execute_nested_script (
+				file			=> get_field (5),
+				log_threshold	=> log_threshold + 1);
 
-				execute_nested_script (
-					file			=> get_field (5),
-					log_threshold	=> log_threshold + 1);
+			case exit_code is
+				when SUCCESSFUL =>
+					set_exit_code (cmd, 0);
 
-			when 6 .. type_field_count'last => too_long;								
-			when others => command_incomplete;
+				when others =>
+					set_exit_code (cmd, 3);
+			end case;
+		end command_complete;
+
+		
+	begin
+		case get_origin (cmd) is
+			when ORIGIN_CONSOLE =>
+				
+				case cmd_field_count is
+					when 4 => 
+						-- Command is incomplete like "execute script"
+						set_incomplete (cmd);
+						-- NOTE: This is not a failure. For this reason
+						-- we do not set an exit code here.
+						
+					when 5 =>
+						-- Command is complete like "execute script demo.scr"
+						command_complete;
+								
+					when 6 .. type_field_count'last =>
+						too_long;
+
+						-- In console mode, too long a command is not accepted.
+						-- The "failed" status must be set accordingly:
+						set_exit_code (cmd, 2);
+						
+
+					when others => null;
+						-- CS should never happen
+						raise constraint_error;
+						
+				end case;
+
+				
+			when ORIGIN_SCRIPT =>
+				case cmd_field_count is
+					when 5 => 
+						-- Command is complete like "execute script demo.scr"
+						command_complete;
+						
+					when 6 .. type_field_count'last =>
+						too_long;
+
+						-- In script mode, too long a command is not accepted.
+						-- The "failed" status must be set accordingly:
+						set_exit_code (cmd, 2);
+						
+
+					when others => null;
+						set_incomplete (cmd);
+						
+						-- In script mode, an incomplete command is not accepted.
+						-- The "failed" status must be set accordingly:
+						set_exit_code (cmd, 1);
+						
+				end case;
 		end case;
 	end execute_script;
 
