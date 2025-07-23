@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                             SCRIPTING                                    --
+--                          SCRIPT PROCESSOR                                --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -52,91 +52,69 @@ with et_modes.project;			use et_modes.project;
 
 
 
-package et_scripting is -- CS rename to et_command_processor
+package et_script_processor is
+
+	
+	comment_mark : constant string := ("#");
+
+	
+	-- This is the exit code after a script
+	-- has been executed:
+	type type_exit_code_script is (
+		SUCCESSFUL,
+		WARNINGS,
+		ERROR
+		);
+
+	
 
 
 
--- CS move this stuff to a separate package
-	device_missing	: constant string := "Device name missing !";
-	module_missing	: constant string := "Module name missing !";
-	net_missing		: constant string := "Net name missing !";
-
-
-
-
-
-	-- This procedure parses a command that launches
-	-- a script like:
-	-- "execute script demo.scr"
-	-- This procedure is common to all domains. For this reasone
-	-- it is placed in this file.
-	-- It calls function execute_nested_script for the final
-	-- execution:
-	procedure parse_execute_script (
-		cmd				: in out type_single_cmd;
-		log_threshold	: in type_log_level);
-
-
-
-	-- Evaluates the exit code of the given 
-	-- command and writes helpful messages in the log file:
-	procedure evaluate_command_exit_code (
-		cmd				: in type_single_cmd;
-		log_threshold	: in type_log_level);
+	-- Reads a given script file that must exist 
+	-- in the current working directory.
+	-- The caller must care for changing into the proper
+	-- directory before.
+	-- Reads the script line per line. One command must be placed
+	-- in a line. The command itself is then passed to procedure
+	-- execute_script_command for futher processing:
+	function read_script (
+		file			: in string; -- like "rename_nets.scr"
+		log_threshold	: in type_log_level)
+		return type_exit_code_script;
 
 
 	
-	-- Executes a schematic command.
-	-- Is called by procedure execute_command whenever a
-	-- schematic related command is to be executed:
-	procedure execute_schematic_command (
-		module_cursor	: in pac_generic_modules.cursor;
-		cmd				: in out type_single_cmd;
-		log_threshold	: in type_log_level);
-
-
-		
-
-	
-	-- Executes a board command.
-	-- Is called by procedure execute_script_command whenever a
-	-- board related command is to be executed:
-	procedure execute_board_command (
-		module_cursor	: in pac_generic_modules.cursor;
-		cmd				: in out type_single_cmd;
-		log_threshold	: in type_log_level);
-
+	-- Used when executing a script from inside a script
+	-- or
+	-- when executing a script from inside the GUI.
+	-- Calls procedure execute_command in the course of
+	-- executing the given script.
+	-- The caller must care for changing into the proper
+	-- directory before:
+	function execute_nested_script (
+		file			: in string; -- like "rename_nets.scr"
+		log_threshold	: in type_log_level)
+		return type_exit_code_script;
 
 	
-	-- Executes a project command.
-	-- Is called by procedure execute_script_command whenever a
-	-- project related command is to be executed:
-	procedure execute_project_command (
-		cmd				: in out type_single_cmd;
-		verb			: in type_verb_project;
-		noun 			: in type_noun_project;
-		log_threshold	: in type_log_level);
-										  
+	
+	-- Executes the given script file like "dummy_module/my_script.scr"
+	-- in headless mode.
+	-- Changes into the directory where the script lives and starts
+	-- execution there.
+	-- 1. This function should be called to execute a script on launching
+	--    ET via command line in headless mode.
+	-- 2. This function is NOT intended to launch a script
+	--    from inside a script ! This would be a nested script.
+	--    For this mode the procedure execute_nested_script is provided.
+	function execute_script_headless (
+		script_name		: in pac_script_name.bounded_string;
+		log_threshold	: in type_log_level)
+		return type_exit_code_script;
 
 
 	
-	-- Executes a command like 
-	-- "schematic motor_driver draw net motor_on 1 150 100 150 130".
-	-- Dispatches further to the execution of either schematic, 
-	-- board or project commands.
-	-- When called, the current working directory must be the
-	-- project like my_projects/blood_sample_analyzer.
-	procedure execute_script_command (
-		-- The script file that contains the command. for debug messages only:
-		script_name		: in pac_script_name.bounded_string; 
-		-- The text fields like "schematic motor_driver draw net motor_on 1 150 100 150 130":
-		cmd				: in out type_single_cmd;
-		log_threshold	: in type_log_level);
-
-
-
-	
-end et_scripting;
+end et_script_processor;
 
 -- Soli Deo Gloria
 

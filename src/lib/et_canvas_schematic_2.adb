@@ -82,6 +82,7 @@ with et_project_name;
 with et_module_ops;
 with et_canvas_schematic_preliminary_object;
 with et_cmd_sts;						use et_cmd_sts;
+with et_script_processor;
 
 
 package body et_canvas_schematic_2 is
@@ -1061,7 +1062,7 @@ package body et_canvas_schematic_2 is
 		fields := read_line (
 			line 			=> line_as_typed_by_operator,
 			number			=> 1,  -- this is the one and only line
-			comment_mark 	=> et_scripting.comment_mark,
+			comment_mark 	=> et_script_processor.comment_mark,
 			delimiter_wrap	=> true, -- strings are enclosed in quotations
 			ifs 			=> space); -- fields are separated by space
 
@@ -1153,7 +1154,7 @@ package body et_canvas_schematic_2 is
 		fields := read_line (
 			line 			=> line_as_typed_by_operator,
 			number			=> 1,  -- this is the one and only line
-			comment_mark 	=> et_scripting.comment_mark,
+			comment_mark 	=> et_script_processor.comment_mark,
 			delimiter_wrap	=> true, -- strings are enclosed in quotations
 			ifs 			=> space); -- fields are separated by space
 
