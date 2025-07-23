@@ -38,6 +38,8 @@
 
 with ada.containers;
 
+with et_display;					use et_display;
+with et_display.schematic;
 with et_modes.schematic;
 with et_canvas_schematic_units;
 with et_canvas_schematic_nets;
@@ -76,6 +78,9 @@ with et_device_model_names;
 with et_device_value;					use et_device_value;
 with et_package_variant;
 with et_canvas.cmd;
+
+with et_canvas_schematic_2;
+with et_canvas_board_2;
 
 with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
 

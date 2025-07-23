@@ -42,26 +42,14 @@ with ada.characters.handling;		use ada.characters.handling;
 with ada.strings; 					use ada.strings;
 with ada.strings.fixed; 			use ada.strings.fixed;
 
-with ada.exceptions;
+with ada.exceptions;				use ada.exceptions;
 with ada.directories;
 with gnat.directory_operations;
 
+with et_string_processing;			use et_string_processing;
 with et_exceptions;					use et_exceptions;
 
-with et_domains;
-with et_project;
-with et_primitive_objects;			use et_primitive_objects;
-with et_axes;						use et_axes;
-
-with et_display;					use et_display;
-with et_display.schematic;
-with et_display.board;
-
-with et_canvas_schematic_2;
-with et_canvas_board_2;
-with et_module_names;				use et_module_names;
-with et_keywords;					use et_keywords;
-
+with et_cmd_sts;					use et_cmd_sts;
 with et_command_processor;			use et_command_processor;
 
 

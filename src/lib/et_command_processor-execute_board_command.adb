@@ -38,8 +38,14 @@
 --   ToDo:
 --   - command to define a global cutout area
 
+
+with et_display;					use et_display;
+with et_display.board;
+
 with et_module_instance;			use et_module_instance;
 with et_pcb_sides;
+with et_primitive_objects;			use et_primitive_objects;
+with et_axes;						use et_axes;
 
 with et_schematic_coordinates;
 with et_board_coordinates;
@@ -93,6 +99,9 @@ with et_vias;
 with et_pcb;
 with et_pcb_stack;
 with et_keywords;					use et_keywords;
+
+with et_canvas_schematic_2;
+with et_canvas_board_2;
 
 with et_canvas_board_preliminary_object;
 
