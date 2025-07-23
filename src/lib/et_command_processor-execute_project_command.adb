@@ -42,7 +42,7 @@
 -- to do:
 
 
-separate (et_scripting)
+separate (et_command_processor)
 
 
 

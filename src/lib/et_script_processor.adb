@@ -62,7 +62,7 @@ with et_canvas_board_2;
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
 
-with et_scripting;					use et_scripting;
+with et_command_processor;			use et_command_processor;
 
 
 package body et_script_processor is

@@ -57,7 +57,7 @@ with et_domains;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_axes;						use et_axes;
-with et_scripting;
+with et_command_processor;
 with et_modes;						--use et_modes;
 with et_modes.board;
 with et_modes.schematic;	
@@ -1021,7 +1021,7 @@ package body et_canvas_schematic_2 is
 	is
 		use ada.directories;
 		use et_project_name;
-		use et_scripting;
+		use et_command_processor;
 		use et_modes;
 		use et_project;
 		use et_domains;
@@ -1114,7 +1114,7 @@ package body et_canvas_schematic_2 is
 	procedure execute_command (self : access gtk_entry_record'class) is 
 		use ada.directories;	
 		use et_project_name;
-		use et_scripting;
+		use et_command_processor;
 		use et_modes;
 		use et_project;
 		use et_domains;

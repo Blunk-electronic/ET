@@ -80,7 +80,7 @@ with et_canvas.cmd;
 with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
 
 
-separate (et_scripting)
+separate (et_command_processor)
 
 
 

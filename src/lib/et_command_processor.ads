@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                             SCRIPTING                                    --
+--                          COMMAND PROCESSOR                               --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -52,7 +52,7 @@ with et_modes.project;			use et_modes.project;
 
 
 
-package et_scripting is -- CS rename to et_command_processor
+package et_command_processor is
 
 
 
@@ -136,7 +136,7 @@ package et_scripting is -- CS rename to et_command_processor
 
 
 	
-end et_scripting;
+end et_command_processor;
 
 -- Soli Deo Gloria
 

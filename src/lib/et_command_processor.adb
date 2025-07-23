@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                             SCRIPTING                                    --
+--                          COMMAND PROCESSOR                               --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -65,7 +65,7 @@ with et_keywords;					use et_keywords;
 with et_script_processor;
 
 
-package body et_scripting is
+package body et_command_processor is
 
 -- CS move this stuff to a separate package:
 
@@ -390,7 +390,7 @@ package body et_scripting is
 
 
 	
-end et_scripting;
+end et_command_processor;
 	
 -- Soli Deo Gloria
 

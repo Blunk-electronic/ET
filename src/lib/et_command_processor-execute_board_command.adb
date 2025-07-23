@@ -99,7 +99,7 @@ with et_canvas_board_preliminary_object;
 -- to do:
 
 
-separate (et_scripting)
+separate (et_command_processor)
 
 
 
