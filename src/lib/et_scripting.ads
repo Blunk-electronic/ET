@@ -104,10 +104,89 @@ package et_scripting is -- CS rename to et_command_processor
 
 
 
-	-- Reads a given script file in the current
-	-- working directory.
+
+
+	-- This procedure parses a command that launches
+	-- a script like:
+	-- "execute script demo.scr"
+	-- This procedure is common to all domains. For this reasone
+	-- it is placed in this file.
+	-- It calls function execute_nested_script for the final
+	-- execution:
+	procedure parse_execute_script (
+		cmd				: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Evaluates the exit code of the given 
+	-- command and writes helpful messages in the log file:
+	procedure evaluate_command_exit_code (
+		cmd				: in type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+	
+	-- Executes a schematic command.
+	-- Is called by procedure execute_command whenever a
+	-- schematic related command is to be executed:
+	procedure execute_schematic_command (
+		module_cursor	: in pac_generic_modules.cursor;
+		cmd				: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+	
+	polygon_log_category : type_log_category := log_category_default;
+	-- CS move where it belongs or remove entirely.
+	
+
+	
+	-- Executes a board command.
+	-- Is called by procedure execute_script_command whenever a
+	-- board related command is to be executed:
+	procedure execute_board_command (
+		module_cursor	: in pac_generic_modules.cursor;
+		cmd				: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+	
+	-- Executes a project command.
+	-- Is called by procedure execute_script_command whenever a
+	-- project related command is to be executed:
+	procedure execute_project_command (
+		cmd				: in out type_single_cmd;
+		verb			: in type_verb_project;
+		noun 			: in type_noun_project;
+		log_threshold	: in type_log_level);
+										  
+
+
+	
+	-- Executes a command like 
+	-- "schematic motor_driver draw net motor_on 1 150 100 150 130".
+	-- Dispatches further to the execution of either schematic, 
+	-- board or project commands.
+	-- When called, the current working directory must be the
+	-- project like my_projects/blood_sample_analyzer.
+	procedure execute_script_command (
+		-- The script file that contains the command. for debug messages only:
+		script_name		: in pac_script_name.bounded_string; 
+		-- The text fields like "schematic motor_driver draw net motor_on 1 150 100 150 130":
+		cmd				: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+
+
+	-- Reads a given script file that must exist 
+	-- in the current working directory.
 	-- The caller must care for changing into the proper
-	-- directory before:
+	-- directory before.
+	-- Reads the script line per line. One command must be placed
+	-- in a line. The command itself is then passed to procedure
+	-- execute_script_command for futher processing:
 	function read_script (
 		file			: in string; -- like "rename_nets.scr"
 		log_threshold	: in type_log_level)
@@ -127,66 +206,7 @@ package et_scripting is -- CS rename to et_command_processor
 		log_threshold	: in type_log_level)
 		return type_exit_code;
 
-
-	-- This procedure parses a command that launches
-	-- a script like:
-	-- "execute script demo.scr"
-	-- This procedure is common to all domains. For this reasone
-	-- it is placed in this file.
-	-- It calls function execute_nested_script for the final
-	-- execution:
-	procedure parse_execute_script (
-		cmd				: in out type_single_cmd;
-		log_threshold	: in type_log_level);
-
 	
-	
-	-- Executes a schematic command.
-	-- Is called by procedure execute_command whenever a
-	-- schematic related command is to be executed:
-	procedure execute_schematic_command (
-		module_cursor	: in pac_generic_modules.cursor;
-		cmd				: in out type_single_cmd;
-		log_threshold	: in type_log_level);
-
-	
-	polygon_log_category : type_log_category := log_category_default;
-	
-	
-	-- Executes a board command.
-	-- Is called by procedure execute_script_command whenever a
-	-- board related command is to be executed:
-	procedure execute_board_command (
-		module_cursor	: in pac_generic_modules.cursor;
-		cmd				: in out type_single_cmd;
-		log_threshold	: in type_log_level);
-
-
-	-- Executes a project command.
-	-- Is called by procedure execute_script_command whenever a
-	-- project related command is to be executed:
-	procedure execute_project_command (
-		cmd				: in out type_single_cmd;
-		verb			: in type_verb_project;
-		noun 			: in type_noun_project;
-		log_threshold	: in type_log_level);
-										  
-	
-	-- Executes a command like 
-	-- "schematic motor_driver draw net motor_on 1 150 100 150 130".
-	-- Dispatches further to the execution of either schematic, 
-	-- board or project commands.
-	-- When called, the current working directory must be the
-	-- project like my_projects/blood_sample_analyzer.
-	procedure execute_script_command (
-		-- The script file that contains the command. for debug messages only:
-		script_name		: in pac_script_name.bounded_string; 
-		-- The text fields like "schematic motor_driver draw net motor_on 1 150 100 150 130":
-		cmd				: in out type_single_cmd;
-		log_threshold	: in type_log_level);
-
-
-
 	
 	-- Executes the given script file like "dummy_module/my_script.scr"
 	-- in headless mode.

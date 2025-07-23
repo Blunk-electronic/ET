@@ -139,206 +139,6 @@ package body et_scripting is
 	
 
 
-	function read_script (
-		file			: in string; -- like "rename_nets.scr"
-		log_threshold	: in type_log_level) 
-		return type_exit_code
-	is
-		exit_code : type_exit_code := ERROR;
-		
-		use ada.directories;
-		
-		file_handle : file_type;
-
-		-- The text fields of a single command read from the script:
-		-- Example: "schematic demo draw net GND 1 90 100 100 100"
-		fields : type_fields_of_line;
-
-		-- The single command to be executed:
-		cmd : type_single_cmd;
-		
-		script_name : pac_script_name.bounded_string := to_script_name (file);
-		
-	begin
-		log (text => "read script " & enclose_in_quotes (to_string (script_name)),
-			 level => log_threshold);
-		
-		log_indentation_up;
-		
-
-		
-		-- make sure the script file exists:
-		if exists (to_string (script_name)) then
-
-			-- goto l_end;
-			
-			-- open script file
-			open (
-				file => file_handle,
-				mode => in_file, 
-				name => to_string (script_name)); -- demo.scr
-
-			set_input (file_handle);
-
-			
-			-- read the file line by line
-			while not end_of_file loop
-				
-				fields := read_line (
-					line 			=> get_line,
-					number			=> positive (ada.text_io.line (current_input)),
-					comment_mark 	=> comment_mark,
-					delimiter_wrap	=> true, -- strings are enclosed in quotations
-					ifs 			=> space); -- fields are separated by space
-
-				-- we are interested in lines that contain something. emtpy lines are skipped:
-				if get_field_count (fields) > 0 then
-
-					-- Compose and execute the command to be executed.
-					-- Since it is launched via a script, its origin
-					-- is set accordingly:
-					cmd := to_single_cmd (fields, ORIGIN_SCRIPT);
-
-					-- log (text => "A cmd: " & get_all_fields (cmd));
-					
-					execute_script_command (
-						script_name		=> script_name, 
-						cmd				=> cmd,
-						log_threshold	=> log_threshold + 1);
-					
-					-- Procedure execute_script_command dispatches to subprograms
-					-- that execute the command according to the 
-					-- targeted domain (first field in fields) like project, 
-					-- schematic, board, ...
-
-
-					-- CS evaluate cmd status and output line number, hints, etc.
-					-- line provides the affected line number
-					case get_exit_code (cmd) is
-						when 0 => 
-							exit_code := SUCCESSFUL; -- no error
-							
-						when 1 =>
-							log (ERROR, "Command incomplete !"); -- CS output line number
-							--log (text => "cmd: " & get_all_fields (cmd));
-							
-							exit; -- abort script execution
-							
-						when 2 =>
-							log (ERROR, "Command too long !"); -- CS output line number
-							exit; -- abort script execution
-
-						when 3 =>
-							log (ERROR, "Other error."); -- CS output line number
-							exit; -- abort script execution
-
-					end case;					
-				end if;
-			end loop;
-
-			
-			log (text => "close script file " & to_string (script_name),
-				 level => log_threshold + 1);
-			
-			close (file_handle);
-
-			-- << l_end >>
-			
-		else -- script file not found
-
-			-- raise semantic_error_1 with 
-			-- 	"script file " 
-			-- 	& enclose_in_quotes (to_string (script_name)) 
-			-- 	& " not found !";
-
-			log (ERROR, "script file " 
-				 & enclose_in_quotes (to_string (script_name)) 
-				 & " not found !", console => true);
-					
-		end if;
-
-		
-		log_indentation_down;
-
-
-		-- log (text => "done", level => log_threshold);
-
-		return exit_code;
-		
-		
-		exception when event: others =>
-			log_indentation_down;
-			log (text => ada.exceptions.exception_information (event));
-		
-			if is_open (file_handle) then 
-				close (file_handle); 
-			end if;
-
-			return exit_code;
-	end read_script;
-
-	
-	
-
-	
-
-	-- Used when executing a script from inside a script
-	-- or
-	-- when executing a script from inside the GUI:
-	function execute_nested_script (
-		file			: in string; -- like "rename_nets.scr"
-		log_threshold	: in type_log_level) 
-		return type_exit_code
-	is
-		exit_code : type_exit_code := ERROR;
-		
-		use ada.directories;
-
-		-- Backup previous input:
-		previous_input : ada.text_io.file_type renames current_input;
-				
-	begin
-		log (text => "execute nested script in directory: " 
-			 & enclose_in_quotes (current_directory),
-			 level => log_threshold);
-		
-		log (text => "executing project internal script: " & file,
-			 level => log_threshold);
-		
-		log_indentation_up;
-
-		exit_code := read_script (file, log_threshold + 1);
-						
-
-		-- A script can be executed from inside a script (nested scripts).
-		-- When the top level script finishes, then there might be no previous
-		-- input to switch to. So we test whether the previous_input is open
-		-- before swtiching back to it:
-		if is_open (previous_input) then
-			--log (text => "reset to previous input " & name (previous_input) & " ...", level => log_threshold + 1);
-			set_input (previous_input);
-		end if;
-
-		
-		log_indentation_down;
-
-		return exit_code;
-		
-
-		exception when event: others =>
-			log (text => ada.exceptions.exception_information (event));
-	
-			if is_open (previous_input) then
-				set_input (previous_input);
-			end if;
-  
-			return exit_code;
-	end execute_nested_script;
-
-
-
-
-
 	
 	procedure parse_execute_script (
 		cmd				: in out type_single_cmd;
@@ -424,6 +224,28 @@ package body et_scripting is
 	end parse_execute_script;
 
 	
+
+
+	
+	procedure evaluate_command_exit_code (
+		cmd				: in type_single_cmd;
+		log_threshold	: in type_log_level)
+	is 
+		code : constant et_cmd_sts.type_exit_code := get_exit_code (cmd);
+	begin
+		case code is
+			when 0 => null; -- no errors
+
+			-- when 1 => -- command incomplete
+				
+			when others =>
+				log (text => "exit code" & natural'image (code), 
+					level => log_threshold);
+		end case;
+	end evaluate_command_exit_code;
+	
+											
+
 	
 	
 	
@@ -454,6 +276,7 @@ package body et_scripting is
 	is separate;
 
 	
+
 	
 	
 	procedure execute_script_command (
@@ -594,9 +417,7 @@ package body et_scripting is
 		log_indentation_down;
 		log_indentation_down;
 
-		-- put_line ("execute_command done");
-
-		log (text => "done", level => log_threshold);
+		-- log (text => "done", level => log_threshold);
 		
 		-- exception when event: others => 
   -- 
@@ -605,6 +426,204 @@ package body et_scripting is
 		
 	end execute_script_command;
 
+
+	
+
+
+
+	function read_script (
+		file			: in string; -- like "rename_nets.scr"
+		log_threshold	: in type_log_level) 
+		return type_exit_code
+	is
+		exit_code : type_exit_code := ERROR;
+		
+		use ada.directories;
+		
+		file_handle : file_type;
+
+		-- The text fields of a single command read from the script:
+		-- Example: "schematic demo draw net GND 1 90 100 100 100"
+		fields : type_fields_of_line;
+
+		-- The single command to be executed:
+		cmd : type_single_cmd;
+		
+		script_name : pac_script_name.bounded_string := to_script_name (file);
+		
+	begin
+		log (text => "read script " & enclose_in_quotes (to_string (script_name)),
+			 level => log_threshold);
+		
+		log_indentation_up;
+		
+
+		
+		-- make sure the script file exists:
+		if exists (to_string (script_name)) then
+
+			-- goto l_end;
+			
+			-- open script file
+			open (
+				file => file_handle,
+				mode => in_file, 
+				name => to_string (script_name)); -- demo.scr
+
+			set_input (file_handle);
+
+			
+			-- read the file line by line
+			while not end_of_file loop
+				
+				fields := read_line (
+					line 			=> get_line,
+					number			=> positive (ada.text_io.line (current_input)),
+					comment_mark 	=> comment_mark,
+					delimiter_wrap	=> true, -- strings are enclosed in quotations
+					ifs 			=> space); -- fields are separated by space
+
+				-- we are interested in lines that contain something. emtpy lines are skipped:
+				if get_field_count (fields) > 0 then
+
+					-- Compose and execute the command to be executed.
+					-- Since it is launched via a script, its origin
+					-- is set accordingly:
+					cmd := to_single_cmd (fields, ORIGIN_SCRIPT);
+
+					-- log (text => "A cmd: " & get_all_fields (cmd));
+					
+					execute_script_command (
+						script_name		=> script_name, 
+						cmd				=> cmd,
+						log_threshold	=> log_threshold + 1);
+					
+					-- Procedure execute_script_command dispatches to subprograms
+					-- that execute the command according to the 
+					-- targeted domain (first field in fields) like project, 
+					-- schematic, board, ...
+
+
+					-- CS evaluate cmd status and output line number, hints, etc.
+					-- line provides the affected line number
+					case get_exit_code (cmd) is
+						when 0 => 
+							exit_code := SUCCESSFUL; -- no error
+							
+						when 1 =>
+							log (ERROR, "Command incomplete !"); -- CS output line number
+							--log (text => "cmd: " & get_all_fields (cmd));
+							
+							exit; -- abort script execution
+							
+						when 2 =>
+							log (ERROR, "Command too long !"); -- CS output line number
+							exit; -- abort script execution
+
+						when 3 =>
+							log (ERROR, "Other error."); -- CS output line number
+							exit; -- abort script execution
+
+					end case;					
+				end if;
+			end loop;
+
+			
+			-- log (text => "close script file " & to_string (script_name),
+				 -- level => log_threshold + 1);
+			
+			close (file_handle);
+
+			-- << l_end >>
+			
+		else -- script file not found
+
+			-- raise semantic_error_1 with 
+			-- 	"script file " 
+			-- 	& enclose_in_quotes (to_string (script_name)) 
+			-- 	& " not found !";
+
+			log (ERROR, "script file " 
+				 & enclose_in_quotes (to_string (script_name)) 
+				 & " not found !", console => true);
+					
+		end if;
+
+		
+		log_indentation_down;
+
+
+		-- log (text => "done", level => log_threshold);
+
+		return exit_code;
+		
+		
+		exception when event: others =>
+			log_indentation_down;
+			log (text => ada.exceptions.exception_information (event));
+		
+			if is_open (file_handle) then 
+				close (file_handle); 
+			end if;
+
+			return exit_code;
+	end read_script;
+
+	
+
+	
+
+	
+
+	function execute_nested_script (
+		file			: in string; -- like "rename_nets.scr"
+		log_threshold	: in type_log_level) 
+		return type_exit_code
+	is
+		exit_code : type_exit_code := ERROR;
+		
+		use ada.directories;
+
+		-- Backup previous input:
+		previous_input : ada.text_io.file_type renames current_input;
+				
+	begin
+		log (text => "execute nested script in directory: " 
+			 & enclose_in_quotes (current_directory),
+			 level => log_threshold);
+		
+		log (text => "executing project internal script: " & file,
+			 level => log_threshold);
+		
+		log_indentation_up;
+
+		exit_code := read_script (file, log_threshold + 1);
+						
+
+		-- A script can be executed from inside a script (nested scripts).
+		-- When the top level script finishes, then there might be no previous
+		-- input to switch to. So we test whether the previous_input is open
+		-- before swtiching back to it:
+		if is_open (previous_input) then
+			--log (text => "reset to previous input " & name (previous_input) & " ...", level => log_threshold + 1);
+			set_input (previous_input);
+		end if;
+
+		
+		log_indentation_down;
+
+		return exit_code;
+		
+
+		exception when event: others =>
+			log (text => ada.exceptions.exception_information (event));
+	
+			if is_open (previous_input) then
+				set_input (previous_input);
+			end if;
+  
+			return exit_code;
+	end execute_nested_script;
 
 
 

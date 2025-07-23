@@ -3914,7 +3914,7 @@ is
 
 
 	
-begin -- board_cmd
+begin
 	
 	log (text => "execute board command: " & enclose_in_quotes (get_all_fields (cmd)),
 		 level => log_threshold);
@@ -3943,7 +3943,7 @@ begin -- board_cmd
 	propose_arguments;
 
 
-	log (text => "exit code" & natural'image (get_exit_code (cmd)), level => log_threshold);
+	evaluate_command_exit_code (cmd, log_threshold);
 
 	
 	-- After every command (regardless if it is complete or not)

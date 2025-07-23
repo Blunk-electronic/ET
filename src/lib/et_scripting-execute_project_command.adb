@@ -176,6 +176,7 @@ begin -- execute_project_command
 	
 	-- CS propose_arguments;
 
+	evaluate_command_exit_code (cmd, log_threshold);
 
 	
 end execute_project_command;
