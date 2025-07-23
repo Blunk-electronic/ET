@@ -66,7 +66,8 @@ with et_kicad.schematic;
 with et_kicad_to_native;
 with et_project_name;			use et_project_name;
 with et_project;
-with et_scripting;
+-- with et_scripting;
+with et_script_processor;
 
 with et_package_appearance;
 with et_package_names;			use et_package_names;
@@ -573,9 +574,9 @@ procedure et is
 		use et_symbols.pac_symbol_model_file;
 		use pac_device_model_file;
 		use et_drawing_frame.pac_template_name;
-		use et_scripting;
+		use et_script_processor;
 
-		exit_code_script : et_scripting.type_exit_code;
+		exit_code_script : type_exit_code_script;
 		
 	begin
 		-- The arguments are processed according to a certain priority.
@@ -632,16 +633,16 @@ procedure et is
 
 							-- evaluate exit code
 							case exit_code_script is
-								when et_scripting.ERROR =>
+								when ERROR =>
 									log (ERROR, "Execution of script " & to_string (script_name) &
 										" failed !", console => true);
 									raise constraint_error;
 
-								when et_scripting.WARNINGS =>
+								when WARNINGS =>
 									log (WARNING, "Execution of script " & to_string (script_name) &
 										" produced warnings !", console => true);
 
-								when et_scripting.SUCCESSFUL =>
+								when SUCCESSFUL =>
 									log (text => "Execution of script " & to_string (script_name) & " successful");
 									
 							end case;
