@@ -193,7 +193,7 @@ package body et_cmd_sts is
 
 	function get_exit_code (
 		cmd		: in type_single_cmd)
-		return type_exit_code
+		return type_exit_code_command
 	is begin
 		return cmd.exit_code;
 	end;
@@ -203,7 +203,7 @@ package body et_cmd_sts is
 
 	procedure set_exit_code (
 		cmd		: in out type_single_cmd;
-		code	: in type_exit_code)
+		code	: in type_exit_code_command)
 	is begin
 		cmd.exit_code := code;
 	end;

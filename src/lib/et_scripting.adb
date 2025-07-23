@@ -152,7 +152,7 @@ package body et_scripting is
 		-- It lauches the given script and sets the exit code of
 		-- the command according to the outcome of the script execution:
 		procedure command_complete is
-			exit_code : type_exit_code;
+			exit_code : type_exit_code_script;
 		begin
 			exit_code := execute_nested_script (
 				file			=> get_field (cmd, 5),
@@ -231,7 +231,7 @@ package body et_scripting is
 		cmd				: in type_single_cmd;
 		log_threshold	: in type_log_level)
 	is 
-		code : constant et_cmd_sts.type_exit_code := get_exit_code (cmd);
+		code : constant type_exit_code_command := get_exit_code (cmd);
 	begin
 		case code is
 			when 0 => null; -- no errors
@@ -434,9 +434,9 @@ package body et_scripting is
 	function read_script (
 		file			: in string; -- like "rename_nets.scr"
 		log_threshold	: in type_log_level) 
-		return type_exit_code
+		return type_exit_code_script
 	is
-		exit_code : type_exit_code := ERROR;
+		exit_code : type_exit_code_script := ERROR;
 		
 		use ada.directories;
 		
@@ -578,9 +578,9 @@ package body et_scripting is
 	function execute_nested_script (
 		file			: in string; -- like "rename_nets.scr"
 		log_threshold	: in type_log_level) 
-		return type_exit_code
+		return type_exit_code_script
 	is
-		exit_code : type_exit_code := ERROR;
+		exit_code : type_exit_code_script := ERROR;
 		
 		use ada.directories;
 
@@ -633,9 +633,9 @@ package body et_scripting is
 	function execute_script_headless (
 		script_name		: in pac_script_name.bounded_string;
 		log_threshold	: in type_log_level)
-		return type_exit_code 
+		return type_exit_code_script 
 	is		
-		exit_code : type_exit_code := ERROR;
+		exit_code : type_exit_code_script := ERROR;
 
 		use ada.directories;
 

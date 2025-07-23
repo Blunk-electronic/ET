@@ -73,8 +73,9 @@ package et_scripting is -- CS rename to et_command_processor
 
 
 	
-	
-	type type_exit_code is ( -- CS rename to type_exit_code_script
+	-- This is the exit code after a script
+	-- has been executed:
+	type type_exit_code_script is (
 		SUCCESSFUL,
 		WARNINGS,
 		ERROR
@@ -190,7 +191,7 @@ package et_scripting is -- CS rename to et_command_processor
 	function read_script (
 		file			: in string; -- like "rename_nets.scr"
 		log_threshold	: in type_log_level)
-		return type_exit_code;
+		return type_exit_code_script;
 
 
 	
@@ -204,7 +205,7 @@ package et_scripting is -- CS rename to et_command_processor
 	function execute_nested_script (
 		file			: in string; -- like "rename_nets.scr"
 		log_threshold	: in type_log_level)
-		return type_exit_code;
+		return type_exit_code_script;
 
 	
 	
@@ -220,7 +221,7 @@ package et_scripting is -- CS rename to et_command_processor
 	function execute_script_headless (
 		script_name		: in pac_script_name.bounded_string;
 		log_threshold	: in type_log_level)
-		return type_exit_code;
+		return type_exit_code_script;
 
 
 	

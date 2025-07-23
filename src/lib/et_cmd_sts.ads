@@ -154,7 +154,9 @@ package et_cmd_sts is
 
 
 
-	subtype type_exit_code is natural range 0 .. 3; -- CS rename to type_exit_code_command
+	-- This is the exit code after a command
+	-- has been executed:
+	subtype type_exit_code_command is natural range 0 .. 3;
 		-- 0 -> success
 		-- 1 -> too few arguments given
 		-- 2 -> too many arguments given
@@ -164,12 +166,12 @@ package et_cmd_sts is
 
 	function get_exit_code (
 		cmd		: in type_single_cmd)
-		return type_exit_code;
+		return type_exit_code_command;
 
 
 	procedure set_exit_code (
 		cmd		: in out type_single_cmd;
-		code	: in type_exit_code);
+		code	: in type_exit_code_command);
 
 
 	
@@ -272,7 +274,7 @@ private
 		finalization_pending : boolean := false;
 
 		-- Indicates the final result of the command execution:
-		exit_code	: type_exit_code := 0;
+		exit_code	: type_exit_code_command := 0;
 
 		-- CS
 		-- line number if origin is script
