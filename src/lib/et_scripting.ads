@@ -174,7 +174,6 @@ package et_scripting is -- CS rename to et_command_processor
 	
 	-- Executes a command like 
 	-- "schematic motor_driver draw net motor_on 1 150 100 150 130".
-	-- Ensures that the targeted module (like motor_driver) exists.
 	-- Dispatches further to the execution of either schematic, 
 	-- board or project commands.
 	-- When called, the current working directory must be the
