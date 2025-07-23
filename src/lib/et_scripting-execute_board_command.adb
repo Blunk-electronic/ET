@@ -43,6 +43,7 @@ with et_pcb_sides;
 
 with et_schematic_coordinates;
 with et_board_coordinates;
+with et_text;
 
 with et_board_text;
 with et_board_layer_category;		use et_board_layer_category;
@@ -82,7 +83,8 @@ with et_board_ops.grid;
 with et_canvas.cmd;
 
 with et_drawing_frame;
-
+with et_net_names;					use et_net_names;
+with et_device_name;
 with et_terminals;
 with et_package_names;
 with et_mirroring;
@@ -1390,9 +1392,10 @@ is
 	
 	
 
-	-- This procedure parses a command to place text
+	-- This procedure parses a command to place a text
 	-- and dispatches to subprogram according to the layer category:
 	procedure place_text is
+		use et_text;
 		use pac_text_board;
 		use et_board_ops.text;
 		use et_mirroring;
@@ -2018,6 +2021,10 @@ is
 -- ROUTE / TRACK / POLYGON
 
 
+	polygon_log_category : type_log_category := log_category_default;
+
+
+	
 	-- Parses a command like "board demo set zone fill solid/hatched"
 	-- or "board demo set set zone isolation 0.4" and sets the value
 	-- in user specific settings.

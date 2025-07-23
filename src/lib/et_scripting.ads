@@ -37,12 +37,8 @@
 --
 --   ToDo: 
 
-with ada.containers;			use ada.containers;
 with ada.exceptions;			use ada.exceptions;
 
-with et_device_name;
-with et_net_names;				use et_net_names;
-with et_text;					use et_text;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
@@ -52,21 +48,17 @@ with et_modes;					use et_modes;
 
 with et_cmd_sts;				use et_cmd_sts;
 with et_script_names;			use et_script_names;
+with et_modes.project;			use et_modes.project;
+
 
 
 package et_scripting is -- CS rename to et_command_processor
 
-	use pac_net_name;
-
 	
 	comment_mark : constant string := ("#");
 
-	-- Script files have a name like "rename_power_nets.scr":
-	script_name : pac_script_name.bounded_string;
 
-
-
-
+-- CS move this stuff to a separate package
 	device_missing	: constant string := "Device name missing !";
 	module_missing	: constant string := "Module name missing !";
 	net_missing		: constant string := "Net name missing !";
@@ -80,29 +72,6 @@ package et_scripting is -- CS rename to et_command_processor
 		WARNINGS,
 		ERROR
 		);
-
-
-	
-	type type_verb_project is ( -- CS move to et_modes.project
-		VERB_CREATE,
-		VERB_DELETE,
-		VERB_OPEN,
-		VERB_SAVE
-		);
-
-	
--- PROJECT
-	
-	function to_string (verb : in type_verb_project) return string;
-	function to_verb (verb : in string) return type_verb_project;
-	
-	type type_noun_project is (
-		NOUN_MODULE
-		);
-
-	function to_string (noun : in type_noun_project) return string;
-	function to_noun (noun : in string) return type_noun_project;
-
 
 
 
@@ -137,10 +106,7 @@ package et_scripting is -- CS rename to et_command_processor
 		log_threshold	: in type_log_level);
 
 
-	
-	polygon_log_category : type_log_category := log_category_default;
-	-- CS move where it belongs or remove entirely.
-	
+		
 
 	
 	-- Executes a board command.

@@ -65,75 +65,34 @@ with et_keywords;					use et_keywords;
 
 package body et_scripting is
 
+-- CS move this stuff to a separate package:
 
-	function to_string (verb : in type_verb_project) return string is 
-		s : string := type_verb_project'image (verb);
-	begin
-		return s (verb_prefix'length + 1 .. s'last);
-	end;
-
-
-	
-	function to_verb (verb : in string) return type_verb_project is begin
-		return type_verb_project'value (verb_prefix & verb);
-	
-		exception when event: others => 
-			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
-			raise;
-	end;
-
+	-- procedure expect_number (field : in count_type) is begin
+	-- 	log (ERROR, "number expected in field no." & count_type'image (field) & " !", console => true);
+	-- 	raise constraint_error;
+	-- end;
 
 	
-	function to_string (noun : in type_noun_project) return string is 
-		s : string := type_noun_project'image (noun);
-	begin
-		return s (verb_prefix'length + 1 .. s'last);
-	end;
-
-
-	
-	function to_noun (noun : in string) return type_noun_project is begin
-		return type_noun_project'value (noun_prefix & noun);
-	
-		exception when event: others => 
-			log (ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
-			raise;
-	end;
-	
+	-- procedure expect_fill_style (style : in type_fill_style; field : in count_type) is begin
+	-- 	log (ERROR, "fill style " & enclose_in_quotes (to_string (style)) &
+	-- 		 " expected in field no. " & count_type'image (field) & " !" , console => true);
+	-- 	raise constraint_error;
+	-- end;
 
 	
-
-	procedure expect_number (field : in count_type) is begin
-		log (ERROR, "number expected in field no." & count_type'image (field) & " !", console => true);
-		raise constraint_error;
-	end;
-
-
-	
-	procedure expect_fill_style (style : in type_fill_style; field : in count_type) is begin
-		log (ERROR, "fill style " & enclose_in_quotes (to_string (style)) &
-			 " expected in field no. " & count_type'image (field) & " !" , console => true);
-		raise constraint_error;
-	end;
-
-
-
+	-- procedure expect_value_center_x (field : in count_type) is begin
+	-- 	log (ERROR, "Expect value for center x in field no." & count_type'image (field) & " !",
+	-- 		 console => true);
+	-- 	raise constraint_error;
+	-- end;
 
 	
-	procedure expect_value_center_x (field : in count_type) is begin
-		log (ERROR, "Expect value for center x in field no." & count_type'image (field) & " !",
-			 console => true);
-		raise constraint_error;
-	end;
-
-
-	
-	procedure expect_keyword_filled (field : in count_type) is begin
-		log (ERROR, "Expect keyword " & enclose_in_quotes (keyword_filled) &
-			" in field no." & count_type'image (field) & " !",
-			 console => true);
-		raise constraint_error;
-	end;
+	-- procedure expect_keyword_filled (field : in count_type) is begin
+	-- 	log (ERROR, "Expect keyword " & enclose_in_quotes (keyword_filled) &
+	-- 		" in field no." & count_type'image (field) & " !",
+	-- 		 console => true);
+	-- 	raise constraint_error;
+	-- end;
 
 
 	

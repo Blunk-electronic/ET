@@ -36,6 +36,8 @@
 --   history of changes:
 --
 
+with ada.containers;
+
 with et_modes.schematic;
 with et_canvas_schematic_units;
 with et_canvas_schematic_nets;
@@ -53,6 +55,7 @@ with et_units;
 with et_sheets;							use et_sheets;
 with et_net_labels;						use et_net_labels;
 with et_nets;							use et_nets;
+with et_net_names;						use et_net_names;
 with et_net_class;						use et_net_class;
 with et_schematic_text;					use et_schematic_text;
 with et_schematic_ops.nets;
@@ -62,6 +65,7 @@ with et_assembly_variants;
 with et_assembly_variant_name;			use et_assembly_variant_name;
 -- with et_pick_and_place;
 with et_netlists;
+with et_device_name;
 with et_devices_electrical;
 with et_device_library;					use et_device_library;
 with et_device_placeholders;			use et_device_placeholders;
@@ -85,6 +89,8 @@ procedure execute_schematic_command (
 	cmd				: in out type_single_cmd;
 	log_threshold	: in type_log_level)
 is
+	use pac_net_name;
+	
 	use et_project;
 	use et_schematic_ops;
 	use et_schematic_ops.nets;
@@ -1905,6 +1911,7 @@ is
 
 	procedure delete_module is
 
+		use ada.containers;
 		use pac_generic_modules;
 
 		
