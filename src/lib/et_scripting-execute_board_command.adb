@@ -3443,22 +3443,6 @@ is
 	
 
 
-	procedure execute_script is 
-		exit_code : type_exit_code;
-	begin
-		case cmd_field_count is
-			when 5 => 
-
-				exit_code := execute_nested_script (
-					file			=> get_field (5),
-					log_threshold	=> log_threshold + 1);
-
-			when 6 .. type_field_count'last => too_long;								
-			when others => command_incomplete;
-		end case;
-	end execute_script;
-
-
 
 	
 	
@@ -3621,7 +3605,7 @@ is
 			when VERB_EXECUTE =>
 				case noun is
 					when NOUN_SCRIPT =>
-						execute_script;
+						parse_execute_script (cmd, log_threshold);
 							
 					when others => invalid_noun (to_string (noun));
 				end case;

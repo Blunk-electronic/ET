@@ -127,6 +127,18 @@ package et_scripting is -- CS rename to et_command_processor
 		log_threshold	: in type_log_level)
 		return type_exit_code;
 
+
+	-- This procedure parses a command that launches
+	-- a script like:
+	-- "execute script demo.scr"
+	-- This procedure is common to all domains. For this reasone
+	-- it is placed in this file.
+	-- It calls function execute_nested_script for the final
+	-- execution:
+	procedure parse_execute_script (
+		cmd				: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
 	
 	
 	-- Executes a schematic command.
@@ -142,7 +154,7 @@ package et_scripting is -- CS rename to et_command_processor
 	
 	
 	-- Executes a board command.
-	-- Is called by procedure execute_command whenever a
+	-- Is called by procedure execute_script_command whenever a
 	-- board related command is to be executed:
 	procedure execute_board_command (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -151,7 +163,7 @@ package et_scripting is -- CS rename to et_command_processor
 
 
 	-- Executes a project command.
-	-- Is called by procedure execute_command whenever a
+	-- Is called by procedure execute_script_command whenever a
 	-- project related command is to be executed:
 	procedure execute_project_command (
 		cmd				: in out type_single_cmd;
@@ -162,8 +174,6 @@ package et_scripting is -- CS rename to et_command_processor
 	
 	-- Executes a command like 
 	-- "schematic motor_driver draw net motor_on 1 150 100 150 130".
-	-- This procedure is called by function execute_script (see below) or
-	-- by procedure execute_nested_script.
 	-- Ensures that the targeted module (like motor_driver) exists.
 	-- Dispatches further to the execution of either schematic, 
 	-- board or project commands.

@@ -337,6 +337,93 @@ package body et_scripting is
 
 
 
+
+
+	
+	procedure parse_execute_script (
+		cmd				: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is 
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+	
+		-- This procedure is to be called when the command is complete.
+		-- It lauches the given script and sets the exit code of
+		-- the command according to the outcome of the script execution:
+		procedure command_complete is
+			exit_code : type_exit_code;
+		begin
+			exit_code := execute_nested_script (
+				file			=> get_field (cmd, 5),
+				log_threshold	=> log_threshold + 1);
+
+			case exit_code is
+				when SUCCESSFUL =>
+					set_exit_code (cmd, 0);
+
+				when others =>
+					set_exit_code (cmd, 3);
+			end case;
+		end command_complete;
+
+		
+	begin
+		case get_origin (cmd) is
+			when ORIGIN_CONSOLE =>
+				
+				case cmd_field_count is
+					when 4 => 
+						-- Command is incomplete like "execute script"
+						set_incomplete (cmd);
+						-- NOTE: This is not a failure. For this reason
+						-- we do not set an exit code here.
+						
+					when 5 =>
+						-- Command is complete like "execute script demo.scr"
+						command_complete;
+								
+					when 6 .. type_field_count'last =>
+						command_too_long (get_fields (cmd), cmd_field_count - 1);
+
+						-- In console mode, too long a command is not accepted.
+						-- The "failed" status must be set accordingly:
+						set_exit_code (cmd, 2);
+						
+
+					when others => null;
+						-- CS should never happen
+						raise constraint_error;
+						
+				end case;
+
+				
+			when ORIGIN_SCRIPT =>
+				case cmd_field_count is
+					when 5 => 
+						-- Command is complete like "execute script demo.scr"
+						command_complete;
+						
+					when 6 .. type_field_count'last =>
+						command_too_long (get_fields (cmd), cmd_field_count - 1);
+
+						-- In script mode, too long a command is not accepted.
+						-- The "failed" status must be set accordingly:
+						set_exit_code (cmd, 2);
+						
+
+					when others => null;
+						set_incomplete (cmd);
+						
+						-- In script mode, an incomplete command is not accepted.
+						-- The "failed" status must be set accordingly:
+						set_exit_code (cmd, 1);
+						
+				end case;
+		end case;
+	end parse_execute_script;
+
+	
 	
 	
 	
