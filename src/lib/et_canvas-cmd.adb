@@ -195,65 +195,96 @@ package body et_canvas.cmd is
 		
 		
 	
-		procedure evaluate_on_verb_set is begin					
+		procedure evaluate_on_verb_set is 
+
+			-- This procedure parses a command that
+			-- sets the grid spacing:
+			procedure set_grid is begin				
+				case cmd_field_count is
+
+					when 5 =>
+						if to_lower (get_field (5)) = keyword_on then
+						-- schematic led_driver set grid on/off
+
+							grid.on_off := ON;
+							
+						elsif to_lower (get_field (5)) = keyword_off then
+							grid.on_off := OFF;
+						end if;
+						
+							
+					when 6 =>
+						if to_lower (get_field (5)) = keyword_spacing then
+						-- schematic led_driver set grid spacing 5
+							
+							grid.spacing := (
+								x => to_distance (get_field (6)),
+								y => to_distance (get_field (6)));
+
+							set_grid_to_scale;
+							update_grid_display;
+							
+							
+						elsif to_lower (get_field (5)) = keyword_style then
+						-- schematic led_driver set grid style dots/lines
+
+							if to_lower (get_field (6)) = keyword_dots then
+								grid.style := DOTS;
+							elsif to_lower (get_field (6)) = keyword_lines then
+								grid.style := LINES;
+							end if;
+							
+						end if;
+
+						
+					when 7 =>
+						if to_lower (get_field (5)) = keyword_spacing then
+						-- schematic led_driver set grid spacing 5 5
+							
+							grid.spacing := (
+								x => to_distance (get_field (6)),
+								y => to_distance (get_field (7)));
+
+							set_grid_to_scale;
+							update_grid_display;
+						end if;
+
+						
+					when 8 .. type_field_count'last => 
+						too_long;
+
+						-- A too long a command is not accepted.
+						-- The exit code must be set accordingly:
+						set_exit_code (cmd, 2);
+					
+					
+					when others =>  -- command incomplete
+						set_incomplete (cmd);
+						
+						case get_origin (cmd) is
+							when ORIGIN_CONSOLE =>
+								
+								null;
+								-- NOTE: This is not a failure. For this reason
+								-- we do not set an exit code here.
+
+							when ORIGIN_SCRIPT =>
+								
+								-- In script mode, an incomplete command is not accepted.
+								-- The "exit code must be set accordingly:
+								set_exit_code (cmd, 1);
+								
+						end case;
+				end case;
+			end set_grid;
+
+			
+			
+		begin
 			case noun is
 
 				when NOUN_GRID =>
-					case cmd_field_count is
-
-						when 5 =>
-							if to_lower (get_field (5)) = keyword_on then
-							-- schematic led_driver set grid on/off
-
-								grid.on_off := ON;
-								
-							elsif to_lower (get_field (5)) = keyword_off then
-								grid.on_off := OFF;
-							end if;
-							
-								
-						when 6 =>
-							if to_lower (get_field (5)) = keyword_spacing then
-							-- schematic led_driver set grid spacing 5
-								
-								grid.spacing := (
-									x => to_distance (get_field (6)),
-									y => to_distance (get_field (6)));
-
-								set_grid_to_scale;
-								update_grid_display;
-								
-								
-							elsif to_lower (get_field (5)) = keyword_style then
-							-- schematic led_driver set grid style dots/lines
-
-								if to_lower (get_field (6)) = keyword_dots then
-									grid.style := DOTS;
-								elsif to_lower (get_field (6)) = keyword_lines then
-									grid.style := LINES;
-								end if;
-								
-							end if;
-
-							
-						when 7 =>
-							if to_lower (get_field (5)) = keyword_spacing then
-							-- schematic led_driver set grid spacing 5 5
-								
-								grid.spacing := (
-									x => to_distance (get_field (6)),
-									y => to_distance (get_field (7)));
-
-								set_grid_to_scale;
-								update_grid_display;
-							end if;
-
-							
-						when 8 .. type_field_count'last => too_long;
-
-						
-						when others => command_incomplete;
-					end case;
+					set_grid;			
 					
 					
 				

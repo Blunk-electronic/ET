@@ -226,7 +226,7 @@ package et_cmd_sts is
 	--    so that the execution of the current script is aborted.
 	procedure command_incomplete (
 		cmd	: in out type_single_cmd);
-	
+
 
 
 	

@@ -1556,7 +1556,7 @@ is
 						too_long; 
 
 						-- In console mode, too long a command is not accepted.
-						-- The "failed" status must be set accordingly:
+						-- The exit code must be set accordingly:
 						set_exit_code (cmd, 2);
 					
 					when others =>
@@ -1579,7 +1579,7 @@ is
 						too_long; 
 
 						-- In script mode, too long a command is not accepted.
-						-- The "failed" status must be set accordingly:
+						-- The exit code must be set accordingly:
 						set_exit_code (cmd, 2);
 
 						
