@@ -138,12 +138,8 @@ package body et_command_processor is
 						command_complete;
 								
 					when 6 .. type_field_count'last =>
-						command_too_long (get_fields (cmd), cmd_field_count - 1);
+						command_too_long (cmd, cmd_field_count - 1);
 
-						-- In console mode, too long a command is not accepted.
-						-- The "failed" status must be set accordingly:
-						set_exit_code (cmd, 2);
-						
 
 					when others => null;
 						-- CS should never happen
@@ -159,11 +155,7 @@ package body et_command_processor is
 						command_complete;
 						
 					when 6 .. type_field_count'last =>
-						command_too_long (get_fields (cmd), cmd_field_count - 1);
-
-						-- In script mode, too long a command is not accepted.
-						-- The "failed" status must be set accordingly:
-						set_exit_code (cmd, 2);
+						command_too_long (cmd, cmd_field_count - 1);
 						
 
 					when others => null;

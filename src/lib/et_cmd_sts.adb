@@ -298,22 +298,24 @@ package body et_cmd_sts is
 	
 
 
-	
+
+
 	procedure command_too_long (
-		fields	: in type_fields_of_line;
+		cmd		: in out type_single_cmd;
 		from	: in type_field_count) 
 	is begin
-		log (WARNING, "command " & enclose_in_quotes (to_string (fields)) 
-			 & " too long !",
-			 console => true);
+		log (ERROR, "Command: " & enclose_in_quotes (get_all_fields (cmd)) 
+			 & " too long !");
 		
-		log (text => " -> Excessive arguments after no." 
-			 & type_field_count'image (from) & " ignored !",
-			 console => true);
+		log (text => "Excessive arguments after no." 
+			 & type_field_count'image (from));
+
+		-- A too long a command is not accepted.
+		-- The exit code must be set accordingly:
+		set_exit_code (cmd, 2);
 	end;
 
-
-
+	
 	
 end et_cmd_sts;
 

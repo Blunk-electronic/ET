@@ -229,15 +229,14 @@ package et_cmd_sts is
 
 
 
-	
 
+	-- Logs an error message and sets the exit code
+	-- of the given command to 2.
+	-- Argument "field" provides the last valid
+	-- field. All fields after that are execssive:
 	procedure command_too_long (
-		fields	: in type_fields_of_line;
+		cmd		: in out type_single_cmd;
 		from	: in type_field_count);
-
-
-
-	
 
 	
 

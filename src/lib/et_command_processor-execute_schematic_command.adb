@@ -179,7 +179,7 @@ is
 
 	-- This procedure is a shortcut. Call it in case the given command is too long:
 	procedure too_long is begin
-		command_too_long (get_fields (cmd), cmd_field_count - 1);
+		command_too_long (cmd, cmd_field_count - 1);
 	end;
 
 
@@ -1554,10 +1554,6 @@ is
 
 					when 11 .. type_field_count'last => 
 						too_long; 
-
-						-- In console mode, too long a command is not accepted.
-						-- The exit code must be set accordingly:
-						set_exit_code (cmd, 2);
 					
 					when others =>
 						set_incomplete (cmd);
@@ -1577,11 +1573,6 @@ is
 
 					when 11 .. type_field_count'last => 
 						too_long; 
-
-						-- In script mode, too long a command is not accepted.
-						-- The exit code must be set accordingly:
-						set_exit_code (cmd, 2);
-
 						
 					when others => 
 						set_incomplete (cmd);

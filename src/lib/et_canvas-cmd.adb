@@ -86,7 +86,7 @@ package body et_canvas.cmd is
 		-- This procedure is a shortcut. 
 		-- Call it in case the given command is too long:
 		procedure too_long is begin
-			command_too_long (get_fields (cmd), cmd_field_count - 1);
+			command_too_long (cmd, cmd_field_count - 1);
 		end;
 
 
@@ -253,10 +253,6 @@ package body et_canvas.cmd is
 					when 8 .. type_field_count'last => 
 						too_long;
 
-						-- A too long a command is not accepted.
-						-- The exit code must be set accordingly:
-						set_exit_code (cmd, 2);
-					
 					
 					when others =>  -- command incomplete
 						set_incomplete (cmd);
