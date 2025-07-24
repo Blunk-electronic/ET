@@ -255,22 +255,8 @@ package body et_canvas.cmd is
 
 					
 					when others =>  -- command incomplete
-						set_incomplete (cmd);
+						command_incomplete;
 						
-						case get_origin (cmd) is
-							when ORIGIN_CONSOLE =>
-								
-								null;
-								-- NOTE: This is not a failure. For this reason
-								-- we do not set an exit code here.
-
-							when ORIGIN_SCRIPT =>
-								
-								-- In script mode, an incomplete command is not accepted.
-								-- The "exit code must be set accordingly:
-								set_exit_code (cmd, 1);
-								
-						end case;
 				end case;
 			end set_grid;
 

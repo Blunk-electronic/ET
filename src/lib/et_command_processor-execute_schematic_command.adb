@@ -1556,9 +1556,7 @@ is
 						too_long; 
 					
 					when others =>
-						set_incomplete (cmd);
-						-- NOTE: This is not a failure. For this reason
-						-- we do not set an exit code here.
+						command_incomplete;
 				end case;
 
 				
@@ -1575,11 +1573,8 @@ is
 						too_long; 
 						
 					when others => 
-						set_incomplete (cmd);
+						command_incomplete;
 						
-						-- In script mode, an incomplete command is not accepted.
-						-- The "failed" status must be set accordingly:
-						set_exit_code (cmd, 1);
 				end case;
 
 		end case;

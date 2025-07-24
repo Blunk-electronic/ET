@@ -279,18 +279,26 @@ package body et_cmd_sts is
 	procedure command_incomplete (
 		cmd : in out type_single_cmd)
 	is begin
+		cmd.complete := false;
+		
 		case cmd.origin is
 			when ORIGIN_CONSOLE =>
-				-- If a single command is given, then
-				-- clear the "complete" flag so that further
-				-- actions are proposed to the operator:
-				cmd.complete := false;
+				-- This is not a failure. For this reason
+				-- we do not set an exit code here.
+				
+				-- Instead in console mode, further actions 
+				-- can be proposed to the operator:
+				null;				
+				log (NOTE, "Incomplete command: " & enclose_in_quotes (get_all_fields (cmd)));
 
+				
 			when ORIGIN_SCRIPT =>
-				-- If command is executed via script then
-				-- raise exception so that the script execution
-				-- is stopped:
-				raise exception_command_incomplete with "Command not complete !";
+				log (ERROR, "Incomplete command: " & enclose_in_quotes (get_all_fields (cmd)));
+				
+				-- In script mode, an incomplete command is not accepted.
+				-- The exit code must be set accordingly:
+				set_exit_code (cmd, 1);
+				
 		end case;
 	end command_incomplete;
 

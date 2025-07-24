@@ -129,9 +129,7 @@ package body et_command_processor is
 				case cmd_field_count is
 					when 4 => 
 						-- Command is incomplete like "execute script"
-						set_incomplete (cmd);
-						-- NOTE: This is not a failure. For this reason
-						-- we do not set an exit code here.
+						command_incomplete (cmd);
 						
 					when 5 =>
 						-- Command is complete like "execute script demo.scr"
@@ -156,14 +154,9 @@ package body et_command_processor is
 						
 					when 6 .. type_field_count'last =>
 						command_too_long (cmd, cmd_field_count - 1);
-						
 
-					when others => null;
-						set_incomplete (cmd);
-						
-						-- In script mode, an incomplete command is not accepted.
-						-- The "failed" status must be set accordingly:
-						set_exit_code (cmd, 1);
+					when others =>
+						command_incomplete (cmd);
 						
 				end case;
 		end case;

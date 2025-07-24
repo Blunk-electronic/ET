@@ -218,12 +218,11 @@ package et_cmd_sts is
 
 
 
-	-- A command can be incomplete. 
+	-- Sets the flag "incomplete" of the given command.
 	-- Depending on the entry mode these actions will be done:
-	-- 1. If entry mode is ORIGIN_CONSOLE, then the flag "incomplete" is set
-	--    so that further measures can be taken.
-	-- 2. If entry mode is ORIGIN_SCRIPT, then an exception is raised
-	--    so that the execution of the current script is aborted.
+	-- 1. If entry mode is ORIGIN_CONSOLE, then nothing else happens.
+	-- 2. If entry mode is ORIGIN_SCRIPT, then the exit code
+	--    of the command is set to 1:
 	procedure command_incomplete (
 		cmd	: in out type_single_cmd);
 
