@@ -163,11 +163,11 @@ is
 
 
 	
-begin -- execute_project_command
-	
+begin
 	log (text => "execute project command: " & enclose_in_quotes (get_all_fields (cmd)),
 		 level => log_threshold);
 
+	log (text => "command origin: " & get_origin (cmd), level => log_threshold);
 	
 	
 	-- parse the command:

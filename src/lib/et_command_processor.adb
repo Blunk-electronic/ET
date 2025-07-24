@@ -253,15 +253,11 @@ package body et_command_processor is
 		
 		
 	begin
-		log (text => "execute command: " & enclose_in_quotes (get_all_fields (cmd)),
+		log (text => "execute script command: " & enclose_in_quotes (get_all_fields (cmd)),
 			 level => log_threshold);
 		
 		log_indentation_up;
 		
-		log (text => "command origin: " & get_origin (cmd), level => log_threshold + 1);
-		log_indentation_up;
-		
-
 		
 		-- The command must have at least two fields:
 		if field_count >= 2 then
@@ -359,7 +355,7 @@ package body et_command_processor is
 		-- and if it was executed from inside a script
 		
 		log_indentation_down;
-		log_indentation_down;
+
 
 		-- log (text => "done", level => log_threshold);
 		

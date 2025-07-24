@@ -2036,7 +2036,7 @@ is
 		use et_device_placeholders;
 		use et_assembly_variants;
 	begin
-		log (text => "parsing command: " 
+		log (text => "parse command: " 
 			& enclose_in_quotes (get_all_fields (cmd)),
 			level => log_threshold);
 
@@ -3499,11 +3499,13 @@ is
 	
 	
 begin
-	
 	log (text => "execute schematic command: " & enclose_in_quotes (get_all_fields (cmd)),
 		 level => log_threshold);
 
+	log (text => "command origin: " & get_origin (cmd), level => log_threshold);
 
+
+	
 	module := to_module_name (get_field (2)); -- motor_driver (without extension *.mod)
 	-- CS: Becomes obsolete once all board ops use the
 	-- given module_cursor.
