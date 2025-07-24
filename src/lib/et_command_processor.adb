@@ -190,10 +190,16 @@ package body et_command_processor is
 		case code is
 			when 0 => null; -- no errors
 
-			-- when 1 => -- command incomplete
-				
+			when 1 => -- command incomplete
+				log (ERROR, "Command incomplete. Exit code" & to_string (code), 
+					level => log_threshold);
+
+			when 2 => -- command too long
+				log (ERROR, "Command too long. Exit code" & to_string (code), 
+					level => log_threshold);
+
 			when others =>
-				log (text => "exit code" & natural'image (code), 
+				log (ERROR, "Other error. Exit code" & to_string (code), 
 					level => log_threshold);
 		end case;
 	end evaluate_command_exit_code;
@@ -261,15 +267,15 @@ package body et_command_processor is
 
 		
 		
-	begin -- execute_script_command
-		log (text => "execute command", level => log_threshold);
+	begin
+		log (text => "execute command: " & enclose_in_quotes (get_all_fields (cmd)),
+			 level => log_threshold);
+		
 		log_indentation_up;
 		
 		log (text => "command origin: " & get_origin (cmd), level => log_threshold + 1);
 		log_indentation_up;
 		
-		log (text => "fields: " & enclose_in_quotes (get_all_fields (cmd)), level => log_threshold + 2);
-		log_indentation_up;
 
 		
 		-- The command must have at least two fields:
@@ -367,7 +373,6 @@ package body et_command_processor is
 		-- CS exception handler if command is incomplete
 		-- and if it was executed from inside a script
 		
-		log_indentation_down;
 		log_indentation_down;
 		log_indentation_down;
 

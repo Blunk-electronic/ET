@@ -212,6 +212,15 @@ package body et_cmd_sts is
 	
 
 
+	function to_string (
+		exit_code : in type_exit_code_command)
+		return string
+	is begin
+		return type_exit_code_command'image (exit_code);
+	end;
+
+
+	
 	function get_exit_code (
 		cmd		: in type_single_cmd)
 		return type_exit_code_command

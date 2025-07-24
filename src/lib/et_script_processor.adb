@@ -80,7 +80,8 @@ package body et_script_processor is
 
 
 		procedure log_command is begin
-			log (text => get_line_number (cmd) & "cmd: " & get_all_fields (cmd),
+			log (text => get_line_number (cmd) & "cmd: " 
+				& enclose_in_quotes (get_all_fields (cmd)),
 				level => log_threshold);
 		end;
 
@@ -143,18 +144,18 @@ package body et_script_processor is
 							exit_code := SUCCESSFUL; -- no error
 							
 						when 1 =>
-							log (ERROR, "Command incomplete !");
 							log_command;							
+							log (ERROR, "Script command incomplete !");
 							exit; -- abort script execution
 							
 						when 2 =>
-							log (ERROR, "Command too long !");
 							log_command;
+							log (ERROR, "Script command too long !");
 							exit; -- abort script execution
 
 						when 3 =>
-							log (ERROR, "Other error.");
 							log_command;
+							log (ERROR, "Other script error.");
 							exit; -- abort script execution
 
 					end case;					

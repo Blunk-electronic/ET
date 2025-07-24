@@ -175,6 +175,11 @@ package et_cmd_sts is
 		-- 3 -> other error
 		-- CS others ?
 
+	
+	function to_string (
+		exit_code : in type_exit_code_command)
+		return string;
+	
 
 	function get_exit_code (
 		cmd		: in type_single_cmd)
