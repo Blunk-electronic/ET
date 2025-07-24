@@ -229,6 +229,8 @@ is
 	
 
 
+	-- This procedure parses a command that set the 
+	-- grid spacing like "schematic demo set grid spacing 20 20":
 	procedure set_grid is 
 		use et_schematic_ops.grid;
 	begin
