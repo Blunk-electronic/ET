@@ -101,7 +101,19 @@ package et_cmd_sts is
 		origin	: in type_cmd_origin)
 		return type_single_cmd;
 	
-		
+
+
+	function get_line_number (
+		cmd		: in type_single_cmd)
+		return positive;
+
+
+	function get_line_number (
+		cmd		: in type_single_cmd)
+		return string;
+	
+
+	
 	procedure set_fields (
 		cmd		: in out type_single_cmd;
 		fields	: in type_fields_of_line);

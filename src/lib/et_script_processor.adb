@@ -77,6 +77,13 @@ package body et_script_processor is
 		cmd : type_single_cmd;
 		
 		script_name : pac_script_name.bounded_string := to_script_name (file);
+
+
+		procedure log_command is begin
+			log (text => get_line_number (cmd) & "cmd: " & get_all_fields (cmd),
+				level => log_threshold);
+		end;
+
 		
 	begin
 		log (text => "read script " & enclose_in_quotes (to_string (script_name)),
@@ -130,25 +137,24 @@ package body et_script_processor is
 					-- targeted domain (first field in fields) like project, 
 					-- schematic, board, ...
 
-
-					-- CS evaluate cmd status and output line number, hints, etc.
-					-- line provides the affected line number
+					-- Evaluate exit code of the command:
 					case get_exit_code (cmd) is
 						when 0 => 
 							exit_code := SUCCESSFUL; -- no error
 							
 						when 1 =>
-							log (ERROR, "Command incomplete !"); -- CS output line number
-							--log (text => "cmd: " & get_all_fields (cmd));
-							
+							log (ERROR, "Command incomplete !");
+							log_command;							
 							exit; -- abort script execution
 							
 						when 2 =>
-							log (ERROR, "Command too long !"); -- CS output line number
+							log (ERROR, "Command too long !");
+							log_command;
 							exit; -- abort script execution
 
 						when 3 =>
-							log (ERROR, "Other error."); -- CS output line number
+							log (ERROR, "Other error.");
+							log_command;
 							exit; -- abort script execution
 
 					end case;					

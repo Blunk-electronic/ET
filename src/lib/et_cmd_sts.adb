@@ -98,6 +98,27 @@ package body et_cmd_sts is
 		return cmd;
 	end;
 
+
+
+
+	function get_line_number (
+		cmd		: in type_single_cmd)
+		return positive
+	is begin
+		return get_line_number (cmd.fields);
+	end;
+
+
+
+	function get_line_number (
+		cmd		: in type_single_cmd)
+		return string
+	is begin
+		return "line" & positive'image (get_line_number (cmd.fields)) & ": ";
+	end;
+
+
+	
 	
 
 	procedure set_fields (
