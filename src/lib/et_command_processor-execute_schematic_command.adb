@@ -2031,14 +2031,12 @@ is
 	
 
 	
-	-- Parses the single_cmd.fields:
+	-- Parses the given command and dispatches to
+	-- further subroutines:
 	procedure parse is 
 		use et_device_placeholders;
 		use et_assembly_variants;
 	begin
-		log (text => "parse command: " 
-			& enclose_in_quotes (get_all_fields (cmd)),
-			level => log_threshold);
 
 		-- Clear the status bar if we are in graphical mode:
 		if runmode /= MODE_HEADLESS then

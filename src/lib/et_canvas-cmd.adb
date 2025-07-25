@@ -106,91 +106,7 @@ package body et_canvas.cmd is
 		end;
 
 		
-		
-		-- Zooms on the current cursor position:
-		procedure set_zoom is 
-			l : type_zoom_factor := to_zoom_factor (get_field (5));
-		begin
-			log (text => "set zoom factor " & to_string (l),
-				level => log_threshold + 1);					
 
-			zoom_to (get_cursor_position, l);
-		end set_zoom;
-
-		
-
-		-- Zooms on a given point and places the cursor
-		-- at the given point:
-		procedure zoom_to_point is
-			c : type_vector_model := type_vector_model (set (
-				x => to_distance (get_field (5)),
-				y => to_distance (get_field (6))));
-
-			l : type_zoom_factor := to_zoom_factor (get_field (7));
-		begin
-			log (text => "zoom to point " & to_string (c) 
-				& " zoom factor" & to_string (l),
-				level => log_threshold + 1);
-					
-			zoom_to (c, l);
-		end zoom_to_point;
-		
-
-		
-		-- Sets the cursor at a given place:
-		procedure set_cursor is
-			c : type_vector_model := type_vector_model (set (
-				x => to_distance (get_field (5)),
-				y => to_distance (get_field (6))));
-
-		begin
-			log (text => "zoom to point " & to_string (c),
-				level => log_threshold + 1);
-					
-			zoom_to (c, S); -- zoom factor remains unchanged
-		end set_cursor;
-
-
-
-		
-		-- Sets the scale, the grid according to the new scale,
-		-- updates the scale and grid display:
-		procedure set_scale is
-			M_new : type_scale := type_scale'value (get_field (5));		
-			-- CS do a proper range check. exception handler ?
-		begin
-			M := M_new;
-
-			-- If the operator changes the scale, then
-			-- a default grid spacing must be set first:
-			grid.spacing.x := grid_spacing_default;
-			grid.spacing.y := grid_spacing_default;
-			
-			-- If the operator changes the scale, then the
-			-- visible grid spacing must be changed accordingly.
-			set_grid_to_scale;
-			
-			-- put_line ("grid spacing x/y:" 
-			-- 	& to_string (grid.spacing.x) & "/" & to_string (grid.spacing.y));
-
-			update_grid_display;
-			update_scale_display;
-		end set_scale;
-
-
-		
-
-		procedure move_cursor is
-			c : type_vector_model := type_vector_model (set (
-				x => to_distance (get_field (5)),
-				y => to_distance (get_field (6))));
-
-		begin
-			log (text => "move cursor by " & to_string (c),
-				level => log_threshold + 1);
-					
-			move_cursor_by (c);
-		end move_cursor;
 
 		
 		
@@ -198,7 +114,8 @@ package body et_canvas.cmd is
 		procedure evaluate_on_verb_set is 
 
 			-- This procedure parses a command that
-			-- sets the grid spacing:
+			-- sets the grid spacing like
+			-- "set grid spacing 5 5":
 			procedure set_grid is begin				
 				case cmd_field_count is
 
@@ -261,82 +178,192 @@ package body et_canvas.cmd is
 			end set_grid;
 
 			
+			-- Parses a command that sets the zoom
+			-- factor like "set zoom 3":
+			procedure set_zoom is 
+				l : type_zoom_factor;
+			begin
+				case cmd_field_count is
+					when 5 =>  -- set zoom 3
+						l := to_zoom_factor (get_field (5));
+
+						log (text => "set zoom factor " & to_string (l),
+							level => log_threshold + 1);					
+
+						zoom_to (get_cursor_position, l);
+
+					when 6 .. type_field_count'last => too_long;
+
+					when others => command_incomplete;
+				end case;			
+			end set_zoom;
+
+
+			
+			
+			-- Parses a command that sets the cursor
+			-- to a certain place like "set cursor 10 10":
+			procedure set_cursor is 
+
+				-- Sets the cursor to a certain place
+				-- but leaves the zoom factor unchanged:
+				procedure set is
+					c : type_vector_model := type_vector_model (set (
+						x => to_distance (get_field (5)),
+						y => to_distance (get_field (6))));
+
+				begin
+					log (text => "set cursor at " & to_string (c),
+						level => log_threshold + 1);
+							
+					zoom_to (c, S); -- zoom factor remains unchanged
+				end set;
+
+
+
+				-- Zooms on a given point and places the cursor
+				-- at the given point:
+				procedure zoom_to_point is
+					c : type_vector_model := type_vector_model (set (
+						x => to_distance (get_field (5)),
+						y => to_distance (get_field (6))));
+
+					l : type_zoom_factor := to_zoom_factor (get_field (7));
+				begin
+					log (text => "zoom to point " & to_string (c) 
+						& " zoom factor" & to_string (l),
+						level => log_threshold + 1);
+							
+					zoom_to (c, l);
+				end zoom_to_point;
+
+				
+			begin
+				case cmd_field_count is
+					when 6 =>  -- set cursor 10 10
+						set;
+
+					when 7 =>  -- set cursor 10 10 0.5 
+						zoom_to_point;
+
+					when 8 .. type_field_count'last => too_long;
+
+					when others => command_incomplete;
+				end case;
+			end set_cursor;
+
+			
+
+
+			-- Parses a command that sets the scale like
+			-- "set scale 10":
+			procedure set_scale is
+
+				-- Sets the scale, the grid according to the new scale,
+				-- updates the scale and grid display:
+				procedure set is
+					M_new : type_scale := type_scale'value (get_field (5));		
+					-- CS do a proper range check. exception handler ?
+				begin
+					M := M_new;
+
+					-- If the operator changes the scale, then
+					-- a default grid spacing must be set first:
+					grid.spacing.x := grid_spacing_default;
+					grid.spacing.y := grid_spacing_default;
+					
+					-- If the operator changes the scale, then the
+					-- visible grid spacing must be changed accordingly.
+					set_grid_to_scale;
+					
+					-- put_line ("grid spacing x/y:" 
+					-- 	& to_string (grid.spacing.x) & "/" & to_string (grid.spacing.y));
+
+					update_grid_display;
+					update_scale_display;
+				end set;
+
+				
+			begin
+				case cmd_field_count is
+					when 5 =>  -- set scale 3
+						set;
+
+					when 6 .. type_field_count'last => too_long;
+
+					when others => command_incomplete;
+				end case;
+			end set_scale;
+
+			
 			
 		begin
 			case noun is
-
 				when NOUN_GRID =>
-					set_grid;			
-					
-					
+					set_grid;					
 				
 				when NOUN_ZOOM => 
-					case cmd_field_count is
-						when 5 =>  -- set zoom 3
-							set_zoom;
-
-						when 6 .. type_field_count'last => too_long;
-
-						when others => command_incomplete;
-					end case;
-
-
-					
+					set_zoom;
+									
 				when NOUN_CURSOR =>
-					case cmd_field_count is
-						when 6 =>  -- set cursor 10 10
-							set_cursor;
+					set_cursor;
 
-						when 7 =>  -- set cursor 10 10 0.5 
-							zoom_to_point;
-
-						when 8 .. type_field_count'last => too_long;
-
-						when others => command_incomplete;
-					end case;
-
-					
-
-				when NOUN_SCALE => 
-					case cmd_field_count is
-						when 5 =>  -- set scale 3
-							set_scale;
-
-						when 6 .. type_field_count'last => too_long;
-
-						when others => command_incomplete;
-					end case;
-
+				when NOUN_SCALE =>
+					set_scale;				
 					
 				when others => invalid_noun (to_string (noun));
 			end case;
 		end evaluate_on_verb_set;
 
 
+
+
 		
-		procedure evaluate_on_verb_move is begin
+		procedure evaluate_on_verb_move is 
+
+			-- Parses a command that moves the cursor
+			-- by a certain offset like "move cursor 5 -10":
+			procedure move_cursor is
+
+				procedure move is
+					c : type_vector_model := type_vector_model (set (
+						x => to_distance (get_field (5)),
+						y => to_distance (get_field (6))));
+
+				begin
+					log (text => "move cursor by " & to_string (c),
+						level => log_threshold + 1);
+							
+					move_cursor_by (c);
+				end move;
+
+				
+			begin
+				case cmd_field_count is
+					when 6 =>  -- move cursor 5 -10
+						move_cursor;
+
+					when 7 .. type_field_count'last => too_long;
+
+					when others => command_incomplete;
+				end case;
+			end move_cursor;
+		
+
+		begin
 			case noun is
 				when NOUN_CURSOR =>
-					case cmd_field_count is
-						when 6 =>  -- move cursor 5 -10
-							move_cursor;
-
-						when 7 .. type_field_count'last => too_long;
-
-						when others => command_incomplete;
-					end case;
-
+					move_cursor;
 				
 				when others => invalid_noun (to_string (noun));
 			end case;
 		end evaluate_on_verb_move;
 
+
 		
 		
 	begin
 		log (text => "parse canvas command ...", level => log_threshold + 1);
-
-		
 
 		-- Canvas commands can only be executed 
 		-- in a graphical runmode:
@@ -347,7 +374,6 @@ package body et_canvas.cmd is
 				case verb is
 					when VERB_SET =>
 						evaluate_on_verb_set;
-
 
 					when VERB_MOVE =>
 						evaluate_on_verb_move;
@@ -362,9 +388,6 @@ package body et_canvas.cmd is
 		-- 	propose_arguments;
 		-- end if;
 
-		-- CS exception handler if command is incomplete
-		-- and if it was executed from inside a script
-				
 			
 			when others =>
 				skipped_in_this_runmode (log_threshold + 1);

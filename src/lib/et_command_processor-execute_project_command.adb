@@ -81,7 +81,8 @@ is
 	
 
 	
-
+	-- Parses the given command and dispatches to
+	-- further subroutines:
 	procedure parse is begin
 		case verb is
 			when VERB_OPEN =>

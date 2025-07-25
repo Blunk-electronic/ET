@@ -3462,13 +3462,9 @@ is
 
 	
 	
-	-- Parses the single_cmd.fields:
-	procedure parse is 
-	begin
-		log (text => "parse command: " 
-			& enclose_in_quotes (get_all_fields (cmd)),
-			level => log_threshold);
-
+	-- Parses the given command and dispatches to
+	-- further subroutines:
+	procedure parse is begin
 		-- Clear the status bar if we are in graphical mode:
 		if runmode /= MODE_HEADLESS then
 			status_clear;
