@@ -430,7 +430,7 @@ is
 
 	
 begin -- button_pressed
-	log (text => "button_pressed (board) " 
+	log (text => "button_pressed (board) "   -- CS which button ?
 		 & to_string (event), level => log_threshold);
 	
 	case event.button is

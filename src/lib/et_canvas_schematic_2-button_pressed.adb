@@ -468,7 +468,7 @@ is
 	
 	
 begin -- button_pressed
-	log (text => "button_pressed (schematic) " 
+	log (text => "button_pressed (schematic) "  -- CS which button ?
 		 & to_string (event), level => log_threshold);
 
 	
