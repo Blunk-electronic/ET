@@ -40,6 +40,7 @@
 
 with et_board_ops.ratsnest;					use et_board_ops.ratsnest;
 with et_schematic_ops.nets;
+with et_net_strands;						use et_net_strands;
 with et_port_direction;
 with et_device_model;						use et_device_model;
 with et_numbering;

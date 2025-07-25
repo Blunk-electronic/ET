@@ -45,6 +45,7 @@ with et_board_coordinates;
 with et_generic_stacks;
 with et_device_appearance;
 with et_package_names;
+with et_net_strands;				use et_net_strands;
 with et_net_ports;
 with et_module_ops;
 with et_schematic_ops.units;		use et_schematic_ops.units;

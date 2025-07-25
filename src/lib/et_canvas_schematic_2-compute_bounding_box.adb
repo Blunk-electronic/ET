@@ -54,6 +54,7 @@ with et_units;						use et_units;
 with et_devices_electrical;			use et_devices_electrical;
 with et_nets;
 with et_net_segment;
+with et_net_strands;
 with et_net_labels;
 
 
@@ -142,6 +143,8 @@ is
 			is
 				use et_nets;
 				use pac_nets;
+
+				use et_net_strands;
 				use pac_strands;
 				
 				use et_net_segment;

@@ -52,6 +52,7 @@ with et_design_rules;				use et_design_rules;
 with et_design_rules_board;			use et_design_rules_board;
 
 with et_primitive_objects;			use et_primitive_objects;
+with et_net_strands;				use et_net_strands;
 with et_nets;
 with et_net_names;
 with et_net_ports;

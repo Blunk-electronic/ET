@@ -80,6 +80,7 @@ with et_modes.schematic;			use et_modes.schematic;
 
 with et_canvas_schematic_2;			use et_canvas_schematic_2;
 
+with et_net_strands;
 with et_schematic_ops.nets;
 with et_schematic_text;				use et_schematic_text;
 
@@ -904,6 +905,7 @@ package body et_canvas_schematic_units is
 		use pac_devices_sch;
 		use pac_units;
 		use et_symbol_ports;
+		use et_net_strands;
 		
 		su : type_selected_unit := element (selected_unit);
 		device_name : constant type_device_name := key (su.device);

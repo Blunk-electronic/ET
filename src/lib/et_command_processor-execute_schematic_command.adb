@@ -56,6 +56,7 @@ with et_unit_name;						use et_unit_name;
 with et_units;
 with et_sheets;							use et_sheets;
 with et_net_labels;						use et_net_labels;
+with et_net_strands;					use et_net_strands;
 with et_nets;							use et_nets;
 with et_net_names;						use et_net_names;
 with et_net_class;						use et_net_class;

@@ -74,6 +74,7 @@ with et_kicad_coordinates;
 with et_import;
 with et_sheets;
 with et_netlists;
+with et_net_strands;
 with et_text;
 with et_pcb_rw;
 with et_pcb_rw.device_packages;
@@ -2873,9 +2874,10 @@ package body et_kicad_to_native is
 				kicad_segments : et_kicad.schematic.type_net_segments.list;
 				kicad_segment_cursor : et_kicad.schematic.type_net_segments.cursor;
 
-				use et_nets.pac_strands;
-				strands_native : et_nets.pac_strands.list;
-				strand_native : et_nets.type_strand;
+				use et_net_strands;
+				use pac_strands;
+				strands_native : pac_strands.list;
+				strand_native : type_strand;
 
 				use et_net_segment;
 				use et_net_segment.pac_net_segments;
@@ -3229,7 +3231,7 @@ package body et_kicad_to_native is
 					et_schematic_coordinates.set_sheet (strand_native.position, et_kicad_coordinates.sheet (element (kicad_strand_cursor).position));
 
 					-- calculate lowest x/y of native strand
-					et_nets.set_strand_position (strand_native);
+					set_strand_position (strand_native);
 
 
 					
@@ -3237,7 +3239,7 @@ package body et_kicad_to_native is
 					clear (net_segments_native);
 					
 					-- collect native strand (incl. segments) in list strands_native
-					et_nets.pac_strands.append (
+					pac_strands.append (
 						container	=> strands_native,
 						new_item	=> strand_native);
 					

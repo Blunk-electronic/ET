@@ -55,6 +55,7 @@ with et_primitive_objects;			use et_primitive_objects;
 with et_axes;						use et_axes;
 with et_module_instance;			use et_module_instance;
 with et_nets;
+with et_net_strands;				use et_net_strands;
 with et_net_names;					use et_net_names;
 with et_net_junction;
 with et_net_ports;
@@ -740,8 +741,8 @@ is
 	end read_net;
 
 	
-	strands : et_nets.pac_strands.list;
-	strand	: et_nets.type_strand;
+	strands : pac_strands.list;
+	strand	: type_strand;
 
 	
 	procedure read_strand is
@@ -5255,7 +5256,7 @@ is
 
 							-- insert strand collection in net
 							net.strands := strands;
-							et_nets.pac_strands.clear (strands); -- clean up for next strand collection
+							pac_strands.clear (strands); -- clean up for next strand collection
 
 						when others => invalid_section;
 					end case;
@@ -5288,7 +5289,7 @@ is
 								-- and overwrite previous x/y position. 
 								-- So the calculated position takes precedence over the position found in 
 								-- the module file.
-								et_nets.set_strand_position (strand);
+								set_strand_position (strand);
 
 								-- Issue warning about this mismatch:
 								if strand.position.place /= position_found_in_module_file then
@@ -5305,7 +5306,7 @@ is
 							end;
 							
 							-- insert strand in collection of strands
-							et_nets.pac_strands.append (
+							pac_strands.append (
 								container	=> strands,
 								new_item	=> strand);
 
