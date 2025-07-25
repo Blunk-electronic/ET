@@ -569,6 +569,8 @@ package body et_schematic_ops.nets is
 					c : pac_net_segments.cursor := segment.segment_cursor;
 				begin
 					delete (strand.segments, c);
+					-- CS The strand may fall apart in two
+					-- fragments. Create two new strands ?
 				end query_strand;
 
 				
