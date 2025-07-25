@@ -41,6 +41,8 @@ with ada.text_io;				use ada.text_io;
 with glib;
 
 with gdk.event;					use gdk.event;
+with gdk.types;					use gdk.types;
+-- with gdk.types.keysyms;			use gdk.types.keysyms;
 
 with gtk.widget;				use gtk.widget;
 with gtk.container;				use gtk.container;
@@ -1521,6 +1523,15 @@ package et_canvas is
 		event	: gdk_event_motion)
 		return type_vector_model;
 
+
+
+	-- Converts the key type to a string in a form
+	-- like "key 115"
+	-- CS: Improvement required so that "key 115 (s)" is returned.
+	function to_string (
+		key : in gdk_key_type)
+		return string;
+	
 	
 private
 	

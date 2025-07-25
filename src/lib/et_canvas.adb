@@ -4395,6 +4395,20 @@ package body et_canvas is
 	
 
 
+
+
+	function to_string (
+		key : in gdk_key_type)
+		return string
+	is begin
+		return "key " & gdk_key_type'image (key);
+		-- CS output the key like "s" or "space"
+	end to_string;
+
+
+	
+	
+
 -- CALLBACKS:
 	
 	

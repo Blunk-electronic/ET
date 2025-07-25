@@ -726,7 +726,7 @@ is
 	
 begin -- key_pressed
 
-	log (text => "key_pressed (board) ", -- CS which key ?
+	log (text => "key_pressed (board): " & to_string (key),
 		 level => log_threshold);
 
 	

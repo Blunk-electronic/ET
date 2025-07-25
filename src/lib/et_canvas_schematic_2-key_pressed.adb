@@ -790,11 +790,11 @@ is
 	
 	
 begin -- key_pressed
-	log (text => "key_pressed (schematic) ", -- CS which key ?
+	log (text => "key pressed (schematic): " & to_string (key),
 		 level => log_threshold);
 
 -- 		put_line ("schematic: evaluating other key ...");
--- 		put_line (gdk_modifier_type'image (key_ctrl));
+		-- put_line (gdk_key_type'image (key));
 
 	case key is
 			
