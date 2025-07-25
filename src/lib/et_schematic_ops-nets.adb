@@ -567,10 +567,15 @@ package body et_schematic_ops.nets is
 
 				procedure query_strand (strand : in out type_strand) is
 					c : pac_net_segments.cursor := segment.segment_cursor;
+
+					use et_net_strands;
+					n : pac_strands.list;
 				begin
 					delete (strand.segments, c);
 					-- CS The strand may fall apart in two
 					-- fragments. Create two new strands ?
+					
+					n := delete_segment (strand, segment.segment_cursor, log_threshold + 3);
 				end query_strand;
 
 				

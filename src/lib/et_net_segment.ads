@@ -56,7 +56,7 @@ package et_net_segment is
 	use pac_geometry_2;
 
 	
-	type type_net_segment is new type_line with record		
+	type type_net_segment is new type_line with record -- CS make private
 		labels		: pac_net_labels.list;
 		tag_labels	: type_tag_labels;
 		junctions	: type_junctions;

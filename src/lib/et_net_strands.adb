@@ -820,6 +820,22 @@ package body et_net_strands is
 
 
 
+
+
+
+	function delete_segment (
+		strand			: in type_strand;
+		segment			: in pac_net_segments.cursor;
+		log_threshold	: in type_log_level)
+		return pac_strands.list
+	is
+		result : pac_strands.list;
+	begin
+
+
+		return result;
+	end delete_segment;
+
 	
 	
 	

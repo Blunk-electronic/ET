@@ -259,8 +259,25 @@ package et_net_strands is
 		log_threshold	: in type_log_level);
 
 
-	
 
+	package pac_strands is new doubly_linked_lists (type_strand);
+	use pac_strands;
+
+
+
+	-- Deletes the given segment in a given strand.
+	-- The result can be:
+	-- 1. just the given strand modified
+	-- 2. two new strands because the given strand has been
+	--    fallen apart into two separate strands:
+	function delete_segment (
+		strand			: in type_strand;
+		segment			: in pac_net_segments.cursor;
+		log_threshold	: in type_log_level)
+		return pac_strands.list;
+
+	
+								 
 	procedure set_proposed (
 		strand : in out type_strand);
 
@@ -336,8 +353,6 @@ package et_net_strands is
 
 	
 	
-	package pac_strands is new doubly_linked_lists (type_strand);
-	use pac_strands;
 	
 
 	-- Returns true if the given strand has segments:
