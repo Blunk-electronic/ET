@@ -363,6 +363,23 @@ package et_net_segment is
 	package pac_net_segments is new doubly_linked_lists (type_net_segment);
 	use pac_net_segments;
 
+
+	-- Returns the status of a junction at the specified
+	-- end of the segment:
+	function get_junction_status (
+		segment	: in pac_net_segments.cursor;
+		AB_end	: in type_start_end_point)
+		return boolean;
+
+
+	-- Returns the ports that are connected with
+	-- the given end of a segment:
+	function get_ports (
+		segment : in pac_net_segments.cursor;
+		AB_end	: in type_start_end_point)				   
+		return type_ports;
+
+
 	
 
 	-- Returns true if the net segment

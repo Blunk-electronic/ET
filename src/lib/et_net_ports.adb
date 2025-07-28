@@ -155,6 +155,18 @@ package body et_net_ports is
 	end merge_ports;
 
 
+
+	
+	procedure merge_ports (
+		target	: in out type_ports;
+		source	: in type_ports)
+	is
+		scratch : type_ports;
+	begin
+		scratch := merge_ports (target, source);
+		target := scratch;
+	end;
+
 	
 	
 
@@ -228,6 +240,31 @@ package body et_net_ports is
 
 		return result;
 	end no_ports;
+
+	
+
+
+	function get_port_count (
+		ports : in type_ports)
+		return natural
+	is 
+		result : natural := 0;
+
+		d, s, n : count_type := 0;
+
+		use pac_device_ports;
+		use pac_submodule_ports;
+		use et_netlists.pac_netchanger_ports;
+	begin
+		d := length (ports.devices);
+		s := length (ports.submodules);
+		n := length (ports.netchangers);
+
+		result := natural (d + s + n);
+		return result;
+	end;
+
+		
 
 	
 	

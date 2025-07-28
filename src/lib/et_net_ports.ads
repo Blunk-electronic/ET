@@ -108,6 +108,11 @@ package et_net_ports is
 		right, left : in type_ports)
 		return type_ports;
 
+
+	-- Merges the given source ports in the target ports:
+	procedure merge_ports (
+		target	: in out type_ports;
+		source	: in type_ports);					  
 	
 
 	-- Returns true if the given netchanger port
@@ -132,6 +137,13 @@ package et_net_ports is
 		ports : in type_ports) 
 		return boolean;
 
+
+	-- Returns the total number of ports contained
+	-- in the given port group:
+	function get_port_count (
+		ports : in type_ports)
+		return natural;
+	
 
 	-- These are the ports which may exist
 	-- at the A or B end of a net segment.

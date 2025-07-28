@@ -953,8 +953,29 @@ package body et_net_segment is
 	end merge_overlapping_segments;
 
 	
+
+
+
+	function get_junction_status (
+		segment	: in pac_net_segments.cursor;
+		AB_end	: in type_start_end_point)
+		return boolean
+	is begin
+		return get_junction_status (element (segment), AB_end);
+	end;
+
 	
 
+
+	function get_ports (
+		segment : in pac_net_segments.cursor;
+		AB_end	: in type_start_end_point)				   
+		return type_ports
+	is begin
+		return get_ports (element (segment), AB_end);
+	end;
+
+	
 	
 	
 -- 	procedure move_net_labels (
