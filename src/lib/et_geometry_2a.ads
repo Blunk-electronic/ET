@@ -1148,9 +1148,12 @@ package et_geometry_2a is
 	-- we regard them as overlapping.
 	-- Otherwise, the return is always false if any of the given lines
 	-- has orientation ORIENT_SLOPING. In this case we assume
-	-- they are not overlapping:
+	-- they are not overlapping.
+	-- If argument "test_touch" is true, then the start and end points
+	-- of the lines are tested whether they meet each other:
 	function lines_overlap (
-		line_1, line_2 : in type_line)
+		line_1, line_2	: in type_line;
+		test_touch		: in boolean := false)
 		return boolean;
 	
 	

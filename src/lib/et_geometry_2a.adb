@@ -2271,28 +2271,89 @@ end;
 
 
 	function lines_overlap (
-		line_1, line_2 : in type_line)
+		line_1, line_2	: in type_line;
+		test_touch		: in boolean := false)
 		return boolean
 	is
 		result : boolean := false;
 
+		-- Get the orientation of the two lines:
 		O1 : constant type_line_orientation := get_orientation (line_1);
 		O2 : constant type_line_orientation := get_orientation (line_2);
 
-		-- x and y component of A and B end of line 1:
-		L1_Ax : type_distance renames line_1.A.x;
-		L1_Ay : type_distance renames line_1.A.y;
-		
-		L1_Bx : type_distance renames line_1.B.x;
-		L1_By : type_distance renames line_1.B.y;
-		
-		-- x and y component of A and B end of line 2:
-		L2_Ax : type_distance renames line_2.A.x;
-		L2_Ay : type_distance renames line_2.A.y;
-		
-		L2_Bx : type_distance renames line_2.B.x;
-		L2_By : type_distance renames line_2.B.y;
+		-- Returns true if start or end points of the two lines
+		-- meet each other on the same spot:
+		function touch return boolean is begin
+			if get_A (line_1) = get_B (line_2) or get_A (line_1) = get_A (line_2)
+			or get_B (line_1) = get_B (line_2) or get_B (line_1) = get_A (line_2) 
+			then 
+				return true;
+			else 
+				return false;
+			end if;
+		end touch;
 
+
+		procedure test_ranges is
+			include_limits : constant boolean := false;
+			
+			-- x and y component of A and B end of line 1:
+			L1_Ax : type_distance renames line_1.A.x;
+			L1_Ay : type_distance renames line_1.A.y;
+			
+			L1_Bx : type_distance renames line_1.B.x;
+			L1_By : type_distance renames line_1.B.y;
+			
+			-- x and y component of A and B end of line 2:
+			L2_Ax : type_distance renames line_2.A.x;
+			L2_Ay : type_distance renames line_2.A.y;
+			
+			L2_Bx : type_distance renames line_2.B.x;
+			L2_By : type_distance renames line_2.B.y;
+		begin
+			case O1 is
+				when ORIENT_HORIZONTAL =>					
+					-- The y values must be equal:
+					if L1_Ay = L2_Ay then
+
+						-- CASE H1: Line 1 runs from left to right:
+						if in_range (lower => L1_Ax, upper => L1_Bx, value => L2_Ax, include_limits => include_limits)
+						or in_range (lower => L1_Ax, upper => L1_Bx, value => L2_Bx, include_limits => include_limits)
+
+						-- CASE H2: Line 1 runs from right to left:					
+						or in_range (lower => L1_Bx, upper => L1_Ax, value => L2_Ax, include_limits => include_limits)
+						or in_range (lower => L1_Bx, upper => L1_Ax, value => L2_Bx, include_limits => include_limits)
+
+						then
+							result := true;
+						end if;
+					end if;
+
+					
+				when ORIENT_VERTICAL =>
+					-- The x values must be equal:
+					if L1_Ax = L2_Ax then
+
+						-- CASE V1: Line 1 runs from down to up:
+						if in_range (lower => L1_Ay, upper => L1_By, value => L2_Ay, include_limits => include_limits)
+						or in_range (lower => L1_Ay, upper => L1_By, value => L2_By, include_limits => include_limits)
+
+						-- CASE V2: Line 1 runs from up to down:					
+						or in_range (lower => L1_By, upper => L1_Ay, value => L2_Ay, include_limits => include_limits)
+						or in_range (lower => L1_By, upper => L1_Ay, value => L2_By, include_limits => include_limits)
+
+						then
+							result := true;
+						end if;
+					end if;
+					
+
+				when ORIENT_SLOPING =>
+					raise constraint_error; -- CS should never happen
+					
+			end case;
+		end test_ranges;
+		
 		
 	begin
 		-- If both lines are equal, then they do overlap.
@@ -2308,48 +2369,17 @@ end;
 			return false;
 		end if;
 
+		-- If the orientation is equal, the more tests
+		-- will be conducted:
 		if O1 = O2 then
-			case O1 is
-				when ORIENT_HORIZONTAL =>
-					-- The y values must be equal:
-					if L1_Ay = L2_Ay then
-
-						-- CASE H1: Line 1 runs from left to right:
-						if in_range (lower => L1_Ax, upper => L1_Bx, value => L2_Ax, include_limits => FALSE)
-						or in_range (lower => L1_Ax, upper => L1_Bx, value => L2_Bx, include_limits => FALSE)
-
-						-- CASE H2: Line 1 runs from right to left:					
-						or in_range (lower => L1_Bx, upper => L1_Ax, value => L2_Ax, include_limits => FALSE)
-						or in_range (lower => L1_Bx, upper => L1_Ax, value => L2_Bx, include_limits => FALSE)
-
-						then
-							result := true;
-						end if;
-					end if;
-
-					
-				when ORIENT_VERTICAL =>
-					-- The x values must be equal:
-					if L1_Ax = L2_Ax then
-
-						-- CASE V1: Line 1 runs from down to up:
-						if in_range (lower => L1_Ay, upper => L1_By, value => L2_Ay, include_limits => FALSE)
-						or in_range (lower => L1_Ay, upper => L1_By, value => L2_By, include_limits => FALSE)
-
-						-- CASE V2: Line 1 runs from up to down:					
-						or in_range (lower => L1_By, upper => L1_Ay, value => L2_Ay, include_limits => FALSE)
-						or in_range (lower => L1_By, upper => L1_Ay, value => L2_By, include_limits => FALSE)
-
-						then
-							result := true;
-						end if;
-					end if;
-					
-
-				when ORIENT_SLOPING =>
-					raise constraint_error; -- CS should never happen
-					
-			end case;
+			-- Test whether start or end points touch each other:
+			if test_touch and touch then
+				result := true;
+			else
+				-- Test whether start or end points of line_2
+				-- lie between start and end of line_1:
+				test_ranges;
+			end if;
 		end if;
 		
 		return result;
