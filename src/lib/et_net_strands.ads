@@ -97,9 +97,19 @@ package et_net_strands is
 	-- Searches for net segments that run into the same direction
 	-- and overlap each other. Replaces such segments by a single 
 	-- segment:
-	procedure optimize_strand (
+	procedure optimize_strand_1 (
 		strand			: in out type_strand;
 		log_threshold	: in type_log_level);
+
+
+	-- Searches for net segments that run into the same direction
+	-- and are connected via their start or end points.
+	-- If the common point has no ports and no other segments
+	-- then such segments are replaced by a single segment:
+	procedure optimize_strand_2 (
+		strand			: in out type_strand;
+		log_threshold	: in type_log_level);
+
 
 	
 	-- If strands are to be joined (or merged) with each other
@@ -142,7 +152,7 @@ package et_net_strands is
 
 	
 	type type_connected_segment is record
-		segment	: pac_net_segments.cursor;
+		segment	: pac_net_segments.cursor; -- CS rename to cursor
 		AB_end	: type_start_end_point;
 	end record;
 
@@ -159,6 +169,11 @@ package et_net_strands is
 		doubly_linked_lists (type_connected_segment);
 
 		
+	function get_length (
+		segments : in pac_connected_segments.list)
+		return natural;
+
+	
 	-- Returns the net segments which are connected
 	-- with the given primary segment at the given end (A/B).
 	-- NOTE; The primary segment must belong to the given strand.	
@@ -169,7 +184,21 @@ package et_net_strands is
 		return pac_connected_segments.list;
 
 
+	-- Returns true if the given primary segment has
+	-- any segments connected at the given end (A/B):
+	function has_connected_segments (
+		primary 	: in pac_net_segments.cursor;
+		AB_end		: in type_start_end_point;
+		strand		: in type_strand)
+		return boolean;
 
+	
+
+	-- Clears all junctions of the given connected
+	-- segments in the given strand:
+	procedure clear_junctions (
+		strand		: in out type_strand;
+		segments	: in out pac_connected_segments.list);
 
 	
 
@@ -182,7 +211,7 @@ package et_net_strands is
 
 
 		
-	-- Tests whether at the givne point exist other
+	-- Tests whether at the given point exist other
 	-- net segments except the one indicated by "except":
 	function other_segments_exist (
 		segments	: in pac_net_segments.list;
@@ -265,16 +294,22 @@ package et_net_strands is
 
 
 
-	-- Deletes the given segment in a given strand.
+	-- Deletes the given target segment in a given strand.
 	-- The result can be:
-	-- 1. just the given strand modified
-	-- 2. two new strands because the given strand has been
-	--    fallen apart into two separate strands:
-	function delete_segment (
-		strand			: in type_strand;
+	-- 1. Just the given strand gets trimmed.
+	--    If the targeted segment is the last, then
+	--    the flag "empty" is set.
+	-- 2. Two new strands because the given strand has been
+	--    fallen apart into two separate strands. The flag "split"
+	--    will be set.
+	procedure delete_segment (
+		strand			: in out type_strand;
 		segment			: in pac_net_segments.cursor;
-		log_threshold	: in type_log_level)
-		return pac_strands.list;
+		empty			: out boolean;
+		split			: out boolean;
+		strand_1		: out type_strand;
+		strand_2		: out type_strand;
+		log_threshold	: in type_log_level);
 
 	
 								 

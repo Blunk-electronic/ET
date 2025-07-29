@@ -564,18 +564,25 @@ package body et_schematic_ops.nets is
 				net			: in out type_net) 
 			is
 
+				strand_is_empty : boolean;
+				split_strand : boolean;
+				
+				strand_1, strand_2 : type_strand;
 
-				procedure query_strand (strand : in out type_strand) is
-					c : pac_net_segments.cursor := segment.segment_cursor;
-
-					use et_net_strands;
-					n : pac_strands.list;
-				begin
-					delete (strand.segments, c);
-					-- CS The strand may fall apart in two
-					-- fragments. Create two new strands ?
+				
+				procedure query_strand (strand : in out type_strand) is begin
+					log_indentation_up;
 					
-					n := delete_segment (strand, segment.segment_cursor, log_threshold + 3);
+					delete_segment (
+						strand			=> strand, 
+						segment			=> segment.segment_cursor,
+						empty			=> strand_is_empty,
+						split			=> split_strand,
+						strand_1		=> strand_1,
+						strand_2		=> strand_2, 
+						log_threshold	=> log_threshold + 2);
+					
+					log_indentation_down;
 				end query_strand;
 
 				
@@ -584,13 +591,20 @@ package body et_schematic_ops.nets is
 
 				-- If the strand has no segments anymore, then
 				-- remove the now useless strand entirely:
-				if not has_segments (segment.strand_cursor) then
+				--if not has_segments (segment.strand_cursor) then
+				if strand_is_empty then
+					log (text => "no segments left. delete strand.", level => log_threshold + 1);
 					declare
 						c : pac_strands.cursor := segment.strand_cursor;
 					begin
-						-- CS log message
 						delete (net.strands, c);
 					end;
+				end if;
+
+				if split_strand then
+					log (text => "split strand", level => log_threshold + 1);
+					net.strands.append (strand_1);
+					net.strands.append (strand_2);
 				end if;
 			end query_net;
 

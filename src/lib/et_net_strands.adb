@@ -135,7 +135,7 @@ package body et_net_strands is
 
 
 
-	procedure optimize_strand (
+	procedure optimize_strand_1 (
 		strand			: in out type_strand;
 		log_threshold	: in type_log_level)
 	is
@@ -149,7 +149,7 @@ package body et_net_strands is
 		
 
 		-- This procedure searches for a net segment (called primary) that
-		-- overlap another segment (called secondary).
+		-- overlaps another segment (called secondary).
 		-- Once an overlap has been found:
 		-- 1. The search is aborted.
 		-- 2. Primary and secondary segment are merged to a new segment.
@@ -244,10 +244,246 @@ package body et_net_strands is
 		end loop;
 
 		log_indentation_down;
-	end optimize_strand;
+	end optimize_strand_1;
 
 
 	
+
+	
+
+	procedure optimize_strand_2 (
+		strand			: in out type_strand;
+		log_threshold	: in type_log_level)
+	is
+		segments_have_been_merged : boolean := true;
+		
+		-- The optimization process may require several passes.
+		-- In order to avoid a forever-loop this counter is required.
+		-- CS: Increase the upper limit if required:
+		subtype type_safety_counter is natural range 0 .. 10;
+		safety_counter : type_safety_counter := 0;
+		
+
+		-- This procedure searches for a net segment (called primary) that
+		-- starts or ends where another segment (called secondary) starts or ends.		
+		-- Once a connections has been found:
+		-- 1. The search is aborted.
+		-- 2. Primary and secondary segment are merged to a new segment.
+		-- 3. The secondary segment is removed.
+		-- 4. The primary segment is replaced by the new segment.
+		procedure search_overlap is
+
+			-- This flag is cleared once an overlap has been found:
+			proceed : aliased boolean := true;
+
+			-- After an overlap has been found, these cursors point to the
+			-- affected primary and secondary segment:
+			primary, secondary : pac_net_segments.cursor;
+
+			-- After merging primary and secondary segment, here the
+			-- resulting segment will be stored:
+			new_segment : type_net_segment;
+			
+			
+			procedure query_primary (p : in pac_net_segments.cursor) is
+				PA : type_vector_model := get_A (p);
+				PB : type_vector_model := get_B (p);
+
+				-- The number of segments connected 
+				-- with the A end of the primary segment candidate:
+				PAS : constant natural := get_length (get_connected_segments (p, A, strand));
+
+				-- The number of segments connected 
+				-- with the B end of the primary segment candidate:
+				PBS : constant natural := get_length (get_connected_segments (p, B, strand));
+
+				-- Whether the A end of the primary candidate 
+				-- segment has any ports connected:
+				PAP : constant boolean := has_ports (p, A);
+
+				-- Whether the B end of the primary candidate 
+				-- segment has any ports connected:
+				PBP : constant boolean := has_ports (p, B);
+
+				
+				procedure query_secondary (s : in pac_net_segments.cursor) is 
+					SA : type_vector_model := get_A (s);
+					SB : type_vector_model := get_B (s);
+
+					-- The number of segments connected 
+					-- with the A end of the secondary segment candidate:
+					SAS : constant natural := get_length (get_connected_segments (s, A, strand));
+
+					-- The number of segments connected 
+					-- with the B end of the secondary segment candidate:
+					SBS : constant natural := get_length (get_connected_segments (s, B, strand));
+
+					-- Whether the A end of the secondary segment candidate 
+					-- has any ports connected:
+					SAP : constant boolean := has_ports (s, A);
+
+					-- Whether the B end of the secondary segment candidate 
+					-- has any ports connected:
+					SBP : constant boolean := has_ports (s, B);
+
+
+					procedure do_overlap_test is begin
+						log (text => "do overlap test", level => log_threshold + 3);
+						-- Do the actual overlap test. If positive, then
+						-- store the cursors of primary and secondary segment
+						-- and clear the proceed-flag so that all iterators stop.
+						-- We test whether the start and end points of the
+						-- two segments touch each other:
+						if segments_overlap (s, p, test_touch => true) then
+							primary := p;
+							secondary := s;
+
+							proceed := false;
+						end if;
+					end do_overlap_test;
+
+					
+				begin
+					-- We do not test the primary segment against itself.
+					-- For this reason we compare primary and secondary cursors:
+					if s /= p then
+						log (text => "secondary segment: " & to_string (s), level => log_threshold + 1);
+						log_indentation_up;
+
+						-- Log segment count and ports on A end:
+						log (text => "SAS: " & natural'image (SAS), level => log_threshold + 2);
+						log (text => "SAP: " & boolean'image (SAP), level => log_threshold + 2);
+
+						-- Log segment count and ports on B end:
+						log (text => "SBS: " & natural'image (SBS), level => log_threshold + 2);
+						log (text => "SBP: " & boolean'image (SBP), level => log_threshold + 2);
+						
+						log_indentation_up;
+						
+						-- Test primary A against secondary A:
+						if PA = SA then
+							log (text => "PA = SA", level => log_threshold + 2);
+							if PAS = 1 
+							and SAS = 1 -- CS no need ?
+							and not PAP
+							and not SAP
+							then
+								do_overlap_test;
+							end if;
+
+						-- Test primary A against secondary B:
+						elsif PA = SB then
+							log (text => "PA = SB", level => log_threshold + 2);
+							if PAS = 1 
+							and SBS = 1 -- CS no need ?
+							and not PAP
+							and not SBP
+							then
+								do_overlap_test;
+							end if;
+
+						-- Test primary B against secondary A:
+						elsif PB = SA then
+							log (text => "PB = SA", level => log_threshold + 2);
+							if PBS = 1 
+							and SAS = 1 -- CS no need ?
+							and not PBP
+							and not SAP
+							then
+								do_overlap_test;
+							end if;
+
+						-- Test primary B against secondary B:
+						elsif PB = SB then
+							log (text => "PB = SB", level => log_threshold + 2);
+							if PBS = 1 
+							and SBS = 1 -- CS no need ?
+							and not PBP
+							and not SBP
+							then
+								do_overlap_test;
+							end if;
+						end if;
+
+						log_indentation_down;
+						log_indentation_down;
+					end if;
+				end query_secondary;
+
+			begin
+				log (text => "primary segment: " & to_string (p), level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Log segment count and ports on A end:
+				log (text => "PAS: " & natural'image (PAS), level => log_threshold + 2);
+				log (text => "PAP: " & boolean'image (PAP), level => log_threshold + 2);
+
+				-- Log segment count and ports on B end:
+				log (text => "PBS: " & natural'image (PBS), level => log_threshold + 2);
+				log (text => "PBP: " & boolean'image (PBP), level => log_threshold + 2);
+				
+				-- Iterate the secondary segments:
+				iterate (strand.segments, query_secondary'access, proceed'access);
+				log_indentation_down;
+			end query_primary;
+
+			
+		begin			
+			-- Iterate the primary segments. Abort when an overlap has been found:
+			iterate (strand.segments, query_primary'access, proceed'access);
+
+			-- If no overlap has been found, then the proceed-flag is still
+			-- set. So we notify the caller that nothing has been merged:
+			if proceed then
+				log (text => "nothing to do", level => log_threshold + 1);
+				
+				segments_have_been_merged := false;
+			else
+				log (text => "overlapping segments found", level => log_threshold + 1);
+				
+				-- If an overlap has been found, then the proceed-flag is cleared.
+				-- In this case we merge the two segments:
+
+				-- Merge primary and secondary segment:
+				new_segment := merge_overlapping_segments (element (primary), element (secondary));
+				
+				-- Delete secondary segment, because it is no longer needed:
+				strand.segments.delete (secondary);
+
+				-- Replace the primary segment by the new segment:
+				strand.segments.replace_element (primary, new_segment);
+
+				-- Notify the caller that a merge took place:
+				segments_have_been_merged := true;
+			end if;
+		end search_overlap;
+			
+		
+
+	begin
+		log (text => "optimize strand 2", level => log_threshold);
+		log_indentation_up;
+		
+		-- Call procedure search_overlap as many times
+		-- as optimzing is required:
+		
+		while segments_have_been_merged loop
+			
+			-- Count the loops and raise exception on overflow:
+			safety_counter := safety_counter + 1;
+
+			log (text => "pass" & natural'image (safety_counter), level => log_threshold + 1);
+			
+			log_indentation_up;			
+			search_overlap;
+			log_indentation_down;
+		end loop;
+
+		log_indentation_down;
+	end optimize_strand_2;
+
+
+
 	
 	
 
@@ -293,7 +529,7 @@ package body et_net_strands is
 					source	=> source_copy.segments);
 
 				-- Optimize target due to overlapping segments:
-				optimize_strand (target, log_threshold);
+				optimize_strand_1 (target, log_threshold);
 		end case;
 		
 		set_strand_position (target);
@@ -314,6 +550,14 @@ package body et_net_strands is
 
 	
 
+	function get_length (
+		segments : in pac_connected_segments.list)
+		return natural
+	is begin
+		return natural (segments.length);
+	end;
+
+	
 
 	
 	function get_connected_segments (
@@ -358,6 +602,71 @@ package body et_net_strands is
 
 	
 
+
+
+	function has_connected_segments (
+		primary 	: in pac_net_segments.cursor;
+		AB_end		: in type_start_end_point;
+		strand		: in type_strand)
+		return boolean
+	is
+		count : natural;
+	begin
+		count := get_length (get_connected_segments (primary, AB_end, strand));
+
+		if count = 0 then
+			return false;
+		else
+			return true;
+		end if;
+	end has_connected_segments;
+
+	
+
+	
+	
+
+	procedure clear_junctions (
+		strand		: in out type_strand;
+		segments	: in out pac_connected_segments.list)
+	is
+		use pac_connected_segments;
+
+		
+		procedure query_connected_segment (
+			c : in pac_connected_segments.cursor) 
+		is
+			-- Get the connected segment candidate.
+			-- It provides a cursor to the actual segment in the strand
+			-- and the related end (A or B):
+			connected_segment : type_connected_segment renames element (c);
+
+
+			-- Clear the junction on the affected end:
+			procedure query_segment (
+				segment : in out type_net_segment) 
+			is begin
+				clear_junction (segment, connected_segment.AB_end);
+			end query_segment;
+
+			
+		begin
+			-- Update the segment in the strand:
+			strand.segments.update_element (
+				position	=> connected_segment.segment,
+				process		=> query_segment'access);
+		end;
+
+
+	begin
+		-- Iterate though all given connected segments:
+		segments.iterate (query_connected_segment'access);
+	end clear_junctions;
+
+
+
+	
+	
 	
 
 	function get_segment_to_split (
@@ -823,17 +1132,216 @@ package body et_net_strands is
 
 
 
-	function delete_segment (
-		strand			: in type_strand;
+	procedure delete_segment (
+		strand			: in out type_strand;
 		segment			: in pac_net_segments.cursor;
+		empty			: out boolean;
+		split			: out boolean;
+		strand_1		: out type_strand;
+		strand_2		: out type_strand;
 		log_threshold	: in type_log_level)
-		return pac_strands.list
 	is
-		result : pac_strands.list;
+		-- The given segment is now referred to as 
+		-- the "target segment" because this will be deleted.
+				
+		segments_A, segments_B : pac_connected_segments.list;
+		segments_A_count, segments_B_count : natural;
+		
+		junction_A, junction_B : boolean;
+		ports_A, ports_B : type_ports;
+
+		ports_A_count, ports_B_count : natural;
+
+		
+		procedure split_strand is
+		begin
+			log (text => "split strand", level => log_threshold + 1);
+			empty := false;
+			split := true;
+		end;
+
+
+		procedure trim_strand (AB_end : in type_start_end_point) is
+			con : type_connected_segment;
+			destination_AB : type_start_end_point;
+			destination_segment : type_net_segment;
+			c : pac_net_segments.cursor := segment;
+
+		
+		begin
+			log (text => "trim on end " & to_string (AB_end), level => log_threshold + 1);
+
+			-- Delete the targeted segment:
+			strand.segments.delete (c);
+
+			-- Get the first segment among those
+			-- which are connected with the target segment:
+			case AB_end is
+				when A => con := segments_B.first_element;
+				when B => con := segments_A.first_element;
+			end case;
+
+			destination_segment := element (con.segment);
+			destination_AB := con.AB_end;
+
+			case AB_end is
+				when A => 
+					-- The B end of the target segment is 
+					-- connected with the strand.
+					put_line ("trim A");
+					
+					append_ports (destination_segment, ports_B, destination_AB);
+     
+					clear_junctions (strand, segments_B);
+					
+					put_line ("segments_B_count" & natural'image (segments_B_count));
+					put_line ("ports_B_count   " & natural'image (ports_B_count));
+					
+
+					if junction_B then
+						if (segments_B_count + ports_B_count) >= 3 then
+							set_junction (destination_segment, destination_AB);
+						end if;
+					end if;
+					
+					
+				when B => 
+					-- The A end of the target segment is 
+					-- connected with the strand.
+					put_line ("trim B");
+					
+					append_ports (destination_segment, ports_A, destination_AB);
+
+					clear_junctions (strand, segments_A);
+					
+					put_line ("segments_A_count" & natural'image (segments_A_count));
+					put_line ("ports_A_count   " & natural'image (ports_A_count));
+					
+
+					if junction_A then
+						if (segments_A_count + ports_A_count) >= 3 then
+							set_junction (destination_segment, destination_AB);
+						end if;
+					end if;
+					
+			end case;
+
+
+
+			strand.segments.replace_element (con.segment, destination_segment);
+
+			empty := false;
+			split := false;
+
+			optimize_strand_2 (strand, log_threshold + 2);
+		end trim_strand;
+		
+		
+		
+		procedure trim_strand_B is
+			con : type_connected_segment;
+			destination_AB : type_start_end_point;
+			destination_segment : type_net_segment;
+			c : pac_net_segments.cursor := segment;
+		begin
+			log (text => "trim on B end", level => log_threshold + 1);
+			
+			-- The A end of the target segment is 
+			-- connected with the strand.
+
+			-- Get the first segment among those
+			-- which are connected with the target segment:
+			con := segments_A.first_element;
+
+			destination_segment := element (con.segment);
+			destination_AB := con.AB_end;
+
+			append_ports (destination_segment, ports_A, destination_AB);
+
+			if junction_A then
+				if (segments_A_count + ports_A_count) >= 3 then
+					set_junction (destination_segment, destination_AB);
+				end if;
+			end if;
+
+
+			if (segments_A_count + ports_A_count) < 3 then
+				clear_junctions (strand, segments_A);
+			end if;
+
+			
+			-- Delete the targeted segment
+			strand.segments.delete (c);
+			strand.segments.replace_element (con.segment, destination_segment);
+			empty := false;
+			split := false;
+
+			-- CS optimize
+		end trim_strand_B;
+		
+
+
+		procedure delete_last_segment is begin
+			log (text => "delete last segment", level => log_threshold + 1);			
+			strand.segments.clear;
+			empty := true;
+			split := false;
+		end;
+		
+		
 	begin
+		log (text => "delete segment", level => log_threshold);
+		log_indentation_up;
+		
+		-- Get the net segments which are connected with
+		-- the A and B end of the given segment:
+		segments_A := get_connected_segments (segment, A, strand);
+		segments_B := get_connected_segments (segment, B, strand);
 
+		segments_A_count := get_length (segments_A);
+		segments_B_count := get_length (segments_B);
+		
+		-- Get the junction status of the given segment:
+		junction_A := get_junction_status (segment, A);
+		junction_B := get_junction_status (segment, B);
 
-		return result;
+		-- Get the ports which are connected with the
+		-- A and B end of the given segment:
+		ports_A := get_ports (segment, A);
+		ports_B := get_ports (segment, B);
+
+		ports_A_count := get_port_count (ports_A);
+		ports_B_count := get_port_count (ports_B);
+		
+
+		-- CASE 1:
+		-- If there are segments on both ends of the target segment,
+		-- then the strand will be split in two fragments:
+		if segments_A_count > 0 and segments_B_count > 0 then
+			split_strand;
+
+		-- CASE 2:
+		-- If only the A end has segments connected, then
+		-- the strand will be trimmed at the B end of the target segment:
+		elsif segments_A_count > 0 and segments_B_count = 0 then
+			-- trim_strand_B;
+			trim_strand (B);
+
+		-- CASE 3:
+		-- If only the B end has segments connected, then
+		-- the strand will be trimmed at the A end of the target segment:
+		elsif segments_A_count = 0 and segments_B_count > 0 then
+			-- trim_strand_A;
+			trim_strand (A);
+
+		-- CASE 4:
+		-- If no segments are connected with the target segment,
+		-- then the strand will be deleted completely:
+		elsif segments_A_count = 0 and segments_B_count = 0 then
+			delete_last_segment;
+		end if;
+
+		log_indentation_down;
 	end delete_segment;
 
 	

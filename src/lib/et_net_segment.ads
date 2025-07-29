@@ -481,8 +481,11 @@ package et_net_segment is
 	-- It is assumed that none of the given segments
 	-- is a slope. If any of the segments is sloping, then
 	-- the return is always false:
+	-- If argument "test_touch" is true, then the start and end points
+	-- of the segments are tested whether they meet each other:
 	function segments_overlap (
-		s1, s2 : in pac_net_segments.cursor)
+		s1, s2		: in pac_net_segments.cursor;
+		test_touch	: in boolean := false)
 		return boolean;
 
 

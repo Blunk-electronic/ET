@@ -1220,10 +1220,11 @@ package body et_net_segment is
 
 
 	function segments_overlap (
-		s1, s2 : in pac_net_segments.cursor)
+		s1, s2		: in pac_net_segments.cursor;
+		test_touch	: in boolean := false)
 		return boolean
 	is begin
-		return lines_overlap (element (s1), element (s2));
+		return lines_overlap (element (s1), element (s2), test_touch);
 	end;
 
 
