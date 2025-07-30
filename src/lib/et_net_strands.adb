@@ -603,6 +603,35 @@ package body et_net_strands is
 	
 
 
+	
+	function get_connected_ports (
+		segments	: in pac_connected_segments.list)
+		return natural
+	is
+		result : natural := 0;
+
+		-- Queries a connected segment candidate and adds its
+		-- port count to the result:
+		procedure query_segment (c : in pac_connected_segments.cursor) is
+			use pac_connected_segments;
+			segment : type_connected_segment renames element (c);
+			ports : natural;
+		begin
+			ports := get_port_count (element (segment.segment), segment.AB_end); 
+			result := result + ports;
+		end query_segment;
+
+		
+	begin
+		-- Iterate through the given connected segments:
+		segments.iterate (query_segment'access);
+
+		return result;
+	end get_connected_ports;
+
+
+	
+
 
 	function has_connected_segments (
 		primary 	: in pac_net_segments.cursor;
@@ -621,8 +650,115 @@ package body et_net_strands is
 		end if;
 	end has_connected_segments;
 
+
 	
 
+
+
+	procedure set_junction (
+		strand	: in out type_strand;
+		place	: in type_vector_model)
+	is
+		-- As soon as a segment has been found that starts
+		-- or ends at the given place, then this flag is cleared
+		-- so that no more segments are searched for:
+		proceed : aliased boolean := true;
+
+		-- This will be the segment where the junction
+		-- will be set:
+		target_segment : pac_net_segments.cursor;
+
+		-- This is the end of the target segment where the 
+		-- junction will be set:
+		target_AB_end : type_start_end_point;
+
+		-- If the given place is accepted for a junction
+		-- then this flag will be set:
+		junction_granted : boolean := false;
+
+
+		-- Queries a given primary segment candidate:
+		procedure query_primary_segment (p : in pac_net_segments.cursor) is
+
+			-- This procedure fetches the number of connected
+			-- secondary segments and ports (of devices, netchangers and submodules)
+			-- and decides whether to grant the junction or not:
+			procedure get_count is
+				secondary_segments : pac_connected_segments.list;
+				s_count : natural; -- the number of connected secondary segments
+				p_count_s : natural; -- the number of secondary ports
+				p_count_p : natural; -- the number of primary ports
+			begin
+				put_line ("target segment: " & to_string (p));
+				proceed := false; -- no more searching requred
+				target_segment := p; -- store the affected primary segment
+
+				-- Get the secondary segments which are connected with
+				-- the primary segment:
+				secondary_segments := get_connected_segments (p, target_AB_end, strand);
+				s_count := get_length (secondary_segments);				
+				put_line ("connected secondary segments " & natural'image (s_count));
+
+				-- Get the number of ports connected with the primary segment:
+				p_count_p := get_port_count (element (p), target_AB_end);
+				put_line ("connected primary ports " & natural'image (p_count_p));
+
+				-- Get the number of ports connected with the secondary segments:
+				p_count_s := get_connected_ports (secondary_segments);
+				put_line ("connected secondary ports " & natural'image (p_count_s));
+				
+				-- Now the sum of the number of segments and ports
+				-- that meet at the given place decides whether to 
+				-- place a junction:
+				if (1 + s_count + p_count_p + p_count_s) >= 3 then
+					junction_granted := true;
+				end if;
+			end get_count;
+
+			
+		begin
+			-- Test whether the given place is the
+			-- start or end point of the primary candidate segment:
+			if get_A (p) = place then
+				target_AB_end := A;
+				get_count;
+				
+			elsif get_B (p) = place then
+				target_AB_end := B;
+				get_count;
+			end if;
+
+			-- If no end of the primary candidate segment 
+			-- matches the given place, then the next primary
+			-- segment will be tested.
+		end query_primary_segment;
+
+
+		
+		-- Sets the junction in the target segment
+		-- at the given A/B end:
+		procedure do_it (segment : in out type_net_segment) is begin
+			set_junction (segment, target_AB_end);
+		end;
+		
+		
+	begin
+		put_line ("set junction at " & to_string (place));
+
+		-- Iterate the segments of the given strand. Abort the process
+		-- once the proceed-flag is cleared:
+		iterate (strand.segments, query_primary_segment'access, proceed'access);
+
+
+		-- If the junction is allowed at the given place, then
+		-- set it in the target segment:
+		if junction_granted then
+			strand.segments.update_element (target_segment, do_it'access);
+		end if;
+	end set_junction;
+
+
+	
 	
 	
 
@@ -1147,7 +1283,7 @@ package body et_net_strands is
 		segments_A, segments_B : pac_connected_segments.list;
 		segments_A_count, segments_B_count : natural;
 		
-		junction_A, junction_B : boolean;
+		-- junction_A, junction_B : boolean;
 		ports_A, ports_B : type_ports;
 
 		ports_A_count, ports_B_count : natural;
@@ -1167,117 +1303,75 @@ package body et_net_strands is
 			destination_segment : type_net_segment;
 			c : pac_net_segments.cursor := segment;
 
-		
+			P : type_vector_model;
 		begin
 			log (text => "trim on end " & to_string (AB_end), level => log_threshold + 1);
-
-			-- Delete the targeted segment:
-			strand.segments.delete (c);
-
-			-- Get the first segment among those
-			-- which are connected with the target segment:
-			case AB_end is
-				when A => con := segments_B.first_element;
-				when B => con := segments_A.first_element;
-			end case;
-
-			destination_segment := element (con.segment);
-			destination_AB := con.AB_end;
 
 			case AB_end is
 				when A => 
 					-- The B end of the target segment is 
 					-- connected with the strand.
 					put_line ("trim A");
-					
-					append_ports (destination_segment, ports_B, destination_AB);
-     
-					clear_junctions (strand, segments_B);
-					
 					put_line ("segments_B_count" & natural'image (segments_B_count));
 					put_line ("ports_B_count   " & natural'image (ports_B_count));
-					
 
-					if junction_B then
-						if (segments_B_count + ports_B_count) >= 3 then
-							set_junction (destination_segment, destination_AB);
-						end if;
-					end if;
+					P := get_B (segment);
 					
+					clear_junctions (strand, segments_B);
+					
+					-- Get the first segment among those
+					-- which are connected with the target segment:
+					con := segments_B.first_element;
+					destination_segment := element (con.segment);
+					destination_AB := con.AB_end;
+					
+					append_ports (destination_segment, ports_B, destination_AB);
+					strand.segments.replace_element (con.segment, destination_segment);
+
+					-- Delete the targeted segment:
+					strand.segments.delete (c);
+
+					optimize_strand_2 (strand, log_threshold + 2);
+
+					-- Set a junction, as far as requred:
+					set_junction (strand, P);
+								
 					
 				when B => 
 					-- The A end of the target segment is 
 					-- connected with the strand.
 					put_line ("trim B");
-					
-					append_ports (destination_segment, ports_A, destination_AB);
-
-					clear_junctions (strand, segments_A);
-					
 					put_line ("segments_A_count" & natural'image (segments_A_count));
 					put_line ("ports_A_count   " & natural'image (ports_A_count));
-					
 
-					if junction_A then
-						if (segments_A_count + ports_A_count) >= 3 then
-							set_junction (destination_segment, destination_AB);
-						end if;
-					end if;
+					P := get_A (segment);
+					
+					clear_junctions (strand, segments_A);
+
+					-- Get the first segment among those
+					-- which are connected with the target segment:
+					con := segments_A.first_element;
+					destination_segment := element (con.segment);
+					destination_AB := con.AB_end;
+					
+					append_ports (destination_segment, ports_A, destination_AB);
+					strand.segments.replace_element (con.segment, destination_segment);
+
+					-- Delete the targeted segment:
+					strand.segments.delete (c);
+
+					optimize_strand_2 (strand, log_threshold + 2);
+					
+					-- Set a junction, as far as requred:
+					set_junction (strand, P);
 					
 			end case;
 
-
-
-			strand.segments.replace_element (con.segment, destination_segment);
-
 			empty := false;
 			split := false;
 
-			optimize_strand_2 (strand, log_threshold + 2);
 		end trim_strand;
 		
-		
-		
-		procedure trim_strand_B is
-			con : type_connected_segment;
-			destination_AB : type_start_end_point;
-			destination_segment : type_net_segment;
-			c : pac_net_segments.cursor := segment;
-		begin
-			log (text => "trim on B end", level => log_threshold + 1);
-			
-			-- The A end of the target segment is 
-			-- connected with the strand.
-
-			-- Get the first segment among those
-			-- which are connected with the target segment:
-			con := segments_A.first_element;
-
-			destination_segment := element (con.segment);
-			destination_AB := con.AB_end;
-
-			append_ports (destination_segment, ports_A, destination_AB);
-
-			if junction_A then
-				if (segments_A_count + ports_A_count) >= 3 then
-					set_junction (destination_segment, destination_AB);
-				end if;
-			end if;
-
-
-			if (segments_A_count + ports_A_count) < 3 then
-				clear_junctions (strand, segments_A);
-			end if;
-
-			
-			-- Delete the targeted segment
-			strand.segments.delete (c);
-			strand.segments.replace_element (con.segment, destination_segment);
-			empty := false;
-			split := false;
-
-			-- CS optimize
-		end trim_strand_B;
 		
 
 
@@ -1302,8 +1396,8 @@ package body et_net_strands is
 		segments_B_count := get_length (segments_B);
 		
 		-- Get the junction status of the given segment:
-		junction_A := get_junction_status (segment, A);
-		junction_B := get_junction_status (segment, B);
+		-- junction_A := get_junction_status (segment, A);
+		-- junction_B := get_junction_status (segment, B);
 
 		-- Get the ports which are connected with the
 		-- A and B end of the given segment:
@@ -1324,14 +1418,12 @@ package body et_net_strands is
 		-- If only the A end has segments connected, then
 		-- the strand will be trimmed at the B end of the target segment:
 		elsif segments_A_count > 0 and segments_B_count = 0 then
-			-- trim_strand_B;
 			trim_strand (B);
 
 		-- CASE 3:
 		-- If only the B end has segments connected, then
 		-- the strand will be trimmed at the A end of the target segment:
 		elsif segments_A_count = 0 and segments_B_count > 0 then
-			-- trim_strand_A;
 			trim_strand (A);
 
 		-- CASE 4:

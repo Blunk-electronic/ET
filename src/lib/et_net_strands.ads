@@ -192,6 +192,22 @@ package et_net_strands is
 		strand		: in type_strand)
 		return boolean;
 
+
+
+	-- Returns the total number of ports which are
+	-- connected with the given segments:
+	function get_connected_ports (
+		segments	: in pac_connected_segments.list)
+		return natural;
+	
+		
+	-- Sets a junction at the given place in the given strand.
+	-- If the given place does not qualify for a junction,
+	-- then nothing happens:
+	procedure set_junction (
+		strand	: in out type_strand;
+		place	: in type_vector_model);
+	
 	
 
 	-- Clears all junctions of the given connected
