@@ -689,7 +689,7 @@ package body et_net_strands is
 				p_count_s : natural; -- the number of secondary ports
 				p_count_p : natural; -- the number of primary ports
 			begin
-				put_line ("target segment: " & to_string (p));
+				-- put_line ("target segment: " & to_string (p));
 				proceed := false; -- no more searching requred
 				target_segment := p; -- store the affected primary segment
 
@@ -697,15 +697,15 @@ package body et_net_strands is
 				-- the primary segment:
 				secondary_segments := get_connected_segments (p, target_AB_end, strand);
 				s_count := get_length (secondary_segments);				
-				put_line ("connected secondary segments " & natural'image (s_count));
+				-- put_line ("connected secondary segments " & natural'image (s_count));
 
 				-- Get the number of ports connected with the primary segment:
 				p_count_p := get_port_count (element (p), target_AB_end);
-				put_line ("connected primary ports " & natural'image (p_count_p));
+				-- put_line ("connected primary ports " & natural'image (p_count_p));
 
 				-- Get the number of ports connected with the secondary segments:
 				p_count_s := get_connected_ports (secondary_segments);
-				put_line ("connected secondary ports " & natural'image (p_count_s));
+				-- put_line ("connected secondary ports " & natural'image (p_count_s));
 				
 				-- Now the sum of the number of segments and ports
 				-- that meet at the given place decides whether to 
@@ -743,7 +743,7 @@ package body et_net_strands is
 		
 		
 	begin
-		put_line ("set junction at " & to_string (place));
+		-- put_line ("set junction at " & to_string (place));
 
 		-- Iterate the segments of the given strand. Abort the process
 		-- once the proceed-flag is cleared:
@@ -1283,7 +1283,6 @@ package body et_net_strands is
 		segments_A, segments_B : pac_connected_segments.list;
 		segments_A_count, segments_B_count : natural;
 		
-		-- junction_A, junction_B : boolean;
 		ports_A, ports_B : type_ports;
 
 		ports_A_count, ports_B_count : natural;
@@ -1298,22 +1297,31 @@ package body et_net_strands is
 
 
 		procedure trim_strand (AB_end : in type_start_end_point) is
-			con : type_connected_segment;
+			-- This is a segment that is connected with the target segment.
+			-- To this segment the ports of the primary segment will be
+			-- transferred. For this reason we refer to this segment
+			-- as destination_segment. The affected end of the destination_segment
+			-- is the variable destination_AB:
+			con : type_connected_segment;			
 			destination_AB : type_start_end_point;
 			destination_segment : type_net_segment;
+
+			-- This cursor points to the segment to be deleted:
 			c : pac_net_segments.cursor := segment;
 
+			-- This is the place where a junction might be required:
 			P : type_vector_model;
+			
 		begin
 			log (text => "trim on end " & to_string (AB_end), level => log_threshold + 1);
 
 			case AB_end is
 				when A => 
-					-- The B end of the target segment is 
-					-- connected with the strand.
-					put_line ("trim A");
-					put_line ("segments_B_count" & natural'image (segments_B_count));
-					put_line ("ports_B_count   " & natural'image (ports_B_count));
+					-- The B end of the target segment is connected with the strand.
+
+					-- put_line ("trim A");
+					-- put_line ("segments_B_count" & natural'image (segments_B_count));
+					-- put_line ("ports_B_count   " & natural'image (ports_B_count));
 
 					P := get_B (segment);
 					
@@ -1326,23 +1334,14 @@ package body et_net_strands is
 					destination_AB := con.AB_end;
 					
 					append_ports (destination_segment, ports_B, destination_AB);
-					strand.segments.replace_element (con.segment, destination_segment);
 
-					-- Delete the targeted segment:
-					strand.segments.delete (c);
-
-					optimize_strand_2 (strand, log_threshold + 2);
-
-					-- Set a junction, as far as requred:
-					set_junction (strand, P);
-								
-					
+			
 				when B => 
-					-- The A end of the target segment is 
-					-- connected with the strand.
-					put_line ("trim B");
-					put_line ("segments_A_count" & natural'image (segments_A_count));
-					put_line ("ports_A_count   " & natural'image (ports_A_count));
+					-- The A end of the target segment is connected with the strand.
+
+					-- put_line ("trim B");
+					-- put_line ("segments_A_count" & natural'image (segments_A_count));
+					-- put_line ("ports_A_count   " & natural'image (ports_A_count));
 
 					P := get_A (segment);
 					
@@ -1355,21 +1354,22 @@ package body et_net_strands is
 					destination_AB := con.AB_end;
 					
 					append_ports (destination_segment, ports_A, destination_AB);
-					strand.segments.replace_element (con.segment, destination_segment);
-
-					-- Delete the targeted segment:
-					strand.segments.delete (c);
-
-					optimize_strand_2 (strand, log_threshold + 2);
-					
-					-- Set a junction, as far as requred:
-					set_junction (strand, P);
-					
 			end case;
 
+
+			-- Update the destination_segment:
+			strand.segments.replace_element (con.segment, destination_segment);
+			
+			-- Delete the targeted segment:
+			strand.segments.delete (c);
+
+			optimize_strand_2 (strand, log_threshold + 2);
+
+			-- Set a junction, as far as requred:
+			set_junction (strand, P);
+			
 			empty := false;
 			split := false;
-
 		end trim_strand;
 		
 		
@@ -1395,10 +1395,6 @@ package body et_net_strands is
 		segments_A_count := get_length (segments_A);
 		segments_B_count := get_length (segments_B);
 		
-		-- Get the junction status of the given segment:
-		-- junction_A := get_junction_status (segment, A);
-		-- junction_B := get_junction_status (segment, B);
-
 		-- Get the ports which are connected with the
 		-- A and B end of the given segment:
 		ports_A := get_ports (segment, A);
