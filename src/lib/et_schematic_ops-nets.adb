@@ -601,8 +601,17 @@ package body et_schematic_ops.nets is
 					end;
 				end if;
 
+				
 				if split_strand then
 					log (text => "split strand", level => log_threshold + 1);
+
+					-- Delete the original strand:
+					declare
+						c : pac_strands.cursor := segment.strand_cursor;
+					begin
+						net.strands.delete (c);
+					end;
+					
 					net.strands.append (strand_1);
 					net.strands.append (strand_2);
 				end if;

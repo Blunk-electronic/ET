@@ -1266,6 +1266,185 @@ package body et_net_strands is
 
 
 
+	
+
+	procedure split_strand (
+		strand			: in out type_strand;
+		start_segment	: in pac_net_segments.cursor;
+		strand_1		: out type_strand;
+		strand_2		: out type_strand;
+		log_threshold	: in type_log_level)
+	is
+		use pac_connected_segments;
+
+		-- This procedure has a recursive algorithm.
+		-- In order to prevent a forever-loop this 
+		-- counter is required:
+		subtype type_safety_counter is natural range 0 .. 10; -- CS increase if required
+		loops : type_safety_counter := 0;
+
+		
+		-- Segments and ports on the ends of the given start segment:
+		segments_A, segments_B : pac_connected_segments.list;
+		ports_A, ports_B : type_ports;
+
+		start_AB_end : type_start_end_point := A;
+		
+		-- This is required to indicate which branch of
+		-- the given strand is processed:
+		subtype type_branch is positive range 1 .. 2;
+		branch : type_branch := 1;
+		
+
+		-- This is the place where a junction might be required:
+		PA, PB : type_vector_model;
+
+		
+
+		-- Transfers the ports on the A end of the start segment
+		-- to one of the connected segments:
+		procedure transfer_ports_A is
+			con : type_connected_segment;			
+			destination_AB : type_start_end_point;
+			destination_segment : type_net_segment;
+		begin
+			-- Get the first segment among those
+			-- which are connected with the target segment:
+			con := segments_A.first_element;
+			destination_segment := element (con.segment);
+			destination_AB := con.AB_end;
+			append_ports (destination_segment, ports_A, destination_AB);
+			strand.segments.replace_element (con.segment, destination_segment);
+		end;
+
+
+		-- Transfers the ports on the B end of the start segment
+		-- to one of the connected segments:
+		procedure transfer_ports_B is
+			con : type_connected_segment;			
+			destination_AB : type_start_end_point;
+			destination_segment : type_net_segment;
+		begin
+			-- Get the first segment among those
+			-- which are connected with the target segment:
+			con := segments_B.first_element;
+			destination_segment := element (con.segment);
+			destination_AB := con.AB_end;
+			append_ports (destination_segment, ports_B, destination_AB);
+			strand.segments.replace_element (con.segment, destination_segment);
+		end;
+
+
+		
+		
+		-- Iterates though the given connected segments and
+		-- searches for each of them other connected segments.
+		-- This procedure is recursive. It calls itself over and over
+		-- until the whole tree of connected segments has been walked through.
+		-- A safety counter prevents a stuck-for-ever-loop:
+		procedure collect (segments : in pac_connected_segments.list) is
+
+			procedure query_segment (c : in pac_connected_segments.cursor) is
+				connected_segment : type_connected_segment renames element (c);
+				segment : type_net_segment renames element (connected_segment.segment);
+			begin
+				log (text => "segment: " & to_string (segment), level => log_threshold + 2);
+
+				-- Depending on the destination strand, append the
+				-- candidate segment to the current strand:
+				case branch is
+					when 1 => strand_1.segments.append (segment);
+					when 2 => strand_2.segments.append (segment);
+				end case;
+
+				collect (get_connected_segments (
+					primary => connected_segment.segment,
+					AB_end	=> get_opposide_end (connected_segment.AB_end),
+					strand	=> strand));
+
+			end query_segment;
+			
+		begin
+			loops := loops + 1;
+			segments.iterate (query_segment'access);
+		end collect;
+
+
+		
+		-- Deletes the given start segment from the given strand.
+		-- CS: Currently not used.
+		procedure delete_start_segment is
+			c : pac_net_segments.cursor := start_segment;
+		begin
+			strand.segments.delete (c);
+		end;
+		
+		
+		
+	begin
+		log (text => "split strand. start segment: " & to_string (start_segment), level => log_threshold);
+		log_indentation_up;
+
+		-- Get the net segments which are connected with
+		-- the A and B end of the given start segment:
+		segments_A := get_connected_segments (start_segment, A, strand);
+		segments_B := get_connected_segments (start_segment, B, strand);
+
+		PA := get_A (start_segment);
+		PB := get_B (start_segment);
+		
+		-- Get the ports which are connected with the
+		-- A and B end of the given start segment:
+		ports_A := get_ports (start_segment, A);
+		ports_B := get_ports (start_segment, B);
+
+
+		-- WALK THOUGH THE SEGMENTS ON THE A END:
+		start_AB_end := A;
+		log (text => "start at " & to_string (start_AB_end), level => log_threshold + 1);
+		log_indentation_up;		
+
+		clear_junctions (strand, segments_A);
+		transfer_ports_A;
+		collect (segments_A);
+		log_indentation_down;
+
+
+
+					
+		-- WALK THOUGH THE SEGMENTS ON THE B END:
+		loops := 0;
+		branch := 2;
+		
+		start_AB_end := B;
+		log (text => "start at " & to_string (start_AB_end), level => log_threshold + 1);
+		log_indentation_up;
+
+		clear_junctions (strand, segments_B);
+		transfer_ports_B;
+		collect (segments_B);
+		log_indentation_down;
+
+
+	-- finalize:
+		-- CS no need:
+		-- delete_start_segment;
+
+		-- Set the junctions (if required) at
+		-- the former start and end point of the
+		-- start segment:
+		set_junction (strand_1, PA);
+		set_junction (strand_2, PB);
+		
+		log_indentation_down;
+		
+		-- CS ? optimize_strand_2 (strand, log_threshold + 2);
+		-- CS exception handler for safety counter
+	end split_strand;
+
+
+
+	
 
 
 	procedure delete_segment (
@@ -1291,6 +1470,17 @@ package body et_net_strands is
 		procedure split_strand is
 		begin
 			log (text => "split strand", level => log_threshold + 1);
+			log_indentation_up;
+
+			split_strand (
+				strand			=> strand,
+				start_segment	=> segment,
+				strand_1		=> strand_1,
+				strand_2		=> strand_2,
+				log_threshold	=> log_threshold + 2);
+
+			log_indentation_down;
+			
 			empty := false;
 			split := true;
 		end;

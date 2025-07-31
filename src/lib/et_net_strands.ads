@@ -310,6 +310,24 @@ package et_net_strands is
 
 
 
+	-- Splits a given strand in two strands.
+	-- The process starts at the given segment.
+	-- The segments on the given A/B end will be returned
+	-- in strand_1. The segments on the opposide end wil be
+	-- returned in strand_2.
+	-- The given strand is modified so that the ports of
+	-- the start_segment are transferred to other connected
+	-- segments:
+	procedure split_strand (
+		strand			: in out type_strand;
+		start_segment	: in pac_net_segments.cursor;
+		strand_1		: out type_strand;
+		strand_2		: out type_strand;
+		log_threshold	: in type_log_level);
+
+
+	
+
 	-- Deletes the given target segment in a given strand.
 	-- The result can be:
 	-- 1. Just the given strand gets trimmed.
