@@ -1722,6 +1722,72 @@ is
 		end case;
 	end drag_net_segment;
 	
+
+
+	
+
+	procedure rename_net is begin
+		case cmd_field_count is
+
+			-- If the command has only 6 fields, the net scope is EVERYWHERE.
+			-- So all strands on all sheets are renamed.
+			-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
+			-- by the called procedure.
+			-- example: rename net RESET_N RST_N
+			when 6 =>
+				rename_net (
+					module_cursor		=> active_module,
+					net_name_before		=> to_net_name (get_field (5)), -- RESET
+					net_name_after		=> to_net_name (get_field (6)), -- RESET_N
+					scope				=> EVERYWHERE,
+					place				=> to_position (
+											point => origin,
+											sheet => 1),
+					log_threshold		=> log_threshold + 1);
+
+				
+			-- If the command has 7 fields, the net scope is SHEET.
+			-- So the renaming takes place on the strands of the given sheet only.	
+			-- Sheet is set by the 7th argument. x and y assume default (0/0)
+			-- and are further-on ignored by the called procedure.
+			-- example: rename net RESET_N RST_N 2
+			when 7 =>
+				rename_net 	(
+					module_cursor		=> active_module,
+					net_name_before		=> to_net_name (get_field (5)), -- RESET
+					net_name_after		=> to_net_name (get_field (6)), -- RESET_N
+					scope				=> SHEET,
+					place				=> to_position (
+											point => origin,
+											sheet => to_sheet (get_field (7))), -- sheet number
+					log_threshold		=> log_threshold + 1);
+
+				
+			-- If the command has 9 fields, the net scope is STRAND.
+			-- Place is set according to arguments 7..9.
+			-- example: rename net RESET_N RST_N 2 50 90
+			when 9 =>
+				rename_net
+					(
+					module_cursor		=> active_module,
+					net_name_before		=> to_net_name (get_field (5)), -- RESET
+					net_name_after		=> to_net_name (get_field (6)), -- RESET_N
+					scope				=> STRAND,
+					place				=> to_position (
+											point => type_vector_model (set (
+												x => to_distance (get_field (8)), -- 50
+												y => to_distance (get_field (9)))), -- 90
+											sheet => to_sheet (get_field (7))), -- sheet number 2
+					log_threshold		=> log_threshold + 1);
+
+				
+			when 10 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end rename_net;
+
+
 	
 	
 	-- This procedure extracts from the command the
@@ -2394,67 +2460,13 @@ is
 				case noun is
 					when NOUN_DEVICE =>
 						rename_device;
-
 						
 					when NOUN_SUBMODULE =>
 						rename_submodule;
-
 						
 					when NOUN_NET =>
-						case cmd_field_count is
-
-							-- If the statement has only 6 fields, the net scope is EVERYWHERE.
-							-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
-							-- by the called procedure:
-							when 6 =>
-								rename_net
-									(
-									module_cursor		=> active_module,
-									net_name_before		=> to_net_name (get_field (5)), -- RESET
-									net_name_after		=> to_net_name (get_field (6)), -- RESET_N
-									scope				=> EVERYWHERE,
-									place				=> to_position (
-															point => origin,
-															sheet => 1),
-									log_threshold		=> log_threshold + 1);
-
-							-- If the statement has 7 fields, the net scope is SHEET.
-							-- Sheet is set by the 7th argument. x and y assume default (0/0)
-							-- and are further-on ignored by the called procedure:
-							when 7 =>
-								rename_net
-									(
-									module_cursor		=> active_module,
-									net_name_before		=> to_net_name (get_field (5)), -- RESET
-									net_name_after		=> to_net_name (get_field (6)), -- RESET_N
-									scope				=> SHEET,
-									place				=> to_position (
-															point => origin,
-															sheet => to_sheet (get_field (7))), -- sheet number
-									log_threshold		=> log_threshold + 1);
-
-							-- If the statement has 9 fields, the net scope is STRAND.
-							-- Place is set according to arguments 7..9.
-							when 9 =>
-								rename_net
-									(
-									module_cursor		=> active_module,
-									net_name_before		=> to_net_name (get_field (5)), -- RESET
-									net_name_after		=> to_net_name (get_field (6)), -- RESET_N
-									scope				=> STRAND,
-									place				=> to_position (
-															point => type_vector_model (set (
-																x => to_distance (get_field (8)),
-																y => to_distance (get_field (9)))),
-															sheet => to_sheet (get_field (7))), -- sheet number
-									log_threshold		=> log_threshold + 1);
-
-								
-							when 10 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
-
+						rename_net;
+				
 					when others => invalid_noun (to_string (noun));
 				end case;
 

@@ -274,7 +274,7 @@ Nets and Net Labels
 	
 	
 	
-#. Rename net
+#. Renaming a Net
 
 	- A strand on the current sheet:
 	
@@ -284,6 +284,14 @@ Nets and Net Labels
 	- All strands on the current sheet:
 	
 	|VNS| n n
+
+
+	- A specific strand on a specific sheet:
+
+	.. code-block::
+
+		rename net RESET_N RST_N 2 50 90
+
 
 
 	- All strands on a specific sheet:
