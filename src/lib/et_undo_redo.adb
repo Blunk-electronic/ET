@@ -107,6 +107,15 @@ package body et_undo_redo is
 			increment (module.commit_index);			
 
 			case noun is
+				when NOUN_SEGMENT =>
+					case verb is
+						when VERB_DELETE =>
+							commit_nets;
+
+						when others => null;
+					end case;
+
+
 				when NOUN_NET =>
 					case verb is
 						when VERB_DRAW | VERB_DELETE | VERB_DRAG =>
@@ -143,6 +152,8 @@ package body et_undo_redo is
 
 		log_indentation_down;
 	end commit;
+
+
 
 
 
@@ -307,6 +318,10 @@ package body et_undo_redo is
 
 
 
+	
+
+
+	
 	procedure undo (
 		message	: in out pac_undo_message.bounded_string;
 		lth		: in type_log_level)
@@ -368,6 +383,7 @@ package body et_undo_redo is
 				end if;
 			end undo_nets;
 
+			
 
 			procedure undo_devices is 
 				use pac_device_commits;
@@ -410,6 +426,7 @@ package body et_undo_redo is
 			end undo_devices;
 
 
+			
 			procedure undo_non_electrical_devices is 
 				use et_pcb;
 				use pac_non_electrical_device_commits;
@@ -452,6 +469,7 @@ package body et_undo_redo is
 			end undo_non_electrical_devices;
 
 
+			
 			procedure undo_board is
 				use et_pcb;
 				use pac_board_commits;
@@ -549,7 +567,10 @@ package body et_undo_redo is
 	end undo;
 	
 
+	
 
+
+	
 
 	procedure redo (
 		message	: in out pac_redo_message.bounded_string;
@@ -621,6 +642,7 @@ package body et_undo_redo is
 			end redo_nets;
 			
 
+			
 			procedure redo_devices is
 				use pac_device_commits;				
 				dos		: pac_device_commits.list renames module.device_commits.dos;
@@ -665,6 +687,7 @@ package body et_undo_redo is
 					end if;
 				end if;
 			end redo_devices;
+
 
 			
 			procedure redo_non_electrical_devices is
@@ -713,6 +736,7 @@ package body et_undo_redo is
 				end if;
 			end redo_non_electrical_devices;
 
+			
 
 			procedure redo_board is
 				use et_pcb;
