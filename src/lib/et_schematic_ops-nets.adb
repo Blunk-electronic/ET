@@ -563,13 +563,22 @@ package body et_schematic_ops.nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
-
+				-- In the course of the deleting process, the strand
+				-- that contains the target segment can:
+				-- 1. become empty (because it contains only one segment)
+				-- 2. be split in two smaller strands.
+				-- So these flags indicate what happened to the strand:
 				strand_is_empty : boolean;
 				split_strand : boolean;
-				
+
+				-- If the strand was split, then these two new
+				-- an smaller strands will contain the outcome:
 				strand_1, strand_2 : type_strand;
 
-				
+
+				-- This procedure queries the target strand and
+				-- deletes the target segment. The variables above
+				-- are set accordingly:
 				procedure query_strand (strand : in out type_strand) is begin
 					log_indentation_up;
 					
@@ -585,59 +594,78 @@ package body et_schematic_ops.nets is
 					log_indentation_down;
 				end query_strand;
 
+
+				-- Deletes the target strand:
+				procedure delete_strand is
+					c : pac_strands.cursor := segment.strand_cursor;
+				begin
+					log (text => "no segments left. delete strand.", level => log_threshold + 1);
+					delete (net.strands, c);
+				end delete_strand;
+
+
+				-- Deletes the target strand and adds the
+				-- two new strands strand_1 and strand_2 to the target net:
+				procedure do_split is
+					c : pac_strands.cursor := segment.strand_cursor;
+				begin
+					log (text => "split strand", level => log_threshold + 1);
+
+					-- Delete the original strand:
+					net.strands.delete (c);
+					
+					net.strands.append (strand_1);
+					net.strands.append (strand_2);
+				end do_split;
+				
 				
 			begin
+				-- Via the parameter "segment" the target strand is provided.
+				-- So we can access the strand right away:
 				net.strands.update_element (segment.strand_cursor, query_strand'access);
 
 				-- If the strand has no segments anymore, then
 				-- remove the now useless strand entirely:
-				--if not has_segments (segment.strand_cursor) then
 				if strand_is_empty then
-					log (text => "no segments left. delete strand.", level => log_threshold + 1);
-					declare
-						c : pac_strands.cursor := segment.strand_cursor;
-					begin
-						delete (net.strands, c);
-					end;
+					delete_strand;
 				end if;
 
-				
+				-- If the strand has been split, then delete the
+				-- original strand and add the two new smaller strands
+				-- to the target net:
 				if split_strand then
-					log (text => "split strand", level => log_threshold + 1);
-
-					-- Delete the original strand:
-					declare
-						c : pac_strands.cursor := segment.strand_cursor;
-					begin
-						net.strands.delete (c);
-					end;
-					
-					net.strands.append (strand_1);
-					net.strands.append (strand_2);
+					do_split;
 				end if;
 			end query_net;
 
+
+
+			-- Deletes the whole target net:
+			procedure delete_net is
+				c : pac_nets.cursor := segment.net_cursor;
+			begin
+				log (text => "no strands left. delete net.", level => log_threshold + 1);
+				delete (module.nets, c);
+			end;
+				
 			
 		begin
+			-- Via the parameter "segment" the target net is provided.
+			-- So we can access the net right away:
 			module.nets.update_element (segment.net_cursor, query_net'access);
 			
 			-- If the net has no strands anymore, 
 			-- then delete it entirely because a
 			-- net without strands is useless:
 			if not has_strands (segment.net_cursor) then
-				declare
-					c : pac_nets.cursor := segment.net_cursor;
-				begin
-					-- CS log message
-					delete (module.nets, c);
-				end;
+				delete_net;
 			end if;			
 		end query_module;
 
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& " deleting segment " & to_string (segment),
+			& " delete net segment " & to_string (segment),
 			level => log_threshold);
 
 		log_indentation_up;
