@@ -1280,7 +1280,7 @@ package body et_net_strands is
 		-- This procedure has a recursive algorithm.
 		-- In order to prevent a forever-loop this 
 		-- counter is required:
-		subtype type_safety_counter is natural range 0 .. 10; -- CS increase if required
+		subtype type_safety_counter is natural range 0 .. 40; -- CS increase if required
 		loops : type_safety_counter := 0;
 
 		
@@ -1298,6 +1298,24 @@ package body et_net_strands is
 
 		-- This is the place where a junction might be required:
 		PA, PB : type_vector_model;
+
+
+
+		procedure get_segments_and_ports is begin
+			-- Get the net segments which are connected with
+			-- the A and B end of the given start segment:
+			segments_A := get_connected_segments (start_segment, A, strand);
+			segments_B := get_connected_segments (start_segment, B, strand);
+
+			-- Get the start and end point of the start segment:
+			PA := get_A (start_segment);
+			PB := get_B (start_segment);
+			
+			-- Get the ports which are connected with the
+			-- A and B end of the given start segment:
+			ports_A := get_ports (start_segment, A);
+			ports_B := get_ports (start_segment, B);
+		end get_segments_and_ports;
 
 		
 
@@ -1370,6 +1388,51 @@ package body et_net_strands is
 		end collect;
 
 
+
+		-- Initiates the search for segments on the A end
+		-- of the given start segment:
+		procedure walk_along_A_end is begin
+			loops := 0; -- reset safety counter
+
+			-- We are on branch 1, means the segments
+			-- connected with the A end of the start segment.
+			-- Each segment that has been found goes into
+			-- list strand_1:
+			branch := 1;
+
+			start_AB_end := A;
+			log (text => "start at " & to_string (start_AB_end), level => log_threshold + 1);
+			log_indentation_up;		
+
+			clear_junctions (strand, segments_A);
+			transfer_ports_A;
+			collect (segments_A);
+			log_indentation_down;
+		end;
+
+
+		-- Initiates the search for segments on the B end
+		-- of the given start segment:
+		procedure walk_along_B_end is begin
+			loops := 0; -- reset safety counter
+
+			-- We are on branch 2, means the segments
+			-- connected with the B end of the start segment:
+			-- Each segment that has been found goes into
+			-- list strand_2:
+			branch := 2;
+			
+			start_AB_end := B;
+			log (text => "start at " & to_string (start_AB_end), level => log_threshold + 1);
+			log_indentation_up;
+
+			clear_junctions (strand, segments_B);
+			transfer_ports_B;
+			collect (segments_B);
+			log_indentation_down;
+		end;
+
+		
 		
 		-- Deletes the given start segment from the given strand.
 		-- CS: Currently not used.
@@ -1379,68 +1442,65 @@ package body et_net_strands is
 			strand.segments.delete (c);
 		end;
 		
+
+		-- A precheck is required before the actual splitting.
+		-- It must be ensured that both ends of the target segment
+		-- are connected with other segments. Otherwise there is nothing to do:
+		do_split : boolean := true;
+
+		procedure precheck is begin
+			if get_length (segments_A) = 0 then
+				log (text => "no segments on A end. nothing to do.", level => log_threshold);
+				do_split := false;
+			end if;
+
+			if get_length (segments_B) = 0 then
+				log (text => "no segments on B end. nothing to do.", level => log_threshold);
+				do_split := false;
+			end if;
+		end;
+
 		
 		
 	begin
-		log (text => "split strand. start segment: " & to_string (start_segment), level => log_threshold);
+		log (text => "split strand. start segment: " & to_string (start_segment), 
+			 level => log_threshold);
+		
 		log_indentation_up;
 
-		-- Get the net segments which are connected with
-		-- the A and B end of the given start segment:
-		segments_A := get_connected_segments (start_segment, A, strand);
-		segments_B := get_connected_segments (start_segment, B, strand);
+		get_segments_and_ports;
 
-		PA := get_A (start_segment);
-		PB := get_B (start_segment);
-		
-		-- Get the ports which are connected with the
-		-- A and B end of the given start segment:
-		ports_A := get_ports (start_segment, A);
-		ports_B := get_ports (start_segment, B);
+		precheck;
 
+		-- If the precheck is passed then do the 
+		-- actual splitting. Otherwise do nothing:
+		if do_split then
+			
+			-- WALK THOUGH THE SEGMENTS ON THE A END:
+			walk_along_A_end;
+			
+			-- WALK THOUGH THE SEGMENTS ON THE B END:
+			walk_along_B_end;
 
-		-- WALK THOUGH THE SEGMENTS ON THE A END:
-		start_AB_end := A;
-		log (text => "start at " & to_string (start_AB_end), level => log_threshold + 1);
-		log_indentation_up;		
+			-- finalize:
+			-- CS no need:
+			-- delete_start_segment;
 
-		clear_junctions (strand, segments_A);
-		transfer_ports_A;
-		collect (segments_A);
-		log_indentation_down;
+			-- Set the junctions (if required) at
+			-- the former start and end point of the
+			-- start segment:
+			set_junction (strand_1, PA);
+			set_junction (strand_2, PB);
 
+			-- CS ? optimize_strand_2 (strand, log_threshold + 2);
+		end if;
 
-
-					
-		-- WALK THOUGH THE SEGMENTS ON THE B END:
-		loops := 0;
-		branch := 2;
-		
-		start_AB_end := B;
-		log (text => "start at " & to_string (start_AB_end), level => log_threshold + 1);
-		log_indentation_up;
-
-		clear_junctions (strand, segments_B);
-		transfer_ports_B;
-		collect (segments_B);
-		log_indentation_down;
-
-
-	-- finalize:
-		-- CS no need:
-		-- delete_start_segment;
-
-		-- Set the junctions (if required) at
-		-- the former start and end point of the
-		-- start segment:
-		set_junction (strand_1, PA);
-		set_junction (strand_2, PB);
 		
 		log_indentation_down;
 		
-		-- CS ? optimize_strand_2 (strand, log_threshold + 2);
 		-- CS exception handler for safety counter
 	end split_strand;
+
 
 
 
@@ -1466,9 +1526,30 @@ package body et_net_strands is
 
 		ports_A_count, ports_B_count : natural;
 
+
+		procedure get_segments_and_ports is begin
+			-- Get the net segments which are connected with
+			-- the A and B end of the given segment:
+			segments_A := get_connected_segments (segment, A, strand);
+			segments_B := get_connected_segments (segment, B, strand);
+
+			segments_A_count := get_length (segments_A);
+			segments_B_count := get_length (segments_B);
+			
+			-- Get the ports which are connected with the
+			-- A and B end of the given segment:
+			ports_A := get_ports (segment, A);
+			ports_B := get_ports (segment, B);
+
+			ports_A_count := get_port_count (ports_A);
+			ports_B_count := get_port_count (ports_B);
+		end get_segments_and_ports;
+
+
 		
-		procedure split_strand is
-		begin
+		-- Splits the given strand. The outcome are two new
+		-- strands, stored in the output variables strand_1 and strand_2:
+		procedure split_strand is begin
 			log (text => "split strand", level => log_threshold + 1);
 			log_indentation_up;
 
@@ -1479,13 +1560,18 @@ package body et_net_strands is
 				strand_2		=> strand_2,
 				log_threshold	=> log_threshold + 2);
 
+			-- Delete all segments of the given strand:
+			strand.segments.clear;
+			
 			log_indentation_down;
 			
 			empty := false;
 			split := true;
-		end;
+		end split_strand;
 
+		
 
+		-- Deletes the given segment in the given strand:
 		procedure trim_strand (AB_end : in type_start_end_point) is
 			-- This is a segment that is connected with the target segment.
 			-- To this segment the ports of the primary segment will be
@@ -1564,7 +1650,8 @@ package body et_net_strands is
 		
 		
 
-
+		-- Deletes the single remaining segment that the given 
+		-- strand contains:
 		procedure delete_last_segment is begin
 			log (text => "delete last segment", level => log_threshold + 1);			
 			strand.segments.clear;
@@ -1576,23 +1663,10 @@ package body et_net_strands is
 	begin
 		log (text => "delete segment", level => log_threshold);
 		log_indentation_up;
-		
-		-- Get the net segments which are connected with
-		-- the A and B end of the given segment:
-		segments_A := get_connected_segments (segment, A, strand);
-		segments_B := get_connected_segments (segment, B, strand);
 
-		segments_A_count := get_length (segments_A);
-		segments_B_count := get_length (segments_B);
-		
-		-- Get the ports which are connected with the
-		-- A and B end of the given segment:
-		ports_A := get_ports (segment, A);
-		ports_B := get_ports (segment, B);
+		get_segments_and_ports;
 
-		ports_A_count := get_port_count (ports_A);
-		ports_B_count := get_port_count (ports_B);
-		
+		-- Do some prechecks before the actual deleting process:
 
 		-- CASE 1:
 		-- If there are segments on both ends of the target segment,
@@ -1614,7 +1688,7 @@ package body et_net_strands is
 
 		-- CASE 4:
 		-- If no segments are connected with the target segment,
-		-- then the strand will be deleted completely:
+		-- then the segments of the strand will be deleted completely:
 		elsif segments_A_count = 0 and segments_B_count = 0 then
 			delete_last_segment;
 		end if;

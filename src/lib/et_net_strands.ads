@@ -312,6 +312,8 @@ package et_net_strands is
 
 	-- Splits a given strand in two strands.
 	-- The process starts at the given segment.
+	-- If both ends of the given start segment are not connected
+	-- with any other segments, then nothing happens.
 	-- The segments on the given A/B end will be returned
 	-- in strand_1. The segments on the opposide end wil be
 	-- returned in strand_2.
@@ -335,7 +337,10 @@ package et_net_strands is
 	--    the flag "empty" is set.
 	-- 2. Two new strands because the given strand has been
 	--    fallen apart into two separate strands. The flag "split"
-	--    will be set.
+	--    will be set. The output strand_1 contains the segments
+	--    that are connected with the A end of the given segment
+	--    whereas strand_2 contains the segments of the B end.
+	--    The segments of the given strand will be deleted.
 	procedure delete_segment (
 		strand			: in out type_strand;
 		segment			: in pac_net_segments.cursor;
