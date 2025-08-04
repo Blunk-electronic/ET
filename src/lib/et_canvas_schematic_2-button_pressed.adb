@@ -213,12 +213,7 @@ is
 						end if;
 
 					when NOUN_NET =>
-						if not clarification_pending then
-							-- CS
-							null;
-						else
-							et_canvas_schematic_nets.window_set_property;
-						end if;
+						et_canvas_schematic_nets.rename_object (snap_point);
 						
 					when others => null;
 				end case;
@@ -410,7 +405,7 @@ is
 
 					when NOUN_NET =>
 						if clarification_pending then
-							clarify_net_segment;
+							et_canvas_schematic_nets.clarify_object;
 						end if;
 
 					when others => null;							

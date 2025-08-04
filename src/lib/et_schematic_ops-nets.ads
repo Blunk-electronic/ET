@@ -1053,6 +1053,13 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
+	procedure rename_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level);
+
+
+	
 	procedure show_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;

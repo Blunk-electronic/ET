@@ -1735,6 +1735,7 @@ is
 			-- by the called procedure.
 			-- example: rename net RESET_N RST_N
 			when 6 =>
+				-- Rename the net everywhere:
 				rename_net (
 					module_cursor		=> active_module,
 					net_name_before		=> to_net_name (get_field (5)), -- RESET
@@ -1752,6 +1753,7 @@ is
 			-- and are further-on ignored by the called procedure.
 			-- example: rename net RESET_N RST_N 2
 			when 7 =>
+				-- Rename the net on the given sheet:
 				rename_net 	(
 					module_cursor		=> active_module,
 					net_name_before		=> to_net_name (get_field (5)), -- RESET
@@ -1767,8 +1769,8 @@ is
 			-- Place is set according to arguments 7..9.
 			-- example: rename net RESET_N RST_N 2 50 90
 			when 9 =>
-				rename_net
-					(
+				-- Rename a strand on a given sheet:
+				rename_net (
 					module_cursor		=> active_module,
 					net_name_before		=> to_net_name (get_field (5)), -- RESET
 					net_name_after		=> to_net_name (get_field (6)), -- RESET_N

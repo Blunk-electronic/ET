@@ -7531,6 +7531,46 @@ package body et_schematic_ops.nets is
 	end delete_object;
 
 
+
+
+
+	procedure rename_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " rename object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_SEGMENT =>
+				null;
+				
+			when CAT_STRAND =>
+				null;
+				
+			when CAT_NET => 
+				null;
+				
+			when CAT_LABEL => 
+				null; -- CS
+				
+			when CAT_LABEL_TAG => 
+				null; -- CS
+				
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end rename_object;
+
+
+	
 	
 
 
