@@ -3604,6 +3604,53 @@ package body et_canvas is
 
 
 	
+-- RENAME WINDOW:
+	
+	
+	procedure build_rename_window is 
+		box : gtk_vbox;
+		-- label : gtk_label;
+		-- rename_new : gtk_gentry;
+
+		label_old, label_new : gtk.label.gtk_label;
+		-- rename_old	: gtk_gentry;
+
+		label_status	: gtk.label.gtk_label;
+	begin
+		gtk_new (rename_window);
+
+		rename_window.set_title ("Rename Object");
+
+		rename_window.set_default_size (300, 100);
+		rename_window.set_resizable (false);
+
+
+		gtk_new_vbox (box);
+		add (rename_window, box);
+
+		-- show the old name:
+		gtk_new (label_old, "old:");
+		pack_start (box, label_old);
+		
+		gtk_new (rename_old);
+		pack_start (box, rename_old);
+
+
+		-- show the new name (will be entered by the operator later):
+		gtk_new (label_new, "new:");
+		pack_start (box, label_new);
+
+		gtk_new (rename_new);
+		pack_start (box, rename_new);
+
+		-- gtk_new (label_status);
+		-- pack_start (box, label_status);
+
+		
+	end build_rename_window;
+
+
+
 	
 	
 

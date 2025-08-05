@@ -1334,6 +1334,20 @@ package et_canvas is
 
 
 
+-- RENAME WINDOW:
+	
+	rename_window : gtk.window.gtk_window;
+
+	-- CS: these variables should be moved to procedure
+	-- build_rename_window:
+	rename_new : gtk_gentry;
+	rename_old : gtk_gentry;
+	
+	procedure build_rename_window;
+
+
+	
+
 -- VISIBILITY THRESHOLD:
 
 	
