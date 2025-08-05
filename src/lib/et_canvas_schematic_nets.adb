@@ -434,7 +434,7 @@ package body et_canvas_schematic_nets is
 		net_name_new := to_net_name (self.get_text); -- RST_N
 
 		-- CS: Precheck net name ?
-		put_line ("new name entered: " & to_string (net_name_new));
+		-- put_line ("new name entered: " & to_string (net_name_new));
 		
 		finalize;
 
@@ -453,6 +453,24 @@ package body et_canvas_schematic_nets is
 	
 
 
+	
+
+	procedure close_rename_window (
+		window : access gtk_widget_record'class)
+	is
+	begin
+		-- put_line ("close rename window");
+		
+		reset_request_clarification;
+		status_clear;
+		rename_window_open := false;
+
+		reset_proposed_objects (active_module, log_threshold + 1);
+
+		reset_editing_process; -- prepare for a new editing process
+		
+	end close_rename_window;
+
 
 
 	
@@ -468,19 +486,16 @@ package body et_canvas_schematic_nets is
 	begin
 		build_rename_window;
 
-
 		-- If the operator closes the window:
-	-- CS rename_window.on_destroy (access_on_window_properties_closed);
+		rename_window.on_destroy (close_rename_window'access);
 
-		-- If the operator presses a key in the properties window:
-	-- CS rename_window.on_key_press_event (access_on_window_properties_key_event);
-
+		-- If the operator presses a key in the window (via ESc):
+		-- CS rename_window.on_key_press_event (access_on_window_properties_key_event);
 		
 		rename_old.set_text (net_name);
 
 		rename_new.on_activate (rename_new_name_entered'access);
 		-- gtk_entry (rename_window.box.get_child).on_activate (rename_new_name_entered'access);
-
 		
 		rename_new.grab_focus;
 		
