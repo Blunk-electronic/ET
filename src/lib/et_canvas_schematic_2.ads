@@ -469,6 +469,16 @@ package et_canvas_schematic_2 is
 	procedure set_property_before (text : in string);
 
 	
+
+	rename_window : gtk.window.gtk_window;
+
+	-- CS: these variables should be moved to procedure
+	-- build_rename_window:
+	rename_new : gtk_gentry;
+	rename_old : gtk_gentry;
+	
+	procedure build_rename_window;
+	
 	
 end et_canvas_schematic_2;
 

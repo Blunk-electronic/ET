@@ -44,7 +44,6 @@ with ada.exceptions;				use ada.exceptions;
 with gtk.window;
 with gtk.box;
 with gtk.label;
-with gtk.gentry;
 
 with et_canvas_schematic_2;			use et_canvas_schematic_2;
 with et_module_names;				use et_module_names;
@@ -371,11 +370,11 @@ package body et_canvas_schematic_nets is
 
 	
 
-	-- Called when the operator presses ENTER after typing a property in
-	-- the properties window.
-	-- The properties window will remain open until the operator enters 
-	-- a correct property. The status bar of the window shows the error message:	
-	procedure property_entered (self : access gtk.gentry.gtk_entry_record'class) is 
+
+	
+	procedure rename_new_name_entered (
+		self : access gtk.gentry.gtk_entry_record'class) 
+	is 
 
 		-- Renames the selected object:
 		procedure finalize is
@@ -423,7 +422,7 @@ package body et_canvas_schematic_nets is
 
 		
 		procedure clean_up is begin
-			window_properties.window.destroy;
+			rename_window.destroy;
 			reset_request_clarification;
 			status_clear;
 			rename_window_open := false;
@@ -431,10 +430,11 @@ package body et_canvas_schematic_nets is
 
 
 		
-	begin -- property_entered
+	begin
 		net_name_new := to_net_name (self.get_text); -- RST_N
 
 		-- CS: Precheck net name ?
+		put_line ("new name entered: " & to_string (net_name_new));
 		
 		finalize;
 
@@ -449,22 +449,16 @@ package body et_canvas_schematic_nets is
 		exception when event: others =>
 			set_status_properties (exception_message (event));
 			
-	end property_entered;
+	end rename_new_name_entered;
 	
 
 
+
+
+	
 	
 	
 	procedure show_rename_window is
-		use gtk.window;
-		use gtk.box;
-		use gtk.label;
-		use gtk.gentry;
-		
-		box : gtk_vbox;
-		label : gtk_label;
-		gentry : gtk_gentry;
-		
 
 		object : constant type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
@@ -472,46 +466,25 @@ package body et_canvas_schematic_nets is
 		net_name : constant string := get_net_name (object.net.net_cursor); -- RESET_N
 		
 	begin
-		build_window_properties;
+		build_rename_window;
 
-		window_properties.window.set_default_size (200, 100);
-		window_properties.window.set_resizable (false);
+
+		-- If the operator closes the window:
+	-- CS rename_window.on_destroy (access_on_window_properties_closed);
+
+		-- If the operator presses a key in the properties window:
+	-- CS rename_window.on_key_press_event (access_on_window_properties_key_event);
+
 		
-		gtk_new_vbox (box);
-		add (window_properties.window, box);
+		rename_old.set_text (net_name);
 
-		-- Prepare displaying the old state of the property:
-		gtk_new (entry_property_old);
+		rename_new.on_activate (rename_new_name_entered'access);
+		-- gtk_entry (rename_window.box.get_child).on_activate (rename_new_name_entered'access);
+
 		
-		case noun is
-			when NOUN_NET =>
-				gtk_new (label, "Net name");
-				set_property_before (net_name);
-				
-			when others => raise constraint_error;
-		end case;				
-
-		pack_start (box, label);
-
-		-- show the old property:
-		gtk_new (label_property_old, "old:");
-		pack_start (box, label_property_old);
-		pack_start (box, entry_property_old);
-
-		-- show the new property (will be entered by the operator later):
-		gtk_new (label_property_new, "new:"); -- CS some info or warning about the scope ?
-		pack_start (box, label_property_new);
+		rename_new.grab_focus;
 		
-		gtk_new (gentry);
-		pack_start (box, gentry);
-		gentry.on_activate (property_entered'access);
-		-- CS signal destroy
-		gentry.grab_focus;
-
-		gtk_new (label_properties_status);
-		pack_start (box, label_properties_status);
-		
-		window_properties.window.show_all;
+		rename_window.show_all;
 
 		rename_window_open := true;
 	end show_rename_window;

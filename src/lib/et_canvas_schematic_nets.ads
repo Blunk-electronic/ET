@@ -42,6 +42,8 @@ with ada.containers;				use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
+with gtk.gentry;
+
 with et_canvas_schematic_2;
 with et_net_names;					use et_net_names;
 with et_canvas_messages;			use et_canvas_messages;
@@ -227,6 +229,12 @@ package et_canvas_schematic_nets is
 
 	
 
+	-- Called when the operator presses ENTER after typing a new name in
+	-- the rename window:
+	procedure rename_new_name_entered (
+		self : access gtk.gentry.gtk_entry_record'class);
+
+	
 	-- This procedure shows the window where the
 	-- operator sees the old name of the targeted object
 	-- and where he can enter the new name of the object:
