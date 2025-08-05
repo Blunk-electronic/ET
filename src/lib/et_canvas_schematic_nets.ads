@@ -84,12 +84,6 @@ package et_canvas_schematic_nets is
 		segment	: pac_net_segments.cursor;
 	end record;
 
-	
-	-- Deletes a selected segment of a net.
-	procedure delete_selected_segment (
-		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		segment			: in type_selected_segment; -- net/strand/segment
-		log_threshold	: in type_log_level);
 
 	
 	package pac_proposed_segments is new doubly_linked_lists (type_selected_segment);
@@ -99,19 +93,6 @@ package et_canvas_schematic_nets is
 	proposed_segments	: pac_proposed_segments.list;
 	selected_segment	: pac_proposed_segments.cursor;
 
-	
-	-- Returns the name of the net of the selected_segment:
-	function selected_net return pac_net_name.bounded_string;
-	-- CS rename to get_selected_net
-
-	
-	-- Returns the position of the strand of the selected segment:
-	function get_strand_position return type_object_position;
-
-	
-	-- Clears the list of proposed segments.
-	-- Resets selected_segment to no_element.
-	procedure clear_proposed_segments;
 
 	
 
