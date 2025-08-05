@@ -226,14 +226,6 @@ package et_canvas_schematic_nets is
 		& status_hint_for_abort;	
 
 	
-	type type_net_rename is record
-		scope		: type_net_scope := SHEET; -- strand, sheet, everywhere
-		-- position	: type_vector_model; -- x/y where net segment was selected
-	end record;
-
-	net_rename : type_net_rename;
-
-
 
 	-- This procedure shows the window where the
 	-- operator sees the old name of the targeted object

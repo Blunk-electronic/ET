@@ -724,23 +724,19 @@ is
 			when key_noun_device =>
 				noun := NOUN_DEVICE;
 				set_status (et_canvas_schematic_units.status_rename);
-
 				
 			when key_noun_strand => -- rename strand
-				noun := NOUN_NET;
-				net_rename.scope := STRAND;
+				noun := NOUN_STRAND;
 				set_status (et_canvas_schematic_nets.status_rename_net_strand);
-
 				
 			when key_noun_net => -- rename all strands on current sheet
 				noun := NOUN_NET;
-				net_rename.scope := SHEET;
+				et_schematic_ops.nets.modify_net_on_all_sheets := false;
 				set_status (et_canvas_schematic_nets.status_rename_net_sheet);
-
 				
 			when key_noun_net_all_sheets => -- rename everywhere: all strands on all sheets
 				noun := NOUN_NET;
-				net_rename.scope := EVERYWHERE;
+				et_schematic_ops.nets.modify_net_on_all_sheets := true;
 				set_status (et_canvas_schematic_nets.status_rename_net_everywhere);
 
 				
