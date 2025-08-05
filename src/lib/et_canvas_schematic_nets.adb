@@ -483,46 +483,66 @@ package body et_canvas_schematic_nets is
 	-- a correct property. The status bar of the window shows the error message:	
 	procedure property_entered (self : access gtk.gentry.gtk_entry_record'class) is 
 
-		procedure clean_up is begin
-			properties_confirmed := true;
-			window_properties.window.destroy;
-			reset_request_clarification;
-			--status_clear;
-			clear_proposed_segments;
-		-- CS redraw;
-		end clean_up;
+		-- Renames the selected object:
+		procedure finalize is
+			use et_modes.schematic;
+			use et_undo_redo;
+			use et_commit;
 
-		position : type_object_position;
-		
-	begin -- property_entered
-		case noun is
-			when NOUN_NET =>
-				case net_rename.scope is
-					when STRAND =>
-						position := get_strand_position;
-							
-					when SHEET =>
-						position := to_position (
-										point => origin, -- don't care
-										sheet => active_sheet); -- sheet number
+			object : constant type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
+		begin
+			log (text => "finalizing rename ...", level => log_threshold);
+			log_indentation_up;
 
-					when EVERYWHERE =>
-						position := to_position (
-										point => origin, -- don't care
-										sheet => 1); -- don't care
-				end case;
-
-				rename_net (
-					module_cursor	=> active_module,
-					net_name_before	=> selected_net, -- RESET_N
-					net_name_after	=> to_net_name (self.get_text), -- RST_N
-					scope			=> net_rename.scope,
-					place			=> position,
-					log_threshold	=> log_threshold + 1);
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
 
 				
-			when others => raise constraint_error;
-		end case;
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+				
+				rename_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					new_name		=> net_name_new,
+					log_threshold	=> log_threshold + 1);
+
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+
+				redraw_board; -- board is not always affected
+				-- CS redraw schematic ?
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			
+			reset_proposed_objects (active_module, log_threshold + 1);
+
+			reset_editing_process; -- prepare for a new editing process
+		end finalize;
+
+		
+		procedure clean_up is begin
+			window_properties.window.destroy;
+			reset_request_clarification;
+			status_clear;
+			rename_window_open := false;
+		end clean_up;
+
+
+		
+	begin -- property_entered
+		net_name_new := to_net_name (self.get_text); -- RST_N
+
+		-- CS: Precheck net name ?
+		
+		finalize;
 
 		-- If everything was fine, close the window and clean up.
 		-- If one of the operations above has raised an exception then
@@ -538,8 +558,10 @@ package body et_canvas_schematic_nets is
 	end property_entered;
 	
 
+
 	
-	procedure window_set_property is
+	
+	procedure show_rename_window is
 		use gtk.window;
 		use gtk.box;
 		use gtk.label;
@@ -549,7 +571,12 @@ package body et_canvas_schematic_nets is
 		label : gtk_label;
 		gentry : gtk_gentry;
 		
-		net_name : constant string := to_string (selected_net); -- RESET_N
+
+		object : constant type_object := get_first_object (
+				active_module, SELECTED, log_threshold + 1);
+
+		net_name : constant string := get_net_name (object.net.net_cursor); -- RESET_N
+		
 	begin
 		build_window_properties;
 
@@ -584,6 +611,7 @@ package body et_canvas_schematic_nets is
 		gtk_new (gentry);
 		pack_start (box, gentry);
 		gentry.on_activate (property_entered'access);
+		-- CS signal destroy
 		gentry.grab_focus;
 
 		gtk_new (label_properties_status);
@@ -591,7 +619,8 @@ package body et_canvas_schematic_nets is
 		
 		window_properties.window.show_all;
 
-	end window_set_property;
+		rename_window_open := true;
+	end show_rename_window;
 
 	
 
@@ -843,6 +872,36 @@ package body et_canvas_schematic_nets is
 					when others => null; -- CS
 				end case;
 				
+
+
+			when VERB_RENAME =>
+
+				case noun is
+					when NOUN_STRAND =>
+
+						-- Propose strands in the vicinity of the given point:
+						propose_strands (
+							module_cursor	=> active_module,
+							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+							count			=> count_total,
+							log_threshold	=> log_threshold + 1);
+
+
+					when NOUN_NET =>
+
+						-- Propose nets in the vicinity of the given point:
+						propose_nets (
+							module_cursor	=> active_module,
+							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+							count			=> count_total,
+							log_threshold	=> log_threshold + 1);
+
+						
+					when others => null; -- CS
+				end case;
+
+
+
 				
 			when VERB_SHOW =>
 
@@ -1205,72 +1264,29 @@ package body et_canvas_schematic_nets is
 
 	procedure rename_object (
 		point	: in type_vector_model)
-	is 
-
-		-- Renames the selected object:
-		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
-			object : constant type_object := get_first_object (
-					active_module, SELECTED, log_threshold + 1);
-		begin
-			log (text => "finalizing rename ...", level => log_threshold);
-			log_indentation_up;
-
-			-- If a selected object has been found, then
-			-- we do the actual finalizing:
-			if object.cat /= CAT_VOID then
+	is begin
+		if not rename_window_open then
+			
+			if not clarification_pending then
+				-- Locate all objects in the vicinity of the given point:
+				find_objects (point);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
-				rename_object (
-					module_cursor	=> active_module, 
-					object			=> object, 
-					log_threshold	=> log_threshold + 1);
+				-- NOTE: If many objects have been found, then
+				-- clarification is now pending.
 
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
+				-- If find_objects has found only one object
+				-- then the flag edit_process_running is set true.
 
-				redraw_board; -- board is not always affected
-				-- CS redraw schematic ?
-				
+				if edit_process_running then
+					show_rename_window;
+				end if;
 			else
-				log (text => "nothing to do", level => log_threshold);
+				-- Here the clarification procedure ends.
+				-- An object has been selected
+				-- via procedure clarify_object.
+
+				show_rename_window;
 			end if;
-				
-			log_indentation_down;			
-			
-			set_status (status_delete);
-			
-			reset_proposed_objects (active_module, log_threshold + 1);
-
-			reset_editing_process; -- prepare for a new editing process
-		end finalize;
-
-		
-	begin
-		if not clarification_pending then
-			-- Locate all objects in the vicinity of the given point:
-			find_objects (point);
-			
-			-- NOTE: If many objects have been found, then
-			-- clarification is now pending.
-
-			-- If find_objects has found only one object
-			-- then the flag edit_process_running is set true.
-
-			if edit_process_running then
-				finalize;
-			end if;
-		else
-			-- Here the clarification procedure ends.
-			-- An object has been selected
-			-- via procedure clarify_object.
-
-			finalize;
 		end if;
 	end rename_object;
 

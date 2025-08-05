@@ -7537,6 +7537,7 @@ package body et_schematic_ops.nets is
 	procedure rename_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
+		new_name		: in pac_net_name.bounded_string;
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)

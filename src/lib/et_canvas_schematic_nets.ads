@@ -251,11 +251,17 @@ package et_canvas_schematic_nets is
 	end record;
 
 	net_rename : type_net_rename;
-		
-	procedure window_set_property;
-	--procedure rename_selected_net;
 
 
+
+	-- This procedure shows the window where the
+	-- operator sees the old name of the targeted object
+	-- and where he can enter the new name of the object:
+	procedure show_rename_window;
+
+	rename_window_open : boolean := false;
+
+	net_name_new : pac_net_name.bounded_string;
 		
 
 	-- This procedure is required in order to clarify
