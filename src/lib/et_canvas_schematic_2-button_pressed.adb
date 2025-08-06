@@ -212,7 +212,7 @@ is
 							set_property_selected_unit;
 						end if;
 
-					when NOUN_NET =>
+					when NOUN_STRAND | NOUN_NET =>
 						et_canvas_schematic_nets.rename_object (snap_point);
 						
 					when others => null;
@@ -403,7 +403,7 @@ is
 							clarify_unit;
 						end if;
 
-					when NOUN_NET =>
+					when NOUN_STRAND | NOUN_NET =>
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
