@@ -481,7 +481,7 @@ package body et_canvas_schematic_nets is
 		object : constant type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
 
-		net_name : constant string := get_net_name (object.net.net_cursor); -- RESET_N
+		net_name : pac_net_name.bounded_string; -- RESET_N
 		
 	begin
 		build_rename_window;
@@ -489,11 +489,24 @@ package body et_canvas_schematic_nets is
 		-- If the operator closes the window:
 		rename_window.on_destroy (close_rename_window'access);
 
-		-- If the operator presses a key in the window (via ESc):
+		-- If the operator presses a key in the window (via ESC):
 		-- CS rename_window.on_key_press_event (access_on_window_properties_key_event);
-		
-		rename_old.set_text (net_name);
 
+		case object.cat is
+			when CAT_NET =>
+				net_name := get_net_name (object.net.net_cursor);
+
+			when CAT_STRAND =>
+				net_name := get_net_name (object.strand.net_cursor);
+
+			when others =>
+				raise constraint_error; -- CS
+		end case;
+
+		-- Set the text in the window:
+		rename_old.set_text (to_string (net_name));
+
+				
 		rename_new.on_activate (rename_new_name_entered'access);
 		-- gtk_entry (rename_window.box.get_child).on_activate (rename_new_name_entered'access);
 		
