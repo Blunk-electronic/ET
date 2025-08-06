@@ -283,6 +283,7 @@ package et_schematic_ops.nets is
 	
 	
 -- STRANDS:
+
 	
 
 	-- This composite type is meant to identify a strand
@@ -301,6 +302,20 @@ package et_schematic_ops.nets is
 
 
 
+	-- Returns the actual strand as given by the cursor
+	-- contained in argument "strand":
+	function get_strand (
+		strand : in type_object_strand)
+		return type_strand;
+
+
+	-- Adds a strand to a net:
+	procedure add_strand (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in pac_nets.cursor;
+		strand			: in type_strand;
+		log_threshold	: in type_log_level);
+	
 	
 	package pac_object_strands is new doubly_linked_lists (type_object_strand);
 
@@ -510,7 +525,30 @@ package et_schematic_ops.nets is
 		place			: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
+	
+	-- Renames a strand. A strand exists on a particular sheet only.
+	-- Renaming a strand is basically a move operation.
+	-- The given strand will be moved to a net named after new_name.
+	-- If the net new_name does not exist already, then it will be created first:
+	procedure rename_strand (
+		module_cursor	: in pac_generic_modules.cursor;
+		strand			: in type_object_strand;
+		new_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		log_threshold	: in type_log_level);
 
+
+	-- Renames a net on the given sheet. If all_sheets is
+	-- true, then all nets on all sheets are renamed:
+	procedure rename_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		net				: in type_object_net;
+		sheet			: in type_sheet;
+		all_sheets		: in boolean := false;
+		new_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		log_threshold	: in type_log_level);
+
+	
+	
 
 	-- Deletes a net on the given sheet. If all_sheets is
 	-- true, then all nets on all sheets are deleted:

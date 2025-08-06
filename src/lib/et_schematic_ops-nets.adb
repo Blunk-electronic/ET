@@ -1688,6 +1688,57 @@ package body et_schematic_ops.nets is
 
 	
 
+
+	function get_strand (
+		strand : in type_object_strand)
+		return type_strand
+	is begin
+		return element (strand.strand_cursor);
+	end get_strand;
+
+
+
+
+	procedure add_strand (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in pac_nets.cursor;
+		strand			: in type_strand;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is begin
+				net.strands.append (strand);
+			end query_net;
+			
+		begin
+			module.nets.update_element (net_cursor, query_net'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " add strand to net " & get_net_name (net_cursor),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (module_cursor, query_module'access);			
+
+		update_ratsnest (module_cursor, log_threshold + 1);
+		
+		log_indentation_down;
+	end add_strand;
+
+
+	
 	
 	
 	function get_strands (
@@ -2285,7 +2336,7 @@ package body et_schematic_ops.nets is
 				declare
 					c : pac_nets.cursor := strand.net_cursor;
 				begin
-					-- CS log message
+					log (text => "no strands left. delete whole net", level => log_threshold + 1);
 					delete (module.nets, c);
 				end;
 			end if;			
@@ -2294,7 +2345,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& " deleting strand " & to_string (strand),
+			& " delete " & to_string (strand),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -3127,6 +3178,184 @@ package body et_schematic_ops.nets is
 
 
 
+
+
+	procedure rename_strand (
+		module_cursor	: in pac_generic_modules.cursor;
+		strand			: in type_object_strand;
+		new_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		log_threshold	: in type_log_level)
+	is
+
+		-- This cursor points to the net where the given strand
+		-- will be moved to. The destination net can be an existing
+		-- one or a new net:
+		destination_net : pac_nets.cursor;
+
+		-- This flag indicates whether a new destination net
+		-- has been created:
+		new_net_created : boolean;
+
+		-- This is the actual strand to be moved:
+		target_strand : constant type_strand := get_strand (strand);
+
+
+
+		procedure move_strand_to_new_net is begin
+			log (text => "move strand to new net " 
+				 & get_net_name (destination_net),
+				 level => log_threshold + 1);
+
+			add_strand (module_cursor, destination_net, target_strand, log_threshold + 2);
+		end move_strand_to_new_net;
+
+
+
+		
+		procedure move_strand_to_existing_net is begin
+			log (text => "move strand to existing net " 
+				 & get_net_name (destination_net),
+				 level => log_threshold + 1);
+
+			add_strand (module_cursor, destination_net, target_strand, log_threshold + 2);			
+		end move_strand_to_existing_net;
+
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " rename " & to_string (strand),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		-- If a net named after new_name does not exist already, then
+		-- it wil be created now:
+		create_net (
+			module_cursor	=> module_cursor, 
+			net_name		=> new_name, 
+			created			=> new_net_created,
+			net_cursor		=> destination_net,
+			log_threshold	=> log_threshold + 2);
+
+		-- The cursor destination_net no points to either
+		-- the new created destination net or to an existing destination net.
+		
+		if new_net_created then
+			move_strand_to_new_net;
+		else
+			move_strand_to_existing_net;
+		end if;
+		
+		-- Delete the old strand. Delete the origin net 
+		-- completely if no strands are left over:
+		delete_strand (module_cursor, strand, log_threshold + 2);
+
+		update_ratsnest (module_cursor, log_threshold + 2);
+			
+		log_indentation_down;		
+	end rename_strand;
+
+
+
+
+	
+
+	procedure rename_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		net				: in type_object_net;
+		sheet			: in type_sheet;
+		all_sheets		: in boolean := false;
+		new_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		log_threshold	: in type_log_level)
+	is 
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			-- This procedure renames the whole net on
+			-- all sheets:
+			procedure rename_whole_net is
+				-- c : pac_nets.cursor := net.net_cursor;
+			begin
+				null;
+				-- module.nets.delete (c);
+			end;
+
+
+			-- This procedure renames all strands of
+			-- the given net on the given sheet only:
+			procedure rename_on_sheet is
+
+				procedure query_net (
+					net_name	: in pac_net_name.bounded_string;
+					net			: in out type_net) 
+				is
+					-- strands : pac_strands.list;
+				begin
+					null;
+					-- Get the strands on the given sheet:
+					-- strands := get_strands (net, sheet);
+
+					-- Delete the strands on the given sheet:
+					-- delete_strands (net, strands);
+				end query_net;
+
+			begin
+				module.nets.update_element (net.net_cursor, query_net'access);
+				
+				-- If the net has no strands anymore, 
+				-- then delete it entirely because a
+				-- net without strands is useless:
+				-- if not has_strands (net.net_cursor) then
+				-- 	declare
+				-- 		c : pac_nets.cursor := net.net_cursor;
+				-- 	begin
+				-- 		-- CS log message
+				-- 		delete (module.nets, c);
+				-- 	end;
+				-- end if;
+			end rename_on_sheet;
+			
+			
+		begin
+			case all_sheets is
+				when TRUE	=> rename_whole_net;
+				when FALSE	=> rename_on_sheet;
+			end case;			
+		end query_module;
+
+
+		
+	begin
+		if all_sheets then
+			log (text => "module " & to_string (module_cursor)
+				& " rename net " & to_string (net)
+				& " on all sheets.",
+				level => log_threshold);
+
+		else
+			log (text => "module " & to_string (module_cursor)
+				& " renames net " & to_string (net)
+				& " on sheet " & to_string (sheet) & ".",
+				level => log_threshold);
+
+		end if;
+
+
+		log_indentation_up;
+		
+		generic_modules.update_element (module_cursor, query_module'access);
+		update_ratsnest (module_cursor, log_threshold + 1);
+			
+		log_indentation_down;
+	end rename_net;
+
+
+
+	
 
 
 
@@ -7552,10 +7781,22 @@ package body et_schematic_ops.nets is
 				null;
 				
 			when CAT_STRAND =>
-				null;
-				
+				rename_strand (
+					module_cursor	=> module_cursor,
+					strand			=> object.strand,
+					new_name		=> new_name,
+					log_threshold	=> log_threshold + 1);
+
+					
 			when CAT_NET => 
-				null;
+				rename_net (
+					module_cursor	=> module_cursor,
+					net				=> object.net,
+					sheet			=> active_sheet,
+					all_sheets		=> modify_net_on_all_sheets,
+					new_name		=> new_name,
+					log_threshold	=> log_threshold + 1);
+
 				
 			when CAT_LABEL => 
 				null; -- CS
