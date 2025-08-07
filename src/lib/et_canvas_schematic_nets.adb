@@ -443,11 +443,12 @@ package body et_canvas_schematic_nets is
 		-- nothing will be cleaned up and the window will remain until the
 		-- operator enters a correct property.
 		clean_up;
-		
+
+		-- CS
 		-- Whatever goes wrong, output the message in the status bar
 		-- of the properties window:
-		exception when event: others =>
-			set_status_properties (exception_message (event));
+		-- exception when event: others =>
+		-- 	set_status_properties (exception_message (event));
 			
 	end rename_new_name_entered;
 	

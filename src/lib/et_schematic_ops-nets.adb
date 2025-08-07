@@ -3270,75 +3270,142 @@ package body et_schematic_ops.nets is
 		log_threshold	: in type_log_level)
 	is 
 
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-
-			-- This procedure renames the whole net on
-			-- all sheets:
-			procedure rename_whole_net is
-				-- c : pac_nets.cursor := net.net_cursor;
-			begin
-				null;
-				-- module.nets.delete (c);
-			end;
+		net_name : constant pac_net_name.bounded_string := get_net_name (net.net_cursor);
+	
 
 
-			-- This procedure renames all strands of
-			-- the given net on the given sheet only:
-			procedure rename_on_sheet is
+		-- This procedure renames the whole net on all sheets:
+		procedure rename_whole_net is
+		begin
+			null;
+		end rename_whole_net;
+		
 
+		
+		-- This procedure renames all strands of
+		-- the given net on the given sheet only:
+		procedure rename_on_sheet is
+
+			-- The procedure iterates the strands of the given net
+			-- and stops the iteration as soon as a strand on the given
+			-- sheet has been found. For this reason we need this flag:			
+			strand_found : boolean := true;
+
+			-- Once a strand has been found, the cursor to the parent net
+			-- and the cursor to the affected strand is stored here:
+			object_strand : type_object_strand;
+
+			-- Then the strand (as specified in object_strand) is renamed
+			-- and the search for the next suitable strand is started.
+
+			-- For each strand an iteration (or search) must be started.
+			-- To prevent a stuck-for-ever-loop this counter counts the passes
+			-- and raises an execption on overflow:
+			subtype type_safety_counter is natural range 0 .. 10;
+			-- CS for max use the total of strands of the given net ?
+			safety_counter : type_safety_counter := 0;
+
+			
+
+			-- This procedure queries the in the given module the given net
+			-- and iterates the strands on the given sheet:
+			procedure query_module (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in type_generic_module) 
+			is
+				-- Get the cursor to the given net:
+				net_cursor : pac_nets.cursor := locate_net (module_cursor, net_name);
+				-- NOTE: The net cursor provied by net.net_cursor can not be
+				-- used because it may become invalid in case the net
+				-- is deleted later.
+				
+				-- This procedure queries the targeted net and
+				-- iterates through the strands. It stops iterating
+				-- as soon as a strand on the given sheet has been found:
 				procedure query_net (
 					net_name	: in pac_net_name.bounded_string;
-					net			: in out type_net) 
+					net			: in type_net) 
 				is
-					-- strands : pac_strands.list;
+					strand_cursor : pac_strands.cursor := net.strands.first;
 				begin
-					null;
-					-- Get the strands on the given sheet:
-					-- strands := get_strands (net, sheet);
+					while has_element (strand_cursor) loop
+						if get_sheet (strand_cursor) = sheet then
+							log (text => "strand " & get_position (strand_cursor),
+								 level => log_threshold + 1);
 
-					-- Delete the strands on the given sheet:
-					-- delete_strands (net, strands);
+							-- Store the cursors of strand and net
+							-- for later renaming:
+							object_strand.strand_cursor := strand_cursor;
+							object_strand.net_cursor := net_cursor;
+
+							strand_found := true;
+							exit;
+						end if;
+						
+						next (strand_cursor);
+					end loop;
 				end query_net;
 
-			begin
-				module.nets.update_element (net.net_cursor, query_net'access);
 				
-				-- If the net has no strands anymore, 
-				-- then delete it entirely because a
-				-- net without strands is useless:
-				-- if not has_strands (net.net_cursor) then
-				-- 	declare
-				-- 		c : pac_nets.cursor := net.net_cursor;
-				-- 	begin
-				-- 		-- CS log message
-				-- 		delete (module.nets, c);
-				-- 	end;
-				-- end if;
-			end rename_on_sheet;
+			begin
+				-- If the net still exists, then it can be queried.
+				-- The net might have been deleted (due to previous passes).
+				-- In that case there is nothing to do anymore:
+				if has_element (net_cursor) then
+					log (text => "start pass" & type_safety_counter'image (safety_counter),
+						level => log_threshold + 2);
+
+					query_element (net_cursor, query_net'access);
+				else
+					-- Net does not exist anomore:
+					log (text => "Net does not exist anymore. Nothing to do.",
+						 level => log_threshold + 2);
+				end if;
+			end query_module;
 			
 			
 		begin
-			case all_sheets is
-				when TRUE	=> rename_whole_net;
-				when FALSE	=> rename_on_sheet;
-			end case;			
-		end query_module;
+			while strand_found loop
+				strand_found := false;
+
+				-- Search for a strand on the given sheet:
+				query_element (module_cursor, query_module'access);
+
+				-- Once a matching strand has been 
+				-- found - as specified in object_strand - rename it:
+				if strand_found then
+					rename_strand (module_cursor, object_strand, 
+						new_name, log_threshold + 1);
+				else
+					-- If no strand has been found, then there is nothing
+					-- to do anymore.
+					exit;
+				end if;
+				
+				-- Increment safety counter:
+				safety_counter := safety_counter + 1;
+			end loop;
+
+			
+			exception
+				when event: others =>
+					log (text => ada.exceptions.exception_information (event));
+					raise;
+					
+		end rename_on_sheet;
 
 
 		
 	begin
 		if all_sheets then
 			log (text => "module " & to_string (module_cursor)
-				& " rename net " & to_string (net)
+				& " rename " & to_string (net)
 				& " on all sheets.",
 				level => log_threshold);
 
 		else
 			log (text => "module " & to_string (module_cursor)
-				& " renames net " & to_string (net)
+				& " rename " & to_string (net)
 				& " on sheet " & to_string (sheet) & ".",
 				level => log_threshold);
 
@@ -3346,8 +3413,14 @@ package body et_schematic_ops.nets is
 
 
 		log_indentation_up;
+
+		if all_sheets then
+			rename_whole_net;
+		else
+			rename_on_sheet;
+		end if;
 		
-		generic_modules.update_element (module_cursor, query_module'access);
+		
 		update_ratsnest (module_cursor, log_threshold + 1);
 			
 		log_indentation_down;
