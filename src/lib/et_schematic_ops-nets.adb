@@ -4356,8 +4356,9 @@ package body et_schematic_ops.nets is
 						ports := get_ports (module_cursor, place, log_threshold + 4);
 						s.ports.A := ports;
 
-						-- Create the new strand with the new segment:
-						create_strand (net, s);
+						-- Create the new strand on the given
+						-- sheet with the new single segment:
+						create_strand (net, sheet, s);
 
 						log_indentation_down;
 					end create_new_strand;

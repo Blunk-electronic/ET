@@ -94,6 +94,12 @@ package et_net_strands is
 		strand : in out type_strand);
 
 
+	-- Set the sheet of the given strand:
+	procedure set_sheet (
+		strand	: in out type_strand;
+		sheet	: in type_sheet);					
+
+	
 	-- Searches for net segments that run into the same direction
 	-- and overlap each other. Replaces such segments by a single 
 	-- segment:

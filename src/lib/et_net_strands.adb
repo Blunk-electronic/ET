@@ -131,6 +131,16 @@ package body et_net_strands is
 	end set_strand_position;
 
 
+
+
+
+	procedure set_sheet (
+		strand	: in out type_strand;
+		sheet	: in type_sheet)
+	is begin
+		set_sheet (strand.position, sheet);
+	end;
+
 	
 
 

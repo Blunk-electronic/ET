@@ -155,12 +155,14 @@ package et_nets is
 
 
 
-	-- Creates a new strand. Inserts the given segment
+	-- Creates a new strand on the given sheet.
+	-- Inserts the given segment
 	-- in the strand. So a new strand with a single segment
 	-- is created in the given net:
 	procedure create_strand (
-		net			: in out type_net;
-		segment		: in type_net_segment);
+		net		: in out type_net;
+		sheet	: in type_sheet;						
+		segment	: in type_net_segment);
 	
 
 	-- Returns true if the given net has strands:

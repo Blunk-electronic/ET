@@ -136,11 +136,14 @@ package body et_nets is
 
 
 	procedure create_strand (
-		net			: in out type_net;
-		segment		: in type_net_segment)
+		net		: in out type_net;
+		sheet	: in type_sheet;						
+		segment	: in type_net_segment)
 	is 
 		strand : type_strand; -- the new strand
 	begin
+		set_sheet (strand, sheet);
+		
 		-- Insert the given segment in the new strand:
 		strand.segments.append (segment);
 
