@@ -2845,10 +2845,96 @@ package body et_schematic_ops.nets is
 		log_indentation_down;
 	end create_net;
 
+
 	
 	
 	
 
+
+	procedure merge_nets (
+		module_cursor	: in pac_generic_modules.cursor;
+		target			: in pac_nets.cursor;
+		source			: in pac_nets.cursor;
+		target_master	: in boolean;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is 
+
+			-- Transfers the contents of the source net
+			-- to the target net.
+			-- Resets the status flags of the target net:
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				-- Get the actual source net:
+				source_net : type_net := element (source);
+			begin
+				log (text => "transfer strands", level => log_threshold + 1);
+				
+				-- Transfer the strands:
+				splice (
+					target	=> net.strands,
+					before	=> pac_strands.no_element,
+					source	=> source_net.strands);
+
+				-- CS routing
+				-- log (text => "transfer tracks and fill zones", level => log_threshold + 1);
+
+				-- If the target net is the master, then class
+				-- and scope of it remain as they are.
+				-- If the source net is the master, then ovewrite
+				-- class and scope of the target with those of the source:
+				if not target_master then					
+					net.class := source_net.class;
+					net.scope := source_net.scope;
+				end if;			
+
+				reset_status (net);				
+			end query_net;
+
+
+			c : pac_nets.cursor := source;
+
+		begin
+			module.nets.update_element (target, query_net'access);
+
+			-- Delete the source net entirely:
+			log (text => "delete net " & get_net_name (source),
+				 level => log_threshold + 1);
+			
+			module.nets.delete (c);
+		end query_module;
+
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " merge source net " & get_net_name (source)
+			 & " with target net " & get_net_name (target),
+			level => log_threshold);
+
+		if target_master then
+			log (text => "target net is master", level => log_threshold);
+		else
+			log (text => "source net is master", level => log_threshold);
+		end if;
+		
+		
+		log_indentation_up;
+		generic_modules.update_element (module_cursor, query_module'access);
+		log_indentation_down;
+
+	end merge_nets;
+	
+
+
+
+	
 
 	
 	function get_lowest_available_anonymous_net (
@@ -3274,11 +3360,60 @@ package body et_schematic_ops.nets is
 	
 
 
-		-- This procedure renames the whole net on all sheets:
+		-- This procedure renames the whole net on all sheets.
+		-- If no net named after "new_name" exists, then it will be
+		-- created. If a net named after "new_name" does exist, then
+		-- the contents of the original given net are merged with
+		-- the net named "new_name".
+		-- Deletes the given original net entirely.
 		procedure rename_whole_net is
+			new_net_created : boolean;
+			target_net_cursor : pac_nets.cursor;
 		begin
-			null;
+			-- The net named after new_name may exist
+			-- or may not exist already; 
+			create_net (
+				module_cursor	=> module_cursor,
+				net_name		=> new_name,
+				created			=> new_net_created,
+				net_cursor		=> target_net_cursor,
+				log_threshold	=> log_threshold + 1);
+
+			-- Cursor target_net_cursor now points to the target net
+			-- independed on whether it has been created or not.
+			
+			if new_net_created then				
+				-- The target net is empty, means it has no strands
+				-- and no conductor elements in the board.
+				
+				-- We transfer everything from the original net to the target net.
+				-- Since the target net is completey new, its class and
+				-- scope will be set as given by the original given net:
+				merge_nets (
+					module_cursor	=> module_cursor,
+					target			=> target_net_cursor,
+					source			=> net.net_cursor, -- the original given net
+					target_master	=> false, -- take class and scope from source net
+					log_threshold	=> log_threshold + 1);
+							   
+				
+			else
+				-- The target net already exists. It has strands
+				-- and most likely conductor elements in the board.
+
+				-- We transfer everything from the original net to the target net.
+				-- Since the target net already exists, its class and
+				-- scope dominate over the source net:
+				merge_nets (
+					module_cursor	=> module_cursor,
+					target			=> target_net_cursor,
+					source			=> net.net_cursor, -- the original given net
+					target_master	=> true, -- take class and scope from target net
+					log_threshold	=> log_threshold + 1);
+
+			end if;
 		end rename_whole_net;
+
 		
 
 		

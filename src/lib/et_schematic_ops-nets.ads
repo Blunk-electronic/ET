@@ -495,7 +495,26 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
-	
+	-- Merges net source with net target.
+	-- - If "target_master" is true, then the scope and class 
+	--   of the target net are kept,
+	--   while scope and class of the source net are discarded.
+	-- - If "target_master" is false, then scope and class of
+	--   the source net are kept, while scope and class of the target
+	--   net are discarded.
+	-- Appends the contents of the given source net to
+	-- the given target net.
+	-- Resets the status flags of the target net.
+	-- Afterward, the source net is deleted entirely. This implies
+	-- the the input cursor "source" is invalid once this procedure
+	-- completes:
+	procedure merge_nets (
+		module_cursor	: in pac_generic_modules.cursor;
+		target			: in pac_nets.cursor;
+		source			: in pac_nets.cursor;
+		target_master	: in boolean;
+		log_threshold	: in type_log_level);
+							 
 	
 	-- Searches the module for an anonymous net with the lowest index available.
 	-- Example: If the module contains nets like N$2, N$4, N$5 and N$101 then
