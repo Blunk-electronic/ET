@@ -42,6 +42,10 @@ with ada.containers;				use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
+with gdk.event;						use gdk.event;
+with gdk.types;						use gdk.types;
+with gdk.types.keysyms;				use gdk.types.keysyms;
+
 with gtk.widget;					use gtk.widget;
 with gtk.gentry;
 
@@ -230,14 +234,34 @@ package et_canvas_schematic_nets is
 
 	
 
-	-- Called when the operator presses ENTER after typing a new name in
-	-- the rename window:
-	procedure rename_new_name_entered (
+	-- This procedure is called when the signal "destroy" 
+	-- is emitted by the rename window.
+	-- This is usually the case when:
+	--  1. the operator terminates the rename window by 
+	--     clicking the X in the upper right corner of the window.
+	--  2. the operator presses the ESC key in the rename window:
+	-- The procedure also calls procedure "reset":
+	procedure cb_rename_window_destroy (
+		window : access gtk_widget_record'class);
+
+	
+	-- Called when the "on_activate" signal is emitted
+	-- (usually when ENTER pressed) by the entry field
+	-- for the new name:
+	procedure cb_rename_new_name_entered (
 		self : access gtk.gentry.gtk_entry_record'class);
 
 
-	procedure close_rename_window (
-		window : access gtk_widget_record'class);
+
+	-- This callback function is called whenever
+	-- the operator presses a key in the rename window.
+	-- If ESC key pressed, then the window is destroyed
+	-- by calling cb_rename_window_destroy:
+	function cb_rename_window_key_pressed (
+		window	: access gtk_widget_record'class;
+		event	: gdk_event_key)
+		return boolean;
+
 
 
 	

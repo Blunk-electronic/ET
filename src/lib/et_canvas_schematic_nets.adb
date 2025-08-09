@@ -371,8 +371,21 @@ package body et_canvas_schematic_nets is
 	
 
 
+
+	procedure cb_rename_window_destroy (
+		window : access gtk_widget_record'class)
+	is
+	begin
+		put_line ("cb_rename_window_destroy");
+		reset;
+	end cb_rename_window_destroy;
+
 	
-	procedure rename_new_name_entered (
+
+
+	
+	
+	procedure cb_rename_new_name_entered (
 		self : access gtk.gentry.gtk_entry_record'class) 
 	is 
 
@@ -421,14 +434,6 @@ package body et_canvas_schematic_nets is
 		end finalize;
 
 		
-		procedure clean_up is begin
-			rename_window.destroy;
-			reset_request_clarification;
-			status_clear;
-			rename_window_open := false;
-		end clean_up;
-
-
 		
 	begin
 		net_name_new := to_net_name (self.get_text); -- RST_N
@@ -442,7 +447,7 @@ package body et_canvas_schematic_nets is
 		-- If one of the operations above has raised an exception then
 		-- nothing will be cleaned up and the window will remain until the
 		-- operator enters a correct property.
-		clean_up;
+		rename_window.destroy;
 
 		-- CS
 		-- Whatever goes wrong, output the message in the status bar
@@ -450,29 +455,41 @@ package body et_canvas_schematic_nets is
 		-- exception when event: others =>
 		-- 	set_status_properties (exception_message (event));
 			
-	end rename_new_name_entered;
+	end cb_rename_new_name_entered;
 	
 
 
-	
 
-	procedure close_rename_window (
-		window : access gtk_widget_record'class)
+
+
+
+	
+	function cb_rename_window_key_pressed (
+		window	: access gtk_widget_record'class;
+		event	: gdk_event_key)
+		return boolean
 	is
+		event_handled : boolean;
+		key : gdk_key_type := event.keyval;		
 	begin
-		-- put_line ("close rename window");
+		put_line ("cb_rename_window_key_pressed");
+
+		case key is
+			when GDK_ESCAPE =>
+				put_line ("ESC");
+				rename_window.destroy;
+				event_handled := true;
+
+			when others =>
+				put_line ("other key");
+				event_handled := false;
+				
+		end case;
 		
-		reset_request_clarification;
-		status_clear;
-		rename_window_open := false;
+		return event_handled;
+	end cb_rename_window_key_pressed;
 
-		reset_proposed_objects (active_module, log_threshold + 1);
-
-		reset_editing_process; -- prepare for a new editing process
-		
-	end close_rename_window;
-
-
+	
 
 	
 	
@@ -487,11 +504,11 @@ package body et_canvas_schematic_nets is
 	begin
 		build_rename_window;
 
-		-- If the operator closes the window:
-		rename_window.on_destroy (close_rename_window'access);
+		-- Connect the "destroy" signal:
+		rename_window.on_destroy (cb_rename_window_destroy'access);
 
-		-- If the operator presses a key in the window (via ESC):
-		-- CS rename_window.on_key_press_event (access_on_window_properties_key_event);
+		-- Connect the "on_key_press_event" signal:
+		rename_window.on_key_press_event (cb_rename_window_key_pressed'access);
 
 		case object.cat is
 			when CAT_NET =>
@@ -507,8 +524,9 @@ package body et_canvas_schematic_nets is
 		-- Set the text in the window:
 		rename_old.set_text (to_string (net_name));
 
-				
-		rename_new.on_activate (rename_new_name_entered'access);
+		-- Connect the "on_activate" signal (emitted when ENTER pressed)
+		-- of the entry field for the new name:
+		rename_new.on_activate (cb_rename_new_name_entered'access);
 		-- gtk_entry (rename_window.box.get_child).on_activate (rename_new_name_entered'access);
 		
 		rename_new.grab_focus;
