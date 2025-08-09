@@ -1158,6 +1158,7 @@ package et_canvas is
 
 -- ESCAPE KEY EVENT COUNTER:
 
+	-- Increments the escape counter:
 	procedure escape_key_pressed;
 
 	-- We count only up to 2:
@@ -1577,7 +1578,7 @@ private
 	-- MAIN WINDOW:
 
 	-- This procedure is called when the operator terminates
-	-- the demo program by clicking the X in the upper right corner
+	-- the main window by clicking the X in the upper right corner
 	-- of the main window:
 	procedure cb_terminate (
 		window : access gtk_widget_record'class);
