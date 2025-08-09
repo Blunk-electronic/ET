@@ -521,15 +521,17 @@ package body et_canvas_schematic_2 is
 			et_schematic_ops.units.reset_proposed_objects (active_module, log_threshold + 1);
 			
 			reset_selections; -- CS
+
+			rename_window_open := false;
 		end level_1;
 	
 
 		-- Do a level 2 reset. This is a full reset:
 		procedure level_2 is begin
-			log (text => "level 2", level => log_threshold + 1);
-			
 			level_1;
 			
+			log (text => "level 2", level => log_threshold + 1);
+						
 			reset_verb_and_noun;
 			update_mode_display;
 			
