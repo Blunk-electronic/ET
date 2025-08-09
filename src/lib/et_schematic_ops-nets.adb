@@ -3355,10 +3355,7 @@ package body et_schematic_ops.nets is
 		new_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		log_threshold	: in type_log_level)
 	is 
-
 		net_name : constant pac_net_name.bounded_string := get_net_name (net.net_cursor);
-	
-
 
 		-- This procedure renames the whole net on all sheets.
 		-- If no net named after "new_name" exists, then it will be
