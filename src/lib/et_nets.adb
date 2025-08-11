@@ -810,6 +810,53 @@ package body et_nets is
 	
 
 
+
+
+
+	function to_string (
+		object	: in type_object_strand)
+		return string
+	is begin
+		return "net " & get_net_name (object.net_cursor) 
+			& " strand " & get_position (object.strand_cursor);
+	end to_string;
+
+
+
+
+
+	function get_strand (
+		strand : in type_object_strand)
+		return type_strand
+	is begin
+		return element (strand.strand_cursor);
+	end get_strand;
+
+	
+
+
+	
+
+	function get_strand (
+		strands			: in pac_object_strands.list;
+		net_cursor		: in pac_nets.cursor)
+		return type_object_strand
+	is 
+		result : type_object_strand;
+
+		use pac_object_strands;
+		c : pac_object_strands.cursor := strands.first;
+
+		-- procedure query_strand (
+	begin
+		while has_element (c) loop
+			-- query_element (c, query_strand'access);
+			next (c);
+		end loop;
+		
+		return result;
+	end get_strand;
+
 	
 end et_nets;
 

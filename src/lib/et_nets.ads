@@ -357,8 +357,47 @@ package et_nets is
 
 
 
+-- OBJECT STRAND:
+	
+	-- This composite type is meant to identify a strand
+	-- and its parent net in the schematic:
+	type type_object_strand is record
+		net_cursor		: pac_nets.cursor;
+		strand_cursor	: pac_strands.cursor;
+	end record;
+
+	
+
+	-- Returns the net name and strand position of the given object
+	-- as string in the form like "GND strand sheet / start x/y end x/y":
+	function to_string (
+		object	: in type_object_strand)
+		return string;
 
 
+
+	-- Returns the actual strand as given by the cursor
+	-- contained in argument "strand":
+	function get_strand (
+		strand : in type_object_strand)
+		return type_strand;
+
+
+	package pac_object_strands is new doubly_linked_lists (type_object_strand);
+
+
+
+	-- Returns the first strand among the given strands
+	-- that belongs to the given net (indicated by net_cursor).
+	-- If no suitable strand found then the return is
+	-- a type_object_strand with empty cursors:
+	function get_strand (
+		strands			: in pac_object_strands.list;
+		net_cursor		: in pac_nets.cursor)
+		return type_object_strand;
+
+	
+	
 	
 -- NET INDEX:
 	
