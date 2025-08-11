@@ -234,33 +234,13 @@ package et_canvas_schematic_nets is
 
 	
 
-	-- This procedure is called when the signal "destroy" 
-	-- is emitted by the rename window.
-	-- This is usually the case when:
-	--  1. the operator terminates the rename window by 
-	--     clicking the X in the upper right corner of the window.
-	--  2. the operator presses the ESC key in the rename window:
-	-- The procedure also calls procedure "reset":
-	procedure cb_rename_window_destroy (
-		window : access gtk_widget_record'class);
 
 	
 	-- Called when the "on_activate" signal is emitted
 	-- (usually when ENTER pressed) by the entry field
-	-- for the new name:
+	-- for the new name in the rename window:
 	procedure cb_rename_new_name_entered (
 		self : access gtk.gentry.gtk_entry_record'class);
-
-
-
-	-- This callback function is called whenever
-	-- the operator presses a key in the rename window.
-	-- If ESC key pressed, then the window is destroyed
-	-- by calling cb_rename_window_destroy:
-	function cb_rename_window_key_pressed (
-		window	: access gtk_widget_record'class;
-		event	: gdk_event_key)
-		return boolean;
 
 
 

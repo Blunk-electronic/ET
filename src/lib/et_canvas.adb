@@ -3603,6 +3603,8 @@ package body et_canvas is
 
 
 
+
+	
 	
 -- RENAME WINDOW:
 	
@@ -3624,7 +3626,10 @@ package body et_canvas is
 		rename_window.set_default_size (300, 100);
 		rename_window.set_resizable (false);
 
-
+		-- Connect the "on_key_press_event" signal:
+		rename_window.on_key_press_event (access_cb_rename_window_key_pressed);
+		
+		
 		gtk_new_vbox (box);
 		add (rename_window, box);
 
@@ -4658,6 +4663,54 @@ package body et_canvas is
 	end cb_delete_box_properties_child;
 
 
+
+	
+
+	
+-- RENAME WINDOW:
+	
+	function cb_rename_window_key_pressed (
+		window	: access gtk_widget_record'class;
+		event	: gdk_event_key)
+		return boolean
+	is
+		debug : boolean := false;
+		
+		event_handled : boolean;
+		key : gdk_key_type := event.keyval;		
+	begin
+		if debug then
+			put_line ("cb_rename_window_key_pressed");
+		end if;
+
+		
+		case key is
+			when GDK_ESCAPE =>
+				if debug then
+					put_line ("ESC");
+				end if;
+
+				-- Emit the "destroy" signal.
+				-- The connection to a callback procedure
+				-- is established in the package where
+				-- the canvas is instantiated. For example see procedure
+				-- show_rename_window in et_cnavas_schematic:
+				rename_window.destroy;
+				
+				event_handled := true;
+
+				
+			when others =>
+				if debug then
+					put_line ("other key");
+				end if;
+				
+				event_handled := false;
+		end case;
+		
+		return event_handled;
+	end cb_rename_window_key_pressed;
+	
 	
 	
 end et_canvas;

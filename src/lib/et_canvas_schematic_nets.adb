@@ -370,16 +370,6 @@ package body et_canvas_schematic_nets is
 
 	
 
-
-
-	procedure cb_rename_window_destroy (
-		window : access gtk_widget_record'class)
-	is
-	begin
-		put_line ("cb_rename_window_destroy");
-		reset;
-	end cb_rename_window_destroy;
-
 	
 
 
@@ -464,34 +454,6 @@ package body et_canvas_schematic_nets is
 
 
 	
-	function cb_rename_window_key_pressed (
-		window	: access gtk_widget_record'class;
-		event	: gdk_event_key)
-		return boolean
-	is
-		event_handled : boolean;
-		key : gdk_key_type := event.keyval;		
-	begin
-		put_line ("cb_rename_window_key_pressed");
-
-		case key is
-			when GDK_ESCAPE =>
-				put_line ("ESC");
-				rename_window.destroy;
-				event_handled := true;
-
-			when others =>
-				put_line ("other key");
-				event_handled := false;
-				
-		end case;
-		
-		return event_handled;
-	end cb_rename_window_key_pressed;
-
-	
-
-	
 	
 	
 	procedure show_rename_window is
@@ -504,11 +466,10 @@ package body et_canvas_schematic_nets is
 	begin
 		build_rename_window;
 
-		-- Connect the "destroy" signal:
+		-- Connect the "destroy" signal.
+		-- It is emitted
 		rename_window.on_destroy (cb_rename_window_destroy'access);
 
-		-- Connect the "on_key_press_event" signal:
-		rename_window.on_key_press_event (cb_rename_window_key_pressed'access);
 
 		case object.cat is
 			when CAT_NET =>

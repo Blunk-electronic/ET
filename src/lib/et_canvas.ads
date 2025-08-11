@@ -42,7 +42,7 @@ with glib;
 
 with gdk.event;					use gdk.event;
 with gdk.types;					use gdk.types;
--- with gdk.types.keysyms;			use gdk.types.keysyms;
+with gdk.types.keysyms;			use gdk.types.keysyms;
 
 with gtk.widget;				use gtk.widget;
 with gtk.container;				use gtk.container;
@@ -1294,14 +1294,32 @@ package et_canvas is
 
 
 -- RENAME WINDOW:
-	
+
+	-- The window to rename objects is used in all domains
+	-- and in various situations. For this reason we make it
+	-- a generic object:
 	rename_window : gtk.window.gtk_window;
 
 	-- CS: these variables should be moved to procedure
 	-- build_rename_window:
+	-- This is the field inside the rename_window 
+	-- where the operator enters the new name of an object:
 	rename_new : gtk_gentry;
-	rename_old : gtk_gentry;
 	
+	-- This is the field inside the rename_window 
+	-- where the old name of an object is shown:
+	rename_old : gtk_gentry;
+
+	
+	-- This procedure assembles the rename_window with 
+	-- all its basic properties.
+	-- It connects the "on_key_press_event" with the
+	-- callback function cb_rename_window_key_pressed (see below).
+	-- This procedure DOES NOT show the rename window. It just prepares
+	-- basic things. The actual showing is preformed by a procedure in
+	-- the package where the canvas is instantiated (see
+	-- for example procedure show_rename_window 
+	-- in et_canvas_schematic):
 	procedure build_rename_window;
 
 
@@ -1644,7 +1662,7 @@ private
 
 	access_cb_main_window_activate : constant
 		cb_gtk_window_void := cb_main_window_activate'access;
-
+	
 
 
 -- SCROLLED WINDOW AND SCROLLBARS:
@@ -1750,6 +1768,29 @@ private
 	access_cb_delete_box_properties_child : constant 
 		gtk_callback := cb_delete_box_properties_child'access;
 
+
+
+-- RENAME WINDOW:
+
+	-- See comments on rename window above.
+	
+	-- This callback function is called whenever
+	-- the operator presses a key in the rename window.
+	-- If ESC key pressed, then the window is destroyed
+	-- by emitting the "destroy" signal. The connection
+	-- to the "destroy" signal is estabilshed in the package
+	-- where the canvas is instantiated.
+	-- All other key-press events are propagated to the
+	-- field where the new name is entered (see 
+	-- variable "rename_new" above):
+	function cb_rename_window_key_pressed (
+		window	: access gtk_widget_record'class;
+		event	: gdk_event_key)
+		return boolean;
+	
+
+	access_cb_rename_window_key_pressed : constant
+		cb_gtk_widget_gdk_event_key_boolean := cb_rename_window_key_pressed'access;
 	
 end et_canvas;
 
