@@ -812,6 +812,47 @@ package body et_nets is
 
 
 
+	
+
+
+
+	function to_string (
+		object	: in type_object_segment)
+		return string
+	is begin
+		return "net " & get_net_name (object.net_cursor) 
+			-- & " strand " & get_position (object.strand_cursor)
+			& " segment " & to_string (object.segment_cursor);
+	end;
+
+
+
+	function get_sheet (
+		object	: in type_object_segment)
+		return type_sheet
+	is 
+		segment : type_net_segment;
+	begin
+		return get_sheet (object.strand_cursor);
+	end;
+
+
+
+
+
+
+
+
+
+	function get_net_name (
+		strand	: in type_object_strand)
+		return pac_net_name.bounded_string
+	is begin
+		return key (strand.net_cursor);
+	end;
+
+	
+
 
 	function to_string (
 		object	: in type_object_strand)
@@ -835,6 +876,18 @@ package body et_nets is
 	
 
 
+
+	function get_net_name (
+		strand	: in pac_object_strands.cursor)
+		return pac_net_name.bounded_string
+	is 
+		use pac_object_strands;
+		s : type_object_strand := element (strand);
+	begin
+		return key (s.net_cursor);
+	end;
+	
+	
 	
 
 	function get_strand (
@@ -847,16 +900,49 @@ package body et_nets is
 		use pac_object_strands;
 		c : pac_object_strands.cursor := strands.first;
 
-		-- procedure query_strand (
+		proceed : boolean := true;
+
+		
+		procedure query_strand (s : in type_object_strand) is
+		begin
+			if get_net_name (s) = key (net_cursor) then
+				proceed := false;
+			end if;
+		end query_strand;
+
+		
 	begin
+		-- Iterate the given strands. Abort when the proceed-flag
+		-- is set:
 		while has_element (c) loop
-			-- query_element (c, query_strand'access);
+			query_element (c, query_strand'access);
+			
+			if not proceed then
+				exit;
+			end if;
+			
 			next (c);
 		end loop;
 		
 		return result;
 	end get_strand;
 
+
+
+
+
+
+	
+
+
+	function to_string (
+		object	: in type_object_net)
+		return string
+	is begin
+		return "net " & get_net_name (object.net_cursor);
+	end to_string;
+
+	
 	
 end et_nets;
 

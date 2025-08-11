@@ -259,29 +259,6 @@ package body et_schematic_ops.nets is
 
 
 
-
-	
-	function to_string (
-		object	: in type_object_segment)
-		return string
-	is begin
-		return "net " & get_net_name (object.net_cursor) 
-			-- & " strand " & get_position (object.strand_cursor)
-			& " segment " & to_string (object.segment_cursor);
-	end;
-
-
-
-	function get_sheet (
-		object	: in type_object_segment)
-		return type_sheet
-	is 
-		segment : type_net_segment;
-	begin
-		return get_sheet (object.strand_cursor);
-	end;
-
-
 	
 
 	procedure modify_status (
@@ -2458,16 +2435,6 @@ package body et_schematic_ops.nets is
 	
 
 	
-
-	
-
-	function to_string (
-		object	: in type_object_net)
-		return string
-	is begin
-		return "net " & get_net_name (object.net_cursor);
-	end to_string;
-
 
 
 	

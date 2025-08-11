@@ -74,32 +74,7 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
-	
-	-- This composite type is meant to identify a net segment
-	-- and its parent net in the schematic:
-	type type_object_segment is record
-		net_cursor		: pac_nets.cursor;
-		strand_cursor	: pac_strands.cursor;
-		segment_cursor	: pac_net_segments.cursor;
-	end record;
 
-
-	-- Returns the net name and segment of the given object
-	-- as string in the form like "GND segment start x/y end x/y":
-	function to_string (
-		object	: in type_object_segment)
-		return string;
-
-
-	-- Returns the sheet number of the given net segment:
-	function get_sheet (
-		object	: in type_object_segment)
-		return type_sheet;
-
-	
-	package pac_object_segments is new doubly_linked_lists (type_object_segment);
-
-	
 	
 	-- Modifies the status flag of a net segment:
 	procedure modify_status (
@@ -280,6 +255,8 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
+
+	
 	
 	
 -- STRANDS:
@@ -394,19 +371,6 @@ package et_schematic_ops.nets is
 
 -- NETS:
 	
-	-- This composite type is meant to identify a net
-	-- in the schematic:
-	type type_object_net is record
-		net_cursor		: pac_nets.cursor;
-	end record;
-
-
-	-- Returns the net name of the given object
-	-- as string in the form like "GND":
-	function to_string (
-		object	: in type_object_net)
-		return string;
-
 
 
 	-- Clears the proposed-flag and the selected-flag of all nets:

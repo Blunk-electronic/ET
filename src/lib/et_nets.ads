@@ -357,6 +357,44 @@ package et_nets is
 
 
 
+
+	
+
+-- OBJECT SEGMENT:
+
+
+	-- This composite type is meant to identify a net segment
+	-- and its parent net in the schematic:
+	type type_object_segment is record
+		net_cursor		: pac_nets.cursor;
+		strand_cursor	: pac_strands.cursor;
+		segment_cursor	: pac_net_segments.cursor;
+	end record;
+
+
+	-- Returns the net name and segment of the given object
+	-- as string in the form like "GND segment start x/y end x/y":
+	function to_string (
+		object	: in type_object_segment)
+		return string;
+
+
+	-- Returns the sheet number of the given net segment:
+	function get_sheet (
+		object	: in type_object_segment)
+		return type_sheet;
+
+	
+	package pac_object_segments is new doubly_linked_lists (type_object_segment);
+
+
+
+
+
+	
+
+
+	
 -- OBJECT STRAND:
 	
 	-- This composite type is meant to identify a strand
@@ -365,6 +403,11 @@ package et_nets is
 		net_cursor		: pac_nets.cursor;
 		strand_cursor	: pac_strands.cursor;
 	end record;
+
+
+	function get_net_name (
+		strand	: in type_object_strand)
+		return pac_net_name.bounded_string;
 
 	
 
@@ -386,10 +429,16 @@ package et_nets is
 	package pac_object_strands is new doubly_linked_lists (type_object_strand);
 
 
+	-- Returns the net name of the given object strand:
+	function get_net_name (
+		strand	: in pac_object_strands.cursor)
+		return pac_net_name.bounded_string;
+
+	
 
 	-- Returns the first strand among the given strands
 	-- that belongs to the given net (indicated by net_cursor).
-	-- If no suitable strand found then the return is
+	-- If no suitable strand found, then the return is
 	-- a type_object_strand with empty cursors:
 	function get_strand (
 		strands			: in pac_object_strands.list;
@@ -397,6 +446,26 @@ package et_nets is
 		return type_object_strand;
 
 	
+
+
+
+-- OBJECT NET:
+
+	-- This composite type is meant to identify a net
+	-- in the schematic:
+	type type_object_net is record
+		net_cursor		: pac_nets.cursor;
+	end record;
+
+
+	-- Returns the net name of the given object
+	-- as string in the form like "GND":
+	function to_string (
+		object	: in type_object_net)
+		return string;
+
+
+
 	
 	
 -- NET INDEX:
