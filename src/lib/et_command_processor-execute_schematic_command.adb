@@ -1726,7 +1726,9 @@ is
 
 	
 
-	procedure rename_net is begin
+	procedure rename_net is 
+		catch_zone : type_catch_zone;
+	begin
 		case cmd_field_count is
 
 			-- If the command has only 6 fields, the net scope is EVERYWHERE.
@@ -1765,25 +1767,39 @@ is
 					log_threshold		=> log_threshold + 1);
 
 				
-			-- If the command has 9 fields, the net scope is STRAND.
+			-- If the command has 10 fields, the net scope is STRAND.
 			-- Place is set according to arguments 7..9.
-			-- example: rename net RESET_N RST_N 2 50 90
-			when 9 =>
+			-- example: rename net RESET_N RST_N 2 50 90 5
+			when 10 =>
 				-- Rename a strand on a given sheet:
-				rename_net (
+
+				catch_zone := set_catch_zone (
+					center	=> to_vector_model (get_field (8), get_field (9)),
+					radius	=> to_zone_radius (get_field (10))); -- 50 90 5
+
+				rename_strand (
 					module_cursor		=> active_module,
 					net_name_before		=> to_net_name (get_field (5)), -- RESET
 					net_name_after		=> to_net_name (get_field (6)), -- RESET_N
-					scope				=> STRAND,
-					place				=> to_position (
-											point => type_vector_model (set (
-												x => to_distance (get_field (8)), -- 50
-												y => to_distance (get_field (9)))), -- 90
-											sheet => to_sheet (get_field (7))), -- sheet number 2
+					sheet				=> to_sheet (get_field (7)), -- 2
+					catch_zone			=> catch_zone,
 					log_threshold		=> log_threshold + 1);
+				
+								  
+				-- rename_net (
+				-- 	module_cursor		=> active_module,
+				-- 	net_name_before		=> to_net_name (get_field (5)), -- RESET
+				-- 	net_name_after		=> to_net_name (get_field (6)), -- RESET_N
+				-- 	scope				=> STRAND,
+				-- 	place				=> to_position (
+				-- 							point => type_vector_model (set (
+				-- 								x => to_distance (get_field (8)), -- 50
+				-- 								y => to_distance (get_field (9)))), -- 90
+				-- 							sheet => to_sheet (get_field (7))), -- sheet number 2
+				-- 	log_threshold		=> log_threshold + 1);
 
 				
-			when 10 .. type_field_count'last => too_long;
+			when 11 .. type_field_count'last => too_long;
 				
 			when others => command_incomplete;
 		end case;

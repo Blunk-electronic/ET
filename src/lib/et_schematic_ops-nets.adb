@@ -2974,6 +2974,68 @@ package body et_schematic_ops.nets is
 	
 
 
+	function get_strand (
+		strands			: in pac_object_strands.list;
+		net_cursor		: in pac_nets.cursor)
+		return type_object_strand
+	is 
+		result : type_object_strand;
+
+		use pac_object_strands;
+		c : pac_object_strands.cursor := strands.first;
+
+		-- procedure query_strand (
+	begin
+		while has_element (c) loop
+			-- query_element (c, query_strand'access);
+			next (c);
+		end loop;
+		
+		return result;
+	end get_strand;
+	
+
+
+	
+	procedure rename_strand (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
+		sheet			: in type_sheet;
+		catch_zone		: in type_catch_zone;
+		log_threshold	: in type_log_level)
+	is
+		strands_found : pac_object_strands.list;
+
+		net_cursor : pac_nets.cursor;
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " rename strand at " & to_string (sheet) 
+			 & " " & to_string (catch_zone)
+			 & " from " & to_string (net_name_before)
+			 & " to " & to_string (net_name_after),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		net_cursor := locate_net (module_cursor, net_name_before);
+
+		if has_element (net_cursor) then
+			
+			-- Locate all strands at the given place:
+			strands_found := get_strands (module_cursor, sheet, catch_zone, log_threshold + 2);
+
+		else
+			log (text => "Net " & to_string (net_name_before) -- CS warning ?
+				 & " does not exist.",
+				 level => log_threshold);
+		end if;
+		
+		log_indentation_down;
+	end rename_strand;
+			 
+
 	
 
 	

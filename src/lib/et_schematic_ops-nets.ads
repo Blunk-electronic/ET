@@ -352,6 +352,16 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level)
 		return pac_object_strands.list;
 	
+
+	-- Returns the first strand among the given strands
+	-- that belongs to the given net (indicated by net_cursor).
+	-- If no suitable strand found then the return is
+	-- a type_object_strand with empty cursors:
+	function get_strand (
+		strands			: in pac_object_strands.list;
+		net_cursor		: in pac_nets.cursor)
+		return type_object_strand;
+
 	
 
 	-- Clears the proposed-flag and the selected-flag of all strands:
@@ -529,7 +539,19 @@ package et_schematic_ops.nets is
 	-- on a net affects the active sheet or all sheets:
 	modify_net_on_all_sheets : boolean := false;
 	
-	
+
+	-- Renames a strand of a given net on a given sheet
+	-- in a given catch zone. This procedure should be called
+	-- via the command processor:
+	procedure rename_strand (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
+		sheet			: in type_sheet;
+		catch_zone		: in type_catch_zone;
+		log_threshold	: in type_log_level);
+
+
 	
 	-- Renames a net. The scope determines whether to rename a certain strand,
 	-- all strands on a certain sheet or on all sheets.
