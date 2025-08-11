@@ -109,7 +109,7 @@ package body et_undo_redo is
 			case noun is
 				when NOUN_SEGMENT | NOUN_STRAND =>
 					case verb is
-						when VERB_DELETE =>
+						when VERB_DELETE | VERB_RENAME =>
 							commit_nets;
 
 						when others => null;
@@ -118,7 +118,7 @@ package body et_undo_redo is
 
 				when NOUN_NET =>
 					case verb is
-						when VERB_DRAW | VERB_DELETE | VERB_DRAG =>
+						when VERB_DRAW | VERB_DELETE | VERB_DRAG | VERB_RENAME =>
 							commit_nets;
 
 						when others => null;
