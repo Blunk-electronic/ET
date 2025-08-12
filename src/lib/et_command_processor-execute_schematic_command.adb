@@ -1731,10 +1731,8 @@ is
 	begin
 		case cmd_field_count is
 
-			-- If the command has only 6 fields, the net scope is EVERYWHERE.
-			-- So all strands on all sheets are renamed.
-			-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
-			-- by the called procedure.
+			-- If the command has only 6 fields, then
+			-- all strands on all sheets are renamed.
 			-- example: rename net RESET_N RST_N
 			when 6 =>
 				-- Rename the net everywhere:
@@ -1742,28 +1740,22 @@ is
 					module_cursor		=> active_module,
 					net_name_before		=> to_net_name (get_field (5)), -- RESET
 					net_name_after		=> to_net_name (get_field (6)), -- RESET_N
-					scope				=> EVERYWHERE,
-					place				=> to_position (
-											point => origin,
-											sheet => 1),
+					all_sheets			=> true,
 					log_threshold		=> log_threshold + 1);
 
 				
-			-- If the command has 7 fields, the net scope is SHEET.
-			-- So the renaming takes place on the strands of the given sheet only.	
-			-- Sheet is set by the 7th argument. x and y assume default (0/0)
+			-- If the command has 7 fields, then
+			-- the renaming takes place on the strands of the given sheet only.	
+			-- Sheet is set by the 7th argument.
 			-- and are further-on ignored by the called procedure.
 			-- example: rename net RESET_N RST_N 2
 			when 7 =>
 				-- Rename the net on the given sheet:
-				rename_net 	(
+				rename_net (
 					module_cursor		=> active_module,
 					net_name_before		=> to_net_name (get_field (5)), -- RESET
 					net_name_after		=> to_net_name (get_field (6)), -- RESET_N
-					scope				=> SHEET,
-					place				=> to_position (
-											point => origin,
-											sheet => to_sheet (get_field (7))), -- sheet number
+					sheet				=> to_sheet (get_field (7)), -- 2
 					log_threshold		=> log_threshold + 1);
 
 				
@@ -1784,20 +1776,6 @@ is
 					sheet				=> to_sheet (get_field (7)), -- 2
 					catch_zone			=> catch_zone,
 					log_threshold		=> log_threshold + 1);
-				
-								  
-				-- rename_net (
-				-- 	module_cursor		=> active_module,
-				-- 	net_name_before		=> to_net_name (get_field (5)), -- RESET
-				-- 	net_name_after		=> to_net_name (get_field (6)), -- RESET_N
-				-- 	scope				=> STRAND,
-				-- 	place				=> to_position (
-				-- 							point => type_vector_model (set (
-				-- 								x => to_distance (get_field (8)), -- 50
-				-- 								y => to_distance (get_field (9)))), -- 90
-				-- 							sheet => to_sheet (get_field (7))), -- sheet number 2
-				-- 	log_threshold		=> log_threshold + 1);
-
 				
 			when 11 .. type_field_count'last => too_long;
 				

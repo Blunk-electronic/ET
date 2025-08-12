@@ -276,7 +276,7 @@ Nets and Net Labels
 	
 #. Renaming a Net
 
-	- A strand on the current sheet:
+	- A single particular strand on the current sheet:
 	
 	|VNS| n s
 

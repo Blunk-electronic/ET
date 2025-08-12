@@ -470,33 +470,7 @@ package et_schematic_ops.nets is
 	modify_net_on_all_sheets : boolean := false;
 	
 
-	-- Renames a strand of a given net on a given sheet
-	-- in a given catch zone. This procedure should be called
-	-- via the command processor:
-	procedure rename_strand (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
-		sheet			: in type_sheet;
-		catch_zone		: in type_catch_zone;
-		log_threshold	: in type_log_level);
 
-
-	
-	-- Renames a net. The scope determines whether to rename a certain strand,
-	-- all strands on a certain sheet or on all sheets.
-	-- CS If a particular strand on a sheet is to be renamed, the argument "place"
-	-- must provide sheet and x/y start position of strand. 
-	-- CS: In the future x/y can be any point on any segment of the strand.
-	procedure rename_net (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
-		scope			: in type_net_scope; -- strand, sheet, everywhere
-		place			: in type_object_position; -- sheet/x/y
-		log_threshold	: in type_log_level);
-
-	
 	-- Renames a strand. A strand exists on a particular sheet only.
 	-- Renaming a strand is basically a move operation.
 	-- The given strand will be moved to a net named after new_name.
@@ -508,6 +482,21 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
+
+	
+	-- Renames a strand of a given net on a given sheet
+	-- in a given catch zone. This procedure should be called
+	-- via the command processor:
+	procedure rename_strand (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
+		sheet			: in type_sheet;
+		catch_zone		: in type_catch_zone;
+		log_threshold	: in type_log_level);
+	
+	
+
 	-- Renames a net on the given sheet. If all_sheets is
 	-- true, then all nets on all sheets are renamed:
 	procedure rename_net (
@@ -517,6 +506,23 @@ package et_schematic_ops.nets is
 		all_sheets		: in boolean := false;
 		new_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		log_threshold	: in type_log_level);
+
+
+	
+	-- Renames a net. 
+	-- 1. If all_sheets is true, then all strands
+	--    on all sheets are renamed. So the whole net is renamed.
+	--    The argument "sheet" is ignored.
+	-- 2. If all_sheets is false, then the argument "sheet" 
+	--    specifies the single sheet where the renaming is to take place:
+	procedure rename_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
+		all_sheets		: in boolean := false;
+		sheet			: in type_sheet := 1;
+		log_threshold	: in type_log_level);
+	
 
 	
 	

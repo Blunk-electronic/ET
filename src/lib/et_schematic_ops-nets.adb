@@ -2917,339 +2917,7 @@ package body et_schematic_ops.nets is
 	
 
 
-
-
 	
-	procedure rename_strand (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
-		sheet			: in type_sheet;
-		catch_zone		: in type_catch_zone;
-		log_threshold	: in type_log_level)
-	is
-		strands_found : pac_object_strands.list;
-
-		net_cursor : pac_nets.cursor;
-		
-	begin
-		log (text => "module " & to_string (module_cursor) 
-			 & " rename strand at " & to_string (sheet) 
-			 & " " & to_string (catch_zone)
-			 & " from " & to_string (net_name_before)
-			 & " to " & to_string (net_name_after),
-			 level => log_threshold);
-
-		log_indentation_up;
-
-		net_cursor := locate_net (module_cursor, net_name_before);
-
-		if has_element (net_cursor) then
-			
-			-- Locate all strands at the given place:
-			strands_found := get_strands (module_cursor, sheet, catch_zone, log_threshold + 2);
-
-		else
-			log (text => "Net " & to_string (net_name_before) -- CS warning ?
-				 & " does not exist.",
-				 level => log_threshold);
-		end if;
-		
-		log_indentation_down;
-	end rename_strand;
-			 
-
-	
-
-	
-	procedure rename_net (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
-		scope			: in type_net_scope; -- strand, sheet, everywhere
-		place			: in type_object_position; -- sheet/x/y
-		log_threshold	: in type_log_level) 
-	is
-		net_cursor_old : pac_nets.cursor; -- points to the old net
-		net_cursor_new : pac_nets.cursor; -- points to the new net
-
-		new_net_created : boolean := false;
-		
-		-- Creates a new empty net named net_name_after. 
-		-- Sets the cursor net_cursor_new to the new net.
-		-- Sets the flag new_net_created to true.
-		procedure create_net (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is begin
-			insert (
-				container	=> module.nets,
-				key			=> net_name_after,
-
-				-- The scope of the net assumes the default value LOCAL.
-				-- CS: It could be reasonable to assume the scope of the old net.
-				new_item	=> (others => <>),
-				
-				inserted	=> new_net_created,
-				position	=> net_cursor_new
-				);
-		end create_net;
-
-		
-		procedure rename_everywhere (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			-- backup the old net
-			net_old	: type_net := element (net_cursor_old);
-
-			procedure copy_net_content (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) -- target
-			is begin
-				merge_nets (net, net_old);
-			end copy_net_content;
-			
-		begin -- rename_everywhere
-			
-			-- CS check class and scope !
-			
-			-- delete the old net entirely:
-			delete (
-				container	=> module.nets,
-				position	=> net_cursor_old);
-
-			-- Merg the old net into the new net:
-			update_element (	
-				container	=> module.nets,
-				position	=> net_cursor_new,
-				process		=> copy_net_content'access);
-			
-		end rename_everywhere;
-
-		
-		procedure rename_on_sheet (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			-- Temporarily collection of affected strands on
-			-- the given sheet (of the net to be renamed):
-			strands_on_sheet : pac_strands.list;
-			
-			-- Collects all strands on the targeted sheet in container strands_on_sheet.
-			-- Deletes the affected strands from the old net.
-			procedure collect_strands (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is begin
-				log (text => "collecting strands of net " 
-					 & enclose_in_quotes (to_string (net_name)) & " ...",
-					 level => log_threshold + 1);
-				
-				strands_on_sheet := get_strands (net, get_sheet (place));
-
-				log (text => "deleting strands of net " 
-					 & enclose_in_quotes (to_string (net_name)) & " ...",
-					 level => log_threshold + 1);
-
-				delete_strands (net, strands_on_sheet);
-			end collect_strands;
-
-			
-			-- Adds the collection of strands strands_on_sheet 
-			-- to the targeted net.
-			procedure move_strands (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is begin
-				add_strands (net, strands_on_sheet);
-			end move_strands;
-
-			
-		begin -- rename_on_sheet
-
-			-- Collect strands of old net in strands_on_sheet.
-			-- Remove strands from old net:
-			update_element (
-				container	=> module.nets,
-				position	=> net_cursor_old,
-				process		=> collect_strands'access);
-
-			-- Issue warning if no strands have been collected. This can result:
-			-- - from an attempt to rename on a sheet that does not exist 
-			-- - from the fact that the targeted sheet does not contain the targeted net 
-			if is_empty (strands_on_sheet) then
-				log (WARNING, "No strands have been renamed on sheet" & to_string (get_sheet (place)) &
-					 ". Check net name and sheet number !");
-
-				if new_net_created then
-					-- A net without strands is useless. So the just created net must be discarded.
-					log (text => "deleting net " & to_string (net_name_after), level => log_threshold + 1);
-					delete (module.nets, net_cursor_new);
-				end if;
-				
-			else
-				-- move strands to new net
-				update_element (
-					container	=> module.nets,
-					position	=> net_cursor_new,
-					process		=> move_strands'access);
-			end if;
-
-			-- If the old net has no strands anymore, delete it.
-			if is_empty (element (net_cursor_old).strands) then
-				delete (module.nets, net_cursor_old);
-			end if;
-			
-		end rename_on_sheet;
-
-		
-		procedure rename_strand (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			-- The affected strand:
-			strand_temp : type_strand;
-			
-			strand_found : boolean := false;
-
-			-- Locates the strand at place and stores it in strand_temp.
-			procedure locate_strand (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is
-				strand_cursor : pac_strands.cursor;
-			begin
-				strand_cursor := get_strand (net, place);
-				
-				if strand_cursor /= pac_strands.no_element then
-
-					-- fetch strand from old net
-					strand_temp := element (strand_cursor);
-
-					-- delete strand in old net
-					delete (net.strands, strand_cursor);
-
-					strand_found := true;
-				end if;				
-			end locate_strand;
-
-			
-			-- Moves strand_temp to the targeted net.
-			procedure move_strand (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is begin
-				add_strand (net, strand_temp);
-			end move_strand;
-
-			
-		begin -- rename_strand
-
-			-- locate the targeted strand and store it in strand_temp:
-			update_element (
-				container	=> module.nets,
-				position	=> net_cursor_old,
-				process		=> locate_strand'access);
-
-			
-			if not strand_found then
-				log (WARNING, "strand not found at" & to_string (position => place) &
-					 ". Check net name and position !");
-
-				if new_net_created then
-					-- A net without strands is useless. So the just created net 
-					-- must be discarded.
-					log (text => "deleting net " & to_string (net_name_after),
-						 level => log_threshold + 1);
-					
-					delete (module.nets, net_cursor_new);
-				end if;
-				
-			else -- strand found
-				-- move strand_temp to the targeted net
-				update_element (
-					container	=> module.nets,
-					position	=> net_cursor_new,
-					process		=> move_strand'access);
-			end if;
-
-			-- If the old net has no strands anymore, delete it.
-			if is_empty (element (net_cursor_old).strands) then
-				delete (module.nets, net_cursor_old);
-			end if;
-			
-		end rename_strand;
-
-		
-	begin -- rename_net
-		log (text => "module " & to_string (module_cursor) &
-			 " renaming net " & enclose_in_quotes (to_string (net_name_before)) &
-			 " to " & enclose_in_quotes (to_string (net_name_after)),
-			level => log_threshold);
-
-		-- locate the requested nets in the module
-		net_cursor_old := locate_net (module_cursor, net_name_before);
-		net_cursor_new := locate_net (module_cursor, net_name_after);		
-
-		-- issue error if old net does not exist:
-		if net_cursor_old = pac_nets.no_element then
-			net_not_found (net_name_before);
-		end if;
-
-		-- if there is no net named net_name_after, notify operator about a new
-		-- net being created. 
-		if net_cursor_new = pac_nets.no_element then
-			log (text => "creating new net " & to_string (net_name_after),
-				 level => log_threshold + 1);
-
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> create_net'access);
-		end if;
-		-- Now net_cursor_new points to the new net.
-		
-		log_indentation_up;
-
-		-- log where the renaming will be taking place:
-		case scope is
-			when EVERYWHERE =>
-				log (text => "scope: everywhere -> all strands on all sheets", level => log_threshold);
-
-				update_element (
-					container	=> generic_modules,
-					position	=> module_cursor,
-					process		=> rename_everywhere'access);
-
-			when SHEET =>
-				log (text => "scope: all strands on sheet" & to_string (get_sheet (place)), level => log_threshold);
-
-				update_element (
-					container	=> generic_modules,
-					position	=> module_cursor,
-					process		=> rename_on_sheet'access);
-
-			when STRAND => 
-				log (text => "scope: strand at" & to_string (position => place), level => log_threshold);
-
-				update_element (
-					container	=> generic_modules,
-					position	=> module_cursor,
-					process		=> rename_strand'access);
-				
-		end case;
-
-		update_ratsnest (module_cursor, log_threshold + 1);
-		
-		log_indentation_down;		
-	end rename_net;
-
-
-
-
-
-
 
 	procedure rename_strand (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3279,7 +2947,6 @@ package body et_schematic_ops.nets is
 
 			add_strand (module_cursor, destination_net, target_strand, log_threshold + 2);
 		end move_strand_to_new_net;
-
 
 
 		
@@ -3331,6 +2998,81 @@ package body et_schematic_ops.nets is
 
 
 	
+
+
+	
+	procedure rename_strand (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
+		sheet			: in type_sheet;
+		catch_zone		: in type_catch_zone;
+		log_threshold	: in type_log_level)
+	is
+		-- Here we store the strands of all nets that
+		-- exist on the given place:
+		strands_found : pac_object_strands.list;
+
+		-- This is the cursor to the targeted net:
+		net_cursor : pac_nets.cursor;
+
+		-- This is the targeted strand:
+		object_strand : type_object_strand;
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " rename strand at " & to_string (sheet) 
+			 & " " & to_string (catch_zone)
+			 & " from " & to_string (net_name_before)
+			 & " to " & to_string (net_name_after),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		-- Locate net where the strand is to be renamed:
+		net_cursor := locate_net (module_cursor, net_name_before);
+
+		-- If the net exists, then do rename the strand it.
+		-- Otherwise output warning and do nothing else:		
+		if has_element (net_cursor) then
+			
+			-- Locate all strands at the given place:
+			strands_found := get_strands (module_cursor, sheet, catch_zone, log_threshold + 2);
+
+			-- Get the first object strand that belongs to the given net:
+			object_strand := get_strand (strands_found, net_cursor);
+
+			-- If an object strand exists, then rename it.
+			-- Otherwise nothing happens
+			if is_empty (object_strand) then
+				log (text => "No strand of net " & to_string (net_name_before) -- CS warning ?
+					& " found at the specified place.",
+					level => log_threshold);
+
+			else
+				rename_strand (
+					module_cursor	=> module_cursor,
+					strand			=> object_strand,
+					new_name		=> net_name_after,
+					log_threshold	=> log_threshold + 1);
+					
+			end if;
+			
+		else
+			log (text => "Net " & to_string (net_name_before) -- CS warning ?
+				 & " does not exist.",
+				 level => log_threshold);
+		end if;
+		
+		log_indentation_down;
+	end rename_strand;
+			 
+
+
+
+
+	
+
 
 	procedure rename_net (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3543,6 +3285,76 @@ package body et_schematic_ops.nets is
 		log_indentation_down;
 	end rename_net;
 
+
+	
+
+
+	
+
+
+	procedure rename_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
+		all_sheets		: in boolean := false;
+		sheet			: in type_sheet := 1;
+		log_threshold	: in type_log_level)
+	is
+		-- This cursor points to the targeted net in 
+		-- order to locate it and to test whether it exists at all:
+		net_cursor : pac_nets.cursor;
+
+		-- This points to the targeted net:
+		object_net : type_object_net;
+
+		-- This procedure composes a string depending on
+		-- whether a single sheet is addressed or the whole net
+		-- on all sheets:
+		function to_sheets return string is begin
+			if all_sheets then
+				return "all sheets";
+			else
+				return "sheet " & to_string (sheet);
+			end if;
+		end;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " rename net on " & to_sheets
+			 & " from " & to_string (net_name_before)
+			 & " to " & to_string (net_name_after),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		-- Locate the net that is to be renamed:
+		net_cursor := locate_net (module_cursor, net_name_before);
+
+		-- If the net exists, then do rename it.
+		-- Otherwise output warning and do nothing else:
+		if has_element (net_cursor) then
+
+			object_net.net_cursor := net_cursor;
+			
+			rename_net (
+				module_cursor	=> module_cursor,
+				net				=> object_net,
+				sheet			=> sheet,
+				all_sheets		=> all_sheets,
+				new_name		=> net_name_after,
+				log_threshold	=> log_threshold + 1);
+			
+		else
+			log (text => "Net " & to_string (net_name_before) -- CS warning ?
+				 & " does not exist.",
+				 level => log_threshold);
+		end if;
+		
+		log_indentation_down;
+	end rename_net;
+
+	
 
 
 	
