@@ -405,6 +405,14 @@ package et_nets is
 	end record;
 
 
+	-- Returns true if the cursors of the given
+	-- strand object are empty (no_element):
+	function is_empty (
+		strand	: in type_object_strand)
+		return boolean;
+
+	
+
 	function get_net_name (
 		strand	: in type_object_strand)
 		return pac_net_name.bounded_string;

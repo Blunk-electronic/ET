@@ -842,6 +842,21 @@ package body et_nets is
 
 
 
+	function is_empty (
+		strand	: in type_object_strand)
+		return boolean
+	is begin
+		if not has_element (strand.net_cursor) 
+		and not has_element (strand.strand_cursor) 
+		then
+			return true;
+		else
+			return false;
+		end if;
+	end is_empty;
+	
+	
+
 
 
 	function get_net_name (
@@ -887,6 +902,8 @@ package body et_nets is
 		return key (s.net_cursor);
 	end;
 	
+
+
 	
 	
 
@@ -897,23 +914,27 @@ package body et_nets is
 	is 
 		result : type_object_strand;
 
-		use pac_object_strands;
-		c : pac_object_strands.cursor := strands.first;
-
 		proceed : boolean := true;
 
-		
-		procedure query_strand (s : in type_object_strand) is
-		begin
+		-- Query a single object strand and compare
+		-- its net name with the give net name.
+		-- When both match, clear the proceed flag so that
+		-- the iteration stops.
+		-- Save the object strand in the return value:
+		procedure query_strand (s : in type_object_strand) is begin
 			if get_net_name (s) = key (net_cursor) then
 				proceed := false;
+
+				result := s;
 			end if;
 		end query_strand;
 
 		
+		use pac_object_strands;
+		c : pac_object_strands.cursor := strands.first;
+		
 	begin
-		-- Iterate the given strands. Abort when the proceed-flag
-		-- is set:
+		-- Iterate the given strands. Abort when the proceed-flag is set:
 		while has_element (c) loop
 			query_element (c, query_strand'access);
 			
