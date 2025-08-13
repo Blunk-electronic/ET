@@ -68,7 +68,7 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_label =>
-				noun := NOUN_LABEL;
+				noun := NOUN_NET_LABEL;
 				set_status (et_canvas_schematic_nets.status_delete);
 				
 			when key_noun_unit =>
@@ -99,7 +99,7 @@ is
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when key_space =>
 				case noun is
-					when NOUN_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
+					when NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
 						et_canvas_schematic_nets.delete_object (point);
 						
 					when NOUN_UNIT =>
@@ -112,7 +112,7 @@ is
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
-					when NOUN_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
+					when NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
@@ -260,7 +260,7 @@ is
 				--set_status (et_canvas_schematic_nets.status_move);
 
 			when key_noun_label =>
-				noun := NOUN_LABEL;
+				noun := NOUN_NET_LABEL;
 				set_status (et_canvas_schematic_nets.status_move);
 
 			when GDK_LC_n => -- CS
@@ -311,7 +311,7 @@ is
 -- 
 -- 							end if;
 
-					when NOUN_LABEL =>
+					when NOUN_NET_LABEL =>
 						et_canvas_schematic_nets.move_object (KEYBOARD, get_cursor_position);
 						
 					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
@@ -331,7 +331,7 @@ is
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
-					when NOUN_LABEL => 
+					when NOUN_NET_LABEL => 
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
@@ -359,7 +359,7 @@ is
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when GDK_LC_l => -- CS
-				noun := NOUN_LABEL;
+				noun := NOUN_NET_LABEL;
 				-- label.appearance := SIMPLE;
 				-- set_status (et_canvas_schematic_nets.status_place_label_simple);
 
@@ -367,14 +367,14 @@ is
 				-- CS self.set_grid (FINE);
 				
 			when GDK_L => -- CS
-				noun := NOUN_LABEL;
+				noun := NOUN_NET_LABEL;
 				-- label.appearance := TAG;
 				-- set_status (et_canvas_schematic_nets.status_place_label_tag);
 
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when key_space =>
 				case noun is
-					when NOUN_LABEL =>
+					when NOUN_NET_LABEL =>
 						null; -- CS
 						-- place_label (KEYBOARD, get_cursor_position);
 						
@@ -385,7 +385,7 @@ is
 			when key_clarify =>
 				case noun is
 
-					when NOUN_LABEL => 
+					when NOUN_NET_LABEL => 
 						if clarification_pending then
 							clarify_net_segment;
 						end if;
@@ -397,7 +397,7 @@ is
 			when GDK_LC_r =>
 				case noun is
 
-					when NOUN_LABEL =>
+					when NOUN_NET_LABEL =>
 						-- Rotate simple label:
 						null; -- CS
 						-- if label.ready then
@@ -667,7 +667,7 @@ is
 				set_status (et_canvas_schematic_nets.status_show_net);
 
 			when GDK_LC_l =>  -- CS
-				noun := NOUN_LABEL;
+				noun := NOUN_NET_LABEL;
 				-- CS set_status (et_canvas_schematic_nets.status_show_label);
 
 				
@@ -682,7 +682,7 @@ is
 						end if;
 
 
-					when NOUN_LABEL =>
+					when NOUN_NET_LABEL =>
 						et_canvas_schematic_nets.show_object (get_cursor_position);
 						
 					when NOUN_NET =>
@@ -700,7 +700,7 @@ is
 							clarify_unit;
 						end if;
 
-					when NOUN_NET | NOUN_LABEL =>
+					when NOUN_NET | NOUN_NET_LABEL =>
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;

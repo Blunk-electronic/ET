@@ -124,7 +124,7 @@ is
 				
 			when VERB_DELETE =>
 				case noun is
-					when NOUN_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
+					when NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
 						et_canvas_schematic_nets.delete_object (snap_point);
 						
 					when NOUN_UNIT =>
@@ -177,7 +177,7 @@ is
 				
 			when VERB_MOVE =>
 				case noun is
-					when NOUN_LABEL =>
+					when NOUN_NET_LABEL =>
 						et_canvas_schematic_nets.move_object (MOUSE, snap_point);
 						
 					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
@@ -195,7 +195,7 @@ is
 				
 			when VERB_PLACE =>
 				case noun is
-					when NOUN_LABEL =>
+					when NOUN_NET_LABEL =>
 						--place_label (MOUSE, snap_point);
 						null; -- CS
 						
@@ -284,7 +284,7 @@ is
 						end if;
 
 						
-					when NOUN_NET | NOUN_LABEL =>
+					when NOUN_NET | NOUN_NET_LABEL =>
 						et_canvas_schematic_nets.show_object (snap_point);
 						
 					when others => null;
@@ -308,7 +308,7 @@ is
 		case verb is
 			when VERB_DELETE =>
 				case noun is
-					when NOUN_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
+					when NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
@@ -360,7 +360,7 @@ is
 				
 			when VERB_MOVE =>
 				case noun is
-					when NOUN_LABEL => 
+					when NOUN_NET_LABEL => 
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
@@ -382,7 +382,7 @@ is
 			when VERB_PLACE =>
 				case noun is
 					
-					when NOUN_LABEL => 
+					when NOUN_NET_LABEL => 
 						if clarification_pending then
 							clarify_net_segment;
 						end if;
@@ -446,7 +446,7 @@ is
 							clarify_unit;
 						end if;
 
-					when NOUN_NET | NOUN_LABEL =>
+					when NOUN_NET | NOUN_NET_LABEL =>
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;

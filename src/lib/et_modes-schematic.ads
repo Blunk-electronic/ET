@@ -96,7 +96,7 @@ package et_modes.schematic is
 		NOUN_GRID,
 		NOUN_INTEGRITY,
 		NOUN_JUNCTION,
-		NOUN_LABEL, -- CS rename to NOUN_NET_LABEL
+		NOUN_NET_LABEL,
 		NOUN_LEVEL,
 		NOUN_NAME,
 		NOUN_NAMES,

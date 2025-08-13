@@ -2173,7 +2173,7 @@ is
 					when NOUN_DEVICE =>
 						delete_device;
 						
-					when NOUN_LABEL =>
+					when NOUN_NET_LABEL =>
 						delete_net_label;
 						
 					when NOUN_MODULE =>
@@ -2396,7 +2396,7 @@ is
 				
 			when VERB_PLACE =>
 				case noun is
-					when NOUN_LABEL =>
+					when NOUN_NET_LABEL =>
 						place_net_label;
 
 					when others => invalid_noun (to_string (noun));

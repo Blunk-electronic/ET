@@ -81,7 +81,7 @@ begin
 					end if;
 
 					
-				when NOUN_SEGMENT | NOUN_LABEL =>
+				when NOUN_SEGMENT | NOUN_NET_LABEL =>
 					if edit_process_running then
 						redraw_schematic;
 					end if;

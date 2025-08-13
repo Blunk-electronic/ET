@@ -744,7 +744,7 @@ package body et_canvas_schematic_nets is
 							log_threshold	=> log_threshold + 1);
 
 
-					when NOUN_LABEL =>
+					when NOUN_NET_LABEL =>
 
 						-- Propose simple labels in the vicinity of the given point:
 						propose_labels (
@@ -800,7 +800,7 @@ package body et_canvas_schematic_nets is
 							log_threshold	=> log_threshold + 1);
 
 						
-					when NOUN_LABEL =>
+					when NOUN_NET_LABEL =>
 						-- Propose simple label in the vicinity of the given point:
 						propose_labels (
 							module_cursor	=> active_module,
