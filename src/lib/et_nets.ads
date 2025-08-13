@@ -251,12 +251,12 @@ package et_nets is
 
 	
 	
-	-- Merges net_2 into net_1.
+	-- Merges net source into net target.
 	-- NOTE: All strands, tracks, vias, fill-zones and cutout-areas 
-	-- of net_2 are deleted.
+	-- of source are deleted.
 	procedure merge_nets (
-		net_1	: in out type_net;
-		net_2	: in out type_net);
+		target	: in out type_net;
+		source	: in out type_net);
 
 
 

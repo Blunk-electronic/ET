@@ -2812,35 +2812,31 @@ package body et_schematic_ops.nets is
 			-- Resets the status flags of the target net:
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net)
+				target_net	: in out type_net)
 			is
 				-- Get the actual source net:
 				source_net : type_net := element (source);
 			begin
-				log (text => "transfer strands", level => log_threshold + 1);
+				log (text => "merge nets", level => log_threshold + 1);
+
+				-- Do the actual merge of the nets:
+				merge_nets (target_net, source_net);
 				
-				-- Transfer the strands:
-				splice (
-					target	=> net.strands,
-					before	=> pac_strands.no_element,
-					source	=> source_net.strands);
-
-				-- CS routing
-				-- log (text => "transfer tracks and fill zones", level => log_threshold + 1);
-
 				-- If the target net is the master, then class
 				-- and scope of it remain as they are.
 				-- If the source net is the master, then ovewrite
 				-- class and scope of the target with those of the source:
 				if not target_master then					
-					net.class := source_net.class;
-					net.scope := source_net.scope;
+					target_net.class := source_net.class;
+					target_net.scope := source_net.scope;
 				end if;			
 
-				reset_status (net);				
+				reset_status (target_net);				
 			end query_net;
 
-
+			
+			-- In order to delete the source net entirely,
+			-- we need a cursor to it:
 			c : pac_nets.cursor := source;
 
 		begin
@@ -2865,13 +2861,11 @@ package body et_schematic_ops.nets is
 			log (text => "target net is master", level => log_threshold);
 		else
 			log (text => "source net is master", level => log_threshold);
-		end if;
-		
+		end if;		
 		
 		log_indentation_up;
 		generic_modules.update_element (module_cursor, query_module'access);
 		log_indentation_down;
-
 	end merge_nets;
 	
 

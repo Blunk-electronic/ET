@@ -448,8 +448,8 @@ package body et_nets is
 	
 
 	procedure merge_nets (
-		net_1	: in out type_net;
-		net_2	: in out type_net)
+		target	: in out type_net;
+		source	: in out type_net)
 	is
 		use et_conductor_segment.boards;
 		use pac_conductor_lines;
@@ -468,48 +468,48 @@ package body et_nets is
 		
 		-- strands:
 		splice (
-			target => net_1.strands, 
+			target => target.strands, 
 			before => pac_strands.no_element,
-			source => net_2.strands);
+			source => source.strands);
 		-- CS: not good. use procedure merge_strands ?
 
 		-- BOARD:
 		
 		-- conductor lines:
 		splice (
-			target => net_1.route.lines, 
+			target => target.route.lines, 
 			before => pac_conductor_lines.no_element,
-			source => net_2.route.lines);
+			source => source.route.lines);
 
 		-- conductor arcs:
 		splice (
-			target => net_1.route.arcs, 
+			target => target.route.arcs, 
 			before => pac_conductor_arcs.no_element,
-			source => net_2.route.arcs);
+			source => source.route.arcs);
 
 		-- vias:
 		splice (
-			target => net_1.route.vias, 
+			target => target.route.vias, 
 			before => pac_vias.no_element,
-			source => net_2.route.vias);
+			source => source.route.vias);
 
 		-- fill zones:
 		splice (
-			target => net_1.route.zones.solid, 
+			target => target.route.zones.solid, 
 			before => pac_route_solid.no_element,
-			source => net_2.route.zones.solid);
+			source => source.route.zones.solid);
 		
 		splice (
-			target => net_1.route.zones.hatched, 
+			target => target.route.zones.hatched, 
 			before => pac_route_hatched.no_element,
-			source => net_2.route.zones.hatched);
+			source => source.route.zones.hatched);
 
 		-- cutout areas:
 		-- CS now net specific restrict stuff
 		--splice (
-			--target => net_1.route.cutouts, 
+			--target => target.route.cutouts, 
 			--before => pac_cutouts.no_element,
-			--source => net_2.route.cutouts);
+			--source => source.route.cutouts);
 
 		
 	end merge_nets;
