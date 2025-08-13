@@ -95,7 +95,6 @@ package et_modes.schematic is
 		--DEVICE_VALUE,
 		NOUN_GRID,
 		NOUN_INTEGRITY,
-		NOUN_JUNCTION,
 		NOUN_NET_LABEL,
 		NOUN_LEVEL,
 		NOUN_NAME,
