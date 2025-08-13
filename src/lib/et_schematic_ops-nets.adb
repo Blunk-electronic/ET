@@ -5616,6 +5616,97 @@ package body et_schematic_ops.nets is
 
 
 
+	
+
+
+	procedure delete_net_label_simple (
+		module_cursor	: in pac_generic_modules.cursor;
+		label			: in type_object_label;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+
+				procedure query_strand (strand : in out type_strand) is
+
+					procedure query_segment (segment : in out type_net_segment) is
+						c : pac_net_labels.cursor := label.label_cursor;
+					begin
+						delete (segment.labels, c);
+					end query_segment;
+				
+				begin
+					update_element (strand.segments, label.segment_cursor, query_segment'access);
+				end query_strand;
+				
+			begin
+				update_element (net.strands, label.strand_cursor, query_strand'access);
+			end query_net;
+			
+		begin
+			update_element (module.nets, label.net_cursor, query_net'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " delete simple net label ",
+			level => log_threshold);
+		
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end delete_net_label_simple;
+	
+
+
+	
+
+
+	procedure delete_net_label_tag (
+		module_cursor	: in pac_generic_modules.cursor;
+		label			: in type_object_label_tag;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+		begin
+			null;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " delete tag net label ",
+			level => log_threshold);
+		
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end delete_net_label_tag;
+
+
+	
 
 	
 	
@@ -6028,6 +6119,7 @@ package body et_schematic_ops.nets is
 	
 	
 
+	
 
 	function get_net (
 		object_cursor : in pac_objects.cursor)
@@ -6053,6 +6145,8 @@ package body et_schematic_ops.nets is
 	end;
 
 
+
+	
 	
 	function get_strand (
 		object_cursor : in pac_objects.cursor)
@@ -6062,6 +6156,7 @@ package body et_schematic_ops.nets is
 	begin
 		return object.segment.strand_cursor;
 	end;
+
 	
 
 
@@ -6887,6 +6982,7 @@ package body et_schematic_ops.nets is
 
 
 
+
 	
 
 	
@@ -7297,10 +7393,10 @@ package body et_schematic_ops.nets is
 
 				
 			when CAT_LABEL => 
-				null; -- CS
+				delete_net_label_simple (module_cursor, object.label, log_threshold + 1);
 				
 			when CAT_LABEL_TAG => 
-				null; -- CS
+				delete_net_label_tag (module_cursor, object.label_tag, log_threshold + 1);
 				
 			when CAT_VOID =>
 				null;

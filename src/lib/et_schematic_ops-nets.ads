@@ -782,6 +782,21 @@ package et_schematic_ops.nets is
 
 
 	
+
+	-- This procedure deletes a simple net label:
+	procedure delete_net_label_simple (
+		module_cursor	: in pac_generic_modules.cursor;
+		label			: in type_object_label;
+		log_threshold	: in type_log_level);
+
+
+	-- This procedure deletes a tag net label:
+	procedure delete_net_label_tag (
+		module_cursor	: in pac_generic_modules.cursor;
+		label			: in type_object_label_tag;
+		log_threshold	: in type_log_level);
+
+	
 	
 	-- Deletes a label.
 	procedure delete_net_label (
@@ -789,6 +804,11 @@ package et_schematic_ops.nets is
 		position		: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
+
+	
+
+										  
+	
 	-- CS procedure move_net_label
 
 	
