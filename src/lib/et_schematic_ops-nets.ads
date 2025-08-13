@@ -688,39 +688,6 @@ package et_schematic_ops.nets is
 
 -- LABELS:
 	
-
-	-- This composite type is meant to identify a 
-	-- simple net label
-	-- and its parent net in the schematic:
-	type type_object_label is record -- CS rename to type_object_label_simple
-		net_cursor		: pac_nets.cursor;
-		strand_cursor	: pac_strands.cursor;
-		segment_cursor	: pac_net_segments.cursor;
-		label_cursor	: pac_net_labels.cursor;
-	end record;
-
-	
-	-- Returns the net name and the position of the given object
-	-- as string in the form like "GND simple label at x/y":
-	function to_string (
-		object	: in type_object_label)
-		return string;
-
-
-	type type_object_label_tag is record
-		net_cursor		: pac_nets.cursor;
-		strand_cursor	: pac_strands.cursor;
-		segment_cursor	: pac_net_segments.cursor;
-		start_end		: type_start_end_point := A;
-	end record;
-
-	
-	-- Returns the net name and the position of the given object
-	-- as string in the form like "GND tag label at x/y":
-	function to_string (
-		object	: in type_object_label_tag)
-		return string;
-
 	
 
 	-- Resets the status flags of all net labels 

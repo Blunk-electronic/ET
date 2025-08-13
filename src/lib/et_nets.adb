@@ -963,6 +963,32 @@ package body et_nets is
 		return "net " & get_net_name (object.net_cursor);
 	end to_string;
 
+
+
+
+	function to_string (
+		object	: in type_object_label)
+		return string
+	is begin
+		return "net " & get_net_name (object.net_cursor)
+			& " simple label at " & get_position (object.label_cursor);
+			-- CS other properties ?
+	end;
+
+	
+	
+	function to_string (
+		object	: in type_object_label_tag)
+		return string
+	is begin
+		return "net " & get_net_name (object.net_cursor)
+			& " tag label"; 
+		-- CS Strand " & get_position (object.strand_cursor)
+		-- & " segment " & to_string (object.segment_cursor)
+		-- & to_string (object.start_end) & " point";
+		-- CS direction, rotation
+	end;
+
 	
 	
 end et_nets;
