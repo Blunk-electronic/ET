@@ -682,27 +682,9 @@ package et_schematic_ops.nets is
 		scope			: in et_netlists.type_net_scope; -- local/global
 		log_threshold	: in type_log_level);
 
+
+
 	
-	-- Places a net junction at the given position.
-	-- If the junction is to be placed between start and end point of a segment, then the segment 
-	-- is split in two new segments with the junction between them.
-	-- If there is no net segment at the given position, no junction is placed and warning issued.
-	procedure place_junction (
-		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_object_position; -- sheet/x/y, rotation doesn't matter
-		log_threshold	: in type_log_level);
-
--- CS
--- 	procedure place_junction (
--- 	-- Places a net junction at the given position.
--- 	-- If the junction is to be placed between start and end point of a segment, then the segment 
--- 	-- is split in two new segments with the junction between them.
--- 	-- If there is no net segment at the given position, no junction is placed and warning issued.
--- 		module_cursor	: in pac_generic_modules.cursor;
--- 		place			: in type_object_position; -- sheet/x/y, rotation doesn't matter
--- 		log_threshold	: in type_log_level);
-
-
 
 -- LABELS:
 	

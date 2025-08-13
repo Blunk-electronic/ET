@@ -2396,30 +2396,6 @@ is
 				
 			when VERB_PLACE =>
 				case noun is
-					when NOUN_JUNCTION =>
-						case cmd_field_count is
-							when 7 =>
-								place_junction 
-									(
-									module_cursor 	=> active_module,
-									place			=> to_position 
-														(
-														sheet => to_sheet (get_field (5)),
-														point => type_vector_model (set (
-																	x => to_distance (get_field (6)),
-																	y => to_distance (get_field (7))
-																	))
-														),
-										
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 8 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
-
-						
 					when NOUN_LABEL =>
 						place_net_label;
 
