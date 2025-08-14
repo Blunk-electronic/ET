@@ -686,22 +686,24 @@ package et_schematic_ops.nets is
 
 	
 
--- LABELS:
+-- LABELS AND CONNECTORS:
 	
 	
 
 	-- Resets the status flags of all net labels 
-	-- (both simple and tag labels):
+	-- and all net connectors:
 	procedure reset_labels (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 
+	-- CS reset_connectors ?
+	
 
 	-- Modifies the status flag of a simple net label:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_label;
+		label			: in type_object_net_label;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
@@ -709,7 +711,7 @@ package et_schematic_ops.nets is
 	-- Modifies the status flag of a tag net label:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_label_tag;
+		label			: in type_object_net_connector; -- CS rename to connector
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
@@ -718,14 +720,14 @@ package et_schematic_ops.nets is
 	-- Sets the proposed-flag of all net labels which are in the
 	-- given zone around the given place on the currently active sheet.
 	-- Adds to count the number of labels that have been found:
-	procedure propose_labels ( -- CS rename to propose_labels_simple
+	procedure propose_labels (
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level);
 
 
-	procedure propose_labels_tag (
+	procedure propose_connectors (
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
 		count			: in out natural;
@@ -735,24 +737,24 @@ package et_schematic_ops.nets is
 
 	-- Returns the first net label according to the given flag.
 	-- If no label has been found, then the return is no_element:
-	function get_first_label ( -- CS rename to get_first_label_simple
+	function get_first_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
-		return type_object_label;
+		return type_object_net_label;
 
 
-	function get_first_label_tag (
+	function get_first_connector (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
-		return type_object_label_tag;
+		return type_object_net_connector;
 
 	
 	
 	
 	-- Places a label next to a segment at position.
-	procedure place_net_label_simple (
+	procedure place_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
 
 		-- CS size ?
@@ -773,7 +775,7 @@ package et_schematic_ops.nets is
 
 
 	
-	procedure place_net_label_tag (
+	procedure place_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
 		-- CS size ?
 		position		: in type_object_position; -- sheet/x/y
@@ -783,17 +785,17 @@ package et_schematic_ops.nets is
 
 	
 
-	-- This procedure deletes a simple net label:
-	procedure delete_net_label_simple (
+	-- This procedure deletes a net label:
+	procedure delete_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_label;
+		label			: in type_object_net_label;
 		log_threshold	: in type_log_level);
 
 
-	-- This procedure deletes a tag net label:
-	procedure delete_net_label_tag (
+	-- This procedure deletes a net connector:
+	procedure delete_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_label_tag;
+		label			: in type_object_net_connector; -- CS rename to connector
 		log_threshold	: in type_log_level);
 
 	
@@ -825,17 +827,17 @@ package et_schematic_ops.nets is
 
 	-- Shows/highlights a simple label by setting its 
 	-- status to "selected":
-	procedure show_label_simple (
+	procedure show_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_label;
+		label			: in type_object_net_label;
 		log_threshold	: in type_log_level);
 
 	
 	-- Shows/highlights a tag label by setting its 
 	-- status to "selected":
-	procedure show_label_tag (
+	procedure show_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_label_tag;
+		label			: in type_object_net_connector; -- CS rename to connector
 		log_threshold	: in type_log_level);
 
 	
@@ -850,8 +852,8 @@ package et_schematic_ops.nets is
 		CAT_SEGMENT,
 		CAT_STRAND,
 		CAT_NET,
-		CAT_LABEL, -- CS rename to CAT_LABEL_SIMPLE
-		CAT_LABEL_TAG);
+		CAT_LABEL,
+		CAT_CONNECTOR);
 
 
 
@@ -869,11 +871,11 @@ package et_schematic_ops.nets is
 			when CAT_NET =>
 				net : type_object_net;
 				
-			when CAT_LABEL => --  CS rename to CAT_LABEL_SIMPLE
-				label : type_object_label; -- CS rename to label_simple
+			when CAT_LABEL =>
+				label : type_object_net_label;
 
-			when CAT_LABEL_TAG =>
-				label_tag : type_object_label_tag;
+			when CAT_CONNECTOR =>
+				connector : type_object_net_connector;
 		end case;
 	end record;
 

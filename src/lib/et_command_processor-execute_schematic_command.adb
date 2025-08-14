@@ -1409,10 +1409,9 @@ is
 	begin
 		case cmd_field_count is
 			when 10 =>
-				-- SIMPLE LABEL
 
-				-- example "schematic demo place label 1 70 80 0 1 0"
-				place_net_label_simple (
+				-- example "schematic demo place net_label 1 70 80 0 1 0"
+				place_net_label (
 					module_cursor		=> active_module,
 					segment_position	=> to_position (
 											point => type_vector_model (set (
@@ -1429,10 +1428,10 @@ is
 
 				
 			when 8 =>
-				-- TAG LABEL
+				-- CS: separate procedure, connected with NOUN_NET_CONNECTOR
 				
-				-- example "schematic demo place label 1 60 80 input"
-				place_net_label_tag (
+				-- example "schematic demo place net_connector 1 60 80 input"
+				place_net_connector (
 					module_cursor	=> active_module,
 					position		=> to_position (
 											point => type_vector_model (set (

@@ -4723,7 +4723,7 @@ package body et_schematic_ops.nets is
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_label;
+		label			: in type_object_net_label;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
@@ -4790,7 +4790,7 @@ package body et_schematic_ops.nets is
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_label_tag;
+		label			: in type_object_net_connector;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
@@ -4957,7 +4957,7 @@ package body et_schematic_ops.nets is
 
 
 
-	procedure propose_labels_tag (
+	procedure propose_connectors (
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
 		count			: in out natural;
@@ -5039,7 +5039,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " proposing tag net labels in " & to_string (catch_zone),
+			& " proposing net connectors in " & to_string (catch_zone),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -5049,7 +5049,7 @@ package body et_schematic_ops.nets is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end propose_labels_tag;
+	end propose_connectors;
 
 
 
@@ -5061,9 +5061,9 @@ package body et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
-		return type_object_label
+		return type_object_net_label
 	is
-		result : type_object_label;
+		result : type_object_net_label;
 
 
 		procedure query_module (
@@ -5167,7 +5167,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up the first simple net label / " & to_string (flag),
+			& " looking up the first net label / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -5187,13 +5187,13 @@ package body et_schematic_ops.nets is
 
 	
 
-	function get_first_label_tag (
+	function get_first_connector (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
-		return type_object_label_tag
+		return type_object_net_connector
 	is
-		result : type_object_label_tag;
+		result : type_object_net_connector;
 
 
 		procedure query_module (
@@ -5300,7 +5300,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up the first tag net label / " & to_string (flag),
+			& " looking up the first net connector / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -5312,14 +5312,14 @@ package body et_schematic_ops.nets is
 		log_indentation_down;
 		
 		return result;
-	end get_first_label_tag;
+	end get_first_connector;
 
 
 
 	
 	
 	
-	procedure place_net_label_simple (
+	procedure place_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment_position: in type_object_position; -- sheet/x/y
 		label_position	: in type_vector_model := origin; -- x/y
@@ -5418,7 +5418,7 @@ package body et_schematic_ops.nets is
 		
 	begin -- place_net_label
 		log (text => "module " & to_string (module_cursor) &
-			" place simple label next to segment at"  &
+			" place net label next to segment at"  &
 			to_string (position => segment_position) &
 			to_string (label_position) &
 			" rotation" & to_string (rotation),
@@ -5454,13 +5454,15 @@ package body et_schematic_ops.nets is
 		
 		log_indentation_down;		
 		log_indentation_down;
-	end place_net_label_simple;
+	end place_net_label;
 
 
 
 
+	
 
-	procedure place_net_label_tag (
+
+	procedure place_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
 		position		: in type_object_position; -- sheet/x/y
 		direction		: in type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
@@ -5576,7 +5578,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& " place tag label at " & to_string (position => position)
+			& " place net connector at " & to_string (position => position)
 			& " direction " & to_string (direction),
 			level => log_threshold);
 		
@@ -5610,7 +5612,7 @@ package body et_schematic_ops.nets is
 		
 		log_indentation_down;
 		log_indentation_down;
-	end place_net_label_tag;
+	end place_net_connector;
 
 
 
@@ -5619,9 +5621,9 @@ package body et_schematic_ops.nets is
 	
 
 
-	procedure delete_net_label_simple (
+	procedure delete_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_label;
+		label			: in type_object_net_label;
 		log_threshold	: in type_log_level)
 	is
 
@@ -5657,7 +5659,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& " delete simple net label ",
+			& " delete net label ",
 			level => log_threshold);
 		
 		log_indentation_up;
@@ -5668,16 +5670,16 @@ package body et_schematic_ops.nets is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end delete_net_label_simple;
+	end delete_net_label;
 	
 
 
 	
 
 
-	procedure delete_net_label_tag (
+	procedure delete_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_label_tag;
+		label			: in type_object_net_connector;
 		log_threshold	: in type_log_level)
 	is
 
@@ -5692,7 +5694,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& " delete tag net label ",
+			& " delete net connector ",
 			level => log_threshold);
 		
 		log_indentation_up;
@@ -5703,7 +5705,7 @@ package body et_schematic_ops.nets is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end delete_net_label_tag;
+	end delete_net_connector;
 
 
 	
@@ -5953,9 +5955,9 @@ package body et_schematic_ops.nets is
 
 
 
-	procedure show_label_simple (
+	procedure show_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_label;
+		label			: in type_object_net_label;
 		log_threshold	: in type_log_level)
 	is
 
@@ -5996,7 +5998,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " showing/highlight simple label "
+			& " showing/highlight net label "
 			& to_string (label),
 			level => log_threshold);
 
@@ -6007,7 +6009,7 @@ package body et_schematic_ops.nets is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end show_label_simple;
+	end show_net_label;
 		
 
 	
@@ -6015,9 +6017,9 @@ package body et_schematic_ops.nets is
 	
 
 	
-	procedure show_label_tag (
+	procedure show_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_label_tag;
+		label			: in type_object_net_connector;
 		log_threshold	: in type_log_level)
 	is
 
@@ -6058,7 +6060,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " showing/highlight tag label "
+			& " showing/highlight net connector "
 			& to_string (label),
 			level => log_threshold);
 
@@ -6069,7 +6071,7 @@ package body et_schematic_ops.nets is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end show_label_tag;
+	end show_net_connector;
 
 
 	
@@ -6100,8 +6102,8 @@ package body et_schematic_ops.nets is
 			when CAT_LABEL =>
 				return to_string (object.label);
 
-			when CAT_LABEL_TAG =>
-				return to_string (object.label_tag);
+			when CAT_CONNECTOR =>
+				return to_string (object.connector);
 				
 		end case;
 	end to_string;
@@ -6184,8 +6186,8 @@ package body et_schematic_ops.nets is
 		result_segment 	: type_object_segment;		
 		result_strand	: type_object_strand;
 		result_net		: type_object_net;
-		result_label	: type_object_label; -- CS rename to result_label_simple
-		result_label_tag: type_object_label_tag;
+		result_label	: type_object_net_label; -- CS rename to result_label_simple
+		result_label_tag: type_object_net_connector;
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -6275,12 +6277,12 @@ package body et_schematic_ops.nets is
 		-- SEARCH FOR THE FIRST TAG NET LABEL:
 		
 		-- If a label has been found, then go to the end of this procedure:
-		result_label_tag := get_first_label_tag (module_cursor, flag, log_threshold + 1);
+		result_label_tag := get_first_connector (module_cursor, flag, log_threshold + 1);
 
 		if has_element (result_label_tag.net_cursor) then
 			-- A label has been found.
 			-- CS log ?
-			result_category := CAT_LABEL_TAG;
+			result_category := CAT_CONNECTOR;
 		end if;
 		
 		if result_category /= CAT_VOID then
@@ -6313,8 +6315,8 @@ package body et_schematic_ops.nets is
 			when CAT_LABEL =>
 				return (CAT_LABEL, result_label);
 
-			when CAT_LABEL_TAG =>
-				return (CAT_LABEL_TAG, result_label_tag);
+			when CAT_CONNECTOR =>
+				return (CAT_CONNECTOR, result_label_tag);
 				
 		end case;
 	end get_first_object;
@@ -6693,8 +6695,8 @@ package body et_schematic_ops.nets is
 									log (text => to_string (start_end) & " end", level => log_threshold + 4);
 									
 									result.append ((
-										cat			=> CAT_LABEL_TAG,
-										label_tag	=> (net_cursor, strand_cursor, segment_cursor, start_end)));
+										cat			=> CAT_CONNECTOR,
+										connector	=> (net_cursor, strand_cursor, segment_cursor, start_end)));
 
 								end collect;
 
@@ -6824,8 +6826,8 @@ package body et_schematic_ops.nets is
 			when CAT_LABEL =>
 				modify_status (module_cursor, object.label, operation, log_threshold + 1);
 
-			when CAT_LABEL_TAG =>
-				modify_status (module_cursor, object.label_tag, operation, log_threshold + 1);
+			when CAT_CONNECTOR =>
+				modify_status (module_cursor, object.connector, operation, log_threshold + 1);
 				
 			when CAT_VOID =>
 				null; -- CS
@@ -7299,7 +7301,7 @@ package body et_schematic_ops.nets is
 			when CAT_LABEL => 
 				null; -- CS
 
-			when CAT_LABEL_TAG => 
+			when CAT_CONNECTOR => 
 				null; -- CS
 				
 			when CAT_VOID =>
@@ -7348,7 +7350,7 @@ package body et_schematic_ops.nets is
 			when CAT_LABEL => 
 				null; -- CS
 
-			when CAT_LABEL_TAG => 
+			when CAT_CONNECTOR => 
 				null; -- CS
 				
 			when CAT_VOID =>
@@ -7393,10 +7395,10 @@ package body et_schematic_ops.nets is
 
 				
 			when CAT_LABEL => 
-				delete_net_label_simple (module_cursor, object.label, log_threshold + 1);
+				delete_net_label (module_cursor, object.label, log_threshold + 1);
 				
-			when CAT_LABEL_TAG => 
-				delete_net_label_tag (module_cursor, object.label_tag, log_threshold + 1);
+			when CAT_CONNECTOR => 
+				delete_net_connector (module_cursor, object.connector, log_threshold + 1);
 				
 			when CAT_VOID =>
 				null;
@@ -7447,7 +7449,7 @@ package body et_schematic_ops.nets is
 			when CAT_LABEL => 
 				null; -- CS
 				
-			when CAT_LABEL_TAG => 
+			when CAT_CONNECTOR => 
 				null; -- CS
 				
 			when CAT_VOID =>
@@ -7486,10 +7488,10 @@ package body et_schematic_ops.nets is
 				show_net (module_cursor, object.net.net_cursor, log_threshold + 1);
 
 			when CAT_LABEL => 
-				show_label_simple (module_cursor, object.label, log_threshold + 1);
+				show_net_label (module_cursor, object.label, log_threshold + 1);
 
-			when CAT_LABEL_TAG => 
-				show_label_tag (module_cursor, object.label_tag, log_threshold + 1);
+			when CAT_CONNECTOR => 
+				show_net_connector (module_cursor, object.connector, log_threshold + 1);
 				
 			when CAT_VOID =>
 				null;

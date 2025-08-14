@@ -967,7 +967,7 @@ package body et_nets is
 
 
 	function to_string (
-		object	: in type_object_label)
+		object	: in type_object_net_label)
 		return string
 	is begin
 		return "net " & get_net_name (object.net_cursor)
@@ -978,7 +978,7 @@ package body et_nets is
 	
 	
 	function to_string (
-		object	: in type_object_label_tag)
+		object	: in type_object_net_connector)
 		return string
 	is begin
 		return "net " & get_net_name (object.net_cursor)
