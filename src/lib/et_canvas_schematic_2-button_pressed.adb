@@ -124,7 +124,7 @@ is
 				
 			when VERB_DELETE =>
 				case noun is
-					when NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
+					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
 						et_canvas_schematic_nets.delete_object (snap_point);
 						
 					when NOUN_UNIT =>
@@ -308,7 +308,7 @@ is
 		case verb is
 			when VERB_DELETE =>
 				case noun is
-					when NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
+					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
@@ -380,13 +380,13 @@ is
 
 				
 			when VERB_PLACE =>
-				case noun is
-					
-					when NOUN_NET_LABEL => 
+				case noun is					
+					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL => 
 						if clarification_pending then
 							clarify_net_segment;
 						end if;
 
+						-- CS:
 						-- Rotate simple label:
 						if label.ready then
 							toggle_rotation (label.rotation_simple);
@@ -446,7 +446,7 @@ is
 							clarify_unit;
 						end if;
 
-					when NOUN_NET | NOUN_NET_LABEL =>
+					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET =>
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;

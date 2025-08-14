@@ -351,28 +351,36 @@ package et_canvas_schematic_nets is
 		status_click_left 
 		& "or "
 		& status_press_space
-		& "to place label." 
+		& "to place a net label." 
 		& status_hint_for_abort;	
 	
-	status_place_label_simple : constant string := 
+	-- status_place_label_simple : constant string := 
+	-- 	status_click_left 
+	-- 	& "or "
+	-- 	& status_press_space
+	-- 	& "to place simple label." 
+	-- 	& status_hint_for_abort;	
+
+	status_place_connector : constant string := 
 		status_click_left 
 		& "or "
 		& status_press_space
-		& "to place simple label." 
+		& "to place a net connector." 
 		& status_hint_for_abort;	
 
-	status_place_label_tag : constant string := 
+	status_delete_connector : constant string := 
 		status_click_left 
 		& "or "
 		& status_press_space
-		& "to place tag label." 
+		& "to delete a net connector." 
 		& status_hint_for_abort;	
 
+	
 	status_move_label : constant string := 
 		status_click_left 
 		& "or "
 		& status_press_space
-		& "to move simple label." 
+		& "to move net label." 
 		& status_hint_for_abort;	
 
 	type type_label_category is (SIMPLE, TAG, BOTH);

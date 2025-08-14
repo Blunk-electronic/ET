@@ -67,9 +67,13 @@ is
 	procedure delete is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
+			when key_noun_connector =>
+				noun := NOUN_NET_CONNECTOR;
+				set_status (et_canvas_schematic_nets.status_delete_connector);
+
 			when key_noun_label =>
 				noun := NOUN_NET_LABEL;
-				set_status (et_canvas_schematic_nets.status_delete);
+				set_status (et_canvas_schematic_nets.status_delete_label);
 				
 			when key_noun_unit =>
 				noun := NOUN_UNIT;					
@@ -99,7 +103,7 @@ is
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when key_space =>
 				case noun is
-					when NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
+					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
 						et_canvas_schematic_nets.delete_object (point);
 						
 					when NOUN_UNIT =>
@@ -112,7 +116,7 @@ is
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
-					when NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
+					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
@@ -253,15 +257,9 @@ is
 	procedure move is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
--- 				when key_noun_net =>
--- 					noun := NOUN_NET;
-
-				-- CS
-				--set_status (et_canvas_schematic_nets.status_move);
-
 			when key_noun_label =>
 				noun := NOUN_NET_LABEL;
-				set_status (et_canvas_schematic_nets.status_move);
+				set_status (et_canvas_schematic_nets.status_move_label);
 
 			when GDK_LC_n => -- CS
 				noun := NOUN_NAME;					
@@ -288,29 +286,6 @@ is
 			-- by keyboard:
 			when key_space =>	
 				case noun is
--- CS
--- 						when NOUN_NET =>
--- 							if not segment.being_moved then
--- 								
--- 								-- Set the tool being used for moving the segment:
--- 								segment.tool := KEYBOARD;
--- 								
--- 								if not clarification_pending then
--- 									find_segments (get_cursor_position);
--- 								else
--- 									segment.being_moved := true;
--- 									reset_request_clarification;
--- 								end if;
--- 								
--- 							else
--- 								-- Finally assign the cursor position to the
--- 								-- currently selected segment:
--- 								et_canvas_schematic_nets.finalize_move (
--- 									destination		=> get_cursor_position,
--- 									log_threshold	=> log_threshold + 1);
--- 
--- 							end if;
-
 					when NOUN_NET_LABEL =>
 						et_canvas_schematic_nets.move_object (KEYBOARD, get_cursor_position);
 						
@@ -324,7 +299,6 @@ is
 						et_canvas_schematic_units.move_object (KEYBOARD, point);
 
 					when others => null;
-						
 				end case;
 
 				
@@ -358,18 +332,16 @@ is
 	procedure place is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
-			when GDK_LC_l => -- CS
+			when key_noun_label =>
 				noun := NOUN_NET_LABEL;
-				-- label.appearance := SIMPLE;
-				-- set_status (et_canvas_schematic_nets.status_place_label_simple);
+				set_status (et_canvas_schematic_nets.status_place_label);
 
 				-- For placing simple net labels, the fine grid is required:
 				-- CS self.set_grid (FINE);
 				
-			when GDK_L => -- CS
-				noun := NOUN_NET_LABEL;
-				-- label.appearance := TAG;
-				-- set_status (et_canvas_schematic_nets.status_place_label_tag);
+			when key_noun_connector =>
+				noun := NOUN_NET_CONNECTOR;
+				set_status (et_canvas_schematic_nets.status_place_connector);
 
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when key_space =>
@@ -377,6 +349,10 @@ is
 					when NOUN_NET_LABEL =>
 						null; -- CS
 						-- place_label (KEYBOARD, get_cursor_position);
+
+					when NOUN_NET_CONNECTOR =>
+						null; -- CS
+
 						
 					when others => null;							
 				end case;
@@ -385,7 +361,7 @@ is
 			when key_clarify =>
 				case noun is
 
-					when NOUN_NET_LABEL => 
+					when NOUN_NET_LABEL | NOUN_NET_CONNECTOR => 
 						if clarification_pending then
 							clarify_net_segment;
 						end if;
@@ -666,7 +642,7 @@ is
 				noun := NOUN_NET;
 				set_status (et_canvas_schematic_nets.status_show_net);
 
-			when GDK_LC_l =>  -- CS
+			when key_noun_label =>
 				noun := NOUN_NET_LABEL;
 				-- CS set_status (et_canvas_schematic_nets.status_show_label);
 
@@ -682,10 +658,7 @@ is
 						end if;
 
 
-					when NOUN_NET_LABEL =>
-						et_canvas_schematic_nets.show_object (get_cursor_position);
-						
-					when NOUN_NET =>
+					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET =>
 						et_canvas_schematic_nets.show_object (get_cursor_position);
 						
 					when others => null;
@@ -700,7 +673,7 @@ is
 							clarify_unit;
 						end if;
 
-					when NOUN_NET | NOUN_NET_LABEL =>
+					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET =>
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
