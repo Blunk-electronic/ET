@@ -107,9 +107,9 @@ package body et_undo_redo is
 			increment (module.commit_index);			
 
 			case noun is
-				when NOUN_SEGMENT | NOUN_STRAND | NOUN_NET_LABEL =>
+				when NOUN_SEGMENT | NOUN_STRAND | NOUN_NET_LABEL | NOUN_NET_CONNECTOR =>
 					case verb is
-						when VERB_DELETE | VERB_RENAME =>
+						when VERB_DELETE | VERB_RENAME | VERB_PLACE =>
 							commit_nets;
 
 						when others => null;

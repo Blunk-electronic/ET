@@ -751,7 +751,15 @@ package et_schematic_ops.nets is
 		return type_object_net_connector;
 
 	
-	
+
+	-- Places a net label next to the given net segment
+	-- at the given position:
+	procedure place_net_label (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;						  
+		position		: in type_vector_model;
+		log_threshold	: in type_log_level);
+		
 	
 	-- Places a label next to a segment at position.
 	procedure place_net_label (

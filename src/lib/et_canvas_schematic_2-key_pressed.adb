@@ -347,8 +347,7 @@ is
 			when key_space =>
 				case noun is
 					when NOUN_NET_LABEL =>
-						null; -- CS
-						-- place_label (KEYBOARD, get_cursor_position);
+						place_label (KEYBOARD, get_cursor_position);
 
 					when NOUN_NET_CONNECTOR =>
 						null; -- CS

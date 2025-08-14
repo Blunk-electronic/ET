@@ -397,10 +397,10 @@ package et_canvas_schematic_nets is
 	-- procedure finalize_place_label (
 	-- 	destination		: in type_vector_model;
 	-- 	log_threshold	: in type_log_level);
- -- 
-	-- procedure place_label (
-	-- 	tool		: in type_tool;
-	-- 	position	: in type_vector_model);
+ 
+	procedure place_label (
+		tool	: in type_tool;
+		point	: in type_vector_model);
 
 
 	

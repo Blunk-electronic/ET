@@ -5316,6 +5316,79 @@ package body et_schematic_ops.nets is
 
 
 
+
+	
+
+	procedure place_net_label (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;						  
+		position		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is				
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (strand : in out type_strand) is
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					
+					procedure query_segment (segment : in out type_net_segment) is 
+						use pac_net_labels;
+						label : type_net_label_simple;
+					begin
+						label.position := position;
+						-- move_by (label.position, segment_position.place);
+						-- now label.position is absolute
+
+						-- snap given rotation to either 0 or 90 degree
+						-- label.rotation := snap (rotation);
+						
+						segment.labels.append (label);								
+					end query_segment;
+
+					
+				begin
+					strand.segments.update_element (segment.segment_cursor, query_segment'access);
+				end query_strand;
+
+				
+			begin
+				net.strands.update_element (segment.strand_cursor, query_strand'access);					
+			end query_net;
+
+			
+		begin
+			module.nets.update_element (segment.net_cursor, query_net'access);
+		end query_module;
+
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " place net label next to segment" 
+			& " at " & to_string (position),
+			level => log_threshold);
+		
+		log_indentation_up;
+
+
+		generic_modules.update_element (module_cursor, query_module'access);
+		
+		log_indentation_down;
+	end place_net_label;
+	
+
+
 	
 	
 	

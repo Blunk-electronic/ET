@@ -712,7 +712,6 @@ package body et_canvas_schematic_nets is
 		-- Propose objects according to current verb and noun:
 		case verb is
 			when VERB_DELETE | VERB_DRAG =>
-
 				case noun is
 					when NOUN_SEGMENT =>
 				
@@ -746,7 +745,7 @@ package body et_canvas_schematic_nets is
 
 					when NOUN_NET_LABEL =>
 
-						-- Propose simple labels in the vicinity of the given point:
+						-- Propose net labels in the vicinity of the given point:
 						propose_labels (
 							module_cursor	=> active_module,
 							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
@@ -754,13 +753,37 @@ package body et_canvas_schematic_nets is
 							log_threshold	=> log_threshold + 1);
 
 						
+					when NOUN_NET_CONNECTOR =>
+						
+						-- Propose net connectors in the vicinity of the given point:
+						propose_connectors (
+							module_cursor	=> active_module,
+							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+							count			=> count_total,
+							log_threshold	=> log_threshold + 1);
+						
+						
 					when others => null; -- CS
+				end case;
+
+				
+			when VERB_PLACE =>
+				case noun is
+					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL =>
+
+						-- Propose net segments in the vicinity of the given point:
+						propose_segments (
+							module_cursor	=> active_module,
+							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+							count			=> count_total,
+							log_threshold	=> log_threshold + 1);
+
+						
+					when others => null;
 				end case;
 				
 
-
 			when VERB_RENAME =>
-
 				case noun is
 					when NOUN_STRAND =>
 
@@ -785,11 +808,8 @@ package body et_canvas_schematic_nets is
 					when others => null; -- CS
 				end case;
 
-
-
 				
 			when VERB_SHOW =>
-
 				case noun is
 					when NOUN_NET =>
 						-- Propose nets in the vicinity of the given point:
@@ -808,6 +828,8 @@ package body et_canvas_schematic_nets is
 							count			=> count_total,
 							log_threshold	=> log_threshold + 1);
 
+						
+					when NOUN_NET_CONNECTOR =>
 						-- Propose net connectors in the vicinity of the given point:
 						propose_connectors (
 							module_cursor	=> active_module,
@@ -820,15 +842,19 @@ package body et_canvas_schematic_nets is
 				
 				
 			when VERB_MOVE =>
+				case noun is
+					when NOUN_NET_LABEL =>
+						
+						-- Propose net labels in the vicinity of the given point:
+						propose_labels (
+							module_cursor	=> active_module,
+							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+							count			=> count_total,
+							log_threshold	=> log_threshold + 1);
 
-				-- Propose simple net labels in the vicinity of the given point:
-				propose_labels (
-					module_cursor	=> active_module,
-					catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
-					count			=> count_total,
-					log_threshold	=> log_threshold + 1);
 
-
+					when others => null;
+				end case;
 			when others => null;
 		end case;
 
@@ -1267,8 +1293,8 @@ package body et_canvas_schematic_nets is
 		--clear_proposed_labels;
 
 		-- clear_proposed_segments;
-		proposed_labels.clear;
-		selected_label := pac_proposed_labels.no_element;
+		-- proposed_labels.clear;
+		-- selected_label := pac_proposed_labels.no_element;
 	end reset_label;
 
 	
@@ -1762,30 +1788,89 @@ package body et_canvas_schematic_nets is
 
 
 	
--- 	procedure place_label (
--- 		tool		: in type_tool;
--- 		position	: in type_vector_model)
--- 	is begin
--- 		if not label.ready then
--- 			
--- 			-- Set the tool being used:
--- 			label.tool := tool;
--- 			
--- 			if not clarification_pending then
--- 				find_segments (position);
--- 			else
--- 				label.ready := true;
--- 				reset_request_clarification;
--- 			end if;
--- 			
--- 		else
--- 			-- Finally place the label at the current
--- 			-- cursor position:
--- 			finalize_place_label (
--- 				destination		=> position,
--- 				log_threshold	=> log_threshold + 1);
--- 		end if;
--- 	end place_label;
+	procedure place_label (
+		tool	: in type_tool;
+		point	: in type_vector_model)
+	is 
+
+
+		procedure finalize is
+			use et_modes.schematic;
+			use et_undo_redo;
+			use et_commit;
+
+			object : constant type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
+		begin
+			log (text => "finalize place net label", level => log_threshold);
+			log_indentation_up;
+
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+				
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+				
+				place_net_label (
+					module_cursor	=> active_module, 
+					segment			=> object.segment,
+					position		=> point,
+					log_threshold	=> log_threshold + 1);
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+
+				-- CS redraw schematic ?
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			
+			set_status (status_delete_label);
+			
+			reset_proposed_objects (active_module, log_threshold + 1);
+
+			reset_editing_process; -- prepare for a new editing process
+		end finalize;
+		
+
+	begin
+		-- Initially the editing process is not running:
+		if not edit_process_running then
+
+			-- Set the tool being used:
+			object_tool := tool;
+			
+			
+			if not clarification_pending then
+				-- Locate all net segments in the vicinity of the given point:
+				find_objects (point);
+
+				-- NOTE: If many segments have been found, then
+				-- clarification is now pending.
+
+				-- If find_objects has found only one segment,				
+				-- then the flag edit_process_running is set true.
+
+				if edit_process_running then
+					finalize;
+				end if;
+				
+			else
+				-- Here the clarification procedure ends.
+				-- A segment has been selected via procedure clarify_object.
+				
+				finalize;
+			end if;
+
+		else
+			finalize;
+		end if;
+
+	end place_label;
 
 
 
