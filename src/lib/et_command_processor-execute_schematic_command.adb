@@ -1403,14 +1403,41 @@ is
 
 
 
-	
 
-	procedure place_net_label is
-	begin
+	-- This procedure parses a command that places a net connector.
+	-- Example: "schematic demo place net_connector 1 60 80 input"
+	procedure place_net_connector is begin
+		case cmd_field_count is
+			when 8 =>
+
+				place_net_connector (
+					module_cursor	=> active_module,
+					position		=> to_position (
+											point => type_vector_model (set (
+												x => to_distance (get_field (6)),
+												y => to_distance (get_field (7)))),
+											sheet => to_sheet (get_field (5))), -- sheet number
+    
+					-- A connector requires specification of signal direction:
+					direction		=> to_direction (get_field (8)), -- INPUT, OUTPUT, PASSIVE, ...
+					log_threshold	=> log_threshold + 1);
+
+				
+			when 9 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end place_net_connector;
+
+
+	
+	
+	-- This procedure parses a command that places a net connector.
+	-- Example: "schematic demo place net_label 1 70 80 0 1 0"
+	procedure place_net_label is begin
 		case cmd_field_count is
 			when 10 =>
-
-				-- example "schematic demo place net_label 1 70 80 0 1 0"
+				
 				place_net_label (
 					module_cursor		=> active_module,
 					segment_position	=> to_position (
@@ -1427,31 +1454,16 @@ is
 					log_threshold		=> log_threshold + 1);
 
 				
-			when 8 =>
-				-- CS: separate procedure, connected with NOUN_NET_CONNECTOR
-				
-				-- example "schematic demo place net_connector 1 60 80 input"
-				place_net_connector (
-					module_cursor	=> active_module,
-					position		=> to_position (
-											point => type_vector_model (set (
-												x => to_distance (get_field (6)),
-												y => to_distance (get_field (7)))),
-											sheet => to_sheet (get_field (5))), -- sheet number
-    
-					-- A tag label requires specification of signal direction:
-					direction		=> to_direction (get_field (8)), -- INPUT, OUTPUT, PASSIVE, ...
-					log_threshold	=> log_threshold + 1);
-
-				
 			when 11 .. type_field_count'last => too_long;
 				
-			when others => command_incomplete; -- incl. field count of 9
+			when others => command_incomplete;
 		end case;
 	end place_net_label;
 
 
 
+
+	
 
 	
 
@@ -1587,10 +1599,16 @@ is
 
 
 
+
+	-- This procedure parses a command that deletes a net connector:
+	procedure delete_net_connector is begin
+		null; -- CS
+	end; 
 	
+
 	
-	procedure delete_net_label is
-	begin
+	-- This procedure parses a command that deletes a net label:
+	procedure delete_net_label is begin
 		case cmd_field_count is
 			when 7 =>
 				delete_net_label
@@ -1611,6 +1629,13 @@ is
 		end case;
 	end delete_net_label;
 
+
+
+	-- This procedure parses a command that moves a net label:
+	procedure move_net_label is begin
+		null;
+		-- CS
+	end move_net_label;
 
 	
 
@@ -2172,6 +2197,9 @@ is
 					when NOUN_DEVICE =>
 						delete_device;
 						
+					when NOUN_NET_CONNECTOR =>
+						delete_net_connector;
+
 					when NOUN_NET_LABEL =>
 						delete_net_label;
 						
@@ -2299,6 +2327,9 @@ is
 					when NOUN_NETCHANGER =>
 						move_netchanger;
 
+
+					when NOUN_NET_LABEL =>
+						move_net_label;
 								
 					when NOUN_TEXT =>
 						NULL; -- CS
@@ -2395,6 +2426,9 @@ is
 				
 			when VERB_PLACE =>
 				case noun is
+					when NOUN_NET_CONNECTOR =>
+						place_net_connector;
+
 					when NOUN_NET_LABEL =>
 						place_net_label;
 
