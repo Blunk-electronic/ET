@@ -195,9 +195,14 @@ is
 				
 			when VERB_PLACE =>
 				case noun is
+					when NOUN_NET_CONNECTOR =>
+						--place_label (MOUSE, snap_point);
+						null; -- CS
+
 					when NOUN_NET_LABEL =>
 						--place_label (MOUSE, snap_point);
 						null; -- CS
+
 						
 					when others => null;
 				end case;
