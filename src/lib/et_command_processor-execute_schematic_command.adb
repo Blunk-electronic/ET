@@ -1338,7 +1338,6 @@ is
 		use pac_strands;
 		
 		use et_canvas_schematic_nets;
-		use pac_proposed_segments;
 		
 		net_cursor : pac_nets.cursor := locate_net (active_module, net);
 
@@ -1359,12 +1358,12 @@ is
 					-- center drawing where the strand starts:
 				-- CS center_on (canvas, element (strand_cursor).position.place);
 					
-					proposed_segments.append (new_item => (
-						net		=> net_cursor,
-						strand	=> strand_cursor,
-						segment	=> get_first_segment (strand_cursor)));
-
-					selected_segment := proposed_segments.first;
+					-- proposed_segments.append (new_item => (
+					-- 	net		=> net_cursor,
+					-- 	strand	=> strand_cursor,
+					-- 	segment	=> get_first_segment (strand_cursor)));
+     -- 
+					-- selected_segment := proposed_segments.first;
 					
 					-- show_properties_of_selected_net;
 					
@@ -1381,12 +1380,13 @@ is
 						-- center drawing where the strand starts:
 					-- CS center_on (canvas, element (strand_cursor).position.place);
 
-						proposed_segments.append (new_item => (
-							net		=> net_cursor,
-							strand	=> strand_cursor,
-							segment	=> get_first_segment (strand_cursor)));
-
-						selected_segment := proposed_segments.first;
+						null;
+						-- proposed_segments.append (new_item => (
+						-- 	net		=> net_cursor,
+						-- 	strand	=> strand_cursor,
+						-- 	segment	=> get_first_segment (strand_cursor)));
+      -- 
+						-- selected_segment := proposed_segments.first;
 						
 						-- show_properties_of_selected_net;
 					else

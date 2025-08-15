@@ -82,43 +82,6 @@ package et_canvas_schematic_nets is
 	use pac_strands;
 	use pac_net_segments;
 
-	
-	-- Whenever a segment is selected via the GUI, we store its
-	-- parent net, strand and the segment itself via this type:
-	type type_selected_segment is tagged record
-		net		: pac_nets.cursor;
-		strand	: pac_strands.cursor;
-		segment	: pac_net_segments.cursor;
-	end record;
-
-
-	
-	package pac_proposed_segments is new doubly_linked_lists (type_selected_segment);
-	use pac_proposed_segments;
-	
-	-- These variables are used by the GUI when the operator selects a segment:
-	proposed_segments	: pac_proposed_segments.list;
-	selected_segment	: pac_proposed_segments.cursor;
-
-
-	
-
-
-	
--- DELETE SEGMENT
-
-	
-	-- status_delete : constant string := 
-	-- 	status_click_left 
-	-- 	& "or "
-	-- 	& status_press_space
-	-- 	& "to delete net segment." 
-	-- 	& status_hint_for_abort;
-
-
-	
-	-- Advances cursor selected_segment to next segment in list proposed_segments.
-	procedure clarify_net_segment;
 
 
 
@@ -204,7 +167,14 @@ package et_canvas_schematic_nets is
 		& status_hint_for_abort;
 
 	
+	-- status_delete : constant string := 
+	-- 	status_click_left 
+	-- 	& "or "
+	-- 	& status_press_space
+	-- 	& "to delete net segment." 
+	-- 	& status_hint_for_abort;
 
+	
 
 	
 -- RENAME NET

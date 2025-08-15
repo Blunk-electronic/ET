@@ -361,7 +361,7 @@ is
 
 					when NOUN_NET_LABEL | NOUN_NET_CONNECTOR => 
 						if clarification_pending then
-							clarify_net_segment;
+							et_canvas_schematic_nets.clarify_object;
 						end if;
 
 					when others => null;

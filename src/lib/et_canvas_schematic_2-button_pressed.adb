@@ -386,7 +386,7 @@ is
 				case noun is					
 					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL => 
 						if clarification_pending then
-							clarify_net_segment;
+							et_canvas_schematic_nets.clarify_object;
 						end if;
 						
 					when others => null;

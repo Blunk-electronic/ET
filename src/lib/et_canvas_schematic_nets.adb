@@ -65,35 +65,7 @@ package body et_canvas_schematic_nets is
 
 	
 
-	
-	procedure clarify_net_segment is
-		s : pac_net_segments.cursor;
-		n : pac_net_name.bounded_string;
-	begin
-		-- On every call of this procedure we must advance from one
-		-- segment to the next in a circular manner. So if the end 
-		-- of the list is reached, then the cursor selected_segment
-		-- moves back to the start of the segment list.
-		if next (selected_segment) /= pac_proposed_segments.no_element then
-			next (selected_segment);
-		else
-			selected_segment := proposed_segments.first;
-		end if;
 
-		-- show the selected segment in the status bar
-		s := element (selected_segment).segment;
-
-		-- get the name of the selected net
-		n := key (element (selected_segment).net);
-		
-		set_status ("net " & to_string (n) & space 
-			& to_string (s) & ". " & status_next_object_clarification);
-	end clarify_net_segment;
-
-
-
-
-	
 
 	
 	procedure make_path (
