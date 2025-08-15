@@ -396,9 +396,9 @@ Nets and Net Labels
 
 	
 	
-#. Placing Simple Net Labels
+#. Placing Net Labels
 
-	A simple label is just a text next
+	A net label is just a text next
 	to a net segment to indicate the net name.
 	
 	|VNS| p l
@@ -406,46 +406,50 @@ Nets and Net Labels
 	Rotate: right mouse click or key o
 
 	
-	Example: Place a simple net label on sheet 1 at x/y 30/100
+	Example: Place a net label on sheet 1 at x/y 30/100
 	with an x/y offset of 0/1 and a rotation of 0 degrees:
 		
 	.. code-block::
 
-		demo place label  1  30 100  0 1  0
+		demo place net_label  1  30 100  0 1  0
 
 	
 	
-	
-#. Placing Tag Labels
-
-	A tag label is a text inside a box that
-	is connected with a net segment. The box
-	indicates the nature of the label (input, output,
-	bidir, tristate, passive).
-	Inside the box the net name is shown.
-
-	|VNS| p L
-
-	Example: Place a tag label on sheet 1 at x/y position 50/100.
-	The label type is 'passive':
-	
-	.. code-block::
-	
-		demo place label  1  50 100  passive
-	
-	
-	
-#. Move label
+#. Move Net Label
 
 	|VNS| m l
 
 	
 	
 	
-#. Delete label
+#. Delete Net Label
 
 	|VNS| del l
 
+
+
+	
+#. Placing Net Off-Page-Connectors
+
+	An off-page-connector is a text inside a box that
+	is connected with a net segment. The box
+	indicates the nature of the connector (input, output,
+	bidir, tristate, passive).
+	Inside the box the net name is shown.
+
+	|VNS| p c
+
+	Example: Place a net connector on sheet 1 at x/y position 50/100.
+	The connector type is 'passive':
+	
+	.. code-block::
+	
+		demo place net_connector  1  50 100  passive
+	
+	
+#. Delete Net Off-Page-Connectors
+
+	|VNS| del c
 
 	
 	
