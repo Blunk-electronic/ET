@@ -221,8 +221,6 @@ package et_canvas_schematic_nets is
 	procedure show_rename_window;
 	
 
-	rename_window_open : boolean := false;
-
 	net_name_new : pac_net_name.bounded_string;
 		
 

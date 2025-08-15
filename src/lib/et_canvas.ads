@@ -1300,6 +1300,9 @@ package et_canvas is
 	-- a generic object:
 	rename_window : gtk.window.gtk_window;
 
+	-- This flag indicates that the rename window is open:
+	rename_window_open : boolean := false;
+	
 	-- CS: these variables should be moved to procedure
 	-- build_rename_window:
 	-- This is the field inside the rename_window 
