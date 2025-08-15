@@ -249,7 +249,7 @@ Nets and Net Labels
 
 
 
-#. Showing and finding nets
+#. Showing and Finding Nets
 
 	- To show a net:
 
@@ -263,13 +263,6 @@ Nets and Net Labels
 
 	|VNS| |NI|
 	
-	- To find a net on the current sheet:
-	
-	.. code-block::
-
-		show net RESET_N .
-
-	|VNS| |NI|
 
 	
 	

@@ -1321,84 +1321,42 @@ is
 	
 	
 	
-	
-	-- For showing and finding nets:
-	type type_show_net is (
-		FIRST_NET,
-		NET_ON_CURRENT_SHEET);
 
 
-	
-	procedure show_net (
-		net		: in pac_net_name.bounded_string; -- RESET_N
-		mode	: in type_show_net)
-	is
+	-- This procedure parses a command that highlights a net:
+	procedure show_net is
 		use pac_nets;
-		
-		use pac_strands;
-		
 		use et_canvas_schematic_nets;
-		
-		net_cursor : pac_nets.cursor := locate_net (active_module, net);
 
-		strand_cursor : pac_strands.cursor;
-		
-		pos : type_object_position;
+		net_name : pac_net_name.bounded_string; -- RESET_N
+		net_cursor : pac_nets.cursor;
+
 	begin
-		if net_cursor /= pac_nets.no_element then
+		case cmd_field_count is
+			when 5 => 
+				net_name := to_net_name (get_field (5)); -- RESET_N
+
+				net_cursor := locate_net (active_module, net_name);
+
+				if has_element (net_cursor) then				
+					reset_proposed_nets (active_module, log_threshold + 1);
+					show_net (active_module, net_cursor, log_threshold + 1);
+				else
+					log (WARNING, "Net " & to_string (net_name) & " does not exist !");
+					-- CS set_status ?
+				end if;
 			
-			case mode is
-				when FIRST_NET =>
-					-- Get the cursor of the first strand:
-					strand_cursor := get_first_strand (net_cursor);
+			
+			when 6 .. type_field_count'last => too_long;
+			
+			when others => command_incomplete;
+		end case;
 
-					-- show the sheet where the first net is:
-					active_sheet := get_sheet (element (strand_cursor).position);
+		-- CS:
+		-- "ERROR: Net " & enclose_in_quotes (to_string (net))
+		-- 	& " is not on this sheet !";
+   		
 
-					-- center drawing where the strand starts:
-				-- CS center_on (canvas, element (strand_cursor).position.place);
-					
-					-- proposed_segments.append (new_item => (
-					-- 	net		=> net_cursor,
-					-- 	strand	=> strand_cursor,
-					-- 	segment	=> get_first_segment (strand_cursor)));
-     -- 
-					-- selected_segment := proposed_segments.first;
-					
-					-- show_properties_of_selected_net;
-					
-				when NET_ON_CURRENT_SHEET =>
-					-- Get the cursor of the first strand on the current
-					-- active sheet:
-					strand_cursor := get_first_strand_on_sheet (
-										active_sheet, net_cursor);
-
-					-- If the net does have a strand on the given sheet,
-					-- select it and show properties in status bar.
-					if strand_cursor /= pac_strands.no_element then
-
-						-- center drawing where the strand starts:
-					-- CS center_on (canvas, element (strand_cursor).position.place);
-
-						null;
-						-- proposed_segments.append (new_item => (
-						-- 	net		=> net_cursor,
-						-- 	strand	=> strand_cursor,
-						-- 	segment	=> get_first_segment (strand_cursor)));
-      -- 
-						-- selected_segment := proposed_segments.first;
-						
-						-- show_properties_of_selected_net;
-					else
-						raise semantic_error_1 with
-							"ERROR: Net " & enclose_in_quotes (to_string (net))
-							& " is not on this sheet !";
-					end if;
-			end case;
-		else
-			raise semantic_error_1 with
-				"ERROR: Net " & enclose_in_quotes (to_string (net)) & " does not exist !";
-		end if;
 	end show_net;
 
 
@@ -2720,27 +2678,7 @@ is
 
 						
 					when NOUN_NET =>
-						case cmd_field_count is
-							when 5 => show_net ( -- show net RESET_N
-									net		=> to_net_name (get_field (5)), -- RESET_N
-									mode	=> FIRST_NET);
-							
-							when 6 =>
-								-- The 6th field may be a period, which means
-								-- the net is to be shown on the current active sheet.
-								-- If the 6th field is not a period, then we
-								-- threat this field as excessive argument.
-								if get_field (6) = here then
-									show_net ( -- show net RESET_N
-										net		=> to_net_name (get_field (5)), -- RESET_N
-										mode	=> NET_ON_CURRENT_SHEET);
-								else
-									too_long;
-								end if;
-								
-							when 7 .. type_field_count'last => too_long;
-							when others => command_incomplete;
-						end case;
+						show_net;
 						
 					when NOUN_SHEET =>
 						show_sheet;
