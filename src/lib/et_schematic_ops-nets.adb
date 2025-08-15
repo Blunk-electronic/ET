@@ -5352,6 +5352,9 @@ package body et_schematic_ops.nets is
 
 						-- snap given rotation to either 0 or 90 degree
 						-- label.rotation := snap (rotation);
+
+						-- CS: set rotation and distance to net
+						-- segment automatically.
 						
 						segment.labels.append (label);								
 					end query_segment;
