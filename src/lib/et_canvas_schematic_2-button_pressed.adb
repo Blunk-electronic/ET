@@ -388,12 +388,6 @@ is
 						if clarification_pending then
 							clarify_net_segment;
 						end if;
-
-						-- CS:
-						-- Rotate simple label:
-						if label.ready then
-							toggle_rotation (label.rotation_simple);
-						end if;
 						
 					when others => null;
 				end case;

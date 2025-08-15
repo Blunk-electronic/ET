@@ -305,47 +305,17 @@ package et_canvas_schematic_nets is
 	
 -- NET LABELS
 
-	-- Global information for the GUI when a label is being
-	-- placed or moved:
-	type type_label is record
-		ready				: boolean := false;
-		tool				: type_tool := MOUSE;
-		appearance			: type_net_label_appearance := SIMPLE;
-		rotation_simple		: et_text.type_rotation_documentation := et_text.HORIZONTAL;
-		
-		-- If we are dealing with a TAG label, then a permission
-		-- is required to do the final placement.
-		-- For a simple label this flag has no meaning because
-		-- a simple net label can be placed anywhere.
-		finalizing_granted	: boolean := false; -- CS use edit_process.finalizing_granted ?
-	end record;
-
-	label : type_label;
-
-	type type_selected_label is new type_selected_segment with record
-		label : pac_net_labels.cursor;
-	end record;
-
-	package pac_proposed_labels is new indefinite_doubly_linked_lists (type_selected_label);
-	use pac_proposed_labels;
-
-	proposed_labels : pac_proposed_labels.list;
-	selected_label : pac_proposed_labels.cursor;
 	
-	--procedure clear_proposed_labels;		
-	
-	
-	-- This procedure:
-	-- - Clears list of proposed net labels.
-	-- - resets global variable "label" to its default values
-	procedure reset_label;
 
+
+	
 	status_delete_label : constant string := 
 		status_click_left 
 		& "or "
 		& status_press_space
 		& "to delete label." 
 		& status_hint_for_abort;	
+
 	
 	status_place_label : constant string := 
 		status_click_left 
@@ -354,12 +324,6 @@ package et_canvas_schematic_nets is
 		& "to place a net label." 
 		& status_hint_for_abort;	
 	
-	-- status_place_label_simple : constant string := 
-	-- 	status_click_left 
-	-- 	& "or "
-	-- 	& status_press_space
-	-- 	& "to place simple label." 
-	-- 	& status_hint_for_abort;	
 
 	status_place_connector : constant string := 
 		status_click_left 
@@ -368,6 +332,7 @@ package et_canvas_schematic_nets is
 		& "to place a net connector." 
 		& status_hint_for_abort;	
 
+	
 	status_delete_connector : constant string := 
 		status_click_left 
 		& "or "
@@ -401,24 +366,6 @@ package et_canvas_schematic_nets is
 		point	: in type_vector_model);
 
 	
-	
-	-- procedure find_labels (
-	-- 	point		: in type_vector_model;
-	-- 	category	: in type_label_category);
-
-	-- procedure finalize_move_label (
-	-- 	destination		: in type_vector_model;
-	-- 	log_threshold	: in type_log_level);
-
-	
-	-- NOTE: Only simple labels can be moved.
-	-- Tag labels are always attached to a stub
-	-- and are moved along when the stub is moved.
-	-- This is about simple labels:
-	-- procedure move_label (
-	-- 	tool		: in type_tool;
-	-- 	position	: in type_vector_model);
-
 
 	
 	status_show_net : constant string := 
@@ -430,7 +377,7 @@ package et_canvas_schematic_nets is
 
 	-- Outputs in the status bar some helpful properties
 	-- of the selected net:
-	procedure show_properties_of_selected_net;
+	-- procedure show_properties_of_selected_net;
 
 	
 end et_canvas_schematic_nets;

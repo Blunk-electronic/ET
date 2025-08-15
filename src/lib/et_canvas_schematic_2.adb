@@ -487,8 +487,7 @@ package body et_canvas_schematic_2 is
 		reset_segments_being_dragged; -- after dragging a unit
 		-- reset_unit_move; -- after moving/dragging a unit
 		reset_unit_add; -- after adding a device
-		
-		reset_label; -- after placing a label
+
 		
 		reset_placeholder; -- after moving a placeholder
 

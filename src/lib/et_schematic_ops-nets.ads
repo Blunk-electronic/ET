@@ -856,7 +856,7 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 	
-	-- Shows/highlights a tag label by setting its 
+	-- Shows/highlights a connector by setting its 
 	-- status to "selected":
 	procedure show_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;

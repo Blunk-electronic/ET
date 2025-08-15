@@ -1366,7 +1366,7 @@ is
 
 					selected_segment := proposed_segments.first;
 					
-					show_properties_of_selected_net;
+					-- show_properties_of_selected_net;
 					
 				when NET_ON_CURRENT_SHEET =>
 					-- Get the cursor of the first strand on the current
@@ -1388,7 +1388,7 @@ is
 
 						selected_segment := proposed_segments.first;
 						
-						show_properties_of_selected_net;
+						-- show_properties_of_selected_net;
 					else
 						raise semantic_error_1 with
 							"ERROR: Net " & enclose_in_quotes (to_string (net))
