@@ -387,16 +387,8 @@ package et_canvas_schematic_nets is
 
 	function to_string (cat : in type_label_category) return string;
 	
-	-- procedure delete_selected_label;
 
-	-- procedure delete_label (point : in type_vector_model);
 	
-
-	-- procedure clarify_label;
-	
-	-- procedure finalize_place_label (
-	-- 	destination		: in type_vector_model;
-	-- 	log_threshold	: in type_log_level);
  
 	procedure place_label (
 		tool	: in type_tool;
