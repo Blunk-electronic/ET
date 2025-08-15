@@ -808,12 +808,19 @@ package et_schematic_ops.nets is
 
 	
 	
-	-- Deletes a label.
+	-- Deletes a net label.
 	procedure delete_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		position		: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
+
+	-- Moves a net a label to the given destination:
+	procedure move_net_label (
+		module_cursor	: in pac_generic_modules.cursor;
+		label			: in type_object_net_label;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
 
 	
 

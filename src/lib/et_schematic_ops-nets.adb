@@ -5880,7 +5880,7 @@ package body et_schematic_ops.nets is
 		
 	begin -- delete_net_label
 		log (text => "module " & to_string (module_cursor) &
-			" deleting net label at" &
+			" deleting net label at " &
 			et_schematic_coordinates.to_string (position => position),
 			level => log_threshold);
 		
@@ -5900,7 +5900,82 @@ package body et_schematic_ops.nets is
 	
 
 
+	
 
+
+	
+	procedure move_net_label (
+		module_cursor	: in pac_generic_modules.cursor;
+		label			: in type_object_net_label;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is				
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (strand : in out type_strand) is
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					
+					procedure query_segment (segment : in out type_net_segment) is 
+						use pac_net_labels;
+
+						procedure query_label (label : in out type_net_label_simple) is
+						begin
+							label.position := destination;
+							-- CS: adjust distance to net segment.
+							-- CS: reject destination if too far away from segment
+						end query_label;
+
+					begin
+						segment.labels.update_element (label.label_cursor, query_label'access);
+					end query_segment;
+
+					
+				begin
+					strand.segments.update_element (label.segment_cursor, query_segment'access);
+				end query_strand;
+
+				
+			begin
+				net.strands.update_element (label.strand_cursor, query_strand'access);					
+			end query_net;
+
+			
+		begin
+			module.nets.update_element (label.net_cursor, query_net'access);
+		end query_module;
+		
+
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " move net label to " & to_string (destination),
+			level => log_threshold);
+		
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end move_net_label;
+
+	
+
+	
+	
 
 	
 
@@ -7359,7 +7434,7 @@ package body et_schematic_ops.nets is
 		log (text => "module " & to_string (module_cursor)
 			& " moving object " 
 			-- CS & to_string (object)
-			& " to" & to_string (destination),
+			& " to " & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -7375,7 +7450,12 @@ package body et_schematic_ops.nets is
 				null; -- CS
 
 			when CAT_LABEL => 
-				null; -- CS
+				move_net_label (
+					module_cursor	=> module_cursor,
+					label			=> object.label,
+					destination		=> destination,
+					log_threshold	=> log_threshold + 1);
+
 
 			when CAT_CONNECTOR => 
 				null; -- CS
