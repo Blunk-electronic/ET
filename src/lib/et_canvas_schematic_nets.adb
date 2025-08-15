@@ -1557,7 +1557,7 @@ package body et_canvas_schematic_nets is
 
 
 	
-	procedure place_label (
+	procedure place_net_label (
 		tool	: in type_tool;
 		point	: in type_vector_model)
 	is 
@@ -1589,8 +1589,6 @@ package body et_canvas_schematic_nets is
 
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
-
-				-- CS redraw schematic ?
 				
 			else
 				log (text => "nothing to do", level => log_threshold);
@@ -1638,11 +1636,96 @@ package body et_canvas_schematic_nets is
 		else
 			finalize;
 		end if;
-
-	end place_label;
-
+	end place_net_label;
 
 
+
+
+
+	
+
+	procedure place_net_connector (
+		tool	: in type_tool;
+		point	: in type_vector_model)
+	is 
+
+
+		procedure finalize is
+			use et_modes.schematic;
+			use et_undo_redo;
+			use et_commit;
+
+			object : constant type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
+		begin
+			log (text => "finalize place net connector", level => log_threshold);
+			log_indentation_up;
+
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+				
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+
+				place_net_connector (
+					module_cursor	=> active_module, 
+					segment			=> object.segment,
+					position		=> point,
+					log_threshold	=> log_threshold + 1);
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			
+			set_status (status_delete_label);
+			
+			reset_proposed_objects (active_module, log_threshold + 1);
+
+			reset_editing_process; -- prepare for a new editing process
+		end finalize;
+		
+
+	begin
+		-- Initially the editing process is not running:
+		if not edit_process_running then
+
+			-- Set the tool being used:
+			object_tool := tool;
+			
+			
+			if not clarification_pending then
+				-- Locate all net segments in the vicinity of the given point:
+				find_objects (point);
+
+				-- NOTE: If many segments have been found, then
+				-- clarification is now pending.
+
+				-- If find_objects has found only one segment,				
+				-- then the flag edit_process_running is set true.
+
+				if edit_process_running then
+					finalize;
+				end if;
+				
+			else
+				-- Here the clarification procedure ends.
+				-- A segment has been selected via procedure clarify_object.
+				
+				finalize;
+			end if;
+
+		else
+			finalize;
+		end if;
+	end place_net_connector;
+
+	
 	
 	
 -- 	procedure move_selected_label (

@@ -760,6 +760,16 @@ package et_schematic_ops.nets is
 		position		: in type_vector_model;
 		log_threshold	: in type_log_level);
 		
+
+	-- Places a net connector at the given net segment
+	-- at the given position:
+	procedure place_net_connector (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;						  
+		position		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+
 	
 	-- Places a label next to a segment at position.
 	procedure place_net_label (
@@ -803,7 +813,7 @@ package et_schematic_ops.nets is
 	-- This procedure deletes a net connector:
 	procedure delete_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_net_connector; -- CS rename to connector
+		connector		: in type_object_net_connector;
 		log_threshold	: in type_log_level);
 
 	
@@ -821,12 +831,10 @@ package et_schematic_ops.nets is
 		label			: in type_object_net_label;
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level);
-
-	
-
 										  
 	
-	-- CS procedure move_net_label
+	-- CS procedure move_net_label to be called via
+	-- script processor
 
 	
 	-- Queries the position of the given net. If a stub is at the
@@ -852,7 +860,7 @@ package et_schematic_ops.nets is
 	-- status to "selected":
 	procedure show_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_net_connector; -- CS rename to connector
+		connector		: in type_object_net_connector;
 		log_threshold	: in type_log_level);
 
 	

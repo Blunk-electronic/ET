@@ -390,10 +390,15 @@ package et_canvas_schematic_nets is
 
 	
  
-	procedure place_label (
+	procedure place_net_label (
 		tool	: in type_tool;
 		point	: in type_vector_model);
 
+
+
+	procedure place_net_connector (
+		tool	: in type_tool;
+		point	: in type_vector_model);
 
 	
 	

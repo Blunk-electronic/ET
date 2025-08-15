@@ -5316,6 +5316,7 @@ package body et_schematic_ops.nets is
 
 
 
+	
 
 	
 
@@ -5374,7 +5375,6 @@ package body et_schematic_ops.nets is
 			module.nets.update_element (segment.net_cursor, query_net'access);
 		end query_module;
 
-
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
@@ -5383,16 +5383,79 @@ package body et_schematic_ops.nets is
 			level => log_threshold);
 		
 		log_indentation_up;
-
-
-		generic_modules.update_element (module_cursor, query_module'access);
-		
+		generic_modules.update_element (module_cursor, query_module'access);		
 		log_indentation_down;
 	end place_net_label;
 	
 
 
 	
+
+
+	
+	procedure place_net_connector (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;						  
+		position		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is				
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (strand : in out type_strand) is
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					
+					procedure query_segment (segment : in out type_net_segment) is 
+					begin
+						-- CS
+						null; -- activate the connector
+						-- of the affected end of the segment
+						-- The end must be a stub !
+					end query_segment;
+
+					
+				begin
+					strand.segments.update_element (segment.segment_cursor, query_segment'access);
+				end query_strand;
+
+				
+			begin
+				net.strands.update_element (segment.strand_cursor, query_strand'access);					
+			end query_net;
+
+			
+		begin
+			module.nets.update_element (segment.net_cursor, query_net'access);
+		end query_module;
+
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " place net connector at segment" 
+			& " at " & to_string (position),
+			level => log_threshold);
+		
+		log_indentation_up;
+		generic_modules.update_element (module_cursor, query_module'access);		
+		log_indentation_down;
+	end place_net_connector;
+
+
+
+	
+
 	
 	
 	procedure place_net_label (
@@ -5755,7 +5818,7 @@ package body et_schematic_ops.nets is
 
 	procedure delete_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_net_connector;
+		connector		: in type_object_net_connector;
 		log_threshold	: in type_log_level)
 	is
 
@@ -5763,8 +5826,38 @@ package body et_schematic_ops.nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is				
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (strand : in out type_strand) is
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					
+					procedure query_segment (segment : in out type_net_segment) is 
+					begin
+						-- CS
+						null; -- deactivate the connector
+						-- of the affected end of the segment
+					end query_segment;
+
+					
+				begin
+					strand.segments.update_element (connector.segment_cursor, query_segment'access);
+				end query_strand;
+
+				
+			begin
+				net.strands.update_element (connector.strand_cursor, query_strand'access);					
+			end query_net;
+
+			
 		begin
-			null;
+			module.nets.update_element (connector.net_cursor, query_net'access);
 		end query_module;
 
 		
@@ -6170,7 +6263,7 @@ package body et_schematic_ops.nets is
 	
 	procedure show_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_net_connector;
+		connector		: in type_object_net_connector;
 		log_threshold	: in type_log_level)
 	is
 
@@ -6188,31 +6281,31 @@ package body et_schematic_ops.nets is
 				procedure query_strand (strand : in out type_strand) is
 
 					procedure query_segment (segment : in out type_net_segment) is begin
-						case label.start_end is
+						case connector.start_end is
 							when A => set_selected (segment.tag_labels.A);
 							when B => set_selected (segment.tag_labels.B);
 						end case;
 					end query_segment;
 					
 				begin
-					strand.segments.update_element (label.segment_cursor, query_segment'access);
+					strand.segments.update_element (connector.segment_cursor, query_segment'access);
 				end;
 
 				
 			begin
-				net.strands.update_element (label.strand_cursor, query_strand'access);
+				net.strands.update_element (connector.strand_cursor, query_strand'access);
 			end query_net;
 
 			
 		begin
-			module.nets.update_element (label.net_cursor, query_net'access);
+			module.nets.update_element (connector.net_cursor, query_net'access);
 		end query_module;
 
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " showing/highlight net connector "
-			& to_string (label),
+			& to_string (connector),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -6337,8 +6430,8 @@ package body et_schematic_ops.nets is
 		result_segment 	: type_object_segment;		
 		result_strand	: type_object_strand;
 		result_net		: type_object_net;
-		result_label	: type_object_net_label; -- CS rename to result_label_simple
-		result_label_tag: type_object_net_connector;
+		result_label	: type_object_net_label;
+		result_label_tag: type_object_net_connector; -- CS rename to result_connector
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -6923,8 +7016,8 @@ package body et_schematic_ops.nets is
 			search_nets; -- addresses whole nets		
 			search_strands;
 			search_net_segments;			
-			search_net_labels; -- CS rename to search_net_labels_simple
-			search_net_labels_tag;
+			search_net_labels;
+			search_net_labels_tag; -- CS rename to search_net_connectors
 		end query_module;
 
 		

@@ -347,11 +347,10 @@ is
 			when key_space =>
 				case noun is
 					when NOUN_NET_LABEL =>
-						place_label (KEYBOARD, get_cursor_position);
+						place_net_label (KEYBOARD, get_cursor_position);
 
 					when NOUN_NET_CONNECTOR =>
-						null; -- CS
-
+						place_net_connector (KEYBOARD, get_cursor_position);
 						
 					when others => null;							
 				end case;
