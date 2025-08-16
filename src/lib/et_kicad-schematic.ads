@@ -437,6 +437,21 @@ package et_kicad.schematic is
 	-- Returns the simple name of the given net name.
 	-- Example: If the given name is "MOTOR_DRIVER/CLOCK" then the return is "CLOCK".
 
+
+	type type_net_label_appearance is (
+		SIMPLE,	-- a label that shows just the name of the net
+		TAG 	-- a lable that shows the net name, the sheet name and the row/column
+		);		-- where the net continues
+	-- CS rename to type_label_category
+
+	
+	function to_string (appearance : in type_net_label_appearance) return string;
+	
+	function to_appearance (appearance : in string) return type_net_label_appearance;
+
+
+
+	
 	type type_net_label (label_appearance : type_net_label_appearance) is record
 		coordinates	: type_vector_model;
 		rotation	: et_schematic_coordinates.type_rotation_model;

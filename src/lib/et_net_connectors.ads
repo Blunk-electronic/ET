@@ -58,18 +58,6 @@ package et_net_connectors is
 	use pac_text_schematic;
 	
 	
--- 	type type_net_label_appearance is (
--- 		SIMPLE,	-- a label that shows just the name of the net
--- 		TAG 	-- a lable that shows the net name, the sheet name and the row/column
--- 		);		-- where the net continues
--- 	-- CS rename to type_label_category
--- 
--- 	
--- 	function to_string (appearance : in type_net_label_appearance) return string;
--- 	
--- 	function to_appearance (appearance : in string) return type_net_label_appearance;
-
-	
 	type type_net_label_direction is (INPUT, OUTPUT, BIDIR, TRISTATE, PASSIVE); -- CS POWER ?
 	net_label_direction_default : constant type_net_label_direction := PASSIVE;
 

@@ -43,13 +43,6 @@ with ada.text_io;						use ada.text_io;
 
 package body et_net_connectors is
 
-	-- function to_string (appearance : in type_net_label_appearance) return string is begin
-	-- 	return to_lower (type_net_label_appearance'image (appearance));
-	-- end;
- -- 
-	-- function to_appearance (appearance : in string) return type_net_label_appearance is begin
-	-- 	return type_net_label_appearance'value (appearance);
-	-- end;
 	
 	function to_string (direction : in type_net_label_direction) return string is begin
 		return to_lower (type_net_label_direction'image (direction));
