@@ -1937,11 +1937,11 @@ package body et_kicad.schematic is
 
 	
 	function to_direction (text_in : in string) 
-		return type_net_label_direction 
+		return type_connector_direction 
 	is
 	-- Converts the direction of a label to a type_label_direction. 
 	-- CS: currently case sensitive ! Use dedicated type for input parameter.
-		d_out : type_net_label_direction := input;
+		d_out : type_connector_direction := input;
 	begin
 		if text_in = schematic_keyword_label_dir_input then
 			d_out := INPUT;

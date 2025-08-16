@@ -765,7 +765,7 @@ is
 	net_segments	: et_net_segment.pac_net_segments.list;
 	net_segment		: et_net_segment.type_net_segment;
 	net_junctions	: et_net_junction.type_junctions;
-	net_tag_labels	: et_net_connectors.type_tag_labels;
+	net_tag_labels	: et_net_connectors.type_net_connectors;
 
 	
 	procedure set_junction (place : in string) is begin
@@ -847,8 +847,8 @@ is
 		et_text.type_rotation_documentation'first;
 
 	-- The net label direction is relevant if it is a tag label:
-	net_label_direction : et_net_connectors.type_net_label_direction := 
-		et_net_connectors.type_net_label_direction'first;
+	net_label_direction : et_net_connectors.type_connector_direction := 
+		et_net_connectors.type_connector_direction'first;
 
 	-- CS warn about parameter "direction" being ignored
 

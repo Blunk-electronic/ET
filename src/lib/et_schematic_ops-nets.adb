@@ -5300,7 +5300,7 @@ package body et_schematic_ops.nets is
 						start_end : type_start_end_point; -- A or B end
 						
 						
-						procedure query_label (label : in type_net_label_tag) is
+						procedure query_label (label : in type_net_connector) is
 
 							procedure set_result is begin
 								result.net_cursor		:= net_cursor;
@@ -5683,7 +5683,7 @@ package body et_schematic_ops.nets is
 	procedure place_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
 		position		: in type_object_position; -- sheet/x/y
-		direction		: in type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
+		direction		: in type_connector_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		log_threshold	: in type_log_level) 
 	is
 		net_cursor : pac_nets.cursor; -- points to the net
@@ -5723,7 +5723,7 @@ package body et_schematic_ops.nets is
 						stub : constant type_stub := query_stub (
 							module_cursor, net_name, position, log_threshold + 1);
 
-						t : type_net_label_tag;
+						t : type_net_connector;
 					begin
 						-- A tag label can be attached to a stub only.
 						-- So we test wheter the given position matches either
@@ -6990,7 +6990,7 @@ package body et_schematic_ops.nets is
 			----------------------------------------------------------------------------------------
 			
 
-			procedure search_net_labels_tag is
+			procedure search_net_connectors is
 				net_cursor : pac_nets.cursor := module.nets.first;
 				
 
@@ -7010,7 +7010,7 @@ package body et_schematic_ops.nets is
 							start_end : type_start_end_point;
 
 							
-							procedure query_label (label : in type_net_label_tag) is
+							procedure query_label (label : in type_net_connector) is
 
 								-- This procedure appends the matching
 								-- net, strand, segment and end point to the result:
@@ -7088,7 +7088,7 @@ package body et_schematic_ops.nets is
 				end loop;
 				
 				log_indentation_down;
-			end search_net_labels_tag;
+			end search_net_connectors;
 			
 			
 		begin
@@ -7096,7 +7096,7 @@ package body et_schematic_ops.nets is
 			search_strands;
 			search_net_segments;			
 			search_net_labels;
-			search_net_labels_tag; -- CS rename to search_net_connectors
+			search_net_connectors;
 		end query_module;
 
 		

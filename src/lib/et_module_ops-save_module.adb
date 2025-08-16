@@ -550,7 +550,7 @@ is
 					use et_net_connectors;
 					
 					-- Writes the given tag label:
-					procedure write_label (l : in type_net_label_tag) is begin
+					procedure write_label (l : in type_net_connector) is begin
 						if is_active (l) then
 							write (keyword => keyword_tag_label, 
 								parameters => keyword_start & space & get_direction (l));

@@ -59,7 +59,7 @@ package et_net_segment is
 	
 	type type_net_segment is new type_line with record -- CS make private
 		labels		: pac_net_labels.list;
-		tag_labels	: type_tag_labels;
+		tag_labels	: type_net_connectors;
 		junctions	: type_junctions;
 		ports		: type_ports_AB; -- CS
 		--ports		: type_ports;
@@ -125,7 +125,7 @@ package et_net_segment is
 	function get_tag_label (
 		segment	: in type_net_segment;
 		AB_end	: in type_start_end_point)
-		return type_net_label_tag;
+		return type_net_connector;
 
 
 	-- Returns the tag label at the specified
@@ -133,7 +133,7 @@ package et_net_segment is
 	function get_tag_label (
 		segment		: in type_net_segment;
 		NSWE_end	: in type_direction_NSWE)
-		return type_net_label_tag;
+		return type_net_connector;
 
 	
 	

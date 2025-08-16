@@ -461,7 +461,7 @@ package et_kicad.schematic is
 		processed	: boolean := false; -- used for associating label with net segment
 		case label_appearance is
 			when TAG => 
-				direction	: type_net_label_direction;
+				direction	: type_connector_direction;
 				global		: boolean; -- CS: use only one flag. true -> hierachic, false -> global
 				hierarchic	: boolean;
 			when SIMPLE => null;

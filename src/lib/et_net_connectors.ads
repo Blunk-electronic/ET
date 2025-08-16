@@ -36,19 +36,14 @@
 --   history of changes:
 --
 
-with ada.characters.handling;			use ada.characters.handling;
-with ada.containers; 					use ada.containers;
-with ada.containers.doubly_linked_lists;
+
 with cairo;
 
-with et_schematic_coordinates;			use et_schematic_coordinates;
-with et_text;							use et_text;
-with et_schematic_text;					use et_schematic_text;
-
-with et_alignment;						use et_alignment;
-with et_object_status;					use et_object_status;
-
 with et_fonts;
+
+with et_schematic_coordinates;			use et_schematic_coordinates;
+with et_schematic_text;					use et_schematic_text;
+with et_object_status;					use et_object_status;
 
 
 
@@ -58,25 +53,32 @@ package et_net_connectors is
 	use pac_text_schematic;
 	
 	
-	type type_net_label_direction is (INPUT, OUTPUT, BIDIR, TRISTATE, PASSIVE); -- CS POWER ?
-	net_label_direction_default : constant type_net_label_direction := PASSIVE;
+	type type_connector_direction is (
+		-- CS POWER ?
+		INPUT, 
+		OUTPUT, 
+		BIDIR, 
+		TRISTATE, 
+		PASSIVE); -- CS use prefix DIR_ ?
+	
+	connector_direction_default : constant type_connector_direction := PASSIVE;
 
 	
-	function to_string (direction : in type_net_label_direction) return string;
-	function to_direction (direction : in string) return type_net_label_direction;
+	function to_string (direction : in type_connector_direction) return string;
+	
+	function to_direction (direction : in string) return type_connector_direction;
 
 
 	
 
 	
-	-- A tag label can only be attached to a stub of a net, means to a 
+	-- A net connector can only be attached to a stub of a net, means to a 
 	-- dead end of a net segment.
-	-- The rotation of the label depends on the direction of the stub.
-	-- However, the shown text inside the label (net name and coordinates) 
+	-- The rotation of the connector depends on the direction of the stub.
+	-- However, the shown text inside the connector (net name and coordinates) 
 	-- is always readable from the front or from the right.
 	
-	type type_net_label_tag (active : boolean := false) is record
-	-- is new type_net_label_base with record
+	type type_net_connector (active : boolean := false) is record
 		case active is
 			when TRUE =>
 				size		: type_text_size := text_size_default;
@@ -86,7 +88,7 @@ package et_net_connectors is
 				
 				status		: type_object_status;
 				
-				direction	: type_net_label_direction := net_label_direction_default;
+				direction	: type_connector_direction := connector_direction_default;
 
 			when FALSE => null;
 		end case;
@@ -95,12 +97,12 @@ package et_net_connectors is
 
 
 	function get_direction (
-		label	: in type_net_label_tag)
-		return type_net_label_direction;
+		connector	: in type_net_connector)
+		return type_connector_direction;
 
 
 	function get_direction (
-		label	: in type_net_label_tag)
+		connector	: in type_net_connector)
 		return string;
 
 
@@ -108,16 +110,16 @@ package et_net_connectors is
 	
 	
 	procedure modify_status (
-		label 		: in out type_net_label_tag;
+		connector 	: in out type_net_connector;
 		operation	: in type_status_operation);
 
 
 
-	-- This type models the tag labels of
+	-- This type models the connectors of
 	-- a net segment:
-	type type_tag_labels is record
-		A : type_net_label_tag; --(active => false);
-		B : type_net_label_tag; -- (active => false);
+	type type_net_connectors is record
+		A : type_net_connector; --(active => false);
+		B : type_net_connector; -- (active => false);
 	end record;
 
 
@@ -125,68 +127,68 @@ package et_net_connectors is
 	
 
 	procedure reset_status (
-		labels : in out type_tag_labels);
+		labels : in out type_net_connectors);
 	
 
 	function is_active (
-		label : in type_net_label_tag)
+		connector : in type_net_connector)
 		return boolean;
 
 
 	procedure set_active (
-		label : in out type_net_label_tag);
+		connector : in out type_net_connector);
 	
 
 
 	function is_proposed (
-		label : in type_net_label_tag)
+		connector : in type_net_connector)
 		return boolean;
 
 	
 							 
 	procedure set_proposed (
-		label : in out type_net_label_tag);
+		connector : in out type_net_connector);
 
 
 	procedure clear_proposed (
-		label : in out type_net_label_tag);
+		connector : in out type_net_connector);
 
 
 	
 
 	function is_selected (
-		label : in type_net_label_tag)
+		connector : in type_net_connector)
 		return boolean;
 
 	
 	procedure set_selected (
-		label : in out type_net_label_tag);
+		connector : in out type_net_connector);
 
 
 	procedure clear_selected (
-		label : in out type_net_label_tag);
+		connector : in out type_net_connector);
 
 
 
 
 
 	function is_moving (
-		label : in type_net_label_tag)
+		connector : in type_net_connector)
 		return boolean;
 
 	
 	procedure set_moving (
-		label : in out type_net_label_tag);
+		connector : in out type_net_connector);
 
 
 	procedure clear_moving (
-		label : in out type_net_label_tag);
+		connector : in out type_net_connector);
 
 	
 	
 	
-	procedure reset_tag_label (
-		label : in out type_net_label_tag);
+	procedure reset_connector (
+		connector : in out type_net_connector);
 
 
 	
@@ -203,16 +205,19 @@ package et_net_connectors is
 
 	use pac_geometry_sch;
 	
-	-- GUI relevant only: The line width of the box that enshroudes the net name of a tag label:
-	tag_label_box_line_width : constant type_distance_positive := 0.2;
+	-- GUI relevant only: The line width of the box that enshroudes 
+	-- the net name of a connector:
+	net_connector_box_linewidth : constant type_distance_positive := 0.2;
 
 	
-	-- GUI relevant only: The spacing between anchor point of tag label and net name:
-	tag_label_text_offset : constant type_distance_positive := 1.0;
+	-- GUI relevant only: The spacing between anchor point 
+	-- of the connector and the net name:
+	net_connector_text_offset : constant type_distance_positive := 1.0;
 
 	
-	-- GUI relevant only: The ratio of box height to text size of a tag label:
-	tag_label_height_to_size_ratio : constant type_distance_positive := 1.8;
+	-- GUI relevant only: The ratio of box height 
+	-- to text size of a net connector:
+	net_connector_height_to_size_ratio : constant type_distance_positive := 1.8;
 
 
 	

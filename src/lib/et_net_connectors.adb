@@ -38,36 +38,36 @@
 
 
 with ada.text_io;						use ada.text_io;
-
+with ada.characters.handling;			use ada.characters.handling;
 
 
 package body et_net_connectors is
 
 	
-	function to_string (direction : in type_net_label_direction) return string is begin
-		return to_lower (type_net_label_direction'image (direction));
+	function to_string (direction : in type_connector_direction) return string is begin
+		return to_lower (type_connector_direction'image (direction));
 	end;
 
-	function to_direction (direction : in string) return type_net_label_direction is begin
-		return type_net_label_direction'value (direction);
+	function to_direction (direction : in string) return type_connector_direction is begin
+		return type_connector_direction'value (direction);
 	end;
 
 
 
 
 	function get_direction (
-		label	: in type_net_label_tag)
-		return type_net_label_direction
+		connector	: in type_net_connector)
+		return type_connector_direction
 	is begin
-		return label.direction;
+		return connector.direction;
 	end;
 
 
 	function get_direction (
-		label	: in type_net_label_tag)
+		connector	: in type_net_connector)
 		return string
 	is begin
-		return to_string (get_direction (label));
+		return to_string (get_direction (connector));
 	end;
 
 
@@ -76,18 +76,18 @@ package body et_net_connectors is
 	
 
 	procedure modify_status (
-		label 		: in out type_net_label_tag;
+		connector 	: in out type_net_connector;
 		operation	: in type_status_operation)
 	is begin
-		if label.active then
-			modify_status (label.status, operation);
+		if connector.active then
+			modify_status (connector.status, operation);
 		end if;
 	end;
 
 	
 
 	procedure reset_status (
-		labels : in out type_tag_labels)
+		labels : in out type_net_connectors)
 	is begin
 		if labels.A.active then
 			reset_status (labels.A.status);
@@ -102,27 +102,27 @@ package body et_net_connectors is
 	
 
 	function is_active (
-		label : in type_net_label_tag)
+		connector : in type_net_connector)
 		return boolean
 	is begin
-		return label.active;
+		return connector.active;
 	end;
 	
 
 	procedure set_active (
-		label : in out type_net_label_tag)
+		connector : in out type_net_connector)
 	is begin
-		label := (active => true, others => <>);
+		connector := (active => true, others => <>);
 	end;
 
 
 
 	function is_proposed (
-		label : in type_net_label_tag)
+		connector : in type_net_connector)
 		return boolean
 	is begin
-		if label.active then
-			return is_proposed (label.status);
+		if connector.active then
+			return is_proposed (connector.status);
 		else
 			return false;
 		end if;
@@ -131,19 +131,19 @@ package body et_net_connectors is
 	
 
 	procedure set_proposed (
-		label : in out type_net_label_tag)
+		connector : in out type_net_connector)
 	is begin
-		if label.active then
-			set_proposed (label.status);
+		if connector.active then
+			set_proposed (connector.status);
 		end if;
 	end;
 
 
 	procedure clear_proposed (
-		label : in out type_net_label_tag)
+		connector : in out type_net_connector)
 	is begin
-		if label.active then
-			clear_proposed (label.status);
+		if connector.active then
+			clear_proposed (connector.status);
 		end if;
 	end;
 
@@ -152,11 +152,11 @@ package body et_net_connectors is
 
 
 	function is_selected (
-		label : in type_net_label_tag)
+		connector : in type_net_connector)
 		return boolean
 	is begin
-		if label.active then
-			return is_selected (label.status);
+		if connector.active then
+			return is_selected (connector.status);
 		else
 			return false;
 		end if;
@@ -165,19 +165,19 @@ package body et_net_connectors is
 	
 
 	procedure set_selected (
-		label : in out type_net_label_tag)
+		connector : in out type_net_connector)
 	is begin
-		if label.active then
-			set_selected (label.status);
+		if connector.active then
+			set_selected (connector.status);
 		end if;
 	end;
 
 
 	procedure clear_selected (
-		label : in out type_net_label_tag)
+		connector : in out type_net_connector)
 	is begin
-		if label.active then
-			clear_selected (label.status);
+		if connector.active then
+			clear_selected (connector.status);
 		end if;
 	end;
 
@@ -185,11 +185,11 @@ package body et_net_connectors is
 
 
 	function is_moving (
-		label : in type_net_label_tag)
+		connector : in type_net_connector)
 		return boolean
 	is begin
-		if label.active then
-			return is_moving (label.status);
+		if connector.active then
+			return is_moving (connector.status);
 		else
 			return false;
 		end if;
@@ -197,28 +197,28 @@ package body et_net_connectors is
 	
 
 	procedure set_moving (
-		label : in out type_net_label_tag)
+		connector : in out type_net_connector)
 	is begin
-		if label.active then
-			set_moving (label.status);
+		if connector.active then
+			set_moving (connector.status);
 		end if;
 	end;
 
 
 	procedure clear_moving (
-		label : in out type_net_label_tag)
+		connector : in out type_net_connector)
 	is begin
-		if label.active then
-			clear_moving (label.status);
+		if connector.active then
+			clear_moving (connector.status);
 		end if;
 	end;
 	
 	
 	
-	procedure reset_tag_label (
-		label : in out type_net_label_tag)
+	procedure reset_connector (
+		connector : in out type_net_connector)
 	is begin
-		label := (active => false, others => <>);
+		connector := (active => false, others => <>);
 	end;
 
 

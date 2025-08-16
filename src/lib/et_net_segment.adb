@@ -155,7 +155,7 @@ package body et_net_segment is
 	function get_tag_label (
 		segment	: in type_net_segment;
 		AB_end	: in type_start_end_point)
-		return type_net_label_tag
+		return type_net_connector
 	is begin
 		case AB_end is
 			when A => return segment.tag_labels.A;
@@ -170,7 +170,7 @@ package body et_net_segment is
 	function get_tag_label (
 		segment		: in type_net_segment;
 		NSWE_end	: in type_direction_NSWE)
-		return type_net_label_tag
+		return type_net_connector
 	is
 		AB_end : type_start_end_point;
 	begin
@@ -580,10 +580,10 @@ package body et_net_segment is
 		
 		procedure merge_tag_labels is
 			-- Backup the tag labels at the open end of the two segments:
-			tag_A : type_net_label_tag := 
+			tag_A : type_net_connector := 
 				get_tag_label (primary,   get_opposide_end (primary_end));
 			
-			tag_B : type_net_label_tag := 
+			tag_B : type_net_connector := 
 				get_tag_label (secondary, get_opposide_end (secondary_end));
 		begin
 			-- Overwrite the tags labels of the given primary segment
@@ -862,15 +862,15 @@ package body et_net_segment is
 
 
 		-- Tag labels at A and B end of the resulting segment:
-		TRA, TRB : type_net_label_tag;
+		TRA, TRB : type_net_connector;
 
 		
 		procedure merge_tag_labels is		
 			-- Labels at the A and B end of the primary segment;
-			TPA, TPB : type_net_label_tag;
+			TPA, TPB : type_net_connector;
 
 			-- Labels at the A and B end of the secondary segment;
-			TSA, TSB : type_net_label_tag;
+			TSA, TSB : type_net_connector;
 		begin
 			-- The orientation determines whether to collect
 			-- the tag labels from the west and east ends or

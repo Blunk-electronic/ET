@@ -800,7 +800,7 @@ package et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		-- CS size ?
 		position		: in type_object_position; -- sheet/x/y
-		direction		: in type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
+		direction		: in type_connector_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		log_threshold	: in type_log_level);
 
 

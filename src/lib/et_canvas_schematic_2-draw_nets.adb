@@ -255,10 +255,6 @@ procedure draw_nets is
 						set_color_nets (BRIGHT);
 					end if;
 					
-					-- case label.appearance is
-					-- 	when SIMPLE	=> draw_simple;
-					-- 	when TAG	=> draw_tag;
-					-- end case;
 					draw_simple;
 
 					if is_selected (label) then
@@ -282,7 +278,7 @@ procedure draw_nets is
 					
 					
 					-- This procedure draws a tag label:
-					procedure draw_tag (label : in type_net_label_tag) is
+					procedure draw_connector (label : in type_net_connector) is
 						use pac_draw_text;
 						use et_alignment;
 						use pac_net_name;
@@ -301,8 +297,8 @@ procedure draw_nets is
 
 							-- Expand the box so that there is some empty space between
 							-- text and border:
-							box.height := box.height * tag_label_height_to_size_ratio;
-							box.width  := box.width  * tag_label_height_to_size_ratio;
+							box.height := box.height * net_connector_height_to_size_ratio;
+							box.width  := box.width  * net_connector_height_to_size_ratio;
 						end make_box;
 						
 						
@@ -320,7 +316,7 @@ procedure draw_nets is
 
 						-- The text position is not the same as the 
 						-- label position, thus it must be calculated according to 
-						-- the label rotation and tag_label_text_offset:
+						-- the label rotation and net_connector_text_offset:
 						text_position : type_vector_model;
 
 						
@@ -339,7 +335,7 @@ procedure draw_nets is
 								get_y (position) - box.height * 0.5);
 
 							text_rotation := zero_rotation;
-							text_position := set (get_x (position) + tag_label_text_offset, 
+							text_position := set (get_x (position) + net_connector_text_offset, 
 												  get_y (position));
 							
 							text_alignment.horizontal := ALIGN_LEFT;
@@ -356,7 +352,7 @@ procedure draw_nets is
 
 							text_rotation := 90.0;
 							text_position := set (get_x (position), 
-												  get_y (position) + tag_label_text_offset);
+												  get_y (position) + net_connector_text_offset);
 							
 							text_alignment.horizontal := ALIGN_LEFT;
 						end if;
@@ -369,7 +365,7 @@ procedure draw_nets is
 								get_y (position) - box.height * 0.5);
 
 							text_rotation := zero_rotation;
-							text_position := set (get_x (position) - tag_label_text_offset, 
+							text_position := set (get_x (position) - net_connector_text_offset, 
 												  get_y (position));
 							
 							text_alignment.horizontal := ALIGN_RIGHT;
@@ -386,7 +382,7 @@ procedure draw_nets is
 
 							text_rotation := 90.0;
 							text_position := set (get_x (position), 
-												  get_y (position) - tag_label_text_offset);
+												  get_y (position) - net_connector_text_offset);
 							
 							text_alignment.horizontal := ALIGN_RIGHT;
 						end if;
@@ -401,7 +397,7 @@ procedure draw_nets is
 						-- Draw the box enshrouding the net name:
 						draw_rectangle (
 							rectangle	=> box, 
-							width		=> tag_label_box_line_width);
+							width		=> net_connector_box_linewidth);
 
 						-- Draw the actual net name:
 						draw_text (
@@ -420,7 +416,7 @@ procedure draw_nets is
 						if is_selected (label) then
 							set_color_nets (NORMAL);
 						end if;
-					end draw_tag;
+					end draw_connector;
 
 					
 				begin
@@ -442,7 +438,7 @@ procedure draw_nets is
 							move_by (position, object_displacement);
 						end if;
 						
-						draw_tag (segment.tag_labels.A);
+						draw_connector (segment.tag_labels.A);
 					end if;
 
 					
@@ -462,7 +458,7 @@ procedure draw_nets is
 							move_by (position, object_displacement);
 						end if;
 
-						draw_tag (segment.tag_labels.B);
+						draw_connector (segment.tag_labels.B);
 					end if;					
 				end draw_net_connectors;
 				
