@@ -36,7 +36,7 @@
 --   history of changes:
 --
 
-with ada.characters.handling;			use ada.characters.handling;
+
 with ada.containers; 					use ada.containers;
 with ada.containers.doubly_linked_lists;
 with cairo;
@@ -60,7 +60,7 @@ package et_net_labels is
 
 
 	
-	type type_net_label_base is tagged record -- CS rename to type_net_label
+	type type_net_label_base is tagged record
 		size		: type_text_size := text_size_default;
 		
 		width		: et_schematic_text.type_text_line_width := et_schematic_text.type_text_line_width'first;
