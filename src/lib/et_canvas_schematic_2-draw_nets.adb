@@ -213,7 +213,7 @@ procedure draw_nets is
 
 
 				-- This procedure queries a simple net label and draws it:
-				procedure query_label (label : in type_net_label_simple) is
+				procedure query_label (label : in type_net_label) is
 					use pac_net_name;
 					use pac_draw_text;
 

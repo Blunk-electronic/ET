@@ -4653,7 +4653,7 @@ package body et_schematic_ops.nets is
 					is 
 						label_cursor : pac_net_labels.cursor := segment.labels.first;
 
-						procedure query_label (label : in out type_net_label_simple) is begin
+						procedure query_label (label : in out type_net_label) is begin
 							log (text => "label: " & get_position (label), level => log_threshold + 3);
 							reset_status (label);
 						end;
@@ -4821,7 +4821,7 @@ package body et_schematic_ops.nets is
 
 					procedure query_segment (segment : in out type_net_segment) is 
 
-						procedure query_label (label : in out type_net_label_simple) is begin
+						procedure query_label (label : in out type_net_label) is begin
 							modify_status (label, operation);
 						end;
 							
@@ -4958,7 +4958,7 @@ package body et_schematic_ops.nets is
 						label_cursor : pac_net_labels.cursor := segment.labels.first;
 
 
-						procedure query_label (label : in out type_net_label_simple) is begin
+						procedure query_label (label : in out type_net_label) is begin
 							if in_catch_zone (catch_zone, get_position (label)) then
 								log (text => "in catch zone", level => log_threshold + 5);
 								set_proposed (label);
@@ -5169,7 +5169,7 @@ package body et_schematic_ops.nets is
 						label_cursor : pac_net_labels.cursor := segment.labels.first;
 
 						
-						procedure query_label (label : in type_net_label_simple) is
+						procedure query_label (label : in type_net_label) is
 
 							
 							procedure set_result is begin
@@ -5424,7 +5424,7 @@ package body et_schematic_ops.nets is
 					
 					procedure query_segment (segment : in out type_net_segment) is 
 						use pac_net_labels;
-						label : type_net_label_simple;
+						label : type_net_label;
 					begin
 						label.position := position;
 						-- move_by (label.position, segment_position.place);
@@ -5579,7 +5579,7 @@ package body et_schematic_ops.nets is
 					
 					procedure query_segment (segment : in out type_net_segment) is 
 						use pac_net_labels;
-						label : type_net_label_simple;
+						label : type_net_label;
 					begin
 						-- label_position is relative to segment_position
 						label.position := label_position;
@@ -6102,7 +6102,7 @@ package body et_schematic_ops.nets is
 					procedure query_segment (segment : in out type_net_segment) is 
 						use pac_net_labels;
 
-						procedure query_label (label : in out type_net_label_simple) is
+						procedure query_label (label : in out type_net_label) is
 						begin
 							label.position := destination;
 							-- CS: adjust distance to net segment.
@@ -6298,7 +6298,7 @@ package body et_schematic_ops.nets is
 
 					procedure query_segment (segment : in out type_net_segment) is 
 
-						procedure query_label (label : in out type_net_label_simple) is begin
+						procedure query_label (label : in out type_net_label) is begin
 							set_selected (label);
 						end;
 
@@ -6903,7 +6903,7 @@ package body et_schematic_ops.nets is
 							label_cursor : pac_net_labels.cursor := seg.labels.first;
 
 
-							procedure query_label (label : in type_net_label_simple) is
+							procedure query_label (label : in type_net_label) is
 
 								-- This procedure appends the matching
 								-- net, strand, segment and label cursor to the result:

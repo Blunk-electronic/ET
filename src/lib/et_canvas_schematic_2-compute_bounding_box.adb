@@ -155,7 +155,7 @@ is
 
 
 				procedure query_label (c : in pac_net_labels.cursor) is
-					label : type_net_label_simple renames element (c);
+					label : type_net_label renames element (c);
 				begin
 					null;
 					-- CS: The text or label size must be inquired similar to

@@ -140,7 +140,7 @@ package body et_net_labels is
 	
 
 	function get_position (
-		label : in type_net_label_simple)
+		label : in type_net_label)
 		return type_vector_model
 	is begin
 		return label.position;
@@ -148,7 +148,7 @@ package body et_net_labels is
 
 
 	function get_position (
-		label : in type_net_label_simple)
+		label : in type_net_label)
 		return string
 	is begin
 		return to_string (label.position);
@@ -161,21 +161,21 @@ package body et_net_labels is
 
 
 	procedure set_moving (
-		label : in out type_net_label_simple)
+		label : in out type_net_label)
 	is begin
 		set_moving (label.status);
 	end;
 
 	
 	procedure clear_moving (
-		label : in out type_net_label_simple)
+		label : in out type_net_label)
 	is begin
 		clear_moving (label.status);
 	end;
 		
 
 	function is_moving (
-		label : in type_net_label_simple)
+		label : in type_net_label)
 		return boolean
 	is begin
 		if is_moving (label.status) then

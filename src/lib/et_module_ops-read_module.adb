@@ -840,7 +840,7 @@ is
 
 	
 	net_labels				: et_net_labels.pac_net_labels.list;
-	net_label 				: et_net_labels.type_net_label_simple;
+	net_label 				: et_net_labels.type_net_label;
 	
 	net_label_rotation		: et_text.type_rotation_documentation := 
 		et_text.type_rotation_documentation'first;

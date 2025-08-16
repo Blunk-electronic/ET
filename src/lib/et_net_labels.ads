@@ -130,9 +130,9 @@ package et_net_labels is
 
 
 
--- SIMPLE LABEL:
+-- LABEL:
 	
-	type type_net_label_simple is new type_net_label_base with record
+	type type_net_label is new type_net_label_base with record
 		-- The position of the label is absolute (relative to drawing origin):
 		position	: type_vector_model;
 
@@ -145,12 +145,12 @@ package et_net_labels is
 
 
 	function get_position (
-		label : in type_net_label_simple)
+		label : in type_net_label)
 		return type_vector_model;
 
 
 	function get_position (
-		label : in type_net_label_simple)
+		label : in type_net_label)
 		return string;
 
 	
@@ -158,15 +158,15 @@ package et_net_labels is
 
 	
 	procedure set_moving (
-		label : in out type_net_label_simple);
+		label : in out type_net_label);
 
 	
 	procedure clear_moving (
-		label : in out type_net_label_simple);
+		label : in out type_net_label);
 
 
 	function is_moving (
-		label : in type_net_label_simple)
+		label : in type_net_label)
 		return boolean;
 
 
@@ -174,7 +174,7 @@ package et_net_labels is
 
 	
 	
-	package pac_net_labels is new doubly_linked_lists (type_net_label_simple);
+	package pac_net_labels is new doubly_linked_lists (type_net_label);
 	use pac_net_labels;
 	
 
