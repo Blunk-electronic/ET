@@ -61,6 +61,7 @@ with et_net_junction;
 with et_net_ports;
 with et_net_segment;
 with et_net_labels;
+with et_net_connectors;
 with et_net_class;
 with et_port_names;
 with et_symbol_ports;
@@ -764,7 +765,7 @@ is
 	net_segments	: et_net_segment.pac_net_segments.list;
 	net_segment		: et_net_segment.type_net_segment;
 	net_junctions	: et_net_junction.type_junctions;
-	net_tag_labels	: et_net_labels.type_tag_labels;
+	net_tag_labels	: et_net_connectors.type_tag_labels;
 
 	
 	procedure set_junction (place : in string) is begin
@@ -781,7 +782,7 @@ is
 
 	procedure set_tag_label (place : in string) is 
 	-- example "tag_label start/end direction input/output"
-		use et_net_labels;
+		use et_net_connectors;
 	begin
 		if f (line, 2) = keyword_start then
 			set_active (net_tag_labels.A);
@@ -846,13 +847,13 @@ is
 		et_text.type_rotation_documentation'first;
 
 	-- The net label direction is relevant if it is a tag label:
-	net_label_direction : et_net_labels.type_net_label_direction := 
-		et_net_labels.type_net_label_direction'first;
+	net_label_direction : et_net_connectors.type_net_label_direction := 
+		et_net_connectors.type_net_label_direction'first;
 
 	-- CS warn about parameter "direction" being ignored
 
 	
-	procedure read_label is -- simple label
+	procedure read_label is
 		use et_schematic_text;
 		use pac_text_schematic;
 		

@@ -45,6 +45,7 @@ with et_schematic_coordinates;	use et_schematic_coordinates;
 with et_logging;				use et_logging;
 with et_net_names;				use et_net_names;
 with et_net_labels;				use et_net_labels;
+with et_net_connectors;			use et_net_connectors;
 with et_net_ports;				use et_net_ports;
 with et_net_junction;			use et_net_junction;
 with et_netlists;

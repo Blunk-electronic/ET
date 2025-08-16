@@ -49,6 +49,7 @@ with et_net_junction;						use et_net_junction;
 with et_net_segment;						use et_net_segment;
 with et_net_strands;						use et_net_strands;
 with et_net_labels;							use et_net_labels;
+with et_net_connectors;						use et_net_connectors;
 with et_net_names;							use et_net_names;
 
 
@@ -218,7 +219,7 @@ procedure draw_nets is
 					use pac_draw_text;
 
 
-					-- This procedure draws a simple label:
+					-- This procedure draws a net label:
 					procedure draw_simple is
 						-- Temporarily we store here the position
 						-- of the label. In case it is moving, then it
@@ -268,7 +269,7 @@ procedure draw_nets is
 
 
 				
-				procedure draw_tag_labels is 
+				procedure draw_net_connectors is 
 					-- The place at which the label is to be drawn.
 					-- It will be taken from the A or B end of the segment,
 					-- depending on which end has a tag lablel:
@@ -406,7 +407,7 @@ procedure draw_nets is
 						draw_text (
 							content		=> content,
 							size		=> label.size,
-							font		=> net_label_font,
+							font		=> net_connector_font,
 							anchor		=> text_position,
 							origin		=> false, -- no origin for net names required
 							
@@ -423,7 +424,7 @@ procedure draw_nets is
 
 					
 				begin
-					-- put_line ("draw tag labels");
+					-- put_line ("draw net connectors");
  					
 					-- Draw the label on the A end (if it is active):
 					if is_active (segment.tag_labels.A) then
@@ -463,7 +464,7 @@ procedure draw_nets is
 
 						draw_tag (segment.tag_labels.B);
 					end if;					
-				end draw_tag_labels;
+				end draw_net_connectors;
 				
 				
 				
@@ -512,7 +513,7 @@ procedure draw_nets is
 				end loop;
 				
 				draw_junctions;
-				draw_tag_labels;
+				draw_net_connectors;
 
 				if is_selected (segment) then
 					set_color_nets (NORMAL);

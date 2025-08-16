@@ -51,6 +51,7 @@ with et_net_names;				use et_net_names;
 with et_nets;					use et_nets;
 with et_project_name;			use et_project_name;
 with et_net_labels;				use et_net_labels;
+with et_net_connectors;			use et_net_connectors;
 with et_terminals;
 with et_package_names;			use et_package_names;
 with et_pcb;
@@ -445,7 +446,7 @@ package et_kicad.schematic is
 		processed	: boolean := false; -- used for associating label with net segment
 		case label_appearance is
 			when TAG => 
-				direction	: et_net_labels.type_net_label_direction;
+				direction	: type_net_label_direction;
 				global		: boolean; -- CS: use only one flag. true -> hierachic, false -> global
 				hierarchic	: boolean;
 			when SIMPLE => null;

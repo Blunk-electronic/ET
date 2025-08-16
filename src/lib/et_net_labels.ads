@@ -69,13 +69,6 @@ package et_net_labels is
 	
 	function to_appearance (appearance : in string) return type_net_label_appearance;
 
-	
-	type type_net_label_direction is (INPUT, OUTPUT, BIDIR, TRISTATE, PASSIVE); -- CS POWER ?
-	net_label_direction_default : constant type_net_label_direction := PASSIVE;
-
-	
-	function to_string (direction : in type_net_label_direction) return string;
-	function to_direction (direction : in string) return type_net_label_direction;
 
 
 	
@@ -212,129 +205,6 @@ package et_net_labels is
 		
 
 
--- TAG LABEL:	
-
-	
-	-- A tag label can only be attached to a stub of a net, means to a 
-	-- dead end of a net segment.
-	-- The rotation of the label depends on the direction of the stub.
-	-- However, the shown text inside the label (net name and coordinates) 
-	-- is always readable from the front or from the right.
-	
-	type type_net_label_tag (active : boolean := false) is record
-	-- is new type_net_label_base with record
-		case active is
-			when TRUE =>
-				size		: type_text_size := text_size_default;
-				
-				-- width		: et_schematic_text.type_text_line_width := et_schematic_text.type_text_line_width'first;
-				-- CS probably no need ?
-				
-				status		: type_object_status;
-				
-				direction	: type_net_label_direction := net_label_direction_default;
-
-			when FALSE => null;
-		end case;
-	end record;
-
-
-
-	function get_direction (
-		label	: in type_net_label_tag)
-		return type_net_label_direction;
-
-
-	function get_direction (
-		label	: in type_net_label_tag)
-		return string;
-
-
-
-	
-	
-	procedure modify_status (
-		label 		: in out type_net_label_tag;
-		operation	: in type_status_operation);
-
-
-
-	-- This type models the tag labels of
-	-- a net segment:
-	type type_tag_labels is record
-		A : type_net_label_tag; --(active => false);
-		B : type_net_label_tag; -- (active => false);
-	end record;
-
-
-
-	
-
-	procedure reset_status (
-		labels : in out type_tag_labels);
-	
-
-	function is_active (
-		label : in type_net_label_tag)
-		return boolean;
-
-
-	procedure set_active (
-		label : in out type_net_label_tag);
-	
-
-
-	function is_proposed (
-		label : in type_net_label_tag)
-		return boolean;
-
-	
-							 
-	procedure set_proposed (
-		label : in out type_net_label_tag);
-
-
-	procedure clear_proposed (
-		label : in out type_net_label_tag);
-
-
-	
-
-	function is_selected (
-		label : in type_net_label_tag)
-		return boolean;
-
-	
-	procedure set_selected (
-		label : in out type_net_label_tag);
-
-
-	procedure clear_selected (
-		label : in out type_net_label_tag);
-
-
-
-
-
-	function is_moving (
-		label : in type_net_label_tag)
-		return boolean;
-
-	
-	procedure set_moving (
-		label : in out type_net_label_tag);
-
-
-	procedure clear_moving (
-		label : in out type_net_label_tag);
-
-	
-	
-	
-	procedure reset_tag_label (
-		label : in out type_net_label_tag);
-
-
 	
 
 	use et_fonts;
@@ -346,23 +216,9 @@ package et_net_labels is
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
 	
-	-- GUI relevant only: The alignment for simple labels:
+	-- GUI relevant only: The alignment for net labels:
 	net_label_alignment : constant type_text_alignment := 
 		(ALIGN_LEFT, ALIGN_BOTTOM);
-
-
-	use pac_geometry_sch;
-	
-	-- GUI relevant only: The line width of the box that enshroudes the net name of a tag label:
-	tag_label_box_line_width : constant type_distance_positive := 0.2;
-
-	
-	-- GUI relevant only: The spacing between anchor point of tag label and net name:
-	tag_label_text_offset : constant type_distance_positive := 1.0;
-
-	
-	-- GUI relevant only: The ratio of box height to text size of a tag label:
-	tag_label_height_to_size_ratio : constant type_distance_positive := 1.8;
 
 
 	

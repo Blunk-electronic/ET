@@ -58,6 +58,7 @@ with et_net_names;
 with et_net_ports;
 with et_net_segment;
 with et_net_labels;
+with et_net_connectors;
 with et_net_class;
 with et_port_names;
 with et_symbol_ports;
@@ -546,7 +547,8 @@ is
 
 				
 				procedure query_tag_labels (segment : in type_net_segment) is 
-
+					use et_net_connectors;
+					
 					-- Writes the given tag label:
 					procedure write_label (l : in type_net_label_tag) is begin
 						if is_active (l) then
