@@ -205,7 +205,7 @@ package et_net_connectors is
 
 	use et_fonts;
 	
-	-- GUI relevant only: The font of a net label:
+	-- GUI relevant only: The font of a net connector:
 	net_connector_font : constant type_font := (
 		family	=> to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
