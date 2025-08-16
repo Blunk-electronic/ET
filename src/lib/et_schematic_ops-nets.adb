@@ -5725,7 +5725,7 @@ package body et_schematic_ops.nets is
 
 						t : type_net_connector;
 					begin
-						-- A tag label can be attached to a stub only.
+						-- A connector can be attached to a stub only.
 						-- So we test wheter the given position matches either
 						-- the A or B end of the segment:
 						if stub.is_stub then
@@ -5734,8 +5734,8 @@ package body et_schematic_ops.nets is
 
 							
 							if get_place (position) = get_A (segment) then
-								-- Enable the tag label on the A end:
-								log (text => "attach label to A end of segment", level => log_threshold + 2);
+								-- Enable the connector on the A end:
+								log (text => "attach connector to A end of segment", level => log_threshold + 2);
 								
 								t := (active => true, direction => direction, others => <>); -- CS size, ...
 								segment.connectors.A := t;
@@ -5746,8 +5746,8 @@ package body et_schematic_ops.nets is
 
 
 							if get_place (position) = get_B (segment) then
-								-- Enable the tag label on the B end:
-								log (text => "attach label to B end of segment", level => log_threshold + 2);
+								-- Enable the connector on the B end:
+								log (text => "attach connector to B end of segment", level => log_threshold + 2);
 								
 								t := (active => true, direction => direction, others => <>); -- CS size, ...
 								segment.connectors.B := t;
@@ -5760,9 +5760,8 @@ package body et_schematic_ops.nets is
 							
 						else
 							--log (WARNING, "Net has no stub at" & to_string (position), console => true);
-							log (text => "No stub found. No label placed.", level => log_threshold + 1);
+							log (text => "No stub found. No connector placed.", level => log_threshold + 1);
 						end if;
-
 					end query_segment;
 
 					
@@ -6510,7 +6509,7 @@ package body et_schematic_ops.nets is
 		result_strand	: type_object_strand;
 		result_net		: type_object_net;
 		result_label	: type_object_net_label;
-		result_label_tag: type_object_net_connector; -- CS rename to result_connector
+		result_connector: type_object_net_connector;
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -6597,13 +6596,13 @@ package body et_schematic_ops.nets is
 		
 
 
-		-- SEARCH FOR THE FIRST TAG NET LABEL:
+		-- SEARCH FOR THE FIRST NET CONNECTOR:
 		
-		-- If a label has been found, then go to the end of this procedure:
-		result_label_tag := get_first_connector (module_cursor, flag, log_threshold + 1);
+		-- If a connector has been found, then go to the end of this procedure:
+		result_connector := get_first_connector (module_cursor, flag, log_threshold + 1);
 
-		if has_element (result_label_tag.net_cursor) then
-			-- A label has been found.
+		if has_element (result_connector.net_cursor) then
+			-- A connector has been found.
 			-- CS log ?
 			result_category := CAT_CONNECTOR;
 		end if;
@@ -6639,7 +6638,7 @@ package body et_schematic_ops.nets is
 				return (CAT_LABEL, result_label);
 
 			when CAT_CONNECTOR =>
-				return (CAT_CONNECTOR, result_label_tag);
+				return (CAT_CONNECTOR, result_connector);
 				
 		end case;
 	end get_first_object;
@@ -6970,7 +6969,7 @@ package body et_schematic_ops.nets is
 				
 				
 			begin
-				log (text => "simple net labels", level => log_threshold + 1);
+				log (text => "net labels", level => log_threshold + 1);
 				log_indentation_up;
 
 				-- Iterate through the nets:
@@ -7010,7 +7009,7 @@ package body et_schematic_ops.nets is
 							start_end : type_start_end_point;
 
 							
-							procedure query_label (label : in type_net_connector) is
+							procedure query_connector (connector : in type_net_connector) is
 
 								-- This procedure appends the matching
 								-- net, strand, segment and end point to the result:
@@ -7027,26 +7026,26 @@ package body et_schematic_ops.nets is
 							begin
 								case flag is
 									when PROPOSED =>
-										if is_proposed (label) then
+										if is_proposed (connector) then
 											collect;
 										end if;
 				
 									when SELECTED =>
-										if is_selected (label) then
+										if is_selected (connector) then
 											collect;
 										end if;
 				
 									when others => null; -- CS
 								end case;
-							end query_label;
+							end query_connector;
 							
 							
 						begin
 							start_end := A;
-							query_label (seg.connectors.A);
+							query_connector (seg.connectors.A);
 							
 							start_end := B;
-							query_label (seg.connectors.B);
+							query_connector (seg.connectors.B);
 						end query_segment;
 
 						
@@ -7075,7 +7074,7 @@ package body et_schematic_ops.nets is
 				
 				
 			begin
-				log (text => "tag net labels", level => log_threshold + 1);
+				log (text => "net connectors", level => log_threshold + 1);
 				log_indentation_up;
 
 				-- Iterate through the nets:
