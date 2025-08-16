@@ -178,7 +178,7 @@ package body et_schematic_ops.nets is
 
 
 
-	procedure reset_proposed_segments (
+	procedure reset_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
@@ -251,7 +251,7 @@ package body et_schematic_ops.nets is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_proposed_segments;
+	end reset_segments;
 
 		
 
@@ -2441,7 +2441,7 @@ package body et_schematic_ops.nets is
 
 
 
-	procedure reset_proposed_nets (
+	procedure reset_nets (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
@@ -2484,7 +2484,7 @@ package body et_schematic_ops.nets is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_proposed_nets;
+	end reset_nets;
 
 
 	
@@ -4668,9 +4668,6 @@ package body et_schematic_ops.nets is
 							log_indentation_down;
 							next (label_cursor);
 						end loop;	
-
-						-- Reset status of tag labels:
-						reset_status (segment.tag_labels);
 					end query_segment;
 					
 						
@@ -4718,8 +4715,90 @@ package body et_schematic_ops.nets is
 
 
 
+
+
+
+	procedure reset_connectors (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+	
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (
+					strand : in out type_strand)
+				is
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					
+					procedure query_segment (
+						segment : in out type_net_segment)
+					is begin
+						log (text => "segment: " & to_string (segment), level => log_threshold + 2);
+
+						-- Reset status of net connectors:
+						reset_status (segment.tag_labels);
+					end query_segment;
+					
+						
+				begin
+					-- Iterate the segments of the strand:
+					while has_element (segment_cursor) loop
+						strand.segments.update_element (segment_cursor, query_segment'access);
+						next (segment_cursor);
+					end loop;
+				end query_strand;
+
+				
+			begin
+				while has_element (strand_cursor) loop
+					net.strands.update_element (strand_cursor, query_strand'access);
+					next (strand_cursor);
+				end loop;
+			end query_net;
+
+			
+		begin
+			while has_element (net_cursor) loop
+				log (text => "net " & get_net_name (net_cursor), level => log_threshold + 1);
+				log_indentation_up;
+				module.nets.update_element (net_cursor, query_net'access);
+				log_indentation_down;
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " reset all net connectors.",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_connectors;
+
+	
 	
 
+	
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -7106,16 +7185,17 @@ package body et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is begin
-		log (text => "module " & to_string (module_cursor) &
-			" resetting proposed objects",
+		log (text => "module " & to_string (module_cursor) 
+			& " reset proposed objects",
 			level => log_threshold);
 
 		log_indentation_up;
-		reset_proposed_segments (module_cursor, log_threshold + 1);
+		reset_segments (module_cursor, log_threshold + 1);
 		reset_strands (module_cursor, log_threshold + 1);
-		reset_proposed_nets (module_cursor, log_threshold + 1);
+		reset_nets (module_cursor, log_threshold + 1);
 		
-		reset_labels (module_cursor, log_threshold + 1); -- simple and tag
+		reset_labels (module_cursor, log_threshold + 1);
+		reset_connectors (module_cursor, log_threshold + 1);
 		
 		log_indentation_down;
 	end reset_proposed_objects;

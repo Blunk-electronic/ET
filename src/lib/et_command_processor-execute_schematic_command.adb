@@ -1339,7 +1339,7 @@ is
 				net_cursor := locate_net (active_module, net_name);
 
 				if has_element (net_cursor) then				
-					reset_proposed_nets (active_module, log_threshold + 1);
+					reset_nets (active_module, log_threshold + 1);
 					show_net (active_module, net_cursor, log_threshold + 1);
 				else
 					log (WARNING, "Net " & to_string (net_name) & " does not exist !");

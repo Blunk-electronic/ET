@@ -69,7 +69,7 @@ package et_schematic_ops.nets is
 
 
 	-- Clears the proposed-flag and the selected-flag of all net segments:
-	procedure reset_proposed_segments ( -- CS rename to reset_segments
+	procedure reset_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
@@ -374,7 +374,7 @@ package et_schematic_ops.nets is
 
 
 	-- Clears the proposed-flag and the selected-flag of all nets:
-	procedure reset_proposed_nets ( -- CS rename to reset_nets
+	procedure reset_nets (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
@@ -687,17 +687,19 @@ package et_schematic_ops.nets is
 	
 
 -- LABELS AND CONNECTORS:
-	
-	
+		
 
-	-- Resets the status flags of all net labels 
-	-- and all net connectors:
+	-- Resets the status flags of all net labels:
 	procedure reset_labels (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 
-	-- CS reset_connectors ?
+	-- Resets the status flags of all net connectors:
+	procedure reset_connectors (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
 	
 
 	-- Modifies the status flag of a simple net label:

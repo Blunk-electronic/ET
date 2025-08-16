@@ -788,7 +788,7 @@ package body et_canvas_schematic_units is
 			
 			reset_proposed_objects (active_module, log_threshold + 1);
 
-			et_schematic_ops.nets.reset_proposed_segments (active_module, log_threshold + 1);
+			et_schematic_ops.nets.reset_segments (active_module, log_threshold + 1);
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
