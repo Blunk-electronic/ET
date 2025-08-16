@@ -5343,7 +5343,7 @@ is
 							net_junctions := (others => <>);
 
 							-- Copy the tag lables into the segment.
-							net_segment.tag_labels := net_tag_labels;
+							net_segment.connectors := net_tag_labels;
 
 							-- Reset the tag labels for next net segment.
 							net_tag_labels := (others => <>);

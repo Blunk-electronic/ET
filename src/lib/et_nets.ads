@@ -509,7 +509,7 @@ package et_nets is
 
 	
 	-- Returns the net name and the position of the given object
-	-- as string in the form like "GND tag label at x/y":
+	-- as string in the form like "net GND connector at x/y":
 	function to_string (
 		object	: in type_object_net_connector)
 		return string;

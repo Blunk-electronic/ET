@@ -59,7 +59,7 @@ package et_net_segment is
 	
 	type type_net_segment is new type_line with record -- CS make private
 		labels		: pac_net_labels.list;
-		tag_labels	: type_net_connectors;
+		connectors	: type_net_connectors;
 		junctions	: type_junctions;
 		ports		: type_ports_AB; -- CS
 		--ports		: type_ports;
@@ -104,33 +104,33 @@ package et_net_segment is
 
 
 
-	-- Returns the status of a tag label at the specified
+	-- Returns the status of a connector at the specified
 	-- end of a segment:
-	function get_tag_label_status (
+	function get_connector_status (
 		segment	: in type_net_segment;
 		AB_end	: in type_start_end_point)
 		return boolean;
 
 	
-	-- Returns the status of a tag label at the specified
+	-- Returns the status of a connector at the specified
 	-- NSWE end of a segment:
-	function get_tag_label_status (
+	function get_connector_status (
 		segment		: in type_net_segment;
 		NSWE_end	: in type_direction_NSWE)
 		return boolean;
 
 
-	-- Returns the tag label at the specified
+	-- Returns the connector at the specified
 	-- end of a segment:
-	function get_tag_label (
+	function get_connector (
 		segment	: in type_net_segment;
 		AB_end	: in type_start_end_point)
 		return type_net_connector;
 
 
-	-- Returns the tag label at the specified
+	-- Returns the connector at the specified
 	-- NSWE end of a segment:
-	function get_tag_label (
+	function get_connector (
 		segment		: in type_net_segment;
 		NSWE_end	: in type_direction_NSWE)
 		return type_net_connector;
@@ -269,11 +269,11 @@ package et_net_segment is
 	--    is raised.
 	-- 4. The ports connected with the open ends of the two segments
 	--    are kept.
-	-- 5. Simple net labels of both segments are kept.
+	-- 5. Net labels of both segments are kept.
 	-- 6. The status of the junctions at the open ends of the two 
 	--    segments are kept, whereas the junctions at the joint are removed.
-	-- 7. Tag labels at the open ends of the two segments are kept,
-	--    whereas tag labels at the joint are removed.
+	-- 7. Connectors at the open ends of the two segments are kept,
+	--    whereas connectors at the joint are removed.
 	procedure merge_segments (
 		-- The primary segment and its end to be connected:
 		primary			: in out type_net_segment;
@@ -291,15 +291,7 @@ package et_net_segment is
 		segment : in out type_net_segment);
 	
 	
-	-- Moves the net labels of a segment.
-	-- CS: Currently moves only the tag labels
-	-- procedure move_net_labels (
-	-- 	segment_before	: in type_net_segment;		-- the segment before the move
-	-- 	segment_after	: in out type_net_segment;	-- the segment after the move
-	-- 	zone			: in type_line_zone);		-- the zone being moved
 
-
-	
 
 
 	

@@ -1166,7 +1166,7 @@ package body et_net_strands is
 		procedure append_segment is
 		begin
 			strand.segments.append (segment);
-			-- CS: delete tag labels at attach point
+			-- CS: delete net connectors at attach point
 			-- in target strand
 		end append_segment;
 		

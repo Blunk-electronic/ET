@@ -116,14 +116,14 @@ package body et_net_segment is
 
 
 
-	function get_tag_label_status (
+	function get_connector_status (
 		segment	: in type_net_segment;
 		AB_end	: in type_start_end_point)
 		return boolean
 	is begin
 		case AB_end is
-			when A => return is_active (segment.tag_labels.A);
-			when B => return is_active (segment.tag_labels.B);
+			when A => return is_active (segment.connectors.A);
+			when B => return is_active (segment.connectors.B);
 		end case;
 	end;
 
@@ -131,7 +131,7 @@ package body et_net_segment is
 
 	
 
-	function get_tag_label_status (
+	function get_connector_status (
 		segment		: in type_net_segment;
 		NSWE_end	: in type_direction_NSWE)
 		return boolean
@@ -143,23 +143,23 @@ package body et_net_segment is
 		AB_end := to_AB_end (segment, NSWE_end);
 
 		-- Get the junction status on the AB end:
-		result := get_tag_label_status (segment, AB_end);
+		result := get_connector_status (segment, AB_end);
 		return result;
-	end get_tag_label_status;
+	end get_connector_status;
 
 	
 	
 
 
 
-	function get_tag_label (
+	function get_connector (
 		segment	: in type_net_segment;
 		AB_end	: in type_start_end_point)
 		return type_net_connector
 	is begin
 		case AB_end is
-			when A => return segment.tag_labels.A;
-			when B => return segment.tag_labels.B;
+			when A => return segment.connectors.A;
+			when B => return segment.connectors.B;
 		end case;
 	end;
 
@@ -167,7 +167,7 @@ package body et_net_segment is
 
 
 
-	function get_tag_label (
+	function get_connector (
 		segment		: in type_net_segment;
 		NSWE_end	: in type_direction_NSWE)
 		return type_net_connector
@@ -177,7 +177,7 @@ package body et_net_segment is
 		-- Map from the given NSWE end to the AB end:
 		AB_end := to_AB_end (segment, NSWE_end);
 
-		return get_tag_label (segment, AB_end);
+		return get_connector (segment, AB_end);
 	end;
 
 	
@@ -514,14 +514,14 @@ package body et_net_segment is
 			segment_1 := (fragments.segments (1) with others => <>);
 			segment_1.ports.A := segment.ports.A;
 			segment_1.junctions.A := segment.junctions.A;
-			segment_1.tag_labels.A := segment.tag_labels.A;
-			-- CS labels. Currently simple labels are discarded.
+			segment_1.connectors.A := segment.connectors.A;
+			-- CS labels. Currently net labels are discarded.
 			
 			segment_2 := (fragments.segments (2) with others => <>);
 			segment_2.ports.B := segment.ports.B;
 			segment_2.junctions.B := segment.junctions.B;
-			segment_2.tag_labels.B := segment.tag_labels.B;
-			-- CS labels. Currently simple labels are discarded.
+			segment_2.connectors.B := segment.connectors.B;
+			-- CS labels. Currently net labels are discarded.
 
 			result_split.segments (1) := segment_1;
 			result_split.segments (2) := segment_2;
@@ -578,17 +578,17 @@ package body et_net_segment is
 		
 
 		
-		procedure merge_tag_labels is
-			-- Backup the tag labels at the open end of the two segments:
+		procedure merge_connectors is
+			-- Backup the connectors at the open end of the two segments:
 			tag_A : type_net_connector := 
-				get_tag_label (primary,   get_opposide_end (primary_end));
+				get_connector (primary,   get_opposide_end (primary_end));
 			
 			tag_B : type_net_connector := 
-				get_tag_label (secondary, get_opposide_end (secondary_end));
+				get_connector (secondary, get_opposide_end (secondary_end));
 		begin
-			-- Overwrite the tags labels of the given primary segment
-			-- with the new tag labels:
-			primary.tag_labels := (tag_A, tag_B);
+			-- Overwrite the connectors of the given primary segment
+			-- with the new connectors:
+			primary.connectors := (tag_A, tag_B);
 		end;
 
 		
@@ -604,7 +604,7 @@ package body et_net_segment is
 		junctions.A := get_junction_status (primary,   get_opposide_end (primary_end));
 		junctions.B := get_junction_status (secondary, get_opposide_end (secondary_end));
 		
-		-- Merge the simple labels of the two segments:
+		-- Merge the labels of the two segments:
 		labels_primary   := primary.labels;
 		labels_secondary := secondary.labels;
 		merge_labels (labels_primary, labels_secondary);
@@ -619,10 +619,10 @@ package body et_net_segment is
 		-- Assign the junction status to the resulting segment:
 		primary.junctions := junctions;
 		
-		-- Assign the simple labels to the resulting segment:
+		-- Assign the labels to the resulting segment:
 		primary.labels := labels_primary;
 
-		merge_tag_labels;
+		merge_connectors;
 		
 	end merge_segments;
 
@@ -841,10 +841,10 @@ package body et_net_segment is
 
 		
 		
-		-- The simple labels of the resulting segment:
+		-- The labels of the resulting segment:
 		LR : pac_net_labels.list;
 
-		procedure merge_simple_labels is 
+		procedure merge_labels is 
 			use pac_net_labels;
 			primary_labels : pac_net_labels.list := primary.labels;
 			secondary_labels : pac_net_labels.list := secondary.labels;
@@ -855,55 +855,55 @@ package body et_net_segment is
 				source		=> secondary_labels);
 
 			LR := primary_labels;
-		end merge_simple_labels;
+		end merge_labels;
 			
 
 
 
 
-		-- Tag labels at A and B end of the resulting segment:
+		-- Connectors at A and B end of the resulting segment:
 		TRA, TRB : type_net_connector;
 
 		
-		procedure merge_tag_labels is		
-			-- Labels at the A and B end of the primary segment;
+		procedure merge_connectors is		
+			-- Connectors at the A and B end of the primary segment;
 			TPA, TPB : type_net_connector;
 
-			-- Labels at the A and B end of the secondary segment;
+			-- Connectors at the A and B end of the secondary segment;
 			TSA, TSB : type_net_connector;
 		begin
 			-- The orientation determines whether to collect
-			-- the tag labels from the west and east ends or
+			-- the connectors from the west and east ends or
 			-- from the south and north ends:
 			case OP is
 				when ORIENT_HORIZONTAL =>
-					-- Get the labels from the west ends:
-					TPA := get_tag_label (primary,   DIR_WEST);
-					TSA := get_tag_label (secondary, DIR_WEST);
+					-- Get the connectors from the west ends:
+					TPA := get_connector (primary,   DIR_WEST);
+					TSA := get_connector (secondary, DIR_WEST);
 
 					-- Get the label status from the east ends:
-					TPB := get_tag_label (primary,   DIR_EAST);
-					TSB := get_tag_label (secondary, DIR_EAST);
+					TPB := get_connector (primary,   DIR_EAST);
+					TSB := get_connector (secondary, DIR_EAST);
 
 					
 					
 				when ORIENT_VERTICAL =>
-					-- Get the labels from the south ends:
-					TPA := get_tag_label (primary,   DIR_SOUTH);
-					TSA := get_tag_label (secondary, DIR_SOUTH);
+					-- Get the connectors from the south ends:
+					TPA := get_connector (primary,   DIR_SOUTH);
+					TSA := get_connector (secondary, DIR_SOUTH);
 
 					-- Get the label status from the north ends:
-					TPB := get_tag_label (primary,   DIR_NORTH);
-					TSB := get_tag_label (secondary, DIR_NORTH);
+					TPB := get_connector (primary,   DIR_NORTH);
+					TSB := get_connector (secondary, DIR_NORTH);
 
 					
 				when ORIENT_SLOPING =>
 					raise constraint_error; -- CS should never happen
 			end case;
 
-			-- Union the labels on the A end.
-			-- If the label on the A end of the primary segment
-			-- is active, then copy this label to the resulting segment:
+			-- Union the connectors on the A end.
+			-- If the connector on the A end of the primary segment
+			-- is active, then copy this connector to the resulting segment:
 			if is_active (TPA) then
 				TRA := TPA;
 			elsif is_active (TSA) then
@@ -911,15 +911,15 @@ package body et_net_segment is
 			end if;
 
 			-- Union the labels on the B end.
-			-- If the label on the B end of the primary segment
-			-- is active, then copy this label to the resulting segment:
+			-- If the connectors on the B end of the primary segment
+			-- is active, then copy this connectors to the resulting segment:
 			if is_active (TPB) then
 				TRB := TPB;
 			elsif is_active (TSB) then
 				TRB := TSB;
 			end if;
 			
-		end merge_tag_labels;
+		end merge_connectors;
 
 		
 
@@ -934,9 +934,9 @@ package body et_net_segment is
 
 		merge_junctions;
 
-		merge_simple_labels;
+		merge_labels;
 
-		merge_tag_labels;
+		merge_connectors;
 
 		
 		-- Merge the actual line segments to a single line:
@@ -947,7 +947,7 @@ package body et_net_segment is
 			ports 		=> (PRA, PRB), 
 			junctions	=> (JRA, JRB), 
 			labels		=> LR,
-			tag_labels	=> (TRA, TRB));
+			connectors	=> (TRA, TRB));
 
 		return result;
 	end merge_overlapping_segments;
@@ -977,73 +977,6 @@ package body et_net_segment is
 
 	
 	
-	
--- 	procedure move_net_labels (
--- 		segment_before	: in type_net_segment;
--- 		segment_after	: in out type_net_segment;
--- 		zone			: in type_line_zone)
--- 	is 
--- 		-- Calculate the displacement of the start and end point:
--- 		
--- 		delta_start : constant type_vector_model :=
--- 			get_distance_relative (get_A (segment_before), get_A (segment_after));
--- 		
--- 		delta_end	: constant type_vector_model :=
--- 			get_distance_relative (get_B (segment_before), get_B (segment_after));
--- 															
--- 		use pac_net_labels;
--- 		label_cursor : pac_net_labels.cursor := segment_after.labels.first;
--- 
--- 		
--- 		procedure move (l : in out type_net_label) is begin
--- 			-- The position of a net label is absolute.
--- 			
--- 			case l.appearance is
--- 				when TAG => 
--- 					-- Moving the tag labels is quite simple because
--- 					-- they are always at start or end point.
--- 					-- So the label position change is just the displacement
--- 					-- of the start or end point:
--- 					case zone is
--- 						when START_POINT =>
--- 							if l.position = get_A (segment_before) then
--- 								move_by (l.position, delta_start);
--- 							end if;
--- 							
--- 						when END_POINT => 
--- 							if l.position = get_B (segment_before) then
--- 								move_by (l.position, delta_end);
--- 							end if;
--- 
--- 						when CENTER =>
--- 							if l.position = get_A (segment_before) then
--- 								move_by (l.position, delta_start);
--- 							end if;
--- 
--- 							if l.position = get_B (segment_before) then
--- 								move_by (l.position, delta_end);
--- 							end if;
--- 							
--- 					end case;
--- 
--- 					-- CS: change rotation of label ?
--- 					
--- 				when SIMPLE => null; -- CS
--- 					-- This requires a bit more math because simple labels
--- 					-- are mostly between start and end point.
--- 
--- 					-- CS: change rotation of label ?
--- 			end case;
--- 		end move;
--- 
--- 		
--- 	begin
--- 		while label_cursor /= pac_net_labels.no_element loop
--- 			update_element (segment_after.labels, label_cursor, move'access);
--- 			next (label_cursor);
--- 		end loop;
--- 		
--- 	end move_net_labels;
 
 
 

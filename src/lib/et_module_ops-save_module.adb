@@ -558,8 +558,8 @@ is
 					end write_label;
 
 				begin
-					write_label (segment.tag_labels.A);
-					write_label (segment.tag_labels.B);
+					write_label (segment.connectors.A);
+					write_label (segment.connectors.B);
 				end query_tag_labels;
 
 

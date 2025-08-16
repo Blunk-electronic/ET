@@ -4749,7 +4749,7 @@ package body et_schematic_ops.nets is
 						log (text => "segment: " & to_string (segment), level => log_threshold + 2);
 
 						-- Reset status of net connectors:
-						reset_status (segment.tag_labels);
+						reset_status (segment.connectors);
 					end query_segment;
 					
 						
@@ -4889,10 +4889,10 @@ package body et_schematic_ops.nets is
 					procedure query_segment (segment : in out type_net_segment) is begin
 						case label.start_end is
 							when A =>
-								modify_status (segment.tag_labels.A, operation);
+								modify_status (segment.connectors.A, operation);
 
 							when B =>
-								modify_status (segment.tag_labels.B, operation);
+								modify_status (segment.connectors.B, operation);
 						end case;
 					end query_segment;
 					
@@ -5064,14 +5064,14 @@ package body et_schematic_ops.nets is
 					procedure query_segment (segment : in out type_net_segment) is begin
 						-- Probe the A end of the segment:
 						if in_catch_zone (catch_zone, get_A (segment)) then
-							set_proposed (segment.tag_labels.A);
+							set_proposed (segment.connectors.A);
 							count := count + 1;
 							log (text => "A end" & to_string (get_A (segment)), level => log_threshold + 4);
 						end if;
 
 						-- Probe the B end of the segment:
 						if in_catch_zone (catch_zone, get_B (segment)) then
-							set_proposed (segment.tag_labels.B);
+							set_proposed (segment.connectors.B);
 							count := count + 1;
 							log (text => "B end" & to_string (get_B (segment)), level => log_threshold + 4);
 						end if;
@@ -5333,13 +5333,13 @@ package body et_schematic_ops.nets is
 						-- Probe the A end of the segment:
 						start_end := A;
 						log (text => "A end at " & to_string (get_A (segment)), level => log_threshold + 3);
-						query_label (segment.tag_labels.A);
+						query_label (segment.connectors.A);
 
 						-- Probe the B end of the segment if nothing found at A end:
 						if proceed then
 							start_end := B;
 							log (text => "B end at " & to_string (get_B (segment)), level => log_threshold + 3);
-							query_label (segment.tag_labels.B);
+							query_label (segment.connectors.B);
 						end if;
 					end query_segment;
 
@@ -5738,7 +5738,7 @@ package body et_schematic_ops.nets is
 								log (text => "attach label to A end of segment", level => log_threshold + 2);
 								
 								t := (active => true, direction => direction, others => <>); -- CS size, ...
-								segment.tag_labels.A := t;
+								segment.connectors.A := t;
 
 								-- Signal iterations in upper level to cancel:
 								segment_found := true;						
@@ -5750,7 +5750,7 @@ package body et_schematic_ops.nets is
 								log (text => "attach label to B end of segment", level => log_threshold + 2);
 								
 								t := (active => true, direction => direction, others => <>); -- CS size, ...
-								segment.tag_labels.B := t;
+								segment.connectors.B := t;
 
 								-- Signal iterations in upper level to cancel:
 								segment_found := true;						
@@ -6361,8 +6361,8 @@ package body et_schematic_ops.nets is
 
 					procedure query_segment (segment : in out type_net_segment) is begin
 						case connector.start_end is
-							when A => set_selected (segment.tag_labels.A);
-							when B => set_selected (segment.tag_labels.B);
+							when A => set_selected (segment.connectors.A);
+							when B => set_selected (segment.connectors.B);
 						end case;
 					end query_segment;
 					
@@ -7043,10 +7043,10 @@ package body et_schematic_ops.nets is
 							
 						begin
 							start_end := A;
-							query_label (seg.tag_labels.A);
+							query_label (seg.connectors.A);
 							
 							start_end := B;
-							query_label (seg.tag_labels.B);
+							query_label (seg.connectors.B);
 						end query_segment;
 
 						

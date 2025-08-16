@@ -423,7 +423,7 @@ procedure draw_nets is
 					-- put_line ("draw net connectors");
  					
 					-- Draw the label on the A end (if it is active):
-					if is_active (segment.tag_labels.A) then
+					if is_active (segment.connectors.A) then
 						--put_line ("A is active");
 						position := get_A (segment);
 
@@ -438,12 +438,12 @@ procedure draw_nets is
 							move_by (position, object_displacement);
 						end if;
 						
-						draw_connector (segment.tag_labels.A);
+						draw_connector (segment.connectors.A);
 					end if;
 
 					
 					-- Draw the label on the B end (if it is active):
-					if is_active (segment.tag_labels.B) then
+					if is_active (segment.connectors.B) then
 						--put_line ("B is active");
 						position := get_B (segment);
 
@@ -458,7 +458,7 @@ procedure draw_nets is
 							move_by (position, object_displacement);
 						end if;
 
-						draw_connector (segment.tag_labels.B);
+						draw_connector (segment.connectors.B);
 					end if;					
 				end draw_net_connectors;
 				
