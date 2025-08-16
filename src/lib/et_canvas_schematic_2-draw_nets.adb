@@ -213,14 +213,14 @@ procedure draw_nets is
 				end draw_segment;
 
 
-				-- This procedure queries a simple net label and draws it:
+				-- This procedure queries a net label and draws it:
 				procedure query_label (label : in type_net_label) is
 					use pac_net_name;
 					use pac_draw_text;
 
 
 					-- This procedure draws a net label:
-					procedure draw_simple is
+					procedure draw_label is
 						-- Temporarily we store here the position
 						-- of the label. In case it is moving, then it
 						-- will be overwritten by the tool position:
@@ -245,7 +245,7 @@ procedure draw_nets is
 							-- It is readable from the front or the right.
 							rotation	=> pac_text.to_rotation (label.rotation),
 							alignment	=> net_label_alignment);					
-					end draw_simple;
+					end draw_label;
 
 					
 				begin
@@ -255,7 +255,7 @@ procedure draw_nets is
 						set_color_nets (BRIGHT);
 					end if;
 					
-					draw_simple;
+					draw_label;
 
 					if is_selected (label) then
 						set_color_nets (NORMAL);
@@ -268,16 +268,16 @@ procedure draw_nets is
 				procedure draw_net_connectors is 
 					-- The place at which the label is to be drawn.
 					-- It will be taken from the A or B end of the segment,
-					-- depending on which end has a tag lablel:
+					-- depending on which end has a connector:
 					position : type_vector_model;
 					
-					-- The rotation of the tag label must be deduced
+					-- The rotation of the connector must be deduced
 					-- from the orientation and affected A/B end
 					-- of the net segment:
 					rotation : type_rotation := 0.0;
 					
 					
-					-- This procedure draws a tag label:
+					-- This procedure draws a net connector:
 					procedure draw_connector (label : in type_net_connector) is
 						use pac_draw_text;
 						use et_alignment;
