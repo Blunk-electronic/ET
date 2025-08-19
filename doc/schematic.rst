@@ -411,6 +411,10 @@ Nets and Net Labels
 	
 #. Move Net Label
 
+	A net label can be moved along a net segment.
+	Independed of the the grid settings, the label will
+	always be at a fixed distance away from the segment.
+
 	|VNS| m l
 
 	
