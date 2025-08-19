@@ -110,8 +110,6 @@ package et_net_labels is
 		label : in out type_net_label_base);
 
 
-
--- LABEL:
 	
 	type type_net_label is new type_net_label_base with record
 		-- The position of the label is absolute (relative to drawing origin):
@@ -193,6 +191,12 @@ package et_net_labels is
 		
 
 
+
+	-- SPACING BETWEEN NET LABEL AND NET SEGMENT:
+
+	-- Net labels are placed at some distance from the
+	-- net segment. This is independed of any grid settings:	
+	spacing_between_net_label_and_segment : constant type_distance_positive := 0.5;
 	
 
 	use et_fonts;

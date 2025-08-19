@@ -756,7 +756,11 @@ package et_schematic_ops.nets is
 	
 
 	-- Places a net label next to the given net segment
-	-- at the given position:
+	-- at the given position. The given position is just a
+	-- rough position. The final position of the label
+	-- will be determined automatically depending on the
+	-- orientation of the targeted net segment.
+	-- If the segment is a slope, then no label will be placed:
 	procedure place_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment;						  

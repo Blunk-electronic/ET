@@ -393,10 +393,11 @@ Nets and Net Labels
 
 	A net label is just a text next
 	to a net segment to indicate the net name.
-	
-	|VNS| p l
+	The label will be orientated automatically so that
+	it is readable either from the front or from the right.
+	The spacing between net segment and label is fixed.
 
-	Rotate: right mouse click or key o
+	|VNS| p l
 
 	
 	Example: Place a net label on sheet 1 at x/y 30/100

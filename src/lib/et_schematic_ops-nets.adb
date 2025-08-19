@@ -39,6 +39,8 @@
 with ada.strings;						use ada.strings;
 with ada.strings.unbounded;				use ada.strings.unbounded;
 
+with et_axes;
+
 with et_schematic_ops.units;			use et_schematic_ops.units;
 with et_schematic_ops.submodules;
 
@@ -5424,19 +5426,85 @@ package body et_schematic_ops.nets is
 					
 					procedure query_segment (segment : in out type_net_segment) is 
 						use pac_net_labels;
+
+						-- Create a new net label:
 						label : type_net_label;
-					begin
-						label.position := position;
-						-- move_by (label.position, segment_position.place);
-						-- now label.position is absolute
 
-						-- snap given rotation to either 0 or 90 degree
-						-- label.rotation := snap (rotation);
+						-- Depending on the orientation of the
+						-- net segment, the label will be readable
+						-- from the front or from the right:
+						orientation : constant type_line_orientation := 
+							get_orientation (segment);
 
-						-- CS: set rotation and distance to net
-						-- segment automatically.
+						-- As a reference point we use the A end of
+						-- the targeted net segment:
+						A_end : constant type_vector_model := get_A (segment);
 						
-						segment.labels.append (label);								
+
+						procedure horizontal_text is 
+							use et_axes;
+							use et_text;
+						begin
+							-- The x-component of the label position is the same
+							-- as the x-component of the given position:
+							set (label.position, AXIS_X, get_x (position));
+
+							-- The y-component of the label position is some distance
+							-- ABOVE the reference point:
+							set (label.position, AXIS_Y, 
+								 get_y (A_end) + spacing_between_net_label_and_segment);
+
+							-- The label must be readable from the front:
+							label.rotation := HORIZONTAL;
+
+							-- Append the label to other labels of the segment:
+							segment.labels.append (label);
+						end;
+
+						
+						procedure vertical_text is 
+							use et_axes;
+							use et_text;
+						begin
+							-- The y-component of the label position is the same
+							-- as the y-component of the given position:
+							set (label.position, AXIS_Y, get_y (position));
+							
+							-- The x-component of the label position is some distance
+							-- LEFT of the reference point:
+							set (label.position, AXIS_X,
+								 get_x (A_end) - spacing_between_net_label_and_segment);
+
+							-- The label must be readable from the right:
+							label.rotation := VERTICAL;
+
+							-- Append the label to other labels of the segment:
+							segment.labels.append (label);
+						end;
+
+						
+					begin
+						-- Depending on the orientation of the segment,
+						-- we place the text either horizontally or vertically:
+						case orientation is
+							when ORIENT_HORIZONTAL =>
+								horizontal_text;
+
+								log (text => "Horizontal label placed at "
+									 & to_string (label.position), level => log_threshold + 1);
+
+							when ORIENT_VERTICAL =>
+								vertical_text;
+
+								log (text => "Vertical label placed at "
+									 & to_string (label.position), level => log_threshold + 1);
+								
+								-- In case the net segment is a slope, then
+								-- we do not place a label:
+							when ORIENT_SLOPING =>
+								log (WARNING, "Targeted net segment is a slope. No label allowed here !.");
+								
+						end case;
 					end query_segment;
 
 					
