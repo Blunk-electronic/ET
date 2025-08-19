@@ -5556,40 +5556,23 @@ package body et_schematic_ops.nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is				
-				strand_cursor : pac_strands.cursor := net.strands.first;
-
 				
-				procedure query_strand (strand : in out type_strand) is
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;
-
-					
-					procedure query_segment (segment : in out type_net_segment) is 
-					begin
-						-- CS
-						null; -- activate the connector
-						-- of the affected end of the segment
-						-- The end must be a stub !
-					end query_segment;
-
-					
-				begin
-					strand.segments.update_element (segment.segment_cursor, query_segment'access);
+				procedure query_strand (strand : in out type_strand) is begin
+					place_connector (strand, segment.segment_cursor, position, log_threshold + 1);
 				end query_strand;
-
 				
 			begin
 				net.strands.update_element (segment.strand_cursor, query_strand'access);					
 			end query_net;
-
 			
 		begin
 			module.nets.update_element (segment.net_cursor, query_net'access);
 		end query_module;
 
-
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
+			& " " & get_net_name (segment.net_cursor)
 			& " place net connector at segment" 
 			& " at " & to_string (position),
 			level => log_threshold);
@@ -6169,13 +6152,75 @@ package body et_schematic_ops.nets is
 					procedure query_segment (segment : in out type_net_segment) is 
 						use pac_net_labels;
 
+						-- Depending on the orientation of the
+						-- net segment, the label will be moved by some
+						-- distance upwards or to the left of the segment:
+						orientation : constant type_line_orientation := 
+							get_orientation (segment);
+
+						-- As a reference point we use the A end of
+						-- the targeted net segment:
+						A_end : constant type_vector_model := get_A (segment);
+
+						
+
 						procedure query_label (label : in out type_net_label) is
+
+							procedure horizontal_text is 
+								use et_axes;
+							begin
+								-- The x-component of the label position is the same
+								-- as the x-component of the given destination:
+								set (label.position, AXIS_X, get_x (destination));
+
+								-- The y-component of the label position is some distance
+								-- ABOVE the reference point:
+								set (label.position, AXIS_Y, 
+									get_y (A_end) + spacing_between_net_label_and_segment);
+
+								-- CS: limit x-component of destination if too far 
+								-- right or left of the segment.
+							end;
+
+							
+							procedure vertical_text is 
+								use et_axes;
+							begin
+								-- The y-component of the label position is the same
+								-- as the y-component of the given destination:
+								set (label.position, AXIS_Y, get_y (destination));
+								
+								-- The x-component of the label position is some distance
+								-- LEFT of the reference point:
+								set (label.position, AXIS_X,
+									get_x (A_end) - spacing_between_net_label_and_segment);
+
+								-- CS: limit y-component of destination if too far 
+								-- above or below of the segment.
+							end;
+
+							
 						begin
-							label.position := destination;
-							-- CS: adjust distance to net segment.
-							-- CS: reject destination if too far away from segment
+							case orientation is
+								when ORIENT_HORIZONTAL =>
+									horizontal_text;
+
+									log (text => "Horizontal moved to "
+										& to_string (label.position), level => log_threshold + 1);
+
+								when ORIENT_VERTICAL =>
+									vertical_text;
+
+									log (text => "Vertical label moved to "
+										& to_string (label.position), level => log_threshold + 1);
+									
+								when ORIENT_SLOPING =>
+									raise constraint_error; -- CS should never happen
+									
+							end case;
 						end query_label;
 
+						
 					begin
 						segment.labels.update_element (label.label_cursor, query_label'access);
 					end query_segment;

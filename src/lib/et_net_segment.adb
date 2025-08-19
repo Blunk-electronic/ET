@@ -129,6 +129,42 @@ package body et_net_segment is
 
 
 
+
+	procedure set_connector (
+		segment	: in out type_net_segment;
+		AB_end	: in type_start_end_point)
+	is 
+		c : type_net_connector;
+	begin
+		c := (active => true, others => <>); -- CS direction ?
+
+		case AB_end is
+			when A => segment.connectors.A := c;
+			when B => segment.connectors.B := c;
+		end case;
+	end;
+
+
+
+
+	procedure delete_connector (
+		segment	: in out type_net_segment;
+		AB_end	: in type_start_end_point)
+	is 
+		c : type_net_connector;
+	begin
+		c := (active => false, others => <>);
+
+		case AB_end is
+			when A => segment.connectors.A := c;
+			when B => segment.connectors.B := c;
+		end case;
+	end;
+
+
+
+	
+
 	
 
 	function get_connector_status (

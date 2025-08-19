@@ -570,8 +570,30 @@ package et_net_strands is
 		segment	: in pac_net_segments.cursor;
 		point	: in type_vector_model)
 		return type_stub;
-		
 
+
+	-- Returns true if the given segment of the given
+	-- strand is a stub at the given end.
+	-- A stub is a dead end of a net segment where no other
+	-- segments and no other ports of devices, netchangers or
+	-- submodules are connected:
+	function is_stub (
+		strand		: in out type_strand;
+		segment		: in pac_net_segments.cursor;
+		AB_end		: in type_start_end_point)
+		return boolean;
+	
+
+	-- Places a net connector on a end of the
+	-- given net segment. The actual end will be
+	-- determined deduced from the given position.
+	-- If the given point is in the midsection of the segment,
+	-- then nothing will be done:
+	procedure place_connector (
+		strand			: in out type_strand;
+		segment			: in pac_net_segments.cursor;
+		position		: in type_vector_model;
+		log_threshold	: in type_log_level);
 	
 end et_net_strands;
 

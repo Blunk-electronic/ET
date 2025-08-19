@@ -111,6 +111,21 @@ package et_net_segment is
 		AB_end	: in type_start_end_point)
 		return boolean;
 
+
+	-- Sets a connector on the given end of
+	-- the given segment:
+	procedure set_connector (
+		segment	: in out type_net_segment;
+		AB_end	: in type_start_end_point);
+
+
+	-- Deletes a connector on the given end of
+	-- the given segment:
+	procedure delete_connector (
+		segment	: in out type_net_segment;
+		AB_end	: in type_start_end_point);
+
+	
 	
 	-- Returns the status of a connector at the specified
 	-- NSWE end of a segment:

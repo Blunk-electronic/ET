@@ -2196,6 +2196,65 @@ package body et_net_strands is
 	end stub_direction;
 
 
+
+
+	
+	function is_stub (
+		strand		: in out type_strand;
+		segment		: in pac_net_segments.cursor;
+		AB_end		: in type_start_end_point)
+		return boolean
+	is begin
+		if not has_connected_segments (segment, AB_end, strand)
+		and not has_ports (segment, AB_end)
+		then
+			return true;
+		else
+			return false;
+		end if;
+	end is_stub;
+	
+
+
+	
+
+	procedure place_connector (
+		strand			: in out type_strand;
+		segment			: in pac_net_segments.cursor;
+		position		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_segment (segment : in out type_net_segment) is
+			zone : constant type_line_zone := get_zone (segment, position);
+		begin
+			case zone is
+				when START_POINT =>
+					if is_stub (strand, place_connector.segment, A) then
+						log (text => "segment end A", level => log_threshold);
+						set_connector (segment, A);
+					end if;
+					
+				when END_POINT =>
+					if is_stub (strand, place_connector.segment, B) then
+						log (text => "segment end B", level => log_threshold);
+						set_connector (segment, B);
+					end if;
+
+
+				when CENTER =>
+					log (WARNING, "Attempt to place net connector in midsection rejected!",
+						 level => log_threshold);
+			end case;
+		end query_segment;
+
+		
+	begin		
+		strand.segments.update_element (segment, query_segment'access);
+	end place_connector;
+
+	
+
 	
 end et_net_strands;
 

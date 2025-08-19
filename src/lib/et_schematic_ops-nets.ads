@@ -832,7 +832,10 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
-	-- Moves a net a label to the given destination:
+	-- Moves a net a label to the given destination.
+	-- Independed of the grid, depending on the orientation
+	-- of the net segment, the label will be moved by some
+	-- distance upwards or to the left of the segment:
 	procedure move_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		label			: in type_object_net_label;
