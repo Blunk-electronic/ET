@@ -98,21 +98,33 @@ package et_logging is
 	procedure log_indentation_reset;
 
 	tabulator : constant character := latin_1.ht;
+
 	
 	function indent (width : in type_indentation_level) return string;
 
+	
 	type type_message_importance is (NORMAL, NOTE, WARNING, ERROR);
 
+	
 	-- Writes the given text with the current log_indentation 
 	-- in the current output. 
 	-- If the system wide log level is greater or equal the 
 	-- given log_level, then given text is put on the log.
 	-- Does not log anything if given level is no_logging.
 	-- Counts warnings independent of log level.
+	-- If the importance is WARNING or ERROR then the indentation
+	-- level is ignored:
 	procedure log (
 		importance	: in type_message_importance := NORMAL;
+
+		-- The actual text to be logged:
 		text		: in string;
+
+		-- The indentation level:
 		level		: in type_log_level := type_log_level'first;
+
+		-- Whether the log message is to be output
+		-- additional on the console:
 		console		: in boolean := false);
 
 	
