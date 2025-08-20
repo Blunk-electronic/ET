@@ -774,6 +774,7 @@ package et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment;						  
 		position		: in type_vector_model;
+		-- CS direction ?
 		log_threshold	: in type_log_level);
 
 
@@ -803,9 +804,9 @@ package et_schematic_ops.nets is
 	
 	-- Places a net connector at the given position.
 	-- This procedure is meant to be called via the command processor:
+	-- CS: The direction is currently ignored.
 	procedure place_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
-		-- CS size ?
 		position		: in type_object_position; -- sheet/x/y
 		direction		: in type_connector_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		log_threshold	: in type_log_level);
