@@ -687,7 +687,7 @@ package et_schematic_ops.nets is
 
 	
 
--- LABELS AND CONNECTORS:
+-- LABELS:
 		
 
 	-- Resets the status flags of all net labels:
@@ -696,13 +696,6 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
-	-- Resets the status flags of all net connectors:
-	procedure reset_connectors (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level);
-
-	
-
 	-- Modifies the status flag of a simple net label:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -710,15 +703,6 @@ package et_schematic_ops.nets is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-
-	-- Modifies the status flag of a tag net label:
-	procedure modify_status (
-		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_net_connector; -- CS rename to connector
-		operation		: in type_status_operation;
-		log_threshold	: in type_log_level);
-
-	
 
 	-- Sets the proposed-flag of all net labels which are in the
 	-- given zone around the given place on the currently active sheet.
@@ -730,14 +714,6 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
-	procedure propose_connectors (
-		module_cursor	: in pac_generic_modules.cursor;
-		catch_zone		: in type_catch_zone;
-		count			: in out natural;
-		log_threshold	: in type_log_level);
-
-	
-
 	-- Returns the first net label according to the given flag.
 	-- If no label has been found, then the return is no_element:
 	function get_first_label (
@@ -745,38 +721,6 @@ package et_schematic_ops.nets is
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return type_object_net_label;
-
-
-	function get_first_connector (
-		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;
-		log_threshold	: in type_log_level)
-		return type_object_net_connector;
-
-	
-
-	
-
-	-- Places a net connector at the given net segment
-	-- at the given position:
-	procedure place_net_connector (
-		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_object_segment;						  
-		position		: in type_vector_model;
-		-- CS direction ?
-		log_threshold	: in type_log_level);
-
-
-	-- Places a net connector at the given position.
-	-- This procedure is meant to be called via the command processor:
-	-- CS: The direction is currently ignored.
-	procedure place_net_connector (
-		module_cursor	: in pac_generic_modules.cursor;
-		position		: in type_object_position; -- sheet/x/y
-		direction		: in type_connector_direction; -- INPUT, OUTPUT, PASSIVE, ...
-		log_threshold	: in type_log_level);
-
-	
 
 
 
@@ -800,12 +744,8 @@ package et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		
 		-- The reference point at the segment:
-		position: in type_object_position; -- sheet/x/y
+		position		: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
-
-
-	
-
 
 	
 
@@ -816,15 +756,9 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
-	-- This procedure deletes a net connector:
-	procedure delete_net_connector (
-		module_cursor	: in pac_generic_modules.cursor;
-		connector		: in type_object_net_connector;
-		log_threshold	: in type_log_level);
-
-	
 	
 	-- Deletes a net label.
+	-- This procedure is intended to be called via the command processor:
 	procedure delete_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		position		: in type_object_position; -- sheet/x/y
@@ -845,16 +779,6 @@ package et_schematic_ops.nets is
 	-- CS procedure move_net_label to be called via
 	-- script processor
 
-	
-	-- Queries the position of the given net. If a stub is at the
-	-- given position, then returns the direction of the stub.
-	function query_stub (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		position		: in type_object_position; -- sheet/x/y
-		log_threshold	: in type_log_level)
-		return type_stub;
-
 
 
 	-- Shows/highlights a simple label by setting its 
@@ -864,6 +788,72 @@ package et_schematic_ops.nets is
 		label			: in type_object_net_label;
 		log_threshold	: in type_log_level);
 
+	
+	
+	
+	
+-- CONNECTORS:
+	
+	-- Resets the status flags of all net connectors:
+	procedure reset_connectors (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+	-- Modifies the status flag of a tag net label:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		label			: in type_object_net_connector; -- CS rename to connector
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+	
+
+	procedure propose_connectors (
+		module_cursor	: in pac_generic_modules.cursor;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural;
+		log_threshold	: in type_log_level);
+
+	
+
+	function get_first_connector (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_net_connector;
+
+
+	
+
+	-- Places a net connector at the given net segment
+	-- at the given position:
+	procedure place_net_connector (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;						  
+		position		: in type_vector_model;
+		-- CS direction ?
+		log_threshold	: in type_log_level);
+
+
+	-- Places a net connector at the given position.
+	-- This procedure is meant to be called via the command processor:
+	-- CS: The direction is currently ignored.
+	procedure place_net_connector (
+		module_cursor	: in pac_generic_modules.cursor;
+		position		: in type_object_position; -- sheet/x/y
+		direction		: in type_connector_direction; -- INPUT, OUTPUT, PASSIVE, ...
+		log_threshold	: in type_log_level);
+
+
+
+	-- This procedure deletes a net connector:
+	procedure delete_net_connector (
+		module_cursor	: in pac_generic_modules.cursor;
+		connector		: in type_object_net_connector;
+		log_threshold	: in type_log_level);
+
+	
+	
 	
 	-- Shows/highlights a connector by setting its 
 	-- status to "selected":

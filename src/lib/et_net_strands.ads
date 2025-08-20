@@ -536,40 +536,7 @@ package et_net_strands is
 		return pac_net_segments.list;
 	
 
-
-
-
-	-- A stub of a net is modelled this way:
-	type type_stub_direction is (
-		LEFT,	-- dead end points to the left
-		RIGHT,	-- dead end points to the right
-		UP,		-- dead end points up
-		DOWN);	-- dead end points down
-
 	
-	type type_stub (is_stub : boolean) is record
-		case is_stub is
-			when TRUE => direction : type_stub_direction;
-			when FALSE => null;
-		end case;
-	end record;
-
-	
-	-- Maps from stub direction to rotation:
-	function to_label_rotation (direction : in type_stub_direction)
-		return type_rotation_model;
-
-	
-	-- Detects whether the given segment is a stub and if so
-	-- detects the direction of the stub relative to the given point.
-	-- If the segment is neither horizontal or vertical then it is NOT a stub.
-	-- Examples: 
-	-- - If point is right of a horizontal segment then then it is a stub that points to the right.
-	-- - If point is above of a vertical segment then then it is a stub that points up.
-	function stub_direction (
-		segment	: in pac_net_segments.cursor;
-		point	: in type_vector_model)
-		return type_stub;
 
 
 	-- Returns true if the given segment of the given

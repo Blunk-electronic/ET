@@ -4621,8 +4621,10 @@ package body et_schematic_ops.nets is
 	
 	
 
-
 	
+
+-- LABELS:
+		
 	
 
 	procedure reset_labels (
@@ -4718,89 +4720,8 @@ package body et_schematic_ops.nets is
 
 
 
-
-
-	procedure reset_connectors (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level)
-	is
-	
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			net_cursor : pac_nets.cursor := module.nets.first;
-
-
-			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net)
-			is
-				strand_cursor : pac_strands.cursor := net.strands.first;
-
-				
-				procedure query_strand (
-					strand : in out type_strand)
-				is
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;
-
-					
-					procedure query_segment (
-						segment : in out type_net_segment)
-					is begin
-						log (text => "segment: " & to_string (segment), level => log_threshold + 2);
-
-						-- Reset status of net connectors:
-						reset_status (segment.connectors);
-					end query_segment;
-					
-						
-				begin
-					-- Iterate the segments of the strand:
-					while has_element (segment_cursor) loop
-						strand.segments.update_element (segment_cursor, query_segment'access);
-						next (segment_cursor);
-					end loop;
-				end query_strand;
-
-				
-			begin
-				while has_element (strand_cursor) loop
-					net.strands.update_element (strand_cursor, query_strand'access);
-					next (strand_cursor);
-				end loop;
-			end query_net;
-
-			
-		begin
-			while has_element (net_cursor) loop
-				log (text => "net " & get_net_name (net_cursor), level => log_threshold + 1);
-				log_indentation_up;
-				module.nets.update_element (net_cursor, query_net'access);
-				log_indentation_down;
-				next (net_cursor);
-			end loop;
-		end query_module;
-
-		
-	begin
-		log (text => "module " & to_string (module_cursor)
-			 & " reset all net connectors.",
-			level => log_threshold);
-
-		log_indentation_up;
-
-		generic_modules.update_element (
-			position	=> module_cursor,
-			process		=> query_module'access);
-
-		log_indentation_down;
-	end reset_connectors;
-
-	
 	
 
-	
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4846,7 +4767,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of simple net label "
+			& " modify status of net label "
 			& get_net_name (label.net_cursor) 
 			& " strand " & get_position (label.strand_cursor)
 			& " " & to_string (label.segment_cursor)
@@ -4865,71 +4786,10 @@ package body et_schematic_ops.nets is
 		log_indentation_down;
 	end modify_status;
 
-
-
-
-
-	procedure modify_status (
-		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_object_net_connector;
-		operation		: in type_status_operation;
-		log_threshold	: in type_log_level)
-	is
-
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is			
-
-			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net)
-			is
-
-				procedure query_strand (strand : in out type_strand) is
-
-					procedure query_segment (segment : in out type_net_segment) is begin
-						case label.start_end is
-							when A =>
-								modify_status (segment.connectors.A, operation);
-
-							when B =>
-								modify_status (segment.connectors.B, operation);
-						end case;
-					end query_segment;
-					
-				begin
-					strand.segments.update_element (label.segment_cursor, query_segment'access);
-				end query_strand;
-				
-			begin
-				net.strands.update_element (label.strand_cursor, query_strand'access);
-			end query_net;
-			
-		begin
-			module.nets.update_element (label.net_cursor, query_net'access);
-		end query_module;
-
-		
-	begin
-		log (text => "module " & to_string (module_cursor)
-			& " modifying status of " & to_string (label)
-			& " / " & to_string (operation),
-			level => log_threshold);
-
-		log_indentation_up;
-		
-		generic_modules.update_element (
-			position	=> module_cursor,		   
-			process		=> query_module'access);
-
-		log_indentation_down;
-	end modify_status;
+	
 
 	
 
-
-	
 
 	procedure propose_labels (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -5021,7 +4881,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " proposing net labels in " & to_string (catch_zone),
+			& " propose net labels in " & to_string (catch_zone),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -5034,109 +4894,10 @@ package body et_schematic_ops.nets is
 	end propose_labels;
 
 
-
-
-
-
-	procedure propose_connectors (
-		module_cursor	: in pac_generic_modules.cursor;
-		catch_zone		: in type_catch_zone;
-		count			: in out natural;
-		log_threshold	: in type_log_level)
-	is
-
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			net_cursor : pac_nets.cursor := module.nets.first;
-
-			
-			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net)
-			is 
-				strand_cursor : pac_strands.cursor := net.strands.first;
-
-			
-				procedure query_strand (strand : in out type_strand) is
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;
-
-					
-					procedure query_segment (segment : in out type_net_segment) is begin
-						-- Probe the A end of the segment:
-						if in_catch_zone (catch_zone, get_A (segment)) then
-							set_proposed (segment.connectors.A);
-							count := count + 1;
-							log (text => "A end" & to_string (get_A (segment)), level => log_threshold + 4);
-						end if;
-
-						-- Probe the B end of the segment:
-						if in_catch_zone (catch_zone, get_B (segment)) then
-							set_proposed (segment.connectors.B);
-							count := count + 1;
-							log (text => "B end" & to_string (get_B (segment)), level => log_threshold + 4);
-						end if;
-					end query_segment;
-
-					
-				begin
-					-- Iterate through the segments:
-					while has_element (segment_cursor) loop
-						log (text => to_string (segment_cursor), level => log_threshold + 3);
-						log_indentation_up;
-						strand.segments.update_element (segment_cursor, query_segment'access);
-						log_indentation_down;
-						next (segment_cursor);
-					end loop;
-				end query_strand;
-				
-				
-			begin
-				-- Iterate through the strands:
-				while has_element (strand_cursor) loop
-					if get_sheet (strand_cursor) = active_sheet then
-						log (text => "strand " & get_position (strand_cursor), level => log_threshold + 2);
-						log_indentation_up;
-						net.strands.update_element (strand_cursor, query_strand'access);
-						log_indentation_down;
-					end if;
-					next (strand_cursor);
-				end loop;				
-			end query_net;
-			
 	
-		begin
-			-- Iterate through the nets:
-			while has_element (net_cursor) loop
-				log (text => "net " & get_net_name (net_cursor), level => log_threshold + 1);
-				log_indentation_up;
-				module.nets.update_element (net_cursor, query_net'access);
-				log_indentation_down;
-				next (net_cursor);
-			end loop;
-		end query_module;
-			
-		
-	begin
-		log (text => "module " & to_string (module_cursor)
-			& " proposing net connectors in " & to_string (catch_zone),
-			level => log_threshold);
-
-		log_indentation_up;
-		
-		generic_modules.update_element (
-			position	=> module_cursor,		   
-			process		=> query_module'access);
-
-		log_indentation_down;
-	end propose_connectors;
-
 
 
 	
-	
-
 
 	function get_first_label (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -5248,7 +5009,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up the first net label / " & to_string (flag),
+			& " look up the first net label / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -5265,264 +5026,7 @@ package body et_schematic_ops.nets is
 
 
 
-
 	
-
-	function get_first_connector (
-		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;
-		log_threshold	: in type_log_level)
-		return type_object_net_connector
-	is
-		result : type_object_net_connector;
-
-
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is
-			net_cursor : pac_nets.cursor := module.nets.first;
-
-			proceed : boolean := true;
-
-
-			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in type_net) 
-			is
-				strand_cursor : pac_strands.cursor := net.strands.first;
-
-				
-				procedure query_strand (strand : in type_strand) is
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;
-
-
-					procedure query_segment (segment : in type_net_segment) is
-						
-						start_end : type_start_end_point; -- A or B end
-						
-						
-						procedure query_label (label : in type_net_connector) is
-
-							procedure set_result is begin
-								result.net_cursor		:= net_cursor;
-								result.strand_cursor	:= strand_cursor;
-								result.segment_cursor	:= segment_cursor;
-								result.start_end		:= start_end;
-								log (text => "match: " & to_string (result), level => log_threshold + 3);
-								proceed := false; -- no further probing required
-							end set_result;
-
-							
-						begin
-							case flag is
-								when PROPOSED =>
-									if is_proposed (label) then
-										set_result;
-									end if;
-				
-								when SELECTED =>
-									if is_selected (label) then
-										set_result;
-									end if;
-				
-								when others => null; -- CS
-							end case;
-						end query_label;
-							
-						
-					begin
-						-- Probe the A end of the segment:
-						start_end := A;
-						log (text => "A end at " & to_string (get_A (segment)), level => log_threshold + 3);
-						query_label (segment.connectors.A);
-
-						-- Probe the B end of the segment if nothing found at A end:
-						if proceed then
-							start_end := B;
-							log (text => "B end at " & to_string (get_B (segment)), level => log_threshold + 3);
-							query_label (segment.connectors.B);
-						end if;
-					end query_segment;
-
-					
-				begin
-					-- Iterate through the segments:
-					while has_element (segment_cursor) and proceed loop
-						log (text => to_string (segment_cursor), level => log_threshold + 2);
-						log_indentation_up;
-						query_element (segment_cursor, query_segment'access);
-						log_indentation_down;
-						next (segment_cursor);
-					end loop;
-				end query_strand;
-
-				
-			begin
-				-- Iterate through the strands:
-				while has_element (strand_cursor) and proceed loop
-					log (text => "strand " & get_position (strand_cursor), level => log_threshold + 1);
-					log_indentation_up;
-					query_element (strand_cursor, query_strand'access);
-					log_indentation_down;
-					next (strand_cursor);
-				end loop;
-			end query_net;
-
-			
-		begin
-			-- Iterate through the nets:
-			while has_element (net_cursor) and proceed loop
-				query_element (net_cursor, query_net'access);
-				next (net_cursor);
-			end loop;
-		end query_module;
-
-		
-	begin
-		log (text => "module " & to_string (module_cursor)
-			& " looking up the first net connector / " & to_string (flag),
-			level => log_threshold);
-
-		log_indentation_up;
-		
-		query_element (
-			position	=> module_cursor,
-			process		=> query_module'access);
-
-		log_indentation_down;
-		
-		return result;
-	end get_first_connector;
-
-
-
-
-
-	
-
-
-	
-	procedure place_net_connector (
-		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_object_segment;						  
-		position		: in type_vector_model;
-		log_threshold	: in type_log_level)
-	is
-
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			
-			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is				
-				
-				procedure query_strand (strand : in out type_strand) is begin
-					place_connector (strand, segment.segment_cursor, position, log_threshold + 1);
-				end query_strand;
-				
-			begin
-				net.strands.update_element (segment.strand_cursor, query_strand'access);					
-			end query_net;
-			
-		begin
-			module.nets.update_element (segment.net_cursor, query_net'access);
-		end query_module;
-
-		
-	begin
-		log (text => "module " & to_string (module_cursor) 
-			& " " & get_net_name (segment.net_cursor)
-			& " place net connector at segment" 
-			& " at " & to_string (position),
-			level => log_threshold);
-		
-		log_indentation_up;
-		generic_modules.update_element (module_cursor, query_module'access);		
-		log_indentation_down;
-	end place_net_connector;
-
-
-
-
-
-
-
-	procedure place_net_connector (
-		module_cursor	: in pac_generic_modules.cursor;
-		position		: in type_object_position; -- sheet/x/y
-		direction		: in type_connector_direction; -- INPUT, OUTPUT, PASSIVE, ...
-		log_threshold	: in type_log_level) 
-	is
-		use pac_object_segments;
-		segments : pac_object_segments.list;
-		segment : type_object_segment;
-		
-
-		procedure do_it is 
-			net_name : pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		begin 
-			-- Take the first object segment:
-			segment := segments.first_element;
-			
-			net_name := get_net_name (segment.net_cursor);
-
-			log_indentation_up;
-			log (text => "Found net: " & to_string (net_name), level => log_threshold + 1);
-
-			place_net_connector (
-				module_cursor	=> module_cursor,
-				segment			=> segment,
-				position		=> get_place (position),
-				-- CS direction ?
-				log_threshold	=> log_threshold + 1);
-
-			log_indentation_down;
-		end do_it;
-	
-		
-	begin
-		log (text => "module " & to_string (module_cursor) 
-			& " place net connector at " & to_string (position => position)
-			& " direction " & to_string (direction),
-			level => log_threshold);
-		
-		log_indentation_up;
-
-		-- Get all object segments which are at the given position:
-		segments := get_segments (
-			module_cursor	=> module_cursor, 
-			sheet			=> get_sheet (position),
-			catch_zone		=> set_catch_zone (get_place (position), 0.0),
-			log_threshold	=> log_threshold + 2);
-
-
-		-- Depending on the number of segments that have been found
-		-- proceed further. We place the net connector only if only
-		-- one segment exists at the specified place:
-		case length (segments) is
-			when 0 =>
-				log (WARNING, "No net found at" & to_string (position));
-
-			when 1 => 
-				do_it;
-
-			when others =>
-				log (WARNING, "More than one net found at" & to_string (position));
-				-- CS show the net names ?				
-		end case;
-		
-		log_indentation_down;
-	end place_net_connector;
-
-
-
-
-	
-
 
 	procedure place_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -5789,74 +5293,10 @@ package body et_schematic_ops.nets is
 	
 
 
-	
 
 
-	procedure delete_net_connector (
-		module_cursor	: in pac_generic_modules.cursor;
-		connector		: in type_object_net_connector;
-		log_threshold	: in type_log_level)
-	is
-
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			
-			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is				
-				strand_cursor : pac_strands.cursor := net.strands.first;
-
-				
-				procedure query_strand (strand : in out type_strand) is
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;
-
-					
-					procedure query_segment (segment : in out type_net_segment) is 
-					begin
-						-- CS
-						null; -- deactivate the connector
-						-- of the affected end of the segment
-					end query_segment;
-
-					
-				begin
-					strand.segments.update_element (connector.segment_cursor, query_segment'access);
-				end query_strand;
-
-				
-			begin
-				net.strands.update_element (connector.strand_cursor, query_strand'access);					
-			end query_net;
-
-			
-		begin
-			module.nets.update_element (connector.net_cursor, query_net'access);
-		end query_module;
-
-		
-	begin
-		log (text => "module " & to_string (module_cursor) 
-			& " delete net connector ",
-			level => log_threshold);
-		
-		log_indentation_up;
-
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_module'access);
-
-		log_indentation_down;
-	end delete_net_connector;
 
 
-	
-
-	
-	
 	procedure delete_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		position		: in type_object_position; -- sheet/x/y
@@ -5948,9 +5388,9 @@ package body et_schematic_ops.nets is
 
 		
 	begin -- delete_net_label
-		log (text => "module " & to_string (module_cursor) &
-			" deleting net label at " &
-			et_schematic_coordinates.to_string (position => position),
+		log (text => "module " & to_string (module_cursor) 
+			& " delete net label at " 
+			& et_schematic_coordinates.to_string (position => position),
 			level => log_threshold);
 		
 		log_indentation_up;
@@ -5961,7 +5401,7 @@ package body et_schematic_ops.nets is
 			process		=> query_nets'access);
 
 		if not label_found then
-			log (WARNING, "no net label found at given position !");
+			log (WARNING, "No net label found at given position !");
 		end if;
 		
 		log_indentation_down;
@@ -6103,140 +5543,12 @@ package body et_schematic_ops.nets is
 		log_indentation_down;
 	end move_net_label;
 
-	
-
-	
-	
-
-	
-
-	function query_stub (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		position		: in type_object_position; -- sheet/x/y		
-		log_threshold	: in type_log_level)
-		return type_stub 
-	is
-		net_cursor : pac_nets.cursor; -- points to the net
-		
-		ports : type_ports;
-		
-		stub_found : boolean := false;
-		direction : type_stub_direction;
-
-		
-		procedure query_strands (
-			net_name	: in pac_net_name.bounded_string;
-			net			: in type_net) 
-		is			
-			strand_cursor : pac_strands.cursor := net.strands.first;
-
-			
-			procedure query_segments (strand : in type_strand) is
-				segment_cursor : pac_net_segments.cursor := strand.segments.first;
-
-				segment_counter : natural := 0;
-
-				
-				procedure probe_direction is
-					-- Get the stub direction. If the segment is sloped then it
-					-- does not qualify as stub.
-					s : constant type_stub := stub_direction (segment_cursor, position.place);
-				begin
-					-- get stub direction
-					if s.is_stub then -- stub is horizontal or vertical
-						direction := s.direction;
-						stub_found := true;
-					end if;
-
-					-- count the match (regardless if it is a stub or not)
-					segment_counter := segment_counter + 1;
-				end probe_direction;
-
-				
-			begin -- query_segments
-				while segment_cursor /= pac_net_segments.no_element loop
-					
-					-- The given position must be a start or end point of a segment,
-					if get_A (segment_cursor) = position.place then
-						log (text => "match with start point of a segment", level => log_threshold + 2);
-						probe_direction;
-						
-					elsif get_B (segment_cursor) = position.place then
-						log (text => "match with end point of a segment", level => log_threshold + 2);						
-						probe_direction;
-
-					end if;
-
-					next (segment_cursor);
-				end loop;
-
-				-- After probing all segments of the strand there must have been found only one
-				-- segment at the given position. In this case we have a stub. 
-				-- If more segments have been found, it is a junction or a corner/bend. The flag
-				-- stub_found would be reset.
-				if segment_counter /= 1 then
-					stub_found := false; -- reset flag
-				end if;
-			end query_segments;
-
-			
-		begin -- query_strands
-			while strand_cursor /= pac_strands.no_element loop
-				
-				-- We are interested in strands on the given sheet only:
-				if get_sheet (element (strand_cursor).position) = get_sheet (position) then
-
-					query_element (
-						position	=> strand_cursor,
-						process		=> query_segments'access);
-				end if;
-
-				-- exit this loop once a stub has been found
-				if stub_found then exit; end if;
-				
-				next (strand_cursor);
-			end loop;
-		end query_strands;
-
-		
-	begin -- query_stub
-		log (text => "querying stub at" & to_string (position), level => log_threshold);
-
-		-- Query ports at the given position.
-		ports := get_ports (module_cursor, position, log_threshold + 1);
-		
-		-- If there are no ports then examine the net further.
-		-- If there are devices, submodule or netchanger ports, then the given position
-		-- is definitely not a stub.
-		if no_ports (ports) then
-			log (text => "no ports here. examining net further ...", level => log_threshold + 1);
-		
-			-- locate the net (it should exist)
-			net_cursor := locate_net (module_cursor, net_name);
-			
-			query_element (
-				position	=> net_cursor,
-				process		=> query_strands'access);
-
-			if not stub_found then
-				return (is_stub => false);
-			else
-				-- put_line (type_stub_direction'image (direction));
-				return (is_stub => true, direction => direction);
-			end if;
-
-		else -- means there are ports at the given position
-			return (is_stub => false);
-		end if;
-
-	end query_stub;
 
 
 	
 
-
-
+	
+	
 	procedure show_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		label			: in type_object_net_label;
@@ -6280,7 +5592,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " showing/highlight net label "
+			& " show net label "
 			& to_string (label),
 			level => log_threshold);
 
@@ -6292,9 +5604,593 @@ package body et_schematic_ops.nets is
 
 		log_indentation_down;
 	end show_net_label;
-		
 
 	
+
+
+	
+
+-- CONNECTORS:
+
+
+	procedure reset_connectors (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+	
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (
+					strand : in out type_strand)
+				is
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					
+					procedure query_segment (
+						segment : in out type_net_segment)
+					is begin
+						log (text => "segment: " & to_string (segment), level => log_threshold + 2);
+
+						-- Reset status of net connectors:
+						reset_status (segment.connectors);
+					end query_segment;
+					
+						
+				begin
+					-- Iterate the segments of the strand:
+					while has_element (segment_cursor) loop
+						strand.segments.update_element (segment_cursor, query_segment'access);
+						next (segment_cursor);
+					end loop;
+				end query_strand;
+
+				
+			begin
+				while has_element (strand_cursor) loop
+					net.strands.update_element (strand_cursor, query_strand'access);
+					next (strand_cursor);
+				end loop;
+			end query_net;
+
+			
+		begin
+			while has_element (net_cursor) loop
+				log (text => "net " & get_net_name (net_cursor), level => log_threshold + 1);
+				log_indentation_up;
+				module.nets.update_element (net_cursor, query_net'access);
+				log_indentation_down;
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " reset all net connectors.",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_connectors;
+
+	
+
+	
+
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		label			: in type_object_net_connector;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is			
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+
+				procedure query_strand (strand : in out type_strand) is
+
+					procedure query_segment (segment : in out type_net_segment) is begin
+						case label.start_end is
+							when A =>
+								modify_status (segment.connectors.A, operation);
+
+							when B =>
+								modify_status (segment.connectors.B, operation);
+						end case;
+					end query_segment;
+					
+				begin
+					strand.segments.update_element (label.segment_cursor, query_segment'access);
+				end query_strand;
+				
+			begin
+				net.strands.update_element (label.strand_cursor, query_strand'access);
+			end query_net;
+			
+		begin
+			module.nets.update_element (label.net_cursor, query_net'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modify status of " & to_string (label)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,		   
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+	
+
+
+
+
+
+
+
+	procedure propose_connectors (
+		module_cursor	: in pac_generic_modules.cursor;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is 
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+			
+				procedure query_strand (strand : in out type_strand) is
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					
+					procedure query_segment (segment : in out type_net_segment) is begin
+						-- Probe the A end of the segment:
+						if in_catch_zone (catch_zone, get_A (segment)) then
+							set_proposed (segment.connectors.A);
+							count := count + 1;
+							log (text => "A end" & to_string (get_A (segment)), level => log_threshold + 4);
+						end if;
+
+						-- Probe the B end of the segment:
+						if in_catch_zone (catch_zone, get_B (segment)) then
+							set_proposed (segment.connectors.B);
+							count := count + 1;
+							log (text => "B end" & to_string (get_B (segment)), level => log_threshold + 4);
+						end if;
+					end query_segment;
+
+					
+				begin
+					-- Iterate through the segments:
+					while has_element (segment_cursor) loop
+						log (text => to_string (segment_cursor), level => log_threshold + 3);
+						log_indentation_up;
+						strand.segments.update_element (segment_cursor, query_segment'access);
+						log_indentation_down;
+						next (segment_cursor);
+					end loop;
+				end query_strand;
+				
+				
+			begin
+				-- Iterate through the strands:
+				while has_element (strand_cursor) loop
+					if get_sheet (strand_cursor) = active_sheet then
+						log (text => "strand " & get_position (strand_cursor), level => log_threshold + 2);
+						log_indentation_up;
+						net.strands.update_element (strand_cursor, query_strand'access);
+						log_indentation_down;
+					end if;
+					next (strand_cursor);
+				end loop;				
+			end query_net;
+			
+	
+		begin
+			-- Iterate through the nets:
+			while has_element (net_cursor) loop
+				log (text => "net " & get_net_name (net_cursor), level => log_threshold + 1);
+				log_indentation_up;
+				module.nets.update_element (net_cursor, query_net'access);
+				log_indentation_down;
+				next (net_cursor);
+			end loop;
+		end query_module;
+			
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " propose net connectors in " & to_string (catch_zone),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,		   
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_connectors;
+
+
+
+	
+	
+
+
+
+
+	
+
+	function get_first_connector (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_net_connector
+	is
+		result : type_object_net_connector;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			proceed : boolean := true;
+
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net) 
+			is
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (strand : in type_strand) is
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+
+					procedure query_segment (segment : in type_net_segment) is
+						
+						start_end : type_start_end_point; -- A or B end
+						
+						
+						procedure query_label (label : in type_net_connector) is
+
+							procedure set_result is begin
+								result.net_cursor		:= net_cursor;
+								result.strand_cursor	:= strand_cursor;
+								result.segment_cursor	:= segment_cursor;
+								result.start_end		:= start_end;
+								log (text => "match: " & to_string (result), level => log_threshold + 3);
+								proceed := false; -- no further probing required
+							end set_result;
+
+							
+						begin
+							case flag is
+								when PROPOSED =>
+									if is_proposed (label) then
+										set_result;
+									end if;
+				
+								when SELECTED =>
+									if is_selected (label) then
+										set_result;
+									end if;
+				
+								when others => null; -- CS
+							end case;
+						end query_label;
+							
+						
+					begin
+						-- Probe the A end of the segment:
+						start_end := A;
+						log (text => "A end at " & to_string (get_A (segment)), level => log_threshold + 3);
+						query_label (segment.connectors.A);
+
+						-- Probe the B end of the segment if nothing found at A end:
+						if proceed then
+							start_end := B;
+							log (text => "B end at " & to_string (get_B (segment)), level => log_threshold + 3);
+							query_label (segment.connectors.B);
+						end if;
+					end query_segment;
+
+					
+				begin
+					-- Iterate through the segments:
+					while has_element (segment_cursor) and proceed loop
+						log (text => to_string (segment_cursor), level => log_threshold + 2);
+						log_indentation_up;
+						query_element (segment_cursor, query_segment'access);
+						log_indentation_down;
+						next (segment_cursor);
+					end loop;
+				end query_strand;
+
+				
+			begin
+				-- Iterate through the strands:
+				while has_element (strand_cursor) and proceed loop
+					log (text => "strand " & get_position (strand_cursor), level => log_threshold + 1);
+					log_indentation_up;
+					query_element (strand_cursor, query_strand'access);
+					log_indentation_down;
+					next (strand_cursor);
+				end loop;
+			end query_net;
+
+			
+		begin
+			-- Iterate through the nets:
+			while has_element (net_cursor) and proceed loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " look up the first net connector / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+		
+		return result;
+	end get_first_connector;
+
+
+
+
+
+	
+
+
+	
+	procedure place_net_connector (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;						  
+		position		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is				
+				
+				procedure query_strand (strand : in out type_strand) is begin
+					place_connector (strand, segment.segment_cursor, position, log_threshold + 1);
+				end query_strand;
+				
+			begin
+				net.strands.update_element (segment.strand_cursor, query_strand'access);					
+			end query_net;
+			
+		begin
+			module.nets.update_element (segment.net_cursor, query_net'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " " & get_net_name (segment.net_cursor)
+			& " place net connector at segment" 
+			& " at " & to_string (position),
+			level => log_threshold);
+		
+		log_indentation_up;
+		generic_modules.update_element (module_cursor, query_module'access);		
+		log_indentation_down;
+	end place_net_connector;
+
+
+
+
+
+
+
+	procedure place_net_connector (
+		module_cursor	: in pac_generic_modules.cursor;
+		position		: in type_object_position; -- sheet/x/y
+		direction		: in type_connector_direction; -- INPUT, OUTPUT, PASSIVE, ...
+		log_threshold	: in type_log_level) 
+	is
+		use pac_object_segments;
+		segments : pac_object_segments.list;
+		segment : type_object_segment;
+		
+
+		procedure do_it is 
+			net_name : pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		begin 
+			-- Take the first object segment:
+			segment := segments.first_element;
+			
+			net_name := get_net_name (segment.net_cursor);
+
+			log_indentation_up;
+			log (text => "Found net: " & to_string (net_name), level => log_threshold + 1);
+
+			place_net_connector (
+				module_cursor	=> module_cursor,
+				segment			=> segment,
+				position		=> get_place (position),
+				-- CS direction ?
+				log_threshold	=> log_threshold + 1);
+
+			log_indentation_down;
+		end do_it;
+	
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " place net connector at " & to_string (position => position)
+			& " direction " & to_string (direction),
+			level => log_threshold);
+		
+		log_indentation_up;
+
+		-- Get all object segments which are at the given position:
+		segments := get_segments (
+			module_cursor	=> module_cursor, 
+			sheet			=> get_sheet (position),
+			catch_zone		=> set_catch_zone (get_place (position), 0.0),
+			log_threshold	=> log_threshold + 2);
+
+
+		-- Depending on the number of segments that have been found
+		-- proceed further. We place the net connector only if only
+		-- one segment exists at the specified place:
+		case length (segments) is
+			when 0 =>
+				log (WARNING, "No net found at" & to_string (position));
+
+			when 1 => 
+				do_it;
+
+			when others =>
+				log (WARNING, "More than one net found at" & to_string (position));
+				-- CS show the net names ?				
+		end case;
+		
+		log_indentation_down;
+	end place_net_connector;
+
+
+
+
+	
+
+
+
+
+	
+
+
+	procedure delete_net_connector (
+		module_cursor	: in pac_generic_modules.cursor;
+		connector		: in type_object_net_connector;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is				
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (strand : in out type_strand) is
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					
+					procedure query_segment (segment : in out type_net_segment) is 
+					begin
+						-- CS
+						null; -- deactivate the connector
+						-- of the affected end of the segment
+					end query_segment;
+
+					
+				begin
+					strand.segments.update_element (connector.segment_cursor, query_segment'access);
+				end query_strand;
+
+				
+			begin
+				net.strands.update_element (connector.strand_cursor, query_strand'access);					
+			end query_net;
+
+			
+		begin
+			module.nets.update_element (connector.net_cursor, query_net'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " delete net connector ",
+			level => log_threshold);
+		
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end delete_net_connector;
+
+
+	
+
+
 
 	
 

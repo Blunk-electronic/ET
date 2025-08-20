@@ -2128,73 +2128,8 @@ package body et_net_strands is
 	
 
 	
-	
-	
-	
-	function to_label_rotation (direction : in type_stub_direction) 
-		return type_rotation_model is
-	begin
-		case direction is
-			when RIGHT	=> return zero_rotation;
-			when LEFT	=> return 180.0;
-			when UP		=> return 90.0;
-			when DOWN	=> return -90.0;
-		end case;
-	end to_label_rotation;
-
-
 
 	
-	
-	function stub_direction (
-		segment	: in pac_net_segments.cursor;
-		point	: in type_vector_model)
-		return type_stub 
-	is
-		is_stub : boolean := true;
-		direction : type_stub_direction;
-		orientation : constant type_line_orientation := 
-			get_segment_orientation (segment);
-
-		-- Get the start and end point of the segment:
-		A : constant type_vector_model := get_A (segment);
-		B : constant type_vector_model := get_B (segment);
-	begin
-		case orientation is
-			when ORIENT_HORIZONTAL =>
-				if get_x (point) >= get_x (A) and
-					get_x (point) >= get_x (B) then
-					direction := RIGHT;
-				end if;
-
-				if get_x (point) <= get_x (A) and
-					get_x (point) <= get_x (B) then
-					direction := LEFT;
-				end if;
-				
-			when ORIENT_VERTICAL =>
-				if get_y (point) >= get_y (A) and
-					get_y (point) >= get_y (B) then
-					direction := UP;
-				end if;
-
-				if get_y (point) <= get_y (A) and
-					get_y (point) <= get_y (B) then
-					direction := DOWN;
-				end if;
-				
-			when ORIENT_SLOPING =>
-				is_stub := false;
-		end case;
-
-		if is_stub then
-			return (is_stub => TRUE, direction => direction);
-		else
-			return (is_stub => FALSE);
-		end if;
-
-	end stub_direction;
-
 
 
 
