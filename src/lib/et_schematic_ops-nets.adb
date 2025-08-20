@@ -6149,11 +6149,8 @@ package body et_schematic_ops.nets is
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					
-					procedure query_segment (segment : in out type_net_segment) is 
-					begin
-						-- CS
-						null; -- deactivate the connector
-						-- of the affected end of the segment
+					procedure query_segment (segment : in out type_net_segment) is begin
+						delete_connector (segment, connector.start_end);
 					end query_segment;
 
 					
@@ -6238,7 +6235,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " showing/highlight net connector "
+			& " show net connector "
 			& to_string (connector),
 			level => log_threshold);
 

@@ -551,9 +551,9 @@ package et_net_strands is
 		return boolean;
 	
 
-	-- Places a net connector on a end of the
+	-- Places a net connector on an end of the
 	-- given net segment. The actual end will be
-	-- determined deduced from the given position.
+	-- deduced from the given position.
 	-- If the given point is in the midsection of the segment,
 	-- then nothing will be done:
 	procedure place_connector (
