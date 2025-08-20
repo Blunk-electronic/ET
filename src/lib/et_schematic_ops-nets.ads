@@ -755,18 +755,7 @@ package et_schematic_ops.nets is
 
 	
 
-	-- Places a net label next to the given net segment
-	-- at the given position. The given position is just a
-	-- rough position. The final position of the label
-	-- will be determined automatically depending on the
-	-- orientation of the targeted net segment.
-	-- If the segment is a slope, then no label will be placed:
-	procedure place_net_label (
-		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_object_segment;						  
-		position		: in type_vector_model;
-		log_threshold	: in type_log_level);
-		
+	
 
 	-- Places a net connector at the given net segment
 	-- at the given position:
@@ -778,30 +767,6 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
-	
-	-- Places a label next to a segment at position.
-	-- This procedure is meant to be called via the command processor:
-	procedure place_net_label (
-		module_cursor	: in pac_generic_modules.cursor;
-
-		-- CS size ?
-		
-		-- The reference point at the segment:
-		segment_position: in type_object_position; -- sheet/x/y
-
-		-- The position of the label relative to segment_position:
-		label_position	: in type_vector_model := origin; -- x/y
-
-		-- The rotation is relevant for simple labels only. 
-		-- The label will always be placed
-		-- so that is is readable from the front or from the right.
-		-- Whatever angle you provide here, the final roation will 
-		-- be either 0 or 90 degrees.
-		rotation		: in et_schematic_coordinates.type_rotation_model := zero_rotation;
-		log_threshold	: in type_log_level);
-
-
-	
 	-- Places a net connector at the given position.
 	-- This procedure is meant to be called via the command processor:
 	-- CS: The direction is currently ignored.
@@ -810,6 +775,36 @@ package et_schematic_ops.nets is
 		position		: in type_object_position; -- sheet/x/y
 		direction		: in type_connector_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		log_threshold	: in type_log_level);
+
+	
+
+
+
+	-- Places a net label next to the given net segment
+	-- at the given position. The given position is just a
+	-- rough position. The final position of the label
+	-- will be determined automatically depending on the
+	-- orientation of the targeted net segment.
+	-- If the segment is a slope, then no label will be placed:
+	procedure place_net_label (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;						  
+		position		: in type_vector_model;
+		log_threshold	: in type_log_level);
+	
+	
+	
+	-- Places a label next to a segment at position.
+	-- This procedure is meant to be called via the command processor:
+	procedure place_net_label (
+		module_cursor	: in pac_generic_modules.cursor;
+		
+		-- The reference point at the segment:
+		position: in type_object_position; -- sheet/x/y
+		log_threshold	: in type_log_level);
+
+
+	
 
 
 	

@@ -5397,9 +5397,132 @@ package body et_schematic_ops.nets is
 
 
 
-	
+
 
 	
+
+
+	
+	procedure place_net_connector (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;						  
+		position		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is				
+				
+				procedure query_strand (strand : in out type_strand) is begin
+					place_connector (strand, segment.segment_cursor, position, log_threshold + 1);
+				end query_strand;
+				
+			begin
+				net.strands.update_element (segment.strand_cursor, query_strand'access);					
+			end query_net;
+			
+		begin
+			module.nets.update_element (segment.net_cursor, query_net'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " " & get_net_name (segment.net_cursor)
+			& " place net connector at segment" 
+			& " at " & to_string (position),
+			level => log_threshold);
+		
+		log_indentation_up;
+		generic_modules.update_element (module_cursor, query_module'access);		
+		log_indentation_down;
+	end place_net_connector;
+
+
+
+
+
+
+
+	procedure place_net_connector (
+		module_cursor	: in pac_generic_modules.cursor;
+		position		: in type_object_position; -- sheet/x/y
+		direction		: in type_connector_direction; -- INPUT, OUTPUT, PASSIVE, ...
+		log_threshold	: in type_log_level) 
+	is
+		use pac_object_segments;
+		segments : pac_object_segments.list;
+		segment : type_object_segment;
+		
+
+		procedure do_it is 
+			net_name : pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		begin 
+			-- Take the first object segment:
+			segment := segments.first_element;
+			
+			net_name := get_net_name (segment.net_cursor);
+
+			log_indentation_up;
+			log (text => "Found net: " & to_string (net_name), level => log_threshold + 1);
+
+			place_net_connector (
+				module_cursor	=> module_cursor,
+				segment			=> segment,
+				position		=> get_place (position),
+				-- CS direction ?
+				log_threshold	=> log_threshold + 1);
+
+			log_indentation_down;
+		end do_it;
+	
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " place net connector at " & to_string (position => position)
+			& " direction " & to_string (direction),
+			level => log_threshold);
+		
+		log_indentation_up;
+
+		-- Get all object segments which are at the given position:
+		segments := get_segments (
+			module_cursor	=> module_cursor, 
+			sheet			=> get_sheet (position),
+			catch_zone		=> set_catch_zone (get_place (position), 0.0),
+			log_threshold	=> log_threshold + 2);
+
+
+		-- Depending on the number of segments that have been found
+		-- proceed further. We place the net connector only if only
+		-- one segment exists at the specified place:
+		case length (segments) is
+			when 0 =>
+				log (WARNING, "No net found at" & to_string (position));
+
+			when 1 => 
+				do_it;
+
+			when others =>
+				log (WARNING, "More than one net found at" & to_string (position));
+				-- CS show the net names ?				
+		end case;
+		
+		log_indentation_down;
+	end place_net_connector;
+
+
+
+
+	
+
 
 	procedure place_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -5533,210 +5656,19 @@ package body et_schematic_ops.nets is
 		generic_modules.update_element (module_cursor, query_module'access);		
 		log_indentation_down;
 	end place_net_label;
-	
-
 
 	
 
 
-	
-	procedure place_net_connector (
-		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_object_segment;						  
-		position		: in type_vector_model;
-		log_threshold	: in type_log_level)
-	is
-
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			
-			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is				
-				
-				procedure query_strand (strand : in out type_strand) is begin
-					place_connector (strand, segment.segment_cursor, position, log_threshold + 1);
-				end query_strand;
-				
-			begin
-				net.strands.update_element (segment.strand_cursor, query_strand'access);					
-			end query_net;
-			
-		begin
-			module.nets.update_element (segment.net_cursor, query_net'access);
-		end query_module;
-
-		
-	begin
-		log (text => "module " & to_string (module_cursor) 
-			& " " & get_net_name (segment.net_cursor)
-			& " place net connector at segment" 
-			& " at " & to_string (position),
-			level => log_threshold);
-		
-		log_indentation_up;
-		generic_modules.update_element (module_cursor, query_module'access);		
-		log_indentation_down;
-	end place_net_connector;
-
-
-
-	
 
 	
 	
 	procedure place_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
-		segment_position: in type_object_position; -- sheet/x/y
-		label_position	: in type_vector_model := origin; -- x/y
-		rotation		: in et_schematic_coordinates.type_rotation_model := zero_rotation; -- 0, 90, 180. Relevant for simple labels only.
-		log_threshold	: in type_log_level) 
-	is
-		net_cursor : pac_nets.cursor; -- points to the net
-
-		
-		-- function no_label_placed return string is begin
-		-- 	return (et_schematic_coordinates.to_string (position => segment_position) & " !" &
-		-- 		" No label placed ! Specify another position and try again.");
-		-- end;
-		
-		use pac_net_names;
-		nets : pac_net_names.list;
-		net_name : pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-
-		
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			-- This flag goes true once the first segment of the 
-			-- targeted net at the targeted sheet has been found.
-			segment_found : boolean := false;
-
-			
-			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is				
-				strand_cursor : pac_strands.cursor := net.strands.first;
-
-				
-				procedure query_strand (strand : in out type_strand) is
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;
-
-					
-					procedure query_segment (segment : in out type_net_segment) is 
-						use pac_net_labels;
-						label : type_net_label;
-					begin
-						-- label_position is relative to segment_position
-						label.position := label_position;
-						move_by (label.position, segment_position.place);
-						-- now label.position is absolute
-
-						-- snap given rotation to either 0 or 90 degree
-						label.rotation := snap (rotation);
-						
-						segment.labels.append (label);								
-					end query_segment;
-
-					
-				begin
-					-- Iterate through the segments:
-					while has_element (segment_cursor) and not segment_found loop
-
-						-- If the given target position is on the
-						-- candidate segment, then the right segment has
-						-- been found:
-						if on_line (
-							point 	=> segment_position.place,
-							line	=> element (segment_cursor)) then
-							
-							strand.segments.update_element (segment_cursor, query_segment'access);
-
-							-- signal iterations in upper level to cancel
-							segment_found := true;
-						end if;
-						
-						next (segment_cursor);
-					end loop;
-				end query_strand;
-
-				
-			begin
-				-- Iterate through the strands:
-				while has_element (strand_cursor) and not segment_found loop
-					
-					-- We pick out only the strands on the targeted sheet:
-					if get_sheet (strand_cursor) = get_sheet (segment_position) then
-						net.strands.update_element (strand_cursor, query_strand'access);					
-					end if;
-					
-					next (strand_cursor);
-				end loop;
-			end query_net;
-
-			
-		begin
-			module.nets.update_element (net_cursor, query_net'access);
-		end query_module;
-
-		
-	begin -- place_net_label
-		log (text => "module " & to_string (module_cursor) &
-			" place net label next to segment at"  &
-			to_string (position => segment_position) &
-			to_string (label_position) &
-			" rotation" & to_string (rotation),
-			level => log_threshold);
-		
-		log_indentation_up;
-
-
-		-- collect names of nets that cross the given segment_position
-		nets := get_nets_at_place (module_cursor, segment_position, log_threshold + 1);
-
-		log_indentation_up;
-		
-		
-		case length (nets) is
-			when 0 =>
-				log (WARNING, "No net found at " & to_string (segment_position), level => log_threshold + 1);
-
-			when 1 => 
-				net_name := element (nets.first);
-				log (text => "Found net: " & to_string (net_name), level => log_threshold + 1);
-				
-				-- Set the cursor to the net.
-				net_cursor := locate_net (module_cursor, net_name);
-				--log (text => "net name " & to_string (key (net_cursor)), level => log_threshold + 1);				
-				generic_modules.update_element (module_cursor, query_module'access);
-
-			when others =>
-				log (WARNING, "More than one net found at" & to_string (segment_position), level => log_threshold + 1);
-				-- CS show the net names
-				
-		end case;
-		
-		log_indentation_down;		
-		log_indentation_down;
-	end place_net_label;
-
-
-
-
-	
-
-
-	procedure place_net_connector (
-		module_cursor	: in pac_generic_modules.cursor;
 		position		: in type_object_position; -- sheet/x/y
-		direction		: in type_connector_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		log_threshold	: in type_log_level) 
 	is
+
 		use pac_object_segments;
 		segments : pac_object_segments.list;
 		segment : type_object_segment;
@@ -5753,24 +5685,22 @@ package body et_schematic_ops.nets is
 			log_indentation_up;
 			log (text => "Found net: " & to_string (net_name), level => log_threshold + 1);
 
-			place_net_connector (
+			place_net_label (
 				module_cursor	=> module_cursor,
 				segment			=> segment,
 				position		=> get_place (position),
-				-- CS direction ?
 				log_threshold	=> log_threshold + 1);
 
 			log_indentation_down;
 		end do_it;
-		
 
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& " place net connector at " & to_string (position => position)
-			& " direction " & to_string (direction),
-			level => log_threshold);
-		
+			& " place net label next to segment at "
+			& to_string (position),
+			level => log_threshold);		
+
 		log_indentation_up;
 
 		-- Get all object segments which are at the given position:
@@ -5782,8 +5712,8 @@ package body et_schematic_ops.nets is
 
 
 		-- Depending on the number of segments that have been found
-		-- proceed further. We place the net connector only if only
-		-- single segment exists at the specified place:
+		-- proceed further. We place the net label only if only 
+		-- one segment exists at the specified place:
 		case length (segments) is
 			when 0 =>
 				log (WARNING, "No net found at" & to_string (position));
@@ -5796,14 +5726,14 @@ package body et_schematic_ops.nets is
 				-- CS show the net names ?				
 		end case;
 		
-		log_indentation_down;
-	end place_net_connector;
-
+		log_indentation_down;		
+	end place_net_label;
 
 
 
 
 	
+
 
 
 	procedure delete_net_label (

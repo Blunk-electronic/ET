@@ -400,12 +400,11 @@ Nets and Net Labels
 	|VNS| p l
 
 	
-	Example: Place a net label on sheet 1 at x/y 30/100
-	with an x/y offset of 0/1 and a rotation of 0 degrees:
+	Example: Place a net label on sheet 1 at x/y 30/100:
 		
 	.. code-block::
 
-		demo place net_label  1  30 100  0 1  0
+		demo place net_label  1  30 100
 
 	
 	

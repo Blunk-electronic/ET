@@ -1392,28 +1392,23 @@ is
 	
 	
 	-- This procedure parses a command that places a net connector.
-	-- Example: "schematic demo place net_label 1 70 80 0 1 0"
+	-- Example: "schematic demo place net_label 1 70 80"
 	procedure place_net_label is begin
 		case cmd_field_count is
-			when 10 =>
+			when 7 =>
 				
 				place_net_label (
-					module_cursor		=> active_module,
-					segment_position	=> to_position (
+					module_cursor	=> active_module,
+					position		=> to_position (
 											point => type_vector_model (set (
 												x => to_distance (get_field (6)),
 												y => to_distance (get_field (7)))),
 											sheet => to_sheet (get_field (5))), -- sheet number
     
-					label_position		=> type_vector_model (set (
-												x => to_distance (get_field (8)),
-												y => to_distance (get_field (9)))),
-    
-					rotation			=> to_rotation (get_field (10)), -- 0 / 90
-					log_threshold		=> log_threshold + 1);
+					log_threshold	=> log_threshold + 1);
 
 				
-			when 11 .. type_field_count'last => too_long;
+			when 8 .. type_field_count'last => too_long;
 				
 			when others => command_incomplete;
 		end case;
