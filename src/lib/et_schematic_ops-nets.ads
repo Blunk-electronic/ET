@@ -779,6 +779,7 @@ package et_schematic_ops.nets is
 
 	
 	-- Places a label next to a segment at position.
+	-- This procedure is meant to be called via the command processor:
 	procedure place_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
 
@@ -800,6 +801,8 @@ package et_schematic_ops.nets is
 
 
 	
+	-- Places a net connector at the given position.
+	-- This procedure is meant to be called via the command processor:
 	procedure place_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
 		-- CS size ?

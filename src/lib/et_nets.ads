@@ -364,8 +364,8 @@ package et_nets is
 -- OBJECT SEGMENT:
 
 
-	-- This composite type is meant to identify a net segment
-	-- and its parent net in the schematic:
+	-- This composite type is meant to identify a net segment,
+	-- its parent strand and net in the schematic:
 	type type_object_segment is record
 		net_cursor		: pac_nets.cursor;
 		strand_cursor	: pac_strands.cursor;

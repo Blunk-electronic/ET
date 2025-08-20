@@ -5836,6 +5836,7 @@ package body et_schematic_ops.nets is
 					
 					next (strand_cursor);
 				end loop;
+
 			end query_net;
 
 			
