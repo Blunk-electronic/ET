@@ -56,6 +56,19 @@ package body et_net_segment is
 
 
 
+	procedure add_label (
+		segment	: in out type_net_segment;
+		label	: in type_net_label)
+	is begin
+		if not segment.labels.contains (label) then
+			segment.labels.append (label);
+		end if;
+	end;
+
+
+
+
+	
 
 	procedure set_junction (
 		segment	: in out type_net_segment;

@@ -118,6 +118,23 @@ package body et_net_labels is
 
 
 
+	function get_rotation (
+		label : in type_net_label)
+		return type_rotation_documentation
+	is begin
+		return label.rotation;
+	end;
+
+	
+
+	procedure set_rotation (
+		label		: in out type_net_label;
+		rotation	: in type_rotation_documentation)
+	is begin
+		label.rotation := rotation;
+	end;
+
+	
 	
 	
 
@@ -129,6 +146,17 @@ package body et_net_labels is
 	end;
 
 
+	
+	procedure set_position (
+		label		: in out type_net_label;
+		position	: in type_vector_model)
+	is begin
+		label.position := position;
+	end;
+
+
+
+	
 	function get_position (
 		label : in type_net_label)
 		return string

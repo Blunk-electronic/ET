@@ -5052,7 +5052,6 @@ package body et_schematic_ops.nets is
 
 					
 					procedure query_segment (segment : in out type_net_segment) is 
-						use pac_net_labels;
 
 						-- Create a new net label:
 						label : type_net_label;
@@ -5068,6 +5067,8 @@ package body et_schematic_ops.nets is
 						A_end : constant type_vector_model := get_A (segment);
 						
 
+						-- This procedure places the net label horizontally
+						-- so that it is readable from the front:
 						procedure horizontal_text is 
 							use et_axes;
 							use et_text;
@@ -5082,13 +5083,16 @@ package body et_schematic_ops.nets is
 								 get_y (A_end) + spacing_between_net_label_and_segment);
 
 							-- The label must be readable from the front:
-							label.rotation := HORIZONTAL;
+							set_rotation (label, HORIZONTAL);
 
-							-- Append the label to other labels of the segment:
-							segment.labels.append (label);
+							-- Add the label to other labels of the segment:
+							add_label (segment, label);
 						end;
 
+
 						
+						-- This procedure places the net label vertically
+						-- so that it is readable from the right:
 						procedure vertical_text is 
 							use et_axes;
 							use et_text;
@@ -5103,10 +5107,10 @@ package body et_schematic_ops.nets is
 								 get_x (A_end) - spacing_between_net_label_and_segment);
 
 							-- The label must be readable from the right:
-							label.rotation := VERTICAL;
+							set_rotation (label, VERTICAL);
 
-							-- Append the label to other labels of the segment:
-							segment.labels.append (label);
+							-- Add the label to other labels of the segment:
+							add_label (segment, label);
 						end;
 
 						

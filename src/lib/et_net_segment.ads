@@ -75,6 +75,15 @@ package et_net_segment is
 		return type_net_segment;
 
 
+
+	-- Adds a net label to the given segment.
+	-- The label is rejected if it is already
+	-- in the list of net labels:
+	procedure add_label (
+		segment	: in out type_net_segment;
+		label	: in type_net_label);					
+	
+	
 	-- Activates a junction at the given end:
 	procedure set_junction (
 		segment	: in out type_net_segment;

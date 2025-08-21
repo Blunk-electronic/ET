@@ -117,17 +117,32 @@ package et_net_labels is
 
 		-- The simple label can be read from the front or from the right.
 		-- Its rotation can be HORIZONTAL or VERTICAL (0 or 90 degrees):
-		rotation	: et_text.type_rotation_documentation := et_text.type_rotation_documentation'first;
+		rotation	: type_rotation_documentation := type_rotation_documentation'first;
 	end record;
 
 
 
+	function get_rotation (
+		label : in type_net_label)
+		return type_rotation_documentation;
+
+	
+	procedure set_rotation (
+		label		: in out type_net_label;
+		rotation	: in type_rotation_documentation);
+	
+							   
 
 	function get_position (
 		label : in type_net_label)
 		return type_vector_model;
 
 
+	procedure set_position (
+		label		: in out type_net_label;
+		position	: in type_vector_model);
+
+	
 	function get_position (
 		label : in type_net_label)
 		return string;
