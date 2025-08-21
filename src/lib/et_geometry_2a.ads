@@ -1,4 +1,4 @@
-	------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
@@ -145,6 +145,14 @@ package et_geometry_2a is
 		minimum		: in type_distance);
 
 
+	-- Clips a given distance so that it is greater or equal
+	-- the given minimum and less or equal the given maximum.
+	-- Bases on the procedures limit_to_minimum and limit_to_maximum.
+	-- See comments above for details:
+	procedure clip (
+		distance	: in out type_distance;
+		minimum		: in type_distance;
+		maximum		: in type_distance);
 	
 
 	-- Converts a mil number (given as a string) to millimeters.	
@@ -823,6 +831,40 @@ package et_geometry_2a is
 		return type_direction_NSWE;
 
 
+	-- Returns the x-compoent of the west end
+	-- of the given line. The line orientation
+	-- must be horizontal or sloping. Otherwise 
+	-- the x-component of the A end will be returned:
+	function get_x_of_west_end (
+		line	: in type_line)
+		return type_distance;
+
+	-- Returns the x-compoent of the east end
+	-- of the given line. The line orientation
+	-- must be horizontal or sloping. Otherwise 
+	-- the x-component of the A end will be returned:
+	function get_x_of_east_end (
+		line	: in type_line)
+		return type_distance;
+
+	-- Returns the y-compoent of the north end
+	-- of the given line. The line orientation
+	-- must be vertical or sloping. Otherwise 
+	-- the y-component of the A end will be returned:
+	function get_y_of_north_end (
+		line	: in type_line)
+		return type_distance;
+
+	-- Returns the y-compoent of the south end
+	-- of the given line. The line orientation
+	-- must be vertical or sloping. Otherwise 
+	-- the y-component of the A end will be returned:
+	function get_y_of_south_end (
+		line	: in type_line)
+		return type_distance;
+
+	
+	
 	-- Maps from the A/B end of a line to a rotation.
 	-- The rotation is a multiple of 90 degrees.
 	-- It bases on the function to_NSWE_end and translates

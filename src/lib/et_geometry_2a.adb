@@ -203,6 +203,19 @@ package body et_geometry_2a is
 	end limit_to_minimum;
 
 	
+
+
+	procedure clip (
+		distance	: in out type_distance;
+		minimum		: in type_distance;
+		maximum		: in type_distance)
+	is begin
+		limit_to_minimum (distance, minimum);
+		limit_to_maximum (distance, maximum);
+	end;
+
+
+	
 	
 	
 	function mil_to_distance (
@@ -1713,6 +1726,114 @@ end;
 
 
 
+	
+
+
+	function get_x_of_west_end (
+		line	: in type_line)
+		return type_distance
+	is 
+		result : type_distance := 0.0;
+		AB_end : type_start_end_point;
+		orientation : type_line_orientation := get_orientation (line);
+	begin
+		-- Map from west end to A/B-end:
+		AB_end := to_AB_end (line, DIR_WEST);
+
+		case orientation is
+			when ORIENT_HORIZONTAL | ORIENT_SLOPING =>
+				result := get_x (get_end_point (line, AB_end));
+
+			when ORIENT_VERTICAL =>
+				result := get_x (get_end_point (line, A));
+		end case;
+								 
+		return result;
+	end;
+
+
+	
+	
+
+	function get_x_of_east_end (
+		line	: in type_line)
+		return type_distance
+	is 
+		result : type_distance := 0.0;
+		AB_end : type_start_end_point;
+		orientation : type_line_orientation := get_orientation (line);
+	begin
+		-- Map from east end to A/B-end:
+		AB_end := to_AB_end (line, DIR_EAST);
+
+		case orientation is
+			when ORIENT_HORIZONTAL | ORIENT_SLOPING =>
+				result := get_x (get_end_point (line, AB_end));
+
+			when ORIENT_VERTICAL =>
+				result := get_x (get_end_point (line, A));
+		end case;
+								 
+		return result;
+	end;
+
+
+
+
+
+
+	function get_y_of_north_end (
+		line	: in type_line)
+		return type_distance
+	is 
+		result : type_distance := 0.0;
+		AB_end : type_start_end_point;
+		orientation : type_line_orientation := get_orientation (line);
+	begin
+		-- Map from north end to A/B-end:
+		AB_end := to_AB_end (line, DIR_NORTH);
+
+		case orientation is
+			when ORIENT_VERTICAL | ORIENT_SLOPING =>
+				result := get_y (get_end_point (line, AB_end));
+
+			when ORIENT_HORIZONTAL =>
+				result := get_y (get_end_point (line, A));
+		end case;
+								 
+		return result;
+	end;
+
+	
+
+
+
+
+	function get_y_of_south_end (
+		line	: in type_line)
+		return type_distance
+	is 
+		result : type_distance := 0.0;
+		AB_end : type_start_end_point;
+		orientation : type_line_orientation := get_orientation (line);
+	begin
+		-- Map from south end to A/B-end:
+		AB_end := to_AB_end (line, DIR_SOUTH);
+
+		case orientation is
+			when ORIENT_VERTICAL | ORIENT_SLOPING =>
+				result := get_y (get_end_point (line, AB_end));
+
+			when ORIENT_HORIZONTAL =>
+				result := get_y (get_end_point (line, A));
+		end case;
+								 
+		return result;
+	end;
+
+
+	
+	
 
 	
 	function to_rotation (

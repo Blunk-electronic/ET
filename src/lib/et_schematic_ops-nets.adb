@@ -5453,38 +5453,60 @@ package body et_schematic_ops.nets is
 
 						procedure query_label (label : in out type_net_label) is
 
+							-- Places the net label in horizontal orientation
+							-- above the net segment:
 							procedure horizontal_text is 
 								use et_axes;
+								
+								-- Initially the x-component of the label position is 
+								-- the same as the x-component of the given destination:
+								x : type_distance_model := get_x (destination);
+
+								-- The x-component must be limited so that the
+								-- label is between west and east end of the segment:
+								x_min, x_max : type_distance_model;
 							begin
-								-- The x-component of the label position is the same
-								-- as the x-component of the given destination:
-								set (label.position, AXIS_X, get_x (destination));
+								x_min := get_x_of_west_end (segment);
+								x_max := get_x_of_east_end (segment);								
+								clip (x, x_min, x_max);
+
+								-- Assign the final x-position to the label:
+								set (label.position, AXIS_X, x);
 
 								-- The y-component of the label position is some distance
 								-- ABOVE the reference point:
 								set (label.position, AXIS_Y, 
 									get_y (A_end) + spacing_between_net_label_and_segment);
 
-								-- CS: limit x-component of destination if too far 
-								-- right or left of the segment.
-							end;
+							end horizontal_text;
 
 							
+							-- Places the net label in vertical orientation
+							-- left of the net segment:
 							procedure vertical_text is 
 								use et_axes;
+
+								-- Initially the y-component of the label position is 
+								-- the same as the y-component of the given destination:
+								y : type_distance_model := get_y (destination);
+
+								-- The y-component must be limited so that the
+								-- label is between south and north end of the segment:
+								y_min, y_max : type_distance_model;								
 							begin
-								-- The y-component of the label position is the same
-								-- as the y-component of the given destination:
-								set (label.position, AXIS_Y, get_y (destination));
+								y_min := get_y_of_south_end (segment);
+								y_max := get_y_of_north_end (segment);								
+								clip (y, y_min, y_max);
+
+								-- Assign the final y-position to the label:
+								set (label.position, AXIS_Y, y);
 								
 								-- The x-component of the label position is some distance
 								-- LEFT of the reference point:
 								set (label.position, AXIS_X,
 									get_x (A_end) - spacing_between_net_label_and_segment);
 
-								-- CS: limit y-component of destination if too far 
-								-- above or below of the segment.
-							end;
+							end vertical_text;
 
 							
 						begin
