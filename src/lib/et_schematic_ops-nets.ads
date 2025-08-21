@@ -548,20 +548,6 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
-	
-	-- Deletes a net. The scope determines whether to delete a certain strand,
-	-- all strands on a certain sheet or on all sheets.
-	-- CS If a particular strand on a sheet is to be deleted, the argument "place"
-	-- must provide sheet and x/y start position of strand. In the future x/y can be
-	-- any point on any segment of the strand.
-	-- CS: This procedure is not used anymore.
-	procedure delete_net (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		scope			: in type_net_scope; -- strand, sheet, everywhere
-		place			: in type_object_position; -- sheet/x/y
-		log_threshold	: in type_log_level);
-
 
 	
 	-- Shows/highlights a complete net:

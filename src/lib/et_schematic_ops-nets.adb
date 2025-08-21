@@ -3441,183 +3441,7 @@ package body et_schematic_ops.nets is
 		log_indentation_down;		
 	end delete_net;
 
-
-
-
-
-
 	
-	procedure delete_net (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		scope			: in type_net_scope; -- strand, sheet, everywhere
-		place			: in type_object_position; -- sheet/x/y
-		log_threshold	: in type_log_level) 
-	is
-		net_cursor : pac_nets.cursor; -- points to the net
-
-		
-		procedure delete_everywhere (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is begin
-			delete (
-				container	=> module.nets,
-				position	=> net_cursor);
-		end;
-
-		
-		procedure delete_on_sheet (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-
-			
-			procedure delete_strands_of_sheet (
-			-- Removes the affected strands from the net.
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is
-				strand_cursor : pac_strands.cursor := net.strands.first;
-				strand_count_before : count_type := length (net.strands);
-			begin
-				-- Look at the strands that are on the targeted sheet.
-				while strand_cursor /= pac_strands.no_element loop
-					if get_sheet (element (strand_cursor).position) = get_sheet (place) then
-						delete (net.strands, strand_cursor);
-					end if;
-					next (strand_cursor);
-				end loop;
-
-				-- Issue warning if no strands have been deleted. This can result:
-				-- - from an attempt to rename on a sheet that does not exist 
-				-- - from the fact that the targeted sheet does not contain the targeted net 
-				-- This simple check is a compare of the number of strands before with the
-				-- number of strands after the deletion:
-				if length (net.strands) = strand_count_before then -- nothing deleted
-					log (WARNING, "no strands have been deleted on sheet" & to_string (get_sheet (place)) &
-						". Check net name and sheet number !");
-				end if;
-			end;
-
-			
-		begin -- delete_on_sheet
-
-			-- delete strands in net
-			update_element (
-				container	=> module.nets,
-				position	=> net_cursor,
-				process		=> delete_strands_of_sheet'access);
-
-			-- If the net has no strands anymore, delete it.
-			if is_empty (element (net_cursor).strands) then
-				delete (module.nets, net_cursor);
-			end if;
-			
-		end delete_on_sheet;
-		
-
-		
-		procedure delete_strand (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			strand_found : boolean := false;
-
-			
-			procedure locate_strand (
-			-- Locates the strand that starts at place.
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is
-				strand_cursor : pac_strands.cursor := net.strands.first;
-			begin
-				-- Find the strand that starts at the given position.
-				while strand_cursor /= pac_strands.no_element loop
-					if element (strand_cursor).position = place then
-						-- CS: if place is not exactly the start position of the strand,
-						-- search for any other point on the strand instead.
-
-						-- delete strand in net
-						delete (net.strands, strand_cursor);
-
-						strand_found := true;
-						-- no need for further searching
-						exit;
-					end if;
-					next (strand_cursor);
-				end loop;
-			end locate_strand;
-
-			
-		begin -- delete_strand
-
-			-- locate the targeted strand
-			update_element (
-				container	=> module.nets,
-				position	=> net_cursor,
-				process		=> locate_strand'access);
-
-			if not strand_found then
-				log (WARNING, "strand not found at" & to_string (position => place) &
-					 ". Check net name and position !");
-			end if;
-
-			-- If the net has no strands anymore, delete it.
-			if is_empty (element (net_cursor).strands) then
-				delete (module.nets, net_cursor);
-			end if;
-			
-		end delete_strand;
-
-		
-	begin -- delete_net		
-		log (text => "module " & to_string (module_cursor)
-			& " deleting net " & to_string (net_name),
-			level => log_threshold);
-
-		-- locate the requested nets in the module
-		net_cursor := locate_net (module_cursor, net_name);
-
-		-- issue error if net does not exist:
-		if net_cursor = pac_nets.no_element then
-			net_not_found (net_name);
-		end if;
-
-		log_indentation_up;
-
-		-- show where the deletion will be taking place:
-		case scope is
-			when EVERYWHERE =>
-				log (text => "scope: everywhere -> all strands on all sheets", level => log_threshold);
-
-				update_element (
-					container	=> generic_modules,
-					position	=> module_cursor,
-					process		=> delete_everywhere'access);
-
-			when SHEET =>
-				log (text => "scope: all strands on sheet" & to_string (get_sheet (place)), level => log_threshold);
-
-				update_element (
-					container	=> generic_modules,
-					position	=> module_cursor,
-					process		=> delete_on_sheet'access);
-
-			when STRAND => 
-				log (text => "scope: strand at" & to_string (position => place), level => log_threshold);
-
-				update_element (
-					container	=> generic_modules,
-					position	=> module_cursor,
-					process		=> delete_strand'access);
-				
-		end case;
-
-		update_ratsnest (module_cursor, log_threshold + 1);
-		
-		log_indentation_down;		
-	end delete_net;
 
 
 
@@ -3632,17 +3456,16 @@ package body et_schematic_ops.nets is
 		log_threshold	: in type_log_level)
 	is
 		net : type_object_net;
-
 	begin
 		if all_sheets then
 			log (text => "module " & to_string (module_cursor)
-				& " deleting net " & to_string (net_name)
+				& " delete net " & to_string (net_name)
 				& " on all sheets.",
 				level => log_threshold);
 
 		else
 			log (text => "module " & to_string (module_cursor)
-				& " deleting net " & to_string (net_name)
+				& " delete net " & to_string (net_name)
 				& " on sheet " & to_string (sheet) & ".",
 				level => log_threshold);
 
@@ -3658,7 +3481,7 @@ package body et_schematic_ops.nets is
 		if has_element (net.net_cursor) then
 			delete_net (module_cursor, net, sheet, all_sheets, log_threshold + 1);			
 		else
-			log (text => "Net does not exist !", level => log_threshold);
+			log (WARNING, "Net " & to_string (net_name) & " does not exist !");
 		end if;		
 			
 		log_indentation_down;
@@ -3695,7 +3518,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " showing/highlight whole net "
+			& " show/highlight whole net "
 			& get_net_name (net_cursor),
 			level => log_threshold);
 
@@ -3771,8 +3594,8 @@ package body et_schematic_ops.nets is
 
 
 	begin
-		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &
-			 " collecting all nets",
+		log (text => "module " & to_string (key (module_cursor)) &
+			 " collect all nets",
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -3788,6 +3611,7 @@ package body et_schematic_ops.nets is
 
 
 
+	
 	
 	function get_net_index (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3911,7 +3735,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) &
-			 " identifying nets at" & to_string (position => place),
+			 " identify nets at" & to_string (position => place),
 			 level => log_threshold);
 
 		log_indentation_up;
