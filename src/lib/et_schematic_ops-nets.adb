@@ -3041,9 +3041,8 @@ package body et_schematic_ops.nets is
 			-- If an object strand exists, then rename it.
 			-- Otherwise nothing happens
 			if is_empty (object_strand) then
-				log (text => "No strand of net " & to_string (net_name_before) -- CS warning ?
-					& " found at the specified place.",
-					level => log_threshold);
+				log (WARNING, "No strand of net " & to_string (net_name_before)
+					& " found at the specified place !");
 
 			else
 				rename_strand (
@@ -3055,9 +3054,7 @@ package body et_schematic_ops.nets is
 			end if;
 			
 		else
-			log (text => "Net " & to_string (net_name_before) -- CS warning ?
-				 & " does not exist.",
-				 level => log_threshold);
+			log (WARNING, "Net " & to_string (net_name_before) & " does not exist !");
 		end if;
 		
 		log_indentation_down;
@@ -3342,9 +3339,7 @@ package body et_schematic_ops.nets is
 				log_threshold	=> log_threshold + 1);
 			
 		else
-			log (text => "Net " & to_string (net_name_before) -- CS warning ?
-				 & " does not exist.",
-				 level => log_threshold);
+			log (WARNING, "Net " & to_string (net_name_before) & " does not exist !");
 		end if;
 		
 		log_indentation_down;
