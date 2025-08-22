@@ -233,7 +233,7 @@ procedure draw_conductors is
 		end draw;
 
 	begin
-		-- Draw the arc if it is in theh current layer:
+		-- Draw the arc if it is in the current layer:
 		if get_layer (c) = current_layer then
 
 			-- If the segment is selected, then it must be drawn highlighted:
@@ -969,7 +969,14 @@ procedure draw_conductors is
 		net_name := key (n);
 		net_class := element (n).class;
 
+		-- if is_selected (n) then
+		-- 	put_line ("net " & get_net_name (n) & " selected");
+		-- 	brightness := BRIGHT;
+		-- end if;
+		
 		iterate (element (n).route.vias, query_via'access);
+
+		-- brightness := NORMAL;
 	end query_net_via;
 
 
