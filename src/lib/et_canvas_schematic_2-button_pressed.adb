@@ -92,24 +92,6 @@ is
 
 
 		
-		procedure fetch_unit is
-		begin
-			-- If no device has been selected already, then
-			-- fetch a unit:
-			if unit_add.device = pac_devices_lib.no_element then
-
-				if not clarification_pending then
-					fetch_unit (snap_point);
-				else
-					show_units;
-				end if;
-
-			else
-				finalize_fetch (snap_point, log_threshold + 1);
-			end if;
-		end fetch_unit;
-
-		
 		
 	begin
 		case verb is
@@ -150,7 +132,6 @@ is
 		
 					when others => null;
 				end case;
-
 				
 				
 			when VERB_DRAW =>
@@ -169,7 +150,7 @@ is
 			when VERB_FETCH =>
 				case noun is
 					when NOUN_UNIT =>
-						fetch_unit;
+						fetch_unit (snap_point);
 						
 					when others => null;
 				end case;

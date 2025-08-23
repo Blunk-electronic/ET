@@ -330,6 +330,14 @@ package et_schematic_ops.units is
 	end record;
 
 
+
+	-- Returns the device name of the given object
+	-- as string in the form like "IC12":
+	function get_device_name (
+		object	: in type_object_unit)
+		return string;
+	
+							   
 	-- Returns the full name of the given object
 	-- as string in the form like "IC12.B":
 	function get_object_name (

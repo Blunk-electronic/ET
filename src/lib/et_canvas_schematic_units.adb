@@ -372,17 +372,28 @@ package body et_canvas_schematic_units is
 		log (text => "locating objects ...", level => log_threshold);
 		log_indentation_up;
 
-		-- CS propose objects according to
-		-- current verb.
+		-- Propose objects according to current verb and noun:
+		case verb is
+			when VERB_DELETE | VERB_DRAG | VERB_FETCH =>
+				case noun is
+					when NOUN_UNIT =>
+						
+						-- Propose units in the vicinity of the given point:
+						propose_units (
+							module_cursor	=> active_module,
+							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+							count			=> count_total,
+							log_threshold	=> log_threshold + 1);
+
+					when others =>
+						null; -- CS
+				end case;
+						
+			when others =>
+				null; -- CS 
+
+		end case;
 		
-		-- Propose units in the vicinity of the given point:
-		propose_units (
-			module_cursor	=> active_module,
-			catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
-			count			=> count_total,
-			log_threshold	=> log_threshold + 1);
-
-
 		-- CS placeholders
 
 
@@ -1358,6 +1369,8 @@ package body et_canvas_schematic_units is
 		--status_enter_verb;
 	end drop_unit;
 
+
+
 	
 	procedure finalize_fetch (
 		position		: in type_vector_model;
@@ -1400,36 +1413,13 @@ package body et_canvas_schematic_units is
 	
 	
 
-	-- Extracts from the selected menu item the unit name.
-	procedure unit_selected (self : access gtk.menu_item.gtk_menu_item_record'class) is
-		
-		-- Extract the unit name from field 2 of the menu item:
-		unit_name : constant string := get_field_from_line (
-			text_in		=> self.get_label,
-			position	=> 2);
-	begin
-		--put_line ("selected");
-		
-		-- assign the unit to be drawn:
-		unit_add.name := to_unit_name (unit_name);
 
-		-- Signal procedure draw_units to draw this unit as a preview:
-		unit_add.via_fetch := true;
-
-		-- The list of proposed units and the cursor "selected_unit" are
-		-- no longer required. This operation also prevents the formerly
-		-- selected unit to be drawn highlighted:
-		clear_proposed_units;
-		
-		set_status ("Device " & to_string (unit_add.device_pre) 
-			& " unit " & unit_name & " selected.");
-
-	end unit_selected;
-	
 
 	
-	procedure unit_selection_cancelled (self : access gtk.menu_shell.gtk_menu_shell_record'class) is
-	begin
+	
+	procedure unit_selection_cancelled (
+	self : access gtk.menu_shell.gtk_menu_shell_record'class) 
+	is begin
 		set_status ("Unit selection cancelled");
 		reset_unit_add;
 
@@ -1437,6 +1427,7 @@ package body et_canvas_schematic_units is
 	end unit_selection_cancelled;
 
 
+	
 	
 	-- CS
 	procedure set_position ( -- of a menu
@@ -1474,35 +1465,146 @@ package body et_canvas_schematic_units is
 	end set_position;
 
 
+
+
+
+	-- procedure cb_fetch_window_destroy (
+	-- 	window : access gtk_widget_record'class)
+	-- is begin
+	-- 	put_line ("cb_fetch_window_destroy");
+	-- 	fetch_window_open := false;
+	-- 	reset_proposed_objects (active_module, log_threshold + 1);
+	-- end cb_fetch_window_destroy;
+
+
+
 	
-	procedure show_units is
-		use pac_devices_sch;
+-- 	function cb_fetch_window_key_pressed (
+-- 		self	: access gtk_widget_record'class;
+-- 		event	: in gdk_event_key) 
+-- 		return boolean 
+-- 	is
+-- 		key : gdk_key_type := event.keyval;
+-- 
+-- 		-- This is required in order to propagate the key-pressed event further.
+-- 		result : boolean; -- to be returned. Indicates that the event has been handled.
+-- 	begin
+-- 		case key is
+-- 			when GDK_ESCAPE =>
+-- 				fetch_window.destroy;
+-- 				result := true;
+-- 
+-- 			when others =>
+-- 				--put_line ("key B");
+-- 				result := false;
+-- 		end case;
+-- 		
+-- 		return result;
+-- 	end cb_fetch_window_key_pressed;
+
+
+
+
+	
+
+-- 	procedure build_fetch_window (
+-- 		unit : in type_object_unit)
+-- 	is
+-- 		use gtk.window;
+-- 		-- use gtk.box;
+-- 		-- use gtk.label;
+-- 	
+-- 	begin
+-- 		gtk_new (fetch_window);
+-- 
+-- 		-- CS set size
+-- 		
+-- 		fetch_window.set_title ("Select a unit of " & get_device_name (unit));
+-- 		fetch_window.on_destroy (cb_fetch_window_destroy'access);
+-- 		
+-- 		fetch_window.on_key_press_event (cb_fetch_window_key_pressed'access);
+-- 	end build_fetch_window;
+
+
+
+
+	procedure cb_fetch_menu_destroy (
+		self : access gtk.menu_shell.gtk_menu_shell_record'class) 
+	is begin
+		set_status ("cb_fetch_menu_destroy");
+		reset_proposed_units (active_module, log_threshold + 1);
+  	end cb_fetch_menu_destroy;
+
+
+
+
+	
+	-- Extracts from the selected menu item the unit name.
+	procedure cb_fetch_menu_unit_select (
+		self : access gtk.menu_item.gtk_menu_item_record'class)
+	is
 		
-		--su : constant type_selected_unit := element (selected_unit);
-		su : type_selected_unit;
+		-- Extract the unit name from field 2 of the menu item:
+		unit_name : constant string := get_field_from_line (
+			text_in		=> self.get_label,
+			position	=> 2);
+	begin
+		put_line ("cb_fetch_menu_unit_select");
+		
+		-- assign the unit to be drawn:
+		unit_add.name := to_unit_name (unit_name);
+
+		-- Signal procedure draw_units to draw this unit as a preview:
+		unit_add.via_fetch := true;
+
+		reset_proposed_units (active_module, log_threshold + 1);
+		
+		set_status ("Device " & to_string (unit_add.device_pre) 
+			& " unit " & unit_name & " selected.");
+
+		-- exception
+		-- 	when event: others =>
+		-- 		-- log (text => ada.exceptions.exception_information (event), console => true);
+		-- 		log (text => ada.exceptions.exception_information (event));
+		
+	end cb_fetch_menu_unit_select;
+	
+
+
+	
+	
+	
+	procedure show_fetch_window is
+
+		object : constant type_object := get_first_object (
+				active_module, SELECTED, log_threshold + 1);
+		
+		use pac_devices_sch;
+	
 		
 		device_model : pac_device_model_file.bounded_string;
 		device_cursor_lib : pac_devices_lib.cursor;
-		
+
+		units_total : type_unit_count;
+
+		use pac_unit_names;
 		unit_names : pac_unit_names.list;
 
 		use pac_unit_name;
-
 		
+
 		procedure show_menu is
-			--use glib;
 			use gtk.menu;
 			use gtk.menu_item;
 
-			m : gtk_menu; -- the menu
-			i : gtk_menu_item; -- an item on the menu
+			menu : gtk_menu; -- the menu
+			item : gtk_menu_item; -- an item on the menu
 									   
 			-- If no units are available, then no menu is to be shown.
 			-- So we must count units with this stuff:
 			subtype type_units_available is natural range 0 .. type_unit_count'last;
 			units_available : type_units_available := 0;
-			
-			use pac_unit_names;
+					
 
 			
 			procedure query_name (c : in pac_unit_names.cursor) is 
@@ -1525,7 +1627,7 @@ package body et_canvas_schematic_units is
 			begin -- query_name
 				-- Test whether the unit is already in use.
 				query_element (
-					position	=> su.device,
+					position	=> object.unit.device_cursor,
 					process		=> query_in_use'access);
 
 				-- If the unit is available then put its name on the menu:
@@ -1535,30 +1637,27 @@ package body et_canvas_schematic_units is
 					units_available := units_available + 1;
 					
 					-- Build the menu item. NOTE: The actual unit name must be
-					-- the 2nd string of the entry. Procedure unit_selected expects
+					-- the 2nd string of the entry. Procedure cb_fetch_menu_unit_select expects
 					-- it at this place:
-					i := gtk_menu_item_new_with_label (
+					item := gtk_menu_item_new_with_label (
 						"unit " & to_string (element (c)));
 
 					-- Connect the item with the "activate" signal which
-					-- in turn calls procedure unit_selected:
-					i.on_activate (unit_selected'access);
+					-- in turn calls procedure cb_fetch_menu_unit_select:
+					item.on_activate (cb_fetch_menu_unit_select'access);
 
-					m.append (i);
-					i.show;
+					menu.append (item);
+					item.show;
 				end if;
-
 			end query_name;
 
 			
 		begin -- show_menu
 
-			-- create a menu
-			m := gtk_menu_new;
+			-- create the menu
+			menu := gtk_menu_new;
 
-			-- In case the operator closes the menu (via ESC for example)
-			-- then reset unit_add.
-			m.on_cancel (unit_selection_cancelled'access);
+			menu.on_cancel (cb_fetch_menu_destroy'access);
 
 			-- Query the available units and add them
 			-- to the menu:
@@ -1569,14 +1668,17 @@ package body et_canvas_schematic_units is
 			if units_available > 0 then
 				-- put_line ("show units menu");
 
+				unit_add.device := device_cursor_lib;
+				unit_add.device_pre := key (object.unit.device_cursor);
+				
 				-- Show the menu:
-				m.show;
+				menu.show;
 
-				-- CS place the menu either a cursor or pointer
+				-- CS place the menu either at cursor or pointer
 				-- position.
 
 				-- Open the menu:
-				m.popup (
+				menu.popup (
 					-- CS func => set_position'access,
 							
 					-- button 0 means: this is not triggered by a key press
@@ -1598,80 +1700,71 @@ package body et_canvas_schematic_units is
 			end if;
 		end show_menu;
 
-		
-	begin -- show_units
-		-- put_line ("show_units");
-		su := element (selected_unit);		
-		-- put_line ("selected " & to_string (key (su.device)));
-
-		device_model := element (su.device).model;
-		-- put_line ("model " & to_string (device_model));
-		
-		device_cursor_lib := get_device_model_cursor (device_model);
-
-		-- assign the cursor to the device model:
-		-- put_line ("assign model");
-		unit_add.device := device_cursor_lib;
-
-		-- For a nice preview we also need the total of units provided
-		-- the the device:
-		-- put_line ("assign total");
-		unit_add.total := get_unit_count (unit_add.device);
-			
-		-- assign the prospective device name:
-		-- put_line ("assign prospective device");
-		unit_add.device_pre := key (su.device);
-
-		-- collect the names of all units of the selected device:
-		-- put_line ("get all units");
-		unit_names := get_all_units (device_cursor_lib);
-
-		-- Show the units of the device in a menu. After the operator
-		-- has selected a unit, procedure unit_selected finally
-		-- assigns the unit name to unit_add.
-		-- put_line ("show units");
-		show_menu;
-		
-	end show_units;
-
-
-
-	
-	
-	procedure fetch_unit (point : in type_vector_model) is 
-		use et_schematic_ops.units;
-	begin
-		log (text => "fetching unit ...", level => log_threshold);
-		log_indentation_up;
-		
-		-- Collect all units in the vicinity of the given point:
-		proposed_units := collect_units (
-			module			=> active_module,
-			place			=> to_position (point, active_sheet),
-			zone			=> get_catch_zone (catch_zone_radius_default),
-			log_threshold	=> log_threshold + 1);
 
 		
-		-- evaluate the number of units found here:
-		case length (proposed_units) is
-			when 0 =>
-				reset_request_clarification;
+	begin -- show_fetch_window
+		put_line ("show_fetch_window");
+		
+
+		case object.cat is
+			when CAT_UNIT =>
+				-- build_fetch_window (object.unit);
 				
-			when 1 =>
-				selected_unit := proposed_units.first;
-				show_units;
+				device_model := get_device_model_file (object.unit.device_cursor);
+				-- put_line ("model " & to_string (device_model));
+				
+				device_cursor_lib := get_device_model_cursor (device_model);
 
+				units_total := get_unit_count (device_cursor_lib);
+
+				-- collect the names of all units of the selected device:
+				-- put_line ("get all units");
+				unit_names := get_all_units (device_cursor_lib);				
+				
+				show_menu;
+				
+				
 			when others =>
-				set_request_clarification;
-
-				-- preselect the first unit
-				selected_unit := proposed_units.first;
+				null;
 		end case;
 		
-		log_indentation_down;
+	end show_fetch_window;
+	
+
+
+
+	
+	
+	procedure fetch_unit (
+		point : in type_vector_model) 
+	is begin
+		if not fetch_window_open then
+			
+			if not clarification_pending then
+				-- Locate all objects in the vicinity of the given point:
+				find_objects (point);
+				
+				-- NOTE: If many objects have been found, then
+				-- clarification is now pending.
+
+				-- If find_objects has found only one object
+				-- then the flag edit_process_running is set true.
+
+				if edit_process_running then
+					show_fetch_window;
+				end if;
+			else
+				-- Here the clarification procedure ends.
+				-- An object has been selected
+				-- via procedure clarify_object.
+
+				show_fetch_window;
+			end if;
+		end if;
 	end fetch_unit;
 
 
+	
 	
 	
 -- PLACEHOLDERS

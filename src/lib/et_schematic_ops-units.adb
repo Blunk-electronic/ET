@@ -2337,6 +2337,16 @@ package body et_schematic_ops.units is
 
 
 
+	function get_device_name (
+		object	: in type_object_unit)
+		return string
+	is begin
+		return get_device_name (object.device_cursor);
+	end;
+
+
+	
+
 
 	function get_object_name (
 		object	: in type_object_unit)

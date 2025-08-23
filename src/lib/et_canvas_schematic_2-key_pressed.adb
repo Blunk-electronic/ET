@@ -525,6 +525,7 @@ is
 
 
 	
+	
 	procedure fetch is 
 		use pac_devices_lib;
 	begin
@@ -540,22 +541,9 @@ is
 				case noun is
 
 					when NOUN_UNIT =>
-						-- If no device has been selected already, then
-						-- set the tool used for fetching.
-						if unit_add.device = pac_devices_lib.no_element then
-
-							if not clarification_pending then
-								fetch_unit (get_cursor_position);
-							else
-								show_units;
-							end if;
-
-						else
-							finalize_fetch (get_cursor_position, log_threshold + 1);
-						end if;
+						et_canvas_schematic_units.fetch_unit (point);
 						
-					when others => null;
-						
+					when others => null;						
 				end case;
 				
 
@@ -568,13 +556,13 @@ is
 							clarify_unit;
 						end if;
 						
-					when others => null;
-						
+					when others => null;						
 				end case;
 				
 			when others => null;
 		end case;
 	end fetch;
+
 
 	
 	

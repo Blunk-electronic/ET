@@ -360,14 +360,24 @@ package et_canvas_schematic_units is
 		position		: in type_vector_model;
 		log_threshold	: in type_log_level);
 
-	
-	-- Shows the available units of the selected device in a menu.
-	procedure show_units;
 
+
+	fetch_window : gtk_window;
+	
+	fetch_window_open : boolean := false;
+	
+	-- Shows the available units of 
+	-- the selected device in a menu:
+	procedure show_fetch_window;
+
+
+
+	
 	
 	-- Collects units in the vicinity of the given point.
 	-- Requests for clarification if more than one unit found.
-	procedure fetch_unit (point : in type_vector_model);
+	procedure fetch_unit (
+		point : in type_vector_model);
 
 
 
