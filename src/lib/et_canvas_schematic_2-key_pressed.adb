@@ -62,6 +62,7 @@ is
 
 	point : type_vector_model renames get_cursor_position;
 
+	-- CS global variable for the tool KEYBOARD
 	
 	
 	procedure delete is begin
@@ -541,7 +542,7 @@ is
 				case noun is
 
 					when NOUN_UNIT =>
-						et_canvas_schematic_units.fetch_unit (point);
+						et_canvas_schematic_units.fetch_unit (KEYBOARD, point);
 						
 					when others => null;						
 				end case;

@@ -58,8 +58,6 @@ with gtk.box;
 with gtk.label;
 with gtk.gentry;
 with gtk.menu;
-with gtk.menu_item;
-with gtk.menu_shell;
 
 with et_sheets;						use et_sheets;
 with et_device_rw;
@@ -1372,45 +1370,7 @@ package body et_canvas_schematic_units is
 
 
 	
-	procedure finalize_fetch (
-		position		: in type_vector_model;
-		log_threshold	: in type_log_level)
-	is 
-		use pac_unit_name;
-		use et_commit;
-		use et_undo_redo;
-	begin
-		log (text => "finalizing fetch ...", level => log_threshold);
-		log_indentation_up;
-		
-		if length (unit_add.name) > 0 then
 
-			-- Commit the current state of the design:
-			commit (PRE, verb, noun, log_threshold);
-			
-			fetch_unit (
-				module_cursor	=> active_module,
-				device_name		=> unit_add.device_pre,
-				unit_name		=> unit_add.name,
-				destination		=> to_position (position, active_sheet),
-				log_threshold	=> log_threshold + 1);
-
-
-			-- Commit the current state of the design:
-			commit (POST, verb, noun, log_threshold);
-
-		else
-			log (text => "nothing to do", level => log_threshold + 1);
-		end if;
-
-		reset_unit_add;
-		reset_request_clarification;
-		set_status (status_fetch);
-
-		log_indentation_down;		
-	end finalize_fetch;
-
-	
 	
 
 
@@ -1468,111 +1428,12 @@ package body et_canvas_schematic_units is
 
 
 
-	-- procedure cb_fetch_window_destroy (
-	-- 	window : access gtk_widget_record'class)
-	-- is begin
-	-- 	put_line ("cb_fetch_window_destroy");
-	-- 	fetch_window_open := false;
-	-- 	reset_proposed_objects (active_module, log_threshold + 1);
-	-- end cb_fetch_window_destroy;
 
 
 
-	
--- 	function cb_fetch_window_key_pressed (
--- 		self	: access gtk_widget_record'class;
--- 		event	: in gdk_event_key) 
--- 		return boolean 
--- 	is
--- 		key : gdk_key_type := event.keyval;
--- 
--- 		-- This is required in order to propagate the key-pressed event further.
--- 		result : boolean; -- to be returned. Indicates that the event has been handled.
--- 	begin
--- 		case key is
--- 			when GDK_ESCAPE =>
--- 				fetch_window.destroy;
--- 				result := true;
--- 
--- 			when others =>
--- 				--put_line ("key B");
--- 				result := false;
--- 		end case;
--- 		
--- 		return result;
--- 	end cb_fetch_window_key_pressed;
+-- FETCH UNIT:
 
 
-
-
-	
-
--- 	procedure build_fetch_window (
--- 		unit : in type_object_unit)
--- 	is
--- 		use gtk.window;
--- 		-- use gtk.box;
--- 		-- use gtk.label;
--- 	
--- 	begin
--- 		gtk_new (fetch_window);
--- 
--- 		-- CS set size
--- 		
--- 		fetch_window.set_title ("Select a unit of " & get_device_name (unit));
--- 		fetch_window.on_destroy (cb_fetch_window_destroy'access);
--- 		
--- 		fetch_window.on_key_press_event (cb_fetch_window_key_pressed'access);
--- 	end build_fetch_window;
-
-
-
-
-	procedure cb_fetch_menu_destroy (
-		self : access gtk.menu_shell.gtk_menu_shell_record'class) 
-	is begin
-		set_status ("cb_fetch_menu_destroy");
-		reset_proposed_units (active_module, log_threshold + 1);
-  	end cb_fetch_menu_destroy;
-
-
-
-
-	
-	-- Extracts from the selected menu item the unit name.
-	procedure cb_fetch_menu_unit_select (
-		self : access gtk.menu_item.gtk_menu_item_record'class)
-	is
-		
-		-- Extract the unit name from field 2 of the menu item:
-		unit_name : constant string := get_field_from_line (
-			text_in		=> self.get_label,
-			position	=> 2);
-	begin
-		put_line ("cb_fetch_menu_unit_select");
-		
-		-- assign the unit to be drawn:
-		unit_add.name := to_unit_name (unit_name);
-
-		-- Signal procedure draw_units to draw this unit as a preview:
-		unit_add.via_fetch := true;
-
-		reset_proposed_units (active_module, log_threshold + 1);
-		
-		set_status ("Device " & to_string (unit_add.device_pre) 
-			& " unit " & unit_name & " selected.");
-
-		-- exception
-		-- 	when event: others =>
-		-- 		-- log (text => ada.exceptions.exception_information (event), console => true);
-		-- 		log (text => ada.exceptions.exception_information (event));
-		
-	end cb_fetch_menu_unit_select;
-	
-
-
-	
-	
 	
 	procedure show_fetch_window is
 
@@ -1668,8 +1529,8 @@ package body et_canvas_schematic_units is
 			if units_available > 0 then
 				-- put_line ("show units menu");
 
-				unit_add.device := device_cursor_lib;
-				unit_add.device_pre := key (object.unit.device_cursor);
+				unit_fetch.device := device_cursor_lib;
+				unit_fetch.device_pre := key (object.unit.device_cursor);
 				
 				-- Show the menu:
 				menu.show;
@@ -1692,7 +1553,7 @@ package body et_canvas_schematic_units is
 				-- put_line ("units menu open");
 			else
 				set_status ("No more units of device " 
-					& to_string (unit_add.device_pre)
+					& to_string (unit_fetch.device_pre)
 					& " available !");
 
 				reset_unit_add;
@@ -1708,8 +1569,6 @@ package body et_canvas_schematic_units is
 
 		case object.cat is
 			when CAT_UNIT =>
-				-- build_fetch_window (object.unit);
-				
 				device_model := get_device_model_file (object.unit.device_cursor);
 				-- put_line ("model " & to_string (device_model));
 				
@@ -1733,37 +1592,142 @@ package body et_canvas_schematic_units is
 
 
 
+
+	procedure reset_unit_fetch is begin
+		unit_fetch := (others => <>);
+	end;
+	
+
+	
+	
+	procedure cb_fetch_menu_destroy (
+		menu : access gtk.menu_shell.gtk_menu_shell_record'class) 
+	is begin
+		set_status ("cb_fetch_menu_destroy");
+
+		-- Clean up for next unit to be fetched:
+		reset_proposed_units (active_module, log_threshold + 1);
+		reset_unit_fetch;
+  	end cb_fetch_menu_destroy;
+
+
+
+
+	
+	-- Extracts from the selected menu item the unit name.
+	procedure cb_fetch_menu_unit_select (
+		menu : access gtk.menu_item.gtk_menu_item_record'class)
+	is
+		
+		-- Extract the unit name from field 2 of the menu item:
+		unit_name : constant string := get_field_from_line (
+			text_in		=> menu.get_label,
+			position	=> 2);
+	begin
+		put_line ("cb_fetch_menu_unit_select");
+		
+		-- assign the unit to be drawn:
+		unit_fetch.name := to_unit_name (unit_name);
+
+		-- Signal procedure draw_units to draw this unit as a preview:
+		unit_fetch.valid := true;
+
+		reset_proposed_units (active_module, log_threshold + 1);
+		
+		set_status ("Device " & to_string (unit_fetch.device_pre) 
+			& " unit " & unit_name & " selected.");
+
+		-- exception
+		-- 	when event: others =>
+		-- 		-- log (text => ada.exceptions.exception_information (event), console => true);
+		-- 		log (text => ada.exceptions.exception_information (event));
+		
+	end cb_fetch_menu_unit_select;
+	
+
+
+
+	
 	
 	
 	procedure fetch_unit (
-		point : in type_vector_model) 
-	is begin
-		if not fetch_window_open then
+		tool	: in type_tool;
+		point	: in type_vector_model) 
+	is 
+		use pac_unit_name;
+
+		
+		procedure finalize is 
+			use et_commit;
+			use et_undo_redo;
+		begin
+			log (text => "finalize fetch", level => log_threshold);
+			log_indentation_up;
+						
+
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
 			
-			if not clarification_pending then
-				-- Locate all objects in the vicinity of the given point:
-				find_objects (point);
-				
-				-- NOTE: If many objects have been found, then
-				-- clarification is now pending.
+			fetch_unit (
+				module_cursor	=> active_module,
+				device_name		=> unit_fetch.device_pre,
+				unit_name		=> unit_fetch.name,
+				destination		=> to_position (point, active_sheet),
+				log_threshold	=> log_threshold + 1);
 
-				-- If find_objects has found only one object
-				-- then the flag edit_process_running is set true.
 
-				if edit_process_running then
-					show_fetch_window;
-				end if;
-			else
-				-- Here the clarification procedure ends.
-				-- An object has been selected
-				-- via procedure clarify_object.
+			-- Commit the current state of the design:
+			commit (POST, verb, noun, log_threshold);
 
+			-- Clean up for the next unit to be fetched:
+			reset_unit_fetch;			
+			reset_request_clarification;
+			set_status (status_fetch);
+
+			log_indentation_down;		
+		end finalize;
+
+
+	begin
+		-- Set the tool being used:
+		primary_tool := tool;
+
+		-- CS test whether the fetch menu is not open ?
+		
+		if not clarification_pending then
+			-- Locate all objects in the vicinity of the given point:
+			find_objects (point);
+			
+			-- NOTE: If many objects have been found, then
+			-- clarification is now pending.
+
+			-- If find_objects has found only one object
+			-- then the flag edit_process_running is set true.
+
+			if edit_process_running then
 				show_fetch_window;
 			end if;
+		else
+			-- Here the clarification procedure ends.
+			-- An object has been selected
+			-- via procedure clarify_object.
+
+			show_fetch_window;
 		end if;
+
+
+		-- If a unit has been selected from the 
+		-- fetch menu, then the data in unit_fetch is regarded
+		-- as valid and the unit inserted in the database:
+		if unit_fetch.valid then
+			finalize;
+		end if;
+
 	end fetch_unit;
 
 
+
+	
 	
 	
 	

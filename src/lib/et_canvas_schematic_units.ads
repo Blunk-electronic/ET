@@ -42,6 +42,8 @@ with ada.containers;	            use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with gtk.window;					use gtk.window;
+with gtk.menu_item;
+with gtk.menu_shell;
 
 with et_schematic_coordinates;		use et_schematic_coordinates;
 use et_schematic_coordinates.pac_geometry_2;
@@ -250,7 +252,7 @@ package et_canvas_schematic_units is
 
 		-- This flag indicates that the
 		-- window is open. The purpose of this flag is
-		-- to prevent the window from being opended
+		-- to prevent the window from being opened
 		-- multiple times:
 		open	: boolean := false;
 	end record;
@@ -344,8 +346,12 @@ package et_canvas_schematic_units is
 
 	
 
--- FETCH UNIT:
 	
+-- FETCH UNIT:
+
+	-- To fetch a unit means to select a unit of
+	-- a device that is already in use:
+
 	-- to be output in the status bar:
 	status_fetch : constant string := 
 		status_click_left 
@@ -355,29 +361,71 @@ package et_canvas_schematic_units is
 		& status_hint_for_abort;
 	
 
-	-- Does the final fetching of the unit in the schematic:
-	procedure finalize_fetch (
-		position		: in type_vector_model;
-		log_threshold	: in type_log_level);
-
-
-
-	fetch_window : gtk_window;
-	
-	fetch_window_open : boolean := false;
-	
 	-- Shows the available units of 
 	-- the selected device in a menu:
 	procedure show_fetch_window;
 
 
+	
+	-- This type is required when a unit has been
+	-- selected from the fetch menu. This type is indicated
+	-- to store temporarily information for a preview
+	-- of the unit before it dropped at its final position:
+	type type_unit_fetch is record
+		-- The cursor to the device model:
+		device		: pac_devices_lib.cursor;
+
+		-- The name of the unit:
+		name		: pac_unit_name.bounded_string; -- A, B, PWR_IO3
+		
+		-- The prospective device name (like IC4):
+		device_pre	: type_device_name := (others => <>);
+
+		-- Indicates that the information above is valid
+		-- and a unit has been selected from the fetch menu
+		-- by the operator:
+		valid		: boolean := false;
+	end record;
+
+	
+	-- The actual information about the
+	-- unit being fetched:
+	unit_fetch : type_unit_fetch;
+
+
+	
+	-- Resets the information of the unit_fetch:
+	procedure reset_unit_fetch;
+	
+
+	-- This callback procedure is called when the fetch menu is closed
+	-- by the operator by pressing the ESCAPE key:
+	procedure cb_fetch_menu_destroy (
+		menu : access gtk.menu_shell.gtk_menu_shell_record'class);
+	
+
+	-- This callback procedure is called when the operator
+	-- has selected a unit from the fetch menu.
+	-- It sets the variable unit_fetch accordingly.
+	-- Extracts from the selected menu item the unit name.
+	procedure cb_fetch_menu_unit_select (
+		menu : access gtk.menu_item.gtk_menu_item_record'class);
 
 	
 	
-	-- Collects units in the vicinity of the given point.
-	-- Requests for clarification if more than one unit found.
+	-- This procedure is to be called when the operator wants
+	-- to fetch a unit at the given point on the current sheet.
+	-- 1. On the first call, it locates units in a certain zone around
+	--    the given point. If more than one unit exists there, then
+	--    the operator is requested to clarify.
+	-- 2. If only one unit has been found or if the operator has
+	--    clarified which unit was meant, then the fetch menu
+	--    is opened so that the operator can choose an available unit.
+	-- 3. On the next call the unit is dropped a the given point
+	--    and inserted in the database:
 	procedure fetch_unit (
-		point : in type_vector_model);
+		tool	: in type_tool;
+		point	: in type_vector_model);
 
 
 

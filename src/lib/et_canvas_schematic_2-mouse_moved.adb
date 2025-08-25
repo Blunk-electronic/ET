@@ -99,8 +99,8 @@ begin
 		when VERB_FETCH =>
 			case noun is
 				when NOUN_UNIT =>
-					if et_canvas_schematic_units.unit_add.device /= pac_devices_lib.no_element then
-						redraw;
+					if et_canvas_schematic_units.unit_fetch.valid then
+						redraw_schematic;
 					end if;
 
 				when others => null;

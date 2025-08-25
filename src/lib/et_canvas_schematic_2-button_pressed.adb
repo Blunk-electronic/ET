@@ -55,6 +55,7 @@ is
 	snap_point : constant type_vector_model := snap_to_grid (event.point);
 	-- CS rename to point
 
+	-- CS global variable for the tool MOUSE
 	
 	procedure left_button is 
 		use et_device_model;
@@ -150,7 +151,7 @@ is
 			when VERB_FETCH =>
 				case noun is
 					when NOUN_UNIT =>
-						fetch_unit (snap_point);
+						fetch_unit (MOUSE, snap_point);
 						
 					when others => null;
 				end case;

@@ -913,6 +913,60 @@ procedure draw_units is
 
 
 
+
+
+	-- Drawing the symbol of a real device requires placeholders
+	-- for name, value an purpose. We fetch them from the symbol model
+	-- in this case.
+	-- If the symbol is virtual, then the placeholders are meaningless
+	-- and assume default values.
+	procedure fetch_placeholders_ext (
+		symbol_cursor : in et_symbols.pac_symbols.cursor)
+	is 
+		use et_symbols;
+		use pac_symbols;
+	begin
+		if is_real (symbol_cursor) then
+			sch_placeholder_name	:= element (symbol_cursor).name;
+			sch_placeholder_value	:= element (symbol_cursor).value;
+			sch_placeholder_purpose := element (symbol_cursor).purpose;
+		else
+			sch_placeholder_name	:= (meaning => NAME, others => <>);
+			sch_placeholder_value	:= (meaning => VALUE, others => <>);
+			sch_placeholder_purpose := (meaning => PURPOSE, others => <>);
+		end if;
+	end fetch_placeholders_ext;
+
+	
+
+
+	-- Drawing the symbol of a real device requires placeholders
+	-- for name, value an purpose. We fetch them from the symbol model
+	-- in this case.
+	-- If the symbol is virtual, then the placeholders are meaningless
+	-- and assume default values.
+	procedure fetch_placeholders_int (
+		unit_cursor : in pac_units_internal.cursor)
+	is
+		use pac_units_internal;
+	begin
+		case element (unit_cursor).appearance is
+			when APPEARANCE_PCB =>
+				sch_placeholder_name	:= element (unit_cursor).symbol.name;
+				sch_placeholder_value	:= element (unit_cursor).symbol.value;
+				sch_placeholder_purpose := element (unit_cursor).symbol.purpose;
+				
+			when APPEARANCE_VIRTUAL =>
+				sch_placeholder_name	:= (meaning => NAME, others => <>);
+				sch_placeholder_value	:= (meaning => VALUE, others => <>);
+				sch_placeholder_purpose := (meaning => PURPOSE, others => <>);
+		end case;
+	end fetch_placeholders_int;
+
+
+
+
+	
 	
 	
 	-- Draws the unit being added. If there is no unit being added,
@@ -929,7 +983,7 @@ procedure draw_units is
 
 			-- The place where the unit will be drawn.
 			-- Depends on the tool used for placing the unit:
-			destination : type_vector_model;
+			destination : type_vector_model := get_primary_tool_position;
 			
 			use et_symbols;
 			use pac_symbols;
@@ -937,49 +991,7 @@ procedure draw_units is
 			symbol_cursor : et_symbols.pac_symbols.cursor;
 
 			
-			-- Drawing the symbol of a real device requires placeholders
-			-- for name, value an purpose. We fetch them from the symbol model
-			-- in this case.
-			-- If the symbol is virtual, then the placeholders are meaningless
-			-- and assume default values.
-			procedure fetch_placeholders_ext is begin
-				if is_real (symbol_cursor) then
-					sch_placeholder_name	:= element (symbol_cursor).name;
-					sch_placeholder_value	:= element (symbol_cursor).value;
-					sch_placeholder_purpose := element (symbol_cursor).purpose;
-				else
-					sch_placeholder_name	:= (meaning => NAME, others => <>);
-					sch_placeholder_value	:= (meaning => VALUE, others => <>);
-					sch_placeholder_purpose := (meaning => PURPOSE, others => <>);
-				end if;
-			end fetch_placeholders_ext;
-
-			
-			procedure fetch_placeholders_int is begin
-			-- Drawing the symbol of a real device requires placeholders
-			-- for name, value an purpose. We fetch them from the symbol model
-			-- in this case.
-			-- If the symbol is virtual, then the placeholders are meaningless
-			-- and assume default values.
-				case element (unit_cursor.internal).appearance is
-					when APPEARANCE_PCB =>
-						sch_placeholder_name	:= element (unit_cursor.internal).symbol.name;
-						sch_placeholder_value	:= element (unit_cursor.internal).symbol.value;
-						sch_placeholder_purpose := element (unit_cursor.internal).symbol.purpose;
-					when APPEARANCE_VIRTUAL =>
-						sch_placeholder_name	:= (meaning => NAME, others => <>);
-						sch_placeholder_value	:= (meaning => VALUE, others => <>);
-						sch_placeholder_purpose := (meaning => PURPOSE, others => <>);
-				end case;
-			end fetch_placeholders_int;
-
-			
-		begin -- locate_symbol
-			-- Set the destination coordinates according to 
-			-- current primary tool:
-			destination := get_primary_tool_position;
-			
-			
+		begin
 			case unit_cursor.ext_int is
 				when EXT =>
 					--put_line ("external unit");
@@ -989,7 +1001,7 @@ procedure draw_units is
 					symbol_model := element (unit_cursor.external).model;
 					locate_symbol (symbol_model, symbol_cursor);
 
-					fetch_placeholders_ext;
+					fetch_placeholders_ext (symbol_cursor);
 						
 					draw_symbol (
 						symbol		=> pac_symbols.element (symbol_cursor),
@@ -1014,7 +1026,7 @@ procedure draw_units is
 					-- If the unit is internal, we fetch it the symbol and the placeholders 
 					-- directly from the unit:
 					
-					fetch_placeholders_int;
+					fetch_placeholders_int (unit_cursor.internal);
 					
 					draw_symbol (
 						symbol		=> element (unit_cursor.internal).symbol,
@@ -1037,25 +1049,104 @@ procedure draw_units is
 
 		use et_modes.schematic;
 	begin
-		-- There are two cases when a unit is being added:
-
-		-- 1. When adding a new completley new device.
-		-- 2. When fetching a unit from an existing device. 
-
 		case verb is
 			when VERB_ADD =>
 				if unit_add.device /= pac_devices_lib.no_element then
 					locate_symbol (locate_unit (unit_add.device, unit_add.name));
 				end if;
 
-			when VERB_FETCH =>
-				if unit_add.via_fetch then
-					locate_symbol (locate_unit (unit_add.device, unit_add.name));
-				end if;
-
 			when others => null;
 		end case;
 	end draw_unit_being_added;
+
+
+
+
+
+
+	
+	
+	procedure draw_unit_being_fetched is
+		brightness : type_brightness := BRIGHT;
+		
+		use pac_devices_lib;
+
+		
+		procedure locate_symbol (unit_cursor : in type_unit_cursors) is
+			use pac_units_external;
+			use pac_units_internal;
+
+			-- The place where the unit will be drawn.
+			-- Depends on the tool used for placing the unit:
+			destination : type_vector_model := get_primary_tool_position;
+			
+			use et_symbols;
+			use pac_symbols;
+			symbol_model : pac_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
+			symbol_cursor : et_symbols.pac_symbols.cursor;
+			
+		begin			
+			case unit_cursor.ext_int is
+				when EXT =>
+					--put_line ("external unit");
+					
+					-- If the unit is external, we must fetch the symbol and the placeholders
+					-- via its model file:
+					symbol_model := element (unit_cursor.external).model;
+					locate_symbol (symbol_model, symbol_cursor);
+
+					fetch_placeholders_ext (symbol_cursor);
+						
+					draw_symbol (
+						symbol		=> pac_symbols.element (symbol_cursor),
+
+						device_name		=> unit_fetch.device_pre,
+						unit_name		=> unit_fetch.name,
+						unit_count		=> 1, -- CS unit_fetch.total,
+						
+						unit_position	=> destination,
+
+						sch_placeholder_name	=> sch_placeholder_name,
+						sch_placeholder_value	=> sch_placeholder_value,
+						sch_placeholder_purpose => sch_placeholder_purpose,
+
+						brightness		=> brightness,
+						preview			=> true);
+
+
+				when INT =>
+					--put_line ("internal unit");						
+					
+					-- If the unit is internal, we fetch it the symbol and the placeholders 
+					-- directly from the unit:
+					
+					fetch_placeholders_int (unit_cursor.internal);
+					
+					draw_symbol (
+						symbol		=> element (unit_cursor.internal).symbol,
+
+						device_name		=> unit_fetch.device_pre,
+						unit_name		=> unit_fetch.name,
+						unit_count		=> 1, -- CS unit_fetch.total,
+						
+						unit_position	=> destination,
+
+						sch_placeholder_name	=> sch_placeholder_name,
+						sch_placeholder_value	=> sch_placeholder_value,
+						sch_placeholder_purpose => sch_placeholder_purpose,
+						
+						brightness		=> brightness,
+						preview			=> true);
+			end case;
+		end locate_symbol;
+
+
+	begin
+		if unit_fetch.valid then
+			locate_symbol (locate_unit (unit_fetch.device, unit_fetch.name));
+		end if;
+	end draw_unit_being_fetched;
+
 
 	
 begin
@@ -1064,11 +1155,16 @@ begin
 	iterate (element (active_module).devices, query_devices'access);
 	-- CS use query_element (active_module, query_module'access);
 
-	-- Draw the unit being added. If no unit is being added, nothing 
-	-- happens here:
+	-- Draw the unit being added. If no unit is being added,
+	-- then nothing happens here:
 	draw_unit_being_added;
+
+	-- Draw the unit being fetched. If no unit is being fetched,
+	-- then nothing happens here:
+	draw_unit_being_fetched;
 	
 end draw_units;
+
 
 
 -- Soli Deo Gloria
