@@ -216,7 +216,6 @@ package et_devices_electrical is
 
 	
 	
-	
 	-- Returns the total number of units that the
 	-- given device contains per device model:
 	function get_unit_count (
@@ -293,6 +292,20 @@ package et_devices_electrical is
 		unit	: in pac_units.cursor) -- A, B, C
 		return type_sheet;
 
+
+
+	-- Returns the position of the unit inqured for.
+	-- If the unit does not exist,
+	-- then the return is false (see specs of
+	-- type type_unit_query above).
+	-- The function just inquires for a unit with the given
+	-- name. So it does not distinguish between "not deployed"
+	-- or "not available or "not existing":
+	function get_unit_position (
+		device_cursor	: in pac_devices_sch.cursor;
+		unit_name		: in pac_unit_name.bounded_string)
+		return type_unit_query;
+
 	
 
 	
@@ -300,7 +313,7 @@ package et_devices_electrical is
 	-- the given device and returns them in a list.
 	function get_unit_positions (
 		device_cursor : in pac_devices_sch.cursor) 
-		return pac_unit_positions.map ;
+		return pac_unit_positions.map;
 
 
 

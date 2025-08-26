@@ -115,6 +115,7 @@ package body et_devices_electrical is
 
 
 
+
 	
 
 	
@@ -284,6 +285,50 @@ package body et_devices_electrical is
 	end get_sheet;
 
 	
+
+
+	
+	function get_unit_position (
+		device_cursor	: in pac_devices_sch.cursor;
+		unit_name		: in pac_unit_name.bounded_string)
+		return type_unit_query
+	is 
+		exists : boolean := false;
+
+		position : type_object_position;
+		
+		
+		procedure query_device (
+			device_name	: in type_device_name;
+			device		: in type_device_sch)
+		is 
+			unit_cursor : pac_units.cursor;
+		begin
+			-- Locate the given unit in the device.
+			-- If the unit does not exist, then
+			-- unit_cursor will be pointing to it:
+			unit_cursor := device.units.find (unit_name);
+
+			-- Get the coordinates of the unit.
+			if has_element (unit_cursor) then
+				position := get_position (unit_cursor);
+				exists := true;
+			end if;
+		end query_device;
+		
+
+	begin
+		query_element (device_cursor, query_device'access);
+		
+		if exists then
+			return (exists => true, position => position);
+		else
+			return (exists => false);
+		end if;
+	end get_unit_position;
+
+
+
 	
 
 

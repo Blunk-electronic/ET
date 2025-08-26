@@ -48,218 +48,190 @@ procedure fetch_unit (
 	destination		: in type_object_position; -- sheet/x/y/rotation
 	log_threshold	: in type_log_level) 
 is
-	use pac_unit_name;
+		
+	device_cursor_sch : pac_devices_sch.cursor;
+
 	
-	
-	procedure query_devices (
+	procedure query_module (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in out type_generic_module) 
 	is
-		use et_symbols;
 		use et_device_appearance;
 		use et_devices_electrical;
 		use pac_devices_sch;
-		device_cursor_sch : pac_devices_sch.cursor;
 
+		-- Query whehter the given unit is available:
+		unit_query : constant type_unit_query := 
+			get_unit_position (device_cursor_sch, unit_name);
 		
-		
-		procedure query_units_in_use (
-			device_name	: in type_device_name;
-			device		: in type_device_sch)
-		is
-			use pac_units;
-		begin
-			if contains (device.units, unit_name) then
-				log (ERROR, to_string (device_name) &
-						" unit " & to_string (unit_name) &
-						" already deployed !", console => true);
-				
-				raise semantic_error_1 with
-					"ERROR: " & to_string (device_name) &
-					" unit " & to_string (unit_name) &
-					" already deployed !";
-				
-			end if;
-		end query_units_in_use;
-		
-
-		device_model : pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		device_cursor_lib : pac_devices_lib.cursor;
 		unit_cursors : type_device_units;
 
-		placeholders : type_rotated_placeholders;
 		
 		use pac_units_external;
 		use pac_units_internal;
 		use pac_devices_lib;
 
-		
-		-- Add an internal unit to the schematic device.
-		-- The unit to be added is accessed by unit_cursors.int.
-		procedure add_unit_internal (
-			device_name	: in type_device_name;
-			device		: in out type_device_sch) 
-		is
-			use et_symbols;
-		begin
-			log (text => "invoking internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
-			
-			case element (device_cursor_lib).appearance is
-				when APPEARANCE_VIRTUAL =>
-					pac_units.insert (
-						container	=> device.units,
-						key			=> key (unit_cursors.int), -- the unit name like A, B
-						new_item	=> (
-							appearance	=> APPEARANCE_VIRTUAL,
-							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-							others 		=> <>)
-							);
-					
-				when APPEARANCE_PCB =>
-
-					-- Rotate the positions of placeholders and their rotation about
-					-- their own origin according to rotation given by caller:
-					placeholders := rotate_placeholders (unit_cursors.int, destination);
-					
-					pac_units.insert (
-						container	=> device.units,
-						key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
-						new_item	=> (
-							appearance	=> APPEARANCE_PCB,
-							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-							name		=> placeholders.name,
-							value		=> placeholders.value,
-							purpose		=> placeholders.purpose,
-							others 		=> <>)
-							);
-			end case;
-			
-		end add_unit_internal;
-
-		
-		-- Add an external unit to the schematic device.
-		-- The unit to be added is accessed by unit_cursors.ext.
-		procedure add_unit_external (
-			device_name	: in type_device_name;
-			device		: in out type_device_sch) 
-		is
-			use et_symbols;
-			use et_symbols.pac_symbols;
-			symbol_cursor : pac_symbols.cursor;
-			symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
-		begin
-			log (text => "invoking external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
-			
-			case element (device_cursor_lib).appearance is
-				when APPEARANCE_VIRTUAL =>
-					pac_units.insert (
-						container	=> device.units,
-						key			=> key (unit_cursors.ext), -- the unit name like A, B
-						new_item	=> (
-							appearance	=> APPEARANCE_VIRTUAL,
-							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-							others 		=> <>)
-							);
-					
-				when APPEARANCE_PCB =>
-					-- The symbol file name is provided by unit_cursors.ext.
-					symbol_file := element (unit_cursors.ext).model; -- *.sym
-					
-					-- Locate the external symbol in container "symbols".
-					-- The key into symbols is the file name (*.sym).
-					symbol_cursor := find (symbol_library, symbol_file);
-
-					-- CS: The symbol should be there now. Otherwise symbol_cursor would assume no_element
-					-- and constraint_error would arise here:
-
-					-- Rotate the positions of placeholders and their rotation about
-					-- their own origin according to rotation given by caller:
-					placeholders := rotate_placeholders (symbol_cursor, destination);
-					
-					pac_units.insert (
-						container	=> device.units,
-						key			=> key (unit_cursors.ext), -- the unit name like A, B, VCC_IO_BANK_1
-						new_item	=> (
-							appearance	=> APPEARANCE_PCB,
-							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-							name		=> placeholders.name,
-							value		=> placeholders.value,
-							purpose		=> placeholders.purpose,
-							others 		=> <>)
-							);
-			end case;
-		end add_unit_external;
-
 		ports : pac_ports.map; -- the positions of the unit ports
-		
-		
-	begin -- query_devices
-		if contains (module.devices, device_name) then -- device exists in schematic
 
-			device_cursor_sch := find (module.devices, device_name);
+
+		
+		-- Adds an internal unit to the schematic device:
+		procedure add_internal is
+
+			-- The unit to be added is accessed by unit_cursors.int.
+			procedure do_it (
+				device_name	: in type_device_name;
+				device		: in out type_device_sch) 
+			is
+				use et_symbols;
+				placeholders : type_rotated_placeholders;
+			begin
+				log (text => "fetch internal unit " 
+					 & to_string (key (unit_cursors.int)),
+					 level => log_threshold + 2);
+				
+				case element (device_cursor_lib).appearance is
+					when APPEARANCE_VIRTUAL =>
+						pac_units.insert (
+							container	=> device.units,
+							key			=> key (unit_cursors.int), -- the unit name like A, B
+							new_item	=> (
+								appearance	=> APPEARANCE_VIRTUAL,
+								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
+								others 		=> <>)
+								);
+						
+					when APPEARANCE_PCB =>
+
+						-- Rotate the positions of placeholders and their rotation about
+						-- their own origin according to rotation given by caller:
+						placeholders := rotate_placeholders (unit_cursors.int, destination);
+						
+						pac_units.insert (
+							container	=> device.units,
+							key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
+							new_item	=> (
+								appearance	=> APPEARANCE_PCB,
+								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
+								name		=> placeholders.name,
+								value		=> placeholders.value,
+								purpose		=> placeholders.purpose,
+								others 		=> <>)
+								);
+				end case;
+				
+			end do_it;
+
 			
-			-- Test whether desired unit is already used by the device (in schematic).
-			-- Abort if unit already in use.
-			query_element (
+		begin
+			pac_devices_sch.update_element (
+				container	=> module.devices,
 				position	=> device_cursor_sch,
-				process		=> query_units_in_use'access);
+				process		=> do_it'access);
 
-			-- Locate the device model in the library:
-			device_model := element (device_cursor_sch).model;
-			--device_cursor_lib := pac_devices_lib.find (et_devices.devices, device_model);
-			device_cursor_lib := get_device_model_cursor (device_model);
+			-- fetch ports of unit and their positions relative to the unit origin
+			log_indentation_up;				
+			log (text => "fetch relative port positions of internal unit " &
+				to_string (key (unit_cursors.int)) & " ...", level => log_threshold + 1);
+			
+			ports := get_ports_of_unit (
+				device_cursor	=> device_cursor_sch,
+				unit_name		=> key (unit_cursors.int));
+		end add_internal;
 
-			-- Get cursor to the desired unit in device model.
-			-- The unit can be internal or external.
-			unit_cursors := get_unit (device_cursor_lib, unit_name);
 
-			-- If the unit is internal, add it to the device in the schematic:
-			if unit_cursors.int /= pac_units_internal.no_element then
 
-				pac_devices_sch.update_element (
-					container	=> module.devices,
-					position	=> device_cursor_sch,
-					process		=> add_unit_internal'access);
 
-				-- fetch ports of unit and their positions relative to the unit origin
-				log_indentation_up;				
-				log (text => "fetching relative port positions of internal unit " &
-					to_string (key (unit_cursors.int)) & " ...", level => log_threshold + 1);
+		
+		-- Adds an external unit to the schematic device:
+		procedure add_external is 
+
+			-- The unit to be added is accessed by unit_cursors.ext.
+			procedure do_it (
+				device_name	: in type_device_name;
+				device		: in out type_device_sch) 
+			is
+				use et_symbols;
+				use et_symbols.pac_symbols;
+				placeholders : type_rotated_placeholders;
+				symbol_cursor : pac_symbols.cursor;
+				symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
+			begin
+				log (text => "invoking external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
 				
-				ports := get_ports_of_unit (
-					device_cursor	=> device_cursor_sch,
-					unit_name		=> key (unit_cursors.int));
+				case element (device_cursor_lib).appearance is
+					when APPEARANCE_VIRTUAL =>
+						pac_units.insert (
+							container	=> device.units,
+							key			=> key (unit_cursors.ext), -- the unit name like A, B
+							new_item	=> (
+								appearance	=> APPEARANCE_VIRTUAL,
+								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
+								others 		=> <>)
+								);
+						
+					when APPEARANCE_PCB =>
+						-- The symbol file name is provided by unit_cursors.ext.
+						symbol_file := element (unit_cursors.ext).model; -- *.sym
+						
+						-- Locate the external symbol in container "symbols".
+						-- The key into symbols is the file name (*.sym).
+						symbol_cursor := find (symbol_library, symbol_file);
 
-			-- Unit is external -> add external unit to device in schematic:
-			elsif unit_cursors.ext /= pac_units_external.no_element then
-				
-				pac_devices_sch.update_element (
-					container	=> module.devices,
-					position	=> device_cursor_sch,
-					process		=> add_unit_external'access);
+						-- CS: The symbol should be there now. Otherwise symbol_cursor would assume no_element
+						-- and constraint_error would arise here:
 
-				-- fetch ports of unit and their positions relative to the unit origin
-				log_indentation_up;
-				log (text => "fetching relative port positions of external unit " &
-					to_string (key (unit_cursors.ext)) & " ...", level => log_threshold + 1);
+						-- Rotate the positions of placeholders and their rotation about
+						-- their own origin according to rotation given by caller:
+						placeholders := rotate_placeholders (symbol_cursor, destination);
+						
+						pac_units.insert (
+							container	=> device.units,
+							key			=> key (unit_cursors.ext), -- the unit name like A, B, VCC_IO_BANK_1
+							new_item	=> (
+								appearance	=> APPEARANCE_PCB,
+								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
+								name		=> placeholders.name,
+								value		=> placeholders.value,
+								purpose		=> placeholders.purpose,
+								others 		=> <>)
+								);
+				end case;
+			end do_it;
 
-				ports := get_ports_of_unit (
-					device_cursor	=> device_cursor_sch,
-					unit_name		=> key (unit_cursors.ext));
-				
-			else
-				raise constraint_error; -- CS should never happen. function any_unit excludes this case.
-			end if;
+			
+		begin			
+			pac_devices_sch.update_element (
+				container	=> module.devices,
+				position	=> device_cursor_sch,
+				process		=> do_it'access);
 
+			-- fetch ports of unit and their positions relative to the unit origin
+			log_indentation_up;
+			log (text => "fetch relative port positions of external unit " &
+				to_string (key (unit_cursors.ext)) & " ...", level => log_threshold + 1);
+
+			ports := get_ports_of_unit (
+				device_cursor	=> device_cursor_sch,
+				unit_name		=> key (unit_cursors.ext));
+
+		end add_external;
+
+
+		
+
+		procedure add_ports_to_nets is begin
 			-- Calculate the absolute positions of the unit ports. Rotate first if required:
-			log (text => "calculating absolute port positions ...", level => log_threshold + 1);
+			log (text => "Calcule absolute port positions ...", level => log_threshold + 1);
+			
 			if get_rotation (destination) /= zero_rotation then
 				rotate_ports (ports, get_rotation (destination));
 			end if;
 
 			move_ports (ports, destination);
 			
-			-- Insert the new unit ports in the nets (type_generic_module.nets):
+			-- Insert the new unit ports in the nets of the module:
 			insert_ports (
 				module			=> module_cursor,
 				device			=> device_name,
@@ -268,29 +240,70 @@ is
 				sheet			=> get_sheet (destination),
 				log_threshold	=> log_threshold + 2);
 
-			log_indentation_down;
+		end add_ports_to_nets;
+		
+		
+	begin -- query_module
+
+		-- Test whether desired unit is already used by 
+		-- the device (in schematic). Abort if unit already deployed:
+		if unit_query.exists then
+			log (WARNING, "Unit " & to_string (unit_name) 
+				& " is already deployed in the schematic at "
+				& to_string (unit_query.position));
 		else
-			device_not_found (device_name);
+			-- Locate the device model in the library:
+			device_cursor_lib := get_device_model (device_cursor_sch);
+
+			-- Get cursor to the desired unit in device model.
+			-- The unit can be internal or external.
+			unit_cursors := get_unit (device_cursor_lib, unit_name);
+
+			-- If the unit is internal, then add it to the device in the schematic.
+			-- If the unit is external, then add external unit to device in schematic:
+			if unit_cursors.int /= pac_units_internal.no_element then
+				add_internal;
+				add_ports_to_nets;
+				
+			elsif unit_cursors.ext /= pac_units_external.no_element then
+				add_external;
+				add_ports_to_nets;
+			else
+				raise constraint_error; -- CS should never happen. 
+					-- function any_unit excludes this case.
+			end if;				
 		end if;
-	end query_devices;
+
+
+	end query_module;
 
 	
 begin
-	log (text => "module " & to_string (module_cursor) &
-		" device " & to_string (device_name) &
-		" invoking unit " & to_string (unit_name) &
-		" at" &
-		to_string (position => destination) &
-		" rotation" & to_string (get_rotation (destination)),
+	log (text => "module " & to_string (module_cursor) 
+		& " device " & to_string (device_name) 
+		& " fetch unit " & to_string (unit_name) & " and place at " 
+		& to_string (position => destination) 
+		& " rotation" & to_string (get_rotation (destination)),
 		level => log_threshold);
 
 	log_indentation_up;
 	
+	-- Locate the targeted device in the given module.
+	-- If the device exists, then proceed with further actions.
+	-- Otherwise abort this procedure with a warning:
+	device_cursor_sch := locate_device (module_cursor, device_name);
+		
+	if has_element (device_cursor_sch) then -- device exists in schematic
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
 
-	update_element (
-		container	=> generic_modules,
-		position	=> module_cursor,
-		process		=> query_devices'access);
+	else
+		log (WARNING, " Device " & to_string (device_name) & " not found !");
+	end if;
+	
 	
 	log_indentation_down;		
 	
