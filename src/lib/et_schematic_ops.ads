@@ -151,9 +151,9 @@ package et_schematic_ops is
 	-- CS: Automatic splitting the segment into two and placing a junction is not supported
 	-- jet and probably not a good idea.
 	procedure insert_ports (
-		module			: in pac_generic_modules.cursor;		-- the module
-		device			: in type_device_name;					-- the device
-		unit			: in pac_unit_name.bounded_string;	-- the unit name like A, C, PWR
+		module_cursor	: in pac_generic_modules.cursor;		-- the module
+		device_name		: in type_device_name;					-- the device
+		unit_name		: in pac_unit_name.bounded_string;	-- the unit name like A, C, PWR
 		ports			: in pac_ports.map; -- the ports to be inserted
 		sheet			: in type_sheet;				-- the sheet to look at
 		log_threshold	: in type_log_level);

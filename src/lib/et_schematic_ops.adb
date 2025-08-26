@@ -289,41 +289,60 @@ package body et_schematic_ops is
 
 
 	procedure insert_ports (
-		module			: in pac_generic_modules.cursor;		-- the module
-		device			: in type_device_name;					-- the device
-		unit			: in pac_unit_name.bounded_string;	-- the unit name like A, C, PWR
+		module_cursor	: in pac_generic_modules.cursor;		-- the module
+		device_name		: in type_device_name;					-- the device
+		unit_name		: in pac_unit_name.bounded_string;	-- the unit name like A, C, PWR
 		ports			: in pac_ports.map; -- the ports to be inserted
 		sheet			: in type_sheet;				-- the sheet to look at
 		log_threshold	: in type_log_level)
 	is
+		-- In the course of this procedure the given list
+		-- of ports is processed. Each processed port will be
+		-- removed from the given ports. For this reason we make
+		-- a copy of the given ports:
+		ports_tmp : pac_ports.map := ports;
 
--- 		procedure query_nets (
--- 			module_name	: in pac_module_name.bounded_string;
--- 			module		: in out type_generic_module) is
--- 
--- 			
--- 			procedure query_net (net_cursor : in pac_nets.cursor) is
--- 				use pac_nets;
--- 
--- 				
--- 				procedure query_strands (
--- 					net_name	: in pac_net_name.bounded_string;
--- 					net			: in out type_net) 
--- 				is
--- 					strand_cursor : pac_strands.cursor;
--- 
--- 					use pac_ports;
--- 					port_cursor : pac_ports.cursor := ports.first;
--- 
--- 					port_processed : boolean;
--- 
--- 					
--- 					procedure query_segments (strand : in out type_strand) is
--- 						use pac_net_segments;
--- 						segment_cursor : pac_net_segments.cursor := strand.segments.first;
--- 
--- 						
--- 						procedure change_segment (segment : in out type_net_segment) is
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_nets;
+			net_cursor : pac_nets.cursor := module.nets.first;
+			
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				use pac_strands;
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (
+					strand	: in out type_strand)
+				is
+					use pac_net_segments;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					
+					procedure query_segment (
+						segment : in out type_net_segment)
+					is
+					begin
+						null;
+					end query_segment;
+
+					
+				begin
+					-- Iterate through the segments:
+					while has_element (segment_cursor) loop
+						strand.segments.update_element (segment_cursor, query_segment'access);
+						next (segment_cursor);
+					end loop;
+					
+
+					-- 						procedure change_segment (segment : in out type_net_segment) is
 -- 						begin -- change_segment
 -- 							-- If port sits on start OR end point of segment AND if it
 -- 							-- is not already in the segment then append it to segment.ports.devices.
@@ -358,97 +377,45 @@ package body et_schematic_ops is
 -- 								port_processed := true;
 -- 							end if;								
 -- 						end change_segment;
--- 						
--- 
--- 					begin -- query_segments
--- 						-- On the first segment, where the port sits on, this loop ends prematurely.
--- 						while not port_processed and segment_cursor /= pac_net_segments.no_element loop
--- 
--- 							log_indentation_up;
--- 							log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
--- 							
--- 							pac_net_segments.update_element (
--- 								container	=> strand.segments,
--- 								position	=> segment_cursor,
--- 								process		=> change_segment'access);
--- 
--- 							log_indentation_down;
--- 							next (segment_cursor);
--- 						end loop;
--- 
--- 					end query_segments;
--- 					
--- 				
--- 				begin -- query_strands
--- 					-- loop in portlist
--- 					while port_cursor /= pac_ports.no_element loop
--- 						-- CS: If the current net is not on the targeted sheet then this log message
--- 						-- is issued many times without providing any useful information. Rework required:
--- 						log (text => "probing port " & to_string (key (port_cursor))
--- 							& " at" & to_string (element (port_cursor).position), level => log_threshold + 1);
--- 						log_indentation_up;
--- 						
--- 						-- If the current port sits on a strand, this flag will go true. Other 
--- 						-- strands will then not be looked at because the port can only sit on 
--- 						-- one strand.
--- 						port_processed := false;
--- 						
--- 						strand_cursor := net.strands.first;
--- 						while strand_cursor /= pac_strands.no_element loop
--- 
--- 							-- We pick out only the strands on the targeted sheet:
--- 							if get_sheet (element (strand_cursor).position) = sheet then
--- 								log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
--- 
--- 								log_indentation_up;
--- 								log (text => "strand " & to_string (position => element (strand_cursor).position),
--- 									level => log_threshold + 1);
--- 
--- 								update_element (
--- 									container	=> net.strands,
--- 									position	=> strand_cursor,
--- 									process		=> query_segments'access);
--- 							
--- 								log_indentation_down;
--- 							end if;
--- 
--- 							-- If the port has been processed, there is no need to look up
--- 							-- other strands for this port.
--- 							if port_processed then exit; end if;
--- 							
--- 							next (strand_cursor);
--- 						end loop;
--- 
--- 						log_indentation_down;
--- 						next (port_cursor);
--- 					end loop;
--- 
--- 				end query_strands;
--- 
--- 				
--- 			begin -- query_net
--- 				update_element (
--- 					container	=> module.nets,
--- 					position	=> net_cursor,
--- 					process		=> query_strands'access);
--- 			end query_net;				
--- 
--- 			
--- 		begin -- query_nets
--- 			pac_nets.iterate (module.nets, query_net'access);
--- 		end query_nets;
+
+
+				end query_strand;
+
+				
+			begin
+				-- Iterate through the strands on the given sheet:
+				while has_element (strand_cursor) loop
+					if get_sheet (strand_cursor) = sheet then
+						net.strands.update_element (strand_cursor, query_strand'access);
+					end if;
+					
+					next (strand_cursor);
+				end loop;
+
+			end query_net;				
+
+			
+		begin
+			-- Iterate through the nets:
+			while has_element (net_cursor) loop
+				module.nets.update_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
 
 		
-	begin --insert_ports
-		log (text => "inserting device ports in nets on sheet" & 
-			 to_string (sheet) & " ...", level => log_threshold);
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " insert ports of device " & to_string (device_name)
+			& " in nets on sheet " & to_string (sheet),
+			level => log_threshold);
+		
 		log_indentation_up;
 
-		-- CS
-		-- update_element (
-		-- 	container	=> generic_modules,
-		-- 	position	=> module,
-		-- 	process		=> query_nets'access);
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
 
 		log_indentation_down;
 	end insert_ports;

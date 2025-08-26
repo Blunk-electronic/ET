@@ -233,9 +233,9 @@ is
 			
 			-- Insert the new unit ports in the nets of the module:
 			insert_ports (
-				module			=> module_cursor,
-				device			=> device_name,
-				unit			=> unit_name,
+				module_cursor	=> module_cursor,
+				device_name		=> device_name,
+				unit_name		=> unit_name,
 				ports			=> ports,
 				sheet			=> get_sheet (destination),
 				log_threshold	=> log_threshold + 2);

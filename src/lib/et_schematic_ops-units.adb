@@ -1285,9 +1285,9 @@ package body et_schematic_ops.units is
 
 				-- Insert the new unit ports in the nets (type_generic_module.nets):
 				insert_ports (
-					module			=> module_cursor,
-					device			=> device_name,
-					unit			=> unit_name,
+					module_cursor	=> module_cursor,
+					device_name		=> device_name,
+					unit_name		=> unit_name,
 					ports			=> ports,
 					sheet			=> get_sheet (position_of_unit_new),
 					log_threshold	=> log_threshold + 1);
@@ -1990,9 +1990,9 @@ package body et_schematic_ops.units is
 				log_indentation_up;
 				
 				insert_ports (
-					module			=> module_cursor,
-					device			=> device_name,
-					unit			=> unit_name,
+					module_cursor	=> module_cursor,
+					device_name		=> device_name,
+					unit_name		=> unit_name,
 					ports			=> ports_new,
 					sheet			=> get_sheet (position_of_unit_new),
 					log_threshold	=> log_threshold + 1);
@@ -2286,9 +2286,9 @@ package body et_schematic_ops.units is
 				
 				-- Insert the new unit ports in the nets (type_generic_module.nets):
 				insert_ports (
-					module			=> module_cursor,
-					device			=> device_name,
-					unit			=> unit_name,
+					module_cursor	=> module_cursor,
+					device_name		=> device_name,
+					unit_name		=> unit_name,
 					ports			=> ports_lib,
 					sheet			=> get_sheet (position_of_unit),
 					log_threshold	=> log_threshold + 1);
