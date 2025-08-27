@@ -83,11 +83,16 @@ Devices and Units
 	|VNS| d u
 
 
-#. Fetch unit
+#. Fetch Unit
+
+	If a device is already used in the schematic and further units
+	of it are to be placed, then the fetch command should be used.
+	The example fetches from IC1 the unit C and places it on sheet 1
+	at x/y 70/100 with a rotation of -90 degrees:
 
 	.. code-block::
 
-		fetch unit IC1 [B]
+		fetch unit IC1 C 1 70 100 -90
 
 	|VNS| f u
 

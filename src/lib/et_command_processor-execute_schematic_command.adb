@@ -1199,26 +1199,33 @@ is
 	
 
 
+	-- Parses a command that fetches a unit from a device
+	-- and places it in the schematic:
+	-- example: 
+	-- "schematic demo fetch unit IC1 C 1 70 100 -90"
 	procedure fetch_unit is
+		device_name : type_device_name;
+		unit_name	: pac_unit_name.bounded_string;
+		sheet		: type_sheet;
+		place		: type_vector_model;
+		rotation	: type_rotation;
 	begin
+		device_name := to_device_name (get_field (5)); -- IC1
+		unit_name	:= to_unit_name (get_field (6)); -- C
+		sheet		:= to_sheet (get_field (7)); -- 1
+		place		:= set (x => to_distance (get_field (8)), -- 70
+							y => to_distance (get_field (9))); -- 100
+	
+		rotation	:= to_rotation (get_field (10)); -- -90
+
 		case cmd_field_count is
 			when 10 =>
 				fetch_unit (
 					module_cursor	=> active_module,
-					device_name		=> to_device_name (get_field (5)),
-					unit_name		=> to_unit_name (get_field (6)),
-					destination		=> to_position 
-						(
-						sheet => to_sheet (get_field (7)),
-						point => type_vector_model (set
-									(
-									x => to_distance (get_field (8)),
-									y => to_distance (get_field (9))
-									)),
-						rotation		=> to_rotation (get_field (10))
-						),
-					log_threshold	=> log_threshold + 1
-					);
+					device_name		=> device_name,
+					unit_name		=> unit_name,
+					destination		=> to_position (place, sheet, rotation),
+					log_threshold	=> log_threshold + 1);
 
 			when 11 .. type_field_count'last => too_long;
 				
