@@ -223,7 +223,7 @@ is
 
 		procedure add_ports_to_nets is begin
 			-- Calculate the absolute positions of the unit ports. Rotate first if required:
-			log (text => "Calcule absolute port positions ...", level => log_threshold + 1);
+			log (text => "Calculate absolute port positions ...", level => log_threshold + 1);
 			
 			if get_rotation (destination) /= zero_rotation then
 				rotate_ports (ports, get_rotation (destination));

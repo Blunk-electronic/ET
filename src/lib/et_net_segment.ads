@@ -170,6 +170,16 @@ package et_net_segment is
 
 
 	-- Inserts in the given segment at the given
+	-- end the given device port.
+	-- If the port is alrady there then nothing happens:
+	procedure insert_device_port (
+		segment	: in out type_net_segment;
+		AB_end	: in type_start_end_point;
+		port	: in type_device_port);
+
+
+	
+	-- Inserts in the given segment at the given
 	-- end the given netchanger port.
 	-- If the port is alrady there then nothing happens:
 	procedure insert_netchanger_port (

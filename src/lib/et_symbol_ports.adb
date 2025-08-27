@@ -52,6 +52,57 @@ package body et_symbol_ports is
 	end get_position;
 
 
+
+
+	procedure delete_port (
+		ports		: in out pac_ports.map;
+		position	: in type_vector_model;
+		deleted		: out boolean;
+		port_name	: out pac_port_name.bounded_string)
+	is
+		c : pac_ports.cursor := ports.first;
+
+		-- Tests whether the given port position is
+		-- equal the given position. On match the
+		-- flag "deleted" is set so that the iteration stops:
+		procedure query_port (
+			port_name	: in pac_port_name.bounded_string;
+			port 		: in type_port) 
+		is begin
+			if port.position = position then
+				deleted := true;
+				delete_port.port_name := port_name;
+			end if;
+		end;
+
+		
+	begin
+		-- Initially we assume that no port has been found:
+		deleted := false;
+		
+		-- Iterate though the given ports until a port
+		-- has been found that sits at the given position:
+		while has_element (c) loop
+			query_element (c, query_port'access);
+
+			-- If a matching port has been found,
+			-- then the iteration is aborted:
+			if deleted then
+				exit;
+			end if;
+			
+			next (c);
+		end loop;
+
+		-- If a port has been found, then remove
+		-- it from the given port list:
+		if deleted then
+			ports.delete (c);
+		end if;
+	end delete_port;
+
+	
+
 	
 
 	procedure move_ports (

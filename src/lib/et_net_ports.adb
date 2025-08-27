@@ -81,6 +81,23 @@ package body et_net_ports is
 	end;
 
 
+
+	function to_device_port (
+		device	: in type_device_name;
+		unit	: in pac_unit_name.bounded_string;
+		port	: in pac_port_name.bounded_string)
+		return type_device_port
+	is 
+		result : type_device_port;
+	begin
+		result.device_name := device;
+		result.unit_name := unit;
+		result.port_name := port;
+		return result;
+	end;
+
+
+
 	
 	
 	function "<" (left, right : in type_submodule_port) return boolean is

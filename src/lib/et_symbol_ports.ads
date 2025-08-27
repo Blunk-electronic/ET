@@ -181,6 +181,16 @@ package et_symbol_ports is
 		return type_vector_model;
 
 
+	-- Deletes the first port in the given list
+	-- that sits at the given position. If a port
+	-- has been found (and deleted) then the flag
+	-- "deleted" is set and the name of the port output:
+	procedure delete_port (
+		ports		: in out pac_ports.map;
+		position	: in type_vector_model;
+		deleted		: out boolean;
+		port_name	: out pac_port_name.bounded_string);
+	
 	
 	-- Moves the given ports by given offset.
 	procedure move_ports (

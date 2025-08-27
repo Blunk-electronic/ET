@@ -329,8 +329,43 @@ package body et_schematic_ops is
 					procedure query_segment (
 						segment : in out type_net_segment)
 					is
+				
+						-- Searches in list ports_tmp for a port that sits on
+						-- the given A/B end of the segment. If a port exists there,
+						-- then:
+						-- 1. the port is removed from port_tmp 
+						-- 2. the unit name is of the port is used to 
+						--    build a device port.
+						-- 3. The device port is then added to the A/B end of the segment:
+						procedure add_port (AB_end : in type_start_end_point) is 
+							port_name : pac_port_name.bounded_string; -- IN1, IN2
+							device_port : type_device_port; -- (IC1, AMP1, IN1)
+							deleted : boolean;
+						begin
+							delete_port (ports_tmp, get_end_point (segment, AB_end), deleted, port_name);
+
+							-- If a port has been found, then the delete-flag is set
+							-- and port_name loaded with the affected port name.
+							-- If nothing was found, then ports_tmp is unchanged and the
+							-- flag "deleted" is cleared so that nothing else happens here:
+							if deleted then
+								-- Build the device port:
+								device_port := to_device_port (device_name, unit_name, port_name);
+								
+								log (text => "Add device port " & to_string (device_port),
+									 level => log_threshold + 1);
+								-- CS log segment and end point
+								
+								-- Add the device port to the targeted end of the segment:
+								insert_device_port (segment, AB_end, device_port);
+							end if;
+						end add_port;
+
+		
 					begin
-						null;
+						-- Add device ports on A and B end:
+						add_port (A);
+						add_port (B);
 					end query_segment;
 
 					
@@ -340,45 +375,6 @@ package body et_schematic_ops is
 						strand.segments.update_element (segment_cursor, query_segment'access);
 						next (segment_cursor);
 					end loop;
-					
-
-					-- 						procedure change_segment (segment : in out type_net_segment) is
--- 						begin -- change_segment
--- 							-- If port sits on start OR end point of segment AND if it
--- 							-- is not already in the segment then append it to segment.ports.devices.
--- 							-- append it to the portlist of the segment.
--- 							if 	get_A (segment) = element (port_cursor).position or
--- 								get_B (segment) = element (port_cursor).position then
--- 
--- 								-- If port not already in segment, append it.
--- 								-- Otherwise it must not be appended again. constraint_error would arise.
--- 								if pac_device_ports.contains (
--- 									container	=> segment.ports.devices,
--- 									item		=> (
--- 											device_name	=> device,
--- 											unit_name	=> unit, -- A, C, PWR
--- 											port_name	=> key (port_cursor)) -- IC23, VCC_IO
--- 									) then 
--- 
--- 									log (text => " already there -> skipped", level => log_threshold + 3);
--- 								else
--- 									pac_device_ports.insert (
--- 										container	=> segment.ports.devices,
--- 										new_item	=> (
--- 											device_name	=> device,
--- 											unit_name	=> unit, -- A, C, PWR
--- 											port_name	=> key (port_cursor)) -- IC23, VCC_IO
--- 											);
--- 
--- 									log (text => " sits on segment -> inserted", level => log_threshold + 3);
--- 								end if;
--- 
--- 								-- signal iterations in upper levels to cancel
--- 								port_processed := true;
--- 							end if;								
--- 						end change_segment;
-
-
 				end query_strand;
 
 				
@@ -421,6 +417,7 @@ package body et_schematic_ops is
 	end insert_ports;
 	
 
+	
 	
 
 	

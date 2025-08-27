@@ -60,7 +60,18 @@ package et_net_ports is
 		port_name	: pac_port_name.bounded_string; -- IN1
 	end record;
 
+
 	function "<" (left, right : in type_device_port) return boolean;
+
+
+	-- Builds a device port:
+	function to_device_port (
+		device	: in type_device_name;
+		unit	: in pac_unit_name.bounded_string;
+		port	: in pac_port_name.bounded_string)
+		return type_device_port;
+
+	
 	package pac_device_ports is new ordered_sets (type_device_port);
 
 

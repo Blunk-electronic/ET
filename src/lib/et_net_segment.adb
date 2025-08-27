@@ -250,6 +250,28 @@ package body et_net_segment is
 
 
 
+	
+
+	procedure insert_device_port (
+		segment	: in out type_net_segment;
+		AB_end	: in type_start_end_point;
+		port	: in type_device_port)
+	is begin
+		case AB_end is
+			when A =>
+				if not segment.ports.A.devices.contains (port) then
+					segment.ports.A.devices.insert (port);
+				end if;
+
+			when B =>
+				if not segment.ports.B.devices.contains (port) then
+					segment.ports.B.devices.insert (port);
+				end if;
+		end case;
+	end insert_device_port;
+
+	
+
 
 	procedure insert_netchanger_port (
 		segment	: in out type_net_segment;
