@@ -304,6 +304,8 @@ begin
 		log (WARNING, " Device " & to_string (device_name) & " not found !");
 	end if;
 	
+
+	update_ratsnest (module_cursor, log_threshold + 1);
 	
 	log_indentation_down;		
 	
