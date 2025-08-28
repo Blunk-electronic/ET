@@ -381,6 +381,9 @@ package et_canvas_schematic_units is
 		-- The prospective device name (like IC4):
 		device_pre	: type_device_name := (others => <>);
 
+		-- The rotation of the unit:
+		rotation	: type_rotation := 0.0;
+		
 		-- Indicates that the information above is valid
 		-- and a unit has been selected from the fetch menu
 		-- by the operator:

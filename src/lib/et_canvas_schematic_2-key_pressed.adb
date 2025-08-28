@@ -540,7 +540,6 @@ is
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when key_space =>
 				case noun is
-
 					when NOUN_UNIT =>
 						et_canvas_schematic_units.fetch_unit (KEYBOARD, point);
 						
@@ -551,15 +550,28 @@ is
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
-
 					when NOUN_UNIT => 
 						if clarification_pending then
 							clarify_unit;
 						end if;
-						
+
 					when others => null;						
 				end case;
-				
+
+			-- If the operator wants to rotate the unit
+			-- being fetched, then add 90 degrees to the
+			-- temporily unit:
+			when key_rotate =>
+				case noun is
+					when NOUN_UNIT =>
+						if unit_fetch.valid then
+							add (unit_fetch.rotation, 90.0);
+						end if;
+
+					when others => null;						
+				end case;
+
+						
 			when others => null;
 		end case;
 	end fetch;

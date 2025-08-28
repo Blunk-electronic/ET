@@ -96,6 +96,9 @@ Devices and Units
 
 	|VNS| f u
 
+	While the unit is being moved it can be rotated by pressing
+	the r-key.
+
 	
 #. Move unit
 

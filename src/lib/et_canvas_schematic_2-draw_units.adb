@@ -1105,7 +1105,8 @@ procedure draw_units is
 						unit_count		=> 1, -- CS unit_fetch.total,
 						
 						unit_position	=> destination,
-
+						unit_rotation	=> unit_fetch.rotation,
+						
 						sch_placeholder_name	=> sch_placeholder_name,
 						sch_placeholder_value	=> sch_placeholder_value,
 						sch_placeholder_purpose => sch_placeholder_purpose,
@@ -1130,7 +1131,8 @@ procedure draw_units is
 						unit_count		=> 1, -- CS unit_fetch.total,
 						
 						unit_position	=> destination,
-
+						unit_rotation	=> unit_fetch.rotation,
+						
 						sch_placeholder_name	=> sch_placeholder_name,
 						sch_placeholder_value	=> sch_placeholder_value,
 						sch_placeholder_purpose => sch_placeholder_purpose,

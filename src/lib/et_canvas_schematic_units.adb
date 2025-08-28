@@ -1672,7 +1672,7 @@ package body et_canvas_schematic_units is
 				module_cursor	=> active_module,
 				device_name		=> unit_fetch.device_pre,
 				unit_name		=> unit_fetch.name,
-				destination		=> to_position (point, active_sheet),
+				destination		=> to_position (point, active_sheet, unit_fetch.rotation),
 				log_threshold	=> log_threshold + 1);
 
 

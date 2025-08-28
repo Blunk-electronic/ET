@@ -91,8 +91,6 @@ is
 			end if;
 		end add_device;
 
-
-		
 		
 	begin
 		case verb is
