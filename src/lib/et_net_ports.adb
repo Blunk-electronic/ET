@@ -37,7 +37,9 @@
 --
 
 with ada.text_io;				use ada.text_io;
+with ada.characters.handling;
 
+with et_keywords;				use et_keywords;
 with et_module_names;
 
 
@@ -118,6 +120,71 @@ package body et_net_ports is
 
 
 
+	
+
+	procedure make_device_port (
+		arguments	: in type_fields_of_line; -- device IC1 unit C port I1
+		error		: out boolean;
+		port		: out type_device_port)
+	is
+		use ada.characters.handling;
+		
+		function f (place : in type_field_count_positive) 
+			return string 
+		is begin
+			return to_lower (get_field (arguments, place));
+		end;
+		
+	begin
+		error := false;
+		
+		-- Iterate all fields of given list of arguments:
+		-- P points to the place in arguments at which we 
+		-- fetch a field from.
+		-- If something goes wrong, then the error-flag is
+		-- set and the iteration cancelled:
+		for p in 1 .. get_field_count (arguments) loop
+			
+			case p is
+				when 1 => -- device
+					if f (p) /= keyword_device then
+						error := true;
+						exit;
+					end if;
+
+				when 2 => -- IC1
+					port.device_name := to_device_name (f (p));
+					-- CS check existence of device in schematic
+
+				when 3 => -- unit
+					if f (p) /= keyword_unit then
+						error := true;
+						exit;
+					end if;
+
+				when 4 => -- C
+					port.unit_name := to_unit_name (f (p));
+					-- CS check existenc of unit in schematic and model
+
+				when 5 => -- port
+					if f (p) /= keyword_port then
+						error := true;
+						exit;
+					end if;
+
+				when 6 => -- I1
+					port.port_name := to_port_name (f (p));
+					-- CS check existence of port in model
+
+				when others =>					
+					error := true;
+					exit;
+			end case;
+		end loop;
+	end make_device_port;
+
+
+	
 
 	
 	
@@ -133,6 +200,18 @@ package body et_net_ports is
 	end to_string;
 
 
+	
+
+	function to_string (
+		port : in pac_device_ports.cursor) 
+		return string 
+	is 
+		p : type_device_port renames element (port);
+	begin
+		return to_string (p);
+	end to_string;
+
+	
 
 	
 	

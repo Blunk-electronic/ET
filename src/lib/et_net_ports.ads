@@ -47,6 +47,8 @@ with et_device_name;			use et_device_name;
 with et_unit_name;				use et_unit_name;
 with et_net_names;				use et_net_names;
 with et_netlists;
+with et_string_processing;		use et_string_processing;
+
 
 
 package et_net_ports is
@@ -71,13 +73,28 @@ package et_net_ports is
 		port	: in pac_port_name.bounded_string)
 		return type_device_port;
 
+
+	-- Converts a string like "device IC1 unit C port I1"
+	-- to a device port.
+	-- If something is wrong, then the error-flag is set:
+	procedure make_device_port (
+		arguments	: in type_fields_of_line;
+		error		: out boolean;
+		port		: out type_device_port);
+
+	
 	
 	package pac_device_ports is new ordered_sets (type_device_port);
+	use pac_device_ports;
 
 
+	-- Returns something like "device IC1 unit A port PD4":
 	function to_string (port : in type_device_port) return string;
 
+	-- Returns something like "device IC1 unit A port PD4":
+	function to_string (port : in pac_device_ports.cursor) return string;
 
+	
 	
 	-- Iterates the device ports. 
 	-- Aborts the process when the proceed-flag goes false:

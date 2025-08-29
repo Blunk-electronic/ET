@@ -584,14 +584,12 @@ is
 					port_cursor : pac_device_ports.cursor;
 					AB_end : type_start_end_point := A;
 
-					-- Writes something like "A/B device IC1 port PD4"
+					-- Writes something like "A/B device IC1 unit A port PD4"
 					procedure iterate_ports is begin
 						while has_element (port_cursor) loop
 							write (
-								keyword 	=> to_string (AB_end) & space & keyword_device, 
-								parameters	=> space & to_string (element (port_cursor).device_name)
-									& space & keyword_port & space
-									& to_string (element (port_cursor).port_name));
+								keyword 	=> to_string (AB_end), 
+								parameters	=> space & to_string (port_cursor));
 							
 							next (port_cursor);
 						end loop;

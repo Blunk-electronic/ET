@@ -912,12 +912,15 @@ is
 	net_segment_ports : et_net_ports.type_ports_AB;
 	
 	
-	-- read port parameters
+	-- Read a port of a device, submodule or netchanger
+	-- that is connected with a net segment and sets the variables
+	-- net_device_port, net_submodule_port, net_netchanger_port.
+	-- Appends the port to net_segment_ports.
 	-- NOTE: A device, submodule or netchanger port is defined by a
 	-- single line.
 	-- Upon reading the line like "A/B device/submodule/netchanger x port 1" 
 	-- the port is appended to the corresponding port collection 
-	-- immediately when the line is read. See main code of process_line.
+	-- net_segment_ports immediately after the line has been read:
 	procedure read_ports is
 		use et_module_instance;
 		use et_device_model;
@@ -925,6 +928,7 @@ is
 		use et_symbol_ports;
 		use et_nets;
 		use et_net_segment;
+		use et_net_ports;
 		use pac_net_name;
 
 		use et_schematic_coordinates;
@@ -933,16 +937,20 @@ is
 		AB_end : type_start_end_point;
 		
 		kw : constant string := f (line, 2);
+
+		error : boolean := false;
 	begin
 		AB_end := to_start_end_point (f (line, 1));
 		
-		if kw = keyword_device then -- A/B device R1 port 1
-			expect_field_count (line, 5);
+		if kw = keyword_device then -- A/B device R1 unit 1 port 1
+			expect_field_count (line, 7);
 
-			net_device_port.device_name := to_device_name (f (line, 3)); -- IC3
+			make_device_port (
+				arguments	=> remove_field (line, 1, 1),
+				error		=> error,
+				port		=> net_device_port);
 
-			if f (line, 4) = keyword_port then -- port
-				net_device_port.port_name := to_port_name (f (line, 5)); -- CE
+			if not error then
 
 				-- CS really required ?
 				-- Insert port in port collection of device ports. First make sure it is
@@ -961,7 +969,8 @@ is
 
 				net_device_port := (others => <>);
 			else
-				invalid_keyword (f (line, 4));
+				invalid_keyword (f (line, 3));
+				-- CS: improve this message. show details.
 			end if;
 
 			
