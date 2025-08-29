@@ -96,6 +96,12 @@ package et_net_connectors is
 
 
 
+	-- Returns something like "connector direction input":
+	function to_string (
+		connector : in type_net_connector)
+		return string;
+	
+
 	function get_direction (
 		connector	: in type_net_connector)
 		return type_connector_direction;

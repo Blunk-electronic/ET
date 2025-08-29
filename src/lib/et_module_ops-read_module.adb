@@ -765,7 +765,7 @@ is
 	net_segments	: et_net_segment.pac_net_segments.list;
 	net_segment		: et_net_segment.type_net_segment;
 	net_junctions	: et_net_junction.type_junctions;
-	net_tag_labels	: et_net_connectors.type_net_connectors;
+	net_connectors	: et_net_connectors.type_net_connectors;
 
 	
 	procedure set_junction (place : in string) is begin
@@ -779,29 +779,31 @@ is
 	end set_junction;
 
 
+	
 
-	procedure set_tag_label (place : in string) is 
-	-- example "tag_label start/end direction input/output"
+	procedure set_connector (place : in string) is 
+	-- example "connector A/B direction input/output"
 		use et_net_connectors;
 	begin
 		if f (line, 2) = keyword_start then
-			set_active (net_tag_labels.A);
+			set_active (net_connectors.A);
 
 			if f (line, 3) = keyword_direction then
-				net_tag_labels.A.direction := to_direction (f (line, 4));
+				net_connectors.A.direction := to_direction (f (line, 4));
 			end if;
 		end if;
 
 		if f (line, 2) = keyword_end then
-			set_active (net_tag_labels.B);
+			set_active (net_connectors.B);
 
 			if f (line, 3) = keyword_direction then
-				net_tag_labels.B.direction := to_direction (f (line, 4));
+				net_connectors.B.direction := to_direction (f (line, 4));
 			end if;
 		end if;
-	end set_tag_label;
+	end set_connector;
 
 	
+
 	
 	procedure read_net_segment is
 		use et_symbol_rw;
@@ -830,14 +832,15 @@ is
 			expect_field_count (line, 2);
 			set_junction (f (line, 2));
 
-		elsif kw = keyword_tag_label then -- "tag_label start/end direction input/output"
+		elsif kw = keyword_connector then -- "connector start/end direction input/output"
 			expect_field_count (line, 4);
-			set_tag_label (f (line, 2));
+			set_connector (f (line, 2));
 
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_net_segment;
+
 
 	
 	net_labels				: et_net_labels.pac_net_labels.list;
@@ -5352,10 +5355,10 @@ is
 							net_junctions := (others => <>);
 
 							-- Copy the tag lables into the segment.
-							net_segment.connectors := net_tag_labels;
+							net_segment.connectors := net_connectors;
 
 							-- Reset the tag labels for next net segment.
-							net_tag_labels := (others => <>);
+							net_connectors := (others => <>);
 
 							
 							-- insert segment in segment collection

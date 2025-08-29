@@ -57,6 +57,7 @@ package et_keywords is
 	keyword_columns					: constant string := "columns";	
 	keyword_conductor				: constant string := "conductor";
 	keyword_connection				: constant string := "connection";
+	keyword_connector				: constant string := "connector";
 	keyword_content 				: constant string := "content";
 
 	keyword_default					: constant string := "default";
@@ -99,7 +100,6 @@ package et_keywords is
 	
 	keyword_junction				: constant string := "junction";
 
-	keyword_tag_label				: constant string := "tag_label";
 	keyword_layer					: constant string := "layer";	
 	keyword_layers					: constant string := "layers";
 	keyword_layout					: constant string := "layout";	

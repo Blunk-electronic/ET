@@ -40,6 +40,8 @@
 with ada.text_io;						use ada.text_io;
 with ada.characters.handling;			use ada.characters.handling;
 
+with et_keywords;						use et_keywords;
+
 
 package body et_net_connectors is
 
@@ -48,12 +50,24 @@ package body et_net_connectors is
 		return to_lower (type_connector_direction'image (direction));
 	end;
 
+	
 	function to_direction (direction : in string) return type_connector_direction is begin
 		return type_connector_direction'value (direction);
 	end;
 
 
 
+	function to_string (
+		connector : in type_net_connector)
+		return string
+	is begin
+		return keyword_connector & " " & keyword_direction 
+			& to_string (connector.direction);
+	end;
+		
+
+
+	
 
 	function get_direction (
 		connector	: in type_net_connector)

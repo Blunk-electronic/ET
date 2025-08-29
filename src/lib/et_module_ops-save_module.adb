@@ -518,7 +518,7 @@ is
 				use pac_netchanger_ports;
 
 				
-				procedure query_simple_labels (segment : in type_net_segment) is
+				procedure query_net_labels (segment : in type_net_segment) is
 					use pac_net_labels;					
 					label_cursor : pac_net_labels.cursor := segment.labels.first;
 				begin
@@ -542,25 +542,26 @@ is
 						end loop;
 						section_mark (section_labels, FOOTER);
 					end if;
-				end query_simple_labels;
+				end query_net_labels;
 
 
 				
-				procedure query_tag_labels (segment : in type_net_segment) is 
+				procedure query_net_connectors (segment : in type_net_segment) is 
 					use et_net_connectors;
 					
-					-- Writes the given tag label:
-					procedure write_label (l : in type_net_connector) is begin
+					-- Writes the given connector:
+					procedure write_connector (l : in type_net_connector) is begin
 						if is_active (l) then
-							write (keyword => keyword_tag_label, 
-								parameters => keyword_start & space & get_direction (l));
+							write (keyword => keyword_connector, 
+								   parameters => keyword_start & space 
+								   & keyword_direction & space & get_direction (l));
 						end if;
-					end write_label;
+					end write_connector;
 
 				begin
-					write_label (segment.connectors.A);
-					write_label (segment.connectors.B);
-				end query_tag_labels;
+					write_connector (segment.connectors.A);
+					write_connector (segment.connectors.B);
+				end query_net_connectors;
 
 
 				
@@ -689,8 +690,8 @@ is
 					write (keyword => keyword_end,
 						parameters => "  " & to_string (get_B (segment_cursor), FORMAT_2));
 
-					query_element (segment_cursor, query_simple_labels'access);
-					query_element (segment_cursor, query_tag_labels'access);
+					query_element (segment_cursor, query_net_labels'access);
+					query_element (segment_cursor, query_net_connectors'access);
 					query_element (segment_cursor, query_junctions'access);
 
 					-- Write ports if there are any. Otherwise leave out section ports.
