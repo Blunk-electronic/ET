@@ -320,6 +320,8 @@ is
 	end query_meta;
 
 
+
+	
 	
 	procedure query_rules is
 		use et_board_ops;
@@ -340,6 +342,8 @@ is
 
 		log_indentation_down;
 	end query_rules;
+
+
 
 	
 	procedure query_net_classes is
@@ -376,6 +380,9 @@ is
 	end query_net_classes;
 
 
+
+
+	
 	
 	procedure query_drawing_grid is 
 
@@ -429,6 +436,9 @@ is
 		log_indentation_down;
 	end query_drawing_grid;
 
+
+
+	
 	
 	
 	procedure query_layer_stack is
@@ -482,6 +492,7 @@ is
 	end query_layer_stack;
 
 
+
 	
 	
 	procedure query_nets is
@@ -517,11 +528,16 @@ is
 				use et_netlists;
 				use pac_netchanger_ports;
 
+
 				
+				-- This procedure writes the net labels.
+				-- If no labels exist, then nothing happens here:
 				procedure query_net_labels (segment : in type_net_segment) is
 					use pac_net_labels;					
 					label_cursor : pac_net_labels.cursor := segment.labels.first;
 				begin
+					-- Only if there are labels, then we start
+					-- a new section for them:
 					if not is_empty (segment.labels) then
 						section_mark (section_labels, HEADER);
 						while label_cursor /= pac_net_labels.no_element loop
@@ -546,23 +562,37 @@ is
 
 
 				
+
+				-- This procedure writes the net connectors.
+				-- If no connectors exist, then nothing happens here:
 				procedure query_net_connectors (segment : in type_net_segment) is 
 					use et_net_connectors;
-					
-					-- Writes the given connector:
-					procedure write_connector (l : in type_net_connector) is begin
-						if is_active (l) then
-							write (keyword => keyword_connector, 
-								   parameters => keyword_start & space 
-								   & keyword_direction & space & get_direction (l));
-						end if;
-					end write_connector;
 
+					
+					procedure write_connectors is begin
+						if is_active (segment.connectors.A) then
+							write (keyword => to_string (A),
+								parameters => to_string (segment.connectors.A));
+						end if;
+
+						if is_active (segment.connectors.B) then
+							write (keyword => to_string (B),
+								parameters => to_string (segment.connectors.B));
+						end if;
+					end write_connectors;
+
+					
 				begin
-					write_connector (segment.connectors.A);
-					write_connector (segment.connectors.B);
+					-- Only if there are connectors, then we start
+					-- a new section for them:
+					if has_connectors (segment) then
+						section_mark (section_connectors, HEADER);
+						write_connectors;
+						section_mark (section_connectors, FOOTER);
+					end if;
 				end query_net_connectors;
 
+				
 
 				
 				procedure query_junctions (segment : in type_net_segment) is begin
@@ -576,6 +606,7 @@ is
 				end query_junctions;
 
 
+				
 				
 				procedure query_device_ports (segment : in type_net_segment) is
 					use et_port_names;
@@ -709,6 +740,8 @@ is
 				section_mark (section_segments, FOOTER);
 			end query_segments;
 
+
+			
 			
 		begin -- query_strands
 			section_mark (section_strands, HEADER);

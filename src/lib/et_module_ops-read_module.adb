@@ -781,26 +781,74 @@ is
 
 	
 
-	procedure set_connector (place : in string) is 
-	-- example "connector A/B direction input/output"
+	-- Reads a line that describes a net connector 
+	-- (like "A/B direction input/output") that is attached to an end
+	-- of a net segment. Once the line is read, the connector
+	-- is assigned to the variable net_connectors (see above):
+	procedure read_net_connector is
+		use et_net_connectors;
+		use et_schematic_coordinates.pac_geometry_2;
+
+		AB_end : type_start_end_point;
+		error : boolean := false;
+		connector : type_net_connector (active => true);
+	begin
+		log (text => "read net connector", level => log_threshold + 1);
+		log_indentation_up;
+		
+		-- There must be 3 fields in the line:
+		expect_field_count (line, 3);
+		
+		-- Read the targeted end point of the segment:
+		AB_end := to_start_end_point (f (line, 1)); -- A/B
+
+		log (text => "end " & to_string (AB_end), level => log_threshold + 2);
+		
+		-- Make a net connector from the fields 2 and 3:
+		make_net_connector (
+			arguments	=> remove_field (line, 1, 1),
+			error		=> error,
+			connector	=> connector);
+
+		if not error then
+			log (text => "direction " & get_direction (connector), level => log_threshold + 2);
+			
+			-- Assign the connector to the targeted end of the segment:
+			case AB_end is
+				when A => net_connectors.A := connector;
+				when B => net_connectors.B := connector;
+			end case;
+		end if;
+
+		-- CS handle error
+		
+		log_indentation_down;
+	end read_net_connector;
+
+
+
+
+
+	
+	procedure assign_net_connectors is 
 		use et_net_connectors;
 	begin
-		if f (line, 2) = keyword_start then
-			set_active (net_connectors.A);
+		log (text => "assign net connectors", level => log_threshold + 1);
+		log_indentation_up;
+		
+		-- Assign the net connectors to the net segment:
+		net_segment.connectors := net_connectors;
 
-			if f (line, 3) = keyword_direction then
-				net_connectors.A.direction := to_direction (f (line, 4));
-			end if;
-		end if;
+		log (text => "A " & to_string (net_segment.connectors.A), level => log_threshold + 2);
+		log (text => "B " & to_string (net_segment.connectors.B), level => log_threshold + 2);
+		
+		-- clean up for next connectors
+		net_connectors := (others => <>);
+		
+		log_indentation_down;
+	end assign_net_connectors;
 
-		if f (line, 2) = keyword_end then
-			set_active (net_connectors.B);
-
-			if f (line, 3) = keyword_direction then
-				net_connectors.B.direction := to_direction (f (line, 4));
-			end if;
-		end if;
-	end set_connector;
+	
 
 	
 
@@ -832,15 +880,33 @@ is
 			expect_field_count (line, 2);
 			set_junction (f (line, 2));
 
-		elsif kw = keyword_connector then -- "connector start/end direction input/output"
-			expect_field_count (line, 4);
-			set_connector (f (line, 2));
-
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_net_segment;
 
+
+
+
+	
+	procedure insert_net_segment is begin
+		-- Copy the net_junctions into the segment.
+		net_segment.junctions := net_junctions;
+
+		-- Reset net_junctions for next net segment.
+		net_junctions := (others => <>);
+
+		-- insert segment in segment collection
+		et_net_segment.pac_net_segments.append (
+			container	=> net_segments,
+			new_item	=> net_segment);
+
+		-- clean up for next segment
+		et_net_segment.reset_line (net_segment);
+
+	end insert_net_segment;
+	
+	
 
 	
 	net_labels				: et_net_labels.pac_net_labels.list;
@@ -915,7 +981,7 @@ is
 	net_segment_ports : et_net_ports.type_ports_AB;
 	
 	
-	-- Read a port of a device, submodule or netchanger
+	-- Reads a port of a device, submodule or netchanger
 	-- that is connected with a net segment and sets the variables
 	-- net_device_port, net_submodule_port, net_netchanger_port.
 	-- Appends the port to net_segment_ports.
@@ -1215,6 +1281,7 @@ is
 			invalid_keyword (kw);
 		end if;
 	end read_unit;
+
 	
 
 	device_non_electric			: et_devices_non_electrical.type_device_non_electric;
@@ -1227,6 +1294,7 @@ is
 	assembly_variant_description	: et_assembly_variants.type_description; -- "variant without temp. sensor"
 	assembly_variant_devices		: et_assembly_variants.pac_device_variants.map;
 	assembly_variant_submodules		: et_assembly_variants.pac_submodule_variants.map;
+
 
 	
 	procedure read_assembly_variant is
@@ -1424,6 +1492,7 @@ is
 	-- a single temporarily placeholder of a package
 	device_text_placeholder : et_device_placeholders.packages.type_placeholder;
 
+
 	
 	procedure read_device_text_placeholder is
 		use et_device_placeholders;
@@ -1467,6 +1536,7 @@ is
 		end if;
 	end read_device_text_placeholder;
 
+
 	
 	-- the temporarily collection of placeholders of packages (in the layout)
 	device_text_placeholders	: et_device_placeholders.packages.type_text_placeholders; -- silk screen, assy doc, top, bottom
@@ -1478,6 +1548,7 @@ is
 	unit_placeholder_reference	: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.NAME);
 	unit_placeholder_value		: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.VALUE);
 	unit_placeholder_purpose	: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.PURPOSE);
+
 
 	
 	procedure read_unit_placeholder is
@@ -1652,6 +1723,7 @@ is
 		end if;
 	end read_netchanger;
 
+
 	
 	
 	procedure read_cutout_route is
@@ -1681,6 +1753,7 @@ is
 	end read_cutout_route;
 
 	
+
 	
 	procedure read_cutout_non_conductor is
 		use et_board_coordinates.pac_geometry_2;
@@ -1703,6 +1776,7 @@ is
 	end read_cutout_non_conductor;
 
 	
+
 	
 	procedure read_cutout_restrict is
 		use et_pcb_stack;
@@ -1723,6 +1797,7 @@ is
 	end read_cutout_restrict;
 
 
+	
 	
 	-- Reads cutout zone in conductor layer.
 	-- NOTE: This is about floating conductor zones. Has nothing to
@@ -1754,6 +1829,7 @@ is
 	end read_cutout_conductor_non_electric;
 
 
+	
 	
 	-- Reads parameters of a conductor fill zone connected with a net:
 	procedure read_fill_zone_route is
@@ -1881,6 +1957,7 @@ is
 	end read_fill_zone_restrict;
 
 
+
 	
 	procedure read_fill_zone_conductor_non_electric is
 		use et_pcb_stack;
@@ -1982,6 +2059,7 @@ is
 			invalid_keyword (kw);
 		end if;
 	end read_submodule;
+
 
 	
 	
@@ -2125,6 +2203,7 @@ is
 	end read_board_text_conductor_placeholder;
 
 
+
 	
 	procedure read_schematic_text is
 		use et_schematic_text;
@@ -2172,6 +2251,7 @@ is
 		end if;
 	end read_schematic_text;
 
+	
 
 	
 	procedure read_board_text_non_conductor is 
@@ -2219,6 +2299,7 @@ is
 	end read_board_text_non_conductor;
 
 
+
 	
 	procedure read_board_text_conductor is
 		use et_board_coordinates.pac_geometry_2;
@@ -2264,6 +2345,7 @@ is
 	end read_board_text_conductor;
 
 	
+
 	
 	procedure read_board_text_contours is 
 		use et_board_coordinates.pac_geometry_2;
@@ -2301,6 +2383,7 @@ is
 	end read_board_text_contours;
 
 
+	
 	
 	procedure read_layer is
 		kw : constant string := f (line, 1);
@@ -2418,6 +2501,7 @@ is
 
 
 
+	
 	
 	procedure read_device_non_electric is
 		use et_device_model;
@@ -2628,6 +2712,7 @@ is
 	end read_user_settings_vias;
 
 
+
 	
 	procedure read_user_settings_fill_zones_conductor is
 		use et_fill_zones;
@@ -2688,6 +2773,7 @@ is
 	end read_user_settings_fill_zones_conductor;
 
 
+
 	
 	procedure assign_user_settings_board is
 		procedure do_it (
@@ -2701,6 +2787,7 @@ is
 	end assign_user_settings_board;
 
 
+	
 	
 	procedure process_line is 
 		-- use et_symbol_rw;
@@ -2891,6 +2978,7 @@ is
 			end insert_net;
 
 			
+
 			
 			procedure insert_submodule (
 				module_name	: in pac_module_name.bounded_string;
@@ -5196,6 +5284,15 @@ is
 		begin -- execute_section
 			case stack.current is
 
+				when SEC_CONNECTORS =>
+					case stack.parent is
+						when SEC_SEGMENT =>
+							assign_net_connectors;
+
+						when others => invalid_section;
+					end case;
+
+				
 				when SEC_CONTOURS =>
 					case stack.parent is
 						when SEC_ZONE => check_outline (contour, log_threshold + 1);
@@ -5344,30 +5441,10 @@ is
 					end case;
 
 					
-				when SEC_SEGMENT => -- CS clean up. separate procedures required
+				when SEC_SEGMENT =>
 					case stack.parent is
 						when SEC_SEGMENTS =>
-
-							-- Copy the net_junctions into the segment.
-							net_segment.junctions := net_junctions;
-
-							-- Reset net_junctions for next net segment.
-							net_junctions := (others => <>);
-
-							-- Copy the tag lables into the segment.
-							net_segment.connectors := net_connectors;
-
-							-- Reset the tag labels for next net segment.
-							net_connectors := (others => <>);
-
-							
-							-- insert segment in segment collection
-							et_net_segment.pac_net_segments.append (
-								container	=> net_segments,
-								new_item	=> net_segment);
-
-							-- clean up for next segment
-							et_net_segment.reset_line (net_segment);
+							insert_net_segment;
 							
 						when others => invalid_section;
 					end case;
@@ -5385,6 +5462,7 @@ is
 
 						when others => invalid_section;
 					end case;
+
 
 					
 				when SEC_PORTS =>
@@ -6031,7 +6109,9 @@ is
 					
 					-- Now that the section ends, the data collected in temporarily
 					-- variables is processed.
+					log_indentation_up;
 					execute_section;
+					log_indentation_down;
 					
 					stack.pop;
 					if stack.empty then
@@ -6059,6 +6139,7 @@ is
 		
 	begin -- process_line
 		if set (section_net_classes, SEC_NET_CLASSES) then null;
+		elsif set (section_connectors, SEC_CONNECTORS) then null;
 		elsif set (section_net_class, SEC_NET_CLASS) then null;
 		elsif set (section_board_layer_stack, SEC_BOARD_LAYER_STACK) then null;			
 		elsif set (section_drawing_grid, SEC_DRAWING_GRID) then null;
@@ -6125,9 +6206,17 @@ is
 			-- Temporarily this data is stored in corresponding variables.
 
 			log (text => "module line --> " & to_string (line), level => log_threshold + 4);
-	
+			log_indentation_up;
+
+			
 			case stack.current is
 
+				when SEC_CONNECTORS =>
+					case stack.parent is
+						when SEC_SEGMENT => read_net_connector;
+						when others => invalid_section;
+					end case;
+				
 				when SEC_CONTOURS =>
 					case stack.parent is
 						when SEC_ZONE => null;
@@ -6829,6 +6918,9 @@ is
 					
 				when SEC_INIT => null; -- CS: should never happen
 			end case;
+
+
+			log_indentation_down;
 		end if;
 
 		exception when event: others =>
@@ -6837,6 +6929,7 @@ is
 			raise;
 		
 	end process_line;
+
 
 	
 	

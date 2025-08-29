@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -45,6 +45,7 @@ package et_module_rw is
 	type type_section is ( -- CS: sort aphabetically
 		SEC_DEVICES_NON_ELECTRIC,
 		SEC_BOARD_LAYER_STACK,
+		SEC_CONNECTORS,
 		SEC_CONTOURS, -- of fill and cutout zones
 		SEC_CUTOUT_ZONE,
 		SEC_DRAWING_GRID,

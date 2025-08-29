@@ -57,12 +57,61 @@ package body et_net_connectors is
 
 
 
+	
+
+	
+	procedure make_net_connector (
+		arguments	: in type_fields_of_line;
+		error		: out boolean;
+		connector	: out type_net_connector)
+	is
+
+		function f (place : in type_field_count_positive) 
+			return string 
+		is begin
+			return to_lower (get_field (arguments, place));
+		end;
+		
+	begin
+		error := false;
+		
+		-- Iterate all fields of given list of arguments:
+		-- P points to the place in arguments at which we 
+		-- fetch a field from.
+		-- If something goes wrong, then the error-flag is
+		-- set and the iteration cancelled:
+		for p in 1 .. get_field_count (arguments) loop
+			
+			case p is
+				when 1 => -- direction
+					if f (p) /= keyword_direction then
+						error := true;
+						exit;
+					end if;
+
+				when 2 => -- input
+					connector.direction := to_direction (f (p));
+
+				when others =>					
+					error := true;
+					exit;
+			end case;
+		end loop;
+	end make_net_connector;
+
+	
+
+	
+
 	function to_string (
 		connector : in type_net_connector)
 		return string
 	is begin
-		return keyword_connector & " " & keyword_direction 
-			& to_string (connector.direction);
+		if connector.active then
+			return keyword_direction & " " & to_string (connector.direction);
+		else
+			return "inactive";
+		end if;
 	end;
 		
 

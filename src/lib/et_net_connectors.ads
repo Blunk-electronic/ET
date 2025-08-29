@@ -44,7 +44,7 @@ with et_fonts;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_text;					use et_schematic_text;
 with et_object_status;					use et_object_status;
-
+with et_string_processing;				use et_string_processing;
 
 
 package et_net_connectors is
@@ -94,6 +94,19 @@ package et_net_connectors is
 		end case;
 	end record;
 
+
+
+	-- Converts a string like "direction input"
+	-- to a net connector.
+	-- If something is wrong, then the error-flag is set.
+	-- This procedure modifies a connector. The connector
+	-- must be set active by the caller beforehand,
+	-- otherwise a discriminant exception will be raised:
+	procedure make_net_connector (
+		arguments	: in type_fields_of_line;
+		error		: out boolean;
+		connector	: out type_net_connector); -- must be active
+	
 
 
 	-- Returns something like "connector direction input":

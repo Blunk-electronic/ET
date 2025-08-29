@@ -121,6 +121,13 @@ package et_net_segment is
 		return boolean;
 
 
+	-- Returns true if the given net segment
+	-- has a net connector on the A or B end:
+	function has_connectors (
+		segment	: in type_net_segment)
+		return boolean;
+
+	
 	-- Sets a connector on the given end of
 	-- the given segment:
 	procedure set_connector (

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -51,6 +51,7 @@ package et_section_headers is
 
 	section_clearances				: constant string := "[CLEARANCES";
 	section_conductor				: constant string := "[CONDUCTOR";
+	section_connectors				: constant string := "[CONNECTORS";
 
 	section_device					: constant string := "[DEVICE";
 	section_devices					: constant string := "[DEVICES";

@@ -142,7 +142,24 @@ package body et_net_segment is
 
 
 
+	
+	function has_connectors (
+		segment	: in type_net_segment)
+		return boolean
+	is begin
+		if is_active (segment.connectors.A) or
+		   is_active (segment.connectors.B)
+		then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+	
 
+
+
+	
 	procedure set_connector (
 		segment	: in out type_net_segment;
 		AB_end	: in type_start_end_point)
