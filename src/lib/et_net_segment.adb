@@ -40,6 +40,19 @@ with ada.text_io;				use ada.text_io;
 
 
 package body et_net_segment is
+
+
+
+	procedure reset_net_segment (
+		segment	: in out type_net_segment)
+	is begin
+		segment.labels.clear;
+		segment.connectors := (others => <>);
+		segment.junctions := (others => <>);
+		segment.ports := (others => <>);
+	end;
+
+
 	
 
 	function to_net_segment (
@@ -67,6 +80,20 @@ package body et_net_segment is
 
 
 
+	function has_junctions (
+		segment	: in type_net_segment)
+		return boolean
+	is begin
+		if segment.junctions.A or
+		   segment.junctions.B
+		then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+	
 
 	
 

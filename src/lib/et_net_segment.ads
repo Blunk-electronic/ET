@@ -66,6 +66,11 @@ package et_net_segment is
 	end record;
 
 
+	-- Resets all components of a segment:
+	procedure reset_net_segment (
+		segment	: in out type_net_segment);
+
+	
 	type type_segment_array is array (natural range <>) of type_net_segment;
 
 	-- Creates a bare net segment without labels, 
@@ -83,6 +88,13 @@ package et_net_segment is
 		segment	: in out type_net_segment;
 		label	: in type_net_label);					
 	
+
+	-- Returns true if the given net segment
+	-- has a junction on the A or B end:
+	function has_junctions (
+		segment	: in type_net_segment)
+		return boolean;
+
 	
 	-- Activates a junction at the given end:
 	procedure set_junction (

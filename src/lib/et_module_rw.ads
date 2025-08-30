@@ -52,6 +52,7 @@ package et_module_rw is
 		SEC_ZONE,
 		SEC_HOLE,
 		SEC_INIT,
+		SEC_JUNCTIONS,
 		SEC_NET_CLASSES,
 		SEC_NET_CLASS,
 		SEC_NETS,

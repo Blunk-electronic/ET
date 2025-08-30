@@ -768,15 +768,76 @@ is
 	net_connectors	: et_net_connectors.type_net_connectors;
 
 	
-	procedure set_junction (place : in string) is begin
-		if f (line, 2) = keyword_start then
-			net_junctions.A := true;
+
+	-- Reads a line that describes a net junction
+	-- (like "A/B") that is active on an end
+	-- of a net segment. Once the line is read, the junction
+	-- is activated in variable net_junctions (see above):
+	procedure read_net_junction is
+		use et_net_junction;
+		use et_schematic_coordinates.pac_geometry_2;
+
+		AB_end : type_start_end_point;
+		error : boolean := false;
+	begin
+		log (text => "read net junction", level => log_threshold + 1);
+		log_indentation_up;
+		
+		-- There must be only a single field in the line:
+		expect_field_count (line, 1);
+		
+		-- Read the targeted end point of the segment:
+		AB_end := to_start_end_point (f (line, 1)); -- A/B
+
+		log (text => "end " & to_string (AB_end), level => log_threshold + 2);
+
+		-- CS:
+		-- Make a junction:
+		-- make_net_junction (
+		-- 	arguments	=> AB_end,
+		-- 	error		=> error,
+		-- 	connector	=> connector);
+
+		if not error then
+			-- log (text => "direction " & get_direction (connector), level => log_threshold + 2);
+			
+			-- Activate the junction on the targeted end of the segment:
+			case AB_end is
+				when A => net_junctions.A := true;
+				when B => net_junctions.B := true;
+			end case;
+		end if;
+
+		-- CS handle error
+		
+		log_indentation_down;
+	end read_net_junction;
+
+	
+
+	
+
+	
+	procedure assign_net_junctions is begin
+		log (text => "assign net junctions", level => log_threshold + 1);
+		log_indentation_up;
+		
+		-- Assign the net_junctions to the net segment:
+		net_segment.junctions := net_junctions;
+
+		if net_segment.junctions.A then
+			log (text => "A", level => log_threshold + 2);
+		end if;
+
+		if net_segment.junctions.B then
+			log (text => "B", level => log_threshold + 2);
 		end if;
 		
-		if f (line, 2) = keyword_end then
-			net_junctions.B := true;
-		end if;
-	end set_junction;
+		-- clean up for next junctions
+		net_junctions := (others => <>);
+		
+		log_indentation_down;
+	end assign_net_junctions;
 
 
 	
@@ -876,10 +937,6 @@ is
 			vm := to_position (line, from => 2);
 			set_B (net_segment, vm);
 
-		elsif kw = keyword_junction then -- "junction start/end"
-			expect_field_count (line, 2);
-			set_junction (f (line, 2));
-
 		else
 			invalid_keyword (kw);
 		end if;
@@ -888,22 +945,17 @@ is
 
 
 
-	
-	procedure insert_net_segment is begin
-		-- Copy the net_junctions into the segment.
-		net_segment.junctions := net_junctions;
+	-- Appends the net_segment to the list of net segments:
+	procedure insert_net_segment is 
+		use et_net_segment;
+	begin
 
-		-- Reset net_junctions for next net segment.
-		net_junctions := (others => <>);
-
-		-- insert segment in segment collection
 		et_net_segment.pac_net_segments.append (
 			container	=> net_segments,
 			new_item	=> net_segment);
 
-		-- clean up for next segment
-		et_net_segment.reset_line (net_segment);
-
+		-- Clean up for next net segment:
+		reset_net_segment (net_segment);
 	end insert_net_segment;
 	
 	
@@ -5301,6 +5353,15 @@ is
 						when others => invalid_section;
 					end case;
 
+
+				when SEC_JUNCTIONS =>
+					case stack.parent is
+						when SEC_SEGMENT =>
+							assign_net_junctions;
+
+						when others => invalid_section;
+					end case;
+					
 					
 				when SEC_NET_CLASS =>
 					case stack.parent is
@@ -6141,6 +6202,7 @@ is
 		if set (section_net_classes, SEC_NET_CLASSES) then null;
 		elsif set (section_connectors, SEC_CONNECTORS) then null;
 		elsif set (section_net_class, SEC_NET_CLASS) then null;
+		elsif set (section_junctions, SEC_JUNCTIONS) then null;
 		elsif set (section_board_layer_stack, SEC_BOARD_LAYER_STACK) then null;			
 		elsif set (section_drawing_grid, SEC_DRAWING_GRID) then null;
 		elsif set (section_nets, SEC_NETS) then null;
@@ -6223,7 +6285,13 @@ is
 						when SEC_CUTOUT_ZONE => null;
 						when others => invalid_section;
 					end case;
-				
+
+				when SEC_JUNCTIONS =>
+					case stack.parent is
+						when SEC_SEGMENT => read_net_junction;
+						when others => invalid_section;
+					end case;
+					
 				when SEC_NET_CLASSES =>
 					case stack.parent is
 						when SEC_INIT => null; -- nothing to do

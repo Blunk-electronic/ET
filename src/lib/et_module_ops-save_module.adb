@@ -595,13 +595,27 @@ is
 				
 
 				
-				procedure query_junctions (segment : in type_net_segment) is begin
-					if segment.junctions.A then
-						write (keyword => keyword_junction, parameters => keyword_start);
-					end if;
+				-- This procedure writes the net junctions.
+				-- If no junctions exist, then nothing happens here:
+				procedure query_junctions (segment : in type_net_segment) is 
 
-					if segment.junctions.B then
-						write (keyword => keyword_junction, parameters => keyword_end);
+					procedure write_junctions is begin
+						if segment.junctions.A then
+							write (keyword => to_string (A), parameters => "");
+						end if;
+
+						if segment.junctions.B then
+							write (keyword => to_string (B), parameters => "");
+						end if;
+					end write_junctions;
+
+				begin
+					-- Only if there are junctions, then we start
+					-- a new section for them:
+					if has_junctions (segment) then
+						section_mark (section_junctions, HEADER);
+						write_junctions;
+						section_mark (section_junctions, FOOTER);
 					end if;
 				end query_junctions;
 

@@ -61,6 +61,8 @@ package et_section_headers is
 	section_fill_zones_conductor	: constant string := "[FILL_ZONES_CONDUCTOR";
 	
 	section_hole					: constant string := "[HOLE";
+
+	section_junctions				: constant string := "[JUNCTIONS";
 	
 	section_keepout					: constant string := "[KEEPOUT";
 
