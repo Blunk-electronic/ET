@@ -297,7 +297,7 @@ is
 						-- When moving units, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
-						et_canvas_schematic_units.move_object (KEYBOARD, point);
+						et_canvas_schematic_units.move_object (KEYBOARD, get_cursor_position);
 
 					when others => null;
 				end case;

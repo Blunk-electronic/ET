@@ -328,7 +328,7 @@ package body et_canvas_schematic_units is
 		
 		
 	begin
-		log (text => "set_first_selected_object_moving ...", level => log_threshold);
+		log (text => "set_first_selected_object_moving", level => log_threshold);
 		log_indentation_up;
 		do_it;
 		log_indentation_down;
@@ -367,12 +367,12 @@ package body et_canvas_schematic_units is
 
 		
 	begin
-		log (text => "locating objects ...", level => log_threshold);
+		log (text => "locate objects", level => log_threshold);
 		log_indentation_up;
 
 		-- Propose objects according to current verb and noun:
 		case verb is
-			when VERB_DELETE | VERB_DRAG | VERB_FETCH =>
+			when VERB_DELETE | VERB_DRAG | VERB_FETCH | VERB_MOVE =>
 				case noun is
 					when NOUN_UNIT =>
 						
@@ -459,7 +459,7 @@ package body et_canvas_schematic_units is
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
-			log (text => "finalizing move ...", level => log_threshold);
+			log (text => "finalize move", level => log_threshold);
 			log_indentation_up;
 
 			-- If a selected object has been found, then
@@ -478,7 +478,7 @@ package body et_canvas_schematic_units is
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
 
-				-- If a unit has been deleted, then the board
+				-- If a unit has been moved, then the board
 				-- must be redrawn:
 				if object.cat = CAT_UNIT then
 					redraw_board;

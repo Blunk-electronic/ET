@@ -468,7 +468,7 @@ package et_schematic_ops.units is
 		log_threshold	: in type_log_level);
 
 
-	
+	-- Moves an object to the given destination:
 	procedure move_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
