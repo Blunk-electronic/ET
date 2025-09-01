@@ -1111,12 +1111,13 @@ package body et_schematic_ops.units is
 				ports := get_ports_of_unit (device_cursor, unit_name);
 				
 				-- Delete the ports of the targeted unit from module.nets
-				delete_ports (
-					module			=> module_cursor,
-					device			=> device_name,
-					ports			=> ports,
-					sheets			=> position_of_unit, -- there is only one unit -> only one sheet to look at
-					log_threshold	=> log_threshold);
+				-- CS
+				-- delete_ports (
+				-- 	module			=> module_cursor,
+				-- 	device			=> device_name,
+				-- 	ports			=> ports,
+				-- 	sheets			=> position_of_unit, -- there is only one unit -> only one sheet to look at
+				-- 	log_threshold	=> log_threshold);
 
 				-- In case no more units are invoked then the device must be
 				-- deleted entirely from module.devices.
@@ -1154,6 +1155,7 @@ package body et_schematic_ops.units is
 
 
 	
+
 	
 
 	
@@ -1167,32 +1169,34 @@ package body et_schematic_ops.units is
 		log_threshold	: in type_log_level) 
 	is
 
+		device_cursor_sch : pac_devices_sch.cursor;
 		
-		procedure query_devices (
+		
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			device_cursor : pac_devices_sch.cursor;
+			-- Query whether the given unit is deployed in the schematic:
+			unit_query : constant type_unit_query := 
+				get_unit_position (device_cursor_sch, unit_name);
 
-			-- temporarily storage of unit coordinates.
-			-- There will be only one unit in this container.
-			position_of_unit_old : pac_unit_positions.map;
-
-			position_of_unit_new : type_object_position;
-
-			ports : pac_ports.map;
+			-- The old ports of the unit must be removed from the net segments,
+			-- whereas new ports must be inserted in the net segments.
+			-- For this reason we need some temporarily storage place:
+			sheet_old, sheet_new : type_sheet;
+			ports_old, ports_new : pac_ports.map;
 			
 
-			procedure query_units (
+			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_sch) 
 			is
-				unit_cursor : pac_units.cursor;
-
+				
+				-- Does the actual move of the unit:
 				procedure move_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit) 
-				is begin
+				is begin					
 					case coordinates is
 						when ABSOLUTE =>
 							-- build the new position while preserving rotation:
@@ -1206,126 +1210,114 @@ package body et_schematic_ops.units is
 								position	=> unit.position,
 								offset		=> to_position_relative (destination, sheet));
 								-- rotation remains as it is
-					end case;
-
-					-- store new unit position
-					position_of_unit_new := unit.position;
-					
-					exception
-						when event: others =>
-							log (ERROR, "coordinates invalid !", console => true); -- CS required more details
-							log (text => ada.exceptions.exception_information (event), console => true);
-							raise;
-					
+					end case;								
 				end move_unit;
 
+				-- Locate the targeted unit:
+				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
+
 				
-			begin -- query_units
-				if contains (device.units, unit_name) then
-					-- locate unit by its name
-					unit_cursor := find (device.units, unit_name);
+			begin
+				-- Get the sheet where the unit is BEFORE the move operation:
+				sheet_old := get_sheet (device_cursor_sch, unit_cursor);
+				
+				-- Get the ports of the unit as they are
+				-- BEFORE the move operation:
+				ports_old := get_ports_of_unit (device_cursor_sch, unit_cursor);
 
-					-- load unit position and insert in container "position_of_unit_old"
-					pac_unit_positions.insert (
-						container	=> position_of_unit_old, 
-						key			=> unit_name,
-						new_item	=> element (unit_cursor).position);
+				update_element (
+					container	=> device.units,
+					position	=> unit_cursor,
+					process		=> move_unit'access);
 
-					-- log old unit position
-					log_unit_positions (position_of_unit_old, log_threshold + 1); -- there is only one unit
--- 					log (text => "position before " & 
--- 						 et_schematic_coordinates.to_string (
--- 							type_ports.first_element (positions)), level => log_threshold + 1);
 
-					update_element (
-						container	=> device.units,
-						position	=> unit_cursor,
-						process		=> move_unit'access);
-					
-				else
-					unit_not_found (unit_name);
-				end if;
-			end query_units;
+				-- Get the sheet where the unit is AFTER the move operation:
+				sheet_new := get_sheet (device_cursor_sch, unit_cursor);
+
+				-- Get the ports of the unit as they are
+				-- AFTER the move operation:
+				ports_new := get_ports_of_unit (device_cursor_sch, unit_cursor);
+				
+			end query_device;
 
 			
-		begin -- query_devices
-			if contains (module.devices, device_name) then
+			
+		begin -- query_module
 
-				-- Before the actual move, the coordinates of the
-				-- unit must be fetched. These coordinates will later assist
-				-- in deleting the port names from connected net segments.
-				device_cursor := find (module.devices, device_name); -- the device should be there
-
-				-- locate the unit, get its current position, set its new position
+			-- Test whether the desired unit is deployed (in schematic).
+			-- If the unit is deployed, then move it:
+			if unit_query.exists then
+				
 				update_element (
 					container	=> module.devices,
-					position	=> device_cursor,
-					process		=> query_units'access);
-				
-				log_indentation_up;
-
-				-- Fetch the ports of the unit to be moved 
-				-- The x/y-positions of the ports are as defined in the symbol model.
-				ports := get_ports_of_unit (device_cursor, unit_name);
-
-				-- Rotate the ports according to the rotation of the unit:
-				rotate_ports (ports, get_rotation (position_of_unit_new));
-
-				
-				-- Delete the old ports of the targeted unit from module.nets
+					position	=> device_cursor_sch,
+					process		=> query_device'access);
+			
+				-- Remove the old ports of the unit from the net segments:
 				delete_ports (
-					module			=> module_cursor,
-					device			=> device_name,
-					ports			=> ports,
-					sheets			=> position_of_unit_old,
+					module_cursor	=> module_cursor,
+					device_name		=> device_name,
+					unit_name		=> unit_name,
+					ports			=> ports_old,
+					sheet			=> sheet_old,
 					log_threshold	=> log_threshold + 1);
 
-				-- Calculate the new positions of the unit ports:
-				move_ports (ports, position_of_unit_new);
-
-				-- Insert the new unit ports in the nets (type_generic_module.nets):
+				-- Insert the new unit ports in the net segments:
 				insert_ports (
 					module_cursor	=> module_cursor,
 					device_name		=> device_name,
 					unit_name		=> unit_name,
-					ports			=> ports,
-					sheet			=> get_sheet (position_of_unit_new),
+					ports			=> ports_new,
+					sheet			=> sheet_new,
 					log_threshold	=> log_threshold + 1);
 
-				update_ratsnest (module_cursor, log_threshold + 1);
-				
-				log_indentation_down;				
 			else
-				device_not_found (device_name);
+				log (WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
 			end if;
-		end query_devices;
+		end query_module;
 
 		
-	begin
+	begin -- move_unit
 		case coordinates is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_cursor)
-					& " moving " & enclose_in_quotes (to_string (device_name)) 
-					& " unit " & enclose_in_quotes (to_string (unit_name)) 
+					& " move " & to_string (device_name)
+					& " unit " & to_string (unit_name)
 					& " to sheet" & to_string (sheet) 
 					& to_string (destination),
 					level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_cursor)
-					& " moving " & enclose_in_quotes (to_string (device_name))
-					& " unit " & enclose_in_quotes (to_string (unit_name)) 
+					& " move " & to_string (device_name)
+					& " unit " & to_string (unit_name)
 					& " by " & relative_to_string (sheet) & " sheet(s)" 
 					& to_string (destination),
 					level => log_threshold);
 		end case;
-		
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_devices'access);
 
+		
+		log_indentation_up;
+		
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor_sch := locate_device (module_cursor, device_name);
+			
+		if has_element (device_cursor_sch) then -- device exists in schematic
+			
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> query_module'access);
+
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+		end if;
+
+		update_ratsnest (module_cursor, log_threshold + 1);
+		
+		log_indentation_down;
 	end move_unit;
 
 
@@ -2264,12 +2256,13 @@ package body et_schematic_ops.units is
 						key			=> unit_name,
 						new_item	=> position_of_unit);
 
-					delete_ports (
-						module			=> module_cursor,
-						device			=> device_name,
-						ports			=> ports_scratch,
-						sheets			=> sheets, 
-						log_threshold	=> log_threshold + 1);
+					-- CS
+					-- delete_ports (
+					-- 	module			=> module_cursor,
+					-- 	device			=> device_name,
+					-- 	ports			=> ports_scratch,
+					-- 	sheets			=> sheets, 
+					-- 	log_threshold	=> log_threshold + 1);
 				end;
 
 				

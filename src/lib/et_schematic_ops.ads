@@ -131,16 +131,15 @@ package et_schematic_ops is
 
 
 	
-	-- Deletes ports of the given device in module.nets.
-	-- The port names are relevant here. Their x/x positions are irrelevant.
+	-- Deletes ports of the given device and unit in the
+	-- net segments on the given sheet:
 	procedure delete_ports (
-		module			: in pac_generic_modules.cursor; -- the module
-		device			: in type_device_name;			-- the device
-		ports			: in pac_ports.map := pac_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
-		sheets			: in pac_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name;
+		unit_name		: in pac_unit_name.bounded_string;
+		ports			: in pac_ports.map;
+		sheet			: in type_sheet;
 		log_threshold	: in type_log_level);
-
-	
 
 	
 	-- Inserts the given device ports in the net segments.

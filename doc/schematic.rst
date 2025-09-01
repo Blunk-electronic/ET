@@ -100,13 +100,35 @@ Devices and Units
 	the r-key.
 
 	
-#. Move unit
+
+#. Move Unit
+
+	Moving a unit disconnects it from net segments and places it 
+	at the given position. If the ports of the unit end up where 
+	a net segment is, they are connected with the net.
 
 	.. code-block::
 
 		move unit IC1 [A]
 
+	A unit can be moved relatively from one sheet to 
+	another and by some distance dx and dy:
+
+	.. code-block::
+
+		schematic led_driver move unit R1 1 relative -1 2 4
+
+
+	A unit can be moved absolutely to a sheet and to
+	a position x/y:
+
+	.. code-block::
+
+		schematic led_driver move unit R1 1 absolute 2 210 100
+
 	|VNS| m u
+
+
 	
 
 #. Rotate unit

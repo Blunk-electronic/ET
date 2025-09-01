@@ -197,6 +197,14 @@ package et_net_segment is
 		port	: in type_device_port);
 
 
+	-- Deletes in the given segment at the given
+	-- end the given device port.
+	-- If the port has already been deleted then nothing happens:
+	procedure delete_device_port (
+		segment	: in out type_net_segment;
+		AB_end	: in type_start_end_point;
+		port	: in type_device_port);
+	
 	
 	-- Inserts in the given segment at the given
 	-- end the given netchanger port.
@@ -207,6 +215,7 @@ package et_net_segment is
 		port	: in et_netlists.type_port_netchanger);
 
 
+	
 	
 	-- Inserts in the given segment at the given
 	-- end the given submodule port.

@@ -86,7 +86,16 @@ package body et_devices_electrical is
 
 	
 
+	function locate_unit (
+		device	: in type_device_sch;
+		unit	: in pac_unit_name.bounded_string)
+		return pac_units.cursor
+	is begin
+		return find (device.units, unit);
+	end;
 
+
+	
 
 
 	function to_string (
@@ -590,6 +599,39 @@ package body et_devices_electrical is
 		-- 		log (text => ada.exceptions.exception_information (event), console => true);
 		-- 		raise;
 		
+	end get_ports_of_unit;
+
+
+
+
+
+	function get_ports_of_unit (
+		device_cursor	: in pac_devices_sch.cursor;
+		unit_cursor		: in pac_units.cursor)
+		return pac_ports.map
+	is
+		ports : pac_ports.map;
+
+		position : type_object_position;
+		rotation : type_rotation_model;
+	begin
+		-- Get the default positions as described in the 
+		-- device model:
+		ports := get_ports_of_unit (device_cursor, key (unit_cursor));
+
+		
+		-- Rotate and move the ports according to the 
+		-- actual rotation and position of the unit in the schematic:
+		position := get_position (unit_cursor);
+		rotation := get_rotation (position);
+
+		if rotation /= zero_rotation then
+			rotate_ports (ports, rotation);
+		end if;
+
+		move_ports (ports, position);
+		
+		return ports;
 	end get_ports_of_unit;
 
 

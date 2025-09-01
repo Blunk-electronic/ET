@@ -317,6 +317,37 @@ package body et_net_segment is
 	
 
 
+
+	procedure delete_device_port (
+		segment	: in out type_net_segment;
+		AB_end	: in type_start_end_point;
+		port	: in type_device_port)
+	is 
+		use pac_device_ports;
+		c : pac_device_ports.cursor;
+	begin
+		case AB_end is
+			when A =>
+				c := find (segment.ports.A.devices, port);
+
+				if has_element (c) then
+					segment.ports.A.devices.delete (c);
+				end if;
+
+			when B =>
+				c := find (segment.ports.B.devices, port);
+
+				if has_element (c) then
+					segment.ports.B.devices.delete (c);
+				end if;
+		end case;
+	end delete_device_port;
+
+
+
+
+	
+
 	procedure insert_netchanger_port (
 		segment	: in out type_net_segment;
 		AB_end	: in type_start_end_point;

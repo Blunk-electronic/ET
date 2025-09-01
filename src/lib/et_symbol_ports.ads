@@ -156,6 +156,7 @@ package et_symbol_ports is
 			when others => null;
 		end case;
 	end record;
+	-- CS rename to type_symbol_port ?
 
 
 	
@@ -168,7 +169,7 @@ package et_symbol_ports is
 	use et_port_names;
 	use pac_port_name;
 	
-	package pac_ports is new indefinite_ordered_maps (
+	package pac_ports is new indefinite_ordered_maps ( -- CS rename to pac_symbol_ports ?
 		key_type		=> pac_port_name.bounded_string, -- CLOCK, CE, VDD, GND
 		element_type	=> type_port);
 

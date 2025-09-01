@@ -1154,20 +1154,34 @@ is
 
 
 
+	-- Parses a command that moves a unit either relatively or
+	-- absolutely:
+	-- example 1: schematic led_driver move unit R1 1 relative -1 2 4
+	-- example 2: schematic led_driver move unit R1 1 absolute 2 210 100
 	procedure move_unit is 
+		device_name : type_device_name;
+		unit_name	: pac_unit_name.bounded_string;
+		coordinates : type_coordinates;
+		sheet		: type_sheet_relative;		
+		destination	: type_vector_model;
 	begin
+		device_name := to_device_name (get_field (5)); -- IC1
+		unit_name	:= to_unit_name (get_field (6)); -- A
+		coordinates := to_coordinates (get_field (7)); -- relative/absolute
+		sheet		:= to_sheet_relative (get_field (8)); -- -1, 2
+
+		destination	:= set (x => to_distance (get_field (9)), -- 2, 210
+							y => to_distance (get_field (10))); -- 4, 100
+
 		case cmd_field_count is
 			when 10 =>
 				move_unit (
 					module_cursor 	=> active_module,
-					device_name		=> to_device_name (get_field (5)), -- IC1
-					unit_name		=> to_unit_name (get_field (6)), -- A
-					coordinates		=> to_coordinates (get_field (7)),  -- relative/absolute
-					sheet			=> to_sheet_relative (get_field (8)),
-					destination		=> type_vector_model (set (
-										x => to_distance (get_field (9)),
-										y => to_distance (get_field (10)))),
-						
+					device_name		=> device_name,
+					unit_name		=> unit_name,
+					coordinates		=> coordinates,
+					sheet			=> sheet,
+					destination		=> destination,						
 					log_threshold	=> log_threshold + 1);
 
 			when 11 .. type_field_count'last => too_long; 

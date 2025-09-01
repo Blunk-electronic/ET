@@ -246,7 +246,7 @@ package et_schematic_ops.units is
 
 	-- Moves the given unit within the schematic. Disconnects the unit from
 	-- start or end points of net segments BEFORE the move. 
-	-- Connects unit ports with segment end or strart points AFTER the move.
+	-- Connects unit ports with segment end or start points AFTER the move.
 	procedure move_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
@@ -258,7 +258,7 @@ package et_schematic_ops.units is
 
 
 
-	-- Returns the position of given unit. If the unit_name is emtpty ("")
+	-- Returns the position of given unit. If the unit_name is empty ("")
 	-- then the position of the first unit is returned.
 	-- This is useful when a device has only one unit.
 	-- If the given device or unit does not exist, then the return is false.

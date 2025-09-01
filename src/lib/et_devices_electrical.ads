@@ -189,6 +189,16 @@ package et_devices_electrical is
 
 
 
+	-- Locates the given unit in the given device.
+	-- If the unit can not be located (because it is not
+	-- deployed yet or does not exist at all), then 
+	-- the result is no_element:
+	function locate_unit (
+		device	: in type_device_sch;
+		unit	: in pac_unit_name.bounded_string)
+		return pac_units.cursor;
+
+	
 
 	-- The result of a unit query is of this type:
 	type type_unit_query (exists : boolean := false) is record
@@ -335,13 +345,22 @@ package et_devices_electrical is
 	
 	
 	-- Returns a map of ports of the given device and unit.
-	-- The coordinates of the ports are default xy-positions relative
-	-- to the center of the unit as they are defined in the symbol model.
+	-- The coordinates of the ports are the default x/y-positions relative
+	-- to the origin of the unit as they are defined in the symbol model.
 	function get_ports_of_unit (
 		device_cursor	: in pac_devices_sch.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return pac_ports.map;
-	
+
+
+	-- Returns a map of ports of the given device and unit.
+	-- The coordinates of the ports are absolute x/y-positions:
+	function get_ports_of_unit (
+		device_cursor	: in pac_devices_sch.cursor;
+		unit_cursor		: in pac_units.cursor)
+		return pac_ports.map;
+
+								   
 
 	
 	-- Returns the current position (x/y/rotation/face) of the 

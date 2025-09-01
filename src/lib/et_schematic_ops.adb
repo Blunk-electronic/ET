@@ -136,172 +136,27 @@ package body et_schematic_ops is
 
 
 	
+	
 
 	
 	procedure delete_ports (
-		module			: in pac_generic_modules.cursor;-- the module
-		device			: in type_device_name;			-- the device
-		ports			: in pac_ports.map := pac_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
-		sheets			: in pac_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
-		log_threshold	: in type_log_level) 
-	is
-		dedicated_ports : boolean := false; -- goes true if "ports" contains something.
-
-		
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			
--- 			procedure query_net (net_cursor : in pac_nets.cursor) is
--- 				use pac_nets;
--- 
--- 				
--- 				procedure query_strands (
--- 					net_name	: in pac_net_name.bounded_string;
--- 					net			: in out type_net) 
--- 				is
--- 					
--- 					procedure query_strand (strand_cursor : in pac_strands.cursor) is
--- 						procedure query_segments (strand : in out type_strand) is
--- 							use pac_net_segments;
--- 
--- 							
--- 							procedure query_segment (segment_cursor : in pac_net_segments.cursor) is 
--- 								use pac_device_ports;
--- 
--- 								
--- 								procedure query_ports (segment : in out type_net_segment) is
--- 								-- Tests device ports of given segment if their device name matches the given device name.
--- 								-- On match the port is skipped. All other ports are collected in ports_new.	
--- 									ports_new : pac_device_ports.set;
--- 
--- 									
--- 									procedure query_port (port_cursor : in pac_device_ports.cursor) is
--- 										use et_symbols;
--- 										port : type_device_port := element (port_cursor); -- take a copy of the port
--- 									begin -- query_port
--- 										if port.device_name = device then -- on match just report the port and skip it
--- 
--- 											log_indentation_up;
--- 											
--- 											if dedicated_ports then
--- 												if pac_ports.contains (ports, port.port_name) then
--- 													log (text => "delete port " & to_string (port.port_name), level => log_threshold + 3);
--- 												else
--- 													ports_new.insert (port); -- all other ports are collected in ports_new.
--- 												end if;
--- 											else
--- 												log (text => "delete port " & to_string (port.port_name), level => log_threshold + 3);	
--- 											end if;
--- 																						
--- 											log_indentation_down;
--- 										else
--- 											ports_new.insert (port); -- all other ports are collected in ports_new.
--- 										end if;
--- 									end query_port;
--- 
--- 									
--- 								begin -- query_ports
--- 									iterate (segment.ports.devices, query_port'access); -- loop in portlist of given segment
--- 
--- 									-- overwrite old portlist by new portlist
--- 									segment.ports.devices := ports_new;
--- 								end query_ports;
--- 
--- 								
--- 							begin -- query_segment
--- 								log_indentation_up;
--- 								log (text => to_string (segment_cursor), level => log_threshold + 2);
--- 
--- 								update_element (
--- 									container	=> strand.segments,
--- 									position	=> segment_cursor,
--- 									process		=> query_ports'access);
--- 												   
--- 								log_indentation_down;
--- 							end query_segment;
--- 
--- 							
--- 						begin -- query_segments
--- 							iterate (strand.segments, query_segment'access);
--- 						end query_segments;
--- 
--- 						
--- 					begin -- query_strand
--- 						log_indentation_up;
--- 						log (text => "strand " & to_string (position => element (strand_cursor).position),
--- 							 level => log_threshold + 2);
--- 
--- 						update_element (
--- 							container	=> net.strands,
--- 							position	=> strand_cursor,
--- 							process		=> query_segments'access);
--- 						
--- 						log_indentation_down;
--- 					end query_strand;
--- 
--- 					
--- 				begin -- query_strands
--- 					iterate (net.strands, query_strand'access);
--- 				end query_strands;
-
-				
--- 			begin -- query_net
--- 				log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
--- 
--- 				update_element (
--- 					container	=> module.nets,
--- 					position	=> net_cursor,
--- 					process		=> query_strands'access);
--- 				
--- 			end query_net;				
-
-			
-		begin
-			null;
-			-- CS
-			-- pac_nets.iterate (module.nets, query_net'access);
-		end query_module;
-		
-		
-	begin
-		log (text => "deleting device ports in nets ...", level => log_threshold);
-
-		-- If ports are provided, we have to delete exactly those in list "ports".
-		-- The flag dedicated_ports is later required in order to do this job:
-		if pac_ports.length (ports) > 0 then
-			dedicated_ports := true;
-		end if;
-		
-		log_indentation_up;
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module,
-			process		=> query_module'access);
-
-		log_indentation_down;
-	end delete_ports;
-
-
-
-
-
-	procedure insert_ports (
-		module_cursor	: in pac_generic_modules.cursor;		-- the module
-		device_name		: in type_device_name;					-- the device
-		unit_name		: in pac_unit_name.bounded_string;	-- the unit name like A, C, PWR
-		ports			: in pac_ports.map; -- the ports to be inserted
-		sheet			: in type_sheet;				-- the sheet to look at
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name;
+		unit_name		: in pac_unit_name.bounded_string;
+		ports			: in pac_ports.map;
+		sheet			: in type_sheet;
 		log_threshold	: in type_log_level)
 	is
+		use pac_unit_name;
+		
 		-- In the course of this procedure the given list
 		-- of ports is processed. Each processed port will be
 		-- removed from the given ports. For this reason we make
 		-- a copy of the given ports:
 		ports_tmp : pac_ports.map := ports;
 
+		-- CS: On the end of this procedure make sure ports_tmp is empty.
+		
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -333,15 +188,20 @@ package body et_schematic_ops is
 						-- Searches in list ports_tmp for a port that sits on
 						-- the given A/B end of the segment. If a port exists there,
 						-- then:
-						-- 1. the port is removed from port_tmp 
-						-- 2. the unit name is of the port is used to 
+						-- 1. the port is removed from list port_tmp 
+						-- 2. the unit name of the port is used to 
 						--    build a device port.
-						-- 3. The device port is then added to the A/B end of the segment:
-						procedure add_port (AB_end : in type_start_end_point) is 
+						-- 3. The device port is then deleted on the A/B end of the segment:
+						procedure delete_port (AB_end : in type_start_end_point) is 
 							port_name : pac_port_name.bounded_string; -- IN1, IN2
 							device_port : type_device_port; -- (IC1, AMP1, IN1)
 							deleted : boolean;
 						begin
+							-- Get the name of the port that is connected
+							-- with the given end of the segment candidate
+							-- and delete it in list ports_tmp.
+							-- NOTE: We need to do this only once, because only one port of
+							-- the unit can be connected with the end of the segment.
 							delete_port (ports_tmp, get_end_point (segment, AB_end), deleted, port_name);
 
 							-- If a port has been found, then the delete-flag is set
@@ -349,6 +209,151 @@ package body et_schematic_ops is
 							-- If nothing was found, then ports_tmp is unchanged and the
 							-- flag "deleted" is cleared so that nothing else happens here:
 							if deleted then
+								
+								-- Build the device port:
+								device_port := to_device_port (device_name, unit_name, port_name);
+								
+								log (text => "Delete device port " & to_string (device_port),
+									 level => log_threshold + 1);
+								-- CS log segment and end point
+								
+								-- Remove the device port from the segment:
+								delete_device_port (segment, AB_end, device_port);
+							end if;
+						end delete_port;
+
+		
+					begin
+						delete_port (A);
+						delete_port (B);
+					end query_segment;
+
+					
+				begin
+					-- Iterate through the segments:
+					while has_element (segment_cursor) loop
+						strand.segments.update_element (segment_cursor, query_segment'access);
+						next (segment_cursor);
+					end loop;
+				end query_strand;
+
+				
+			begin
+				-- Iterate through the strands on the given sheet:
+				while has_element (strand_cursor) loop
+					if get_sheet (strand_cursor) = sheet then
+						net.strands.update_element (strand_cursor, query_strand'access);
+					end if;
+					
+					next (strand_cursor);
+				end loop;
+
+			end query_net;				
+
+			
+		begin
+			-- Iterate through the nets:
+			while has_element (net_cursor) loop
+				module.nets.update_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " delete ports of device " & to_string (device_name)
+			& " unit " & to_string (unit_name)
+			& " in nets on sheet " & to_string (sheet),
+			level => log_threshold);
+
+		
+		log_indentation_up;
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end delete_ports;
+
+
+
+
+	
+
+
+	procedure insert_ports (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name;
+		unit_name		: in pac_unit_name.bounded_string;
+		ports			: in pac_ports.map;
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level)
+	is
+		use pac_unit_name;
+		
+		-- In the course of this procedure the given list
+		-- of ports is processed. Each processed port will be
+		-- removed from the given ports. For this reason we make
+		-- a copy of the given ports:
+		ports_tmp : pac_ports.map := ports;
+
+		-- CS: On the end of this procedure make sure ports_tmp is empty.
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_nets;
+			net_cursor : pac_nets.cursor := module.nets.first;
+			
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				use pac_strands;
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (
+					strand	: in out type_strand)
+				is
+					use pac_net_segments;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					
+					procedure query_segment (
+						segment : in out type_net_segment)
+					is
+				
+						-- Searches in list ports_tmp for a port that sits on
+						-- the given A/B end of the segment. If a port exists there,
+						-- then:
+						-- 1. the port is removed from list port_tmp 
+						-- 2. the unit name of the port is used to 
+						--    build a device port.
+						-- 3. The device port is then added to the A/B end of the segment:
+						procedure add_port (AB_end : in type_start_end_point) is 
+							port_name : pac_port_name.bounded_string; -- IN1, IN2
+							device_port : type_device_port; -- (IC1, AMP1, IN1)
+							deleted : boolean;
+						begin
+							-- Get the name of the port that is connected
+							-- with the given end of the segment candidate
+							-- and delete it in list ports_tmp.
+							-- NOTE: We need to do this only once, because only one port of
+							-- the unit can be connected with the end of the segment.
+							delete_port (ports_tmp, get_end_point (segment, AB_end), deleted, port_name);
+
+							-- If a port has been found, then the delete-flag is set
+							-- and port_name loaded with the affected port name.
+							-- If nothing was found, then ports_tmp is unchanged and the
+							-- flag "deleted" is cleared so that nothing else happens here:
+							if deleted then
+								
 								-- Build the device port:
 								device_port := to_device_port (device_name, unit_name, port_name);
 								
@@ -403,6 +408,7 @@ package body et_schematic_ops is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " insert ports of device " & to_string (device_name)
+			& " unit " & to_string (unit_name) 
 			& " in nets on sheet " & to_string (sheet),
 			level => log_threshold);
 		
