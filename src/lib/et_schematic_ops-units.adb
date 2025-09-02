@@ -1143,6 +1143,7 @@ package body et_schematic_ops.units is
 
 	
 
+
 	
 
 	procedure delete_device (
@@ -1152,6 +1153,26 @@ package body et_schematic_ops.units is
 	is
 		device_cursor_sch : pac_devices_sch.cursor;
 
+		-- We use list of deployed units here. By iterating the names
+		-- the procedure delete_unit (see above) is called for each unit:
+		unit_names : pac_unit_names.list;
+
+
+		-- Queries a unit of the list unit_names and deletes it:
+		procedure query_unit (c : in pac_unit_names.cursor) is
+			use pac_unit_names;
+			name : pac_unit_name.bounded_string := element (c);
+		begin
+			log (text => "Delete unit " & to_string (name), level => log_threshold + 1);
+
+			log_indentation_up;
+			
+			delete_unit (module_cursor, device_name, name, log_threshold + 2);
+			
+			log_indentation_down;
+		end;
+
+		
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " delete " & to_string (device_name), 
@@ -1166,8 +1187,12 @@ package body et_schematic_ops.units is
 			
 		if has_element (device_cursor_sch) then -- device exists in schematic
 
-			null;
+			-- Get the names of deployed units:
+			unit_names := get_unit_names_deployed (device_cursor_sch);
 
+			-- Iterate the name list and delete the units one by one:
+			unit_names.iterate (query_unit'access);
+			
 		else
 			log (WARNING, " Device " & to_string (device_name) & " not found !");
 		end if;

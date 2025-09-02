@@ -174,9 +174,12 @@ package et_device_library is
 		return type_device_units;
 
 
-	
-	package pac_unit_names is new doubly_linked_lists (pac_unit_name.bounded_string);
+	-- If unit names are to be stored in lists:
+	package pac_unit_names is new 
+		doubly_linked_lists (pac_unit_name.bounded_string);
 
+
+	
 	-- Returns a list of all unit names of the given device:
 	function get_all_units (
 		device_cursor	: in pac_devices_lib.cursor)

@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,6 +36,9 @@
 --   history of changes:
 --
 
+with ada.containers;           			use ada.containers;
+with ada.containers.doubly_linked_lists;
+
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 
@@ -59,8 +62,11 @@ package et_unit_name is
 	
 	-- function to_string (unit_name : in pac_unit_name.bounded_string) return string;
 
-	function to_unit_name (unit_name : in string) return pac_unit_name.bounded_string; 
 	
+	function to_unit_name (
+		unit_name : in string) 
+		return pac_unit_name.bounded_string; 
+
 	
 		
 end et_unit_name;

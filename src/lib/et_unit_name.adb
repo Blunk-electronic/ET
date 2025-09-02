@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -58,7 +58,10 @@ package body et_unit_name is
 
 
 	
-	function to_unit_name (unit_name : in string) return pac_unit_name.bounded_string is begin
+	function to_unit_name (
+		unit_name : in string) 
+		return pac_unit_name.bounded_string 
+	is begin
 		-- CS do character and length checks
 		return pac_unit_name.to_bounded_string (to_upper (unit_name));
 	end;

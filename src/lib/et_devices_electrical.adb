@@ -46,7 +46,27 @@ with et_string_processing;			use et_string_processing;
 
 package body et_devices_electrical is
 
+	
+	function get_unit_names_deployed (
+		device : in type_device_sch)
+		return pac_unit_names.list
+	is 
+		result : pac_unit_names.list;
 
+		procedure query_unit (c : in pac_units.cursor) is begin
+			result.append (key (c));
+		end;
+
+	begin
+		device.units.iterate (query_unit'access);
+		return result;
+	end;
+
+	
+
+
+
+	
 	function get_unit_count (
 		device : in type_device_sch)
 		return natural
@@ -173,6 +193,16 @@ package body et_devices_electrical is
 
 
 
+
+	function get_unit_names_deployed (
+		device : in pac_devices_sch.cursor)
+		return pac_unit_names.list
+	is begin
+		return get_unit_names_deployed (element (device));
+	end;
+
+
+	
 	
 
 	

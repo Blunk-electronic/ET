@@ -105,7 +105,7 @@ with et_logging;						use et_logging;
 package et_devices_electrical is
 
 	use pac_units;
-
+	-- use pac_unit_names;
 	
 
 	-- This is a device as it appears in the schematic.
@@ -115,7 +115,7 @@ package et_devices_electrical is
 		model	: pac_device_model_file.bounded_string;
 		-- CS use a cursor to the model instead ?
 
-		-- The units like PWR, A, B, ...
+		-- The deployed units like PWR, A, B, ...
 		-- Virtual devices have only one unit (like the GND symbol).
 		-- Real devices like a single resistor have one unit.
 		-- Real devices like FPGAs have many units (like PWR1, PWR2, GPIO1, GPIO2, ...):
@@ -159,6 +159,12 @@ package et_devices_electrical is
 	end record;
 
 
+	-- Returns the names of all deployed units:
+	function get_unit_names_deployed (
+		device : in type_device_sch)
+		return pac_unit_names.list;
+	
+								
 	-- Returns the total number of units that
 	-- the device provides according to its model:
 	function get_unit_count (
@@ -194,7 +200,8 @@ package et_devices_electrical is
 
 	use pac_devices_sch;
 	
-
+	
+	
 	
 	function get_device_model_file (
 		device : pac_devices_sch.cursor)
@@ -244,6 +251,12 @@ package et_devices_electrical is
 		query_result	: in type_unit_query)
 		return string;
 
+
+
+	-- Returns the names of deployed units:
+	function get_unit_names_deployed (
+		device : in pac_devices_sch.cursor)
+		return pac_unit_names.list;
 
 	
 	
