@@ -675,7 +675,7 @@ package body et_canvas_schematic_units is
 			-- clarification is now pending.
 
 			-- If find_objects has found only one object,				
-			-- then delete the object immediatley.
+			-- then delete the object immediateley.
 			if edit_process_running then
 				finalize;
 			end if;

@@ -65,13 +65,16 @@ Devices and Units
 	|VNS| n d
 	
 	
-#. Delete unit
+
+#. Delete Unit
 
 	.. code-block::
 
 		delete unit IC1 C
 
 	|VNS| del u
+
+
 	
 
 #. Drag unit
