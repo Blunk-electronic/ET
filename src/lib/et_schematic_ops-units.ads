@@ -230,8 +230,6 @@ package et_schematic_ops.units is
 	-- CS function port_position 
 
 
-		
-
 	
 	-- Deletes a unit of a device. 
 	-- In case the last unit has been deleted, then the device is 
@@ -240,6 +238,14 @@ package et_schematic_ops.units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
+		log_threshold	: in type_log_level);
+
+
+	-- Deletes a whole device (incl. all its units)
+	-- in the module:
+	procedure delete_device (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- IC45
 		log_threshold	: in type_log_level);
 
 	

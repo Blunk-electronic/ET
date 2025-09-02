@@ -64,6 +64,20 @@ Devices and Units
 	
 	|VNS| n d
 	
+
+
+
+#. Delete Device
+
+	A whole device (incl. all its units) can be deleted
+	via this simple command:
+
+	.. code-block::
+
+		delete device IC12
+
+	|VNS| del d
+
 	
 
 #. Delete Unit

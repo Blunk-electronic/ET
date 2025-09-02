@@ -1093,14 +1093,21 @@ is
 	end show_device;
 
 
-	
 
-	procedure delete_device is begin
+	
+	-- This procedure parses a command that deletes a 
+	-- whole device (with all units) like
+	-- "schematic led_driver delete unit IC1":
+	procedure delete_device is 
+		device_name : type_device_name;
+	begin
+		device_name := to_device_name (get_field (5));
+		
 		case cmd_field_count is
 			when 5 =>
 				delete_device (
-					module_name 	=> module,
-					device_name		=> to_device_name (get_field (5)),
+					module_cursor 	=> active_module,
+					device_name		=> device_name,
 					log_threshold	=> log_threshold + 1);
 
 			when 6 .. type_field_count'last => too_long; 
@@ -1109,6 +1116,7 @@ is
 		end case;
 	end delete_device;
 
+	
 
 	
 

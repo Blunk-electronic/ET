@@ -1039,9 +1039,7 @@ package body et_schematic_ops.units is
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level) 
 	is
-
 		device_cursor_sch : pac_devices_sch.cursor;
-		
 
 
 		procedure query_module (
@@ -1145,6 +1143,43 @@ package body et_schematic_ops.units is
 
 	
 
+	
+
+	procedure delete_device (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- IC45
+		log_threshold	: in type_log_level) 
+	is
+		device_cursor_sch : pac_devices_sch.cursor;
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " delete " & to_string (device_name), 
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor_sch := locate_device (module_cursor, device_name);
+			
+		if has_element (device_cursor_sch) then -- device exists in schematic
+
+			null;
+
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+		end if;
+
+		update_ratsnest (module_cursor, log_threshold + 1);
+		
+		log_indentation_down;
+	end delete_device;
+
+
+
+	
 	
 
 	

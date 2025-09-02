@@ -157,14 +157,7 @@ package et_schematic_ops is
 		sheet			: in type_sheet;				-- the sheet to look at
 		log_threshold	: in type_log_level);
 
-	
-	
-	procedure delete_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- IC45
-		log_threshold	: in type_log_level);
 
-	
 
 
 	-- Returns the name of the active assembly variant of the given module:
