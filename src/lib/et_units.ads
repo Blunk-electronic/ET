@@ -112,11 +112,18 @@ package et_units is
 		return type_rotation_model;
 
 
+	-- Sets the absolute rotation of a unit:
 	procedure set_rotation (
 		unit		: in out type_unit;
 		rotation	: in type_rotation_model);
 
+	
+	-- Rotates the unit by a given angle:
+	procedure rotate_by (
+		unit		: in out type_unit;
+		rotation	: in type_rotation_model);
 
+	
 	
 	function get_sheet (
 		unit	: in type_unit)

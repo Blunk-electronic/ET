@@ -312,7 +312,7 @@ package et_schematic_ops.units is
 	-- Rotates the given unit. 
 	-- Disconnects the unit from attached net segments before the rotation.
 	-- Connects the unit with net segments after the rotation.
-	-- Rotates the placeholders about the unit center.
+	-- Rotates the placeholders about the unit origin.
 	procedure rotate_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45

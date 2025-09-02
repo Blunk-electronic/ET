@@ -92,6 +92,7 @@ package body et_units is
 		return get_rotation (unit.position);
 	end get_rotation;
 
+	
 
 	procedure set_rotation (
 		unit		: in out type_unit;
@@ -101,6 +102,23 @@ package body et_units is
 	end set_rotation;
 
 
+	
+
+	procedure rotate_by (
+		unit		: in out type_unit;
+		rotation	: in type_rotation_model)
+	is 
+		-- Get the rotation before:
+		r_actual : type_rotation_model := get_rotation (unit);
+	begin
+		-- Add the given rotation to the actual rotation:
+		add (r_actual, rotation);		
+
+		-- Assign the new rotation:
+		set_rotation (unit, r_actual);
+	end;
+
+	
 	
 	
 	function get_sheet (

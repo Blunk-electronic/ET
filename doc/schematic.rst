@@ -148,13 +148,20 @@ Devices and Units
 
 	
 
-#. Rotate unit
+#. Rotate Unit
 
 	.. code-block::
 
-		rotate unit IC1 [A]
+		rotate unit IC1 C absolute 90
+
+	.. code-block::
+
+		rotate unit IC1 C relative -90
+
 
 	|VNS| o u
+
+
 
 
 #. Set package variant

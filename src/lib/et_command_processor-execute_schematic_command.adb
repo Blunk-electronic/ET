@@ -1171,8 +1171,8 @@ is
 
 	-- Parses a command that moves a unit either relatively or
 	-- absolutely:
-	-- example 1: schematic led_driver move unit R1 1 relative -1 2 4
-	-- example 2: schematic led_driver move unit R1 1 absolute 2 210 100
+	-- example 1: schematic led_driver move unit IC1 A relative -1 2 4
+	-- example 2: schematic led_driver move unit IC1 C absolute 2 210 100
 	procedure move_unit is 
 		device_name : type_device_name;
 		unit_name	: pac_unit_name.bounded_string;
@@ -1208,6 +1208,10 @@ is
 
 	
 	
+	-- Parses a command that rotates a unit either relatively or
+	-- absolutely:
+	-- example 1: schematic led_driver rotate unit IC1 A relative -90
+	-- example 2: schematic led_driver rotate unit IC1 B absolute 90
 	procedure rotate_unit is begin
 		case cmd_field_count is
 			when 8 =>
