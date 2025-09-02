@@ -117,7 +117,7 @@ package et_canvas_schematic_units is
 -- DELETE UNIT
 
 	-- to be output in the status bar:
-	status_delete : constant string := 
+	status_delete_unit : constant string := 
 		status_click_left 
 		& "or "
 		& status_press_space
@@ -125,6 +125,12 @@ package et_canvas_schematic_units is
 		& status_hint_for_abort;
 	
 
+	status_delete_device : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to delete device." 
+		& status_hint_for_abort;
 
 	
 

@@ -374,7 +374,7 @@ package body et_canvas_schematic_units is
 		case verb is
 			when VERB_DELETE | VERB_DRAG | VERB_FETCH | VERB_MOVE =>
 				case noun is
-					when NOUN_UNIT =>
+					when NOUN_DEVICE | NOUN_UNIT =>
 						
 						-- Propose units in the vicinity of the given point:
 						propose_units (
@@ -626,10 +626,10 @@ package body et_canvas_schematic_units is
 			use et_undo_redo;
 			use et_commit;
 
-			object : constant type_object := get_first_object (
+			object : type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
-			log (text => "finalizing delete ...", level => log_threshold);
+			log (text => "finalize delete ...", level => log_threshold);
 			log_indentation_up;
 
 			-- If a selected object has been found, then
@@ -638,7 +638,16 @@ package body et_canvas_schematic_units is
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
-				
+
+				-- If a whole device is to be deleted, then
+				-- we clear the cursor that points to the unit.
+				-- This way, procedure delete_object is notified
+				-- that the whole device is to be deleted:
+				if noun = NOUN_DEVICE then
+					object.unit.unit_cursor := pac_units.no_element;
+				end if;
+
+				-- Do the delete operation:
 				delete_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
@@ -658,8 +667,9 @@ package body et_canvas_schematic_units is
 			end if;
 				
 			log_indentation_down;			
-			
-			set_status (status_delete);
+
+			-- CS clear status bar ?
+			-- set_status (status_delete);
 			
 			reset_proposed_objects (active_module, log_threshold + 1);
 
@@ -792,8 +802,9 @@ package body et_canvas_schematic_units is
 			end if;
 				
 			log_indentation_down;			
-			
-			set_status (status_delete); -- CS correct ?
+
+			-- CS clear status bar ?
+			-- set_status (status_delete); -- CS correct ?
 			
 			reset_proposed_objects (active_module, log_threshold + 1);
 

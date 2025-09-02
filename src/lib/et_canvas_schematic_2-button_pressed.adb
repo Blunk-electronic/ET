@@ -108,7 +108,7 @@ is
 					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
 						et_canvas_schematic_nets.delete_object (snap_point);
 						
-					when NOUN_UNIT =>
+					when NOUN_DEVICE | NOUN_UNIT =>
 						et_canvas_schematic_units.delete_object (snap_point);
 						
 					when others => null;
@@ -296,7 +296,7 @@ is
 							et_canvas_schematic_nets.clarify_object;
 						end if;
 
-					when NOUN_UNIT =>
+					when NOUN_DEVICE | NOUN_UNIT =>
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
 						end if;

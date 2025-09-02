@@ -68,6 +68,10 @@ is
 	procedure delete is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
+			when key_noun_device =>
+				noun := NOUN_DEVICE;					
+				set_status (et_canvas_schematic_units.status_delete_device);
+
 			when key_noun_connector =>
 				noun := NOUN_NET_CONNECTOR;
 				set_status (et_canvas_schematic_nets.status_delete_connector);
@@ -78,7 +82,7 @@ is
 				
 			when key_noun_unit =>
 				noun := NOUN_UNIT;					
-				set_status (et_canvas_schematic_units.status_delete);
+				set_status (et_canvas_schematic_units.status_delete_unit);
 				
 			when key_noun_net_all_sheets =>
 				noun := NOUN_NET;
@@ -107,7 +111,7 @@ is
 					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
 						et_canvas_schematic_nets.delete_object (point);
 						
-					when NOUN_UNIT =>
+					when NOUN_DEVICE | NOUN_UNIT =>
 						et_canvas_schematic_units.delete_object (point);
 						
 					when others => null;							
@@ -122,7 +126,7 @@ is
 							et_canvas_schematic_nets.clarify_object;
 						end if;
 
-					when NOUN_UNIT =>
+					when NOUN_DEVICE | NOUN_UNIT =>
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
 						end if;

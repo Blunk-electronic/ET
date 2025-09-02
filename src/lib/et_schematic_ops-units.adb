@@ -3188,13 +3188,26 @@ package body et_schematic_ops.units is
 		case object.cat is
 			when CAT_UNIT =>
 
-				delete_unit (
-					module_cursor	=> module_cursor,
-					device_name		=> key (object.unit.device_cursor),
-					unit_name		=> key (object.unit.unit_cursor),
-					log_threshold	=> log_threshold + 1);
+				-- If the unit cursor of the given object
+				-- points to a unit, then s single unit
+				-- is to be deleted.
+				-- If the unit cursor is no_element then
+				-- the whole device must be deleted:
+				if has_element (object.unit.unit_cursor) then
+					
+					delete_unit (
+						module_cursor	=> module_cursor,
+						device_name		=> key (object.unit.device_cursor),
+						unit_name		=> key (object.unit.unit_cursor),
+						log_threshold	=> log_threshold + 1);
 
-				
+				else
+					delete_device (
+						module_cursor	=> module_cursor,
+						device_name		=> key (object.unit.device_cursor),
+						log_threshold	=> log_threshold + 1);
+
+				end if;
 
 			-- CS CAT_NANE, ...
 				
