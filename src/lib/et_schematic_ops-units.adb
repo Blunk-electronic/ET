@@ -2756,22 +2756,24 @@ package body et_schematic_ops.units is
 				name	: in type_device_name;
 				device	: in type_device_sch) 
 			is 
-				unit_cursor : pac_units.cursor := device.units.first;
 
+				-- Queries a unit for its status flag
+				-- and appends it to the result:
+				procedure query_unit (c : in pac_units.cursor) is 
 
-				-- This procedure appends the matching
-				-- device and unit cursor to the result:
-				procedure collect is begin
-					log (text => get_unit_name (unit_cursor), level => log_threshold + 4);
+					-- This procedure appends the matching
+					-- device and unit cursor to the result:
+					procedure collect is begin
+						log (text => get_unit_name (c), level => log_threshold + 4);
+						
+						result.append ((
+							cat		=> CAT_UNIT,
+							unit	=> (device_cursor, c)));
+
+					end collect;
+
 					
-					result.append ((
-						cat		=> CAT_UNIT,
-						unit	=> (device_cursor, unit_cursor)));
-
-				end collect;
-
-				
-				procedure query_unit (c : in pac_units.cursor) is begin
+				begin
 					case flag is
 						when PROPOSED =>
 							if is_proposed (c) then
