@@ -69,7 +69,7 @@ Devices and Units
 
 	.. code-block::
 
-		delete unit IC1 [B]
+		delete unit IC1 C
 
 	|VNS| del u
 	

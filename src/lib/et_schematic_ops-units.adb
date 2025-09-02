@@ -1039,117 +1039,106 @@ package body et_schematic_ops.units is
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level) 
 	is
+
+		device_cursor_sch : pac_devices_sch.cursor;
 		
-		procedure query_devices (
+
+
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			device_cursor : pac_devices_sch.cursor;
+			-- Query whether the given unit is deployed in the schematic:
+			unit_query : constant type_unit_query := 
+				get_unit_position (device_cursor_sch, unit_name);
 
-			-- temporarily storage of unit coordinates.
-			-- There will be only one unit in this container.
-			position_of_unit : pac_unit_positions.map;
-
-			ports : pac_ports.map;
+			-- The ports of the unit must be removed from the net segments.
+			-- For this reason we need some temporarily storage place:
+			sheet_old : type_sheet;
+			ports_old : pac_ports.map;
 			
 
-			procedure query_units (
+			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_sch) 
 			is
-				unit_cursor : pac_units.cursor;
+				-- Locate the targeted unit:
+				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
 			begin
-				if contains (device.units, unit_name) then
-					-- locate unit by its name
-					unit_cursor := find (device.units, unit_name);
+				-- Get the sheet where the unit is:
+				sheet_old := get_sheet (device_cursor_sch, unit_cursor);
+				
+				-- Get the ports of the unit:
+				ports_old := get_ports_of_unit (device_cursor_sch, unit_cursor);
 
-					-- Load the single unit position and insert in container "position_of_unit"
-					pac_unit_positions.insert (
-						container	=> position_of_unit, 
-						key			=> unit_name,
-						new_item	=> element (unit_cursor).position);
-
-					log_unit_positions (position_of_unit, log_threshold);
-					
-					-- delete the unit
-					delete (device.units, unit_name);
-				else
-					unit_not_found (unit_name);
-				end if;
-			end query_units;
+				-- Delete the unit:
+				device.units.delete (unit_cursor);				
+			end query_device;
 
 			
-			units_invoked : boolean := true; -- goes false if no unit used anymore
-
-			procedure query_number_of_invoked_units (
-				device_name	: in type_device_name;
-				device		: in type_device_sch) 
-			is begin
-				if length (device.units) = 0 then
-					units_invoked := false;
-				end if;
-			end query_number_of_invoked_units;
 			
+		begin -- query_module
 
-		begin -- query_devices
-			if contains (module.devices, device_name) then
-
-				-- Before the actual deletion, the coordinates of the
-				-- unit must be fetched. These coordinates will later assist
-				-- in deleting the port names from connected net segments.
-				device_cursor := find (module.devices, device_name); -- the device should be there
-
-				-- locate the unit, load position and then delete the targeted unit
+			-- Test whether the desired unit is deployed (in schematic).
+			-- If the unit is deployed, then delete it:
+			if unit_query.exists then
+				
 				update_element (
 					container	=> module.devices,
-					position	=> device_cursor,
-					process		=> query_units'access);
-				
-				log_indentation_up;
+					position	=> device_cursor_sch,
+					process		=> query_device'access);
+			
+				-- Remove the old ports of the unit from the net segments:
+				delete_ports (
+					module_cursor	=> module_cursor,
+					device_name		=> device_name,
+					unit_name		=> unit_name,
+					ports			=> ports_old,
+					sheet			=> sheet_old,
+					log_threshold	=> log_threshold + 1);
 
-				-- Fetch the ports of the unit to be deleted.
-				ports := get_ports_of_unit (device_cursor, unit_name);
-				
-				-- Delete the ports of the targeted unit from module.nets
-				-- CS
-				-- delete_ports (
-				-- 	module			=> module_cursor,
-				-- 	device			=> device_name,
-				-- 	ports			=> ports,
-				-- 	sheets			=> position_of_unit, -- there is only one unit -> only one sheet to look at
-				-- 	log_threshold	=> log_threshold);
-
-				-- In case no more units are invoked then the device must be
-				-- deleted entirely from module.devices.
-				-- First we query the number of still invoked units. If none invoked,
-				-- the flag units_invoked goes false.
-				query_element (
-					position	=> device_cursor,
-					process		=> query_number_of_invoked_units'access);
-
-				if not units_invoked then
-					delete (module.devices, device_cursor);
+				-- If no more units are deployed, then the whole device
+				-- must be removed from the module:
+				if get_unit_count_deployed (device_cursor_sch) = 0 then
+					log (text => "No more units deployed. Delete device entirely.",
+						 level => log_threshold + 1);
+					
+					module.devices.delete (device_cursor_sch);
 				end if;
-
-				update_ratsnest (module_cursor, log_threshold);
-				
-				log_indentation_down;				
 			else
-				device_not_found (device_name);
+				log (WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
 			end if;
-		end query_devices;
+		end query_module;
 
+		
 		
 	begin
 		log (text => "module " & to_string (module_cursor) &
-			 " deleting " & to_string (device_name) & " unit " & 
-			 to_string (unit_name) & " ...", level => log_threshold);
+			 " delete " & to_string (device_name) & " unit " & 
+			 to_string (unit_name),
+			 level => log_threshold);
 
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_devices'access);
+		log_indentation_up;
+		
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor_sch := locate_device (module_cursor, device_name);
+			
+		if has_element (device_cursor_sch) then -- device exists in schematic
+			
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> query_module'access);
 
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+		end if;
+
+		update_ratsnest (module_cursor, log_threshold + 1);
+		
+		log_indentation_down;
 	end delete_unit;
 	
 

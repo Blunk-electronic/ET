@@ -1112,14 +1112,21 @@ is
 
 	
 
-	
-	procedure delete_unit is begin
+	-- This procedure parses a command that deletes a unit
+	-- of a device like "schematic led_driver delete unit IC1 C":
+	procedure delete_unit is 
+		device_name : type_device_name;
+		unit_name	: pac_unit_name.bounded_string;
+	begin
+		device_name := to_device_name (get_field (5));
+		unit_name	:= to_unit_name (get_field (6));
+		
 		case cmd_field_count is
 			when 6 =>
 				delete_unit (
 					module_cursor 	=> active_module,
-					device_name		=> to_device_name (get_field (5)),
-					unit_name		=> to_unit_name (get_field (6)),
+					device_name		=> device_name,
+					unit_name		=> unit_name,
 					log_threshold	=> log_threshold + 1);
 
 			when 7 .. type_field_count'last => too_long; 

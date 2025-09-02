@@ -159,12 +159,33 @@ package et_devices_electrical is
 	end record;
 
 
+	-- Returns the total number of units that
+	-- the device provides according to its model:
+	function get_unit_count (
+		device : in type_device_sch)
+		return natural;
+
+	
+	-- Returns the number of units that are deployed:
+	function get_unit_count_deployed (
+		device : in type_device_sch)
+		return natural;
+
+	
 
 	function get_device_model_file (
 		device : type_device_sch)
 		return pac_device_model_file.bounded_string; -- *.dev
 
 
+	-- Maps from schematic device to 
+	-- cursor to device model (in library):
+	function get_device_model (
+		device : in type_device_sch)
+		return pac_devices_lib.cursor;
+
+
+	
 	-- The devices of a module are collected in a map.
 	-- CS: This must be a hashed map:
  	package pac_devices_sch is new indefinite_ordered_maps (
@@ -227,12 +248,18 @@ package et_devices_electrical is
 	
 	
 	-- Returns the total number of units that the
-	-- given device contains per device model:
+	-- given device provides according to the device model:
 	function get_unit_count (
 		device : in pac_devices_sch.cursor)
 		return type_unit_count;
 	
-		
+
+	-- Returns the number of units that are deployed:
+	function get_unit_count_deployed (
+		device : in pac_devices_sch.cursor)
+		return natural;
+
+	
 	
 	function get_device_name (
 		device : in pac_devices_sch.cursor)

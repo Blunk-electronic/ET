@@ -47,6 +47,35 @@ with et_string_processing;			use et_string_processing;
 package body et_devices_electrical is
 
 
+	function get_unit_count (
+		device : in type_device_sch)
+		return natural
+	is 
+		result : natural;
+		cursor : pac_devices_lib.cursor;
+	begin
+		-- Get a cursor to the device in the library.
+		-- Map from schematic cursor to library cursor:
+		cursor := get_device_model (device);
+
+		-- Get the number of units from the device model:
+		result := get_unit_count (cursor);
+
+		return result;
+	end;
+
+	
+
+	
+	function get_unit_count_deployed (
+		device : in type_device_sch)
+		return natural
+	is begin
+		return natural (device.units.length);
+	end;
+
+
+	
 
 	function get_device_model_file (
 		device : type_device_sch)
@@ -55,6 +84,25 @@ package body et_devices_electrical is
 		return device.model;
 	end get_device_model_file;
 
+
+	
+
+	function get_device_model (
+		device : in type_device_sch)
+		return pac_devices_lib.cursor
+	is
+		use et_device_model_names;
+		model_file : pac_device_model_file.bounded_string;
+	begin
+		-- The name of the device model file is THE link
+		-- from device in schematic to device in library:
+		model_file := get_device_model_file (device);
+
+		-- Locate the device model in the library:
+		return get_device_model_cursor (model_file);
+	end get_device_model;
+
+	
 
 	
 
@@ -137,7 +185,7 @@ package body et_devices_electrical is
 		cursor : pac_devices_lib.cursor;
 	begin
 		-- Get a cursor to the device in the library.
-		-- Map from schematic cursor to libarary cursor:
+		-- Map from schematic cursor to library cursor:
 		cursor := get_device_model (device);
 
 		-- Get the number of units from the device model:
@@ -149,6 +197,15 @@ package body et_devices_electrical is
 
 
 	
+
+	function get_unit_count_deployed (
+		device : in pac_devices_sch.cursor)
+		return natural
+	is begin
+		return get_unit_count_deployed (element (device));
+	end;
+
+
 	
 
 	function get_device_name (
