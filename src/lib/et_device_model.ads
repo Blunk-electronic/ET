@@ -83,6 +83,14 @@ package et_device_model is
 	-- device model and unit..
 
 
+	-- A device has one or more units. A unit is a subsection of a device.
+	-- There are internal units, which exist for the particular device exclusively. 
+	-- An internal unit has a symbol and further properties like a swap level.
+	-- There are external units, which are used for frequently used symbols like resistors or capacitors.
+	-- An external unit is just a reference to a symbol library, the symbol name therein and other properties
+	-- like swap level.	
+	-- The unit name is something like "I/O Bank 3", "PWR" or "Switch 1" "Switch 2"
+
 	
 	
 

@@ -33,6 +33,12 @@
 --   info@blunk-electronic.de
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
+-- DESCRIPTION:
+--
+--  This package is about so called "symbols". A symbol is an abstraction
+--  of an electrical component like a resistor, capactor, inductor or
+--  a subset of an integrated circuit.
+--
 --   history of changes:
 --
 
@@ -210,31 +216,24 @@ package et_symbols is
 
 
 	
--- SYMBOLS AND UNITS
 
-	-- In schematics things like resistors, capactors and inductors are called "symbols".
-	-- Since they are frequently used we store such things in symbol libraries like bel_primitives.sym.
-	-- The symbol name is something very general like "NAND", "Resistor", "Switch"
 
-	-- A device has one or more units. A unit is a subsection of a device.
-	-- There are internal units, which exist for the particular device exclusively. 
-	-- An internal unit has a symbol and further properties like a swap level.
-	-- There are external units, which are used for frequently used symbols like resistors or capacitors.
-	-- An external unit is just a reference to a symbol library, the symbol name therein and other properties
-	-- like swap level.	
-	-- The unit name is something like "I/O Bank 3", "PWR" or "Switch 1" "Switch 2"
 
 	origin_half_size : constant type_distance_positive := 1.0;
 	origin_line_width : constant type_distance_positive := 0.05;
+
+
 	
 	type type_symbol_base is tagged record		
 		texts : pac_texts.list; -- the collection of texts
 	end record;
 
 	
+	
 	type type_symbol (appearance : type_appearance) is new type_symbol_base with record
-		shapes			: type_shapes; -- the collection of shapes
-		ports			: pac_ports.map;
+		shapes	: type_shapes; -- the collection of shapes
+		ports	: pac_ports.map;
+		
 		case appearance is
 			when APPEARANCE_PCB =>
 				-- Placeholders to be filled with content when 
@@ -245,6 +244,7 @@ package et_symbols is
 		end case;
 	end record;
 
+	
 
 	-- Returns true if the given symbol will be part of a real device:
 	function is_real (
@@ -288,9 +288,13 @@ package et_symbols is
 	
 
 
+
+
+	
 	
 -- FILE NAMES
 
+	
 	symbol_file_name_length_max : constant natural := 500;
 	package pac_symbol_model_file is new generic_bounded_length (symbol_file_name_length_max);
 	function to_string (name : in pac_symbol_model_file.bounded_string) return string;
