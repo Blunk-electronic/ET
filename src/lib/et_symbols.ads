@@ -333,7 +333,7 @@ package et_symbols is
 		return pac_points.list;
 
 	
-	-- When placing, copying, invoking units their placeholders must be
+	-- When placing, copying, fetching units their placeholders must be
 	-- changed according to the rotation of the affected unit. We basically
 	-- deal with only those placeholders:
 	type type_rotated_placeholders is record
@@ -351,8 +351,8 @@ package et_symbols is
 		rotation	: in et_schematic_coordinates.type_rotation_model); -- the rotation of the unit
 
 	
-	-- Use this function to adopt placeholder position and rotation 
-	-- of a external symbol. Exter
+	-- Use this function to get the position and rotation of
+	-- placeholders of a unit.
 	-- Rotates the positions of placeholders and their rotation about
 	-- their own origin according to rotation given by destination:
 	function rotate_placeholders (

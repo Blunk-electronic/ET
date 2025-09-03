@@ -294,9 +294,8 @@ package body et_symbols is
 	end rotate;
 
 	
-	-- Use this function to adopt placeholder position and rotation of a symbol.
-	-- Rotates the positions of placeholders and their rotation about
-	-- their own origin according to rotation given by destination:
+
+
 	function rotate_placeholders (
 		symbol_cursor	: in pac_symbols.cursor;
 		destination		: in type_object_position)

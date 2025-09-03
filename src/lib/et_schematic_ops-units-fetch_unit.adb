@@ -158,7 +158,7 @@ is
 				symbol_cursor : pac_symbols.cursor;
 				symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
 			begin
-				log (text => "invoking external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
+				log (text => "fetch external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
 				
 				case element (device_cursor_lib).appearance is
 					when APPEARANCE_VIRTUAL =>
