@@ -37,7 +37,8 @@
 --
 
 with et_device_rw;
-with et_device_model;				use et_device_model;
+with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
+with et_device_model;					use et_device_model;
 
 
 separate (et_schematic_ops)
@@ -114,9 +115,10 @@ is
 						new_item	=> (
 							appearance	=> APPEARANCE_PCB,
 							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-							name		=> placeholders.name,
-							value		=> placeholders.value,
-							purpose		=> placeholders.purpose,
+							placeholders => (
+								name		=> placeholders.name,
+								value		=> placeholders.value,
+								purpose		=> placeholders.purpose),
 							others 		=> <>) -- mirror
 							);
 					
@@ -170,9 +172,10 @@ is
 						new_item	=> (
 							appearance	=> APPEARANCE_PCB,
 							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
-							name		=> placeholders.name,	
-							value		=> placeholders.value,	
-							purpose		=> placeholders.purpose,	
+							placeholders => (
+								name		=> placeholders.name,	
+								value		=> placeholders.value,	
+								purpose		=> placeholders.purpose),	
 							others 		=> <>) -- mirror
 							);
 

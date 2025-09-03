@@ -3413,12 +3413,12 @@ is
 								status		=> get_default_status,
 								position	=> device_unit_position,
 								appearance	=> APPEARANCE_PCB,
-
-								-- The placeholders for reference, value and purpose have
-								-- been built and can now be assigned to the unit:
-								name		=> unit_placeholder_reference,
-								value 		=> unit_placeholder_value,
-								purpose		=> unit_placeholder_purpose));
+								placeholders => (
+									-- The placeholders for reference, value and purpose have
+									-- been built and can now be assigned to the unit:
+									name		=> unit_placeholder_reference,
+									value 		=> unit_placeholder_value,
+									purpose		=> unit_placeholder_purpose)));
 				end case;
 
 				-- clean up for next unit

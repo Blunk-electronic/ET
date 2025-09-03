@@ -68,15 +68,6 @@ package et_units is
 
 	use pac_text_schematic;
 		
-
-	-- When placing, copying, fetching units, the final placeholders
-	-- are handled via this type:
-	type type_default_placeholders is record
-		name	: type_text_placeholder (meaning => et_device_placeholders.NAME);
-		value	: type_text_placeholder (meaning => et_device_placeholders.VALUE);
-		purpose	: type_text_placeholder (meaning => et_device_placeholders.PURPOSE);
-	end record;
-
 	
 	-- This procedure does the actual rotating of placeholders.
 	-- Rotation is the rotation of the unit in the schematic.
@@ -124,15 +115,14 @@ package et_units is
 		mirror		: type_mirror := MIRROR_NO; -- CS rename to mirror_status
 		status		: type_object_status;
 		case appearance is
-			when APPEARANCE_VIRTUAL => null; -- CS
+			when APPEARANCE_VIRTUAL => 
+				null; -- CS
+
 			when APPEARANCE_PCB =>
-				name	: type_text_placeholder (meaning => et_device_placeholders.NAME);
-				value	: type_text_placeholder (meaning => et_device_placeholders.VALUE);
-				purpose	: type_text_placeholder (meaning => et_device_placeholders.PURPOSE); -- to be filled in schematic later by the user
+				placeholders : type_default_placeholders;
 		end case;
-		-- NOTE: The placeholders are defined in et_symbols. Thus they have only
-		-- basic coordinates (x/y relative to the unit position).
-		-- Via the unit position the sheet number can be obtained.
+		-- The plaeholders have only x/y positions relative 
+		-- to the unit position.
 	end record;
 
 

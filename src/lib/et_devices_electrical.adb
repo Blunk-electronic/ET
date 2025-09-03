@@ -799,13 +799,13 @@ package body et_devices_electrical is
 			-- get the coordinates of the placeholder:
 			case category is
 				when NAME =>
-					placeholder_position := element (unit).name.position;
+					placeholder_position := element (unit).placeholders.name.position;
 
 				when PURPOSE =>
-					placeholder_position := element (unit).purpose.position;
+					placeholder_position := element (unit).placeholders.purpose.position;
 
 				when VALUE =>
-					placeholder_position := element (unit).value.position;
+					placeholder_position := element (unit).placeholders.value.position;
 			end case;
 
 			move_by (placeholder_position, unit_position.place);
@@ -1306,9 +1306,9 @@ package body et_devices_electrical is
 				-- placeholders as they are specified in the symbol model:
 				case result.appearance is
 					when APPEARANCE_PCB =>
-						result.name 	:= element (unit_cursor).symbol.name;
-						result.value	:= element (unit_cursor).symbol.value;
-						result.purpose	:= element (unit_cursor).symbol.purpose;
+						result.name 	:= element (unit_cursor).symbol.placeholders.name;
+						result.value	:= element (unit_cursor).symbol.placeholders.value;
+						result.purpose	:= element (unit_cursor).symbol.placeholders.purpose;
 					when others => null;
 				end case;
 
@@ -1339,9 +1339,9 @@ package body et_devices_electrical is
 				-- placeholders as they are specified in the symbol model:
 				case result.appearance is
 					when APPEARANCE_PCB =>
-						result.name 	:= symbol.name;
-						result.value	:= symbol.value;
-						result.purpose	:= symbol.purpose;
+						result.name 	:= symbol.placeholders.name;
+						result.value	:= symbol.placeholders.value;
+						result.purpose	:= symbol.placeholders.purpose;
 					when others => null;
 				end case;
 			end query_symbol;

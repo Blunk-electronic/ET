@@ -1930,17 +1930,17 @@ package body et_canvas_schematic_units is
 						case category is
 							when NAME =>
 								-- Get the position of the name placeholder relative to the unit origin:
-								placeholder_position := element (unit_cursor).name.position;
+								placeholder_position := element (unit_cursor).placeholders.name.position;
 								test_placeholder_position;
 
 							when VALUE =>
 								-- Get the position of the value placeholder relative to the unit origin:
-								placeholder_position := element (unit_cursor).value.position;
+								placeholder_position := element (unit_cursor).placeholders.value.position;
 								test_placeholder_position;
 
 							when PURPOSE =>
 								-- Get the position of the purpose placeholder relative to the unit origin:
-								placeholder_position := element (unit_cursor).purpose.position;
+								placeholder_position := element (unit_cursor).placeholders.purpose.position;
 								test_placeholder_position;
 								
 						end case;
@@ -2077,16 +2077,16 @@ package body et_canvas_schematic_units is
 				begin
 					case category is
 						when et_device_placeholders.NAME =>
-							r := unit.name.rotation + rotation;
-							unit.name.rotation := snap (r);
+							r := unit.placeholders.name.rotation + rotation;
+							unit.placeholders.name.rotation := snap (r);
 							
 						when VALUE =>
-							r := unit.value.rotation + rotation;
-							unit.value.rotation := snap (r);
+							r := unit.placeholders.value.rotation + rotation;
+							unit.placeholders.value.rotation := snap (r);
 							
 						when PURPOSE =>
-							r := unit.purpose.rotation + rotation;
-							unit.purpose.rotation := snap (r);
+							r := unit.placeholders.purpose.rotation + rotation;
+							unit.placeholders.purpose.rotation := snap (r);
 
 					end case;
 				end rotate_placeholder;

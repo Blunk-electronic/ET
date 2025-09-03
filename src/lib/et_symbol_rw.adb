@@ -251,21 +251,21 @@ package body et_symbol_rw is
 					section_mark (section_placeholders, HEADER);
 					
 					section_mark (section_placeholder, HEADER);
-					write (keyword => keyword_meaning, parameters => to_string (symbol.name.meaning));
-					write (keyword => keyword_position, parameters => to_string (symbol.name.position, FORMAT_2));
-					write_text_properties (symbol.name);
+					write (keyword => keyword_meaning, parameters => to_string (symbol.placeholders.name.meaning));
+					write (keyword => keyword_position, parameters => to_string (symbol.placeholders.name.position, FORMAT_2));
+					write_text_properties (symbol.placeholders.name);
 					section_mark (section_placeholder, FOOTER);
 
 					section_mark (section_placeholder, HEADER);
-					write (keyword => keyword_meaning , parameters => to_string (symbol.value.meaning));
-					write (keyword => keyword_position, parameters => to_string (symbol.value.position, FORMAT_2));
-					write_text_properties (symbol.value);
+					write (keyword => keyword_meaning , parameters => to_string (symbol.placeholders.value.meaning));
+					write (keyword => keyword_position, parameters => to_string (symbol.placeholders.value.position, FORMAT_2));
+					write_text_properties (symbol.placeholders.value);
 					section_mark (section_placeholder, FOOTER);
 
 					section_mark (section_placeholder, HEADER);
-					write (keyword => keyword_meaning , parameters => to_string (symbol.purpose.meaning));
-					write (keyword => keyword_position, parameters => to_string (symbol.purpose.position, FORMAT_2));
-					write_text_properties (symbol.purpose);
+					write (keyword => keyword_meaning , parameters => to_string (symbol.placeholders.purpose.meaning));
+					write (keyword => keyword_position, parameters => to_string (symbol.placeholders.purpose.position, FORMAT_2));
+					write_text_properties (symbol.placeholders.purpose);
 					section_mark (section_placeholder, FOOTER);
 
 					section_mark (section_placeholders, FOOTER);
@@ -698,17 +698,17 @@ package body et_symbol_rw is
 
 								case symbol_placeholder_meaning is
 									when NAME =>
-										symbol.name := (symbol_text_base with 
+										symbol.placeholders.name := (symbol_text_base with 
 											position	=> symbol_text_position,
 											meaning		=> symbol_placeholder_meaning);
 
 									when VALUE =>
-										symbol.value := (symbol_text_base with 
+										symbol.placeholders.value := (symbol_text_base with 
 											position	=> symbol_text_position,
 											meaning		=> symbol_placeholder_meaning);
 
 									when PURPOSE =>
-										symbol.purpose := (symbol_text_base with 
+										symbol.placeholders.purpose := (symbol_text_base with 
 											position	=> symbol_text_position,
 											meaning		=> symbol_placeholder_meaning);
 

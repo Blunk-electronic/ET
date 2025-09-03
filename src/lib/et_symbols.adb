@@ -91,6 +91,9 @@ package body et_symbols is
 	end write_text_properies;
 
 
+
+
+	
 	function content (text : in type_text) return string is
 	-- Returns the content of the given text as string.
 		c : et_text.pac_text_content.bounded_string;
@@ -161,6 +164,20 @@ package body et_symbols is
 		return get_direction (element (arc));
 	end;
 	
+
+
+	function is_real (
+		symbol : in type_symbol)
+		return boolean
+	is begin
+		case symbol.appearance is
+			when APPEARANCE_PCB		=> return true;
+			when APPEARANCE_VIRTUAL	=> return false;
+		end case;
+	end;
+
+
+
 	
 
 	function get_port_positions (
@@ -245,7 +262,8 @@ package body et_symbols is
 
 	
 	
-	function is_real (symbol : in pac_symbols.cursor)
+	function is_real (
+		symbol : in pac_symbols.cursor)
 		return boolean
 	is begin
 		case element (symbol).appearance is

@@ -457,7 +457,7 @@ procedure draw_units is
 				
 				draw_text (
 					content		=> to_content (get_full_name (device_name, unit_name, unit_count)), -- IC4.PWR
-					size		=> symbol.name.size,
+					size		=> symbol.placeholders.name.size,
 					font		=> name_font,
 					anchor		=> p,
 					origin		=> true, -- origin required
@@ -483,7 +483,7 @@ procedure draw_units is
 					
 					draw_text (
 						content		=> to_content (to_string (device_value)), -- 100R
-						size		=> symbol.value.size,
+						size		=> symbol.placeholders.value.size,
 						font		=> value_font,
 						anchor		=> p,
 						origin		=> true, -- origin required
@@ -510,7 +510,7 @@ procedure draw_units is
 					
 					draw_text (
 						content		=> to_content (to_string (device_purpose)), -- "brightness control"
-						size		=> symbol.purpose.size,
+						size		=> symbol.placeholders.purpose.size,
 						font		=> purpose_font,
 						anchor		=> p,
 						origin		=> true, -- origin required
@@ -756,9 +756,9 @@ procedure draw_units is
 				-- Which one is determined by the selector placeholder.category.
 				
 				if element (unit_cursor).appearance = APPEARANCE_PCB then
-					sch_placeholder_name := element (unit_cursor).name;
-					sch_placeholder_value := element (unit_cursor).value;
-					sch_placeholder_purpose := element (unit_cursor).purpose;
+					sch_placeholder_name := element (unit_cursor).placeholders.name;
+					sch_placeholder_value := element (unit_cursor).placeholders.value;
+					sch_placeholder_purpose := element (unit_cursor).placeholders.purpose;
 
 					
 					if placeholder_is_selected (device_cursor, unit_cursor) then
@@ -878,9 +878,9 @@ procedure draw_units is
 					-- NOTE: The position of the placeholders is relative to
 					-- the unit position !
 					if element (unit_cursor).appearance = APPEARANCE_PCB then
-						sch_placeholder_name := element (unit_cursor).name;
-						sch_placeholder_value := element (unit_cursor).value;
-						sch_placeholder_purpose := element (unit_cursor).purpose;		
+						sch_placeholder_name := element (unit_cursor).placeholders.name;
+						sch_placeholder_value := element (unit_cursor).placeholders.value;
+						sch_placeholder_purpose := element (unit_cursor).placeholders.purpose;		
 					end if;
 
 					device_cursor_lib := get_device_model_cursor (device_model);
@@ -915,8 +915,8 @@ procedure draw_units is
 
 
 
-	-- Drawing the symbol of a real device requires placeholders
-	-- for name, value an purpose. We fetch them from the symbol model
+	-- Drawing the unit of a real device requires placeholders
+	-- for name, value and purpose. We fetch them from the symbol model
 	-- in this case.
 	-- If the symbol is virtual, then the placeholders are meaningless
 	-- and assume default values.
@@ -925,11 +925,14 @@ procedure draw_units is
 	is 
 		use et_symbols;
 		use pac_symbols;
+		sym : type_symbol renames element (symbol_cursor);
 	begin
-		if is_real (symbol_cursor) then
-			sch_placeholder_name	:= element (symbol_cursor).name;
-			sch_placeholder_value	:= element (symbol_cursor).value;
-			sch_placeholder_purpose := element (symbol_cursor).purpose;
+		-- CS: use function get_default_placeholders ?
+		
+		if is_real (sym) then
+			sch_placeholder_name	:= sym.placeholders.name;
+			sch_placeholder_value	:= sym.placeholders.value;
+			sch_placeholder_purpose := sym.placeholders.purpose;
 		else
 			sch_placeholder_name	:= (meaning => NAME, others => <>);
 			sch_placeholder_value	:= (meaning => VALUE, others => <>);
@@ -949,12 +952,15 @@ procedure draw_units is
 		unit_cursor : in pac_units_internal.cursor)
 	is
 		use pac_units_internal;
+		sym : type_unit_internal renames element (unit_cursor);
 	begin
+		-- CS: use function get_default_placeholders ?
+		
 		case element (unit_cursor).appearance is
 			when APPEARANCE_PCB =>
-				sch_placeholder_name	:= element (unit_cursor).symbol.name;
-				sch_placeholder_value	:= element (unit_cursor).symbol.value;
-				sch_placeholder_purpose := element (unit_cursor).symbol.purpose;
+				sch_placeholder_name	:= sym.symbol.placeholders.name;
+				sch_placeholder_value	:= sym.symbol.placeholders.value;
+				sch_placeholder_purpose := sym.symbol.placeholders.purpose;
 				
 			when APPEARANCE_VIRTUAL =>
 				sch_placeholder_name	:= (meaning => NAME, others => <>);

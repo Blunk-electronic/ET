@@ -2705,7 +2705,6 @@ package body et_kicad_to_native is
 					-- Kicad stuff like "alternative representation", package name, datasheet is discarded.
 					case element (component_cursor_kicad).appearance is
 						when APPEARANCE_VIRTUAL =>
-
 							unit_native_virtual := (
 								mirror		=> element (unit_cursor_kicad).mirror,
 								status		=> get_default_status,					   
@@ -2721,8 +2720,8 @@ package body et_kicad_to_native is
 								inserted	=> unit_inserted,
 								new_item	=> unit_native_virtual);
 
+							
 						when APPEARANCE_PCB => -- real device
-
 							unit_native_real := (
 								mirror		=> element (unit_cursor_kicad).mirror,
 								status		=> get_default_status,
@@ -2732,13 +2731,14 @@ package body et_kicad_to_native is
 								appearance	=> APPEARANCE_PCB,
 							
 								-- and stuff that comes with a real device:
+								placeholders => (
 									
-								name		=> element (unit_cursor_kicad).reference,
-								value		=> element (unit_cursor_kicad).value,
-												
-								-- create a placeholder for purpose because kicad does not know such a thing
-								purpose		=> (meaning => PURPOSE, others => <>)
-								);
+									name		=> element (unit_cursor_kicad).reference,
+									value		=> element (unit_cursor_kicad).value,
+													
+									-- create a placeholder for purpose because kicad does not know such a thing
+									purpose		=> (meaning => PURPOSE, others => <>)
+								));
 							
 							et_units.pac_units.insert (
 								container	=> component.units,
@@ -3686,12 +3686,13 @@ package body et_kicad_to_native is
 												shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes, log_threshold + 5),
 												appearance	=> APPEARANCE_PCB,
 												ports		=> et_symbol_ports.pac_ports.empty_map, -- ports will come later
-												name		=> element (unit_cursor_kicad).symbol.name, 	-- placeholder
-												value		=> element (unit_cursor_kicad).symbol.value,	-- placeholder
-												purpose		=> ( -- we must invent a placeholder for purpose since kicad does not know such a thing
-																meaning	=> PURPOSE,
-																others 	=> <>),
-												-- NOTE: Other placeholders (fields in kicad) discarded here.
+												placeholders=> (
+													name		=> element (unit_cursor_kicad).symbol.name, 	-- placeholder
+													value		=> element (unit_cursor_kicad).symbol.value,	-- placeholder
+													purpose		=> ( -- we must invent a placeholder for purpose since kicad does not know such a thing
+																	meaning	=> PURPOSE,
+																	others 	=> <>)),
+													-- NOTE: Other placeholders (fields in kicad) discarded here.
 												
 												others		=> <>)
 										));

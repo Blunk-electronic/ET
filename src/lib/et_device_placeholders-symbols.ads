@@ -68,6 +68,14 @@ package et_device_placeholders.symbols is
 		position : type_vector_model;
 	end record;
 	
+
+	type type_default_placeholders is record
+		name	: type_text_placeholder (meaning => et_device_placeholders.NAME);
+		value	: type_text_placeholder (meaning => et_device_placeholders.VALUE);
+		purpose	: type_text_placeholder (meaning => et_device_placeholders.PURPOSE);
+	end record;
+	
+
 	
 	-- Writes the properties of the given placeholder.
 	procedure write_placeholder_properties (
@@ -76,6 +84,8 @@ package et_device_placeholders.symbols is
 
 
 
+
+	
 
 	-- GUI relevant only:
 	name_font : constant type_font := (

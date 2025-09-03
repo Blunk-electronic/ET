@@ -1060,9 +1060,9 @@ is
 				if element (unit_cursor).appearance = APPEARANCE_PCB then
 					section_mark (section_placeholders, HEADER);
 					
-					write_placeholder (element (unit_cursor).name);
-					write_placeholder (element (unit_cursor).value);
-					write_placeholder (element (unit_cursor).purpose);
+					write_placeholder (element (unit_cursor).placeholders.name);
+					write_placeholder (element (unit_cursor).placeholders.value);
+					write_placeholder (element (unit_cursor).placeholders.purpose);
 					--write_placeholder (element (unit_cursor).partcode);
 
 					section_mark (section_placeholders, FOOTER);

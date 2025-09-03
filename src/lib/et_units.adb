@@ -81,13 +81,17 @@ package body et_units is
 		return type_default_placeholders
 	is
 		use pac_symbols;
+
+		sym : type_symbol renames element (symbol_cursor);
+		
 		r : type_default_placeholders; -- to be returned
 	begin
-		r.name		:= element (symbol_cursor).name;
-		r.value		:= element (symbol_cursor).value;
-		r.purpose	:= element (symbol_cursor).purpose;
+		r.name		:= sym.placeholders.name;
+		r.value		:= sym.placeholders.value;
+		r.purpose	:= sym.placeholders.purpose;
 
-		-- rotate the positions of placeholders according to rotation given by caller:
+		-- Rotate the positions of placeholders 
+		-- according to rotation given by destination:
 		rotate_placeholders (r, get_rotation (destination));
 		
 		return r;
@@ -103,13 +107,15 @@ package body et_units is
 		return type_default_placeholders
 	is
 		use pac_units_internal;
+		sym : type_unit_internal renames element (symbol_cursor);
+		
 		use et_schematic_coordinates.pac_geometry_sch;
 
 		r : type_default_placeholders; -- to be returned
 	begin
-		r.name		:= element (symbol_cursor).symbol.name;
-		r.value		:= element (symbol_cursor).symbol.value;
-		r.purpose	:= element (symbol_cursor).symbol.purpose;
+		r.name		:= sym.symbol.placeholders.name;
+		r.value		:= sym.symbol.placeholders.value;
+		r.purpose	:= sym.symbol.placeholders.purpose;
 
 		-- rotate the positions of placeholders according to rotation given by caller:
 		rotate_placeholders (r, get_rotation (destination));

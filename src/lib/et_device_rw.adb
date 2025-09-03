@@ -898,17 +898,17 @@ package body et_device_rw is
 
 								case symbol_placeholder_meaning is
 									when NAME =>
-										unit_symbol.name := (symbol_text_base with 
+										unit_symbol.placeholders.name := (symbol_text_base with 
 											position	=> symbol_text_position,
 											meaning		=> symbol_placeholder_meaning);
 
 									when et_device_placeholders.VALUE =>
-										unit_symbol.value := (symbol_text_base with 
+										unit_symbol.placeholders.value := (symbol_text_base with 
 											position	=> symbol_text_position,
 											meaning		=> symbol_placeholder_meaning);
 
 									when PURPOSE =>
-										unit_symbol.purpose := (symbol_text_base with 
+										unit_symbol.placeholders.purpose := (symbol_text_base with 
 											position	=> symbol_text_position,
 											meaning		=> symbol_placeholder_meaning);
 

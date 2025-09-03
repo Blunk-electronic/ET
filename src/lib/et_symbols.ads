@@ -237,18 +237,23 @@ package et_symbols is
 		ports			: pac_ports.map;
 		case appearance is
 			when APPEARANCE_PCB =>
-				-- Placeholders for device wide texts. To be filled with content when 
-				-- a symbol is placed in the schematic:
-				name	: type_text_placeholder (meaning => et_device_placeholders.NAME);
-				value	: type_text_placeholder (meaning => et_device_placeholders.VALUE);
-				purpose : type_text_placeholder (meaning => et_device_placeholders.PURPOSE);
+				-- Placeholders to be filled with content when 
+				-- a symbol is instantiated:
+				placeholders : type_default_placeholders;
 
 			when APPEARANCE_VIRTUAL => null;				
 		end case;
 	end record;
 
 
+	-- Returns true if the given symbol will be part of a real device:
+	function is_real (
+		symbol : in type_symbol)
+		return boolean;
 
+
+
+	
 	-- Retrurns x/y-positions the the ports of the given symbol:
 	function get_port_positions (
 		symbol	: in type_symbol)
@@ -331,7 +336,8 @@ package et_symbols is
 	
 		
 	-- Returns true if the given symbol will be part of a real device:
-	function is_real (symbol : in pac_symbols.cursor)
+	function is_real (
+		symbol : in pac_symbols.cursor)
 		return boolean;
 
 
