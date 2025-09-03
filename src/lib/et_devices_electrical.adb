@@ -1256,7 +1256,7 @@ package body et_devices_electrical is
 	function get_default_text_positions (
 		device_cursor	: in pac_devices_sch.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
-		return et_symbols.type_default_text_positions 
+		return type_default_text_positions 
 	is		
 		use et_symbols;
 		use et_device_appearance;
@@ -1306,9 +1306,9 @@ package body et_devices_electrical is
 				-- placeholders as they are specified in the symbol model:
 				case result.appearance is
 					when APPEARANCE_PCB =>
-						result.name 	:= element (unit_cursor).symbol.placeholders.name;
-						result.value	:= element (unit_cursor).symbol.placeholders.value;
-						result.purpose	:= element (unit_cursor).symbol.placeholders.purpose;
+						result.placeholders.name	:= element (unit_cursor).symbol.placeholders.name;
+						result.placeholders.value	:= element (unit_cursor).symbol.placeholders.value;
+						result.placeholders.purpose	:= element (unit_cursor).symbol.placeholders.purpose;
 					when others => null;
 				end case;
 
@@ -1317,6 +1317,7 @@ package body et_devices_electrical is
 			end if;
 		end query_internal_units;
 
+		
 		
 		procedure query_external_units (
 			model	: in pac_device_model_file.bounded_string;
@@ -1339,9 +1340,9 @@ package body et_devices_electrical is
 				-- placeholders as they are specified in the symbol model:
 				case result.appearance is
 					when APPEARANCE_PCB =>
-						result.name 	:= symbol.placeholders.name;
-						result.value	:= symbol.placeholders.value;
-						result.purpose	:= symbol.placeholders.purpose;
+						result.placeholders.name 	:= symbol.placeholders.name;
+						result.placeholders.value	:= symbol.placeholders.value;
+						result.placeholders.purpose	:= symbol.placeholders.purpose;
 					when others => null;
 				end case;
 			end query_symbol;

@@ -2119,7 +2119,7 @@ package body et_schematic_ops.units is
 						-- Get the default positions of texts and placeholders as
 						-- specified in symbol model. The default positions are
 						-- later rotated by the given rotation rot.
-						default_positions : et_symbols.type_default_text_positions := 
+						default_positions : type_default_text_positions := 
 							get_default_text_positions (device_cursor, name);
 						
 						-- Rotates the position by the given rotation rot:
@@ -2136,13 +2136,13 @@ package body et_schematic_ops.units is
 						-- NAME
 						-- Rotate the placeholder around its own anchor point so that it
 						-- it is readable from the front or from the right.
-						unit.placeholders.name.rotation := snap (default_positions.name.rotation + rot);
+						unit.placeholders.name.rotation := snap (default_positions.placeholders.name.rotation + rot);
 
 						-- reset the placeholder anchor point to the position as specified in the symbol model
-						unit.placeholders.name.position := default_positions.name.position;
+						unit.placeholders.name.position := default_positions.placeholders.name.position;
 						
 						-- rotate the placeholder anchor point around the symbol origin:
-						rotate_to (unit.placeholders.name.position, add_rot (default_positions.name.position));
+						rotate_to (unit.placeholders.name.position, add_rot (default_positions.placeholders.name.position));
 									
 						log (text => "name" & preamble & to_string (unit.placeholders.name.position), 
 								level => log_threshold + 2);
@@ -2151,13 +2151,13 @@ package body et_schematic_ops.units is
 						-- VALUE
 						-- Rotate the placeholder around its own anchor point so that it
 						-- it is readable from the front or from the right.
-						unit.placeholders.value.rotation := snap (default_positions.value.rotation + rot);
+						unit.placeholders.value.rotation := snap (default_positions.placeholders.value.rotation + rot);
 						
 						-- reset the placeholder anchor point to the position as specified in the symbol model
-						unit.placeholders.value.position := default_positions.value.position;
+						unit.placeholders.value.position := default_positions.placeholders.value.position;
 						
 						-- rotate the placeholder anchor point around the symbol origin:
-						rotate_to (unit.placeholders.value.position, add_rot (default_positions.value.position));
+						rotate_to (unit.placeholders.value.position, add_rot (default_positions.placeholders.value.position));
 
 						log (text => "value" & preamble & to_string (unit.placeholders.value.position), 
 								level => log_threshold + 2);
@@ -2166,13 +2166,13 @@ package body et_schematic_ops.units is
 						-- PURPOSE
 						-- Rotate the placeholder around its own anchor point so that it
 						-- it is readable from the front or from the right.
-						unit.placeholders.purpose.rotation := snap (default_positions.purpose.rotation + rot);
+						unit.placeholders.purpose.rotation := snap (default_positions.placeholders.purpose.rotation + rot);
 
 						-- reset the placeholder anchor point to the position as specified in the symbol model
-						unit.placeholders.purpose.position := default_positions.purpose.position;
+						unit.placeholders.purpose.position := default_positions.placeholders.purpose.position;
 						
 						-- rotate the placeholder anchor point around the symbol origin:
-						rotate_to (unit.placeholders.purpose.position, add_rot (default_positions.purpose.position));
+						rotate_to (unit.placeholders.purpose.position, add_rot (default_positions.placeholders.purpose.position));
 
 						log (text => "purpose" & preamble & to_string (unit.placeholders.purpose.position), 
 								level => log_threshold + 2);

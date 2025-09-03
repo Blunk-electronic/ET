@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                              SYMBOLS                                     --
+--                         SCHEMATIC SYMBOLS                                --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --

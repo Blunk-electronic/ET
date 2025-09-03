@@ -58,6 +58,7 @@ with et_assembly_variant_name;			use et_assembly_variant_name;
 
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	--use et_device_placeholders.packages;
+with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_silkscreen;						use et_silkscreen;
 with et_silkscreen.packages;
@@ -591,12 +592,36 @@ package et_devices_electrical is
 
 
 
+	-- In the schematic, when a unit is rotated to a certain absolute rotation,
+	-- or if the placeholders are to be restored (kind of un-smash),
+	-- the default positions of texts and placeholders are required. For this
+	-- reason we define here the type type_default_text_positions:
+	package pac_text_positions is new doubly_linked_lists (type_vector_model);
+
+	
+
+	type type_default_text_positions (appearance : type_appearance) is record
+
+		-- For texts, we need only their positions (x/y):
+		texts : pac_text_positions.list; -- same order as the texts in type_symbol_base
+
+		-- The placeholders are copies of those in the symbol (see type_symbol):
+		case appearance is
+			when APPEARANCE_PCB =>
+				placeholders : type_default_placeholders;
+				
+			when APPEARANCE_VIRTUAL => null;
+		end case;
+	end record;
+
+	
+	
 	-- Returns the default positions of placeholders and texts of a unit
 	-- as they are defined in the symbol model.
 	function get_default_text_positions (
 		device_cursor	: in pac_devices_sch.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
-		return et_symbols.type_default_text_positions;
+		return type_default_text_positions;
 
 	
 	

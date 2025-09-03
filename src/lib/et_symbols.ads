@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                              SYMBOLS                                     --
+--                         SCHEMATIC SYMBOLS                                --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
@@ -260,33 +260,6 @@ package et_symbols is
 		return pac_points.list;
 
 	
-		
-	-- In the schematic, when a unit is rotated to a certain absolute rotation,
-	-- or if the placeholders are to be restored (kind of un-smash),
-	-- the default positions of texts and placeholders are required. For this
-	-- reason we define here the type type_default_text_positions:
-	package pac_text_positions is new doubly_linked_lists (type_vector_model);
-
-
-	
-	type type_default_text_positions (appearance : type_appearance) is record
-
-		-- For texts, we need only their positions (x/y):
-		texts : pac_text_positions.list; -- same order as the texts in type_symbol_base
-
-		-- The placeholders are copies of those in the symbol (see type_symbol):
-		case appearance is
-			when APPEARANCE_PCB =>
-				name	: type_text_placeholder (meaning => et_device_placeholders.NAME);
-				value	: type_text_placeholder (meaning => et_device_placeholders.VALUE);
-				purpose : type_text_placeholder (meaning => et_device_placeholders.PURPOSE);
-				
-			when APPEARANCE_VIRTUAL => null;
-		end case;
-	end record;
-
-	
-
 
 
 
@@ -296,8 +269,11 @@ package et_symbols is
 
 	
 	symbol_file_name_length_max : constant natural := 500;
+	
 	package pac_symbol_model_file is new generic_bounded_length (symbol_file_name_length_max);
+	
 	function to_string (name : in pac_symbol_model_file.bounded_string) return string;
+	
 	function to_file_name (name : in string) return pac_symbol_model_file.bounded_string;
 	
 
