@@ -333,32 +333,31 @@ package et_symbols is
 		return pac_points.list;
 
 	
-	-- When placing, copying, fetching units their placeholders must be
+	-- When placing, copying, fetching units, placeholders must be
 	-- changed according to the rotation of the affected unit. We basically
 	-- deal with only those placeholders:
-	type type_rotated_placeholders is record
+	type type_default_placeholders is record
 		name	: type_text_placeholder (meaning => et_device_placeholders.NAME);
 		value	: type_text_placeholder (meaning => et_device_placeholders.VALUE);
 		purpose	: type_text_placeholder (meaning => et_device_placeholders.PURPOSE);
 	end record;
 
 	
-	-- This procedure is called by function et_symbols.rotate_placeholders and
-	-- by the function et_devices.rotate_placeholders. It does the actual
+	-- This procedure does the actual
 	-- rotating of placeholders of a symbol.
-	procedure rotate (
-		phs			: in out type_rotated_placeholders;
+	procedure rotate_placeholders (
+		phs			: in out type_default_placeholders;
 		rotation	: in et_schematic_coordinates.type_rotation_model); -- the rotation of the unit
 
 	
-	-- Use this function to get the position and rotation of
-	-- placeholders of a unit.
-	-- Rotates the positions of placeholders and their rotation about
-	-- their own origin according to rotation given by destination:
-	function rotate_placeholders (
+	-- Use this function translates from the rotation of placeholder
+	-- described in the symbol model to the rotation of
+	-- placeholders of a unit in the schematic.
+	-- It translates according to the rotation given by destination:
+	function get_default_placeholders (
 		symbol_cursor	: in pac_symbols.cursor;
 		destination		: in type_object_position) -- x/y/rotation of the unit
-		return type_rotated_placeholders;
+		return type_default_placeholders;
 	
 		
 end et_symbols;

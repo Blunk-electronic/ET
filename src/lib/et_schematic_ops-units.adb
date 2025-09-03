@@ -2404,9 +2404,7 @@ package body et_schematic_ops.units is
 				-- Get the ports of the unit as they are
 				-- AFTER the rotate operation:
 				ports_new := get_ports_of_unit (device_cursor_sch, unit_cursor);
-				
 			end query_device;
-
 			
 			
 		begin -- query_module
@@ -2442,7 +2440,6 @@ package body et_schematic_ops.units is
 				log (WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
 			end if;
 		end query_module;
-
 
 		
 	begin

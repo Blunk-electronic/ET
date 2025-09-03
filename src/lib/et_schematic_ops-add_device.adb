@@ -72,7 +72,7 @@ is
 		next_name : type_device_name := 
 			get_next_device_name (module_cursor, element (device_cursor_lib).prefix);
 
-		placeholders : type_rotated_placeholders;
+		placeholders : type_default_placeholders;
 		
 		unit_cursors : type_device_units;
 
@@ -106,7 +106,7 @@ is
 
 					-- Rotate the positions of placeholders and their rotation about
 					-- their own origin according to rotation given by caller:
-					placeholders := rotate_placeholders (unit_cursors.int, destination);
+					placeholders := get_default_placeholders (unit_cursors.int, destination);
 					
 					pac_units.insert (
 						container	=> device.units,
@@ -162,7 +162,7 @@ is
 
 					-- Rotate the positions of placeholders and their rotation about
 					-- their own origin according to rotation given by caller:
-					placeholders := rotate_placeholders (symbol_cursor, destination);
+					placeholders := get_default_placeholders (symbol_cursor, destination);
 					
 					pac_units.insert (
 						container	=> device.units,

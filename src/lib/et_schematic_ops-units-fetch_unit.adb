@@ -85,7 +85,7 @@ is
 				device		: in out type_device_sch) 
 			is
 				use et_symbols;
-				placeholders : type_rotated_placeholders;
+				placeholders : type_default_placeholders;
 			begin
 				log (text => "fetch internal unit " 
 					 & to_string (key (unit_cursors.int)),
@@ -106,7 +106,7 @@ is
 
 						-- Rotate the positions of placeholders and their rotation about
 						-- their own origin according to rotation given by caller:
-						placeholders := rotate_placeholders (unit_cursors.int, destination);
+						placeholders := get_default_placeholders (unit_cursors.int, destination);
 						
 						pac_units.insert (
 							container	=> device.units,
@@ -154,7 +154,7 @@ is
 			is
 				use et_symbols;
 				use et_symbols.pac_symbols;
-				placeholders : type_rotated_placeholders;
+				placeholders : type_default_placeholders;
 				symbol_cursor : pac_symbols.cursor;
 				symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
 			begin
@@ -184,7 +184,7 @@ is
 
 						-- Rotate the positions of placeholders and their rotation about
 						-- their own origin according to rotation given by caller:
-						placeholders := rotate_placeholders (symbol_cursor, destination);
+						placeholders := get_default_placeholders (symbol_cursor, destination);
 						
 						pac_units.insert (
 							container	=> device.units,

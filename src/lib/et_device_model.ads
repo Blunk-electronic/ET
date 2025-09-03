@@ -229,14 +229,14 @@ package et_device_model is
 	
 
 	
-	-- Use this function to adopt placeholder position and rotation 
-	-- of a internal symbol.
-	-- Rotates the positions of placeholders and their rotation about
-	-- their own origin according to rotation given by destination:
-	function rotate_placeholders (
+	-- Use this function translates from the rotation of placeholder
+	-- described in the internal symbol of the device model to the rotation of
+	-- placeholders of a unit in the schematic.
+	-- It translates according to the rotation given by destination:
+	function get_default_placeholders (
 		symbol_cursor	: in pac_units_internal.cursor;
 		destination		: in type_object_position)
-		return type_rotated_placeholders;
+		return type_default_placeholders;
 	
 		
 end et_device_model;

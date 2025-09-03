@@ -269,8 +269,8 @@ package body et_symbols is
 
 	
 	
-	procedure rotate (
-		phs			: in out type_rotated_placeholders;
+	procedure rotate_placeholders (
+		phs			: in out type_default_placeholders;
 		rotation	: in et_schematic_coordinates.type_rotation_model)
 	is begin
 		-- Rotate the POSITIONS	of the placeholders about
@@ -291,28 +291,28 @@ package body et_symbols is
 		phs.value.rotation := snap (to_rotation (phs.value.rotation) + rotation);
 
 		phs.purpose.rotation := snap (to_rotation (phs.purpose.rotation) + rotation);
-	end rotate;
+	end rotate_placeholders;
 
 	
 
 
-	function rotate_placeholders (
+	function get_default_placeholders (
 		symbol_cursor	: in pac_symbols.cursor;
 		destination		: in type_object_position)
-		return type_rotated_placeholders
+		return type_default_placeholders
 	is
 		use pac_symbols;
-		r : type_rotated_placeholders; -- to be returned
+		r : type_default_placeholders; -- to be returned
 	begin
 		r.name		:= element (symbol_cursor).name;
 		r.value		:= element (symbol_cursor).value;
 		r.purpose	:= element (symbol_cursor).purpose;
 
 		-- rotate the positions of placeholders according to rotation given by caller:
-		rotate (r, get_rotation (destination));
+		rotate_placeholders (r, get_rotation (destination));
 		
 		return r;
-	end rotate_placeholders;
+	end get_default_placeholders;
 	
 end et_symbols;
 
