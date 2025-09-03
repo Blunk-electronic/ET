@@ -39,25 +39,17 @@
 --
 -- This is about so called "electrical" device models.
 -- A device is called "electrical" because it ALWAYS
--- has a representation in the schematic and mostly 
--- a representation in the board. 
+-- has an abstract representation in the schematic and mostly 
+-- a physical representation in the board. 
 
 
 with ada.containers; 			use ada.containers;
-with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 
 with et_schematic_coordinates;	use et_schematic_coordinates;
-with et_logging;				use et_logging;
-with et_port_direction;			use et_port_direction;
-with et_port_names;				use et_port_names;
-with et_symbol_ports;			use et_symbol_ports;
 with et_symbols;				use et_symbols;
-with et_terminals;				use et_terminals;
 with et_device_appearance;		use et_device_appearance;
-with et_package_names;			use et_package_names;
-with et_device_purpose;			use et_device_purpose;
 with et_device_model_names;		use et_device_model_names;
 with et_device_value;			use et_device_value;
 with et_device_prefix;			use et_device_prefix;
@@ -150,10 +142,12 @@ package et_device_model is
 	use pac_units_external;
 	
 
+	
 	function get_symbol_model_file (
 		unit	: in pac_units_external.cursor)
 		return pac_symbol_model_file.bounded_string;
-		
+
+	
 
 	-- Returns the default x/y-positions 
 	-- of the given external unit. If the given
@@ -166,8 +160,7 @@ package et_device_model is
 	
 	
 
-
--- DEVICES:
+	
 	
 	type type_device_model (appearance : type_appearance) is record
 		prefix			: pac_device_prefix.bounded_string; -- R, C, IC, ...
@@ -227,16 +220,6 @@ package et_device_model is
 		device_model : in type_device_model)
 		return type_unit_count;
 	
-
-	
-	-- Use this function translates from the rotation of placeholder
-	-- described in the internal symbol of the device model to the rotation of
-	-- placeholders of a unit in the schematic.
-	-- It translates according to the rotation given by destination:
-	function get_default_placeholders (
-		symbol_cursor	: in pac_units_internal.cursor;
-		destination		: in type_object_position)
-		return type_default_placeholders;
 	
 		
 end et_device_model;

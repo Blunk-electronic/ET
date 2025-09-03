@@ -38,15 +38,7 @@
 
 with ada.text_io;				use ada.text_io;
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-
-with et_string_processing;		use et_string_processing;
-with et_exceptions;				use et_exceptions;
+-- with et_exceptions;				use et_exceptions;
 
 
 package body et_device_model is
@@ -153,32 +145,6 @@ package body et_device_model is
 		
 		return result;
 	end get_unit_count;
-
-	
-
-	
-	
-	
-	function get_default_placeholders (
-		symbol_cursor	: in pac_units_internal.cursor;
-		destination		: in type_object_position)
-		return type_default_placeholders
-	is
-		use pac_units_internal;
-		use et_schematic_coordinates.pac_geometry_sch;
-
-		r : type_default_placeholders; -- to be returned
-	begin
-		r.name		:= element (symbol_cursor).symbol.name;
-		r.value		:= element (symbol_cursor).symbol.value;
-		r.purpose	:= element (symbol_cursor).symbol.purpose;
-
-		-- rotate the positions of placeholders according to rotation given by caller:
-		rotate_placeholders (r, get_rotation (destination));
-		
-		return r;
-	end get_default_placeholders;
-
 
 
 	

@@ -33,6 +33,12 @@
 --   info@blunk-electronic.de
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
+-- DESCRIPTION:
+--
+--  This package is about so called "units". A unit is a subset of an
+--  electrical device. The blueprint of a unit is a symbol. As soon as
+--  a symbol is instantiated in the schematic, it becomes a unit.
+--
 --   history of changes:
 --
 --   ToDo: 
@@ -42,11 +48,14 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 
 with et_schematic_coordinates;			use et_schematic_coordinates;
+with et_schematic_text;					use et_schematic_text;
 with et_sheets;							use et_sheets;
+with et_symbols;						use et_symbols;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_unit_name;						use et_unit_name;
 with et_mirroring;						use et_mirroring;
+with et_device_model;					use et_device_model;
 with et_device_appearance;				use et_device_appearance;
 with et_object_status;					use et_object_status;
 
@@ -56,7 +65,50 @@ package et_units is
 	use pac_unit_name;
 
 	use pac_geometry_2;
+
+	use pac_text_schematic;
 		
+
+	-- When placing, copying, fetching units, the final placeholders
+	-- are handled via this type:
+	type type_default_placeholders is record
+		name	: type_text_placeholder (meaning => et_device_placeholders.NAME);
+		value	: type_text_placeholder (meaning => et_device_placeholders.VALUE);
+		purpose	: type_text_placeholder (meaning => et_device_placeholders.PURPOSE);
+	end record;
+
+	
+	-- This procedure does the actual rotating of placeholders.
+	-- Rotation is the rotation of the unit in the schematic.
+	-- It performs the following operations with each placeholder:
+	-- 1. Rotates about the origin of the former symbol (which is 0/0)
+	-- 2. Rotates about the origin of the placeholder
+	-- 3. Snaps to horizonal or vertical so that the later text
+	--    can be read from the front or from the right:
+	procedure rotate_placeholders (
+		placeholders	: in out type_default_placeholders;
+		rotation		: in et_schematic_coordinates.type_rotation_model);
+
+	
+	-- Use this function translates from the rotation of placeholder
+	-- described in the symbol model to the rotation of
+	-- placeholders of a unit in the schematic.
+	-- It translates according to the rotation given by destination:
+	function get_default_placeholders (
+		symbol_cursor	: in pac_symbols.cursor;
+		destination		: in type_object_position) -- x/y/rotation of the unit
+		return type_default_placeholders;
+
+	
+	-- Use this function translates from the rotation of placeholder
+	-- described in the internal symbol of the device model to the rotation of
+	-- placeholders of a unit in the schematic.
+	-- It translates according to the rotation given by destination:
+	function get_default_placeholders (
+		symbol_cursor	: in pac_units_internal.cursor;
+		destination		: in type_object_position)
+		return type_default_placeholders;
+	
 	
 	-- In a schematic we handle only virtual devices (like GND symbols)
 	-- and those which appear in both schematic an layout (so called real devices):

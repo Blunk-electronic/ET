@@ -70,18 +70,22 @@ package et_symbols is
         content		: et_text.pac_text_content.bounded_string;
 	end record;
 
+	
 	-- GUI relevant only:
 	text_font : constant type_font := 
 		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);
 	
 
-	procedure write_text_properies (
+	
 	-- Outputs the properties of the given text.
+	procedure write_text_properies (
 		text 			: in type_text;
 		log_threshold	: in type_log_level);
 
-	function content (text : in type_text) return string;
+
+	
 	-- Returns the content of the given text as string.
+	function content (text : in type_text) return string;
 
 
 	package pac_texts is new doubly_linked_lists (type_text);
@@ -257,6 +261,8 @@ package et_symbols is
 	-- the default positions of texts and placeholders are required. For this
 	-- reason we define here the type type_default_text_positions:
 	package pac_text_positions is new doubly_linked_lists (type_vector_model);
+
+
 	
 	type type_default_text_positions (appearance : type_appearance) is record
 
@@ -276,6 +282,8 @@ package et_symbols is
 
 	
 
+
+	
 -- FILE NAMES
 
 	symbol_file_name_length_max : constant natural := 500;
@@ -332,34 +340,7 @@ package et_symbols is
 		symbol	: in pac_symbols.cursor)
 		return pac_points.list;
 
-	
-	-- When placing, copying, fetching units, placeholders must be
-	-- changed according to the rotation of the affected unit. We basically
-	-- deal with only those placeholders:
-	type type_default_placeholders is record
-		name	: type_text_placeholder (meaning => et_device_placeholders.NAME);
-		value	: type_text_placeholder (meaning => et_device_placeholders.VALUE);
-		purpose	: type_text_placeholder (meaning => et_device_placeholders.PURPOSE);
-	end record;
 
-	
-	-- This procedure does the actual
-	-- rotating of placeholders of a symbol.
-	procedure rotate_placeholders (
-		phs			: in out type_default_placeholders;
-		rotation	: in et_schematic_coordinates.type_rotation_model); -- the rotation of the unit
-
-	
-	-- Use this function translates from the rotation of placeholder
-	-- described in the symbol model to the rotation of
-	-- placeholders of a unit in the schematic.
-	-- It translates according to the rotation given by destination:
-	function get_default_placeholders (
-		symbol_cursor	: in pac_symbols.cursor;
-		destination		: in type_object_position) -- x/y/rotation of the unit
-		return type_default_placeholders;
-	
-		
 end et_symbols;
 
 -- Soli Deo Gloria

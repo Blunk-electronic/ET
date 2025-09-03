@@ -41,9 +41,6 @@ with ada.text_io;				use ada.text_io;
 with ada.characters;			use ada.characters;
 with ada.characters.handling;	use ada.characters.handling;
 
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.exceptions; 			use ada.exceptions;
 with et_alignment;				use et_alignment;
 
@@ -266,53 +263,8 @@ package body et_symbols is
 		return get_port_positions (element (symbol));
 	end get_port_positions;
 
-
 	
 	
-	procedure rotate_placeholders (
-		phs			: in out type_default_placeholders;
-		rotation	: in et_schematic_coordinates.type_rotation_model)
-	is begin
-		-- Rotate the POSITIONS	of the placeholders about
-		-- the origin of the symbol:
-		rotate_by (phs.name.position, rotation);
-		rotate_by (phs.value.position, rotation);
-		rotate_by (phs.purpose.position, rotation);
-
-		-- Rotate the placeholders about THEIR OWN ORIGIN.
-		-- The resulting angle is the sum of the initial 
-		-- rotation (given by the symbol model) and the rotation
-		-- of the unit.
-		-- After summing up the rotation must be snapped to either
-		-- HORIZONTAL or VERTICAL so that the text is readable
-		-- from the right or from the front of the drawing.
-		phs.name.rotation := snap (to_rotation (phs.name.rotation) + rotation);
-
-		phs.value.rotation := snap (to_rotation (phs.value.rotation) + rotation);
-
-		phs.purpose.rotation := snap (to_rotation (phs.purpose.rotation) + rotation);
-	end rotate_placeholders;
-
-	
-
-
-	function get_default_placeholders (
-		symbol_cursor	: in pac_symbols.cursor;
-		destination		: in type_object_position)
-		return type_default_placeholders
-	is
-		use pac_symbols;
-		r : type_default_placeholders; -- to be returned
-	begin
-		r.name		:= element (symbol_cursor).name;
-		r.value		:= element (symbol_cursor).value;
-		r.purpose	:= element (symbol_cursor).purpose;
-
-		-- rotate the positions of placeholders according to rotation given by caller:
-		rotate_placeholders (r, get_rotation (destination));
-		
-		return r;
-	end get_default_placeholders;
 	
 end et_symbols;
 
