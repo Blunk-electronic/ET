@@ -372,7 +372,7 @@ package body et_canvas_schematic_units is
 
 		-- Propose objects according to current verb and noun:
 		case verb is
-			when VERB_DELETE | VERB_DRAG | VERB_FETCH | VERB_MOVE =>
+			when VERB_DELETE | VERB_DRAG | VERB_FETCH | VERB_MOVE | VERB_ROTATE =>
 				case noun is
 					when NOUN_DEVICE | NOUN_UNIT =>
 						
@@ -538,6 +538,8 @@ package body et_canvas_schematic_units is
 
 
 
+
+	
 	
 	
 	procedure rotate_object (
@@ -553,7 +555,7 @@ package body et_canvas_schematic_units is
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
-			log (text => "finalizing rotate ...", level => log_threshold);
+			log (text => "finalize rotate", level => log_threshold);
 			log_indentation_up;
 
 			-- If a selected object has been found, then
@@ -582,8 +584,9 @@ package body et_canvas_schematic_units is
 			end if;
 				
 			log_indentation_down;			
-			
-			set_status (status_rotate);
+
+			-- CS clear status bar
+			-- set_status (status_rotate);
 			
 			reset_proposed_objects (active_module, log_threshold + 1);
 

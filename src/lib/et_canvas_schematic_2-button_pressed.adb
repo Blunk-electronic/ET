@@ -223,11 +223,6 @@ is
 						end if;
 					
 					when NOUN_UNIT =>
-						-- if not clarification_pending then
-						-- 	rotate_unit (event.point);
-						-- else
-						-- 	rotate_selected_unit;
-						-- end if;
 						et_canvas_schematic_units.rotate_object (snap_point);
 
 					when NOUN_VALUE =>

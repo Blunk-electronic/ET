@@ -2862,6 +2862,7 @@ package body et_schematic_ops.units is
 
 
 
+	
 
 	procedure rotate_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2869,7 +2870,7 @@ package body et_schematic_ops.units is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " rotating object " 
+			& " rotate object " 
 			-- CS & to_string (object)
 			& " by 90 degrees",
 			level => log_threshold);
