@@ -2088,264 +2088,6 @@ package body et_schematic_ops.units is
 	is
 		device_cursor_sch : pac_devices_sch.cursor;
 
-		
-		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			device_cursor : pac_devices_sch.cursor;
-
-			position_of_unit : type_object_position;
-			rotation_before : et_schematic_coordinates.type_rotation_model;
-
-			ports_lib, ports_scratch : pac_ports.map;
-
-			
-			procedure query_units (
-				device_name	: in type_device_name;
-				device		: in out type_device_sch)
-			is
-				unit_cursor : pac_units.cursor;
-
-				
-				procedure rotate_unit (
-					name	: in pac_unit_name.bounded_string; -- A
-					unit	: in out type_unit) 
-				is
-					preamble : constant string := " placeholder now at";
-					
-					procedure rotate_placeholders_absolute (rot : in type_rotation_model) is 
-
-						-- Get the default positions of texts and placeholders as
-						-- specified in symbol model. The default positions are
-						-- later rotated by the given rotation rot.
-						default_positions : type_default_text_positions := 
-							get_default_text_positions (device_cursor, name);
-						
-						-- Rotates the position by the given rotation rot:
-						function add_rot (p : in type_vector_model) return type_rotation_model is begin
-							return get_rotation (p) + rot;
-						end;
-
-					begin
-						-- The current positions of the placeholders are overwritten by
-						-- the defaults as specified in the symbol mode.
-						-- Then the position of placeholders around the origin of the unit
-						-- are rotated.
-						
-						-- NAME
-						-- Rotate the placeholder around its own anchor point so that it
-						-- it is readable from the front or from the right.
-						unit.placeholders.name.rotation := snap (default_positions.placeholders.name.rotation + rot);
-
-						-- reset the placeholder anchor point to the position as specified in the symbol model
-						unit.placeholders.name.position := default_positions.placeholders.name.position;
-						
-						-- rotate the placeholder anchor point around the symbol origin:
-						rotate_to (unit.placeholders.name.position, add_rot (default_positions.placeholders.name.position));
-									
-						log (text => "name" & preamble & to_string (unit.placeholders.name.position), 
-								level => log_threshold + 2);
-
-
-						-- VALUE
-						-- Rotate the placeholder around its own anchor point so that it
-						-- it is readable from the front or from the right.
-						unit.placeholders.value.rotation := snap (default_positions.placeholders.value.rotation + rot);
-						
-						-- reset the placeholder anchor point to the position as specified in the symbol model
-						unit.placeholders.value.position := default_positions.placeholders.value.position;
-						
-						-- rotate the placeholder anchor point around the symbol origin:
-						rotate_to (unit.placeholders.value.position, add_rot (default_positions.placeholders.value.position));
-
-						log (text => "value" & preamble & to_string (unit.placeholders.value.position), 
-								level => log_threshold + 2);
-
-
-						-- PURPOSE
-						-- Rotate the placeholder around its own anchor point so that it
-						-- it is readable from the front or from the right.
-						unit.placeholders.purpose.rotation := snap (default_positions.placeholders.purpose.rotation + rot);
-
-						-- reset the placeholder anchor point to the position as specified in the symbol model
-						unit.placeholders.purpose.position := default_positions.placeholders.purpose.position;
-						
-						-- rotate the placeholder anchor point around the symbol origin:
-						rotate_to (unit.placeholders.purpose.position, add_rot (default_positions.placeholders.purpose.position));
-
-						log (text => "purpose" & preamble & to_string (unit.placeholders.purpose.position), 
-								level => log_threshold + 2);
-
-					end rotate_placeholders_absolute;
-					
-					
-					procedure rotate_placeholders_relative (rot : in type_rotation_model) is begin
-					-- Rotate position of placeholders around the unit origin. 
-					
-						-- NAME
-						-- Rotate the placeholder around its own anchor point so that it
-						-- it is readable from the front or from the right.
-						unit.placeholders.name.rotation := snap (unit.placeholders.name.rotation + rot);
-
-						-- rotate the placeholder anchor point around the symbol origin:
-						rotate_by (unit.placeholders.name.position, rot);
-
-						log (text => "name" & preamble & to_string (unit.placeholders.name.position), 
-								level => log_threshold + 2);
-
-
-						-- VALUE
-						-- Rotate the placeholder around its own anchor point so that it
-						-- it is readable from the front or from the right.
-						unit.placeholders.value.rotation := snap (unit.placeholders.value.rotation + rot);
-
-						-- rotate the placeholder anchor point around the symbol origin:
-						rotate_by (unit.placeholders.value.position, rot);
-
-						log (text => "value" & preamble & to_string (unit.placeholders.value.position), 
-								level => log_threshold + 2);
-
-
-						-- PURPOSE
-						-- Rotate the placeholder around its own anchor point so that it
-						-- it is readable from the front or from the right.
-						unit.placeholders.purpose.rotation := snap (unit.placeholders.purpose.rotation + rot);
-
-						-- rotate the placeholder anchor point around the symbol origin:
-						rotate_by (unit.placeholders.purpose.position, rot);
-
-						log (text => "purpose" & preamble & to_string (unit.placeholders.purpose.position), 
-								level => log_threshold + 2);
-
-					end rotate_placeholders_relative;
-
-					
-				begin -- rotate_unit
-					case coordinates is
-						when ABSOLUTE =>
-							set (unit.position, rotation);
-							rotate_placeholders_absolute (rotation);
-							
-						when RELATIVE =>
-							set (unit.position, add (rotation_before, rotation));
-							
-							log (text => "rotation now" & to_string (get_rotation (unit.position)),
-									level => log_threshold + 1);
-
-							rotate_placeholders_relative (rotation);
-					end case;
-				end rotate_unit;
-
-				
-			begin -- query_units
-				if contains (device.units, unit_name) then
-					-- locate unit by its name
-					unit_cursor := find (device.units, unit_name);
-
-					-- load unit position and current rotation
-					position_of_unit := element (unit_cursor).position;
-					rotation_before := get_rotation (element (unit_cursor).position);
-
-					-- log unit position and current rotation
-					log (text => to_string (position => position_of_unit) &
-							" rotation before" & to_string (rotation_before),
-							level => log_threshold + 1);
-
-					log_indentation_up;
-					
-					pac_units.update_element (
-						container	=> device.units,
-						position	=> unit_cursor,
-						process		=> rotate_unit'access);
-
-					log_indentation_down;
-				else
-					unit_not_found (unit_name);
-				end if;
-			end query_units;
-
-			
-		begin -- query_devices
-			if contains (module.devices, device_name) then
-
-				-- Before the rotation, the coordinates of the
-				-- unit must be fetched. These coordinates will later assist
-				-- in deleting the port names from connected net segments.
-				device_cursor := find (module.devices, device_name); -- the device should be there
-
-				-- rotate the unit
-				update_element (
-					container	=> module.devices,
-					position	=> device_cursor,
-					process		=> query_units'access);
-				
-				log_indentation_up;
-
-				-- Fetch the ports of the unit to be rotated.
-				-- The coordinates here are the default positions (in the library model)
-				-- relative to the center of the units.
-				ports_lib := get_ports_of_unit (device_cursor, unit_name);
-				
-				ports_scratch := ports_lib;						 
-
-				-- Calculate the absolute positions of the unit ports in the schematic
-				-- as they are BEFORE the rotation:
-				rotate_ports (ports_scratch, rotation_before);
-				move_ports (ports_scratch, position_of_unit);
-				
-				-- Delete the old ports of the targeted unit from module.nets.
-				-- The unit is on a certain sheet. The procedure delete_ports however
-				-- requires a list of unit positions (containing sheet numbers).
-				-- So we create a list "sheets", put the unit name and position in it,
-				-- and pass it to procedure delete_ports:
-				declare
-					sheets : pac_unit_positions.map;
-				begin
-					pac_unit_positions.insert (
-						container	=> sheets,
-						key			=> unit_name,
-						new_item	=> position_of_unit);
-
-					-- CS
-					-- delete_ports (
-					-- 	module			=> module_cursor,
-					-- 	device			=> device_name,
-					-- 	ports			=> ports_scratch,
-					-- 	sheets			=> sheets, 
-					-- 	log_threshold	=> log_threshold + 1);
-				end;
-
-				
-				-- Calculate the new positions of the unit ports.
-				case coordinates is
-					when ABSOLUTE =>
-						rotate_ports (ports_lib, rotation);
-					when RELATIVE =>
-							-- The given angle of rotation adds to the rotation_before:
-						rotate_ports (ports_lib, add (rotation_before, rotation));
-				end case;
-				
-				move_ports (ports_lib, position_of_unit);
-				
-				-- Insert the new unit ports in the nets (type_generic_module.nets):
-				insert_ports (
-					module_cursor	=> module_cursor,
-					device_name		=> device_name,
-					unit_name		=> unit_name,
-					ports			=> ports_lib,
-					sheet			=> get_sheet (position_of_unit),
-					log_threshold	=> log_threshold + 1);
-
-				update_ratsnest (module_cursor, log_threshold + 1);
-				
-				log_indentation_down;				
-			else
-				device_not_found (device_name);
-			end if;
-		end query_devices;
-
-
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -2375,11 +2117,18 @@ package body et_schematic_ops.units is
 					case coordinates is
 						when ABSOLUTE =>
 							set_rotation (unit, rotation);
-
+							
 						when RELATIVE =>
 							rotate_by (unit, rotation);
-					end case;								
+					end case;
+
+					-- According to the new rotation of the unit,
+					-- the placeholders must be rotated also. This is
+					-- about the rotation of the about their own origin
+					-- and the rotation about the origin of the unit:
+					rotate_placeholders (unit.placeholders, rotation);
 				end rotate_unit;
+				
 
 				-- Locate the targeted unit:
 				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
@@ -2490,6 +2239,7 @@ package body et_schematic_ops.units is
 
 
 
+	
 
 
 	function get_device_name (
