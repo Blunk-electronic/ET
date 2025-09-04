@@ -454,7 +454,7 @@ package body et_units is
 
 	
 	
-	function unit_positions (
+	function get_unit_positions (
 		units : in pac_units.map)
 		return pac_unit_positions.map
 	is
@@ -469,7 +469,7 @@ package body et_units is
 	begin
 		iterate (units, query_unit'access);
 		return list;
-	end unit_positions;
+	end get_unit_positions;
 
 	
 	

@@ -439,7 +439,7 @@ package body et_devices_electrical is
 			device_name : in type_device_name;
 			device		: in type_device_sch) 
 		is begin
-			positions := unit_positions (device.units);
+			positions := get_unit_positions (device.units);
 		end;
 
 	begin

@@ -2577,6 +2577,131 @@ package body et_schematic_ops.units is
 
 	
 
+
+	procedure rename_device_ports (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_before	: in type_device_name;	-- the device name before like IC1
+		device_after	: in type_device_name;	-- the device name after like IC23
+		sheets			: in pac_unit_positions.map; -- the sheet numbers where to look at
+		log_threshold	: in type_log_level) 
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+-- 			procedure query_net (net_cursor : in pac_nets.cursor) is
+-- 				use pac_nets;
+-- 
+-- 				procedure query_strands (
+-- 					net_name	: in pac_net_name.bounded_string;
+-- 					net			: in out type_net) 
+-- 				is
+-- 					procedure query_strand (strand_cursor : in pac_strands.cursor) is
+-- 						procedure query_segments (strand : in out type_strand) is
+-- 							use pac_net_segments;
+-- 
+-- 							procedure query_segment (segment_cursor : in pac_net_segments.cursor) is 
+-- 								use pac_device_ports;
+-- 
+-- 								procedure query_ports (segment : in out type_net_segment) is
+-- 								-- Tests device ports of given segment if their device name matches the given device name.
+-- 								-- On match replace the old device name by the new device name.
+-- 
+-- 									port_cursor : pac_device_ports.cursor := segment.ports.devices.first;
+-- 									
+-- 								begin -- query_ports
+-- 									while port_cursor /= pac_device_ports.no_element loop
+-- 
+-- 										if element (port_cursor).device_name = device_before then -- IC1
+-- 
+-- 											replace_element (
+-- 												container	=> segment.ports.devices,
+-- 												position	=> port_cursor,
+-- 												new_item	=> (
+-- 													device_name	=> device_after, -- IC23
+-- 													unit_name	=> element (port_cursor).unit_name, -- unchanged
+-- 													port_name 	=> element (port_cursor).port_name) -- unchanged
+-- 												);
+-- 										end if;
+-- 										
+-- 										next (port_cursor);
+-- 									end loop;
+-- 								end query_ports;
+-- 
+-- 								
+-- 							begin -- query_segment
+-- 								log_indentation_up;
+-- 								log (text => to_string (segment_cursor), level => log_threshold + 2);
+-- 
+-- 								update_element (
+-- 									container	=> strand.segments,
+-- 									position	=> segment_cursor,
+-- 									process		=> query_ports'access);
+-- 												   
+-- 								log_indentation_down;
+-- 							end query_segment;
+-- 
+-- 							
+-- 						begin -- query_segments
+-- 							iterate (strand.segments, query_segment'access);
+-- 						end query_segments;
+-- 						
+-- 					begin -- query_strand
+-- 						log_indentation_up;
+-- 						log (text => "strand " & to_string (position => element (strand_cursor).position),
+-- 							 level => log_threshold + 2);
+-- 
+-- 						update_element (
+-- 							container	=> net.strands,
+-- 							position	=> strand_cursor,
+-- 							process		=> query_segments'access);
+-- 						
+-- 						log_indentation_down;
+-- 					end query_strand;
+-- 					
+-- 				begin -- query_strands
+-- 					iterate (net.strands, query_strand'access);
+-- 				end query_strands;
+-- 				
+-- 			begin -- query_net
+-- 				log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
+-- 
+-- 				update_element (
+-- 					container	=> module.nets,
+-- 					position	=> net_cursor,
+-- 					process		=> query_strands'access);
+-- 				
+-- 			end query_net;				
+-- 			
+		begin
+			null;
+-- 			pac_nets.iterate (module.nets, query_net'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " rename ports of devices in nets. Device old: " & to_string (device_before) 
+			& " to device new: " & to_string (device_after),
+			level => log_threshold);
+
+
+		log_indentation_up;
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end rename_device_ports;
+
+
+
+
+
+	
 	
 
 	procedure rename_device (
@@ -2585,71 +2710,50 @@ package body et_schematic_ops.units is
 		device_name_after	: in type_device_name; -- IC23
 		log_threshold		: in type_log_level) 
 	is
-
 		device_cursor_sch : pac_devices_sch.cursor;
-		
--- 		procedure query_devices (
--- 			module_name	: in pac_module_name.bounded_string;
--- 			module		: in out type_generic_module) 
--- 		is
--- 			use pac_devices_sch;
--- 
--- 			device_cursor_before : pac_devices_sch.cursor;
--- 			device_cursor_after  : pac_devices_sch.cursor;
--- 			inserted : boolean;
--- 
--- 			-- temporarily storage of unit coordinates:
--- 			position_of_units : pac_unit_positions.map;
--- 
--- 		begin -- query_devices
--- 			-- locate the device by the old name
--- 			device_cursor_before := find (module.devices, device_name_before); -- IC1
--- 
--- 			if device_cursor_before /= pac_devices_sch.no_element then -- the device should be there
--- 
--- 				-- copy elements and properties of the old device to a new one:
--- 				pac_devices_sch.insert (
--- 					container	=> module.devices,
--- 					key			=> device_name_after, -- IC23
--- 					new_item	=> element (device_cursor_before), -- all elements and properties of IC1
--- 					inserted	=> inserted,
--- 					position	=> device_cursor_after);
--- 
--- 				if not inserted then
--- 					device_already_exists (device_name_after);
--- 				end if;
--- 
--- 				-- check conformity of prefix
--- 				if not et_conventions.prefix_valid (device_name_after) then
--- 					null;
--- 					--device_prefix_invalid (device_name_after);
--- 				end if;
--- 
--- 				-- Before deleting the old device, the coordinates of the
--- 				-- units must be fetched. These coordinates will later assist
--- 				-- in renaming the port names in connected net segments.
--- 				position_of_units := get_unit_positions (device_cursor_before);
--- 				
--- 				-- delete the old device
--- 				pac_devices_sch.delete (
--- 					container	=> module.devices,
--- 					position	=> device_cursor_before);
--- 
--- 				-- rename all ports in module.nets
--- 				rename_ports (
--- 					module			=> module_cursor,
--- 					device_before	=> device_name_before,
--- 					device_after	=> device_name_after,
--- 					sheets			=> position_of_units, -- the sheets to look at
--- 					log_threshold	=> log_threshold + 1);
--- 
--- 			else
--- 				device_not_found (device_name_before);
--- 			end if;
--- 		end query_devices;
--- 		
-		-- 
 
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			device_cursor_after  : pac_devices_sch.cursor;
+			inserted : boolean;
+
+			-- Temporarily storage of unit coordinates:
+			unit_positions : pac_unit_positions.map;
+
+		begin
+			-- Before deleting the old device, the coordinates of the
+			-- units must be fetched. Their sheet numbers will later assist
+			-- renaming the port names connected with net segments.
+			unit_positions := get_unit_positions (device_cursor_sch);
+			
+			-- Copy elements and properties of the old device to a new one:
+			pac_devices_sch.insert (
+				container	=> module.devices,
+				key			=> device_name_after, -- IC23
+				new_item	=> element (device_cursor_sch), -- all elements and properties of IC1
+				inserted	=> inserted,
+				position	=> device_cursor_after);
+
+				
+			-- Delete the old device:
+			pac_devices_sch.delete (
+				container	=> module.devices,
+				position	=> device_cursor_sch);
+
+			-- Rename all ports in module.nets
+			rename_device_ports (
+				module_cursor	=> module_cursor,
+				device_before	=> device_name_before,
+				device_after	=> device_name_after,
+				sheets			=> unit_positions, -- the sheets to look at
+				log_threshold	=> log_threshold + 1);
+			
+		end query_module;
+
+		
 
 		procedure check_names is begin
 				
@@ -2660,20 +2764,26 @@ package body et_schematic_ops.units is
 				-- prevent an inadvertently category change:
 				if same_prefix (device_name_after, device_name_before) then
 
-					null;
-					-- update_element (
-					-- 	container	=> generic_modules,
-					-- 	position	=> module_cursor,
-					-- 	process		=> query_module'access);
+					-- A device having the new name must
+					-- not exist yet:
+					if not device_exists (module_cursor, device_name_after) then
+						
+						update_element (
+							container	=> generic_modules,
+							position	=> module_cursor,
+							process		=> query_module'access);
 
+					else
+						log (WARNING, "Device " & to_string (device_name_after)
+							 & " already exists !");
+					end if;
 				else
-					raise semantic_error_1 with "ERROR: Changing the prefix is not allowed !";
+					log (WARNING, "Changing the prefix is not allowed !");
 				end if;
 			else
-				raise semantic_error_1 with "ERROR: Old and new device name are equal !";
+				log (WARNING, "Old and new device name are equal !");
 			end if;
 		end check_names;
-
 
 
 		
