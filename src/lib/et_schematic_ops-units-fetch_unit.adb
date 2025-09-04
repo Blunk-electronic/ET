@@ -90,7 +90,8 @@ is
 				log (text => "fetch internal unit " 
 					 & to_string (key (unit_cursors.int)),
 					 level => log_threshold + 2);
-				
+
+				-- Instanciate a symbol so that a unit comes into life:
 				case element (device_cursor_lib).appearance is
 					when APPEARANCE_VIRTUAL =>
 						pac_units.insert (
@@ -98,30 +99,23 @@ is
 							key			=> key (unit_cursors.int), -- the unit name like A, B
 							new_item	=> (
 								appearance	=> APPEARANCE_VIRTUAL,
-								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-								others 		=> <>)
-								);
+								position	=> destination,
+								others 		=> <>));
 						
 					when APPEARANCE_PCB =>
-
-						-- Rotate the positions of placeholders and their rotation about
-						-- their own origin according to rotation given by caller:
+						-- Get the default positions and rotations of placeholders
+						-- according to the rotation of the unit in the schematic:
 						placeholders := get_default_placeholders (unit_cursors.int, destination);
 						
 						pac_units.insert (
 							container	=> device.units,
 							key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
 							new_item	=> (
-								appearance	=> APPEARANCE_PCB,
-								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-								placeholders => (
-									name		=> placeholders.name,
-									value		=> placeholders.value,
-									purpose		=> placeholders.purpose),
-								others 		=> <>)
-								);
-				end case;
-				
+								appearance		=> APPEARANCE_PCB,
+								position		=> destination,
+								placeholders	=> placeholders,
+								others 			=> <>));
+				end case;				
 			end do_it;
 
 			
@@ -159,8 +153,10 @@ is
 				symbol_cursor : pac_symbols.cursor;
 				symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
 			begin
-				log (text => "fetch external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
-				
+				log (text => "fetch external unit " 
+					 & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
+
+				-- Instanciate a symbol so that a unit comes into life:
 				case element (device_cursor_lib).appearance is
 					when APPEARANCE_VIRTUAL =>
 						pac_units.insert (
@@ -168,37 +164,32 @@ is
 							key			=> key (unit_cursors.ext), -- the unit name like A, B
 							new_item	=> (
 								appearance	=> APPEARANCE_VIRTUAL,
-								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-								others 		=> <>)
-								);
+								position	=> destination,
+								others 		=> <>));
 						
 					when APPEARANCE_PCB =>
 						-- The symbol file name is provided by unit_cursors.ext.
 						symbol_file := element (unit_cursors.ext).model; -- *.sym
 						
-						-- Locate the external symbol in container "symbols".
+						-- Locate the external symbol in the symbol library.
 						-- The key into symbols is the file name (*.sym).
 						symbol_cursor := find (symbol_library, symbol_file);
 
 						-- CS: The symbol should be there now. Otherwise symbol_cursor would assume no_element
 						-- and constraint_error would arise here:
 
-						-- Rotate the positions of placeholders and their rotation about
-						-- their own origin according to rotation given by caller:
+						-- Get the default positions and rotations of placeholders
+						-- according to the rotation of the unit in the schematic:
 						placeholders := get_default_placeholders (symbol_cursor, destination);
 						
 						pac_units.insert (
 							container	=> device.units,
 							key			=> key (unit_cursors.ext), -- the unit name like A, B, VCC_IO_BANK_1
 							new_item	=> (
-								appearance	=> APPEARANCE_PCB,
-								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-								placeholders => (
-									name		=> placeholders.name,
-									value		=> placeholders.value,
-									purpose		=> placeholders.purpose),
-								others 		=> <>)
-								);
+								appearance		=> APPEARANCE_PCB,
+								position		=> destination,
+								placeholders	=> placeholders,
+								others 			=> <>));
 				end case;
 			end do_it;
 
