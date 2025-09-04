@@ -90,8 +90,6 @@ with et_device_partcode;		use et_device_partcode;
 with et_conventions;
 
 with et_schematic_text;			use et_schematic_text;
-with et_unit_name;				use et_unit_name;
-with et_units;					use et_units;
 with et_devices_electrical;		use et_devices_electrical;
 
 with et_logging;				use et_logging;
@@ -131,32 +129,6 @@ package et_schematic_ops is
 
 
 	
-	-- Deletes ports of the given device and unit in the
-	-- net segments on the given sheet:
-	procedure delete_ports (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_device_name;
-		unit_name		: in pac_unit_name.bounded_string;
-		ports			: in pac_ports.map;
-		sheet			: in type_sheet;
-		log_threshold	: in type_log_level);
-
-	
-	-- Inserts the given device ports in the net segments.
-	-- If a port lands on either the start or end point of a segment, it will
-	-- be regarded as "connected" with the segment.
-	-- If a ports lands between start or end point of a segment, nothing happens
-	-- because the docking to net segments is possible on segment ends/starts only.
-	-- CS: Automatic splitting the segment into two and placing a junction is not supported
-	-- jet and probably not a good idea.
-	procedure insert_ports (
-		module_cursor	: in pac_generic_modules.cursor;		-- the module
-		device_name		: in type_device_name;					-- the device
-		unit_name		: in pac_unit_name.bounded_string;	-- the unit name like A, C, PWR
-		ports			: in pac_ports.map; -- the ports to be inserted
-		sheet			: in type_sheet;				-- the sheet to look at
-		log_threshold	: in type_log_level);
-
 
 
 
@@ -215,193 +187,6 @@ package et_schematic_ops is
 
 	
 
-	
-	-- Sets the value of a device.
-	procedure set_value (
-		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name			: in type_device_name; -- R2
-		value				: in pac_device_value.bounded_string; -- 470R
-		log_threshold		: in type_log_level);
-
-	-- CS procedure set_value that takes a module cursor and a device cursor.
-	
-	-- Sets the purpose of a device.
-	procedure set_purpose (
-		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name			: in type_device_name; -- R2
-		purpose				: in pac_device_purpose.bounded_string; -- brightness_control
-		log_threshold		: in type_log_level);
-
-	-- CS procedure set_purpose that takes a module cursor and a device cursor.
-
-	
-	-- Sets the partcode of a device.
-	procedure set_partcode (
-		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name			: in type_device_name; -- R2
-		partcode			: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-		log_threshold		: in type_log_level);
-
-	-- CS procedure set_partcode that takes a module cursor and a device cursor.
-
-	
-	-- Returns true if the given module provides the given device.
-	-- The module being searched in must be in the rig already.						
-	function exists ( -- CS rename to device_exists
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name)
-		return boolean;
-
-	
-	-- Locates the given device in the given module and returns
-	-- the cursor to the device.
-	-- If the device does not exist, returns no_element.
-	function locate_device (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name) -- R2
-		return pac_devices_sch.cursor;
-
-	
-	-- Returns the cursor of the device model
-	-- for the given device in the module.
-	-- Raises exception if device does not exist.
-	function locate_device (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name) -- R2
-		return pac_devices_lib.cursor;
-
-
-
-	
-	-- Locates the given device in the given module and returns
-	-- the name of the device model (like 7400.dev).
-	-- Raises constraint error if the device does not exist.
-	function device_model_name ( -- CS get_device_model_name
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name) -- R2
-		return pac_device_model_file.bounded_string; -- 7400.dev
-
-	
-	-- Returns the package variants available for the
-	-- given device.
-	-- The device must be real. Otherwise constraint error rises.
-	function get_available_variants (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name) -- R2
-		return pac_variants.map;
-
-	
-	-- Returns the name of the package variant name of the device.
-	-- Raises constraint error if the device does not exist.
-	-- Raises semantic error if the device is virtual.
-	function get_variant (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name) -- R2
-		return pac_package_variant_name.bounded_string; -- D, N
-
-	
-	-- Sets the package variant of a device.
-	-- Raises constraint error if the device does not exist.
-	-- Raises semantic error if the device is virtual.
-	-- Raises semantic error if the variant is not defined
-	-- in the according device model:
-	procedure set_variant (
-		module	: in pac_generic_modules.cursor;
-		device	: in pac_devices_sch.cursor;
-		variant	: in pac_package_variant_name.bounded_string);
-
-	
-	-- Sets the package variant of a device.
-	-- Raises semantic error if the device does not exist.
-	-- Raises semantic error if the device is virtual.
-	-- Raises semantic error if the variant is not defined
-	-- in the according device model:
-	procedure set_variant (
-		module			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device			: in type_device_name; -- R2
-		variant			: in pac_package_variant_name.bounded_string; -- N, D
-		log_threshold	: in type_log_level);
-
-
-	
-	-- Locates the given device in the given module and returns
-	-- the cursor to the device model.
-	-- Raises constraint error if the device does not exist.
-	function device_model_cursor ( -- CS rename to get_device_model_cursor
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name) -- R2
-		return pac_devices_lib.cursor;
-
-
-	
-
-
-	-- To distinguish between electrical and non-electrical devices
-	-- use this type:
-	type type_device_category is (ELECTRICAL, NON_ELECTRICAL);
-	-- CS: This type and the function get_next_device_name (see below)
-	-- seem misplaced here.	
-	
-	-- Returns for the given device prefix the next available device name in the module.
-	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 the return will be C2.
-	function get_next_device_name (
-		module_cursor	: in pac_generic_modules.cursor;
-		prefix			: in pac_device_prefix.bounded_string; -- C
-		category		: in type_device_category := ELECTRICAL)
-		return type_device_name; -- C2
-
-	
-	
-	-- Adds a device to the schematic. The unit is determined by the unit add levels.
-	-- If the given variant is empty (zero length) the the device is assumed to be virtual.							 
-	procedure add_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
-		variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
-		destination		: in type_object_position; -- sheet/x/y/rotation
-		log_threshold	: in type_log_level);
-
-	-- CS procedure add_device with explicit device name like R12
-
-	-- CS procedure add_device that takes module cursor and model cursor
-	
-	-- Copies the given device. Places the first unit of the device (according to add level)
-	-- at the given destination in the schematic.
-	procedure copy_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- IC45
-		destination		: in type_object_position; -- sheet/x/y
-		log_threshold	: in type_log_level);
-
-
-
-	-- Returns true if the given module and assembly variant 
-	-- provides the given device.
-	-- Assumptions: 
-	-- - The module being searched in must be in the rig already.
-	-- - The assembly variant must exist in the module.
-	-- - The device must exist in the module.
-	function device_exists (
-		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
-		device	: in type_device_name)
-		return boolean;
-
-
-
-	-- Returns a cursor to the alternative device in the given module
-	-- and given assembly variant.
-	-- Assumptions: 
-	-- - The module being searched in must be in the rig already.
-	-- - The assembly variant must exist in the module.
-	-- - The device must exist in the module.
-	-- - The device must have an entry in the given assembly variant,
-	--   otherwise the return is no_element.
-	function get_alternative_device (
-		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
-		device	: in type_device_name)
-		return pac_device_variants.cursor;
 
 
 	
@@ -429,33 +214,6 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level);
 
 	
-	-- Sets the value, partcode and (optionally the purpose) of a device in 
-	-- An already existing device will be overwritten without warning.
-	procedure mount_device (
-		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
-		device			: in type_device_name; -- R1
-		value			: in pac_device_value.bounded_string; -- 220R
-		partcode		: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
-		purpose			: in pac_device_purpose.bounded_string := pac_device_purpose.to_bounded_string (""); -- set temperature
-		log_threshold	: in type_log_level);
-
-	
-	-- Sets the given device as not mounted in the given assembly variant.
-	procedure unmount_device (
-		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
-		device			: in type_device_name; -- R1
-		log_threshold	: in type_log_level);
-
-	
-	-- Removes the given device from the given assembly variant.
-	procedure remove_device (
-		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
-		device			: in type_device_name; -- R1
-		log_threshold	: in type_log_level);
-
 	
 	
 	function sort_by_coordinates_2 (

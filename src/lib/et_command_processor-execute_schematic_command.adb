@@ -2873,7 +2873,7 @@ is
 
 					device_name := to_device_name (get_field (5));
 
-					if exists (active_module, device_name) then
+					if device_exists (active_module, device_name) then
 
 						unit_add.device		:= device_model_cursor (active_module, device_name);
 						
@@ -2899,7 +2899,7 @@ is
 				when 6 => -- like "fetch unit IC1 B"
 					device_name := to_device_name (get_field (5));
 
-					if exists (active_module, device_name) then
+					if device_exists (active_module, device_name) then
 
 						unit_add.device		:= device_model_cursor (active_module, device_name);
 
@@ -2984,7 +2984,7 @@ is
 
 									device_name := to_device_name (get_field (5));
 
-									if exists (active_module, device_name) then
+									if device_exists (active_module, device_name) then
 
 										-- unit_delete.device := device_name;
 
@@ -3007,7 +3007,7 @@ is
 								when 6 => -- like "delete unit IC1 B"
 									device_name := to_device_name (get_field (5));
 									
-									if exists (active_module, device_name) then
+									if device_exists (active_module, device_name) then
 										
 										--unit_delete.device := device_name;
 
@@ -3060,7 +3060,7 @@ is
 
 									device_name := to_device_name (get_field (5));
 
-									if exists (active_module, device_name) then
+									if device_exists (active_module, device_name) then
 										object_device_name := device_name;
 
 										-- Propose units that are on the current active sheet:
@@ -3079,7 +3079,7 @@ is
 								when 6 => -- like "drag unit IC1 B"
 									device_name := to_device_name (get_field (5));
 									
-									if exists (active_module, device_name) then
+									if device_exists (active_module, device_name) then
 										
 										object_device_name := device_name;
 
@@ -3152,7 +3152,7 @@ is
 
 									device_name := to_device_name (get_field (5));
 
-									if exists (active_module, device_name) then
+									if device_exists (active_module, device_name) then
 										object_device_name := device_name;
 
 										-- Propose units that are on the current active sheet:
@@ -3171,7 +3171,7 @@ is
 								when 6 => -- like "move unit IC1 B"
 									device_name := to_device_name (get_field (5));
 									
-									if exists (active_module, device_name) then
+									if device_exists (active_module, device_name) then
 										
 										object_device_name := device_name;
 
@@ -3225,7 +3225,7 @@ is
 
 									device_name := to_device_name (get_field (5));
 
-									if exists (active_module, device_name) then
+									if device_exists (active_module, device_name) then
 
 										placeholder_move.device := device_name;
 
@@ -3245,7 +3245,7 @@ is
 								when 6 => -- like "move name IC1 B"
 									device_name := to_device_name (get_field (5));
 									
-									if exists (active_module, device_name) then
+									if device_exists (active_module, device_name) then
 
 										placeholder_move.device := device_name;
 										
@@ -3291,7 +3291,7 @@ is
 
 									device_name := to_device_name (get_field (5));
 
-									if exists (active_module, device_name) then
+									if device_exists (active_module, device_name) then
 										object_device_name := device_name;
 
 										-- Propose units that are on the current active sheet:
@@ -3310,7 +3310,7 @@ is
 								when 6 => -- like "rotate unit IC1 B"
 									device_name := to_device_name (get_field (5));
 									
-									if exists (active_module, device_name) then
+									if device_exists (active_module, device_name) then
 										
 										object_device_name := device_name;
 
@@ -3349,7 +3349,7 @@ is
 
 									device_name := to_device_name (get_field (5));
 
-									if exists (active_module, device_name) then
+									if device_exists (active_module, device_name) then
 
 										placeholder_move.device := device_name;
 
@@ -3369,7 +3369,7 @@ is
 								when 6 => -- like "rotate name IC1 B"
 									device_name := to_device_name (get_field (5));
 									
-									if exists (active_module, device_name) then
+									if device_exists (active_module, device_name) then
 
 										placeholder_move.device := device_name;
 										
@@ -3413,7 +3413,7 @@ is
 								when 5 => -- like "set value/partcode/purpose IC1"
 									device_name := to_device_name (get_field (5));
 
-									if exists (active_module, device_name) then
+									if device_exists (active_module, device_name) then
 										set_property (device_name);
 									else
 										device_not_found;
@@ -3429,7 +3429,7 @@ is
 								when 5 => -- like "set variant IC1"
 									device_name := to_device_name (get_field (5));
 
-									if exists (active_module, device_name) then
+									if device_exists (active_module, device_name) then
 										set_variant (device_name);
 									else
 										device_not_found;

@@ -39,6 +39,7 @@
 with ada.tags;
 
 with et_mirroring;					use et_mirroring;
+with et_schematic_ops.units;		use et_schematic_ops.units;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
 with et_schematic_ops;				use et_schematic_ops;
 with et_board_ops.devices;			use et_board_ops.devices;

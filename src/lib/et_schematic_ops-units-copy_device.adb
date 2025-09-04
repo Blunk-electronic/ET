@@ -47,7 +47,7 @@ with et_device_model;					use et_device_model;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 
-separate (et_schematic_ops)
+separate (et_schematic_ops.units)
 
 procedure copy_device (
 	module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)

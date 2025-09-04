@@ -38,6 +38,7 @@
 
 with et_assembly_variants;
 with et_netlists;
+with et_schematic_ops.units;		use et_schematic_ops.units;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
 with et_schematic_ops.submodules;
 with et_schematic_ops;				use et_schematic_ops;

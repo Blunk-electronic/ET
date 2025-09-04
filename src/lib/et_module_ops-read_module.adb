@@ -104,6 +104,7 @@ with et_conventions;
 with et_time;
 
 with et_schematic_ops;
+with et_schematic_ops.units;
 with et_schematic_ops.submodules;
 with et_board_ops;
 
@@ -1575,6 +1576,7 @@ is
 		submod_cursor	: pac_submodule_variants.cursor;
 		inserted		: boolean;
 
+		use et_schematic_ops.units;
 		use et_schematic_ops.submodules;
 		use ada.containers;
 	begin
@@ -1600,7 +1602,7 @@ is
 			device_name := to_device_name (f (line, 2));
 
 			-- test whether device exists
-			if not exists (module_cursor, device_name) then
+			if not device_exists (module_cursor, device_name) then
 				log (ERROR, "device " &
 						enclose_in_quotes (to_string (device_name)) &
 						" does not exist !", console => true);
