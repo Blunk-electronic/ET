@@ -56,6 +56,13 @@ package body et_schematic_ops.units is
 	use pac_text_schematic;
 	
 
+
+
+
+
+
+
+	
 	function get_position (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC34
@@ -1204,7 +1211,133 @@ package body et_schematic_ops.units is
 
 
 
+
 	
+
+	
+
+	procedure rename_device (
+		module_cursor		: in pac_generic_modules.cursor;
+		device_name_before	: in type_device_name; -- IC1
+		device_name_after	: in type_device_name; -- IC23
+		log_threshold		: in type_log_level) 
+	is
+
+		device_cursor_sch : pac_devices_sch.cursor;
+		
+-- 		procedure query_devices (
+-- 			module_name	: in pac_module_name.bounded_string;
+-- 			module		: in out type_generic_module) 
+-- 		is
+-- 			use pac_devices_sch;
+-- 
+-- 			device_cursor_before : pac_devices_sch.cursor;
+-- 			device_cursor_after  : pac_devices_sch.cursor;
+-- 			inserted : boolean;
+-- 
+-- 			-- temporarily storage of unit coordinates:
+-- 			position_of_units : pac_unit_positions.map;
+-- 
+-- 		begin -- query_devices
+-- 			-- locate the device by the old name
+-- 			device_cursor_before := find (module.devices, device_name_before); -- IC1
+-- 
+-- 			if device_cursor_before /= pac_devices_sch.no_element then -- the device should be there
+-- 
+-- 				-- copy elements and properties of the old device to a new one:
+-- 				pac_devices_sch.insert (
+-- 					container	=> module.devices,
+-- 					key			=> device_name_after, -- IC23
+-- 					new_item	=> element (device_cursor_before), -- all elements and properties of IC1
+-- 					inserted	=> inserted,
+-- 					position	=> device_cursor_after);
+-- 
+-- 				if not inserted then
+-- 					device_already_exists (device_name_after);
+-- 				end if;
+-- 
+-- 				-- check conformity of prefix
+-- 				if not et_conventions.prefix_valid (device_name_after) then
+-- 					null;
+-- 					--device_prefix_invalid (device_name_after);
+-- 				end if;
+-- 
+-- 				-- Before deleting the old device, the coordinates of the
+-- 				-- units must be fetched. These coordinates will later assist
+-- 				-- in renaming the port names in connected net segments.
+-- 				position_of_units := get_unit_positions (device_cursor_before);
+-- 				
+-- 				-- delete the old device
+-- 				pac_devices_sch.delete (
+-- 					container	=> module.devices,
+-- 					position	=> device_cursor_before);
+-- 
+-- 				-- rename all ports in module.nets
+-- 				rename_ports (
+-- 					module			=> module_cursor,
+-- 					device_before	=> device_name_before,
+-- 					device_after	=> device_name_after,
+-- 					sheets			=> position_of_units, -- the sheets to look at
+-- 					log_threshold	=> log_threshold + 1);
+-- 
+-- 			else
+-- 				device_not_found (device_name_before);
+-- 			end if;
+-- 		end query_devices;
+-- 		
+		-- 
+
+
+		procedure check_names is begin
+				
+			-- The old and new name must not be the same:
+			if device_name_after /= device_name_before then
+
+				-- The old and new prefix must be the same in order to
+				-- prevent an inadvertently category change:
+				if same_prefix (device_name_after, device_name_before) then
+
+					null;
+					-- update_element (
+					-- 	container	=> generic_modules,
+					-- 	position	=> module_cursor,
+					-- 	process		=> query_module'access);
+
+				else
+					raise semantic_error_1 with "ERROR: Changing the prefix is not allowed !";
+				end if;
+			else
+				raise semantic_error_1 with "ERROR: Old and new device name are equal !";
+			end if;
+		end check_names;
+
+
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " rename device " & to_string (device_name_before) 
+			& " to " & to_string (device_name_after),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor_sch := locate_device (module_cursor, device_name_before);
+			
+		if has_element (device_cursor_sch) then -- device exists in schematic
+			check_names;
+		else
+			log (WARNING, " Device " & to_string (device_name_before) & " not found !");
+		end if;
+		
+		log_indentation_down;
+	end rename_device;
+
+	
+
 	
 
 	

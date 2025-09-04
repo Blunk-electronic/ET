@@ -44,6 +44,7 @@ with et_object_status;					use et_object_status;
 
 package et_schematic_ops.units is
 
+	
 
 	-- Returns the sheet/x/y position of the given device,
 	-- unit and port:
@@ -248,6 +249,20 @@ package et_schematic_ops.units is
 		device_name		: in type_device_name; -- IC45
 		log_threshold	: in type_log_level);
 
+
+
+	-- Renames a device.
+	-- Changing the prefix is not allowed. A warning will be issued.
+	-- For example renaming from R1 to C1 is forbidden as this would 
+	-- change the device category:
+	procedure rename_device (
+		module_cursor		: in pac_generic_modules.cursor;
+		device_name_before	: in type_device_name; -- IC1
+		device_name_after	: in type_device_name; -- IC23
+		log_threshold		: in type_log_level);
+
+
+	
 	
 
 	-- Moves the given unit within the schematic. Disconnects the unit from

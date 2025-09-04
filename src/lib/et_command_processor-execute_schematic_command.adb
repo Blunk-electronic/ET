@@ -379,17 +379,17 @@ is
 
 	
 
+	-- This procedure parses a command that renames a device like
+	-- "schematic led_driver rename device IC1 IC2"
 	procedure rename_device is 
 	begin
 		case cmd_field_count is
 			when 6 =>
-				rename_device
-					(
-					module_name 		=> module,
+				rename_device (
+					module_cursor 		=> active_module,
 					device_name_before	=> to_device_name (get_field (5)), -- IC1
 					device_name_after	=> to_device_name (get_field (6)), -- IC23
-					log_threshold		=> log_threshold + 1
-					);
+					log_threshold		=> log_threshold + 1);
 
 			when 7 .. type_field_count'last => too_long; 
 				
@@ -398,6 +398,7 @@ is
 	end rename_device;
 
 
+	
 	
 	
 	procedure add_netchanger is

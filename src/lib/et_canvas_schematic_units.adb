@@ -2232,7 +2232,7 @@ package body et_canvas_schematic_units is
 		case noun is
 			when NOUN_DEVICE =>
 				rename_device (
-					module_name 		=> key (active_module),
+					module_cursor 		=> active_module,
 					device_name_before	=> key (su.device), -- IC2
 					device_name_after	=> to_device_name (self.get_text), -- IC3
 					log_threshold		=> log_threshold + 1);
