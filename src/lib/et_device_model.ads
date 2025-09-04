@@ -41,6 +41,9 @@
 -- A device is called "electrical" because it ALWAYS
 -- has an abstract representation in the schematic and mostly 
 -- a physical representation in the board. 
+--
+-- To Do:
+-- 1. Rename everything containing the term "unit" to "symbol".
 
 
 with ada.containers; 			use ada.containers;
