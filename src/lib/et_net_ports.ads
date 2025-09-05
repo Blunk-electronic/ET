@@ -94,6 +94,14 @@ package et_net_ports is
 	-- Returns something like "device IC1 unit A port PD4":
 	function to_string (port : in pac_device_ports.cursor) return string;
 
+
+	-- Renames the device names in the given
+	-- list of device ports:
+	procedure rename_device_ports (
+		ports		: in out pac_device_ports.set;
+		device_old	: in type_device_name;
+		device_new	: in type_device_name);
+
 	
 	
 	-- Iterates the device ports. 

@@ -513,7 +513,7 @@ package et_schematic_ops.units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_before	: in type_device_name;
 		device_after	: in type_device_name;
-		sheets			: in pac_unit_positions.map;
+		unit_positions	: in pac_unit_positions.map;
 		log_threshold	: in type_log_level);
 
 

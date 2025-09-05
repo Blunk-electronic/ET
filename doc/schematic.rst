@@ -55,8 +55,10 @@ Devices and Units
 		
 	|VNS| |NI|
 
+
+
 	
-#. Rename device
+#. Rename a Device
 
 	.. code-block::
 
@@ -678,8 +680,10 @@ Modules
 			directory or in a subdirectory thereof. Creating a module across several 
 			directory levels like ../other_project/MOTOR-driver is not possible.
 				
-				
-#. Save a module
+		
+
+		
+#. Save a Module
 
 	Save with its own name:
 	

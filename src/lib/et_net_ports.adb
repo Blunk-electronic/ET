@@ -211,6 +211,37 @@ package body et_net_ports is
 		return to_string (p);
 	end to_string;
 
+
+
+
+	
+	procedure rename_device_ports (
+		ports		: in out pac_device_ports.set;
+		device_old	: in type_device_name;
+		device_new	: in type_device_name)
+	is 
+		cursor : pac_device_ports.cursor := ports.first;
+
+		-- A temporarily port:
+		port : type_device_port;
+				
+	begin
+		-- Iterate the given list of device ports.
+		-- If a port named after device_old has been found,
+		-- then overwrite the name by device_new:
+		while has_element (cursor) loop
+			port := element (cursor);
+			
+			if port.device_name = device_old then
+				port.device_name := device_new;
+			end if;
+			
+			ports.replace_element (cursor, port);
+			next (cursor);
+		end loop;
+	end rename_device_ports;
+	
+
 	
 
 	

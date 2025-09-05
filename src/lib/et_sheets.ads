@@ -36,6 +36,10 @@
 --   history of changes:
 --
 
+with ada.containers;    		        use ada.containers;
+with ada.containers.doubly_linked_lists;
+
+
 
 package et_sheets is
 	
@@ -52,6 +56,10 @@ package et_sheets is
 	function to_sheet_relative (sheet : in string) return type_sheet_relative;
 	
 
+	package pac_sheet_numbers is new doubly_linked_lists (type_sheet);
+
+	package pac_sheet_sorting is new pac_sheet_numbers.generic_sorting;
+	
 end et_sheets;
 
 -- Soli Deo Gloria

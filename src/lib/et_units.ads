@@ -328,6 +328,15 @@ package et_units is
 
 
 	
+	-- Extracts from the given list of object positions a list
+	-- of sheet numbers. A sheet number occurs only once
+	-- in the returned list:
+	function extract_sheets (
+		positions	: in pac_unit_positions.map)
+		return pac_sheet_numbers.list;
+
+	
+	
 	-- Returns a list of units and their 
 	-- coordinates in the schematic:
 	function get_unit_positions (

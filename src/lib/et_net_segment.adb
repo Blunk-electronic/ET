@@ -69,6 +69,27 @@ package body et_net_segment is
 
 
 
+
+	procedure rename_device_port (
+		segment		: in out type_net_segment;
+		AB_end		: in type_start_end_point;
+		device_old	: in type_device_name;
+		device_new	: in type_device_name)
+	is begin
+		case AB_end is
+			when A => 
+				rename_device_ports (
+					segment.ports.A.devices, device_old, device_new);
+				
+			when B =>
+				rename_device_ports (
+					segment.ports.B.devices, device_old, device_new);
+		end case;
+	end;
+
+	
+
+
 	procedure add_label (
 		segment	: in out type_net_segment;
 		label	: in type_net_label)
@@ -1423,8 +1444,6 @@ package body et_net_segment is
 
 	
 
-	
-	
 end et_net_segment;
 
 -- Soli Deo Gloria

@@ -48,6 +48,7 @@ with et_net_labels;				use et_net_labels;
 with et_net_connectors;			use et_net_connectors;
 with et_net_ports;				use et_net_ports;
 with et_net_junction;			use et_net_junction;
+with et_device_name;			use et_device_name;
 with et_netlists;
 with et_primitive_objects;		use et_primitive_objects;
 
@@ -80,6 +81,19 @@ package et_net_segment is
 		return type_net_segment;
 
 
+	-- Renames the name of a device on
+	-- the given end of the given segment. If the
+	-- device_old does not exist then nothing happens:
+	procedure rename_device_port (
+		segment		: in out type_net_segment;
+		AB_end		: in type_start_end_point;
+		device_old	: in type_device_name;
+		device_new	: in type_device_name);
+	
+	-- CS: rename_netchanger_port, rename_submodule_port
+
+
+	
 
 	-- Adds a net label to the given segment.
 	-- The label is rejected if it is already
@@ -593,6 +607,8 @@ package et_net_segment is
 		segments	: in pac_net_segments.list)
 		return pac_points.list;
 
+	
+	
 	
 	
 	net_line_width : constant type_distance_positive := 0.2;

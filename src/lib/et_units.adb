@@ -444,6 +444,8 @@ package body et_units is
 	end;
 
 
+
+	
 	
 	function is_moving (
 		unit : in pac_units.cursor)
@@ -451,6 +453,46 @@ package body et_units is
 	is begin
 		return is_moving (element (unit));
 	end;
+
+
+
+	
+
+	function extract_sheets (
+		positions	: in pac_unit_positions.map)
+		return pac_sheet_numbers.list
+	is
+		use pac_sheet_numbers;
+		use pac_sheet_sorting;
+		
+		result : pac_sheet_numbers.list;
+
+		
+		procedure query_position (c : in pac_unit_positions.cursor) is
+			use pac_unit_positions;
+			pos : type_object_position := element (c);
+			sheet : type_sheet;
+		begin
+			sheet := get_sheet (pos);
+			
+			if not result.contains (sheet) then
+				result.append (sheet);
+			end if;
+		end query_position;
+
+		
+	begin
+		positions.iterate (query_position'access);
+
+		-- Sort the sheets in ascending order:
+		sort (result);
+		
+		return result;
+	end extract_sheets;
+
+	
+
+	
 
 	
 	

@@ -2582,102 +2582,119 @@ package body et_schematic_ops.units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_before	: in type_device_name;	-- the device name before like IC1
 		device_after	: in type_device_name;	-- the device name after like IC23
-		sheets			: in pac_unit_positions.map; -- the sheet numbers where to look at
+		unit_positions	: in pac_unit_positions.map; -- the sheet numbers where to look at
 		log_threshold	: in type_log_level) 
 	is
+		-- Make a list of affected sheets.
+		-- For each sheet we look at the net segments there
+		-- and rename the ports of the given device_before to device_after:
+		use pac_sheet_numbers;
+		sheets : constant pac_sheet_numbers.list := extract_sheets (unit_positions);
 
+		-- Points to the sheet being processed:
+		sheet : type_sheet;
+		
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
--- 			procedure query_net (net_cursor : in pac_nets.cursor) is
--- 				use pac_nets;
--- 
--- 				procedure query_strands (
--- 					net_name	: in pac_net_name.bounded_string;
--- 					net			: in out type_net) 
--- 				is
--- 					procedure query_strand (strand_cursor : in pac_strands.cursor) is
--- 						procedure query_segments (strand : in out type_strand) is
--- 							use pac_net_segments;
--- 
--- 							procedure query_segment (segment_cursor : in pac_net_segments.cursor) is 
--- 								use pac_device_ports;
--- 
--- 								procedure query_ports (segment : in out type_net_segment) is
--- 								-- Tests device ports of given segment if their device name matches the given device name.
--- 								-- On match replace the old device name by the new device name.
--- 
--- 									port_cursor : pac_device_ports.cursor := segment.ports.devices.first;
--- 									
--- 								begin -- query_ports
--- 									while port_cursor /= pac_device_ports.no_element loop
--- 
--- 										if element (port_cursor).device_name = device_before then -- IC1
--- 
--- 											replace_element (
--- 												container	=> segment.ports.devices,
--- 												position	=> port_cursor,
--- 												new_item	=> (
--- 													device_name	=> device_after, -- IC23
--- 													unit_name	=> element (port_cursor).unit_name, -- unchanged
--- 													port_name 	=> element (port_cursor).port_name) -- unchanged
--- 												);
--- 										end if;
--- 										
--- 										next (port_cursor);
--- 									end loop;
--- 								end query_ports;
--- 
--- 								
--- 							begin -- query_segment
--- 								log_indentation_up;
--- 								log (text => to_string (segment_cursor), level => log_threshold + 2);
--- 
--- 								update_element (
--- 									container	=> strand.segments,
--- 									position	=> segment_cursor,
--- 									process		=> query_ports'access);
--- 												   
--- 								log_indentation_down;
--- 							end query_segment;
--- 
--- 							
--- 						begin -- query_segments
--- 							iterate (strand.segments, query_segment'access);
--- 						end query_segments;
--- 						
--- 					begin -- query_strand
--- 						log_indentation_up;
--- 						log (text => "strand " & to_string (position => element (strand_cursor).position),
--- 							 level => log_threshold + 2);
--- 
--- 						update_element (
--- 							container	=> net.strands,
--- 							position	=> strand_cursor,
--- 							process		=> query_segments'access);
--- 						
--- 						log_indentation_down;
--- 					end query_strand;
--- 					
--- 				begin -- query_strands
--- 					iterate (net.strands, query_strand'access);
--- 				end query_strands;
--- 				
--- 			begin -- query_net
--- 				log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
--- 
--- 				update_element (
--- 					container	=> module.nets,
--- 					position	=> net_cursor,
--- 					process		=> query_strands'access);
--- 				
--- 			end query_net;				
--- 			
+
+			use pac_nets;
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				use pac_strands;
+				strand_cursor : pac_strands.cursor := net.strands.first;
+				
+				
+				procedure query_strand (
+					strand : in out type_strand)
+				is
+					use pac_net_segments;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+					
+
+						procedure query_segment (
+							segment : in out type_net_segment)
+						is begin
+							log (text => "segment " & to_string (segment), level => log_threshold + 3);	
+
+							rename_device_port (segment, A, device_before, device_after);
+							rename_device_port (segment, B, device_before, device_after);
+						end query_segment;
+
+					
+				begin
+					-- Look at strands that are on the sheet being processed:
+					if get_sheet (strand) = sheet then
+
+						log (text => "strand " & get_position (strand), level => log_threshold + 2);
+						log_indentation_up;
+						
+						-- Iterate through the segments:
+						while has_element (segment_cursor) loop
+							
+							update_element (
+								container	=> strand.segments,
+								position	=> segment_cursor,
+								process		=> query_segment'access);
+							
+							next (segment_cursor);
+						end loop;
+
+						log_indentation_down;
+					end if;
+				end query_strand;
+
+				
+			begin
+				log (text => "net " & to_string (net_name), level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate through the strands:
+				while has_element (strand_cursor) loop
+				
+					update_element (
+						container	=> net.strands,
+						position	=> strand_cursor,
+						process		=> query_strand'access);					
+					
+					next (strand_cursor);
+				end loop;
+				
+				log_indentation_down;
+			end query_net;	
+
+			
 		begin
-			null;
--- 			pac_nets.iterate (module.nets, query_net'access);
+			-- Iterate though the nets:
+			while has_element (net_cursor) loop
+				module.nets.update_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
 		end query_module;
+
+
+		
+		
+		procedure query_sheet (c : in pac_sheet_numbers.cursor) is begin
+			sheet := element (c);
+			
+			log (text => "sheet " & to_string (sheet), level => log_threshold + 1);
+			log_indentation_up;
+			
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> query_module'access);
+
+			log_indentation_down;
+		end query_sheet;
 
 		
 	begin
@@ -2686,14 +2703,11 @@ package body et_schematic_ops.units is
 			& " to device new: " & to_string (device_after),
 			level => log_threshold);
 
-
 		log_indentation_up;
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_module'access);
 
+		-- Iterate through the sheets:
+		sheets.iterate (query_sheet'access);
+		
 		log_indentation_down;
 	end rename_device_ports;
 
@@ -2729,7 +2743,8 @@ package body et_schematic_ops.units is
 			-- renaming the port names connected with net segments.
 			unit_positions := get_unit_positions (device_cursor_sch);
 			
-			-- Copy elements and properties of the old device to a new one:
+			-- Copy elements and properties of the old device to a new one.
+			-- This includes deployed units, the position in the board, everything:
 			pac_devices_sch.insert (
 				container	=> module.devices,
 				key			=> device_name_after, -- IC23
@@ -2748,7 +2763,7 @@ package body et_schematic_ops.units is
 				module_cursor	=> module_cursor,
 				device_before	=> device_name_before,
 				device_after	=> device_name_after,
-				sheets			=> unit_positions, -- the sheets to look at
+				unit_positions	=> unit_positions, -- the sheets to look at
 				log_threshold	=> log_threshold + 1);
 			
 		end query_module;
