@@ -3460,14 +3460,15 @@ package body et_schematic_ops.units is
 	
 	
 	procedure drag_unit (
-		module_cursor 	: in pac_generic_modules.cursor; -- points to the module being modified
-		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- A
-		coordinates		: in type_coordinates; -- relative/absolute
+		module_cursor 	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name;
+		unit_name		: in pac_unit_name.bounded_string;
+		coordinates		: in type_coordinates;
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level) 
 	is
-
+		device_cursor_sch : pac_devices_sch.cursor;
+		
 		
 		-- Merges the two maps ports_old and ports_new to a drag list.
 		-- The resulting drag list tells which port is to be moved from old to new position.
@@ -3506,11 +3507,10 @@ package body et_schematic_ops.units is
 
 		
 		
-		procedure query_devices (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			device_cursor : pac_devices_sch.cursor;
 
 			-- temporarily storage of unit coordinates.
 			-- There will be only one unit in this container.
@@ -3595,102 +3595,110 @@ package body et_schematic_ops.units is
 			end query_units;
 
 			
-		begin -- query_devices
-			if contains (module.devices, device_name) then
-				device_cursor := find (module.devices, device_name); -- the device should be there
+		begin -- query_module
 
-				log_indentation_up;
+			-- Before the actual drag, the coordinates of the
+			-- unit must be fetched. These coordinates will later assist
+			-- in changing the positions of connected net segments.
+			
+			-- locate the unit, store old position in position_of_unit_old
+			query_element (
+				position	=> device_cursor_sch,
+				process		=> query_unit_location'access);
+			
+			-- Fetch the ports of the unit to be moved. These are the default port positions
+			-- (relative to the symbol origin) as they are defined in the library model.
+			ports := get_ports_of_unit (device_cursor_sch, unit_name);
+			
+			-- Calculate the old and new positions of the unit ports:
+			ports_old := ports;
+			rotate_ports (ports_old, get_rotation (position_of_unit_old));
+			move_ports (ports_old, position_of_unit_old); 
+			-- ports_old now contains the absolute port positions in the schematic BEFORE the move.
 
-				-- Before the actual drag, the coordinates of the
-				-- unit must be fetched. These coordinates will later assist
-				-- in changing the positions of connected net segments.
-				
-				-- locate the unit, store old position in position_of_unit_old
-				query_element (
-					position	=> device_cursor,
-					process		=> query_unit_location'access);
-				
-				-- Fetch the ports of the unit to be moved. These are the default port positions
-				-- (relative to the symbol origin) as they are defined in the library model.
-				ports := get_ports_of_unit (device_cursor, unit_name);
-				
-				-- Calculate the old and new positions of the unit ports:
-				ports_old := ports;
-				rotate_ports (ports_old, get_rotation (position_of_unit_old));
-				move_ports (ports_old, position_of_unit_old); 
-				-- ports_old now contains the absolute port positions in the schematic BEFORE the move.
+			-- Test whether the ports of the unit can be dragged.
+			-- CS: Might become obsolete once ports at the same x/y position are prevented.
+			-- CS: Before the drag: If a port of the unit sits at the same place
+			--     where a port of another unit is, then a net segment should be
+			--     inserted between them ?
+			movable_test (module_cursor, device_name, unit_name, 
+				position_of_unit_old, ports_old, log_threshold + 1);
 
-				-- Test whether the ports of the unit can be dragged.
-				-- CS: Might become obsolete once ports at the same x/y position are prevented.
-				-- CS: Before the drag: If a port of the unit sits at the same place
-				--     where a port of another unit is, then a net segment should be
-				--     inserted between them ?
-				movable_test (module_cursor, device_name, unit_name, 
-					position_of_unit_old, ports_old, log_threshold + 1);
+			-- locate the unit, move it, store new position in position_of_unit_new
+			update_element (
+				container	=> module.devices,
+				position	=> device_cursor_sch,
+				process		=> query_units'access);
+			
+			ports_new := ports;
+			rotate_ports (ports_new, get_rotation (position_of_unit_new));
+			move_ports (ports_new, position_of_unit_new);
+			-- ports_new now contains the absolute port positions in the schematic AFTER the move.
+			
+			-- Change net segments in the affected nets (type_generic_module.nets):
+			drag_net_segments (
+				module			=> module_cursor,
+				drag_list		=> make_drag_list (ports_old, ports_new),
+				sheet			=> get_sheet (position_of_unit_new), -- or position_of_unit_old
+				log_threshold	=> log_threshold + 1);
 
-				-- locate the unit, move it, store new position in position_of_unit_new
-				update_element (
-					container	=> module.devices,
-					position	=> device_cursor,
-					process		=> query_units'access);
-				
-				ports_new := ports;
-				rotate_ports (ports_new, get_rotation (position_of_unit_new));
-				move_ports (ports_new, position_of_unit_new);
-				-- ports_new now contains the absolute port positions in the schematic AFTER the move.
-				
-				-- Change net segments in the affected nets (type_generic_module.nets):
-				drag_net_segments (
-					module			=> module_cursor,
-					drag_list		=> make_drag_list (ports_old, ports_new),
-					sheet			=> get_sheet (position_of_unit_new), -- or position_of_unit_old
-					log_threshold	=> log_threshold + 1);
+			-- The drag operation might result in new port-to-net connections.
+			-- So we must insert new ports in segments.
+			-- Insert possible new unit ports in the nets (type_generic_module.nets):
+			log_indentation_up;
+			
+			insert_ports (
+				module_cursor	=> module_cursor,
+				device_name		=> device_name,
+				unit_name		=> unit_name,
+				ports			=> ports_new,
+				sheet			=> get_sheet (position_of_unit_new),
+				log_threshold	=> log_threshold + 1);
 
-				-- The drag operation might result in new port-to-net connections.
-				-- So we must insert new ports in segments.
-				-- Insert possible new unit ports in the nets (type_generic_module.nets):
-				log_indentation_up;
-				
-				insert_ports (
-					module_cursor	=> module_cursor,
-					device_name		=> device_name,
-					unit_name		=> unit_name,
-					ports			=> ports_new,
-					sheet			=> get_sheet (position_of_unit_new),
-					log_threshold	=> log_threshold + 1);
+			log_indentation_down;
+		end query_module;
 
-				log_indentation_down;
-				log_indentation_down;				
-			else
-				device_not_found (device_name);
-			end if;
-		end query_devices;
 
 		
 	begin
 		case coordinates is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_cursor)
-					 & " dragging " & enclose_in_quotes (to_string (device_name)) 
-					 & " unit " & enclose_in_quotes	(to_string (unit_name)) 
+					 & " drag device " & to_string (device_name)
+					 & " unit " & to_string (unit_name)
 					 & " to" & to_string (destination), 
 					 level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_cursor)
-					 & " dragging " & enclose_in_quotes (to_string (device_name)) 
-					 & " unit " & enclose_in_quotes	(to_string (unit_name)) 
+					 & " drag device " & to_string (device_name)
+					 & " unit " & to_string (unit_name)
 					 & " by" & to_string (destination), 
 					 level => log_threshold);
 		end case;
 		
 		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_devices'access);
+		log_indentation_up;
+		
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor_sch := locate_device (module_cursor, device_name);
+			
+		if has_element (device_cursor_sch) then -- device exists in schematic
+			
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> query_module'access);
+
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+		end if;
 
 		update_ratsnest (module_cursor, log_threshold + 1);
+		
+		log_indentation_down;		
 	end drag_unit;
 
 

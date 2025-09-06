@@ -1147,7 +1147,8 @@ is
 
 
 
-	
+	-- This procedure parses a command that drags a unit
+	-- of a device like "schematic led_driver drag unit IC1 C absolute 100 130":
 	procedure drag_unit is begin
 		case cmd_field_count is
 			when 9 =>

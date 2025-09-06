@@ -574,15 +574,13 @@ package et_schematic_ops.units is
 		return boolean;
 
 	
-	-- Drags the given unit within the schematic.
+	-- Drags the given unit about the sheet.
 	-- Already existing connections with net segments are kept.
-	-- Net segment positions are modified.
-	-- Net segment positions are modified.
+	-- This operation applies to a single sheet. Dragging from one sheet
+	-- to another is not possible.
 	-- CS: Before the drag: If a port of the unit sits at the same place
 	--     where a port of another unit is, then a net segment should be
 	--     inserted between them ?
-	-- This operation applies to a single sheet. Dragging from one sheet
-	-- to another is not possible.
 	procedure drag_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
