@@ -861,58 +861,6 @@ package body et_canvas_schematic_units is
 
 	
 	
-	procedure reset_segments_being_dragged is begin
-		segments_being_dragged.clear;
-	end reset_segments_being_dragged;
-
--- 	
--- 	
--- 	procedure finalize_drag (
--- 		destination		: in type_vector_model;
--- 		log_threshold	: in type_log_level)
--- 	is
--- 		su : type_selected_unit;
--- 
--- 		use pac_devices_sch;
--- 		use pac_units;
--- 
--- 		use et_commit;
--- 		use et_undo_redo;
--- 	begin
--- 		log (text => "finalizing drag ...", level => log_threshold);
--- 		log_indentation_up;
--- 
--- 		if selected_unit /= pac_proposed_units.no_element then
--- 
--- 			su := element (selected_unit);
--- 
--- 			-- Commit the current state of the design:
--- 			commit (PRE, verb, noun, log_threshold);
--- 			
--- 			drag_unit (
--- 				module_cursor	=> active_module,
--- 				device_name		=> key (su.device),
--- 				unit_name		=> key (su.unit),
--- 				coordinates		=> ABSOLUTE,
--- 				destination		=> destination,
--- 				log_threshold	=> log_threshold);
--- 
--- 			-- Commit the new state of the design:
--- 			commit (POST, verb, noun, log_threshold);			
--- 		else
--- 			log (text => "nothing to do", level => log_threshold);
--- 		end if;
--- 			
--- 		log_indentation_down;
--- 
--- 		set_status (status_drag);
--- 
--- 		reset_segments_being_dragged;
--- 		
--- 		-- CS reset_unit_move; -- reset_proposed_objects ?
--- 	end finalize_drag;
-
-
 
 
 	
@@ -931,7 +879,7 @@ package body et_canvas_schematic_units is
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
-			log (text => "finalizing drag ...", level => log_threshold);
+			log (text => "finalize drag", level => log_threshold);
 			log_indentation_up;
 
 			-- If a selected object has been found, then
@@ -999,8 +947,7 @@ package body et_canvas_schematic_units is
 				set_first_selected_object_moving;
 				
 				-- Set the net segments which are
-				-- connected with the selected unit
-				-- as "moving":
+				-- connected with the selected unit as "moving":
 				set_segments_moving (active_module, log_threshold + 1);
 
 				-- Furtheron, on the next call of this procedure
@@ -1012,167 +959,10 @@ package body et_canvas_schematic_units is
 
 		else
 			finalize;
-			
-			-- -- Finally assign the pointer position to the
-			-- -- currently selected unit:
-			-- finalize_drag (
-			-- 	destination		=> position,
-			-- 	log_threshold	=> log_threshold + 1);
-
 		end if;
 	end drag_object;
 
 	
-
-
-	
--- 	procedure find_units_for_move (point : in type_vector_model) is 
--- 		use et_modes.schematic;
--- 	begin
--- 		log (text => "locating units for move/drag ...", level => log_threshold);
--- 		log_indentation_up;
--- 		
--- 		-- Collect all units in the vicinity of the given point:
--- 		proposed_units := collect_units (
--- 			module			=> active_module,
--- 			place			=> to_position (point, active_sheet),
--- 			zone			=> get_catch_zone (catch_zone_radius_default),
--- 			log_threshold	=> log_threshold + 1);
--- 
--- 		
--- 		-- evaluate the number of units found here:
--- 		case length (proposed_units) is
--- 			when 0 =>
--- 				reset_request_clarification;
--- 				--reset_unit_move;
--- 				-- CS reset_proposed_objects ?
--- 				
--- 			when 1 =>
--- 				set_edit_process_running;
--- 				selected_unit := proposed_units.first;
--- 
--- 				case verb is
--- 					when VERB_DRAG => 
--- 						find_attached_segments;
--- 						set_status (status_drag);
--- 						
--- 					when VERB_MOVE => 
--- 						set_status (status_move);
--- 						
--- 					when others => null;
--- 				end case;
--- 
--- 				reset_request_clarification;
--- 				
--- 			when others =>
--- 				--log (text => "many objects", level => log_threshold + 2);
--- 				set_request_clarification;
--- 
--- 				-- preselect the first unit
--- 				selected_unit := proposed_units.first;
--- 		end case;
--- 		
--- 		log_indentation_down;
--- 	end find_units_for_move;
-
-
-
-
-	
-	procedure find_attached_segments is
-		-- Device and unit name of the selected unit:
-		use pac_devices_sch;
-		use pac_units;
-		use et_symbol_ports;
-		use et_net_strands;
-		
-		su : type_selected_unit := element (selected_unit);
-		device_name : constant type_device_name := key (su.device);
-		unit_name : constant pac_unit_name.bounded_string := key (su.unit);
-
-		-- The ports with their positions of the selected unit:
-		ports : pac_ports.map;
-
-		-- The initial position of the selected unit before 
-		-- the drag:
-		unit_position : type_object_position;
-		
-		procedure get_ports (su : in type_selected_unit) is 
-			use pac_units;
-		begin
-			-- Get the unit position before the drag:
-			unit_position := element (su.unit).position;
-
-			-- Get the default port positions as defined in the library:
-			ports := get_ports_of_unit (su.device, key (su.unit));
-
-			-- Calculate the port positions in the schematic before the drag:
-			rotate_ports (ports, get_rotation (unit_position));
-			move_ports (ports, unit_position);
-		end get_ports;
-
-		
-		procedure query_port (p : in pac_ports.cursor) is
-			use pac_nets;
-			use pac_ports;
-
-			procedure query_net (n : in pac_nets.cursor) is
-				use pac_strands;
-
-				procedure query_strand (s : in pac_strands.cursor) is
-					use pac_net_segments;
-
-					procedure query_segment (g : in pac_net_segments.cursor) is begin
-						log (text => to_string (element (g)));
-						
-						if get_A (g) = element (p).position then
-							segments_being_dragged.append ((
--- 								net		=> n,
--- 								strand	=> s,
-								segment	=> element (g),
-								zone	=> START_POINT));
-
-							--log (text => "dg S" & to_string (element (g)), console => true);
-						end if;
-
-						if get_B (g) = element (p).position then
-							segments_being_dragged.append ((
--- 								net		=> n,
--- 								strand	=> s,
-								segment	=> element (g),
-								zone	=> END_POINT));
-
-							--log (text => "dg1 E" & to_string (element (g)), console => true);
-						end if;
-					end query_segment;
-					
-				begin -- query_strand
-					if get_sheet (element (s).position) = active_sheet then
-						iterate (element (s).segments, query_segment'access);
-					end if;
-				end query_strand;
-				
-			begin
-				--log (text => "iterate strands", console => true);
-				iterate (element (n).strands, query_strand'access);
-			end query_net;
-			
-		begin
-			--log (text => "iterate nets", console => true);
-			iterate (element (active_module).nets, query_net'access);
-		end query_port;
-		
-	begin -- find_attached_segments
-		--log (text => "find attached segments", console => true);
-		
-		query_element (selected_unit, get_ports'access);
-		-- now the ports of the selected unit are in "ports"
-
-		--log (text => count_type'image (ports.length), console => true);
-		
-		pac_ports.iterate (ports, query_port'access);
-		
-	end find_attached_segments;
 
 
 

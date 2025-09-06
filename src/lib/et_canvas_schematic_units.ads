@@ -217,54 +217,12 @@ package et_canvas_schematic_units is
 		point	: in type_vector_model);
 
 	
-
--- DRAG:
 	
-	-- While dragging a unit, the attached segments must be dragged along.
-	-- So we need a list of selected segments.
-	-- There must also be information about the zone of the segment being dragged at:
-	subtype type_drag_zone is type_line_zone range START_POINT .. END_POINT;
-	
--- 	type type_segment_being_dragged is new et_canvas_schematic_nets.type_selected_segment with record
-	type type_segment_being_dragged is record
-		segment	: type_net_segment;
-		zone	: type_drag_zone;
-	end record;
-
-	package pac_segments_being_dragged is new doubly_linked_lists (type_segment_being_dragged);
-	use pac_segments_being_dragged;
-
-	segments_being_dragged : pac_segments_being_dragged.list;
-
-	-- Clears list of segments being dragged:
-	procedure reset_segments_being_dragged;
-	
-	-- Assigns the final position after the drag to the selected unit.
-	-- Resets the global variable "unit".
-	-- procedure finalize_drag (
-	-- 	destination		: in type_vector_model;
-	-- 	log_threshold	: in type_log_level);
-
 	procedure drag_object (
 		tool	: in type_tool;
 		point	: in type_vector_model);
 
 	
-
--- MOVE:
-	
-	-- Locates all units in the vicinity of given point.
-	-- If more than one unit near point found, then it sets the
-	-- cursor selected_unit to the first unit and requests
-	-- for clarification.
-	-- If there is only one unite, sets global variable selected_unit accordingly.
-	-- If there is no unit, then selected_unit is set to no_element.
-	-- procedure find_units_for_move (point : in type_vector_model);
-
-	-- Locates net segments attached to the unit indicated by
-	-- cursor selected_unit. Collects the segments in list
-	-- segments_being_dragged (see above):
-	procedure find_attached_segments;
 
 
 	

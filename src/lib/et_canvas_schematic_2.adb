@@ -484,10 +484,8 @@ package body et_canvas_schematic_2 is
 		reset_request_clarification;
 		
 		reset_preliminary_segment; -- after move/drag/draw of a net segment
-		reset_segments_being_dragged; -- after dragging a unit
-		-- reset_unit_move; -- after moving/dragging a unit
-		reset_unit_add; -- after adding a device
 
+		reset_unit_add; -- after adding a device
 		
 		reset_placeholder; -- after moving a placeholder
 

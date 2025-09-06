@@ -3048,78 +3048,78 @@ is
 					end case;
 
 					
-				when VERB_DRAG =>
-					case noun is
-						when NOUN_UNIT =>
-							case cmd_field_count is
-								when 4 =>
-									device_name_missing;
-									
-								when 5 => -- like "drag unit IC1"
-									unit_name_missing;
-
-									device_name := to_device_name (get_field (5));
-
-									if device_exists (active_module, device_name) then
-										object_device_name := device_name;
-
-										-- Propose units that are on the current active sheet:
-										menu_propose_units_on_move (
-											units			=> get_units_on_sheet (
-																active_module,
-																device_name,
-																active_sheet,
-																log_threshold + 1),
-											log_threshold	=> log_threshold + 1);
-
-									else
-										device_not_found;
-									end if;
-									
-								when 6 => -- like "drag unit IC1 B"
-									device_name := to_device_name (get_field (5));
-									
-									if device_exists (active_module, device_name) then
-										
-										object_device_name := device_name;
-
-										unit_name := to_unit_name (get_field (6));
-
-										-- Test whether the unit is deployed on the current active sheet.
-										-- Dragging is possible if it is deployed and if it is on the current sheet.
-										-- It will then be attached to the cursor or mouse pointer.
-										if is_deployed (active_module, object_device_name, unit_name) then
-
-											object_unit_name := unit_name;
-											
-											if get_sheet (active_module, object_device_name, object_unit_name) = active_sheet then
-												select_unit_for_move;
-												
-												-- use the current primary tool for moving the unit:
-												object_tool := primary_tool;
-
-												find_attached_segments;
-												
-												set_edit_process_running;
-
-												set_finalization_pending (cmd);
-												-- CS redraw;
-
-											else
-												unit_not_on_this_sheet;
-											end if;
-										else
-											unit_not_deployed;
-										end if; 
-									else
-										device_not_found;
-									end if;
-														
-								when others => null;								
-							end case;
-
-						when others => null; -- CS
-					end case;
+-- 				when VERB_DRAG =>
+-- 					case noun is
+-- 						when NOUN_UNIT =>
+-- 							case cmd_field_count is
+-- 								when 4 =>
+-- 									device_name_missing;
+-- 									
+-- 								when 5 => -- like "drag unit IC1"
+-- 									unit_name_missing;
+-- 
+-- 									device_name := to_device_name (get_field (5));
+-- 
+-- 									if device_exists (active_module, device_name) then
+-- 										object_device_name := device_name;
+-- 
+-- 										-- Propose units that are on the current active sheet:
+-- 										menu_propose_units_on_move (
+-- 											units			=> get_units_on_sheet (
+-- 																active_module,
+-- 																device_name,
+-- 																active_sheet,
+-- 																log_threshold + 1),
+-- 											log_threshold	=> log_threshold + 1);
+-- 
+-- 									else
+-- 										device_not_found;
+-- 									end if;
+-- 									
+-- 								when 6 => -- like "drag unit IC1 B"
+-- 									device_name := to_device_name (get_field (5));
+-- 									
+-- 									if device_exists (active_module, device_name) then
+-- 										
+-- 										object_device_name := device_name;
+-- 
+-- 										unit_name := to_unit_name (get_field (6));
+-- 
+-- 										-- Test whether the unit is deployed on the current active sheet.
+-- 										-- Dragging is possible if it is deployed and if it is on the current sheet.
+-- 										-- It will then be attached to the cursor or mouse pointer.
+-- 										if is_deployed (active_module, object_device_name, unit_name) then
+-- 
+-- 											object_unit_name := unit_name;
+-- 											
+-- 											if get_sheet (active_module, object_device_name, object_unit_name) = active_sheet then
+-- 												select_unit_for_move;
+-- 												
+-- 												-- use the current primary tool for moving the unit:
+-- 												object_tool := primary_tool;
+-- 
+-- 												find_attached_segments;
+-- 												
+-- 												set_edit_process_running;
+-- 
+-- 												set_finalization_pending (cmd);
+-- 												-- CS redraw;
+-- 
+-- 											else
+-- 												unit_not_on_this_sheet;
+-- 											end if;
+-- 										else
+-- 											unit_not_deployed;
+-- 										end if; 
+-- 									else
+-- 										device_not_found;
+-- 									end if;
+-- 														
+-- 								when others => null;								
+-- 							end case;
+-- 
+-- 						when others => null; -- CS
+-- 					end case;
 
 					
 				when VERB_DRAW =>

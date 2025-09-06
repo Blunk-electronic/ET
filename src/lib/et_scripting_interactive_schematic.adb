@@ -376,7 +376,7 @@ package body et_scripting_interactive_schematic is
 			when VERB_DRAG => 
 				-- If we are about to drag a unit, then the connected
 				-- net segments must be identified:
-				find_attached_segments;
+				-- CS find_attached_segments;				
 
 				-- Allow drawing the unit:
 				set_edit_process_running;

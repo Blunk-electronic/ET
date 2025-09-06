@@ -4625,7 +4625,7 @@ package body et_schematic_ops.units is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " dragging object " 
+			& " drag object " 
 			-- CS & to_string (object)
 			& " to" & to_string (destination),
 			level => log_threshold);
