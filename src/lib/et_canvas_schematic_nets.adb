@@ -360,7 +360,7 @@ package body et_canvas_schematic_nets is
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
-			log (text => "finalizing rename ...", level => log_threshold);
+			log (text => "finalize rename", level => log_threshold);
 			log_indentation_up;
 
 			-- If a selected object has been found, then
@@ -439,7 +439,6 @@ package body et_canvas_schematic_nets is
 		build_rename_window;
 
 		-- Connect the "destroy" signal.
-		-- It is emitted
 		rename_window.on_destroy (cb_rename_window_destroy'access);
 
 
