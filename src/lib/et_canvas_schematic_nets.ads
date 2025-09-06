@@ -220,8 +220,6 @@ package et_canvas_schematic_nets is
 	-- and where he can enter the new name of the object:
 	procedure show_rename_window;
 	
-
-	net_name_new : pac_net_name.bounded_string;
 		
 
 	-- This procedure is required in order to clarify

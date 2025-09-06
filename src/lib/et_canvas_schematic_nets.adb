@@ -350,7 +350,9 @@ package body et_canvas_schematic_nets is
 	procedure cb_rename_new_name_entered (
 		self : access gtk.gentry.gtk_entry_record'class) 
 	is 
+		net_name_new : pac_net_name.bounded_string;
 
+		
 		-- Renames the selected object:
 		procedure finalize is
 			use et_modes.schematic;

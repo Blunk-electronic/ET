@@ -211,8 +211,6 @@ package et_canvas_schematic_units is
 	procedure show_rename_window;
 	
 
-	device_name_new : type_device_name;
-
 
 	
 	procedure rename_object (
