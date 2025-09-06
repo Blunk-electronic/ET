@@ -44,6 +44,7 @@ with ada.containers.doubly_linked_lists;
 with gtk.window;					use gtk.window;
 with gtk.menu_item;
 with gtk.menu_shell;
+with gtk.gentry;
 
 with et_schematic_coordinates;		use et_schematic_coordinates;
 use et_schematic_coordinates.pac_geometry_2;
@@ -193,7 +194,30 @@ package et_canvas_schematic_units is
 	procedure delete_object (
 		point	: in type_vector_model);
 
+
+
+
 	
+	-- Called when the "on_activate" signal is emitted
+	-- (usually when ENTER pressed) by the entry field
+	-- for the new name in the rename window:
+	procedure cb_rename_new_name_entered (
+		self : access gtk.gentry.gtk_entry_record'class);
+	
+
+	-- This procedure shows the window where the
+	-- operator sees the old name of the targeted object
+	-- and where he can enter the new name of the object:
+	procedure show_rename_window;
+	
+
+	device_name_new : type_device_name;
+
+
+	
+	procedure rename_object (
+		point	: in type_vector_model);
+
 	
 
 -- DRAG:
@@ -542,7 +566,7 @@ package et_canvas_schematic_units is
 -- SET PROPERTIES (value, partcode, purpose, name)
 
 	-- to be output in the status bar:
-	status_rename : constant string := 
+	status_rename_device : constant string := 
 		status_click_left 
 		& "or "
 		& status_press_space

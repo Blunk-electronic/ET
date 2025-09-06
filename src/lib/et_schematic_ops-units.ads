@@ -792,6 +792,13 @@ package et_schematic_ops.units is
 		log_threshold	: in type_log_level);
 
 	
+	procedure rename_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		new_name_device	: in type_device_name;
+		-- CS add argument for new names of other kinds of objects
+		log_threshold	: in type_log_level);
+
 	
 end et_schematic_ops.units;
 

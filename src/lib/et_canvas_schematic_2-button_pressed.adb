@@ -189,12 +189,8 @@ is
 			when VERB_RENAME =>
 				case noun is
 					when NOUN_DEVICE =>
-						if not clarification_pending then
-							set_property (event.point);
-						else
-							set_property_selected_unit;
-						end if;
-
+						et_canvas_schematic_units.rename_object (snap_point);
+							
 					when NOUN_STRAND | NOUN_NET =>
 						et_canvas_schematic_nets.rename_object (snap_point);
 						
@@ -372,7 +368,7 @@ is
 				case noun is
 					when NOUN_DEVICE =>
 						if clarification_pending then
-							clarify_unit;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 
 					when NOUN_STRAND | NOUN_NET =>
