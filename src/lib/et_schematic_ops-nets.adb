@@ -7440,7 +7440,7 @@ package body et_schematic_ops.nets is
 	procedure rename_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		new_name		: in pac_net_name.bounded_string;
+		new_name_net	: in pac_net_name.bounded_string;
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
@@ -7458,7 +7458,7 @@ package body et_schematic_ops.nets is
 				rename_strand (
 					module_cursor	=> module_cursor,
 					strand			=> object.strand,
-					new_name		=> new_name,
+					new_name		=> new_name_net,
 					log_threshold	=> log_threshold + 1);
 
 					
@@ -7468,7 +7468,7 @@ package body et_schematic_ops.nets is
 					net				=> object.net,
 					sheet			=> active_sheet,
 					all_sheets		=> modify_net_on_all_sheets,
-					new_name		=> new_name,
+					new_name		=> new_name_net,
 					log_threshold	=> log_threshold + 1);
 
 				

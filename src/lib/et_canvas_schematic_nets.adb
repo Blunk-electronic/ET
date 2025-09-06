@@ -374,7 +374,7 @@ package body et_canvas_schematic_nets is
 				rename_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
-					new_name		=> net_name_new,
+					new_name_net	=> net_name_new,
 					log_threshold	=> log_threshold + 1);
 
 
