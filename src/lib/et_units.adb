@@ -535,18 +535,21 @@ package body et_units is
 		
 		cursor_old : pac_ports.cursor := ports_old.first;
 		cursor_new : pac_ports.cursor := ports_new.first;
-		
+
+		drag : type_drag;
 	begin
-		-- Loop in ports_old, copy the key to the drag list.
-		-- Take the old position from ports_old and the new position from ports_new:
-		while cursor_old /= pac_ports.no_element loop
+		-- Iterate through list ports_old, copy the port name to 
+		-- the drag list.
+		-- Take the old position from ports_old and 
+		-- the new position from ports_new:
+		while has_element (cursor_old) loop
+			drag := (before => element (cursor_old).position,
+					after	=> element (cursor_new).position);
+			
 			insert (
 				container	=> drag_list,
 				key			=> key (cursor_old), -- the port name
-				new_item	=> (
-							before	=> element (cursor_old).position, -- x/y
-							after	=> element (cursor_new).position) -- x/y
-					);
+				new_item	=> drag);
 			
 			next (cursor_old);
 			next (cursor_new);
