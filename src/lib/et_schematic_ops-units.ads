@@ -573,6 +573,20 @@ package et_schematic_ops.units is
 		log_threshold	: in type_log_level)
 		return boolean;
 
+
+
+	-- Drags the net segments according to the given drag_list of a unit.
+	-- Changes the position of start or end points of segments.
+	-- Does NOT create new connections with segments if a port
+	-- lands on the start or end point of another segment.
+	-- Does NOT create a new connection with a segments if a port
+	-- lands between start and end point.
+	procedure drag_net_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		port_drag_list	: in type_port_drag_list; -- the old and new port positions
+		log_threshold	: in type_log_level);
+
+
 	
 	-- Drags the given unit about the sheet.
 	-- Already existing connections with net segments are kept.

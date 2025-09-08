@@ -155,20 +155,7 @@ package et_schematic_ops is
 		return pac_nets.cursor;
 
 	
-	
 
-	type type_drag is record
-		before		: type_vector_model;
-		after		: type_vector_model;
-	end record;
-
-
-	package type_drags_of_ports is new ada.containers.ordered_maps (
-		key_type		=> pac_port_name.bounded_string,
-		"<"				=> pac_port_name."<",
-		element_type	=> type_drag);
-
-	
 	
 	-- Returns lists of device, netchanger and 
 	-- submodule ports at the given place:

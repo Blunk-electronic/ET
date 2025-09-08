@@ -50,6 +50,8 @@ with ada.containers.indefinite_ordered_maps;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_text;					use et_schematic_text;
 with et_sheets;							use et_sheets;
+with et_port_names;						use et_port_names;
+with et_symbol_ports;
 with et_symbols;						use et_symbols;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
@@ -345,7 +347,33 @@ package et_units is
 
 
 
+	use pac_port_name;
+
+	-- When units are dragged about the sheet then connected
+	-- net segments must be dragged along.
+	-- So a list of port names with their old an new positions
+	-- is required.
+	-- The list tells which port is to be moved from an
+	-- old to a new position:
+	package pac_dragged_ports is new ordered_maps (
+		key_type		=> pac_port_name.bounded_string,
+		element_type	=> type_drag);
+
 	
+	-- Creates from two portlists a list of ports to be dragged:
+	function make_drag_list ( 
+		ports_old : in et_symbol_ports.pac_ports.map;
+		ports_new : in et_symbol_ports.pac_ports.map) 
+		return pac_dragged_ports.map;
+
+
+	-- When ports of a unit are dragged, then the sheet
+	-- where all that takes place must also be provided:
+	type type_port_drag_list is record
+		sheet	: type_sheet;
+		ports	: pac_dragged_ports.map;
+	end record;
+
 	
 end et_units;
 

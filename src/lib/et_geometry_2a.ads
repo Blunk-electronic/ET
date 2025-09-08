@@ -730,7 +730,7 @@ package et_geometry_2a is
 
 -- START AND END POINT OF LINES AND ARCS:	
 
-	type type_start_end_point is (A, B);
+	type type_start_end_point is (A, B); -- CS rename to type_AB_end
 
 
 	-- If A given, then the return is B and vise versa:
@@ -2010,6 +2010,18 @@ package et_geometry_2a is
 		rotation	: in type_rotation;
 		mirror		: in type_mirror := MIRROR_NO)	
 		return type_area;
+
+	
+
+
+	-- Whenever objects are to be dragged, then this
+	-- type shall be used in order to express the old and
+	-- new position of the object:
+	type type_drag is record
+		before		: type_vector_model;
+		after		: type_vector_model;
+	end record;
+
 
 	
 

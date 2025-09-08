@@ -395,7 +395,8 @@ package et_devices_electrical is
 
 
 	-- Returns a map of ports of the given device and unit.
-	-- The coordinates of the ports are absolute x/y-positions:
+	-- The coordinates of the ports are the
+	-- absolute x/y-positions in the schematic::
 	function get_ports_of_unit (
 		device_cursor	: in pac_devices_sch.cursor;
 		unit_cursor		: in pac_units.cursor)
