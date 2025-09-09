@@ -2953,7 +2953,7 @@ package body et_schematic_ops.units is
 				log (text => "module " & to_string (module_cursor)
 					& " move " & to_string (device_name)
 					& " unit " & to_string (unit_name)
-					& " to sheet" & to_string (sheet) 
+					& " to sheet " & to_string (sheet) 
 					& to_string (destination),
 					level => log_threshold);
 
@@ -2961,7 +2961,7 @@ package body et_schematic_ops.units is
 				log (text => "module " & to_string (module_cursor)
 					& " move " & to_string (device_name)
 					& " unit " & to_string (unit_name)
-					& " by " & relative_to_string (sheet) & " sheet(s)" 
+					& " by " & relative_to_string (sheet) & " sheet(s) " 
 					& to_string (destination),
 					level => log_threshold);
 		end case;
@@ -4028,7 +4028,7 @@ package body et_schematic_ops.units is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " resetting proposed units", 
+			& " reset proposed units", 
 			level => log_threshold);
 
 		log_indentation_up;
@@ -4369,8 +4369,8 @@ package body et_schematic_ops.units is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is begin
-		log (text => "module " & to_string (module_cursor) &
-			" resetting proposed objects",
+		log (text => "module " & to_string (module_cursor) 
+			& " reset proposed objects",
 			level => log_threshold);
 
 		log_indentation_up;
@@ -4392,9 +4392,9 @@ package body et_schematic_ops.units is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " movie object " 
+			& " move object " 
 			-- CS & to_string (object)
-			& " to" & to_string (destination),
+			& " to " & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;

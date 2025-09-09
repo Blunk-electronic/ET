@@ -730,7 +730,8 @@ procedure draw_units is
 				brightness := NORMAL;
 
 				if is_selected (unit_cursor) then
-
+					-- put_line ("selected");
+					
 					-- increase brightness
 					brightness := BRIGHT;
 

@@ -467,6 +467,8 @@ package body et_canvas_schematic_units is
 			-- If a selected object has been found, then
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
+
+				reset_proposed_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -476,7 +478,7 @@ package body et_canvas_schematic_units is
 					object			=> object, 
 					destination		=> point,
 					log_threshold	=> log_threshold + 1);
-
+				
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
 
@@ -493,8 +495,7 @@ package body et_canvas_schematic_units is
 			log_indentation_down;			
 			
 			set_status (status_move);
-			
-			reset_proposed_objects (active_module, log_threshold + 1);
+			-- CS clear status bar ?
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
@@ -563,6 +564,8 @@ package body et_canvas_schematic_units is
 			-- If a selected object has been found, then
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
+
+				reset_proposed_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -589,8 +592,6 @@ package body et_canvas_schematic_units is
 
 			-- CS clear status bar
 			-- set_status (status_rotate);
-			
-			reset_proposed_objects (active_module, log_threshold + 1);
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
@@ -620,6 +621,8 @@ package body et_canvas_schematic_units is
 
 
 
+	
+
 
 	procedure delete_object (
 		point	: in type_vector_model)
@@ -640,6 +643,8 @@ package body et_canvas_schematic_units is
 			-- If a selected object has been found, then
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
+
+				reset_proposed_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -675,8 +680,6 @@ package body et_canvas_schematic_units is
 
 			-- CS clear status bar ?
 			-- set_status (status_delete);
-			
-			reset_proposed_objects (active_module, log_threshold + 1);
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
@@ -730,6 +733,7 @@ package body et_canvas_schematic_units is
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
 
+				reset_proposed_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -752,8 +756,6 @@ package body et_canvas_schematic_units is
 			end if;
 				
 			log_indentation_down;			
-			
-			reset_proposed_objects (active_module, log_threshold + 1);
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
@@ -885,6 +887,8 @@ package body et_canvas_schematic_units is
 			-- If a selected object has been found, then
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
+
+				reset_proposed_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -912,10 +916,6 @@ package body et_canvas_schematic_units is
 
 			-- CS clear status bar ?
 			-- set_status (status_delete); -- CS correct ?
-			
-			reset_proposed_objects (active_module, log_threshold + 1);
-
-			et_schematic_ops.nets.reset_segments (active_module, log_threshold + 1);
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
@@ -1306,6 +1306,8 @@ package body et_canvas_schematic_units is
 		use et_commit;
 		use et_undo_redo;
 	begin
+		-- CS ? reset_proposed_objects (active_module, log_threshold + 1);
+		
 		-- Commit the current state of the design:
 		commit (PRE, verb, noun, log_threshold);
 
@@ -1624,7 +1626,8 @@ package body et_canvas_schematic_units is
 			log (text => "finalize fetch", level => log_threshold);
 			log_indentation_up;
 						
-
+			reset_proposed_objects (active_module, log_threshold + 1);
+			
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 			

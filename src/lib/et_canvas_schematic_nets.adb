@@ -369,6 +369,7 @@ package body et_canvas_schematic_nets is
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
 
+				reset_proposed_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -391,8 +392,6 @@ package body et_canvas_schematic_nets is
 			end if;
 				
 			log_indentation_down;			
-			
-			reset_proposed_objects (active_module, log_threshold + 1);
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
@@ -892,12 +891,14 @@ package body et_canvas_schematic_nets is
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
-			log (text => "finalizing drag ...", level => log_threshold);
+			log (text => "finalize drag", level => log_threshold);
 			log_indentation_up;
 
 			-- If a selected object has been found, then
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
+
+				reset_proposed_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -922,8 +923,7 @@ package body et_canvas_schematic_nets is
 			log_indentation_down;			
 			
 			set_status (status_drag);
-			
-			reset_proposed_objects (active_module, log_threshold + 1);
+			-- CS clear status bar ?
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
@@ -988,12 +988,14 @@ package body et_canvas_schematic_nets is
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
-			log (text => "finalizing move ...", level => log_threshold);
+			log (text => "finalize move", level => log_threshold);
 			log_indentation_up;
 
 			-- If a selected object has been found, then
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
+
+				reset_proposed_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -1018,8 +1020,7 @@ package body et_canvas_schematic_nets is
 			log_indentation_down;			
 			
 			set_status (status_move);
-			
-			reset_proposed_objects (active_module, log_threshold + 1);
+			-- CS clear status bar
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
@@ -1089,6 +1090,8 @@ package body et_canvas_schematic_nets is
 			-- If a selected object has been found, then
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
+
+				reset_proposed_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -1111,8 +1114,7 @@ package body et_canvas_schematic_nets is
 			log_indentation_down;			
 			
 			set_status (status_delete);
-			
-			reset_proposed_objects (active_module, log_threshold + 1);
+			-- CS clear status bar
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
@@ -1291,9 +1293,12 @@ package body et_canvas_schematic_nets is
 			log (text => "finalize place net label", level => log_threshold);
 			log_indentation_up;
 
+			
 			-- If a selected object has been found, then
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
+				
+				reset_proposed_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -1314,8 +1319,7 @@ package body et_canvas_schematic_nets is
 			log_indentation_down;			
 			
 			set_status (status_delete_label);
-			
-			reset_proposed_objects (active_module, log_threshold + 1);
+			-- CS clear status bar
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
@@ -1381,6 +1385,8 @@ package body et_canvas_schematic_nets is
 			-- If a selected object has been found, then
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
+
+				reset_proposed_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -1401,8 +1407,7 @@ package body et_canvas_schematic_nets is
 			log_indentation_down;			
 			
 			set_status (status_delete_label);
-			
-			reset_proposed_objects (active_module, log_threshold + 1);
+			-- CS clear status bar
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
