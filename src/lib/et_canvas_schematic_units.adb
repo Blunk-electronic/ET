@@ -888,7 +888,11 @@ package body et_canvas_schematic_units is
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
 
+				-- Since the drag operation affects both
+				-- units and connected net segments, a reset
+				-- is required for units and net segments:
 				reset_proposed_objects (active_module, log_threshold + 1);
+				et_schematic_ops.nets.reset_proposed_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
