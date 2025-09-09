@@ -517,6 +517,15 @@ package body et_units is
 
 
 
+	function get_port_name (
+		port : in pac_dragged_ports.cursor)
+		return pac_port_name.bounded_string
+	is begin
+		return key (port);
+	end;
+
+
+	
 	
 
 	function make_drag_list ( 

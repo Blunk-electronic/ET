@@ -359,6 +359,13 @@ package et_units is
 		key_type		=> pac_port_name.bounded_string,
 		element_type	=> type_drag);
 
+	use pac_dragged_ports;
+
+	
+	function get_port_name (
+		port : in pac_dragged_ports.cursor)
+		return pac_port_name.bounded_string;
+	
 	
 	-- Creates from two portlists a list of ports to be dragged:
 	function make_drag_list ( 
