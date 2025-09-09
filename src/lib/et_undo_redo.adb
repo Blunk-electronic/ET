@@ -300,6 +300,16 @@ package body et_undo_redo is
 					end case;
 
 					
+				when NOUN_VIA =>
+					case verb is
+						when VERB_PLACE | VERB_DELETE | VERB_MOVE =>
+							commit_nets;
+
+						when others =>
+							null;
+					end case;
+
+					
 				when others =>
 					null;
 			end case;
