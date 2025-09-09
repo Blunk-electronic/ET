@@ -490,7 +490,7 @@ package body et_canvas_board_devices is
 
 			selected_device : pac_devices_sch.cursor;
 		begin
-			log (text => "finalizing move ...", level => log_threshold);
+			log (text => "finalize move", level => log_threshold);
 			log_indentation_up;
 
 			selected_device := get_first_device (active_module, SELECTED, log_threshold + 1);
@@ -574,7 +574,7 @@ package body et_canvas_board_devices is
 
 			selected_device : pac_devices_non_electric.cursor;
 		begin
-			log (text => "finalizing move ...", level => log_threshold);
+			log (text => "finalize move", level => log_threshold);
 			log_indentation_up;
 
 			selected_device := get_first_non_electrical_device (active_module, SELECTED, log_threshold + 1);
@@ -656,12 +656,14 @@ package body et_canvas_board_devices is
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
-			log (text => "finalizing move ...", level => log_threshold);
+			log (text => "finalize move", level => log_threshold);
 			log_indentation_up;
 
 			-- If a selected object has been found, then
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
+
+				reset_proposed_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -682,8 +684,7 @@ package body et_canvas_board_devices is
 			log_indentation_down;			
 			
 			set_status (status_move_device);
-			
-			reset_proposed_objects (active_module, log_threshold + 1);
+			-- CS clear ?
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;

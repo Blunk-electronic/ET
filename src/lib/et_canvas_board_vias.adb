@@ -1120,13 +1120,15 @@ package body et_canvas_board_vias is
 			object : constant type_object_via := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
-			log (text => "finalizing move ...", level => log_threshold);
+			log (text => "finalize move", level => log_threshold);
 			log_indentation_up;
 
 			-- If a selected object has been found, then
 			-- we do the actual finalizing:
 			if has_element (object.via_cursor) then
 
+				reset_proposed_vias (active_module, log_threshold + 1);
+				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 				
@@ -1147,8 +1149,7 @@ package body et_canvas_board_vias is
 			log_indentation_down;			
 			
 			set_status (status_move_via);			
-			
-			reset_proposed_vias (active_module, log_threshold + 1);
+			-- CS clear ?
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
@@ -1212,13 +1213,15 @@ package body et_canvas_board_vias is
 			object : constant type_object_via := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
 		begin
-			log (text => "finalizing delete ...", level => log_threshold);
+			log (text => "finalize delete", level => log_threshold);
 			log_indentation_up;
 
 			-- If a selected object has been found, then
 			-- we do the actual finalizing:
 			if has_element (object.via_cursor) then
 			
+				reset_proposed_vias (active_module, log_threshold + 1);
+				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 				
@@ -1237,8 +1240,7 @@ package body et_canvas_board_vias is
 			log_indentation_down;			
 			
 			set_status (status_delete_via);
-			
-			reset_proposed_vias (active_module, log_threshold + 1);
+			-- CS clear ?
 
 			reset_editing_process; -- prepare for a new editing process			
 		end finalize;
