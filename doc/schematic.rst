@@ -15,9 +15,14 @@ Devices and Units
 
 #. Add device
 
+	This example command adds a new electrical device to the module.
+	The destination is sheet 1 on 100/140 with rotation 0 degree.
+	The unit to be added is D:
+
 	.. code-block::
 
-		add device
+		add device $HOME/git/BEL/ET_component_library/devices/active/logic/7400_ext.dev 1 100 140 0 D
+
 
 	|VNS| a d
 
@@ -57,6 +62,7 @@ Devices and Units
 
 
 
+
 	
 #. Rename a Device
 
@@ -69,7 +75,8 @@ Devices and Units
 
 
 
-#. Delete Device
+
+#. Delete a Device
 
 	A whole device (incl. all its units) can be deleted
 	via this simple command:
@@ -82,7 +89,9 @@ Devices and Units
 
 	
 
-#. Delete Unit
+
+
+#. Delete a Unit
 
 	.. code-block::
 
@@ -93,16 +102,36 @@ Devices and Units
 
 	
 
-#. Drag unit
+
+#. Drag a Unit
+
+	Dragging a unit means to move it about the sheet
+	along with the connected net segments.
+	If the ports of the unit end up where 
+	a net segment is, then they are connected with the net.
+
+	This example command drags the unit C of IC1 to the
+	absolute position 100/140:
 
 	.. code-block::
 
-		drag unit IC1 [A]
+		drag unit IC1 C absolute 100 140
+
+	This example command drags the unit C of IC1 by the
+	10/4:
+
+	.. code-block::
+
+		drag unit IC1 C relative 10 4
+
 
 	|VNS| d u
 
 
-#. Fetch Unit
+
+
+
+#. Fetch a Unit
 
 	If a device is already used in the schematic and further units
 	of it are to be placed, then the fetch command should be used.
@@ -120,11 +149,13 @@ Devices and Units
 
 	
 
-#. Move Unit
+
+
+#. Move a Unit
 
 	Moving a unit disconnects it from net segments and places it 
 	at the given position. If the ports of the unit end up where 
-	a net segment is, they are connected with the net.
+	a net segment is, then they are connected with the net.
 
 	.. code-block::
 
@@ -146,6 +177,7 @@ Devices and Units
 		schematic led_driver move unit R1 1 absolute 2 210 100
 
 	|VNS| m u
+
 
 
 	
