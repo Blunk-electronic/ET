@@ -2023,6 +2023,9 @@ package et_geometry_2a is
 	end record;
 
 
+	function to_string (
+		drag : in type_drag)
+		return string;
 	
 
 private

@@ -4308,6 +4308,17 @@ end;
 		return b;
 	end get_bounding_box;
 
+
+
+
+	function to_string (
+		drag : in type_drag)
+		return string
+	is begin
+		return "from " & to_string (drag.before) 
+		& " to " & to_string (drag.after);
+	end;
+
 	
 	
 end et_geometry_2a;
