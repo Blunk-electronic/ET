@@ -184,10 +184,14 @@ package et_schematic_ops.units is
 
 	
 	
-	-- Adds a device to the schematic. The unit is determined by the unit add levels.
-	-- If the given variant is empty (zero length) the the device is assumed to be virtual.							 
+	-- Adds a device to the schematic. 
+	-- The unit is determined by the unit add levels.
+	-- If the given variant is empty (zero length) then
+	-- the the device is assumed to be virtual.							 
+	-- CS: Reject the selected unit if a port overlaps a port of another
+	-- existing unit.
 	procedure add_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		device_model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
 		destination		: in type_object_position; -- sheet/x/y/rotation
@@ -195,7 +199,9 @@ package et_schematic_ops.units is
 
 	-- CS procedure add_device with explicit device name like R12
 
-	-- CS procedure add_device that takes module cursor and model cursor
+	-- CS procedure add_device that takes model cursor
+
+
 	
 	-- Copies the given device. Places the first unit of the device (according to add level)
 	-- at the given destination in the schematic.

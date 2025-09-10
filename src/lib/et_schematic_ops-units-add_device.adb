@@ -35,6 +35,10 @@
 --
 --   history of changes:
 --
+--  To Do:
+--  - Rework, simplify code, clean up
+--
+
 
 with et_device_rw;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
@@ -44,20 +48,20 @@ with et_device_model;					use et_device_model;
 separate (et_schematic_ops.units)
 
 procedure add_device (
-	module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-	device_model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
-	variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
-	destination		: in type_object_position; -- sheet/x/y,rotation
+	module_cursor	: in pac_generic_modules.cursor;
+	device_model	: in pac_device_model_file.bounded_string;
+	variant			: in pac_package_variant_name.bounded_string;
+	destination		: in type_object_position;
 	log_threshold	: in type_log_level) 
 is	
 	use et_symbols;
 	use pac_package_variant_name;
 	
-	module_cursor : pac_generic_modules.cursor; -- points to the targeted module
 
 	use pac_devices_lib;
 	device_cursor_lib : pac_devices_lib.cursor; -- points to the device in the library
 
+	
 	
 	procedure add (
 		module_name	: in pac_module_name.bounded_string;
@@ -88,9 +92,8 @@ is
 		procedure add_unit_internal (
 			device_name	: in type_device_name;
 			device		: in out type_device_sch) 
-		is 
-		begin
-			log (text => "adding internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
+		is begin
+			log (text => "add internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
 			
 			case element (device_cursor_lib).appearance is
 				when APPEARANCE_VIRTUAL =>
@@ -127,6 +130,7 @@ is
 		end add_unit_internal;
 
 		
+		
 		-- Add an external unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.ext.
 		procedure add_unit_external (
@@ -136,9 +140,8 @@ is
 			use pac_symbols;
 			symbol_cursor : pac_symbols.cursor;
 			symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
-
 		begin
-			log (text => "adding external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
+			log (text => "add external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
 			
 			case element (device_cursor_lib).appearance is
 				when APPEARANCE_VIRTUAL =>
@@ -189,7 +192,7 @@ is
 
 		
 	begin -- add
-		log (text => "adding device " & to_string (next_name), level => log_threshold + 1);
+		log (text => "add device " & to_string (next_name), level => log_threshold + 1);
 		log_indentation_up;
 		
 		case element (device_cursor_lib).appearance is
@@ -251,6 +254,7 @@ is
 				
 		end case;
 
+		
 		-- Add first available unit (according to search order specified in function first_unit)
 		-- to device in schematic.
 		unit_cursors := get_first_unit (device_cursor_lib);
@@ -330,8 +334,8 @@ is
 	
 begin -- add_device
 	if pac_package_variant_name.length (variant) > 0 then -- real device
-		log (text => "module " & to_string (module_name) &
-			" adding device " & to_string (device_model) &
+		log (text => "module " & to_string (module_cursor) &
+			" add device " & to_string (device_model) &
 			" package variant " & to_string (variant) &
 			" at" &
 			to_string (position => destination) &
@@ -339,8 +343,8 @@ begin -- add_device
 			level => log_threshold);
 		
 	else -- virtual device
-		log (text => "module " & to_string (module_name) &
-			" adding device " & to_string (device_model) &
+		log (text => "module " & to_string (module_cursor) &
+			" add device " & to_string (device_model) &
 			" at" &
 			to_string (position => destination) &
 			" rotation" & to_string (get_rotation (destination)),
@@ -349,8 +353,6 @@ begin -- add_device
 		
 	log_indentation_up;
 	
-	-- locate module
-	module_cursor := locate_module (module_name);
 
 	-- Read the device file and store it in the rig wide device 
 	-- library et_devices.devices.
@@ -359,8 +361,10 @@ begin -- add_device
 		file_name		=> device_model, -- ../lbr/logic_ttl/7400.dev
 		log_threshold	=> log_threshold + 1);
 
+	
 	-- locate the device in the library
 	device_cursor_lib := find (device_library, device_model);
+
 	
 	update_element (
 		container	=> generic_modules,

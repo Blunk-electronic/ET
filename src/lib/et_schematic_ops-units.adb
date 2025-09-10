@@ -704,10 +704,10 @@ package body et_schematic_ops.units is
 
 	
 	procedure add_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
-		variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
-		destination		: in type_object_position; -- sheet/x/y,rotation
+		module_cursor	: in pac_generic_modules.cursor;
+		device_model	: in pac_device_model_file.bounded_string;
+		variant			: in pac_package_variant_name.bounded_string;
+		destination		: in type_object_position;
 		log_threshold	: in type_log_level) is separate;
 
 

@@ -326,6 +326,7 @@ is
 
 	
 
+	
 	-- This procedure parses a command that adds an electrical
 	-- device to the module.
 	-- example: "schematic demo add device $HOME/git/BEL/ET_component_library/devices/active/logic/7400_ext.dev 1 100 140 0 D"
@@ -337,7 +338,7 @@ is
 			when 9 =>
 				-- If a virtual device is added, then no variant is required.
 				add_device (
-					module_name 	=> module,
+					module_cursor 	=> active_module,
 					device_model	=> to_file_name (get_field (5)),
 					destination		=> to_position 
 						(
@@ -350,13 +351,13 @@ is
 						rotation => to_rotation (get_field (9))
 						),
 					variant			=> to_variant_name (""),
-					log_threshold	=> log_threshold + 1
-					);
+					log_threshold	=> log_threshold + 1);
 
+				
 			when 10 =>
 				-- A real device requires specification of a package variant.
 				add_device (
-					module_name 	=> module,
+					module_cursor 	=> active_module,
 					device_model	=> to_file_name (get_field (5)),
 					destination		=> to_position 
 						(
@@ -369,8 +370,7 @@ is
 						rotation		=> to_rotation (get_field (9))
 						),
 					variant			=> to_variant_name (get_field (10)),
-					log_threshold	=> log_threshold + 1
-					);
+					log_threshold	=> log_threshold + 1);
 
 			when 11 .. type_field_count'last => too_long;
 				
@@ -380,6 +380,7 @@ is
 	end add_device;
 
 
+	
 	
 
 	-- This procedure parses a command that renames a device like

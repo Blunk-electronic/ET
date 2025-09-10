@@ -1318,7 +1318,7 @@ package body et_canvas_schematic_units is
 		put_line ("drop_unit");
 		
 		add_device (
-			module_name		=> key (active_module),
+			module_cursor	=> active_module,
 			device_model	=> pac_devices_lib.key (unit_add.device),
 			variant			=> unit_add.variant,
 			destination		=> to_position (position, active_sheet),
