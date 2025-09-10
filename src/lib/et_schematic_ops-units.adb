@@ -3270,175 +3270,113 @@ package body et_schematic_ops.units is
 		port_drag_list	: in type_port_drag_list;
 		log_threshold	: in type_log_level) 
 	is
-
+		-- The given drag list provides port names and their
+		-- positions before and after the drag operation of a single unit.
+		-- For each port, the module is searched for a net segment that starts
+		-- or ends at the old position. Each segment that has been found is
+		-- then moved with its affected end point to the new position.
+		
+		use pac_dragged_ports;
+		port_cursor : pac_dragged_ports.cursor := port_drag_list.ports.first;
+		port_name : pac_port_name.bounded_string;
+		port_drag : type_drag;
+		port_sheet : type_sheet renames port_drag_list.sheet;
+		
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-
-			procedure query_net (net_cursor : in pac_nets.cursor) is
-				use pac_nets;
-				use et_symbols;
-				
-
-				procedure query_strands (
-					net_name	: in pac_net_name.bounded_string;
-					net			: in out type_net) is
-					use et_schematic_coordinates;
-					
-					use pac_strands;
-					strand_cursor : pac_strands.cursor;
-					
-					use pac_dragged_ports;
-					drag_cursor : pac_dragged_ports.cursor := port_drag_list.ports.first;
-
-					drag_processed : boolean;
-
-					-- We must keep record of segments that have been dragged already.
-					-- Each time a segment has been dragged, it will be appended to
-					-- this list:
-					already_dragged_segments : pac_net_segments.list;
-
-					
-					procedure query_segments (strand : in out type_strand) is
-						use pac_net_segments;
-
-						
-						procedure query_segment (segment_cursor : in pac_net_segments.cursor) is 
-
-							-- Changes the position of start or end point of a segment 
-							-- according to the drag point:
-							procedure change_segment (
-								segment : in out type_net_segment) 
-							is begin								
-								-- if port sits on a start point of a segment -> move start point
-								if get_A (segment) = element (drag_cursor).before then
-									log (text => "move segment start point from" & 
-										to_string (get_A (segment)),
-										level => log_threshold + 3);
-
-									set_A (segment, element (drag_cursor).after);
-
-									log (text => "to" & 
-										to_string (get_A (segment)),
-										level => log_threshold + 3);
-
-									-- Now the segment has been dragged. Store it
-									-- in list of already dragged segments:
-									already_dragged_segments.append (segment);
-									
-									drag_processed := true;
-								end if;
-
-								-- if port sits on an end point of a segment -> move end point
-								if get_B (segment) = element (drag_cursor).before then
-									log (text => "move segment end point from" & 
-										to_string (get_B (segment)),
-										level => log_threshold + 3);
-
-									set_B (segment, element (drag_cursor).after);
-
-									log (text => "to" & 
-										to_string (get_B (segment)),
-										level => log_threshold + 3);
-
-									-- Now the segment has been dragged. Store it
-									-- in list of already dragged segments:
-									already_dragged_segments.append (segment);
-									
-									drag_processed := true;
-								end if;
-							end change_segment;
-
-							
-						begin -- query_segment
-							-- Probe only those segments which have not been dragged already:
-							if not already_dragged_segments.contains (element (segment_cursor)) then
-								
-								log_indentation_up;
-								log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
-								log_indentation_up;
-								
-								update_element (
-									container	=> strand.segments,
-									position	=> segment_cursor,
-									process		=> change_segment'access);
-												
-								log_indentation_down;
-								log_indentation_down;
-								
-							end if;
-						end query_segment;
-
-						
-					begin -- query_segments
-						-- Probe segments of this strand. Skip segments that have been
-						-- dragged already:
-						iterate (strand.segments, query_segment'access);
-
-						-- Update strand position if any movement took place.
-						if drag_processed then
-							set_strand_position (strand); 
-						end if;						
-					end query_segments;
-
-					
-				begin -- query_strands
-					-- loop in drag list
-					while drag_cursor /= pac_dragged_ports.no_element loop
-						log (text => "probing port " & to_string (key (drag_cursor)), level => log_threshold + 1);
-						log_indentation_up;
-
-						-- If the current drag point sits on a strand, this flag will go true. Other 
-						-- strands will then not be looked at because the point can only sit on 
-						-- one strand.
-						drag_processed := false;
-						
-						strand_cursor := net.strands.first;
-						while strand_cursor /= pac_strands.no_element loop
-							
-							-- We pick out only the strands on the targeted sheet:
-							if get_sheet (element (strand_cursor).position) = port_drag_list.sheet then
-								log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
-
-								log_indentation_up;
-								log (text => "strand " & to_string (position => element (strand_cursor).position),
-									level => log_threshold + 1);
-							
-								-- Iterate in segments of strand. If drag point sits on any segment
-								-- the flag drag_processed goes true.
-								update_element (
-									container	=> net.strands,
-									position	=> strand_cursor,
-									process		=> query_segments'access);
-							
-								log_indentation_down;
-							end if;
-
-							-- If the drag point has been processed, there is no need to look up
-							-- other strands for this port.
-							if drag_processed then exit; end if;
-							
-							next (strand_cursor);
-						end loop;
-
-						log_indentation_down;
-						next (drag_cursor);
-					end loop;
-						
-				end query_strands;
-
-				
-			begin -- query_net
-				update_element (
-					container	=> module.nets,
-					position	=> net_cursor,
-					process		=> query_strands'access);
-			end query_net;				
+			use pac_nets;
+			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				use pac_strands;
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (
+					strand	: in out type_strand)
+				is 
+					use pac_net_segments;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+
+					procedure query_segment (
+						segment : in out type_net_segment)
+					is 
+						
+						procedure log_segment_before is begin
+							log (text => "segment before: " 
+								& to_string (segment), level => log_threshold + 3);
+						end;
+
+						procedure log_segment_now is begin
+							log (text => "segment now:    " 
+								& to_string (segment), level => log_threshold + 3);
+						end;
+
+						
+					begin
+						-- Move the affected end of the segment
+						-- candidate:
+						if get_A (segment) = port_drag.before then
+							log_segment_before;
+							set_A (segment, port_drag.after);
+							log_segment_now;
+						end if;
+
+						if get_B (segment) = port_drag.before then
+							log_segment_before;
+							set_B (segment, port_drag.after);
+							log_segment_now;
+						end if;
+					end query_segment;
+
+					
+				begin
+					if get_sheet (strand) = port_sheet then
+						log (text => "strand " & get_position (strand),
+							 level => log_threshold + 3);
+						
+						log_indentation_up;
+
+						-- Iterate through the segments:
+						while has_element (segment_cursor) loop
+							strand.segments.update_element (segment_cursor, query_segment'access);
+							next (segment_cursor);
+						end loop;
+						
+						log_indentation_down;
+					end if;
+				end query_strand;
+
+				
+			begin
+				log (text => "net " & to_string (net_name), level => log_threshold + 2);
+				log_indentation_up;
+
+				-- Iterate through the strands. Look at the strand on the given
+				-- sheet only:
+				while has_element (strand_cursor) loop
+					net.strands.update_element (strand_cursor, query_strand'access);
+					next (strand_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_net;
+			
+					
 		begin
-			pac_nets.iterate (module.nets, query_net'access);
+			-- Iterate through the nets of the module:
+			while has_element (net_cursor) loop
+				module.nets.update_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
 		end query_module;
 
 		
@@ -3449,11 +3387,28 @@ package body et_schematic_ops.units is
 		
 		log_indentation_up;
 
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_module'access);
+		
+		-- Iterate through the ports to be dragged:
+		while has_element (port_cursor) loop
+			port_drag := element (port_cursor);
+			port_name := get_port_name (port_cursor);
+			
+			log (text => "port " & to_string (port_name) & " " & to_string (port_drag),
+				level => log_threshold + 1);
+			
+			log_indentation_up;
+			
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> query_module'access);
 
+			next (port_cursor);
+
+			log_indentation_down;
+		end loop;
+
+		
 		log_indentation_down;
 	end drag_net_segments;
 

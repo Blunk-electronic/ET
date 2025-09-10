@@ -575,12 +575,12 @@ package et_schematic_ops.units is
 
 
 
-	-- Drags the net segments according to the given drag_list of a unit.
+	-- Drags the net segments according to the given drag list of a unit.
 	-- Changes the position of start or end points of segments.
-	-- Does NOT create new connections with segments if a port
-	-- lands on the start or end point of another segment.
-	-- Does NOT create a new connection with a segments if a port
-	-- lands between start and end point.
+	-- 1. It does NOT create new connections with segments if a port
+	--    lands on the start or end point of another segment.
+	-- 2. It does NOT create a new connection with a segments if a port
+	-- l  ands between start and end point.
 	procedure drag_net_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		port_drag_list	: in type_port_drag_list; -- the old and new port positions
