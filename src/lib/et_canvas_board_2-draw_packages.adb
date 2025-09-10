@@ -1725,38 +1725,47 @@ procedure draw_packages is
 			module.devices_non_electric.first;
 
 	begin
-		-- Iterate electrical devices:
 		if debug then
 			put_line (" electrical devices");
 		end if;
+
 		
+		-- Iterate electrical devices:
 		while has_element (cursor_electrical) loop
-			-- If the device is selected then draw it highlighted:
-			if is_selected (cursor_electrical) then
-				brightness := BRIGHT;
-			else
-				brightness := NORMAL;
+
+			-- Here we address only real devices (which have 
+			-- a physical representation in the board):
+			if is_real (cursor_electrical) then
+
+				-- If the device is selected then draw it highlighted:
+				if is_selected (cursor_electrical) then
+					brightness := BRIGHT;
+				else
+					brightness := NORMAL;
+				end if;
+
+				-- Fetch the complete position of the device
+				-- (incl. x/y/rotaton/face) from the database:
+				package_position := get_position (cursor_electrical);
+
+				if is_moving (cursor_electrical) then
+					-- Override package position by tool position:
+					package_position.place := get_object_tool_position;
+				end if;
+
+				query_element (cursor_electrical, query_electrical_device'access);
 			end if;
-
-			-- Fetch the complete position of the device
-			-- (incl. x/y/rotaton/face) from the database:
-			package_position := get_position (cursor_electrical);
-
-			if is_moving (cursor_electrical) then
-				-- Override package position by tool position:
-				package_position.place := get_object_tool_position;
-			end if;
-
-			query_element (cursor_electrical, query_electrical_device'access);
+			
 			next (cursor_electrical);
 		end loop;
 
 
-		-- Iterate non-electrical devices:
 		if debug then
 			put_line (" non electrical devices");
 		end if;
+
 		
+		-- Iterate non-electrical devices:
 		while has_element (cursor_non_electrical) loop
 			-- If the device is selected then draw it highlighted:
 			if is_selected (cursor_non_electrical) then

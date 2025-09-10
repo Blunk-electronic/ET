@@ -326,6 +326,9 @@ is
 
 	
 
+	-- This procedure parses a command that adds an electrical
+	-- device to the module.
+	-- example: "schematic demo add device $HOME/git/BEL/ET_component_library/devices/active/logic/7400_ext.dev 1 100 140 0 D"
 	procedure add_device is
 		use et_device_model_names;
 		use et_package_variant;
