@@ -444,6 +444,8 @@ package et_schematic_ops.units is
 	
 
 	-- Fetches a unit from a device into the schematic.
+	-- CS: Reject unit if a port overlaps a port of another
+	-- existing unit.
 	procedure fetch_unit (
 		module_cursor 	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
@@ -536,6 +538,8 @@ package et_schematic_ops.units is
 	-- Moves the given unit within the schematic. Disconnects the unit from
 	-- start or end points of net segments BEFORE the move. 
 	-- Connects unit ports with segment end or start points AFTER the move.
+	-- CS: Reject unit if a port overlaps a port of another
+	-- existing unit.
 	procedure move_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
@@ -592,9 +596,8 @@ package et_schematic_ops.units is
 	-- Already existing connections with net segments are kept.
 	-- This operation applies to a single sheet. Dragging from one sheet
 	-- to another is not possible.
-	-- CS: Before the drag: If a port of the unit sits at the same place
-	--     where a port of another unit is, then a net segment should be
-	--     inserted between them ?
+	-- CS: Reject unit if a port overlaps a port of another
+	-- existing unit.
 	procedure drag_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
@@ -608,6 +611,8 @@ package et_schematic_ops.units is
 	-- Disconnects the unit from attached net segments before the rotation.
 	-- Connects the unit with net segments after the rotation.
 	-- Rotates the placeholders about the unit origin.
+	-- CS: Reject unit if a port overlaps a port of another
+	-- existing unit.	
 	procedure rotate_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45

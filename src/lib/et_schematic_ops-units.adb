@@ -3477,7 +3477,6 @@ package body et_schematic_ops.units is
 
 				-- Locate the targeted unit:
 				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
-
 				
 			begin
 				-- Get the sheet where the unit is:
@@ -3489,28 +3488,17 @@ package body et_schematic_ops.units is
 				-- Get the ports of the unit as they are
 				-- BEFORE the drag operation:
 				ports_old := get_ports_of_unit (device_cursor_sch, unit_cursor);
-
-
-			-- Test whether the ports of the unit can be dragged.
-			-- CS: Might become obsolete once ports at the same x/y position are prevented.
-			-- CS: Before the drag: If a port of the unit sits at the same place
-			--     where a port of another unit is, then a net segment should be
-			--     inserted between them ?
-			-- movable_test (module_cursor, device_name, unit_name, 
-			-- 	position_of_unit_old, ports_old, log_threshold + 1);
 				
 				update_element (
 					container	=> device.units,
 					position	=> unit_cursor,
 					process		=> move_unit'access);
 
-
 				-- Get the ports of the unit as they are
 				-- AFTER the drag operation:
 				ports_new := get_ports_of_unit (device_cursor_sch, unit_cursor);
 			end query_device;
 			
-
 			
 		begin
 			-- Test whether the desired unit is deployed (in schematic).
@@ -3523,13 +3511,14 @@ package body et_schematic_ops.units is
 					process		=> query_device'access);
 			
 
+				-- Make a list of ports and their old and new positions:
 				drag_list.ports := make_drag_list (ports_old, ports_new);
-				
+
+				-- Drag the net segments which are connected with the unit:
 				drag_net_segments (
 					module_cursor	=> module_cursor,
 					port_drag_list	=> drag_list,
 					log_threshold	=> log_threshold + 1);
-
 				
 				-- Insert the new unit ports in the net segments:
 				insert_ports (
