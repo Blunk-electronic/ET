@@ -474,14 +474,12 @@ package body et_canvas_schematic_2 is
 
 -- RESET:
 	
-	procedure reset_selections is 
+	procedure reset_selections is -- CS move this stuff to procedure level_1 below
 		use et_canvas_schematic_nets;
 		use et_canvas_schematic_units;
 	begin
 		-- Verb and noun remain as they are
-		-- so that the mode is unchanged.
-		
-		reset_request_clarification;
+		-- so that the mode is unchanged.		
 		
 		reset_preliminary_segment; -- after move/drag/draw of a net segment
 
@@ -533,7 +531,7 @@ package body et_canvas_schematic_2 is
 			update_mode_display;
 			
 			status_enter_verb;
-			-- clear_out_properties_box;
+			clear_out_properties_box;
 			reset_editing_process;
 		end level_2;
 
