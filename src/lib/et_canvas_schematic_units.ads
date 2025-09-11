@@ -233,34 +233,6 @@ package et_canvas_schematic_units is
 	-- of the preferred schematic libraries.
 	function get_top_most_important_library return string;
 
-	type type_device_selection is record
-		window	: gtk_window;
-
-		-- This flag indicates that the
-		-- window is open. The purpose of this flag is
-		-- to prevent the window from being opened
-		-- multiple times:
-		open	: boolean := false;
-	end record;
-
-
-	
-	device_selection : type_device_selection;
-
-	
-
-	-- Returns the status of the "open" flag.
-	-- True if the device selection is open.
-	-- False if the selection is not open.
-	function device_selection_is_open return boolean;
-
-
-	
-	-- Closes the device selection window.
-	-- Resets the status flag "open".
-	procedure close_device_selection;
-
-
 	
 	-- In order to place a package variant and the associated model
 	-- on a menu, use this function.
@@ -303,6 +275,7 @@ package et_canvas_schematic_units is
 		-- add operation is complete.
 		-- This is relevant for the preview only:
 		device_pre	: type_device_name := (others => <>);
+		-- CS probably no need anymore
 
 		-- When drawing a unit being added via fetch:
 		via_fetch	: boolean := false;
@@ -316,11 +289,9 @@ package et_canvas_schematic_units is
 	
 	procedure reset_unit_add;
 
-
 	
-	-- Builds the device selection window which lets the operator
-	-- select the directory and the actual device model.
-	-- The window is already up, then nothing happens here:
+	-- Builds the widgets for the device model selection
+	-- in the properties box:
 	procedure show_model_selection;
 
 

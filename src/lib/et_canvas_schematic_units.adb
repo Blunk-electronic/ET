@@ -55,9 +55,15 @@ with gtk.main;
 with gtk.widget;					use gtk.widget;
 with gtk.window;
 with gtk.box;
+with gtk.combo_box;					use gtk.combo_box;
+with gtk.combo_box_text;			use gtk.combo_box_text;
 with gtk.label;
 with gtk.gentry;
 with gtk.menu;
+with gtk.cell_renderer_text;		
+-- with gtk.cell_layout;        		
+with gtk.list_store;				use gtk.list_store;
+with gtk.tree_model;				use gtk.tree_model;
 
 with et_sheets;						use et_sheets;
 with et_device_rw;
@@ -991,16 +997,16 @@ package body et_canvas_schematic_units is
 	end get_top_most_important_library;
 
 	
-	function device_selection_is_open return boolean is begin
-		return device_selection.open;
-	end device_selection_is_open;
+	-- function device_selection_is_open return boolean is begin
+	-- 	return device_selection.open;
+	-- end device_selection_is_open;
 
 	
-	procedure close_device_selection is begin
-		put_line ("close_device_selection");
-		device_selection.window.destroy;
-		device_selection.open := false;
-	end close_device_selection;	
+	-- procedure close_device_selection is begin
+	-- 	put_line ("close_device_selection");
+	-- 	device_selection.window.destroy;
+	-- 	device_selection.open := false;
+	-- end close_device_selection;	
 
 	
 	function extract_variant_name (menu_item : in string) 
@@ -1017,6 +1023,8 @@ package body et_canvas_schematic_units is
 	end extract_variant_name;
 
 	
+
+
 	
 	-- In order to place a package variant and the associated model
 	-- on a menu, use this function:
@@ -1036,6 +1044,9 @@ package body et_canvas_schematic_units is
 		return "package variant: " & variant_name & " model: " & package_model;
 	end to_package_variant_item;
 
+
+
+
 	
 	procedure reset_unit_add is begin
 		unit_add := (others => <>);
@@ -1043,7 +1054,10 @@ package body et_canvas_schematic_units is
 
 
 	
-	procedure variant_selected (self : access gtk.menu_item.gtk_menu_item_record'class) is
+	
+	procedure cb_package_variant_selected (
+		self : access gtk.menu_item.gtk_menu_item_record'class) 
+	is
 		use pac_package_variant_name;
 	begin
 		unit_add.variant := extract_variant_name (self.get_label);
@@ -1054,19 +1068,27 @@ package body et_canvas_schematic_units is
 			& status_add);
 
 		-- The device selection window is no longer needed:
-		close_device_selection;
-	end variant_selected;
+		-- close_device_selection;
+	end cb_package_variant_selected;
 
 
-	
-	--procedure device_directory_selected (self : access gtk.file_chooser_button.gtk_file_chooser_button_record'class) is
-	--begin
-		--put_line (self.get_current_folder);
-	--end device_directory_selected;
 
 	
 	
-	procedure device_model_selected (self : access gtk.file_chooser_button.gtk_file_chooser_button_record'class) is
+	procedure cb_model_directory_selected (
+		self : access gtk.file_chooser_button.gtk_file_chooser_button_record'class) 
+	is begin
+		put_line (self.get_current_folder);
+	end cb_model_directory_selected;
+
+
+
+	
+	
+	
+	procedure cb_model_selected (
+		self : access gtk.file_chooser_button.gtk_file_chooser_button_record'class) 
+	is
 
 		use gtk.menu;
 		use gtk.menu_item;
@@ -1086,39 +1108,39 @@ package body et_canvas_schematic_units is
 
 
 		
-		procedure show_variants_menu is
-			m : gtk_menu;
-			i : gtk_menu_item;
-
-			
-			procedure query_variant (c : in pac_variants.cursor) is begin
-				-- Build the menu item:
-				i := gtk_menu_item_new_with_label (to_package_variant_item (c));
-				i.on_activate (variant_selected'access);
-				m.append (i);
-				i.show;
-			end query_variant;
-			
-		begin
-			m := gtk_menu_new;
-			variants.iterate (query_variant'access);
-
-			m.show;
-			m.popup;
-
-		end show_variants_menu;
+-- 		procedure show_variants_menu is
+-- 			m : gtk_menu;
+-- 			i : gtk_menu_item;
+-- 
+-- 			
+-- 			procedure query_variant (c : in pac_variants.cursor) is begin
+-- 				-- Build the menu item:
+-- 				i := gtk_menu_item_new_with_label (to_package_variant_item (c));
+-- 				i.on_activate (cb_package_variant_selected'access);
+-- 				m.append (i);
+-- 				i.show;
+-- 			end query_variant;
+-- 			
+-- 		begin
+-- 			m := gtk_menu_new;
+-- 			variants.iterate (query_variant'access);
+-- 
+-- 			m.show;
+-- 			m.popup;
+-- 
+-- 		end show_variants_menu;
 		
 
-	begin -- device_model_selected
+	begin -- cb_model_selected
 		put_line (self.get_filename);
 		
 		device_model := to_file_name (self.get_filename);
 
 		--set_status ("selected device model: " & to_string (device_model));
 
-		-- Read the device file and store it in the rig wide device 
-		-- library et_devices.devices.
-		-- If the device is already in the library, nothing happpens.
+		-- Read the device file and store it in the 
+		-- rig wide device library.
+		-- If the device is already in the library, then nothing happpens:
 		read_device (
 			file_name		=> device_model, -- ../lbr/logic_ttl/7400.dev
 			log_threshold	=> log_threshold + 1);
@@ -1148,59 +1170,29 @@ package body et_canvas_schematic_units is
 		case element (device_cursor_lib).appearance is
 			when APPEARANCE_PCB =>
 				if length (variants) > 1 then
-					show_variants_menu;
+					null;
+					-- CS
+					-- show_variants_menu;
 				else
 					unit_add.variant := key (variants.first);
 
 					-- The device selection window is no longer needed:
-					close_device_selection;
+					--close_device_selection;
+					clear_out_properties_box;
 					
 					set_status (status_add);
+					-- CS clear ?
 				end if;
 				
 			when APPEARANCE_VIRTUAL => null;
 		end case;
 			
 		-- CS exception handler in case read_device fails ?
-	end device_model_selected;
+	end cb_model_selected;
 
-
-	
-	
-	function device_model_selection_key_event (
-		self	: access gtk_widget_record'class;
-		event	: in gdk_event_key) 
-		return boolean 
-	is
-		key : gdk_key_type := event.keyval;
-
-		-- This is required in order to propagate the key-pressed event further.
-		result : boolean; -- to be returned. Indicates that the event has been handled.
-	begin
-		case key is
-			when GDK_ESCAPE =>
-				--put_line ("key A");
-
-				-- Close the device selection if operator hits ESC:
-				close_device_selection;
-				result := true;
-
-			when others =>
-				--put_line ("key B");
-				result := false;
-		end case;
-		
-		return result;
-	end device_model_selection_key_event;
 
 
 	
-	
-	procedure device_model_selection_close (
-		self	: access gtk_widget_record'class) 
-	is begin
-		device_selection.open := false;
-	end device_model_selection_close;
 
 
 	
@@ -1214,93 +1206,176 @@ package body et_canvas_schematic_units is
 		use gtk.file_chooser_button;
 		use gtk.file_filter;
 
-		box_main : gtk_hbox;
-		box_directory, box_model : gtk_vbox;
-		label_directory, label_model : gtk_label;
+		box_directory, box_model, box_variant : gtk_vbox;
+		label_directory, label_model, label_variant : gtk_label;
 		
 		use glib;
 		spacing : constant natural := 10;
 		
-		button_directory, button_model : gtk_file_chooser_button;
-		filter : gtk_file_filter;
+		button_directory_2, button_model_2 : gtk_file_chooser_button;
+		filter_2 : gtk_file_filter;
+
+		cbox_variant : gtk_combo_box;
+		
 
 		use et_directory_and_file_ops;
-	begin
-		-- BUILD THE DEVICE SELECTION WINDOW:
 
-		-- CS: Add the variant menu to this window.
-		
-		-- If it is already up, move it to the foreground.
-		-- Otherwise build it:
-		if device_selection_is_open then
-			device_selection.window.present;
-		else
-			-- Mark the window as "open" so that it can not be opened anew:
-			device_selection.open := true;
-			
-			gtk_new (device_selection.window);
-			device_selection.window.set_title ("Select a device model");
-			device_selection.window.on_destroy (device_model_selection_close'access);
-			device_selection.window.on_key_press_event (device_model_selection_key_event'access);
 
-			
-			gtk_new_hbox (box_main, homogeneous => false, spacing => gint (spacing));
-			add (device_selection.window, box_main);
-
-			-- directory selection on the LEFT:
+		procedure make_button_directory is
+		begin
 			gtk_new_vbox (box_directory, homogeneous => false);
-			pack_start (box_main, box_directory, padding => guint (spacing));
+			pack_start (box_v4, box_directory, padding => guint (spacing));
 
 			gtk_new (label_directory, "directory");
-			
+			pack_start (box_directory, label_directory, padding => guint (spacing));
+
 			gtk_new (
-				button		=> button_directory,
+				button		=> button_directory_2,
 				title		=> "Select a device model",
 				action		=> ACTION_SELECT_FOLDER);
 
 			-- CS: Currently the button_directory shows only the most important
 			-- library path. It would be convenient if the operator would be shown
 			-- all preferred library paths sorted by their rank.
-			if button_directory.set_current_folder_uri (get_top_most_important_library) then
+			if button_directory_2.set_current_folder_uri (get_top_most_important_library) then
 				null; -- Testing the existence of the folder is not required.
 			end if;
 			
-			--button_directory.on_file_set (device_directory_selected'access);
-			pack_start (box_directory, label_directory, padding => guint (spacing));
-			pack_start (box_directory, button_directory, padding => guint (spacing));
 
+			-- button_directory_2.on_file_set (cb_model_directory_selected'access);			
+			pack_start (box_directory, button_directory_2, padding => guint (spacing));
 			
-			-- device model selection on the RIGHT:		
+		end make_button_directory;
+
+
+		
+
+		procedure make_button_model is
+		begin
 			gtk_new_vbox (box_model, homogeneous => false);
-			pack_start (box_main, box_model, padding => guint (spacing));
+			pack_start (box_v4, box_model, padding => guint (spacing));
 
 			gtk_new (label_model, "model");
-			
-			gtk_new (filter);
-			add_pattern (filter, make_filter_pattern (device_model_file_extension));
-			set_name (filter, "Device Models");
+			pack_start (box_model, label_model, padding => guint (spacing));
+
+			gtk_new (filter_2);
+			add_pattern (filter_2, make_filter_pattern (device_model_file_extension));
+			set_name (filter_2, "Device Models");
 			
 			gtk_new (
-				button		=> button_model,
+				button		=> button_model_2,
 				title		=> "Select a device model",
 				action		=> ACTION_OPEN);
 
-			button_model.add_filter (filter);
+			button_model_2.add_filter (filter_2);
 
-			if button_model.set_current_folder (button_directory.get_current_folder_uri) then
+			if button_model_2.set_current_folder (button_directory_2.get_current_folder_uri) then
 				null; -- Testing the existence of the device model is not required.
 			end if;
 			
-			button_model.on_file_set (device_model_selected'access);
-			pack_start (box_model, label_model, padding => guint (spacing));
-			pack_start (box_model, button_model, padding => guint (spacing));
+			button_model_2.on_file_set (cb_model_selected'access);
+			pack_start (box_model, button_model_2, padding => guint (spacing));
 			
-			device_selection.window.show_all;
-		end if;
+		end make_button_model;
+
+
+
+
+		procedure make_store_for_variants (
+			store : in out gtk_list_store)
+		is
+			use gtk.list_store;
+			
+			column_0 : constant := 0; -- for the net name
+			column_1 : constant := 1; -- for the net index
+
+			entry_structure : glib.gtype_array := (
+					column_0 => glib.gtype_string,
+					column_1 => glib.gtype_string);
+
+			use gtk.tree_model;
+			iter : gtk_tree_iter;			
+
+
+			-- Fetch the package variant names:
+			-- variants : pac_vnet_names.list := get_nets (active_module, log_threshold + 1);
+			
+			index : type_net_index := 0;
+
+			-- Enters the name and index of a net into the storage model:
+			-- procedure query_net (c : in pac_net_names.cursor) is begin
+			-- 	store.append (iter);
+			-- 	set (store, iter, column_0, to_string (c));
+			-- 	set (store, iter, column_1, type_net_index'image (index));
+			-- 	index := index + 1;
+			-- end query_net;
+
+		begin
+			-- Create the storage model:
+			gtk_new (list_store => store, types => (entry_structure));
+
+			-- Insert the available net names in the storage model:
+			-- nets.iterate (query_net'access);	
+		end make_store_for_variants;
+
+
+		
+
+		procedure make_combo_variant is
+			use gtk.cell_renderer_text;
+			
+			store : gtk_list_store;			
+			render	: gtk_cell_renderer_text;			
+
+		begin
+			gtk_new_vbox (box_variant, homogeneous => false);
+			pack_start (box_v4, box_variant, padding => guint (spacing));
+
+			gtk_new (label_variant, "variant");
+			pack_start (box_variant, label_variant, padding => guint (spacing));
+
+			-- Create the storage model:
+			make_store_for_variants (store);
+			
+			-- Create the combo box:
+			gtk_new_with_model (
+				combo_box	=> cbox_variant,
+				model		=> +store); -- ?
+
+			pack_start (box_variant, cbox_variant, padding => guint (spacing));
+			-- cbox_variant.on_changed (variant_changed'access);
+
+			-- The purpose of this stuff is unclear, but it
+			-- is required to make the entries visible:
+			gtk_new (render);
+			pack_start (cbox_variant, render, expand => true);
+			add_attribute (cbox_variant, render, "markup", 0); -- column 0
+			
+		end make_combo_variant;
+
+		
+		
+	begin
+		-- CS log message
+		
+		-- Before inserting any widgets, the properties box must be cleared:
+		clear_out_properties_box;
+
+		-- Build the elements of the properties bar:
+		make_button_directory;
+		make_button_model;
+		make_combo_variant;
+
+		-- Show the properties box:
+		box_v4.show_all;
+
 	end show_model_selection;
 
 
 
+
+
+	
 	
 	procedure drop_unit (
 		position	: in type_vector_model)
