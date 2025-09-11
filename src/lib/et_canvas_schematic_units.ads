@@ -42,9 +42,11 @@ with ada.containers;	            use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with gtk.window;					use gtk.window;
-with gtk.menu_item;
+with gtk.menu_item;					use gtk.menu_item;
 with gtk.menu_shell;
 with gtk.gentry;
+with gtk.file_chooser_button;		use gtk.file_chooser_button;
+with gtk.combo_box;					use gtk.combo_box;
 
 with et_schematic_coordinates;		use et_schematic_coordinates;
 use et_schematic_coordinates.pac_geometry_2;
@@ -234,19 +236,7 @@ package et_canvas_schematic_units is
 	function get_top_most_important_library return string;
 
 	
-	-- In order to place a package variant and the associated model
-	-- on a menu, use this function.
-	-- Field separator is space:
-	function to_package_variant_item (variant : in pac_variants.cursor)
-		return string;
 
-
-	
-	-- In order to extract the actual variant name from a the 
-	-- menu of package variants, use this function.
-	-- Field separator is space.
-	function extract_variant_name (menu_item : in string) 
-		return pac_package_variant_name.bounded_string;
 
 	
 	
@@ -289,6 +279,30 @@ package et_canvas_schematic_units is
 	
 	procedure reset_unit_add;
 
+
+	-- Widgets to be added in the properties box:
+	button_model_directory, button_model_file : gtk_file_chooser_button;
+	
+	cbox_package_variant : gtk_combo_box;
+
+	
+	-- This procedure is called when the operator
+	-- has selected a package variant:
+	procedure cb_package_variant_selected (
+		combo : access gtk_combo_box_record'class);
+
+	
+	-- This procedure is called when the operator
+	-- has selected a library directory:
+	procedure cb_model_directory_selected (
+		self : access gtk_file_chooser_button_record'class);
+	
+
+	-- This callback procedure is called when the operator
+	-- has selected a device model:
+	procedure cb_model_selected (
+		self : access gtk_file_chooser_button_record'class);
+	
 	
 	-- Builds the widgets for the device model selection
 	-- in the properties box:

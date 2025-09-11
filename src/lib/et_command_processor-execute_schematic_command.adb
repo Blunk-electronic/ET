@@ -3427,21 +3427,21 @@ is
 								when others => null;
 							end case;
 
-						when NOUN_VARIANT =>
-							case cmd_field_count is
-								when 4 => device_name_missing;
-									
-								when 5 => -- like "set variant IC1"
-									device_name := to_device_name (get_field (5));
-
-									if device_exists (active_module, device_name) then
-										set_variant (device_name);
-									else
-										device_not_found;
-									end if;
-
-								when others => null;
-							end case;
+-- 						when NOUN_VARIANT =>
+-- 							case cmd_field_count is
+-- 								when 4 => device_name_missing;
+-- 									
+-- 								when 5 => -- like "set variant IC1"
+-- 									device_name := to_device_name (get_field (5));
+-- 
+-- 									if device_exists (active_module, device_name) then
+-- 										set_variant (device_name);
+-- 									else
+-- 										device_not_found;
+-- 									end if;
+-- 
+-- 								when others => null;
+-- 							end case;
 
 						when others => null; -- CS
 					end case;

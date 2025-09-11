@@ -147,8 +147,8 @@ package et_scripting_interactive_schematic is
 	-- Sets the package variant of the given device.
 	-- The device must exist in the current active module.
 	-- Otherwise constraint error rises.
-	procedure set_variant (
-		device : in type_device_name);
+	-- procedure set_variant (
+	-- 	device : in type_device_name);
 	
 
 -- SET PROPERTIES (partcode, purpose, value)
