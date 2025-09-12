@@ -250,6 +250,7 @@ is
 					log (ERROR, "device requires specification of package variant !",
 							console => true);
 					raise constraint_error;
+					-- CS use first available variant instead ?
 				end if;
 				
 		end case;
