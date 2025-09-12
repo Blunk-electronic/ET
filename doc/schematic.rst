@@ -17,7 +17,12 @@ Devices and Units
 
 	This example command adds a new electrical device to the module.
 	The destination is sheet 1 on 100/140 with rotation 0 degree.
-	The unit to be added is D:
+	The package variant is D:
+
+	.. code-block::
+
+		add device $HOME/git/BEL/ET_component_library/devices/active/logic/7400_ext.dev 1 100 140 0 D
+
 
 	.. code-block::
 
