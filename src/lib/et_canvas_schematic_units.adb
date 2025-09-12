@@ -1213,8 +1213,6 @@ package body et_canvas_schematic_units is
 					make_combo_variant;
 				else
 					unit_add.variant := key (variants.first);
-
-					clear_out_properties_box;
 					
 					set_status (status_add);
 					-- CS clear ?
