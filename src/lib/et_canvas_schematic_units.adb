@@ -1026,6 +1026,8 @@ package body et_canvas_schematic_units is
 		unit_add.variant := to_variant_name (glib.values.get_string (name));
 
 		unit_add.valid := true;
+		reset_escape_counter;
+		
 	end cb_package_variant_selected;
 
 
@@ -1195,6 +1197,8 @@ package body et_canvas_schematic_units is
 		unit_add.total := get_unit_count (unit_add.device);
 
 		unit_add.valid := true;
+
+		reset_escape_counter;
 		
 		-- assign the prospective device name:
 		unit_add.device_pre := get_next_device_name (active_module, element (device_cursor_lib).prefix);

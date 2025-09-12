@@ -3429,6 +3429,11 @@ package body et_canvas is
 
 
 
+	procedure reset_escape_counter is begin
+		log (text => "editing_process.escape_counter RESET", level => log_threshold);
+		editing_process.escape_counter := 0;
+	end;
+
 	
 	
 

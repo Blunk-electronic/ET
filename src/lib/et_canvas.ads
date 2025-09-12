@@ -1166,7 +1166,7 @@ package et_canvas is
 	
 	function get_escape_counter return type_escape_count;
 	
-
+	procedure reset_escape_counter;
 	
 
 -- OBJECT AND PATH:
