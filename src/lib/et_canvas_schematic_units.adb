@@ -1055,6 +1055,14 @@ package body et_canvas_schematic_units is
 
 
 
+	box_variant : gtk_vbox;
+	
+	box_variant_exists : boolean := false;
+
+	
+	procedure remove_variant_box is begin
+		box_v4.remove (box_variant);
+	end;
 	
 	
 	
@@ -1114,25 +1122,33 @@ package body et_canvas_schematic_units is
 		end make_store_for_variants;
 
 
+
+
+
 		
 		
 		procedure make_combo_variant is
-			use gtk.box;
-			use gtk.label;
-			
+			use gtk.label;			
 			use gtk.cell_renderer_text;
 
 			use glib;
 			spacing : constant natural := 10;
 			
-
-			box_variant : gtk_vbox;
 			label_variant : gtk_label;
 			store : gtk_list_store;			
 			render	: gtk_cell_renderer_text;			
 
 		begin
 			put_line ("make_combo_variant");
+
+			-- If the box already exists, due to a previous
+			-- model selection, then it will be removed first
+			-- and a new one created:
+			if box_variant_exists then
+				remove_variant_box;				
+				box_variant_exists := false;
+			end if;
+
 			
 			gtk_new_vbox (box_variant, homogeneous => false);
 			pack_start (box_v4, box_variant, padding => guint (spacing));
@@ -1150,7 +1166,7 @@ package body et_canvas_schematic_units is
 
 			pack_start (box_variant, cbox_package_variant, padding => guint (spacing));
 			cbox_package_variant.on_changed (cb_package_variant_selected'access);
-			-- CS key pressed escape
+
 
 			-- The purpose of this stuff is unclear, but it
 			-- is required to make the entries visible:
@@ -1159,6 +1175,8 @@ package body et_canvas_schematic_units is
 			add_attribute (cbox_package_variant, render, "markup", 0); -- column 0
 
 			box_v4.show_all;
+
+			box_variant_exists := true;
 		end make_combo_variant;
 
 		
@@ -1210,6 +1228,7 @@ package body et_canvas_schematic_units is
 		case element (device_cursor_lib).appearance is
 			when APPEARANCE_PCB =>
 				if length (variants) > 1 then
+					-- Create the combo box for the package variant.
 					make_combo_variant;
 				else
 					unit_add.variant := key (variants.first);

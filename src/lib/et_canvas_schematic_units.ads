@@ -46,6 +46,7 @@ with gtk.menu_item;					use gtk.menu_item;
 with gtk.menu_shell;
 with gtk.gentry;
 with gtk.file_chooser_button;		use gtk.file_chooser_button;
+with gtk.box;						use gtk.box;
 with gtk.combo_box;					use gtk.combo_box;
 
 with et_schematic_coordinates;		use et_schematic_coordinates;
