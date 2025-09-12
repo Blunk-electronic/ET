@@ -1054,16 +1054,10 @@ procedure draw_units is
 		end locate_symbol;
 
 
-		use et_modes.schematic;
 	begin
-		case verb is
-			when VERB_ADD =>
-				if unit_add.device /= pac_devices_lib.no_element then
-					locate_symbol (locate_unit (unit_add.device, unit_add.name));
-				end if;
-
-			when others => null;
-		end case;
+		if unit_add.valid then
+			locate_symbol (locate_unit (unit_add.device, unit_add.name));
+		end if;
 	end draw_unit_being_added;
 
 

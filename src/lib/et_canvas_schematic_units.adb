@@ -1024,6 +1024,8 @@ package body et_canvas_schematic_units is
 		gtk.tree_model.get_value (model, iter, 0, name);
 		
 		unit_add.variant := to_variant_name (glib.values.get_string (name));
+
+		unit_add.valid := true;
 	end cb_package_variant_selected;
 
 
@@ -1039,6 +1041,15 @@ package body et_canvas_schematic_units is
 	end cb_model_directory_selected;
 
 
+
+	
+-- 	procedure cb_model_directory_key_pressed (
+-- 		self : access gtk_file_chooser_button_record'class) 
+-- 	is begin
+-- 		put_line ("cb_model_directory_key_pressed");
+-- 		
+-- 		-- put_line (self.get_current_folder);
+-- 	end cb_model_directory_key_pressed;
 
 
 
@@ -1182,6 +1193,8 @@ package body et_canvas_schematic_units is
 		-- For a nice preview we also need the total of units provided
 		-- the the device:
 		unit_add.total := get_unit_count (unit_add.device);
+
+		unit_add.valid := true;
 		
 		-- assign the prospective device name:
 		unit_add.device_pre := get_next_device_name (active_module, element (device_cursor_lib).prefix);
@@ -1261,7 +1274,7 @@ package body et_canvas_schematic_units is
 			pack_start (box_directory, button_model_directory, padding => guint (spacing));
 			
 			button_model_directory.on_file_set (cb_model_directory_selected'access);
-			-- CS key pressed escape
+			-- button_model_directory.on_key_pressed (cb_model_directory_key_pressed'access);
 		end make_button_directory;
 
 		
@@ -1341,7 +1354,7 @@ package body et_canvas_schematic_units is
 		-- Commit the new state of the design:
 		commit (POST, verb, noun, log_threshold);
 		
-		reset_unit_add;
+		-- reset_unit_add;
 
 		set_status (status_add);
 		-- CS clear ?

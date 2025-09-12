@@ -267,8 +267,10 @@ package et_canvas_schematic_units is
 		device_pre	: type_device_name := (others => <>);
 		-- CS probably no need anymore
 
-		-- When drawing a unit being added via fetch:
-		via_fetch	: boolean := false;
+		-- Indicates that the information above is valid
+		-- and a unit has been selected from the fetch menu
+		-- by the operator:
+		valid		: boolean := false;		
 	end record;
 
 
@@ -276,7 +278,7 @@ package et_canvas_schematic_units is
 	unit_add : type_unit_being_added;
 
 
-	
+	-- Resets unit_add to its default values:
 	procedure reset_unit_add;
 
 

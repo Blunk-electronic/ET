@@ -497,32 +497,20 @@ is
 				case noun is
 
 					when NOUN_DEVICE =>
-						-- When adding units, we enforce the default grid
-						-- and snap the cursor position to the default grid:
-						reset_grid_and_cursor;
+						if unit_add.valid then
+							-- When adding units, we enforce the default grid
+							-- and snap the cursor position to the default grid:
+							reset_grid_and_cursor;
 
-						-- If no unit has been selected yet, then the device
-						-- model selection dialog opens.
-						if unit_add.device /= pac_devices_lib.no_element then -- unit selected
-
-							-- If a unit has already been selected, then
-							-- it will be dropped at the current cursor position:
+							-- If a device model has already been selected, then
+							-- an available unit will be dropped at the current 
+							-- cursor position:
 							drop_unit (get_cursor_position);
-
-							-- Open the model selection to
-							-- select the next unit:
-							show_model_selection;
-									
-						else -- no unit selected yet
-							-- Open the model selection to 
-							-- select a unit:
-							show_model_selection;
 						end if;
 						
-					when others => null;
-						
+					when others => null;						
 				end case;
-
+				
 				
 			when others => null;
 		end case;
