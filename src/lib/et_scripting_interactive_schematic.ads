@@ -53,14 +53,14 @@ with et_logging;				use et_logging;
 
 package et_scripting_interactive_schematic is
 
-	procedure unit_selection_cancelled (
-		self : access gtk_menu_shell_record'class);
+	-- procedure unit_selection_cancelled (
+	-- 	self : access gtk_menu_shell_record'class);
 
 	
 	-- If the operator selects a unit from the menu, 
 	-- then this procedure is called:
-	procedure unit_selected_on_fetch (
-		self : access gtk_menu_item_record'class);
+	-- procedure unit_selected_on_fetch (
+	-- 	self : access gtk_menu_item_record'class);
 
 
 	type type_unit_being_deleted is record
@@ -71,10 +71,10 @@ package et_scripting_interactive_schematic is
 	unit_delete : type_unit_being_deleted;
 	
 	
-	procedure menu_propose_units_on_delete (
-		device			: in type_device_name;
-		units			: in pac_unit_names.list;
-		log_threshold	: in type_log_level);
+	-- procedure menu_propose_units_on_delete (
+	-- 	device			: in type_device_name;
+	-- 	units			: in pac_unit_names.list;
+	-- 	log_threshold	: in type_log_level);
 
 	
 	-- Proposes units on a menu if list "units" has
@@ -82,10 +82,10 @@ package et_scripting_interactive_schematic is
 	-- If "units" contains only one item, then
 	-- this single unit will be granted to be drawn.
 	-- If "units" is empty, nothing happens.
-	procedure menu_propose_units_on_fetch (
-		device			: in type_device_name; -- R2
-		units			: in pac_unit_names.list;
-		log_threshold	: in type_log_level);
+	-- procedure menu_propose_units_on_fetch (
+	-- 	device			: in type_device_name; -- R2
+	-- 	units			: in pac_unit_names.list;
+	-- 	log_threshold	: in type_log_level);
 
 	
 	-- Makes the unit_move a selected unit.
@@ -105,8 +105,8 @@ package et_scripting_interactive_schematic is
 	-- then this procedure is called.
 	-- The connected net segments are identified and collected in 
 	-- container segments_being_dragged.
-	procedure unit_selected_on_move (
-		self : access gtk_menu_item_record'class);
+	-- procedure unit_selected_on_move (
+	-- 	self : access gtk_menu_item_record'class);
 
 	-- Proposes units on a menu if list "units" has
 	-- more than one item. 
@@ -117,9 +117,9 @@ package et_scripting_interactive_schematic is
 	-- net segments are identified and collected in 
 	-- container segments_being_dragged.	
 	-- If "units" is empty, nothing happens.
-	procedure menu_propose_units_on_move (
-		units			: in pac_unit_names.list;
-		log_threshold	: in type_log_level);
+	-- procedure menu_propose_units_on_move (
+	-- 	units			: in pac_unit_names.list;
+	-- 	log_threshold	: in type_log_level);
 
 
 	-- Makes the placeholder_move a selected placeholder.
