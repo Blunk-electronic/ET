@@ -1596,7 +1596,7 @@ private
 
 	
 
-	-- MAIN WINDOW:
+-- MAIN WINDOW:
 
 	-- This procedure is called when the operator terminates
 	-- the main window by clicking the X in the upper right corner
@@ -1618,7 +1618,18 @@ private
 
 
 
-		-- This function is called each time the operator
+	-- -- This function is called each time the operator hits a key:
+	-- function cb_main_window_key_pressed (
+	-- 	window	: access gtk_widget_record'class;
+	-- 	event	: gdk_event_key)
+	-- 	return boolean;
+ -- 
+	-- access_cb_main_window_key_pressed : constant
+	-- 	cb_gtk_widget_gdk_event_key_boolean := cb_main_window_key_pressed'access;
+
+	
+
+	-- This function is called each time the operator
 	-- presses a mouse button.
 	function cb_window_button_pressed (
 		window	: access gtk_widget_record'class;
@@ -1794,6 +1805,8 @@ private
 
 	access_cb_rename_window_key_pressed : constant
 		cb_gtk_widget_gdk_event_key_boolean := cb_rename_window_key_pressed'access;
+
+
 	
 end et_canvas;
 

@@ -2854,6 +2854,53 @@ package body et_canvas is
 	end cb_main_window_size_allocate;
 
 
+
+	
+
+-- 	function cb_main_window_key_pressed (
+-- 		window	: access gtk_widget_record'class;
+-- 		event	: gdk_event_key)
+-- 		return boolean
+-- 	is
+-- 		debug : boolean := true;
+-- 		
+-- 		event_handled : boolean;
+-- 		key : gdk_key_type := event.keyval;		
+-- 	begin
+-- 		if debug then
+-- 			put_line ("cb_main_window_key_pressed");
+-- 		end if;
+-- 
+-- 		
+-- 		case key is
+-- 			when GDK_ESCAPE =>
+-- 				if debug then
+-- 					put_line ("ESC");
+-- 				end if;
+-- 
+-- 				escape_key_pressed;
+-- 
+-- 				if get_escape_counter = 2 then
+-- 					clear_out_properties_box;
+-- 				end if;
+-- 				
+-- 				event_handled := false;
+-- 
+-- 				
+-- 			when others =>
+-- 				if debug then
+-- 					put_line ("other key");
+-- 				end if;
+-- 				
+-- 				event_handled := false;
+-- 		end case;
+-- 		
+-- 		return event_handled;
+-- 	end cb_main_window_key_pressed;
+
+
+	
+	
 	
 	function cb_main_window_configure (
 		window		: access gtk_widget_record'class;
@@ -2947,6 +2994,8 @@ package body et_canvas is
 		--main_window.on_activate_default (cb_main_window_activate'access);
 		main_window.on_activate_default (access_cb_main_window_activate);
 
+		-- main_window.on_key_press_event (access_cb_main_window_key_pressed);
+		
 		-- Not used:
 		-- main_window.on_activate_focus (cb_window_focus'access);
 
@@ -3354,6 +3403,7 @@ package body et_canvas is
 	end;
 		
 
+	
 
 -- ESCAPE KEY EVENT COUNTER:
 
@@ -4132,6 +4182,8 @@ package body et_canvas is
 
 		draw_line (l, position, origin_linewidth, do_stroke => true);
 	end draw_origin;
+
+
 
 
 	
