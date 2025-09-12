@@ -275,9 +275,10 @@ package body et_canvas_schematic_2 is
 		-- Output the the gdk_key_type (which is
 		-- just a number (see gdk.types und gdk.types.keysyms)):
 		
-		-- put_line ("cb_window_key_pressed (schematic)"
-		-- 	& " key " & gdk_key_type'image (event.keyval));
+		put_line ("cb_window_key_pressed (schematic)"
+			& " key " & gdk_key_type'image (event.keyval));
 
+		
 		if key_ctrl = control_mask then 
 			case key is
 					
@@ -324,6 +325,14 @@ package body et_canvas_schematic_2 is
 					event_handled := true;
 					
 
+					
+				when GDK_ESCAPE =>
+					reset;			
+
+					-- No more actions required:
+					event_handled := true;
+
+					
 				-- Other keys are propagated to the canvas:
 				when others =>
 					event_handled := false;
@@ -482,11 +491,8 @@ package body et_canvas_schematic_2 is
 		-- so that the mode is unchanged.		
 		
 		reset_preliminary_segment; -- after move/drag/draw of a net segment
-
-		reset_unit_add; -- after adding a device
 		
 		reset_placeholder; -- after moving a placeholder
-
 		-- reset_activate_counter;
 
 		reset_zoom_area; -- abort zoom-to-area operation
@@ -499,6 +505,7 @@ package body et_canvas_schematic_2 is
 		use et_modes;
 		use et_modes.schematic;
 		use et_canvas_schematic_nets;
+		use et_canvas_schematic_units;
 
 
 		-- Do a level 1 reset. This is a partly reset:
@@ -514,6 +521,10 @@ package body et_canvas_schematic_2 is
 			et_schematic_ops.nets.reset_proposed_objects (active_module, log_threshold + 1);
 			
 			et_schematic_ops.units.reset_proposed_objects (active_module, log_threshold + 1);
+
+			unit_add.valid := false;
+			
+			-- CS unit_fetch.valid := false;
 			
 			reset_selections; -- CS
 
@@ -529,6 +540,9 @@ package body et_canvas_schematic_2 is
 						
 			reset_verb_and_noun;
 			update_mode_display;
+
+			reset_unit_add; -- after adding a device
+			-- CS reset_unit_fetch
 			
 			status_enter_verb;
 			clear_out_properties_box;
@@ -540,10 +554,12 @@ package body et_canvas_schematic_2 is
 	begin
 		log (text => "RESET (schematic)", level => log_threshold + 1);
 		log_indentation_up;
-		
-		escape_key_pressed;
 
 		expect_entry := expect_entry_default; -- expect a verb
+
+		-- Count the number of ESC hits:
+		escape_key_pressed;
+
 		
 		-- Verb and noun remain as they are
 		-- so that the mode is unchanged.
@@ -657,8 +673,8 @@ package body et_canvas_schematic_2 is
 		-- Output the the gdk_key_type (which is
 		-- just a number (see gdk.types und gdk.types.keysyms)):
 
-		-- put_line ("cb_canvas_key_pressed (schematic)"
-		-- 	& " key " & gdk_key_type'image (event.keyval));
+		put_line ("cb_canvas_key_pressed (schematic)"
+			& " key " & gdk_key_type'image (event.keyval));
 
 		if key_ctrl = control_mask then 
 			case key is

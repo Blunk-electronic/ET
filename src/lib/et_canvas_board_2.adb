@@ -284,8 +284,9 @@ package body et_canvas_board_2 is
 		-- Output the the gdk_key_type (which is
 		-- just a number (see gdk.types und gdk.types.keysyms)):
 		
-		-- put_line ("cb_window_key_pressed (board)"
-		-- 	& " key " & gdk_key_type'image (event.keyval));
+		put_line ("cb_window_key_pressed (board)"
+			& " key " & gdk_key_type'image (event.keyval));
+
 
 		if key_ctrl = control_mask then 
 			case key is
@@ -332,6 +333,13 @@ package body et_canvas_board_2 is
 					et_canvas_schematic_2.switch_module (et_canvas_schematic_2.NEXT);
 					event_handled := true;
 
+
+
+				when GDK_ESCAPE =>
+					reset;			
+
+					-- No more actions required:
+					event_handled := true;
 
 					
 				-- Other keys are propagated to the canvas:
@@ -839,10 +847,12 @@ package body et_canvas_board_2 is
 	begin
 		log (text => "RESET (board)", level => log_threshold + 1);
 		log_indentation_up;
-		
-		escape_key_pressed;
 
 		expect_entry := expect_entry_default; -- expect a verb
+
+		-- Count the number of ESC hits:
+		escape_key_pressed;
+
 		
 		-- Verb and noun remain as they are
 		-- so that the mode is unchanged.
@@ -916,9 +926,10 @@ package body et_canvas_board_2 is
 		-- Output the the gdk_key_type (which is
 		-- just a number (see gdk.types und gdk.types.keysyms)):
 		
-		-- put_line ("cb_canvas_key_pressed (board)"
-		-- 	& " key " & gdk_key_type'image (event.keyval));
+		put_line ("cb_canvas_key_pressed (board)"
+			& " key " & gdk_key_type'image (event.keyval));
 
+		
 		if key_ctrl = control_mask then 
 			case key is
 				when GDK_KP_ADD | GDK_PLUS =>
