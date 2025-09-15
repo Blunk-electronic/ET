@@ -236,10 +236,7 @@ package et_canvas_schematic_units is
 	-- of the preferred schematic libraries.
 	function get_top_most_important_library return string;
 
-	
-
-
-	
+		
 	
 	-- to be output in the status bar:
 	status_add : constant string := 
@@ -261,6 +258,7 @@ package et_canvas_schematic_units is
 
 		-- The total number of units provided by the device model:
 		total		: type_unit_count := type_unit_count'first;
+		-- CS still required ?
 		
 		-- The prospective device name (like IC4) once the 
 		-- add operation is complete.
@@ -283,12 +281,6 @@ package et_canvas_schematic_units is
 	procedure reset_unit_add;
 
 
-	-- Widgets to be added in the properties box:
-	button_model_directory, button_model_file : gtk_file_chooser_button;
-	
-	cbox_package_variant : gtk_combo_box;
-
-
 	
 	
 	-- This procedure is called when the operator
@@ -304,15 +296,22 @@ package et_canvas_schematic_units is
 		button : access gtk_file_chooser_button_record'class);
 	
 
-	-- This is the combo box for package variants.
-	-- The box is displayed in the properties box and
-	-- its content updated each time the operator selects
-	-- device model file:
-	box_variant : gtk_vbox;
+	-- This is the box that contains a label
+	-- and a combo box for package variants.
+	-- The box is displayed in the properties box
+	-- if package variants exist for a currently selected device model:
+	box_package_variant : gtk_vbox;
 
-	-- This flag indicates that the combo box for
-	-- the package variants is displayed or not:
-	box_variant_exists : boolean := false;
+	-- This flag indicates that the box for
+	-- the package variant selection is displayed or not:
+	box_package_variant_active : boolean := false;
+
+
+	-- This procedure removes the box
+	-- for the package variant selection from the properties box
+	-- and resets the flag box_package_variant_active:
+	procedure remove_box_package_variant;
+	
 	
 	-- This procedure is called when the operator
 	-- has selected a device model file from inside
@@ -331,6 +330,10 @@ package et_canvas_schematic_units is
 	-- select the directory, model and package variant:
 	procedure show_device_model_selection;
 
+
+
+
+	
 
 	
 	procedure drop_unit (

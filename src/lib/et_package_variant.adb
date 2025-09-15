@@ -49,11 +49,6 @@ with et_exceptions;				use et_exceptions;
 
 package body et_package_variant is
 
-	
-	-- function to_string (package_variant : in pac_package_variant_name.bounded_string) return string is begin
-	-- 	return pac_package_variant_name.to_string (package_variant);
-	-- end;
-
 
 	
 	function to_variant_name (variant_name : in string) 
@@ -63,6 +58,14 @@ package body et_package_variant is
 	end;
 
 
+	-- function to_string (
+	-- 	variant : in pac_package_variant_name.bounded_string) 
+	-- 	return string
+	-- is begin
+	-- 	return pac_package_variant_name.to_string (variant);
+	-- end;
+
+	
 	
 	procedure check_variant_name_length (variant_name : in string) is
 	-- tests if the given variant name is not longer than allowed

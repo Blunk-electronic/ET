@@ -1018,17 +1018,33 @@ package body et_canvas_schematic_units is
 		use glib.values;
 		name : gvalue;
 	begin
-		put_line ("cb_package_variant_selected");
+		log (text => "cb_package_variant_selected", level => log_threshold);
+		log_indentation_up;
+
+		log (text => "selected variant: " & pac_package_variant_name.to_string (unit_add.variant),
+			 level => log_threshold + 1);
 		
 		-- Get the variant name of the entry column 0:
 		gtk.tree_model.get_value (model, iter, 0, name);
 		
 		unit_add.variant := to_variant_name (glib.values.get_string (name));
 
-		unit_add.valid := true;
+		
+		-- Once the operator has started selecing a package variant, the
+		-- counter that counts the number of ESC hits until a reset 
+		-- is perfomed, must be reset:
 		reset_escape_counter;
 		
+
+		-- Now the information in unit_add is complete.
+		-- By setting the flag "valid" the draw operation of the unit
+		-- starts drawing the unit as it is sticking at the current tool
+		-- (cursor or mouse):
+		unit_add.valid := true;
+
+		log_indentation_down;
 	end cb_package_variant_selected;
+
 
 
 	
@@ -1053,19 +1069,23 @@ package body et_canvas_schematic_units is
 
 
 	
-	procedure remove_variant_box is begin
-		box_v4.remove (box_variant);
+	procedure remove_box_package_variant is begin
+		if box_package_variant_active then
+			-- Remove the box_variant and everything
+			-- that is inside:
+			box_v4.remove (box_package_variant);
+			box_package_variant_active := false;
+		end if;
 	end;
 	
 
+
 	
+
 	
 	procedure cb_device_model_selected (
 		button : access gtk_file_chooser_button_record'class) 
 	is
-		use et_device_rw;
-
-
 		-- The delected device model file (*.dev) is stored here:
 		device_model_file : pac_device_model_file.bounded_string;
 
@@ -1082,6 +1102,10 @@ package body et_canvas_schematic_units is
 		variants : pac_variants.map;
 
 
+		-- This procedure iterates through the list of
+		-- package variants and adds them one by one
+		-- to a so called "store". The store is required
+		-- to fill the combo box for the variants with content:		
 		procedure make_store_for_variants (
 			store : in out gtk_list_store)
 		is
@@ -1121,8 +1145,11 @@ package body et_canvas_schematic_units is
 
 
 		
-		
-		procedure make_combo_variant is
+		-- This procedure builds the box_variant with a
+		-- combo box inside that allows
+		-- the operator to select a package variant for the
+		-- currently selected device model:
+		procedure make_combo_box_package_variant is
 			use gtk.label;			
 			use gtk.cell_renderer_text;
 
@@ -1131,27 +1158,31 @@ package body et_canvas_schematic_units is
 			
 			label_variant : gtk_label;
 			store : gtk_list_store;			
-			render	: gtk_cell_renderer_text;			
+			render	: gtk_cell_renderer_text;
 
+			-- This is the combo box that allows the operator
+			-- to select among a list of package variant names.
+			-- It is filled with variant names each time the operator selects
+			-- a new device model file:
+			cbox_package_variant : gtk_combo_box;
+			
 		begin
-			-- put_line ("make_combo_variant");
+			-- put_line ("make_combo_box_package_variant");
 
 			-- If the box already exists, due to a previous
 			-- model selection, then it will be removed first
-			-- and a new one created:
-			if box_variant_exists then
-				remove_variant_box;				
-				box_variant_exists := false;
-			end if;
+			-- (with all its content) and a new one created:
+			remove_box_package_variant;
 
-			
-			gtk_new_vbox (box_variant, homogeneous => false);
-			pack_start (box_v4, box_variant, padding => guint (spacing));
+			-- Create the box_variant and insert it in the properties box:
+			gtk_new_vbox (box_package_variant, homogeneous => false);
+			pack_start (box_v4, box_package_variant, padding => guint (spacing));
 
+			-- Create a label for the box and insert it in box_variant:
 			gtk_new (label_variant, "variant");
-			pack_start (box_variant, label_variant, padding => guint (spacing));
+			pack_start (box_package_variant, label_variant, padding => guint (spacing));
 
-			-- Create the storage model:
+			-- Create the storage model for the content of the combo box:
 			make_store_for_variants (store);
 			
 			-- Create the combo box:
@@ -1159,27 +1190,38 @@ package body et_canvas_schematic_units is
 				combo_box	=> cbox_package_variant,
 				model		=> +store); -- ?
 
-			pack_start (box_variant, cbox_package_variant, padding => guint (spacing));
+			-- Insert the combo box in box_variant:
+			pack_start (box_package_variant, cbox_package_variant, padding => guint (spacing));
+
+			-- Connect the "on_changed" signal with procedure
+			-- cb_package_variant_selected:
 			cbox_package_variant.on_changed (cb_package_variant_selected'access);
 
-
 			-- The purpose of this stuff is unclear, but it
-			-- is required to make the entries visible:
+			-- is required to make the entries in the combo box visible:
 			gtk_new (render);
 			pack_start (cbox_package_variant, render, expand => true);
 			add_attribute (cbox_package_variant, render, "markup", 0); -- column 0
 
-			box_v4.show_all;
+			-- Show the box_variant with all its content:
+			box_package_variant.show_all;			
 
-			box_variant_exists := true;
-		end make_combo_variant;
+			box_package_variant_active := true;
+		end make_combo_box_package_variant;
 
 		
 
 	begin -- cb_device_model_selected
 		log (text => "cb_device_model_selected", level => log_threshold);
+
+		-- Once the operator has started selecing a device model, the
+		-- counter that counts the number of ESC hits until a reset 
+		-- is perfomed, must be reset:
+		reset_escape_counter;
+		
 		log_indentation_up;
 
+		-- Get the name of the device model file from the button:
 		device_model_file := to_file_name (button.get_filename);
 		
 		log (text => "selected device model file: " & to_string (device_model_file), 
@@ -1190,9 +1232,11 @@ package body et_canvas_schematic_units is
 		-- Read the device mode file and store it in the 
 		-- rig wide device library.
 		-- If the device is already in the library, then nothing happpens:
-		read_device (
+		et_device_rw.read_device (
 			file_name		=> device_model_file, -- ../lbr/logic_ttl/7400.dev
 			log_threshold	=> log_threshold + 2);
+		-- CS add error flag output by read_device and evaluate accordingly.
+		-- Wrap follwing actions in a procedure.
 
 		-- Locate the device in the library:
 		device_cursor_lib := get_device_model_cursor (device_model_file);
@@ -1209,21 +1253,12 @@ package body et_canvas_schematic_units is
 		-- For a nice preview we also need the total of units provided
 		-- the the device:
 		unit_add.total := get_unit_count (unit_add.device);
-
-		-- Now the information in unit_add is complete.
-		-- By setting the flag "valid" the draw operation of the unit
-		-- starts drawing the unit as it is sticking at the current tool
-		-- (cursor or mouse):
-		unit_add.valid := true;
-
-		-- Once the operator as selected a device model, the
-		-- counter that counts the number of ESC hits must be reset:
-		reset_escape_counter;
+		-- CS still required ?
 		
 		-- Assign the prospective device name:
 		unit_add.device_pre := get_next_device_name (
 			active_module, element (device_cursor_lib).prefix);
-		
+		-- CS still required ?
 		
 		-- Depending on the nature of the device we
 		-- offer a selection of package variants. Virtual devices
@@ -1242,19 +1277,28 @@ package body et_canvas_schematic_units is
 			-- assign its name directly to unit_add:
 			if get_variant_count (variants) > 1 then
 				-- Create the combo box for the package variant.
-				make_combo_variant;
+				make_combo_box_package_variant;
 			else
+				remove_box_package_variant;
 				unit_add.variant := get_first_variant (variants);
-				
-				set_status (status_add);
-				-- CS clear ?
-			end if;				
+			end if;
+
+		else
+			-- Virtual devices do not have package variants:
+			remove_box_package_variant;
 		end if;
 
 		log_indentation_down;
 		log_indentation_down;
+
+		status_clear;
 		
-		-- CS exception handler in case read_device fails ?
+		-- Now the information in unit_add is complete.
+		-- By setting the flag "valid" the draw operation of the unit
+		-- starts drawing the unit as it is sticking at the current tool
+		-- (cursor or mouse):
+		unit_add.valid := true;
+
 	end cb_device_model_selected;
 
 
@@ -1273,6 +1317,12 @@ package body et_canvas_schematic_units is
 		use glib;
 		spacing : constant guint := 10;
 
+		-- The button for the directory:		
+		button_model_directory : gtk_file_chooser_button;
+
+		-- The button for the model file:
+		button_model_file : gtk_file_chooser_button;
+		
 		
 		-- This procedure creates a button by which the operator
 		-- selects the directory where a device model can be taken from:
@@ -1391,10 +1441,11 @@ package body et_canvas_schematic_units is
 		use et_commit;
 		use et_undo_redo;
 	begin
+		log (text => "drop_unit", level => log_threshold);
+		log_indentation_up;
+		
 		-- Commit the current state of the design:
 		commit (PRE, verb, noun, log_threshold);
-
-		put_line ("drop_unit");
 		
 		add_device (
 			module_cursor	=> active_module,
@@ -1405,14 +1456,12 @@ package body et_canvas_schematic_units is
 
 		-- Commit the new state of the design:
 		commit (POST, verb, noun, log_threshold);
+
+		status_clear;
+
+		redraw_board;
 		
-		-- reset_unit_add;
-
-		set_status (status_add);
-		-- CS clear ?
-		--status_enter_verb;
-
-		-- CS update board, ratsnest
+		log_indentation_down;
 	end drop_unit;
 
 
