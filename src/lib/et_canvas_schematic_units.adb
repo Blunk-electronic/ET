@@ -1035,54 +1035,49 @@ package body et_canvas_schematic_units is
 	
 	
 	procedure cb_model_directory_selected (
-		self : access gtk_file_chooser_button_record'class) 
+		button : access gtk_file_chooser_button_record'class) 
 	is begin
-		put_line ("cb_model_directory_selected");
+		log (text => "cb_model_directory_selected", level => log_threshold);
 		
-		put_line (self.get_current_folder);
+		log_indentation_up;
+		log (text => "directory: " & button.get_current_folder,
+			 level => log_threshold + 1);
+		
+		log_indentation_down;
 	end cb_model_directory_selected;
 
 
 
 	
--- 	procedure cb_model_directory_key_pressed (
--- 		self : access gtk_file_chooser_button_record'class) 
--- 	is begin
--- 		put_line ("cb_model_directory_key_pressed");
--- 		
--- 		-- put_line (self.get_current_folder);
--- 	end cb_model_directory_key_pressed;
 
 
-
-	box_variant : gtk_vbox;
-	
-	box_variant_exists : boolean := false;
 
 	
 	procedure remove_variant_box is begin
 		box_v4.remove (box_variant);
 	end;
 	
-	
-	
-	procedure cb_model_selected (
-		self : access gtk_file_chooser_button_record'class) 
-	is
 
-		use gtk.menu;
-		use gtk.menu_item;
+	
+	
+	procedure cb_device_model_selected (
+		button : access gtk_file_chooser_button_record'class) 
+	is
 		use et_device_rw;
-		use et_device_appearance;
-		
-		device_model : pac_device_model_file.bounded_string;
+
+
+		-- The delected device model file (*.dev) is stored here:
+		device_model_file : pac_device_model_file.bounded_string;
 
 		use pac_devices_lib;
-		device_cursor_lib : pac_devices_lib.cursor; -- points to the device in the library
+		-- This cursor points to the device model in the library:
+		device_cursor_lib : pac_devices_lib.cursor;
 
 		use pac_unit_name;
 		unit_name : pac_unit_name.bounded_string;
-		
+
+		-- If package variants are available, then
+		-- they are stored here temporaily:
 		use pac_variants;
 		variants : pac_variants.map;
 
@@ -1139,7 +1134,7 @@ package body et_canvas_schematic_units is
 			render	: gtk_cell_renderer_text;			
 
 		begin
-			put_line ("make_combo_variant");
+			-- put_line ("make_combo_variant");
 
 			-- If the box already exists, due to a previous
 			-- model selection, then it will be removed first
@@ -1181,70 +1176,86 @@ package body et_canvas_schematic_units is
 
 		
 
-	begin -- cb_model_selected
-		log (text => "cb_model_selected", level => log_threshold);
+	begin -- cb_device_model_selected
+		log (text => "cb_device_model_selected", level => log_threshold);
 		log_indentation_up;
 
-		device_model := to_file_name (self.get_filename);
+		device_model_file := to_file_name (button.get_filename);
 		
-		log (text => "selected device model: " & to_string (device_model), level => log_threshold + 1);
+		log (text => "selected device model file: " & to_string (device_model_file), 
+			 level => log_threshold + 1);
+		
 		log_indentation_up;
 		
-
-		-- Read the device file and store it in the 
+		-- Read the device mode file and store it in the 
 		-- rig wide device library.
 		-- If the device is already in the library, then nothing happpens:
 		read_device (
-			file_name		=> device_model, -- ../lbr/logic_ttl/7400.dev
-			log_threshold	=> log_threshold + 1);
+			file_name		=> device_model_file, -- ../lbr/logic_ttl/7400.dev
+			log_threshold	=> log_threshold + 2);
 
-		-- locate the device in the library
-		device_cursor_lib := find (device_library, device_model);
+		-- Locate the device in the library:
+		device_cursor_lib := get_device_model_cursor (device_model_file);
 
-		-- assign the cursor to the device model:
+		-- Assign the cursor to the unit_add:
 		unit_add.device := device_cursor_lib;
 
 		-- Assign the name of the first unit.
 		-- NOTE: When adding a device, the first unit within the device
-		-- will be placed first. Further units are to be placed via
-		-- fetch operations:
+		-- will be placed first. Further units of the instantiated device
+		-- must to be placed via a fetch operation:
 		unit_add.name := get_first_unit (device_cursor_lib);
 
 		-- For a nice preview we also need the total of units provided
 		-- the the device:
 		unit_add.total := get_unit_count (unit_add.device);
 
+		-- Now the information in unit_add is complete.
+		-- By setting the flag "valid" the draw operation of the unit
+		-- starts drawing the unit as it is sticking at the current tool
+		-- (cursor or mouse):
 		unit_add.valid := true;
 
+		-- Once the operator as selected a device model, the
+		-- counter that counts the number of ESC hits must be reset:
 		reset_escape_counter;
 		
-		-- assign the prospective device name:
-		unit_add.device_pre := get_next_device_name (active_module, element (device_cursor_lib).prefix);
+		-- Assign the prospective device name:
+		unit_add.device_pre := get_next_device_name (
+			active_module, element (device_cursor_lib).prefix);
 		
-		-- get the available package variants:
-		variants := get_available_variants (device_cursor_lib);
 		
+		-- Depending on the nature of the device we
+		-- offer a selection of package variants. Virtual devices
+		-- like supply symbols have no package variants:
+		if is_real (device_cursor_lib) then
 
-		case element (device_cursor_lib).appearance is
-			when APPEARANCE_PCB =>
-				if length (variants) > 1 then
-					-- Create the combo box for the package variant.
-					make_combo_variant;
-				else
-					unit_add.variant := key (variants.first);
-					
-					set_status (status_add);
-					-- CS clear ?
-				end if;
+			-- Get the available package variants.
+			-- If the device model does not provide package variants
+			-- then the list "variants" is empty:
+			variants := get_available_variants (device_cursor_lib);
+
+			-- If more than one package variant is available,
+			-- then show the combo box that allows the operator
+			-- to select a variant.
+			-- Otherwise, if only one variant is available, then
+			-- assign its name directly to unit_add:
+			if get_variant_count (variants) > 1 then
+				-- Create the combo box for the package variant.
+				make_combo_variant;
+			else
+				unit_add.variant := get_first_variant (variants);
 				
-			when APPEARANCE_VIRTUAL => null;
-		end case;
+				set_status (status_add);
+				-- CS clear ?
+			end if;				
+		end if;
 
 		log_indentation_down;
 		log_indentation_down;
 		
 		-- CS exception handler in case read_device fails ?
-	end cb_model_selected;
+	end cb_device_model_selected;
 
 
 
@@ -1254,35 +1265,33 @@ package body et_canvas_schematic_units is
 	
 	
 	
-	procedure show_model_selection is
+	procedure show_device_model_selection is
 		use gtk.box;
 		use gtk.label;
-		use gtk.file_chooser_dialog;
 		use gtk.file_chooser;
-		use gtk.file_filter;
-
-		box_directory, box_model : gtk_vbox;
-		label_directory, label_model : gtk_label;
 		
 		use glib;
-		spacing : constant natural := 10;
-
-		file_filter : gtk_file_filter;
-
-		use et_directory_and_file_ops;
-
+		spacing : constant guint := 10;
 
 		
-		procedure make_button_directory is begin
+		-- This procedure creates a button by which the operator
+		-- selects the directory where a device model can be taken from:
+		procedure make_button_directory is 
+			box_directory : gtk_vbox;
+			label_directory : gtk_label;
+		begin
+			-- Make a box and insert it in the properties box:
 			gtk_new_vbox (box_directory, homogeneous => false);
 			pack_start (box_v4, box_directory, padding => guint (spacing));
 
-			gtk_new (label_directory, "directory");
+			-- Makre a label for the box and insert it in the box_directory:
+			gtk_new (label_directory, "Model Directory");
 			pack_start (box_directory, label_directory, padding => guint (spacing));
 
+			-- Create a button by which the operator can select a directory:
 			gtk_new (
 				button		=> button_model_directory,
-				title		=> "Select a device model",
+				title		=> "Select a Directory",
 				action		=> ACTION_SELECT_FOLDER);
 
 			-- CS: Currently the button_directory shows only the most important
@@ -1291,46 +1300,68 @@ package body et_canvas_schematic_units is
 			if button_model_directory.set_current_folder_uri (get_top_most_important_library) then
 				null; -- Testing the existence of the folder is not required.
 			end if;
-			
+
+			-- Insert the button_model_directory in the box_directory:
 			pack_start (box_directory, button_model_directory, padding => guint (spacing));
-			
+
+			-- Connect the "on_file_set" signal with procedure
+			-- cb_model_directory_selected:
 			button_model_directory.on_file_set (cb_model_directory_selected'access);
-			-- button_model_directory.on_key_pressed (cb_model_directory_key_pressed'access);
+			
+			-- NOTE: Key pressed events are handled by the main window.
 		end make_button_directory;
 
 		
 
-		procedure make_button_model is begin
+		-- This procedure creates a button by which the operator
+		-- selects the model file (*.dev):
+		procedure make_button_model is 
+			box_model : gtk_vbox;
+			label_model : gtk_label;
+			
+			use et_directory_and_file_ops;
+			use gtk.file_filter;
+			file_filter : gtk_file_filter;
+		begin
+			-- Make a box and insert it in the properties box:
 			gtk_new_vbox (box_model, homogeneous => false);
 			pack_start (box_v4, box_model, padding => guint (spacing));
 
-			gtk_new (label_model, "model");
+			-- Make a label for the box and insert it in the box_model:
+			gtk_new (label_model, "Model File");
 			pack_start (box_model, label_model, padding => guint (spacing));
 
+			-- Create a file filter so that only *.dev files are shown
+			-- to the operator:
 			gtk_new (file_filter);
 			add_pattern (file_filter, make_filter_pattern (device_model_file_extension));
 			set_name (file_filter, "Device Models");
-			
+
+			-- Create a button by which the operator can select a model file:
 			gtk_new (
 				button		=> button_model_file,
-				title		=> "Select a device model",
+				title		=> "Select a Device Model",
 				action		=> ACTION_OPEN);
 
+			-- Add the file filter to the button_model_file:
 			button_model_file.add_filter (file_filter);
 
 			if button_model_file.set_current_folder (button_model_directory.get_current_folder_uri) then
 				null; -- Testing the existence of the device model is not required.
 			end if;
-			
+
+			-- Insert the button_model_file in the box_model:
 			pack_start (box_model, button_model_file, padding => guint (spacing));
-			
-			button_model_file.on_file_set (cb_model_selected'access);
-			-- CS key pressed escape
+
+			-- Connect the "on_file_set" signal with procedure cb_device_model_selected:
+			button_model_file.on_file_set (cb_device_model_selected'access);
+
+			-- NOTE: Key pressed events are handled by the main window.
 		end make_button_model;
 		
 		
 	begin
-		log (text => "show_model_selection", level => log_threshold);
+		log (text => "show_device_model_selection", level => log_threshold);
 		log_indentation_up;
 		
 		-- Before inserting any widgets, the properties box must be cleared:
@@ -1344,7 +1375,7 @@ package body et_canvas_schematic_units is
 		box_v4.show_all;
 
 		log_indentation_down;
-	end show_model_selection;
+	end show_device_model_selection;
 
 
 

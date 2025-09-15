@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -100,11 +100,26 @@ package et_package_variant is
 	end record;
 
 	
-	package pac_variants is new ordered_maps (
+	package pac_variants is new ordered_maps ( -- CS rename to pac_package_variants
 		key_type 		=> pac_package_variant_name.bounded_string, -- D, N
 		element_type 	=> type_variant);
 
+	use pac_variants;
 
+	
+	-- Returns the name of the first package variant
+	-- of the given list:
+	function get_first_variant (
+		variants : in pac_variants.map)
+		return pac_package_variant_name.bounded_string;
+
+								   
+	-- Returns the number of package variants that
+	-- the given list contains:
+	function get_variant_count (
+		variants : in pac_variants.map)
+		return natural;
+	
 
 	-- For enquiries of port and unit that is linked to a terminal these
 	-- types are required to indicate whether a terminal is linked to a port at all.

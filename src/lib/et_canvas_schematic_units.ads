@@ -288,6 +288,8 @@ package et_canvas_schematic_units is
 	
 	cbox_package_variant : gtk_combo_box;
 
+
+	
 	
 	-- This procedure is called when the operator
 	-- has selected a package variant:
@@ -296,20 +298,38 @@ package et_canvas_schematic_units is
 
 	
 	-- This procedure is called when the operator
-	-- has selected a library directory:
+	-- has selected a library directory from inside 
+	-- the properties box:
 	procedure cb_model_directory_selected (
-		self : access gtk_file_chooser_button_record'class);
+		button : access gtk_file_chooser_button_record'class);
 	
 
-	-- This callback procedure is called when the operator
-	-- has selected a device model:
-	procedure cb_model_selected (
-		self : access gtk_file_chooser_button_record'class);
+	-- This is the combo box for package variants.
+	-- The box is displayed in the properties box and
+	-- its content updated each time the operator selects
+	-- device model file:
+	box_variant : gtk_vbox;
+
+	-- This flag indicates that the combo box for
+	-- the package variants is displayed or not:
+	box_variant_exists : boolean := false;
 	
+	-- This procedure is called when the operator
+	-- has selected a device model file from inside
+	-- the properties box.
+	-- Once the operator has selected a model file,
+	-- the combo box for the available package variants
+	-- is updated:
+	procedure cb_device_model_selected (
+		button : access gtk_file_chooser_button_record'class);
 	
-	-- Builds the widgets for the device model selection
-	-- in the properties box:
-	procedure show_model_selection;
+
+	-- When the operator wants to add a device to the
+	-- drawing then this procedure should be called first.
+	-- It builds the widgets for the device model selection
+	-- in the properties box so that the operator can
+	-- select the directory, model and package variant:
+	procedure show_device_model_selection;
 
 
 	

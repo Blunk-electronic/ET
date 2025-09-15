@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -95,6 +95,28 @@ package body et_package_variant is
 	end check_variant_name_characters;
 
 
+
+
+
+	function get_first_variant (
+		variants : in pac_variants.map)
+		return pac_package_variant_name.bounded_string
+	is begin
+		return key (variants.first);
+	end;
+
+
+	
+
+	function get_variant_count (
+		variants : in pac_variants.map)
+		return natural
+	is begin
+		return natural (variants.length);
+	end;
+
+
+	
 
 
 	function get_unit_and_port (

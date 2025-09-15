@@ -489,7 +489,7 @@ is
 				reset_grid_and_cursor;
 				
 				-- open device model selection
-				show_model_selection; 
+				show_device_model_selection; 
 
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:	

@@ -58,16 +58,16 @@ is
 	-- CS global variable for the tool MOUSE
 	
 	procedure left_button is 
-		use et_device_model;
-		use pac_devices_lib;
-		
 		use et_canvas_schematic_nets;
 		use et_canvas_schematic_units;
 		use et_device_placeholders;
 
 
-		procedure add_device is
+		procedure add_device is 
+			use et_canvas_schematic_units;
 		begin
+			-- If the operator is done with the device model
+			-- selection, then the unit can be dropped:
 			if unit_add.valid then
 				-- When adding units, we enforce the default grid
 				-- and snap the cursor position to the default grid:
@@ -78,29 +78,6 @@ is
 				-- cursor position:
 				drop_unit (snap_point);
 			end if;
-
-			
--- 			-- When adding units, we enforce the default grid
--- 			-- and snap the cursor position to the default grid:
--- 			reset_grid_and_cursor;
--- 			
--- 			-- If no unit has been selected yet, then the device
--- 			-- model selection dialog opens.
--- 			if unit_add.device /= pac_devices_lib.no_element then
--- 
--- 				-- If a unit has already been selected, then
--- 				-- it will be dropped at the current mouse position:
--- 				drop_unit (snap_point);
--- 
--- 				-- Open the device model selection for 
--- 				-- the next unit:
--- 				show_model_selection;
--- 
--- 			else -- no unit selected yet
--- 				-- Open the device model selection window
--- 				-- to allow selection of the unit:
--- 				show_model_selection;
--- 			end if;
 		end add_device;
 
 		
