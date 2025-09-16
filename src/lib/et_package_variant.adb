@@ -50,6 +50,19 @@ with et_exceptions;				use et_exceptions;
 package body et_package_variant is
 
 
+	function is_empty (
+		variant_name : in pac_package_variant_name.bounded_string)
+		return boolean
+	is begin
+		if length (variant_name) = 0 then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+
+	
 	
 	function to_variant_name (variant_name : in string) 
 		return pac_package_variant_name.bounded_string

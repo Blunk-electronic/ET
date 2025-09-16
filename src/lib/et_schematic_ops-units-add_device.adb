@@ -334,34 +334,32 @@ is
 
 	
 begin -- add_device
-	if pac_package_variant_name.length (variant) > 0 then -- real device
-		log (text => "module " & to_string (module_cursor) &
-			" add device " & to_string (device_model) &
-			" package variant " & to_string (variant) &
-			" at" &
-			to_string (position => destination) &
-			" rotation" & to_string (get_rotation (destination)),
+	if not is_empty (variant) then -- real device
+		log (text => "module " & to_string (module_cursor) 
+			 & " add real device " & to_string (device_model) 
+			 & " package variant " & to_string (variant) 
+			 & " at " & to_string (position => destination),
 			level => log_threshold);
 		
 	else -- virtual device
-		log (text => "module " & to_string (module_cursor) &
-			" add device " & to_string (device_model) &
-			" at" &
-			to_string (position => destination) &
-			" rotation" & to_string (get_rotation (destination)),
+		log (text => "module " & to_string (module_cursor) 
+			 & " add virtual device " & to_string (device_model) 
+			 & " at" & to_string (position => destination),
 			level => log_threshold);
 	end if;
 		
 	log_indentation_up;
 	
-
-	-- Read the device file and store it in the rig wide device 
-	-- library et_devices.devices.
+	-- Read the device file and store it in the rig wide device library.
 	-- If the device is already in the library, nothing happpens.
 	et_device_rw.read_device (
 		file_name		=> device_model, -- ../lbr/logic_ttl/7400.dev
 		log_threshold	=> log_threshold + 1);
 
+	-- CS add error flag output by read_device and evaluate accordingly.
+	-- Wrap follwing actions in a procedure.
+	-- CS use device cursor output by read_device instead 
+	-- the following statement.
 	
 	-- locate the device in the library
 	device_cursor_lib := find (device_library, device_model);

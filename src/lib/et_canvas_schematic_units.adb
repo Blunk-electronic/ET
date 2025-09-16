@@ -1237,7 +1237,9 @@ package body et_canvas_schematic_units is
 			log_threshold	=> log_threshold + 2);
 		-- CS add error flag output by read_device and evaluate accordingly.
 		-- Wrap follwing actions in a procedure.
-
+		-- CS use device cursor output by read_device instead 
+		-- the following statement.
+		
 		-- Locate the device in the library:
 		device_cursor_lib := get_device_model_cursor (device_model_file);
 

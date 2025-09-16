@@ -66,6 +66,12 @@ package et_package_variant is
 	package pac_package_variant_name is new generic_bounded_length (variant_name_length_max);
 	use pac_package_variant_name;
 
+
+	-- Returns true if the given variant name is empty:
+	function is_empty (
+		variant_name : in pac_package_variant_name.bounded_string)
+		return boolean;
+
 	
 	-- function to_string (
 	-- 	variant : in pac_package_variant_name.bounded_string) 

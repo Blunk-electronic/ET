@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -103,6 +103,8 @@ package et_device_rw is
 	procedure read_device (
 		file_name 		: in pac_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
+		-- CS error : out boolean;
+		-- CS device_curosr : out pac_devices_lib.cursor;
 		log_threshold	: in type_log_level);
 
 	
