@@ -256,8 +256,6 @@ package body et_canvas_schematic_2 is
 			restore_scrollbar_settings;
 			
 			status_clear;
-			
-			event_handled := true;
 		end focus_canvas;
 	
 
@@ -303,6 +301,7 @@ package body et_canvas_schematic_2 is
 				-- If the operator presses F4 then set the focus to the canvas:
 				when GDK_F4 =>
 					focus_canvas;
+					event_handled := true;
 					
 					
 				when GDK_F5 =>
@@ -335,6 +334,7 @@ package body et_canvas_schematic_2 is
 					
 				-- Other keys are propagated to the canvas:
 				when others =>
+					focus_canvas;
 					event_handled := false;
 					
 			end case;

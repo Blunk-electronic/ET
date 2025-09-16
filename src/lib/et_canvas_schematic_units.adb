@@ -1433,13 +1433,13 @@ package body et_canvas_schematic_units is
 
 	
 	
-	procedure drop_unit (
+	procedure add_device (
 		position	: in type_vector_model)
 	is 
 		use et_commit;
 		use et_undo_redo;
 	begin
-		log (text => "drop_unit", level => log_threshold);
+		log (text => "add_device", level => log_threshold);
 		log_indentation_up;
 		
 		-- Commit the current state of the design:
@@ -1449,7 +1449,7 @@ package body et_canvas_schematic_units is
 			module_cursor	=> active_module,
 			device_model	=> get_device_model_file (unit_add.device),
 			variant			=> unit_add.variant,
-			destination		=> to_position (position, active_sheet),
+			destination		=> to_position (position, active_sheet, unit_add.rotation),
 			log_threshold	=> log_threshold + 1);
 
 		-- Commit the new state of the design:
@@ -1460,7 +1460,7 @@ package body et_canvas_schematic_units is
 		redraw_board;
 		
 		log_indentation_down;
-	end drop_unit;
+	end add_device;
 
 
 

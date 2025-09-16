@@ -73,10 +73,11 @@ is
 				-- and snap the cursor position to the default grid:
 				reset_grid_and_cursor;
 
-				-- If a device model has already been selected, then
-				-- an available unit will be dropped at the current 
-				-- cursor position:
-				drop_unit (snap_point);
+				-- If a device model has been selected, then
+				-- an unit will be dropped at the current 
+				-- cursor position. The properties of the new device
+				-- are taken from the preliminary unit_add:
+				add_device (snap_point);
 			end if;
 		end add_device;
 

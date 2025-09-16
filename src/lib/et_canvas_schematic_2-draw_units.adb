@@ -1001,7 +1001,8 @@ procedure draw_units is
 		begin
 			case unit_cursor.ext_int is
 				when EXT =>
-					--put_line ("external unit");
+					-- put_line ("external unit");
+					-- put_line ("rotation " & to_string (unit_add.rotation));
 					
 					-- If the unit is external, we must fetch the symbol and the placeholders
 					-- via its model file:
@@ -1018,7 +1019,8 @@ procedure draw_units is
 						unit_count		=> unit_add.total,
 						
 						unit_position	=> destination,
-
+						unit_rotation	=> unit_add.rotation,
+						
 						sch_placeholder_name	=> sch_placeholder_name,
 						sch_placeholder_value	=> sch_placeholder_value,
 						sch_placeholder_purpose => sch_placeholder_purpose,
@@ -1043,7 +1045,8 @@ procedure draw_units is
 						unit_count		=> unit_add.total,
 						
 						unit_position	=> destination,
-
+						unit_rotation	=> unit_add.rotation,
+						
 						sch_placeholder_name	=> sch_placeholder_name,
 						sch_placeholder_value	=> sch_placeholder_value,
 						sch_placeholder_purpose => sch_placeholder_purpose,

@@ -266,6 +266,10 @@ package et_canvas_schematic_units is
 		device_pre	: type_device_name := (others => <>);
 		-- CS probably no need anymore
 
+		-- The rotation of the unit:
+		rotation	: type_rotation := 0.0;
+
+		
 		-- Indicates that the information above is valid
 		-- and a unit has been selected from the fetch menu
 		-- by the operator:
@@ -332,11 +336,10 @@ package et_canvas_schematic_units is
 
 
 
-
-	
-
-	
-	procedure drop_unit (
+	-- This procedure adds the unit of a new device
+	-- to the drawing. It takes the information stored
+	-- in unit_add:
+	procedure add_device (
 		position	: in type_vector_model);
 
 

@@ -502,15 +502,30 @@ is
 							-- and snap the cursor position to the default grid:
 							reset_grid_and_cursor;
 
-							-- If a device model has already been selected, then
-							-- an available unit will be dropped at the current 
-							-- cursor position:
-							drop_unit (get_cursor_position);
+							-- If a device model has been selected, then
+							-- an unit will be dropped at the current 
+							-- cursor position. The properties of the new device
+							-- are taken from the preliminary unit_add:
+							add_device (get_cursor_position);
 						end if;
 						
 					when others => null;						
 				end case;
 				
+
+			-- If the operator wants to rotate the unit
+			-- being added, then add 90 degrees to the
+			-- temporily unit:
+			when key_rotate =>
+				case noun is
+					when NOUN_DEVICE =>
+						if unit_add.valid then
+							add (unit_add.rotation, 90.0);
+						end if;
+
+					when others => null;						
+				end case;
+
 				
 			when others => null;
 		end case;
