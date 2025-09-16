@@ -61,9 +61,13 @@ is
 	use pac_devices_lib;
 	device_cursor_lib : pac_devices_lib.cursor; -- points to the device in the library
 
+
+	-- The next available device name:
+	next_name : type_device_name;
+
 	
 	
-	procedure add (
+	procedure query_module (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in out type_generic_module) 
 	is
@@ -73,9 +77,6 @@ is
 		device_cursor_sch : pac_devices_sch.cursor;
 		inserted : boolean;
 
-		-- build the next available device name:
-		next_name : type_device_name := 
-			get_next_device_name (module_cursor, element (device_cursor_lib).prefix);
 
 		placeholders : type_default_placeholders;
 		
@@ -191,69 +192,88 @@ is
 		unit_name : pac_unit_name.bounded_string;
 
 		
-	begin -- add
-		log (text => "add device " & to_string (next_name), level => log_threshold + 1);
-		log_indentation_up;
+
+		-- Adds a virtual device to the devices
+		-- in the drawing. After successful inserting, the cursor
+		-- device_cursor_sch points to the device in the schematic.
+		-- For the moment, no units are added:
+		procedure add_virtual_device is begin
+			pac_devices_sch.insert (
+				container	=> module.devices,
+				inserted	=> inserted,
+				position	=> device_cursor_sch,
+				key			=> next_name,
+				new_item	=> (
+					appearance 	=> APPEARANCE_VIRTUAL,
+					model		=> get_device_model_file (device_cursor_lib),
+					units		=> pac_units.empty_map)); -- no units yet
+
+			-- CS test inserted flag ?
+		end add_virtual_device;
+
+
 		
-		case element (device_cursor_lib).appearance is
-			when APPEARANCE_VIRTUAL =>
-				pac_devices_sch.insert (
-					container	=> module.devices,
-					inserted	=> inserted,
-					position	=> device_cursor_sch,
-					key			=> next_name,
-					new_item	=> (
-						appearance 	=> APPEARANCE_VIRTUAL,
-						model		=> key (device_cursor_lib),
-						units		=> pac_units.empty_map
-						));
+		-- Adds a real device to the devices
+		-- in the drawing. After successful inserting, the cursor
+		-- device_cursor_sch points to the device in the schematic.
+		-- For the moment, no units are added:
+		procedure add_real_device is begin
+			-- A real device requires a package variant.
 
-				-- CS check inserted flag ?
-				
-			when APPEARANCE_PCB =>
-				-- A real device requires a package variant.
-				if pac_package_variant_name.length (variant) > 0 then
+			-- If a package variant was specified, then we must
+			-- make sure that the requested variant exists in the model at all.
+			-- If it exists, then the device is added to the drawing.
+			-- If the requested package variant does not exist in the model,
+			-- then an error messages is output and nothing else happens.
+			if not is_empty (variant) then
 
-					if is_variant_available (device_cursor_lib, variant) then
-						pac_devices_sch.insert (
-							container	=> module.devices,
-							inserted	=> inserted,
-							position	=> device_cursor_sch,
-							key			=> next_name,
-							new_item	=> (
-								appearance 	=> APPEARANCE_PCB,
-								model		=> key (device_cursor_lib),
-								units		=> pac_units.empty_map,
-								value		=> element (device_cursor_lib).value, -- if predefined in dev. model
-								variant		=> variant,
+				if is_variant_available (device_cursor_lib, variant) then
+					pac_devices_sch.insert (
+						container	=> module.devices,
+						inserted	=> inserted,
+						position	=> device_cursor_sch,
+						key			=> next_name,
+						new_item	=> (
+							appearance 	=> APPEARANCE_PCB,
+							model		=> get_device_model_file (device_cursor_lib),
+							units		=> pac_units.empty_map, -- no units yet
+							value		=> element (device_cursor_lib).value, -- if predefined in dev. model
+							variant		=> variant,
 
-								-- Initially, the text placeholders are copies of the placeholders 
-								-- defined in the package.
-								-- Extract them from the device model and the variant:
-								text_placeholders	=> placeholders_of_package (device_cursor_lib, variant),
+							-- Initially, the text placeholders are copies of the placeholders 
+							-- defined in the package.
+							-- Extract them from the device model and the variant:
+							text_placeholders	=> placeholders_of_package (device_cursor_lib, variant),
 
-								-- Use default position in layout.
-								-- CS: do not place the package on top of others
-								others		=> <>
-								));
+							-- Use default position in layout.
+							-- CS: do not place the package on top of others
+							others		=> <> ));
 
-						-- CS check inserted flag ?
-						
-						
-					else -- variant not available
-						log (ERROR, "package variant " & enclose_in_quotes (to_string (variant)) &
-								" not available in the specified device model !", console => true);
-						raise constraint_error;
-					end if;
+					-- CS test the inserted flag ?
 					
-				else -- no variant specified
-					log (ERROR, "device requires specification of package variant !",
-							console => true);
-					raise constraint_error;
-					-- CS use first available variant instead ?
+					
+				else -- variant not available
+					log (ERROR, "Package variant " & enclose_in_quotes (to_string (variant)) 
+						 & " not available in the specified device model !");
 				end if;
 				
-		end case;
+			else -- no variant specified
+				log (ERROR, "device requires specification of package variant !",
+						console => true);
+				raise constraint_error;
+				-- CS use first available variant instead ?
+			end if;
+		end add_real_device;
+
+		
+		
+	begin -- query_module
+		
+		if is_real (device_cursor_lib) then
+			add_real_device;
+		else
+			add_virtual_device;				
+		end if;
 
 		
 		-- Add first available unit (according to search order specified in function first_unit)
@@ -329,9 +349,9 @@ is
 		end if;
 		
 		log_indentation_down;
-		log_indentation_down;
-	end add;
+	end query_module;
 
+	
 	
 begin -- add_device
 	if not is_empty (variant) then -- real device
@@ -364,11 +384,18 @@ begin -- add_device
 	-- locate the device in the library
 	device_cursor_lib := find (device_library, device_model);
 
+
+	-- Build the next available device name:
+	next_name := get_next_device_name (module_cursor, get_prefix (device_cursor_lib));
+
+	log (text => "auto generated device name: " & to_string (next_name),
+		 level => log_threshold);
+	
 	
 	update_element (
 		container	=> generic_modules,
 		position	=> module_cursor,
-		process		=> add'access);
+		process		=> query_module'access);
 	
 	log_indentation_down;
 

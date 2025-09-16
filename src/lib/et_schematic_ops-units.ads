@@ -185,8 +185,9 @@ package et_schematic_ops.units is
 	
 	
 	-- Adds a device to the schematic. 
-	-- The unit to be added is determined by the add levels
-	-- of the units.
+	-- Determines the name of the device automatically by its
+	-- prefix and the device indexes that are available (after IC43 follows IC44).
+	-- The unit to be added is determined by the add levels of the units.
 	-- If the given variant is empty (zero length) then
 	-- the the device is assumed to be virtual (like a GND symbol). 
 	-- CS: Reject the selected unit if a port overlaps a port of another
