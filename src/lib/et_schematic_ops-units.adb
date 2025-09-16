@@ -45,7 +45,6 @@ with et_port_direction;
 with et_device_model;						use et_device_model;
 with et_devices_non_electrical;				use et_devices_non_electrical;
 with et_numbering;
-with et_device_appearance;
 
 package body et_schematic_ops.units is
 
@@ -82,10 +81,6 @@ package body et_schematic_ops.units is
 			end;
 
 			
-			use et_symbols;
-			use et_device_appearance;
-
-			
 		begin -- query_devices
 			-- locate the device
 			device_cursor := find (module.devices, device_name); -- R1
@@ -93,7 +88,7 @@ package body et_schematic_ops.units is
 			if device_cursor /= pac_devices_sch.no_element then -- the device should be there
 
 				-- Only real devices have a value.
-				if element (device_cursor).appearance = APPEARANCE_PCB then
+				if is_real (device_cursor) then
 
 					-- Check value regarding the device category:
 					if et_conventions.value_valid (value, get_prefix (device_name)) then 
@@ -180,10 +175,6 @@ package body et_schematic_ops.units is
 			end;
 
 			
-			use et_symbols;
-			use et_device_appearance;
-
-			
 		begin -- query_devices
 			-- locate the device
 			device_cursor := find (module.devices, device_name); -- R1
@@ -191,7 +182,7 @@ package body et_schematic_ops.units is
 			if device_cursor /= pac_devices_sch.no_element then -- the device should be there
 
 				-- Only real devices have a purpose. Issue warning if targeted device is virtual.
-				if element (device_cursor).appearance = APPEARANCE_PCB then
+				if is_real (device_cursor) then
 
 					update_element (
 						container	=> module.devices,
@@ -256,9 +247,6 @@ package body et_schematic_ops.units is
 			begin
 				device.partcode := partcode;
 			end;
-
-			use et_symbols;
-			use et_device_appearance;
 			
 			
 		begin -- query_devices
@@ -268,7 +256,7 @@ package body et_schematic_ops.units is
 			if device_cursor /= pac_devices_sch.no_element then -- the device should be there
 
 				-- Only real devices have a purpose. Issue warning if targeted device is virtual.
-				if element (device_cursor).appearance = APPEARANCE_PCB then
+				if is_real (device_cursor) then
 
 					update_element (
 						container	=> module.devices,

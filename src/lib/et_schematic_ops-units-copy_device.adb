@@ -45,6 +45,7 @@
 
 with et_device_model;					use et_device_model;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
+with et_device_appearance;				use et_device_appearance;
 
 
 separate (et_schematic_ops.units)

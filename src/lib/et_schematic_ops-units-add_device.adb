@@ -55,13 +55,10 @@ procedure add_device (
 	destination		: in type_object_position;
 	log_threshold	: in type_log_level) 
 is	
-	use et_symbols;
 	use pac_package_variant_name;
 	
-
 	use pac_devices_lib;
 	device_cursor_lib : pac_devices_lib.cursor; -- points to the device in the library
-
 
 	-- The next available device name:
 	next_name : type_device_name;
@@ -72,8 +69,6 @@ is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in out type_generic_module) 
 	is
-		
-		use et_devices_electrical;
 		use pac_devices_sch;
 		device_cursor_sch : pac_devices_sch.cursor;
 		
@@ -147,13 +142,12 @@ is
 					
 					
 				else -- variant not available
-					log (ERROR, "Package variant " & enclose_in_quotes (to_string (variant)) 
+					log (ERROR, "Package variant " & to_string (variant)
 						 & " not available in the specified device model !");
 				end if;
 				
 			else -- no variant specified
-				log (ERROR, "device requires specification of package variant !",
-						console => true);
+				log (ERROR, "device requires specification of package variant !");
 				raise constraint_error;
 				-- CS use first available variant instead ?
 			end if;
@@ -237,6 +231,7 @@ is
 			device_name	: in type_device_name;
 			device		: in out type_device_sch) 
 		is
+			use et_symbols;
 			use pac_symbols;
 			symbol_cursor : pac_symbols.cursor;
 			symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
