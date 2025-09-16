@@ -258,7 +258,6 @@ package et_canvas_schematic_units is
 
 		-- The total number of units provided by the device model:
 		total		: type_unit_count := type_unit_count'first;
-		-- CS still required ?
 		
 		-- The prospective device name (like IC4) once the 
 		-- add operation is complete.
@@ -275,7 +274,8 @@ package et_canvas_schematic_units is
 	end record;
 
 
-	
+	-- If a unit of a new device is being added, then
+	-- all the required preliminary information is stored here:
 	unit_add : type_unit_being_added;
 
 
@@ -389,8 +389,8 @@ package et_canvas_schematic_units is
 	end record;
 
 	
-	-- The actual information about the
-	-- unit being fetched:
+	-- If a unit of a device is being fetched, then
+	-- all the required preliminary information is stored here:
 	unit_fetch : type_unit_fetch;
 
 

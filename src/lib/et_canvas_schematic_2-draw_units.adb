@@ -81,6 +81,10 @@ procedure draw_units is
 		device_value	: in pac_device_value.bounded_string := to_value (""); -- like 100R or TL084
 		device_purpose	: in pac_device_purpose.bounded_string := to_purpose (""); -- like "brightness control"
 		unit_name		: in pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
+
+		-- The unit count is required in order to decide whether a suffix
+		-- for the unit name is to be drawn. If the device has only a single unit,
+		-- then the unit name will not be drawn:
 		unit_count		: in type_unit_count;
 
 		-- CS: Unit position and rotation should be unified

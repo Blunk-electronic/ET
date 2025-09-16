@@ -1250,10 +1250,9 @@ package body et_canvas_schematic_units is
 		-- must to be placed via a fetch operation:
 		unit_add.name := get_first_unit (device_cursor_lib);
 
-		-- For a nice preview we also need the total of units provided
-		-- the the device:
+		-- In the preview, the total number of units determines whether
+		-- to show the unit name as a suffix or not:
 		unit_add.total := get_unit_count (unit_add.device);
-		-- CS still required ?
 		
 		-- Assign the prospective device name:
 		unit_add.device_pre := get_next_device_name (
