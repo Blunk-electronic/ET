@@ -1257,8 +1257,7 @@ package body et_canvas_schematic_units is
 		
 		-- Assign the prospective device name:
 		unit_add.device_pre := get_next_device_name (
-			active_module, element (device_cursor_lib).prefix);
-		-- CS still required ?
+			active_module, get_prefix (device_cursor_lib));
 		
 		-- Depending on the nature of the device we
 		-- offer a selection of package variants. Virtual devices
@@ -1458,6 +1457,11 @@ package body et_canvas_schematic_units is
 		status_clear;
 
 		redraw_board;
+
+		-- In case further devices are to be added,
+		-- assign the prospective next device name:
+		unit_add.device_pre := get_next_device_name (
+			active_module, get_prefix (unit_add.device));
 		
 		log_indentation_down;
 	end add_device;

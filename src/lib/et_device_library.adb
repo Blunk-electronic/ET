@@ -73,6 +73,15 @@ package body et_device_library is
 	--end equivalent_models;
 
 
+	function get_prefix (
+		cursor	: in pac_devices_lib.cursor)
+		return pac_device_prefix.bounded_string
+	is begin
+		return element (cursor).prefix;
+	end;
+
+
+	
 
 	function get_device_model_file (
 		cursor	: in pac_devices_lib.cursor)
