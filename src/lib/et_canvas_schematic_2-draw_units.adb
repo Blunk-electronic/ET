@@ -1110,7 +1110,7 @@ procedure draw_units is
 
 						device_name		=> unit_fetch.device_pre,
 						unit_name		=> unit_fetch.name,
-						unit_count		=> 1, -- CS unit_fetch.total,
+						unit_count		=> unit_fetch.total,
 						
 						unit_position	=> destination,
 						unit_rotation	=> unit_fetch.rotation,
@@ -1136,7 +1136,7 @@ procedure draw_units is
 
 						device_name		=> unit_fetch.device_pre,
 						unit_name		=> unit_fetch.name,
-						unit_count		=> 1, -- CS unit_fetch.total,
+						unit_count		=> unit_fetch.total,
 						
 						unit_position	=> destination,
 						unit_rotation	=> unit_fetch.rotation,

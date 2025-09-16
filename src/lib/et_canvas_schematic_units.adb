@@ -1727,6 +1727,10 @@ package body et_canvas_schematic_units is
 		-- assign the unit to be drawn:
 		unit_fetch.name := to_unit_name (unit_name);
 
+		-- In the preview, the total number of units determines whether
+		-- to show the unit name as a suffix or not:
+		unit_fetch.total := get_unit_count (unit_fetch.device);
+		
 		-- Signal procedure draw_units to draw this unit as a preview:
 		unit_fetch.valid := true;
 

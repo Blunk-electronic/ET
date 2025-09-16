@@ -375,6 +375,9 @@ package et_canvas_schematic_units is
 
 		-- The name of the unit:
 		name		: pac_unit_name.bounded_string; -- A, B, PWR_IO3
+
+		-- The total number of units provided by the device model:
+		total		: type_unit_count := type_unit_count'first;
 		
 		-- The prospective device name (like IC4):
 		device_pre	: type_device_name := (others => <>);
