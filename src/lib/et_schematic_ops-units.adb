@@ -47,7 +47,6 @@ with et_devices_non_electrical;				use et_devices_non_electrical;
 with et_numbering;
 with et_device_appearance;
 
-
 package body et_schematic_ops.units is
 
 	use pac_devices_sch;

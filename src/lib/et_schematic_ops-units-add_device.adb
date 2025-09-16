@@ -36,13 +36,14 @@
 --   history of changes:
 --
 --  To Do:
---  - Rework, simplify code, clean up
+--
 --
 
 
 with et_device_rw;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 with et_device_model;					use et_device_model;
+with et_device_appearance;				use et_device_appearance;
 
 
 separate (et_schematic_ops.units)
@@ -71,29 +72,127 @@ is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in out type_generic_module) 
 	is
-		use et_device_appearance;
+		
 		use et_devices_electrical;
 		use pac_devices_sch;
 		device_cursor_sch : pac_devices_sch.cursor;
-		inserted : boolean;
-
-
-		placeholders : type_default_placeholders;
 		
-		unit_cursors : type_device_units;
+
+		-- Adds a virtual device to the devices
+		-- in the drawing. After successful inserting, the cursor
+		-- device_cursor_sch points to the device in the schematic.
+		-- For the moment, no units are added:
+		procedure add_virtual_device is 
+			inserted : boolean;
+		begin
+			-- CS decompose the following stuff:
+			
+			pac_devices_sch.insert (
+				container	=> module.devices,
+				inserted	=> inserted,
+				position	=> device_cursor_sch,
+				key			=> next_name,
+				new_item	=> (
+					appearance 	=> APPEARANCE_VIRTUAL,
+					model		=> get_device_model_file (device_cursor_lib),
+					units		=> pac_units.empty_map)); -- no units yet
+
+			-- CS test inserted flag ?
+		end add_virtual_device;
+
+
+		
+		-- Adds a real device to the devices
+		-- in the drawing. After successful inserting, the cursor
+		-- device_cursor_sch points to the device in the schematic.
+		-- For the moment, no units are added:
+		procedure add_real_device is 
+			inserted : boolean;
+		begin
+			-- A real device requires a package variant.
+
+			-- If a package variant was specified, then we must
+			-- make sure that the requested variant exists in the model at all.
+			-- If it exists, then the device is added to the drawing.
+			-- If the requested package variant does not exist in the model,
+			-- then an error messages is output and nothing else happens.
+			if not is_empty (variant) then
+
+				if is_variant_available (device_cursor_lib, variant) then
+					
+					-- CS decompose the following stuff:
+					pac_devices_sch.insert (
+						container	=> module.devices,
+						inserted	=> inserted,
+						position	=> device_cursor_sch,
+						key			=> next_name,
+						new_item	=> (
+							appearance 	=> APPEARANCE_PCB,
+							model		=> get_device_model_file (device_cursor_lib),
+							units		=> pac_units.empty_map, -- no units yet
+							value		=> element (device_cursor_lib).value, -- if predefined in dev. model
+							variant		=> variant,
+
+							-- Initially, the text placeholders are copies of 
+							-- the placeholders as they are defined in the 
+							-- package model.
+							-- Extract them from the device model and the variant:
+							text_placeholders	=> placeholders_of_package (device_cursor_lib, variant),
+
+							-- Use default position in layout.
+							-- CS: do not place the package on top of others
+							others		=> <> ));
+
+					-- CS test the inserted flag ?
+					
+					
+				else -- variant not available
+					log (ERROR, "Package variant " & enclose_in_quotes (to_string (variant)) 
+						 & " not available in the specified device model !");
+				end if;
+				
+			else -- no variant specified
+				log (ERROR, "device requires specification of package variant !",
+						console => true);
+				raise constraint_error;
+				-- CS use first available variant instead ?
+			end if;
+		end add_real_device;
+
+
+		
+		-- Adds a bare device (without any units deployed)
+		-- to the module:
+		procedure add_bare_device is begin
+			log (text => "add_bare_device", level => log_threshold + 1);
+			log_indentation_up;
+			
+			-- As the first step we add a bare device to the module.
+			-- For the moment no units are deployed:
+			if is_real (device_cursor_lib) then
+				add_real_device;
+			else
+				add_virtual_device;				
+			end if;
+
+			log_indentation_down;
+		end add_bare_device;
+		
+
 
 		use pac_units_internal;
 		use pac_units_external;
-		
-		use pac_unit_name;
-		
-		
+		unit_cursors : type_device_units;
+
+
 		-- Add an internal unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.int.
 		procedure add_unit_internal (
 			device_name	: in type_device_name;
 			device		: in out type_device_sch) 
-		is begin
+		is 
+			placeholders : type_default_placeholders;
+		begin
 			log (text => "add internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
 			
 			case element (device_cursor_lib).appearance is
@@ -141,6 +240,8 @@ is
 			use pac_symbols;
 			symbol_cursor : pac_symbols.cursor;
 			symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
+
+			placeholders : type_default_placeholders;
 		begin
 			log (text => "add external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
 			
@@ -187,168 +288,117 @@ is
 
 		end add_unit_external;
 
+
+
+
 		
+		-- Here we store temporarily the ports (with their positions)
+		-- of the unit to be added:
 		ports : pac_ports.map;
+
 		unit_name : pac_unit_name.bounded_string;
 
 		
-
-		-- Adds a virtual device to the devices
-		-- in the drawing. After successful inserting, the cursor
-		-- device_cursor_sch points to the device in the schematic.
-		-- For the moment, no units are added:
-		procedure add_virtual_device is begin
-			pac_devices_sch.insert (
-				container	=> module.devices,
-				inserted	=> inserted,
-				position	=> device_cursor_sch,
-				key			=> next_name,
-				new_item	=> (
-					appearance 	=> APPEARANCE_VIRTUAL,
-					model		=> get_device_model_file (device_cursor_lib),
-					units		=> pac_units.empty_map)); -- no units yet
-
-			-- CS test inserted flag ?
-		end add_virtual_device;
-
-
-		
-		-- Adds a real device to the devices
-		-- in the drawing. After successful inserting, the cursor
-		-- device_cursor_sch points to the device in the schematic.
-		-- For the moment, no units are added:
-		procedure add_real_device is begin
-			-- A real device requires a package variant.
-
-			-- If a package variant was specified, then we must
-			-- make sure that the requested variant exists in the model at all.
-			-- If it exists, then the device is added to the drawing.
-			-- If the requested package variant does not exist in the model,
-			-- then an error messages is output and nothing else happens.
-			if not is_empty (variant) then
-
-				if is_variant_available (device_cursor_lib, variant) then
-					pac_devices_sch.insert (
-						container	=> module.devices,
-						inserted	=> inserted,
-						position	=> device_cursor_sch,
-						key			=> next_name,
-						new_item	=> (
-							appearance 	=> APPEARANCE_PCB,
-							model		=> get_device_model_file (device_cursor_lib),
-							units		=> pac_units.empty_map, -- no units yet
-							value		=> element (device_cursor_lib).value, -- if predefined in dev. model
-							variant		=> variant,
-
-							-- Initially, the text placeholders are copies of the placeholders 
-							-- defined in the package.
-							-- Extract them from the device model and the variant:
-							text_placeholders	=> placeholders_of_package (device_cursor_lib, variant),
-
-							-- Use default position in layout.
-							-- CS: do not place the package on top of others
-							others		=> <> ));
-
-					-- CS test the inserted flag ?
-					
-					
-				else -- variant not available
-					log (ERROR, "Package variant " & enclose_in_quotes (to_string (variant)) 
-						 & " not available in the specified device model !");
-				end if;
-				
-			else -- no variant specified
-				log (ERROR, "device requires specification of package variant !",
-						console => true);
-				raise constraint_error;
-				-- CS use first available variant instead ?
-			end if;
-		end add_real_device;
-
-		
-		
-	begin -- query_module
-		
-		if is_real (device_cursor_lib) then
-			add_real_device;
-		else
-			add_virtual_device;				
-		end if;
-
-		
-		-- Add first available unit (according to search order specified in function first_unit)
-		-- to device in schematic.
-		unit_cursors := get_first_unit (device_cursor_lib);
-
-		-- If an internal unit is available, add it to device. If no internal unit available
-		-- but an external, add it to the device. So the operator will not take notice
-		-- whether an internal or external unit is placed.
-		if unit_cursors.int /= pac_units_internal.no_element then
-
-			pac_devices_sch.update_element (
-				container	=> module.devices,
-				position	=> device_cursor_sch,
-				process		=> add_unit_internal'access);
-
-			-- fetch ports of unit and their positions relative to the unit origin
-			log_indentation_up;				
-			log (text => "fetching relative port positions of internal unit " &
-					to_string (key (unit_cursors.int)) & " ...", level => log_threshold + 2);
-			
-			ports := get_ports_of_unit (
-				device_cursor	=> device_cursor_sch,
-				unit_name		=> key (unit_cursors.int));
-
-			unit_name := key (unit_cursors.int);
-			
-		-- no internal unit available -> add external unit
-		elsif unit_cursors.ext /= pac_units_external.no_element then
-			
-			pac_devices_sch.update_element (
-				container	=> module.devices,
-				position	=> device_cursor_sch,
-				process		=> add_unit_external'access);
-
-			-- fetch ports of unit and their positions relative to the unit origin
+		-- This procedure adds a unit to the device:
+		procedure add_unit is 			
+		begin
+			log (text => "add_unit", level => log_threshold + 1);
 			log_indentation_up;
-			log (text => "fetching relative port positions of external unit " &
-					to_string (key (unit_cursors.ext)) & " ...", level => log_threshold + 2);
-
-			ports := get_ports_of_unit (
-				device_cursor	=> device_cursor_sch,
-				unit_name		=> key (unit_cursors.ext));
-
-			unit_name := key (unit_cursors.ext);
 			
-		else
-			raise constraint_error; -- CS should never happen. function first_unit excludes this case.
-		end if;
+			-- Now we add the first available unit to the device in schematic.
+			-- The order by which units are deployed is specified in 
+			-- function get_first_unit:
+			unit_cursors := get_first_unit (device_cursor_lib);
 
-		-- Calculate the absolute positions of the unit ports. Rotate first if required:
-		log (text => "calculating absolute port positions ...", level => log_threshold + 2);
-		if get_rotation (destination) /= zero_rotation then
-			rotate_ports (ports, get_rotation (destination));
-		end if;
+			-- If an internal unit is available, add it to device. If no internal unit available
+			-- but an external, add it to the device. So the operator will not take notice
+			-- whether an internal or external unit is placed.
+			if unit_cursors.int /= pac_units_internal.no_element then
 
-		move_ports (ports, destination);
+				pac_devices_sch.update_element (
+					container	=> module.devices,
+					position	=> device_cursor_sch,
+					process		=> add_unit_internal'access);
 
-		-- CS
-		-- Insert the new unit ports in the nets (type_generic_module.nets):
-		-- insert_ports (
-		-- 	module			=> module_cursor,
-		-- 	device			=> next_name,
-		-- 	unit			=> unit_name,
-		-- 	ports			=> ports,
-		-- 	sheet			=> get_sheet (destination),
-		-- 	log_threshold	=> log_threshold + 2);
+				-- fetch ports of unit and their positions relative to the unit origin
+				log (text => "fetch relative port positions of internal unit " &
+						to_string (key (unit_cursors.int)), level => log_threshold + 2);
+				
+				ports := get_ports_of_unit (
+					device_cursor	=> device_cursor_sch,
+					unit_name		=> key (unit_cursors.int));
 
+				unit_name := key (unit_cursors.int);
+				
+			-- no internal unit available -> add external unit
+			elsif unit_cursors.ext /= pac_units_external.no_element then
+				
+				pac_devices_sch.update_element (
+					container	=> module.devices,
+					position	=> device_cursor_sch,
+					process		=> add_unit_external'access);
 
-		-- Update the ratsnest if the added device is real:
-		if is_real (device_cursor_lib) then
-			update_ratsnest (module_cursor, log_threshold + 1);
-		end if;
+				-- fetch ports of unit and their positions relative to the unit origin
+				log (text => "fetch relative port positions of external unit " &
+						to_string (key (unit_cursors.ext)), level => log_threshold + 2);
+
+				ports := get_ports_of_unit (
+					device_cursor	=> device_cursor_sch,
+					unit_name		=> key (unit_cursors.ext));
+
+				unit_name := key (unit_cursors.ext);
+				
+			else
+				raise constraint_error; -- CS should never happen. function first_unit excludes this case.
+			end if;
+
+			log_indentation_down;
+		end add_unit;
 		
-		log_indentation_down;
+
+
+		procedure insert_ports is begin
+			log (text => "insert_ports", level => log_threshold + 1);
+			log_indentation_up;
+			
+			-- Calculate the absolute positions of the unit ports. Rotate first if required:
+			-- log (text => "calculate absolute port positions", level => log_threshold + 2);
+			
+			if get_rotation (destination) /= zero_rotation then
+				rotate_ports (ports, get_rotation (destination));
+			end if;
+
+			move_ports (ports, destination);
+
+			-- Insert the new unit ports in the net segments:
+			insert_ports (
+				module_cursor	=> module_cursor,
+				device_name		=> next_name,
+				unit_name		=> unit_name,
+				ports			=> ports,
+				sheet			=> get_sheet (destination),
+				log_threshold	=> log_threshold + 2);
+
+
+			-- Update the ratsnest if the added device is real:
+			if is_real (device_cursor_lib) then
+				update_ratsnest (module_cursor, log_threshold + 1);
+			end if;
+
+			log_indentation_down;
+		end insert_ports;
+
+		
+		
+	begin 			
+		-- First we add a bare device to the module:
+		add_bare_device;
+
+		-- Now we add the first available unit:
+		add_unit;
+
+		-- Insert the ports of the unit in the net segments
+		insert_ports;
 	end query_module;
 
 	
