@@ -128,11 +128,13 @@ is
 			-- fetch ports of unit and their positions relative to the unit origin
 			log_indentation_up;				
 			log (text => "fetch relative port positions of internal unit " &
-				to_string (key (unit_cursors.int)) & " ...", level => log_threshold + 1);
+				to_string (key (unit_cursors.int)), level => log_threshold + 1);
 			
 			ports := get_ports_of_unit (
 				device_cursor	=> device_cursor_sch,
 				unit_name		=> key (unit_cursors.int));
+
+			log_indentation_down;
 		end add_internal;
 
 
@@ -203,20 +205,24 @@ is
 			-- fetch ports of unit and their positions relative to the unit origin
 			log_indentation_up;
 			log (text => "fetch relative port positions of external unit " &
-				to_string (key (unit_cursors.ext)) & " ...", level => log_threshold + 1);
+				to_string (key (unit_cursors.ext)), level => log_threshold + 1);
 
 			ports := get_ports_of_unit (
 				device_cursor	=> device_cursor_sch,
 				unit_name		=> key (unit_cursors.ext));
 
+			log_indentation_down;
 		end add_external;
 
 
 		
 
 		procedure add_ports_to_nets is begin
+			log (text => "insert_ports", level => log_threshold + 1);
+			log_indentation_up;
+			
 			-- Calculate the absolute positions of the unit ports. Rotate first if required:
-			log (text => "Calculate absolute port positions ...", level => log_threshold + 1);
+			-- log (text => "Calculate absolute port positions ...", level => log_threshold + 1);
 			
 			if get_rotation (destination) /= zero_rotation then
 				rotate_ports (ports, get_rotation (destination));
@@ -233,6 +239,7 @@ is
 				sheet			=> get_sheet (destination),
 				log_threshold	=> log_threshold + 2);
 
+			log_indentation_down;
 		end add_ports_to_nets;
 		
 		

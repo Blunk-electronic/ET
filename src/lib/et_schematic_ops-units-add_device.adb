@@ -352,7 +352,7 @@ is
 		
 
 
-		procedure insert_ports is begin
+		procedure add_ports_to_nets is begin
 			log (text => "insert_ports", level => log_threshold + 1);
 			log_indentation_up;
 			
@@ -381,7 +381,7 @@ is
 			end if;
 
 			log_indentation_down;
-		end insert_ports;
+		end add_ports_to_nets;
 
 		
 		
@@ -393,7 +393,7 @@ is
 		add_unit;
 
 		-- Insert the ports of the unit in the net segments
-		insert_ports;
+		add_ports_to_nets;
 	end query_module;
 
 	
