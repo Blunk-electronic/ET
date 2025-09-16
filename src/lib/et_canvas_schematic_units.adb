@@ -1650,12 +1650,8 @@ package body et_canvas_schematic_units is
 				
 				-- put_line ("units menu open");
 			else
-				set_status ("No more units of device " 
-					& to_string (unit_fetch.device_pre)
-					& " available !");
-
+				set_status ("No more units of this device available !");
 				reset_unit_add;
-				--set_status (status_fetch);
 			end if;
 		end show_menu;
 
