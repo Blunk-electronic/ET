@@ -102,8 +102,12 @@ package et_device_library is
 	use pac_devices_lib;
 
 
-	
 
+	function get_device_model_file (
+		cursor	: in pac_devices_lib.cursor)
+		return pac_device_model_file.bounded_string;
+
+	
 
 	-- THIS IS THE RIG WIDE LIBRARY OF ELECTRICAL DEVICES:
 	

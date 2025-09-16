@@ -74,6 +74,16 @@ package body et_device_library is
 
 
 
+	function get_device_model_file (
+		cursor	: in pac_devices_lib.cursor)
+		return pac_device_model_file.bounded_string
+	is begin
+		return key (cursor);
+	end;
+
+
+	
+
 	function get_device_model_cursor (
 		model : in pac_device_model_file.bounded_string)
 		return pac_devices_lib.cursor 

@@ -1436,8 +1436,6 @@ package body et_canvas_schematic_units is
 	procedure drop_unit (
 		position	: in type_vector_model)
 	is 
-		use pac_devices_lib;
-
 		use et_commit;
 		use et_undo_redo;
 	begin
@@ -1449,7 +1447,7 @@ package body et_canvas_schematic_units is
 		
 		add_device (
 			module_cursor	=> active_module,
-			device_model	=> pac_devices_lib.key (unit_add.device),
+			device_model	=> get_device_model_file (unit_add.device),
 			variant			=> unit_add.variant,
 			destination		=> to_position (position, active_sheet),
 			log_threshold	=> log_threshold + 1);
