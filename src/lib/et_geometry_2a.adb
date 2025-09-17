@@ -473,19 +473,24 @@ package body et_geometry_2a is
 		v 		: in type_vector_model;
 		format	: in type_output_format := FORMAT_1)
 		return string
-	is begin
+	is 
+		x : constant string := to_string (v.x);
+		y : constant string := to_string (v.y);
+
+		separator : constant string := " / ";
+	begin
 		case format is
 			when FORMAT_1 =>
-				return "x/y: " & to_string (v.x) & "/" & to_string (v.y);
+				return "x/y " & x & separator & y;
 
 			when FORMAT_2 =>
-				return "x " & to_string (v.x) & " y " & to_string (v.y);
+				return "x " & x & " y " & y;
 
 			when FORMAT_3 =>
-				return to_string (v.x) & " " & to_string (v.y);
+				return x & space & y;
 				
 			when others => -- do the same as with FORMAT_1
-				return "x/y: " & to_string (v.x) & "/" & to_string (v.y);
+				return "x/y " & x & separator & y;
 		end case;
 	end to_string;
 
@@ -3664,18 +3669,34 @@ end;
 -- POSITION:
 
 	function to_string (
-		position : in type_position)
+		position	: in type_position;
+		format		: in type_output_format := FORMAT_1)
 		return string 
-	is begin
-		return point_preamble_with_rotation
-			& to_string (position.place.x)
-			& axis_separator
-			& to_string (position.place.y)
-			& axis_separator
-			& to_string (position.rotation);
+	is 
+		x : constant string := to_string (get_x (position));
+		y : constant string := to_string (get_y (position));
+		r : constant string := to_string (get_rotation (position));
+
+		separator : constant string := " / ";
+	begin
+		case format is
+			when FORMAT_1 =>
+				return "x/y/rotation " & x & separator & y & separator & r;
+
+			when FORMAT_2 =>
+				return "x " & x & " y " & y & " rotation " & r;
+
+			when FORMAT_3 =>
+				return x & space & y & space & r;
+
+			when others => -- CS do the same as with FORMAT_1
+				return "x/y/rotation " & x & separator & y & separator & r;
+		end case;
 	end to_string;
 
 
+	
+	
 
 	function to_position (
 		point		: in type_vector_model;

@@ -48,6 +48,7 @@ with et_geometry_2a.path;
 with et_geometry_2a.contours;
 
 with et_sheets;						use et_sheets;
+with et_coordinates_formatting;		use et_coordinates_formatting;
 
 -- with system.assertions;
 
@@ -196,9 +197,9 @@ package et_schematic_coordinates is
 	zero_position : constant type_object_position;
 
 
-	function to_string (
-		position : in type_object_position) 
-		return string;
+	-- function to_string (
+	-- 	position : in type_object_position) 
+	-- 	return string;
 
 	
 	-- Returns something like "sheet 3 x 12.34 y 45.0".
@@ -210,8 +211,19 @@ package et_schematic_coordinates is
 		return string;
 
 
-	
+	-- This function returns the given object position
+	-- as string formatted as follows:
+	-- FORMAT_1 : sheet/x/y/rotation 2 / 4.5 / 5.6 / 90.0
+	-- FORMAT_2 : sheet 2 x 4.5 y 5.6 rotation 90.0
+	-- FORMAT_3 : 2 4.5 5.6 90.0
+	overriding function to_string (
+		position	: in type_object_position;
+		format		: in type_output_format := FORMAT_1)
+		return string;
 
+
+
+	
 -- PLACE (X/Y):
 	
 	-- Returns x and y of a given object position:

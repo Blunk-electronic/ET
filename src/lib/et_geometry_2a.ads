@@ -293,7 +293,7 @@ package et_geometry_2a is
 		v 		: in type_vector_model;
 		format	: in type_output_format := FORMAT_1)
 		return string;
-	-- CS apply this scheme to other to_string functions !
+
 
 
 	function to_vector_model (
@@ -1717,15 +1717,21 @@ package et_geometry_2a is
 
 	-- The position of an object is a composite
 	-- of the place (x/y) and the rotation of the object about
-	-- its own center:
+	-- its origin:
 	type type_position is tagged record -- CS make private ?
 		place 		: type_vector_model := origin;
 		rotation	: type_rotation := zero_rotation;
 	end record;
 
 
+	-- This function returns the given object position
+	-- as string formatted as follows:
+	-- FORMAT_1 : x/y/rotation 4.5 / 5.6 / 90.0
+	-- FORMAT_2 : x 4.5 y 5.6 rotation 90.0
+	-- FORMAT_3 : 4.5 5.6 90.0
 	function to_string (
-		position : in type_position)
+		position	: in type_position;
+		format		: in type_output_format := FORMAT_1)
 		return string;
 
 

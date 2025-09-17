@@ -41,31 +41,39 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.exceptions;
 
-with et_coordinates_formatting;			use et_coordinates_formatting;
-
 
 package body et_board_coordinates is
 
 	
 	function to_string (
-		p : in type_package_position) 
+		position	: in type_package_position;
+		format		: in type_output_format := FORMAT_1)
 		return string 
-	is begin
-		-- return position_preamble
-		-- 		& to_string (get_x (p))
-		-- 		& axis_separator
-		-- 		& to_string (get_y (p))
-		-- 		& axis_separator
-		-- 		& to_string (get_rotation (p))
-		-- 		& axis_separator
-		-- 		& to_string (p.face);
+	is 
+		x : constant string := to_string (get_x (position));
+		y : constant string := to_string (get_y (position));
+		r : constant string := to_string (get_rotation (position));
+		f : constant string := to_string (get_face (position));
 
-		return (" position" & to_string (p.place)
-			& " angle" & to_string (get_rotation (p))
-			& " face" & to_string (get_face (p)));
-		
+		separator : constant string := " / ";
+	begin
+		case format is
+			when FORMAT_1 =>
+				return "x/y/rotation/face " & x & separator & y & separator & r & separator & f;
+
+			when FORMAT_2 =>
+				return "x " & x & " y " & y & " rotation " & r & " f " & f;
+
+			when FORMAT_3 =>
+				return x & space & y & space & r & space & f;
+
+			when others => -- CS do the same as with FORMAT_1
+				return "x/y/rotation/face " & x & separator & y & separator & r & separator & f;
+		end case;
 	end to_string;
 
+
+	
 	
 	function to_package_position (
 		point 		: in type_vector_model;

@@ -43,12 +43,13 @@ with et_geometry_1.et_polygons.cropping;
 with et_geometry_1.et_polygons.union;
 with et_geometry_1.et_polygons.offsetting;
 
+with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_geometry_2a;
 with et_geometry_2a.contours;
 with et_geometry_2a.grid;
 with et_geometry_2a.path;
 
-with et_pcb_sides;				use et_pcb_sides;
+with et_pcb_sides;					use et_pcb_sides;
 
 
 package et_board_coordinates is
@@ -162,9 +163,15 @@ package et_board_coordinates is
 	package_position_default : constant type_package_position;
  
 
-	
+
+	-- This function returns the given package position
+	-- as string formatted as follows:
+	-- FORMAT_1 : x/y/rotation/face 4.5 / 5.6 / 90.0 / top
+	-- FORMAT_2 : x 4.5 y 5.6 rotation 90.0 face top
+	-- FORMAT_3 : 4.5 5.6 90.0 top
 	overriding function to_string (
-		p : in type_package_position) 
+		position	: in type_package_position;
+		format		: in type_output_format := FORMAT_1)
 		return string;
 
 	

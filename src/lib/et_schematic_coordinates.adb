@@ -143,25 +143,25 @@ package body et_schematic_coordinates is
 
 	
 	
-	function to_string (
-		position : in type_object_position) 
-		return string
-	is
-		coordinates_preamble_sheet : constant string := " pos "
-			& "(sheet"
-			& axis_separator
-			& "x"
-			& axis_separator
-			& "y) ";
-
-	begin
-		return coordinates_preamble_sheet
-			& to_string (position.sheet) 
-			& space & axis_separator & space
-			& to_string (get_x (position))
-			& space & axis_separator & space
-			& to_string (get_y (position));
-	end to_string;
+	-- function to_string (
+	-- 	position : in type_object_position) 
+	-- 	return string
+	-- is
+	-- 	coordinates_preamble_sheet : constant string := " pos "
+	-- 		& "(sheet"
+	-- 		& axis_separator
+	-- 		& "x"
+	-- 		& axis_separator
+	-- 		& "y) ";
+ -- 
+	-- begin
+	-- 	return coordinates_preamble_sheet
+	-- 		& to_string (position.sheet) 
+	-- 		& space & axis_separator & space
+	-- 		& to_string (get_x (position))
+	-- 		& space & axis_separator & space
+	-- 		& to_string (get_y (position));
+	-- end to_string;
 
 
 	
@@ -185,6 +185,37 @@ package body et_schematic_coordinates is
 
 
 
+	function to_string (
+		position	: in type_object_position;
+		format		: in type_output_format := FORMAT_1)
+		return string
+	is
+		s : constant string := to_string (get_sheet (position));
+		x : constant string := to_string (get_x (position));
+		y : constant string := to_string (get_y (position));
+		r : constant string := to_string (get_rotation (position));
+		
+		separator : constant string := " / ";
+	begin
+		case format is
+			when FORMAT_1 =>
+				return "sheet/x/y/rotation " & s & separator & x & separator & y & separator & r;
+
+			when FORMAT_2 =>
+				return "sheet " & s & " x " & x & " y " & y & " rotation " & r;
+
+			when FORMAT_3 =>
+				return s & space & x & space & y & space & r;
+
+			when others => -- CS: do the same as with FORMAT_1
+				return "sheet/x/y/rotation " & s & separator & x & separator & y & separator & r;
+				
+		end case;
+	end to_string;
+
+
+
+	
 	function get_place (
 		position : in type_object_position)
 		return type_vector_model
