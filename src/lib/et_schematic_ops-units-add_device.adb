@@ -403,13 +403,13 @@ begin -- add_device
 		log (text => "module " & to_string (module_cursor) 
 			 & " add real device " & to_string (device_model) 
 			 & " package variant " & to_string (variant) 
-			 & " at " & to_string (position => destination),
+			 & " at " & to_string (destination),
 			level => log_threshold);
 		
 	else -- virtual device
 		log (text => "module " & to_string (module_cursor) 
 			 & " add virtual device " & to_string (device_model) 
-			 & " at" & to_string (position => destination),
+			 & " at " & to_string (destination),
 			level => log_threshold);
 	end if;
 		

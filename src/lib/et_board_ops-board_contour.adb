@@ -56,7 +56,7 @@ package body et_board_ops.board_contour is
 							   
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			 & " setting outline" & to_string (outline),
+			 & " set outline " & to_string (outline),
 			level => log_threshold);
 
 		update_element (

@@ -779,6 +779,7 @@ package et_geometry_2a is
 	-- line as string in the form "A: x/y B: x/y":
 	function to_string (
 		line : in type_line) 
+		-- CS: parameter for format
 		return string;
 
 
@@ -1364,6 +1365,7 @@ package et_geometry_2a is
 	-- C is the center, D is the direction:
 	function to_string (
 		arc : in type_arc) 
+		-- CS: parameter for format
 		return string;
 
 	
@@ -1597,6 +1599,7 @@ package et_geometry_2a is
 	-- in the form "C: x/y R: r". C is the center, R is the radius:
 	function to_string (
 		circle : in type_circle) 
+		-- CS: parameter for format
 		return string;
 
 

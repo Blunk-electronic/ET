@@ -61,7 +61,7 @@ package body et_schematic_ops.grid is
 		
 	begin -- set_grid
 		log (text => "module " & enclose_in_quotes (to_string (module_name))
-			& " setting schematic grid" & to_string (grid.spacing),
+			& " set schematic grid to " & to_string (grid.spacing),
 			level => log_threshold);
 
 		-- locate module

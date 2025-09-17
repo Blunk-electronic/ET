@@ -309,12 +309,11 @@ is
 	end query_devices;
 
 	
-begin -- copy_device
-	log (text => "module " & to_string (module_name) &
-		" copying " & to_string (device_name) & 
-		" to" & to_string (position => destination) &
-		" rotation" & to_string (get_rotation (destination)) &
-		" ...", level => log_threshold);
+begin
+	log (text => "module " & to_string (module_name) 
+		& " copy " & to_string (device_name) 
+		& " to " & to_string (destination),
+		 level => log_threshold);
 
 	-- locate module
 	module_cursor := locate_module (module_name);

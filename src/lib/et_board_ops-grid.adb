@@ -60,7 +60,7 @@ package body et_board_ops.grid is
 		
 	begin -- set_grid
 		log (text => "module " & enclose_in_quotes (to_string (module_name))
-			& " setting board grid" & to_string (grid.spacing),
+			& " set board grid to " & to_string (grid.spacing),
 			level => log_threshold);
 
 		-- locate module

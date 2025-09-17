@@ -775,12 +775,12 @@ package body et_geometry_2a.contours is
 				when LINE =>
 					--result := result & space & to_unbounded_string (to_string (element (c).segment_line));
 					result := result & space
-							& to_unbounded_string ("line start:" 
+							& to_unbounded_string ("line start: " 
 							& to_string (element (c).segment_line.A));
 
 					if full then
 						result := result & space
-							& to_unbounded_string ("end:" 
+							& to_unbounded_string ("end: " 
 							& to_string (element (c).segment_line.B));
 					end if;
 					
@@ -788,12 +788,12 @@ package body et_geometry_2a.contours is
 				when ARC =>
 					--result := result & space & to_unbounded_string (to_string (element (c).segment_arc));
 					result := result & space 
-						& to_unbounded_string ("arc center:" & to_string (element (c).segment_arc.center))
-						& to_unbounded_string ("start:" & to_string (element (c).segment_arc.A));
+						& to_unbounded_string ("arc center: " & to_string (element (c).segment_arc.center))
+						& to_unbounded_string (" start: " & to_string (element (c).segment_arc.A));
 
 					if full then
 						result := result & space
-							& to_unbounded_string ("end:" 
+							& to_unbounded_string ("end: " 
 							& to_string (element (c).segment_arc.B));
 					end if;
 

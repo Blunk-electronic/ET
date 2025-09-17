@@ -282,8 +282,7 @@ begin
 	log (text => "module " & to_string (module_cursor) 
 		& " device " & to_string (device_name) 
 		& " fetch unit " & to_string (unit_name) & " and place at " 
-		& to_string (position => destination) 
-		& " rotation" & to_string (get_rotation (destination)),
+		& to_string (destination),
 		level => log_threshold);
 
 	log_indentation_up;

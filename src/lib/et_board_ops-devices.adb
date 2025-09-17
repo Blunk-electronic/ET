@@ -620,12 +620,12 @@ package body et_board_ops.devices is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_cursor) &
 					" moving device " & to_string (device_name) &
-					" to" & to_string (point), level => log_threshold);
+					" to " & to_string (point), level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_cursor) &
 					" moving device " & to_string (device_name) &
-					" by" & to_string (point), level => log_threshold);
+					" by " & to_string (point), level => log_threshold);
 		end case;
 
 		
@@ -724,12 +724,12 @@ package body et_board_ops.devices is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_cursor) &
 					" rotating device " & to_string (device_name) &
-					" to" & to_string (rotation), level => log_threshold);
+					" to " & to_string (rotation), level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_cursor) &
 					" rotating device " & to_string (device_name) &
-					" by" & to_string (rotation), level => log_threshold);
+					" by " & to_string (rotation), level => log_threshold);
 		end case;
 
 		
@@ -847,7 +847,7 @@ package body et_board_ops.devices is
 	begin
 		log (text => "module " & to_string (module_cursor) &
 			" flipping device " & to_string (device_name) &
-			" to" & to_string (face), level => log_threshold);
+			" to " & to_string (face), level => log_threshold);
 
 		update_element (
 			container	=> generic_modules,
@@ -1383,10 +1383,9 @@ package body et_board_ops.devices is
 
 		
 	begin
-		log (text => "module " & to_string (module_cursor) &
-			" adding non-electric device " & to_string (package_model) &
-			" at" &
-			to_string (position),
+		log (text => "module " & to_string (module_cursor) 
+			& " add non-electric device " & to_string (package_model) 
+			& " at " & to_string (position),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -1832,7 +1831,7 @@ package body et_board_ops.devices is
 		log (text => "module " & to_string (module_cursor)
 			& " moving object " 
 			-- CS & to_string (object)
-			& " to" & to_string (destination),
+			& " to " & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
