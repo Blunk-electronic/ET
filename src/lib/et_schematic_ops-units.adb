@@ -3558,6 +3558,7 @@ package body et_schematic_ops.units is
 			log (WARNING, " Device " & to_string (device_name) & " not found !");
 		end if;
 
+		et_schematic_ops.nets.update_strand_positions (module_cursor, log_threshold + 2);		
 		update_ratsnest (module_cursor, log_threshold + 1);
 		
 		log_indentation_down;		
