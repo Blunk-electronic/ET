@@ -1051,12 +1051,8 @@ is
 				
 				write (
 					keyword => keyword_position, 
-					parameters => to_string (element (unit_cursor).position, FORMAT_2)); -- position sheet 1 x 147.32 y 96.97
+					parameters => to_string (element (unit_cursor).position, FORMAT_2)); -- position sheet 1 x 147.32 y 96.97 rotation 90.0
 				
-				write (
-					keyword => keyword_rotation, 
-					parameters => to_string (get_rotation (element (unit_cursor).position))); -- rotation 180.0
-					   
 				write (keyword => keyword_mirrored, parameters => to_string (element (unit_cursor).mirror, verbose => false)); -- x_axis, y_axis, none
 
 				if element (unit_cursor).appearance = APPEARANCE_PCB then

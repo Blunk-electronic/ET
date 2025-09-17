@@ -734,7 +734,7 @@ package body et_nets is
 		return pac_strands.cursor
 	is
 		strand_cursor : pac_strands.cursor; -- to be returned
-		strand_position : type_object_position := greatest_position;
+		strand_position : type_strand_position := greatest_strand_position;
 
 		
 		procedure query_strands (
@@ -774,7 +774,7 @@ package body et_nets is
 	is
 		strand_cursor : pac_strands.cursor; -- to be returned
 
-		strand_position : type_object_position := greatest_position;
+		strand_position : type_strand_position := greatest_strand_position;
 
 		
 		procedure query_strands (

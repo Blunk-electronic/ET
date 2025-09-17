@@ -49,6 +49,7 @@ with et_geometry_2a.contours;
 
 with et_sheets;						use et_sheets;
 with et_coordinates_formatting;		use et_coordinates_formatting;
+with et_string_processing;			use et_string_processing;
 
 -- with system.assertions;
 
@@ -196,9 +197,7 @@ package et_schematic_coordinates is
 	
 	zero_position : constant type_object_position;
 
-
-
-
+	
 
 	-- This function returns the given object position
 	-- as string formatted as follows:
@@ -211,7 +210,19 @@ package et_schematic_coordinates is
 		return string;
 
 
+	-- Reads a line like "position sheet 3 x 44.5 y 53.5 rotation 90.0"
+	-- starting at a field given by "from" and returns
+	-- an object position:
+	-- CS should be a procedure with an error flag output
+	-- and the position output ?
+	function to_object_position (
+		line : in type_fields_of_line;
+		from : in type_field_count_positive)
+		return type_object_position;
 
+
+
+	
 	
 -- PLACE (X/Y):
 	

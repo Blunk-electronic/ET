@@ -37,15 +37,17 @@
 --
 
 
-with ada.containers; 			use ada.containers;
+with ada.containers; 				use ada.containers;
 with ada.containers.doubly_linked_lists;
 
-with et_schematic_coordinates;	use et_schematic_coordinates;
-with et_logging;				use et_logging;
-with et_sheets;					use et_sheets;
-with et_net_ports;				use et_net_ports;
-with et_net_segment;			use et_net_segment;
-with et_object_status;			use et_object_status;
+with et_coordinates_formatting;		use et_coordinates_formatting;
+with et_schematic_coordinates;		use et_schematic_coordinates;
+with et_logging;					use et_logging;
+with et_sheets;						use et_sheets;
+with et_net_ports;					use et_net_ports;
+with et_net_segment;				use et_net_segment;
+with et_object_status;				use et_object_status;
+with et_string_processing;			use et_string_processing;
 
 
 package et_net_strands is
@@ -55,14 +57,80 @@ package et_net_strands is
 	use pac_net_segments;
 
 
+	-- A strand has an x/y position on a certain sheet.
+	-- The position is determined by the end of a net segment
+	-- that is closest to the drawing origin.
+	type type_strand_position is record
+		sheet	: type_sheet := 1;
+		place	: type_vector_model;
+	end record;
+
+
+
+	-- A position in a schematic which is on the
+	-- last possible sheet and the greatest distance in
+	-- x and y from the origin:
+	greatest_strand_position : constant type_strand_position := (
+		sheet => type_sheet'last,
+		place => far_upper_right);
+
+
+	
+
+	function get_x (
+		position	: in type_strand_position)
+		return type_distance_model;
+
+
+	function get_y (
+		position	: in type_strand_position)
+		return type_distance_model;
+
+
+	function get_sheet (
+		position	: in type_strand_position)
+		return type_sheet;
+
+
+
+	function "<" (left, right : in type_strand_position) 
+		return boolean;
+
+
+	
+	
+	-- This function returns the given strand position
+	-- as string formatted as follows:
+	-- FORMAT_1 : sheet/x/y/rotation 1 / 4.5 / 5.6
+	-- FORMAT_2 : sheet 1 x 4.5 y 5.6
+	-- FORMAT_3 : 1 4.5 5.6
+	function to_string (
+		position	: in type_strand_position;
+		format		: in type_output_format := FORMAT_1)
+		return string;
+
+
+	-- Reads a line like "position sheet 3 x 44.5 y 53.5"
+	-- starting at a field given by "from" and returns
+	-- a strand position:
+	-- CS should be a procedure with an error flag output
+	-- and the position output ?
+	function to_strand_position (
+		line			: in type_fields_of_line;
+		from 			: in type_field_count_positive;
+		log_threshold	: in type_log_level)
+		return type_strand_position;
+
+
+	
+	
 	-- A strand is a collection of net segments which belong to each other. 
 	-- Segments belong to each other because their start/end points meet.
 	-- A strand has coordinates. 
-	-- x/y position are the lowest values within the strand.
 	type type_strand is record -- CS make private ?
 	-- NOTE: ET does not provide a name for a strand.
 	-- As a strand is part of a net, there is no need for individual strand names.
-		position	: type_object_position; -- sheet and lowest x/y, rotation doesn't matter -> always zero
+		position	: type_strand_position;
 		segments	: pac_net_segments.list;
 
 		status : type_object_status; 
@@ -71,6 +139,12 @@ package et_net_strands is
 	end record;		
 
 	
+	-- Set the place of the given strand:
+	procedure set_place (
+		strand	: in out type_strand;
+		place	: in type_vector_model);					
+
+
 	
 	-- Returns true if the given strand has segments:
 	function has_segments (
@@ -88,7 +162,9 @@ package et_net_strands is
 		return natural;
 
 
-	-- Calculates and sets the lowest x/y position of the given strand.	
+	-- Calculates and sets the x/y position of the given strand.
+	-- The position is determined by the end of a net segment
+	-- that is closest to the drawing origin.
 	-- Leaves the sheet number of the strand as it is.	
 	procedure set_strand_position (
 		strand : in out type_strand);
@@ -406,10 +482,11 @@ package et_net_strands is
 		return type_sheet;
 
 
+	
 	-- Returns the (sheet/x/y) position of the given strand:
 	function get_position (
 		strand : in type_strand)
-		return type_object_position;
+		return type_strand_position;
 	
 
 	-- Returns the (sheet/x/y) position of the given strand

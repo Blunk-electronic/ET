@@ -446,47 +446,6 @@ is
 
 
 	
-	
-	function to_position (
-		line : in type_fields_of_line; -- "position sheet 3 x 44.5 y 53.5"
-		from : in type_field_count_positive)
-		return et_schematic_coordinates.type_object_position
-	is		
-		use et_schematic_coordinates;
-		use pac_geometry_2;
-		use et_sheets;
-		use ada.containers;
-		use et_schematic_rw;
-		
-		point : type_object_position; -- to be returned
-		place : type_field_count_positive := from; -- the field being read from given line
-
-		-- CS: flags to detect missing sheet, x or y
-	begin
-		while place <= get_field_count (line) loop
-
-			-- We expect after "sheet" the sheet number
-			if f (line, place) = keyword_sheet then
-				set_sheet (point, to_sheet (f (line, place + 1)));
-				
-			-- We expect after the x the corresponding value for x
-			elsif f (line, place) = keyword_x then
-				point.set (AXIS_X, to_distance (f (line, place + 1)));
-
-			-- We expect after the y the corresponding value for y
-			elsif f (line, place) = keyword_y then
-				point.set (AXIS_Y, to_distance (f (line, place + 1)));
-
-			else
-				invalid_keyword (f (line, place));
-			end if;
-				
-			place := place + 2;
-		end loop;
-		
-		return point;
-	end to_position;
-
 
 	
 	
@@ -888,7 +847,7 @@ is
 			expect_field_count (line, 7);
 
 			-- extract strand position starting at field 2
-			strand.position := to_position (line, 2);
+			strand.position := to_strand_position (line, 2, log_threshold + 2);
 		else
 			invalid_keyword (kw);
 		end if;
@@ -925,7 +884,7 @@ is
 					& to_string (net_name) & ": Lowest x/y position of strand invalid !");
 			
 			log (text => " Found " & to_string (position_found_in_module_file));
-			log (text => " Will be overridden by calculated position" & 
+			log (text => " Will be overridden by calculated position " & 
 					to_string (strand.position.place));
 		end if;
 							
@@ -1500,7 +1459,6 @@ is
 	device_value			: et_device_value.pac_device_value.bounded_string; -- 470R
 	device_appearance		: et_units.type_appearance_schematic;
 	--device_unit				: et_schematic.type_unit;
-	--device_unit_rotation	: et_schematic_coordinates.type_rotation_model := geometry.zero_rotation;
 
 	device_unit_mirror		: type_mirror := MIRROR_NO;
 	device_unit_name		: et_unit_name.pac_unit_name.bounded_string; -- GPIO_BANK_1
@@ -1523,16 +1481,12 @@ is
 			expect_field_count (line, 2);
 			device_unit_name := to_unit_name (f (line, 2));
 			
-		elsif kw = keyword_position then -- position sheet 1 x 1.000 y 5.555
-			expect_field_count (line, 7);
+		elsif kw = keyword_position then -- position sheet 1 x 1.000 y 5.555 rotation 180.0
+			expect_field_count (line, 9);
 
 			-- extract position of unit starting at field 2
-			device_unit_position := to_position (line, 2);
+			device_unit_position := to_object_position (line, 2);
 
-		elsif kw = keyword_rotation then -- rotation 180.0
-			expect_field_count (line, 2);
-			--device_unit_rotation := geometry.to_rotation (f (line, 2));
-			set (device_unit_position, to_rotation (f (line, 2)));
 
 		elsif kw = keyword_mirrored then -- mirrored no/x_axis/y_axis
 			expect_field_count (line, 2);
@@ -1963,7 +1917,7 @@ is
 			expect_field_count (line, 7);
 
 			-- extract position (in schematic) starting at field 2
-			netchanger.position_sch := to_position (line, 2);
+			netchanger.position_sch := to_object_position (line, 2);
 
 		elsif kw = keyword_rotation_in_schematic then -- rotation_in_schematic 180.0
 			expect_field_count (line, 2);
@@ -2281,6 +2235,7 @@ is
 	
 	-- Reads the parameters of a submodule:
 	procedure read_submodule is
+		use et_schematic_coordinates;
 		use et_schematic_rw;
 		use et_submodules;
 		use et_pcb_rw;
@@ -2299,7 +2254,7 @@ is
 			expect_field_count (line, 7);
 
 			-- extract position of submodule starting at field 2
-			submodule.position := to_position (line, 2);
+			submodule.position := to_object_position (line, 2);
 
 		elsif kw = keyword_size then -- size x 30 y 30
 			expect_field_count (line, 5);
@@ -2479,7 +2434,8 @@ is
 
 			declare
 				-- extract position of schematic_text starting at field 2
-				pos : constant type_object_position := to_position (line, 2);
+				pos : constant type_object_position := 
+					to_object_position (line, 2);
 			begin
 				schematic_text.position := pos.place;
 				schematic_text.sheet := get_sheet (pos);

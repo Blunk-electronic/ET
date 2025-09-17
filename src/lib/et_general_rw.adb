@@ -76,7 +76,7 @@ package body et_general_rw is
 	
 	procedure invalid_keyword (word : in string) is begin
 		log (ERROR, "invalid keyword '" & word & "' !", console => true);
-		raise constraint_error;
+		-- raise constraint_error;
 	end;
 
 	

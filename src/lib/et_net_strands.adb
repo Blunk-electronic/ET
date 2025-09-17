@@ -36,13 +36,167 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
+with ada.text_io;						use ada.text_io;
+with ada.strings;						use ada.strings;
+
+with et_keywords;						use et_keywords;
+with et_general_rw;
 
 
 package body et_net_strands is
 
+
+	
+	function get_x (
+		position	: in type_strand_position)
+		return type_distance_model
+	is begin
+		return position.place.x;
+	end;
+
+
+	function get_y (
+		position	: in type_strand_position)
+		return type_distance_model
+	is begin
+		return position.place.y;
+	end;
+
+
+
+	function get_sheet (
+		position	: in type_strand_position)
+		return type_sheet
+	is begin
+		return position.sheet;
+	end;
+
+
+
+
+	
+	function "<" (left, right : in type_strand_position) 
+		return boolean
+	is 
+		result : boolean := false;
+	begin
+		if left.sheet < right.sheet then
+			result := true;
+		elsif left.sheet > right.sheet then
+			result := false;
+		else
+			-- sheet numbers are equal -> compare x
+			
+			if get_x (left) < get_x (right) then
+				result := true;
+			elsif get_x (left) > get_x (right) then
+				result := false;
+			else 
+				-- x positions equal -> compare y
+				
+				if get_y (left) < get_y (right) then
+					result := true;
+				elsif get_y (left) > get_y (right) then
+					result := false;
+				else
+					-- y equal
+					result := false;
+				end if;
+
+			end if;
+		end if;
+			
+		return result;
+	end;
+
 	
 
+	
+	
+	function to_string (
+		position	: in type_strand_position;
+		format		: in type_output_format := FORMAT_1)
+		return string
+	is
+		s : constant string := to_string (get_sheet (position));
+		x : constant string := to_string (get_x (position));
+		y : constant string := to_string (get_y (position));
+		
+		separator : constant string := " / ";
+	begin
+		case format is
+			when FORMAT_1 =>
+				return "sheet/x/y " & s & separator & x & separator & y;
+
+			when FORMAT_2 =>
+				return "sheet " & s & " x " & x & " y " & y;
+
+			when FORMAT_3 =>
+				return s & space & x & space & y;
+
+			when others => -- CS: do the same as with FORMAT_1
+				return "sheet/x/y " & s & separator & x & separator & y;
+				
+		end case;
+	end to_string;
+
+	
+
+
+	function to_strand_position (
+		line			: in type_fields_of_line;
+		from 			: in type_field_count_positive;
+		log_threshold	: in type_log_level)
+		return type_strand_position
+	is		
+		use et_general_rw;
+
+		position : type_strand_position; -- to be returned
+		place : type_field_count_positive := from; -- the field being read from given line
+
+		-- CS: more detailled syntax check required
+		-- CS: flags to detect missing sheet, x or y
+	begin
+		while place <= get_field_count (line) loop
+
+			-- We expect after "sheet" the sheet number
+			if get_field (line, place) = keyword_sheet then
+				position.sheet := to_sheet (get_field (line, place + 1));
+				
+			-- We expect after the x the corresponding value for x
+			elsif get_field (line, place) = keyword_x then
+				position.place.x := to_distance (get_field (line, place + 1));
+
+			-- We expect after the y the corresponding value for y
+			elsif get_field (line, place) = keyword_y then
+				position.place.y := to_distance (get_field (line, place + 1));
+
+			else
+				invalid_keyword (get_field (line, place));
+				raise constraint_error; -- CS
+			end if;
+				
+			place := place + 2;
+		end loop;
+		
+		return position;
+	end to_strand_position;
+
+
+	
+
+
+	
+
+	procedure set_place (
+		strand	: in out type_strand;
+		place	: in type_vector_model)
+	is begin
+		strand.position.place := place;
+	end;
+
+	
+	
 
 	function has_segments (
 		strand : in type_strand)
@@ -126,7 +280,7 @@ package body et_net_strands is
 		iterate (strand.segments, query_strand'access);
 
 		-- build and assign the final strand position from point_1
-		strand.position.set (point_1);
+		set_place (strand, point_1);
 		
 	end set_strand_position;
 
@@ -138,7 +292,7 @@ package body et_net_strands is
 		strand	: in out type_strand;
 		sheet	: in type_sheet)
 	is begin
-		set_sheet (strand.position, sheet);
+		strand.position.sheet := sheet;
 	end;
 
 	
@@ -1799,7 +1953,7 @@ package body et_net_strands is
 
 	function get_position (
 		strand : in type_strand)
-		return type_object_position
+		return type_strand_position
 	is begin
 		return strand.position;
 	end;

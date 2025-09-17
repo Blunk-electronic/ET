@@ -3228,7 +3228,7 @@ package body et_kicad_to_native is
 
 					
 					-- copy sheet number from kicad strand to native strand:
-					et_schematic_coordinates.set_sheet (strand_native.position, et_kicad_coordinates.sheet (element (kicad_strand_cursor).position));
+					set_sheet (strand_native, et_kicad_coordinates.sheet (element (kicad_strand_cursor).position));
 
 					-- calculate lowest x/y of native strand
 					set_strand_position (strand_native);

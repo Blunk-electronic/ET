@@ -2386,8 +2386,8 @@ package body et_schematic_ops.nets is
 				
 				
 				procedure query_strand (strand : in out type_strand) is 
-					old_position : type_object_position := get_position (strand);
-					new_position : type_object_position;
+					old_position : type_strand_position := get_position (strand);
+					new_position : type_strand_position;
 				begin
 					log (text => "strand " & get_position (strand), level => log_threshold + 2);
 					
