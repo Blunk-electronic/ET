@@ -116,16 +116,22 @@ package body et_board_ops.ratsnest is
 				
 			begin -- query_net
 				log (text => "net " & to_string (net_name), level => lth + 1);
-
+				log_indentation_up;
+				
 				-- get x/y positions of all terminals:
 				nodes := get_terminal_positions (
 					module_cursor	=> module_cursor, 
-					net_cursor		=> net_cursor);
+					net_cursor		=> net_cursor,
+					log_threshold	=> lth + 2);
+
+				log (text => "get via positions", level => lth + 2);
 				
 				-- Get x/y of all vias and append their positions to nodes.
 				-- The via positions must be converted to location vectors:
 				splice_vectors (nodes, to_vectors (get_via_positions (net_cursor)));
 
+				log (text => "get track ends", level => lth + 2);
+				
 				-- Get x/y of track segments (start and end points)
 				-- and append their positions to nodes.
 				-- The end points of the tracks must be converted to location vectors:
@@ -156,7 +162,9 @@ package body et_board_ops.ratsnest is
 				-- directly connected via tracks, vias and tht-terminals (not via ariwires):
 				airwires := make_airwires (nodes, fragments);
 				
-				net.route.airwires.lines := airwires;				
+				net.route.airwires.lines := airwires;
+
+				log_indentation_down;
 			end query_net;
 
 			
@@ -169,9 +177,8 @@ package body et_board_ops.ratsnest is
 
 		
 	begin
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " updating ratsnest ...",
+		log (text => "module " & to_string (module_cursor)
+			& " update ratsnest",
 			level => lth);
 
 		log_indentation_up;
@@ -179,6 +186,14 @@ package body et_board_ops.ratsnest is
 		update_element (generic_modules, module_cursor, query_module'access);
 
 		log_indentation_down;
+
+		
+		exception
+			when event: others =>
+				log (text => ada.exceptions.exception_information (event), console => true);
+				--log (text => ada.exceptions.exception_information (event));
+
+		
 	end update_ratsnest;
 
 
@@ -248,7 +263,7 @@ package body et_board_ops.ratsnest is
 		
 		
 	begin
-		log (text => "proposing airwires in" & to_string (catch_zone),
+		log (text => "propose airwires in " & to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -319,7 +334,7 @@ package body et_board_ops.ratsnest is
 
 		
 	begin
-		log (text => "resetting proposed lines",
+		log (text => "reset proposed lines",
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -425,7 +440,7 @@ package body et_board_ops.ratsnest is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up the first airwire / " & to_string (flag),
+			& " look up the first airwire / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -508,7 +523,7 @@ package body et_board_ops.ratsnest is
 	
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up airwires / " & to_string (flag),
+			& " look up airwires / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -572,7 +587,7 @@ package body et_board_ops.ratsnest is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of airwire "
+			& " modify status of airwire "
 			& to_string (object.wire_cursor)
 			& " / " & to_string (operation),
 			level => log_threshold);

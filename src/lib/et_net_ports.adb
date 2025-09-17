@@ -132,7 +132,7 @@ package body et_net_ports is
 		function f (place : in type_field_count_positive) 
 			return string 
 		is begin
-			return to_lower (get_field (arguments, place));
+			return get_field (arguments, place);
 		end;
 		
 	begin
@@ -392,6 +392,31 @@ package body et_net_ports is
 	end;
 
 		
+
+
+
+	function get_port_count_devices (
+		ports : in type_ports)
+		return natural
+	is begin
+		return natural (ports.devices.length);
+	end;
+
+
+	function get_port_count_submodules (
+		ports : in type_ports)
+		return natural
+	is begin
+		return natural (ports.submodules.length);
+	end;
+
+	
+	function get_port_count_netchangers (
+		ports : in type_ports)
+		return natural
+	is begin
+		return natural (ports.netchangers.length);
+	end;
 
 	
 	

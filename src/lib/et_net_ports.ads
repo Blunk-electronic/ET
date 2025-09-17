@@ -176,11 +176,27 @@ package et_net_ports is
 
 	-- Returns the total number of ports contained
 	-- in the given port group:
-	function get_port_count (
+	function get_port_count ( -- CS rename to get_port_count_total
 		ports : in type_ports)
 		return natural;
-	
 
+
+	function get_port_count_devices (
+		ports : in type_ports)
+		return natural;
+
+
+	function get_port_count_submodules (
+		ports : in type_ports)
+		return natural;
+
+	
+	function get_port_count_netchangers (
+		ports : in type_ports)
+		return natural;
+
+	
+	
 	-- These are the ports which may exist
 	-- at the A or B end of a net segment.
 	-- This type models the tag labels of a net segment:

@@ -2084,11 +2084,14 @@ package body et_board_ops.devices is
 	--end get_terminal_position;
 
 
+
+	
 	function get_terminal_positions (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in et_nets.pac_nets.cursor;
 		observe_techno	: in boolean := false;
-		technology		: in type_assembly_technology := assembly_technology_default)
+		technology		: in type_assembly_technology := assembly_technology_default;
+		log_threshold	: in type_log_level)
 		return pac_geometry_brd.pac_vectors.list
 	is
 		use pac_geometry_brd;
@@ -2105,6 +2108,8 @@ package body et_board_ops.devices is
 
 		
 		procedure query_device (d : in pac_device_ports.cursor) is
+			port : type_device_port renames element (d);
+			
 			-- CS use rename
 			device_cursor : pac_devices_sch.cursor;
 			terminal_position : type_vector;
@@ -2114,10 +2119,7 @@ package body et_board_ops.devices is
 
 			-- Only real devices have terminals. Virtual devices are ignored here:
 			if is_real (device_cursor) then
-				--put_line ("");
-				--put_line ("dev  " & to_string (element (d).device_name));
-				--put_line ("unit " & to_string (element (d).unit_name));
-				--put_line ("port " & to_string (element (d).port_name));
+				log (text => to_string (port), level => log_threshold + 2);
 				
 				port_properties := get_port_properties (
 					module_cursor	=> module_cursor,
@@ -2180,6 +2182,12 @@ package body et_board_ops.devices is
 		
 		
 	begin
+		log (text => "module " & to_string (module_cursor)
+			& " get terminal positions",
+			level => log_threshold);
+
+		log_indentation_up;
+
 		-- Get the ports of devices, netchangers and submodules that are connected
 		-- with the given net. Assume default assembly variant:
 		ports := get_ports (
@@ -2187,11 +2195,37 @@ package body et_board_ops.devices is
 				variant	=> et_assembly_variants.pac_assembly_variants.no_element);
 
 
+		
+		log (text => "devices " & natural'image (get_port_count_devices (ports)),
+			 level => log_threshold + 1);
+		log_indentation_up;
 		iterate (ports.devices, query_device'access);
+		log_indentation_down;
+		
+		
+		log (text => "submodules " & natural'image (get_port_count_submodules (ports)),
+			 level => log_threshold + 1);
+		log_indentation_up;		
 		iterate (ports.submodules, query_submodule'access);
+		log_indentation_down;
+
+		
+		log (text => "netchangers " & natural'image (get_port_count_netchangers (ports)),
+			 level => log_threshold + 1);
+		log_indentation_up;
 		iterate (ports.netchangers, query_netchanger'access);
+		log_indentation_down;
+		
+
+		log_indentation_down;
 		
 		return result;
+
+		-- exception
+		-- 	when event: others =>
+		-- 		log (text => ada.exceptions.exception_information (event), console => true);
+				--log (text => ada.exceptions.exception_information (event));
+		
 	end get_terminal_positions;
 	
 
