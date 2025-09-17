@@ -511,6 +511,7 @@ is
 			net			: in type_net) 
 		is
 			use pac_strands;
+			use et_schematic_coordinates;
 			use et_schematic_coordinates.pac_geometry_2;
 			
 			strand_cursor : pac_strands.cursor := net.strands.first;
@@ -762,7 +763,8 @@ is
 			while strand_cursor /= pac_strands.no_element loop
 				section_mark (section_strand, HEADER);
 
-				write (keyword => keyword_position, parameters => et_schematic_coordinates.get_position (element (strand_cursor).position));
+				write (keyword => keyword_position, 
+					parameters => to_string (element (strand_cursor).position, FORMAT_2));
 
 				query_element (strand_cursor, query_segments'access);
 				
@@ -1049,7 +1051,7 @@ is
 				
 				write (
 					keyword => keyword_position, 
-					parameters => et_schematic_coordinates.get_position (element (unit_cursor).position)); -- position sheet 1 x 147.32 y 96.97
+					parameters => to_string (element (unit_cursor).position, FORMAT_2)); -- position sheet 1 x 147.32 y 96.97
 				
 				write (
 					keyword => keyword_rotation, 
@@ -1325,7 +1327,8 @@ is
 		begin
 			section_mark (section_netchanger, HEADER);
 			write (keyword => keyword_name,	parameters => to_string (key (cursor))); -- 1, 2, 201, ...
-			write (keyword => keyword_position_in_schematic, parameters => get_position (element (cursor).position_sch)); -- position_in_schematic sheet 1 x 147.32 y 96.97
+			write (keyword => keyword_position_in_schematic, 
+				   parameters => to_string (element (cursor).position_sch, FORMAT_2)); -- position_in_schematic sheet 1 x 147.32 y 96.97
 
 			write (
 				keyword => keyword_rotation_in_schematic, 
@@ -1475,6 +1478,7 @@ is
 
 		
 		procedure write (submodule_cursor : in pac_submodules.cursor) is 
+			use et_schematic_coordinates;
 			use et_schematic_coordinates.pac_geometry_2;
 			use et_pcb_rw;
 			use et_module_instance;
@@ -1483,7 +1487,9 @@ is
 			write (keyword => keyword_name, parameters => to_string (key (submodule_cursor))); -- name stepper_driver_1
 			write (keyword => keyword_file, parameters => pac_submodule_path.to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
 
-			write (keyword => keyword_position, parameters => et_schematic_coordinates.get_position (element (submodule_cursor).position));
+			write (keyword => keyword_position, 
+				   parameters => to_string (element (submodule_cursor).position, FORMAT_2));
+			
 			write (keyword => keyword_size, parameters => 
 				space & keyword_x & to_string (element (submodule_cursor).size.x) &
 				space & keyword_y & to_string (element (submodule_cursor).size.y)); -- size x 50 y 70

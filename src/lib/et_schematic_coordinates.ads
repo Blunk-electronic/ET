@@ -197,18 +197,7 @@ package et_schematic_coordinates is
 	zero_position : constant type_object_position;
 
 
-	-- function to_string (
-	-- 	position : in type_object_position) 
-	-- 	return string;
 
-	
-	-- Returns something like "sheet 3 x 12.34 y 45.0".
-	-- CS: merge this function with the to_string function above
-	-- using an argument for the desired output format.
-	-- CS: output rotation
-	function get_position (
-		pos : in type_object_position) 
-		return string;
 
 
 	-- This function returns the given object position

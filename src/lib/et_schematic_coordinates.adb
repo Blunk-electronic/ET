@@ -142,47 +142,6 @@ package body et_schematic_coordinates is
 
 
 	
-	
-	-- function to_string (
-	-- 	position : in type_object_position) 
-	-- 	return string
-	-- is
-	-- 	coordinates_preamble_sheet : constant string := " pos "
-	-- 		& "(sheet"
-	-- 		& axis_separator
-	-- 		& "x"
-	-- 		& axis_separator
-	-- 		& "y) ";
- -- 
-	-- begin
-	-- 	return coordinates_preamble_sheet
-	-- 		& to_string (position.sheet) 
-	-- 		& space & axis_separator & space
-	-- 		& to_string (get_x (position))
-	-- 		& space & axis_separator & space
-	-- 		& to_string (get_y (position));
-	-- end to_string;
-
-
-	
-
-
-	function get_position (
-		pos : in type_object_position) 
-		return string 
-	is
-		function text return string is begin return 
-			space & keyword_x & to_string (get_x (pos.place)) 
-			& space & keyword_y & to_string (get_y (pos.place));
-		end text;
-		
-	begin
-		return keyword_sheet
-			& to_string (pos.sheet) 
-			& text;
-	end get_position;
-
-
 
 
 	function to_string (
