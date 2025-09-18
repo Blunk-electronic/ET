@@ -41,7 +41,6 @@ with ada.exceptions;
 -- with ada.characters.handling;		use ada.characters.handling;
 with ada.strings;						use ada.strings;
 
-with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_axes;							use et_axes;
 with et_keywords;						use et_keywords;
 with et_general_rw;

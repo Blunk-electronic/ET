@@ -35,11 +35,15 @@
 --
 --   history of changes:
 --
-with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
+with ada.text_io;						use ada.text_io;
+with ada.characters;					use ada.characters;
+with ada.characters.latin_1;			use ada.characters.latin_1;
+with ada.characters.handling;			use ada.characters.handling;
 with ada.exceptions;
+
+with et_axes;							use et_axes;
+with et_keywords;						use et_keywords;
+with et_general_rw;
 
 
 package body et_board_coordinates is
@@ -73,6 +77,56 @@ package body et_board_coordinates is
 	end to_string;
 
 
+
+
+
+	
+
+	function to_package_position (
+		line : in type_fields_of_line;
+		from : in type_field_count_positive)
+		return type_package_position
+	is
+		use et_general_rw;
+		
+		position : type_package_position; -- to be returned
+		place : type_field_count_positive := from; -- the field being read from given line
+
+		-- CS: more detailled syntax check required
+		-- CS: flags to detect missing sheet, x or y
+	begin
+		while place <= get_field_count (line) loop
+
+			-- We expect after the x the corresponding value for x
+			if get_field (line, place) = keyword_x then
+				set (position.place, AXIS_X, to_distance (get_field (line, place + 1)));
+
+			-- We expect after the y the corresponding value for y
+			elsif get_field (line, place) = keyword_y then
+				set (position.place, AXIS_Y, to_distance (get_field (line, place + 1)));
+
+			-- We expect after "rotation" the corresponding value for the rotation
+			elsif get_field (line, place) = keyword_rotation then
+				set (position, to_rotation (get_field (line, place + 1)));
+
+			-- We expect after "face" the actual face (top/bottom)
+			elsif get_field (line, place) = keyword_face then
+				set_face (position, to_face (get_field (line, place + 1)));
+			else
+				invalid_keyword (get_field (line, place));
+				raise constraint_error; -- CS
+			end if;
+				
+			place := place + 2;
+		end loop;
+		
+		return position;
+	end to_package_position;
+
+
+
+	
+
 	
 	
 	function to_package_position (
@@ -88,14 +142,18 @@ package body et_board_coordinates is
 		end return;
 	end to_package_position;
 
+
+	
 	
 	procedure set_face (
-		face	: in type_face;
-		position: in out type_package_position) 
+		position: in out type_package_position;
+		face	: in type_face)
 	is begin
 		position.face := face;
 	end set_face;
 
+
+	
 	
 	function get_face (
 		packge : in type_package_position)
@@ -103,17 +161,21 @@ package body et_board_coordinates is
 	is begin
 		return packge.face;
 	end get_face;
+
+
+
 	
 
 	procedure flip (
 		position : in out type_package_position)
 	is begin
 		case get_face (position) is
-			when TOP => set_face (BOTTOM, position);
-			when BOTTOM => set_face (TOP, position);
+			when TOP	=> set_face (position, BOTTOM);
+			when BOTTOM	=> set_face (position, TOP);
 		end case;
 	end;
 
+	
 	
 	function get_place (
 		position : in type_package_position)
@@ -123,6 +185,8 @@ package body et_board_coordinates is
 	end get_place;
 
 
+
+	
 	function get_position (
 		position : in type_package_position)
 		return type_position
@@ -144,6 +208,8 @@ package body et_board_coordinates is
 		set (pos, rotation);
 		return pos;
 	end to_terminal_position;
+
+
 	
 end et_board_coordinates;
 

@@ -485,49 +485,6 @@ is
 
 
 
-	
-	-- Returns a type_package_position in the layout.
-	function to_position (
-		line : in type_fields_of_line; -- "position x 23 y 0.2 rotation 90.0 face top"
-		from : in type_field_count_positive)
-		return et_board_coordinates.type_package_position
-	is
-		use ada.containers;
-		use et_pcb_sides;
-		use et_board_coordinates;
-		use et_board_coordinates.pac_geometry_2;
-		
-		point : type_package_position; -- to be returned
-		place : type_field_count_positive := from; -- the field being read from given line
-
-		-- CS: flags to detect missing sheet, x or y
-	begin
-		while place <= get_field_count (line) loop
-
-			-- We expect after the x the corresponding value for x
-			if f (line, place) = keyword_x then
-				set (point => point.place, axis => AXIS_X, value => to_distance (f (line, place + 1)));
-
-			-- We expect after the y the corresponding value for y
-			elsif f (line, place) = keyword_y then
-				set (point => point.place, axis => AXIS_Y, value => to_distance (f (line, place + 1)));
-
-			-- We expect after "rotation" the corresponding value for the rotation
-			elsif f (line, place) = keyword_rotation then
-				set (point, to_rotation (f (line, place + 1)));
-
-			-- We expect after "face" the actual face (top/bottom)
-			elsif f (line, place) = keyword_face then
-				set_face (position => point, face => to_face (f (line, place + 1)));
-			else
-				invalid_keyword (f (line, place));
-			end if;
-				
-			place := place + 2;
-		end loop;
-		
-		return point;
-	end to_position;
 
 
 	
@@ -1714,7 +1671,7 @@ is
 	procedure read_device_text_placeholder is
 		use et_device_placeholders;
 		use et_device_placeholders.packages;
-		use et_pcb_stack;
+		use et_board_coordinates;
 		use et_board_coordinates.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
@@ -1731,7 +1688,7 @@ is
 			expect_field_count (line, 9);
 
 			-- extract position of placeholder starting at field 2
-			device_text_placeholder_position := to_position (line, 2);
+			device_text_placeholder_position := to_package_position (line, 2);
 
 		elsif kw = keyword_size then -- size 5
 			expect_field_count (line, 2);
@@ -2349,10 +2306,11 @@ is
 	
 	device_position	: et_board_coordinates.type_package_position; -- in the layout ! incl. angle and face
 
+
 	
 	
 	procedure read_package is
-		use et_pcb_sides;
+		use et_board_coordinates;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -2360,7 +2318,7 @@ is
 			expect_field_count (line, 9);
 
 			-- extract package position starting at field 2
-			device_position := to_position (line, 2);
+			device_position := to_package_position (line, 2);
 
 		else
 			invalid_keyword (kw);
@@ -2368,6 +2326,7 @@ is
 	end read_package;
 
 
+	
 	
 	-- This variable is used for vector texts in conductor layers
 	-- and restrict layers:
@@ -2723,8 +2682,7 @@ is
 	
 	
 	procedure read_device_non_electric is
-		use et_device_model;
-		use et_pcb_sides;
+		use et_board_coordinates;
 		use et_package_names;
 		kw : constant string := f (line, 1);
 	begin
@@ -2738,7 +2696,7 @@ is
 			expect_field_count (line, 9);
 
 			-- extract device position (in the layout) starting at field 2
-			device_position := to_position (line, 2);
+			device_position := to_package_position (line, 2);
 		
 			
 		elsif kw = keyword_model then -- model /lib/fiducials/crosshair.pac

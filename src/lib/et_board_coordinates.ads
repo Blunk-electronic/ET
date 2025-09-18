@@ -44,6 +44,7 @@ with et_geometry_1.et_polygons.union;
 with et_geometry_1.et_polygons.offsetting;
 
 with et_coordinates_formatting;		use et_coordinates_formatting;
+with et_string_processing;			use et_string_processing;
 with et_geometry_2a;
 with et_geometry_2a.contours;
 with et_geometry_2a.grid;
@@ -174,7 +175,18 @@ package et_board_coordinates is
 		format		: in type_output_format := FORMAT_1)
 		return string;
 
-	
+
+	-- Reads a line like "position x 44.5 y 53.5 rotation 90.0 face top"
+	-- starting at a field given by "from" and returns
+	-- a package position:
+	-- CS should be a procedure with an error flag output
+	-- and the position output ?
+	function to_package_position (
+		line : in type_fields_of_line;
+		from : in type_field_count_positive)
+		return type_package_position;
+
+		
 	function to_package_position (
 		point 		: in type_vector_model;
 		rotation	: in type_rotation_model := zero_rotation;
@@ -186,8 +198,8 @@ package et_board_coordinates is
 
 	
 	procedure set_face (
-		face	: in type_face;
-		position: in out type_package_position);
+		position: in out type_package_position;
+		face	: in type_face);
 
 	
 	function get_face (
