@@ -1826,6 +1826,10 @@ package body et_conventions is
 -- 			
 -- 		log_indentation_down;
 -- 	end export_routing_tables;
+
+
+
+
 	
 	function to_unit_of_measurement (unit : in string) return type_unit_of_measurement is
 	-- Converts a string to type_component_unit_meaning.
@@ -1848,12 +1852,20 @@ package body et_conventions is
 						
 				raise constraint_error;
 	end to_unit_of_measurement;
+
+
+
+
 	
 	function to_string (unit : in type_unit_of_measurement) return string is
 	-- returns the given unit of measurement as string. (things like OHM, KILOOHM, MEGAOHM, ...)
 	begin
 		return type_unit_of_measurement'image (unit);
 	end to_string;
+
+
+
+
 	
 	procedure check_abbrevation_of_unit_characters (
 		abbrevation : in type_unit_abbrevation.bounded_string;
@@ -1879,6 +1891,9 @@ package body et_conventions is
 		end if;
 	end check_abbrevation_of_unit_characters;
 
+
+
+	
 	function to_abbrevation (unit : in type_unit_of_measurement) 
 	-- Translates from given unit_of_measurement (like OHM or VOLT) to the
 	-- actual abbrevation like R or V.
@@ -1887,6 +1902,9 @@ package body et_conventions is
 	begin
 		return element (type_units_of_measurement.find (component_units, unit));
 	end;
+
+
+
 	
 	function requires_operator_interaction (
 		prefix : in pac_device_prefix.bounded_string) 
@@ -1918,6 +1936,11 @@ package body et_conventions is
 		end if;
 	end requires_operator_interaction;
 
+
+
+
+
+	
 	function to_text (text : in string) return type_text_schematic is
 	-- Converts a string to type_text_schematic.
 		use et_string_processing;
@@ -1940,18 +1963,25 @@ package body et_conventions is
 				raise constraint_error;
 	end to_text;
 
+
+
+	
 	
 	function to_string (text : in type_text_schematic) return string is begin
 		return type_text_schematic'image (text);
 	end to_string;
 
+
+
+
+	
 	
 	procedure check_schematic_text_size (
 		category 	: in type_text_schematic;
-		size		: in et_schematic_coordinates.pac_geometry_2.type_distance_positive) 
+		size		: in et_schematic_geometry.pac_geometry_2.type_distance_positive) 
 	is
 		use et_string_processing;
-		use et_schematic_coordinates;
+		use et_schematic_geometry;
 		use pac_geometry_2;
 		use type_text_sizes_schematic;
 		cursor : type_text_sizes_schematic.cursor; -- points to a text size 
@@ -2033,6 +2063,9 @@ package body et_conventions is
 		return type_partcode_keyword_argument.to_bounded_string (argument);
 	end to_partcode_keyword_argument;
 
+
+
+
 	
 	function to_string (argument : in type_partcode_keyword_argument.bounded_string) return string is
 	-- Converts a type_partcode_keyword_argument to a string.
@@ -2040,12 +2073,20 @@ package body et_conventions is
 		return type_partcode_keyword_argument.to_string (argument);
 	end to_string;
 
+
+
+
+
 	
 	function to_string (keyword : in type_partcode_keyword.bounded_string) return string is
 	-- Converts a type_partcode_keyword to a string.
 	begin
 		return type_partcode_keyword.to_string (keyword);
 	end to_string;
+
+
+
+
 
 	
 	procedure check_partcode_keyword_length (keyword : in string) is
@@ -2060,6 +2101,9 @@ package body et_conventions is
 		end if;
 	end check_partcode_keyword_length;
 
+
+
+	
 	
 	procedure check_partcode_keyword_characters (
 		keyword		: in type_partcode_keyword.bounded_string;
@@ -2088,6 +2132,10 @@ package body et_conventions is
 		end if;
 
 	end check_partcode_keyword_characters;
+
+
+
+
 	
 
 	procedure validate_partcode_keyword (keyword : in type_partcode_keyword.bounded_string) is
@@ -2122,6 +2170,8 @@ package body et_conventions is
 	end validate_partcode_keyword;
 
 
+
+
 	
 	function to_partcode_keyword (keyword : in string) return type_partcode_keyword.bounded_string is
 	begin
@@ -2129,6 +2179,7 @@ package body et_conventions is
 	end to_partcode_keyword;
 
 
+	
 	
 	-- The root of a partcode in general is something like R_PAC_S_0805_VAL_ .
 	-- If optionally the value is provided, it gets appended which would result
@@ -2415,21 +2466,29 @@ package body et_conventions is
 		return type_partcode_keyword.to_string (keyword);
 	end to_partcode_keyword;
 
+
+
+	
 	function to_file_name (file : in string) return pac_file_name.bounded_string is begin
 		return pac_file_name.to_bounded_string (file);
 	end to_file_name;
 
+
+
+	
 	function to_string (file : in pac_file_name.bounded_string) return string is begin
 		return pac_file_name.to_string (file);
 	end to_string;
 	
+
+
 	
 	procedure make_default_conventions (
 		file_name		: in pac_file_name.bounded_string;
 		log_threshold	: in type_log_level) 
 	is
 		use et_system_info;
-		use et_schematic_coordinates.pac_geometry_2;
+		use et_schematic_geometry.pac_geometry_2;
 		
 		function comment return string is begin return comment_mark & latin_1.space; end comment;
 
@@ -2625,6 +2684,9 @@ package body et_conventions is
 	end make_default_conventions;
 
 
+
+	
+
 	procedure read_conventions (
 		file_name		: in pac_file_name.bounded_string;
 		log_threshold	: in type_log_level) is
@@ -2655,6 +2717,7 @@ package body et_conventions is
 		use type_lines;
 		lines : type_lines.list := type_lines.empty_list;
 
+
 		
 		-- Processes the section indicated by section_entered. 
 		-- The lines of the section are in container "lines".
@@ -2668,7 +2731,7 @@ package body et_conventions is
 			-- we deal with columns and need to index them
 			subtype type_column is positive range 1..8;
 		
-			use et_schematic_coordinates;
+			use et_schematic_geometry;
 			use pac_geometry_2;
 
 			
@@ -2678,9 +2741,13 @@ package body et_conventions is
 				end if;
 			end test_multiple_occurences;
 
+
+			
 			function reduced_check_coverage return string is begin 
 				return " Design check coverage reduced !";
 			end reduced_check_coverage;
+
+
 			
 			prefix 		: pac_device_prefix.bounded_string;
 			cat 		: type_device_category;

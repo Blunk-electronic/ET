@@ -41,6 +41,7 @@ with cairo;
 
 with et_fonts;
 
+with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_text;					use et_schematic_text;
 with et_object_status;					use et_object_status;

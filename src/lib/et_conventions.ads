@@ -46,6 +46,7 @@ with ada.containers.ordered_sets;
 
 with ada.directories;			use ada.directories;
 
+with et_schematic_geometry;
 with et_schematic_coordinates;
 -- with et_import;
 with et_material;
@@ -188,7 +189,7 @@ package et_conventions is
 -- 	-- Tests if module interconnections at net level make sense.
 -- 	-- NOTE: call AFTER modules have been imported !
 
-	subtype type_net_label_text_size is et_schematic_coordinates.type_distance_model range 1.0 .. 5.0; -- unit is mm
+	subtype type_net_label_text_size is et_schematic_geometry.type_distance_model range 1.0 .. 5.0; -- unit is mm
 	net_label_text_size_default : constant type_net_label_text_size := 1.3;
 	
 	function to_net_label_text_size (text : in string) return type_net_label_text_size;
@@ -386,8 +387,8 @@ package et_conventions is
 	-- Text sizes of various categories are collected in a map:
 	package type_text_sizes_schematic is new ordered_maps (
 		key_type		=> type_text_schematic,
-		element_type	=> et_schematic_coordinates.pac_geometry_2.type_distance_positive,
-		"="				=> et_schematic_coordinates."=");
+		element_type	=> et_schematic_geometry.pac_geometry_2.type_distance_positive,
+		"="				=> et_schematic_geometry."=");
 
 	
 	-- After reading the conventions file, text sizes are collected here:
@@ -402,7 +403,7 @@ package et_conventions is
 	-- specified in configuration file in section TEXT_SIZES_SCHEMATIC.
 	procedure check_schematic_text_size (
 		category 	: in type_text_schematic;
-		size		: in et_schematic_coordinates.pac_geometry_2.type_distance_positive);
+		size		: in et_schematic_geometry.pac_geometry_2.type_distance_positive);
 
 
 

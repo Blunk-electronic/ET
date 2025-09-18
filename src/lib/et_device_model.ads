@@ -50,6 +50,7 @@ with ada.containers; 			use ada.containers;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 
+with et_schematic_geometry;		use et_schematic_geometry;
 with et_schematic_coordinates;	use et_schematic_coordinates;
 with et_symbols;				use et_symbols;
 with et_device_appearance;		use et_device_appearance;

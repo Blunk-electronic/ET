@@ -41,6 +41,7 @@ with ada.containers; 					use ada.containers;
 with ada.containers.doubly_linked_lists;
 with cairo;
 
+with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_text;							use et_text;
 with et_schematic_text;					use et_schematic_text;

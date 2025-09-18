@@ -51,8 +51,9 @@ with et_logging;				use et_logging;
 with et_axes;					use et_axes;
 with et_sheets;					use et_sheets;
 with et_mirroring;				use et_mirroring;
+with et_schematic_geometry;		use et_schematic_geometry;
 with et_schematic_coordinates;	use et_schematic_coordinates;
-use et_schematic_coordinates.pac_geometry_2;
+use et_schematic_geometry.pac_geometry_2;
 
 
 package et_kicad_coordinates is

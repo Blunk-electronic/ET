@@ -214,7 +214,7 @@ package body et_kicad_to_native is
 			point : in out et_kicad_coordinates.type_position) 
 		is
 			use et_sheets;
-			use et_schematic_coordinates;
+			use et_schematic_geometry;
 			use pac_geometry_2;
 			
 			sheet_number 		: type_sheet;
@@ -248,11 +248,11 @@ package body et_kicad_to_native is
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
 		procedure move (
-			point_actual	: in out et_schematic_coordinates.pac_geometry_2.type_vector_model;	-- the point it is about
+			point_actual	: in out et_schematic_geometry.pac_geometry_2.type_vector_model;	-- the point it is about
 			point_help		: in et_kicad_coordinates.type_position) -- supportive point that provides the sheet number
 		is
 			use et_sheets;
-			use et_schematic_coordinates;
+			use et_schematic_geometry;
 			use pac_geometry_2;
 			
 			sheet_number 		: type_sheet;
@@ -582,6 +582,7 @@ package body et_kicad_to_native is
 			use et_kicad.schematic.type_nets;
 			net_cursor : et_kicad.schematic.type_nets.cursor := module.nets.first;
 
+			
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out et_kicad.schematic.type_net) is
@@ -589,11 +590,13 @@ package body et_kicad_to_native is
 				use et_kicad.schematic.type_strands;
 				strand_cursor : et_kicad.schematic.type_strands.cursor := net.strands.first;
 
+				
 				procedure query_segments (strand : in out et_kicad.schematic.type_strand) is
-					use et_schematic_coordinates.pac_geometry_2;
+					use et_schematic_geometry.pac_geometry_2;
 					use et_kicad.schematic.type_net_segments;
 					segment_cursor : et_kicad.schematic.type_net_segments.cursor := strand.segments.first;
 
+					
 					procedure change_path_of_segment (segment : in out et_kicad.schematic.type_net_segment) is
 						use et_schematic_coordinates;
 						
@@ -2285,7 +2288,7 @@ package body et_kicad_to_native is
 	-- Converts kicad schematic coordinates to native schematic coordinates.
 	function to_native_coordinates (
 		point 		: in et_kicad_coordinates.type_position;
-		rotation	: in et_schematic_coordinates.type_rotation_model := et_schematic_coordinates.pac_geometry_2.zero_rotation)
+		rotation	: in et_schematic_geometry.type_rotation_model := et_schematic_geometry.pac_geometry_2.zero_rotation)
 		return et_schematic_coordinates.type_object_position 
 	is
 		use et_schematic_coordinates;
@@ -2389,7 +2392,7 @@ package body et_kicad_to_native is
 		procedure copy_rectangle (cursor : in et_kicad_libraries.type_symbol_rectangles.cursor) is
 			use et_kicad;
 			use type_symbol_rectangles;
-			use et_schematic_coordinates;
+			use et_schematic_geometry;
 			
 			-- This is the given kicad rectangle:
 			rectangle : type_symbol_rectangle := type_symbol_rectangles.element (cursor);
@@ -2397,7 +2400,7 @@ package body et_kicad_to_native is
 			-- This is the native line that will be appended to native_shapes.lines:
 			line : type_symbol_line;
 			
-			width, height : et_schematic_coordinates.type_distance_model;
+			width, height : et_schematic_geometry.type_distance_model;
 
 			-- These two points are required to form the final rectangle:
 			corner_C, corner_D : pac_geometry_2.type_vector_model;
@@ -2903,8 +2906,8 @@ package body et_kicad_to_native is
 					use et_kicad.schematic.type_simple_labels;
 					simple_label_cursor : et_kicad.schematic.type_simple_labels.cursor := segment.label_list_simple.first;
 
-					use et_schematic_coordinates;
-					use et_schematic_coordinates.pac_geometry_2;
+					use et_schematic_geometry;
+					use et_schematic_geometry.pac_geometry_2;
 
 					-- Simple labels require to be shifted slightly both to the right and up.
 					-- This prevents them to sit directly on the net segment:
@@ -3016,7 +3019,7 @@ package body et_kicad_to_native is
 				is
 					junctions : et_net_junction.type_junctions; -- to be returned
 
-					use et_schematic_coordinates.pac_geometry_2;
+					use et_schematic_geometry.pac_geometry_2;
 					use et_kicad_coordinates;
 					use et_kicad.schematic.type_junctions;
 					junction_cursor : et_kicad.schematic.type_junctions.cursor := segment.junctions.first;
@@ -3057,7 +3060,7 @@ package body et_kicad_to_native is
 				-- at the given end (A or B):
 				function read_ports (
 					segment : in et_kicad.schematic.type_net_segment;
-					AB_end	: in et_schematic_coordinates.pac_geometry_2.type_start_end_point)
+					AB_end	: in et_schematic_geometry.pac_geometry_2.type_start_end_point)
 					return et_net_ports.pac_device_ports.set 
 				is
 					use et_kicad.schematic;
@@ -3068,7 +3071,7 @@ package body et_kicad_to_native is
 					ports_of_segment : et_net_ports.pac_device_ports.set; -- to be returned
 
 					use et_sheets;
-					use et_schematic_coordinates;
+					use et_schematic_geometry;
 					use pac_geometry_sch;
 					use pac_geometry_2;
 					use et_symbol_ports;
@@ -3203,10 +3206,10 @@ package body et_kicad_to_native is
 						
 						-- Read ports connected with the A and B end of the candiate segment:
 						net_segment_native.ports.A.devices := 
-							read_ports (element (kicad_segment_cursor), et_schematic_coordinates.pac_geometry_2.A);
+							read_ports (element (kicad_segment_cursor), et_schematic_geometry.pac_geometry_2.A);
 
 						net_segment_native.ports.B.devices := 
-							read_ports (element (kicad_segment_cursor), et_schematic_coordinates.pac_geometry_2.B);
+							read_ports (element (kicad_segment_cursor), et_schematic_geometry.pac_geometry_2.B);
 
 						
 						-- there are no ports of submodules

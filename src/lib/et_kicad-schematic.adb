@@ -150,7 +150,7 @@ package body et_kicad.schematic is
 	function orientation_of_unit (
 		name	: in pac_unit_name.bounded_string; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
-		return et_schematic_coordinates.type_rotation_model 
+		return et_schematic_geometry.type_rotation_model 
 	is
 		unit_cursor : type_units_schematic.cursor;
 	begin
@@ -675,10 +675,14 @@ package body et_kicad.schematic is
 				raise;
 		
 	end to_text_meaning;
-								 
-	function to_field_orientation (text : in string) return et_schematic_coordinates.type_rotation_model is
+
+
+	
 	-- Converts a kicad field text orientation character (H/V) to type_rotation_model.
-	begin	
+	function to_field_orientation (
+		text : in string)
+		return et_schematic_geometry.type_rotation_model
+	is begin	
 		case type_field_orientation'value (text) is
 			when H => return 0.0;
 			when V => return 90.0; -- CS -90.0 ?
@@ -693,6 +697,8 @@ package body et_kicad.schematic is
 				raise;
 	end to_field_orientation;
 
+
+	
 	
 	-- Converts a horizontal kicad text alignment to type_text_alignment_horizontal.
 	function to_alignment_horizontal (text : in string) return type_text_alignment_horizontal is
@@ -706,6 +712,7 @@ package body et_kicad.schematic is
 		return a;
 	end to_alignment_horizontal;
 
+	
 	
 	function to_alignment_vertical (text : in string) return type_text_alignment_vertical is
 	-- Converts a vertical kicad text alignment to type_text_alignment_vertical.
@@ -904,9 +911,14 @@ package body et_kicad.schematic is
 		
 	end to_alternative_representation;
 
-	function to_degrees (angle : in string) return et_schematic_coordinates.type_rotation_model is
+
+
+	
 	-- Converts a given angle as string to type_rotation_model.
-		
+	function to_degrees (
+		angle : in string) 
+		return et_schematic_geometry.type_rotation_model
+	is		
 		a_in  : type_angle; -- unit is tenth of degrees -3599 .. 3599
 
 		-- For the conversion we need an intermediate real type
@@ -923,13 +935,15 @@ package body et_kicad.schematic is
 		a_tmp := type_angle_real (a_in); -- -3599.0 .. 3599.0
 
 		-- convert given angle to et_schematic_coordinates.type_rotation_model.
-		return et_schematic_coordinates.type_rotation_model (a_tmp / 10.0); -- -359.9 .. 359.9
+		return et_schematic_geometry.type_rotation_model (a_tmp / 10.0); -- -359.9 .. 359.9
 		-- CS multiply by -1 ? If yes, remove - before all calls of this function.
 
 		-- CS: exception handler
 	end to_degrees;
 
 
+
+	
 	
 	function to_power_flag (reference : in type_device_name) 
 		return type_power_flag is
@@ -947,6 +961,7 @@ package body et_kicad.schematic is
 	end to_power_flag;
 
 
+	
 	
 	-- Tests if the given component package name meets certain conventions.
 	procedure validate_component_package_name 
@@ -1918,11 +1933,13 @@ package body et_kicad.schematic is
 
 	
 	-- Converts the rotaton of a label or a text to a relative rotation.
-	function to_relative_rotation (text_in : in string) 
-		return et_schematic_coordinates.type_rotation_relative is
+	function to_relative_rotation (
+		text_in : in string) 
+		return et_schematic_geometry.type_rotation_relative 
+	is
 	-- CS: use a dedicated type for input parameter.
 		o_in	: type_label_orientation := type_label_orientation'value (text_in);
-		o_out	: et_schematic_coordinates.type_rotation_relative;
+		o_out	: et_schematic_geometry.type_rotation_relative;
 	begin
 		case o_in is
 			when 0 => o_out := 180.0;
@@ -1935,6 +1952,7 @@ package body et_kicad.schematic is
 	end to_relative_rotation;
 
 
+	
 	
 	function to_direction (text_in : in string) 
 		return type_connector_direction 
@@ -6361,7 +6379,7 @@ package body et_kicad.schematic is
 	
 	-- Returns the length of the given net segment.
 	function length (segment : in type_net_segment_base) 
-		return et_schematic_coordinates.type_distance_model 
+		return et_schematic_geometry.type_distance_model 
 	is
 		len : type_distance_model;
 		--use et_string_processing;

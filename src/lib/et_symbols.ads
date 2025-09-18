@@ -53,6 +53,7 @@ with et_schematic_text;					use et_schematic_text;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
+with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 
 with et_primitive_objects;				use et_primitive_objects;

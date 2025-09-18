@@ -53,8 +53,9 @@ with et_kicad_general;			use et_kicad_general;
 with et_kicad_coordinates;		use et_kicad_coordinates;
 
 with et_import;
+with et_schematic_geometry;		use et_schematic_geometry;
 with et_schematic_coordinates;	use et_schematic_coordinates;
-use et_schematic_coordinates.pac_geometry_2;
+use et_schematic_geometry.pac_geometry_2;
 
 with et_kicad_packages;			use et_kicad_packages;
 
@@ -144,7 +145,7 @@ package et_kicad_libraries is
 		-- CS: currently the style of text is ignored
 		-- style : ???
 		content		: et_text.pac_text_content.bounded_string;		
-		rotation	: et_schematic_coordinates.type_rotation_model := 0.0;
+		rotation	: et_schematic_geometry.type_rotation_model := 0.0;
 	end record;
 	
 	type type_text_placeholder (meaning : type_placeholder_meaning) is new type_text_basic with record
@@ -219,7 +220,7 @@ package et_kicad_libraries is
 
 		-- the clearance between symbol outline and port name 
 		-- CS: define a reasonable range
-		port_name_offset : et_schematic_coordinates.type_distance_model;
+		port_name_offset : et_schematic_geometry.type_distance_model;
 		-- CS : obsolete ? pin_position_offset ?
 	end record;
 
@@ -273,9 +274,9 @@ package et_kicad_libraries is
 	
 	-- arcs of a symbol:
 	type type_symbol_arc is new et_symbols.type_symbol_arc with record
-		start_angle		: et_schematic_coordinates.pac_geometry_sch.type_angle;
-		end_angle		: et_schematic_coordinates.pac_geometry_sch.type_angle;
-		radius			: et_schematic_coordinates.pac_geometry_sch.type_float_positive;
+		start_angle		: et_schematic_geometry.pac_geometry_sch.type_angle;
+		end_angle		: et_schematic_geometry.pac_geometry_sch.type_angle;
+		radius			: et_schematic_geometry.pac_geometry_sch.type_float_positive;
  		fill			: type_fill;
 	end record;
 	package type_symbol_arcs is new doubly_linked_lists (type_symbol_arc);
@@ -725,8 +726,8 @@ package et_kicad_libraries is
 
 	-- The distance of the pin name from the pin itself (supply pins only)
 	subtype type_supply_pin_name_position_offset 
-		is et_schematic_coordinates.type_distance_model
-		range 0.00 .. et_schematic_coordinates.type_distance_model'last;
+		is et_schematic_geometry.type_distance_model
+		range 0.00 .. et_schematic_geometry.type_distance_model'last;
 
 	-- KiCad supports up to 64 units within a component
 	unit_count_max : constant positive := 64;

@@ -49,6 +49,7 @@ with gtk.gentry;					use gtk.gentry;
 with ada.text_io;					use ada.text_io;
 with ada.containers;				use ada.containers;
 
+with et_schematic_geometry;			use et_schematic_geometry;
 with et_schematic_coordinates;		use et_schematic_coordinates;
 with et_generic_module;				use et_generic_module;
 with et_command_processor;			use et_command_processor;

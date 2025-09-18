@@ -74,6 +74,7 @@ with et_module_names;				use et_module_names;
 with et_generic_module;				use et_generic_module;
 with et_script_names;				use et_script_names;
 with et_sheets;						use et_sheets;
+with et_schematic_geometry;			use et_schematic_geometry;
 with et_schematic_coordinates;		use et_schematic_coordinates;
 -- use et_coordinates.pac_geometry_sch;
 -- use et_coordinates.pac_geometry_2;
@@ -120,18 +121,18 @@ package et_canvas_schematic_2 is
 	-- Instantiate the canvas package:
 	package pac_canvas is new et_canvas (
 		canvas_name		=> "schematic", -- CS provide domain name like scripting.type_domain
-		pac_geometry	=> et_schematic_coordinates.pac_geometry_2,
-		pac_grid		=> et_schematic_coordinates.pac_grid,								
-		pac_path		=> et_schematic_coordinates.pac_path_and_bend,
-		pac_offsetting	=> et_schematic_coordinates.pac_polygon_offsetting,
-		pac_polygons	=> et_schematic_coordinates.pac_polygons,
-		pac_contours	=> et_schematic_coordinates.pac_contours,
+		pac_geometry	=> et_schematic_geometry.pac_geometry_2,
+		pac_grid		=> et_schematic_geometry.pac_grid,								
+		pac_path		=> et_schematic_geometry.pac_path_and_bend,
+		pac_offsetting	=> et_schematic_geometry.pac_polygon_offsetting,
+		pac_polygons	=> et_schematic_geometry.pac_polygons,
+		pac_contours	=> et_schematic_geometry.pac_contours,
 		pac_text		=> pac_text_schematic
 		);
 		
 	
 	use pac_canvas;
-	use et_schematic_coordinates.pac_geometry_2;
+	use et_schematic_geometry.pac_geometry_2;
 
 	package pac_drawing_frame is new pac_canvas.drawing_frame;
 

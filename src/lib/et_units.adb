@@ -47,7 +47,7 @@ package body et_units is
 
 	procedure rotate_placeholders (
 		placeholders	: in out type_default_placeholders;
-		rotation		: in et_schematic_coordinates.type_rotation_model)
+		rotation		: in type_rotation_model)
 	is begin
 		-- Rotate the POSITIONS	of the placeholders about
 		-- the origin of the symbol:
@@ -109,7 +109,7 @@ package body et_units is
 		use pac_units_internal;
 		sym : type_unit_internal renames element (symbol_cursor);
 		
-		use et_schematic_coordinates.pac_geometry_sch;
+		use pac_geometry_sch;
 
 		r : type_default_placeholders; -- to be returned
 	begin

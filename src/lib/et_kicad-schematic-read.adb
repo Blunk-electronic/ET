@@ -1407,17 +1407,21 @@ is
 
 		end to_direction;
 
+
 		
-		function to_orientation (or_in : in string) return et_schematic_coordinates.type_rotation_model is
 		-- Converts a string to type_rotation
-			result : et_schematic_coordinates.type_rotation_model;
+		function to_orientation (
+			or_in : in string) 
+			return et_schematic_geometry.type_rotation_model
+		is
+			result : et_schematic_geometry.type_rotation_model;
 			orientation : type_sheet_port_orientation; -- see et_kicad.ads
 		begin
 			orientation := type_sheet_port_orientation'value (or_in);
 
 			case orientation is
-				when R => result := et_schematic_coordinates.type_rotation_model (0.0);
-				when L => result := et_schematic_coordinates.type_rotation_model (180.0);
+				when R => result := et_schematic_geometry.type_rotation_model (0.0);
+				when L => result := et_schematic_geometry.type_rotation_model (180.0);
 			end case;
 			
 			return result;
@@ -1431,6 +1435,7 @@ is
 
 		end to_orientation;
 
+		
 		
 	begin -- make_gui_sheet
 		log (text => "making gui sheet ...", level => log_threshold);
@@ -1564,6 +1569,7 @@ is
 	end make_gui_sheet;
 
 
+	
 	function net_segment_header (line : in type_fields_of_line) return boolean is
 	-- Returns true if given line is a net segment header like "Wire Wire Line"
 		result : boolean := false;
@@ -1579,6 +1585,8 @@ is
 		return result;
 	end net_segment_header;
 
+
+	
 	
 	procedure make_net_segment (
 		lines			: in pac_lines_of_file.list;
@@ -1625,6 +1633,8 @@ is
 		--log_indentation_down;
 	end make_net_segment;
 
+
+	
 	
 	function junction_header (line : in type_fields_of_line) return boolean is
 	-- Returns true if given line is a net junction "Connection ~ 4650 4600"
@@ -1640,6 +1650,8 @@ is
 		return result;
 	end junction_header;
 
+
+	
 	
 	procedure make_junction (
 		line			: in type_fields_of_line;
@@ -1687,6 +1699,8 @@ is
 		--log_indentation_down;
 	end make_junction;
 
+
+
 	
 	function simple_label_header (line : in type_fields_of_line) return boolean is
 	-- Returns true if given line is a header of a simple label like 
@@ -1701,6 +1715,8 @@ is
 		end if;
 		return result;
 	end simple_label_header;
+
+
 
 	
 	procedure make_simple_label (
@@ -1756,6 +1772,8 @@ is
 		--log_indentation_down;
 	end make_simple_label;
 
+
+
 	
 	function tag_label_header (line : in type_fields_of_line) return boolean is
 	-- Returns true if given line is a header of a global or hierarchic label like 
@@ -1773,6 +1791,8 @@ is
 		return result;
 	end tag_label_header;
 
+
+	
 	
 	-- Builds a global or hierachical label and appends it to the collection of wild tag labels.
 	procedure make_tag_label (
@@ -1837,6 +1857,8 @@ is
 		--log_indentation_down;
 	end make_tag_label;
 
+
+	
 	
 	function text_note_header (line : in type_fields_of_line) return boolean is
 	-- Returns true if given line is a header of a text note like
@@ -1853,17 +1875,19 @@ is
 		return result;
 	end text_note_header;
 
+
+
 	
+	-- Builds a text note and appends it to the collection of text notes.
 	procedure make_text_note (
 		lines			: in pac_lines_of_file.list;
-		log_threshold	: in type_log_level) is
-	-- Builds a text note and appends it to the collection of text notes.
-
+		log_threshold	: in type_log_level)
+	is
 		-- The label header "Text Notes 3400 2800 0 60 Italic 12" and the next line like
 		-- "ERC32 Test Board" is read here. It contains the actual text.
 		
 		note : type_text; -- the text note being built
-		rotation : et_schematic_coordinates.type_rotation_relative;
+		rotation : et_schematic_geometry.type_rotation_relative;
 
 		procedure warn is begin 
 			log (WARNING, " text note at " 
@@ -1928,6 +1952,8 @@ is
 		--log_indentation_down;
 	end make_text_note;
 
+
+
 	
 	function component_header (line : in type_fields_of_line) return boolean is
 	-- Returns true if given line is a header of a component.
@@ -1944,6 +1970,7 @@ is
 		end if;
 	end component_header;
 
+
 	
 	function component_footer (line : in type_fields_of_line) return boolean is
 	-- Returns true if given line is a footer of a component.
@@ -1959,6 +1986,7 @@ is
 			return false;
 		end if;
 	end component_footer;
+
 
 	
 	procedure make_component (
@@ -2010,7 +2038,7 @@ is
 		alternative_references		: type_alternative_references.list;
 		unit_name					: pac_unit_name.bounded_string; -- A, B, PWR, CT, IO-BANK1 ...
 		unit_position				: et_kicad_coordinates.type_position;
-		orientation					: et_schematic_coordinates.type_rotation_model;
+		orientation					: et_schematic_geometry.type_rotation_model;
 		mirror						: type_mirror;
 		timestamp					: type_timestamp; -- 59F202F2
 		alternative_representation	: type_de_morgan_representation;
@@ -2085,6 +2113,7 @@ is
 				);
 		end to_field;
 
+
 		
 		procedure check_text_fields (log_threshold : in type_log_level) is 
 		-- Tests if any "field found" flag is still cleared and raises an alarm in that case.
@@ -2116,6 +2145,7 @@ is
 				alt_ref_cursor : type_alternative_references.cursor := alternative_references.first;
 				suitable_reference_found : boolean := false;
 
+				
 				procedure query_path (alt_ref : in type_alternative_reference) is
 				-- queries paths like /59F17FDE/5A991D18 and compares the prenultimate timestamp
 				-- with the current_schematic.timestamp. Sets the suitable_reference_found flag on match.
@@ -2135,7 +2165,8 @@ is
 								level => make_component.log_threshold);
 					end if;
 				end query_path;
-					
+
+				
 			begin -- process_alternative_references
 				-- loop in list of alternative references and exit once a suitable one was found.
 				while alt_ref_cursor /= type_alternative_references.no_element loop
@@ -2252,6 +2283,7 @@ is
 		end check_text_fields;
 
 
+
 		
 		-- Returns the full name of the library where given generic component is contained.
 		-- The given reference serves to provide a helpful error message on the affected 
@@ -2342,6 +2374,7 @@ is
 		end generic_name_to_library;
 		
 
+		
 		-- The given reference serves to provide a helpful error message on the affected 
 		-- component in the schematic.
 		function full_name_of_component_library (
@@ -2439,6 +2472,7 @@ is
 		end remove_leading_hash;
 
 
+		
 
 		
 		procedure insert_component is
@@ -2576,6 +2610,8 @@ is
 		end insert_component;
 
 
+
+
 		
 		-- Inserts a unit into the unit list of a component. The text fields around a unit are placeholders.
 		-- The properties of the placeholder texts are loaded with the properties of the text fields of the units
@@ -2670,6 +2706,8 @@ is
 
 		
 
+
+		
 		-- Checks if the x/y position of the unit matches that provided in given line.
 		-- It is about the strange repetition of the unit name and its x/y coordinates in a line like
 		-- "2    6000 4000"

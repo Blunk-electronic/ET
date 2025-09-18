@@ -2770,7 +2770,7 @@ package body et_schematic_ops.submodules is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
-		rotation		: in et_schematic_coordinates.type_rotation_model; -- 90
+		rotation		: in et_schematic_geometry.type_rotation_model; -- 90
 		log_threshold	: in type_log_level) 
 	is
 		use et_submodules;
@@ -2783,7 +2783,7 @@ package body et_schematic_ops.submodules is
 		is
 			cursor : pac_netchangers.cursor;
 			location : type_object_position;
-			rotation : et_schematic_coordinates.type_rotation_model;
+			rotation : et_schematic_geometry.type_rotation_model;
 			ports_old : type_netchanger_ports;
 			ports_new : type_netchanger_ports;
 

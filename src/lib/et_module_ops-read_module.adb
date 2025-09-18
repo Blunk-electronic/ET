@@ -40,6 +40,7 @@
 with ada.text_io;					use ada.text_io;
 with ada.containers;
 
+with et_schematic_geometry;
 with et_schematic_coordinates;
 
 with et_section_headers;			use et_section_headers;
@@ -455,7 +456,7 @@ is
 		from : in type_field_count_positive)
 		return et_submodules.type_submodule_size 
 	is
-		use et_schematic_coordinates.pac_geometry_2;
+		use et_schematic_geometry.pac_geometry_2;
 		use ada.containers;
 		
 		size : et_submodules.type_submodule_size; -- to be returned
@@ -491,14 +492,14 @@ is
 	-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 
 	-- drawing grid
-	grid_schematic : et_schematic_coordinates.pac_grid.type_grid; -- CS rename to schematic_grid
+	grid_schematic : et_schematic_geometry.pac_grid.type_grid; -- CS rename to schematic_grid
 	grid_board : et_board_coordinates.pac_grid.type_grid; -- CS rename to board_grid
 
 	
 	
 	procedure read_drawing_grid_schematic is 
 		use et_symbol_rw;
-		use et_schematic_coordinates.pac_grid;
+		use et_schematic_geometry.pac_grid;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -818,8 +819,9 @@ is
 
 	-- Assigns the strand to the list of strands:
 	procedure assign_net_strand is
-		use et_schematic_coordinates;
+		use et_schematic_geometry;
 		use pac_geometry_2;
+		use et_schematic_coordinates;
 		use et_sheets;
 		use pac_net_name;
 		position_found_in_module_file : type_vector_model := strand.position.place;
@@ -873,7 +875,7 @@ is
 		kw : constant string := f (line, 1);
 
 		use et_net_segment;
-		use et_schematic_coordinates.pac_geometry_2;
+		use et_schematic_geometry.pac_geometry_2;
 		vm : type_vector_model;
 	begin
 		log (text => "read net segment", level => log_threshold + 1);
@@ -938,7 +940,7 @@ is
 	-- is activated in variable net_junctions (see above):
 	procedure read_net_junction is
 		use et_net_junction;
-		use et_schematic_coordinates.pac_geometry_2;
+		use et_schematic_geometry.pac_geometry_2;
 
 		AB_end : type_start_end_point;
 		error : boolean := false;
@@ -1017,7 +1019,7 @@ is
 	-- is assigned to the variable net_connectors (see above):
 	procedure read_net_connector is
 		use et_net_connectors;
-		use et_schematic_coordinates.pac_geometry_2;
+		use et_schematic_geometry.pac_geometry_2;
 
 		AB_end : type_start_end_point;
 		error : boolean := false;
@@ -1103,6 +1105,7 @@ is
 		
 		use et_symbol_rw;
 		use et_schematic_coordinates;	
+		use et_schematic_geometry;
 		use pac_geometry_2;
 		use et_net_labels;
 		kw : constant string := f (line, 1);
@@ -1190,6 +1193,7 @@ is
 		use pac_net_name;
 
 		use et_schematic_coordinates;
+		use et_schematic_geometry;
 		use pac_geometry_2;
 		
 		AB_end : type_start_end_point;
@@ -1426,8 +1430,9 @@ is
 
 	
 	procedure read_unit is
-		use et_schematic_coordinates;	
+		use et_schematic_geometry;	
 		use pac_geometry_2;
+		use et_schematic_coordinates;
 		use et_units;
 		use et_unit_name;
 		use pac_unit_name;
@@ -1717,7 +1722,7 @@ is
 
 	-- temporarily placeholders of unit name (IC12), value (7400) and purpose (clock buffer)
 	unit_placeholder			: et_schematic_text.type_text_basic;
-	unit_placeholder_position	: et_schematic_coordinates.pac_geometry_2.type_vector_model;
+	unit_placeholder_position	: et_schematic_geometry.pac_geometry_2.type_vector_model;
 	unit_placeholder_meaning	: et_device_placeholders.type_placeholder_meaning := et_device_placeholders.placeholder_meaning_default;
 	unit_placeholder_reference	: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.NAME);
 	unit_placeholder_value		: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.VALUE);
@@ -1729,7 +1734,7 @@ is
 		use et_device_placeholders;
 		use et_schematic_text;
 		use et_symbol_rw;
-		use et_schematic_coordinates.pac_geometry_2;
+		use et_schematic_geometry.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -1860,6 +1865,7 @@ is
 
 	
 	procedure read_netchanger is
+		use et_schematic_geometry;
 		use et_schematic_coordinates;	
 		kw : constant string := f (line, 1);
 		use et_pcb_stack;
@@ -2384,6 +2390,7 @@ is
 	
 	procedure read_schematic_text is
 		use et_schematic_text;
+		use et_schematic_geometry;
 		use et_schematic_coordinates;	
 		use pac_geometry_2;
 		kw : constant string := f (line, 1);
@@ -3037,6 +3044,7 @@ is
 				is
 
 					procedure schematic is
+						use et_schematic_geometry;
 						use et_schematic_coordinates;
 						use pac_geometry_2;
 						use pac_grid;
@@ -3358,6 +3366,7 @@ is
 			procedure build_unit_placeholder is
 				use et_device_placeholders;
 				use et_schematic_coordinates;	
+				use et_schematic_geometry;
 				use et_symbols;
 			begin
 				case unit_placeholder_meaning is

@@ -39,6 +39,7 @@
 --
 
 with et_sheets;							use et_sheets;
+with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 
 with ada.containers; 					use ada.containers;

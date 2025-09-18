@@ -40,6 +40,7 @@
 with et_modes;						use et_modes;
 
 with et_canvas_schematic_2;
+with et_schematic_geometry;
 with et_schematic_coordinates;
 
 with et_canvas_board_2;
@@ -64,7 +65,7 @@ package body et_gui_2 is
 	is
 		use et_canvas_schematic_2;
 		use et_canvas_schematic_2.pac_canvas;
-		use et_schematic_coordinates.pac_geometry_2;
+		use et_schematic_geometry.pac_geometry_2;
 		use pac_generic_modules;
 		use et_sheets;
 		use et_schematic_coordinates;

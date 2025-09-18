@@ -50,11 +50,12 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
 
-with et_logging;				use et_logging;
-with et_net_names;				use et_net_names;
+with et_logging;					use et_logging;
+with et_net_names;					use et_net_names;
 with et_text;
-with et_primitive_objects;		use et_primitive_objects;
-with et_schematic_coordinates;	use et_schematic_coordinates;
+with et_primitive_objects;			use et_primitive_objects;
+with et_schematic_geometry;			use et_schematic_geometry;
+with et_schematic_coordinates;		use et_schematic_coordinates;
 with et_pcb;
 with et_pcb_stack;
 with et_board_coordinates;

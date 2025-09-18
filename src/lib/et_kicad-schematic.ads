@@ -57,9 +57,10 @@ with et_package_names;			use et_package_names;
 with et_pcb;
 with et_kicad_general;			use et_kicad_general;
 with et_import;
+with et_schematic_geometry;		use et_schematic_geometry;
 with et_schematic_coordinates;	use et_schematic_coordinates;
-use et_schematic_coordinates.pac_geometry_sch;
-use et_schematic_coordinates.pac_geometry_2;
+use et_schematic_geometry.pac_geometry_sch;
+use et_schematic_geometry.pac_geometry_2;
 
 with et_board_coordinates;
 with et_text;
@@ -233,7 +234,7 @@ package et_kicad.schematic is
 	function orientation_of_unit ( -- CS rename to get_unit_orientation
 		name 	: in pac_unit_name.bounded_string; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
-		return et_schematic_coordinates.type_rotation_model;
+		return et_schematic_geometry.type_rotation_model;
 
 
 	
@@ -454,7 +455,7 @@ package et_kicad.schematic is
 	
 	type type_net_label (label_appearance : type_net_label_appearance) is record
 		coordinates	: type_vector_model;
-		rotation	: et_schematic_coordinates.type_rotation_model;
+		rotation	: et_schematic_geometry.type_rotation_model;
         text		: pac_net_name.bounded_string;
         size		: et_schematic_text.pac_text_schematic.type_text_size;
         width		: et_schematic_text.type_text_line_width;
@@ -500,7 +501,7 @@ package et_kicad.schematic is
 	end record;
 
 	function length (segment : in type_net_segment_base) 
-		return et_schematic_coordinates.type_distance_model;
+		return et_schematic_geometry.type_distance_model;
 	-- Returns the length of the given net segment.
 	
 	type type_net_segment is new type_net_segment_base with record
@@ -844,7 +845,7 @@ package et_kicad.schematic is
 		direction	: et_kicad_libraries.type_port_direction;
 		text_size	: et_schematic_text.pac_text_schematic.type_text_size;
 		coordinates	: type_vector_model;
-        orientation	: et_schematic_coordinates.type_rotation_model;
+        orientation	: et_schematic_geometry.type_rotation_model;
         processed   : boolean; -- used when linking hierarchic nets
 	end record;
 
@@ -864,7 +865,7 @@ package et_kicad.schematic is
         text_size_of_name   : et_schematic_text.pac_text_schematic.type_text_size;
         text_size_of_file   : et_schematic_text.pac_text_schematic.type_text_size;
 		coordinates		    : et_kicad_coordinates.type_position;
-        size_x, size_y      : et_schematic_coordinates.type_distance_model; -- size x/y of the box
+        size_x, size_y      : et_schematic_geometry.type_distance_model; -- size x/y of the box
 		timestamp           : type_timestamp;
 		ports				: type_hierarchic_sheet_ports.map;
 	end record;

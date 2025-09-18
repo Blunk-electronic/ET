@@ -49,8 +49,8 @@ with ada.containers;           			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_ordered_maps;
 
+with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_coordinates;			use et_schematic_coordinates;
-use et_schematic_coordinates.pac_geometry_2;
 with et_sheets;							use et_sheets;
 
 with et_assembly_variants;				use et_assembly_variants;
@@ -105,8 +105,11 @@ with et_logging;						use et_logging;
 
 package et_devices_electrical is
 
+	use pac_geometry_2;
+	
 	use pac_units;
 	-- use pac_unit_names;
+
 	
 
 	-- This is a device as it appears in the schematic.

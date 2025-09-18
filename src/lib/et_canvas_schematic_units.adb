@@ -2135,7 +2135,7 @@ package body et_canvas_schematic_units is
 		category		: in type_placeholder_meaning;
 		log_threshold	: in type_log_level)
 	is
-		rotation : constant et_schematic_coordinates.type_rotation_model := 90.0;
+		rotation : constant et_schematic_geometry.type_rotation_model := 90.0;
 
 		use pac_devices_sch;
 		use pac_units;

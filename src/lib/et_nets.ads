@@ -44,6 +44,7 @@ with ada.containers.ordered_maps;
 with et_assembly_variants;		use et_assembly_variants;
 with et_module_instance;		use et_module_instance;
 with et_schematic_coordinates;	use et_schematic_coordinates;
+with et_schematic_geometry;		use et_schematic_geometry;
 with et_logging;				use et_logging;
 with et_net_names;				use et_net_names;
 with et_net_class;				use et_net_class;

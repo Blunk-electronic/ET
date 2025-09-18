@@ -47,6 +47,7 @@ with ada.containers;    		        use ada.containers;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 
+with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_text;					use et_schematic_text;
 with et_sheets;							use et_sheets;
@@ -80,7 +81,7 @@ package et_units is
 	--    can be read from the front or from the right:
 	procedure rotate_placeholders (
 		placeholders	: in out type_default_placeholders;
-		rotation		: in et_schematic_coordinates.type_rotation_model);
+		rotation		: in type_rotation_model);
 
 
 	-- In the symbol, the placeholders have a rotation (about itself)

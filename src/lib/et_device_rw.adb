@@ -53,8 +53,9 @@ with ada.containers.ordered_maps;
 with et_directory_and_file_ops;
 with et_primitive_objects;			use et_primitive_objects;
 with et_coordinates_formatting;		use et_coordinates_formatting;
+with et_schematic_geometry;			use et_schematic_geometry;
+use et_schematic_geometry.pac_geometry_2;
 with et_schematic_coordinates;		use et_schematic_coordinates;
-use et_schematic_coordinates.pac_geometry_2;
 
 with et_string_processing;
 with et_time;

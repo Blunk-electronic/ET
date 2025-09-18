@@ -36,6 +36,7 @@
 
 with ada.text_io;					use ada.text_io;
 
+with et_schematic_geometry;
 with et_schematic_coordinates;
 
 with et_section_headers;			use et_section_headers;
@@ -388,6 +389,7 @@ is
 
 		procedure schematic is
 			use et_schematic_coordinates;
+			use et_schematic_geometry;
 			use pac_geometry_2;
 			use pac_grid;
 			use et_schematic_ops.grid;
@@ -512,7 +514,8 @@ is
 		is
 			use pac_strands;
 			use et_schematic_coordinates;
-			use et_schematic_coordinates.pac_geometry_2;
+			use et_schematic_geometry;
+			use et_schematic_geometry.pac_geometry_2;
 			
 			strand_cursor : pac_strands.cursor := net.strands.first;
 
@@ -1021,7 +1024,7 @@ is
 						
 			unit_cursor : pac_units.cursor := device.units.first;
 
-			use et_schematic_coordinates.pac_geometry_2;
+			use et_schematic_geometry.pac_geometry_2;
 
 			
 			procedure write_placeholder (
@@ -1312,6 +1315,7 @@ is
 	
 	-- writes the netchangers in the module file
 	procedure query_netchangers is
+		use et_schematic_geometry;
 		use et_schematic_coordinates;	
 		use et_submodules;
 		use pac_netchangers;
@@ -1452,7 +1456,7 @@ is
 
 	
 	procedure query_submodules is		
-		use et_schematic_coordinates.pac_geometry_2;
+		use et_schematic_geometry.pac_geometry_2;
 		use et_submodules;
 		use pac_submodules;
 		use et_net_names;
@@ -1475,7 +1479,7 @@ is
 		
 		procedure write (submodule_cursor : in pac_submodules.cursor) is 
 			use et_schematic_coordinates;
-			use et_schematic_coordinates.pac_geometry_2;
+			use et_schematic_geometry.pac_geometry_2;
 			use et_pcb_rw;
 			use et_module_instance;
 		begin
@@ -1516,7 +1520,7 @@ is
 		use et_schematic_text;
 		use pac_text_schematic;
 		use et_schematic_coordinates;
-		use et_schematic_coordinates.pac_geometry_2;
+		use et_schematic_geometry.pac_geometry_2;
 		use et_schematic_text;
 		use pac_texts;
 		

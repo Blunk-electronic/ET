@@ -610,10 +610,12 @@ package body et_kicad_libraries is
 		
 	end to_text_meaning;
 
+
+
 	
 	function to_field_orientation (
 		text : in string) 
-		return et_schematic_coordinates.type_rotation_model 
+		return et_schematic_geometry.type_rotation_model 
 	is
 	-- Converts a kicad field text orientation character (H/V) to type_rotation.
 	begin	
@@ -632,6 +634,7 @@ package body et_kicad_libraries is
 	end to_field_orientation;
 
 	
+	
 	-- Converts a horizontal kicad text alignment to type_text_alignment_horizontal.
 	function to_alignment_horizontal (text : in string) return type_text_alignment_horizontal is
 		a : type_text_alignment_horizontal;
@@ -643,6 +646,7 @@ package body et_kicad_libraries is
 		end case;
 		return a;
 	end to_alignment_horizontal;
+
 
 	
 	-- Converts a vertical kicad text alignment to type_text_alignment_vertical.
@@ -838,12 +842,12 @@ package body et_kicad_libraries is
 	end to_alternative_representation;
 
 	
+	
+	-- Converts a given angle as string to type_rotation.
 	function to_degrees (
 		angle : in string) 
-		return et_schematic_coordinates.type_rotation_model 
-	is
-	-- Converts a given angle as string to type_rotation.
-		
+		return et_schematic_geometry.type_rotation_model 
+	is		
 		a_in  : type_angle; -- unit is tenth of degrees -3599 .. 3599
 
 		-- For the conversion we need an intermediate real type
@@ -860,17 +864,21 @@ package body et_kicad_libraries is
 		a_tmp := type_angle_real (a_in); -- -3599.0 .. 3599.0
 
 		-- convert given angle to et_coordinates.type_rotation.
-		return et_schematic_coordinates.type_rotation_model (a_tmp / 10.0); -- -359.9 .. 359.9
+		return et_schematic_geometry.type_rotation_model (a_tmp / 10.0); -- -359.9 .. 359.9
 		-- CS multiply by -1 ? If yes, remove - before all calls of this function.
 
 		-- CS: exception handler
 	end to_degrees;
 
+
+
+
 	
+	-- If the given component reference is one that belongs 
+	-- to a "power flag" returns YES.
 	function to_power_flag (reference : in type_device_name) 
 		return type_power_flag 
 	is
-	-- If the given component reference is one that belongs to a "power flag" returns YES.
 		use pac_device_prefix;
 	begin
 		--log (text => et_schematic.to_string (reference));
@@ -883,6 +891,9 @@ package body et_kicad_libraries is
 		end if;
 	end to_power_flag;
 
+
+
+	
 	
 	procedure check_generic_name_characters (
 	-- Checks if the given generic component name meets certain conventions.
@@ -1300,7 +1311,7 @@ package body et_kicad_libraries is
 
 			tmp_port_name_visible		: et_port_visibility.type_port_name_visible;
 			tmp_terminal_name_visible	: et_port_visibility.type_terminal_name_visible;
-			tmp_port_name_offset		: et_schematic_coordinates.type_distance_model; -- CS: rename to port_name_offset
+			tmp_port_name_offset		: et_schematic_geometry.type_distance_model; -- CS: rename to port_name_offset
 			tmp_terminal_name			: et_terminals.pac_terminal_name.bounded_string;
 			
 			tmp_units_total		: type_units_total; -- see spec for range -- CS rename to units_total	
@@ -1605,7 +1616,7 @@ package body et_kicad_libraries is
 				--  #7 : line width (23)
 				--  #8 : fill style N/F/f no fill/foreground/background
 
-				use et_schematic_coordinates.pac_geometry_sch;
+				use et_schematic_geometry.pac_geometry_sch;
 
 				scratch_point : type_vector_model;
 			begin
@@ -1655,7 +1666,7 @@ package body et_kicad_libraries is
 				-- #11..12 : start point (x/y)
 				-- #13..14 : end point (x/y)
 
-				use et_schematic_coordinates.pac_geometry_sch;
+				use et_schematic_geometry.pac_geometry_sch;
 
 				scratch_point : type_vector_model;
 				
@@ -1796,7 +1807,8 @@ package body et_kicad_libraries is
 					return et_text.pac_text_content.to_bounded_string (t);
 				end to_content;
 
-				use et_schematic_coordinates.pac_geometry_sch;
+				use et_schematic_geometry.pac_geometry_sch;
+
 				
 			begin -- to_text
 				text.rotation := snap (- to_degrees (f (line,2)));
@@ -1890,6 +1902,7 @@ package body et_kicad_libraries is
 					return d_out;
 				end to_direction;
 
+				
 				function to_style (style : in string) return type_port_style is
 					s_in  : type_library_pin_graphical_style;
 					s_out : type_port_style := type_port_style'first;
@@ -1923,12 +1936,13 @@ package body et_kicad_libraries is
 					-- CS: exception handler
 				end to_style;
 
+				
 				-- Translates orientation up/down/left/right (U/D/L/R) to rotation:
 				function to_rotation (orientation : in string) 
-					return et_schematic_coordinates.type_rotation_relative 
+					return et_schematic_geometry.type_rotation_relative 
 				is
 					orient : constant character := orientation (orientation'first);
-					rot : et_schematic_coordinates.type_rotation_relative := 0.0;
+					rot : et_schematic_geometry.type_rotation_relative := 0.0;
 				begin
 					case orient is
 						when 'D' => rot :=  90.0; -- to be connected with a net from above,
@@ -1943,7 +1957,8 @@ package body et_kicad_libraries is
 				end to_rotation;
 
 				use et_conventions;
-				use et_schematic_coordinates.pac_geometry_sch;
+				use et_schematic_geometry.pac_geometry_sch;
+
 				
 			begin -- to_port
 				log_indentation_up;
@@ -2006,6 +2021,7 @@ package body et_kicad_libraries is
 				-- CS: exception handler
 			end to_port;
 
+			
 					
 			function to_field (
 				line 	: in type_fields_of_line;
@@ -2018,7 +2034,7 @@ package body et_kicad_libraries is
 			-- NOTE: The contextual validation takes place in procedure check_text_fields.
 				use et_text;
 				use et_text.pac_text_content;
-				use et_schematic_coordinates.pac_geometry_sch;
+				use et_schematic_geometry.pac_geometry_sch;
 				
 				-- instantiate a text field as speficied by given parameter meaning
 				text : type_text_placeholder (meaning);
@@ -2093,6 +2109,8 @@ package body et_kicad_libraries is
 
 			end to_field;
 
+
+			
 			
 			procedure check_text_fields (log_threshold : in type_log_level) is
 			-- Tests if all text fields have been found by evaluating the "field found flags".
@@ -2178,6 +2196,7 @@ package body et_kicad_libraries is
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_datasheet.size);
 						end if;
 
+						
 					when APPEARANCE_VIRTUAL =>
 						-- Since this is a virtual component, we do the prefix character check
 						-- against the Kicad specific character set for prefixes. see et_kicad.ads.
@@ -2202,6 +2221,7 @@ package body et_kicad_libraries is
 				log_indentation_down;				
 
 			end check_text_fields;
+
 
 			
 			procedure insert_component (

@@ -49,8 +49,9 @@ with gtk.file_chooser_button;		use gtk.file_chooser_button;
 with gtk.box;						use gtk.box;
 with gtk.combo_box;					use gtk.combo_box;
 
+with et_schematic_geometry;			use et_schematic_geometry;
 with et_schematic_coordinates;		use et_schematic_coordinates;
-use et_schematic_coordinates.pac_geometry_2;
+use et_schematic_geometry.pac_geometry_2;
 
 with et_generic_module;				use et_generic_module;
 with et_symbols;					use et_symbols;

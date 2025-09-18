@@ -38,15 +38,7 @@
 
 with ada.characters;			use ada.characters;
 
-with et_geometry_1;
-with et_geometry_1.et_polygons;
-with et_geometry_1.et_polygons.offsetting;
-
-with et_geometry_2a;
-with et_geometry_2a.grid;
-with et_geometry_2a.path;
-with et_geometry_2a.contours;
-
+with et_schematic_geometry;			use et_schematic_geometry;
 with et_sheets;						use et_sheets;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_string_processing;			use et_string_processing;
@@ -55,111 +47,17 @@ with et_string_processing;			use et_string_processing;
 
 
 package et_schematic_coordinates is
+
+	use pac_geometry_2;
+
 	
 -- 	pragma assertion_policy (check);
 
 
-	
-	-- IMPORTANT: UNIT IS METRIC MILLIMETERS !!
-
-	distance_digits_left  : constant := 5;
-	distance_digits_right : constant := 2; -- 0.01mm
-	
-	distance_smallest : constant := 1.0 / (10 ** distance_digits_right);
-
-	type type_distance_model is delta distance_smallest 
-		digits distance_digits_left + distance_digits_right
-		range - 0.1 * (10 ** distance_digits_left) .. 
-			  + 0.1 * (10 ** distance_digits_left);
-
-
-	
-	-- Angle or rotation is in mathematical sense, means:
-	-- positive rotation -> counter clock wise
-	-- negative rotation -> clock wise
-
-	rotation_digits_left  : constant := 3;
-	rotation_digits_right : constant := 1;
- 
-	rotation_smallest : constant := 1.0 / (10 ** rotation_digits_right);
-	type type_rotation_model is delta rotation_smallest
-		digits rotation_digits_left + rotation_digits_right
-		range -360.0 .. 360.0;
-		-- CS range -360.0 + rotation_smallest .. +360.0 - rotation_smallest ?
- 
- 
-	type type_float_model is digits 12;
-	-- CS reduce digits. adapt accuracy
-	-- when instantiating geometry package. See below.
-
-	
-	-- instantiation of the geometry 1 package:
-	package pac_geometry_sch is new et_geometry_1 (
-		type_float	=> type_float_model,
-
-		-- For assumed greatest numbers of 999.999..
-		-- we have 3 digits left and 9 digits right of comma.
-		-- This leads to an accuracy of:											  
-		accuracy	=> 1.0E-9
-		-- CS: For numbers greater 999.9 this accuracy is useless.
-		);
-	
-	use pac_geometry_sch;
-
-
-	-- instantiation of the geometry 2 package:
-	package pac_geometry_2 is new et_geometry_2a (
-		pac_geometry_1			=> pac_geometry_sch,
-		type_distance			=> type_distance_model,
-		axis_max				=> 1_000.0,
-		axis_min				=>  -100.0,
-		type_rotation			=> type_rotation_model
-		);
-		
-	use pac_geometry_2;
-
-
-	package pac_grid is new pac_geometry_2.grid;
-	package pac_path_and_bend is new pac_geometry_2.path;
-	
-	
-	-- These packages are never used in schematic but are
-	-- required for instantiation of some generic packages:
-	package pac_contours is new pac_geometry_2.contours;
-	package pac_polygons is new pac_geometry_1.et_polygons;
-	package pac_polygon_offsetting is new pac_polygons.offsetting;
-
-
-	-- In headless mode this accuracy should be used
-	-- when locating objects inside a particual zone:
-	accuracy_default : constant type_zone_radius := 2.0; 
-	-- CS: should be a general setting for schematic and symbol editor in the future
-	
-
-	
--- 	rotation_delta : constant := 90;
--- 	rotation_min : constant := -270;
--- 	rotation_max : constant :=  270;
--- 	pragma assertion_policy (check);		
--- 	subtype type_rotation is integer range rotation_min .. rotation_max 
--- 		with dynamic_predicate => type_rotation mod rotation_delta = 0;
-	
-    
-	rotation_relative_min : constant type_rotation_model := -90.0;
-	rotation_relative_max : constant type_rotation_model := 180.0;	
-	
-	subtype type_rotation_relative is type_rotation_model range 
-		rotation_relative_min .. rotation_relative_max;
-
 	-- When handling hierachic structures we use a separator.
 	-- Example: net name "HEATER_CONTROL/DRIVER/CLK"
 	hierarchy_separator : constant string (1..1) := "/";
-
-
 	
-
-
-
 	
 
 -- POSITION OF AN OBJECT:
