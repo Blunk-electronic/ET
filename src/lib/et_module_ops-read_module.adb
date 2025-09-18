@@ -107,6 +107,7 @@ with et_schematic_ops;
 with et_schematic_ops.units;
 with et_schematic_ops.submodules;
 with et_board_ops;
+with et_board_ops.ratsnest;
 
 with et_schematic_text;
 with et_board_text;
@@ -7048,6 +7049,59 @@ is
 	end process_line;
 
 
+
+
+	
+	-- This procdure reads the module file line per line
+	-- and adds the content to the module. Cursor module_cursor
+	-- points to the module:
+	procedure read_module_file is begin
+
+		-- Open the module file and direct the input accordingly:
+		open (
+			file => file_handle,
+			mode => in_file, 
+			name => file_name_expanded);
+		
+		set_input (file_handle);
+		
+		-- Init section stack.
+		stack.init;
+		stack.push (SEC_INIT);
+
+		
+		-- Read the file line by line:
+		while not end_of_file loop
+			line := et_string_processing.read_line (
+				line 			=> get_line,
+				number			=> positive (ada.text_io.line (current_input)),
+				comment_mark 	=> comment_mark,
+				delimiter_wrap	=> true, -- strings are enclosed in quotations
+				ifs 			=> space); -- fields are separated by space
+
+			-- We are interested only in lines that 
+			-- contain something. emtpy lines are skipped:
+			if get_field_count (line) > 0 then
+				process_line;
+			end if;
+		end loop;
+
+		
+		-- As a safety measure the top section must be reached finally:
+		if stack.depth > 1 then 
+			log (WARNING, write_section_stack_not_empty);
+		end if;
+
+		-- Close the module file and set the input back to standard input:
+		set_input (previous_input);
+		close (file_handle);
+
+		-- Compute the ratsnest (airwires):
+		et_board_ops.ratsnest.update_ratsnest (module_cursor, log_threshold + 2);
+	end read_module_file;
+
+
+
 	
 	
 	procedure read_submodule_files is
@@ -7096,6 +7150,8 @@ is
 	end read_submodule_files;
 
 
+
+	
 	
 	-- Tests whether the submodules provides the assembly variants as 
 	-- specified in module file section ASSEMBLY_VARIANTS.
@@ -7190,11 +7246,13 @@ is
 		log_indentation_down;
 	end test_assembly_variants_of_submodules;
 
+
+
 	
 	use ada.directories;
-	use ada.containers;
 	
-begin -- read_module
+	
+begin
 	log (text => "opening module file " & enclose_in_quotes (file_name) & " ...", level => log_threshold);
 	--log (text => "full name " & enclose_in_quotes (file_name_expanded), level => log_threshold + 1);
 	log_indentation_up;
@@ -7224,43 +7282,10 @@ begin -- read_module
 		-- then open the module file file and read it. 
 		-- Otherwise notify operator that module has already been loaded.			 
 		if module_inserted then
+
+			read_module_file;
+	
 			
-			-- open module file
-			open (
-				file => file_handle,
-				mode => in_file, 
-				name => file_name_expanded);
-			
-			set_input (file_handle);
-			
-			-- Init section stack.
-			stack.init;
-			stack.push (SEC_INIT);
-
-			
-			-- read the file line by line
-			while not end_of_file loop
-				line := et_string_processing.read_line (
-					line 			=> get_line,
-					number			=> positive (ada.text_io.line (current_input)),
-					comment_mark 	=> comment_mark,
-					delimiter_wrap	=> true, -- strings are enclosed in quotations
-					ifs 			=> space); -- fields are separated by space
-
-				-- we are interested in lines that contain something. emtpy lines are skipped:
-				if get_field_count (line) > 0 then
-					process_line;
-				end if;
-			end loop;
-
-			-- As a safety measure the top section must be reached finally.
-			if stack.depth > 1 then 
-				log (text => message_warning & write_section_stack_not_empty);
-			end if;
-
-			set_input (previous_input);
-			close (file_handle);
-
 			-- Pointer module_cursor points to the last module that has been read.		
 			-- The names of submodule/template files are stored in module.submods.file.
 			-- But the files itself have not been read. That is what we do next:
@@ -7271,7 +7296,7 @@ begin -- read_module
 			
 		else
 			log (text => "module " & enclose_in_quotes (file_name) &
-					" already loaded -> no need to load anew.", level => log_threshold + 1);
+				" already loaded -> no need to load anew.", level => log_threshold + 1);
 		end if;
 
 
@@ -7281,6 +7306,7 @@ begin -- read_module
 			"ERROR: Module file " & enclose_in_quotes (file_name) & " not found !";
 	end if;
 
+	
 	log_indentation_down;
 	
 	exception when event: others =>
