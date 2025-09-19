@@ -79,81 +79,125 @@ is
 		-- For the moment, no units are added:
 		procedure add_virtual_device is 
 			inserted : boolean;
+			device : type_device_sch (APPEARANCE_VIRTUAL);
 		begin
-			-- CS decompose the following stuff:
-			
+			log (text => "add_virtual_device", level => log_threshold + 2);
+			log_indentation_up;
+
+			-- Compose the virtual device:
+			device := (
+				appearance 	=> APPEARANCE_VIRTUAL,
+				model		=> get_device_model_file (device_cursor_lib),
+				units		=> pac_units.empty_map); -- no units yet
+
+			-- Insert the device in the schematic:
 			pac_devices_sch.insert (
 				container	=> module.devices,
 				inserted	=> inserted,
 				position	=> device_cursor_sch,
 				key			=> next_name,
-				new_item	=> (
-					appearance 	=> APPEARANCE_VIRTUAL,
-					model		=> get_device_model_file (device_cursor_lib),
-					units		=> pac_units.empty_map)); -- no units yet
+				new_item	=> device);
 
 			-- CS test inserted flag ?
+			log_indentation_down;
 		end add_virtual_device;
 
 
+		
 		
 		-- Adds a real device to the devices
 		-- in the drawing. After successful inserting, the cursor
 		-- device_cursor_sch points to the device in the schematic.
 		-- For the moment, no units are added:
 		procedure add_real_device is 
-			inserted : boolean;
+			selected_variant : pac_package_variant_name.bounded_string;
+
+			
+			-- Compose and insert the device in the schematic.
+			-- For the moment the device has no units yet:
+			procedure insert_device is 
+				device : type_device_sch (appearance => APPEARANCE_PCB);
+				inserted : boolean;
+			begin
+				log (text => "insert_device", level => log_threshold + 3);
+				log_indentation_up;
+				
+				device := (
+					appearance 	=> APPEARANCE_PCB,
+					model 		=> get_device_model_file (device_cursor_lib),
+					units		=> pac_units.empty_map, -- no units yet
+					value		=> element (device_cursor_lib).value, -- if predefined in dev. model
+					variant		=> selected_variant,
+
+					-- Initially, the text placeholders are copies of 
+					-- the placeholders as they are defined in the package model.
+					-- Extract them from the device model and the package variant:
+					text_placeholders	=> placeholders_of_package (device_cursor_lib, selected_variant),
+
+					-- Use default position in layout.
+					-- CS: do not place the package on top of others
+					others		=> <> );
+
+				
+				-- Insert the device in the schematic:
+				pac_devices_sch.insert (
+					container	=> module.devices,
+					inserted	=> inserted,
+					position	=> device_cursor_sch,
+					key			=> next_name,
+					new_item	=> device);
+
+				-- CS test the inserted flag ?
+				log_indentation_down;
+			end insert_device;
+		
+			
 		begin
+			log (text => "add_real_device", level => log_threshold + 2);
+			log_indentation_up;
+			
 			-- A real device requires a package variant.
 
 			-- If a package variant was specified, then we must
 			-- make sure that the requested variant exists in the model at all.
-			-- If it exists, then the device is added to the drawing.
+			-- If it exists, then the device is added to the schematic
+			-- with the package variant requested by the caller.
 			-- If the requested package variant does not exist in the model,
 			-- then an error messages is output and nothing else happens.
+			-- If no package variant was given by the caller, then the first
+			-- available variant will be applied:
+			
 			if not is_empty (variant) then
+				-- A variant was given by the caller.
 
 				if is_variant_available (device_cursor_lib, variant) then
-					
-					-- CS decompose the following stuff:
-					pac_devices_sch.insert (
-						container	=> module.devices,
-						inserted	=> inserted,
-						position	=> device_cursor_sch,
-						key			=> next_name,
-						new_item	=> (
-							appearance 	=> APPEARANCE_PCB,
-							model		=> get_device_model_file (device_cursor_lib),
-							units		=> pac_units.empty_map, -- no units yet
-							value		=> element (device_cursor_lib).value, -- if predefined in dev. model
-							variant		=> variant,
+					-- The variant exists.
 
-							-- Initially, the text placeholders are copies of 
-							-- the placeholders as they are defined in the 
-							-- package model.
-							-- Extract them from the device model and the variant:
-							text_placeholders	=> placeholders_of_package (device_cursor_lib, variant),
-
-							-- Use default position in layout.
-							-- CS: do not place the package on top of others
-							others		=> <> ));
-
-					-- CS test the inserted flag ?
-					
-					
-				else -- variant not available
+					selected_variant := variant;
+					insert_device;
+										
+				else -- The variant does not exist.
 					log (ERROR, "Package variant " & to_string (variant)
-						 & " not available in the specified device model !");
+						 & " does not exist in the specified device model !");
 				end if;
+
 				
-			else -- no variant specified
-				log (ERROR, "device requires specification of package variant !");
-				raise constraint_error;
-				-- CS use first available variant instead ?
+			else 
+				-- No package variant was specified by the caller.
+				-- Select the first available variant:
+				selected_variant := get_first_package_variant (device_cursor_lib);
+				
+				log (WARNING, "No variant specified !"
+					 & " Default to first available variant " & to_string (selected_variant));
+				
+				insert_device;
 			end if;
+
+			log_indentation_down;
 		end add_real_device;
 
 
+		
 		
 		-- Adds a bare device (without any units deployed)
 		-- to the module:
@@ -173,6 +217,7 @@ is
 		end add_bare_device;
 		
 
+		
 
 		use pac_units_internal;
 		use pac_units_external;
