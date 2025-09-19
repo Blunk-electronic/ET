@@ -505,6 +505,18 @@ package body et_device_library is
 	end;
 
 
+
+
+
+	function get_default_value (
+		device_cursor : in pac_devices_lib.cursor)
+		return pac_device_value.bounded_string
+	is
+		device_model : type_device_model renames element (device_cursor);
+	begin
+		return get_default_value (device_model);
+	end;
+
 	
 
 

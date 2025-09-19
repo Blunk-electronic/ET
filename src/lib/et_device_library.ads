@@ -232,8 +232,7 @@ package et_device_library is
 	function get_available_variants (
 		device_cursor	: in pac_devices_lib.cursor)
 		return pac_package_variants.map;
-
-
+	
 
 	-- Returns the name of the first package variant
 	-- of the given device model.
@@ -242,6 +241,16 @@ package et_device_library is
 	function get_first_package_variant (
 		device_cursor : in pac_devices_lib.cursor)
 		return pac_package_variant_name.bounded_string;
+
+
+	-- Returns the default value as it is 
+	-- specified in the device model.
+	-- The model must be a model of a real device. Otherwise
+	-- an exception will be raised:
+	function get_default_value (
+		device_cursor : in pac_devices_lib.cursor)
+		return pac_device_value.bounded_string;
+
 
 	
 

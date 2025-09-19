@@ -241,6 +241,16 @@ package et_device_model is
 		device_model : in type_device_model)
 		return pac_package_variant_name.bounded_string;
 
+
+	-- Returns the default value as it is 
+	-- specified in the device model.
+	-- The model must be a model of a real device. Otherwise
+	-- an exception will be raised:
+	function get_default_value (
+		device_model : in type_device_model)
+		return pac_device_value.bounded_string;
+
+								   
 	
 end et_device_model;
 
