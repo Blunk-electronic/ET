@@ -38,7 +38,7 @@
 
 with ada.text_io;				use ada.text_io;
 
-with glib;
+with glib;						use glib;
 
 with gdk.event;					use gdk.event;
 with gdk.types;					use gdk.types;
@@ -527,6 +527,9 @@ package et_canvas is
 
 	-- inside box_v0:
 	box_v4 		: gtk_hbox;		-- for properties of objects
+
+	-- The spacing between the boxes inside the properties box:
+	box_properties_spacing : constant guint := 5;
 	
 	
 	-- This procedure creates the main window and

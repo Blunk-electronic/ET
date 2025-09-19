@@ -447,9 +447,6 @@ package body et_canvas_board_vias is
 		restring_size_length_max : constant gint := 5;
 		--CS: adjust if necessary. see parameters of type_restring_width.
 		
-		-- The spacing between the boxes:
-		spacing : constant natural := 5;
-
 
 		
 		-- NET NAME
@@ -462,10 +459,10 @@ package body et_canvas_board_vias is
 			render	: gtk_cell_renderer_text;			
 		begin			
 			gtk_new_vbox (box_net_name, homogeneous => false);
-			pack_start (box_v4, box_net_name, padding => guint (spacing));
+			pack_start (box_v4, box_net_name, padding => box_properties_spacing);
 
 			gtk_new (label_net_name, "NET");
-			pack_start (box_net_name, label_net_name, padding => guint (spacing));
+			pack_start (box_net_name, label_net_name, padding => box_properties_spacing);
 
 			
 			-- Create the storage model:
@@ -489,7 +486,7 @@ package body et_canvas_board_vias is
 				get_net_index (active_module, object_net_name, log_threshold + 1)));
 			
 
-			pack_start (box_net_name, cbox_net_name, padding => guint (spacing));
+			pack_start (box_net_name, cbox_net_name, padding => box_properties_spacing);
 			cbox_net_name.on_changed (net_name_changed'access);
 
 			-- The purpose of this stuff is unclear, but it
@@ -514,10 +511,10 @@ package body et_canvas_board_vias is
 			render : gtk_cell_renderer_text;
 		begin
 			gtk_new_vbox (box_category, homogeneous => false);
-			pack_start (box_v4, box_category, padding => guint (spacing));
+			pack_start (box_v4, box_category, padding => box_properties_spacing);
 
 			gtk_new (label_category, "VIA CAT");
-			pack_start (box_category, label_category, padding => guint (spacing));
+			pack_start (box_category, label_category, padding => box_properties_spacing);
 
 			
 			-- Create the storage model:
@@ -539,7 +536,7 @@ package body et_canvas_board_vias is
 			cbox_category.set_active (type_via_category'pos (preliminary_via.category));
 
 
-			pack_start (box_category, cbox_category, padding => guint (spacing));
+			pack_start (box_category, cbox_category, padding => box_properties_spacing);
 			cbox_category.on_changed (category_changed'access);
 
 			-- The purpose of this stuff is unclear, but it
@@ -567,10 +564,10 @@ package body et_canvas_board_vias is
 			use et_board_ops;
 		begin
 			gtk_new_vbox (box_destination_blind, homogeneous => false);
-			pack_start (box_v4, box_destination_blind, padding => guint (spacing));
+			pack_start (box_v4, box_destination_blind, padding => box_properties_spacing);
 			
 			gtk_new (label_destination_blind, "BL DST");
-			pack_start (box_destination_blind, label_destination_blind, padding => guint (spacing));
+			pack_start (box_destination_blind, label_destination_blind, padding => box_properties_spacing);
 
 			
 			-- Create the storage model:
@@ -601,7 +598,7 @@ package body et_canvas_board_vias is
 			-- NOTE: The entries are numbered from 0 .. N.
 
 
-			pack_start (box_destination_blind, cbox_destination_blind, padding => guint (spacing));
+			pack_start (box_destination_blind, cbox_destination_blind, padding => box_properties_spacing);
 			cbox_destination_blind.on_changed (destination_changed'access);
 
 			-- The purpose of this stuff is unclear, but it
@@ -630,10 +627,10 @@ package body et_canvas_board_vias is
 			use et_board_ops;
 		begin
 			gtk_new_vbox (box_buried_upper, homogeneous => false);
-			pack_start (box_v4, box_buried_upper, padding => guint (spacing));
+			pack_start (box_v4, box_buried_upper, padding => box_properties_spacing);
 			
 			gtk_new (label_buried_upper, "BUR UPPER");
-			pack_start (box_buried_upper, label_buried_upper, padding => guint (spacing));
+			pack_start (box_buried_upper, label_buried_upper, padding => box_properties_spacing);
 
 			
 			-- Create the storage model:
@@ -664,7 +661,7 @@ package body et_canvas_board_vias is
 			-- NOTE: The entries are numbered from 0 .. N.
 
 
-			pack_start (box_buried_upper, cbox_buried_upper, padding => guint (spacing));
+			pack_start (box_buried_upper, cbox_buried_upper, padding => box_properties_spacing);
 			cbox_buried_upper.on_changed (upper_layer_changed'access);
 
 			-- The purpose of this stuff is unclear, but it
@@ -692,10 +689,10 @@ package body et_canvas_board_vias is
 			use et_board_ops;
 		begin
 			gtk_new_vbox (box_buried_lower, homogeneous => false);
-			pack_start (box_v4, box_buried_lower, padding => guint (spacing));
+			pack_start (box_v4, box_buried_lower, padding => box_properties_spacing);
 			
 			gtk_new (label_buried_lower, "BUR LOWER");
-			pack_start (box_buried_lower, label_buried_lower, padding => guint (spacing));
+			pack_start (box_buried_lower, label_buried_lower, padding => box_properties_spacing);
 
 			
 			-- Create the storage model:
@@ -727,7 +724,7 @@ package body et_canvas_board_vias is
 			-- NOTE: The entries are numbered from 0 .. N.
 
 
-			pack_start (box_buried_lower, cbox_buried_lower, padding => guint (spacing));
+			pack_start (box_buried_lower, cbox_buried_lower, padding => box_properties_spacing);
 			cbox_buried_lower.on_changed (lower_layer_changed'access);
 
 			-- The purpose of this stuff is unclear, but it
@@ -742,13 +739,13 @@ package body et_canvas_board_vias is
 		
 		procedure make_combo_drill is begin
 			gtk_new_vbox (box_drill, homogeneous => false);
-			pack_start (box_v4, box_drill, padding => guint (spacing));
+			pack_start (box_v4, box_drill, padding => box_properties_spacing);
 			
 			gtk_new (label_drill, "DRL SIZE");
-			pack_start (box_drill, label_drill, padding => guint (spacing));
+			pack_start (box_drill, label_drill, padding => box_properties_spacing);
 
 			gtk_new_with_entry (cbox_drill);
-			pack_start (box_drill, cbox_drill, padding => guint (spacing));
+			pack_start (box_drill, cbox_drill, padding => box_properties_spacing);
 			gtk_entry (cbox_drill.get_child).set_max_length (drill_size_length_max);
 			gtk_entry (cbox_drill.get_child).set_width_chars (drill_size_length_min);
 
@@ -764,13 +761,13 @@ package body et_canvas_board_vias is
 		
 		procedure make_combo_restring_inner is begin
 			gtk_new_vbox (box_restring_inner, homogeneous => false);
-			pack_start (box_v4, box_restring_inner, padding => guint (spacing));
+			pack_start (box_v4, box_restring_inner, padding => box_properties_spacing);
 			
 			gtk_new (label_restring_inner, "RESTR IN");
-			pack_start (box_restring_inner, label_restring_inner, padding => guint (spacing));
+			pack_start (box_restring_inner, label_restring_inner, padding => box_properties_spacing);
 
 			gtk_new_with_entry (cbox_restring_inner);
-			pack_start (box_restring_inner, cbox_restring_inner, padding => guint (spacing));
+			pack_start (box_restring_inner, cbox_restring_inner, padding => box_properties_spacing);
 			gtk_entry (cbox_restring_inner.get_child).set_max_length (restring_size_length_max);
 			gtk_entry (cbox_restring_inner.get_child).set_width_chars (restring_size_length_min);
 
@@ -785,13 +782,13 @@ package body et_canvas_board_vias is
 		
 		procedure make_combo_restring_outer is begin
 			gtk_new_vbox (box_restring_outer, homogeneous => false);
-			pack_start (box_v4, box_restring_outer, padding => guint (spacing));
+			pack_start (box_v4, box_restring_outer, padding => box_properties_spacing);
 			
 			gtk_new (label_restring_outer, "RESTR OUT");
-			pack_start (box_restring_outer, label_restring_outer, padding => guint (spacing));
+			pack_start (box_restring_outer, label_restring_outer, padding => box_properties_spacing);
 
 			gtk_new_with_entry (cbox_restring_outer);
-			pack_start (box_restring_outer, cbox_restring_outer, padding => guint (spacing));
+			pack_start (box_restring_outer, cbox_restring_outer, padding => box_properties_spacing);
 			gtk_entry (cbox_restring_outer.get_child).set_max_length (restring_size_length_max);
 			gtk_entry (cbox_restring_outer.get_child).set_width_chars (restring_size_length_min);
 

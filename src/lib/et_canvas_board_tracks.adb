@@ -293,10 +293,6 @@ package body et_canvas_board_tracks is
 		rotation_length_max : constant gint := 5;
 		-- CS: adjust if necessary. see et_board_coordinates type_rotation.
 		
-		-- The spacing between the boxes:
-		spacing : constant natural := 5;
-			
-
 	
 
 		procedure make_combo_for_net_name is
@@ -308,10 +304,10 @@ package body et_canvas_board_tracks is
 
 		begin
 			gtk_new_vbox (box_net_name, homogeneous => false);
-			pack_start (box_v4, box_net_name, padding => guint (spacing));
+			pack_start (box_v4, box_net_name, padding => box_properties_spacing);
 			
 			gtk_new (label_net_name, "NET NAME");
-			pack_start (box_net_name, label_net_name, padding => guint (spacing));
+			pack_start (box_net_name, label_net_name, padding => box_properties_spacing);
 			
 			-- Create the storage for the net names:
 			make_store_for_net_names (store);
@@ -334,7 +330,7 @@ package body et_canvas_board_tracks is
 				get_net_index (active_module, object_net_name, log_threshold + 1)));
 
 									  
-			pack_start (box_net_name, cbox_net_name, padding => guint (spacing));
+			pack_start (box_net_name, cbox_net_name, padding => box_properties_spacing);
 			cbox_net_name.on_changed (net_name_changed'access);
 
 			-- The purpose of this stuff is unclear, but it
@@ -362,10 +358,10 @@ package body et_canvas_board_tracks is
 			use et_board_ops;
 		begin
 			gtk_new_vbox (box_signal_layer, homogeneous => false);
-			pack_start (box_v4, box_signal_layer, padding => guint (spacing));
+			pack_start (box_v4, box_signal_layer, padding => box_properties_spacing);
 			
 			gtk_new (label_signal_layer, "SIGNAL LAYER");
-			pack_start (box_signal_layer, label_signal_layer, padding => guint (spacing));
+			pack_start (box_signal_layer, label_signal_layer, padding => box_properties_spacing);
 
 			
 			-- Create the storage model:
@@ -394,7 +390,7 @@ package body et_canvas_board_tracks is
 			-- NOTE: The entries are numbered from 0 .. N.
 
 
-			pack_start (box_signal_layer, cbox_signal_layer, padding => guint (spacing));
+			pack_start (box_signal_layer, cbox_signal_layer, padding => box_properties_spacing);
 			cbox_signal_layer.on_changed (signal_layer_changed'access);
 
 			-- The purpose of this stuff is unclear, but it
@@ -409,13 +405,13 @@ package body et_canvas_board_tracks is
 		
 		procedure make_combo_for_line_width is begin
 			gtk_new_vbox (box_line_width, homogeneous => false);
-			pack_start (box_v4, box_line_width, padding => guint (spacing));
+			pack_start (box_v4, box_line_width, padding => box_properties_spacing);
 
 			gtk_new (label_line_width, "TRACK WIDTH");
-			pack_start (box_line_width, label_line_width, padding => guint (spacing));
+			pack_start (box_line_width, label_line_width, padding => box_properties_spacing);
 
 			gtk_new_with_entry (cbox_line_width);
-			pack_start (box_line_width, cbox_line_width, padding => guint (spacing));
+			pack_start (box_line_width, cbox_line_width, padding => box_properties_spacing);
 			gtk_entry (cbox_line_width.get_child).set_max_length (line_width_length_max);
 			gtk_entry (cbox_line_width.get_child).set_width_chars (line_width_length_min);
 

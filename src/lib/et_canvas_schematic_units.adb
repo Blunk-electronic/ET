@@ -1153,9 +1153,6 @@ package body et_canvas_schematic_units is
 			use gtk.label;			
 			use gtk.cell_renderer_text;
 
-			use glib;
-			spacing : constant natural := 10;
-			
 			label_variant : gtk_label;
 			store : gtk_list_store;			
 			render	: gtk_cell_renderer_text;
@@ -1176,11 +1173,11 @@ package body et_canvas_schematic_units is
 
 			-- Create the box_variant and insert it in the properties box:
 			gtk_new_vbox (box_package_variant, homogeneous => false);
-			pack_start (box_v4, box_package_variant, padding => guint (spacing));
+			pack_start (box_v4, box_package_variant, padding => box_properties_spacing);
 
 			-- Create a label for the box and insert it in box_variant:
 			gtk_new (label_variant, "variant");
-			pack_start (box_package_variant, label_variant, padding => guint (spacing));
+			pack_start (box_package_variant, label_variant, padding => box_properties_spacing);
 
 			-- Create the storage model for the content of the combo box:
 			make_store_for_variants (store);
@@ -1191,7 +1188,7 @@ package body et_canvas_schematic_units is
 				model		=> +store); -- ?
 
 			-- Insert the combo box in box_variant:
-			pack_start (box_package_variant, cbox_package_variant, padding => guint (spacing));
+			pack_start (box_package_variant, cbox_package_variant, padding => box_properties_spacing);
 
 			-- Connect the "on_changed" signal with procedure
 			-- cb_package_variant_selected:
@@ -1314,8 +1311,6 @@ package body et_canvas_schematic_units is
 		use gtk.label;
 		use gtk.file_chooser;
 		
-		use glib;
-		spacing : constant guint := 10;
 
 		-- The button for the directory:		
 		button_model_directory : gtk_file_chooser_button;
@@ -1332,11 +1327,11 @@ package body et_canvas_schematic_units is
 		begin
 			-- Make a box and insert it in the properties box:
 			gtk_new_vbox (box_directory, homogeneous => false);
-			pack_start (box_v4, box_directory, padding => guint (spacing));
+			pack_start (box_v4, box_directory, padding => box_properties_spacing);
 
 			-- Makre a label for the box and insert it in the box_directory:
 			gtk_new (label_directory, "Model Directory");
-			pack_start (box_directory, label_directory, padding => guint (spacing));
+			pack_start (box_directory, label_directory, padding => box_properties_spacing);
 
 			-- Create a button by which the operator can select a directory:
 			gtk_new (
@@ -1352,7 +1347,7 @@ package body et_canvas_schematic_units is
 			end if;
 
 			-- Insert the button_model_directory in the box_directory:
-			pack_start (box_directory, button_model_directory, padding => guint (spacing));
+			pack_start (box_directory, button_model_directory, padding => box_properties_spacing);
 
 			-- Connect the "on_file_set" signal with procedure
 			-- cb_model_directory_selected:
@@ -1375,11 +1370,11 @@ package body et_canvas_schematic_units is
 		begin
 			-- Make a box and insert it in the properties box:
 			gtk_new_vbox (box_model, homogeneous => false);
-			pack_start (box_v4, box_model, padding => guint (spacing));
+			pack_start (box_v4, box_model, padding => box_properties_spacing);
 
 			-- Make a label for the box and insert it in the box_model:
 			gtk_new (label_model, "Model File");
-			pack_start (box_model, label_model, padding => guint (spacing));
+			pack_start (box_model, label_model, padding => box_properties_spacing);
 
 			-- Create a file filter so that only *.dev files are shown
 			-- to the operator:
@@ -1401,7 +1396,7 @@ package body et_canvas_schematic_units is
 			end if;
 
 			-- Insert the button_model_file in the box_model:
-			pack_start (box_model, button_model_file, padding => guint (spacing));
+			pack_start (box_model, button_model_file, padding => box_properties_spacing);
 
 			-- Connect the "on_file_set" signal with procedure cb_device_model_selected:
 			button_model_file.on_file_set (cb_device_model_selected'access);

@@ -461,9 +461,6 @@ package body et_canvas_board_texts is
 		rotation_length_max : constant gint := 5;
 		-- CS: adjust if necessary. see et_pcb_coordinates type_rotation_model.
 		
-		-- The spacing between the boxes:
-		spacing : constant natural := 5;
-
 
 		
 		procedure make_combo_category is
@@ -515,10 +512,10 @@ package body et_canvas_board_texts is
 			
 		begin
 			gtk_new_vbox (box_layer_category, homogeneous => false);
-			pack_start (box_v4, box_layer_category, padding => guint (spacing));
+			pack_start (box_v4, box_layer_category, padding => box_properties_spacing);
 
 			gtk_new (label_layer_category, "LAYER CAT");
-			pack_start (box_layer_category, label_layer_category, padding => guint (spacing));
+			pack_start (box_layer_category, label_layer_category, padding => box_properties_spacing);
 
 			
 			-- Create the storage model:
@@ -534,7 +531,7 @@ package body et_canvas_board_texts is
 
 			set_category_used_last;
 
-			pack_start (box_layer_category, cbox_category, padding => guint (spacing));
+			pack_start (box_layer_category, cbox_category, padding => box_properties_spacing);
 			cbox_category.on_changed (layer_category_changed'access);
 
 			-- The purpose of this stuff is unclear, but it
@@ -560,10 +557,10 @@ package body et_canvas_board_texts is
 			render : gtk_cell_renderer_text;
 		begin
 			gtk_new_vbox (box_face, homogeneous => false);
-			pack_start (box_v4, box_face, padding => guint (spacing));
+			pack_start (box_v4, box_face, padding => box_properties_spacing);
 			
 			gtk_new (label_face, "FACE");
-			pack_start (box_face, label_face, padding => guint (spacing));
+			pack_start (box_face, label_face, padding => box_properties_spacing);
 
 			
 			-- Create the storage model:
@@ -585,7 +582,7 @@ package body et_canvas_board_texts is
 			cbox_face.set_active (type_face'pos (object_face));
 
 
-			pack_start (box_face, cbox_face, padding => guint (spacing));
+			pack_start (box_face, cbox_face, padding => box_properties_spacing);
 			cbox_face.on_changed (face_changed'access);
 
 			-- The purpose of this stuff is unclear, but it
@@ -612,10 +609,10 @@ package body et_canvas_board_texts is
 			render : gtk_cell_renderer_text;
 		begin
 			gtk_new_vbox (box_signal_layer, homogeneous => false);
-			pack_start (box_v4, box_signal_layer, padding => guint (spacing));
+			pack_start (box_v4, box_signal_layer, padding => box_properties_spacing);
 			
 			gtk_new (label_signal_layer, "SIGNAL LAYER");
-			pack_start (box_signal_layer, label_signal_layer, padding => guint (spacing));
+			pack_start (box_signal_layer, label_signal_layer, padding => box_properties_spacing);
 
 			
 			-- Create the storage model:
@@ -644,7 +641,7 @@ package body et_canvas_board_texts is
 			-- NOTE: The entries are numbered from 0 .. N.
 
 
-			pack_start (box_signal_layer, cbox_signal_layer, padding => guint (spacing));
+			pack_start (box_signal_layer, cbox_signal_layer, padding => box_properties_spacing);
 			cbox_signal_layer.on_changed (signal_layer_changed'access);
 
 			-- The purpose of this stuff is unclear, but it
@@ -659,13 +656,13 @@ package body et_canvas_board_texts is
 		
 		procedure make_combo_for_size is begin
 			gtk_new_vbox (box_size, homogeneous => false);
-			pack_start (box_v4, box_size, padding => guint (spacing));
+			pack_start (box_v4, box_size, padding => box_properties_spacing);
 			
 			gtk_new (label_size, "SIZE");
-			pack_start (box_size, label_size, padding => guint (spacing));
+			pack_start (box_size, label_size, padding => box_properties_spacing);
 
 			gtk_new_with_entry (cbox_size);
-			pack_start (box_size, cbox_size, padding => guint (spacing));
+			pack_start (box_size, cbox_size, padding => box_properties_spacing);
 			gtk_entry (cbox_size.get_child).set_max_length (text_size_length_max);
 			gtk_entry (cbox_size.get_child).set_width_chars (text_size_length_min);
 
@@ -681,13 +678,13 @@ package body et_canvas_board_texts is
 		
 		procedure make_combo_for_line_width is begin
 			gtk_new_vbox (box_line_width, homogeneous => false);
-			pack_start (box_v4, box_line_width, padding => guint (spacing));
+			pack_start (box_v4, box_line_width, padding => box_properties_spacing);
 
 			gtk_new (label_line_width, "LINE WIDTH");
-			pack_start (box_line_width, label_line_width, padding => guint (spacing));
+			pack_start (box_line_width, label_line_width, padding => box_properties_spacing);
 
 			gtk_new_with_entry (cbox_line_width);
-			pack_start (box_line_width, cbox_line_width, padding => guint (spacing));
+			pack_start (box_line_width, cbox_line_width, padding => box_properties_spacing);
 			gtk_entry (cbox_line_width.get_child).set_max_length (line_width_length_max);
 			gtk_entry (cbox_line_width.get_child).set_width_chars (line_width_length_min);
 
@@ -703,13 +700,13 @@ package body et_canvas_board_texts is
 		
 		procedure make_combo_for_rotation is begin
 			gtk_new_vbox (box_rotation, homogeneous => false);
-			pack_start (box_v4, box_rotation, padding => guint (spacing));
+			pack_start (box_v4, box_rotation, padding => box_properties_spacing);
 
 			gtk_new (label_rotation, "ROTATION");
-			pack_start (box_rotation, label_rotation, padding => guint (spacing));
+			pack_start (box_rotation, label_rotation, padding => box_properties_spacing);
 
 			gtk_new_with_entry (cbox_rotation);
-			pack_start (box_rotation, cbox_rotation, padding => guint (spacing));
+			pack_start (box_rotation, cbox_rotation, padding => box_properties_spacing);
 			gtk_entry (cbox_rotation.get_child).set_max_length (rotation_length_max);
 			gtk_entry (cbox_rotation.get_child).set_width_chars (rotation_length_min);
 
@@ -725,24 +722,24 @@ package body et_canvas_board_texts is
 		
 		procedure make_view_for_content is begin
 			gtk_new_vbox (box_content, homogeneous => false);
-			pack_start (box_v4, box_content, padding => guint (spacing));
+			pack_start (box_v4, box_content, padding => box_properties_spacing);
 
 			gtk_new (label_content, "CONTENT");
-			pack_start (box_content, label_content, padding => guint (spacing));
+			pack_start (box_content, label_content, padding => box_properties_spacing);
 
 			gtk_new (preliminary_text.entry_content);
 			preliminary_text.entry_content.set_accepts_tab (false); -- TAB character not allowed
-			pack_start (box_content, preliminary_text.entry_content, padding => guint (spacing));
+			pack_start (box_content, preliminary_text.entry_content, padding => box_properties_spacing);
 		end make_view_for_content;
 
 
 		
 		procedure make_apply_button is begin
 			gtk_new_vbox (box_button, homogeneous => false);
-			pack_start (box_v4, box_button, padding => guint (spacing));
+			pack_start (box_v4, box_button, padding => box_properties_spacing);
 
 			gtk_new (button_apply, "Apply");
-			pack_start (box_button, button_apply, padding => guint (spacing));
+			pack_start (box_button, button_apply, padding => box_properties_spacing);
 			button_apply.on_clicked (button_apply_clicked'access);
 		end make_apply_button;
 
