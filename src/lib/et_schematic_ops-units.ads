@@ -120,7 +120,7 @@ package et_schematic_ops.units is
 	function get_available_variants (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return pac_variants.map;
+		return pac_package_variants.map;
 
 	
 	-- Returns the name of the package variant name of the device.

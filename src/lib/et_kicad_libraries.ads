@@ -373,7 +373,7 @@ package et_kicad_libraries is
 			when APPEARANCE_PCB => 
 				package_filter	: type_package_filter.set := type_package_filter.empty_set;
 				datasheet		: type_component_datasheet.bounded_string;
-				variants		: pac_variants.map;
+				variants		: pac_package_variants.map;
 				
 		end case;
 	end record;

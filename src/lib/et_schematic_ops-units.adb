@@ -396,7 +396,7 @@ package body et_schematic_ops.units is
 	function get_available_variants (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return pac_variants.map
+		return pac_package_variants.map
 	is
 		cursor_lib : pac_devices_lib.cursor;	
 	begin
@@ -2298,12 +2298,12 @@ package body et_schematic_ops.units is
 				model	: in pac_device_model_file.bounded_string;
 				device	: in type_device_model) 
 			is
-				variant_cursor : pac_variants.cursor;
+				variant_cursor : pac_package_variants.cursor;
 
 				
 				procedure query_ports (
 					variant_name	: in pac_package_variant_name.bounded_string;
-					variant			: in type_variant) 
+					variant			: in type_package_variant) 
 				is
 					use pac_terminal_port_map;
 					terminal_cursor : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
@@ -2323,9 +2323,9 @@ package body et_schematic_ops.units is
 
 				
 			begin -- query_variants
-				variant_cursor := pac_variants.find (device.variants, variant);
+				variant_cursor := pac_package_variants.find (device.variants, variant);
 
-				pac_variants.query_element (
+				pac_package_variants.query_element (
 					position	=> variant_cursor,
 					process		=> query_ports'access);
 				

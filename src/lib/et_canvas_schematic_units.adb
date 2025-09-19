@@ -1098,8 +1098,8 @@ package body et_canvas_schematic_units is
 
 		-- If package variants are available, then
 		-- they are stored here temporaily:
-		use pac_variants;
-		variants : pac_variants.map;
+		use pac_package_variants;
+		variants : pac_package_variants.map;
 
 
 		-- This procedure iterates through the list of
@@ -1123,7 +1123,7 @@ package body et_canvas_schematic_units is
 			index : natural := 0;
 
 			-- Enters the name and index in the storage model:
-			procedure query_variant (c : in pac_variants.cursor) is 
+			procedure query_variant (c : in pac_package_variants.cursor) is 
 				use pac_package_variant_name;
 			begin
 				store.append (iter);
@@ -1280,7 +1280,7 @@ package body et_canvas_schematic_units is
 				make_combo_box_package_variant;
 			else
 				remove_box_package_variant;
-				unit_add.variant := get_first_variant (variants);
+				unit_add.variant := get_first_package_variant (variants);
 			end if;
 
 		else

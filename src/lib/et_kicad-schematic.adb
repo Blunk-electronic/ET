@@ -1025,14 +1025,14 @@ package body et_kicad.schematic is
 				component 		: in out type_component_library) 
 			is
 				use pac_package_name;
-				use pac_variants;
+				use pac_package_variants;
 				use pac_package_model_file_name;
 
 				-- This cursor points to the package variant being queryied.
-				variant_cursor : pac_variants.cursor := component.variants.first;
+				variant_cursor : pac_package_variants.cursor := component.variants.first;
 
 				-- If a new package variant is to be built, it is temporarily stored here:
-				new_variant : type_variant;
+				new_variant : type_package_variant;
 			
 			begin -- query_variants
 				log (text => "querying package variants ...", level => log_threshold + 2);
@@ -1043,7 +1043,7 @@ package body et_kicad.schematic is
 				-- If no suitable variant in component.variants can be located, then
 				-- a new variant must be built. This will be the case when the user has
 				-- assigned a different package to the component from inside the schematic editor.
-				while variant_cursor /= pac_variants.no_element loop
+				while variant_cursor /= pac_package_variants.no_element loop
 
 					log (text => "probing " 
 						 & enclose_in_quotes (to_string (key (variant_cursor)))
@@ -1071,7 +1071,7 @@ package body et_kicad.schematic is
 
 				
 				-- If no suitable package variant has been found, a new one must be created.
-				if variant_cursor = pac_variants.no_element then
+				if variant_cursor = pac_package_variants.no_element then
 					
 					-- Package variant not defined in library. Package assigned inside the schematic editor.
 					-- Make sure the terminal_port_map (there is only one) can be applied 
@@ -1101,12 +1101,12 @@ package body et_kicad.schematic is
 							);
 
 						-- insert the new package variant in the component (in library)
-						pac_variants.insert (
+						pac_package_variants.insert (
 							container	=> component.variants,
 							key			=> to_variant_name (to_string (packge => package_name)),
 							new_item	=> new_variant);
 
-						--log (text => count_type'image (pac_variants.length (component.variants)));
+						--log (text => count_type'image (pac_package_variants.length (component.variants)));
 						
 						-- Set the variant name to be returned:
 						variant := to_variant_name (to_string (packge => package_name));
@@ -7135,11 +7135,11 @@ package body et_kicad.schematic is
 					name 		: in type_component_generic_name.bounded_string;
 					component 	: in type_component_library) 
 				is
-					use pac_variants;
+					use pac_package_variants;
 					use pac_package_variant_name;
 					use et_import;
 
-					variant_cursor : pac_variants.cursor;
+					variant_cursor : pac_package_variants.cursor;
 				begin
 					log (text => "locating variant " & to_string (package_variant)
 						& " ...", level => log_threshold + 3);
@@ -7299,15 +7299,15 @@ package body et_kicad.schematic is
 					name 		: in type_component_generic_name.bounded_string;
 					component 	: in type_component_library) 
 				is
-					use pac_variants;
-					variant_cursor : pac_variants.cursor;
+					use pac_package_variants;
+					variant_cursor : pac_package_variants.cursor;
 
 					use pac_package_variant_name;
 
 					
 					procedure locate_terminal (
 						variant_name 	: in pac_package_variant_name.bounded_string;
-						variant 		: in type_variant) 
+						variant 		: in type_package_variant) 
 					is
 						use pac_terminal_port_map;
 						use pac_port_name;
@@ -7342,7 +7342,7 @@ package body et_kicad.schematic is
 					-- CS Otherwise an exception would occur here:
 					variant_cursor := component.variants.find (package_variant);
 
-					pac_variants.query_element (
+					pac_package_variants.query_element (
 						position	=> variant_cursor,
 						process		=> locate_terminal'access);
 
@@ -7479,14 +7479,14 @@ package body et_kicad.schematic is
 					name 		: in type_component_generic_name.bounded_string;
 					component 	: in type_component_library) 
 				is				
-					use pac_variants;
-					variant_cursor : pac_variants.cursor;
+					use pac_package_variants;
+					variant_cursor : pac_package_variants.cursor;
 
 					
 					-- Locates the given terminal in the package variant.
 					procedure locate_terminal (
 						variant_name 	: in pac_package_variant_name.bounded_string;
-						variant 		: in type_variant) 
+						variant 		: in type_package_variant) 
 					is
 						use pac_terminal_port_map;
 						terminal_cursor : pac_terminal_port_map.cursor;
@@ -7519,7 +7519,7 @@ package body et_kicad.schematic is
 
 					-- Locate the given terminal in the variant.
 					-- The variant should be found (because the component has been inserted in the library earlier).
-					if variant_cursor /= pac_variants.no_element then
+					if variant_cursor /= pac_package_variants.no_element then
 
 						-- locate the given terminal in the package variant
 						query_element (

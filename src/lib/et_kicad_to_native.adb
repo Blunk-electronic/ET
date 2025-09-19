@@ -3755,14 +3755,14 @@ package body et_kicad_to_native is
 				is
 					use et_package_variant;
 					use pac_package_variant_name;
-					use pac_variants;
+					use pac_package_variants;
 					
-					variant_cursor : pac_variants.cursor := device.variants.first;
+					variant_cursor : pac_package_variants.cursor := device.variants.first;
 
 					
 					procedure rename (
 						variant_name	: in pac_package_variant_name.bounded_string; -- N, D, ...
-						variant			: in out type_variant)
+						variant			: in out type_package_variant)
 					is begin
 						variant.package_model := (rename_package_model (variant.package_model)); -- ../../lbr/transistors.pretty/S_0805
 
@@ -3774,9 +3774,9 @@ package body et_kicad_to_native is
 					
 				begin
 					-- Loop in variants and rename the package names.
-					while variant_cursor /= pac_variants.no_element loop
+					while variant_cursor /= pac_package_variants.no_element loop
 
-						pac_variants.update_element (
+						pac_package_variants.update_element (
 							container	=> device.variants,
 							position	=> variant_cursor,
 							process		=> rename'access);
@@ -3826,7 +3826,7 @@ package body et_kicad_to_native is
 								));
 
 						when APPEARANCE_PCB =>
-							--log (text => "variant count " & count_type'image (pac_variants.length (element (component_cursor).variants)));
+							--log (text => "variant count " & count_type'image (pac_package_variants.length (element (component_cursor).variants)));
 							
 							pac_devices_lib.insert (
 								container	=> device_library,

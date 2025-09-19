@@ -114,8 +114,8 @@ package body et_package_variant is
 
 
 
-	function get_first_variant (
-		variants : in pac_variants.map)
+	function get_first_package_variant (
+		variants : in pac_package_variants.map)
 		return pac_package_variant_name.bounded_string
 	is begin
 		return key (variants.first);
@@ -125,7 +125,7 @@ package body et_package_variant is
 	
 
 	function get_variant_count (
-		variants : in pac_variants.map)
+		variants : in pac_package_variants.map)
 		return natural
 	is begin
 		return natural (variants.length);
@@ -136,17 +136,17 @@ package body et_package_variant is
 
 
 	function get_unit_and_port (
-		variant		: in pac_variants.cursor;
+		variant		: in pac_package_variants.cursor;
 		terminal	: in pac_terminal_name.bounded_string)
 		return type_get_port_result
 	is
 		result : type_get_port_result;
 
-		use pac_variants;
+		use pac_package_variants;
 		
 		procedure query_terminal_port_map (
 			name	: in pac_package_variant_name.bounded_string;
-			variant	: in type_variant)
+			variant	: in type_package_variant)
 		is
 			-- Locate in the given package variant the given terminal:
 			use pac_terminal_port_map;
@@ -174,7 +174,7 @@ package body et_package_variant is
 
 
 	function get_terminal (
-		variant	: in pac_variants.cursor;
+		variant	: in pac_package_variants.cursor;
 		unit	: in pac_unit_name.bounded_string;
 		port	: in pac_port_name.bounded_string)
 		return pac_terminal_name.bounded_string
@@ -182,11 +182,11 @@ package body et_package_variant is
 		use pac_terminal_name;
 		result : pac_terminal_name.bounded_string;
 
-		use pac_variants;
+		use pac_package_variants;
 		
 		procedure query_terminal_port_map (
 			name	: in pac_package_variant_name.bounded_string;
-			variant	: in type_variant)
+			variant	: in type_package_variant)
 		is
 			use pac_unit_name;
 			use pac_port_name;

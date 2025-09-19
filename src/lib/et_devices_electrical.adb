@@ -2039,17 +2039,17 @@ package body et_devices_electrical is
 			model	: in pac_device_model_file.bounded_string;
 			device	: in type_device_model)
 		is
-			use pac_variants;
+			use pac_package_variants;
 
 			-- Locate the package variant of the given device
 			-- in the device model:
-			variant_lib : constant pac_variants.cursor := 
+			variant_lib : constant pac_package_variants.cursor := 
 				find (device.variants, variant_sch);
 
 			
 			procedure query_terminal_port_map (
 				name	: in pac_package_variant_name.bounded_string;
-				variant	: in type_variant)
+				variant	: in type_package_variant)
 			is
 				use pac_terminal_port_map;
 
@@ -2106,8 +2106,8 @@ package body et_devices_electrical is
 			get_package_variant (device); -- N, D
 
 		-- Get full information about the package variant:
-		use pac_variants;
-		variant_lib : constant pac_variants.cursor := 
+		use pac_package_variants;
+		variant_lib : constant pac_package_variants.cursor := 
 			get_package_variant (device_model_lib, variant_sch);
 
 		terminal_name : constant pac_terminal_name.bounded_string := 

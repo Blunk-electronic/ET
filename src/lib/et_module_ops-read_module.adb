@@ -3433,19 +3433,19 @@ is
 						model	: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 						dev_lib	: in type_device_model) -- a device in the library 
 					is
-						use pac_variants;
-						variant_cursor : pac_variants.cursor;
+						use pac_package_variants;
+						variant_cursor : pac_package_variants.cursor;
 						use ada.directories;
 						
 					begin -- query_variants
 						-- Locate the variant (specified by the device in the module) in
 						-- the device model.
-						variant_cursor := pac_variants.find (
+						variant_cursor := pac_package_variants.find (
 							container	=> dev_lib.variants,
 							key			=> device.variant); -- the variant name from the module !
 
 						-- The variant should be there. Otherwise abort.
-						if variant_cursor = pac_variants.no_element then
+						if variant_cursor = pac_package_variants.no_element then
 							log (ERROR, "variant " & to_string (device.variant) &
 								" not available in device model " & to_string (model) & " !", console => true);
 							raise constraint_error;

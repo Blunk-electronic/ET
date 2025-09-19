@@ -214,7 +214,7 @@ package et_device_library is
 	function get_package_variant (
 		device_cursor	: in pac_devices_lib.cursor;
 		variant			: in pac_package_variant_name.bounded_string)  -- D, N
-		return pac_variants.cursor;
+		return pac_package_variants.cursor;
 
 	
 	
@@ -231,9 +231,19 @@ package et_device_library is
 	-- If the device is virtual, then an empty list will be returned.
 	function get_available_variants (
 		device_cursor	: in pac_devices_lib.cursor)
-		return pac_variants.map;
+		return pac_package_variants.map;
 
 
+
+	-- Returns the name of the first package variant
+	-- of the given device model.
+	-- The model must be a model of a real device. Otherwise
+	-- an exception will be raised:
+	function get_first_package_variant (
+		device_cursor : in pac_devices_lib.cursor)
+		return pac_package_variant_name.bounded_string;
+
+	
 
 	
 	-- For locating units this type is required by function locate_unit.

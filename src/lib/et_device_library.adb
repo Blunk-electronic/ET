@@ -418,19 +418,19 @@ package body et_device_library is
 	function get_package_variant (
 		device_cursor	: in pac_devices_lib.cursor;
 		variant			: in pac_package_variant_name.bounded_string)
-		return pac_variants.cursor
+		return pac_package_variants.cursor
 	is 
-		result : pac_variants.cursor;
+		result : pac_package_variants.cursor;
 
 		procedure query_variants (
 			device_name	: in pac_device_model_file.bounded_string;
 			device		: in type_device_model) 
 		is 
-			use pac_variants;
-			--vc : constant pac_variants.cursor := find (device.variants, variant);
+			use pac_package_variants;
+			--vc : constant pac_package_variants.cursor := find (device.variants, variant);
 		begin
 			result := find (device.variants, variant);
-			--if vc /= pac_variants.no_element then
+			--if vc /= pac_package_variants.no_element then
 				--result := vc;
 			--else
 				--raise semantic_error_1 with "Package variant " 
@@ -460,7 +460,7 @@ package body et_device_library is
 			device_name	: in pac_device_model_file.bounded_string;
 			device		: in type_device_model) is
 		begin
-			if pac_variants.contains (device.variants, variant) then
+			if pac_package_variants.contains (device.variants, variant) then
 				result := true;
 			end if;
 		end;
@@ -478,9 +478,9 @@ package body et_device_library is
 
 	function get_available_variants (
 		device_cursor	: in pac_devices_lib.cursor)
-		return pac_variants.map
+		return pac_package_variants.map
 	is
-		result : pac_variants.map; -- to be returned
+		result : pac_package_variants.map; -- to be returned
 	begin
 		case element (device_cursor).appearance is
 			when APPEARANCE_PCB		=> result := element (device_cursor).variants;
@@ -494,6 +494,18 @@ package body et_device_library is
 
 	
 
+
+	function get_first_package_variant (
+		device_cursor : in pac_devices_lib.cursor)
+		return pac_package_variant_name.bounded_string
+	is
+		device_model : type_device_model renames element (device_cursor);
+	begin
+		return get_first_package_variant (device_model);
+	end;
+
+
+	
 
 
 	
@@ -591,10 +603,10 @@ package body et_device_library is
 			device_name	: in pac_device_model_file.bounded_string;
 			device		: in type_device_model) 
 		is
-			use pac_variants;
-			variant_cursor : pac_variants.cursor;
+			use pac_package_variants;
+			variant_cursor : pac_package_variants.cursor;
 		begin
-			variant_cursor := pac_variants.find (device.variants, variant);
+			variant_cursor := pac_package_variants.find (device.variants, variant);
 			package_model := element (variant_cursor).package_model;
 		end;
 		
@@ -718,13 +730,13 @@ package body et_device_library is
 		variant	: in pac_package_variant_name.bounded_string) -- N, D, S_0805
 		return type_text_placeholders
 	is
-		use pac_variants;
+		use pac_package_variants;
 		placeholders		: type_text_placeholders; -- to be returned
 
 		-- fetch the package variants available for the given device:
-		variants_available	: pac_variants.map := element (device).variants;
+		variants_available	: pac_package_variants.map := element (device).variants;
 		
-		variant_cursor		: pac_variants.cursor;
+		variant_cursor		: pac_package_variants.cursor;
 		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/smd/SO15.pac
 
 		use et_packages;		
@@ -734,7 +746,7 @@ package body et_device_library is
 	begin -- placeholders_of_package
 		
 		-- locate the given variant in the device:
-		variant_cursor := pac_variants.find (variants_available, variant);
+		variant_cursor := pac_package_variants.find (variants_available, variant);
 
 		-- get the package model name:
 		package_model := element (variant_cursor).package_model; -- ../lbr/smd/SO15.pac

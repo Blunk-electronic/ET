@@ -153,16 +153,16 @@ package body et_device_rw is
 
 		
 		use et_package_variant;
-		use pac_variants;
+		use pac_package_variants;
 		use pac_package_variant_name;
 		
-		variant_cursor : pac_variants.cursor;
+		variant_cursor : pac_package_variants.cursor;
 
 		
 		
 		procedure write_variant (
 			packge	: in pac_package_variant_name.bounded_string;
-			variant	: in type_variant) 
+			variant	: in type_package_variant) 
 		is
 			use pac_package_variant_name;
 			use et_port_names;
@@ -258,7 +258,7 @@ package body et_device_rw is
 				section_mark (section_variants, HEADER);
 
 				variant_cursor := device.variants.first;
-				while variant_cursor /= pac_variants.no_element loop
+				while variant_cursor /= pac_package_variants.no_element loop
 					section_mark (section_variant, HEADER);
 					write (keyword => keyword_name, parameters => to_string (key (variant_cursor)));
 
@@ -361,9 +361,9 @@ package body et_device_rw is
 		value				: pac_device_value.bounded_string; -- BC548
 		appearance			: type_appearance; -- virtual/pcb
 		partcode			: pac_device_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
-		variant				: type_variant;
+		variant				: type_package_variant;
 		variant_name		: pac_package_variant_name.bounded_string; -- N, D
-		variants			: pac_variants.map;
+		variants			: pac_package_variants.map;
 		terminal_port_map	: pac_terminal_port_map.map;
 
 		
@@ -433,11 +433,11 @@ package body et_device_rw is
 
 		
 		procedure insert_variant is
-			use pac_variants;
+			use pac_package_variants;
 			use pac_package_variant_name;
 			
 			inserted : boolean;
-			position : pac_variants.cursor;
+			position : pac_package_variants.cursor;
 		begin
 			check_variant_name_characters (variant_name);
 

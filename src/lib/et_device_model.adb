@@ -147,6 +147,17 @@ package body et_device_model is
 	end get_unit_count;
 
 
+
+
+
+	function get_first_package_variant (
+		device_model : in type_device_model)
+		return pac_package_variant_name.bounded_string
+	is begin
+		return get_first_package_variant (device_model.variants);
+	end;
+
+
 	
 end et_device_model;
 

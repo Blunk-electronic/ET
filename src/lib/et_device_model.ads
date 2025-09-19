@@ -193,7 +193,7 @@ package et_device_model is
 			when APPEARANCE_PCB => 
 				value		: pac_device_value.bounded_string; -- 74LS00
 				--partcode	: type_component_partcode.bounded_string;
-				variants	: pac_variants.map;
+				variants	: pac_package_variants.map;
 				
 		end case;
 
@@ -232,8 +232,16 @@ package et_device_model is
 		device_model : in type_device_model)
 		return type_unit_count;
 	
+
+	-- Returns the name of the first package variant
+	-- of the given device model.
+	-- The model must be a model of a real device. Otherwise
+	-- an exception will be raised:
+	function get_first_package_variant (
+		device_model : in type_device_model)
+		return pac_package_variant_name.bounded_string;
+
 	
-		
 end et_device_model;
 
 -- Soli Deo Gloria

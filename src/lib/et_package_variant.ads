@@ -103,30 +103,30 @@ package et_package_variant is
 
 
 	
-	type type_variant is record -- CS rename to type_package_variant
+	type type_package_variant is record
 		package_model		: pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
 		terminal_port_map	: pac_terminal_port_map.map; -- which port is connected with with terminal
 	end record;
 
 	
-	package pac_variants is new ordered_maps ( -- CS rename to pac_package_variants
+	package pac_package_variants is new ordered_maps (
 		key_type 		=> pac_package_variant_name.bounded_string, -- D, N
-		element_type 	=> type_variant);
+		element_type 	=> type_package_variant);
 
-	use pac_variants;
+	use pac_package_variants;
 
 	
 	-- Returns the name of the first package variant
 	-- of the given list:
-	function get_first_variant (
-		variants : in pac_variants.map)
+	function get_first_package_variant (
+		variants : in pac_package_variants.map)
 		return pac_package_variant_name.bounded_string;
 
 								   
 	-- Returns the number of package variants that
 	-- the given list contains:
 	function get_variant_count (
-		variants : in pac_variants.map)
+		variants : in pac_package_variants.map)
 		return natural;
 	
 
@@ -151,7 +151,7 @@ package et_package_variant is
 	-- terminal. If no unit and port found, then an unconnected
 	-- terminal is returned:
 	function get_unit_and_port (
-		variant		: in pac_variants.cursor;
+		variant		: in pac_package_variants.cursor;
 		terminal	: in pac_terminal_name.bounded_string)
 		return type_get_port_result;
 
@@ -161,7 +161,7 @@ package et_package_variant is
 	-- Returns the name of the terminal that is linked to the given
 	-- unit and port. If no terminal found, then an exception is raised:
 	function get_terminal (
-		variant	: in pac_variants.cursor;
+		variant	: in pac_package_variants.cursor;
 		unit	: in pac_unit_name.bounded_string;
 		port	: in pac_port_name.bounded_string)
 		return pac_terminal_name.bounded_string;
