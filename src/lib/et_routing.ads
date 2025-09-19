@@ -54,7 +54,7 @@ with et_schematic_ops;
 with et_pcb;						use et_pcb;
 with et_pcb_contour;
 with et_pcb_stack;					use et_pcb_stack;
-with et_board_coordinates;			use et_board_coordinates;
+with et_board_geometry;				use et_board_geometry;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 with et_generic_module;				use et_generic_module;

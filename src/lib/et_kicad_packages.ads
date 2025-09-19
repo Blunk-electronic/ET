@@ -69,9 +69,11 @@ with et_package_names;			use et_package_names;
 with et_packages;
 with et_kicad_general;			use et_kicad_general;
 with et_import;
+
 with et_board_coordinates;		use et_board_coordinates;
-use et_board_coordinates.pac_geometry_2;
-use et_board_coordinates.pac_contours;
+with et_board_geometry;			use et_board_geometry;
+use et_board_geometry.pac_geometry_2;
+use et_board_geometry.pac_contours;
 
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
@@ -146,7 +148,7 @@ package et_kicad_packages is
 
 	type type_arc is new pac_geometry_2.type_arc with record
 		width 	: type_text_line_width;
-		angle 	: et_board_coordinates.pac_geometry_brd.type_angle;
+		angle 	: et_board_geometry.pac_geometry_brd.type_angle;
 		layer	: type_layer_abbrevation;
 	end record;
 

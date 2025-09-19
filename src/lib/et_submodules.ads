@@ -59,6 +59,7 @@ with et_schematic_coordinates;		use et_schematic_coordinates;
 with et_pcb;
 with et_pcb_stack;
 with et_board_coordinates;
+with et_board_geometry;
 with et_symbol_ports;				use et_symbol_ports;
 with et_symbols;
 with et_schematic_text;				use et_schematic_text;
@@ -208,7 +209,7 @@ package et_submodules is
 		file				: pac_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
 		position		    : type_object_position; -- the lower left corner
 		size				: type_submodule_size; -- CS default ?
-		position_in_board	: et_board_coordinates.pac_geometry_2.type_position := et_board_coordinates.pac_geometry_2.origin_zero_rotation;
+		position_in_board	: et_board_geometry.pac_geometry_2.type_position := et_board_geometry.pac_geometry_2.origin_zero_rotation;
 		view_mode			: type_submodule_view_mode := ORIGIN;
 		ports				: pac_submodule_ports.map;
 	end record;
@@ -300,7 +301,7 @@ package et_submodules is
 		position_sch	: type_object_position; -- x,y,sheet,rotation
 		--symbol			: type_netchanger_symbol; -- CS for visualisation only
 		
-		position_brd	: et_board_coordinates.pac_geometry_2.type_vector_model; -- x,y
+		position_brd	: et_board_geometry.pac_geometry_2.type_vector_model; -- x,y
 		-- in board there is no rotation because the netchanger is just a point in x/y.
 		layer			: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
 	end record;

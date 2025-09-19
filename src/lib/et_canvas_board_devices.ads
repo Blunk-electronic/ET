@@ -44,7 +44,8 @@ with et_canvas_messages;			use et_canvas_messages;
 
 with et_pcb_sides;
 with et_board_coordinates;			use et_board_coordinates;
-use et_board_coordinates.pac_geometry_2;
+with et_board_geometry;				use et_board_geometry;
+use et_board_geometry.pac_geometry_2;
 
 with et_pcb;						use et_pcb;
 with et_device_model;				use et_device_model;

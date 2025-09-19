@@ -101,7 +101,7 @@ package body et_canvas_board_assy_doc is
 	is 
 		praeamble : constant string := "selected: ";
 
-		use pac_contours;
+		use et_board_geometry.pac_contours;
 	begin
 		set_status (praeamble & to_string (selected.segment)
 			& " face" & to_string (selected.face) & ". " 

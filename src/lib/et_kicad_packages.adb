@@ -131,7 +131,7 @@ package body et_kicad_packages is
 		shape : type_contour; -- to be returned
 		c : type_circle;
 
-		use et_board_coordinates.pac_geometry_brd;
+		use et_board_geometry.pac_geometry_brd;
 	begin
 		set_center (c, position.place);
 		--c.radius := type_angle (diameter / 2.0);
@@ -153,7 +153,6 @@ package body et_kicad_packages is
 		offset		: in type_vector_model)	-- the offset of the pad from the center
 		return type_contour 
 	is
-		use et_board_coordinates;
 		use pac_geometry_brd;
 
 		shape : type_contour; -- to be returned
@@ -439,8 +438,8 @@ package body et_kicad_packages is
 		use pac_lines_of_file;
 		use et_drills;
 		use et_terminals;
-		use et_board_coordinates;
-		use et_board_coordinates.pac_geometry_brd;
+
+		use pac_geometry_brd;
 
 		-- Extract the actual package name (like S_0201) from the given file name:
 		package_name : pac_package_name.bounded_string :=

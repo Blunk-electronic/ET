@@ -47,6 +47,7 @@ with et_module_names;			use et_module_names;
 with et_assembly_variant_name;	use et_assembly_variant_name;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
+with et_board_geometry;				use et_board_geometry;
 with et_board_coordinates;		use et_board_coordinates;
 with et_device_name;			use et_device_name;
 

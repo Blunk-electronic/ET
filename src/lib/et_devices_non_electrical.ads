@@ -50,6 +50,7 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
 with et_pcb_sides;						use et_pcb_sides;
+with et_board_geometry;					use et_board_geometry;
 with et_board_coordinates;				use et_board_coordinates;
 with et_board_text;						use et_board_text;
 with et_device_placeholders;			use et_device_placeholders;

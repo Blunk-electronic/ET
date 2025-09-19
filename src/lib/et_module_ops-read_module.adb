@@ -47,6 +47,7 @@ with et_section_headers;			use et_section_headers;
 with et_keywords;					use et_keywords;
 with et_module_rw;					use et_module_rw;
 with et_pcb_sides;
+with et_board_geometry;
 with et_board_coordinates;
 
 with et_assembly_variants;			use et_assembly_variants;
@@ -493,7 +494,7 @@ is
 
 	-- drawing grid
 	grid_schematic : et_schematic_geometry.pac_grid.type_grid; -- CS rename to schematic_grid
-	grid_board : et_board_coordinates.pac_grid.type_grid; -- CS rename to board_grid
+	grid_board : et_board_geometry.pac_grid.type_grid; -- CS rename to board_grid
 
 	
 	
@@ -524,7 +525,7 @@ is
 	
 	procedure read_drawing_grid_board is
 		use et_pcb_rw;
-		use et_board_coordinates.pac_grid;
+		use et_board_geometry.pac_grid;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -565,12 +566,14 @@ is
 	end reset_net_class;
 
 
+	
 	-- Reads a line that describes a net class property:
 	procedure read_net_class is 
 		use et_terminals;
 		use et_drills;
 		use et_net_class;
 		use et_pcb_rw;
+		use et_board_geometry.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
 		log (text => "read net class", level => log_threshold + 1);
@@ -588,37 +591,37 @@ is
 			
 		elsif kw = keyword_clearance then
 			expect_field_count (line, 2);
-			net_class.clearance := et_board_coordinates.pac_geometry_2.to_distance (f (line,2));
+			net_class.clearance := to_distance (f (line,2));
 			validate_track_clearance (net_class.clearance);
 			-- CS validate against dru settings
 												
 		elsif kw = keyword_track_width_min then
 			expect_field_count (line, 2);
-			net_class.track_width_min := et_board_coordinates.pac_geometry_2.to_distance (f (line,2));
+			net_class.track_width_min := to_distance (f (line,2));
 			validate_track_width (net_class.track_width_min);
 			-- CS validate against dru settings
 			
 		elsif kw = keyword_via_drill_min then
 			expect_field_count (line, 2);
-			net_class.via_drill_min := et_board_coordinates.pac_geometry_2.to_distance (f (line,2));
+			net_class.via_drill_min := to_distance (f (line,2));
 			validate_drill_size (net_class.via_drill_min);
 			-- CS validate against dru settings
 			
 		elsif kw = keyword_via_restring_min then
 			expect_field_count (line, 2);
-			net_class.via_restring_min := et_board_coordinates.pac_geometry_2.to_distance (f (line,2));
+			net_class.via_restring_min := to_distance (f (line,2));
 			validate_restring_width (net_class.via_restring_min);
 			-- CS validate against dru settings
 			
 		elsif kw = keyword_micro_via_drill_min then
 			expect_field_count (line, 2);
-			net_class.micro_via_drill_min := et_board_coordinates.pac_geometry_2.to_distance (f (line,2));
+			net_class.micro_via_drill_min := to_distance (f (line,2));
 			validate_drill_size (net_class.micro_via_drill_min);
 			-- CS validate against dru settings
 			
 		elsif kw = keyword_micro_via_restring_min then
 			expect_field_count (line, 2);
-			net_class.micro_via_restring_min := et_board_coordinates.pac_geometry_2.to_distance (f (line,2));
+			net_class.micro_via_restring_min := to_distance (f (line,2));
 			validate_restring_width (net_class.micro_via_restring_min);
 			-- CS validate against dru settings
 		else
@@ -678,6 +681,7 @@ is
 	end assign_net_class;
 
 	
+
 
 	
 	
@@ -1676,8 +1680,9 @@ is
 	procedure read_device_text_placeholder is
 		use et_device_placeholders;
 		use et_device_placeholders.packages;
+		use et_board_geometry;
+		use et_board_geometry.pac_geometry_2;
 		use et_board_coordinates;
-		use et_board_coordinates.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -1783,7 +1788,7 @@ is
 
 	
 	procedure read_board_text_placeholder is
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 		use et_pcb_rw;
 		use et_pcb_placeholders;
 		kw : constant string := f (line, 1);
@@ -1907,7 +1912,7 @@ is
 	
 	
 	procedure read_cutout_route is
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 		use et_pcb_stack;
 		use et_fill_zones;
 		use et_pcb_rw;
@@ -1936,7 +1941,7 @@ is
 
 	
 	procedure read_cutout_non_conductor is
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 		use et_fill_zones;
 		use et_pcb_rw;
 		kw : constant string := f (line, 1);
@@ -1961,7 +1966,7 @@ is
 	procedure read_cutout_restrict is
 		use et_pcb_stack;
 		use et_pcb_rw;
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -1985,7 +1990,7 @@ is
 	procedure read_cutout_conductor_non_electric is
 		use et_pcb_rw;
 		use et_pcb_stack;
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 		use et_fill_zones;
 		kw : constant string := f (line, 1);
 	begin
@@ -2013,7 +2018,7 @@ is
 	
 	-- Reads parameters of a conductor fill zone connected with a net:
 	procedure read_fill_zone_route is
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 		use et_fill_zones;
 		use et_fill_zones.boards;
 		use et_thermal_relief;
@@ -2078,8 +2083,9 @@ is
 
 
 	
+	
 	procedure read_fill_zone_non_conductor is
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 		use et_fill_zones;
 		use et_pcb_rw;
 		kw : constant string := f (line, 1);
@@ -2117,7 +2123,7 @@ is
 	procedure read_fill_zone_restrict is
 		use et_pcb_stack;
 		use et_pcb_rw;
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -2144,7 +2150,7 @@ is
 		use et_pcb_rw;
 		use et_fill_zones;
 		use et_fill_zones.boards;
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -2344,7 +2350,7 @@ is
 
 	
 	procedure read_board_text_conductor_placeholder is
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 		use et_pcb_stack;
 		use et_pcb_rw;
 		use et_pcb_placeholders;
@@ -2440,7 +2446,7 @@ is
 
 	
 	procedure read_board_text_non_conductor is 
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 		use et_pcb_rw;
 		kw : constant  string := f (line, 1);
 	begin
@@ -2487,7 +2493,7 @@ is
 
 	
 	procedure read_board_text_conductor is
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 		use et_pcb_stack;
 		use et_pcb_rw;
 		kw : constant string := f (line, 1);
@@ -2533,7 +2539,7 @@ is
 
 	
 	procedure read_board_text_contours is 
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 		use et_pcb_rw;
 		kw : constant  string := f (line, 1);
 	begin
@@ -2574,7 +2580,7 @@ is
 		kw : constant string := f (line, 1);
 		use et_pcb_stack;
 		use package_layers;
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_conductor then -- conductor 1 0.035
@@ -2731,7 +2737,7 @@ is
 
 	
 	procedure read_via is
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 		use et_pcb;
 		use et_pcb_rw;
 		use et_vias;
@@ -2848,7 +2854,7 @@ is
 	
 	procedure read_user_settings_vias is
 		use et_pcb_rw;
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
 		-- via drill
@@ -2902,7 +2908,7 @@ is
 		use et_fill_zones;
 		use et_fill_zones.boards;		
 		use et_thermal_relief;
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
 		if kw = keyword_fill_style then -- fill_style solid/hatched
@@ -3061,7 +3067,7 @@ is
 
 
 					procedure board is
-						use et_board_coordinates;
+						use et_board_geometry;
 						use pac_geometry_2;
 						use pac_grid;
 					begin
@@ -3261,7 +3267,7 @@ is
 				use et_pcb_sides;
 				use et_board_coordinates;
 			begin
-				device_text_placeholder.position := et_board_coordinates.pac_geometry_2.type_position (device_text_placeholder_position);
+				device_text_placeholder.position := et_board_geometry.pac_geometry_2.type_position (device_text_placeholder_position);
 				
 				case device_text_placeholder_layer is
 					when SILK_SCREEN => 
@@ -3669,7 +3675,7 @@ is
 			-- Depending on the layer and the side of the board (face) the board_line
 			-- is now assigned to the board where it belongs to.
 
-				use et_board_coordinates;
+				use et_board_geometry;
 				use pac_geometry_2;
 				
 				use et_stopmask;
@@ -3762,7 +3768,7 @@ is
 			-- Depending on the layer and the side of the board (face) the board_arc
 			-- is now assigned to the board where it belongs to.
 
-				use et_board_coordinates;
+				use et_board_geometry;
 				use pac_geometry_2;
 				
 				use et_stopmask;
@@ -3856,7 +3862,7 @@ is
 			-- Depending on the layer and the side of the board (face) the board_circle
 			-- is now assigned to the board where it belongs to.
 
-				use et_board_coordinates;
+				use et_board_geometry;
 				use pac_geometry_2;
 				
 				use et_stopmask;
@@ -3950,7 +3956,7 @@ is
 			-- Depending on the layer and the side of the board (face) the polygon
 			-- is now assigned to the board where it belongs to.
 
-				use et_board_coordinates;
+				use et_board_geometry;
 				use pac_geometry_2;
 				
 				use et_stopmask;
@@ -4112,7 +4118,7 @@ is
 					module		: in out type_generic_module)
 				is
 					use et_pcb_sides;
-					use et_board_coordinates;
+					use et_board_geometry;
 					use pac_contours;
 					use et_stopmask;
 					use et_keepout;
@@ -4166,7 +4172,7 @@ is
 
 			
 			procedure insert_cutout_via_restrict is
-				use et_board_coordinates;
+				use et_board_geometry;
 				use pac_contours;				
 				use et_via_restrict.boards;
 				use et_pcb_stack;
@@ -4199,7 +4205,7 @@ is
 			
 			
 			procedure insert_cutout_route_restrict is
-				use et_board_coordinates;
+				use et_board_geometry;
 				use pac_contours;
 				use et_route_restrict.boards;
 				use et_pcb_stack;
@@ -4235,7 +4241,7 @@ is
 			-- This is about cutout zones to trim floating contours in 
 			-- signal layers. No connection to any net.
 			procedure insert_cutout_conductor is
-				use et_board_coordinates;
+				use et_board_geometry;
 				use pac_contours;
 				use et_pcb;
 				use et_fill_zones.boards;
@@ -4352,7 +4358,7 @@ is
 
 			
 			procedure insert_line_route_restrict is
-				use et_board_coordinates;
+				use et_board_geometry;
 				use pac_geometry_2;
 				use et_route_restrict.boards;
 				use et_pcb_stack;
@@ -4385,7 +4391,7 @@ is
 
 			
 			procedure insert_arc_route_restrict is
-				use et_board_coordinates;
+				use et_board_geometry;
 				use pac_geometry_2;
 				use et_route_restrict.boards;
 				use et_pcb_stack;					
@@ -4417,7 +4423,7 @@ is
 
 			
 			procedure insert_circle_route_restrict is
-				use et_board_coordinates;
+				use et_board_geometry;
 				use pac_geometry_2;
 				use et_route_restrict.boards;
 				use et_pcb_stack;
@@ -4448,7 +4454,7 @@ is
 			
 			
 			procedure insert_polygon_route_restrict is
-				use et_board_coordinates;
+				use et_board_geometry;
 				use pac_geometry_2;				
 				use pac_contours;
 				
@@ -4483,7 +4489,7 @@ is
 
 			
 			procedure insert_zone_via_restrict is
-				use et_board_coordinates;
+				use et_board_geometry;
 				use pac_geometry_2;
 				use pac_contours;
 				use et_via_restrict.boards;
@@ -4518,7 +4524,7 @@ is
 			
 			-- This is about floating contours in signal layers. No connection to any net.
 			procedure insert_polygon_conductor is
-				use et_board_coordinates;
+				use et_board_geometry;
 				use pac_contours;
 				use et_fill_zones;
 				use et_fill_zones.boards;
@@ -4580,7 +4586,7 @@ is
 				is begin
 					pac_conductor_lines.append (
 						container	=> module.board.conductors_floating.lines,
-						new_item	=> (et_board_coordinates.pac_geometry_2.type_line (board_line) with
+						new_item	=> (et_board_geometry.pac_geometry_2.type_line (board_line) with
 										width	=> board_line_width,
 										layer	=> signal_layer));
 				end;
@@ -4611,7 +4617,7 @@ is
 				is begin
 					pac_conductor_arcs.append (
 						container	=> module.board.conductors_floating.arcs,
-						new_item	=> (et_board_coordinates.pac_geometry_2.type_arc (board_arc) with
+						new_item	=> (et_board_geometry.pac_geometry_2.type_arc (board_arc) with
 										width	=> board_line_width,
 										layer	=> signal_layer));
 				end;
@@ -4644,7 +4650,7 @@ is
 					pac_conductor_circles.append (
 						container	=> module.board.conductors_floating.circles,
 						--new_item	=> (board_make_conductor_circle with signal_layer));
-						new_item	=> (et_board_coordinates.pac_geometry_2.type_circle (board_circle) with 
+						new_item	=> (et_board_geometry.pac_geometry_2.type_circle (board_circle) with 
 										width	=> board_line_width, 
 										layer	=> signal_layer));
 				end;
@@ -4672,7 +4678,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out type_generic_module) 
 				is
-					use et_board_coordinates;
+					use et_board_geometry;
 					use pac_geometry_2;
 					
 					use et_pcb;
@@ -4742,7 +4748,7 @@ is
 			
 			
 			procedure insert_line_outline is
-				use et_board_coordinates;
+				use et_board_geometry;
 				use pac_geometry_2;
 				use pac_contours;
 				use pac_segments;
@@ -4757,7 +4763,8 @@ is
 						container	=> module.board.board_contour.outline.contour.segments,
 						new_item	=> (pac_contours.LINE, board_line));
 				end do_it;
-									
+
+				
 			begin -- insert_line_outline
 				update_element (
 					container	=> generic_modules,
@@ -4771,7 +4778,7 @@ is
 			
 			
 			procedure insert_arc_outline is
-				use et_board_coordinates;
+				use et_board_geometry;
 				use pac_geometry_2;
 				use pac_contours;
 				use pac_segments;
@@ -5064,8 +5071,8 @@ is
 			
 			
 			procedure build_route_polygon is
-				use et_board_coordinates.pac_geometry_2;
-				use et_board_coordinates.pac_contours;
+				use et_board_geometry.pac_geometry_2;
+				use et_board_geometry.pac_contours;
 				use et_fill_zones;
 				use et_fill_zones.boards;
 				use et_thermal_relief;
@@ -5288,7 +5295,7 @@ is
 						module		: in out type_generic_module) 
 					is
 						use et_pcb_sides;
-						use et_board_coordinates;
+						use et_board_geometry;
 						use pac_geometry_2;
 						use et_pcb;
 
@@ -5572,7 +5579,7 @@ is
 							-- insert line in route.lines
 							et_conductor_segment.boards.pac_conductor_lines.append (
 								container	=> route.lines,
-								new_item	=> (et_board_coordinates.pac_geometry_2.type_line (board_line) with
+								new_item	=> (et_board_geometry.pac_geometry_2.type_line (board_line) with
 										width	=> board_line_width,
 										layer	=> signal_layer));
 								
@@ -5614,7 +5621,7 @@ is
 							-- insert arc in route.arcs
 							et_conductor_segment.boards.pac_conductor_arcs.append (
 								container	=> route.arcs,
-								new_item	=> (et_board_coordinates.pac_geometry_2.type_arc (board_arc) with
+								new_item	=> (et_board_geometry.pac_geometry_2.type_arc (board_arc) with
 										width	=> board_line_width,
 										layer	=> signal_layer));
 								
@@ -6152,6 +6159,7 @@ is
 				when SEC_INIT => null; -- CS: should never happen
 			end case;
 
+-- CS:
 -- 				exception when event:
 -- 					others => 
 -- 						log (text => ada.exceptions.exception_message (event), console => true);
@@ -6477,7 +6485,7 @@ is
 
 									elsif kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
-										board_line_width := et_board_coordinates.pac_geometry_2.to_distance (f (line, 2));
+										board_line_width := et_board_geometry.pac_geometry_2.to_distance (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
@@ -6497,7 +6505,7 @@ is
 											-- CS: In the following: set a corresponding parameter-found-flag
 											if kw = keyword_width then -- width 0.5
 												expect_field_count (line, 2);
-												board_line_width := et_board_coordinates.pac_geometry_2.to_distance (f (line, 2));
+												board_line_width := et_board_geometry.pac_geometry_2.to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -6537,7 +6545,7 @@ is
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
-										board_line_width := et_board_coordinates.pac_geometry_2.to_distance (f (line, 2));
+										board_line_width := et_board_geometry.pac_geometry_2.to_distance (f (line, 2));
 
 									elsif kw = keyword_layer then -- layer 1
 										expect_field_count (line, 2);
@@ -6564,7 +6572,7 @@ is
 							if not read_board_arc (line) then
 								declare
 									kw : string := f (line, 1);
-									use et_board_coordinates.pac_geometry_2;
+									use et_board_geometry.pac_geometry_2;
 									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -6575,7 +6583,7 @@ is
 										
 									elsif kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
-										board_line_width := et_board_coordinates.pac_geometry_2.to_distance (f (line, 2));
+										board_line_width := et_board_geometry.pac_geometry_2.to_distance (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
@@ -6596,7 +6604,7 @@ is
 											-- CS: In the following: set a corresponding parameter-found-flag
 											if kw = keyword_width then -- width 0.5
 												expect_field_count (line, 2);
-												board_line_width := et_board_coordinates.pac_geometry_2.to_distance (f (line, 2));
+												board_line_width := et_board_geometry.pac_geometry_2.to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -6636,13 +6644,13 @@ is
 							if not read_board_arc (line) then
 								declare
 									kw : string := f (line, 1);
-									use et_board_coordinates.pac_geometry_2;
+									use et_board_geometry.pac_geometry_2;
 									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
-										board_line_width := et_board_coordinates.pac_geometry_2.to_distance (f (line, 2));
+										board_line_width := et_board_geometry.pac_geometry_2.to_distance (f (line, 2));
 
 									elsif kw = keyword_layer then -- layer 1
 										expect_field_count (line, 2);
@@ -6661,6 +6669,7 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_CIRCLE => -- CS clean up: separate procdures required
 					case stack.parent is
 						when SEC_CONTOURS => read_board_circle (line);
@@ -6673,7 +6682,7 @@ is
 									if not read_board_circle (line) then
 									
 										declare -- CS separate procedure
-											use et_board_coordinates;
+											use et_board_geometry;
 											use pac_geometry_2;
 											kw : string := f (line, 1);
 										begin
@@ -6712,7 +6721,7 @@ is
 
 								declare
 									use et_pcb_stack;
-									use et_board_coordinates.pac_geometry_2;
+									use et_board_geometry.pac_geometry_2;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -6738,7 +6747,7 @@ is
 							if not read_board_circle (line) then
 								declare -- CS separate procdure
 									use et_pcb_stack;
-									use et_board_coordinates.pac_geometry_2;
+									use et_board_geometry.pac_geometry_2;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -6763,6 +6772,7 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_CUTOUT_ZONE =>
 					case stack.parent is
 						when SEC_ROUTE => read_cutout_route;
@@ -6786,6 +6796,7 @@ is
 						when SEC_CONDUCTOR => read_cutout_conductor_non_electric;
 						when others => invalid_section;
 					end case;
+
 					
 				when SEC_ZONE =>
 					case stack.parent is
@@ -6805,18 +6816,21 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_VIA =>
 					case stack.parent is
 						when SEC_ROUTE	=> read_via;
 						when others		=> invalid_section;
 					end case;
-				
+
+					
 				when SEC_SUBMODULE =>
 					case stack.parent is
 						when SEC_SUBMODULES => read_submodule;
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_PORT =>
 					case stack.parent is
 						when SEC_PORTS =>
@@ -6827,6 +6841,7 @@ is
 
 						when others => invalid_section;
 					end case;
+
 					
 				when SEC_SCHEMATIC =>
 					case stack.parent is
@@ -6836,6 +6851,7 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_BOARD =>
 					case stack.parent is
 						when SEC_INIT => null; -- nothing to do
@@ -6845,17 +6861,20 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_SHEET_DESCRIPTIONS =>
 					case stack.parent is
 						when SEC_SCHEMATIC => null; -- nothing to do
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_SHEET =>
 					case stack.parent is
 						when SEC_SHEET_DESCRIPTIONS => read_sheet_description;
 						when others => invalid_section;
 					end case;
+
 					
 				when SEC_TEXT =>
 					case stack.parent is
@@ -6874,6 +6893,7 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_DEVICE =>
 					case stack.parent is
 						when SEC_DEVICES => read_device;
@@ -6881,12 +6901,14 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_PACKAGE =>
 					case stack.parent is
 						when SEC_DEVICE => read_package;
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_PLACEHOLDER =>
 					case stack.parent is
 						when SEC_PLACEHOLDERS =>
@@ -6910,6 +6932,7 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_PLACEHOLDERS =>
 					case stack.parent is
 						when SEC_PACKAGE => null;
@@ -6925,29 +6948,34 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_UNIT =>
 					case stack.parent is
 						when SEC_UNITS => read_unit;
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_UNITS =>
 					case stack.parent is
 						when SEC_DEVICE => null;
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_NETCHANGERS =>
 					case stack.parent is
 						when SEC_INIT => null; -- nothing to do
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_NETCHANGER =>
 					case stack.parent is
 						when SEC_NETCHANGERS => read_netchanger;
 						when others => invalid_section;
 					end case;
+
 					
 				when SEC_DEVICES_NON_ELECTRIC | SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 					SEC_STOPMASK | SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
@@ -6957,6 +6985,7 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_TOP | SEC_BOTTOM =>
 					case stack.parent is
 						when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
@@ -6965,6 +6994,7 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_USER_SETTINGS =>
 					case stack.parent is
 						when SEC_BOARD		=> null;
@@ -6973,6 +7003,7 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_VIAS =>
 					case stack.parent is
 						when SEC_USER_SETTINGS =>
@@ -6984,6 +7015,7 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_FILL_ZONES_CONDUCTOR =>
 					case stack.parent is
 						when SEC_USER_SETTINGS =>
@@ -6995,11 +7027,13 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_OUTLINE | SEC_HOLE =>
 					case stack.parent is
 						when SEC_PCB_CONTOURS_NON_PLATED => null;
 						when others => invalid_section;
 					end case;
+
 					
 				when SEC_INIT => null; -- CS: should never happen
 			end case;

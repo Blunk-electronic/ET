@@ -42,8 +42,7 @@
 with et_canvas_tool;					use et_canvas_tool;
 with et_canvas_messages;				use et_canvas_messages;
 
-with et_board_coordinates;
-use et_board_coordinates.pac_geometry_2;
+with et_board_geometry;					use et_board_geometry;
 
 with et_drills;							use et_drills;
 with et_vias;							use et_vias;
@@ -52,6 +51,7 @@ with et_design_rules_board;				use et_design_rules_board;
 
 package et_canvas_board_vias is
 	
+	use pac_geometry_2;
 
 	
 	-- Before placing, moving, deleting or other operations we

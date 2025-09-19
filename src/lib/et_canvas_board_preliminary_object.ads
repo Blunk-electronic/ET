@@ -46,8 +46,6 @@
 
 with et_canvas_board_2;					use et_canvas_board_2;
 with et_pcb_sides;						use et_pcb_sides;
-with et_board_coordinates;				use et_board_coordinates;
-use et_board_coordinates.pac_geometry_2;
 
 with et_board_layer_category;			use et_board_layer_category;
 with et_pcb_stack;						use et_pcb_stack;

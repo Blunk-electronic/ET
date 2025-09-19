@@ -37,6 +37,7 @@
 --
 --   to do:
 
+with et_board_geometry;			use et_board_geometry;
 with et_board_coordinates;		use et_board_coordinates;
 with et_object_status;			use et_object_status;
 with et_logging;				use et_logging;

@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -56,9 +56,12 @@ with ada.containers.ordered_sets;
 with et_primitive_objects;		use et_primitive_objects;
 with et_string_processing;		use et_string_processing;
 
-with et_board_coordinates;		use et_board_coordinates;
+with et_board_geometry;			use et_board_geometry;
+-- with et_board_coordinates;		use et_board_coordinates;
 with et_pcb_stack;
 with et_design_rules_board;		use et_design_rules_board;
+
+
 
 package et_fill_zones is
 	
@@ -174,8 +177,8 @@ package et_fill_zones is
 -- A FILL ZONE IN GENERAL
 
 
-	hatching_line_width_default : constant et_board_coordinates.pac_geometry_2.type_distance_positive := 0.2;
-	hatching_spacing_default	: constant et_board_coordinates.pac_geometry_2.type_distance_positive := 1.0;
+	hatching_line_width_default : constant pac_geometry_2.type_distance_positive := 0.2;
+	hatching_spacing_default	: constant pac_geometry_2.type_distance_positive := 1.0;
 
 
 
@@ -183,12 +186,15 @@ package et_fill_zones is
 	type type_easing_style is (NONE, CHAMFER, FILLET);
 
 	function to_easing_style (easing : in string) return type_easing_style;
+
 	function to_string (easing : in type_easing_style) return string;
 
-	easing_radius_max : constant et_board_coordinates.pac_geometry_2.type_distance_positive := 100.0;
-	subtype type_easing_radius is et_board_coordinates.pac_geometry_2.type_distance_positive 
-		range et_board_coordinates.pac_geometry_2.type_distance_positive'first .. easing_radius_max;
+	easing_radius_max : constant pac_geometry_2.type_distance_positive := 100.0;
+	
+	subtype type_easing_radius is pac_geometry_2.type_distance_positive 
+		range pac_geometry_2.type_distance_positive'first .. easing_radius_max;
 
+	
 	type type_easing is record
 		style	: type_easing_style := NONE;
 		radius	: type_easing_radius := 0.0; -- center of circle at corner point
@@ -225,6 +231,8 @@ package et_fill_zones is
 		return type_float_positive;
 	
 
+
+	
 -- QUERY POINT TO ZONE LOCATION
 
 	-- Returns true if the given point lies between

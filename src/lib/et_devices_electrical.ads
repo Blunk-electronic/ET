@@ -78,6 +78,7 @@ with et_stopmask.packages;
 with et_stencil;						use et_stencil;
 with et_pcb_stack;						use et_pcb_stack;
 with et_pcb_sides;						use et_pcb_sides;
+with et_board_geometry;
 with et_board_coordinates;
 with et_material;
 with et_text;
@@ -419,7 +420,7 @@ package et_devices_electrical is
 	-- given electrical device:
 	function get_position (
 		device_cursor	: in pac_devices_sch.cursor) -- IC45
-		return et_board_coordinates.pac_geometry_2.type_vector_model;
+		return et_board_geometry.pac_geometry_2.type_vector_model;
 
 	
 	
@@ -479,7 +480,7 @@ package et_devices_electrical is
 	function get_conductor_polygons (
 		device_cursor	: in pac_devices_sch.cursor;
 		layer_category	: in type_signal_layer_category) -- outer top, inner, outer bottom 
-		return et_board_coordinates.pac_polygons.pac_polygon_list.list;
+		return et_board_geometry.pac_polygons.pac_polygon_list.list;
 
 
 
@@ -505,7 +506,7 @@ package et_devices_electrical is
 	function get_route_restrict_polygons (
 		device_cursor	: in pac_devices_sch.cursor;
 		layer_category	: in type_signal_layer_category)
-		return et_board_coordinates.pac_polygons.pac_polygon_list.list;
+		return et_board_geometry.pac_polygons.pac_polygon_list.list;
 
 
 
@@ -668,7 +669,7 @@ package et_devices_electrical is
 	-- If the device is virtual, then the returned list is empty:
 	function get_hole_polygons (
 		device_cursor	: in pac_devices_sch.cursor)
-		return et_board_coordinates.pac_polygons.pac_polygon_list.list;
+		return et_board_geometry.pac_polygons.pac_polygon_list.list;
 
 	
 

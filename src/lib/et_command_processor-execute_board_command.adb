@@ -48,7 +48,8 @@ with et_primitive_objects;			use et_primitive_objects;
 with et_axes;						use et_axes;
 
 with et_schematic_coordinates;
-with et_board_coordinates;
+with et_board_geometry;				use et_board_geometry;
+with et_board_coordinates;			use et_board_coordinates;
 with et_text;
 
 with et_board_text;
@@ -126,7 +127,7 @@ is
 	use et_pcb;
 
 	use et_pcb_sides;
-	use et_board_coordinates;
+
 	use pac_geometry_2;
 	use pac_contours;
 
@@ -2524,7 +2525,7 @@ is
 		end make_fill_zone;
 
 
-		use et_board_coordinates.pac_grid;
+		use et_board_geometry.pac_grid;
 
 		line_tmp	: type_line;
 		arc_tmp		: type_arc;

@@ -46,7 +46,7 @@ with et_canvas_messages;				use et_canvas_messages;
 
 with et_pcb_sides;						use et_pcb_sides;
 with et_board_coordinates;				use et_board_coordinates;
-use et_board_coordinates.pac_geometry_2;
+with et_board_geometry;					use et_board_geometry;
 
 with et_text;							use et_text;
 with et_alignment;						use et_alignment;
@@ -66,6 +66,8 @@ with et_object_status;
 
 package et_canvas_board_texts is
 
+	use pac_geometry_2;
+	
 	
 	-- This procedure creates a set of categories:
 	procedure make_affected_layer_categories;

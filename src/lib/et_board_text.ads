@@ -40,7 +40,7 @@
 
 
 with et_text;
-with et_board_coordinates;		use et_board_coordinates;
+with et_board_geometry;			use et_board_geometry;
 
 
 package et_board_text is

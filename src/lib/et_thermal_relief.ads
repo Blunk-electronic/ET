@@ -52,10 +52,11 @@ with ada.containers.doubly_linked_lists;
 --with ada.containers.indefinite_ordered_maps;
 --with ada.containers.ordered_sets;
 
-with et_board_coordinates;		use et_board_coordinates;
+with et_board_geometry;			use et_board_geometry;
 with et_design_rules_board;		use et_design_rules_board;
 with et_fill_zones;				use et_fill_zones;
 with et_terminals;				use et_terminals;
+
 
 package et_thermal_relief is
 	

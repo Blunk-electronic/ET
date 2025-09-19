@@ -905,7 +905,7 @@ package body et_canvas_board_2 is
 
 		-- Advances to next grid density up or down:
 		procedure set_grid is
-			use et_board_coordinates.pac_grid;
+			use et_board_geometry.pac_grid;
 		begin
 			case key is
 				when GDK_Shift_L =>

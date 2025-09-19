@@ -581,7 +581,7 @@ package body et_canvas_board_tracks is
 		-- This procedure sets the start point of the path:
 		procedure set_A is
 			use et_object_status;
-			use et_board_coordinates.pac_geometry_brd;
+			use et_board_geometry.pac_geometry_brd;
 
 			use et_nets;
 			use et_net_names;

@@ -52,7 +52,8 @@ with ada.containers.ordered_sets;
 
 
 with et_logging;				use et_logging;
-with et_board_coordinates;		use et_board_coordinates;
+with et_board_geometry;			use et_board_geometry;
+
 
 
 package et_pcb_stack is

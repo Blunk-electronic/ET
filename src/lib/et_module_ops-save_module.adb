@@ -43,6 +43,7 @@ with et_section_headers;			use et_section_headers;
 with et_keywords;					use et_keywords;
 with et_module_rw;					use et_module_rw;
 with et_pcb_sides;
+with et_board_geometry;
 with et_board_coordinates;
 
 with et_assembly_variants;			use et_assembly_variants;
@@ -219,11 +220,12 @@ is
 	end write_footer;
 
 
+
 	
-	function rotation (pos : in et_board_coordinates.pac_geometry_2.type_position'class)  -- CS make generic ?
+	function rotation (pos : in et_board_geometry.pac_geometry_2.type_position'class)  -- CS make generic ?
 		return string
 	is
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 	begin
 		return to_string (get_rotation (pos));
 	end rotation;
@@ -350,7 +352,7 @@ is
 	procedure query_net_classes is
 		use et_net_class;
 		use pac_net_classes;
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 		use et_pcb_rw;
 
 		procedure write (class_cursor : in pac_net_classes.cursor) is begin
@@ -388,7 +390,6 @@ is
 	procedure query_drawing_grid is 
 
 		procedure schematic is
-			use et_schematic_coordinates;
 			use et_schematic_geometry;
 			use pac_geometry_2;
 			use pac_grid;
@@ -404,7 +405,7 @@ is
 
 
 		procedure board is
-			use et_board_coordinates;
+			use et_board_geometry;
 			use pac_geometry_2;
 			use pac_grid;
 			use et_board_ops.grid;
@@ -445,7 +446,7 @@ is
 	
 	procedure query_layer_stack is
 		use et_pcb_rw;
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 		use et_pcb_stack;
 		use package_layers;
 
@@ -786,14 +787,14 @@ is
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net) 
 		is
-			use et_board_coordinates;
+			use et_board_geometry;
 			use pac_contours;
 
 			use et_terminals;
 			use et_pcb_rw;
 			use et_pcb;
 			use et_pcb_stack;
-			use et_board_coordinates.pac_geometry_2;
+			use et_board_geometry.pac_geometry_2;
 			
 			use et_conductor_segment.boards;
 			use pac_conductor_lines;
@@ -1336,7 +1337,7 @@ is
 
 			write (
 				keyword => keyword_position_in_board, 
-				parameters => et_board_coordinates.pac_geometry_2.to_string (element (cursor).position_brd)); -- position_in_board x 1.32 y 6.97
+				parameters => et_board_geometry.pac_geometry_2.to_string (element (cursor).position_brd)); -- position_in_board x 1.32 y 6.97
 			
 			write (keyword => keyword_layer, parameters => et_pcb_stack.to_string (element (cursor).layer)); -- layer 2
 			section_mark (section_netchanger, FOOTER);
@@ -1416,7 +1417,7 @@ is
 		-- drawing frame of the board:
 		procedure board is
 			use et_pcb_rw;
-			use et_board_coordinates;
+			use et_board_geometry;
 			use pac_geometry_2;
 			
 			frame_pos : et_drawing_frame.type_position;
@@ -1569,10 +1570,10 @@ is
 		--use et_terminals;
 		use et_board_text;
 		use pac_text_board;
-		use et_board_coordinates.pac_contours;
+		use et_board_geometry.pac_contours;
 		use et_pcb;
 		use et_pcb_stack;
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 
 		use pac_texts_fab_with_content;
 

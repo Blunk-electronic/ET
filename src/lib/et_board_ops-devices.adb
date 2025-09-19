@@ -645,7 +645,7 @@ package body et_board_ops.devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
-		rotation		: in et_board_coordinates.type_rotation_model; -- 90
+		rotation		: in et_board_geometry.type_rotation_model; -- 90
 		log_threshold	: in type_log_level) 
 	is
 
@@ -2429,7 +2429,7 @@ package body et_board_ops.devices is
 		-- Optionally, if required by the caller, offsets the polygon edges
 		-- by the width of the inner signal layer:
 		procedure finalize (do_offset : in boolean := false) is
-			use et_board_coordinates.pac_polygon_offsetting;
+			use et_board_geometry.pac_polygon_offsetting;
 		begin
 			move_by (contour, terminal_displacement);
 			make_polygon;

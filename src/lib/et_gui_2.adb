@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -44,7 +44,7 @@ with et_schematic_geometry;
 with et_schematic_coordinates;
 
 with et_canvas_board_2;
-with et_board_coordinates;
+with et_board_geometry;
 
 with et_schematic_ops.grid;
 with et_board_ops.grid;
@@ -190,7 +190,7 @@ package body et_gui_2 is
 	is
 		use et_canvas_board_2;
 		use et_canvas_board_2.pac_canvas;
-		use et_board_coordinates.pac_geometry_2;
+		use et_board_geometry.pac_geometry_2;
 	begin
 		-- Set the log threshold. Everything that happens in the gui may be logged
 		-- using the gui wide variable log_threshold:
@@ -360,6 +360,8 @@ package body et_gui_2 is
 		log_indentation_down;
 		
 	end single_module;	
+
+
 	
 end et_gui_2;
 

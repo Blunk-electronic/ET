@@ -101,7 +101,7 @@ package body et_canvas_board_stopmask is
 	is 
 		praeamble : constant string := "selected: ";
 
-		use et_board_coordinates.pac_contours;
+		use et_board_geometry.pac_contours;
 	begin
 		set_status (praeamble & to_string (selected.segment)
 			& " face" & to_string (selected.face) & ". " 

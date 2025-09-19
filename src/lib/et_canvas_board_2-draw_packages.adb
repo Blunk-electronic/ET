@@ -749,7 +749,7 @@ procedure draw_packages is
 				
 				t : type_terminal renames element (c);
 
-				use et_board_coordinates.pac_contours;
+				use et_board_geometry.pac_contours;
 
 		
 
@@ -970,8 +970,8 @@ procedure draw_packages is
 						pad_position	: in type_position) -- the center of the pad incl. its rotation
 					is
 						use pac_geometry_2;	
-						use et_board_coordinates.pac_contours;
-						use et_board_coordinates.pac_polygons;
+						use et_board_geometry.pac_contours;
+						use et_board_geometry.pac_polygons;
 						use pac_offsetting;
 
 						use pac_draw_contours;
@@ -1045,8 +1045,8 @@ procedure draw_packages is
 						-- Builds the stopmask contour from the pad contour:
 						procedure build_contour is
 							use pac_geometry_2;	
-							use et_board_coordinates.pac_contours;
-							use et_board_coordinates.pac_polygons;
+							use et_board_geometry.pac_contours;
+							use et_board_geometry.pac_polygons;
 							use pac_offsetting;
 
 							polygon_tmp : type_polygon;
@@ -1335,8 +1335,8 @@ procedure draw_packages is
 						-- Builds the stopmask contour from the pad contour:
 						procedure build_contour is
 							use pac_geometry_2;	
-							use et_board_coordinates.pac_contours;
-							use et_board_coordinates.pac_polygons;
+							use et_board_geometry.pac_contours;
+							use et_board_geometry.pac_polygons;
 							use pac_offsetting;
 
 							polygon_tmp : type_polygon;
@@ -1446,8 +1446,8 @@ procedure draw_packages is
 						-- Builds the stencil contour from the pad contour:
 						procedure build_contour is 
 							use pac_geometry_2;	
-							use et_board_coordinates.pac_contours;
-							use et_board_coordinates.pac_polygons;
+							use et_board_geometry.pac_contours;
+							use et_board_geometry.pac_polygons;
 							use pac_offsetting;
 
 							polygon_tmp : type_polygon;
