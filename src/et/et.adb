@@ -87,7 +87,11 @@ with et_drawing_frame;
 with et_drawing_frame_rw;
 
 with et_sheets;
+
+with et_schematic_geometry;
 with et_schematic_coordinates;
+
+with et_board_geometry;
 with et_board_coordinates;
 
 with et_gui_2;
@@ -755,8 +759,8 @@ procedure et is
 	
 	procedure log_sys_info is 
 	begin
-		log (text => et_board_coordinates.pac_geometry_2.get_info ("layout/board"));
-		log (text => et_schematic_coordinates.pac_geometry_2.get_info ("schematic"));
+		log (text => et_board_geometry.pac_geometry_2.get_info ("layout/board"));
+		log (text => et_schematic_geometry.pac_geometry_2.get_info ("schematic"));
 	end log_sys_info;
 
 
