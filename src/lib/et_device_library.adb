@@ -737,7 +737,7 @@ package body et_device_library is
 
 
 
-	function placeholders_of_package (
+	function get_package_placeholders (
 		device	: in pac_devices_lib.cursor;
 		variant	: in pac_package_variant_name.bounded_string) -- N, D, S_0805
 		return type_text_placeholders
@@ -755,7 +755,7 @@ package body et_device_library is
 		use pac_package_models;
 		package_cursor		: pac_package_models.cursor;
 
-	begin -- placeholders_of_package
+	begin -- get_package_placeholders
 		
 		-- locate the given variant in the device:
 		variant_cursor := pac_package_variants.find (variants_available, variant);
@@ -775,7 +775,7 @@ package body et_device_library is
 		placeholders.assy_doc.bottom := element (package_cursor).assy_doc.bottom.placeholders;
 		
 		return placeholders;
-	end placeholders_of_package;
+	end get_package_placeholders;
 
 	
 		

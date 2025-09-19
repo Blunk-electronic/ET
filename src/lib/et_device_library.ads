@@ -317,9 +317,10 @@ package et_device_library is
 	
 
 
-	-- Returns the placeholders of the package of a device. The package is indirectly selected
-	-- by the given variant name. The given device is accessed by the given device cursor.
-	function placeholders_of_package ( -- CS rename to get_placeholders_of_package
+	-- Returns the placeholders of the package of a device. 
+	-- The package is indirectly selected by the given variant name.
+	-- The given device is accessed by the given device cursor.
+	function get_package_placeholders (
 		device	: in pac_devices_lib.cursor;
 		variant	: in pac_package_variant_name.bounded_string) -- N, D, S_0805
 		return type_text_placeholders;
