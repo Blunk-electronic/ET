@@ -262,10 +262,7 @@ package body et_canvas_board_2 is
 			backup_scrollbar_settings;
 			canvas.grab_focus;
 			restore_scrollbar_settings;
-			
 			status_clear;
-			
-			event_handled := true;
 		end focus_canvas;
 
 
@@ -274,8 +271,6 @@ package body et_canvas_board_2 is
 		procedure focus_console is begin
 			console.grab_focus;
 			set_status ("enter command");
-
-			event_handled := true;
 		end focus_console;
 
 		
@@ -299,20 +294,19 @@ package body et_canvas_board_2 is
 
 				-- If the operator presses F2 then change the primary tool:
 				when GDK_F2 =>
-					change_primary_tool;
-					
+					change_primary_tool;					
 					event_handled := true; -- event handled
 
 
 				-- If the operator presses F3 then set the focus to the console:
 				when GDK_F3 =>
 					focus_console;
-
+					event_handled := true;
 					
 				-- If the operator presses F4 then set the focus to the canvas:
 				when GDK_F4 =>
 					focus_canvas;
-
+					event_handled := true;
 					
 
 				when GDK_F5 =>
@@ -342,7 +336,7 @@ package body et_canvas_board_2 is
 					event_handled := true;
 
 					
-				-- Other keys are propagated to the canvas:
+				-- Other key events are propagated further:
 				when others =>
 					event_handled := false;
 
