@@ -274,6 +274,7 @@ is
 			
 		end add_unit_internal;
 
+
 		
 		
 		-- Add an external unit to the schematic device.
@@ -282,58 +283,84 @@ is
 			device_name	: in type_device_name;
 			device		: in out type_device_sch) 
 		is
-			use pac_units_external;
-			use et_symbols;
-			use pac_symbols;
-			symbol_cursor : pac_symbols.cursor;
-			symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
 
-			placeholders : type_default_placeholders;
-		begin
-			log (text => "add external unit " & to_string (key (first_available_unit.ext)),
+
+			-- This procedure composes the virtual unit and adds
+			-- it to the schematic:
+			procedure add_virtual is
+				unit : type_unit (appearance => APPEARANCE_VIRTUAL);
+			begin
+				-- Compose a virtual unit:
+				unit := (
+					appearance	=> APPEARANCE_VIRTUAL,
+					position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
+					others 		=> <>);
+
+				-- Add the unit to the schematic:
+				pac_units.insert (
+					container	=> device.units,
+					key			=> get_name_external (first_available_unit), -- the unit name like A, B
+					new_item	=> unit);
+					
+			end add_virtual;
+
+			
+
+			-- This procedure composes the real unit and adds
+			-- it to the schematic:
+			procedure add_real is
+				use et_symbols;
+				use pac_symbols;
+				symbol_cursor : pac_symbols.cursor;
+				symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
+
+				placeholders : type_default_placeholders;
+
+				use pac_units_external;
+				unit : type_unit (appearance => APPEARANCE_PCB);
+			begin
+				-- The symbol file name is provided by first_available_unit.ext.
+				symbol_file := element (first_available_unit.ext).model; -- *.sym
+				
+				-- Locate the external symbol in container "symbols".
+				-- The key into symbols is the file name (*.sym).
+				symbol_cursor := find (symbol_library, symbol_file);
+
+				-- CS: The symbol should be there now. Otherwise symbol_cursor would assume no_element
+				-- and constraint_error would arise here:
+
+				-- Rotate the positions of placeholders and their rotation about
+				-- their own origin according to rotation given by caller:
+				placeholders := get_default_placeholders (symbol_cursor, destination);
+
+				-- Compose a real unit:
+				unit := (
+					appearance	=> APPEARANCE_PCB,
+					position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
+					placeholders => (
+						name		=> placeholders.name,	
+						value		=> placeholders.value,	
+						purpose		=> placeholders.purpose),	
+					others 		=> <>);
+
+				-- Add the unit to the schematic:
+				pac_units.insert (
+					container	=> device.units,
+					key			=> get_name_external (first_available_unit), -- the unit name like A, B, VCC_IO_BANK_1
+					new_item	=> unit);
+
+			end add_real;
+			
+			
+		begin					
+			log (text => "add external unit " & to_string (get_name_external (first_available_unit)),
 				 level => log_threshold + 2);
 			
-			case element (device_cursor_lib).appearance is
-				when APPEARANCE_VIRTUAL =>
-					pac_units.insert (
-						container	=> device.units,
-						key			=> key (first_available_unit.ext), -- the unit name like A, B
-						new_item	=> (
-							appearance	=> APPEARANCE_VIRTUAL,
-							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
-							others 		=> <>) -- mirror
-							);
-					
-				when APPEARANCE_PCB =>
-					-- The symbol file name is provided by first_available_unit.ext.
-					symbol_file := element (first_available_unit.ext).model; -- *.sym
-					
-					-- Locate the external symbol in container "symbols".
-					-- The key into symbols is the file name (*.sym).
-					symbol_cursor := find (symbol_library, symbol_file);
-
-					-- CS: The symbol should be there now. Otherwise symbol_cursor would assume no_element
-					-- and constraint_error would arise here:
-
-					-- Rotate the positions of placeholders and their rotation about
-					-- their own origin according to rotation given by caller:
-					placeholders := get_default_placeholders (symbol_cursor, destination);
-					
-					pac_units.insert (
-						container	=> device.units,
-						key			=> key (first_available_unit.ext), -- the unit name like A, B, VCC_IO_BANK_1
-						new_item	=> (
-							appearance	=> APPEARANCE_PCB,
-							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
-							placeholders => (
-								name		=> placeholders.name,	
-								value		=> placeholders.value,	
-								purpose		=> placeholders.purpose),	
-							others 		=> <>) -- mirror
-							);
-
-			end case;
-
+			if is_real (device_cursor_lib) then
+				add_real;
+			else
+				add_virtual;
+			end if;
 		end add_unit_external;
 
 
