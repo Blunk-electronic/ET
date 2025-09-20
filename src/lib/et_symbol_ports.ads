@@ -175,6 +175,12 @@ package et_symbol_ports is
 		element_type	=> type_port);
 
 	use pac_ports;
+
+
+	-- Returns the total number of ports in the given list:
+	function get_count (
+		ports : in pac_ports.map)
+		return natural;
 	
 
 	-- Returns the x/y-position of the given port:

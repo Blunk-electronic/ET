@@ -44,6 +44,16 @@ with ada.characters.handling;	use ada.characters.handling;
 package body et_symbol_ports is
 
 
+	function get_count (
+		ports : in pac_ports.map)
+		return natural
+	is begin
+		return natural (ports.length);
+	end;
+
+
+
+	
 	function get_position (
 		port	: in pac_ports.cursor)
 		return type_vector_model

@@ -837,7 +837,7 @@ package body et_device_library is
 
 		-- If the unit could not be found among external units 
 		-- then look up the internal units:
-		if pac_ports.length (ports) = 0 then
+		if get_count (ports) = 0 then
 
 			query_element (
 				position	=> device_cursor,
@@ -846,7 +846,7 @@ package body et_device_library is
 
 		
 		-- If still no ports found, then we have a problem:
-		if pac_ports.length (ports) = 0 then
+		if get_count (ports) = 0 then
 			raise constraint_error;
 		end if;
 		
