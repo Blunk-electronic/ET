@@ -111,6 +111,43 @@ package body et_device_model is
 
 	
 
+
+	function has_internal_unit (
+		units : in type_device_units)
+		return boolean
+	is begin
+		return has_element (units.int);
+	end;
+
+	
+
+	function has_external_unit (
+		units : in type_device_units)
+		return boolean
+	is begin
+		return has_element (units.ext);
+	end;
+
+
+	
+
+	function get_name_internal (
+		units : in type_device_units)
+		return pac_unit_name.bounded_string
+	is begin
+		return key (units.int);
+	end;
+	
+
+	function get_name_external (
+		units : in type_device_units)
+		return pac_unit_name.bounded_string
+	is begin
+		return key (units.ext);
+	end;
+
+
+	
 	
 	procedure locate_internal (
 		model	: in type_device_model;

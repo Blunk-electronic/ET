@@ -140,12 +140,9 @@ package et_device_library is
 		return boolean;
 
 	
-	-- When querying units of a device this type is required:
-	type type_device_units is record
-		int : pac_units_internal.cursor;
-		ext : pac_units_external.cursor;
-	end record;
 
+
+	
 	
 	-- Returns true if the given device (via a cursor) 
 	-- does provide the given unit.

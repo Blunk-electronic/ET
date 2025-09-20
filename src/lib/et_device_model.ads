@@ -154,6 +154,9 @@ package et_device_model is
 	use pac_units_external;
 	
 
+
+
+	
 	
 	function get_symbol_model_file (
 		unit	: in pac_units_external.cursor)
@@ -200,6 +203,44 @@ package et_device_model is
 	end record;
 
 
+
+	-- When querying units of a device this type is required:
+	type type_device_units is record
+		int : pac_units_internal.cursor;
+		ext : pac_units_external.cursor;
+	end record;
+
+
+	-- Returns true if the given units provide
+	-- an internal unit:
+	function has_internal_unit (
+		units : in type_device_units)
+		return boolean;
+	
+
+	-- Returns true if the given units provide
+	-- an external unit:
+	function has_external_unit (
+		units : in type_device_units)
+		return boolean;
+
+	
+	-- Returns the name of the internal unit.
+	-- If no internal unit exists, then an exception is raised:
+	function get_name_internal (
+		units : in type_device_units)
+		return pac_unit_name.bounded_string;
+	
+
+	-- Returns the name of the external unit.
+	-- If no external unit exists, then an exception is raised:
+	function get_name_external (
+		units : in type_device_units)
+		return pac_unit_name.bounded_string;
+
+
+
+	
 
 	-- Locates the given unit by its name among the
 	-- internal units of the given device model.

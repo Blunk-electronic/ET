@@ -359,8 +359,8 @@ is
 		--    device model.
 		-- 3. It loads the variable "unit_name" with the name of the selected unit.
 		procedure add_unit is 
-			use pac_units_internal;	
-			use pac_units_external;
+			-- use pac_units_internal;	
+			-- use pac_units_external;
 		begin
 			log (text => "add_unit", level => log_threshold + 1);
 			log_indentation_up;
@@ -374,7 +374,7 @@ is
 			-- If no internal unit is available but an external, then add it 
 			-- to the device. So the operator will not take notice
 			-- whether an internal or external unit is selected:
-			if has_element (first_available_unit.int) then
+			if has_internal_unit (first_available_unit) then
 
 				-- Add the internal unit to the device:
 				update_element (
@@ -385,18 +385,18 @@ is
 				-- Fetch the ports of the unit and their default positions 
 				-- relative to the unit origin as they are defined in 
 				-- the device model:
+				unit_name := get_name_internal (first_available_unit);
+				
 				log (text => "fetch default port positions of internal unit " 
-					 & to_string (key (first_available_unit.int)), level => log_threshold + 2);
+					 & to_string (unit_name), level => log_threshold + 2);
 				
 				ports := get_ports_of_unit (
 					device_cursor	=> device_cursor_lib,
-					unit_name		=> key (first_available_unit.int));
-
-				unit_name := key (first_available_unit.int);
+					unit_name		=> unit_name);
 
 				
 			-- If no internal unit is available -> add external unit:
-			elsif has_element (first_available_unit.ext) then
+			elsif has_external_unit (first_available_unit) then
 
 				-- Add the external unit to the device:
 				update_element (
@@ -407,14 +407,15 @@ is
 				-- Fetch the ports of the unit and their default positions 
 				-- relative to the unit origin as they are defined in 
 				-- the device model:
+				unit_name := get_name_external (first_available_unit);
+				
 				log (text => "fetch default port positions of external unit " 
-					 & to_string (key (first_available_unit.ext)), level => log_threshold + 2);
+					 & to_string (unit_name), level => log_threshold + 2);
 
 				ports := get_ports_of_unit (
 					device_cursor	=> device_cursor_lib,
-					unit_name		=> key (first_available_unit.ext));
+					unit_name		=> unit_name);
 
-				unit_name := key (first_available_unit.ext);
 				
 			else
 				raise constraint_error; -- CS should never happen. function first_unit excludes this case.
