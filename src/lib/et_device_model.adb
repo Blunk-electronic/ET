@@ -44,6 +44,15 @@ with ada.text_io;				use ada.text_io;
 package body et_device_model is
 
 
+	function get_ports_internal (
+		unit_cursor	: in pac_units_internal.cursor)
+		return pac_ports.map
+	is begin
+		return element (unit_cursor).symbol.ports;
+	end;
+
+
+	
 
 	function get_port_positions (
 		unit	: in pac_units_internal.cursor)
@@ -63,6 +72,41 @@ package body et_device_model is
 
 
 
+	
+
+	function get_ports_external (
+		unit_cursor	: in pac_units_external.cursor)
+		return pac_ports.map
+	is 
+		result : pac_ports.map; -- to be returned
+
+		sym_model : pac_symbol_model_file.bounded_string; 
+		-- like /libraries/symbols/NAND.sym
+
+		
+		procedure query_symbol (
+			symbol_name	: in pac_symbol_model_file.bounded_string;
+			symbol		: in type_symbol) 
+		is begin
+			result := symbol.ports;
+		end query_symbol;
+
+		
+	begin
+		sym_model := element (unit_cursor).model;
+
+		-- Fetch the ports of the external unit.
+		-- CS: constraint_error arises here if symbol model could not be located.
+		pac_symbols.query_element (
+			position	=> pac_symbols.find (symbol_library, sym_model),
+			process		=> query_symbol'access);
+		
+		return result;
+	end get_ports_external;
+
+	
+
+	
 
 	function get_symbol_model_file (
 		unit	: in pac_units_external.cursor)

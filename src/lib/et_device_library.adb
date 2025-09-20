@@ -797,16 +797,13 @@ package body et_device_library is
 			model	: in pac_device_model_file.bounded_string;
 			device	: in type_device_model) 
 		is
-			use pac_units_internal;
 			unit_cursor : pac_units_internal.cursor;
 		begin
 			-- locate the given unit among the internal units:
 			locate_internal (device, unit_name, unit_cursor);
 
 			-- Fetch the ports of the internal unit.
-			-- Transfer the ports to the portlist to be returned:			
-			-- CS: constraint_error arises here if unit can not be located.
-			ports := element (unit_cursor).symbol.ports;
+			ports := get_ports_internal (unit_cursor);
 		end query_internal_units;
 
 
@@ -817,19 +814,6 @@ package body et_device_library is
 		is
 			use pac_units_external;
 			unit_cursor : pac_units_external.cursor;
-			sym_model : pac_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
-
-			
-			-- Appends the ports names of the external unit 
-			-- to the portlist to be returned.
-			procedure query_symbol (
-				symbol_name	: in pac_symbol_model_file.bounded_string;
-				symbol		: in type_symbol) 
-			is begin
-				ports := symbol.ports;
-			end query_symbol;
-			
-			
 		begin
 			-- locate the given unit among the external units:
 			locate_external (device, unit_name, unit_cursor);
@@ -837,15 +821,8 @@ package body et_device_library is
 			-- Fetch the symbol model file of the external unit.
 			-- If unit could not be located, nothing happens -> ports remains empty.
 			if has_element (unit_cursor) then
-				sym_model := element (unit_cursor).model;
-
-				-- Fetch the ports of the external unit.
-				-- CS: constraint_error arises here if symbol model could not be located.
-				pac_symbols.query_element (
-					position	=> pac_symbols.find (symbol_library, sym_model),
-					process		=> query_symbol'access);
-			end if;
-			
+				ports := get_ports_external (unit_cursor);
+			end if;			
 		end query_external_units;
 		
 		

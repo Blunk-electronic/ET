@@ -53,6 +53,7 @@ with ada.containers.indefinite_ordered_maps;
 with et_schematic_geometry;		use et_schematic_geometry;
 with et_schematic_coordinates;	use et_schematic_coordinates;
 with et_symbols;				use et_symbols;
+with et_symbol_ports;			use et_symbol_ports;
 with et_device_appearance;		use et_device_appearance;
 with et_device_model_names;		use et_device_model_names;
 with et_device_value;			use et_device_value;
@@ -122,6 +123,13 @@ package et_device_model is
 	use pac_units_internal;
 
 
+	-- Returns the ports of the given internal unit:
+	function get_ports_internal (
+		unit_cursor	: in pac_units_internal.cursor)
+		return pac_ports.map;
+
+	
+						   
 	-- Returns the default x/y-positions of the 
 	-- given internal unit. If the given
 	-- cursor of the unit is no_element then the
@@ -161,6 +169,13 @@ package et_device_model is
 	function get_symbol_model_file (
 		unit	: in pac_units_external.cursor)
 		return pac_symbol_model_file.bounded_string;
+
+
+
+	-- Returns the ports of the given external unit:
+	function get_ports_external (
+		unit_cursor	: in pac_units_external.cursor)
+		return pac_ports.map;
 
 	
 
