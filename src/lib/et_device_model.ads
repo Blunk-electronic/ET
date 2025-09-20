@@ -162,6 +162,10 @@ package et_device_model is
 	use pac_units_external;
 	
 
+	-- Returns the ports of the given external unit:
+	function get_ports_external (
+		unit_cursor	: in pac_units_external.cursor)
+		return pac_ports.map;
 
 
 	
@@ -171,11 +175,13 @@ package et_device_model is
 		return pac_symbol_model_file.bounded_string;
 
 
+	-- Maps from an external unit to the symbol
+	-- in the symbol library:
+	function get_symbol (
+		unit	: in pac_units_external.cursor)
+		return pac_symbols.cursor;
+	
 
-	-- Returns the ports of the given external unit:
-	function get_ports_external (
-		unit_cursor	: in pac_units_external.cursor)
-		return pac_ports.map;
 
 	
 

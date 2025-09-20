@@ -310,24 +310,13 @@ is
 			-- it to the schematic:
 			procedure add_real is
 				use et_symbols;
-				use pac_symbols;
 				symbol_cursor : pac_symbols.cursor;
-				symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
-
 				placeholders : type_default_placeholders;
 
 				use pac_units_external;
 				unit : type_unit (appearance => APPEARANCE_PCB);
 			begin
-				-- The symbol file name is provided by first_available_unit.ext.
-				symbol_file := element (first_available_unit.ext).model; -- *.sym
-				
-				-- Locate the external symbol in container "symbols".
-				-- The key into symbols is the file name (*.sym).
-				symbol_cursor := find (symbol_library, symbol_file);
-
-				-- CS: The symbol should be there now. Otherwise symbol_cursor would assume no_element
-				-- and constraint_error would arise here:
+				symbol_cursor := get_symbol (first_available_unit.ext);
 
 				-- Rotate the positions of placeholders and their rotation about
 				-- their own origin according to rotation given by caller:
@@ -341,7 +330,7 @@ is
 						name		=> placeholders.name,	
 						value		=> placeholders.value,	
 						purpose		=> placeholders.purpose),	
-					others 		=> <>);
+						others 		=> <>);
 
 				-- Add the unit to the schematic:
 				pac_units.insert (

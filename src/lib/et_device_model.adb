@@ -116,6 +116,25 @@ package body et_device_model is
 	end get_symbol_model_file;
 	
 
+
+
+	
+	function get_symbol (
+		unit	: in pac_units_external.cursor)
+		return pac_symbols.cursor
+	is
+		result : pac_symbols.cursor;
+		symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
+	begin
+		symbol_file := get_symbol_model_file (unit);
+
+		locate_symbol (symbol_file, result);
+		return result;
+	end;
+
+
+
+
 	
 
 	function get_port_positions (
