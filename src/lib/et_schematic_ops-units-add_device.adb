@@ -358,10 +358,7 @@ is
 		--    of the selected unit with the ports as they are defined in the 
 		--    device model.
 		-- 3. It loads the variable "unit_name" with the name of the selected unit.
-		procedure add_unit is 
-			-- use pac_units_internal;	
-			-- use pac_units_external;
-		begin
+		procedure add_unit is begin
 			log (text => "add_unit", level => log_threshold + 1);
 			log_indentation_up;
 			
