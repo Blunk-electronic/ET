@@ -326,7 +326,17 @@ package et_device_library is
 		return type_text_placeholders;
 
 	
-		
+
+	-- Returns the ports of the given device and unit.
+	-- The coordinates of the ports are the default x/y-positions relative
+	-- to the origin of the unit as they are defined in the symbol model.
+	function get_ports_of_unit (
+		device_cursor	: in pac_devices_lib.cursor;
+		unit_name		: in pac_unit_name.bounded_string)
+		return pac_ports.map;
+
+
+	
 end et_device_library;
 
 -- Soli Deo Gloria

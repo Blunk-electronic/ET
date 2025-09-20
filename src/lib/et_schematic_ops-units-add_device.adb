@@ -382,14 +382,14 @@ is
 					position	=> device_cursor_sch,
 					process		=> add_unit_internal'access);
 
-				-- Fetch the ports of the unit and their positions 
+				-- Fetch the ports of the unit and their default positions 
 				-- relative to the unit origin as they are defined in 
 				-- the device model:
-				log (text => "fetch relative port positions of internal unit " 
+				log (text => "fetch default port positions of internal unit " 
 					 & to_string (key (first_available_unit.int)), level => log_threshold + 2);
 				
 				ports := get_ports_of_unit (
-					device_cursor	=> device_cursor_sch,
+					device_cursor	=> device_cursor_lib,
 					unit_name		=> key (first_available_unit.int));
 
 				unit_name := key (first_available_unit.int);
@@ -404,14 +404,14 @@ is
 					position	=> device_cursor_sch,
 					process		=> add_unit_external'access);
 
-				-- Fetch the ports of the unit and their positions 
+				-- Fetch the ports of the unit and their default positions 
 				-- relative to the unit origin as they are defined in 
 				-- the device model:
-				log (text => "fetch relative port positions of external unit " 
+				log (text => "fetch default port positions of external unit " 
 					 & to_string (key (first_available_unit.ext)), level => log_threshold + 2);
 
 				ports := get_ports_of_unit (
-					device_cursor	=> device_cursor_sch,
+					device_cursor	=> device_cursor_lib,
 					unit_name		=> key (first_available_unit.ext));
 
 				unit_name := key (first_available_unit.ext);

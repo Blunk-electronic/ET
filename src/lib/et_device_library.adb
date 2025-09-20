@@ -777,6 +777,112 @@ package body et_device_library is
 		return placeholders;
 	end get_package_placeholders;
 
+
+
+
+
+
+
+	function get_ports_of_unit (
+		device_cursor	: in pac_devices_lib.cursor;
+		unit_name		: in pac_unit_name.bounded_string)
+		return pac_ports.map 
+	is
+		ports : pac_ports.map; -- to be returned
+		
+
+		
+		procedure query_internal_units (
+			model	: in pac_device_model_file.bounded_string;
+			device	: in type_device_model) 
+		is
+			use pac_units_internal;
+			unit_cursor : pac_units_internal.cursor;
+		begin
+			-- locate the given unit among the internal units
+			unit_cursor := find (device.units_internal, unit_name);
+
+			-- Fetch the ports of the internal unit.
+			-- Transfer the ports to the portlist to be returned:			
+			-- CS: constraint_error arises here if unit can not be located.
+			ports := element (unit_cursor).symbol.ports;
+		end query_internal_units;
+
+
+		
+		procedure query_external_units (
+			model	: in pac_device_model_file.bounded_string;
+			device	: in type_device_model) 
+		is
+			use pac_units_external;
+			unit_cursor : pac_units_external.cursor;
+			sym_model : pac_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
+
+			procedure query_symbol (
+			-- Appends the ports names of the external unit to the portlist to 
+			-- be returned.
+				symbol_name	: in pac_symbol_model_file.bounded_string;
+				symbol		: in type_symbol ) 
+			is begin
+				ports := symbol.ports;
+			end query_symbol;
+			
+			
+		begin -- query_external_units
+			-- locate the given unit among the external units
+			unit_cursor := find (device.units_external, unit_name);
+
+			-- Fetch the symbol model file of the external unit.
+			-- If unit could not be located, nothing happens -> ports remains empty.
+			if unit_cursor /= pac_units_external.no_element then
+				sym_model := element (unit_cursor).model;
+
+				-- Fetch the ports of the external unit.
+				-- CS: constraint_error arises here if symbol model could not be located.
+				pac_symbols.query_element (
+					position	=> pac_symbols.find (symbol_library, sym_model),
+					process		=> query_symbol'access);
+			end if;
+			
+		end query_external_units;
+		
+		
+	begin -- get_ports_of_unit
+
+		-- Query external units of the device.
+		-- It is most likely that
+		-- the unit is among the external units:
+		query_element (
+			position	=> device_cursor,
+			process		=> query_external_units'access);
+
+		-- If the unit could not be found among external units 
+		-- then look up the internal units:
+		if pac_ports.length (ports) = 0 then
+
+			query_element (
+				position	=> device_cursor,
+				process		=> query_internal_units'access);
+		end if;
+
+		
+		-- If still no ports found, then we have a problem:
+		if pac_ports.length (ports) = 0 then
+			raise constraint_error;
+		end if;
+		
+		return ports;
+
+		-- exception
+		-- 	when event: others =>
+		-- 		log_indentation_reset;
+		-- 		log (text => ada.exceptions.exception_information (event), console => true);
+		-- 		raise;
+		
+	end get_ports_of_unit;
+
+
+	
 	
 		
 end et_device_library;
