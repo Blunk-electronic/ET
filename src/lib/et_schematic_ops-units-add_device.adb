@@ -36,9 +36,10 @@
 --   history of changes:
 --
 --  To Do:
+--  1. The packages of new devices shall be placed in the board
+--     next to each other. Currently they are placed on top of each
+--     other.
 --
---
-
 
 with et_device_rw;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
@@ -217,28 +218,33 @@ is
 		end add_bare_device;
 		
 
-		
 
-		use pac_units_internal;
-		use pac_units_external;
-		unit_cursors : type_device_units;
+		-- When a device is added to the schematic, it is first
+		-- added as a bare device without any units (see procedures above).
+		--  The next step is to fetch the first available unit and add
+		-- it to the bare device. Since the available unit can 
+		-- be an external or inernal unit, the variable first_available_unit
+		-- is a record that contains a cursor to an internal or
+		-- external unit:
+		first_available_unit : type_device_units;
 
 
 		-- Add an internal unit to the schematic device.
-		-- The unit to be added is accessed by unit_cursors.int.
+		-- The unit to be added is accessed by first_available_unit.int.
 		procedure add_unit_internal (
 			device_name	: in type_device_name;
 			device		: in out type_device_sch) 
 		is 
+			use pac_units_internal;
 			placeholders : type_default_placeholders;
 		begin
-			log (text => "add internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
+			log (text => "add internal unit " & to_string (key (first_available_unit.int)), level => log_threshold + 2);
 			
 			case element (device_cursor_lib).appearance is
 				when APPEARANCE_VIRTUAL =>
 					pac_units.insert (
 						container	=> device.units,
-						key			=> key (unit_cursors.int), -- the unit name like A, B
+						key			=> key (first_available_unit.int), -- the unit name like A, B
 						new_item	=> (
 							appearance	=> APPEARANCE_VIRTUAL,
 							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
@@ -249,11 +255,11 @@ is
 
 					-- Rotate the positions of placeholders and their rotation about
 					-- their own origin according to rotation given by caller:
-					placeholders := get_default_placeholders (unit_cursors.int, destination);
+					placeholders := get_default_placeholders (first_available_unit.int, destination);
 					
 					pac_units.insert (
 						container	=> device.units,
-						key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
+						key			=> key (first_available_unit.int), -- the unit name like A, B, VCC_IO_BANK_1
 						new_item	=> (
 							appearance	=> APPEARANCE_PCB,
 							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
@@ -271,11 +277,12 @@ is
 		
 		
 		-- Add an external unit to the schematic device.
-		-- The unit to be added is accessed by unit_cursors.ext.
+		-- The unit to be added is accessed by first_available_unit.ext.
 		procedure add_unit_external (
 			device_name	: in type_device_name;
 			device		: in out type_device_sch) 
 		is
+			use pac_units_external;
 			use et_symbols;
 			use pac_symbols;
 			symbol_cursor : pac_symbols.cursor;
@@ -283,13 +290,14 @@ is
 
 			placeholders : type_default_placeholders;
 		begin
-			log (text => "add external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
+			log (text => "add external unit " & to_string (key (first_available_unit.ext)),
+				 level => log_threshold + 2);
 			
 			case element (device_cursor_lib).appearance is
 				when APPEARANCE_VIRTUAL =>
 					pac_units.insert (
 						container	=> device.units,
-						key			=> key (unit_cursors.ext), -- the unit name like A, B
+						key			=> key (first_available_unit.ext), -- the unit name like A, B
 						new_item	=> (
 							appearance	=> APPEARANCE_VIRTUAL,
 							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
@@ -297,8 +305,8 @@ is
 							);
 					
 				when APPEARANCE_PCB =>
-					-- The symbol file name is provided by unit_cursors.ext.
-					symbol_file := element (unit_cursors.ext).model; -- *.sym
+					-- The symbol file name is provided by first_available_unit.ext.
+					symbol_file := element (first_available_unit.ext).model; -- *.sym
 					
 					-- Locate the external symbol in container "symbols".
 					-- The key into symbols is the file name (*.sym).
@@ -313,7 +321,7 @@ is
 					
 					pac_units.insert (
 						container	=> device.units,
-						key			=> key (unit_cursors.ext), -- the unit name like A, B, VCC_IO_BANK_1
+						key			=> key (first_available_unit.ext), -- the unit name like A, B, VCC_IO_BANK_1
 						new_item	=> (
 							appearance	=> APPEARANCE_PCB,
 							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
@@ -336,11 +344,23 @@ is
 		-- of the unit to be added:
 		ports : pac_ports.map;
 
+		-- This is the place where we temporarily keep the name
+		-- of the unit to be added:
 		unit_name : pac_unit_name.bounded_string;
 
+
 		
-		-- This procedure adds a unit to the device:
-		procedure add_unit is 			
+		
+		-- This procedure adds a unit to the device. 
+		-- 1. It searches first among the internal units and then among
+		--    the external units that are provided by the device model.
+		-- 2. It also loads the variable "ports" (see above) with the ports
+		--    of the selected unit with the ports as they are defined in the 
+		--    device model.
+		-- 3. It loads the variable "unit_name" with the name of the selected unit.
+		procedure add_unit is 
+			use pac_units_internal;	
+			use pac_units_external;
 		begin
 			log (text => "add_unit", level => log_threshold + 1);
 			log_indentation_up;
@@ -348,45 +368,53 @@ is
 			-- Now we add the first available unit to the device in schematic.
 			-- The order by which units are deployed is specified in 
 			-- function get_first_unit:
-			unit_cursors := get_first_unit (device_cursor_lib);
+			first_available_unit := get_first_unit (device_cursor_lib);
 
-			-- If an internal unit is available, add it to device. If no internal unit available
-			-- but an external, add it to the device. So the operator will not take notice
-			-- whether an internal or external unit is placed.
-			if unit_cursors.int /= pac_units_internal.no_element then
+			-- If an internal unit is available, then add it to device. 
+			-- If no internal unit is available but an external, then add it 
+			-- to the device. So the operator will not take notice
+			-- whether an internal or external unit is selected:
+			if has_element (first_available_unit.int) then
 
-				pac_devices_sch.update_element (
+				-- Add the internal unit to the device:
+				update_element (
 					container	=> module.devices,
 					position	=> device_cursor_sch,
 					process		=> add_unit_internal'access);
 
-				-- fetch ports of unit and their positions relative to the unit origin
-				log (text => "fetch relative port positions of internal unit " &
-						to_string (key (unit_cursors.int)), level => log_threshold + 2);
+				-- Fetch the ports of the unit and their positions 
+				-- relative to the unit origin as they are defined in 
+				-- the device model:
+				log (text => "fetch relative port positions of internal unit " 
+					 & to_string (key (first_available_unit.int)), level => log_threshold + 2);
 				
 				ports := get_ports_of_unit (
 					device_cursor	=> device_cursor_sch,
-					unit_name		=> key (unit_cursors.int));
+					unit_name		=> key (first_available_unit.int));
 
-				unit_name := key (unit_cursors.int);
+				unit_name := key (first_available_unit.int);
+
 				
-			-- no internal unit available -> add external unit
-			elsif unit_cursors.ext /= pac_units_external.no_element then
-				
-				pac_devices_sch.update_element (
+			-- If no internal unit is available -> add external unit:
+			elsif has_element (first_available_unit.ext) then
+
+				-- Add the external unit to the device:
+				update_element (
 					container	=> module.devices,
 					position	=> device_cursor_sch,
 					process		=> add_unit_external'access);
 
-				-- fetch ports of unit and their positions relative to the unit origin
-				log (text => "fetch relative port positions of external unit " &
-						to_string (key (unit_cursors.ext)), level => log_threshold + 2);
+				-- Fetch the ports of the unit and their positions 
+				-- relative to the unit origin as they are defined in 
+				-- the device model:
+				log (text => "fetch relative port positions of external unit " 
+					 & to_string (key (first_available_unit.ext)), level => log_threshold + 2);
 
 				ports := get_ports_of_unit (
 					device_cursor	=> device_cursor_sch,
-					unit_name		=> key (unit_cursors.ext));
+					unit_name		=> key (first_available_unit.ext));
 
-				unit_name := key (unit_cursors.ext);
+				unit_name := key (first_available_unit.ext);
 				
 			else
 				raise constraint_error; -- CS should never happen. function first_unit excludes this case.
