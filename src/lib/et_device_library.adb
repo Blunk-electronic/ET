@@ -792,7 +792,6 @@ package body et_device_library is
 	is
 		ports : pac_ports.map; -- to be returned
 		
-
 		
 		procedure query_internal_units (
 			model	: in pac_device_model_file.bounded_string;
@@ -801,8 +800,8 @@ package body et_device_library is
 			use pac_units_internal;
 			unit_cursor : pac_units_internal.cursor;
 		begin
-			-- locate the given unit among the internal units
-			unit_cursor := find (device.units_internal, unit_name);
+			-- locate the given unit among the internal units:
+			locate_internal (device, unit_name, unit_cursor);
 
 			-- Fetch the ports of the internal unit.
 			-- Transfer the ports to the portlist to be returned:			
@@ -820,23 +819,24 @@ package body et_device_library is
 			unit_cursor : pac_units_external.cursor;
 			sym_model : pac_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
 
+			
+			-- Appends the ports names of the external unit 
+			-- to the portlist to be returned.
 			procedure query_symbol (
-			-- Appends the ports names of the external unit to the portlist to 
-			-- be returned.
 				symbol_name	: in pac_symbol_model_file.bounded_string;
-				symbol		: in type_symbol ) 
+				symbol		: in type_symbol) 
 			is begin
 				ports := symbol.ports;
 			end query_symbol;
 			
 			
-		begin -- query_external_units
-			-- locate the given unit among the external units
-			unit_cursor := find (device.units_external, unit_name);
-
+		begin
+			-- locate the given unit among the external units:
+			locate_external (device, unit_name, unit_cursor);
+			
 			-- Fetch the symbol model file of the external unit.
 			-- If unit could not be located, nothing happens -> ports remains empty.
-			if unit_cursor /= pac_units_external.no_element then
+			if has_element (unit_cursor) then
 				sym_model := element (unit_cursor).model;
 
 				-- Fetch the ports of the external unit.
