@@ -86,6 +86,7 @@ with et_port_sensitivity;
 with et_port_strength;
 with et_port_names;
 with et_port_direction;
+with et_symbol_shapes;
 with et_symbol_ports;
 with et_symbol_model;
 with et_device_appearance;
@@ -2311,12 +2312,12 @@ package body et_kicad_to_native is
 	function convert_shapes (
 		shapes			: in et_kicad_libraries.type_symbol_shapes;
 		log_threshold	: in type_log_level)
-		return et_symbol_model.type_shapes 
+		return et_symbol_shapes.type_shapes 
 	is
 		use et_kicad_libraries;
 		
-		use et_symbol_model;		
-		native_shapes : et_symbol_model.type_shapes;
+		use et_symbol_shapes;		
+		native_shapes : et_symbol_shapes.type_shapes;
 
 		
 		procedure copy_line (cursor : in et_kicad_libraries.type_symbol_lines.cursor) is begin
@@ -2329,7 +2330,7 @@ package body et_kicad_to_native is
 		procedure copy_arc (cursor : in et_kicad_libraries.type_symbol_arcs.cursor) is begin
 			pac_symbol_arcs.append (
 				container	=> native_shapes.arcs,
-				new_item	=> et_symbol_model.type_symbol_arc (et_kicad_libraries.type_symbol_arcs.element (cursor)));
+				new_item	=> et_symbol_shapes.type_symbol_arc (et_kicad_libraries.type_symbol_arcs.element (cursor)));
 		end;
 
 		
@@ -2378,7 +2379,7 @@ package body et_kicad_to_native is
 						start := true; -- up next: start point
 
 						-- append line to collection of native lines
-						et_symbol_model.pac_symbol_lines.append (
+						et_symbol_shapes.pac_symbol_lines.append (
 							container	=> native_shapes.lines,
 							new_item	=> line);
 
@@ -2412,7 +2413,7 @@ package body et_kicad_to_native is
 
 			
 			procedure append_line is begin
-				et_symbol_model.pac_symbol_lines.append (
+				et_symbol_shapes.pac_symbol_lines.append (
 					container	=> native_shapes.lines,
 					new_item	=> line);
 			end;

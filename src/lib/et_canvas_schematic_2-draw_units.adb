@@ -40,6 +40,7 @@ with et_colors;							use et_colors;
 
 with et_text;
 with et_alignment;
+with et_symbol_shapes;
 with et_symbol_text;
 with et_symbol_model;
 with et_port_names;
@@ -105,10 +106,12 @@ procedure draw_units is
 		use et_symbol_ports;
 		use pac_text_schematic;
 		use pac_geometry_2;
-		
+
+		use et_symbol_shapes;		
 		use pac_symbol_lines;
 		use pac_symbol_arcs;
 		use pac_symbol_circles;
+		
 		use pac_ports;
 
 		use et_symbol_text;

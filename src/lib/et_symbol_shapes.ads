@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                      SCHEMATIC SYMBOL MODEL                              --
+--                      SYMBOL PRIMITIVE SHAPES                             --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
@@ -42,69 +42,144 @@
 --   history of changes:
 --
 
-with ada.containers; 			use ada.containers;
-with ada.containers.indefinite_ordered_maps;
 
-with et_device_placeholders;			use et_device_placeholders;
-with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
+with ada.containers; 			use ada.containers;
+with ada.containers.doubly_linked_lists;
 
 with et_schematic_geometry;				use et_schematic_geometry;
 
-with et_logging;						use et_logging;
-with et_symbol_shapes;					use et_symbol_shapes;
-with et_symbol_name;					use et_symbol_name;
-with et_symbol_ports;					use et_symbol_ports;
-with et_symbol_text;					use et_symbol_text;
-with et_device_appearance;				use et_device_appearance;
+with et_primitive_objects;				use et_primitive_objects;
 
 
-package et_symbol_model is
+package et_symbol_shapes is
 
 	use pac_geometry_2;
 
 
 	
-	type type_symbol_base is tagged record		
-		texts : pac_symbol_texts.list; -- the collection of texts
+
+
+	subtype type_line_width is type_distance_positive range 0.1 .. 10.0;
+	-- CS rename to type_linewidth_contour ?
+
+	line_width_default : constant type_line_width := 0.2;
+
+	
+
+-- LINES
+
+	type type_symbol_line is new pac_geometry_2.type_line with record
+		width	: type_line_width := line_width_default;
 	end record;
 
 	
+	package pac_symbol_lines is new doubly_linked_lists (type_symbol_line);
+	use pac_symbol_lines;
 	
-	type type_symbol (appearance : type_appearance) 
-	is new type_symbol_base with 
-		record
-		shapes	: type_shapes; -- the collection of shapes
-		ports	: pac_ports.map;
-		
-		case appearance is
-			when APPEARANCE_PCB =>
-				-- Placeholders to be filled with content when 
-				-- a symbol is instantiated:
-				placeholders : type_default_placeholders;
 
-			when APPEARANCE_VIRTUAL => null;				
-		end case;
+	function get_A (
+		line : in pac_symbol_lines.cursor)
+		return type_vector_model;
+
+
+	function get_B (
+		line : in pac_symbol_lines.cursor)
+		return type_vector_model;
+
+	
+
+	
+	
+-- ARCS
+	
+	type type_symbol_arc is new pac_geometry_2.type_arc with record
+		width	: type_line_width := line_width_default;
 	end record;
 
-	
 
-	-- Returns true if the given symbol will be part of a real device:
-	function is_real (
-		symbol : in type_symbol)
-		return boolean;
-
-
+	procedure set_width (
+		arc		: in out type_symbol_arc;
+		width	: in type_line_width);
 
 	
-	-- Retrurns x/y-positions the the ports of the given symbol:
-	function get_port_positions (
-		symbol	: in type_symbol)
-		return pac_points.list;
+	procedure reset_arc (
+		arc	: in out type_symbol_arc);
+	
+	
+	package pac_symbol_arcs is new doubly_linked_lists (type_symbol_arc);
+	use pac_symbol_arcs;
+	
+	
+	function get_A (
+		arc : in pac_symbol_arcs.cursor)
+		return type_vector_model;
+
+
+	function get_B (
+		arc : in pac_symbol_arcs.cursor)
+		return type_vector_model;
+
+
+	function get_center (
+		arc : in pac_symbol_arcs.cursor)
+		return type_vector_model;
+
+
+	function get_direction (
+		arc : in pac_symbol_arcs.cursor)
+		return type_direction_of_rotation;
+
+	
+	
+	type type_circle_filled is (NO, YES);
+	
+	function to_string (filled : in type_circle_filled) return string;
+	
+	function to_circle_filled (filled : in string) return type_circle_filled;
 
 
 
+	
 
-end et_symbol_model;
+-- CIRCLES
+	
+	type type_circle_base is new pac_geometry_2.type_circle with record
+		width	: type_line_width := line_width_default;
+	end record;
+
+	type type_symbol_circle is new type_circle_base with record
+		filled	: type_circle_filled := NO;
+	end record;
+
+
+	procedure set_width (
+		circle	: in out type_symbol_circle;
+		width	: in type_line_width);
+
+	
+	package pac_symbol_circles is new doubly_linked_lists (type_symbol_circle);
+
+
+
+	
+	-- Shapes are wrapped in a the type_shapes:
+	type type_shapes is record
+		lines		: pac_symbol_lines.list		:= pac_symbol_lines.empty_list;
+		arcs 		: pac_symbol_arcs.list		:= pac_symbol_arcs.empty_list;
+		circles		: pac_symbol_circles.list	:= pac_symbol_circles.empty_list;
+	end record;
+
+
+	
+
+
+
+	origin_half_size : constant type_distance_positive := 1.0;
+	origin_line_width : constant type_distance_positive := 0.05;
+
+
+
+end et_symbol_shapes;
 
 -- Soli Deo Gloria
 

@@ -63,6 +63,7 @@ with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_text;					use et_text;
 with et_port_names;				use et_port_names;
+with et_symbol_shapes;			use et_symbol_shapes;
 with et_symbol_ports;			use et_symbol_ports;
 with et_symbol_model;			use et_symbol_model;
 with et_device_appearance;		use et_device_appearance;
@@ -241,8 +242,8 @@ package et_kicad_libraries is
 	
 	-- lines of a symbol:
 	package type_symbol_lines is new doubly_linked_lists (
-		element_type	=> et_symbol_model.type_symbol_line,
-		"="				=> et_symbol_model."=");
+		element_type	=> et_symbol_shapes.type_symbol_line,
+		"="				=> et_symbol_shapes."=");
 
 	-- polylines of a symbol:
 	-- A polyline is a list of points. Their interconnections have a width and a fill.
@@ -270,23 +271,29 @@ package et_kicad_libraries is
 		width		: type_distance_positive;
 		fill		: type_fill;
 	end record;
+
 	package type_symbol_rectangles is new doubly_linked_lists (type_symbol_rectangle);	
 	
+
 	-- arcs of a symbol:
-	type type_symbol_arc is new et_symbol_model.type_symbol_arc with record
+	type type_symbol_arc is new et_symbol_shapes.type_symbol_arc with record
 		start_angle		: et_schematic_geometry.pac_geometry_sch.type_angle;
 		end_angle		: et_schematic_geometry.pac_geometry_sch.type_angle;
 		radius			: et_schematic_geometry.pac_geometry_sch.type_float_positive;
  		fill			: type_fill;
 	end record;
+
 	package type_symbol_arcs is new doubly_linked_lists (type_symbol_arc);
 
+	
 	-- circles of a symbol:
-	type type_symbol_circle is new et_symbol_model.type_circle_base with record
+	type type_symbol_circle is new et_symbol_shapes.type_circle_base with record
 		fill			: type_fill;
 	end record;
+
 	package type_symbol_circles is new doubly_linked_lists (type_symbol_circle);
 
+	
 	-- Shapes are wrapped in a composite:
 	type type_symbol_shapes is record
 		lines		: type_symbol_lines.list 		:= type_symbol_lines.empty_list;
@@ -295,6 +302,7 @@ package et_kicad_libraries is
 		rectangles	: type_symbol_rectangles.list	:= type_symbol_rectangles.empty_list;
 		polylines	: type_symbol_polylines.list	:= type_symbol_polylines.empty_list;
 	end record;
+
 	
 	type type_symbol_element is (
 		LINE, POLYLINE, RECTANGLE, ARC, CIRCLE, -- shapes

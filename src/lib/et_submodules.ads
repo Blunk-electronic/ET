@@ -61,12 +61,11 @@ with et_pcb_stack;
 with et_board_coordinates;
 with et_board_geometry;
 with et_symbol_ports;				use et_symbol_ports;
-with et_symbol_model;
 with et_schematic_text;				use et_schematic_text;
 with et_module_names;				use et_module_names;
 with et_module_instance;			use et_module_instance;
 with et_fonts;						use et_fonts;
-
+with et_symbol_shapes;				use et_symbol_shapes;
 
 
 package et_submodules is
@@ -287,7 +286,7 @@ package et_submodules is
 						rotation	=> 180.0);
 
 		-- the arc that connects the ports
-		arc	: et_symbol_model.type_symbol_arc := (type_arc (to_arc (
+		arc	: type_symbol_arc := (type_arc (to_arc (
 						center	=> (x =>  0.0, y => 0.0),
 						A		=> (x => -5.0, y => 0.0),
 						B		=> (x =>  5.0, y => 0.0),

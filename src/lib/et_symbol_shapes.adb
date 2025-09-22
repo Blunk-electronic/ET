@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                      SCHEMATIC SYMBOL MODEL                              --
+--                      SYMBOL PRIMITIVE SHAPES                             --
 --                                                                          --
---                              S p e c                                     --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -33,78 +33,117 @@
 --   info@blunk-electronic.de
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
--- DESCRIPTION:
---
---  This package is about so called "symbols". A symbol is an abstraction
---  of an electrical component like a resistor, capactor, inductor or
---  a subset of an integrated circuit.
---
 --   history of changes:
 --
 
-with ada.containers; 			use ada.containers;
-with ada.containers.indefinite_ordered_maps;
+with ada.text_io;				use ada.text_io;
 
-with et_device_placeholders;			use et_device_placeholders;
-with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
+with ada.characters;			use ada.characters;
+with ada.characters.handling;	use ada.characters.handling;
 
-with et_schematic_geometry;				use et_schematic_geometry;
-
-with et_logging;						use et_logging;
-with et_symbol_shapes;					use et_symbol_shapes;
-with et_symbol_name;					use et_symbol_name;
-with et_symbol_ports;					use et_symbol_ports;
-with et_symbol_text;					use et_symbol_text;
-with et_device_appearance;				use et_device_appearance;
+-- with ada.exceptions; 			use ada.exceptions;
 
 
-package et_symbol_model is
 
-	use pac_geometry_2;
+package body et_symbol_shapes is
 
 
-	
-	type type_symbol_base is tagged record		
-		texts : pac_symbol_texts.list; -- the collection of texts
-	end record;
+	function get_A (
+		line : in pac_symbol_lines.cursor)
+		return type_vector_model
+	is begin
+		return get_A (element (line));
+	end;
 
-	
-	
-	type type_symbol (appearance : type_appearance) 
-	is new type_symbol_base with 
-		record
-		shapes	: type_shapes; -- the collection of shapes
-		ports	: pac_ports.map;
-		
-		case appearance is
-			when APPEARANCE_PCB =>
-				-- Placeholders to be filled with content when 
-				-- a symbol is instantiated:
-				placeholders : type_default_placeholders;
 
-			when APPEARANCE_VIRTUAL => null;				
-		end case;
-	end record;
-
-	
-
-	-- Returns true if the given symbol will be part of a real device:
-	function is_real (
-		symbol : in type_symbol)
-		return boolean;
-
+	function get_B (
+		line : in pac_symbol_lines.cursor)
+		return type_vector_model
+	is begin
+		return get_B (element (line));
+	end;
 
 
 	
-	-- Retrurns x/y-positions the the ports of the given symbol:
-	function get_port_positions (
-		symbol	: in type_symbol)
-		return pac_points.list;
+
+
+	procedure set_width (
+		arc		: in out type_symbol_arc;
+		width	: in type_line_width)
+	is begin
+		arc.width := width;
+	end set_width;
+
+	
+
+	function get_A (
+		arc : in pac_symbol_arcs.cursor)
+		return type_vector_model
+	is begin
+		return get_A (element (arc));
+	end;
+
+
+	function get_B (
+		arc : in pac_symbol_arcs.cursor)
+		return type_vector_model
+	is begin
+		return get_B (element (arc));
+	end;
+
+
+	function get_center (
+		arc : in pac_symbol_arcs.cursor)
+		return type_vector_model
+	is begin
+		return get_center (element (arc));
+	end;
+
+
+	function get_direction (
+		arc : in pac_symbol_arcs.cursor)
+		return type_direction_of_rotation
+	is begin
+		return get_direction (element (arc));
+	end;
+	
 
 
 
 
-end et_symbol_model;
+	procedure reset_arc (
+		arc	: in out type_symbol_arc)
+	is 
+		a : type_arc;
+	begin
+		arc := (a with type_line_width'first);
+	end reset_arc;
+
+	
+	
+
+
+
+	function to_string (filled : in type_circle_filled) return string is begin
+		return to_lower (type_circle_filled'image (filled));
+	end;
+
+	function to_circle_filled (filled : in string) return type_circle_filled is begin
+		return type_circle_filled'value (filled);
+	end;
+
+
+
+	procedure set_width (
+		circle	: in out type_symbol_circle;
+		width	: in type_line_width)
+	is begin
+		circle.width := width;
+	end set_width;
+
+	
+	
+end et_symbol_shapes;
 
 -- Soli Deo Gloria
 

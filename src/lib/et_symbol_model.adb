@@ -38,76 +38,10 @@
 
 with ada.text_io;				use ada.text_io;
 
-with ada.characters;			use ada.characters;
-with ada.characters.handling;	use ada.characters.handling;
-
-with ada.exceptions; 			use ada.exceptions;
-with et_alignment;				use et_alignment;
-
+-- with ada.exceptions; 			use ada.exceptions;
 
 
 package body et_symbol_model is
-
-
-	function get_A (
-		line : in pac_symbol_lines.cursor)
-		return type_vector_model
-	is begin
-		return get_A (element (line));
-	end;
-
-
-	function get_B (
-		line : in pac_symbol_lines.cursor)
-		return type_vector_model
-	is begin
-		return get_B (element (line));
-	end;
-
-
-	
-
-
-	procedure set_width (
-		arc		: in out type_symbol_arc;
-		width	: in type_line_width)
-	is begin
-		arc.width := width;
-	end set_width;
-
-	
-
-	function get_A (
-		arc : in pac_symbol_arcs.cursor)
-		return type_vector_model
-	is begin
-		return get_A (element (arc));
-	end;
-
-
-	function get_B (
-		arc : in pac_symbol_arcs.cursor)
-		return type_vector_model
-	is begin
-		return get_B (element (arc));
-	end;
-
-
-	function get_center (
-		arc : in pac_symbol_arcs.cursor)
-		return type_vector_model
-	is begin
-		return get_center (element (arc));
-	end;
-
-
-	function get_direction (
-		arc : in pac_symbol_arcs.cursor)
-		return type_direction_of_rotation
-	is begin
-		return get_direction (element (arc));
-	end;
-	
 
 
 	function is_real (
@@ -140,39 +74,6 @@ package body et_symbol_model is
 		return result;
 	end get_port_positions;
 
-
-
-	
-
-	procedure reset_arc (
-		arc	: in out type_symbol_arc)
-	is 
-		a : type_arc;
-	begin
-		arc := (a with type_line_width'first);
-	end reset_arc;
-
-	
-	
-
-
-
-	function to_string (filled : in type_circle_filled) return string is begin
-		return to_lower (type_circle_filled'image (filled));
-	end;
-
-	function to_circle_filled (filled : in string) return type_circle_filled is begin
-		return type_circle_filled'value (filled);
-	end;
-
-
-
-	procedure set_width (
-		circle	: in out type_symbol_circle;
-		width	: in type_line_width)
-	is begin
-		circle.width := width;
-	end set_width;
 
 	
 	

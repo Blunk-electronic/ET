@@ -57,6 +57,7 @@ with et_port_strength;
 with et_port_visibility;
 with et_port_direction;
 with et_port_names;
+with et_symbol_shapes;				use et_symbol_shapes;
 with et_symbol_text;				use et_symbol_text;
 with et_symbol_library;				use et_symbol_library;
 with et_symbol_ports;				use et_symbol_ports;
@@ -134,6 +135,8 @@ package body et_symbol_rw is
 		return point;
 	end to_position;
 
+
+
 	
 	procedure write_text_properties (t : in type_text_basic'class) is
 		use et_text;
@@ -146,6 +149,7 @@ package body et_symbol_rw is
 				keyword_vertical   & space & to_string (t.alignment.vertical)
 				);
 	end write_text_properties;
+
 
 
 	
@@ -186,6 +190,7 @@ package body et_symbol_rw is
 	end create_symbol;
 
 	
+
 	
 	procedure write_symbol ( 
 		symbol			: in type_symbol;
@@ -365,6 +370,8 @@ package body et_symbol_rw is
 		section_mark (section_ports, FOOTER);
 	end write_symbol;
 
+
+
 	
 	
 	procedure save_symbol (
@@ -414,6 +421,8 @@ package body et_symbol_rw is
 	end save_symbol;
 
 
+
+	
 
 	
 	procedure read_symbol (
