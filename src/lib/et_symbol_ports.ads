@@ -170,22 +170,22 @@ package et_symbol_ports is
 	use et_port_names;
 	use pac_port_name;
 	
-	package pac_ports is new indefinite_ordered_maps ( -- CS rename to pac_symbol_ports ?
+	package pac_symbol_ports is new indefinite_ordered_maps (
 		key_type		=> pac_port_name.bounded_string, -- CLOCK, CE, VDD, GND
 		element_type	=> type_port);
 
-	use pac_ports;
+	use pac_symbol_ports;
 
 
 	-- Returns the total number of ports in the given list:
 	function get_count (
-		ports : in pac_ports.map)
+		ports : in pac_symbol_ports.map)
 		return natural;
 	
 
 	-- Returns the x/y-position of the given port:
 	function get_position (							  
-		port	: in pac_ports.cursor)
+		port	: in pac_symbol_ports.cursor)
 		return type_vector_model;
 
 
@@ -194,7 +194,7 @@ package et_symbol_ports is
 	-- has been found (and deleted) then the flag
 	-- "deleted" is set and the name of the port output:
 	procedure delete_port (
-		ports		: in out pac_ports.map;
+		ports		: in out pac_symbol_ports.map;
 		position	: in type_vector_model;
 		deleted		: out boolean;
 		port_name	: out pac_port_name.bounded_string);
@@ -202,14 +202,14 @@ package et_symbol_ports is
 	
 	-- Moves the given ports by given offset.
 	procedure move_ports (
-		ports	: in out pac_ports.map; -- the portlist
+		ports	: in out pac_symbol_ports.map; -- the portlist
 		offset	: in type_object_position); -- the offset (only x/y matters)
 	
 
 	-- Rotates the given ports by given 
 	-- angle about the origin of the symbol:
 	procedure rotate_ports (
-		ports	: in out pac_ports.map; -- the portlist
+		ports	: in out pac_symbol_ports.map; -- the portlist
 		angle	: in type_rotation_model); -- 90
 
 

@@ -308,7 +308,7 @@ package et_device_library is
 	function get_properties (
 		device_cursor	: in pac_devices_lib.cursor;
 		port_name		: in pac_port_name.bounded_string)
-		return pac_ports.cursor;
+		return pac_symbol_ports.cursor;
 
 	type type_port_properties_access is access type_port_properties;	
 	
@@ -330,7 +330,7 @@ package et_device_library is
 	function get_ports_of_unit (
 		device_cursor	: in pac_devices_lib.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
-		return pac_ports.map;
+		return pac_symbol_ports.map;
 
 
 	

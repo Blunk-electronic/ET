@@ -392,7 +392,7 @@ is
 		
 		-- Here we store temporarily the ports (with their positions)
 		-- of the unit to be added:
-		ports : pac_ports.map;
+		ports : pac_symbol_ports.map;
 
 		-- This is the place where we temporarily keep the name
 		-- of the unit to be added:

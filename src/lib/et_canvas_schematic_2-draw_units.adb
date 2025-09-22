@@ -112,7 +112,7 @@ procedure draw_units is
 		use pac_symbol_arcs;
 		use pac_symbol_circles;
 		
-		use pac_ports;
+		use pac_symbol_ports;
 
 		use et_symbol_text;
 		use pac_symbol_texts;
@@ -158,7 +158,7 @@ procedure draw_units is
 		end draw_circle;
 
 		
-		procedure draw_port (c : in pac_ports.cursor) is
+		procedure draw_port (c : in pac_symbol_ports.cursor) is
 			A : type_vector_model := element (c).position;
 			B : type_vector_model := element (c).position;
 

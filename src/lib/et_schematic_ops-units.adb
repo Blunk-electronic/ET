@@ -1143,9 +1143,9 @@ package body et_schematic_ops.units is
 				unit_cursor : pac_units.cursor := device.units.first;
 				unit_name : pac_unit_name.bounded_string;
 				
-				use pac_ports;
-				ports : pac_ports.map;
-				port_cursor : pac_ports.cursor;
+				use pac_symbol_ports;
+				ports : pac_symbol_ports.map;
+				port_cursor : pac_symbol_ports.cursor;
 			begin
 				-- Locate unit in schematic device:
 				while unit_cursor /= pac_units.no_element loop
@@ -1542,8 +1542,8 @@ package body et_schematic_ops.units is
 				device		: in type_device_sch) 
 			is
 				unit_cursor : pac_units.cursor := device.units.first;
-				use pac_ports;
-				ports : pac_ports.map;
+				use pac_symbol_ports;
+				ports : pac_symbol_ports.map;
 				use pac_port_name;
 			begin
 				while unit_cursor /= pac_units.no_element loop
@@ -1613,8 +1613,8 @@ package body et_schematic_ops.units is
 				device_name	: in type_device_name;
 				device		: in type_device_sch)
 			is
-				use pac_ports;
-				ports : pac_ports.map;
+				use pac_symbol_ports;
+				ports : pac_symbol_ports.map;
 				use pac_port_name;
 			begin
 				if contains (device.units, unit_name) then
@@ -1951,7 +1951,7 @@ package body et_schematic_ops.units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		unit_name		: in pac_unit_name.bounded_string;
-		ports			: in pac_ports.map;
+		ports			: in pac_symbol_ports.map;
 		sheet			: in type_sheet;
 		log_threshold	: in type_log_level)
 	is
@@ -1961,7 +1961,7 @@ package body et_schematic_ops.units is
 		-- of ports is processed. Each processed port will be
 		-- removed from the given ports. For this reason we make
 		-- a copy of the given ports:
-		ports_tmp : pac_ports.map := ports;
+		ports_tmp : pac_symbol_ports.map := ports;
 
 		-- CS: On the end of this procedure make sure ports_tmp is empty.
 		
@@ -2096,7 +2096,7 @@ package body et_schematic_ops.units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		unit_name		: in pac_unit_name.bounded_string;
-		ports			: in pac_ports.map;
+		ports			: in pac_symbol_ports.map;
 		sheet			: in type_sheet;
 		log_threshold	: in type_log_level)
 	is
@@ -2106,7 +2106,7 @@ package body et_schematic_ops.units is
 		-- of ports is processed. Each processed port will be
 		-- removed from the given ports. For this reason we make
 		-- a copy of the given ports:
-		ports_tmp : pac_ports.map := ports;
+		ports_tmp : pac_symbol_ports.map := ports;
 
 		-- CS: On the end of this procedure make sure ports_tmp is empty.
 		
@@ -2284,7 +2284,7 @@ package body et_schematic_ops.units is
 
 		use et_port_direction;
 		port_direction : type_port_direction := PASSIVE;
-		port_properties_cursor : pac_ports.cursor;
+		port_properties_cursor : pac_symbol_ports.cursor;
 
 		
 		procedure query_devices (
@@ -2334,7 +2334,7 @@ package body et_schematic_ops.units is
 			end query_variants;
 
 			
-			use pac_ports;
+			use pac_symbol_ports;
 
 			
 		begin -- query_devices
@@ -2412,7 +2412,7 @@ package body et_schematic_ops.units is
 			-- The ports of the unit must be removed from the net segments.
 			-- For this reason we need some temporarily storage place:
 			sheet_old : type_sheet;
-			ports_old : pac_ports.map;
+			ports_old : pac_symbol_ports.map;
 			
 
 			procedure query_device (
@@ -2843,7 +2843,7 @@ package body et_schematic_ops.units is
 			-- whereas new ports must be inserted in the net segments.
 			-- For this reason we need some temporarily storage place:
 			sheet_old, sheet_new : type_sheet;
-			ports_old, ports_new : pac_ports.map;
+			ports_old, ports_new : pac_symbol_ports.map;
 			
 
 			procedure query_device (
@@ -2999,14 +2999,14 @@ package body et_schematic_ops.units is
 		device_name		: in type_device_name;
 		unit_name		: in pac_unit_name.bounded_string;
 		location 		: in type_object_position; -- only sheet number matters
-		unit_ports		: in pac_ports.map;
+		unit_ports		: in pac_symbol_ports.map;
 		log_threshold	: in type_log_level)
 	is
-		use pac_ports;
-		port_cursor : pac_ports.cursor := unit_ports.first;
+		use pac_symbol_ports;
+		port_cursor : pac_symbol_ports.cursor := unit_ports.first;
 
 		
-		procedure test_point (port_cursor : in pac_ports.cursor) is
+		procedure test_point (port_cursor : in pac_symbol_ports.cursor) is
 			point : type_object_position; -- the point
 			ports : type_ports;
 			port : type_device_port;
@@ -3065,7 +3065,7 @@ package body et_schematic_ops.units is
 		log (text => "movable test ...", level => log_threshold);
 		log_indentation_up;
 
-		while port_cursor /= pac_ports.no_element loop
+		while port_cursor /= pac_symbol_ports.no_element loop
 			test_point (port_cursor);
 			next (port_cursor);
 		end loop;
@@ -3162,18 +3162,18 @@ package body et_schematic_ops.units is
 		device_name		: in type_device_name;
 		unit_name		: in pac_unit_name.bounded_string;
 		location 		: in type_object_position; -- only sheet number matters
-		unit_ports		: in pac_ports.map;
+		unit_ports		: in pac_symbol_ports.map;
 		log_threshold	: in type_log_level)
 		return boolean
 	is
 		result : boolean := false;
 		
 		use et_symbol_model;
-		use pac_ports;
-		port_cursor : pac_ports.cursor := unit_ports.first;
+		use pac_symbol_ports;
+		port_cursor : pac_symbol_ports.cursor := unit_ports.first;
 
 		
-		procedure test_point (port_cursor : in pac_ports.cursor) is
+		procedure test_point (port_cursor : in pac_symbol_ports.cursor) is
 			point : type_object_position; -- the point
 			ports : type_ports;
 			port : type_device_port;
@@ -3232,7 +3232,7 @@ package body et_schematic_ops.units is
 		log (text => "movable test ...", level => log_threshold);
 		log_indentation_up;
 
-		while port_cursor /= pac_ports.no_element loop
+		while port_cursor /= pac_symbol_ports.no_element loop
 			test_point (port_cursor);
 
 			-- abort this loop as soon as a non-movable port has been detected:
@@ -3432,7 +3432,7 @@ package body et_schematic_ops.units is
 			-- The new ports must be inserted in the net segments.
 			-- For this reason we need some temporarily storage place:
 			sheet : type_sheet;
-			ports_old, ports_new : pac_ports.map;
+			ports_old, ports_new : pac_symbol_ports.map;
 			drag_list : type_port_drag_list;
 
 			
@@ -3596,7 +3596,7 @@ package body et_schematic_ops.units is
 			-- For this reason we need some temporarily storage place:
 			sheet_old, sheet_new : type_sheet;
 			-- CS: use just "sheet" because it is about only one sheet
-			ports_old, ports_new : pac_ports.map;
+			ports_old, ports_new : pac_symbol_ports.map;
 			
 
 			procedure query_device (

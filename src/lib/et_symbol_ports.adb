@@ -45,7 +45,7 @@ package body et_symbol_ports is
 
 
 	function get_count (
-		ports : in pac_ports.map)
+		ports : in pac_symbol_ports.map)
 		return natural
 	is begin
 		return natural (ports.length);
@@ -55,7 +55,7 @@ package body et_symbol_ports is
 
 	
 	function get_position (
-		port	: in pac_ports.cursor)
+		port	: in pac_symbol_ports.cursor)
 		return type_vector_model
 	is begin
 		return element (port).position;
@@ -65,12 +65,12 @@ package body et_symbol_ports is
 
 
 	procedure delete_port (
-		ports		: in out pac_ports.map;
+		ports		: in out pac_symbol_ports.map;
 		position	: in type_vector_model;
 		deleted		: out boolean;
 		port_name	: out pac_port_name.bounded_string)
 	is
-		c : pac_ports.cursor := ports.first;
+		c : pac_symbol_ports.cursor := ports.first;
 
 		-- Tests whether the given port position is
 		-- equal the given position. On match the
@@ -116,10 +116,10 @@ package body et_symbol_ports is
 	
 
 	procedure move_ports (
-		ports	: in out pac_ports.map; -- the portlist
+		ports	: in out pac_symbol_ports.map; -- the portlist
 		offset	: in type_object_position) -- the offset (only x/y matters)
 	is
-		use pac_ports;
+		use pac_symbol_ports;
 
 		procedure move (
 			name	: in pac_port_name.bounded_string;
@@ -128,7 +128,7 @@ package body et_symbol_ports is
 			move_by (port.position, offset.place);
 		end;
 
-		procedure query_port (cursor : in pac_ports.cursor) is begin
+		procedure query_port (cursor : in pac_symbol_ports.cursor) is begin
 			update_element (
 				container	=> ports,
 				position	=> cursor,
@@ -143,7 +143,7 @@ package body et_symbol_ports is
 	
 	
 	procedure rotate_ports (
-		ports	: in out pac_ports.map; -- the portlist
+		ports	: in out pac_symbol_ports.map; -- the portlist
 		angle	: in type_rotation_model)  -- 90
 	is
 
@@ -155,7 +155,7 @@ package body et_symbol_ports is
 		end;
 
 		
-		procedure query_port (cursor : in pac_ports.cursor) is begin
+		procedure query_port (cursor : in pac_symbol_ports.cursor) is begin
 			update_element (
 				container	=> ports,
 				position	=> cursor,

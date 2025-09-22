@@ -65,7 +65,7 @@ package body et_symbol_model is
 		use pac_points;
 		result : pac_points.list;
 
-		procedure query_port (c : in pac_ports.cursor) is begin
+		procedure query_port (c : in pac_symbol_ports.cursor) is begin
 			result.append (get_position (c));
 		end query_port;
 		

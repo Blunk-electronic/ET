@@ -587,9 +587,9 @@ package body et_devices_electrical is
 	function get_ports_of_unit (
 		device_cursor	: in pac_devices_sch.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
-		return pac_ports.map 
+		return pac_symbol_ports.map 
 	is
-		ports : pac_ports.map; -- to be returned
+		ports : pac_symbol_ports.map; -- to be returned
 		device_cursor_lib : pac_devices_lib.cursor;
 	begin
 		device_cursor_lib := get_device_model (device_cursor);
@@ -605,9 +605,9 @@ package body et_devices_electrical is
 	function get_ports_of_unit (
 		device_cursor	: in pac_devices_sch.cursor;
 		unit_cursor		: in pac_units.cursor)
-		return pac_ports.map
+		return pac_symbol_ports.map
 	is
-		ports : pac_ports.map;
+		ports : pac_symbol_ports.map;
 
 		position : type_object_position;
 		rotation : type_rotation_model;

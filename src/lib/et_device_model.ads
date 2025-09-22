@@ -128,7 +128,7 @@ package et_device_model is
 	-- Returns the ports of the given internal unit:
 	function get_ports_internal (
 		unit_cursor	: in pac_units_internal.cursor)
-		return pac_ports.map;
+		return pac_symbol_ports.map;
 
 	
 						   
@@ -167,7 +167,7 @@ package et_device_model is
 	-- Returns the ports of the given external unit:
 	function get_ports_external (
 		unit_cursor	: in pac_units_external.cursor)
-		return pac_ports.map;
+		return pac_symbol_ports.map;
 
 
 	

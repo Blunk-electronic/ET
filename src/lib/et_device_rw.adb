@@ -607,7 +607,7 @@ package body et_device_rw is
 		
 		procedure insert_port is 
 			inserted	: boolean;
-			cursor		: pac_ports.cursor;
+			cursor		: pac_symbol_ports.cursor;
 
 			use et_port_direction;
 			use et_port_names;
@@ -618,7 +618,7 @@ package body et_device_rw is
 		begin
 			case port_direction is
 				when PASSIVE =>
-					pac_ports.insert (
+					pac_symbol_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -628,7 +628,7 @@ package body et_device_rw is
 						);
 
 				when INPUT_ANALOG =>
-					pac_ports.insert (
+					pac_symbol_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -638,7 +638,7 @@ package body et_device_rw is
 						);
 
 				when INPUT_DIGITAL =>
-					pac_ports.insert (
+					pac_symbol_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -650,7 +650,7 @@ package body et_device_rw is
 						);
 
 				when OUTPUT_ANALOG =>
-					pac_ports.insert (
+					pac_symbol_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -662,7 +662,7 @@ package body et_device_rw is
 						);
 
 				when OUTPUT_DIGITAL =>
-					pac_ports.insert (
+					pac_symbol_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -675,7 +675,7 @@ package body et_device_rw is
 						);
 
 				when BIDIR_DIGITAL =>
-					pac_ports.insert (
+					pac_symbol_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -690,7 +690,7 @@ package body et_device_rw is
 						);
 
 				when POWER_OUT =>
-					pac_ports.insert (
+					pac_symbol_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -701,7 +701,7 @@ package body et_device_rw is
 						);
 
 				when POWER_IN =>
-					pac_ports.insert (
+					pac_symbol_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -712,7 +712,7 @@ package body et_device_rw is
 						);
 
 				when NOT_CONNECTED =>
-					pac_ports.insert (
+					pac_symbol_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,

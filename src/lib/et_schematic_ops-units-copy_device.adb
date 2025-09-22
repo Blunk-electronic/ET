@@ -83,7 +83,7 @@ is
 		placeholders : type_default_placeholders;
 		
 		unit_cursors : type_device_units;
-		ports : pac_ports.map;
+		ports : pac_symbol_ports.map;
 
 		use pac_unit_name;
 		unit_name : pac_unit_name.bounded_string;

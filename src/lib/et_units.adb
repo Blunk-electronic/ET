@@ -529,8 +529,8 @@ package body et_units is
 	
 
 	function make_drag_list ( 
-		ports_old : in et_symbol_ports.pac_ports.map;
-		ports_new : in et_symbol_ports.pac_ports.map) 
+		ports_old : in pac_symbol_ports.map;
+		ports_new : in pac_symbol_ports.map) 
 		return pac_dragged_ports.map 
 	is
 		use et_symbol_ports;
@@ -540,10 +540,10 @@ package body et_units is
 		-- ports_old and ports_new are both equally long and contain 
 		-- equal keys (the port names). So we use two cursors and advance them
 		-- simultaneously in a loop (see below).
-		use pac_ports;
+		use pac_symbol_ports;
 		
-		cursor_old : pac_ports.cursor := ports_old.first;
-		cursor_new : pac_ports.cursor := ports_new.first;
+		cursor_old : pac_symbol_ports.cursor := ports_old.first;
+		cursor_new : pac_symbol_ports.cursor := ports_new.first;
 
 		drag : type_drag;
 	begin

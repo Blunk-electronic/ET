@@ -46,7 +46,7 @@ package body et_device_model is
 
 	function get_ports_internal (
 		unit_cursor	: in pac_units_internal.cursor)
-		return pac_ports.map
+		return pac_symbol_ports.map
 	is begin
 		return element (unit_cursor).symbol.ports;
 	end;
@@ -76,9 +76,9 @@ package body et_device_model is
 
 	function get_ports_external (
 		unit_cursor	: in pac_units_external.cursor)
-		return pac_ports.map
+		return pac_symbol_ports.map
 	is 
-		result : pac_ports.map; -- to be returned
+		result : pac_symbol_ports.map; -- to be returned
 
 		sym_model : pac_symbol_model_file.bounded_string; 
 		-- like /libraries/symbols/NAND.sym

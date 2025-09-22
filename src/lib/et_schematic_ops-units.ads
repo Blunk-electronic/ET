@@ -427,7 +427,7 @@ package et_schematic_ops.units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		unit_name		: in pac_unit_name.bounded_string;
-		ports			: in pac_ports.map;
+		ports			: in pac_symbol_ports.map;
 		sheet			: in type_sheet;
 		log_threshold	: in type_log_level);
 
@@ -443,7 +443,7 @@ package et_schematic_ops.units is
 		module_cursor	: in pac_generic_modules.cursor;		-- the module
 		device_name		: in type_device_name;					-- the device
 		unit_name		: in pac_unit_name.bounded_string;	-- the unit name like A, C, PWR
-		ports			: in pac_ports.map; -- the ports to be inserted
+		ports			: in pac_symbol_ports.map; -- the ports to be inserted
 		sheet			: in type_sheet;				-- the sheet to look at
 		log_threshold	: in type_log_level);
 
@@ -581,7 +581,7 @@ package et_schematic_ops.units is
 		device_name		: in type_device_name;
 		unit_name		: in pac_unit_name.bounded_string;
 		location 		: in type_object_position; -- only sheet number matters
-		unit_ports		: in pac_ports.map;
+		unit_ports		: in pac_symbol_ports.map;
 		log_threshold	: in type_log_level)
 		return boolean;
 

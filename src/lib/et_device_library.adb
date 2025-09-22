@@ -642,10 +642,10 @@ package body et_device_library is
 	function get_properties (
 		device_cursor	: in pac_devices_lib.cursor;
 		port_name		: in pac_port_name.bounded_string)
-		return pac_ports.cursor 
+		return pac_symbol_ports.cursor 
 	is
 
-		port_cursor : pac_ports.cursor; -- to be returned
+		port_cursor : pac_symbol_ports.cursor; -- to be returned
 
 
 		procedure query_units (
@@ -658,7 +658,7 @@ package body et_device_library is
 			use pac_units_external;
 			unit_external_cursor : pac_units_external.cursor := device.units_external.first;
 
-			use pac_ports;
+			use pac_symbol_ports;
 
 			
 			-- Query ports of internal unit.
@@ -705,7 +705,7 @@ package body et_device_library is
 					process		=> query_ports'access);
 
 				-- The search ends when the given port has been found.
-				if port_cursor /= pac_ports.no_element then
+				if port_cursor /= pac_symbol_ports.no_element then
 					exit;
 				end if;
 				
@@ -713,7 +713,7 @@ package body et_device_library is
 			end loop;
 
 			-- if port not found among the internal units, search in external units:
-			if port_cursor = pac_ports.no_element then
+			if port_cursor = pac_symbol_ports.no_element then
 				while unit_external_cursor /= pac_units_external.no_element loop
 
 					query_element (
@@ -721,7 +721,7 @@ package body et_device_library is
 						process		=> query_symbols'access);
 
 					-- The search ends when the given port has been found.
-					if port_cursor /= pac_ports.no_element then
+					if port_cursor /= pac_symbol_ports.no_element then
 						exit;
 					end if;
 										
@@ -794,9 +794,9 @@ package body et_device_library is
 	function get_ports_of_unit (
 		device_cursor	: in pac_devices_lib.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
-		return pac_ports.map 
+		return pac_symbol_ports.map 
 	is
-		ports : pac_ports.map; -- to be returned
+		ports : pac_symbol_ports.map; -- to be returned
 		
 		
 		procedure query_internal_units (

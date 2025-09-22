@@ -74,7 +74,7 @@ package et_symbol_model is
 	is new type_symbol_base with 
 		record
 		shapes	: type_shapes; -- the collection of shapes
-		ports	: pac_ports.map;
+		ports	: pac_symbol_ports.map;
 		
 		case appearance is
 			when APPEARANCE_PCB =>

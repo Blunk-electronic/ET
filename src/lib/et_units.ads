@@ -52,7 +52,7 @@ with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_text;					use et_schematic_text;
 with et_sheets;							use et_sheets;
 with et_port_names;						use et_port_names;
-with et_symbol_ports;
+with et_symbol_ports;					use et_symbol_ports;
 with et_symbol_library;					use et_symbol_library;
 with et_symbol_model;					use et_symbol_model;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
@@ -371,8 +371,8 @@ package et_units is
 	
 	-- Creates from two portlists a list of ports to be dragged:
 	function make_drag_list ( 
-		ports_old : in et_symbol_ports.pac_ports.map;
-		ports_new : in et_symbol_ports.pac_ports.map) 
+		ports_old : in pac_symbol_ports.map;
+		ports_new : in pac_symbol_ports.map) 
 		return pac_dragged_ports.map;
 
 

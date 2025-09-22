@@ -75,7 +75,7 @@ is
 		use pac_units_internal;
 		use pac_devices_lib;
 
-		ports : pac_ports.map; -- the positions of the unit ports
+		ports : pac_symbol_ports.map; -- the positions of the unit ports
 
 
 		

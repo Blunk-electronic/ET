@@ -395,7 +395,7 @@ package et_devices_electrical is
 	function get_ports_of_unit (
 		device_cursor	: in pac_devices_sch.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
-		return pac_ports.map;
+		return pac_symbol_ports.map;
 
 
 	-- Returns a map of ports of the given device and unit.
@@ -404,7 +404,7 @@ package et_devices_electrical is
 	function get_ports_of_unit (
 		device_cursor	: in pac_devices_sch.cursor;
 		unit_cursor		: in pac_units.cursor)
-		return pac_ports.map;
+		return pac_symbol_ports.map;
 
 								   
 

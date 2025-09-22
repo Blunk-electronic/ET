@@ -293,12 +293,12 @@ package body et_schematic_ops is
 					use pac_units;
 					use pac_unit_name;
 					unit_position : type_object_position;
-					ports : pac_ports.map;
+					ports : pac_symbol_ports.map;
 
 					
-					procedure query_port (port_cursor : in pac_ports.cursor) is
+					procedure query_port (port_cursor : in pac_symbol_ports.cursor) is
 						use et_symbol_model;
-						use pac_ports;
+						use pac_symbol_ports;
 					begin
 						log (text => "unit " & to_string (key (unit_cursor)) &
 							 " port " & to_string (key (port_cursor)) &
@@ -344,7 +344,7 @@ package body et_schematic_ops is
 
 						move_ports (ports, unit_position);
 
-						pac_ports.iterate (ports, query_port'access);
+						pac_symbol_ports.iterate (ports, query_port'access);
 
 						log_indentation_down;
 					end if;
