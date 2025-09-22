@@ -52,6 +52,7 @@ with ada.containers.indefinite_ordered_maps;
 
 with et_schematic_geometry;		use et_schematic_geometry;
 with et_schematic_coordinates;	use et_schematic_coordinates;
+with et_symbol_name;			use et_symbol_name;
 with et_symbols;				use et_symbols;
 with et_symbol_ports;			use et_symbol_ports;
 with et_device_appearance;		use et_device_appearance;

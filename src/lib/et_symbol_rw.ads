@@ -42,6 +42,7 @@ with et_string_processing;				use et_string_processing;
 with et_logging;						use et_logging;
 with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_coordinates;			use et_schematic_coordinates;
+with et_symbol_name;					use et_symbol_name;
 with et_symbols;						use et_symbols;
 with et_device_appearance;				use et_device_appearance;
 with et_schematic_text;					use et_schematic_text;

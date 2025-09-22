@@ -43,6 +43,7 @@ with et_alignment;
 with et_symbols;
 with et_port_names;
 with et_port_visibility;
+with et_symbol_name;
 with et_symbol_ports;
 with et_unit_name;						use et_unit_name;
 with et_units;							use et_units;
@@ -997,6 +998,7 @@ procedure draw_units is
 			destination : type_vector_model := get_primary_tool_position;
 			
 			use et_symbols;
+			use et_symbol_name;
 			use pac_symbols;
 			symbol_model : pac_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
 			symbol_cursor : et_symbols.pac_symbols.cursor;
@@ -1087,7 +1089,8 @@ procedure draw_units is
 			-- The place where the unit will be drawn.
 			-- Depends on the tool used for placing the unit:
 			destination : type_vector_model := get_primary_tool_position;
-			
+
+			use et_symbol_name;
 			use et_symbols;
 			use pac_symbols;
 			symbol_model : pac_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym

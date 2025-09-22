@@ -42,6 +42,8 @@ with ada.exceptions;
 with et_contour_to_polygon;
 with et_string_processing;			use et_string_processing;
 
+with et_symbol_name;
+
 
 
 package body et_devices_electrical is
@@ -1230,6 +1232,7 @@ package body et_devices_electrical is
 			model	: in pac_device_model_file.bounded_string;
 			device	: in type_device_model) 
 		is
+			use et_symbol_name;
 			use pac_units_external;
 			unit_cursor : pac_units_external.cursor;
 			sym_model : pac_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym

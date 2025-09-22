@@ -48,6 +48,7 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 with et_string_processing;		use et_string_processing;
 with et_exceptions;				use et_exceptions;
 
+with et_symbol_name;
 with et_packages;
 
 
@@ -576,7 +577,8 @@ package body et_device_library is
 	is 
 		use pac_units_external;
 		use pac_units_internal;
-		
+
+		use et_symbol_name;		
 		model_name : pac_symbol_model_file.bounded_string;
 		-- like libraries/symbols/NAND.sym
 		
@@ -671,6 +673,7 @@ package body et_device_library is
 				unit_name	: in pac_unit_name.bounded_string;
 				unit		: in type_unit_external) 
 			is
+				use et_symbol_name;
 				use pac_symbols;
 				symbol_cursor : pac_symbols.cursor;
 

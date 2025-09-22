@@ -73,6 +73,7 @@ with et_port_sensitivity;
 with et_port_visibility;
 with et_port_direction;
 with et_port_names;
+with et_symbol_name;				use et_symbol_name;
 with et_symbol_ports;				use et_symbol_ports;
 with et_symbols;					use et_symbols;
 with et_package_names;				use et_package_names;

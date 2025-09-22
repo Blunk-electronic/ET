@@ -60,6 +60,7 @@ with et_primitive_objects;				use et_primitive_objects;
 with et_text;
 with et_fonts;							use et_fonts;
 with et_logging;						use et_logging;
+with et_symbol_name;					use et_symbol_name;
 with et_symbol_ports;					use et_symbol_ports;
 with et_device_appearance;				use et_device_appearance;
 
@@ -262,24 +263,6 @@ package et_symbols is
 
 	
 
-
-
-	
-	
--- FILE NAMES
-
-	
-	symbol_file_name_length_max : constant natural := 500;
-	
-	package pac_symbol_model_file is new generic_bounded_length (symbol_file_name_length_max);
-	
-	function to_string (name : in pac_symbol_model_file.bounded_string) return string;
-	
-	function to_file_name (name : in string) return pac_symbol_model_file.bounded_string;
-	
-
-
-	
 
 	
 

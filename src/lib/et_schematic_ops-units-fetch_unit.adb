@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+with et_symbol_name;
 with et_device_appearance;				use et_device_appearance;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
@@ -149,6 +150,7 @@ is
 				device_name	: in type_device_name;
 				device		: in out type_device_sch) 
 			is
+				use et_symbol_name;
 				use et_symbols;
 				use et_symbols.pac_symbols;
 				placeholders : type_default_placeholders;

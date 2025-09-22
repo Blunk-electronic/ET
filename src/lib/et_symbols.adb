@@ -233,23 +233,6 @@ package body et_symbols is
 	
 
 
-	function to_string (name : in pac_symbol_model_file.bounded_string) 
-		return string is
-	begin
-		return pac_symbol_model_file.to_string (name);
-	end to_string;
-
-	
-	function to_file_name (name : in string)
-		return pac_symbol_model_file.bounded_string is
-	begin
-		return pac_symbol_model_file.to_bounded_string (name);
-	end;
-
-
-
-
-
 
 	procedure locate_symbol (
 		model_file	: in pac_symbol_model_file.bounded_string;
