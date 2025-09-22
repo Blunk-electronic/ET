@@ -41,6 +41,7 @@
 --     other.
 --
 
+with et_symbol_library;
 with et_device_rw;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 with et_device_model;					use et_device_model;
@@ -339,7 +340,7 @@ is
 			-- This procedure composes the real unit and adds
 			-- it to the schematic:
 			procedure add_real is
-				use et_symbols;
+				use et_symbol_library;
 				symbol_cursor : pac_symbols.cursor;
 				placeholders : type_default_placeholders;
 

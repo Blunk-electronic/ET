@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                       SCHEMATIC SYMBOL NAME                              --
+--                     SCHEMATIC SYMBOL LIBRARY                             --
 --                                                                          --
---                              S p e c                                     --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -33,40 +33,53 @@
 --   info@blunk-electronic.de
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
--- DESCRIPTION:
---
---
 --   history of changes:
 --
 
-with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.text_io;				use ada.text_io;
+
+-- with ada.exceptions; 			use ada.exceptions;
 
 
-package et_symbol_name is
+
+package body et_symbol_library is
+
+	
+
+	procedure locate_symbol (
+		model_file	: in pac_symbol_model_file.bounded_string;
+		cursor		: in out pac_symbols.cursor)
+	is begin
+		cursor := symbol_library.find (model_file);
+	end locate_symbol;
+
+	
 
 	
 	
-	symbol_file_name_length_max : constant natural := 500;
-	
-	package pac_symbol_model_file is new 
-		generic_bounded_length (symbol_file_name_length_max);
+	function is_real (
+		symbol : in pac_symbols.cursor)
+		return boolean
+	is begin
+		case element (symbol).appearance is
+			when APPEARANCE_PCB		=> return true;
+			when APPEARANCE_VIRTUAL	=> return false;
+		end case;
+	end is_real;
 
 
-	symbol_library_file_extension : constant string := "sym";
+
+	function get_port_positions (
+		symbol	: in pac_symbols.cursor)
+		return pac_points.list
+	is begin
+		return get_port_positions (element (symbol));
+	end get_port_positions;
+
 		
-		
-	function to_string (
-		name : in pac_symbol_model_file.bounded_string) 
-		return string;
-
 	
-	function to_file_name (
-		name : in string) 
-		return pac_symbol_model_file.bounded_string;
-	
+end et_symbol_library;
 
-
-end et_symbol_name;
 
 -- Soli Deo Gloria
 

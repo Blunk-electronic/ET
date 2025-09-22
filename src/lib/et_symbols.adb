@@ -231,41 +231,6 @@ package body et_symbols is
 	end set_width;
 
 	
-
-
-
-	procedure locate_symbol (
-		model_file	: in pac_symbol_model_file.bounded_string;
-		cursor		: in out pac_symbols.cursor)
-	is begin
-		cursor := symbol_library.find (model_file);
-	end locate_symbol;
-
-	
-
-	
-	
-	function is_real (
-		symbol : in pac_symbols.cursor)
-		return boolean
-	is begin
-		case element (symbol).appearance is
-			when APPEARANCE_PCB		=> return true;
-			when APPEARANCE_VIRTUAL	=> return false;
-		end case;
-	end is_real;
-
-
-
-	function get_port_positions (
-		symbol	: in pac_symbols.cursor)
-		return pac_points.list
-	is begin
-		return get_port_positions (element (symbol));
-	end get_port_positions;
-
-	
-	
 	
 end et_symbols;
 

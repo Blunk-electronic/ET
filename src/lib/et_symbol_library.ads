@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                       SCHEMATIC SYMBOL NAME                              --
+--                     SCHEMATIC SYMBOL LIBRARY                             --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
@@ -35,38 +35,69 @@
 --
 -- DESCRIPTION:
 --
+--  This package is about so called "symbols". A symbol is an abstraction
+--  of an electrical component like a resistor, capactor, inductor or
+--  a subset of an integrated circuit.
 --
 --   history of changes:
 --
 
-with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.containers; 			use ada.containers;
+with ada.containers.indefinite_ordered_maps;
+
+with et_schematic_geometry;				use et_schematic_geometry;
+
+-- with et_logging;						use et_logging;
+with et_symbols;						use et_symbols;
+with et_symbol_name;					use et_symbol_name;
+with et_device_appearance;				use et_device_appearance;
 
 
-package et_symbol_name is
+package et_symbol_library is
+
+	use pac_geometry_2;
+
+
+	
+	package pac_symbols is new indefinite_ordered_maps (
+		key_type		=> pac_symbol_model_file.bounded_string, -- ../libraries/symbols/NAND.sym
+		"<"				=> pac_symbol_model_file."<",
+		element_type	=> type_symbol);
+
+	use pac_symbols;
+
+
+
+	
+	-- THIS IS THE RIG WIDE LIBRARY OF SYMBOLS:
+	
+	symbol_library : pac_symbols.map;
+
 
 	
 	
-	symbol_file_name_length_max : constant natural := 500;
+	-- Locates the symbol model in the rig wide symbol library 
+	-- by the given file name. Set the cursor accordingly.
+	-- If the model has not been found, then the cursor is
+	-- set to no_element:
+	procedure locate_symbol (
+		model_file	: in pac_symbol_model_file.bounded_string;  -- ../libraries/symbols/NAND.sym
+		cursor		: in out pac_symbols.cursor);
 	
-	package pac_symbol_model_file is new 
-		generic_bounded_length (symbol_file_name_length_max);
-
-
-	symbol_library_file_extension : constant string := "sym";
 		
-		
-	function to_string (
-		name : in pac_symbol_model_file.bounded_string) 
-		return string;
-
-	
-	function to_file_name (
-		name : in string) 
-		return pac_symbol_model_file.bounded_string;
-	
+	-- Returns true if the given symbol will be part of a real device:
+	function is_real (
+		symbol : in pac_symbols.cursor)
+		return boolean;
 
 
-end et_symbol_name;
+	-- Returns the x/y-positions of the given symbol:
+	function get_port_positions (
+		symbol	: in pac_symbols.cursor)
+		return pac_points.list;
+
+
+end et_symbol_library;
 
 -- Soli Deo Gloria
 

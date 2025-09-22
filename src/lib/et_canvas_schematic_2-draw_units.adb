@@ -43,6 +43,7 @@ with et_alignment;
 with et_symbols;
 with et_port_names;
 with et_port_visibility;
+with et_symbol_library;					use et_symbol_library;
 with et_symbol_name;
 with et_symbol_ports;
 with et_unit_name;						use et_unit_name;
@@ -927,7 +928,7 @@ procedure draw_units is
 	-- If the symbol is virtual, then the placeholders are meaningless
 	-- and assume default values.
 	procedure fetch_placeholders_ext (
-		symbol_cursor : in et_symbols.pac_symbols.cursor)
+		symbol_cursor : in pac_symbols.cursor)
 	is 
 		use et_symbols;
 		use pac_symbols;
@@ -1001,7 +1002,7 @@ procedure draw_units is
 			use et_symbol_name;
 			use pac_symbols;
 			symbol_model : pac_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
-			symbol_cursor : et_symbols.pac_symbols.cursor;
+			symbol_cursor : pac_symbols.cursor;
 
 			
 		begin
@@ -1094,7 +1095,7 @@ procedure draw_units is
 			use et_symbols;
 			use pac_symbols;
 			symbol_model : pac_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
-			symbol_cursor : et_symbols.pac_symbols.cursor;
+			symbol_cursor : pac_symbols.cursor;
 			
 		begin			
 			case unit_cursor.ext_int is

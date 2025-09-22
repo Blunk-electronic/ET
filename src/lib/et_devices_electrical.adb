@@ -42,6 +42,7 @@ with ada.exceptions;
 with et_contour_to_polygon;
 with et_string_processing;			use et_string_processing;
 
+with et_symbol_library;
 with et_symbol_name;
 
 
@@ -1232,6 +1233,7 @@ package body et_devices_electrical is
 			model	: in pac_device_model_file.bounded_string;
 			device	: in type_device_model) 
 		is
+			use et_symbol_library;
 			use et_symbol_name;
 			use pac_units_external;
 			unit_cursor : pac_units_external.cursor;

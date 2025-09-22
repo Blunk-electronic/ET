@@ -43,7 +43,9 @@
 --		  source unit. From the source unit the positions must then be copied
 --		  to the new unit.
 
+
 with et_symbol_name;
+with et_symbol_library;
 with et_device_model;					use et_device_model;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 with et_device_appearance;				use et_device_appearance;
@@ -139,6 +141,7 @@ is
 			device		: in out type_device_sch) 
 		is
 			use et_symbol_name;
+			use et_symbol_library;
 			use pac_symbols;
 			symbol_cursor : pac_symbols.cursor;
 			symbol_file : pac_symbol_model_file.bounded_string; -- *.sym

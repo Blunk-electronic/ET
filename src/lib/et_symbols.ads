@@ -65,7 +65,7 @@ with et_symbol_ports;					use et_symbol_ports;
 with et_device_appearance;				use et_device_appearance;
 
 
-package et_symbols is
+package et_symbols is -- CS rename to et_symbol_model
 
 	use pac_geometry_2;
 	use pac_text_schematic;
@@ -261,54 +261,7 @@ package et_symbols is
 		symbol	: in type_symbol)
 		return pac_points.list;
 
-	
 
-
-	
-
-	
-
-	
-	
--- STORAGE
-	
-	package pac_symbols is new indefinite_ordered_maps (
-		key_type		=> pac_symbol_model_file.bounded_string, -- ../libraries/symbols/NAND.sym
-		"<"				=> pac_symbol_model_file."<",
-		element_type	=> type_symbol);
-
-	use pac_symbols;
-	
-	symbol_library_file_extension : constant string := "sym";
-
-
-	
-	-- THIS IS THE RIG WIDE LIBRARY OF SYMBOLS:
-	
-	symbol_library : pac_symbols.map;
-
-
-	
-	
-	-- Locates the symbol model in the rig wide symbol library 
-	-- by the given file name. Set the cursor accordingly.
-	-- If the model has not been found, then the cursor is
-	-- set to no_element:
-	procedure locate_symbol (
-		model_file	: in pac_symbol_model_file.bounded_string;  -- ../libraries/symbols/NAND.sym
-		cursor		: in out pac_symbols.cursor);
-	
-		
-	-- Returns true if the given symbol will be part of a real device:
-	function is_real (
-		symbol : in pac_symbols.cursor)
-		return boolean;
-
-
-	-- Returns the x/y-positions of the given symbol:
-	function get_port_positions (
-		symbol	: in pac_symbols.cursor)
-		return pac_points.list;
 
 
 end et_symbols;
