@@ -290,6 +290,8 @@ is
 			procedure add_virtual is
 				unit : type_unit (appearance => APPEARANCE_VIRTUAL);
 			begin
+				log (text => "add_virtual", level => log_threshold + 2);
+				
 				-- Compose a virtual unit:
 				unit := (
 					appearance	=> APPEARANCE_VIRTUAL,
@@ -316,10 +318,12 @@ is
 				use pac_units_external;
 				unit : type_unit (appearance => APPEARANCE_PCB);
 			begin
+				log (text => "add_real", level => log_threshold + 2);
+				
+				-- Map from the unit back to the symbol in the library:
 				symbol_cursor := get_symbol (first_available_unit.ext);
 
-				-- Rotate the positions of placeholders and their rotation about
-				-- their own origin according to rotation given by caller:
+				-- Get the default placeholders as they are defined in the device model:
 				placeholders := get_default_placeholders (symbol_cursor, destination);
 
 				-- Compose a real unit:
@@ -342,14 +346,18 @@ is
 			
 			
 		begin					
-			log (text => "add external unit " & to_string (get_name_external (first_available_unit)),
+			log (text => "add external unit " 
+				 & to_string (get_name_external (first_available_unit)),
 				 level => log_threshold + 2);
+			log_indentation_up;
 			
 			if is_real (device_cursor_lib) then
 				add_real;
 			else
 				add_virtual;
 			end if;
+
+			log_indentation_down;
 		end add_unit_external;
 
 
