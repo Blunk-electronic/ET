@@ -40,7 +40,7 @@ with et_colors;							use et_colors;
 
 with et_text;
 with et_alignment;
-with et_symbols;
+with et_symbol_model;
 with et_port_names;
 with et_port_visibility;
 with et_symbol_library;					use et_symbol_library;
@@ -78,7 +78,7 @@ procedure draw_units is
 
 	
 	procedure draw_symbol (
-		symbol			: in et_symbols.type_symbol;
+		symbol			: in et_symbol_model.type_symbol;
 		device_name		: in type_device_name := (others => <>);
 		device_value	: in pac_device_value.bounded_string := to_value (""); -- like 100R or TL084
 		device_purpose	: in pac_device_purpose.bounded_string := to_purpose (""); -- like "brightness control"
@@ -100,7 +100,7 @@ procedure draw_units is
 		brightness		: in type_brightness := NORMAL;
 		preview			: in boolean := false)
 	is
-		use et_symbols;
+		use et_symbol_model;
 		use et_symbol_ports;
 		use pac_text_schematic;
 		use pac_geometry_2;
@@ -109,7 +109,7 @@ procedure draw_units is
 		use pac_symbol_arcs;
 		use pac_symbol_circles;
 		use pac_ports;
-		use et_symbols.pac_texts;
+		use et_symbol_model.pac_texts;
 		
 		
 		procedure draw_line (c : in pac_symbol_lines.cursor) is 
@@ -204,7 +204,7 @@ procedure draw_units is
 				draw_text (
 					content		=> to_content (to_string (key (c))),
 					size		=> element (c).port_name_size,
-					font		=> et_symbols.text_font,
+					font		=> et_symbol_model.text_font,
 					anchor		=> pos_port_name,
 					origin		=> false,  -- no origin required
 
@@ -273,7 +273,7 @@ procedure draw_units is
 				draw_text (
 					content		=> to_content (to_string (properties.terminal)), -- H4, 1, 16
 					size		=> element (c).terminal_name_size,
-					font		=> et_symbols.text_font,
+					font		=> et_symbol_model.text_font,
 					anchor		=> pos_terminal_name,
 					origin		=> false,  -- no origin required
 
@@ -413,7 +413,7 @@ procedure draw_units is
 		-- are frequently placed inside symbols.
 		-- Call this procedure after drawing the symbol body because it
 		-- does not change the color to symbol color.
-		procedure draw_text (c : in et_symbols.pac_texts.cursor) is 
+		procedure draw_text (c : in et_symbol_model.pac_texts.cursor) is 
 			p : type_vector_model := element (c).position;
 
 			use pac_draw_text;
@@ -428,7 +428,7 @@ procedure draw_units is
 			draw_text (
 				content		=> element (c).content,
 				size		=> element (c).size,
-				font		=> et_symbols.text_font,
+				font		=> et_symbol_model.text_font,
 				anchor		=> p,
 				origin		=> false, -- no origin required
 				
@@ -597,9 +597,9 @@ procedure draw_units is
 	
 	-- This function returns true if the given placeholder has been moved from the
 	-- default position and rotation or if the alignment has been changed:
--- 	function moved_by_operator (placeholder : in et_symbols.type_text_placeholder)
+-- 	function moved_by_operator (placeholder : in et_symbol_model.type_text_placeholder)
 -- 		return boolean is
--- 		use et_symbols;
+-- 		use et_symbol_model;
 -- 		use et_text;
 -- 		use type et_text.type_text_alignment;
 -- 		result : boolean := false;
@@ -707,7 +707,7 @@ procedure draw_units is
 		
 		
 		procedure query_units (unit_cursor : in pac_units.cursor) is
-			use et_symbols;
+			use et_symbol_model;
 
 			-- Get the position of the unit candidate as it is
 			-- in the schematic:
@@ -930,7 +930,7 @@ procedure draw_units is
 	procedure fetch_placeholders_ext (
 		symbol_cursor : in pac_symbols.cursor)
 	is 
-		use et_symbols;
+		use et_symbol_model;
 		use pac_symbols;
 		sym : type_symbol renames element (symbol_cursor);
 	begin
@@ -998,7 +998,7 @@ procedure draw_units is
 			-- Depends on the tool used for placing the unit:
 			destination : type_vector_model := get_primary_tool_position;
 			
-			use et_symbols;
+			use et_symbol_model;
 			use et_symbol_name;
 			use pac_symbols;
 			symbol_model : pac_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
@@ -1092,7 +1092,7 @@ procedure draw_units is
 			destination : type_vector_model := get_primary_tool_position;
 
 			use et_symbol_name;
-			use et_symbols;
+			use et_symbol_model;
 			use pac_symbols;
 			symbol_model : pac_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
 			symbol_cursor : pac_symbols.cursor;

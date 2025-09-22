@@ -64,7 +64,7 @@ with et_net_connectors;
 with et_net_class;
 with et_port_names;
 with et_symbol_ports;
-with et_symbols;
+with et_symbol_model;
 with et_device_name;				use et_device_name;
 with et_device_model;
 with et_module_instance;
@@ -661,7 +661,7 @@ is
 
 				
 				procedure query_submodule_ports (segment : in type_net_segment) is
-					use et_symbols;
+					use et_symbol_model;
 					use et_symbol_ports;
 					use et_module_instance;
 					
@@ -696,7 +696,7 @@ is
 
 				
 				procedure query_netchanger_ports (segment : in type_net_segment) is
-					use et_symbols;
+					use et_symbol_model;
 					use et_symbol_ports;
 
 					port_cursor : pac_netchanger_ports.cursor;
@@ -1010,7 +1010,7 @@ is
 	
 	procedure query_devices is
 		use et_devices_electrical;
-		use et_symbols;
+		use et_symbol_model;
 		use et_device_placeholders.symbols;
 		use pac_devices_sch;
 

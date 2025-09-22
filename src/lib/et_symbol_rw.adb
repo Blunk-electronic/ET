@@ -195,7 +195,7 @@ package body et_symbol_rw is
 		use pac_symbol_lines;
 		use pac_symbol_arcs;
 		use pac_symbol_circles;
-		use et_symbols.pac_texts;	
+		use et_symbol_model.pac_texts;	
 		use pac_ports;
 		
 		
@@ -236,7 +236,7 @@ package body et_symbol_rw is
 		end write_circle;
 		
 
-		procedure write_text (cursor : in et_symbols.pac_texts.cursor) is begin
+		procedure write_text (cursor : in et_symbol_model.pac_texts.cursor) is begin
 			section_mark (section_text, HEADER);
 			write (keyword => keyword_position, parameters => to_string (element (cursor).position, FORMAT_2));
 			write (keyword => keyword_content , parameters => to_string (element (cursor).content));			
@@ -670,7 +670,7 @@ package body et_symbol_rw is
 							when SEC_TEXTS =>
 
 								-- append symbol text to symbol
-								et_symbols.pac_texts.append (
+								et_symbol_model.pac_texts.append (
 									container	=> symbol.texts,
 									new_item	=> (symbol_text_base with
 										content		=> symbol_text_content,
@@ -1130,7 +1130,7 @@ package body et_symbol_rw is
 		log (text => "reading symbol " & to_string (file_name) & " ...", level => log_threshold);
 		log_indentation_up;
 		
-		-- test if container et_symbols.symbols already contains the symbol
+		-- test if container et_symbol_model.symbols already contains the symbol
 		-- named "file_name". If so, there would be no need to read the file_name again.
 		if pac_symbols.contains (symbol_library, file_name) then
 			log (text => "already read -> skipped", level => log_threshold + 1);
@@ -1171,7 +1171,7 @@ package body et_symbol_rw is
 			set_input (previous_input);
 			close (file_handle);
 
-			-- Insert the symbol (accessed by pointer symbol) in et_symbols.symbols:
+			-- Insert the symbol (accessed by pointer symbol) in et_symbol_model.symbols:
 			pac_symbols.insert (
 				container	=> symbol_library, 
 				key			=> file_name, -- libraries/symbols/nand.sym

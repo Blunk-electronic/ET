@@ -574,7 +574,7 @@ package body et_device_library is
 
 	function get_symbol (
 		unit : in type_unit_cursors)
-		return et_symbols.type_symbol
+		return type_symbol
 	is 
 		use pac_units_external;
 		use pac_units_internal;

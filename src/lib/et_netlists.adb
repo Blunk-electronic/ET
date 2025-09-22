@@ -817,10 +817,9 @@ package body et_netlists is
 			use et_terminals;
 
 			
-			procedure query_device (port_cursor : in pac_device_ports_extended.cursor) is
 			-- Writes the device port in the netlist file.
+			procedure query_device (port_cursor : in pac_device_ports_extended.cursor) is
 				use pac_device_ports_extended;
-				use et_symbols;
 			begin
 				put_line (netlist_handle, -- IC1 CE input H5
 					to_string (element (port_cursor).device) & latin_1.space &

@@ -41,7 +41,6 @@ with gtk.menu;					use gtk.menu;
 with gtk.menu_item;				use gtk.menu_item;
 with gtk.menu_shell;			use gtk.menu_shell;
 
-with et_symbols;				use et_symbols;
 with et_device_library;			use et_device_library;
 with et_device_name;			use et_device_name;
 with et_unit_name;				use et_unit_name;

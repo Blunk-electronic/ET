@@ -328,7 +328,6 @@ package body et_devices_electrical is
 		use et_board_geometry.pac_geometry_2;
 		use et_board_coordinates;
 		use pac_devices_sch;
-		use et_symbols;
 		use et_device_appearance;
 	begin
 		if element (device_cursor).appearance = APPEARANCE_PCB then
@@ -700,9 +699,7 @@ package body et_devices_electrical is
 		procedure query_unit (
 			device_name	: in type_device_name;
 			device		: in type_device_sch)
-		is 
-			use et_symbols;
-		begin
+		is begin
 			-- get the coordinates of the unit
 			unit_position := element (unit).position;
 
@@ -1168,7 +1165,6 @@ package body et_devices_electrical is
 		unit_name		: in pac_unit_name.bounded_string)
 		return type_default_text_positions 
 	is		
-		use et_symbols;
 		use et_device_appearance;
 		use pac_devices_lib;
 
@@ -1178,10 +1174,10 @@ package body et_devices_electrical is
 		model : pac_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
 		device_cursor_lib : pac_devices_lib.cursor;
 		
-		use et_symbols.pac_texts;
+		use et_symbol_model.pac_texts;
 
 		
-		procedure query_text (c : in et_symbols.pac_texts.cursor) is 
+		procedure query_text (c : in pac_texts.cursor) is 
 		-- Appends a text position (x/y) the the result.
 			use pac_text_positions;
 		begin

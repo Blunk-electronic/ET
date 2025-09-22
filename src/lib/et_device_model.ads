@@ -54,7 +54,7 @@ with et_schematic_geometry;		use et_schematic_geometry;
 with et_schematic_coordinates;	use et_schematic_coordinates;
 with et_symbol_name;			use et_symbol_name;
 with et_symbol_library;			use et_symbol_library;
-with et_symbols;				use et_symbols;
+with et_symbol_model;			use et_symbol_model;
 with et_symbol_ports;			use et_symbol_ports;
 with et_device_appearance;		use et_device_appearance;
 with et_device_model_names;		use et_device_model_names;

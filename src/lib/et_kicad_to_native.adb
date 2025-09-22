@@ -87,7 +87,7 @@ with et_port_strength;
 with et_port_names;
 with et_port_direction;
 with et_symbol_ports;
-with et_symbols;
+with et_symbol_model;
 with et_device_appearance;
 with et_device_purpose;
 with et_unit_name;					use et_unit_name;
@@ -2311,12 +2311,12 @@ package body et_kicad_to_native is
 	function convert_shapes (
 		shapes			: in et_kicad_libraries.type_symbol_shapes;
 		log_threshold	: in type_log_level)
-		return et_symbols.type_shapes 
+		return et_symbol_model.type_shapes 
 	is
 		use et_kicad_libraries;
 		
-		use et_symbols;		
-		native_shapes : et_symbols.type_shapes;
+		use et_symbol_model;		
+		native_shapes : et_symbol_model.type_shapes;
 
 		
 		procedure copy_line (cursor : in et_kicad_libraries.type_symbol_lines.cursor) is begin
@@ -2329,7 +2329,7 @@ package body et_kicad_to_native is
 		procedure copy_arc (cursor : in et_kicad_libraries.type_symbol_arcs.cursor) is begin
 			pac_symbol_arcs.append (
 				container	=> native_shapes.arcs,
-				new_item	=> et_symbols.type_symbol_arc (et_kicad_libraries.type_symbol_arcs.element (cursor)));
+				new_item	=> et_symbol_model.type_symbol_arc (et_kicad_libraries.type_symbol_arcs.element (cursor)));
 		end;
 
 		
@@ -2378,7 +2378,7 @@ package body et_kicad_to_native is
 						start := true; -- up next: start point
 
 						-- append line to collection of native lines
-						et_symbols.pac_symbol_lines.append (
+						et_symbol_model.pac_symbol_lines.append (
 							container	=> native_shapes.lines,
 							new_item	=> line);
 
@@ -2412,7 +2412,7 @@ package body et_kicad_to_native is
 
 			
 			procedure append_line is begin
-				et_symbols.pac_symbol_lines.append (
+				et_symbol_model.pac_symbol_lines.append (
 					container	=> native_shapes.lines,
 					new_item	=> line);
 			end;
@@ -3356,7 +3356,7 @@ package body et_kicad_to_native is
 				library_name	: in pac_device_model_file.bounded_string; -- lbr/logic.lib
 				library			: in et_kicad_libraries.type_components_library.map) 
 			is				
-				use et_symbols;
+				use et_symbol_model;
 				use et_device_appearance;
 				use et_kicad_libraries.type_components_library;
 				component_cursor : et_kicad_libraries.type_components_library.cursor := library.first;

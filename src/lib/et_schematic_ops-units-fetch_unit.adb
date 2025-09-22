@@ -41,6 +41,7 @@ with et_symbol_name;
 with et_device_appearance;				use et_device_appearance;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
+
 separate (et_schematic_ops.units)
 
 procedure fetch_unit (
@@ -86,7 +87,6 @@ is
 				device_name	: in type_device_name;
 				device		: in out type_device_sch) 
 			is
-				use et_symbols;
 				placeholders : type_default_placeholders;
 			begin
 				log (text => "fetch internal unit " 

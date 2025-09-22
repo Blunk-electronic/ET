@@ -82,7 +82,7 @@ with et_board_geometry;
 with et_board_coordinates;
 with et_material;
 with et_text;
-with et_symbols;						use et_symbols;
+with et_symbol_model;					use et_symbol_model;
 with et_port_names;						use et_port_names;
 with et_device_model;					use et_device_model;
 with et_device_appearance;				use et_device_appearance;

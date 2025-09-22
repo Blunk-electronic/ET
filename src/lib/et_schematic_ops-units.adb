@@ -42,9 +42,11 @@ with et_board_ops.ratsnest;					use et_board_ops.ratsnest;
 with et_schematic_ops.nets;
 with et_net_strands;						use et_net_strands;
 with et_port_direction;
+with et_symbol_model;
 with et_device_model;						use et_device_model;
 with et_devices_non_electrical;				use et_devices_non_electrical;
 with et_numbering;
+
 
 package body et_schematic_ops.units is
 
@@ -1380,8 +1382,6 @@ package body et_schematic_ops.units is
 		meaning			: in type_placeholder_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level) 
 	is
-
-		use et_symbols;
 		use pac_unit_name;
 
 		
@@ -1599,18 +1599,20 @@ package body et_schematic_ops.units is
 		return boolean 
 	is
 		result : boolean := false; -- to be returned, goes true once the target has been found
+
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) is
+			module		: in type_generic_module) 
+		is
 			use pac_unit_name;
 			device_cursor : pac_devices_sch.cursor;
 
-			use et_symbols;
 			
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in type_device_sch) is
+				device		: in type_device_sch)
+			is
 				use pac_ports;
 				ports : pac_ports.map;
 				use pac_port_name;
@@ -3166,7 +3168,7 @@ package body et_schematic_ops.units is
 	is
 		result : boolean := false;
 		
-		use et_symbols;
+		use et_symbol_model;
 		use pac_ports;
 		port_cursor : pac_ports.cursor := unit_ports.first;
 

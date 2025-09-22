@@ -54,7 +54,7 @@ with et_schematic_coordinates;		use et_schematic_coordinates;
 use et_schematic_geometry.pac_geometry_2;
 
 with et_generic_module;				use et_generic_module;
-with et_symbols;					use et_symbols;
+with et_symbol_model;				use et_symbol_model;
 with et_package_variant;			use et_package_variant;
 with et_device_model;				use et_device_model;
 with et_device_library;				use et_device_library;

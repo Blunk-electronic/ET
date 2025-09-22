@@ -79,7 +79,6 @@ with et_netlists;
 with et_terminals;
 with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
-with et_symbols;
 with et_device_library;			use et_device_library;
 with et_package_variant;		use et_package_variant;
 with et_device_purpose;			use et_device_purpose;

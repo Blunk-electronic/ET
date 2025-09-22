@@ -46,7 +46,7 @@ with et_schematic_ops;				use et_schematic_ops;
 with et_devices_electrical;			use et_devices_electrical;
 with et_submodules;
 with et_numbering;
-with et_symbols;
+with et_symbol_model;
 with et_device_appearance;
 with et_device_name;
 with et_conductor_segment.boards;
@@ -409,7 +409,7 @@ package body et_board_ops is
 						cursor_pnp : et_pick_and_place.pac_devices.cursor;
 
 						use et_assembly_variants.pac_device_variants;
-						use et_symbols;
+						use et_symbol_model;
 						use et_device_appearance;
 
 					begin -- query_properties_default
@@ -452,7 +452,7 @@ package body et_board_ops is
 
 						alt_dev_cursor : et_assembly_variants.pac_device_variants.cursor;
 						use et_assembly_variants.pac_device_variants;
-						use et_symbols;
+						use et_symbol_model;
 						use et_device_appearance;
 						
 					begin -- query_properties_variants

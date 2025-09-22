@@ -44,7 +44,6 @@ with et_modes.schematic;
 with et_canvas_schematic_units;
 with et_canvas_schematic_nets;
 with et_scripting_interactive_schematic;
-with et_symbols;
 with et_schematic_ops.netlists;
 with et_schematic_ops.grid;
 with et_schematic_ops.submodules;

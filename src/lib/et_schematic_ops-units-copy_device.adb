@@ -44,6 +44,7 @@
 --		  to the new unit.
 
 
+with et_symbol_model;
 with et_symbol_name;
 with et_symbol_library;
 with et_device_model;					use et_device_model;
@@ -71,7 +72,7 @@ is
 		use pac_devices_sch;
 		device_cursor_sch : pac_devices_sch.cursor;
 
-		use et_symbols;
+		use et_symbol_model;
 		use pac_devices_lib;
 		device_cursor_lib : pac_devices_lib.cursor; -- points to the device in the library
 		

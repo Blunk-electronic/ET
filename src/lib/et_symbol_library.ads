@@ -48,7 +48,7 @@ with ada.containers.indefinite_ordered_maps;
 with et_schematic_geometry;				use et_schematic_geometry;
 
 -- with et_logging;						use et_logging;
-with et_symbols;						use et_symbols;
+with et_symbol_model;					use et_symbol_model;
 with et_symbol_name;					use et_symbol_name;
 with et_device_appearance;				use et_device_appearance;
 

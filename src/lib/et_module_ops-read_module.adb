@@ -80,7 +80,7 @@ with et_device_value;
 with et_device_library;				use et_device_library;
 with et_device_partcode;
 with et_package_variant;
-with et_symbols;
+with et_symbol_model;
 with et_symbol_rw;
 with et_schematic_text;
 with et_schematic_rw;
@@ -1765,7 +1765,7 @@ is
 -- 											elsif kw = keyword_style then -- stlye italic
 -- 												expect_field_count (line, 2);
 -- 
--- 												unit_placeholder.style := et_symbols.to_text_style (f (line, 2));
+-- 												unit_placeholder.style := et_symbol_model.to_text_style (f (line, 2));
 
 		elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 			expect_field_count (line, 5);
@@ -2428,7 +2428,7 @@ is
 
 -- 			elsif kw = keyword_style then -- style normal/italic
 -- 				expect_field_count (line, 2);
-			-- schematic_text.font := et_symbols.to_text_style (f (line, 2)); -- CS
+			-- schematic_text.font := et_symbol_model.to_text_style (f (line, 2)); -- CS
 			-- CS: currently font and style are ignored.
 
 		elsif kw = keyword_alignment then -- alignment horizontal center vertical center
@@ -2624,7 +2624,7 @@ is
 
 	
 	procedure read_device is
-		use et_symbols;
+		use et_symbol_model;
 		use et_device_model;
 		use et_device_purpose;
 		use et_device_model_names;
@@ -3310,7 +3310,7 @@ is
 			
 			procedure insert_unit is 
 				use et_schematic_coordinates;
-				use et_symbols;
+				use et_symbol_model;
 				use et_units;
 				use et_unit_name;
 				use et_device_appearance;
@@ -3373,7 +3373,7 @@ is
 				use et_device_placeholders;
 				use et_schematic_coordinates;	
 				use et_schematic_geometry;
-				use et_symbols;
+				use et_symbol_model;
 			begin
 				case unit_placeholder_meaning is
 					when NAME =>
@@ -3410,7 +3410,7 @@ is
 				module		: in out type_generic_module) 
 			is
 				use et_devices_electrical;
-				use et_symbols;
+				use et_symbol_model;
 				use et_device_model;
 				use et_device_model_names;
 				use et_package_names;

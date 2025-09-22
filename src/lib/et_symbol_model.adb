@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                         SCHEMATIC SYMBOLS                                --
+--                       SCHEMATIC SYMBOL MODEL                             --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -46,7 +46,7 @@ with et_alignment;				use et_alignment;
 
 
 
-package body et_symbols is
+package body et_symbol_model is
 
 	
 	procedure write_text_properies (
@@ -232,7 +232,7 @@ package body et_symbols is
 
 	
 	
-end et_symbols;
+end et_symbol_model;
 
 -- Soli Deo Gloria
 

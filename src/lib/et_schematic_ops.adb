@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+with et_symbol_model;
 with et_units;							use et_units;
 with et_unit_name;						use et_unit_name;
 with et_devices_non_electrical;
@@ -193,8 +194,6 @@ package body et_schematic_ops is
 	is
 		result : pac_nets.cursor;
 
-		use et_symbols;
-
 		-- Map from the given terminal to the linked 
 		-- unit and port of the device. If the terminal is not linked
 		-- to any port then this function will just return a cursor that
@@ -298,7 +297,7 @@ package body et_schematic_ops is
 
 					
 					procedure query_port (port_cursor : in pac_ports.cursor) is
-						use et_symbols;
+						use et_symbol_model;
 						use pac_ports;
 					begin
 						log (text => "unit " & to_string (key (unit_cursor)) &

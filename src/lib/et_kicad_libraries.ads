@@ -64,7 +64,7 @@ with et_logging;				use et_logging;
 with et_text;					use et_text;
 with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
-with et_symbols;				use et_symbols;
+with et_symbol_model;			use et_symbol_model;
 with et_device_appearance;		use et_device_appearance;
 with et_device_model_names;		use et_device_model_names;
 with et_device_value;			use et_device_value;
@@ -241,8 +241,8 @@ package et_kicad_libraries is
 	
 	-- lines of a symbol:
 	package type_symbol_lines is new doubly_linked_lists (
-		element_type	=> et_symbols.type_symbol_line,
-		"="				=> et_symbols."=");
+		element_type	=> et_symbol_model.type_symbol_line,
+		"="				=> et_symbol_model."=");
 
 	-- polylines of a symbol:
 	-- A polyline is a list of points. Their interconnections have a width and a fill.
@@ -273,7 +273,7 @@ package et_kicad_libraries is
 	package type_symbol_rectangles is new doubly_linked_lists (type_symbol_rectangle);	
 	
 	-- arcs of a symbol:
-	type type_symbol_arc is new et_symbols.type_symbol_arc with record
+	type type_symbol_arc is new et_symbol_model.type_symbol_arc with record
 		start_angle		: et_schematic_geometry.pac_geometry_sch.type_angle;
 		end_angle		: et_schematic_geometry.pac_geometry_sch.type_angle;
 		radius			: et_schematic_geometry.pac_geometry_sch.type_float_positive;
@@ -282,7 +282,7 @@ package et_kicad_libraries is
 	package type_symbol_arcs is new doubly_linked_lists (type_symbol_arc);
 
 	-- circles of a symbol:
-	type type_symbol_circle is new et_symbols.type_circle_base with record
+	type type_symbol_circle is new et_symbol_model.type_circle_base with record
 		fill			: type_fill;
 	end record;
 	package type_symbol_circles is new doubly_linked_lists (type_symbol_circle);
@@ -302,7 +302,7 @@ package et_kicad_libraries is
 		TEXT); -- text embedded in a symbol
 
 	
-	type type_symbol is new et_symbols.type_symbol_base with record
+	type type_symbol is new et_symbol_model.type_symbol_base with record
 		appearance	: type_appearance;
 		shapes		: type_symbol_shapes; -- the collection of shapes		
 		ports		: type_ports_library.list := type_ports_library.empty_list; -- the ports of the symbol

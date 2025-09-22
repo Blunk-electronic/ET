@@ -61,7 +61,6 @@ use et_schematic_geometry.pac_path_and_bend;
 
 with et_text;
 with et_generic_module;				use et_generic_module;
-with et_symbols;
 with et_net_labels;					use et_net_labels;
 with et_nets;						use et_nets;
 with et_net_segment;				use et_net_segment;

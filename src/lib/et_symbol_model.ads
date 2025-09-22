@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                         SCHEMATIC SYMBOLS                                --
+--                      SCHEMATIC SYMBOL MODEL                              --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
@@ -65,7 +65,7 @@ with et_symbol_ports;					use et_symbol_ports;
 with et_device_appearance;				use et_device_appearance;
 
 
-package et_symbols is -- CS rename to et_symbol_model
+package et_symbol_model is
 
 	use pac_geometry_2;
 	use pac_text_schematic;
@@ -264,7 +264,7 @@ package et_symbols is -- CS rename to et_symbol_model
 
 
 
-end et_symbols;
+end et_symbol_model;
 
 -- Soli Deo Gloria
 

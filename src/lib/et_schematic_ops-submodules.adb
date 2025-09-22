@@ -44,6 +44,7 @@ with et_mirroring;					use et_mirroring;
 with et_board_geometry;
 with et_board_coordinates;
 with et_generic_stacks;
+with et_symbol_model;
 with et_device_appearance;
 with et_package_names;
 with et_net_strands;				use et_net_strands;
@@ -4403,7 +4404,7 @@ package body et_schematic_ops.submodules is
 			procedure collect_device_port (
 				port	: in type_device_port;
 				net		: in pac_net_name.bounded_string) is 
-				use et_symbols;
+				use et_symbol_model;
 			begin
 			-- Collect device ports. exception will be raised of port occurs more than once.
 				insert (device_port_collector, port);
@@ -4494,7 +4495,7 @@ package body et_schematic_ops.submodules is
 								procedure query_ports_devices (segment : in type_net_segment) is
 									
 									procedure query_port (port_cursor : in pac_device_ports.cursor) is 
-										use et_symbols;
+										use et_symbol_model;
 									begin
 										log (text => "device " & to_string (element (port_cursor).device_name) &
 											 " port " & to_string (element (port_cursor).port_name), level => log_threshold + 4);
@@ -4901,7 +4902,7 @@ package body et_schematic_ops.submodules is
 
 						use pac_devices_sch;
 						use et_assembly_variants.pac_device_variants;
-						use et_symbols;
+						use et_symbol_model;
 					begin
 						-- the device must be real
 						--if element (cursor_schematic).appearance = PCB then -- skip virtual devices
@@ -4943,7 +4944,7 @@ package body et_schematic_ops.submodules is
 						use pac_devices_sch;
 						alt_dev_cursor : et_assembly_variants.pac_device_variants.cursor;
 						use et_assembly_variants.pac_device_variants;
-						use et_symbols;
+						use et_symbol_model;
 						use et_device_appearance;
 						use et_package_names;
 					begin
