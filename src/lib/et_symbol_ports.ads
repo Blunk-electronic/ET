@@ -206,14 +206,13 @@ package et_symbol_ports is
 		offset	: in type_object_position); -- the offset (only x/y matters)
 	
 
-	-- Rotates the given ports by given angle about the origin.
+	-- Rotates the given ports by given 
+	-- angle about the origin of the symbol:
 	procedure rotate_ports (
 		ports	: in out pac_ports.map; -- the portlist
 		angle	: in type_rotation_model); -- 90
 
 
-	
-	procedure dummy;
 
 	-- CS procedure that outputs the properties of a port
 	

@@ -146,7 +146,6 @@ package body et_symbol_ports is
 		ports	: in out pac_ports.map; -- the portlist
 		angle	: in type_rotation_model)  -- 90
 	is
-		use pac_ports;
 
 		procedure rotate (
 			name	: in pac_port_name.bounded_string;
@@ -155,6 +154,7 @@ package body et_symbol_ports is
 			rotate_by (port.position, angle);
 		end;
 
+		
 		procedure query_port (cursor : in pac_ports.cursor) is begin
 			update_element (
 				container	=> ports,
@@ -163,14 +163,13 @@ package body et_symbol_ports is
 		end;
 			
 	begin
-		iterate (ports, query_port'access);
+		-- Do nothing if the given angle is zero:
+		if angle /= zero_rotation then
+			iterate (ports, query_port'access);
+		end if;
 	end rotate_ports;
 
 
-	
-	procedure dummy is begin null; end;
-
-	
 	
 end et_symbol_ports;
 

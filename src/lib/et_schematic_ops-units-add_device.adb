@@ -235,43 +235,71 @@ is
 			device_name	: in type_device_name;
 			device		: in out type_device_sch) 
 		is 
-			use pac_units_internal;
-			placeholders : type_default_placeholders;
-		begin
-			log (text => "add internal unit " & to_string (key (first_available_unit.int)), level => log_threshold + 2);
-			
-			case element (device_cursor_lib).appearance is
-				when APPEARANCE_VIRTUAL =>
-					pac_units.insert (
-						container	=> device.units,
-						key			=> key (first_available_unit.int), -- the unit name like A, B
-						new_item	=> (
-							appearance	=> APPEARANCE_VIRTUAL,
-							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-							others 		=> <>) -- mirror
-							);
-					
-				when APPEARANCE_PCB =>
 
-					-- Rotate the positions of placeholders and their rotation about
-					-- their own origin according to rotation given by caller:
-					placeholders := get_default_placeholders (first_available_unit.int, destination);
-					
-					pac_units.insert (
-						container	=> device.units,
-						key			=> key (first_available_unit.int), -- the unit name like A, B, VCC_IO_BANK_1
-						new_item	=> (
-							appearance	=> APPEARANCE_PCB,
-							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-							placeholders => (
-								name		=> placeholders.name,
-								value		=> placeholders.value,
-								purpose		=> placeholders.purpose),
-							others 		=> <>) -- mirror
-							);
-					
-			end case;
+			-- This procedure composes the virtual unit and adds
+			-- it to the schematic:
+			procedure add_virtual is
+				unit : type_unit (APPEARANCE_VIRTUAL);
+			begin
+				log (text => "add_virtual", level => log_threshold + 3);
+
+				-- Compose a virtual unit:
+				unit := (
+					appearance	=> APPEARANCE_VIRTUAL,
+					position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
+					others 		=> <>);
+
+				-- Add the unit to the schematic:
+				pac_units.insert (
+					container	=> device.units,
+					key			=> get_name_internal (first_available_unit), -- the unit name like A, B
+					new_item	=> unit);
+
+			end add_virtual;
+
+
+
+			-- This procedure composes the real unit and adds
+			-- it to the schematic:
+			procedure add_real is
+				unit : type_unit (APPEARANCE_PCB);
+				placeholders : type_default_placeholders;
+			begin
+				log (text => "add_real", level => log_threshold + 3);
+
+				-- Get the default placeholders as they are defined in the device model:
+				placeholders := get_default_placeholders (first_available_unit.int, destination);
+				
+				-- Compose a real unit:
+				unit := (
+					appearance		=> APPEARANCE_PCB,
+					position		=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
+					placeholders	=> placeholders,
+					others 			=> <>);
+							
+				-- Add the unit to the schematic:
+				pac_units.insert (
+					container	=> device.units,
+					key			=> get_name_internal (first_available_unit), -- the unit name like A, B, VCC_IO_BANK_1
+					new_item	=> unit);
+
+			end add_real;
 			
+			
+		begin
+			log (text => "add internal unit " 
+				 & to_string (get_name_internal (first_available_unit)),
+				 level => log_threshold + 2);
+			
+			log_indentation_up;
+			
+			if is_real (device_cursor_lib) then
+				add_real;
+			else
+				add_virtual;
+			end if;
+			
+			log_indentation_down;
 		end add_unit_internal;
 
 
@@ -290,7 +318,7 @@ is
 			procedure add_virtual is
 				unit : type_unit (appearance => APPEARANCE_VIRTUAL);
 			begin
-				log (text => "add_virtual", level => log_threshold + 2);
+				log (text => "add_virtual", level => log_threshold + 3);
 				
 				-- Compose a virtual unit:
 				unit := (
@@ -318,7 +346,7 @@ is
 				use pac_units_external;
 				unit : type_unit (appearance => APPEARANCE_PCB);
 			begin
-				log (text => "add_real", level => log_threshold + 2);
+				log (text => "add_real", level => log_threshold + 3);
 				
 				-- Map from the unit back to the symbol in the library:
 				symbol_cursor := get_symbol (first_available_unit.ext);
@@ -328,13 +356,10 @@ is
 
 				-- Compose a real unit:
 				unit := (
-					appearance	=> APPEARANCE_PCB,
-					position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
-					placeholders => (
-						name		=> placeholders.name,	
-						value		=> placeholders.value,	
-						purpose		=> placeholders.purpose),	
-						others 		=> <>);
+					appearance		=> APPEARANCE_PCB,
+					position		=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
+					placeholders	=> placeholders,
+					others 			=> <>);
 
 				-- Add the unit to the schematic:
 				pac_units.insert (
@@ -447,17 +472,18 @@ is
 		
 
 
+		-- The ports of the unit are stored in "ports". But they are
+		-- still on their default positions as defined in the device model.
+		-- This procedure rotates and moves the ports according to
+		-- the rotation and destination of the unit:
 		procedure add_ports_to_nets is begin
 			log (text => "insert_ports", level => log_threshold + 1);
 			log_indentation_up;
-			
-			-- Calculate the absolute positions of the unit ports. Rotate first if required:
-			-- log (text => "calculate absolute port positions", level => log_threshold + 2);
-			
-			if get_rotation (destination) /= zero_rotation then
-				rotate_ports (ports, get_rotation (destination));
-			end if;
 
+			-- Rotate the ports about the origin of the unit;
+			rotate_ports (ports, get_rotation (destination));
+
+			-- Move the ports to the final destination of the unit:
 			move_ports (ports, destination);
 
 			-- Insert the new unit ports in the net segments:
@@ -468,7 +494,6 @@ is
 				ports			=> ports,
 				sheet			=> get_sheet (destination),
 				log_threshold	=> log_threshold + 2);
-
 
 			-- Update the ratsnest if the added device is real:
 			if is_real (device_cursor_lib) then
