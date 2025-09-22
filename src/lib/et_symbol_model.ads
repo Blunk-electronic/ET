@@ -193,7 +193,7 @@ package et_symbol_model is
 
 	
 	type type_symbol_base is tagged record		
-		texts : et_symbol_text.pac_texts.list; -- the collection of texts
+		texts : pac_symbol_texts.list; -- the collection of texts
 	end record;
 
 	

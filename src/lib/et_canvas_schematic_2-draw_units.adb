@@ -110,7 +110,9 @@ procedure draw_units is
 		use pac_symbol_arcs;
 		use pac_symbol_circles;
 		use pac_ports;
-		use et_symbol_text.pac_texts;
+
+		use et_symbol_text;
+		use pac_symbol_texts;
 		
 		
 		procedure draw_line (c : in pac_symbol_lines.cursor) is 
@@ -217,6 +219,7 @@ procedure draw_units is
 					alignment	=> alignment);
 
 			end draw_port_name;
+
 
 			
 			procedure draw_terminal_name is
@@ -414,7 +417,7 @@ procedure draw_units is
 		-- are frequently placed inside symbols.
 		-- Call this procedure after drawing the symbol body because it
 		-- does not change the color to symbol color.
-		procedure draw_text (c : in et_symbol_text.pac_texts.cursor) is 
+		procedure draw_text (c : in pac_symbol_texts.cursor) is 
 			p : type_vector_model := element (c).position;
 
 			use pac_draw_text;
@@ -441,6 +444,7 @@ procedure draw_units is
 
 				alignment	=> element (c).alignment);
 		end draw_text;
+
 
 		
 		-- This procedure draws text placeholders for device name, value and purpose:
@@ -534,6 +538,7 @@ procedure draw_units is
 		end draw_placeholders;
 
 		
+		
 		procedure draw_origin is begin
 			-- NOTE: This is about the origin of the symbol !
 			-- set_color_origin (brightness);
@@ -543,6 +548,8 @@ procedure draw_units is
 
 		end draw_origin;
 
+
+		
 		
 	begin -- draw_symbol
 		

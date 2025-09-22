@@ -63,7 +63,7 @@ package et_symbol_text is
 
 	
 	-- This is a real text with content (used for things like "counter" or "decoder"
-	type type_text is new type_text_basic with record
+	type type_symbol_text is new type_text_basic with record
 		position	: type_vector_model;		
         content		: et_text.pac_text_content.bounded_string;
 	end record;
@@ -77,16 +77,16 @@ package et_symbol_text is
 	
 	-- Outputs the properties of the given text.
 	procedure write_text_properies (
-		text 			: in type_text;
+		text 			: in type_symbol_text;
 		log_threshold	: in type_log_level);
 
 
 	
 	-- Returns the content of the given text as string.
-	function content (text : in type_text) return string;
+	function content (text : in type_symbol_text) return string;
 
 
-	package pac_texts is new doubly_linked_lists (type_text);
+	package pac_symbol_texts is new doubly_linked_lists (type_symbol_text);
 	
 	
 

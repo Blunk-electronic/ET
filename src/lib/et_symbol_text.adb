@@ -47,7 +47,7 @@ package body et_symbol_text is
 
 	
 	procedure write_text_properies (
-		text 			: in type_text;
+		text 			: in type_symbol_text;
 		log_threshold	: in type_log_level) 
 	is
 		use et_text;
@@ -69,14 +69,14 @@ package body et_symbol_text is
 		log (text => "size" & to_string (text.size), level => log_threshold + 1);
 
 		-- style
--- 		log (text => "style " & to_lower (type_text_style'image (text.style)),
+-- 		log (text => "style " & to_lower (type_symbol_text_style'image (text.style)),
 -- 			 level => log_threshold + 1);
 
 		-- rotation
 		log (text => to_string (text.rotation), level => log_threshold + 1);
 
 		-- visible
-		--log (text => "visible " & to_lower(et_libraries.type_text_visible'image (text.visible)),
+		--log (text => "visible " & to_lower(et_libraries.type_symbol_text_visible'image (text.visible)),
 		--	level => log_threshold + 1);
 
 		-- alignment
@@ -91,7 +91,7 @@ package body et_symbol_text is
 
 
 	
-	function content (text : in type_text) return string is
+	function content (text : in type_symbol_text) return string is
 	-- Returns the content of the given text as string.
 		c : et_text.pac_text_content.bounded_string;
 	begin

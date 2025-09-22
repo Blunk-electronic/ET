@@ -1174,11 +1174,12 @@ package body et_devices_electrical is
 		
 		model : pac_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
 		device_cursor_lib : pac_devices_lib.cursor;
-		
-		use et_symbol_text.pac_texts;
+
+		use et_symbol_text;
+		use pac_symbol_texts;
 
 		
-		procedure query_text (c : in et_symbol_text.pac_texts.cursor) is 
+		procedure query_text (c : in pac_symbol_texts.cursor) is 
 		-- Appends a text position (x/y) the the result.
 			use pac_text_positions;
 		begin

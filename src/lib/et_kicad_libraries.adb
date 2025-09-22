@@ -72,10 +72,14 @@ package body et_kicad_libraries is
 		return to_lower (type_placeholder_meaning'image (meaning));
 	end;
 
+
+	
 	function to_meaning (meaning : in string) return type_placeholder_meaning is begin
 		return type_placeholder_meaning'value (meaning);
 	end;
 
+
+	
 	function content (text : in type_text_placeholder) return string is
 	-- Returns the content of the given text placeholder as string.
 		c : et_text.pac_text_content.bounded_string;
@@ -84,10 +88,14 @@ package body et_kicad_libraries is
 		return et_text.to_string (c);
 	end content;
 
+
+	
 	function to_string (style : in type_port_style) return string is begin
 		return space & to_lower (type_port_style'image (style));
 	end to_string;
 
+
+	
 	function to_string (
 		direction	: in type_port_direction;
 		preamble	: in boolean := true) return string is
@@ -253,6 +261,7 @@ package body et_kicad_libraries is
 		return package_name;
 	end to_package_name;
 
+
 	
 	
 	-- Returns the position of the given no-connection-flag as string.
@@ -264,6 +273,7 @@ package body et_kicad_libraries is
 	end to_string;
 
 	
+	
 	-- Returns the properties of the given port as string.
 	function to_string (port : in type_port_with_reference) return string is
 	begin
@@ -272,6 +282,8 @@ package body et_kicad_libraries is
 			& " coordinates " & to_string (position => port.coordinates, scope => module);
 	end to_string;
 
+
+	
 	
 	-- Returns true if left comes before right. Compares by component reference and port name.
 	-- If left equals right, the return is false.	
@@ -298,6 +310,7 @@ package body et_kicad_libraries is
 
 
 	
+	
 	procedure no_generic_model_found (
 		reference		: in type_device_name; -- IC303
 		library			: in pac_device_model_file.bounded_string; -- ../lib/transistors.lib
@@ -310,7 +323,9 @@ package body et_kicad_libraries is
 		raise constraint_error;
 	end no_generic_model_found;
 
+	
 
+	
 	
 	-- Returns the component appearance where cursor points to.
 	function component_appearance (cursor : in type_components_library.cursor)
@@ -319,6 +334,7 @@ package body et_kicad_libraries is
 		return type_components_library.element (cursor).appearance;
 	end component_appearance;
 
+	
 
 	
 	function first_unit (
@@ -355,6 +371,7 @@ package body et_kicad_libraries is
 		return unit_cursor;
 	end first_unit;
 
+	
 
 
 	
@@ -407,6 +424,9 @@ package body et_kicad_libraries is
 			raise constraint_error;
 		end if;
 	end check_datasheet_length;
+
+
+
 	
 	procedure check_datasheet_characters (
 		datasheet : in type_component_datasheet.bounded_string;
@@ -429,6 +449,10 @@ package body et_kicad_libraries is
 		end if;
 	end check_datasheet_characters;
 
+
+
+
+	
 	procedure invalid_field (line : in type_fields_of_line) is begin
 		log (ERROR, get_affected_line (line) & "invalid field !", console => true);
 
@@ -466,6 +490,7 @@ package body et_kicad_libraries is
 	end validate_prefix;
 
 
+
 	
 	procedure validate_prefix (reference : in type_device_name) is
 	-- Tests if the given reference has a power_flag_prefix or a power_symbol_prefix.
@@ -486,6 +511,8 @@ package body et_kicad_libraries is
 		end if;
 	end validate_prefix;
 
+
+	
 	
 	function to_point (x_in, y_in : in string) return type_vector_model is
 		point : type_vector_model;
@@ -1344,7 +1371,7 @@ package body et_kicad_libraries is
 			tmp_draw_rectangle	: type_symbol_rectangle;
 			tmp_draw_arc		: type_symbol_arc;
 			tmp_draw_circle 	: type_symbol_circle;
-			tmp_draw_text		: et_symbol_text.type_text;
+			tmp_draw_text		: et_symbol_text.type_symbol_text;
 			tmp_draw_port		: type_port_library;
 
 			-- The terminal-port map of the current component is stored here temporarily.
@@ -1743,10 +1770,10 @@ package body et_kicad_libraries is
 
 			
 			function to_text (line : in type_fields_of_line) 
-				return et_symbol_text.type_text 
+				return et_symbol_text.type_symbol_text 
 			is
 			-- Returns from the given fields of a text a type_symbol_text.
-				text : et_symbol_text.type_text;
+				text : et_symbol_text.type_symbol_text;
 
 				-- A text is defined by a string like "T 0 0 300 60 0 0 0 leuchtdiode Normal 0 C C"
 				-- Space characters whitin the actual text are replaced by tilde as in this example:
