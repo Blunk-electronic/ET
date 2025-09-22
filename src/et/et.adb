@@ -75,7 +75,9 @@ with et_packages;
 with et_pcb_rw;
 with et_pcb_rw.device_packages;
 
-with et_symbols;
+with et_symbol_name;
+with et_symbol_model;
+with et_symbol_library;
 with et_symbol_rw;
 
 with et_device_appearance;
@@ -117,9 +119,9 @@ procedure et is
 	package_name_save_as	: pac_package_model_file_name.bounded_string; -- the package to be saved as
 	package_appearance		: et_package_appearance.type_package_appearance := et_package_appearance.APPEARANCE_REAL; -- virtual/real. mostly real.
 
-	symbol_name_create		: et_symbols.pac_symbol_model_file.bounded_string; -- the symbol to be created like libraries/symbols/nand.sym
-	symbol_name_open		: et_symbols.pac_symbol_model_file.bounded_string; -- the symbol to be opened
-	symbol_name_save_as		: et_symbols.pac_symbol_model_file.bounded_string; -- the symbol to be saved as
+	symbol_name_create		: et_symbol_name.pac_symbol_model_file.bounded_string; -- the symbol to be created like libraries/symbols/nand.sym
+	symbol_name_open		: et_symbol_name.pac_symbol_model_file.bounded_string; -- the symbol to be opened
+	symbol_name_save_as		: et_symbol_name.pac_symbol_model_file.bounded_string; -- the symbol to be saved as
 	symbol_appearance		: et_device_appearance.type_appearance := et_device_appearance.APPEARANCE_PCB; -- virtual/pcb. mostly pcb.
 	
 	device_name_create		: pac_device_model_file.bounded_string; -- the device to be created like libraries/devices/TL084.dev
@@ -258,7 +260,7 @@ procedure et is
 					-- symbol
 					elsif full_switch = switch_native_symbol_create then
 						log (text => arg & full_switch); -- no parameter
-						symbol_name_create := et_symbols.to_file_name (dummy_name);
+						symbol_name_create := et_symbol_name.to_file_name (dummy_name);
 
 					elsif full_switch = switch_symbol_appearance then -- virtual/pcb
 						log (text => arg & full_switch & space & parameter);
@@ -266,11 +268,11 @@ procedure et is
 						
 					elsif full_switch = switch_native_symbol_open then
 						log (text => arg & full_switch & space & parameter);
-						symbol_name_open := et_symbols.to_file_name (parameter); -- libraries/symbols/nand.sym
+						symbol_name_open := et_symbol_name.to_file_name (parameter); -- libraries/symbols/nand.sym
 
 					elsif full_switch = switch_native_symbol_save_as then
 						log (text => arg & full_switch & space & parameter);
-						symbol_name_save_as := et_symbols.to_file_name (parameter);
+						symbol_name_save_as := et_symbol_name.to_file_name (parameter);
 
 
 					-- device
@@ -478,14 +480,15 @@ procedure et is
 
 	
 	procedure save_symbol_as is 
-		use et_symbols.pac_symbol_model_file;
+		use et_symbol_library;
+		use et_symbol_name.pac_symbol_model_file;
 	begin
 		-- If symbol_name_save_as is empty nothing happens.
-		-- Otherwise the latest and only symbol in et_symbols.symbols is saved.
+		-- Otherwise the latest and only symbol is saved.
 		if length (symbol_name_save_as) > 0 then
 			et_symbol_rw.save_symbol (
 				file_name 		=> symbol_name_save_as,
-				symbol			=> et_symbols.pac_symbols.last_element (et_symbols.symbol_library),
+				symbol			=> pac_symbols.last_element (symbol_library),
 				log_threshold	=> 0);
 		end if;
 	end;
@@ -575,7 +578,7 @@ procedure et is
 	procedure process_commandline_arguments is
 		use et_conventions.pac_file_name;
 		use pac_package_model_file_name;
-		use et_symbols.pac_symbol_model_file;
+		use et_symbol_name.pac_symbol_model_file;
 		use pac_device_model_file;
 		use et_drawing_frame.pac_template_name;
 		use et_script_processor;
