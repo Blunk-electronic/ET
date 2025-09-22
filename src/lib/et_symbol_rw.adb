@@ -57,6 +57,7 @@ with et_port_strength;
 with et_port_visibility;
 with et_port_direction;
 with et_port_names;
+with et_symbol_text;				use et_symbol_text;
 with et_symbol_library;				use et_symbol_library;
 with et_symbol_ports;				use et_symbol_ports;
 with et_device_placeholders;		use et_device_placeholders;
@@ -195,7 +196,7 @@ package body et_symbol_rw is
 		use pac_symbol_lines;
 		use pac_symbol_arcs;
 		use pac_symbol_circles;
-		use et_symbol_model.pac_texts;	
+		use et_symbol_text.pac_texts;	
 		use pac_ports;
 		
 		
@@ -236,7 +237,7 @@ package body et_symbol_rw is
 		end write_circle;
 		
 
-		procedure write_text (cursor : in et_symbol_model.pac_texts.cursor) is begin
+		procedure write_text (cursor : in et_symbol_text.pac_texts.cursor) is begin
 			section_mark (section_text, HEADER);
 			write (keyword => keyword_position, parameters => to_string (element (cursor).position, FORMAT_2));
 			write (keyword => keyword_content , parameters => to_string (element (cursor).content));			
@@ -670,7 +671,7 @@ package body et_symbol_rw is
 							when SEC_TEXTS =>
 
 								-- append symbol text to symbol
-								et_symbol_model.pac_texts.append (
+								et_symbol_text.pac_texts.append (
 									container	=> symbol.texts,
 									new_item	=> (symbol_text_base with
 										content		=> symbol_text_content,

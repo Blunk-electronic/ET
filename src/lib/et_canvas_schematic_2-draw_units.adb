@@ -40,6 +40,7 @@ with et_colors;							use et_colors;
 
 with et_text;
 with et_alignment;
+with et_symbol_text;
 with et_symbol_model;
 with et_port_names;
 with et_port_visibility;
@@ -109,7 +110,7 @@ procedure draw_units is
 		use pac_symbol_arcs;
 		use pac_symbol_circles;
 		use pac_ports;
-		use et_symbol_model.pac_texts;
+		use et_symbol_text.pac_texts;
 		
 		
 		procedure draw_line (c : in pac_symbol_lines.cursor) is 
@@ -204,7 +205,7 @@ procedure draw_units is
 				draw_text (
 					content		=> to_content (to_string (key (c))),
 					size		=> element (c).port_name_size,
-					font		=> et_symbol_model.text_font,
+					font		=> et_symbol_text.text_font,
 					anchor		=> pos_port_name,
 					origin		=> false,  -- no origin required
 
@@ -273,7 +274,7 @@ procedure draw_units is
 				draw_text (
 					content		=> to_content (to_string (properties.terminal)), -- H4, 1, 16
 					size		=> element (c).terminal_name_size,
-					font		=> et_symbol_model.text_font,
+					font		=> et_symbol_text.text_font,
 					anchor		=> pos_terminal_name,
 					origin		=> false,  -- no origin required
 
@@ -413,7 +414,7 @@ procedure draw_units is
 		-- are frequently placed inside symbols.
 		-- Call this procedure after drawing the symbol body because it
 		-- does not change the color to symbol color.
-		procedure draw_text (c : in et_symbol_model.pac_texts.cursor) is 
+		procedure draw_text (c : in et_symbol_text.pac_texts.cursor) is 
 			p : type_vector_model := element (c).position;
 
 			use pac_draw_text;
@@ -428,7 +429,7 @@ procedure draw_units is
 			draw_text (
 				content		=> element (c).content,
 				size		=> element (c).size,
-				font		=> et_symbol_model.text_font,
+				font		=> et_symbol_text.text_font,
 				anchor		=> p,
 				origin		=> false, -- no origin required
 				

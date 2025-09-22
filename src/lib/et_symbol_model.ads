@@ -57,52 +57,18 @@ with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 
 with et_primitive_objects;				use et_primitive_objects;
-with et_text;
-with et_fonts;							use et_fonts;
 with et_logging;						use et_logging;
 with et_symbol_name;					use et_symbol_name;
 with et_symbol_ports;					use et_symbol_ports;
+with et_symbol_text;					use et_symbol_text;
 with et_device_appearance;				use et_device_appearance;
 
 
 package et_symbol_model is
 
 	use pac_geometry_2;
-	use pac_text_schematic;
 
 
-	
-	-- This is a real text with content (used for things like "counter" or "decoder"
-	type type_text is new type_text_basic with record
-		position	: type_vector_model;		
-        content		: et_text.pac_text_content.bounded_string;
-	end record;
-
-	
-	-- GUI relevant only:
-	text_font : constant type_font := 
-		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);
-	
-
-	
-	-- Outputs the properties of the given text.
-	procedure write_text_properies (
-		text 			: in type_text;
-		log_threshold	: in type_log_level);
-
-
-	
-	-- Returns the content of the given text as string.
-	function content (text : in type_text) return string;
-
-
-	package pac_texts is new doubly_linked_lists (type_text);
-	
-
-
-	
-	
-	
 	
 
 
@@ -227,7 +193,7 @@ package et_symbol_model is
 
 	
 	type type_symbol_base is tagged record		
-		texts : pac_texts.list; -- the collection of texts
+		texts : et_symbol_text.pac_texts.list; -- the collection of texts
 	end record;
 
 	

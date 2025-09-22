@@ -63,6 +63,7 @@ with et_port_visibility;
 with et_unit_swap_level;
 with et_unit_add_level;
 with et_object_status;					use et_object_status;
+with et_symbol_text;
 
 
 package body et_kicad_libraries is
@@ -1343,7 +1344,7 @@ package body et_kicad_libraries is
 			tmp_draw_rectangle	: type_symbol_rectangle;
 			tmp_draw_arc		: type_symbol_arc;
 			tmp_draw_circle 	: type_symbol_circle;
-			tmp_draw_text		: et_symbol_model.type_text;
+			tmp_draw_text		: et_symbol_text.type_text;
 			tmp_draw_port		: type_port_library;
 
 			-- The terminal-port map of the current component is stored here temporarily.
@@ -1741,9 +1742,11 @@ package body et_kicad_libraries is
 
 
 			
-			function to_text (line : in type_fields_of_line) return et_symbol_model.type_text is
+			function to_text (line : in type_fields_of_line) 
+				return et_symbol_text.type_text 
+			is
 			-- Returns from the given fields of a text a type_symbol_text.
-				text : et_symbol_model.type_text;
+				text : et_symbol_text.type_text;
 
 				-- A text is defined by a string like "T 0 0 300 60 0 0 0 leuchtdiode Normal 0 C C"
 				-- Space characters whitin the actual text are replaced by tilde as in this example:
