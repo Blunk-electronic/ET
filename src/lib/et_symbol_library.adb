@@ -46,6 +46,45 @@ package body et_symbol_library is
 
 	
 
+	procedure create_symbol (
+		symbol_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
+		appearance		: in type_appearance;
+		log_threshold	: in type_log_level) 
+	is
+		use pac_symbols;
+	begin
+		log (text => "creating symbol " & to_string (symbol_name) & " ...", level => log_threshold);
+		log_indentation_up;
+		log (text => "appearance " & to_string (appearance) & " ...", level => log_threshold);
+		
+		-- Test if symbol already exists. If already exists, issue warning and exit.
+		if contains (symbol_library, symbol_name) then
+			log (WARNING, text => "symbol already exists -> skipped", level => log_threshold + 1);
+		else
+			case appearance is
+				when APPEARANCE_PCB =>
+					insert (
+						container	=> symbol_library,
+						key			=> symbol_name,
+						new_item	=> (appearance => APPEARANCE_PCB, others => <>)
+						);
+
+				when APPEARANCE_VIRTUAL =>
+					insert (
+						container	=> symbol_library,
+						key			=> symbol_name,
+						new_item	=> (appearance => APPEARANCE_VIRTUAL, others => <>)
+						);
+			end case;					
+		end if;
+
+		log_indentation_down;
+	end create_symbol;
+
+
+	
+
+	
 	procedure locate_symbol (
 		model_file	: in pac_symbol_model_file.bounded_string;
 		cursor		: in out pac_symbols.cursor)

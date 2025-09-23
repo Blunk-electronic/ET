@@ -47,10 +47,11 @@ with ada.containers.indefinite_ordered_maps;
 
 with et_schematic_geometry;				use et_schematic_geometry;
 
--- with et_logging;						use et_logging;
+with et_logging;						use et_logging;
 with et_symbol_model;					use et_symbol_model;
 with et_symbol_name;					use et_symbol_name;
 with et_device_appearance;				use et_device_appearance;
+with et_string_processing;				use et_string_processing;
 
 
 package et_symbol_library is
@@ -74,6 +75,14 @@ package et_symbol_library is
 	symbol_library : pac_symbols.map;
 
 
+	-- Creates a symbol and stores it in container symbols.
+	procedure create_symbol (
+		symbol_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
+		appearance		: in type_appearance;
+		log_threshold	: in type_log_level);
+
+
+	
 	
 	
 	-- Locates the symbol model in the rig wide symbol library 

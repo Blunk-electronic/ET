@@ -55,6 +55,8 @@ package et_symbol_read is
 
 	
 	-- Opens the symbol file and stores the symbol in container symbols.
+	-- CS error : out boolean;
+	-- CS device_curosr : out pac_symbols.cursor;
 	procedure read_symbol (
 		file_name 		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		log_threshold	: in type_log_level);

@@ -85,43 +85,6 @@ package body et_symbol_write is
 
 
 	
-	procedure create_symbol (
-		symbol_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
-		appearance		: in type_appearance;
-		log_threshold	: in type_log_level) 
-	is
-		use et_string_processing;
-		use pac_symbols;
-	begin
-		log (text => "creating symbol " & to_string (symbol_name) & " ...", level => log_threshold);
-		log_indentation_up;
-		log (text => "appearance " & to_string (appearance) & " ...", level => log_threshold);
-		
-		-- Test if symbol already exists. If already exists, issue warning and exit.
-		if contains (symbol_library, symbol_name) then
-			log (WARNING, text => "symbol already exists -> skipped", level => log_threshold + 1);
-		else
-			case appearance is
-				when APPEARANCE_PCB =>
-					insert (
-						container	=> symbol_library,
-						key			=> symbol_name,
-						new_item	=> (appearance => APPEARANCE_PCB, others => <>)
-						);
-
-				when APPEARANCE_VIRTUAL =>
-					insert (
-						container	=> symbol_library,
-						key			=> symbol_name,
-						new_item	=> (appearance => APPEARANCE_VIRTUAL, others => <>)
-						);
-			end case;					
-		end if;
-
-		log_indentation_down;
-	end create_symbol;
-
-	
 
 	
 	procedure write_symbol ( 
@@ -304,6 +267,8 @@ package body et_symbol_write is
 
 
 
+
+	
 	
 	
 	procedure save_symbol (
@@ -311,7 +276,6 @@ package body et_symbol_write is
 		symbol			: in type_symbol; -- the actual symbol model
 		log_threshold	: in type_log_level)
 	is
-		use et_string_processing;
 		use et_system_info;
 		file_handle : ada.text_io.file_type;
 	begin

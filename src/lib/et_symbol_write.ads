@@ -58,13 +58,6 @@ package et_symbol_write is
 	procedure write_text_properties (t : in type_text_basic'class);
 
 	
-	
-
-	-- Creates a symbol and stores it in container symbols.
-	procedure create_symbol (
-		symbol_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
-		appearance		: in type_appearance;
-		log_threshold	: in type_log_level);
 
 	
 	procedure write_symbol ( 
