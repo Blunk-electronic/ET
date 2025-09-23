@@ -144,6 +144,19 @@ package body et_terminals is
 	end;
 
 
+
+	overriding function to_position (
+		line : in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0 face top"
+		from : in type_field_count_positive)
+		return type_terminal_position
+	is
+		result : type_terminal_position (THT);
+	begin
+		return result;
+	end;
+
+
+	
 	function get_inner_contour (
 		terminal	: in type_terminal;
 		position	: in type_vector)

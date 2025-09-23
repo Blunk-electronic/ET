@@ -219,6 +219,7 @@ package et_terminals is
 		THT,	-- Through Hole Technology
 		SMT		-- Surface Mount Technology
 		);
+		-- CS: apply prefix like AT_
 
 	assembly_technology_default : constant type_assembly_technology := SMT;
 	function to_string (technology : in type_assembly_technology) return string;
@@ -320,6 +321,16 @@ package et_terminals is
 		end case;
 	end record;
 
+
+
+	-- CS: incomplete !
+	overriding function to_position (
+		line : in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0 face top"
+		from : in type_field_count_positive)
+		return type_terminal_position;
+	
+
+	
 	
 	-- NOTE: This type is used in the board when inquiring for terminal positions.
 	-- It uses floating point numbers for the terminal position because: 
