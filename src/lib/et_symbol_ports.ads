@@ -36,7 +36,6 @@
 --   history of changes:
 --
 
-with ada.strings.bounded; 				use ada.strings.bounded;
 
 with ada.containers; 					use ada.containers;
 with ada.containers.indefinite_ordered_maps;
@@ -129,7 +128,8 @@ package et_symbol_ports is
 
 
 	
-	type type_port (direction : type_port_direction) is new type_port_base with record 
+	type type_symbol_port (direction : type_port_direction) 
+	is new type_port_base with record 
 		case direction is
 			when INPUT_DIGITAL =>
 				sensitivity_edge		: type_sensitivity_edge;
@@ -157,7 +157,6 @@ package et_symbol_ports is
 			when others => null;
 		end case;
 	end record;
-	-- CS rename to type_symbol_port ?
 
 
 	
@@ -169,10 +168,11 @@ package et_symbol_ports is
 
 	use et_port_names;
 	use pac_port_name;
+
 	
 	package pac_symbol_ports is new indefinite_ordered_maps (
 		key_type		=> pac_port_name.bounded_string, -- CLOCK, CE, VDD, GND
-		element_type	=> type_port);
+		element_type	=> type_symbol_port);
 
 	use pac_symbol_ports;
 

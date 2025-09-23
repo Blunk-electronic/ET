@@ -77,7 +77,7 @@ package body et_symbol_ports is
 		-- flag "deleted" is set so that the iteration stops:
 		procedure query_port (
 			port_name	: in pac_port_name.bounded_string;
-			port 		: in type_port) 
+			port 		: in type_symbol_port) 
 		is begin
 			if port.position = position then
 				deleted := true;
@@ -123,7 +123,7 @@ package body et_symbol_ports is
 
 		procedure move (
 			name	: in pac_port_name.bounded_string;
-			port	: in out type_port) 
+			port	: in out type_symbol_port) 
 		is begin
 			move_by (port.position, offset.place);
 		end;
@@ -149,7 +149,7 @@ package body et_symbol_ports is
 
 		procedure rotate (
 			name	: in pac_port_name.bounded_string;
-			port	: in out type_port) 
+			port	: in out type_symbol_port) 
 		is begin
 			rotate_by (port.position, angle);
 		end;

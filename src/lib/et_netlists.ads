@@ -84,7 +84,7 @@ package et_netlists is
 	type type_device_port_extended (direction : type_port_direction) is record
 		device			: type_device_name; -- IC4		
 		port			: pac_port_name.bounded_string; -- CLOCK, CE, VDD, GND
-		characteristics	: et_symbol_ports.type_port (direction); -- direction, sensitivity, ...
+		characteristics	: type_symbol_port (direction); -- direction, sensitivity, ...
 		terminal		: et_terminals.pac_terminal_name.bounded_string; -- H4, 1, 16
 	end record;
 

@@ -300,7 +300,7 @@ package et_device_library is
 	-- Used for netlists and ratsnest:
 	type type_port_properties (direction : type_port_direction) is record
 		terminal	: et_terminals.pac_terminal_name.bounded_string; -- H4, 1, 16
-		properties	: type_port (direction);
+		properties	: type_symbol_port (direction);
 	end record;
 
 	
