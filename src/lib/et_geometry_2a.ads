@@ -299,6 +299,13 @@ package et_geometry_2a is
 	function to_vector_model (
 		x, y : in type_distance)
 		return type_vector_model;
+
+
+	function to_position (
+		line : in type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
+		from : in type_field_count_positive)
+		return type_vector_model;
+
 	
 
 	-- Moves the given point to the origin (0/0).
@@ -1745,6 +1752,12 @@ package et_geometry_2a is
 	far_upper_right_zero_rotation : constant type_position;
 	
 
+
+
+	function to_position (
+		line : in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
+		from : in type_field_count_positive)
+		return type_position;
 
 	
 

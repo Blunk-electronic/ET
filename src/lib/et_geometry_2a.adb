@@ -36,15 +36,16 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
+with ada.text_io;					use ada.text_io;
 
-with ada.strings;				use ada.strings;
-with ada.strings.fixed;			use ada.strings.fixed;
+with ada.strings;					use ada.strings;
+with ada.strings.fixed;				use ada.strings.fixed;
 with ada.strings.unbounded;
 with ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
+with ada.characters.handling;		use ada.characters.handling;
 
-with et_exceptions;						use et_exceptions;
+with et_exceptions;					use et_exceptions;
+with et_keywords;					use et_keywords;
 
 
 package body et_geometry_2a is
@@ -504,6 +505,42 @@ package body et_geometry_2a is
 	end to_vector_model;
 
 
+
+	
+
+	function to_position (
+		line : in type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
+		from : in type_field_count_positive)
+		return type_vector_model 
+	is
+		point : type_vector_model; -- to be returned
+		place : type_field_count_positive := from; -- the field being read from given line
+
+		-- CS: flags to detect missing x or y
+	begin
+		while place <= get_field_count (line) loop
+
+			-- We expect after the x the corresponding value for x
+			if get_field (line, place) = keyword_x then
+				set (point, AXIS_X, to_distance (get_field (line, place + 1)));
+
+			-- We expect after the y the corresponding value for y
+			elsif get_field (line, place) = keyword_y then
+				set (point, AXIS_Y, to_distance (get_field (line, place + 1)));
+
+			else
+				-- CS invalid_keyword (get_field (line, place));
+				raise constraint_error; -- CS
+			end if;
+				
+			place := place + 2;
+		end loop;
+		
+		return point;
+	end to_position;
+
+
+	
 	
 
 	procedure reset (
@@ -3695,6 +3732,47 @@ end;
 	end to_string;
 
 
+
+	
+
+	function to_position (
+		line : in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
+		from : in type_field_count_positive)
+		return type_position 
+	is
+		point : type_position; -- to be returned
+		place : type_field_count_positive := from; -- the field being read from given line
+
+		-- CS: flags to detect missing sheet, x or y
+	begin
+		while place <= get_field_count (line) loop
+
+			-- We expect after the x the corresponding value for x
+			if get_field (line, place) = keyword_x then
+				set (point => point.place, axis => AXIS_X, value => to_distance (get_field (line, place + 1)));
+
+			-- We expect after the y the corresponding value for y
+			elsif get_field (line, place) = keyword_y then
+				set (point => point.place, axis => AXIS_Y, value => to_distance (get_field (line, place + 1)));
+
+			-- We expect after "rotation" the corresponding value for the rotation
+			elsif get_field (line, place) = keyword_rotation then
+				set (point, to_rotation (get_field (line, place + 1)));
+				
+			else
+				-- CS invalid_keyword (f (line, place));
+				raise constraint_error; -- CS
+			end if;
+				
+			place := place + 2;
+		end loop;
+		
+		return point;
+	end to_position;
+
+
+
+	
 	
 	
 
