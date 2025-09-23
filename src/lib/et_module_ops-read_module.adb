@@ -81,7 +81,7 @@ with et_device_library;				use et_device_library;
 with et_device_partcode;
 with et_package_variant;
 with et_symbol_model;
-with et_symbol_rw;
+with et_symbol_read;
 with et_schematic_text;
 with et_schematic_rw;
 with et_device_rw;
@@ -499,7 +499,7 @@ is
 	
 	
 	procedure read_drawing_grid_schematic is 
-		use et_symbol_rw;
+		use et_symbol_read;
 		use et_schematic_geometry.pac_grid;
 		kw : constant string := f (line, 1);
 	begin
@@ -874,7 +874,7 @@ is
 
 	
 	procedure read_net_segment is
-		use et_symbol_rw;
+		use et_symbol_read;
 		kw : constant string := f (line, 1);
 
 		use et_net_segment;
@@ -1106,7 +1106,7 @@ is
 		use et_schematic_text;
 		use pac_text_schematic;
 		
-		use et_symbol_rw;
+		use et_symbol_read;
 		use et_schematic_coordinates;	
 		use et_schematic_geometry;
 		use pac_geometry_2;
@@ -1737,7 +1737,7 @@ is
 	procedure read_unit_placeholder is
 		use et_device_placeholders;
 		use et_schematic_text;
-		use et_symbol_rw;
+		use et_symbol_read;
 		use et_schematic_geometry.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
@@ -2977,8 +2977,6 @@ is
 	
 	
 	procedure process_line is 
-		-- use et_symbol_rw;
-
 		
 		procedure execute_section is
 		-- Once a section concludes, the temporarily variables are read, evaluated

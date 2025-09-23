@@ -61,7 +61,8 @@ with et_string_processing;
 with et_time;
 with et_general_rw;					use et_general_rw;
 with et_schematic_rw;				use et_schematic_rw;
-with et_symbol_rw;					use et_symbol_rw;
+with et_symbol_read;				use et_symbol_read;
+with et_symbol_write;				use et_symbol_write;
 with et_pcb_rw.device_packages;
 with et_conventions;
 with et_text;
@@ -92,6 +93,7 @@ with et_unit_add_level;
 with et_package_variant;
 with et_device_library;				use et_device_library;
 with et_keywords;					use et_keywords;
+with et_symbol_sections;			use et_symbol_sections;
 
 
 package body et_device_rw is

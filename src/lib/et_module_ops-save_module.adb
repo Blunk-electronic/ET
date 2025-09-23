@@ -74,7 +74,7 @@ with et_device_model_names;
 with et_device_value;
 with et_device_partcode;
 with et_package_variant;
-with et_symbol_rw;
+with et_symbol_write;
 with et_schematic_text;
 with et_devices_electrical;
 with et_schematic_rw;
@@ -1031,7 +1031,7 @@ is
 			procedure write_placeholder (
 				ph : in type_text_placeholder) 
 			is 
-				use et_symbol_rw;
+				use et_symbol_write;
 				use et_device_placeholders;
 			begin
 				section_mark (section_placeholder, HEADER);

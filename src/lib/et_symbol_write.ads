@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                        SYMBOL READ AND WRITE                             --
+--                             SYMBOL WRITE                                 --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -36,7 +36,6 @@
 --   history of changes:
 --
 
-with ada.containers;					use ada.containers;
 
 with et_string_processing;				use et_string_processing;
 with et_logging;						use et_logging;
@@ -48,35 +47,17 @@ with et_device_appearance;				use et_device_appearance;
 with et_schematic_text;					use et_schematic_text;
 
 
-package et_symbol_rw is
+package et_symbol_write is
 
 	use pac_text_schematic;
 	
 	use pac_geometry_2;
-
-	section_draw		: constant string := "[DRAW";
-	section_port		: constant string := "[PORT";	
-	section_ports		: constant string := "[PORTS";
-
 
 
 	
 	procedure write_text_properties (t : in type_text_basic'class);
 
 	
-	type type_section is (
-		SEC_INIT,
-		SEC_DRAW,
-		SEC_LINE,
-		SEC_ARC,
-		SEC_CIRCLE,
-		SEC_TEXTS,
-		SEC_TEXT,
-		SEC_PLACEHOLDER,		
-		SEC_PLACEHOLDERS,
-		SEC_PORTS,
-		SEC_PORT
-		);
 	
 
 	-- Creates a symbol and stores it in container symbols.
@@ -97,11 +78,6 @@ package et_symbol_rw is
 		symbol			: in type_symbol; -- the actual symbol model
 		log_threshold	: in type_log_level);
 
-	
-	-- Opens the symbol file and stores the symbol in container symbols.
-	procedure read_symbol (
-		file_name 		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
-		log_threshold	: in type_log_level);
 
 	
-end et_symbol_rw;
+end et_symbol_write;
