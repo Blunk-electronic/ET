@@ -652,7 +652,7 @@ package body et_pcb_rw.device_packages is
 				section_mark (section_terminal, HEADER);
 				write (keyword => keyword_name, parameters => space & to_string (key (terminal_cursor)));
 				write (keyword => keyword_assembly_technology, parameters => to_string (element (terminal_cursor).technology));
-				write (keyword => keyword_position, parameters => position (element (terminal_cursor).position));
+				write (keyword => keyword_position, parameters => to_string (element (terminal_cursor).position));
 				
 				case element (terminal_cursor).technology is
 					when THT =>

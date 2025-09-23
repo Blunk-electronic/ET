@@ -524,7 +524,6 @@ is
 	
 	
 	procedure read_drawing_grid_board is
-		use et_pcb_rw;
 		use et_board_geometry.pac_grid;
 		kw : constant string := f (line, 1);
 	begin
@@ -1452,7 +1451,7 @@ is
 			expect_field_count (line, 9);
 
 			-- extract position of unit starting at field 2
-			device_unit_position := to_object_position (line, 2);
+			device_unit_position := to_position (line, 2);
 
 
 		elsif kw = keyword_mirrored then -- mirrored no/x_axis/y_axis
@@ -1698,7 +1697,7 @@ is
 			expect_field_count (line, 9);
 
 			-- extract position of placeholder starting at field 2
-			device_text_placeholder_position := to_package_position (line, 2);
+			device_text_placeholder_position := to_position (line, 2);
 
 		elsif kw = keyword_size then -- size 5
 			expect_field_count (line, 2);
@@ -1789,7 +1788,6 @@ is
 	
 	procedure read_board_text_placeholder is
 		use et_board_geometry.pac_geometry_2;
-		use et_pcb_rw;
 		use et_pcb_placeholders;
 		kw : constant string := f (line, 1);
 	begin
@@ -1871,10 +1869,10 @@ is
 	
 	procedure read_netchanger is
 		use et_schematic_geometry;
+		use et_board_geometry.pac_geometry_2;
 		use et_schematic_coordinates;	
 		kw : constant string := f (line, 1);
 		use et_pcb_stack;
-		use et_pcb_rw;
 		use et_schematic_rw;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -1886,7 +1884,7 @@ is
 			expect_field_count (line, 7);
 
 			-- extract position (in schematic) starting at field 2
-			netchanger.position_sch := to_object_position (line, 2);
+			netchanger.position_sch := to_position (line, 2);
 
 		elsif kw = keyword_rotation_in_schematic then -- rotation_in_schematic 180.0
 			expect_field_count (line, 2);
@@ -2208,7 +2206,6 @@ is
 		use et_schematic_coordinates;
 		use et_schematic_rw;
 		use et_submodules;
-		use et_pcb_rw;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -2224,7 +2221,7 @@ is
 			expect_field_count (line, 7);
 
 			-- extract position of submodule starting at field 2
-			submodule.position := to_object_position (line, 2);
+			submodule.position := to_position (line, 2);
 
 		elsif kw = keyword_size then -- size x 30 y 30
 			expect_field_count (line, 5);
@@ -2236,7 +2233,7 @@ is
 			expect_field_count (line, 7);
 
 			-- extract position of submodule starting at field 2
-			submodule.position_in_board := to_position (line, 2);
+			submodule.position_in_board := et_board_geometry.pac_geometry_2.to_position (line, 2);
 
 		elsif kw = keyword_view_mode then -- view_mode origin/instance
 			expect_field_count (line, 2);
@@ -2251,7 +2248,7 @@ is
 	
 	
 	procedure read_submodule_port is
-		use et_symbol_rw;
+		use et_schematic_geometry.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -2330,7 +2327,7 @@ is
 			expect_field_count (line, 9);
 
 			-- extract package position starting at field 2
-			device_position := to_package_position (line, 2);
+			device_position := to_position (line, 2);
 
 		else
 			invalid_keyword (kw);
@@ -2408,7 +2405,7 @@ is
 			declare
 				-- extract position of schematic_text starting at field 2
 				pos : constant type_object_position := 
-					to_object_position (line, 2);
+					to_position (line, 2);
 			begin
 				schematic_text.position := pos.place;
 				schematic_text.sheet := get_sheet (pos);
@@ -2709,7 +2706,7 @@ is
 			expect_field_count (line, 9);
 
 			-- extract device position (in the layout) starting at field 2
-			device_position := to_package_position (line, 2);
+			device_position := to_position (line, 2);
 		
 			
 		elsif kw = keyword_model then -- model /lib/fiducials/crosshair.pac
@@ -2735,11 +2732,11 @@ is
 	via_layers_buried : et_vias.type_buried_layers;
 	via_layer_blind : et_vias.type_via_layer;
 
+
 	
 	procedure read_via is
 		use et_board_geometry.pac_geometry_2;
 		use et_pcb;
-		use et_pcb_rw;
 		use et_vias;
 		use et_terminals;
 		use et_pcb_stack;

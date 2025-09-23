@@ -1165,7 +1165,7 @@ is
 
 					-- This is the position of the package in the layout, 
 					write (keyword => keyword_position, parameters => -- position x 34.5 y 60.1 face top/bottom
-							position (element (d).position));
+						et_board_coordinates.to_string (element (d).position));
 				
 					query_element (d, query_placeholders'access);
 					section_mark (section_package, FOOTER);
@@ -1481,7 +1481,6 @@ is
 		procedure write (submodule_cursor : in pac_submodules.cursor) is 
 			use et_schematic_coordinates;
 			use et_schematic_geometry.pac_geometry_2;
-			use et_pcb_rw;
 			use et_module_instance;
 		begin
 			section_mark (section_submodule, HEADER);
@@ -1496,7 +1495,7 @@ is
 				space & keyword_y & to_string (element (submodule_cursor).size.y)); -- size x 50 y 70
 			
 			write (keyword => keyword_position_in_board, parameters => -- position_in_board x 23 y 0.2 rotation 90.0
-				position (element (submodule_cursor).position_in_board));
+				et_board_geometry.pac_geometry_2.to_string (element (submodule_cursor).position_in_board));
 
 			write (keyword => keyword_view_mode, parameters => to_string (element (submodule_cursor).view_mode));
 
@@ -1757,6 +1756,7 @@ is
 		procedure query_devices_non_electric (
 			c : in pac_devices_non_electric.cursor) 
 		is
+			use et_board_coordinates;
 			use et_pcb;
 			use et_package_names;
 			use et_pcb_sides;
@@ -1766,13 +1766,13 @@ is
 				device_name : in type_device_name;
 				device 		: in type_device_non_electric) 
 			is
-				use et_board_coordinates;
 				use et_device_placeholders;
 				use et_device_placeholders.packages;
 				use et_device_placeholders.packages.pac_placeholders;
 
 				face : type_face;
 				layer : type_placeholder_layer;
+
 				
 				procedure write_placeholder (
 					placeholder_cursor : in et_device_placeholders.packages.pac_placeholders.cursor) 					
@@ -1810,7 +1810,7 @@ is
 			section_mark (section_device, HEADER);
 
 			write (keyword => keyword_name, parameters => to_string (key (c))); -- name FD1
-			write (keyword => keyword_position, parameters => position (element (c).position));
+			write (keyword => keyword_position, parameters => to_string (element (c).position));
 			write (keyword => keyword_model, parameters => to_string (element (c).package_model));
 
 			query_element (c, query_placeholders'access);
@@ -1819,6 +1819,7 @@ is
 		end query_devices_non_electric;
 
 		
+
 		
 		procedure query_user_settings is
 			use et_board_ops;
