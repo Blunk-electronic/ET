@@ -127,33 +127,6 @@ package et_pcb_rw is
 		polygon : in type_contour'class);
 
 	
-	
-	-- Returns a type_point_2d in the the layout.
-	function to_position ( -- CS combine with next function to_position using the tag test ?
-		line : in type_fields_of_line; -- "start x 44.5 y 53.5"
-		from : in type_field_count_positive)
-		return type_vector_model;
-
-	
-	-- Returns a type_position in the layout.
-	function to_position (
-		line : in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
-		from : in type_field_count_positive)
-		return type_position;
-
-	
-	--function position (point : in type_vector_model'class) return string;
-	function position (point : in type_position'class) return string; -- CS rename to to_string
-
-
-	-- This function processes a line starting 
-	-- from a given position and returns a grid spacing.
-	-- Since both board and packagel read operations require
-	-- this function, it is placed in this package:
-	function to_grid_spacing (
-		line : in type_fields_of_line; -- spacing x 1 y 1
-		from : in type_field_count_positive)
-		return type_vector_model;
 
 	
 	-- Issues a warning that the given signal layer is deeper than the deepest

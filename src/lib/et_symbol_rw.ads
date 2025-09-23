@@ -43,7 +43,7 @@ with et_logging;						use et_logging;
 with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_symbol_name;					use et_symbol_name;
-with et_symbol_model;						use et_symbol_model;
+with et_symbol_model;					use et_symbol_model;
 with et_device_appearance;				use et_device_appearance;
 with et_schematic_text;					use et_schematic_text;
 
@@ -58,22 +58,7 @@ package et_symbol_rw is
 	section_port		: constant string := "[PORT";	
 	section_ports		: constant string := "[PORTS";
 
-	
-	-- This function processes a line starting 
-	-- from a given position and returns a grid spacing.
-	-- Since both schematic and symbol read operations require
-	-- this function, it is placed in this package:
-	function to_grid_spacing (
-		line : in type_fields_of_line; -- "spacing x 1.0 y 1.0"
-		from : in type_field_count_positive)
-		return type_vector_model;
 
-
-	
-	function to_position (
-		line : in type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
-		from : in type_field_count_positive)
-		return type_vector_model;
 
 	
 	procedure write_text_properties (t : in type_text_basic'class);

@@ -87,7 +87,7 @@ package body et_pcb_rw is
 -- 			space & keyword_rotation & to_string (get_angle (text.position))
 -- 			  ); -- position x 0.000 y 5.555 rotation 0.00
 
-		write (keyword => keyword_position, parameters => position (t.position));
+		write (keyword => keyword_position, parameters => to_string (t.position));
 			-- position x 0.000 y 5.555 rotation 0.00
 		
 		write (keyword => keyword_size, parameters => to_string (t.size)); -- size 1.000
@@ -100,11 +100,12 @@ package body et_pcb_rw is
 	end write_text_properties;
 
 	
+	
 	procedure write_text_properties_with_face (
 		t		: in type_text_fab'class;
 		face	: in type_face) 
 	is begin
-		write (keyword => keyword_position, parameters => position (t.position) & 
+		write (keyword => keyword_position, parameters => to_string (t.position) & 
 			space & keyword_face & to_string (face)); -- position x 0.000 y 5.555 rotation 0.00 face top
 
 		-- CS this could be more elegant way. did not get it working
@@ -122,6 +123,7 @@ package body et_pcb_rw is
 		-- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
 	end write_text_properties_with_face;
 
+	
 	
 	procedure write_text (cursor : in pac_texts_fab_with_content.cursor) is
 		use pac_texts_fab_with_content;
@@ -312,142 +314,7 @@ package body et_pcb_rw is
 	
 
 
-	
-	function to_position ( -- CS combine with next function to_position using the tag test ?
-		line : in type_fields_of_line; -- "start x 44.5 y 53.5"
-		from : in type_field_count_positive)
-		return type_vector_model 
-	is
-		use et_string_processing;
-
-		point : type_vector_model; -- to be returned
-		place : type_field_count_positive := from; -- the field being read from given line
-
-		-- CS: flags to detect missing sheet, x or y
-	begin
-		while place <= get_field_count (line) loop
-
-			-- We expect after the x the corresponding value for x
-			if f (line, place) = keyword_x then
-				set (
-					point	=> point,
-					axis	=> AXIS_X,
-					value 	=> to_distance (f (line, place + 1)));
-
-			-- We expect after the y the corresponding value for y
-			elsif f (line, place) = keyword_y then
-				set (
-					point	=> point,
-					axis 	=> AXIS_Y,
-					value 	=> to_distance (f (line, place + 1)));
-
-			else
-				invalid_keyword (f (line, place));
-			end if;
-				
-			place := place + 2;
-		end loop;
 		
-		return point;
-	end to_position;
-
-
-
-	
-	function to_position (
-		line : in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
-		from : in type_field_count_positive)
-		return type_position 
-	is
-		use et_string_processing;
-		
-		point : type_position; -- to be returned
-		place : type_field_count_positive := from; -- the field being read from given line
-
-		-- CS: flags to detect missing sheet, x or y
-	begin
-		while place <= get_field_count (line) loop
-
-			-- We expect after the x the corresponding value for x
-			if f (line, place) = keyword_x then
-				set (point => point.place, axis => AXIS_X, value => to_distance (f (line, place + 1)));
-
-			-- We expect after the y the corresponding value for y
-			elsif f (line, place) = keyword_y then
-				set (point => point.place, axis => AXIS_Y, value => to_distance (f (line, place + 1)));
-
-			-- We expect after "rotation" the corresponding value for the rotation
-			elsif f (line, place) = keyword_rotation then
-				set (point, to_rotation (f (line, place + 1)));
-				
-			else
-				invalid_keyword (f (line, place));
-			end if;
-				
-			place := place + 2;
-		end loop;
-		
-		return point;
-	end to_position;
-
-	
-	--function position (point : in type_vector_model'class) return string is
-	function position (point : in type_position'class) return string is
-		use ada.tags;
-
-		xy : constant string := space & keyword_x & space & to_string (get_x (point)) 
-				& space & keyword_y & space & to_string (get_y (point));
-	begin
-		--if point'tag = type_vector_model'tag then
-			--return xy;
-			---- x 162.560 y 98.240
-			
-		if point'tag = type_position'tag then
-			return xy 
-				& space & keyword_rotation & space & to_string (get_rotation (type_position (point)));
-				-- x 162.560 y 98.240 rotation 180.00
-			
-		elsif point'tag = type_package_position'tag then
-			return xy
-				& space & keyword_rotation & space & to_string (get_rotation (type_position (point)))
-				& space & keyword_face & to_string (get_face (type_package_position (point)));
-				-- x 162.560 y 98.240 rotation 180.00 face top
-		else
-			return xy;
-		end if;
-	end position;
-
-	
-	
-	function to_grid_spacing (
-		line : in type_fields_of_line;
-		from : in type_field_count_positive)
-		return type_vector_model
-	is
-		spacing : type_vector_model; -- to be returned
-		
-		use et_string_processing;
-		place : type_field_count_positive := from; -- the field being read from given line
-	begin
-		while place <= get_field_count (line) loop
-
-			-- We expect after the x the corresponding value for x
-			if f (line, place) = "x" then
-				spacing.x := to_distance (f (line, place + 1));
-
-			-- We expect after the y the corresponding value for y
-			elsif f (line, place) = "y" then
-				spacing.y := to_distance (f (line, place + 1));
-
-			else
-				invalid_keyword (f (line, place));
-			end if;
-					
-			place := place + 2;
-		end loop;
-		
-		return spacing;
-	end to_grid_spacing;
 
 
 
