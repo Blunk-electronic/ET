@@ -36,7 +36,8 @@
 --   history of changes:
 --
 
-with et_logical_pixels;			use et_logical_pixels;
+with et_logical_pixels;					use et_logical_pixels;
+with et_string_processing;				use et_string_processing;
 
 generic
 	
@@ -102,6 +103,18 @@ package et_geometry_2a.grid is
 	-- distance between grid rows and columns. If the spacing becomes
 	-- greater than this threshold then the grid will be drawn:
 	grid_spacing_min_lp : constant type_logical_pixels_positive := 10.0;
+
+
+	-- This function processes a line starting 
+	-- from a given position and returns a grid spacing.
+	-- Since both schematic and symbol read operations require
+	-- this function, it is placed in this package:
+	function to_grid_spacing (
+		line : in type_fields_of_line; -- "spacing x 1.0 y 1.0"
+		from : in type_field_count_positive)
+		return type_vector_model;
+
+	
 
 	
 	type type_grid is record

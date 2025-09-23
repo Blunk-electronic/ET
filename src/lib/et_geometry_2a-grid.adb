@@ -39,6 +39,9 @@
 with ada.text_io;					use ada.text_io;
 with ada.characters.handling;
 
+with et_keywords;					use et_keywords;
+
+
 
 package body et_geometry_2a.grid is
 
@@ -81,6 +84,44 @@ package body et_geometry_2a.grid is
 
 
 
+	
+	function to_grid_spacing (
+		line : in type_fields_of_line;
+		from : in type_field_count_positive)
+		return type_vector_model 
+	is
+		spacing : type_vector_model; -- to be returned
+
+		place : type_field_count_positive := from; -- the field being read from given line
+
+		-- CS: more detailled syntax check required
+		-- CS: flags to detect missing sheet, x or y
+	begin
+		while place <= get_field_count (line) loop
+
+			-- We expect after the x the corresponding value for x
+			if get_field (line, place) = keyword_x then
+				spacing.x := to_distance (get_field (line, place + 1));
+
+			-- We expect after the y the corresponding value for y
+			elsif get_field (line, place) = keyword_y then
+				spacing.y := to_distance (get_field (line, place + 1));
+
+			else
+				-- CS invalid_keyword (get_field (line, place));
+				raise constraint_error; -- CS
+			end if;
+					
+			place := place + 2;
+		end loop;
+		
+		return spacing;
+	end to_grid_spacing;
+
+
+
+	
+	
 	
 	procedure next_grid_density (
 		grid 		: in out type_grid;
