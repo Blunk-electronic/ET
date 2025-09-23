@@ -77,7 +77,8 @@ with et_netlists;
 with et_net_strands;
 with et_text;
 with et_pcb_rw;
-with et_pcb_rw.device_packages;
+with et_package_read;
+with et_package_write;
 with et_pcb_placeholders;
 with et_device_rw;
 with et_power_sources;
@@ -4029,7 +4030,7 @@ package body et_kicad_to_native is
 			
 			procedure save_package (package_cursor : in et_packages.pac_package_models.cursor) is
 			begin
-				et_pcb_rw.device_packages.save_package (
+				et_package_write.save_package (
 					-- package name like: 
 					-- libraries/packages/__-__-lbr-bel_connector_and_jumper_FEMALE_01X06.pac
 					file_name		=> to_file_name (name => to_string (key (package_cursor))),

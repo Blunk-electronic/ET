@@ -94,7 +94,7 @@ with et_devices_non_electrical;
 with et_pcb;
 with et_pcb_stack;
 with et_pcb_rw;
-with et_pcb_rw.device_packages;
+with et_package_read;
 with et_pcb_rw.restrict;
 with et_package_names;
 with et_drills;
@@ -3604,7 +3604,7 @@ is
 				device_cursor : pac_devices_non_electric.cursor;
 				inserted : boolean;
 
-				use et_pcb_rw.device_packages;
+				use et_package_read;
 			begin
 				log (text => "device (non-electric) " & to_string (device_name), level => log_threshold + 1);
 				log_indentation_up;

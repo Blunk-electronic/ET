@@ -47,7 +47,8 @@ with et_schematic_ops.units;		use et_schematic_ops.units;
 with et_net_ports;
 with et_net_segment;
 with et_submodules;
-with et_pcb_rw.device_packages;
+with et_package_read;
+with et_package_write;
 
 with et_contour_to_polygon;			use et_contour_to_polygon;
 
@@ -1393,7 +1394,7 @@ package body et_board_ops.devices is
 		-- Read the package model (like ../libraries/fiducials/crosshair.pac)
 		-- and store it in the rig wide package library et_packages.packages.
 		-- If it s already in the library, nothing happens:
-		et_pcb_rw.device_packages.read_package (
+		et_package_read.read_package (
 			file_name		=> package_model,
 -- CS						check_layers	=> YES,
 			log_threshold	=> log_threshold + 1);

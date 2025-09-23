@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                   PCB READ AND WRITE FOR DEVICE PACKAGES                 --
+--                            PACKAGE READ                                  --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -38,6 +38,8 @@
 
 --   do do:
 
+with et_design_rules_board;				use et_design_rules_board;
+with et_string_processing;				use et_string_processing;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_package_appearance;				use et_package_appearance;
@@ -46,57 +48,29 @@ with et_fill_zones;						use et_fill_zones;
 with et_route_restrict;					use et_route_restrict;
 with et_via_restrict;					use et_via_restrict;
 with et_pcb_rw.restrict;				use et_pcb_rw.restrict;
+with et_board_geometry;					use et_board_geometry;
+with et_board_coordinates;				use et_board_coordinates;
+with et_board_text;						use et_board_text;
+with et_conductor_text;					use et_conductor_text;
+with et_stopmask;						use et_stopmask;
+with et_stencil;						use et_stencil;
+with et_silkscreen;						use et_silkscreen;
+with et_assy_doc;						use et_assy_doc;
+with et_keepout;						use et_keepout;
+with et_pcb_stack;						use et_pcb_stack;
+with et_pcb_sides;						use et_pcb_sides;
+with et_drills;							use et_drills;
 with et_package_names;					use et_package_names;
+with et_logging;						use et_logging;
 
 
-package et_pcb_rw.device_packages is
 
-	
-	type type_section is (
-		SEC_CONDUCTOR,
-		SEC_CONTOURS, -- of fill and cutout zones
-		SEC_CUTOUT_ZONE,
-		SEC_INIT,
-		SEC_TOP,
-		SEC_BOTTOM,
-		SEC_HOLE,
-		SEC_LINE,
-		SEC_ARC,
-		SEC_CIRCLE,
-		SEC_SILKSCREEN,
-		SEC_ASSEMBLY_DOCUMENTATION,
-		SEC_KEEPOUT,
-		SEC_STOPMASK,
-		SEC_STENCIL,
-		SEC_ROUTE_RESTRICT,
-		SEC_VIA_RESTRICT,
-		SEC_PCB_CONTOURS_NON_PLATED,
-		SEC_TERMINALS,
-		SEC_TERMINAL,
-		SEC_PAD_CONTOURS_SMT,
-		SEC_PAD_CONTOURS_THT,
-		SEC_STENCIL_CONTOURS,
-		SEC_STOPMASK_CONTOURS_SMT,
-		SEC_STOPMASK_CONTOURS_THT,
-		SEC_MILLINGS,
-		SEC_TEXT,
-		SEC_PLACEHOLDER,
-		SEC_ZONE,
-		SEC_PACKAGE_3D_CONTOURS
-		);
+package et_package_read is
 
-	-- Creates a package and stores the package in container et_packages.packages.								 
-	procedure create_package (
-		package_name 	: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
-		appearance		: in type_package_appearance;
-		log_threshold	: in type_log_level);
+	use pac_geometry_2;
+	use pac_contours;
+	use pac_text_board;
 
-	
-	-- Saves the given package model in a file specified by file_name.							   
-	procedure save_package (
-		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
-		packge			: in type_package_model; -- the actual device model
-		log_threshold	: in type_log_level);
 
 	
 	-- Opens the package file and stores the package in container et_packages.packages.
@@ -109,4 +83,4 @@ package et_pcb_rw.device_packages is
 		log_threshold	: in type_log_level);
 
 	
-end et_pcb_rw.device_packages;
+end et_package_read;
