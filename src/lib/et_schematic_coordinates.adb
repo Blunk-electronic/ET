@@ -108,6 +108,9 @@ package body et_schematic_coordinates is
 	end;
 
 
+
+	
+	
 	
 	function to_position (
 		point 		: in type_vector_model;
@@ -123,7 +126,7 @@ package body et_schematic_coordinates is
 		return p;
 	end;
 
-
+	
 
 	
 	function to_position_relative (
@@ -178,7 +181,7 @@ package body et_schematic_coordinates is
 
 	
 
-	function to_object_position (
+	function to_position (
 		line : in type_fields_of_line;
 		from : in type_field_count_positive)
 		return type_object_position
@@ -220,9 +223,55 @@ package body et_schematic_coordinates is
 		end loop;
 		
 		return position;
-	end to_object_position;
+	end to_position;
 
 
+
+
+	
+	function to_position (
+		line : in type_fields_of_line;
+		from : in type_field_count_positive)
+		return type_object_position_relative
+	is		
+		use pac_geometry_2;
+		use et_sheets;
+		use et_general_rw;
+		
+		position : type_object_position_relative; -- to be returned
+		place : type_field_count_positive := from; -- the field being read from given line
+
+		-- CS: more detailled syntax check required
+		-- CS: flags to detect missing sheet, x or y
+	begin
+		while place <= get_field_count (line) loop
+
+			-- We expect after "sheet" the sheet number
+			if get_field (line, place) = keyword_sheet then
+				position.sheet := to_sheet (get_field (line, place + 1));
+				
+			-- We expect after the x the corresponding value for x
+			elsif get_field (line, place) = keyword_x then
+				set (position.place, AXIS_X, to_distance (get_field (line, place + 1)));
+
+			-- We expect after the y the corresponding value for y
+			elsif get_field (line, place) = keyword_y then
+				set (position.place, AXIS_Y, to_distance (f (line, place + 1)));
+
+
+			elsif get_field (line, place) = keyword_rotation then
+				position.set (to_rotation (get_field (line, place + 1)));
+
+			else
+				invalid_keyword (get_field (line, place));
+				raise constraint_error; -- CS
+			end if;
+				
+			place := place + 2;
+		end loop;
+		
+		return position;
+	end to_position;
 
 	
 

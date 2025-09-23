@@ -80,6 +80,7 @@ package et_schematic_coordinates is
 		offset		: in type_object_position_relative);
 
 	
+	
 	function to_position (
 		point 		: in type_vector_model;
 		sheet		: in type_sheet;
@@ -113,11 +114,16 @@ package et_schematic_coordinates is
 	-- an object position:
 	-- CS should be a procedure with an error flag output
 	-- and the position output ?
-	function to_object_position (
+	overriding function to_position (
 		line : in type_fields_of_line;
 		from : in type_field_count_positive)
 		return type_object_position;
 
+	
+	overriding function to_position (
+		line : in type_fields_of_line;
+		from : in type_field_count_positive)
+		return type_object_position_relative;
 
 
 	

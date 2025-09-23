@@ -72,7 +72,7 @@ package et_board_coordinates is
 	-- a package position:
 	-- CS should be a procedure with an error flag output
 	-- and the position output ?
-	function to_package_position (
+	overriding function to_position (
 		line : in type_fields_of_line;
 		from : in type_field_count_positive)
 		return type_package_position;

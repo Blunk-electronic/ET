@@ -82,7 +82,7 @@ package body et_board_coordinates is
 
 	
 
-	function to_package_position (
+	function to_position (
 		line : in type_fields_of_line;
 		from : in type_field_count_positive)
 		return type_package_position
@@ -121,7 +121,7 @@ package body et_board_coordinates is
 		end loop;
 		
 		return position;
-	end to_package_position;
+	end to_position;
 
 
 
