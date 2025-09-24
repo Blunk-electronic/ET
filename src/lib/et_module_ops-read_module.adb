@@ -79,12 +79,13 @@ with et_device_model_names;
 with et_device_value;
 with et_device_library;				use et_device_library;
 with et_device_partcode;
+with et_device_sections;
 with et_package_variant;
 with et_symbol_model;
 with et_symbol_read;
 with et_schematic_text;
 with et_schematic_rw;
-with et_device_rw;
+with et_device_read;
 with et_drawing_frame;
 with et_drawing_frame.schematic;
 with et_drawing_frame_rw;
@@ -3455,7 +3456,7 @@ is
 
 
 				use et_board_ops;
-				use et_device_rw;
+				use et_device_read;
 				use et_device_appearance;
 				use et_device_purpose;
 				use et_device_value;				
@@ -6174,8 +6175,9 @@ is
 		end set;
 
 
-		use et_device_rw;
+		use et_device_read;
 		use et_package_sections;
+		use et_device_sections;
 	
 		
 	begin -- process_line

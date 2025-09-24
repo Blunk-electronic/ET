@@ -65,7 +65,7 @@ with gtk.list_store;				use gtk.list_store;
 with gtk.tree_model;				use gtk.tree_model;
 
 with et_sheets;						use et_sheets;
-with et_device_rw;
+with et_device_read;
 with et_package_names;
 with et_package_variant;
 with et_symbol_ports;
@@ -1229,7 +1229,7 @@ package body et_canvas_schematic_units is
 		-- Read the device mode file and store it in the 
 		-- rig wide device library.
 		-- If the device is already in the library, then nothing happpens:
-		et_device_rw.read_device (
+		et_device_read.read_device (
 			file_name		=> device_model_file, -- ../lbr/logic_ttl/7400.dev
 			log_threshold	=> log_threshold + 2);
 		-- CS add error flag output by read_device and evaluate accordingly.

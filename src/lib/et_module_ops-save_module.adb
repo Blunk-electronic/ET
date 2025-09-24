@@ -73,12 +73,13 @@ with et_device_purpose;
 with et_device_model_names;
 with et_device_value;
 with et_device_partcode;
+with et_device_sections;
 with et_package_variant;
 with et_symbol_write;
 with et_schematic_text;
 with et_devices_electrical;
 with et_schematic_rw;
-with et_device_rw;
+with et_device_write;
 with et_drawing_frame_rw;
 with et_drawing_frame;
 with et_drawing_frame.schematic;
@@ -1038,8 +1039,9 @@ is
 			end write_placeholder;
 
 			
-			use et_device_rw;
+			use et_device_write;
 			use et_device_appearance;
+			use et_device_sections;
 			use et_unit_name.pac_unit_name;
 
 			

@@ -84,7 +84,7 @@ with et_package_read;
 with et_package_write;
 
 with et_pcb_placeholders;
-with et_device_rw;
+with et_device_write;
 with et_power_sources;
 with et_logic;
 with et_port_sensitivity;
@@ -4019,7 +4019,7 @@ package body et_kicad_to_native is
 			
 			procedure save_device (device_cursor : in pac_devices_lib.cursor) is
 			begin
-				et_device_rw.save_device (
+				et_device_write.save_device (
 					-- library name like: 
 					-- libraries/devices/__-__-lbr-bel_connector_and_jumper_FEMALE_01X06.dev
 					file_name		=> to_file_name (to_string (key (device_cursor))),

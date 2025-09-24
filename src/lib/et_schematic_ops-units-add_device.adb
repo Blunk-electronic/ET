@@ -42,7 +42,7 @@
 --
 
 with et_symbol_library;
-with et_device_rw;
+with et_device_read;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 with et_device_model;					use et_device_model;
 with et_device_appearance;				use et_device_appearance;
@@ -538,7 +538,7 @@ begin -- add_device
 	
 	-- Read the device file and store it in the rig wide device library.
 	-- If the device is already in the library, nothing happpens.
-	et_device_rw.read_device (
+	et_device_read.read_device (
 		file_name		=> device_model, -- ../lbr/logic_ttl/7400.dev
 		log_threshold	=> log_threshold + 1);
 

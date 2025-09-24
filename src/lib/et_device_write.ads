@@ -51,7 +51,7 @@ package et_device_write is
 		device_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		appearance		: in type_appearance;
 		log_threshold	: in type_log_level);
-
+	-- CS move to et_device_library
 
 	
 	procedure save_device (
