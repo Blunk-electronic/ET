@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                             PACKAGES                                     --
+--                            PACKAGE MODEL                                 --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -40,14 +40,22 @@ with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 
-with et_logging;				use et_logging;
-
 with ada.exceptions;
 
 
-package body et_packages is
+package body et_package_model is
 	
 
+	procedure validate_pad_size (size : in type_distance_model) is
+	begin
+		if size not in type_pad_size then
+			log (ERROR, "pad size invalid ! Allowed range is" 
+				 & to_string (type_pad_size'first) & " .."
+				 & to_string (type_pad_size'last),
+				 console => true);
+			raise constraint_error;
+		end if;
+	end validate_pad_size;
 	
 -- 	procedure validate_track_clearance (clearance : in et_pcb_coordinates.type_distance_model) is
 -- 	-- Checks whether the given track clearance is in range of type_track_clearance.
@@ -86,6 +94,64 @@ package body et_packages is
 -- 	end validate_restring_width;
 
 
+	procedure mirror_conductor_objects (
+		conductors	: in out type_conductor_objects;
+		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS)
+	is begin
+		mirror_lines (conductors.lines, axis);
+		mirror_arcs (conductors.arcs, axis);
+		mirror_circles (conductors.circles, axis);
+		mirror_texts (conductors.texts);
+	end mirror_conductor_objects;
+
+
+	procedure rotate_conductor_objects (
+		conductors	: in out type_conductor_objects;
+		angle		: in type_rotation_model)
+	is begin
+		rotate_lines (conductors.lines, angle);
+		rotate_arcs (conductors.arcs, angle);
+		rotate_circles (conductors.circles, angle);
+		rotate_texts (conductors.texts, angle);
+	end rotate_conductor_objects;
+
+	
+
+	procedure move_conductor_objects (
+		conductors	: in out type_conductor_objects;
+		offset		: in type_vector_model)
+	is begin
+		move_lines (conductors.lines, offset);
+		move_arcs (conductors.arcs, offset);
+		move_circles (conductors.circles, offset);
+		move_texts (conductors.texts, offset);
+	end move_conductor_objects;
+
+	
+	function to_polygons (
+		conductors	: in type_conductor_objects;
+		tolerance	: in type_distance_positive)
+		return pac_polygon_list.list
+	is
+		result, scratch : pac_polygon_list.list;
+	begin
+		-- lines:
+		result := to_polygons (conductors.lines, tolerance);
+
+		-- arcs:
+		scratch := to_polygons (conductors.arcs, tolerance);
+		result.splice (before => pac_polygon_list.no_element, source => scratch);
+
+		-- circles (outer edges only ):
+		scratch := to_polygons_outside (conductors.circles, tolerance);
+		result.splice (before => pac_polygon_list.no_element, source => scratch);
+		
+		-- texts
+		scratch := to_polygons (conductors.texts);
+		result.splice (before => pac_polygon_list.no_element, source => scratch);
+		
+		return result;
+	end to_polygons;
 
 
 	
@@ -123,282 +189,64 @@ package body et_packages is
 	
 
 	
-	
-	function get_package_model (model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
-		return pac_package_models.cursor 
-	is begin
-		return pac_package_models.find (package_models, model_name);
-	end;
-
 
 	
-	function is_real (package_name : in pac_package_model_file_name.bounded_string) return boolean is
-			use pac_package_models;
-		cursor : pac_package_models.cursor;
+
+
+	procedure move_contours (
+		term_pos	: in out type_position; -- terminal position
+		outline		: in out type_contour'class;
+		flipped		: in type_flipped;
+		package_pos	: in type_package_position) 
+	is 
+		package_rotation : constant type_rotation_model := get_rotation (package_pos);
+		package_position_relative : constant type_vector_model := package_pos.place;
 	begin
-		cursor := find (package_models, package_name);
+		---- Rotate the given terminal position by the position of the package:
+		--rotate_by (term_pos, package_rotation);
 
-		if element (cursor).appearance = APPEARANCE_REAL then
-			return true;
-		else
-			return false;
+		-- Rotate the given terminal position by the rotation of the package:
+		rotate_by (term_pos.place, package_rotation);
+
+		-- If the package is flipped, then the terminal position
+		-- must be mirrored along the Y axis.
+		if flipped = YES then mirror_point (term_pos.place, MIRROR_ALONG_Y_AXIS); end if;
+		
+		-- Move the given terminal position by the position of the package.
+		move_by (term_pos.place, package_position_relative);
+		-- The terminal position is now ready for drawing the terminal
+		-- name and the pad outline.
+
+		-- The terminal position will later be the offset by which the outline will be moved
+		-- to its final place.
+
+		
+		if flipped = YES then
+			-- The outline must be rotated by the rotation of the package
+			-- minus the rotation of the given position itself:
+			rotate_by (outline, add (package_rotation, - get_rotation (term_pos)));
+
+			-- If the package is flipped, then the
+			-- given outline (of a pad or a milled hole)
+			-- must be mirrored along the Y axis.
+			mirror (outline, MIRROR_ALONG_Y_AXIS); 
+		else				
+			-- The outline must be rotated by the rotation of the package
+			-- plus the rotation of the given position itself:
+			rotate_by (outline, add (package_rotation, get_rotation (term_pos)));
 		end if;
-	end is_real;
-
-
-	
-	
-	function get_terminal (
-		cursor		: in pac_package_models.cursor;
-		terminal	: in pac_terminal_name.bounded_string) -- H4, 14
-		return pac_terminals.cursor 
-	is
-		terminal_cursor : pac_terminals.cursor;
-
-		procedure query_terminals (
-			model_name	: in pac_package_model_file_name.bounded_string;
-			model		: in type_package_model) 
-		is
-			use pac_terminals;
-		begin
-			terminal_cursor := find (model.terminals, terminal);
-		end;
 		
-	begin
-		pac_package_models.query_element (
-			position	=> cursor,
-			process		=> query_terminals'access);
-
-		return terminal_cursor;
-	end get_terminal;
-	
-
-
-	
-	function get_terminal_contours (
-		package_cursor	: in pac_package_models.cursor;
-		layer_category	: in type_signal_layer_category)
-		return pac_contour_list.list
-	is
-		packge : type_package_model renames element (package_cursor);
-		
-		result : pac_contour_list.list;
-		
-
-		procedure query_terminal (t : in pac_terminals.cursor) is
-			use pac_terminals;
-			terminal : type_terminal renames element (t);
-
-			displacement : constant type_vector_model := terminal.position.place;
-
-			procedure finalize (c : in type_contour) is 
-				contour : type_contour := c;
-			begin
-				rotate_by (contour, terminal.position.rotation);
-				move_by (contour, displacement);
-				result.append (contour);
-			end finalize;
-	
-		begin
-			case terminal.technology is
-				when THT => 
-					case layer_category is
-						when INNER =>								
-							case terminal.tht_hole is
-								when DRILLED =>
-									finalize (get_inner_contour (
-										terminal, to_vector (terminal.position.place)));
-
-								when MILLED =>
-									finalize (terminal.millings);
-							end case;
-
-							
-						when OUTER_TOP =>
-							finalize (terminal.pad_shape_tht.top);
-							
-						when OUTER_BOTTOM =>
-							finalize (terminal.pad_shape_tht.bottom);
-					end case;
-					
-
-				when SMT =>
-					case layer_category is
-						when OUTER_TOP =>
-							if terminal.face = TOP then
-								finalize (terminal.pad_shape_smt);
-							end if;
-						
-						when OUTER_BOTTOM =>
-							if terminal.face = BOTTOM then
-								finalize (terminal.pad_shape_smt);
-							end if;
-
-						when INNER => null; -- there are no SMT pads in inner layers
-					end case;
-			end case;
-		end query_terminal;
-		
-	begin
-		packge.terminals.iterate (query_terminal'access);
-		return result;
-	end get_terminal_contours;
-
-
-
-	
-	function get_conductor_objects (
-		package_cursor	: in pac_package_models.cursor;
-		layer_category	: in type_signal_layer_category)
-		return type_conductor_objects
-	is 
-		packge : type_package_model renames element (package_cursor);
-	begin
-		case layer_category is
-			when OUTER_TOP =>
-				return packge.conductors.top;
-
-			when OUTER_BOTTOM =>
-				return packge.conductors.bottom;
-
-			when INNER =>
-				raise constraint_error; -- CS semantic_error ? Error message ?
-		end case;
-	end get_conductor_objects;
-	
-
-
-	
-	function get_route_restrict_objects (
-		package_cursor	: in pac_package_models.cursor;
-		layer_category	: in type_signal_layer_category)
-		return et_route_restrict.packages.type_one_side
-	is
-		packge : type_package_model renames element (package_cursor);
-	begin
-		case layer_category is
-			when OUTER_TOP =>
-				return packge.route_restrict.top;
-
-			when OUTER_BOTTOM =>
-				return packge.route_restrict.bottom;
-
-			when INNER =>
-				raise constraint_error; -- CS semantic_error ? Error message ?
-		end case;
-	end get_route_restrict_objects;
-
-
-
-	
-	function get_via_restrict_objects (
-		package_cursor	: in pac_package_models.cursor;
-		layer_category	: in type_signal_layer_category)
-		return et_via_restrict.packages.type_one_side
-	is
-		packge : type_package_model renames element (package_cursor);
-	begin
-		case layer_category is
-			when OUTER_TOP =>
-				return packge.via_restrict.top;
-
-			when OUTER_BOTTOM =>
-				return packge.via_restrict.bottom;
-
-			when INNER =>
-				raise constraint_error; -- CS semantic_error ? Error message ?
-		end case;
-	end get_via_restrict_objects;
+		-- Move the outline to its final position:
+		move_by (outline, term_pos.place);
+	end move_contours;
 
 
 	
 	
-	function get_hole_contours (
-		package_cursor	: in pac_package_models.cursor)
-		return pac_holes.list
-	is 
-		packge : type_package_model renames element (package_cursor);
-	begin
-		return packge.holes;
-	end get_hole_contours;
-
 
 	
-
-	function get_keepout_objects (
-		package_cursor	: in pac_package_models.cursor;
-		face			: in type_face)
-		return type_keepout
-	is
-		packge : type_package_model renames element (package_cursor);
-	begin
-		case face is
-			when TOP	=> return packge.keepout.top;
-			when BOTTOM	=> return packge.keepout.bottom;
-		end case;
-	end get_keepout_objects;
 	
-
-	function get_stencil_objects (
-		package_cursor	: in pac_package_models.cursor;
-		face			: in type_face)
-		return et_stencil.type_stencil
-	is
-		packge : type_package_model renames element (package_cursor);
-	begin
-		case face is
-			when TOP	=> return packge.stencil.top;
-			when BOTTOM	=> return packge.stencil.bottom;
-		end case;
-	end get_stencil_objects;
-
-
-	function get_stopmask_objects (
-		package_cursor	: in pac_package_models.cursor;
-		face			: in type_face)
-		return et_stopmask.type_stopmask
-	is
-		packge : type_package_model renames element (package_cursor);
-	begin
-		case face is
-			when TOP	=> return packge.stop_mask.top;
-			when BOTTOM	=> return packge.stop_mask.bottom;
-		end case;
-	end get_stopmask_objects;
 	
-
-
-	function get_silkscreen_objects (
-		package_cursor	: in pac_package_models.cursor;
-		face			: in type_face)
-		return type_silkscreen_package
-	is
-		packge : type_package_model renames element (package_cursor);
-	begin
-		case face is
-			when TOP	=> return packge.silkscreen.top;
-			when BOTTOM	=> return packge.silkscreen.bottom;
-		end case;
-	end get_silkscreen_objects;
-
-
-	function get_assy_doc_objects (
-		package_cursor	: in pac_package_models.cursor;
-		face			: in type_face)
-		return type_assy_doc_package
-	is
-		packge : type_package_model renames element (package_cursor);
-	begin
-		case face is
-			when TOP	=> return packge.assy_doc.top;
-			when BOTTOM	=> return packge.assy_doc.bottom;
-		end case;
-	end get_assy_doc_objects;
-
-
-	
-
-
 
 
 	
@@ -541,8 +389,9 @@ package body et_packages is
 -- 		log_indentation_down;
 -- 	end terminal_properties;
 
+
 	
-end et_packages;
+end et_package_model;
 
 -- Soli Deo Gloria
 

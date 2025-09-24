@@ -99,6 +99,7 @@ with et_device_purpose;
 with et_unit_name;					use et_unit_name;
 with et_device_model;				use et_device_model;
 with et_device_library;				use et_device_library;
+with et_package_model;
 with et_package_variant;
 with et_device_name;				--use et_device_name;
 with et_device_model_names;			use et_device_model_names;
@@ -3925,7 +3926,7 @@ package body et_kicad_to_native is
 						key			=> package_model, -- libraries/packages/-home-user-lbr-bel_battery_pretty-S_CR3232.pac
 						position	=> package_cursor,
 						inserted	=> inserted,
-						new_item	=> (et_packages.type_package_base (element (package_cursor_kicad)) with 
+						new_item	=> (et_package_model.type_package_base (element (package_cursor_kicad)) with 
 							silkscreen	=> element (package_cursor_kicad).silk_screen,
 							assy_doc	=> element (package_cursor_kicad).assembly_documentation,
 							terminals 	=> element (package_cursor_kicad).terminals)

@@ -52,6 +52,7 @@ with et_axes;							use et_axes;
 with et_directory_and_file_ops;
 with et_generic_stacks;
 with et_alignment;
+with et_package_model;
 with et_package_appearance;
 with et_package_description;			use et_package_description;
 
@@ -640,7 +641,7 @@ package body et_kicad_packages is
 
 		-- NON ELECTRIC !!! COPPER OBJECTS (lines, arcs, circles)
 		-- NOTE: Does not include texts as kicad does not allow texts in signal layers.
-		copper : et_packages.type_conductor_objects_both_sides;
+		copper : et_package_model.type_conductor_objects_both_sides;
 
 		-- STOP MASK OBJECTS
 		stop_mask : type_stopmask_both_sides;

@@ -55,6 +55,7 @@ with et_devices_electrical;
 with et_nets;
 with et_pcb;
 with et_devices_non_electrical;
+with et_package_model;				use et_package_model;
 with et_packages;
 with et_terminals;
 with et_pcb_stack;

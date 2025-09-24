@@ -43,6 +43,7 @@ with et_string_processing;				use et_string_processing;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_package_appearance;				use et_package_appearance;
+with et_package_model;					use et_package_model;
 with et_packages;						use et_packages;
 with et_fill_zones;						use et_fill_zones;
 with et_route_restrict;					use et_route_restrict;

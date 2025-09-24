@@ -56,6 +56,7 @@ with et_axes;						use et_axes;
 with et_generic_stacks;
 with et_system_info;
 with et_alignment;					use et_alignment;
+with et_package_model;
 with et_package_appearance;
 with et_package_description;
 with et_package_variant;
@@ -542,7 +543,7 @@ package body et_kicad.pcb is
 		package_silk_screen		: et_silkscreen.packages.type_silkscreen_both_sides;
 		package_assy_doc		: et_assy_doc.packages.type_assy_doc_both_sides;
 		package_keepout			: et_keepout.type_keepout_both_sides;
-		package_copper			: et_packages.type_conductor_objects_both_sides;
+		package_copper			: et_package_model.type_conductor_objects_both_sides;
 		
 		-- countours of a package as provided by the 3d model:
 -- 		package_contour			: et_pcb.type_package_contour; -- CS not assigned yet
