@@ -73,12 +73,14 @@ with et_package_appearance;
 with et_package_names;			use et_package_names;
 with et_packages;
 with et_pcb_rw;
-with et_pcb_rw.device_packages;
+with et_package_read;
+with et_package_write;
 
 with et_symbol_name;
 with et_symbol_model;
 with et_symbol_library;
-with et_symbol_rw;
+with et_symbol_read;
+with et_symbol_write;
 
 with et_device_appearance;
 with et_device_library;			use et_device_library;
@@ -468,7 +470,7 @@ procedure et is
 		-- CS: Test file extension package_model_file_extension
 		
 		if length (package_name_save_as) > 0 then
-			et_pcb_rw.device_packages.save_package (
+			et_package_write.save_package (
 				file_name 		=> package_name_save_as,
 				packge			=> pac_package_models.last_element (et_packages.package_models),
 				log_threshold	=> 0);
@@ -486,7 +488,7 @@ procedure et is
 		-- If symbol_name_save_as is empty nothing happens.
 		-- Otherwise the latest and only symbol is saved.
 		if length (symbol_name_save_as) > 0 then
-			et_symbol_rw.save_symbol (
+			et_symbol_write.save_symbol (
 				file_name 		=> symbol_name_save_as,
 				symbol			=> pac_symbols.last_element (symbol_library),
 				log_threshold	=> 0);
@@ -669,7 +671,7 @@ procedure et is
 			elsif length (package_name_create) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for package editing
 				
-				et_pcb_rw.device_packages.create_package (package_name_create, package_appearance, log_threshold => 0);
+				et_package_write.create_package (package_name_create, package_appearance, log_threshold => 0);
 
 				-- optionally the package can be saved under a different name
 				save_package_as;  -- if package_name_save_as is empty nothing happens
@@ -685,7 +687,7 @@ procedure et is
 			elsif length (package_name_open) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for package editing
 				
-				et_pcb_rw.device_packages.read_package (package_name_open, log_threshold => 0);
+				et_package_read.read_package (package_name_open, log_threshold => 0);
 
 				-- optionally the package can be saved under a different name
 				save_package_as; -- if package_name_save_as is empty nothing happens
@@ -695,7 +697,7 @@ procedure et is
 			elsif length (symbol_name_create) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for symbol editing
 				
-				et_symbol_rw.create_symbol (symbol_name_create, symbol_appearance, log_threshold => 0);
+				et_symbol_library.create_symbol (symbol_name_create, symbol_appearance, log_threshold => 0);
 
 				-- optionally the symbol can be saved under a different name
 				save_symbol_as; -- if symbol_name_save_as is empty nothing happens
@@ -703,7 +705,7 @@ procedure et is
 			elsif length (symbol_name_open) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for symbol editing
 				
-				et_symbol_rw.read_symbol (symbol_name_open, log_threshold => 0);
+				et_symbol_read.read_symbol (symbol_name_open, log_threshold => 0);
 
 				-- optionally the symbol can be saved under a different name				
 				save_symbol_as; -- if symbol_name_save_as is empty nothing happens
