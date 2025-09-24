@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         DEVICE READ AND WRITE                            --
+--                            DEVICE SECTIONS                               --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -36,18 +36,9 @@
 --   history of changes:
 --
 
-with et_string_processing;
-with et_logging;						use et_logging;
-with et_terminals;
-with et_device_model;					use et_device_model;
-with et_symbol_model;
-with et_device_appearance;				use et_device_appearance;
-with et_device_model_names;				use et_device_model_names;
-with et_pcb_stack;
-with et_device_placeholders;			use et_device_placeholders;
 
 
-package et_device_rw is
+package et_device_sections is
 	
 	section_symbol				: constant string := "[SYMBOL";
 	section_variant				: constant string := "[VARIANT";
@@ -60,7 +51,7 @@ package et_device_rw is
 
 
 	
-	type type_section is ( -- CS rename to type_device_section
+	type type_device_section is (
 		SEC_INIT,
 		SEC_VARIANTS,
 		SEC_VARIANT,
@@ -82,30 +73,4 @@ package et_device_rw is
 		);
 
 	
-	-- Creates adevice and stores it in container et_devices.devices.
-	procedure create_device (
-		device_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
-		appearance		: in type_appearance;
-		log_threshold	: in type_log_level);
-
-
-	
-	procedure save_device (
-		file_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
-		device			: in type_device_model; -- the actual device model
-		log_threshold	: in type_log_level);
-
-	
-	-- Opens the device and stores it in container et_libraries.devices.
-	-- If check_layers.check is YES, then a check will be done that tests
-	-- whether all conductor layers are are in 
-	-- range type_signal_layer'first .. deepest conductor layer.
-	procedure read_device (
-		file_name 		: in pac_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
-		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
-		-- CS error : out boolean;
-		-- CS device_curosr : out pac_devices_lib.cursor;
-		log_threshold	: in type_log_level);
-
-	
-end et_device_rw;
+end et_device_sections;
