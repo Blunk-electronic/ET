@@ -42,7 +42,7 @@
 package et_package_sections is
 
 	
-	type type_section is (
+	type type_section is ( -- CS rename to type_package_section
 		SEC_CONDUCTOR,
 		SEC_CONTOURS, -- of fill and cutout zones
 		SEC_CUTOUT_ZONE,

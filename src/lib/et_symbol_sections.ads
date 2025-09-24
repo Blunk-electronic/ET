@@ -47,7 +47,7 @@ package et_symbol_sections is
 
 
 	
-	type type_section is (
+	type type_section is ( -- CS rename to type_symbol_section
 		SEC_INIT,
 		SEC_DRAW,
 		SEC_LINE,
