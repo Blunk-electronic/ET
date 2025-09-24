@@ -56,7 +56,7 @@ with et_board_text;						use et_board_text;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_package_model;					use et_package_model;
-with et_packages;						use et_packages;
+with et_package_library;				use et_package_library;
 with et_package_names;					use et_package_names;
 with et_device_name;					use et_device_name;
 with et_pcb_stack;						use et_pcb_stack;

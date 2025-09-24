@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                             PACKAGES                                     --
+--                          PACKAGE LIBRARY                                 --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -40,12 +40,10 @@ with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 
-with et_logging;				use et_logging;
-
 with ada.exceptions;
 
 
-package body et_packages is
+package body et_package_library is
 	
 
 	
@@ -542,7 +540,7 @@ package body et_packages is
 -- 	end terminal_properties;
 
 	
-end et_packages;
+end et_package_library;
 
 -- Soli Deo Gloria
 

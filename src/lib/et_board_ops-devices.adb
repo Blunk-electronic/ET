@@ -1313,7 +1313,7 @@ package body et_board_ops.devices is
 
 
 	function get_placeholders (
-		package_cursor : in et_packages.pac_package_models.cursor)
+		package_cursor : in pac_package_models.cursor)
 		return et_device_placeholders.packages.type_text_placeholders 
 	is
 		use et_device_placeholders.packages;
@@ -1346,9 +1346,10 @@ package body et_board_ops.devices is
 		log_threshold	: in type_log_level) 
 	is
 
-		package_cursor_lib : et_packages.pac_package_models.cursor;
+		package_cursor_lib : pac_package_models.cursor;
+
 		
-		procedure add (
+		procedure add (						  
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is

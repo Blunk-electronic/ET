@@ -56,7 +56,7 @@ with et_nets;
 with et_pcb;
 with et_devices_non_electrical;
 with et_package_model;				use et_package_model;
-with et_packages;
+with et_package_library;
 with et_terminals;
 with et_pcb_stack;
 with et_conductor_segment;
@@ -808,7 +808,7 @@ is
 				device_non_electric	: in pac_devices_non_electric.cursor;
 				mirror 				: in type_mirror)
 			is
-				use et_packages;
+				use et_package_library;
 				use pac_package_models;
 
 				-- This cursor points to the package model

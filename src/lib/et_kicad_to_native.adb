@@ -64,7 +64,7 @@ with et_project;
 with et_generic_module;				use et_generic_module;
 with et_vias;
 with et_package_names;
-with et_packages;
+with et_package_library;
 with et_kicad_general;
 with et_kicad_libraries;
 with et_kicad_packages;
@@ -2812,16 +2812,16 @@ package body et_kicad_to_native is
 
 						
 					when APPEARANCE_PCB =>
--- 						log (text => "placeholders silk top" & count_type'image (et_packages.pac_text_placeholders.length (
+-- 						log (text => "placeholders silk top" & count_type'image (et_package_library.pac_text_placeholders.length (
 -- 							element (component_cursor_kicad).text_placeholders.silkscreen.top)));
 -- 
--- 						log (text => "placeholders silk bottom" & count_type'image (et_packages.pac_text_placeholders.length (
+-- 						log (text => "placeholders silk bottom" & count_type'image (et_package_library.pac_text_placeholders.length (
 -- 							element (component_cursor_kicad).text_placeholders.silkscreen.bottom)));
 -- 
--- 						log (text => "placeholders assy top" & count_type'image (et_packages.pac_text_placeholders.length (
+-- 						log (text => "placeholders assy top" & count_type'image (et_package_library.pac_text_placeholders.length (
 -- 							element (component_cursor_kicad).text_placeholders.assy_doc.top)));
 -- 
--- 						log (text => "placeholders assy bottom" & count_type'image (et_packages.pac_text_placeholders.length (
+-- 						log (text => "placeholders assy bottom" & count_type'image (et_package_library.pac_text_placeholders.length (
 -- 							element (component_cursor_kicad).text_placeholders.assy_doc.bottom)));
 						
 						pac_devices_sch.insert (
@@ -3900,8 +3900,8 @@ package body et_kicad_to_native is
 				package_name			: pac_package_name.bounded_string;
 				package_model			: pac_package_model_file_name.bounded_string := library_name; -- projects/lbr/smd_packages.pretty
 
-				use et_packages.pac_package_models;
-				package_cursor			: et_packages.pac_package_models.cursor;
+				use et_package_library.pac_package_models;
+				package_cursor			: et_package_library.pac_package_models.cursor;
 				inserted				: boolean;
 			begin
 				-- Loop in kicad packages (footprints) of the current library.
@@ -3921,8 +3921,8 @@ package body et_kicad_to_native is
 					-- Insert the new package model in et_pcb.packages. In case the package is already in the 
 					-- container (due to other project imports), the flag "inserted" will go false. The package
 					-- would not be inserted again:
-					et_packages.pac_package_models.insert (
-						container	=> et_packages.package_models,
+					et_package_library.pac_package_models.insert (
+						container	=> et_package_library.package_models,
 						key			=> package_model, -- libraries/packages/-home-user-lbr-bel_battery_pretty-S_CR3232.pac
 						position	=> package_cursor,
 						inserted	=> inserted,
@@ -4030,10 +4030,10 @@ package body et_kicad_to_native is
 			end save_device;
 
 			
-			use et_packages.pac_package_models;
+			use et_package_library.pac_package_models;
 
 			
-			procedure save_package (package_cursor : in et_packages.pac_package_models.cursor) is
+			procedure save_package (package_cursor : in et_package_library.pac_package_models.cursor) is
 			begin
 				et_package_write.save_package (
 					-- package name like: 
@@ -4057,7 +4057,7 @@ package body et_kicad_to_native is
 			
 			log (text => "packages (former KiCad footprints) ...", level => log_threshold + 1);
 			log_indentation_up;
-			iterate (et_packages.package_models, save_package'access);
+			iterate (et_package_library.package_models, save_package'access);
 			log_indentation_down;
 
 			log_indentation_down;			

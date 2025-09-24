@@ -71,7 +71,7 @@ with et_script_processor;
 
 with et_package_appearance;
 with et_package_names;			use et_package_names;
-with et_packages;
+with et_package_library;
 
 with et_board_read;
 with et_board_write;
@@ -464,18 +464,18 @@ procedure et is
 	
 	
 	procedure save_package_as is 
-		use et_packages;
+		use et_package_library;
 		use pac_package_model_file_name;
 	begin
 		-- If package_name_save_as is empty nothing happens.
-		-- Otherwise the latest and only packagein et_packages.packages is saved.
+		-- Otherwise the latest and only package is saved.
 
 		-- CS: Test file extension package_model_file_extension
 		
 		if length (package_name_save_as) > 0 then
 			et_package_write.save_package (
 				file_name 		=> package_name_save_as,
-				packge			=> pac_package_models.last_element (et_packages.package_models),
+				packge			=> pac_package_models.last_element (et_package_library.package_models),
 				log_threshold	=> 0);
 		end if;
 	end;

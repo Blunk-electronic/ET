@@ -41,7 +41,6 @@
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_package_appearance;				use et_package_appearance;
-with et_packages;						use et_packages;
 with et_fill_zones;						use et_fill_zones;
 with et_route_restrict;					use et_route_restrict;
 with et_via_restrict;					use et_via_restrict;

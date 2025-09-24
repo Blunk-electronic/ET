@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                             PACKAGES                                     --
+--                          PACKAGE LIBRARY                                 --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
@@ -69,7 +69,7 @@ with et_package_description;			use et_package_description;
 with et_logging;						use et_logging;
 
 
-package et_packages is
+package et_package_library is
 	
 	use pac_geometry_brd;
 
@@ -310,7 +310,7 @@ package et_packages is
 	
 
 	
-end et_packages;
+end et_package_library;
 
 -- Soli Deo Gloria
 

@@ -2022,7 +2022,6 @@ package body et_devices_electrical is
 		terminal_name : constant pac_terminal_name.bounded_string := 
 			get_terminal (variant_lib, unit, port);
 
-		use et_packages;
 		use pac_package_models;
 		package_cursor : pac_package_models.cursor;
 

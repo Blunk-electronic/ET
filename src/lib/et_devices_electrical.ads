@@ -96,7 +96,7 @@ with et_package_names;					use et_package_names;
 with et_package_variant;				use et_package_variant;
 with et_terminals;						use et_terminals;
 with et_package_model;					use et_package_model;
-with et_packages;						use et_packages;
+with et_package_library;				use et_package_library;
 with et_commit;
 with et_object_status;					use et_object_status;
 with et_unit_name;						use et_unit_name;

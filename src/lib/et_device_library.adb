@@ -50,7 +50,7 @@ with et_exceptions;				use et_exceptions;
 
 with et_symbol_library;
 with et_symbol_name;
-with et_packages;
+with et_package_library;
 
 
 package body et_device_library is
@@ -759,7 +759,7 @@ package body et_device_library is
 		variant_cursor		: pac_package_variants.cursor;
 		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/smd/SO15.pac
 
-		use et_packages;		
+		use et_package_library;
 		use pac_package_models;
 		package_cursor		: pac_package_models.cursor;
 

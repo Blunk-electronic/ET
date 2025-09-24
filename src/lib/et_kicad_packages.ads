@@ -67,7 +67,6 @@ with et_device_placeholders.packages;	use et_device_placeholders.packages;
 
 with et_package_names;				use et_package_names;
 with et_package_model;				use et_package_model;
-with et_packages;
 with et_kicad_general;				use et_kicad_general;
 with et_import;
 

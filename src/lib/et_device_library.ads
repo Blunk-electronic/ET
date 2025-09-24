@@ -38,7 +38,7 @@
 -- DESCRIPTION:
 --
 -- This package describes the structure of
--- the rig-wide library of devices models.
+-- the rig-wide li	brary of devices models.
 
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;

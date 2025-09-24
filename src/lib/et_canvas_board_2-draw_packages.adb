@@ -55,7 +55,7 @@ with et_device_purpose;
 
 with et_package_model;				use et_package_model;
 with et_package_names;
-with et_packages;					use et_packages;
+with et_package_library;			use et_package_library;
 with et_package_variant;
 with et_terminals;
 

@@ -262,7 +262,6 @@ package body et_kicad.pcb is
 		board : type_board; -- to be returned
 
 		use et_pcb;
-		use et_packages;
 		use et_package_appearance;
 		use pac_lines_of_file;
 
@@ -3927,9 +3926,7 @@ package body et_kicad.pcb is
 				shape : pac_contours.type_contour;
 
 				
-				procedure insert_tht is 
-					use et_packages;
-				begin
+				procedure insert_tht is begin
 				-- NOTE: The pad shape (stored in shape) now must be assigned to
 				-- a therminal with either a circular or an oval hole.
 					case terminal_hole_shape is
@@ -4718,7 +4715,6 @@ package body et_kicad.pcb is
 		use et_fill_zones;
 		use pac_floating_solid;
 		use et_pcb_stack;
-		use et_packages;
 	begin
 		-- general stuff
 		log (text => "polygon" & 
@@ -5144,7 +5140,6 @@ package body et_kicad.pcb is
 				function to_placeholders return type_text_placeholders is 
 				-- Returns the placeholders for reference and value of the current package (indicated by package_cursor).
 				-- The return distinguishes them by the face (TOP/BOTTOM), silk screen and assembly documentation.
-					use et_packages;
 					use et_board_coordinates;
 					placeholders : type_text_placeholders; -- to be returned
 
