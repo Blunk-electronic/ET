@@ -45,7 +45,6 @@ with et_packages;						use et_packages;
 with et_fill_zones;						use et_fill_zones;
 with et_route_restrict;					use et_route_restrict;
 with et_via_restrict;					use et_via_restrict;
-with et_pcb_rw.restrict;				use et_pcb_rw.restrict;
 with et_package_names;					use et_package_names;
 
 
@@ -85,5 +84,11 @@ package et_package_sections is
 		SEC_PACKAGE_3D_CONTOURS
 		);
 
+
+	section_zone		: constant string := "[ZONE";
+	section_cutout_zone	: constant string := "[CUTOUT_ZONE";
+	section_contours	: constant string := "[CONTOURS";
+
+	
 	
 end et_package_sections;

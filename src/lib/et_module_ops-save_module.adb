@@ -86,8 +86,9 @@ with et_sheets;
 with et_devices_non_electrical;
 with et_pcb;
 with et_pcb_stack;
-with et_pcb_rw;
-with et_pcb_rw.restrict;
+
+with et_board_write;				use et_board_write;
+
 with et_package_names;
 with et_terminals;
 with et_material;
@@ -294,8 +295,6 @@ is
 			section_mark (section_preferred_libraries, FOOTER);
 		end write_board;
 
-		use et_pcb_rw;		
-
 		
 	begin -- query_meta
 		log_indentation_up;
@@ -353,8 +352,8 @@ is
 		use et_net_class;
 		use pac_net_classes;
 		use et_board_geometry.pac_geometry_2;
-		use et_pcb_rw;
 
+		
 		procedure write (class_cursor : in pac_net_classes.cursor) is begin
 			log (text => "net class " & to_string (key (class_cursor)), level => log_threshold + 1);
 			section_mark (section_net_class, HEADER);
@@ -418,8 +417,7 @@ is
 			write (keyword => keyword_style, parameters => to_string (g.style));
 		end board;
 
-		
-		use et_pcb_rw;
+
 		
 	begin
 		log_indentation_up;
@@ -445,7 +443,6 @@ is
 	
 	
 	procedure query_layer_stack is
-		use et_pcb_rw;
 		use et_board_geometry.pac_geometry_2;
 		use et_pcb_stack;
 		use package_layers;
@@ -791,7 +788,6 @@ is
 			use pac_contours;
 
 			use et_terminals;
-			use et_pcb_rw;
 			use et_pcb;
 			use et_pcb_stack;
 			use et_board_geometry.pac_geometry_2;
@@ -1092,7 +1088,6 @@ is
 
 			
 			procedure write_placeholder (placeholder_cursor : in pac_placeholders.cursor) is 
-				use et_pcb_rw;
 				use et_device_placeholders;
 			begin
 				section_mark (section_placeholder, HEADER);
@@ -1128,7 +1123,6 @@ is
 		procedure write (d : in pac_devices_sch.cursor) is 
 			use et_pcb_sides;
 			use et_material;
-			use et_pcb_rw;
 			use et_device_appearance;
 			use et_device_model_names;
 			use et_device_purpose;
@@ -1270,7 +1264,6 @@ is
 
 		
 		procedure write (variant_cursor : in pac_assembly_variants.cursor) is 
-			use et_pcb_rw;
 		begin
 			section_mark (section_assembly_variant, HEADER);
 			write (keyword => keyword_name, parameters => to_variant (key (variant_cursor)));
@@ -1416,7 +1409,6 @@ is
 		-- This procedure writes the stuff related to the
 		-- drawing frame of the board:
 		procedure board is
-			use et_pcb_rw;
 			use et_board_geometry;
 			use pac_geometry_2;
 			
@@ -1611,7 +1603,6 @@ is
 		use pac_route_restrict_arcs;
 		use pac_route_restrict_circles;
 		use pac_route_restrict_contours;
-		use et_pcb_rw.restrict;
 		
 		use et_via_restrict.boards;
 		use pac_via_restrict_contours;
@@ -1622,8 +1613,7 @@ is
 		use et_fill_zones.boards;
 		use et_conductor_segment.boards;
 
-		use et_pcb_rw;
-		
+	
 		
 		-- general stuff
 		use pac_text_placeholders_conductors;

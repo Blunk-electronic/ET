@@ -76,9 +76,13 @@ with et_sheets;
 with et_netlists;
 with et_net_strands;
 with et_text;
-with et_pcb_rw;
+
+with et_board_read;
+with et_board_write;
+
 with et_package_read;
 with et_package_write;
+
 with et_pcb_placeholders;
 with et_device_rw;
 with et_power_sources;

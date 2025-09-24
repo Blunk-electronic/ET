@@ -93,9 +93,11 @@ with et_devices_electrical;
 with et_devices_non_electrical;
 with et_pcb;
 with et_pcb_stack;
-with et_pcb_rw;
+
+with et_board_read;					use et_board_read;
 with et_package_read;
-with et_pcb_rw.restrict;
+with et_package_sections;
+
 with et_package_names;
 with et_drills;
 with et_vias;
@@ -571,7 +573,6 @@ is
 		use et_terminals;
 		use et_drills;
 		use et_net_class;
-		use et_pcb_rw;
 		use et_board_geometry.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
@@ -1483,7 +1484,6 @@ is
 		use et_device_purpose;
 		use et_device_value;
 		use et_device_partcode;
-		use et_pcb_rw;
 		use et_module_instance;
 		
 		kw : constant string := f (line, 1);
@@ -1839,7 +1839,6 @@ is
 	-- Checks the global signal_layer variable against check_layers:
 	procedure validate_signal_layer is 
 		use et_pcb_stack;
-		use et_pcb_rw;
 	begin
 		-- Issue warning if signal layer is invalid:
 		if not signal_layer_valid (signal_layer, check_layers) then
@@ -1852,7 +1851,6 @@ is
 	-- Checks a given signal layer against check_layers:
 	procedure validate_signal_layer (l : in et_pcb_stack.type_signal_layer) is
 		use et_pcb_stack;
-		use et_pcb_rw;
 	begin
 		-- Issue warning if signal layer is invalid:
 		if not signal_layer_valid (l, check_layers) then
@@ -1913,7 +1911,6 @@ is
 		use et_board_geometry.pac_geometry_2;
 		use et_pcb_stack;
 		use et_fill_zones;
-		use et_pcb_rw;
 		kw : constant  string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -1941,7 +1938,6 @@ is
 	procedure read_cutout_non_conductor is
 		use et_board_geometry.pac_geometry_2;
 		use et_fill_zones;
-		use et_pcb_rw;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -1963,7 +1959,6 @@ is
 	
 	procedure read_cutout_restrict is
 		use et_pcb_stack;
-		use et_pcb_rw;
 		use et_board_geometry.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
@@ -1986,7 +1981,6 @@ is
 	-- NOTE: This is about floating conductor zones. Has nothing to
 	-- do with nets and routes.
 	procedure read_cutout_conductor_non_electric is
-		use et_pcb_rw;
 		use et_pcb_stack;
 		use et_board_geometry.pac_geometry_2;
 		use et_fill_zones;
@@ -2021,7 +2015,6 @@ is
 		use et_fill_zones.boards;
 		use et_thermal_relief;
 		use et_pcb_stack;
-		use et_pcb_rw;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -2060,7 +2053,7 @@ is
 
 		elsif kw = keyword_pad_technology then -- pad_technology smt_only/tht_only/smt_and_tht
 			expect_field_count (line, 2);
-			et_pcb_rw.relief_properties.technology := to_pad_technology (f (line, 2));
+			relief_properties.technology := to_pad_technology (f (line, 2));
 
 		elsif kw = keyword_connection then -- connection thermal/solid
 			expect_field_count (line, 2);
@@ -2068,11 +2061,11 @@ is
 			
 		elsif kw = keyword_relief_width_min then -- relief_width_min 0.3
 			expect_field_count (line, 2);
-			et_pcb_rw.relief_properties.width_min := to_distance (f (line, 2));
+			relief_properties.width_min := to_distance (f (line, 2));
 
 		elsif kw = keyword_relief_gap_max then -- relief_gap_max 0.7
 			expect_field_count (line, 2);
-			et_pcb_rw.relief_properties.gap_max := to_distance (f (line, 2));
+			relief_properties.gap_max := to_distance (f (line, 2));
 
 		else
 			invalid_keyword (kw);
@@ -2085,7 +2078,6 @@ is
 	procedure read_fill_zone_non_conductor is
 		use et_board_geometry.pac_geometry_2;
 		use et_fill_zones;
-		use et_pcb_rw;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -2102,7 +2094,6 @@ is
 
 	
 	procedure read_fill_zone_keepout is
-		use et_pcb_rw;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -2120,7 +2111,6 @@ is
 	
 	procedure read_fill_zone_restrict is
 		use et_pcb_stack;
-		use et_pcb_rw;
 		use et_board_geometry.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
@@ -2145,7 +2135,6 @@ is
 	
 	procedure read_fill_zone_conductor_non_electric is
 		use et_pcb_stack;
-		use et_pcb_rw;
 		use et_fill_zones;
 		use et_fill_zones.boards;
 		use et_board_geometry.pac_geometry_2;
@@ -2349,7 +2338,6 @@ is
 	procedure read_board_text_conductor_placeholder is
 		use et_board_geometry.pac_geometry_2;
 		use et_pcb_stack;
-		use et_pcb_rw;
 		use et_pcb_placeholders;
 		kw : constant string := f (line, 1);
 	begin
@@ -2444,7 +2432,6 @@ is
 	
 	procedure read_board_text_non_conductor is 
 		use et_board_geometry.pac_geometry_2;
-		use et_pcb_rw;
 		kw : constant  string := f (line, 1);
 	begin
 		case stack.parent (degree => 2) is
@@ -2492,7 +2479,6 @@ is
 	procedure read_board_text_conductor is
 		use et_board_geometry.pac_geometry_2;
 		use et_pcb_stack;
-		use et_pcb_rw;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -2537,7 +2523,6 @@ is
 	
 	procedure read_board_text_contours is 
 		use et_board_geometry.pac_geometry_2;
-		use et_pcb_rw;
 		kw : constant  string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -2850,7 +2835,6 @@ is
 
 	
 	procedure read_user_settings_vias is
-		use et_pcb_rw;
 		use et_board_geometry.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
@@ -3677,7 +3661,6 @@ is
 				use et_stencil;
 				use et_silkscreen;
 				use et_assy_doc;
-				use et_pcb_rw;
 
 				
 				procedure do_it (
@@ -3770,7 +3753,6 @@ is
 				use et_stencil;
 				use et_silkscreen;
 				use et_assy_doc;
-				use et_pcb_rw;
 				
 				
 				procedure do_it (
@@ -3864,7 +3846,6 @@ is
 				use et_stencil;
 				use et_silkscreen;
 				use et_assy_doc;
-				use et_pcb_rw;
 
 				
 				procedure do_it (
@@ -3959,7 +3940,6 @@ is
 				use et_silkscreen;
 				use et_assy_doc;
 				use et_keepout;
-				use et_pcb_rw;
 				
 				
 				procedure do_it (
@@ -4105,8 +4085,6 @@ is
 			-- Depending on the layer category and the side of the board (face) the polygon
 			-- is threated as a cutout zone and assigned to the board where it belongs to.
 
-				use et_pcb_rw;
-
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -4172,7 +4150,7 @@ is
 				use et_via_restrict.boards;
 				use et_pcb_stack;
 				use type_signal_layers;
-				use et_pcb_rw;
+
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -4205,7 +4183,6 @@ is
 				use et_route_restrict.boards;
 				use et_pcb_stack;
 				use type_signal_layers;
-				use et_pcb_rw;
 				
 				
 				procedure do_it (
@@ -4240,7 +4217,6 @@ is
 				use pac_contours;
 				use et_pcb;
 				use et_fill_zones.boards;
-				use et_pcb_rw;
 				
 				
 				procedure do_it (
@@ -4358,7 +4334,6 @@ is
 				use et_route_restrict.boards;
 				use et_pcb_stack;
 				use type_signal_layers;
-				use et_pcb_rw;
 
 				
 				procedure do_it (
@@ -4391,7 +4366,7 @@ is
 				use et_route_restrict.boards;
 				use et_pcb_stack;					
 				use type_signal_layers;
-				use et_pcb_rw;
+
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -4423,7 +4398,7 @@ is
 				use et_route_restrict.boards;
 				use et_pcb_stack;
 				use type_signal_layers;
-				use et_pcb_rw;
+
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -4458,7 +4433,7 @@ is
 				
 				use et_pcb_stack;
 				use type_signal_layers;
-				use et_pcb_rw;
+
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -4491,7 +4466,6 @@ is
 				use pac_via_restrict_contours;
 				use et_pcb_stack;
 				use type_signal_layers;
-				use et_pcb_rw;
 				
 				
 				procedure do_it (
@@ -4523,7 +4497,6 @@ is
 				use pac_contours;
 				use et_fill_zones;
 				use et_fill_zones.boards;
-				use et_pcb_rw;
 				
 				
 				procedure do_it (
@@ -4572,7 +4545,6 @@ is
 			
 			procedure insert_line_track is -- about freetracks
 				use et_conductor_segment.boards;
-				use et_pcb_rw;
 				
 				
 				procedure do_it (
@@ -4603,7 +4575,6 @@ is
 			
 			procedure insert_arc_track is -- about freetracks
 				use et_conductor_segment.boards;
-				use et_pcb_rw;
 				
 				
 				procedure do_it (
@@ -4635,7 +4606,6 @@ is
 			
 			procedure insert_circle_track is -- about freetracks
 				use et_conductor_segment.boards;
-				use et_pcb_rw;
 				
 				
 				procedure do_it (
@@ -4747,7 +4717,6 @@ is
 				use pac_geometry_2;
 				use pac_contours;
 				use pac_segments;
-				use et_pcb_rw;
 				
 				
 				procedure do_it (
@@ -4777,7 +4746,6 @@ is
 				use pac_geometry_2;
 				use pac_contours;
 				use pac_segments;
-				use et_pcb_rw;
 
 				
 				procedure do_it (
@@ -4804,7 +4772,6 @@ is
 
 			
 			procedure insert_circle_outline is
-				use et_pcb_rw;
 				
 
 				procedure do_it (
@@ -4834,7 +4801,6 @@ is
 			procedure append_hole is 
 				use et_pcb_contour;
 				use pac_holes;
-				use et_pcb_rw;
 				
 				
 				procedure do_it (
@@ -4919,9 +4885,7 @@ is
 			
 			procedure build_non_conductor_arc (
 				face : in et_pcb_sides.type_face)
-			is
-				use et_pcb_rw;
-			begin
+			is begin
 				board_check_arc (log_threshold + 1);
 				
 				case stack.parent (degree => 2) is
@@ -5071,7 +5035,6 @@ is
 				use et_fill_zones;
 				use et_fill_zones.boards;
 				use et_thermal_relief;
-				use et_pcb_rw;
 				
 				
 				procedure solid_polygon is
@@ -5089,7 +5052,7 @@ is
 						
 						p.properties.layer			:= signal_layer;
 						p.properties.priority_level	:= contour_priority;
-						p.relief_properties			:= et_pcb_rw.relief_properties;
+						p.relief_properties			:= relief_properties;
 
 						pac_route_solid.append (
 							container	=> route.zones.solid,
@@ -5109,7 +5072,7 @@ is
 						
 						p.properties.layer			:= signal_layer;
 						p.properties.priority_level	:= contour_priority;
-						p.technology				:= et_pcb_rw.relief_properties.technology;
+						p.technology				:= relief_properties.technology;
 
 						pac_route_solid.append (
 							container	=> route.zones.solid,
@@ -5142,7 +5105,7 @@ is
 						
 						p.properties.layer			:= signal_layer;
 						p.properties.priority_level	:= contour_priority;
-						p.relief_properties			:= et_pcb_rw.relief_properties;
+						p.relief_properties			:= relief_properties;
 						
 						pac_route_hatched.append (
 							container	=> route.zones.hatched,
@@ -5163,7 +5126,7 @@ is
 						p.properties.layer			:= signal_layer;
 						p.properties.priority_level	:= contour_priority;
 						
-						p.technology := et_pcb_rw.relief_properties.technology;
+						p.technology := relief_properties.technology;
 						
 						pac_route_hatched.append (
 							container	=> route.zones.hatched,
@@ -5397,9 +5360,7 @@ is
 				end case;
 			end build_net_label;
 				
-
 			
-			use et_pcb_rw;
 			
 			
 		begin -- execute_section
@@ -6214,9 +6175,8 @@ is
 
 
 		use et_device_rw;
-		use et_pcb_rw;
-		use et_pcb_rw.restrict;
-		
+		use et_package_sections;
+	
 		
 	begin -- process_line
 		if set (section_net_classes, SEC_NET_CLASSES) then null;

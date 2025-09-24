@@ -72,7 +72,10 @@ with et_script_processor;
 with et_package_appearance;
 with et_package_names;			use et_package_names;
 with et_packages;
-with et_pcb_rw;
+
+with et_board_read;
+with et_board_write;
+
 with et_package_read;
 with et_package_write;
 

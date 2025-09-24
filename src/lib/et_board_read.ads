@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         PCB READ AND WRITE                               --
+--                              BOARD READ                                  --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -38,7 +38,7 @@
 
 --   do do:
 
-with ada.containers;            use ada.containers;
+-- with ada.containers;            use ada.containers;
 
 with et_primitive_objects;		use et_primitive_objects;
 with et_string_processing;		use et_string_processing;
@@ -65,68 +65,13 @@ with et_silkscreen;				use et_silkscreen;
 with et_assy_doc;				use et_assy_doc;
 with et_keepout;				use et_keepout;
 
-package et_pcb_rw is
+package et_board_read is
 
 	use pac_geometry_2;
 	use pac_contours;
 	use pac_text_board;
 	
 
-
-	procedure write_text_properties (
-		t : in 	type_text_fab'class);
-
-	
-	procedure write_text_properties_with_face (
-		t		: in type_text_fab'class;
-		face	: in type_face);
-
-	
-	procedure write_text (cursor : in pac_texts_fab_with_content.cursor);
-	--procedure write_text (cursor : in pac_conductor_texts_package.cursor);
-	
-	
-
-	
-	procedure write_width (width : in type_track_width);
-	
-	procedure write_fill_linewidth (width : in type_track_width);		
-
-	
-	-- writes start and end point of a line
-	procedure write_line (line : in type_line'class);
-
-	
-	-- writes center, start and end point of an arc
-	procedure write_arc (arc : in type_arc'class);
-
-	
-	-- writes center and radius of a circle
-	procedure write_circle (circle : in type_circle'class);
-
-	procedure write_spacing (spacing : in type_track_clearance);
-	--procedure write_hatching (hatching : in type_hatching);
-	procedure write_easing (easing: in type_easing);
-	procedure write_thermal (thermal : in type_relief_properties);
-	procedure write_isolation (iso : in type_track_clearance);
-	procedure write_priority (prio : in type_priority);
-	procedure write_signal_layer (layer : in et_pcb_stack.type_signal_layer);
-	procedure write_fill_style (fill_style : in type_fill_style);
-	procedure write_fill_status (filled : in type_filled);
-	procedure write_pad_connection (connection : in type_pad_connection);
-	procedure write_pad_technology (techno : in type_pad_technology);	
-	procedure write_signal_layers (layers : in et_pcb_stack.type_signal_layers.set);
-	procedure write_circle_conductor (circle : in et_conductor_segment.type_conductor_circle);
-
-	-- Writes the properties of a circle in conductor as used in a freetrack:
-	procedure write_circle_conductor (circle : in et_conductor_segment.boards.type_conductor_circle);	
-	
-	
-	-- writes the segments of a polygon (lines, arcs or a single circle):
-	procedure write_polygon_segments (
-		polygon : in type_contour'class);
-
-	
 
 	
 	-- Issues a warning that the given signal layer is deeper than the deepest
@@ -242,45 +187,4 @@ package et_pcb_rw is
 	procedure board_reset_contour;
 
 	
-	section_zone		: constant string := "[ZONE";
-	section_cutout_zone	: constant string := "[CUTOUT_ZONE";
-	section_contours	: constant string := "[CONTOURS";
-
-	procedure fill_zone_begin;
-	procedure fill_zone_end;
-	procedure cutout_zone_begin;
-	procedure cutout_zone_end;
-	procedure contours_begin;
-	procedure contours_end;
-
-
--- SILK SCREEN
-	procedure write_line (cursor : in pac_silk_lines.cursor);
-	procedure write_arc (cursor : in pac_silk_arcs.cursor);
-	procedure write_circle (cursor : in pac_silk_circles.cursor);	
-	procedure write_polygon (cursor : in pac_silk_zones.cursor);
-
--- ASSEMBLY DOCUMENTATION
-	procedure write_line (cursor : in pac_doc_lines.cursor);
-	procedure write_arc (cursor : in pac_doc_arcs.cursor);
-	procedure write_circle (cursor : in pac_doc_circles.cursor);	
-	procedure write_polygon (cursor : in pac_doc_zones.cursor); -- CS rename to write_zone
-	
--- KEEPOUT
-	procedure write_polygon (cursor : in pac_keepout_zones.cursor);
-	procedure write_cutout (cursor : in pac_keepout_cutouts.cursor);
-
--- STOPMASK
-	procedure write_line (cursor : in pac_stop_lines.cursor);
-	procedure write_arc (cursor : in pac_stop_arcs.cursor);
-	procedure write_circle (cursor : in pac_stop_circles.cursor);
-	procedure write_polygon (cursor : in pac_stop_zones.cursor);
-
--- STENCIL (OR SOLDER PASTE MASK)
-	procedure write_line (cursor : in pac_stencil_lines.cursor);
-	procedure write_arc (cursor : in pac_stencil_arcs.cursor);
-	procedure write_circle (cursor : in pac_stencil_circles.cursor);	
-	procedure write_polygon (cursor : in pac_stencil_zones.cursor);
-	
-	
-end et_pcb_rw;
+end et_board_read;

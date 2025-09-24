@@ -56,7 +56,7 @@ with et_system_info;
 with et_package_description;			use et_package_description;
 with et_keywords;						use et_keywords;
 with et_section_headers;				use et_section_headers;
-with et_pcb_rw;							use et_pcb_rw;
+with et_board_read;						use et_board_read;
 with et_conductor_segment;
 with et_package_sections;				use et_package_sections;
 
