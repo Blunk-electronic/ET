@@ -66,6 +66,7 @@ package et_symbol_write is
 
 	
 	-- Saves the given symbol model in a file specified by file_name.
+	-- CS: Move to package et_symbol_ops ?
 	procedure save_symbol (
 		file_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		symbol			: in type_symbol; -- the actual symbol model
