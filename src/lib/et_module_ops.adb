@@ -55,6 +55,7 @@ with et_general_rw;				use et_general_rw;
 with et_meta;
 with et_exceptions;				use et_exceptions;
 with et_project;
+with et_module_write;			use et_module_write;
 
 
 package body et_module_ops is
@@ -157,22 +158,6 @@ package body et_module_ops is
 
 	
 	
-	procedure save_module (
-		module_cursor	: in pac_generic_modules.cursor;
-		save_as_name	: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver, templates/clock_generator							  
-		log_threshold	: in type_log_level) 
-	is separate;
-
-
-	
-
-
-	
-	procedure read_module (
-		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
-		log_threshold	: in type_log_level) 
-		is separate;
-		
 
 
 	

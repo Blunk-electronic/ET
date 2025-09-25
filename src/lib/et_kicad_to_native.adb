@@ -59,6 +59,7 @@ with et_mirroring;					use et_mirroring;
 with et_axes;						use et_axes;
 with et_module_names;				use et_module_names;
 with et_module_ops;
+with et_module_write;
 with et_string_processing;			use et_string_processing;
 with et_project;
 with et_generic_module;				use et_generic_module;
@@ -4130,7 +4131,7 @@ package body et_kicad_to_native is
 				log (text => "saving module " & enclose_in_quotes (to_string (project_name)),
 					 level => log_threshold + 3);
 				
-				save_module (
+				et_module_write.save_module (
 					module_cursor	=> module_list.first,
 					log_threshold	=> log_threshold);
 

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -54,6 +54,7 @@ with et_project.configuration;
 with et_rig_name;
 with et_rig;
 with et_keywords;					use et_keywords;
+with et_module_write;				use et_module_write;
 
 
 package body et_project is
@@ -200,7 +201,7 @@ package body et_project is
 			-- Save the single and first module:
 			module_cursor := generic_modules.first;
 
-			save_module (
+			et_module_write.save_module (
 				module_cursor	=> module_cursor,
 				log_threshold	=> log_threshold + 1);
 			

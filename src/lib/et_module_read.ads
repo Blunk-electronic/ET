@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           MODULE OPERATIONS                              --
+--                             MODULE READ                                  --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -44,41 +44,20 @@ with et_module_names;			use et_module_names;
 with et_logging;				use et_logging;
 
 
-package et_module_ops is
+package et_module_read is
 		
 
-	-- Creates an empty generic module in container modules.
-	-- Does not create the actual module file if the module
-	-- name is "untitled". If the module name is something other
-	-- than "untitled" then the module file will also be created.
-	procedure create_module (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
+	
+	-- Reads a module file and stores its content as generic module.
+	-- The file name may contain environment variables.
+	-- The file must exist, must be visible from the current working directory.
+	procedure read_module (
+		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
 		log_threshold	: in type_log_level);
 
-
-	
-	-- Deletes a generic module (from container generic_modules) and
-	-- the module file (*.mod) itself.
-	procedure delete_module (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
-		log_threshold	: in type_log_level);
-		
-
-
-
-	
-	-- Saves a generic module (from container generic_modules) in a file inside 
-	-- the current project directory.
-	-- The module must be inside the current project. If it is outside
-	-- the project, a warning will be issued and it will NOT be saved.
-	-- If the module is outside the project directory then it will not be touched.
-	-- If the module does not exist, a warning will be issued.
-	procedure save_module (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
-		log_threshold	: in type_log_level);
 	
 	
-end et_module_ops;
+end et_module_read;
 
 -- Soli Deo Gloria
 

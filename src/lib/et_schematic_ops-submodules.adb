@@ -52,6 +52,7 @@ with et_net_ports;
 with et_module_ops;
 with et_schematic_ops.units;		use et_schematic_ops.units;
 with et_schematic_ops.nets;
+with et_module_read;
 
 
 package body et_schematic_ops.submodules is
@@ -3070,7 +3071,7 @@ package body et_schematic_ops.submodules is
 
 		-- THIS IS ABOUT THE ACTUAL SCHEMATIC AND LAYOUT STUFF OF THE SUBMODULE:
 		-- Read the submodule file and store it as generic module:
-		read_module (to_string (file), log_threshold + 1);		
+		et_module_read.read_module (to_string (file), log_threshold + 1);		
 
 	end add_submodule;
 
@@ -4351,7 +4352,7 @@ package body et_schematic_ops.submodules is
 
 			-- THIS IS ABOUT THE ACTUAL SCHEMATIC AND LAYOUT STUFF OF THE SUBMODULE:
 			-- Read the submodule file and store its content in container et_project.modules:
-			read_module (to_string (file), log_threshold + 1);		
+			et_module_read.read_module (to_string (file), log_threshold + 1);		
 			
 			log_indentation_up;
 

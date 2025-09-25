@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           MODULE OPERATIONS                              --
+--                             MODULE WRITE                                 --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -44,41 +44,22 @@ with et_module_names;			use et_module_names;
 with et_logging;				use et_logging;
 
 
-package et_module_ops is
+package et_module_write is
 		
 
-	-- Creates an empty generic module in container modules.
-	-- Does not create the actual module file if the module
-	-- name is "untitled". If the module name is something other
-	-- than "untitled" then the module file will also be created.
-	procedure create_module (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
-		log_threshold	: in type_log_level);
-
-
-	
-	-- Deletes a generic module (from container generic_modules) and
-	-- the module file (*.mod) itself.
-	procedure delete_module (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
-		log_threshold	: in type_log_level);
-		
-
-
-
-	
-	-- Saves a generic module (from container generic_modules) in a file inside 
-	-- the current project directory.
-	-- The module must be inside the current project. If it is outside
-	-- the project, a warning will be issued and it will NOT be saved.
-	-- If the module is outside the project directory then it will not be touched.
-	-- If the module does not exist, a warning will be issued.
+	-- Saves the given generic module in the current working directory.
+	-- Saves the module with its own name if save_as_name is empty.
+	-- If save_as_name contains something, then the module is saved
+	-- with that name. 
 	procedure save_module (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		module_cursor	: in pac_generic_modules.cursor;
+		save_as_name	: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver_test, templates/clock_generator_test
 		log_threshold	: in type_log_level);
 	
 	
-end et_module_ops;
+	
+	
+end et_module_write;
 
 -- Soli Deo Gloria
 

@@ -45,6 +45,8 @@ with et_module_ops;
 with et_assembly_variant_name;		use et_assembly_variant_name;
 with et_module_sections;			use et_module_sections;
 with et_keywords;					use et_keywords;
+with et_module_read;
+
 
 separate (et_rig)
 
@@ -65,7 +67,7 @@ is
 		use et_module_ops;
 		file_name : string := simple_name (module_file_handle); -- motor_driver.mod
 	begin
-		read_module (file_name, log_threshold + 1);
+		et_module_read.read_module (file_name, log_threshold + 1);
 	end;
 	
 	
