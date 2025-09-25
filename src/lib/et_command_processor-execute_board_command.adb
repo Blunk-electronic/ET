@@ -3373,13 +3373,13 @@ is
 		case cmd_field_count is
 			when 4 =>
 				-- Save the module with its own name:
-				save_module (
+				write_module (
 					module_cursor	=> active_module,
 					log_threshold	=> log_threshold + 1);
 
 			when 5 =>
 				-- Save the module with a different name:
-				save_module (
+				write_module (
 					module_cursor	=> active_module,
 					save_as_name	=> to_module_name (get_field (5)), -- led_driver_test
 					log_threshold	=> log_threshold + 1);

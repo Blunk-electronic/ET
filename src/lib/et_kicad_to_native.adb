@@ -4131,7 +4131,7 @@ package body et_kicad_to_native is
 				log (text => "saving module " & enclose_in_quotes (to_string (project_name)),
 					 level => log_threshold + 3);
 				
-				et_module_write.save_module (
+				et_module_write.write_module (
 					module_cursor	=> module_list.first,
 					log_threshold	=> log_threshold);
 

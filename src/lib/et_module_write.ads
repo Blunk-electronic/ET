@@ -51,7 +51,7 @@ package et_module_write is
 	-- Saves the module with its own name if save_as_name is empty.
 	-- If save_as_name contains something, then the module is saved
 	-- with that name. 
-	procedure save_module (
+	procedure write_module (
 		module_cursor	: in pac_generic_modules.cursor;
 		save_as_name	: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver_test, templates/clock_generator_test
 		log_threshold	: in type_log_level);

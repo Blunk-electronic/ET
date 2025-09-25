@@ -185,7 +185,7 @@ package body et_module_ops is
 			-- If the file is outside the project, issue a warning and do not save.
 			if inside_project_directory (to_string (module_name)) then
 			
-				save_module (
+				write_module (
 					module_cursor	=> module_cursor,
 					log_threshold 	=> log_threshold + 1);
 

@@ -153,7 +153,7 @@ package body et_module_write is
 
 	
 
-	procedure save_module (
+	procedure write_module (
 		module_cursor	: in pac_generic_modules.cursor;
 		save_as_name	: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver_test, templates/clock_generator_test
 		log_threshold	: in type_log_level)
@@ -221,7 +221,7 @@ package body et_module_write is
 
 		-- Writes a nice footer in the target file and closes it.
 		-- Directs subsequent outputs to the previous output (That
-		-- is the output which was set before save_module has been called.):
+		-- is the output which was set before write_module has been called.):
 		procedure write_footer is begin
 			new_line;		
 			log (text => "closing module file ...", level => log_threshold + 1);
@@ -2148,7 +2148,7 @@ package body et_module_write is
 		end query_board;
 
 		
-	begin -- save_module
+	begin -- write_module
 
 		-- CS check if module is inside project directory ?
 		
@@ -2215,7 +2215,7 @@ package body et_module_write is
 				set_output (previous_output);
 				raise;
 		
-	end save_module;
+	end write_module;
 
 
 end et_module_write;

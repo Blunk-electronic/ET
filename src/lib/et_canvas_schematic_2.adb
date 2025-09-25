@@ -590,7 +590,7 @@ package body et_canvas_schematic_2 is
 		use ada.directories;
 		use et_project_name;
 		use et_project;
-		use et_module_ops;
+		-- use et_module_ops;
 		use et_module_write;
 
 		-- Backup the current directory (like /home/user/et/blood_sample_analyzer):
@@ -603,7 +603,7 @@ package body et_canvas_schematic_2 is
 		set_directory (to_string (active_project));
 		
 		-- Save the module with its own name:
-		save_module (
+		write_module (
 			module_cursor	=> active_module,
 			log_threshold	=> log_threshold + 1);
 

@@ -201,7 +201,7 @@ package body et_project is
 			-- Save the single and first module:
 			module_cursor := generic_modules.first;
 
-			et_module_write.save_module (
+			et_module_write.write_module (
 				module_cursor	=> module_cursor,
 				log_threshold	=> log_threshold + 1);
 			
@@ -447,7 +447,6 @@ package body et_project is
 		use pac_rigs;		
 
 		use ada.directories;
-		use et_module_ops;
 		use pac_generic_modules;
 
 		-- We need a backup of the current working directory. When this procedure finishes,
@@ -472,7 +471,7 @@ package body et_project is
 				
 				log_indentation_up;
 
-				save_module (
+				write_module (
 					module_cursor	=> module_cursor,
 					log_threshold 	=> log_threshold + 2);
 				
