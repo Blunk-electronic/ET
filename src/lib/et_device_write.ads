@@ -43,18 +43,10 @@ with et_device_model_names;				use et_device_model_names;
 
 
 package et_device_write is
-	
+
 
 	
-	-- Creates adevice and stores it in container et_devices.devices.
-	procedure create_device (
-		device_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
-		appearance		: in type_appearance;
-		log_threshold	: in type_log_level);
-	-- CS move to et_device_library
-
-	
-	procedure save_device (
+	procedure write_device (
 		file_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		device			: in type_device_model; -- the actual device model
 		log_threshold	: in type_log_level);

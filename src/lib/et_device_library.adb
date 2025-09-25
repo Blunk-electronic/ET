@@ -93,6 +93,46 @@ package body et_device_library is
 	end;
 
 
+
+
+	procedure create_device (
+		device_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
+		appearance		: in type_appearance;
+		log_threshold	: in type_log_level) 
+	is
+		use et_string_processing;
+		use pac_devices_lib;
+	begin
+		log (text => "creating device " & to_string (device_name) & " ...", level => log_threshold);
+		log_indentation_up;
+		log (text => "appearance " & to_string (appearance) & " ...", level => log_threshold);
+		
+		-- Test if device already exists. If already exists, issue warning and exit.
+		if contains (device_library, device_name) then
+			log (WARNING, text => "device already exists -> skipped", level => log_threshold + 1);
+		else
+			case appearance is
+				when APPEARANCE_PCB =>
+					insert (
+						container	=> device_library,
+						key			=> device_name,
+						new_item	=> (appearance => APPEARANCE_PCB, others => <>)
+						);
+
+				when APPEARANCE_VIRTUAL =>
+					insert (
+						container	=> device_library,
+						key			=> device_name,
+						new_item	=> (appearance => APPEARANCE_VIRTUAL, others => <>)
+						);
+			end case;					
+		end if;
+
+		log_indentation_down;
+	end create_device;
+
+
+
 	
 
 	function get_device_model_cursor (

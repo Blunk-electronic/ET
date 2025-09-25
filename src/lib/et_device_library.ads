@@ -123,6 +123,14 @@ package et_device_library is
 	device_library : pac_devices_lib.map;
 
 
+	-- Creates a device and stores it in device_library:
+	procedure create_device (
+		device_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
+		appearance		: in type_appearance;
+		log_threshold	: in type_log_level);
+
+
+	
 
 	-- Maps from device model file (*.dev) to a
 	-- cursor in the device library:
