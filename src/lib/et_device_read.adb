@@ -131,13 +131,6 @@ package body et_device_read is
 			max 	=> max_section_depth);
 
 		
-		function to_string (section : in type_device_section) return string is
-		-- Converts a section like SEC_VARIANT to a string "variant".
-			len : positive := type_device_section'image (section)'length;
-		begin
-			return to_lower (type_device_section'image (section) (5..len));
-		end to_string;
-		
 		
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		prefix				: pac_device_prefix.bounded_string; -- T, IC

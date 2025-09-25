@@ -86,15 +86,9 @@ package body et_package_read is
 		max_section_depth : constant positive := 7; -- incl. section init
 
 		package stack is new et_general_rw.stack_lifo (
-			item	=> type_section,
+			item	=> type_package_section,
 			max 	=> max_section_depth);
 
-		function to_string (section : in type_section) return string is
-		-- Converts a section like SEC_KEEPOUT to a string "keepout".
-			len : positive := type_section'image (section)'length;
-		begin
-			return to_lower (type_section'image (section) (5..len));
-		end to_string;
 
 	-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 
@@ -1457,7 +1451,7 @@ package body et_package_read is
 			-- If it is a footer, the latest section name is popped from the stack.
 			function set (
 				section_keyword	: in string; -- [SILKSCREEN
-				section			: in type_section) -- SEC_ZONE
+				section			: in type_package_section) -- SEC_ZONE
 				return boolean is 
 			begin -- set
 				if f (line, 1) = section_keyword then -- section name detected in field 1
@@ -1907,6 +1901,7 @@ package body et_package_read is
 		previous_input : ada.text_io.file_type renames current_input;
 
 		use et_pcb_stack;
+
 		
 	begin -- read_package
 		log_indentation_up;

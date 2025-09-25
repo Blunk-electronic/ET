@@ -40,14 +40,12 @@
 
 package et_symbol_sections is
 
-
-	section_draw		: constant string := "[DRAW";
-	section_port		: constant string := "[PORT";	
-	section_ports		: constant string := "[PORTS";
-
+	-- Prefixes before enumeration types prevent clashes with gnat keywords
+	-- and package names:
+	section_prefix : constant string := ("SEC_");
 
 	
-	type type_section is ( -- CS rename to type_symbol_section
+	type type_symbol_section is (
 		SEC_INIT,
 		SEC_DRAW,
 		SEC_LINE,
@@ -60,5 +58,18 @@ package et_symbol_sections is
 		SEC_PORTS,
 		SEC_PORT
 		);
+
+
+	function to_string (
+		section : in type_symbol_section) 
+		return string;
+
+
+
+	section_draw		: constant string := "[DRAW";
+	section_port		: constant string := "[PORT";	
+	section_ports		: constant string := "[PORTS";
+
+	
 	
 end et_symbol_sections;

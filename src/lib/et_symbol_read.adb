@@ -87,16 +87,10 @@ package body et_symbol_read is
 		max_section_depth : constant positive := 3; -- incl. section init
 
 		package stack is new et_general_rw.stack_lifo (
-			item	=> type_section,
+			item	=> type_symbol_section,
 			max 	=> max_section_depth);
 
 		
-		function to_string (section : in type_section) return string is
-		-- Converts a section like SEC_DRAW to a string "draw".
-			len : positive := type_section'image (section)'length;
-		begin
-			return to_lower (type_section'image (section) (5..len));
-		end to_string;
 
 		
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
@@ -401,7 +395,7 @@ package body et_symbol_read is
 			-- If it is a header, the section name is pushed onto the sections stack.
 			-- If it is a footer, the latest section name is popped from the stack.
 				section_keyword	: in string; -- [DRAW
-				section			: in type_section) -- SEC_DRAW
+				section			: in type_symbol_section) -- SEC_DRAW
 				return boolean is 
 			begin -- set
 				if f (line, 1) = section_keyword then -- section name detected in field 1

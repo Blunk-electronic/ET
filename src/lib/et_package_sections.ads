@@ -41,8 +41,13 @@
 
 package et_package_sections is
 
+
+	-- Prefixes before enumeration types prevent clashes with gnat keywords
+	-- and package names:
+	section_prefix : constant string := ("SEC_");
+
 	
-	type type_section is ( -- CS rename to type_package_section
+	type type_package_section is (
 		SEC_CONDUCTOR,
 		SEC_CONTOURS, -- of fill and cutout zones
 		SEC_CUTOUT_ZONE,
@@ -76,6 +81,14 @@ package et_package_sections is
 		);
 
 
+	
+	-- Converts a section like SEC_KEEPOUT to a string "keepout".
+	function to_string (
+		section : in type_package_section) 
+		return string;
+	
+
+	
 	section_zone		: constant string := "[ZONE";
 	section_cutout_zone	: constant string := "[CUTOUT_ZONE";
 	section_contours	: constant string := "[CONTOURS";

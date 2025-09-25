@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                            DEVICE SECTIONS                               --
+--                           PACKAGE SECTIONS                               --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,56 +36,28 @@
 --   history of changes:
 --
 
+--   do do:
 
 
-package et_device_sections is
-	
-
-	-- Prefixes before enumeration types prevent clashes with gnat keywords
-	-- and package names:
-	section_prefix : constant string := ("SEC_");
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
 
 
-	
-	type type_device_section is (
-		SEC_INIT,
-		SEC_VARIANTS,
-		SEC_VARIANT,
-		SEC_TERMINAL_PORT_MAP,
-		SEC_UNITS_INTERNAL,
-		SEC_UNIT,
-		SEC_SYMBOL,
-		SEC_DRAW,
-		SEC_LINE,
-		SEC_ARC,
-		SEC_CIRCLE,
-		SEC_TEXTS,
-		SEC_TEXT,
-		SEC_PLACEHOLDER,		
-		SEC_PLACEHOLDERS,
-		SEC_PORTS,
-		SEC_PORT,
-		SEC_UNITS_EXTERNAL
-		);
 
+
+package body et_package_sections is
 
 
 	function to_string (
-		section : in type_device_section) 
-		return string;
-
-
-
-
-	section_symbol				: constant string := "[SYMBOL";
-	section_variant				: constant string := "[VARIANT";
-	section_variants			: constant string := "[VARIANTS";
-	section_terminal_port_map	: constant string := "[TERMINAL_PORT_MAP";
-
-	section_unit				: constant string := "[UNIT";
-	section_units_internal		: constant string := "[UNITS_INTERNAL";
-	section_units_external		: constant string := "[UNITS_EXTERNAL";
+		section : in type_package_section) 
+		return string 
+	is
+		s : string := type_package_section'image (section);
+	begin
+		return s (section_prefix'length + 1 .. s'last);
+	end to_string;
 
 	
 	
-end et_device_sections;
+end et_package_sections;
