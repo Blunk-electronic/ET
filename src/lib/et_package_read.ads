@@ -81,6 +81,10 @@ package et_package_read is
 		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
 		log_threshold	: in type_log_level);
+		-- CS error : out boolean;
+		-- CS package_curosr : out ?.cursor;
 
+
+	
 	
 end et_package_read;
