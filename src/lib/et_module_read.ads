@@ -54,6 +54,8 @@ package et_module_read is
 	procedure read_module (
 		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
 		log_threshold	: in type_log_level);
+		-- CS error : out boolean;
+		-- CS module_curosr : out pac_generic_modules.cursor;
 
 	
 	
