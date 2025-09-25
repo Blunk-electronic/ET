@@ -474,7 +474,7 @@ procedure et is
 		-- CS: Test file extension package_model_file_extension
 		
 		if length (package_name_save_as) > 0 then
-			et_package_write.save_package (
+			et_package_write.write_package (
 				file_name 		=> package_name_save_as,
 				packge			=> pac_package_models.last_element (et_package_library.package_models),
 				log_threshold	=> 0);
@@ -510,7 +510,7 @@ procedure et is
 		-- If device_name_save_as is empty nothing happens.
 		-- Otherwise the latest and only device in et_devices.devices is saved.
 		if length (device_name_save_as) > 0 then
-			et_device_write.save_device (
+			et_device_write.write_device (
 				file_name 		=> device_name_save_as,
 				device			=> pac_devices_lib.last_element (device_library),
 				log_threshold	=> 0);
@@ -675,7 +675,7 @@ procedure et is
 			elsif length (package_name_create) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for package editing
 				
-				et_package_write.create_package (package_name_create, package_appearance, log_threshold => 0);
+				et_package_library.create_package (package_name_create, package_appearance, log_threshold => 0);
 
 				-- optionally the package can be saved under a different name
 				save_package_as;  -- if package_name_save_as is empty nothing happens
@@ -719,7 +719,7 @@ procedure et is
 			elsif length (device_name_create) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for device editing
 				
-				et_device_write.create_device (device_name_create, device_appearance, log_threshold => 0);
+				et_device_library.create_device (device_name_create, device_appearance, log_threshold => 0);
 
 				-- optionally the device can be saved under a different name
 				save_device_as; -- if device_name_save_as is empty nothing happens
