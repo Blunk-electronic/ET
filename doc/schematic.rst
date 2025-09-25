@@ -13,7 +13,7 @@ Devices and Units
 +++++++++++++++++
 
 
-#. Add device
+#. Add Device
 
 	This example command adds a new electrical device to the module.
 	The destination is sheet 1 on 100/140 with rotation 0 degree.
@@ -30,6 +30,22 @@ Devices and Units
 
 
 	|VNS| a d
+
+
+
+
+
+#. Copy Device
+
+	This example command creates a copy of IC1 and places the first
+	available unit on sheet 2 210/100 with zero rotation:
+
+	.. code-block::
+
+		schematic led_driver copy device IC1 2 210 100 0
+
+	|VNS| c d
+
 
 	
 #. Showing and finding devices and units:
@@ -68,6 +84,8 @@ Devices and Units
 
 
 
+
+
 	
 #. Rename a Device
 
@@ -77,6 +95,8 @@ Devices and Units
 	
 	|VNS| n d
 	
+
+
 
 
 
@@ -106,6 +126,7 @@ Devices and Units
 
 
 	
+
 
 
 #. Drag a Unit
@@ -203,6 +224,7 @@ Devices and Units
 
 
 
+
 #. Set package variant
 
 	.. code-block::
@@ -212,6 +234,8 @@ Devices and Units
 	|VNS| s a
 	
 	
+
+
 #. Set value
 
 	.. code-block::
@@ -221,6 +245,8 @@ Devices and Units
 	|VNS| s v
 
 	
+
+
 #. Set partcode
 
 	.. code-block::
@@ -230,6 +256,8 @@ Devices and Units
 	|VNS| s p
 
 	
+
+
 #. Set purpose
 
 	.. code-block::
@@ -237,6 +265,10 @@ Devices and Units
 		set purpose R1 [brightness]
 
 	|VNS| s p
+
+
+
+
 
 	
 Placeholders for Name, Value, Partcode and Purpose
