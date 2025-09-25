@@ -73,12 +73,6 @@ package et_package_write is
 	use pac_text_board;
 
 
-	-- Creates a package and stores the package in container et_packages.packages.								 
-	procedure create_package (
-		package_name 	: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
-		appearance		: in type_package_appearance;
-		log_threshold	: in type_log_level);
-
 	
 	-- Saves the given package model in a file specified by file_name.							   
 	procedure write_package (

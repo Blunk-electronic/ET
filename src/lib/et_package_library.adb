@@ -119,6 +119,45 @@ package body et_package_library is
 	
 	
 	
+	procedure create_package (
+		package_name 	: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
+		appearance		: in type_package_appearance;
+		log_threshold	: in type_log_level) 
+	is begin
+		log (text => "creating package" & pac_package_model_file_name.to_string (package_name),
+			 level => log_threshold);
+		
+		log_indentation_up;
+		log (text => "appearance " & to_string (appearance),
+			 level => log_threshold);
+		
+		-- Test if package already exists. If already exists, issue warning and exit.
+		if pac_package_models.contains (package_models, package_name) then
+			log (WARNING, text => "package already exists -> skipped", 
+				 level => log_threshold + 1);
+		else
+			case appearance is
+				when APPEARANCE_REAL =>
+					pac_package_models.insert (
+						container	=> package_models,
+						key			=> package_name,
+						new_item	=> (appearance => APPEARANCE_REAL, others => <>)
+						);
+
+				when APPEARANCE_VIRTUAL =>
+					pac_package_models.insert (
+						container	=> package_models,
+						key			=> package_name,
+						new_item	=> (appearance => APPEARANCE_VIRTUAL, others => <>)
+						);
+			end case;					
+		end if;
+
+		log_indentation_down;
+	end create_package;
+
+
+
 	
 
 	

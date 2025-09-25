@@ -176,6 +176,15 @@ package et_package_library is
 	-- CS rename to library_electrical_devices
 
 
+
+	-- Creates a package and stores the package in container et_packages.packages.								 
+	procedure create_package (
+		package_name 	: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
+		appearance		: in type_package_appearance;
+		log_threshold	: in type_log_level);
+
+
+
 	
 	-- Returns a cursor to the given package model.
 	function get_package_model (
