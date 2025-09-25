@@ -205,10 +205,11 @@ package et_schematic_ops.units is
 
 
 	
-	-- Copies the given device. Places the first unit of the device (according to add level)
+	-- Copies the given device. Places the first unit of 
+	-- the device (according to add level)
 	-- at the given destination in the schematic.
 	procedure copy_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		destination		: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level);

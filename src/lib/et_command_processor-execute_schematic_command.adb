@@ -922,12 +922,15 @@ is
 
 	
 
+	-- This procedure parses a command that copies a 
+	-- device like
+	-- "schematic led_driver copy device IC1 2 210 100 0":	
 	procedure copy_device is
 	begin
 		case cmd_field_count is
 			when 9 =>
 				copy_device (
-					module_name 	=> module,
+					module_cursor 	=> active_module,
 					device_name		=> to_device_name (get_field (5)),
 					destination		=> to_position 
 						(
@@ -948,6 +951,7 @@ is
 		end case;
 	end copy_device;
 
+	
 	
 	
 	-- For showing and finding devices and units:

@@ -55,15 +55,14 @@ with et_device_appearance;				use et_device_appearance;
 separate (et_schematic_ops.units)
 
 procedure copy_device (
-	module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+	module_cursor	: in pac_generic_modules.cursor;
 	device_name		: in type_device_name; -- IC45
 	destination		: in type_object_position; -- sheet/x/y/rotation
 	log_threshold	: in type_log_level)
 is
-	module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 	
-	procedure query_devices (
+	procedure query_module (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in out type_generic_module) 
 	is
@@ -192,7 +191,7 @@ is
 		end add_unit_external;
 
 		
-	begin -- query_devices
+	begin -- query_module
 		if contains (module.devices, device_name) then
 
 			device_cursor_sch := find (module.devices, device_name); -- the device should be there
@@ -312,23 +311,24 @@ is
 		else
 			device_not_found (device_name);
 		end if;
-	end query_devices;
+	end query_module;
 
 	
 begin
-	log (text => "module " & to_string (module_name) 
+	log (text => "module " & to_string (module_cursor) 
 		& " copy " & to_string (device_name) 
 		& " to " & to_string (destination),
 		 level => log_threshold);
 
-	-- locate module
-	module_cursor := locate_module (module_name);
+	log_indentation_up;
 	
 	update_element (
 		container	=> generic_modules,
 		position	=> module_cursor,
-		process		=> query_devices'access);
+		process		=> query_module'access);
 
+	log_indentation_down;
+	
 end copy_device;
 
 
