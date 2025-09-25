@@ -41,7 +41,7 @@ with et_schematic_coordinates;
 
 with et_section_headers;			use et_section_headers;
 with et_keywords;					use et_keywords;
-with et_module_rw;					use et_module_rw;
+with et_module_sections;			use et_module_sections;
 with et_pcb_sides;
 with et_board_geometry;
 with et_board_coordinates;
@@ -78,7 +78,6 @@ with et_package_variant;
 with et_symbol_write;
 with et_schematic_text;
 with et_devices_electrical;
-with et_schematic_rw;
 with et_device_write;
 with et_drawing_frame_rw;
 with et_drawing_frame;
@@ -1319,7 +1318,6 @@ is
 		
 		procedure query_netchanger (cursor : pac_netchangers.cursor) is
 			use pac_geometry_2;
-			use et_schematic_rw;
 		begin
 			section_mark (section_netchanger, HEADER);
 			write (keyword => keyword_name,	parameters => to_string (key (cursor))); -- 1, 2, 201, ...
@@ -1520,7 +1518,6 @@ is
 		
 		
 		procedure write (text_cursor : in pac_texts.cursor) is 
-			use et_schematic_rw;
 			use et_sheets;
 		begin
 			section_mark (section_text, HEADER);

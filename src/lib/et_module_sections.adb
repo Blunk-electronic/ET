@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                              SYSTEM ET                                   --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                         SCHEMATIC READ AND WRITE                         --
+--                            MODULE SECTIONS                               --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -21,10 +21,9 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -36,20 +35,28 @@
 --
 --   history of changes:
 --
-
-with ada.strings; 					use ada.strings;
-with et_coordinates_formatting;		use et_coordinates_formatting;
-with et_sheets;						use et_sheets;
-with et_keywords;					use et_keywords;
+--   ToDo: 
 
 
-package body et_schematic_rw is
+with ada.text_io;					use ada.text_io;
+with ada.characters.handling;		use ada.characters.handling;
 
-	procedure dummy is begin null; end;
+
+package body et_module_sections is
+
+
+	function to_string (
+		section : in type_module_section) 
+		return string 
+	is
+		s : string := type_module_section'image (section);
+	begin
+		return s (section_prefix'length + 1 .. s'last);
+	end to_string;
+
+
 	
-
-	
-end et_schematic_rw;
+end et_module_sections;
 
 -- Soli Deo Gloria
 

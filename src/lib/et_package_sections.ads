@@ -47,7 +47,7 @@ package et_package_sections is
 	section_prefix : constant string := ("SEC_");
 
 	
-	type type_package_section is (
+	type type_package_section is (  -- CS: sort aphabetically
 		SEC_CONDUCTOR,
 		SEC_CONTOURS, -- of fill and cutout zones
 		SEC_CUTOUT_ZONE,

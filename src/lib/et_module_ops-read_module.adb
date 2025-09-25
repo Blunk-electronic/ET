@@ -45,7 +45,7 @@ with et_schematic_coordinates;
 
 with et_section_headers;			use et_section_headers;
 with et_keywords;					use et_keywords;
-with et_module_rw;					use et_module_rw;
+with et_module_sections;			use et_module_sections;
 with et_pcb_sides;
 with et_board_geometry;
 with et_board_coordinates;
@@ -84,7 +84,6 @@ with et_package_variant;
 with et_symbol_model;
 with et_symbol_read;
 with et_schematic_text;
-with et_schematic_rw;
 with et_device_read;
 with et_drawing_frame;
 with et_drawing_frame.schematic;
@@ -180,7 +179,7 @@ is
 	-- pushed onto the stack. When leaving a section the latest section name is popped.
 	max_section_depth : constant positive := 11;
 	package stack is new et_general_rw.stack_lifo (
-		item	=> type_section,
+		item	=> type_module_section,
 		max 	=> max_section_depth);
 
 
@@ -1872,7 +1871,6 @@ is
 		use et_schematic_coordinates;	
 		kw : constant string := f (line, 1);
 		use et_pcb_stack;
-		use et_schematic_rw;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_name then -- name 1, 2, 304, ...
@@ -2194,7 +2192,6 @@ is
 	-- Reads the parameters of a submodule:
 	procedure read_submodule is
 		use et_schematic_coordinates;
-		use et_schematic_rw;
 		use et_submodules;
 		kw : constant string := f (line, 1);
 	begin
@@ -6132,7 +6129,7 @@ is
 		-- If it is a footer, the latest section name is popped from the stack.
 		function set (
 			section_keyword	: in string; -- [NETS
-			section			: in type_section) -- SEC_NETS
+			section			: in type_module_section) -- SEC_NETS
 			return boolean is 
 		begin -- set
 			if f (line, 1) = section_keyword then -- section name detected in field 1

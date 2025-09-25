@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                        MODULE READ AND WRITE                             --
+--                           MODULE SECTIONS                                --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -39,10 +39,16 @@
 
 
 
-package et_module_rw is
+package et_module_sections is
 
 	
-	type type_section is ( -- CS: sort aphabetically
+	-- Prefixes before enumeration types prevent clashes with gnat keywords
+	-- and package names:
+	section_prefix : constant string := ("SEC_");
+
+	
+	
+	type type_module_section is ( -- CS: sort aphabetically
 		SEC_DEVICES_NON_ELECTRIC,
 		SEC_BOARD_LAYER_STACK,
 		SEC_CONNECTORS,
@@ -114,11 +120,13 @@ package et_module_rw is
 
 	
 	-- Converts a section like SEC_NET to a string "net".
-	function to_string (section : in type_section) return string;
+	function to_string (
+		section : in type_module_section) 
+		return string;
 
 
 	
-end et_module_rw;
+end et_module_sections;
 
 -- Soli Deo Gloria
 

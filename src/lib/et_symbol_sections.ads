@@ -45,7 +45,7 @@ package et_symbol_sections is
 	section_prefix : constant string := ("SEC_");
 
 	
-	type type_symbol_section is (
+	type type_symbol_section is (  -- CS: sort aphabetically
 		SEC_INIT,
 		SEC_DRAW,
 		SEC_LINE,

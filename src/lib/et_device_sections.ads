@@ -47,7 +47,7 @@ package et_device_sections is
 
 
 	
-	type type_device_section is (
+	type type_device_section is ( -- CS: sort aphabetically
 		SEC_INIT,
 		SEC_VARIANTS,
 		SEC_VARIANT,
