@@ -105,7 +105,7 @@ package body et_package_write is
 
 	
 
-	procedure save_package (
+	procedure write_package (
 		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac							   
 		packge			: in type_package_model; -- the actual package model
 		log_threshold	: in type_log_level) 
@@ -778,7 +778,7 @@ package body et_package_write is
 			end if;
 			raise;
 
-	end save_package;
+	end write_package;
 	
 		
 	

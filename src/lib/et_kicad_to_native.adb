@@ -4036,7 +4036,7 @@ package body et_kicad_to_native is
 			
 			procedure save_package (package_cursor : in et_package_library.pac_package_models.cursor) is
 			begin
-				et_package_write.save_package (
+				et_package_write.write_package (
 					-- package name like: 
 					-- libraries/packages/__-__-lbr-bel_connector_and_jumper_FEMALE_01X06.pac
 					file_name		=> to_file_name (name => to_string (key (package_cursor))),
