@@ -37,6 +37,10 @@ Devices and Units
 
 #. Copy Device
 
+	When a device is copied, then all the properties of the original
+	device are also copied. Units are not copied. Instead the first
+	available unit is added to the schematic (similar to when a new device
+	is added).
 	This example command creates a copy of IC1 and places the first
 	available unit on sheet 2 210/100 with zero rotation:
 

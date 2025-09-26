@@ -50,6 +50,20 @@ with et_symbol_name;
 
 package body et_devices_electrical is
 
+
+	function is_real (
+		device : in type_device_sch)
+		return boolean
+	is begin
+		if device.appearance = APPEARANCE_PCB then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+
+	
 	
 	function get_unit_names_deployed (
 		device : in type_device_sch)

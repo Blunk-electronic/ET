@@ -549,7 +549,8 @@ begin -- add_device
 	
 	-- locate the device in the library
 	device_cursor_lib := find (device_library, device_model);
-
+	-- CS use: device_cursor_lib := get_device_model_cursor (device_model);
+	
 
 	-- Build the next available device name:
 	next_name := get_next_device_name (module_cursor, get_prefix (device_cursor_lib));

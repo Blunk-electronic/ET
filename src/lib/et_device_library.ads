@@ -134,7 +134,7 @@ package et_device_library is
 
 	-- Maps from device model file (*.dev) to a
 	-- cursor in the device library:
-	function get_device_model_cursor (
+	function get_device_model_cursor ( -- CS rename to get_device_model
 		model : in pac_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
 		return pac_devices_lib.cursor;
 

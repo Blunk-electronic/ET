@@ -165,6 +165,11 @@ package et_devices_electrical is
 	end record;
 
 
+	function is_real (
+		device : in type_device_sch)
+		return boolean;
+	
+
 	-- Returns the names of all deployed units:
 	function get_unit_names_deployed (
 		device : in type_device_sch)
