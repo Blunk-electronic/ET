@@ -602,7 +602,7 @@ is
 				case noun is
 					when NOUN_UNIT => 
 						if clarification_pending then
-							clarify_unit;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 
 					when others => null;						
@@ -651,7 +651,6 @@ is
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when key_space =>
 				case noun is
-					
 					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE | NOUN_VARIANT =>
 						if not clarification_pending then
 							set_property (get_cursor_position);
@@ -667,7 +666,7 @@ is
 				case noun is
 					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE | NOUN_VARIANT =>
 						if clarification_pending then
-							clarify_unit;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 
 					when others => null;							
@@ -719,7 +718,7 @@ is
 				case noun is
 					when NOUN_DEVICE => 
 						if clarification_pending then
-							clarify_unit;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 
 					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET =>

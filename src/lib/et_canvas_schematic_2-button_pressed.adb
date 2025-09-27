@@ -335,7 +335,7 @@ is
 				case noun is
 					when NOUN_UNIT => 
 						if clarification_pending then
-							clarify_unit;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 						
 					when others => null;						
@@ -410,7 +410,7 @@ is
 				case noun is
 					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE =>
 						if clarification_pending then
-							clarify_unit;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 						
 					when others => null;							
@@ -421,7 +421,7 @@ is
 				case noun is
 					when NOUN_DEVICE =>
 						if clarification_pending then
-							clarify_unit;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 
 					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET =>

@@ -197,27 +197,6 @@ package body et_canvas_schematic_units is
 
 
 	
-	procedure clarify_unit is
-		use et_schematic_ops.units;
-		u : pac_units.cursor;
-	begin
-		-- On every call of this procedure we must advance from one
-		-- unit to the next in a circular manner. So if the end 
-		-- of the list is reached, then the cursor selected_unit
-		-- moves back to the start of the unit list.
-		if next (selected_unit) /= pac_proposed_units.no_element then
-			next (selected_unit);
-		else
-			selected_unit := proposed_units.first;
-		end if;
-
-		-- show the selected unit in the status bar
-		u := element (selected_unit).unit;
-	
-		set_status ("selected unit " & to_string (u) 
-			& ". " & status_next_object_clarification);
-		
-	end clarify_unit;
 
 
 

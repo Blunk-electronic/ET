@@ -115,8 +115,6 @@ package et_canvas_schematic_units is
 	-- 	log_threshold	: in type_log_level)
 	-- 	return pac_proposed_units.list;
 
-	-- Advances cursor selected_unit to next unit in list selected_units.
-	procedure clarify_unit;
 
 
 -- DELETE UNIT
