@@ -998,7 +998,7 @@ is
 		end locate;
 
 		use et_canvas_schematic_units;
-		use pac_proposed_units;
+		-- use pac_proposed_units;
 
 		
 		procedure device_not_found is begin
@@ -1029,14 +1029,15 @@ is
 						-- center on the first unit
 					-- CS center_on (canvas, location.position.place);
 
+						-- CS
 						-- Make the whole device (with all its units) selected:
-						proposed_units.append (new_item => (
-							device	=> locate_device (active_module, device),
-							unit	=> pac_units.no_element));
-
-						selected_unit := proposed_units.first;
-
-						show_properties_of_selected_device;
+						-- proposed_units.append (new_item => (
+						-- 	device	=> locate_device (active_module, device),
+						-- 	unit	=> pac_units.no_element));
+      -- 
+						-- selected_unit := proposed_units.first;
+      -- 
+						-- show_properties_of_selected_device;
 					else
 						device_not_found;
 					end if;
@@ -1055,14 +1056,15 @@ is
 						-- center on the unit
 					-- CS center_on (canvas, location.position.place);
 
+						-- CS
 						-- Make the whole device (with all its units) selected:
-						proposed_units.append (new_item => (
-							device	=> locate_device (active_module, device),
-							unit	=> locate_unit (active_module, device, unit)));
+						-- proposed_units.append (new_item => (
+						-- 	device	=> locate_device (active_module, device),
+						-- 	unit	=> locate_unit (active_module, device, unit)));
+      -- 
+						-- selected_unit := proposed_units.first;
 
-						selected_unit := proposed_units.first;
-
-						show_properties_of_selected_device;
+						-- show_properties_of_selected_device;
 					else
 						unit_not_found;
 					end if;
@@ -1077,18 +1079,20 @@ is
 				begin
 					if location.exists then
 						if get_sheet (location.position) = active_sheet then
-
+							null;
+							
 							-- center on the unit
 						-- CS	center_on (canvas, location.position.place);
 
+							-- CS
 							-- Make the whole device (with all its units) selected:
-							proposed_units.append (new_item => (
-								device	=> locate_device (active_module, device),
-								unit	=> pac_units.no_element));
-
-							selected_unit := proposed_units.first;
-							
-							show_properties_of_selected_device;
+-- 							proposed_units.append (new_item => (
+-- 								device	=> locate_device (active_module, device),
+-- 								unit	=> pac_units.no_element));
+-- 
+-- 							selected_unit := proposed_units.first;
+-- 							
+-- 							show_properties_of_selected_device;
 						else
 							raise semantic_error_1 with
 								"Device " & to_string (device) & " is not on this sheet !";

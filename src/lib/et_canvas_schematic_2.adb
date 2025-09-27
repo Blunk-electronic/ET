@@ -1234,7 +1234,8 @@ package body et_canvas_schematic_2 is
 		use et_canvas_schematic_nets;
 		use et_canvas_schematic_units;
 	begin
-		clear_proposed_units;
+		null;
+		-- clear_proposed_units;
 		-- clear_proposed_segments;
 	end clear_proposed_objects;
 

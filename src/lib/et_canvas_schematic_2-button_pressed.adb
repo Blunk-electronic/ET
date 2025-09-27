@@ -237,11 +237,13 @@ is
 			when VERB_SET =>
 				case noun is
 					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE | NOUN_VARIANT =>
-						if not clarification_pending then
-							set_property (event.point);
-						else
-							set_property_selected_unit;
-						end if;
+						null;
+						-- CS
+						-- if not clarification_pending then
+						-- 	set_property (event.point);
+						-- else
+						-- 	set_property_selected_unit;
+						-- end if;
 						
 					when others => null;
 				end case;
@@ -250,11 +252,13 @@ is
 			when VERB_SHOW =>
 				case noun is
 					when NOUN_DEVICE =>
-						if not clarification_pending then
-							find_units_for_show (event.point);
-						else
-							show_properties_of_selected_device;
-						end if;
+						null;
+						-- CS
+						-- if not clarification_pending then
+						-- 	find_units_for_show (event.point);
+						-- else
+						-- 	show_properties_of_selected_device;
+						-- end if;
 
 						
 					when NOUN_NET | NOUN_NET_LABEL =>

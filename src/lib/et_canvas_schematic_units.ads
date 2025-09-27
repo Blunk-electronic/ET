@@ -94,26 +94,7 @@ package et_canvas_schematic_units is
 		unit	: pac_units.cursor;
 	end record;
 
-	
-	package pac_proposed_units is new doubly_linked_lists (type_selected_unit);
-	use pac_proposed_units;
 
-	
-	-- These variables are used by the GUI when the operator selects a unit:
-	proposed_units	: pac_proposed_units.list;
-	selected_unit	: pac_proposed_units.cursor;
-
-	-- Clears the list proposed_units.
-	-- Resets selected_unit to no_element.
-	procedure clear_proposed_units;
-	
-	-- Collects all units in the vicinity of the given point:
-	-- function collect_units (
-	-- 	module			: in pac_generic_modules.cursor;
-	-- 	place			: in type_object_position; -- sheet/x/y
-	-- 	zone			: in type_zone_radius; -- the circular area around the place
-	-- 	log_threshold	: in type_log_level)
-	-- 	return pac_proposed_units.list;
 
 
 
@@ -588,29 +569,7 @@ package et_canvas_schematic_units is
 		& "to set package variant of device." 
 		& status_hint_for_abort;
 
-	-- Opens a window to enter the properties of the
-	-- device indicated by variable "selected_unit".
-	-- The actual property is determined by the current
-	-- verb and noun.
-	-- If the indicated unit belongs to a virtual device, then
-	-- an error message will be output in the status bar.
-	--  Virtual units have no value, partcode or purpose because
-	--  they do not exist in reality.
-	procedure window_set_property;
-	
-	-- Sets a property a unit in the vicinity of given point.
-	-- Since a unit is a subset of a device, the property will be 
-	-- applied for the whole device.
-	-- A property is for example the value, the purpose or
-	-- the partcode.
-	-- If more than one unit near point found, then it sets the
-	-- cursor selected_unit to the first unit and requests
-	-- for clarification.
-	-- If the selected unit belongs to a virtual device, then
-	-- an error message will be output in the status bar.
-	--  Virtual units have no value, partcode or purpose because
-	--  they do not exist in reality.
-	procedure set_property (point : in type_vector_model);
+
 
 	-- Sets the property of the selected unit (and the whole
 	-- device) of the unit being pointed at by cursor selected_unit.
@@ -619,7 +578,7 @@ package et_canvas_schematic_units is
 	-- an error message will be output in the status bar.
 	--  Virtual units have no value, partcode or purpose because
 	--  they do not exist in reality.
-	procedure set_property_selected_unit;
+	-- procedure set_property_selected_unit;
 
 
 	status_show_device : constant string := 
@@ -631,7 +590,7 @@ package et_canvas_schematic_units is
 
 	-- Outputs in the status bar some helpful properties
 	-- of the selected device:
-	procedure show_properties_of_selected_device; 
+	-- procedure show_properties_of_selected_device; 
 	
 	-- Locates all units in the vicinity of given point.
 	-- If more than one unit near point found, then it sets the
@@ -639,7 +598,7 @@ package et_canvas_schematic_units is
 	-- for clarification.
 	-- If there is only one unite, sets global variable selected_unit accordingly.
 	-- If there is no unit, then selected_unit is set to no_element.
-	procedure find_units_for_show (point : in type_vector_model);
+	-- procedure find_units_for_show (point : in type_vector_model);
 
 	
 end et_canvas_schematic_units;

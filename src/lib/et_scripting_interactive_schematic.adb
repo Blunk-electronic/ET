@@ -70,6 +70,10 @@ with et_cmd_sts;								use et_cmd_sts;
 
 package body et_scripting_interactive_schematic is
 
+
+	procedure dummy is begin null; end;
+
+	
 	procedure status_select_unit is begin
 		set_status ("Please select unit via menu !");
 	end status_select_unit;
@@ -313,40 +317,40 @@ package body et_scripting_interactive_schematic is
 
 -- MOVE / DRAG / ROTATE
 	
-	procedure select_unit_for_move is
-		use pac_proposed_units;
-		su : type_selected_unit;
-
-		use pac_geometry_2;
-		pos : type_vector_model;
-
-	begin
-		-- Append the cursors of the device and unit to the list of proposed units.
-		-- There will be only one single item in that list.
-		proposed_units.append (new_item => (
-			device	=> locate_device (active_module, object_device_name),
-			unit	=> locate_unit (active_module, object_device_name, object_unit_name)));
-
-		-- Set the selected unit. This signals the GUI which unit is to be
-		-- drawn at the cursor or mouse position:
-		selected_unit := proposed_units.first;
-
-
-		-- Move the cursor to the unit:
-		su := element (selected_unit);
-
-		-- Get the x/y position of the unit:
-		--pos := pac_geometry_sch.type_vector_model (position (
-				--device	=> su.device,
-				--unit	=> su.unit));
-
-		pos := get_position (
-				device	=> su.device,
-				unit	=> su.unit).place;
-		
-		-- CS canvas.move_cursor (ABSOLUTE, cursor_main, pos);
-		
-	end select_unit_for_move;
+-- 	procedure select_unit_for_move is
+-- 		use pac_proposed_units;
+-- 		su : type_selected_unit;
+-- 
+-- 		use pac_geometry_2;
+-- 		pos : type_vector_model;
+-- 
+-- 	begin
+-- 		-- Append the cursors of the device and unit to the list of proposed units.
+-- 		-- There will be only one single item in that list.
+-- 		proposed_units.append (new_item => (
+-- 			device	=> locate_device (active_module, object_device_name),
+-- 			unit	=> locate_unit (active_module, object_device_name, object_unit_name)));
+-- 
+-- 		-- Set the selected unit. This signals the GUI which unit is to be
+-- 		-- drawn at the cursor or mouse position:
+-- 		selected_unit := proposed_units.first;
+-- 
+-- 
+-- 		-- Move the cursor to the unit:
+-- 		su := element (selected_unit);
+-- 
+-- 		-- Get the x/y position of the unit:
+-- 		--pos := pac_geometry_sch.type_vector_model (position (
+-- 				--device	=> su.device,
+-- 				--unit	=> su.unit));
+-- 
+-- 		pos := get_position (
+-- 				device	=> su.device,
+-- 				unit	=> su.unit).place;
+-- 		
+-- 		-- CS canvas.move_cursor (ABSOLUTE, cursor_main, pos);
+-- 		
+-- 	end select_unit_for_move;
 
 
 	
@@ -365,71 +369,71 @@ package body et_scripting_interactive_schematic is
 
 
 	
-	-- The interactive completition process of moving, dragging or rotating 
-	-- a unit comes to an end here.
-	procedure finish_unit_move is begin
-		select_unit_for_move;
-		
-		-- use the current primary tool for moving the unit:
-		object_tool := primary_tool;
-
-		case verb is
-			when VERB_DRAG => 
-				-- If we are about to drag a unit, then the connected
-				-- net segments must be identified:
-				-- CS find_attached_segments;				
-
-				-- Allow drawing the unit:
-				set_edit_process_running;
-
-				-- single_cmd.finalization_pending := true;
-				
-			when VERB_MOVE => 
-				-- Allow drawing the unit:
-				set_edit_process_running;
-
-				-- single_cmd.finalization_pending := true;
-				
-			when VERB_ROTATE =>
-				-- rotate_selected_unit;
-				null;
-				-- CS ?
-				
-			when others => raise constraint_error; -- CS should never happen
-		end case;
-		
-		-- CS redraw;
-	end finish_unit_move;
-
+-- 	-- The interactive completition process of moving, dragging or rotating 
+-- 	-- a unit comes to an end here.
+-- 	procedure finish_unit_move is begin
+-- 		select_unit_for_move;
+-- 		
+-- 		-- use the current primary tool for moving the unit:
+-- 		object_tool := primary_tool;
+-- 
+-- 		case verb is
+-- 			when VERB_DRAG => 
+-- 				-- If we are about to drag a unit, then the connected
+-- 				-- net segments must be identified:
+-- 				-- CS find_attached_segments;				
+-- 
+-- 				-- Allow drawing the unit:
+-- 				set_edit_process_running;
+-- 
+-- 				-- single_cmd.finalization_pending := true;
+-- 				
+-- 			when VERB_MOVE => 
+-- 				-- Allow drawing the unit:
+-- 				set_edit_process_running;
+-- 
+-- 				-- single_cmd.finalization_pending := true;
+-- 				
+-- 			when VERB_ROTATE =>
+-- 				-- rotate_selected_unit;
+-- 				null;
+-- 				-- CS ?
+-- 				
+-- 			when others => raise constraint_error; -- CS should never happen
+-- 		end case;
+-- 		
+-- 		-- CS redraw;
+-- 	end finish_unit_move;
+-- 
 
 
 	
-	procedure finish_placeholder_move is begin
-		select_placeholder_for_move;
-
-		-- use the current primary tool for moving the unit:
-		placeholder_move.tool := primary_tool;
-
-		-- Map from the current noun to the category of the placeholder:
-		placeholder_move.category := to_category;
-
-		case verb is
-			when VERB_MOVE =>
-				
-				-- Allow drawing the placeholder:
-				placeholder_move.being_moved := true;
-
-				-- single_cmd.finalization_pending := true;
-
-			when VERB_ROTATE =>
-				rotate_selected_placeholder (placeholder_move.category);
-				reset_placeholder;
-
-			when others => raise constraint_error; -- CS should never happen
-		end case;
-		-- CS redraw;
-	end finish_placeholder_move;
-
+-- 	procedure finish_placeholder_move is begin
+-- 		select_placeholder_for_move;
+-- 
+-- 		-- use the current primary tool for moving the unit:
+-- 		placeholder_move.tool := primary_tool;
+-- 
+-- 		-- Map from the current noun to the category of the placeholder:
+-- 		placeholder_move.category := to_category;
+-- 
+-- 		case verb is
+-- 			when VERB_MOVE =>
+-- 				
+-- 				-- Allow drawing the placeholder:
+-- 				placeholder_move.being_moved := true;
+-- 
+-- 				-- single_cmd.finalization_pending := true;
+-- 
+-- 			when VERB_ROTATE =>
+-- 				rotate_selected_placeholder (placeholder_move.category);
+-- 				reset_placeholder;
+-- 
+-- 			when others => raise constraint_error; -- CS should never happen
+-- 		end case;
+-- 		-- CS redraw;
+-- 	end finish_placeholder_move;
+-- 
 
 	
 	
@@ -706,40 +710,6 @@ package body et_scripting_interactive_schematic is
 -- 		end if;
 -- 
 -- 	end set_variant;
-
-
-	
-	
-	procedure set_property (
-		device : in type_device_name) 
-	is
-		su : type_selected_unit;
-	begin
-		-- If the properties window is already open, then the window
-		-- is moved to the foreground.
-		if not window_properties_is_open then
-		
-			-- Mark the whoe device as selected:
-			
-			su.device := locate_device (active_module, device);
-			-- su.unit does not matter here because we care about the device name only.
-			-- It is left as it is: no_element.
-			-- The drawing operation for units regards the whole device as
-			-- selected, thus highlighting all units.
-
-			-- We use the container for proposed units althrough there will be
-			-- only one element it it:
-			proposed_units.append (su);
-			selected_unit := proposed_units.first;
-
-			-- Open the properties window:
-			window_set_property;
-		else
-			-- Move the properties window to the foreground so that the operator
-			-- is notified about the already open properties window:
-			window_properties.window.present;
-		end if;
-	end set_property;
 
 
 	

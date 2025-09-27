@@ -100,105 +100,6 @@ package body et_canvas_schematic_units is
 	use et_canvas_schematic_2.pac_canvas;
 
 
-	
-	procedure clear_proposed_units is begin
-		clear (proposed_units);
-		selected_unit := pac_proposed_units.no_element;
-	end clear_proposed_units;
-
-	
-	function collect_units (
-		module			: in pac_generic_modules.cursor;
-		place			: in type_object_position; -- sheet/x/y
-		zone			: in type_zone_radius; -- the circular area around the place
-		log_threshold	: in type_log_level)
-		return pac_proposed_units.list
-	is
-		result : pac_proposed_units.list;
-
-		
-		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is
-			use pac_devices_sch;
-			device_cursor : pac_devices_sch.cursor := module.devices.first;
-
-			
-			procedure query_units (
-				device_name	: in type_device_name;
-				device		: in type_device_sch)
-			is
-				use pac_units;
-				unit_cursor : pac_units.cursor := device.units.first;
-			begin
-				while unit_cursor /= pac_units.no_element loop
-					
-					-- We are interested in units on the given sheet only:
-					if get_sheet (element (unit_cursor).position) = get_sheet (place) then
-
-						log (text => "probing unit " & to_string (unit_cursor),
-							level => log_threshold + 1);
-
-						if in_catch_zone (
-							zone	=> set_catch_zone (place.place, zone), 
-							point	=> element (unit_cursor).position.place) 
-						then
-							log_indentation_up;
-
-							log (text => "in zone", level => log_threshold + 1);
-							result.append ((device_cursor, unit_cursor));
-							
-							log_indentation_down;
-						end if;
-					end if;
-
-					next (unit_cursor);
-				end loop;
-				
-			end query_units;
-
-
-			
-		begin -- query_devices
-			while device_cursor /= pac_devices_sch.no_element loop
-
-				log (text => "probing device " & to_string (key (device_cursor)),
-					 level => log_threshold + 1);
-				log_indentation_up;
-					 
-				query_element (
-					position	=> device_cursor,
-					process		=> query_units'access);
-
-				next (device_cursor);
-
-				log_indentation_down;
-			end loop;
-		end query_devices;
-
-		
-	begin -- collect_units
-		log (text => "looking up units at " 
-			 & to_string (set_catch_zone (place.place, zone)), 
-			 level => log_threshold);
-
-		log_indentation_up;
-		
-		query_element (
-			position	=> module,
-			process		=> query_devices'access);
-
-		log_indentation_down;
-		
-		return result;
-		
-	end collect_units;
-
-
-	
-
-
 
 
 
@@ -773,6 +674,7 @@ package body et_canvas_schematic_units is
 	
 
 	
+	
 
 	procedure show_rename_window is
 
@@ -816,6 +718,8 @@ package body et_canvas_schematic_units is
 	
 
 
+
+	
 	
 	procedure rename_object (
 		point	: in type_vector_model)
@@ -1023,6 +927,7 @@ package body et_canvas_schematic_units is
 
 		log_indentation_down;
 	end cb_package_variant_selected;
+
 
 
 
@@ -1534,53 +1439,7 @@ package body et_canvas_schematic_units is
 
 
 	
-	
-	procedure unit_selection_cancelled (
-	self : access gtk.menu_shell.gtk_menu_shell_record'class) 
-	is begin
-		set_status ("Unit selection cancelled");
-		reset_unit_add;
 
-		--put_line ("deselected");
-	end unit_selection_cancelled;
-
-
-	
-	
-	-- CS
-	procedure set_position ( -- of a menu
-		menu : not null access gtk.menu.gtk_menu_record'class;
-		x : out glib.gint;
-		y : out glib.gint;
-		push_in : out boolean)
-	is
-		use glib;
-		--use et_schematic_coordinates.pac_geometry_sch;
-
-		--cp : type_vector_model := cursor_main.position;
-		--mp : type_vector_model := canvas.drawing_to_model (cursor_main.position);
-		--vp : type_view_point;
-
-		use gtk.widget;
-		
-		a : gtk_allocation;
-	begin
-		canvas.get_allocation (a);
-
-		-- gdk.window.get_position
-		
-		--vp := canvas.model_to_view (mp);
-
-		--put_line (to_string (vp));
-		
-		--x := gint (type_view_coordinate (cp.x));
-		--y := gint (vp.y);
-
-		x := a.x;
-		y := a.y;
-		
-		push_in := true;
-	end set_position;
 
 
 
@@ -1747,10 +1606,15 @@ package body et_canvas_schematic_units is
 
 
 
+	
+
 	procedure reset_unit_fetch is begin
 		unit_fetch := (others => <>);
 	end;
 	
+
+
+
 
 	
 	
@@ -1765,6 +1629,8 @@ package body et_canvas_schematic_units is
   	end cb_fetch_menu_destroy;
 
 
+
+	
 
 
 	
@@ -1887,6 +1753,7 @@ package body et_canvas_schematic_units is
 
 
 	
+
 	
 	
 	
@@ -1921,11 +1788,15 @@ package body et_canvas_schematic_units is
 		
 	end clarify_placeholder;
 
+
+
 	
 	procedure clear_proposed_placeholders is begin
 		clear (proposed_placeholders);
 		selected_placeholder := pac_proposed_placeholders.no_element;
 	end clear_proposed_placeholders;
+
+
 
 	
 	procedure reset_placeholder is begin
@@ -1933,6 +1804,8 @@ package body et_canvas_schematic_units is
 		clear_proposed_placeholders;
 	end reset_placeholder;
 
+
+	
 	
 	procedure finalize_move_placeholder (
 		destination		: in type_vector_model;
@@ -1974,6 +1847,8 @@ package body et_canvas_schematic_units is
 	end finalize_move_placeholder;
 
 
+
+	
 	procedure move_placeholder (
 		tool		: in type_tool;
 		position	: in type_vector_model;
@@ -2141,6 +2016,9 @@ package body et_canvas_schematic_units is
 		
 	end collect_placeholders;
 	
+
+
+	
 	
 	procedure find_placeholders (
 		point		: in type_vector_model;
@@ -2185,6 +2063,7 @@ package body et_canvas_schematic_units is
 	end find_placeholders;
 
 
+	
 
 	
 	procedure rotate_placeholder (
@@ -2283,6 +2162,7 @@ package body et_canvas_schematic_units is
 	end rotate_placeholder;
 
 
+	
 
 	
 	procedure rotate_selected_placeholder (
@@ -2295,6 +2175,8 @@ package body et_canvas_schematic_units is
 		
 		log_indentation_down;
 	end rotate_selected_placeholder;
+
+
 
 
 	
@@ -2351,318 +2233,276 @@ package body et_canvas_schematic_units is
 	-- the properties window.
 	-- The properties window will remain open until the operator enters 
 	-- a correct property. The status bar of the window shows the error message:	
-	procedure property_entered (self : access gtk.gentry.gtk_entry_record'class) is 
-		su : type_selected_unit := element (selected_unit);
-
-		use pac_devices_sch;
-
-		value	: pac_device_value.bounded_string;
-		purpose	: pac_device_purpose.bounded_string;
-		variant	: pac_package_variant_name.bounded_string;
-
-		partcode : pac_device_partcode.bounded_string;
-
-		
-		procedure clean_up is begin
-			properties_confirmed := true;
-			window_properties.window.destroy;
-			reset_request_clarification;
-			--status_clear;
-			clear_proposed_units;
-		-- CS redraw;
-		end clean_up;
-
-		
-	begin -- property_entered
-		case noun is
-			when NOUN_DEVICE =>
-				rename_device (
-					module_cursor 		=> active_module,
-					device_name_before	=> key (su.device), -- IC2
-					device_name_after	=> to_device_name (self.get_text), -- IC3
-					log_threshold		=> log_threshold + 1);
-
-				-- CS use rename_device that takes a module cursor and a device cursor
-				-- for device_name_before
-				
-			when NOUN_PARTCODE =>
-				partcode := to_partcode (self.get_text);
-
-				set_partcode (
-					module_name		=> key (active_module),
-					device_name		=> key (su.device),
-					partcode		=> partcode,
-					log_threshold	=> log_threshold + 1);
-
-				-- CS use set_partcode that takes a module cursor and a device cursor
-				
-			when NOUN_PURPOSE =>
-				purpose := to_purpose (self.get_text);
-				
-				set_purpose (
-					module_name		=> key (active_module),
-					device_name		=> key (su.device),
-					purpose			=> purpose,
-					log_threshold	=> log_threshold + 1);
-
-				-- CS use set_purpose that takes a module cursor and a device cursor
-				
-			when NOUN_VALUE =>
-				value := to_value_with_check (self.get_text);
-
-				set_value (
-					module_name		=> key (active_module),
-					device_name		=> key (su.device),
-					value			=> value,
-					log_threshold	=> log_threshold + 1);
-
-				-- CS use set_value that takes a module cursor and a device cursor
-
-			when NOUN_VARIANT =>
-				check_variant_name_length (self.get_text);
-				variant := to_variant_name (self.get_text);
-				check_variant_name_characters (variant);
-
-				set_variant (
-					module			=> active_module,
-					device			=> su.device,
-					variant			=> variant);
-				
-			when others => raise constraint_error;
-		end case;
-
-		-- If everything was fine, close the window and clean up.
-		-- If one of the operations above has raised an exception then
-		-- nothing will be cleaned up and the window will remain until the
-		-- operator enters a correct property.
-		clean_up;
-		
-		-- Whatever goes wrong, output the message in the status bar
-		-- of the properties window:
-		exception when event: others =>
-			set_status_properties (exception_message (event));
-			
-	end property_entered;
-
-
-	
-	procedure window_set_property is
-		use gtk.window;
-		use gtk.box;
-		use gtk.label;
-		use gtk.gentry;
-		
-		box : gtk_vbox;
-		label : gtk_label;
-		gentry : gtk_gentry;
-		
-		su : type_selected_unit := element (selected_unit);
-
-		use pac_devices_sch;
-		device_name : constant string := to_string (key (su.device)); -- IC2
-
-		use pac_package_variant_name;
-	begin		
-		-- Properties of real devices can be changed.
-		-- Virtual devices (like GND symbols) can not be changed.
-		if is_real (su.device) then
-			build_window_properties;
-
-			window_properties.window.set_default_size (200, 100);
-			window_properties.window.set_resizable (false);
-			
-			gtk_new_vbox (box);
-			add (window_properties.window, box);
-
-			-- Prepare displaying the old state of the property:
-			gtk_new (entry_property_old);
-			
-			case noun is
-				when NOUN_DEVICE =>
-					gtk_new (label, "Name of " & device_name);
-					set_property_before (device_name); -- IC2
-
-				when NOUN_PARTCODE =>
-					gtk_new (label, "Partcode of " & device_name);
-					set_property_before (to_string (get_partcode (su.device)));
-
-				when NOUN_PURPOSE =>
-					gtk_new (label, "Purpose of " & device_name);
-					set_property_before (to_string (get_purpose (su.device)));
-					
-				when NOUN_VALUE =>
-					gtk_new (label, "Value of " & device_name);
-					set_property_before (to_string (get_value (su.device)));
-
-				when NOUN_VARIANT =>
-					gtk_new (label, "Package variant of " & device_name);
-					set_property_before (to_string (get_package_variant (su.device)));
-					
-				when others => raise constraint_error;
-			end case;				
-
-			pack_start (box, label);
-
-			-- show the old property:
-			gtk_new (label_property_old, "old:");
-			pack_start (box, label_property_old);
-			pack_start (box, entry_property_old);
-
-			-- show the new property (will be entered by the operator later):
-			gtk_new (label_property_new, "new:");
-			pack_start (box, label_property_new);
-			
-			gtk_new (gentry); -- CS if NOUN_VARIANT propose available variants here
-			pack_start (box, gentry);
-			gentry.on_activate (property_entered'access);
-			gentry.grab_focus;
-
-			gtk_new (label_properties_status);
-			pack_start (box, label_properties_status);
-			
-			window_properties.window.show_all;
-		else
-			set_status ("ERROR: Device " & device_name & " is virtual !");
-		end if;
-	end window_set_property;
-
+-- 	procedure property_entered (self : access gtk.gentry.gtk_entry_record'class) is 
+-- 		su : type_selected_unit := element (selected_unit);
+-- 
+-- 		use pac_devices_sch;
+-- 
+-- 		value	: pac_device_value.bounded_string;
+-- 		purpose	: pac_device_purpose.bounded_string;
+-- 		variant	: pac_package_variant_name.bounded_string;
+-- 
+-- 		partcode : pac_device_partcode.bounded_string;
+-- 
+-- 		
+-- 		procedure clean_up is begin
+-- 			properties_confirmed := true;
+-- 			window_properties.window.destroy;
+-- 			reset_request_clarification;
+-- 			--status_clear;
+-- 			clear_proposed_units;
+-- 		-- CS redraw;
+-- 		end clean_up;
+-- 
+-- 		
+-- 	begin -- property_entered
+-- 		case noun is
+-- 			when NOUN_DEVICE =>
+-- 				rename_device (
+-- 					module_cursor 		=> active_module,
+-- 					device_name_before	=> key (su.device), -- IC2
+-- 					device_name_after	=> to_device_name (self.get_text), -- IC3
+-- 					log_threshold		=> log_threshold + 1);
+-- 
+-- 				-- CS use rename_device that takes a module cursor and a device cursor
+-- 				-- for device_name_before
+-- 				
+-- 			when NOUN_PARTCODE =>
+-- 				partcode := to_partcode (self.get_text);
+-- 
+-- 				set_partcode (
+-- 					module_name		=> key (active_module),
+-- 					device_name		=> key (su.device),
+-- 					partcode		=> partcode,
+-- 					log_threshold	=> log_threshold + 1);
+-- 
+-- 				-- CS use set_partcode that takes a module cursor and a device cursor
+-- 				
+-- 			when NOUN_PURPOSE =>
+-- 				purpose := to_purpose (self.get_text);
+-- 				
+-- 				set_purpose (
+-- 					module_name		=> key (active_module),
+-- 					device_name		=> key (su.device),
+-- 					purpose			=> purpose,
+-- 					log_threshold	=> log_threshold + 1);
+-- 
+-- 				-- CS use set_purpose that takes a module cursor and a device cursor
+-- 				
+-- 			when NOUN_VALUE =>
+-- 				value := to_value_with_check (self.get_text);
+-- 
+-- 				set_value (
+-- 					module_name		=> key (active_module),
+-- 					device_name		=> key (su.device),
+-- 					value			=> value,
+-- 					log_threshold	=> log_threshold + 1);
+-- 
+-- 				-- CS use set_value that takes a module cursor and a device cursor
+-- 
+-- 			when NOUN_VARIANT =>
+-- 				check_variant_name_length (self.get_text);
+-- 				variant := to_variant_name (self.get_text);
+-- 				check_variant_name_characters (variant);
+-- 
+-- 				set_variant (
+-- 					module			=> active_module,
+-- 					device			=> su.device,
+-- 					variant			=> variant);
+-- 				
+-- 			when others => raise constraint_error;
+-- 		end case;
+-- 
+-- 		-- If everything was fine, close the window and clean up.
+-- 		-- If one of the operations above has raised an exception then
+-- 		-- nothing will be cleaned up and the window will remain until the
+-- 		-- operator enters a correct property.
+-- 		clean_up;
+-- 		
+-- 		-- Whatever goes wrong, output the message in the status bar
+-- 		-- of the properties window:
+-- 		exception when event: others =>
+-- 			set_status_properties (exception_message (event));
+-- 			
+-- 	end property_entered;
 
 
 	
-	procedure set_property (point : in type_vector_model) is begin
-		-- If the properties window is already open, then it
-		-- is moved to the foreground.
-		if not window_properties_is_open then
-			log (text => "setting property ...", level => log_threshold);
-			log_indentation_up;
-			
-			-- Collect all units in the vicinity of the given point:
-			proposed_units := collect_units (
-				module			=> active_module,
-				place			=> to_position (point, active_sheet),
-				zone			=> get_catch_zone (catch_zone_radius_default),
-				log_threshold	=> log_threshold + 1);
+-- 	procedure window_set_property is
+-- 		use gtk.window;
+-- 		use gtk.box;
+-- 		use gtk.label;
+-- 		use gtk.gentry;
+-- 		
+-- 		box : gtk_vbox;
+-- 		label : gtk_label;
+-- 		gentry : gtk_gentry;
+-- 		
+-- 		su : type_selected_unit := element (selected_unit);
+-- 
+-- 		use pac_devices_sch;
+-- 		device_name : constant string := to_string (key (su.device)); -- IC2
+-- 
+-- 		use pac_package_variant_name;
+-- 	begin		
+-- 		-- Properties of real devices can be changed.
+-- 		-- Virtual devices (like GND symbols) can not be changed.
+-- 		if is_real (su.device) then
+-- 			build_window_properties;
+-- 
+-- 			window_properties.window.set_default_size (200, 100);
+-- 			window_properties.window.set_resizable (false);
+-- 			
+-- 			gtk_new_vbox (box);
+-- 			add (window_properties.window, box);
+-- 
+-- 			-- Prepare displaying the old state of the property:
+-- 			gtk_new (entry_property_old);
+-- 			
+-- 			case noun is
+-- 				when NOUN_DEVICE =>
+-- 					gtk_new (label, "Name of " & device_name);
+-- 					set_property_before (device_name); -- IC2
+-- 
+-- 				when NOUN_PARTCODE =>
+-- 					gtk_new (label, "Partcode of " & device_name);
+-- 					set_property_before (to_string (get_partcode (su.device)));
+-- 
+-- 				when NOUN_PURPOSE =>
+-- 					gtk_new (label, "Purpose of " & device_name);
+-- 					set_property_before (to_string (get_purpose (su.device)));
+-- 					
+-- 				when NOUN_VALUE =>
+-- 					gtk_new (label, "Value of " & device_name);
+-- 					set_property_before (to_string (get_value (su.device)));
+-- 
+-- 				when NOUN_VARIANT =>
+-- 					gtk_new (label, "Package variant of " & device_name);
+-- 					set_property_before (to_string (get_package_variant (su.device)));
+-- 					
+-- 				when others => raise constraint_error;
+-- 			end case;				
+-- 
+-- 			pack_start (box, label);
+-- 
+-- 			-- show the old property:
+-- 			gtk_new (label_property_old, "old:");
+-- 			pack_start (box, label_property_old);
+-- 			pack_start (box, entry_property_old);
+-- 
+-- 			-- show the new property (will be entered by the operator later):
+-- 			gtk_new (label_property_new, "new:");
+-- 			pack_start (box, label_property_new);
+-- 			
+-- 			gtk_new (gentry); -- CS if NOUN_VARIANT propose available variants here
+-- 			pack_start (box, gentry);
+-- 			gentry.on_activate (property_entered'access);
+-- 			gentry.grab_focus;
+-- 
+-- 			gtk_new (label_properties_status);
+-- 			pack_start (box, label_properties_status);
+-- 			
+-- 			window_properties.window.show_all;
+-- 		else
+-- 			set_status ("ERROR: Device " & device_name & " is virtual !");
+-- 		end if;
+-- 	end window_set_property;
 
-			
-			-- evaluate the number of units found here:
-			case length (proposed_units) is
-				when 0 =>
-					reset_request_clarification;
-					
-				when 1 =>
-					selected_unit := proposed_units.first;
-
-					window_set_property;
-
-				when others =>
-					set_request_clarification;
-
-					-- preselect the first unit
-					selected_unit := proposed_units.first;
-			end case;
-
-			log_indentation_down;
-		else
-			log (text => "Window to set properties already open !", level => log_threshold);
-
-			-- Move the properties window to the foreground so that the operator
-			-- is notified about the already open properties window:
-			window_properties.window.present;
-		end if;
-	end set_property;
-
-	
-	
-	procedure set_property_selected_unit is
-		use et_schematic_ops.units;
-	begin
-		log (text => "setting property of unit/device after clarification ...", level => log_threshold);
-		log_indentation_up;
-
-		window_set_property;
-		
-		log_indentation_down;
-	end set_property_selected_unit;
-
-	
-
-	procedure show_properties_of_selected_device is
-		use et_device_appearance;
-		use pac_devices_sch;
-		use pac_units;
-		
-		su		: constant type_selected_unit := element (selected_unit);
-
-		--device	: constant et_devices.type_device_name := key (su.device);
-		
-		-- NOTE: In case the unit name is required for some reason,
-		-- mind the cursor su.unit can be no_element if all units are selected.
-		--unit	: constant pac_unit_name.bounded_string := key (su.unit);
-
-		model	: constant pac_device_model_file.bounded_string := element (su.device).model;
-
-		
-		function further_properties return string is 
-			use et_material;
-			var	: constant string := ", variant ";
-			pc	: constant string := ", partcode ";
-
-			use pac_package_variant_name;
-		begin
-			case element (su.device).appearance is
-				when APPEARANCE_PCB =>
-					return var & to_string (element (su.device).variant)
-						& pc & to_string (element (su.device).partcode);
-
-				when others => return "";
-			end case;
-		end further_properties;
-
-		
-	begin
-		reset_request_clarification;
-		
-		set_status ("Properties:"
-			& " Model " & to_string (model)
-			& further_properties); -- variant, partcode, ...	
-		
-	end show_properties_of_selected_device;
 
 
 
 	
-	procedure find_units_for_show (point : in type_vector_model) is 
-		use et_modes.schematic;
-	begin
-		log (text => "locating units for show ...", level => log_threshold);
-		log_indentation_up;
-		
-		-- Collect all units in the vicinity of the given point:
-		proposed_units := collect_units (
-			module			=> active_module,
-			place			=> to_position (point, active_sheet),
-			zone			=> get_catch_zone (catch_zone_radius_default),
-			log_threshold	=> log_threshold + 1);
+	
+-- 	procedure set_property_selected_unit is
+-- 		use et_schematic_ops.units;
+-- 	begin
+-- 		log (text => "setting property of unit/device after clarification ...", level => log_threshold);
+-- 		log_indentation_up;
+-- 
+-- 		window_set_property;
+-- 		
+-- 		log_indentation_down;
+-- 	end set_property_selected_unit;
 
-		
-		-- evaluate the number of units found here:
-		case length (proposed_units) is
-			when 0 =>
-				reset_request_clarification;
-				
-			when 1 =>
-				selected_unit := proposed_units.first;
-				show_properties_of_selected_device;
-				
-			when others =>
-				set_request_clarification;
+	
 
-				-- preselect the first unit
-				selected_unit := proposed_units.first;
-		end case;
-		
-		log_indentation_down;
-	end find_units_for_show;
+-- 	procedure show_properties_of_selected_device is
+-- 		use et_device_appearance;
+-- 		use pac_devices_sch;
+-- 		use pac_units;
+-- 		
+-- 		su		: constant type_selected_unit := element (selected_unit);
+-- 
+-- 		--device	: constant et_devices.type_device_name := key (su.device);
+-- 		
+-- 		-- NOTE: In case the unit name is required for some reason,
+-- 		-- mind the cursor su.unit can be no_element if all units are selected.
+-- 		--unit	: constant pac_unit_name.bounded_string := key (su.unit);
+-- 
+-- 		model	: constant pac_device_model_file.bounded_string := element (su.device).model;
+-- 
+-- 		
+-- 		function further_properties return string is 
+-- 			use et_material;
+-- 			var	: constant string := ", variant ";
+-- 			pc	: constant string := ", partcode ";
+-- 
+-- 			use pac_package_variant_name;
+-- 		begin
+-- 			case element (su.device).appearance is
+-- 				when APPEARANCE_PCB =>
+-- 					return var & to_string (element (su.device).variant)
+-- 						& pc & to_string (element (su.device).partcode);
+-- 
+-- 				when others => return "";
+-- 			end case;
+-- 		end further_properties;
+-- 
+-- 		
+-- 	begin
+-- 		reset_request_clarification;
+-- 		
+-- 		set_status ("Properties:"
+-- 			& " Model " & to_string (model)
+-- 			& further_properties); -- variant, partcode, ...	
+-- 		
+-- 	end show_properties_of_selected_device;
+
+
+
+	
+-- 	procedure find_units_for_show (point : in type_vector_model) is 
+-- 		use et_modes.schematic;
+-- 	begin
+-- 		log (text => "locating units for show ...", level => log_threshold);
+-- 		log_indentation_up;
+-- 		
+-- 		-- Collect all units in the vicinity of the given point:
+-- 		-- proposed_units := collect_units (
+-- 		-- 	module			=> active_module,
+-- 		-- 	place			=> to_position (point, active_sheet),
+-- 		-- 	zone			=> get_catch_zone (catch_zone_radius_default),
+-- 		-- 	log_threshold	=> log_threshold + 1);
+-- 
+-- 		
+-- 		-- evaluate the number of units found here:
+-- 		case length (proposed_units) is
+-- 			when 0 =>
+-- 				reset_request_clarification;
+-- 				
+-- 			when 1 =>
+-- 				selected_unit := proposed_units.first;
+-- 				show_properties_of_selected_device;
+-- 				
+-- 			when others =>
+-- 				set_request_clarification;
+-- 
+-- 				-- preselect the first unit
+-- 				selected_unit := proposed_units.first;
+-- 		end case;
+-- 		
+-- 		log_indentation_down;
+-- 	end find_units_for_show;
 
 	
 end et_canvas_schematic_units;

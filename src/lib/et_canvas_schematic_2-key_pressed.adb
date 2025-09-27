@@ -652,11 +652,13 @@ is
 			when key_space =>
 				case noun is
 					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE | NOUN_VARIANT =>
-						if not clarification_pending then
-							set_property (get_cursor_position);
-						else
-							set_property_selected_unit;
-						end if;
+						null;
+						-- CS
+						-- if not clarification_pending then
+						-- 	set_property (get_cursor_position);
+						-- else
+						-- 	set_property_selected_unit;
+						-- end if;
 						
 					when others => null;
 				end case;
@@ -699,12 +701,14 @@ is
 			when key_space =>
 				case noun is
 					when NOUN_DEVICE =>
-						if not clarification_pending then
-							find_units_for_show (get_cursor_position);
-						else
-							show_properties_of_selected_device;
-						end if;
-
+						null;
+						-- CS
+						-- if not clarification_pending then
+						-- 	find_units_for_show (get_cursor_position);
+						-- else
+						-- 	show_properties_of_selected_device;
+						-- end if;
+      -- 
 
 					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET =>
 						et_canvas_schematic_nets.show_object (get_cursor_position);

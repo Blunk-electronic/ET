@@ -52,6 +52,8 @@ with et_logging;				use et_logging;
 
 package et_scripting_interactive_schematic is
 
+	procedure dummy;
+	
 	-- procedure unit_selection_cancelled (
 	-- 	self : access gtk_menu_shell_record'class);
 
@@ -93,12 +95,12 @@ package et_scripting_interactive_schematic is
 	-- item in that list.
 	-- Sets the selected_unit. This signals the GUI which unit is to be
 	-- drawn at the cursor or mouse position:
-	procedure select_unit_for_move;
+	-- procedure select_unit_for_move;
 
 	-- The interactive completition process of 
 	-- moving, dragging or rotating 
 	-- a unit comes to an end here.
-	procedure finish_unit_move;
+	-- procedure finish_unit_move;
 	
 	-- If the operator selects a unit from the menu, 
 	-- then this procedure is called.
@@ -127,12 +129,12 @@ package et_scripting_interactive_schematic is
 	-- item in that list.
 	-- Sets the selected_placeholder. This signals the GUI which unit is to be
 	-- drawn at the cursor or mouse position:
-	procedure select_placeholder_for_move;
+	-- procedure select_placeholder_for_move;
 
 	-- The interactive completition process of 
 	-- moving, dragging or rotating 
 	-- a placeholder comes to an end here.
-	procedure finish_placeholder_move;
+	-- procedure finish_placeholder_move;
 
 
 -- SET VARIANT
@@ -149,17 +151,6 @@ package et_scripting_interactive_schematic is
 	-- procedure set_variant (
 	-- 	device : in type_device_name);
 	
-
--- SET PROPERTIES (partcode, purpose, value)
-
-	-- Opens a window to set properties.
-	-- Chooses the actual the property of the given device
-	-- according to the current verb and noun.
-	-- The device must exist in the current active module.
-	-- Otherwise constraint error rises.
-	procedure set_property (
-		device : in type_device_name);
-
 
 	
 end et_scripting_interactive_schematic;
