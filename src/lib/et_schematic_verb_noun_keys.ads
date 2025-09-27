@@ -47,6 +47,7 @@ package et_schematic_verb_noun_keys is
 -- VERBS:
 
 	key_verb_add		: constant gdk_key_type := GDK_LC_a;
+	key_verb_copy		: constant gdk_key_type := GDK_LC_c;
 	key_verb_delete		: constant gdk_key_type := GDK_Delete;
 	key_verb_drag		: constant gdk_key_type := GDK_LC_g;
 	key_verb_draw		: constant gdk_key_type := GDK_LC_d;

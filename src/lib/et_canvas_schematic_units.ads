@@ -343,8 +343,25 @@ package et_canvas_schematic_units is
 
 
 
-	
 
+-- COPY DEVICE:
+	
+	-- to be output in the status bar:
+	status_copy : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to copy a device." 
+		& status_hint_for_abort;
+
+
+	procedure copy_object (
+		tool	: in type_tool;
+		point	: in type_vector_model);
+
+
+	
+	
 	
 -- FETCH UNIT:
 

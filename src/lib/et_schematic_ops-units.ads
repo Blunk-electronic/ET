@@ -825,6 +825,13 @@ package et_schematic_ops.units is
 		-- CS add argument for new names of other kinds of objects
 		log_threshold	: in type_log_level);
 
+
+	procedure copy_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		destination		: in type_vector_model;		
+		log_threshold	: in type_log_level);
+
 	
 end et_schematic_ops.units;
 

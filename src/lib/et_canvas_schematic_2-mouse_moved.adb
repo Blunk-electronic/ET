@@ -54,6 +54,18 @@ begin
 			case noun is
 				when NOUN_DEVICE =>
 					if et_canvas_schematic_units.unit_add.device /= pac_devices_lib.no_element then
+					-- CS if et_canvas_schematic_units.unit_add.valid then
+						redraw;
+					end if;
+
+				when others => null;
+			end case;
+
+
+		when VERB_COPY =>
+			case noun is
+				when NOUN_DEVICE =>
+					if edit_process_running then
 						redraw;
 					end if;
 
@@ -67,7 +79,6 @@ begin
 					if edit_process_running then
 						redraw;
 					end if;
-
 
 				when others => null;
 			end case;

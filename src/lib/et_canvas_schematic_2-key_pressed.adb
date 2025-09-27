@@ -532,6 +532,49 @@ is
 	end add;
 
 
+
+	procedure copy is 
+		use pac_devices_lib;
+	begin
+		case key is
+			-- EVALUATE KEY FOR NOUN:
+			when key_noun_device =>
+				noun := NOUN_DEVICE;					
+				set_status (et_canvas_schematic_units.status_copy);
+
+				-- When copying units, we enforce the default grid
+				-- and snap the cursor position to the default grid:
+				reset_grid_and_cursor;
+				
+				
+			-- If space pressed, then the operator wishes to operate via keyboard:	
+			when key_space =>
+				case noun is
+					when NOUN_DEVICE =>
+						et_canvas_schematic_units.copy_object (KEYBOARD, point);
+						
+					when others => null;						
+				end case;
+
+
+			-- If page down pressed, then the operator is clarifying:
+			when key_clarify =>
+				case noun is
+					when NOUN_DEVICE =>
+						if clarification_pending then
+							et_canvas_schematic_units.clarify_object;
+						end if;
+
+					when others =>
+						null;
+						
+				end case;
+
+				
+			when others => null;
+		end case;
+	end copy;
+
 	
 	
 	procedure fetch is 
@@ -815,6 +858,10 @@ begin -- key_pressed
 							when key_verb_add =>
 								verb := VERB_ADD;
 								status_enter_noun;
+
+							when key_verb_copy =>
+								verb := VERB_COPY;
+								status_enter_noun;
 								
 							when key_verb_drag =>
 								verb := VERB_DRAG;
@@ -867,6 +914,7 @@ begin -- key_pressed
 
 						case verb is
 							when VERB_ADD		=> add;
+							when VERB_COPY		=> copy;
 							when VERB_DELETE	=> delete;
 							when VERB_DRAG		=> drag;
 							when VERB_DRAW		=> draw;

@@ -4612,6 +4612,46 @@ package body et_schematic_ops.units is
 		log_indentation_down;
 	end rename_object;
 
+
+	
+
+
+	procedure copy_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		destination		: in type_vector_model;		
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " copy object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_UNIT =>
+				copy_device (
+					module_cursor	=> module_cursor,
+					device_name		=> get_device_name (object.unit.device_cursor),
+
+					-- The copy operation takes place on the
+					-- active sheet only:
+					destination		=> to_position (destination, active_sheet),
+					log_threshold	=> log_threshold + 1);
+				
+			-- CS CAT_NANE, ...
+				
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end copy_object;
+
+
+	
+
 	
 	
 end et_schematic_ops.units;

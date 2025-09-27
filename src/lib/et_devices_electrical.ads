@@ -457,8 +457,13 @@ package et_devices_electrical is
 		return type_vector_model;
 
 
-	
 
+-- CS	
+	-- procedure add_first_available_unit (
+	-- 	device			: in pac_devices_sch.cursor; -- IC2
+	-- 	log_threshold	: in type_log_level);
+	
+	
 	
 -- CONDUCTOR OBJECTS:
 

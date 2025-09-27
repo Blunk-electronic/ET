@@ -745,6 +745,29 @@ package body et_devices_electrical is
 
 
 
+
+
+-- 	procedure add_first_available_unit (
+-- 		device			: in pac_devices_sch.cursor; -- IC2
+-- 		log_threshold	: in type_log_level)
+-- 	is
+-- 		--- The pointer to the device model:		
+-- 		device_cursor_lib : pac_devices_lib.cursor;
+-- 
+-- 
+-- 	begin
+-- 		log (text => "Add first available unit to device " 
+-- 			 & to_string (get_device_name (device),
+-- 			  level => log_threshold);
+-- 			
+-- 		-- Locate the device model:
+-- 		device_cursor_lib := get_device_model (device_cursor_sch);
+-- 
+-- 	end add_first_available_unit;
+
+	
+
+
 	
 	
 
