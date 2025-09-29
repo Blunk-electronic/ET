@@ -79,7 +79,12 @@ package et_schematic_coordinates is
 		position	: in out type_object_position'class;
 		offset		: in type_object_position_relative);
 
-	
+
+	function to_position (
+		position	: in type_position;
+		sheet		: in type_sheet)
+		return type_object_position;
+
 	
 	function to_position (
 		point 		: in type_vector_model;

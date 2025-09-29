@@ -110,6 +110,22 @@ package body et_schematic_coordinates is
 
 
 	
+	function to_position (
+		position	: in type_position;
+		sheet		: in type_sheet)
+		return type_object_position
+	is 
+		result : type_object_position;
+	begin
+		result.place := position.place;
+		result.rotation := get_rotation (position);
+		result.sheet := sheet;
+		
+		return result;
+	end;
+
+
+	
 	
 	
 	function to_position (

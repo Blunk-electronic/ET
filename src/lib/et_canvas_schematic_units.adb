@@ -1382,7 +1382,7 @@ package body et_canvas_schematic_units is
 				copy_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
-					destination		=> point,
+					destination		=> type_position (to_position (point, unit_add.rotation)),
 					log_threshold	=> log_threshold + 1);
 
 				-- Commit the new state of the design:
@@ -1435,7 +1435,7 @@ package body et_canvas_schematic_units is
 					unit_add.name := get_first_unit (unit_add.device);
 					unit_add.total := get_unit_count (object.unit.device_cursor);
 					unit_add.device_pre := get_next_device_name (active_module, get_prefix (unit_add.device));
-					unit_add.rotation := 0.0; -- CS
+					unit_add.rotation := get_rotation (object.unit.unit_cursor);
 					unit_add.valid := true;
 					
 				when others =>

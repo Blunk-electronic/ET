@@ -367,6 +367,15 @@ package body et_units is
 
 
 
+	function get_rotation (
+		unit	: in pac_units.cursor)
+		return type_rotation_model
+	is begin
+		return get_rotation (element (unit));
+	end;
+
+	
+
 	function get_mirror_status (
 		unit	: in pac_units.cursor)
 		return type_mirror

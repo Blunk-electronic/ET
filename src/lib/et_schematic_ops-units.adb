@@ -4619,9 +4619,11 @@ package body et_schematic_ops.units is
 	procedure copy_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		destination		: in type_vector_model;		
+		destination		: in type_position;		
 		log_threshold	: in type_log_level)
-	is begin
+	is 
+		object_position : type_object_position;
+	begin
 		log (text => "module " & to_string (module_cursor)
 			& " copy object",
 			-- CS & to_string (object)
@@ -4631,13 +4633,16 @@ package body et_schematic_ops.units is
 
 		case object.cat is
 			when CAT_UNIT =>
+				object_position := to_position (destination, active_sheet);
+
+				
 				copy_device (
 					module_cursor	=> module_cursor,
 					device_name		=> get_device_name (object.unit.device_cursor),
 
 					-- The copy operation takes place on the
 					-- active sheet only:
-					destination		=> to_position (destination, active_sheet),
+					destination		=> object_position,
 					log_threshold	=> log_threshold + 1);
 				
 			-- CS CAT_NANE, ...

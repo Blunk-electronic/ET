@@ -276,6 +276,12 @@ package et_units is
 		return type_object_position;
 
 
+	function get_rotation (
+		unit	: in pac_units.cursor)
+		return type_rotation_model;
+
+
+	
 	function get_mirror_status (
 		unit	: in pac_units.cursor)
 		return type_mirror;
