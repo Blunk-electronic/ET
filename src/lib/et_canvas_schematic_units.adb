@@ -1403,9 +1403,48 @@ package body et_canvas_schematic_units is
 			-- CS clear status bar ?
 			-- set_status (status_delete);
 
+			-- The preview-object is no longer required:
+			reset_unit_add;
+			
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
+
+		
+		-- After the orignial object has been selected, and the the operator is moving 
+		-- the pointer or the cursor, a preview of the copied object is attached to
+		-- the tool. The "preview object" is floating:
+		procedure build_preview is
+
+			-- Get the selected original object:
+			object : type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
+
+		begin
+			case object.cat is
+				when CAT_UNIT =>
+					-- Build the preview of the unit that is going to
+					-- be added as part of a new device:
+					unit_add.device := get_device_model (object.unit.device_cursor);
+
+					-- If the device is real, then get the package variant:
+					if is_real (unit_add.device) then
+						unit_add.variant := get_package_variant (object.unit.device_cursor);
+					end if;
+					
+					unit_add.name := get_first_unit (unit_add.device);
+					unit_add.total := get_unit_count (object.unit.device_cursor);
+					unit_add.device_pre := get_next_device_name (active_module, get_prefix (unit_add.device));
+					unit_add.rotation := 0.0; -- CS
+					unit_add.valid := true;
+					
+				when others =>
+					-- CS
+					null;
+			end case;
+		end build_preview;
+
+		
 		
 	begin
 		-- Initially the editing process is not running:
@@ -1422,11 +1461,23 @@ package body et_canvas_schematic_units is
 
 				-- If find_objects has found only one object,				
 				-- then the flag edit_process_running is set true.
+
+				-- Build the floating "preview-object" that is attached
+				-- to the tool being used:
+				if edit_process_running then
+					build_preview;
+				end if;
+				
 			else
 				-- Here the clarification procedure ends.
 				-- An object has been selected via procedure clarify_object.
+
+				-- Build the floating "preview-object" that is attached
+				-- to the tool being used:
+				build_preview;
+
+				set_edit_process_running;
 				reset_request_clarification;
-				finalize;
 			end if;
 
 		else
@@ -1586,6 +1637,9 @@ package body et_canvas_schematic_units is
 				-- put_line ("model " & to_string (device_model));
 				
 				device_cursor_lib := get_device_model_cursor (device_model);
+
+				-- CS use device_cursor_lib := get_device_model (object.unit.device_cursor);
+				-- instead of the statements above.
 
 				units_total := get_unit_count (device_cursor_lib);
 
