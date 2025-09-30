@@ -73,6 +73,13 @@ is
 	is
 		use pac_devices_sch;
 		device_cursor_sch : pac_devices_sch.cursor;
+
+		-- CS:
+		-- There is a lot of code almost the same as with
+		-- copying and fetching devices and units. 
+		-- See procedure et_schematic_ops-units-copy_device
+		-- and et_schematic_ops-units-fetch_device.
+		-- Move common stuff to a single procedure in et_schematic_ops-units.
 		
 
 		-- Adds a virtual device to the devices

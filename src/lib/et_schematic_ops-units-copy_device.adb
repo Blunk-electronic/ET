@@ -76,6 +76,14 @@ is
 		module		: in out type_generic_module) 
 	is
 
+		-- CS:
+		-- There is a lot of code almost the same as with
+		-- copying and fetching devices and units. 
+		-- See procedure et_schematic_ops-units-add_device
+		-- and et_schematic_ops-units-fetch_device.
+		-- Move common stuff to a single procedure in et_schematic_ops-units.
+		
+		
 		-- This procedure creates a new device named after next_name.
 		-- It copies properties from the original device.
 		-- The new device is bare, means it has no units yet.

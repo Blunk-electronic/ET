@@ -59,6 +59,14 @@ is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in out type_generic_module) 
 	is
+		-- CS:
+		-- There is a lot of code almost the same as with
+		-- copying and fetching devices and units. 
+		-- See procedure et_schematic_ops-units-add_device
+		-- and et_schematic_ops-units-copy_device.
+		-- Move common stuff to a single procedure in et_schematic_ops-units.
+
+		
 		use et_device_appearance;
 		use et_devices_electrical;
 		use pac_devices_sch;
