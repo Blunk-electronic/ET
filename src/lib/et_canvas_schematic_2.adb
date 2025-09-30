@@ -252,12 +252,12 @@ package body et_canvas_schematic_2 is
 
 		-- This procedure contains all the actions required
 		-- to set the focus on the canvas:
-		procedure focus_canvas is begin
-			backup_scrollbar_settings;
-			canvas.grab_focus;
-			restore_scrollbar_settings;
-			status_clear;
-		end focus_canvas;
+		-- procedure focus_canvas is begin
+		-- 	backup_scrollbar_settings;
+		-- 	canvas.grab_focus;
+		-- 	restore_scrollbar_settings;
+		-- 	status_clear;
+		-- end focus_canvas;
 	
 
 		-- This procedure contains all the actions required
@@ -299,6 +299,7 @@ package body et_canvas_schematic_2 is
 				-- If the operator presses F4 then set the focus to the canvas:
 				when GDK_F4 =>
 					focus_canvas;
+					status_clear;
 					event_handled := true;
 					
 					
