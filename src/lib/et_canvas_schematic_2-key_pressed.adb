@@ -508,10 +508,11 @@ is
 
 			-- If the operator wants to rotate the unit
 			-- being added, then add 90 degrees to the
-			-- temporily unit:
-			when key_rotate =>
+			-- temporaily unit:
+			when key_verb_rotate =>
 				case noun is
 					when NOUN_DEVICE =>
+						put_line ("rotate");
 						rotate_unit_add;
 
 					when others => null;						
@@ -562,7 +563,7 @@ is
 			-- If the operator wants to rotate the unit
 			-- being added, then add 90 degrees to the
 			-- temporily unit:
-			when key_rotate =>
+			when key_verb_rotate =>
 				case noun is
 					when NOUN_DEVICE =>
 						rotate_unit_add;
@@ -610,7 +611,7 @@ is
 			-- If the operator wants to rotate the unit
 			-- being fetched, then add 90 degrees to the
 			-- temporily unit:
-			when key_rotate =>
+			when key_verb_rotate =>
 				case noun is
 					when NOUN_UNIT =>
 						rotate_unit_fetch;

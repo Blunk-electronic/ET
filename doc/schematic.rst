@@ -212,7 +212,7 @@ Devices and Units
 
 	
 
-#. Rotate Unit
+#. Rotate a Unit
 
 	.. code-block::
 
@@ -223,7 +223,7 @@ Devices and Units
 		rotate unit IC1 C relative -90
 
 
-	|VNS| o u
+	|VNS| r u
 
 
 

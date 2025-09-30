@@ -55,7 +55,7 @@ package et_schematic_verb_noun_keys is
 
 	key_verb_move		: constant gdk_key_type := GDK_LC_m;
 	key_verb_rename		: constant gdk_key_type := GDK_LC_n;
-	key_verb_rotate		: constant gdk_key_type := GDK_LC_o;
+	key_verb_rotate		: constant gdk_key_type := GDK_LC_r;
 	key_verb_place		: constant gdk_key_type := GDK_LC_p;
 	-- key_verb_update		: constant gdk_key_type := GDK_LC_u;
 	key_verb_set		: constant gdk_key_type := GDK_LC_s;
@@ -85,7 +85,7 @@ package et_schematic_verb_noun_keys is
 	key_mode			: constant gdk_key_type := GDK_LC_m;
 	key_bend_style		: constant gdk_key_type := GDK_LC_b;
 	key_clarify			: constant gdk_key_type := GDK_page_down;
-	key_rotate			: constant gdk_key_type := GDK_LC_r;
+
 
 end et_schematic_verb_noun_keys;
 
