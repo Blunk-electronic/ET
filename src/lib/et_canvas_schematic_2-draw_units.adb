@@ -79,7 +79,7 @@ procedure draw_units is
 	use et_canvas_schematic_units;
 
 	
-	procedure draw_symbol (
+	procedure draw_unit (
 		symbol			: in et_symbol_model.type_symbol;
 		device_name		: in type_device_name := (others => <>);
 		device_value	: in pac_device_value.bounded_string := to_value (""); -- like 100R or TL084
@@ -554,7 +554,7 @@ procedure draw_units is
 
 		
 		
-	begin -- draw_symbol
+	begin -- draw_unit
 		
 		-- SYMBOL BODY
 		set_color_symbols (brightness);
@@ -579,7 +579,7 @@ procedure draw_units is
 
 		draw_origin;
 
-	end draw_symbol;
+	end draw_unit;
 
 
 
@@ -695,7 +695,7 @@ procedure draw_units is
 		procedure draw_unit (
 			unit_cursor : in type_unit_cursors) 
 		is begin
-			draw_symbol (						
+			draw_unit (						
 				symbol			=> get_symbol (unit_cursor),
 
 				device_name		=> device_name,
@@ -917,7 +917,7 @@ procedure draw_units is
 		--put_line ("device " & to_string (key (device_cursor)));
 		
 		-- Get device name, value, purpose and number of units of the current device.
-		-- Procedure draw_symbol needs them later:
+		-- Procedure draw_unit needs them later:
 		if element (device_cursor).appearance = APPEARANCE_PCB then
 			device_name := key (device_cursor); -- like R1, IC100
 			device_value := element (device_cursor).value; -- like 100R or TL084
@@ -1001,7 +1001,7 @@ procedure draw_units is
 		use pac_devices_lib;
 
 		
-		procedure locate_symbol (unit_cursor : in type_unit_cursors) is
+		procedure query_unit (unit_cursor : in type_unit_cursors) is
 			use pac_units_external;
 			use pac_units_internal;
 
@@ -1012,7 +1012,6 @@ procedure draw_units is
 			use et_symbol_model;
 			use et_symbol_name;
 			use pac_symbols;
-			symbol_model : pac_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
 			symbol_cursor : pac_symbols.cursor;
 
 			
@@ -1024,12 +1023,11 @@ procedure draw_units is
 					
 					-- If the unit is external, we must fetch the symbol and the placeholders
 					-- via its model file:
-					symbol_model := element (unit_cursor.external).model;
-					locate_symbol (symbol_model, symbol_cursor);
+					symbol_cursor := get_symbol (unit_cursor.external);
 
 					fetch_placeholders_ext (symbol_cursor);
 						
-					draw_symbol (
+					draw_unit (
 						symbol		=> pac_symbols.element (symbol_cursor),
 
 						device_name		=> unit_add.device_pre,
@@ -1055,7 +1053,7 @@ procedure draw_units is
 					
 					fetch_placeholders_int (unit_cursor.internal);
 					
-					draw_symbol (
+					draw_unit (
 						symbol		=> element (unit_cursor.internal).symbol,
 
 						device_name		=> unit_add.device_pre,
@@ -1072,12 +1070,12 @@ procedure draw_units is
 						brightness		=> brightness,
 						preview			=> true);
 			end case;
-		end locate_symbol;
+		end query_unit;
 
 
 	begin
 		if unit_add.valid then
-			locate_symbol (locate_unit (unit_add.device, unit_add.name));
+			query_unit (locate_unit (unit_add.device, unit_add.name));
 		end if;
 	end draw_unit_being_added;
 
@@ -1094,7 +1092,7 @@ procedure draw_units is
 		use pac_devices_lib;
 
 		
-		procedure locate_symbol (unit_cursor : in type_unit_cursors) is
+		procedure query_unit (unit_cursor : in type_unit_cursors) is
 			use pac_units_external;
 			use pac_units_internal;
 
@@ -1105,7 +1103,6 @@ procedure draw_units is
 			use et_symbol_name;
 			use et_symbol_model;
 			use pac_symbols;
-			symbol_model : pac_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
 			symbol_cursor : pac_symbols.cursor;
 			
 		begin			
@@ -1115,13 +1112,12 @@ procedure draw_units is
 					
 					-- If the unit is external, we must fetch the symbol and the placeholders
 					-- via its model file:
-					symbol_model := element (unit_cursor.external).model;
-					locate_symbol (symbol_model, symbol_cursor);
+					symbol_cursor := get_symbol (unit_cursor.external);
 
 					fetch_placeholders_ext (symbol_cursor);
 						
-					draw_symbol (
-						symbol		=> pac_symbols.element (symbol_cursor),
+					draw_unit (
+						symbol			=> pac_symbols.element (symbol_cursor),
 
 						device_name		=> unit_fetch.device_pre,
 						unit_name		=> unit_fetch.name,
@@ -1146,8 +1142,8 @@ procedure draw_units is
 					
 					fetch_placeholders_int (unit_cursor.internal);
 					
-					draw_symbol (
-						symbol		=> element (unit_cursor.internal).symbol,
+					draw_unit (
+						symbol			=> element (unit_cursor.internal).symbol,
 
 						device_name		=> unit_fetch.device_pre,
 						unit_name		=> unit_fetch.name,
@@ -1163,12 +1159,12 @@ procedure draw_units is
 						brightness		=> brightness,
 						preview			=> true);
 			end case;
-		end locate_symbol;
+		end query_unit;
 
 
 	begin
 		if unit_fetch.valid then
-			locate_symbol (locate_unit (unit_fetch.device, unit_fetch.name));
+			query_unit (locate_unit (unit_fetch.device, unit_fetch.name));
 		end if;
 	end draw_unit_being_fetched;
 
