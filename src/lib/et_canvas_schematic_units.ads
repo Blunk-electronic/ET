@@ -364,7 +364,7 @@ package et_canvas_schematic_units is
 
 	-- Shows the available units of 
 	-- the selected device in a menu:
-	procedure show_fetch_window;
+	procedure show_fetch_menu;
 
 
 	

@@ -1516,7 +1516,7 @@ package body et_canvas_schematic_units is
 
 
 	
-	procedure show_fetch_window is
+	procedure show_fetch_menu is
 
 		object : constant type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
@@ -1593,6 +1593,7 @@ package body et_canvas_schematic_units is
 				end if;
 			end query_name;
 
+
 			
 		begin -- show_menu
 
@@ -1640,8 +1641,8 @@ package body et_canvas_schematic_units is
 
 
 		
-	begin -- show_fetch_window
-		put_line ("show_fetch_window");
+	begin -- show_fetch_menu
+		put_line ("show_fetch_menu");
 		
 
 		case object.cat is
@@ -1667,7 +1668,7 @@ package body et_canvas_schematic_units is
 				null;
 		end case;
 		
-	end show_fetch_window;
+	end show_fetch_menu;
 	
 
 
@@ -1805,14 +1806,14 @@ package body et_canvas_schematic_units is
 			-- then the flag edit_process_running is set true.
 
 			if edit_process_running then
-				show_fetch_window;
+				show_fetch_menu;
 			end if;
 		else
 			-- Here the clarification procedure ends.
 			-- An object has been selected
 			-- via procedure clarify_object.
 
-			show_fetch_window;
+			show_fetch_menu;
 		end if;
 
 
