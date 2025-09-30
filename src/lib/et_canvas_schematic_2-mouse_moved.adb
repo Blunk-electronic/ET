@@ -47,14 +47,12 @@ procedure mouse_moved (
 	point	: in type_vector_model) 
 is
 	use et_modes.schematic;
-	use pac_devices_lib;
 begin
 	case verb is
 		when VERB_ADD =>
 			case noun is
 				when NOUN_DEVICE =>
-					if et_canvas_schematic_units.unit_add.device /= pac_devices_lib.no_element then
-					-- CS if et_canvas_schematic_units.unit_add.valid then
+					if et_canvas_schematic_units.unit_add.valid then
 						redraw;
 					end if;
 
