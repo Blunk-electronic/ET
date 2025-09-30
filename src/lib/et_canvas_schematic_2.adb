@@ -521,7 +521,7 @@ package body et_canvas_schematic_2 is
 
 			unit_add.valid := false;
 			
-			-- CS unit_fetch.valid := false;
+			unit_fetch.valid := false;
 			
 			reset_selections; -- CS
 
@@ -539,10 +539,13 @@ package body et_canvas_schematic_2 is
 			update_mode_display;
 
 			reset_unit_add; -- after adding a device
-			-- CS reset_unit_fetch
+			reset_unit_fetch; -- after fetchung a unit
 			
 			status_enter_verb;
+
 			clear_out_properties_box;
+			box_package_variant_active := false;
+			
 			reset_editing_process;
 		end level_2;
 

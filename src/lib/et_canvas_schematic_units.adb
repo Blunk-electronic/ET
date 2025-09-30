@@ -1303,6 +1303,11 @@ package body et_canvas_schematic_units is
 		
 		-- Before inserting any widgets, the properties box must be cleared:
 		clear_out_properties_box;
+		box_package_variant_active := false;
+
+		-- Since the device model selection (re)starts here,
+		-- a possible preview must be turned off:
+		unit_add.valid := false;
 
 		-- Build the elements of the properties bar:
 		make_button_directory;

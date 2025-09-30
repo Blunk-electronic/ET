@@ -256,7 +256,13 @@ package et_canvas_schematic_2 is
 	-- This procedure resets a lot of stuff and should
 	-- be called when the operator presses the ESCAPE key.
 	-- Here the commands to abort any pending 
-	-- operations related to the canvas should be placed:
+	-- operations related to the canvas can be found.
+	-- Reset or cleared are those things:
+	-- - proposed objects
+	-- - "valid" - flags of preview units to be added, copied or fetched
+	-- - flags that indicate whether a window or a widget (like a package variant box)
+	--   is being shown.
+	-- - status bar
 	procedure reset;
 
 	
