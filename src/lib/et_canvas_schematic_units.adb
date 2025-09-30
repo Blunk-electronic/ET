@@ -933,6 +933,8 @@ package body et_canvas_schematic_units is
 		-- (cursor or mouse):
 		unit_add.valid := true;
 
+		focus_canvas;
+		
 		log_indentation_down;
 	end cb_package_variant_selected;
 
@@ -1188,6 +1190,7 @@ package body et_canvas_schematic_units is
 		-- (cursor or mouse):
 		unit_add.valid := true;
 
+		focus_canvas;
 	end cb_device_model_selected;
 
 
