@@ -259,6 +259,12 @@ package et_canvas_schematic_units is
 	unit_add : type_unit_being_added;
 
 
+	-- Rotates the unit_fetch by 90 degrees counter-clockwise
+	-- if it is valid:	
+	procedure rotate_unit_add;
+
+
+	
 	-- Resets unit_add to its default values:
 	procedure reset_unit_add;
 
@@ -393,6 +399,10 @@ package et_canvas_schematic_units is
 	-- all the required preliminary information is stored here:
 	unit_fetch : type_unit_fetch;
 
+
+	-- Rotates the unit_fetch by 90 degrees counter-clockwise
+	-- if it is valid:	
+	procedure rotate_unit_fetch;
 
 	
 	-- Resets the information of the unit_fetch:

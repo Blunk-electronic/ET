@@ -881,6 +881,14 @@ package body et_canvas_schematic_units is
 
 
 
+	procedure rotate_unit_add is begin
+		if unit_add.valid then
+			add (unit_add.rotation, 90.0);
+		end if;
+	end;
+
+	
+
 	
 	procedure reset_unit_add is begin
 		unit_add := (others => <>);
@@ -1659,6 +1667,14 @@ package body et_canvas_schematic_units is
 
 
 
+
+	procedure rotate_unit_fetch is begin
+		if unit_fetch.valid then
+			add (unit_fetch.rotation, 90.0);
+		end if;
+	end;
+		
+	
 
 	
 

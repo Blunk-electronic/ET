@@ -38,10 +38,8 @@
 --
 
 
-with et_text;
+-- with et_text;
 
-with et_device_model;
-with et_device_library;			use et_device_library;
 with et_device_placeholders;
 
 
@@ -275,12 +273,12 @@ is
 
 	
 	-- If right button clicked, then the operator is clarifying:
+	-- CS: Rotate objects (while adding, copying, fetching, ...)
 	procedure right_button is 
 		use et_canvas_schematic_nets;
 		use et_canvas_schematic_units;
 
 		use pac_path_and_bend;
-		use et_text;
 	begin
 		case verb is
 			when VERB_COPY =>

@@ -36,13 +36,7 @@
 --   history of changes:
 --
 
-with et_modes.schematic;				use et_modes.schematic;
-with et_device_library;					use et_device_library;
 with et_device_placeholders;			use et_device_placeholders;
-with et_net_names;						use et_net_names;
-with et_net_labels;						use et_net_labels;
-with et_nets;							use et_nets;
-with et_text;							use et_text;
 with et_schematic_verb_noun_keys;		use et_schematic_verb_noun_keys;
 
 
@@ -56,6 +50,7 @@ is
 	use gdk.types.keysyms;
 
 	use et_modes;
+	use et_modes.schematic;
 	use et_canvas_schematic_nets;
 	use et_canvas_schematic_units;
 
@@ -475,9 +470,7 @@ is
 
 
 	
-	procedure add is 
-		use pac_devices_lib;
-	begin
+	procedure add is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_device =>
@@ -519,9 +512,7 @@ is
 			when key_rotate =>
 				case noun is
 					when NOUN_DEVICE =>
-						if unit_add.valid then
-							add (unit_add.rotation, 90.0);
-						end if;
+						rotate_unit_add;
 
 					when others => null;						
 				end case;
@@ -533,9 +524,7 @@ is
 
 
 
-	procedure copy is 
-		use pac_devices_lib;
-	begin
+	procedure copy is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_device =>
@@ -570,16 +559,25 @@ is
 						
 				end case;
 
+			-- If the operator wants to rotate the unit
+			-- being added, then add 90 degrees to the
+			-- temporily unit:
+			when key_rotate =>
+				case noun is
+					when NOUN_DEVICE =>
+						rotate_unit_add;
+
+					when others => null;						
+				end case;
 				
 			when others => null;
 		end case;
 	end copy;
 
+
 	
 	
-	procedure fetch is 
-		use pac_devices_lib;
-	begin
+	procedure fetch is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_unit =>
@@ -608,15 +606,14 @@ is
 					when others => null;						
 				end case;
 
+				
 			-- If the operator wants to rotate the unit
 			-- being fetched, then add 90 degrees to the
 			-- temporily unit:
 			when key_rotate =>
 				case noun is
 					when NOUN_UNIT =>
-						if unit_fetch.valid then
-							add (unit_fetch.rotation, 90.0);
-						end if;
+						rotate_unit_fetch;
 
 					when others => null;						
 				end case;
