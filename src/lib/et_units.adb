@@ -63,13 +63,13 @@ package body et_units is
 		-- HORIZONTAL or VERTICAL so that the text is readable
 		-- from the right or from the front of the drawing.
 		placeholders.name.rotation := 
-			snap (to_rotation (placeholders.name.rotation) + rotation);
+			to_rotation_doc (to_rotation (placeholders.name.rotation) + rotation);
 
 		placeholders.value.rotation := 
-			snap (to_rotation (placeholders.value.rotation) + rotation);
+			to_rotation_doc (to_rotation (placeholders.value.rotation) + rotation);
 
 		placeholders.purpose.rotation := 
-			snap (to_rotation (placeholders.purpose.rotation) + rotation);
+			to_rotation_doc (to_rotation (placeholders.purpose.rotation) + rotation);
 	end rotate_placeholders;
 
 	
@@ -124,6 +124,20 @@ package body et_units is
 	end get_default_placeholders;
 
 	
+
+
+	function is_real (
+		unit : in type_unit)
+		return boolean
+	is begin
+		if unit.appearance = APPEARANCE_PCB then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+
 	
 	
 	

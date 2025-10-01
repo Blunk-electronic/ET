@@ -1841,7 +1841,7 @@ package body et_kicad_libraries is
 
 				
 			begin -- to_text
-				text.rotation := snap (- to_degrees (f (line,2)));
+				text.rotation := to_rotation_doc (- to_degrees (f (line,2)));
 				
 				set (text.position, AXIS_X, mil_to_distance (mil => f (line,3)));
 				set (text.position, AXIS_Y, mil_to_distance (mil => f (line,4)));
@@ -2585,7 +2585,7 @@ package body et_kicad_libraries is
 						meaning		=> et_device_placeholders.NAME,
 						position	=> field_reference.position,
 						--style		=> field_reference.style,
-						rotation	=> snap (field_reference.rotation),
+						rotation	=> to_rotation_doc (field_reference.rotation),
 						size		=> field_reference.size,
 						--line_width	=> field_reference.line_width,
 						alignment	=> field_reference.alignment);
@@ -2595,7 +2595,7 @@ package body et_kicad_libraries is
 						meaning		=> et_device_placeholders.VALUE,
 						position	=> field_value.position,
 						--style		=> field_value.style,
-						rotation	=> snap (field_value.rotation),
+						rotation	=> to_rotation_doc (field_value.rotation),
 						size		=> field_value.size,
 						--line_width	=> field_value.line_width,
 						alignment	=> field_value.alignment);

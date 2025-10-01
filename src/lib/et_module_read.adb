@@ -1139,7 +1139,7 @@ package body et_module_read is
 				
 			elsif kw = keyword_rotation then -- rotation 0.0
 				expect_field_count (line, 2);
-				net_label_rotation := snap (to_rotation (f (line, 2)));
+				net_label_rotation := to_rotation_doc (to_rotation (f (line, 2)));
 
 				
 			elsif kw = keyword_size then -- size 1.3

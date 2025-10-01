@@ -2173,7 +2173,7 @@ package body et_canvas_schematic_units is
 				-- Rotates the placeholder indicated by category
 				-- by 90 degree. Since the rotation of placeholders
 				-- is documentational, the rotation is always converted
-				-- to HORIZONTAL or VERTICAL via function "snap":
+				-- to HORIZONTAL or VERTICAL via function "to_rotation_doc":
 				procedure rotate_placeholder (
 					name	: in pac_unit_name.bounded_string; -- A
 					unit	: in out type_unit) 
@@ -2184,15 +2184,15 @@ package body et_canvas_schematic_units is
 					case category is
 						when et_device_placeholders.NAME =>
 							r := unit.placeholders.name.rotation + rotation;
-							unit.placeholders.name.rotation := snap (r);
+							unit.placeholders.name.rotation := to_rotation_doc (r);
 							
 						when VALUE =>
 							r := unit.placeholders.value.rotation + rotation;
-							unit.placeholders.value.rotation := snap (r);
+							unit.placeholders.value.rotation := to_rotation_doc (r);
 							
 						when PURPOSE =>
 							r := unit.placeholders.purpose.rotation + rotation;
-							unit.placeholders.purpose.rotation := snap (r);
+							unit.placeholders.purpose.rotation := to_rotation_doc (r);
 
 					end case;
 				end rotate_placeholder;

@@ -331,11 +331,15 @@ package et_text is
 		-- - If rotation is 135 degree, then the return is VERTICAL.		
 		-- - If rotation is 170 degree, then the return is HORIZONTAL.		
 		-- - If rotation is 270 degree, then the return is VERTICAL.		
-		function snap (rotation : in pac_geometry.type_rotation) return type_rotation_documentation;
+		function to_rotation_doc (
+			rotation : in pac_geometry.type_rotation) 
+			return type_rotation_documentation;
 
 		
 		-- Converts a string like "0.0" or "90.0" to HORIZONTAL or VERTICAL.
-		function to_rotation_doc (rotation : in string) return type_rotation_documentation;		
+		function to_rotation_doc (
+			rotation : in string) 
+			return type_rotation_documentation;		
 
 
 		

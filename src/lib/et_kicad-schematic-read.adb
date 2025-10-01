@@ -2644,7 +2644,7 @@ is
 									meaning		=> et_device_placeholders.NAME,
 									position	=> field_reference.position,
 									--style		=> field_reference.style,
-									rotation	=> snap (field_reference.rotation),
+									rotation	=> to_rotation_doc (field_reference.rotation),
 									size		=> field_reference.size,
 									alignment	=> field_reference.alignment),
 
@@ -2653,7 +2653,7 @@ is
 									meaning		=> et_device_placeholders.VALUE,
 									position	=> field_value.position,
 									--style		=> field_value.style,
-									rotation	=> snap (field_value.rotation),
+									rotation	=> to_rotation_doc (field_value.rotation),
 									size		=> field_value.size,
 									alignment	=> field_value.alignment)
 									),
@@ -2683,7 +2683,7 @@ is
 								meaning		=> et_device_placeholders.NAME,
 								position	=> field_reference.position,
 								--style		=> field_reference.style,
-								rotation	=> snap (field_reference.rotation),
+								rotation	=> to_rotation_doc (field_reference.rotation),
 								size		=> field_reference.size,
 								alignment	=> field_reference.alignment),
 
@@ -2692,7 +2692,7 @@ is
 								meaning		=> et_device_placeholders.VALUE,
 								position	=> field_value.position,
 								--style		=> field_value.style,
-								rotation	=> snap (field_value.rotation),
+								rotation	=> to_rotation_doc (field_value.rotation),
 								size		=> field_value.size,
 								alignment	=> field_value.alignment)
 							),

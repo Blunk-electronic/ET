@@ -452,6 +452,8 @@ package body et_text is
 			return to_rotation (rotation_doc) + rotation_add;
 		end;
 
+
+		
 		
 		procedure warning_rotation_outside_range is
 		begin
@@ -459,7 +461,12 @@ package body et_text is
 		end;
 
 		
-		function snap (rotation : in type_rotation) return type_rotation_documentation is
+		
+		
+		function to_rotation_doc (
+			rotation : in type_rotation) 
+			return type_rotation_documentation
+		is
 			offset : constant type_rotation := 45.0 - type_rotation'small;
 			r1 : type_rotation;
 			r2 : float;
@@ -473,9 +480,14 @@ package body et_text is
 			else return VERTICAL;
 			end if;
 		end;
-	
+
+
 		
-		function to_rotation_doc (rotation : in string) return type_rotation_documentation is
+		
+		function to_rotation_doc (
+			rotation : in string) 
+			return type_rotation_documentation 
+		is
 			r : constant type_rotation := to_rotation (rotation);
 		begin
 			if r = zero_rotation then
@@ -486,7 +498,7 @@ package body et_text is
 				
 			else
 				warning_rotation_outside_range;
-				return snap (r);
+				return to_rotation_doc (r);
 			end if;
 		end;
 

@@ -2576,7 +2576,7 @@ package body et_kicad_to_native is
 				--text_native.position := et_schematic_coordinates.pac_geometry_2.type_vector_model (text_kicad.position);
 				text_native.position := et_kicad_coordinates.get_point (text_kicad.position);
 				text_native.sheet := et_kicad_coordinates.sheet (text_kicad.position);
-				text_native.rotation := snap (text_kicad.rotation);
+				text_native.rotation := to_rotation_doc (text_kicad.rotation);
 				
 				-- copy the content
 				text_native.content := text_kicad.content;
