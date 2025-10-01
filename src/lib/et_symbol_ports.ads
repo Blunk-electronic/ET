@@ -177,6 +177,13 @@ package et_symbol_ports is
 	use pac_symbol_ports;
 
 
+
+	function get_port_name (
+		port_cursor : in pac_symbol_ports.cursor)
+		return pac_port_name.bounded_string;
+
+	
+
 	-- Returns the total number of ports in the given list:
 	function get_count (
 		ports : in pac_symbol_ports.map)

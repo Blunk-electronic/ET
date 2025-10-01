@@ -44,6 +44,17 @@ with ada.characters.handling;	use ada.characters.handling;
 package body et_symbol_ports is
 
 
+	function get_port_name (
+		port_cursor : in pac_symbol_ports.cursor)
+		return pac_port_name.bounded_string
+	is begin
+		return key (port_cursor);
+	end;
+
+
+
+
+	
 	function get_count (
 		ports : in pac_symbol_ports.map)
 		return natural
