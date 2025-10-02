@@ -50,7 +50,6 @@ with ada.calendar.formatting;		use ada.calendar.formatting;
 
 with et_system_info;
 with et_domains;
-with et_primitive_objects;			use et_primitive_objects;
 with et_directions;					use et_directions;
 with et_command_processor;
 with et_modes;

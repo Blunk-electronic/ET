@@ -40,6 +40,7 @@
 --
 
 --with ada.text_io;					use ada.text_io;
+with et_primitive_objects;			use et_primitive_objects;
 
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
 with et_fill_zones;					use et_fill_zones;

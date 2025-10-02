@@ -36,12 +36,13 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
+with ada.text_io;					use ada.text_io;
 
-with et_silkscreen;				use et_silkscreen;
-with et_colors;					use et_colors;
-with et_board_ops.text;			use et_board_ops.text;
-with et_pcb_placeholders;		use et_pcb_placeholders;
+with et_primitive_objects;			use et_primitive_objects;
+with et_silkscreen;					use et_silkscreen;
+with et_colors;						use et_colors;
+with et_board_ops.text;				use et_board_ops.text;
+with et_pcb_placeholders;			use et_pcb_placeholders;
 
 
 separate (et_canvas_board_2)

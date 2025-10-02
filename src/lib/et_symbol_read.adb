@@ -42,7 +42,6 @@ with ada.text_io;				use ada.text_io;
 
 with ada.exceptions;
 
-with et_primitive_objects;			--use et_primitive_objects;
 with et_directions;					use et_directions;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_system_info;
@@ -496,7 +495,6 @@ package body et_symbol_read is
 							when SEC_DRAW =>
 								declare
 									kw : string := f (line, 1);
-									use et_primitive_objects;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_start then -- start x 1 y 2
@@ -527,7 +525,6 @@ package body et_symbol_read is
 						case stack.parent is
 							when SEC_DRAW =>
 								declare
-									use et_primitive_objects;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -570,7 +567,6 @@ package body et_symbol_read is
 						case stack.parent is
 							when SEC_DRAW =>
 								declare
-									use et_primitive_objects;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -683,7 +679,6 @@ package body et_symbol_read is
 							when SEC_PORTS =>
 								declare
 									kw : string := f (line, 1);
-									use et_primitive_objects;
 									use et_port_visibility;
 									use et_port_sensitivity;
 									use et_port_strength;

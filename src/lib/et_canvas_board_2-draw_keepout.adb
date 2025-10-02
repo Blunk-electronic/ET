@@ -36,10 +36,11 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
+with ada.text_io;					use ada.text_io;
 
-with et_keepout;				use et_keepout;
-with et_colors;					use et_colors;
+with et_primitive_objects;			use et_primitive_objects;
+with et_keepout;					use et_keepout;
+with et_colors;						use et_colors;
 with et_modes.board;
 with et_canvas_tool;
 

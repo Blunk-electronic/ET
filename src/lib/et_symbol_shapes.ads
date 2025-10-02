@@ -43,12 +43,11 @@
 --
 
 
-with ada.containers; 			use ada.containers;
+with ada.containers; 					use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_schematic_geometry;				use et_schematic_geometry;
 
-with et_primitive_objects;				use et_primitive_objects;
 with et_directions;						use et_directions;
 
 

@@ -42,7 +42,6 @@ with ada.text_io;				use ada.text_io;
 
 with ada.exceptions;
 
-with et_primitive_objects;			--use et_primitive_objects;
 with et_directions;					use et_directions;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_system_info;
@@ -102,7 +101,6 @@ package body et_symbol_write is
 		
 		
 		procedure write_line (cursor : in pac_symbol_lines.cursor) is 
-			use et_primitive_objects;
 		begin
 			section_mark (section_line, HEADER);
 			write (keyword => keyword_start, parameters => to_string (get_A (cursor), FORMAT_2));
@@ -113,7 +111,6 @@ package body et_symbol_write is
 
 		
 		procedure write_arc (cursor : in pac_symbol_arcs.cursor) is 
-			use et_primitive_objects;
 		begin
 			section_mark (section_arc, HEADER);
 			write (keyword => keyword_center, parameters => to_string (get_center (cursor), FORMAT_2));
@@ -126,7 +123,6 @@ package body et_symbol_write is
 
 		
 		procedure write_circle (cursor : in pac_symbol_circles.cursor) is 
-			use et_primitive_objects;
 			use et_schematic_geometry.pac_geometry_sch;
 		begin
 			section_mark (section_circle, HEADER);

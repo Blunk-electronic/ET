@@ -36,10 +36,11 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
+with ada.text_io;					use ada.text_io;
 
-with et_pcb_contour;			use et_pcb_contour;
-with et_colors.board;			use et_colors.board;
+with et_primitive_objects;			use et_primitive_objects;
+with et_pcb_contour;				use et_pcb_contour;
+with et_colors.board;				use et_colors.board;
 
 
 separate (et_canvas_board_2)
