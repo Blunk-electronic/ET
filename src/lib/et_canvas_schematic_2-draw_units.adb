@@ -163,104 +163,142 @@ procedure draw_units is
 
 
 		
+		-- This procedure draws the line of a port candidate.
+		-- The start of the line is where a net segment is attached to.
+		-- The end of the line points toward the body of the unit.
+		-- Depending on the rotation of the port (as defined in the
+		-- device model) the start (A) and end (B) of the line is computed here.
 		procedure draw_port (c : in pac_symbol_ports.cursor) is
 			port : type_symbol_port renames element (c);
+
+			-- For the rotation of port and terminal name, the
+			-- total rotation is required:
+			rotation_total : constant type_rotation := add (port.rotation, unit_rotation);
 			
+			-- This is the start point of the line:
 			A : type_vector_model := port.position;
+
+			-- This is the end point of the line.
+			-- It will be computed according to the rotation of
+			-- the port (as given by the device model) and the
+			-- length of the line (port.length):
 			B : type_vector_model := port.position;
 
-			line : type_line;
-			circle : type_circle;
-			
+			-- The position of the origin of port
+			-- and terminal name:
 			pos_port_name		: type_vector_model;
 			pos_terminal_name	: type_vector_model;
 
-			use et_alignment;
-			use et_port_visibility;
-			
 
-			-- Compute following positions according to port rotation and length:
-			-- - end point of port
-			-- - position of port name
-			-- - position of terminal name (Distance from start point only.
-			--   distance from line of port will be computed later 
-			--   by procedure draw_terminal_name.)
+			-- Compute the following positions according to rotation and length of the port:
+			-- - start and end point of the line (The end points towards the unit body.)
+			-- - From start and end of the line (A/B) the preliminary positions of
+			--   port name and terminal name are computed.
 			--
-			-- NOTE: These computations leave the rotation of the unit outside. For the moment we
-			-- assume the unit is not rotated. We look at the default rotation of the ports.
-			-- The the final port positions will be computed later.
-			procedure compute_positions is 
-			begin
+			-- NOTE: Regarding the position of terminal and port name:
+			-- For the moment, the computations below leave the rotation of the 
+			-- unit in the schematic outside. For the moment we assume that the unit is not rotated
+			-- in the schematic. We look at the default rotation of the ports as they
+			-- are defined in the device model.
+			-- The final coordinates of terminal and port name will be computed later.
+			procedure compute_positions is begin
+				
 				if port.rotation = 0.0 then -- end point points to the left
+					-- Compute the end point. It is left of the start point:
 					set (axis => AXIS_X, value => get_x (A) - port.length, point => B);
 
-					-- compute the position of the port name:
+					-- Compute the position of the port name. 
+					-- It is some distance left of the end point (usually inside the body of the unit):
 					pos_port_name := B;
-					set (axis => AXIS_X, value => get_x (B) - port_name_spacing, point => pos_port_name);
+					set (axis => AXIS_X, 
+						 value => get_x (B) - port_name_spacing, point => pos_port_name);
 
-					-- Compute the position of the origin of the terminal name regarding its distance
-					-- from the start point:
+					-- Compute the position of the terminal name.
+					-- It is some distance left of the start point (usually outside the body of the unit):
 					pos_terminal_name := A;				
-					set (axis => AXIS_X, value => get_x (A) - terminal_name_spacing_start, point => pos_terminal_name);
+					set (axis => AXIS_X, 
+						 value => get_x (A) - terminal_name_spacing_start, point => pos_terminal_name);
+
 					
 				elsif port.rotation = 90.0 then -- end point points downwards
+					-- Compute the end point. It is below the start point:
 					set (axis => AXIS_Y, value => get_y (A) - port.length, point => B);
 
-					-- compute the position of the port name:
+					-- Compute the position of the port name. 
+					-- It is some distance below the end point (usually inside the body of the unit):
 					pos_port_name := B;
-					set (axis => AXIS_Y, value => get_y (B) - port_name_spacing, point => pos_port_name);
+					set (axis => AXIS_Y, 
+						 value => get_y (B) - port_name_spacing, point => pos_port_name);
 
-					-- Compute the position of the origin of the terminal name regarding its distance
-					-- from the start point:
+					-- Compute the position of the terminal name.
+					-- It is some distance below the start point (usually outside the body of the unit):
 					pos_terminal_name := A;				
-					set (axis => AXIS_Y, value => get_y (A) - terminal_name_spacing_start, point => pos_terminal_name);
+					set (axis => AXIS_Y, 
+						 value => get_y (A) - terminal_name_spacing_start, point => pos_terminal_name);
+
 					
 				elsif port.rotation = 180.0 then  -- end point points to the left
+					-- Compute the end point. It is right of the start point:
 					set (axis => AXIS_X, value => get_x (A) + port.length, point => B);
 
-					-- compute the position of the port name:
+					-- Compute the position of the port name. 
+					-- It is some distance right of the end point (usually inside the body of the unit):
 					pos_port_name := B;
-					set (axis => AXIS_X, value => get_x (B) + port_name_spacing, point => pos_port_name);
+					set (axis => AXIS_X, 
+						 value => get_x (B) + port_name_spacing, point => pos_port_name);
 
-					-- Compute the position of the origin of the terminal name regarding its distance
-					-- from the start point:
+					-- Compute the position of the terminal name.
+					-- It is some distance right of the start point (usually outside the body of the unit):
 					pos_terminal_name := A;				
-					set (axis => AXIS_X, value => get_x (A) + terminal_name_spacing_start, point => pos_terminal_name);
+					set (axis => AXIS_X, 
+						 value => get_x (A) + terminal_name_spacing_start, point => pos_terminal_name);
+
 					
 				elsif port.rotation = 270.0 or port.rotation = -90.0 then -- end point points upwards
+					-- Compute the end point. It is above the start point:
 					set (axis => AXIS_Y, value => get_y (A) + port.length, point => B);
 
-					-- compute the position of the port name:
+					-- Compute the position of the port name. 
+					-- It is some distance above the end point (usually inside the body of the unit):
 					pos_port_name := B;
-					set (axis => AXIS_Y, value => get_y (B) + port_name_spacing, point => pos_port_name);
+					set (axis => AXIS_Y, 
+						 value => get_y (B) + port_name_spacing, point => pos_port_name);
 
-					-- Compute the position of the origin of the terminal name regarding its distance
-					-- from the start point:
+					-- Compute the position of the terminal name.
+					-- It is some distance above the start point (usually outside the body of the unit):
 					pos_terminal_name := A;
-					set (axis => AXIS_Y, value => get_y (A) + terminal_name_spacing_start, point => pos_terminal_name);
+					set (axis => AXIS_Y, 
+						 value => get_y (A) + terminal_name_spacing_start, point => pos_terminal_name);
+
 					
 				else
 					raise constraint_error; -- CS do something helpful. should never happen
 				end if;
-
-
 			end compute_positions;
 
 			
 
 			-- Draws the line and the circle of the port:
-			procedure draw_port is begin
+			procedure draw_line_and_circle is 
+				-- The line that represents the port:
+				line : type_line;
+
+				-- The circle at the start of the line where net
+				-- segments are attached to:
+				circle : type_circle;
+			begin
+
+				-- Set start and and points of the line:
 				set_A (line, A);
 				set_B (line, B);
 
-				
-				-- Draw the line of the port:
+				-- Draw the line:
 				set_color_symbols (brightness);
 				draw_line (line, (unit_position, unit_rotation), port_line_width,
 					do_stroke => true);
 
-
-				-- Draw the circle around a port if the layer is enabled:
+				-- Draw the circle around the start point
+				-- of the line if the port-layer is enabled:
 				if ports_enabled then
 					-- put_line ("draw port");
 					
@@ -268,10 +306,11 @@ procedure draw_units is
 					-- set color and line width
 					set_color_ports (brightness);
 
+					-- Set center and radius of the circle:
 					set_center (circle, get_A (line));
 					set_radius (circle, port_circle_radius);
 
-					-- the circle is not filled -> argument "filled" is NO
+					-- Draw the circle. It is not filled:
 					draw_circle (
 						circle		=> circle, 
 						pos			=> (unit_position, unit_rotation), 
@@ -289,19 +328,22 @@ procedure draw_units is
 		-- 					port_name		=> key (c));
 					
 				end if;
-			end draw_port;
+			end draw_line_and_circle;
 
 			
 			
-			
+			-- This procedure draws the port name at its final
+			-- position taking into account the rotation of the unit in the schematic:
 			procedure draw_port_name is
 				use et_port_names;
 				use et_text;
+
 				-- The vertical alignment is untouched and is always CENTER.
 				-- The horizontal alignment depends on the total rotation
 				-- which is a sum of port rotation and unit rotation.
+				use et_alignment;
 				alignment : type_text_alignment := (horizontal => ALIGN_CENTER, vertical => ALIGN_CENTER);
-				rotation_total : constant type_rotation := add (port.rotation, unit_rotation);
+				
 
 				use pac_draw_text;
 			begin
@@ -345,15 +387,17 @@ procedure draw_units is
 
 			end draw_port_name;
 
-
 			
+
+			-- This procedure draws the terminal name at its final
+			-- position taking into account the rotation of the unit in the schematic:
 			procedure draw_terminal_name is
 				use et_text;
 				-- The vertical alignment is untouched and is always BOTTOM.
 				-- The horizontal alignment depends on the total rotation
 				-- which is a sum of port rotation and unit rotation.
+				use et_alignment;
 				alignment : type_text_alignment := (horizontal => ALIGN_CENTER, vertical => ALIGN_BOTTOM);
-				rotation_total : constant type_rotation := add (port.rotation, unit_rotation);
 
 				use et_terminals;
 				properties : type_port_properties_access;
@@ -364,30 +408,42 @@ procedure draw_units is
 				-- Rotate the position of the terminal name by the unit rotation:
 				rotate_by (pos_terminal_name, unit_rotation);
 				
+				-- Move the name by the unit position:
+				move_by (pos_terminal_name, unit_position);
+
+				-- Now some fine adjustment is required to place the terminal
+				-- name some distance away from the line of the port.
 				-- Compute the position of the origin of the terminal name regarding 
 				-- its distance from the line of the port:
+				
 				if rotation_total = 0.0 or rotation_total = 360.0 or rotation_total = -360.0 then
-					set (axis => AXIS_Y, value => get_y (A) + terminal_name_spacing_line, point => pos_terminal_name);
+					-- The line is horizontal. So the terminal name must be 
+					-- moved up above the line by some distance:
+					move (pos_terminal_name, DIR_UP, terminal_name_spacing_line);
 					alignment.horizontal := ALIGN_RIGHT;
 
 				elsif rotation_total = 90.0 or rotation_total = -270.0 then
-					set (axis => AXIS_X, value => get_x (A) - terminal_name_spacing_line, point => pos_terminal_name);
+					-- The line is vertical. So the terminal name must be 
+					-- moved left of the line by some distance:
+					move (pos_terminal_name, DIR_LEFT, terminal_name_spacing_line);
 					alignment.horizontal := ALIGN_RIGHT;
 					
 				elsif rotation_total = 180.0 or rotation_total = -180.0 then
-					set (axis => AXIS_Y, value => get_y (A) + terminal_name_spacing_line, point => pos_terminal_name);
+					-- The line is horizontal. So the terminal name must be 
+					-- moved up above the line by some distance:
+					move (pos_terminal_name, DIR_UP, terminal_name_spacing_line);
 					alignment.horizontal := ALIGN_LEFT;
 					
 				elsif rotation_total = -90.0 or rotation_total = 270.0 then
-					set (axis => AXIS_X, value => get_x (A) - terminal_name_spacing_line, point => pos_terminal_name);
+					-- The line is vertical. So the terminal name must be 
+					-- moved left of the line by some distance:
+					move (pos_terminal_name, DIR_LEFT, terminal_name_spacing_line);
 					alignment.horizontal := ALIGN_LEFT;
 					
 				else
 					raise constraint_error; -- CS should never happen
 				end if;
 
-				-- Move the name by the unit position:
-				move_by (pos_terminal_name, unit_position);
 				
 				set_color_symbols (brightness);
 
@@ -415,22 +471,26 @@ procedure draw_units is
 
 			end draw_terminal_name;
 
+
+			use et_port_visibility;
+
 			
 		begin
-			compute_positions; -- of port and terminal name
+			-- Compute preliminary positions of terminal and port names.
+			-- Compute start and end points of the line:
+			compute_positions;
 	
-			draw_port; -- line and circle
-
+			draw_line_and_circle;
 				
-			-- draw port name
+			-- Draw port name if it is set to visible in the device model:
 			if port.port_name_visible = YES then
 				draw_port_name;
 			end if;
 
 			-- If this is a preview, then no terminal name is to be drawn.
 			-- Otherwise, draw terminal name:
-			-- Draw terminal name if this is the symbol of a real device. 
-			-- Virtual symbols do not have terminal names.
+			-- Draw the terminal name if this is the symbol of a real device. 
+			-- Virtual symbols do not have terminals and thus no terminal names.
 			if not preview then
 				if is_real (symbol) and then port.terminal_name_visible = YES then
 					draw_terminal_name;
