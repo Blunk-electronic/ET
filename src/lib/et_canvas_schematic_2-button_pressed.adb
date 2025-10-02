@@ -394,9 +394,9 @@ is
 				
 			when VERB_ROTATE =>
 				case noun is
-					when NOUN_NAME | NOUN_VALUE | NOUN_PURPOSE => 
+					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE => 
 						if clarification_pending then
-							clarify_placeholder;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 
 					when NOUN_UNIT =>

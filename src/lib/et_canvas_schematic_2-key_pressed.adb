@@ -261,23 +261,23 @@ is
 				noun := NOUN_NET_LABEL;
 				set_status (et_canvas_schematic_nets.status_move_label);
 
-			when GDK_LC_n => -- CS
+			when key_noun_name =>
 				noun := NOUN_NAME;					
-				set_status (et_canvas_schematic_units.status_move);
+				set_status (et_canvas_schematic_units.status_move_placeholder);
 
-			when GDK_LC_p => -- CS
+			when key_noun_purpose =>
 				noun := NOUN_PURPOSE;					
-				set_status (et_canvas_schematic_units.status_move);
+				set_status (et_canvas_schematic_units.status_move_placeholder);
 				
 			when key_noun_unit =>
 				noun := NOUN_UNIT;
-				set_status (et_canvas_schematic_units.status_move);
+				set_status (et_canvas_schematic_units.status_move_placeholder);
 
 				-- When moving units, we enforce the default grid
 				-- and snap the cursor position to the default grid:
 				reset_grid_and_cursor;
 				
-			when GDK_LC_v => -- CS
+			when key_noun_value =>
 				noun := NOUN_VALUE;					
 				set_status (et_canvas_schematic_units.status_move);
 
@@ -391,20 +391,19 @@ is
 	procedure rotate is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
-			when GDK_LC_n => -- CS
+			when key_noun_name =>
 				noun := NOUN_NAME;					
 				set_status (et_canvas_schematic_units.status_rotate_placeholder);
 
-			when GDK_LC_p => -- CS
+			when key_noun_purpose =>
 				noun := NOUN_PURPOSE;					
 				set_status (et_canvas_schematic_units.status_rotate_placeholder);
-
 				
 			when key_noun_unit =>
 				noun := NOUN_UNIT;					
 				set_status (et_canvas_schematic_units.status_rotate);
 
-			when GDK_LC_v => -- CS
+			when key_noun_value =>
 				noun := NOUN_VALUE;					
 				set_status (et_canvas_schematic_units.status_rotate_placeholder);
 
@@ -412,35 +411,11 @@ is
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when key_space =>
 				case noun is
-					when NOUN_NAME =>
-						if not clarification_pending then
-							rotate_placeholder (
-								point		=> get_cursor_position,
-								category	=> NAME);
-						else
-							rotate_selected_placeholder (NAME);
-						end if;
-						
-					when NOUN_PURPOSE =>
-						if not clarification_pending then
-							rotate_placeholder (
-								point		=> get_cursor_position,
-								category	=> PURPOSE);
-						else
-							rotate_selected_placeholder (PURPOSE);
-						end if;
+					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
+						et_canvas_schematic_units.rotate_object (point);
 
 					when NOUN_UNIT =>
 						et_canvas_schematic_units.rotate_object (point);
-						
-					when NOUN_VALUE =>
-						if not clarification_pending then
-							rotate_placeholder (
-								point		=> get_cursor_position,
-								category	=> VALUE);
-						else
-							rotate_selected_placeholder (VALUE);
-						end if;
 						
 					when others => null;
 				end case;
@@ -449,9 +424,9 @@ is
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
-					when NOUN_NAME | NOUN_VALUE | NOUN_PURPOSE => 
+					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE => 
 						if clarification_pending then
-							clarify_placeholder;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 
 					when NOUN_UNIT =>

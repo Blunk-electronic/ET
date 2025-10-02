@@ -1232,6 +1232,7 @@ package body et_schematic_ops.units is
 	is
 		use pac_unit_name;
 
+		-- CS rework
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
@@ -1383,6 +1384,8 @@ package body et_schematic_ops.units is
 	is
 		use pac_unit_name;
 
+		-- CS rework
+		
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;

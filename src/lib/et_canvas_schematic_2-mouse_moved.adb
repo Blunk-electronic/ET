@@ -85,7 +85,7 @@ begin
 		when VERB_DRAG | VERB_MOVE | VERB_PLACE =>
 			case noun is
 				when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE => 
-					if et_canvas_schematic_units.placeholder_move.being_moved then
+					if edit_process_running then
 						redraw_schematic;
 					end if;
 
