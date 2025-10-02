@@ -1028,6 +1028,20 @@ package body et_geometry_2a is
 	end get_distance_absolute;
 
 
+
+
+	procedure move (
+		point		: in out type_vector_model;
+		direction	: in type_direction_RLUD;
+		distance	: in type_distance_positive)
+	is begin
+		case direction is
+			when DIR_RIGHT	=> point.x := point.x + distance;
+			when DIR_LEFT	=> point.x := point.x - distance;
+			when DIR_UP		=> point.y := point.y + distance;
+			when DIR_DOWN	=> point.y := point.y - distance;
+		end case;
+	end;
 	
 
 	

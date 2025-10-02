@@ -516,6 +516,13 @@ package et_geometry_2a is
 	
 	
 
+	-- Moves a point into the given direction
+	-- by the given distance:
+	procedure move (
+		point		: in out type_vector_model;
+		direction	: in type_direction_RLUD;
+		distance	: in type_distance_positive);
+	
 	
 	-- Moves a point to the given destination:
 	procedure move_to (
