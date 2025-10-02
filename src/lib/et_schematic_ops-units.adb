@@ -4075,6 +4075,58 @@ package body et_schematic_ops.units is
 
 
 
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_object_placeholder;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null;
+	end modify_status;
+
+	
+	
+	procedure propose_placeholders (
+		module_cursor	: in pac_generic_modules.cursor;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null;
+	end propose_placeholders;
+								
+
+	
+
+
+	procedure reset_proposed_placeholders (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null;
+	end reset_proposed_placeholders;
+
+	
+
+
+	function get_first_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_placeholder
+	is
+		result : type_object_placeholder;
+	begin
+
+		return result;
+	end get_first_placeholder;
+
+	
+
 ------------------------------------------------------------------------------------------
 
 -- OBJECTS:
@@ -4096,8 +4148,9 @@ package body et_schematic_ops.units is
 		log_threshold	: in type_log_level)
 		return type_object
 	is
-		result_category : type_object_category := CAT_VOID;
-		result_unit 	: type_object_unit;
+		result_category 	: type_object_category := CAT_VOID;
+		result_unit 		: type_object_unit;
+		result_placeholder	: type_object_placeholder;
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -4135,6 +4188,10 @@ package body et_schematic_ops.units is
 			when CAT_UNIT =>
 				return (CAT_UNIT, result_unit);
 
+			when CAT_PLACEHOLDER =>
+				return (CAT_PLACEHOLDER, result_placeholder);
+
+				
 		end case;
 	end get_first_object;
 
@@ -4270,6 +4327,9 @@ package body et_schematic_ops.units is
 			when CAT_UNIT =>
 				modify_status (module_cursor, object.unit, operation, log_threshold + 1);
 
+			when CAT_PLACEHOLDER =>
+				modify_status (module_cursor, object.placeholder, operation, log_threshold + 1);
+				
 			-- CS CAT_NANE, ...
 				
 			when CAT_VOID =>
@@ -4311,7 +4371,7 @@ package body et_schematic_ops.units is
 
 		log_indentation_up;
 		reset_proposed_units (module_cursor, log_threshold + 1);
-		-- CS reset_proposed_placeholders
+		reset_proposed_placeholders (module_cursor, log_threshold + 1);
 		log_indentation_down;
 	end reset_proposed_objects;
 
@@ -4348,6 +4408,9 @@ package body et_schematic_ops.units is
 					log_threshold	=> log_threshold + 1);
 
 
+			when CAT_PLACEHOLDER =>
+				null;
+				
 			-- CS CAT_NANE, ...
 				
 			when CAT_VOID =>
@@ -4386,6 +4449,10 @@ package body et_schematic_ops.units is
 					log_threshold	=> log_threshold + 1);
 
 
+			when CAT_PLACEHOLDER =>
+				null;
+
+				
 			-- CS CAT_NANE, ...
 				
 			when CAT_VOID =>
@@ -4396,6 +4463,8 @@ package body et_schematic_ops.units is
 	end rotate_object;
 
 
+
+	
 	
 
 
@@ -4519,7 +4588,11 @@ package body et_schematic_ops.units is
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
 
+				
+			when CAT_PLACEHOLDER =>
+				null; -- nothing to do
 
+				
 			-- CS CAT_NANE, ...
 				
 			when CAT_VOID =>
@@ -4570,6 +4643,11 @@ package body et_schematic_ops.units is
 
 				end if;
 
+				
+			when CAT_PLACEHOLDER =>
+				null; -- CS clear content ? or do nothing ?
+
+				
 			-- CS CAT_NANE, ...
 				
 			when CAT_VOID =>
@@ -4606,9 +4684,8 @@ package body et_schematic_ops.units is
 					device_name_after	=> new_name_device,
 					log_threshold		=> log_threshold + 1);
 				
-			-- CS CAT_NANE, ...
 				
-			when CAT_VOID =>
+			when CAT_VOID | CAT_PLACEHOLDER =>
 				null;
 		end case;		
 		
@@ -4648,9 +4725,9 @@ package body et_schematic_ops.units is
 					destination		=> object_position,
 					log_threshold	=> log_threshold + 1);
 				
-			-- CS CAT_NANE, ...
+
 				
-			when CAT_VOID =>
+			when CAT_VOID | CAT_PLACEHOLDER =>
 				null;
 		end case;		
 		

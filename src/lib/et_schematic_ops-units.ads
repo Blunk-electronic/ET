@@ -702,6 +702,59 @@ package et_schematic_ops.units is
 
 
 
+
+-- PLACEHOLDERS:
+
+	-- This composite type is meant to identify a 
+	-- placeholder of a unit
+	-- and its parent device in the schematic:
+	type type_object_placeholder is record
+		device_cursor	: pac_devices_sch.cursor;
+		unit_cursor		: pac_units.cursor;
+		meaning			: type_placeholder_meaning;
+	end record;
+
+
+
+	-- Modifies the status flag of a placeholder.
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_object_placeholder;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+	
+	
+	-- Sets the proposed-flag of all placeholders which are in the
+	-- given zone around the given place on the currently active sheet.
+	-- Adds to count the number of placeholders that have been found:
+	procedure propose_placeholders (
+		module_cursor	: in pac_generic_modules.cursor;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural;
+		log_threshold	: in type_log_level);
+								
+
+
+	-- Clears the proposed-flag and the selected-flag of all placeholders:
+	procedure reset_proposed_placeholders (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Returns the first placeholder according to the given flag.
+	-- If no placeholder has been found,
+	-- then the return is no_element:
+	function get_first_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_placeholder;
+
+
+	
+
 ------------------------------------------------------------------------------------------
 
 -- OBJECTS:
@@ -709,7 +762,9 @@ package et_schematic_ops.units is
 
 	type type_object_category is (
 		CAT_VOID,
-		CAT_UNIT);
+		CAT_UNIT,
+		CAT_PLACEHOLDER
+		);
 
 
 	-- This type wraps all kinds of objects into a single type:
@@ -720,6 +775,9 @@ package et_schematic_ops.units is
 			when CAT_UNIT =>
 				unit : type_object_unit;
 
+			when CAT_PLACEHOLDER =>
+				placeholder : type_object_placeholder;
+				
 			-- CS CAT_PLACEHOLDER_VALUE, NAME, PURPOSE ?
 		end case;
 	end record;

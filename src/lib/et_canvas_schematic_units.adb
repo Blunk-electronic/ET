@@ -113,7 +113,11 @@ package body et_canvas_schematic_units is
 				set_status (praeamble & get_object_name (object.unit)
 					& ". " & status_next_object_clarification);
 
-			-- CS placeholders
+			when CAT_PLACEHOLDER =>
+				set_status (praeamble & get_object_name (object.unit)
+							& ". " & status_next_object_clarification);
+				-- CS: show meaning
+
 				
 			when CAT_VOID => null; -- CS
 		end case;
@@ -270,6 +274,17 @@ package body et_canvas_schematic_units is
 							count			=> count_total,
 							log_threshold	=> log_threshold + 1);
 
+						
+					when NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE =>
+						
+						-- Propose placeholders in the vicinity of the given point:
+						propose_placeholders (
+							module_cursor	=> active_module,
+							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+							count			=> count_total,
+							log_threshold	=> log_threshold + 1);
+
+						
 					when others =>
 						null; -- CS
 				end case;
@@ -279,7 +294,7 @@ package body et_canvas_schematic_units is
 
 		end case;
 		
-		-- CS placeholders
+
 
 
 		log (text => "proposed objects total" & natural'image (count_total),
