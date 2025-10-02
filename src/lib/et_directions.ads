@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         PRIMITIVE OBJECTS                                --
+--                             DIRECTIONS                                   --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -37,42 +37,36 @@
 --
 
 
-package et_primitive_objects is
-
-
-
-	type type_shape is (LINE, ARC, CIRCLE); -- CS prefix
-
-	function to_shape (shape : in string) return type_shape;
-	function to_string (shape : in type_shape) return string;
-	
-
+package et_directions is
 
 	
-	type type_filled is (NO, YES);
-	function to_string (filled : in type_filled) return string;
-	function to_filled (filled : in string) return type_filled;
-	filled_default : constant type_filled := NO;
-
-
-	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE		
-	
-	type type_fill_style is (SOLID, HATCHED);  -- CS prefix
-	fill_style_default : constant type_fill_style := SOLID;
-	
-	function to_string (fill_style : in type_fill_style) return string;
-	function to_fill_style (fill_style : in string) return type_fill_style;
+	-- The directions into which the an object can be moved
+	-- for example by means of the cursor keys (arrow keys):
+	type type_direction_RLUD is (DIR_RIGHT, DIR_LEFT, DIR_UP, DIR_DOWN);
 
 	
+	type type_direction_NSWE is (DIR_NORTH, DIR_SOUTH, DIR_WEST, DIR_EAST);
+	
+
+	type type_direction_of_rotation is (
+		CW,		-- clockwise
+		CCW);	-- counterclockwise
+		-- CS PREFIX DIR_
+
+	function to_string (direction : in type_direction_of_rotation) return string;
+
+
+	function to_direction (direction : in string) return type_direction_of_rotation;
+
 
 	
-	-- Whether a line, arc, circle or contour is drawn dashed or not:
-	type type_line_style is (CONTINUOUS, DASHED);  -- CS prefix
-	-- CS other pattersn like jotted, dash-point, ... ?
+	-- Changes CCW to CW and vice versa.
+	function reverse_direction (direction : in type_direction_of_rotation)
+		return type_direction_of_rotation;
 
 	
 		
-end et_primitive_objects;
+end et_directions;
 
 -- Soli Deo Gloria
 

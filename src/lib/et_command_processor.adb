@@ -53,6 +53,7 @@ with et_project;
 
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
+with et_directions;					use et_directions;
 
 with et_script_processor;
 

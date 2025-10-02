@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         PRIMITIVE OBJECTS                                --
+--                              DIRECTIONS                                  --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,42 +37,41 @@
 --
 
 
-package et_primitive_objects is
+with ada.text_io;				use ada.text_io;
+-- with ada.strings;				use ada.strings;
+-- with ada.strings.fixed;			use ada.strings.fixed;
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
 
 
 
-	type type_shape is (LINE, ARC, CIRCLE); -- CS prefix
+package body et_directions is
 
-	function to_shape (shape : in string) return type_shape;
-	function to_string (shape : in type_shape) return string;
-	
-
-
-	
-	type type_filled is (NO, YES);
-	function to_string (filled : in type_filled) return string;
-	function to_filled (filled : in string) return type_filled;
-	filled_default : constant type_filled := NO;
-
-
-	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE		
-	
-	type type_fill_style is (SOLID, HATCHED);  -- CS prefix
-	fill_style_default : constant type_fill_style := SOLID;
-	
-	function to_string (fill_style : in type_fill_style) return string;
-	function to_fill_style (fill_style : in string) return type_fill_style;
+	function to_string (direction : in type_direction_of_rotation) return string is begin
+		return to_lower (type_direction_of_rotation'image (direction));
+	end to_string;
 
 	
+	
+	function to_direction (direction : in string) return type_direction_of_rotation is begin
+		return type_direction_of_rotation'value (direction);
+	end to_direction;
 
 	
-	-- Whether a line, arc, circle or contour is drawn dashed or not:
-	type type_line_style is (CONTINUOUS, DASHED);  -- CS prefix
-	-- CS other pattersn like jotted, dash-point, ... ?
+	
+	function reverse_direction (direction : in type_direction_of_rotation)
+		return type_direction_of_rotation is
+	begin
+		case direction is 
+			when CW => return CCW;
+			when CCW => return CW;
+		end case;
+	end reverse_direction;
+
 
 	
-		
-end et_primitive_objects;
+end et_directions;
 
 -- Soli Deo Gloria
 

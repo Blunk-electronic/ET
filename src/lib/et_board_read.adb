@@ -49,6 +49,7 @@ with et_text;						use et_text;
 with et_alignment;					use et_alignment;
 with et_exceptions;					use et_exceptions;
 with et_keywords;					use et_keywords;
+with et_directions;					use et_directions;
 
 
 package body et_board_read is

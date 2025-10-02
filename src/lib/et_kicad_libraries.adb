@@ -54,6 +54,7 @@ with ada.exceptions; 			use ada.exceptions;
 with ada.environment_variables;
 
 with et_primitive_objects;				use et_primitive_objects;
+with et_directions;						use et_directions;
 with et_axes;							use et_axes;
 with et_mirroring;						use et_mirroring;
 with et_schematic_text;					use et_schematic_text;

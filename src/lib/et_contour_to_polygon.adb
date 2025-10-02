@@ -38,6 +38,7 @@
 
 with ada.text_io;				use ada.text_io;
 with et_primitive_objects;		use et_primitive_objects;
+with et_directions;				use et_directions;
 
 
 package body et_contour_to_polygon is

@@ -43,6 +43,7 @@ with ada.text_io;				use ada.text_io;
 with ada.exceptions;
 
 with et_primitive_objects;			--use et_primitive_objects;
+with et_directions;					use et_directions;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_system_info;
 with et_directory_and_file_ops;

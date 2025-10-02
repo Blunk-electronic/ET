@@ -52,6 +52,7 @@ with et_net_junction;			use et_net_junction;
 with et_device_name;			use et_device_name;
 with et_netlists;
 with et_primitive_objects;		use et_primitive_objects;
+with et_directions;				use et_directions;
 
 
 package et_net_segment is

@@ -66,6 +66,7 @@ with et_module_names;				use et_module_names;
 with et_module_instance;			use et_module_instance;
 with et_fonts;						use et_fonts;
 with et_symbol_shapes;				use et_symbol_shapes;
+with et_directions;					use et_directions;
 
 
 package et_submodules is
