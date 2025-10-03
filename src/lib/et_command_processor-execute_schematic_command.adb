@@ -49,6 +49,7 @@ with et_schematic_ops.grid;
 with et_schematic_ops.submodules;
 with et_board_ops.grid;
 
+with et_text;
 with et_schematic_geometry;
 with et_schematic_coordinates;
 with et_module_instance;				use et_module_instance;
@@ -1284,7 +1285,10 @@ is
 
 	
 
-
+	-- This procedure parses a command that rotates a placeholder
+	-- for name, value or purpose of a unit.
+	-- Example: "schematic led_driver rotate value R1 1 vertical"
+	-- Example: "schematic led_driver rotate value IC1 A horizontal"
 	procedure rotate_unit_placeholder is
 		meaning : type_placeholder_meaning;
 
@@ -1295,7 +1299,7 @@ is
 						module_cursor 	=> active_module,
 						device_name		=> to_device_name (get_field (5)), -- IC1
 						unit_name		=> to_unit_name (get_field (6)), -- A
-						rotation		=> to_rotation_doc (get_field (7)), -- 90
+						rotation		=> et_text.to_rotation_documentation (get_field (7)), -- horizontal
 						meaning			=> meaning,
 						log_threshold	=> log_threshold + 1);
 
@@ -1328,7 +1332,10 @@ is
 
 
 	
-
+	-- This procedure parses a command that moves a placeholder
+	-- for name, value or purpose of a unit.
+	-- Example: "schematic led_driver move value R1 1 absolute 100 115"
+	-- Example: "schematic led_driver move value IC1 A relative -5 0"
 	procedure move_unit_placeholder is
 		meaning : type_placeholder_meaning;
 

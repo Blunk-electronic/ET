@@ -157,7 +157,7 @@ is
 					when NOUN_NET_LABEL =>
 						et_canvas_schematic_nets.move_object (MOUSE, snap_point);
 						
-					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
+					when NOUN_PLACEHOLDER =>
 						et_canvas_schematic_units.move_object (MOUSE, snap_point);
 				
 					when NOUN_UNIT =>
@@ -197,36 +197,11 @@ is
 				
 			when VERB_ROTATE =>
 				case noun is
-					when NOUN_NAME =>
-						if not clarification_pending then
-							rotate_placeholder (
-								point		=> event.point,
-								category	=> NAME);
-						else
-							rotate_selected_placeholder (NAME);
-						end if;
+					when NOUN_PLACEHOLDER =>
+						et_canvas_schematic_units.rotate_object (snap_point);
 						
-					when NOUN_PURPOSE =>
-						if not clarification_pending then
-							rotate_placeholder (
-								point		=> event.point,
-								category	=> PURPOSE);
-						else
-							rotate_selected_placeholder (PURPOSE);
-						end if;
-					
 					when NOUN_UNIT =>
 						et_canvas_schematic_units.rotate_object (snap_point);
-
-					when NOUN_VALUE =>
-						if not clarification_pending then
-							rotate_placeholder (
-								point		=> event.point,
-								category	=> VALUE);
-						else
-							rotate_selected_placeholder (VALUE);
-						end if;
-
 						
 					when others => null;
 				end case;

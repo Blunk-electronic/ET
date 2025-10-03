@@ -152,6 +152,18 @@ package body et_text is
 
 
 
+
+
+	function to_rotation_documentation (
+		rotation : in string)
+		return type_rotation_documentation
+	is begin
+		return type_rotation_documentation'value (rotation);
+	end;
+
+
+
+	
 	
 	procedure toggle_rotation (rotation : in out type_rotation_documentation) is
 	begin

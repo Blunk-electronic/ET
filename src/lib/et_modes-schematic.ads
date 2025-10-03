@@ -105,6 +105,7 @@ package et_modes.schematic is
 		NOUN_NETS,
 		NOUN_NETCHANGER,
 		NOUN_NETLISTS,
+		NOUN_PLACEHOLDER,
 		NOUN_PARTCODE,
 		NOUN_PORT, -- of a submodule instance
 		NOUN_PORTS,

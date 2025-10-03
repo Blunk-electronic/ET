@@ -291,33 +291,6 @@ package et_schematic_ops.units is
 		return type_object_position;
 
 
-	
-
-	-- Moves the name placeholder of the given unit.
-	procedure move_unit_placeholder (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- A
-		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_vector_model; -- x/y
-		meaning			: in type_placeholder_meaning; -- name, value, purpose
-		log_threshold	: in type_log_level);
-
-
-
-
-	
-	-- Rotates the given unit placeholder about its origin.
-	-- The rotation is absolute.										  
-	procedure rotate_unit_placeholder (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- A
-		rotation		: in et_text.type_rotation_documentation; -- absolute ! -- 90
-		meaning			: in type_placeholder_meaning; -- name, value, purpose		
-		log_threshold	: in type_log_level);
-
-
 
 	
 	-- Locates the given unit of the given device in the 
@@ -705,6 +678,32 @@ package et_schematic_ops.units is
 
 -- PLACEHOLDERS:
 
+
+	-- Moves the a unit placeholder of the given unit.
+	procedure move_unit_placeholder ( -- CS rename to move_placeholder
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in pac_unit_name.bounded_string; -- A
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in type_vector_model; -- x/y
+		meaning			: in type_placeholder_meaning; -- name, value, purpose
+		log_threshold	: in type_log_level);
+
+
+	
+	-- Rotates the given unit placeholder about its origin.
+	-- The rotation is absolute.										  
+	procedure rotate_unit_placeholder ( -- CS rename to rotate_placeholder
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in pac_unit_name.bounded_string; -- A
+		rotation		: in et_text.type_rotation_documentation;
+		meaning			: in type_placeholder_meaning; -- name, value, purpose		
+		log_threshold	: in type_log_level);
+
+
+
+	
 	-- This composite type is meant to identify a 
 	-- placeholder of a unit
 	-- and its parent device in the schematic:
@@ -715,7 +714,22 @@ package et_schematic_ops.units is
 	end record;
 
 
+	function get_device_name (
+		object : in type_object_placeholder)
+		return type_device_name;
+	
 
+	function get_unit_name (
+		object : in type_object_placeholder)
+		return pac_unit_name.bounded_string;
+
+
+	function get_meaning (
+		object : in type_object_placeholder)
+		return type_placeholder_meaning;
+
+	
+	
 	-- Modifies the status flag of a placeholder.
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;

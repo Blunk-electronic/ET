@@ -84,7 +84,7 @@ begin
 			
 		when VERB_DRAG | VERB_MOVE | VERB_PLACE =>
 			case noun is
-				when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE => 
+				when NOUN_PLACEHOLDER => 
 					if edit_process_running then
 						redraw_schematic;
 					end if;

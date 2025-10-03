@@ -278,59 +278,65 @@ Devices and Units
 Placeholders for Name, Value, Partcode and Purpose
 ++++++++++++++++++++++++++++++++++++++++++++++++++
 
+Next to a unit usually the name (like R2), the value (like 100R)
+and the purpose (like "Brightness") is displayed via a placeholder.
+The placeholder can be moved or rotated when the schematic drawing
+requires it. 
 	
-#. Move name
+#. Move Name
 
 	.. code-block::
 
-		move name IC1 [A]
+		move name IC1 C relative -10 3
 
-	|VNS| m n
+	|VNS| m p
 		
 
-#. Move value
+#. Move Value
 
 	.. code-block::
 
-		move value IC1 [A]
+		move value IC1 C absoltue 100 115
 
-	|VNS| m v
+	|VNS| m p
 		
 
-#. Move purpose
+#. Move Purpose
 
 	.. code-block::
 
-		move purpose RN1 [A]
+		move purpose RN1 1 relative -10 3
 
 	|VNS| m p
 	
+
+
 	
-#. Rotate name
+#. Rotate Name
 
 	.. code-block::
 
-		rotate name IC1 [A]
+		rotate name IC1 B vertical
 
-	|VNS| o n
+	|VNS| r p
 		
 
-#. Rotate value
+#. Rotate Value
 
 	.. code-block::
 
-		rotate value IC1 [A]
+		rotate value IC1 B horizontal
 
-	|VNS| o v
+	|VNS| r p
 		
 
-#. Rotate purpose
+#. Rotate Purpose
 
 	.. code-block::
 
-		rotate purpose RN1 [A]
+		rotate purpose R1 1 vertical
 
-	|VNS| o p
+	|VNS| r p
 	
 
 

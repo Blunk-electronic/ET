@@ -1217,253 +1217,7 @@ package body et_schematic_ops.units is
 	end get_position;
 
 	
-	
 
-
-	
-	procedure move_unit_placeholder (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- A
-		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_vector_model; -- x/y
-		meaning			: in type_placeholder_meaning; -- name, value, purpose
-		log_threshold	: in type_log_level)
-	is
-		use pac_unit_name;
-
-		-- CS rework
-		
-		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			device_cursor : pac_devices_sch.cursor;
-
-			procedure query_units (
-				device_name	: in type_device_name;
-				device		: in out type_device_sch)
-			is
-				unit_cursor : pac_units.cursor;
-
-				procedure move_placeholder (
-					unit_name	: in pac_unit_name.bounded_string;
-					unit		: in out type_unit)
-				is
-					-- In case absolute movement is required, calculate the
-					-- new position of the placeholder relative to the unit origin:
-					pos_abs : constant type_vector_model :=
-						get_distance_relative (unit.position.place, point);
-					
-				begin -- move_placeholder
-					
-					-- The given meaning determines the placeholder to be moved:
-					case meaning is
-						when NAME =>
-							case coordinates is
-								when ABSOLUTE =>
-									--log (text => "pos " & to_string (point));
-									unit.placeholders.name.position := pos_abs;
-
-								when RELATIVE =>
-									move_by (
-										point	=> unit.placeholders.name.position,
-										offset	=> point);
-							end case;
-							
-						when VALUE =>
-							case coordinates is
-								when ABSOLUTE =>
-									unit.placeholders.value.position := pos_abs;
-
-								when RELATIVE =>
-									move_by (
-										point	=> unit.placeholders.value.position,
-										offset	=> point);
-							end case;
-							
-						when PURPOSE =>
-							case coordinates is
-								when ABSOLUTE =>
-									unit.placeholders.purpose.position := pos_abs;
-
-								when RELATIVE =>
-									move_by (
-										point	=> unit.placeholders.purpose.position,
-										offset	=> point);
-							end case;
-
-						when others =>
-							raise constraint_error; -- CS no longer required
-					end case;
-					
-					exception
-						when event: others =>
-							log (ERROR, "coordinates invalid !", console => true); -- CS required more details
-							log (text => ada.exceptions.exception_information (event), console => true);
-							raise;
-					
-				end move_placeholder;
-
-				
-			begin -- query_units
-				if contains (device.units, unit_name) then
-
-					-- locate unit by its name. it should be there.
-					unit_cursor := find (device.units, unit_name);
-
-					update_element (
-						container	=> device.units,
-						position	=> unit_cursor,
-						process		=> move_placeholder'access);
-					
-				else
-					unit_not_found (unit_name);
-				end if;
-			end query_units;
-
-			
-		begin -- query_devices
-			if contains (module.devices, device_name) then
-
-				-- Locate the device. It should be there.
-				device_cursor := find (module.devices, device_name);
-
-				-- locate the unit
-				update_element (
-					container	=> module.devices,
-					position	=> device_cursor,
-					process		=> query_units'access);
-				
-			else
-				device_not_found (device_name);
-			end if;
-		end query_devices;
-
-		
-	begin
-		case coordinates is
-			when ABSOLUTE =>
-				log (text => "module " & to_string (module_cursor)
-					& " moving " & to_string (device_name) 
-					& " unit " & to_string (unit_name) 
-					& " placeholder " & enclose_in_quotes (to_string (meaning))
-					& " to" & to_string (point),
-					level => log_threshold);
-
-			when RELATIVE =>
-				log (text => "module " & to_string (module_cursor)
-					& " moving " & to_string (device_name) 
-					& " unit " & to_string (unit_name) 
-					& " placeholder " & enclose_in_quotes (to_string (meaning))
-					& " by" & to_string (point),
-					level => log_threshold);
-		end case;
-
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_devices'access);
-		
-	end move_unit_placeholder;
-
-
-
-
-
-	
-
-	procedure rotate_unit_placeholder (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- A
-		rotation		: in et_text.type_rotation_documentation; -- absolute ! -- 90
-		meaning			: in type_placeholder_meaning; -- name, value, purpose		
-		log_threshold	: in type_log_level) 
-	is
-		use pac_unit_name;
-
-		-- CS rework
-		
-		
-		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			device_cursor : pac_devices_sch.cursor;
-
-			procedure query_units (
-				device_name	: in type_device_name;
-				device		: in out type_device_sch) 
-			is
-				unit_cursor : pac_units.cursor;
-
-				
-				procedure rotate_placeholder (
-					name	: in pac_unit_name.bounded_string; -- A
-					unit	: in out type_unit) 
-				is begin
-					case meaning is
-						when et_device_placeholders.NAME =>
-							unit.placeholders.name.rotation := rotation;
-							
-						when VALUE =>
-							unit.placeholders.value.rotation := rotation;
-							
-						when PURPOSE =>
-							unit.placeholders.purpose.rotation := rotation;
-
-					end case;
-				end rotate_placeholder;
-
-				
-			begin -- query_units
-				if contains (device.units, unit_name) then
-
-					-- locate unit by its name
-					unit_cursor := find (device.units, unit_name);
-
-					pac_units.update_element (
-						container	=> device.units,
-						position	=> unit_cursor,
-						process		=> rotate_placeholder'access);
-				else
-					unit_not_found (unit_name);
-				end if;
-			end query_units;
-
-			
-		begin -- query_devices
-			if contains (module.devices, device_name) then
-
-				-- locate the device. it should be there
-				device_cursor := find (module.devices, device_name);
-
-				update_element (
-					container	=> module.devices,
-					position	=> device_cursor,
-					process		=> query_units'access);
-				
-			else
-				device_not_found (device_name);
-			end if;
-		end query_devices;
-		
-		
-	begin
-		log (text => "module " & to_string (module_cursor) &
-			" rotating " & to_string (device_name) & " unit " &
-			to_string (unit_name) & " placeholder" & to_string (meaning) & " to" &
-			to_string (rotation), level => log_threshold);
-		
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_devices'access);
-
-	end rotate_unit_placeholder;
 
 
 
@@ -4075,6 +3829,283 @@ package body et_schematic_ops.units is
 
 
 
+	
+
+	procedure move_unit_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in pac_unit_name.bounded_string; -- A
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in type_vector_model; -- x/y
+		meaning			: in type_placeholder_meaning; -- name, value, purpose
+		log_threshold	: in type_log_level)
+	is
+		use pac_unit_name;
+
+		-- CS rework
+		
+		procedure query_devices (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			device_cursor : pac_devices_sch.cursor;
+
+			procedure query_units (
+				device_name	: in type_device_name;
+				device		: in out type_device_sch)
+			is
+				unit_cursor : pac_units.cursor;
+
+				procedure move_placeholder (
+					unit_name	: in pac_unit_name.bounded_string;
+					unit		: in out type_unit)
+				is
+					-- In case absolute movement is required, calculate the
+					-- new position of the placeholder relative to the unit origin:
+					pos_abs : constant type_vector_model :=
+						get_distance_relative (unit.position.place, point);
+					
+				begin -- move_placeholder
+					
+					-- The given meaning determines the placeholder to be moved:
+					case meaning is
+						when NAME =>
+							case coordinates is
+								when ABSOLUTE =>
+									--log (text => "pos " & to_string (point));
+									unit.placeholders.name.position := pos_abs;
+
+								when RELATIVE =>
+									move_by (
+										point	=> unit.placeholders.name.position,
+										offset	=> point);
+							end case;
+							
+						when VALUE =>
+							case coordinates is
+								when ABSOLUTE =>
+									unit.placeholders.value.position := pos_abs;
+
+								when RELATIVE =>
+									move_by (
+										point	=> unit.placeholders.value.position,
+										offset	=> point);
+							end case;
+							
+						when PURPOSE =>
+							case coordinates is
+								when ABSOLUTE =>
+									unit.placeholders.purpose.position := pos_abs;
+
+								when RELATIVE =>
+									move_by (
+										point	=> unit.placeholders.purpose.position,
+										offset	=> point);
+							end case;
+
+						when others =>
+							raise constraint_error; -- CS no longer required
+					end case;
+					
+					exception
+						when event: others =>
+							log (ERROR, "coordinates invalid !", console => true); -- CS required more details
+							log (text => ada.exceptions.exception_information (event), console => true);
+							raise;
+					
+				end move_placeholder;
+
+				
+			begin -- query_units
+				if contains (device.units, unit_name) then
+
+					-- locate unit by its name. it should be there.
+					unit_cursor := find (device.units, unit_name);
+
+					update_element (
+						container	=> device.units,
+						position	=> unit_cursor,
+						process		=> move_placeholder'access);
+					
+				else
+					unit_not_found (unit_name);
+				end if;
+			end query_units;
+
+			
+		begin -- query_devices
+			if contains (module.devices, device_name) then
+
+				-- Locate the device. It should be there.
+				device_cursor := find (module.devices, device_name);
+
+				-- locate the unit
+				update_element (
+					container	=> module.devices,
+					position	=> device_cursor,
+					process		=> query_units'access);
+				
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+
+		
+	begin
+		case coordinates is
+			when ABSOLUTE =>
+				log (text => "module " & to_string (module_cursor)
+					& " moving " & to_string (device_name) 
+					& " unit " & to_string (unit_name) 
+					& " placeholder " & enclose_in_quotes (to_string (meaning))
+					& " to" & to_string (point),
+					level => log_threshold);
+
+			when RELATIVE =>
+				log (text => "module " & to_string (module_cursor)
+					& " moving " & to_string (device_name) 
+					& " unit " & to_string (unit_name) 
+					& " placeholder " & enclose_in_quotes (to_string (meaning))
+					& " by" & to_string (point),
+					level => log_threshold);
+		end case;
+
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+		
+	end move_unit_placeholder;
+
+
+
+
+
+	
+
+	procedure rotate_unit_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in pac_unit_name.bounded_string; -- A
+		rotation		: in et_text.type_rotation_documentation; -- absolute ! -- 90
+		meaning			: in type_placeholder_meaning; -- name, value, purpose		
+		log_threshold	: in type_log_level) 
+	is
+		use pac_unit_name;
+
+		-- CS rework
+		
+		
+		procedure query_devices (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			device_cursor : pac_devices_sch.cursor;
+
+			procedure query_units (
+				device_name	: in type_device_name;
+				device		: in out type_device_sch) 
+			is
+				unit_cursor : pac_units.cursor;
+
+				
+				procedure rotate_placeholder (
+					name	: in pac_unit_name.bounded_string; -- A
+					unit	: in out type_unit) 
+				is begin
+					case meaning is
+						when et_device_placeholders.NAME =>
+							unit.placeholders.name.rotation := rotation;
+							
+						when VALUE =>
+							unit.placeholders.value.rotation := rotation;
+							
+						when PURPOSE =>
+							unit.placeholders.purpose.rotation := rotation;
+
+					end case;
+				end rotate_placeholder;
+
+				
+			begin -- query_units
+				if contains (device.units, unit_name) then
+
+					-- locate unit by its name
+					unit_cursor := find (device.units, unit_name);
+
+					pac_units.update_element (
+						container	=> device.units,
+						position	=> unit_cursor,
+						process		=> rotate_placeholder'access);
+				else
+					unit_not_found (unit_name);
+				end if;
+			end query_units;
+
+			
+		begin -- query_devices
+			if contains (module.devices, device_name) then
+
+				-- locate the device. it should be there
+				device_cursor := find (module.devices, device_name);
+
+				update_element (
+					container	=> module.devices,
+					position	=> device_cursor,
+					process		=> query_units'access);
+				
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor) &
+			" rotating " & to_string (device_name) & " unit " &
+			to_string (unit_name) & " placeholder" & to_string (meaning) & " to" &
+			to_string (rotation), level => log_threshold);
+		
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+	end rotate_unit_placeholder;
+
+
+
+
+
+	function get_device_name (
+		object : in type_object_placeholder)
+		return type_device_name
+	is begin
+		return key (object.device_cursor);
+	end;
+	
+
+	function get_unit_name (
+		object : in type_object_placeholder)
+		return pac_unit_name.bounded_string
+	is begin
+		return key (object.unit_cursor);
+	end;
+
+
+
+	function get_meaning (
+		object : in type_object_placeholder)
+		return type_placeholder_meaning
+	is begin
+		return object.meaning;
+	end;
+
+
+	
+	
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4406,10 +4437,20 @@ package body et_schematic_ops.units is
 					sheet			=> active_sheet,
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
-
+				-- CS: use get_device_name and get_unit_name
+				
 
 			when CAT_PLACEHOLDER =>
-				null;
+				
+				move_unit_placeholder (
+					module_cursor 	=> module_cursor,
+					device_name		=> get_device_name (object.placeholder),
+					unit_name		=> get_unit_name (object.placeholder),
+					coordinates		=> absolute,
+					point			=> destination,
+					meaning			=> get_meaning (object.placeholder),
+					log_threshold	=> log_threshold + 1);
+
 				
 			-- CS CAT_NANE, ...
 				
@@ -4439,7 +4480,6 @@ package body et_schematic_ops.units is
 
 		case object.cat is
 			when CAT_UNIT =>
-
 				rotate_unit (
 					module_cursor	=> module_cursor,
 					device_name		=> key (object.unit.device_cursor),
@@ -4447,13 +4487,20 @@ package body et_schematic_ops.units is
 					coordinates		=> relative, -- in order to rotate by 90 degrees
 					rotation		=> 90.0,
 					log_threshold	=> log_threshold + 1);
-
+				-- CS: use get_device_name and get_unit_name
+				
 
 			when CAT_PLACEHOLDER =>
+				-- CS
+				-- rotate_unit_placeholder (
+				-- 	module_cursor 	=> module_cursor,
+				-- 	device_name		=> get_device_name (object.placeholder),
+				-- 	unit_name		=> get_unit_name (object.placeholder),
+				-- 	rotation		=> 90.0, -- ?
+				-- 	meaning			=> get_meaning (object.placeholder),
+				-- 	log_threshold	=> log_threshold + 1);
 				null;
 
-				
-			-- CS CAT_NANE, ...
 				
 			when CAT_VOID =>
 				null;
@@ -4587,7 +4634,8 @@ package body et_schematic_ops.units is
 					coordinates		=> absolute,
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
-
+				-- CS: use get_device_name and get_unit_name
+				
 				
 			when CAT_PLACEHOLDER =>
 				null; -- nothing to do
@@ -4634,13 +4682,15 @@ package body et_schematic_ops.units is
 						device_name		=> key (object.unit.device_cursor),
 						unit_name		=> key (object.unit.unit_cursor),
 						log_threshold	=> log_threshold + 1);
-
+					-- CS: use get_device_name and get_unit_name
+					
 				else
 					delete_device (
 						module_cursor	=> module_cursor,
 						device_name		=> key (object.unit.device_cursor),
 						log_threshold	=> log_threshold + 1);
-
+					-- CS: use get_device_name
+					
 				end if;
 
 				
@@ -4683,7 +4733,7 @@ package body et_schematic_ops.units is
 					device_name_before	=> key (object.unit.device_cursor),
 					device_name_after	=> new_name_device,
 					log_threshold		=> log_threshold + 1);
-				
+					-- CS: use get_device_name
 				
 			when CAT_VOID | CAT_PLACEHOLDER =>
 				null;

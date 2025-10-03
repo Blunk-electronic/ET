@@ -102,6 +102,13 @@ package et_text is
 
 
 	type type_rotation_documentation is (HORIZONTAL, VERTICAL);
+	-- CS use prefix
+	
+	-- Converts a string to a type_rotation_documentation:
+	function to_rotation_documentation (
+		rotation : in string)
+		return type_rotation_documentation;
+	
 
 	-- Toggles between HORIZONTAL and VERTICAL:
 	procedure toggle_rotation (rotation : in out type_rotation_documentation);

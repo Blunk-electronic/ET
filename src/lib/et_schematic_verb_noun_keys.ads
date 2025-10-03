@@ -71,6 +71,7 @@ package et_schematic_verb_noun_keys is
 	key_noun_name		: constant gdk_key_type := GDK_LC_n;
 	key_noun_net 			: constant gdk_key_type := GDK_LC_n;
 	key_noun_net_all_sheets	: constant gdk_key_type := GDK_N;
+	key_noun_placeholder	: constant gdk_key_type := GDK_LC_p;
 	key_noun_purpose	: constant gdk_key_type := GDK_LC_p;
 	key_noun_segment	: constant gdk_key_type := GDK_LC_s;
 	key_noun_strand		: constant gdk_key_type := GDK_LC_t;
