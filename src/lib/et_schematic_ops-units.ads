@@ -728,6 +728,22 @@ package et_schematic_ops.units is
 		object : in type_object_placeholder)
 		return type_placeholder_meaning;
 
+
+
+	function get_device_name (
+		object : in type_object_placeholder)
+		return string;
+	
+
+	function get_unit_name (
+		object : in type_object_placeholder)
+		return string;
+
+
+	function get_meaning (
+		object : in type_object_placeholder)
+		return string;
+
 	
 	
 	-- Modifies the status flag of a placeholder.

@@ -46,6 +46,8 @@ with et_symbol_model;
 with et_device_model;						use et_device_model;
 with et_devices_non_electrical;				use et_devices_non_electrical;
 with et_numbering;
+with et_device_placeholders.symbols;
+
 
 
 package body et_schematic_ops.units is
@@ -4104,6 +4106,33 @@ package body et_schematic_ops.units is
 	end;
 
 
+
+
+	function get_device_name (
+		object : in type_object_placeholder)
+		return string
+	is begin
+		return get_device_name (object.device_cursor);
+	end;
+	
+
+	function get_unit_name (
+		object : in type_object_placeholder)
+		return string
+	is begin
+		return to_string (object.unit_cursor);
+	end;
+
+
+
+	function get_meaning (
+		object : in type_object_placeholder)
+		return string
+	is begin
+		return to_string (object.meaning);
+	end;
+
+
 	
 	
 
@@ -4113,10 +4142,66 @@ package body et_schematic_ops.units is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is	
+			
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_sch)
+			is 
+
+				procedure query_unit (
+					unit_name	: in pac_unit_name.bounded_string;
+					unit		: in out type_unit)
+				is 
+					use et_device_placeholders.symbols;
+				begin
+					case get_meaning (placeholder) is
+						when NAME =>
+							modify_status (unit.placeholders.name, operation);
+
+						when VALUE =>
+							modify_status (unit.placeholders.value, operation);
+							
+						when PURPOSE =>
+							modify_status (unit.placeholders.purpose, operation);
+							
+					end case;
+				end query_unit;
+
+				
+			begin
+				device.units.update_element (placeholder.unit_cursor, query_unit'access);
+			end query_device;
+
+			
+		begin
+			module.devices.update_element (placeholder.device_cursor, query_device'access);
+		end query_module;
+
+		
 	begin
-		null;
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of device " & get_device_name (placeholder)
+			& " unit " & get_unit_name (placeholder)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,		   
+			process		=> query_module'access);
+
+		log_indentation_down;
 	end modify_status;
 
+
+
+	
 	
 	
 	procedure propose_placeholders (
@@ -4125,21 +4210,165 @@ package body et_schematic_ops.units is
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			device_cursor : pac_devices_sch.cursor := module.devices.first;
+
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_sch)
+			is 
+				unit_cursor : pac_units.cursor := device.units.first;
+
+
+				procedure query_unit (
+					unit_name	: in pac_unit_name.bounded_string;
+					unit		: in out type_unit)
+				is 
+					use et_device_placeholders.symbols;
+				begin
+					if get_sheet (unit) = active_sheet then
+						log (text => to_string (unit_name), level => log_threshold + 2);
+						log_indentation_up;
+						
+						if in_catch_zone (unit.placeholders.name, catch_zone) then
+							log (text => to_string (NAME), level => log_threshold + 3);
+							set_proposed (unit.placeholders.name);
+							count := count + 1;
+						end if;
+
+						if in_catch_zone (unit.placeholders.value, catch_zone) then
+							log (text => to_string (VALUE), level => log_threshold + 3);
+							set_proposed (unit.placeholders.value);
+							count := count + 1;
+						end if;
+
+						if in_catch_zone (unit.placeholders.purpose, catch_zone) then
+							log (text => to_string (PURPOSE), level => log_threshold + 3);
+							set_proposed (unit.placeholders.purpose);
+							count := count + 1;
+						end if;
+
+						log_indentation_down;
+					end if;
+				end query_unit;
+
+				
+			begin
+				log (text => to_string (device_name), level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate through the units:
+				while has_element (unit_cursor) loop
+					device.units.update_element (unit_cursor, query_unit'access);
+					next (unit_cursor);
+				end loop;
+				log_indentation_down;
+			end query_device;
+
+			
+		begin
+			-- Iterate through the devices:
+			while has_element (device_cursor) loop
+				module.devices.update_element (device_cursor, query_device'access);
+				next (device_cursor);
+			end loop;
+		end query_module;
+
+		
 	begin
-		null;
+		log (text => "module " & to_string (module_cursor)
+			& " propose placeholders in " & to_string (catch_zone),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,		   
+			process		=> query_module'access);
+
+		log_indentation_down;
 	end propose_placeholders;
 								
 
 	
 
 
+
+	
+
 	procedure reset_proposed_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_sch)
+			is 
+				unit_cursor : pac_units.cursor := device.units.first;
+
+
+				procedure query_unit (
+					unit_name	: in pac_unit_name.bounded_string;
+					unit		: in out type_unit)
+				is 
+					use et_device_placeholders.symbols;
+				begin
+					log (text => to_string (unit_name), level => log_threshold + 2);
+					reset_status (unit.placeholders);
+				end query_unit;
+
+										 
+			begin
+				log (text => to_string (device_name), level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate through the units:
+				while has_element (unit_cursor) loop
+					device.units.update_element (unit_cursor, query_unit'access);
+					next (unit_cursor);
+				end loop;
+				
+				log_indentation_down;
+			end query_device;
+
+			
+			device_cursor : pac_devices_sch.cursor := module.devices.first;
+			
+		begin
+			-- Iterate through the devices:
+			while has_element (device_cursor) loop
+				module.devices.update_element (device_cursor, query_device'access);
+				next (device_cursor);
+			end loop;
+		end query_module;
+		
 	begin
-		null;
+		log (text => "module " & to_string (module_cursor)
+			& " reset proposed placeholders", 
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
 	end reset_proposed_placeholders;
+
+
+
+
 
 	
 
@@ -4151,7 +4380,127 @@ package body et_schematic_ops.units is
 		return type_object_placeholder
 	is
 		result : type_object_placeholder;
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			device_cursor : pac_devices_sch.cursor := module.devices.first;
+
+			proceed : aliased boolean := true;
+
+
+			procedure query_device (
+				device_name	: in type_device_name;
+				device 		: in type_device_sch)
+			is 
+				unit_cursor : pac_units.cursor := device.units.first;
+
+				
+				procedure query_unit (
+					unit_name	: in pac_unit_name.bounded_string;
+					unit		: in type_unit)
+				is
+					procedure set_result is begin
+						log (text => to_string (result.meaning), level => log_threshold + 3);
+						result.device_cursor := device_cursor;
+						result.unit_cursor := unit_cursor;
+						proceed := false; -- no further probing required
+					end set_result;
+
+					use et_device_placeholders.symbols;
+				begin					
+					log (text => "unit " & to_string (unit_name), level => log_threshold + 2);
+					log_indentation_up;
+					
+					case flag is
+						when PROPOSED =>
+							if is_proposed (unit.placeholders.name) then
+								result.meaning := NAME;
+								set_result;
+							end if;
+
+							if is_proposed (unit.placeholders.value) then
+								result.meaning := VALUE;
+								set_result;
+							end if;
+
+							if is_proposed (unit.placeholders.purpose) then
+								result.meaning := PURPOSE;
+								set_result;
+							end if;
+
+							
+						when SELECTED =>
+							if is_selected (unit.placeholders.name) then
+								result.meaning := NAME;
+								set_result;
+							end if;
+
+							if is_selected (unit.placeholders.value) then
+								result.meaning := VALUE;
+								set_result;
+							end if;
+
+							if is_selected (unit.placeholders.purpose) then
+								result.meaning := PURPOSE;
+								set_result;
+							end if;
+
+							
+						when others =>
+							null;
+							-- CS
+					end case;
+							
+					log_indentation_down;
+				end query_unit;
+
+				
+			begin
+				log (text => "device " & to_string (device_name), level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate through the units:
+				while has_element (unit_cursor) loop
+					query_element (unit_cursor, query_unit'access);
+					
+					if not proceed then
+						exit;
+					end if;
+					
+					next (unit_cursor);
+				end loop;
+				
+				log_indentation_down;
+			end query_device;
+			
+			
+		begin
+			-- Iterate through the devices:
+			while has_element (device_cursor) and proceed loop
+				pac_devices_sch.query_element (device_cursor, query_device'access);
+				next (device_cursor);
+			end loop;
+
+			if proceed then
+				log (text => "nothing found", level => log_threshold);
+			end if;
+		end query_module;
+
+		
 	begin
+		log (text => "module " & to_string (module_cursor)
+			& " look up the first placeholder / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
 
 		return result;
 	end get_first_placeholder;
@@ -4172,6 +4521,7 @@ package body et_schematic_ops.units is
 	
 	
 
+	
 
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4205,10 +4555,33 @@ package body et_schematic_ops.units is
 		end if;
 		
 		-- If nothing has been found then the category is CAT_VOID.
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
+
+
+
+		
+
+		-- SEARCH FOR A PLACEHOLDER:
+		
+		-- If a placeholder has been found, then go to the end of this procedure:
+		result_placeholder := get_first_placeholder (module_cursor, flag, log_threshold + 1);
+
+		if has_element (result_placeholder.unit_cursor) then
+			-- A placeholder has been found.
+			log (text => get_unit_name (result_placeholder) & " " & get_meaning (result_placeholder),
+				 level => log_threshold + 1);
+			
+			result_category := CAT_PLACEHOLDER;
+		end if;
+
+
+
+	<<end_of_search>>
+		
+		-- If nothing has been found then the category is CAT_VOID.
 		log_indentation_down;
-
-
-		-- CS placeholders
 
 		
 		
@@ -4302,7 +4675,7 @@ package body et_schematic_ops.units is
 			log (text => "devices", level => log_threshold + 1);
 			log_indentation_up;
 			
-			-- Iterate the units of the module:
+			-- Iterate the devices of the module:
 			while has_element (device_cursor) loop
 				query_element (device_cursor, query_device'access);
 				next (device_cursor);

@@ -68,6 +68,15 @@ package et_device_placeholders.symbols is
 	is new type_text_basic with record
 		position : type_vector_model;
 	end record;
+
+
+	-- Returns true if the given placeholder is in
+	-- the given catch zone:
+	function in_catch_zone (
+		placeholder	: in type_text_placeholder;
+		zone		: in type_catch_zone)
+		return boolean;
+
 	
 
 	type type_default_placeholders is record
@@ -77,6 +86,12 @@ package et_device_placeholders.symbols is
 	end record;
 	
 
+
+	-- Clears the proposed-flag and the selected-flag of the placeholders:	
+	procedure reset_status (
+		placeholders : in out type_default_placeholders);
+
+	
 	
 	-- Writes the properties of the given placeholder.
 	procedure write_placeholder_properties (

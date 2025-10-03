@@ -44,6 +44,35 @@ with et_alignment;				use et_alignment;
 
 package body et_device_placeholders.symbols is
 
+
+	function in_catch_zone (
+		placeholder	: in type_text_placeholder;
+		zone		: in type_catch_zone)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		if in_catch_zone (zone, placeholder.position) then
+			result := true;
+		else
+			result := false;
+		end if;
+		
+		return result;
+	end in_catch_zone;
+
+
+
+
+	procedure reset_status (
+		placeholders : in out type_default_placeholders)
+	is begin
+		reset_status (placeholders.name);
+		reset_status (placeholders.value);
+		reset_status (placeholders.purpose);
+	end;
+	
+
 	
 	procedure write_placeholder_properties (
 		placeholder		: in type_text_placeholder;

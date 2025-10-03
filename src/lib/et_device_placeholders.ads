@@ -60,7 +60,8 @@ package et_device_placeholders is
 		PURPOSE	-- for the purpose of the component in the design.
 		-- CS partcode ?
 		);
-
+	-- CS use prefix
+	
 
 	placeholder_meaning_default : constant type_placeholder_meaning := NAME;
 	
