@@ -71,10 +71,14 @@ package et_device_placeholders.symbols is
 
 
 	-- Returns true if the given placeholder is in
-	-- the given catch zone:
+	-- the given catch zone.
+	-- Since the placeholder position is relative to
+	-- the parent unit position, the unit position is
+	-- also required for this test:
 	function in_catch_zone (
-		placeholder	: in type_text_placeholder;
-		zone		: in type_catch_zone)
+		placeholder		: in type_text_placeholder;
+		unit_position	: in type_vector_model;					   
+		zone			: in type_catch_zone)
 		return boolean;
 
 	

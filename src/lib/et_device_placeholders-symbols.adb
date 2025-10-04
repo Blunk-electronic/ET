@@ -46,19 +46,22 @@ package body et_device_placeholders.symbols is
 
 
 	function in_catch_zone (
-		placeholder	: in type_text_placeholder;
-		zone		: in type_catch_zone)
+		placeholder		: in type_text_placeholder;
+		unit_position	: in type_vector_model;					   
+		zone			: in type_catch_zone)
 		return boolean
-	is
-		result : boolean := false;
+	is 
+		point : type_vector_model := placeholder.position;
 	begin
-		if in_catch_zone (zone, placeholder.position) then
-			result := true;
-		else
-			result := false;
-		end if;
+		move_by (point, unit_position);
 		
-		return result;
+		-- put_line ("pos " & to_string (point));
+		
+		if in_catch_zone (zone, point) then
+			return true;
+		else
+			return false;
+		end if;
 	end in_catch_zone;
 
 

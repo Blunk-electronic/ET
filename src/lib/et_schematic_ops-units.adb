@@ -4228,25 +4228,27 @@ package body et_schematic_ops.units is
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
 				is 
+					unit_position : constant type_vector_model := get_place (unit.position);
+					
 					use et_device_placeholders.symbols;
 				begin
 					if get_sheet (unit) = active_sheet then
 						log (text => to_string (unit_name), level => log_threshold + 2);
 						log_indentation_up;
 						
-						if in_catch_zone (unit.placeholders.name, catch_zone) then
+						if in_catch_zone (unit.placeholders.name, unit_position, catch_zone) then
 							log (text => to_string (NAME), level => log_threshold + 3);
 							set_proposed (unit.placeholders.name);
 							count := count + 1;
 						end if;
 
-						if in_catch_zone (unit.placeholders.value, catch_zone) then
+						if in_catch_zone (unit.placeholders.value, unit_position, catch_zone) then
 							log (text => to_string (VALUE), level => log_threshold + 3);
 							set_proposed (unit.placeholders.value);
 							count := count + 1;
 						end if;
 
-						if in_catch_zone (unit.placeholders.purpose, catch_zone) then
+						if in_catch_zone (unit.placeholders.purpose, unit_position, catch_zone) then
 							log (text => to_string (PURPOSE), level => log_threshold + 3);
 							set_proposed (unit.placeholders.purpose);
 							count := count + 1;
@@ -4258,15 +4260,17 @@ package body et_schematic_ops.units is
 
 				
 			begin
-				log (text => to_string (device_name), level => log_threshold + 1);
-				log_indentation_up;
+				if is_real (device) then
+					log (text => to_string (device_name), level => log_threshold + 1);
+					log_indentation_up;
 
-				-- Iterate through the units:
-				while has_element (unit_cursor) loop
-					device.units.update_element (unit_cursor, query_unit'access);
-					next (unit_cursor);
-				end loop;
-				log_indentation_down;
+					-- Iterate through the units:
+					while has_element (unit_cursor) loop
+						device.units.update_element (unit_cursor, query_unit'access);
+						next (unit_cursor);
+					end loop;
+					log_indentation_down;
+				end if;
 			end query_device;
 
 			
@@ -4329,16 +4333,18 @@ package body et_schematic_ops.units is
 
 										 
 			begin
-				log (text => to_string (device_name), level => log_threshold + 1);
-				log_indentation_up;
+				if is_real (device) then
+					log (text => to_string (device_name), level => log_threshold + 1);
+					log_indentation_up;
 
-				-- Iterate through the units:
-				while has_element (unit_cursor) loop
-					device.units.update_element (unit_cursor, query_unit'access);
-					next (unit_cursor);
-				end loop;
-				
-				log_indentation_down;
+					-- Iterate through the units:
+					while has_element (unit_cursor) loop
+						device.units.update_element (unit_cursor, query_unit'access);
+						next (unit_cursor);
+					end loop;
+					
+					log_indentation_down;
+				end if;
 			end query_device;
 
 			
@@ -4458,21 +4464,23 @@ package body et_schematic_ops.units is
 
 				
 			begin
-				log (text => "device " & to_string (device_name), level => log_threshold + 1);
-				log_indentation_up;
+				if is_real (device) then
+					log (text => "device " & to_string (device_name), level => log_threshold + 1);
+					log_indentation_up;
 
-				-- Iterate through the units:
-				while has_element (unit_cursor) loop
-					query_element (unit_cursor, query_unit'access);
+					-- Iterate through the units:
+					while has_element (unit_cursor) loop
+						query_element (unit_cursor, query_unit'access);
+						
+						if not proceed then
+							exit;
+						end if;
+						
+						next (unit_cursor);
+					end loop;
 					
-					if not proceed then
-						exit;
-					end if;
-					
-					next (unit_cursor);
-				end loop;
-				
-				log_indentation_down;
+					log_indentation_down;
+				end if;
 			end query_device;
 			
 			
@@ -4619,76 +4627,191 @@ package body et_schematic_ops.units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			device_cursor : pac_devices_sch.cursor := module.devices.first;
+
+			-- This procedure queries the devices and their units
+			-- and collects those which have the given flag set:			
+			procedure query_devices is
+				device_cursor : pac_devices_sch.cursor := module.devices.first;
+				
+
+				procedure query_device (
+					name	: in type_device_name;
+					device	: in type_device_sch) 
+				is 
+
+					-- Queries a unit for its status flag
+					-- and appends it to the result:
+					procedure query_unit (c : in pac_units.cursor) is 
+
+						-- This procedure appends the matching
+						-- device and unit cursor to the result:
+						procedure collect is begin
+							log (text => get_unit_name (c), level => log_threshold + 4);
+							
+							result.append ((
+								cat		=> CAT_UNIT,
+								unit	=> (device_cursor, c)));
+
+						end collect;
+
+						
+					begin
+						case flag is
+							when PROPOSED =>
+								if is_proposed (c) then
+									collect;
+								end if;
+
+							when SELECTED =>
+								if is_selected (c) then
+									collect;
+								end if;
+
+							when others => null; -- CS
+						end case;					
+					end query_unit;
+			
+					
+				begin
+					log (text => to_string (name), level => log_threshold + 2);
+					log_indentation_up;
+					
+					log (text => "units", level => log_threshold + 3);
+					log_indentation_up;
+					device.units.iterate (query_unit'access);
+					log_indentation_down;
+
+					log_indentation_down;
+				end query_device;
+
+				
+			begin
+				log (text => "query_devices", level => log_threshold + 1);
+				log_indentation_up;
+				
+				-- Iterate the devices of the module:
+				while has_element (device_cursor) loop
+					query_element (device_cursor, query_device'access);
+					next (device_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_devices;
+
 			
 
-			procedure query_device (
-				name	: in type_device_name;
-				device	: in type_device_sch) 
-			is 
+			-- This procedure queries the devices, their units and their placeholders
+			-- and collects those which have the given flag set:
+			procedure query_placeholders is
+				device_cursor : pac_devices_sch.cursor := module.devices.first;
+				
 
-				-- Queries a unit for its status flag
-				-- and appends it to the result:
-				procedure query_unit (c : in pac_units.cursor) is 
+				procedure query_device (
+					name	: in type_device_name;
+					device	: in type_device_sch) 
+				is 
+					unit_cursor : pac_units.cursor := device.units.first;
 
-					-- This procedure appends the matching
-					-- device and unit cursor to the result:
-					procedure collect is begin
-						log (text => get_unit_name (c), level => log_threshold + 4);
+					
+					procedure query_unit (
+						name	: in pac_unit_name.bounded_string;
+						unit	: in type_unit)
+					is
+						use et_device_placeholders.symbols;
 						
-						result.append ((
-							cat		=> CAT_UNIT,
-							unit	=> (device_cursor, c)));
+						-- This procedure appends the matching
+						-- placeholder to result:
+						procedure collect (meaning : type_placeholder_meaning) is begin
+							log (text => to_string (meaning), level => log_threshold + 6);
+							
+							result.append ((
+								cat			=> CAT_PLACEHOLDER,
+								placeholder	=> (device_cursor, unit_cursor, meaning)));
 
-					end collect;
+						end collect;
+
+						
+					begin
+						log (text => to_string (name), level => log_threshold + 5);
+						log_indentation_up;
+
+						case flag is
+							when PROPOSED =>
+								if is_proposed (unit.placeholders.name) then
+									collect (et_device_placeholders.NAME);
+								end if;
+
+								if is_proposed (unit.placeholders.value) then
+									collect (et_device_placeholders.VALUE);
+								end if;
+
+								if is_proposed (unit.placeholders.purpose) then
+									collect (et_device_placeholders.PURPOSE);
+								end if;
+
+								
+							when SELECTED =>
+								if is_selected (unit.placeholders.name) then
+									collect (et_device_placeholders.NAME);
+								end if;
+
+								if is_selected (unit.placeholders.value) then
+									collect (et_device_placeholders.VALUE);
+								end if;
+
+								if is_selected (unit.placeholders.purpose) then
+									collect (et_device_placeholders.PURPOSE);
+								end if;
+
+								
+							when others => null; -- CS
+						end case;					
+
+						log_indentation_down;
+					end query_unit;
 
 					
 				begin
-					case flag is
-						when PROPOSED =>
-							if is_proposed (c) then
-								collect;
-							end if;
+					if is_real (device) then -- Only real devices have placeholders.
+						log (text => to_string (name), level => log_threshold + 3);
+						log_indentation_up;
 
-						when SELECTED =>
-							if is_selected (c) then
-								collect;
-							end if;
+						log (text => "query units", level => log_threshold + 4);
+						log_indentation_up;
 
-						when others => null; -- CS
-					end case;					
-				end query_unit;
-		
+						-- Iterate the units of the device:
+						while has_element (unit_cursor) loop
+							query_element (unit_cursor, query_unit'access);
+							next (unit_cursor);
+						end loop;
+
+						log_indentation_down;
+						log_indentation_down;
+					end if;
+				end query_device;
 				
-			begin
-				log (text => to_string (name), level => log_threshold + 2);
-				log_indentation_up;
-				log (text => "units", level => log_threshold + 3);
-				log_indentation_up;
-				device.units.iterate (query_unit'access);
-				log_indentation_down;
-				log_indentation_down;
-			end query_device;
 
+			begin
+				log (text => "query_placeholders", level => log_threshold + 1);
+				log_indentation_up;
+
+				log (text => "query devices", level => log_threshold + 2);
+				log_indentation_up;
+				
+				-- Iterate the devices of the module:
+				while has_element (device_cursor) loop
+					query_element (device_cursor, query_device'access);
+					next (device_cursor);
+				end loop;
+				
+				log_indentation_down;
+				log_indentation_down;
+			end query_placeholders;
+			
 			
 		begin
-			log (text => "devices", level => log_threshold + 1);
-			log_indentation_up;
-			
-			-- Iterate the devices of the module:
-			while has_element (device_cursor) loop
-				query_element (device_cursor, query_device'access);
-				next (device_cursor);
-			end loop;
-
-			log_indentation_down;
-
-			
-			log (text => "placeholders", level => log_threshold + 1);
-			log_indentation_up;
-			-- CS query placeholders
-			log_indentation_down;
-			
+			query_devices;
+			query_placeholders;			
 		end query_module;
 
 		

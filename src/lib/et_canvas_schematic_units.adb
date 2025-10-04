@@ -114,9 +114,9 @@ package body et_canvas_schematic_units is
 					& ". " & status_next_object_clarification);
 
 			when CAT_PLACEHOLDER =>
-				set_status (praeamble & get_object_name (object.unit)
+				set_status (praeamble & get_device_name (object.placeholder)
 							& ". " & status_next_object_clarification);
-				-- CS: show meaning
+				-- CS: show meaning and unit
 
 				
 			when CAT_VOID => null; -- CS
@@ -275,7 +275,7 @@ package body et_canvas_schematic_units is
 							log_threshold	=> log_threshold + 1);
 
 						
-					when NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE =>
+					when NOUN_PLACEHOLDER =>
 						
 						-- Propose placeholders in the vicinity of the given point:
 						propose_placeholders (
