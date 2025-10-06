@@ -114,10 +114,10 @@ package body et_canvas_schematic_units is
 					& ". " & status_next_object_clarification);
 
 			when CAT_PLACEHOLDER =>
-				set_status (praeamble & get_device_name (object.placeholder)
+				set_status (praeamble
+					& get_object_name (object.placeholder) & " "
 					& get_meaning (object.placeholder)
 					& ". " & status_next_object_clarification);
-				-- CS: show meaning and unit
 
 				
 			when CAT_VOID => null; -- CS

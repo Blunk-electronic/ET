@@ -739,6 +739,14 @@ package et_schematic_ops.units is
 		object : in type_object_placeholder)
 		return string;
 
+	
+	-- Returns the full name of the given object
+	-- as string in the form like "IC12.B":
+	function get_object_name (
+		object	: in type_object_placeholder)
+		return string;
+
+	
 
 	function get_meaning (
 		object : in type_object_placeholder)

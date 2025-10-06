@@ -326,7 +326,7 @@ is
 							et_canvas_schematic_nets.clarify_object;
 						end if;
 					
-					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE => 
+					when NOUN_PLACEHOLDER => 
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
 						end if;

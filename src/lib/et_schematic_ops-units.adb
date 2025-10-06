@@ -4098,6 +4098,16 @@ package body et_schematic_ops.units is
 
 
 
+	
+	function get_object_name (
+		object	: in type_object_placeholder)
+		return string
+	is begin
+		return get_full_name (object.device_cursor, object.unit_cursor);
+	end;
+
+	
+
 	function get_meaning (
 		object : in type_object_placeholder)
 		return type_placeholder_meaning
