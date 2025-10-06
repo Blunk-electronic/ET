@@ -729,87 +729,12 @@ procedure draw_units is
 
 
 
-
-
 	-- The placeholders as given by the schematic:
 	sch_placeholder_name	: type_text_placeholder (meaning => NAME);
 	sch_placeholder_value	: type_text_placeholder (meaning => VALUE);
 	sch_placeholder_purpose : type_text_placeholder (meaning => PURPOSE);
-
-
-
+	-- CS: use sch_placeholders : type_default_placeholders;
 	
-	-- This function returns true if the given placeholder has been moved from the
-	-- default position and rotation or if the alignment has been changed:
--- 	function moved_by_operator (placeholder : in et_symbol_model.type_text_placeholder)
--- 		return boolean is
--- 		use et_symbol_model;
--- 		use et_text;
--- 		use type et_text.type_text_alignment;
--- 		result : boolean := false;
--- 	begin
--- 		case placeholder.meaning is
--- 			when NAME =>
--- 				if  placeholder.position /= sch_placeholder_name.position or
--- 					placeholder.rotation /= sch_placeholder_name.rotation or
--- 					placeholder.alignment /= sch_placeholder_name.alignment then
--- 					result := true;
--- 				end if;
--- 
--- 			when VALUE =>
--- 				if 	placeholder.position /= sch_placeholder_value.position or
--- 					placeholder.rotation /= sch_placeholder_value.rotation or
--- 					placeholder.alignment /= sch_placeholder_value.alignment then
--- 					result := true;
--- 				end if;
--- 			
--- 			when PURPOSE =>
--- 				if 	placeholder.position /= sch_placeholder_purpose.position or
--- 					placeholder.rotation /= sch_placeholder_purpose.rotation or
--- 					placeholder.alignment /= sch_placeholder_purpose.alignment then
--- 					result := true;
--- 				end if;
--- 		end case;
--- 
--- 		return result;
--- 	end moved_by_operator;
-
-	
-	
-	
-	-- Returns true if the given placeholder is selected.
-	function placeholder_is_selected (
-		d : in pac_devices_sch.cursor;
-		u : in pac_units.cursor)
-		return boolean
-	is
-		use pac_proposed_placeholders;
-		use pac_unit_name;
-		use pac_units;
-		use pac_devices_sch;
-	begin
-		-- If there are no selected placeholders at all, then there is nothing to do:
-		if is_empty (proposed_placeholders) then
-			return false;
-		else
-			if selected_placeholder /= pac_proposed_placeholders.no_element then
-				-- Compare given device and unit name with selected unit:
-				if key (d) = key (element (selected_placeholder).device) and then
-					key (u) = key (element (selected_placeholder).unit) then
-					-- CS: Improvement: compare cursors directly ?
-					
-					return true;
-				else
-					return false;
-				end if;
-			else
-				return false;
-			end if;
-		end if;
-	end placeholder_is_selected;
-
-
-
 
 	
 	
@@ -924,92 +849,6 @@ procedure draw_units is
 							sch_placeholder_name := unit.placeholders.name;
 							sch_placeholder_value := unit.placeholders.value;
 							sch_placeholder_purpose := unit.placeholders.purpose;
-
-							
--- 							if placeholder_is_selected (device_cursor, unit_cursor) then
--- 
--- 								-- increase brightness
--- 								brightness := BRIGHT;
--- 
--- 								if placeholder_move.being_moved then
--- 
--- 									case placeholder_move.category is
--- 										when NAME =>									
--- 											-- Calculate the absolute position of the NAME placeholder 
--- 											-- as it was according to database BEFORE the move:
--- 											placeholder_move.absolute_position := sch_placeholder_name.position;
--- 											move_by (placeholder_move.absolute_position, unit_position);
--- 
--- 											-- Depending on the tool used, calculate the new position of the 
--- 											-- placeholder relative to the unit position:
--- 											case placeholder_move.tool is
--- 												when MOUSE =>
--- 													move_by (
--- 														point	=> sch_placeholder_name.position,
--- 														offset	=> get_distance_relative (
--- 															placeholder_move.absolute_position, snap_to_grid (get_mouse_position)));
--- 				
--- 												when KEYBOARD =>
--- 													move_by (
--- 														point	=> sch_placeholder_name.position,
--- 														offset	=> get_distance_relative (
--- 															placeholder_move.absolute_position, get_cursor_position));
--- 				
--- 											end case;
--- 
--- 											
--- 										when PURPOSE =>
--- 											-- Calculate the absolute position of the PURPOSE placeholder 
--- 											-- as it was according to database BEFORE the move:
--- 											placeholder_move.absolute_position := sch_placeholder_purpose.position;
--- 											move_by (placeholder_move.absolute_position, unit_position);
--- 
--- 											-- Depending on the tool used, calculate the new position of the 
--- 											-- placeholder relative to the unit position:
--- 											case placeholder_move.tool is
--- 												when MOUSE =>
--- 													move_by (
--- 														point	=> sch_placeholder_purpose.position,
--- 														offset	=> get_distance_relative (
--- 															placeholder_move.absolute_position, snap_to_grid (get_mouse_position)));
--- 				
--- 												when KEYBOARD =>
--- 													move_by (
--- 														point	=> sch_placeholder_purpose.position,
--- 														offset	=> get_distance_relative (
--- 															placeholder_move.absolute_position, get_cursor_position));
--- 				
--- 											end case;
--- 
--- 											
--- 										when VALUE =>
--- 
--- 											-- Calculate the absolute position of the VALUE placeholder 
--- 											-- as it was according to database BEFORE the move:
--- 											placeholder_move.absolute_position := sch_placeholder_value.position;
--- 											move_by (placeholder_move.absolute_position, unit_position);
--- 
--- 											-- Depending on the tool used, calculate the new position of the 
--- 											-- placeholder relative to the unit position:
--- 											case placeholder_move.tool is
--- 												when MOUSE =>
--- 													move_by (
--- 														point	=> sch_placeholder_value.position,
--- 														offset	=> get_distance_relative (
--- 															placeholder_move.absolute_position, snap_to_grid (get_mouse_position)));
--- 				
--- 												when KEYBOARD =>
--- 													move_by (
--- 														point	=> sch_placeholder_value.position,
--- 														offset	=> get_distance_relative (
--- 															placeholder_move.absolute_position, get_cursor_position));
--- 				
--- 											end case;
--- 
--- 									end case;
--- 											
--- 								end if;
--- 							end if;
 						end if;
 
 
@@ -1104,12 +943,9 @@ procedure draw_units is
 	
 
 
-
-	-- Drawing the unit of a real device requires placeholders
-	-- for name, value and purpose. We fetch them from the symbol model
-	-- in this case.
-	-- If the symbol is virtual, then the placeholders are meaningless
-	-- and assume default values.
+	-- When an external unit is being added or fetched, then
+	-- the placeholders for name, value and purpose must be filled
+	-- temporarily as long as the unit is attached to the tool:
 	procedure fetch_placeholders_ext (
 		symbol_cursor : in pac_symbols.cursor)
 	is 
@@ -1117,7 +953,8 @@ procedure draw_units is
 		use pac_symbols;
 		sym : type_symbol renames element (symbol_cursor);
 	begin
-		-- CS: use function get_default_placeholders ?
+		-- CS: use sch_placeholders := sym.placeholders ?
+		-- or a function like get_default_placeholders (symbol_cursor) ?
 		
 		if is_real (sym) then
 			sch_placeholder_name	:= sym.placeholders.name;
@@ -1133,18 +970,17 @@ procedure draw_units is
 	
 
 
-	-- Drawing the symbol of a real device requires placeholders
-	-- for name, value an purpose. We fetch them from the symbol model
-	-- in this case.
-	-- If the symbol is virtual, then the placeholders are meaningless
-	-- and assume default values.
+	-- When an internal unit is being added or fetched, then
+	-- the placeholders for name, value and purpose must be filled
+	-- temporarily as long as the unit is attached to the tool:
 	procedure fetch_placeholders_int (
 		unit_cursor : in pac_units_internal.cursor)
 	is
 		use pac_units_internal;
 		sym : type_unit_internal renames element (unit_cursor);
 	begin
-		-- CS: use function get_default_placeholders ?
+		-- CS: use sch_placeholders := sym.placeholders ?
+		-- or a function like get_default_placeholders (symbol_cursor) ?
 		
 		case element (unit_cursor).appearance is
 			when APPEARANCE_PCB =>
