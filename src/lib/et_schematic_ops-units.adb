@@ -3996,8 +3996,6 @@ package body et_schematic_ops.units is
 		log_threshold	: in type_log_level) 
 	is
 		device_cursor_sch : pac_devices_sch.cursor;
-		
-		use pac_unit_name;
 
 		
 		procedure query_module (
