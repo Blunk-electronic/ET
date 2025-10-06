@@ -115,7 +115,8 @@ package body et_canvas_schematic_units is
 
 			when CAT_PLACEHOLDER =>
 				set_status (praeamble & get_device_name (object.placeholder)
-							& ". " & status_next_object_clarification);
+					& get_meaning (object.placeholder)
+					& ". " & status_next_object_clarification);
 				-- CS: show meaning and unit
 
 				

@@ -547,100 +547,129 @@ procedure draw_units is
 			use et_text;
 			use pac_draw_text;
 
-			
+
+			-- Draws the device name placeholder filled
+			-- by the actual device name like IC20.A:
 			procedure draw_name is 
+				-- This is the place where the placeholder
+				-- will be anchored. If the placeholder is being
+				-- moved by the operator, then the tool position
+				-- determines the anchor point. Otherwise the position
+				-- as defined by the caller of draw_unit will be used:
 				p : type_vector_model;
 			begin
-				-- DEVICE NAME:
-
 				--put_line (to_string (device_name) & " " 
 				-- & to_string (unit_name) 
 				-- & " " & to_string (unit_count));
 
+				-- The placeholder will be drawn only if the corresponding
+				-- layer is enabled:
 				if device_names_enabled then
 
-					p := sch_placeholder_name.position;
-
-					-- Move placeholder by unit position
-					move_by (p, unit_position);
+					if is_moving (sch_placeholder_name) then
+						p := get_object_tool_position;
+					else
+						-- The placeholder position is relative to the unit position:
+						p := sch_placeholder_name.position;
+						
+						-- Move placeholder by unit position to the final position:
+						move_by (p, unit_position);
+					end if;
 					
+					-- Draw the full text like IC20.A
 					draw_text (
 						content		=> to_content (get_full_name (device_name, unit_name, unit_count)), -- IC4.PWR
 						size		=> symbol.placeholders.name.size,
 						font		=> name_font,
 						anchor		=> p,
 						origin		=> true, -- origin required
-						
-						-- Text rotation around its anchor point.
-						-- NOTE: No snapping to HORIZONAL or VERTICAL required here.
-						-- This has been done in schematic_ops.rotate_unit already.
 						rotation	=> to_rotation (sch_placeholder_name.rotation),
-						
 						alignment	=> sch_placeholder_name.alignment);
+
 				end if;
 			end draw_name;
 
 			
-
+			
+			
+			-- Draws the device value placeholder filled
+			-- by the actual device value like 100k:
 			procedure draw_value is 
+				-- This is the place where the placeholder
+				-- will be anchored. If the placeholder is being
+				-- moved by the operator, then the tool position
+				-- determines the anchor point. Otherwise the position
+				-- as defined by the caller of draw_unit will be used:
 				p : type_vector_model;
 			begin
-			-- VALUE
+				-- The placeholder will be drawn only if the corresponding
+				-- layer is enabled:
 				if device_values_enabled then
 					
 					-- The value may be empty. We do not draw it in this case:
 					if not is_empty (device_value) then
 
-						p := sch_placeholder_value.position;
-
-						-- Move text by unit position
-						move_by (p, unit_position);
-						
+						if is_moving (sch_placeholder_value) then
+							p := get_object_tool_position;
+						else
+							-- The placeholder position is relative to the unit position:
+							p := sch_placeholder_value.position;
+							
+							-- Move placeholder by unit position to the final position:
+							move_by (p, unit_position);
+						end if;
+					
+						-- Draw the full text like 100k:
 						draw_text (
-							content		=> to_content (to_string (device_value)), -- 100R
+							content		=> to_content (to_string (device_value)), -- 100k
 							size		=> symbol.placeholders.value.size,
 							font		=> value_font,
 							anchor		=> p,
 							origin		=> true, -- origin required
-							
-							-- Text rotation around its anchor point.
-							-- NOTE: No snapping to HORIZONAL or VERTICAL required here.
-							-- This has been done in schematic_ops.rotate_unit already.
 							rotation	=> to_rotation (sch_placeholder_value.rotation),
-
 							alignment	=> sch_placeholder_value.alignment);
 					end if;
 				end if;
 			end draw_value;
 
 
+			
 
+			-- Draws the device value placeholder filled
+			-- by the actual device value like "Brightness Control":
 			procedure draw_purpose is 
+				-- This is the place where the placeholder
+				-- will be anchored. If the placeholder is being
+				-- moved by the operator, then the tool position
+				-- determines the anchor point. Otherwise the position
+				-- as defined by the caller of draw_unit will be used:
 				p : type_vector_model;
 			begin
-				-- PURPOSE
+				-- The placeholder will be drawn only if the corresponding
+				-- layer is enabled:
 				if device_purposes_enabled then
 				
 					-- The purpose may be empty. We do not draw it in this case:
 					if not is_empty (device_purpose) then
 
-						p := sch_placeholder_purpose.position;
+						if is_moving (sch_placeholder_purpose) then
+							p := get_object_tool_position;
+						else
+							-- The placeholder position is relative to the unit position:
+							p := sch_placeholder_purpose.position;
+							
+							-- Move placeholder by unit position to the final position:
+							move_by (p, unit_position);
+						end if;
 
-						-- Move text by unit position
-						move_by (p, unit_position);
-						
+						-- Draw the fill text like "Brightness Control":
 						draw_text (
 							content		=> to_content (to_string (device_purpose)), -- "brightness control"
 							size		=> symbol.placeholders.purpose.size,
 							font		=> purpose_font,
 							anchor		=> p,
 							origin		=> true, -- origin required
-							
-							-- Text rotation around its anchor point.
-							-- NOTE: No snapping to HORIZONAL or VERTICAL required here.
-							-- This has been done in schematic_ops.rotate_unit already.
 							rotation	=> to_rotation (sch_placeholder_purpose.rotation),
-
 							alignment	=> sch_placeholder_purpose.alignment);
 					end if;
 				end if;
