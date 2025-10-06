@@ -577,37 +577,37 @@ package body et_scripting_interactive_schematic is
 	
 
 
-	procedure select_placeholder_for_move is
-		use pac_proposed_placeholders;
-		sp : type_selected_placeholder;
-
-		use pac_geometry_2;
-		pos : type_vector_model;
-	begin
-		-- Append the cursors of the device and unit to the list of proposed placeholders.
-		-- There will be only one single item in that list.
-		proposed_placeholders.append (new_item => (
-			device	=> locate_device (active_module, placeholder_move.device),
-			unit	=> locate_unit (active_module, placeholder_move.device, placeholder_move.unit)));
-
-		-- Set the selected placeholder. This signals the GUI which placeholder is to be
-		-- drawn at the cursor or mouse position:
-		selected_placeholder := proposed_placeholders.first;
-
-		
-		-- Move the cursor to the placeholder:
-		sp := element (selected_placeholder);
-			
-		-- Get the x/y position of the placeholder:
-		pos := get_position (
-				device		=> sp.device,
-				unit		=> sp.unit,
-				category	=> to_category); -- maps from noun to placeholder category
-
-		-- CS canvas.move_cursor (ABSOLUTE, cursor_main, pos);
-	
-	end select_placeholder_for_move;
-
+-- 	procedure select_placeholder_for_move is
+-- 		use pac_proposed_placeholders;
+-- 		sp : type_selected_placeholder;
+-- 
+-- 		use pac_geometry_2;
+-- 		pos : type_vector_model;
+-- 	begin
+-- 		-- Append the cursors of the device and unit to the list of proposed placeholders.
+-- 		-- There will be only one single item in that list.
+-- 		proposed_placeholders.append (new_item => (
+-- 			device	=> locate_device (active_module, placeholder_move.device),
+-- 			unit	=> locate_unit (active_module, placeholder_move.device, placeholder_move.unit)));
+-- 
+-- 		-- Set the selected placeholder. This signals the GUI which placeholder is to be
+-- 		-- drawn at the cursor or mouse position:
+-- 		selected_placeholder := proposed_placeholders.first;
+-- 
+-- 		
+-- 		-- Move the cursor to the placeholder:
+-- 		sp := element (selected_placeholder);
+-- 			
+-- 		-- Get the x/y position of the placeholder:
+-- 		pos := get_position (
+-- 				device		=> sp.device,
+-- 				unit		=> sp.unit,
+-- 				category	=> to_category); -- maps from noun to placeholder category
+-- 
+-- 		-- CS canvas.move_cursor (ABSOLUTE, cursor_main, pos);
+-- 	
+-- 	end select_placeholder_for_move;
+-- 
 
 
 	-- Once the operator selects a package variant from the menu, then

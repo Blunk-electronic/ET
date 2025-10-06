@@ -80,21 +80,6 @@ package et_canvas_schematic_units is
 
 	use pac_generic_modules;
 
-	-- Whenever a unit (or the whole device with all its units)
-	-- is selected via the GUI, we store cursors of its
-	-- parent device and the unit itself via this type.
-	-- This type is to be used for a device and a unit that
-	-- is already placed in the schematic. So we use it
-	-- for example for moving, dragging or rotating of a unit.
-	type type_selected_unit is record
-		device	: pac_devices_sch.cursor;
-
-		-- If the cursor to the actual unit is no_element then
-		-- the whole device is regarded as selected:
-		unit	: pac_units.cursor;
-	end record;
-
-
 
 
 
@@ -440,52 +425,7 @@ package et_canvas_schematic_units is
 
 
 
-
 	
-	
--- PLACEHOLDERS
-
-	-- Whenever a placeholder (for value, purpose or name) is selected
-	-- via the GUI, we store cursors of its
-	-- parent device and unit via this type.
-	subtype type_selected_placeholder is type_selected_unit;
-	
-	package pac_proposed_placeholders is new doubly_linked_lists (type_selected_placeholder);
-	use pac_proposed_placeholders;
-
-	-- These variables are used by the GUI when the operator selects a placeholder:
-	proposed_placeholders	: pac_proposed_placeholders.list;
-	selected_placeholder	: pac_proposed_placeholders.cursor;
-
-	-- Advances to next placeholder in 
-	-- list of proposed placeholders:
-	procedure clarify_placeholder;
-
-	-- Clears the list proposed placeholders:
-	procedure clear_proposed_placeholders;
-
-	
-	-- Global information for the GUI when a placeholder 
-	-- is being moved.
-	-- The category indicates whether the placeholder 
-	-- for name, value or purpose is meant.
-	type type_placeholder is record
-		category			: type_placeholder_meaning := NAME;
-		being_moved			: boolean := false;
-		tool				: type_tool := MOUSE;
-		absolute_position	: type_vector_model; -- before the move
-
-		device				: type_device_name := (others => <>); -- IC45
-		unit				: pac_unit_name.bounded_string; -- A
-	end record;
-
-	placeholder_move : type_placeholder;
-
-	
-	
-	-- Resets placeholder_move and clears
-	-- the list of proposed placeholders:
-	procedure reset_placeholder;
 
 	
 	-- to be output in the status bar:
@@ -505,43 +445,8 @@ package et_canvas_schematic_units is
 		& status_hint_for_abort;
 
 	
-	-- Assigns the final position after the move to the selected placeholder.
-	-- Resets the global variable "placeholder".
-	procedure finalize_move_placeholder (
-		destination		: in type_vector_model;
-		category		: in type_placeholder_meaning;
-		log_threshold	: in type_log_level);
-
-	procedure move_placeholder (
-		tool		: in type_tool;
-		position	: in type_vector_model;
-		category	: in type_placeholder_meaning);
-
-	
-	-- Locates all placeholders in the vicinity of given point.
-	-- If more than one placeholder near point found, then it sets the
-	-- cursor selected_placeholder to the first placeholder and requests
-	-- for clarification.
-	procedure find_placeholders (
-		point		: in type_vector_model;
-		category	: in type_placeholder_meaning);
-
-	-- Rotates the placeholder indicated by selected_placeholder:
-	procedure rotate_selected_placeholder (
-		category	: in type_placeholder_meaning);
-
-	-- Locates all placeholders of given category in the vicinity of given point.
-	-- If more than one placeholder near point found, then it sets the
-	-- cursor selected_placeholder to the first placeholder and requests
-	-- for clarification.
-	-- If only one placeholder found, then the placeholder will be rotated.
-	procedure rotate_placeholder (
-		point 		: in type_vector_model;
-		category	: in type_placeholder_meaning);
 
 
-
--- SET PROPERTIES (value, partcode, purpose, name)
 
 	-- to be output in the status bar:
 	status_rename_device : constant string := 
@@ -581,15 +486,6 @@ package et_canvas_schematic_units is
 
 
 
-	-- Sets the property of the selected unit (and the whole
-	-- device) of the unit being pointed at by cursor selected_unit.
-	-- Call this procedure after a clarification.
-	-- If the selected unit belongs to a virtual device, then
-	-- an error message will be output in the status bar.
-	--  Virtual units have no value, partcode or purpose because
-	--  they do not exist in reality.
-	-- procedure set_property_selected_unit;
-
 
 	status_show_device : constant string := 
 		status_click_left 
@@ -597,18 +493,6 @@ package et_canvas_schematic_units is
 		& status_press_space
 		& "to select device." 
 		& status_hint_for_abort;
-
-	-- Outputs in the status bar some helpful properties
-	-- of the selected device:
-	-- procedure show_properties_of_selected_device; 
-	
-	-- Locates all units in the vicinity of given point.
-	-- If more than one unit near point found, then it sets the
-	-- cursor selected_unit to the first unit and requests
-	-- for clarification.
-	-- If there is only one unite, sets global variable selected_unit accordingly.
-	-- If there is no unit, then selected_unit is set to no_element.
-	-- procedure find_units_for_show (point : in type_vector_model);
 
 	
 end et_canvas_schematic_units;

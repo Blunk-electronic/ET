@@ -489,8 +489,7 @@ package body et_canvas_schematic_2 is
 		-- so that the mode is unchanged.		
 		
 		reset_preliminary_segment; -- after move/drag/draw of a net segment
-		
-		reset_placeholder; -- after moving a placeholder
+
 		-- reset_activate_counter;
 
 		reset_zoom_area; -- abort zoom-to-area operation
@@ -1233,29 +1232,6 @@ package body et_canvas_schematic_2 is
 
 
 
-	
-	procedure clear_proposed_objects is 
-		use et_canvas_schematic_nets;
-		use et_canvas_schematic_units;
-	begin
-		null;
-		-- clear_proposed_units;
-		-- clear_proposed_segments;
-	end clear_proposed_objects;
-
-	
--- 	procedure reset_properties_selection (
--- 		self : not null access type_view)
--- 	is 
--- 	begin
--- 		--put_line ("reset selection");
--- 		clear_proposed_units;
--- 		clear_proposed_segments;
--- 		
--- 		-- CS reset other stuff ?
--- 	end reset_properties_selection;
--- 
--- 	
 
 
 

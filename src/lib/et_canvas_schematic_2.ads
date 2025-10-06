@@ -423,16 +423,7 @@ package et_canvas_schematic_2 is
 	procedure reset_grid_and_cursor;
 	
 
-
-
 	
-	-- Clears list of proposed objects such as net segments, units, ...
-	procedure clear_proposed_objects;
-	
-
--- 	overriding procedure reset_properties_selection (
--- 		self : not null access type_view);
-
 
 
 

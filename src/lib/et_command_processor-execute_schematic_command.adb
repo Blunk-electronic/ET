@@ -2702,7 +2702,8 @@ is
 			when VERB_SHOW => -- GUI related
 				-- There might be objects such as net segments or units selected.
 				-- They must be de-selected first:
-				clear_proposed_objects;
+				-- clear_proposed_objects;
+				-- CS use procedure that resets units, nets, ...
 				
 				case noun is
 					when NOUN_DEVICE =>
@@ -2970,7 +2971,8 @@ is
 
 			-- There might be objects such as net segments or units selected.
 			-- They must be de-selected:
-			clear_proposed_objects; -- CS remove
+			--clear_proposed_objects; -- CS remove
+			-- CS use procedure that resets units, nets, ... ?
 			
 			case verb is
 				when VERB_ADD =>
