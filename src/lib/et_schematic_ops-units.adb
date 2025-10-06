@@ -3986,30 +3986,37 @@ package body et_schematic_ops.units is
 
 	
 
-	procedure rotate_unit_placeholder (
+	procedure rotate_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
-		rotation		: in et_text.type_rotation_documentation; -- absolute ! -- 90
+		toggle			: in boolean := false;
+		rotation		: in et_text.type_rotation_documentation := et_text.HORIZONTAL;
 		meaning			: in type_placeholder_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level) 
 	is
+
+		device_cursor_sch : pac_devices_sch.cursor;
+		
 		use pac_unit_name;
 
-		-- CS rework
+
 		
-		
-		procedure query_devices (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			device_cursor : pac_devices_sch.cursor;
+			-- Query whether the given unit is deployed in the schematic:
+			unit_query : constant type_unit_query := 
+				get_unit_position (device_cursor_sch, unit_name);
 
-			procedure query_units (
+
+			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_sch) 
 			is
-				unit_cursor : pac_units.cursor;
+				-- Locate the targeted unit:
+				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
 
 				
 				procedure rotate_placeholder (
@@ -4018,7 +4025,12 @@ package body et_schematic_ops.units is
 				is begin
 					case meaning is
 						when et_device_placeholders.NAME =>
-							unit.placeholders.name.rotation := rotation;
+							if toggle then
+								null;
+								-- CS toggle_rotation (unit.placeholders.name);
+							else
+								unit.placeholders.name.rotation := rotation;
+							end if;
 							
 						when VALUE =>
 							unit.placeholders.value.rotation := rotation;
@@ -4030,55 +4042,54 @@ package body et_schematic_ops.units is
 				end rotate_placeholder;
 
 				
-			begin -- query_units
-				if contains (device.units, unit_name) then
-
-					-- locate unit by its name
-					unit_cursor := find (device.units, unit_name);
-
-					pac_units.update_element (
-						container	=> device.units,
-						position	=> unit_cursor,
-						process		=> rotate_placeholder'access);
-				else
-					unit_not_found (unit_name);
-				end if;
-			end query_units;
+			begin
+				device.units.update_element (unit_cursor, rotate_placeholder'access);
+			end query_device;
 
 			
-		begin -- query_devices
-			if contains (module.devices, device_name) then
-
-				-- locate the device. it should be there
-				device_cursor := find (module.devices, device_name);
-
-				update_element (
-					container	=> module.devices,
-					position	=> device_cursor,
-					process		=> query_units'access);
-				
+		begin
+			-- Test whether the desired unit is deployed (in schematic).
+			-- If the unit is deployed, then proceed:
+			if unit_query.exists then
+				module.devices.update_element (device_cursor_sch, query_device'access);
 			else
-				device_not_found (device_name);
+				log (WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
 			end if;
-		end query_devices;
+		end query_module;
 		
 		
 	begin
-		log (text => "module " & to_string (module_cursor) &
-			" rotating " & to_string (device_name) & " unit " &
-			to_string (unit_name) & " placeholder" & to_string (meaning) & " to" &
-			to_string (rotation), level => log_threshold);
+		log (text => "module " & to_string (module_cursor) 
+			 & " rotate " & to_string (device_name) 
+			 & " unit " & to_string (unit_name) 
+			 & " placeholder" & to_string (meaning) 
+			 & " to" & to_string (rotation),
+			 level => log_threshold);
+
+		log_indentation_up;
 		
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor_sch := locate_device (module_cursor, device_name);
+			
+		if has_element (device_cursor_sch) then -- device exists in schematic
+			
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> query_module'access);
+
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+		end if;
 		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_devices'access);
-
-	end rotate_unit_placeholder;
+		log_indentation_down;
+	end rotate_placeholder;
 
 
 
+	
 
 
 	function get_device_name (
@@ -4997,14 +5008,13 @@ package body et_schematic_ops.units is
 				
 
 			when CAT_PLACEHOLDER =>
-				-- CS
-				-- rotate_unit_placeholder (
-				-- 	module_cursor 	=> module_cursor,
-				-- 	device_name		=> get_device_name (object.placeholder),
-				-- 	unit_name		=> get_unit_name (object.placeholder),
-				-- 	rotation		=> 90.0, -- ?
-				-- 	meaning			=> get_meaning (object.placeholder),
-				-- 	log_threshold	=> log_threshold + 1);
+				rotate_placeholder (
+					module_cursor 	=> module_cursor,
+					device_name		=> get_device_name (object.placeholder),
+					unit_name		=> get_unit_name (object.placeholder),
+					toggle			=> true,
+					meaning			=> get_meaning (object.placeholder),
+					log_threshold	=> log_threshold + 1);
 				null;
 
 				

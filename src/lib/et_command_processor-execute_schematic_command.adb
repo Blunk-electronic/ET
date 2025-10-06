@@ -1295,7 +1295,7 @@ is
 		procedure do_it is begin
 			case cmd_field_count is
 				when 7 =>
-					rotate_unit_placeholder (
+					rotate_placeholder (
 						module_cursor 	=> active_module,
 						device_name		=> to_device_name (get_field (5)), -- IC1
 						unit_name		=> to_unit_name (get_field (6)), -- A

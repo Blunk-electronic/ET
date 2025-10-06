@@ -692,12 +692,16 @@ package et_schematic_ops.units is
 
 	
 	-- Rotates the given unit placeholder about its origin.
-	-- The rotation is absolute.										  
-	procedure rotate_unit_placeholder ( -- CS rename to rotate_placeholder
+	-- The rotation is either horizontal or vertical.
+	-- If toggle is true, then rotation is ignored and
+	-- the rotation of the placeholder toggels between
+	-- horizontal and vertical:
+	procedure rotate_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
-		rotation		: in et_text.type_rotation_documentation;
+		toggle			: in boolean := false;
+		rotation		: in et_text.type_rotation_documentation := et_text.HORIZONTAL;
 		meaning			: in type_placeholder_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level);
 
