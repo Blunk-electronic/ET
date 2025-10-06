@@ -372,6 +372,45 @@ package body et_units is
 
 
 
+	procedure rotate_placeholder (
+		unit		: in out type_unit;
+		meaning		: in type_placeholder_meaning;					 
+		toggle		: in boolean;
+		rotation	: in type_rotation_documentation)
+	is begin
+		case meaning is
+			when NAME =>
+				if toggle then
+					toggle_rotation (unit.placeholders.name);
+				else
+					unit.placeholders.name.rotation := rotation;
+				end if;
+
+				
+			when VALUE =>
+				if toggle then
+					toggle_rotation (unit.placeholders.value);
+				else
+					unit.placeholders.value.rotation := rotation;
+				end if;
+
+				
+			when PURPOSE =>
+				if toggle then
+					toggle_rotation (unit.placeholders.purpose);
+				else
+					unit.placeholders.purpose.rotation := rotation;
+				end if;
+
+		end case;
+	end rotate_placeholder;
+
+	
+
+
+
+	
+
 	function get_position (
 		unit	: in pac_units.cursor)
 		return type_object_position

@@ -3995,11 +3995,9 @@ package body et_schematic_ops.units is
 		meaning			: in type_placeholder_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level) 
 	is
-
 		device_cursor_sch : pac_devices_sch.cursor;
 		
 		use pac_unit_name;
-
 
 		
 		procedure query_module (
@@ -4023,22 +4021,7 @@ package body et_schematic_ops.units is
 					name	: in pac_unit_name.bounded_string; -- A
 					unit	: in out type_unit) 
 				is begin
-					case meaning is
-						when et_device_placeholders.NAME =>
-							if toggle then
-								null;
-								-- CS toggle_rotation (unit.placeholders.name);
-							else
-								unit.placeholders.name.rotation := rotation;
-							end if;
-							
-						when VALUE =>
-							unit.placeholders.value.rotation := rotation;
-							
-						when PURPOSE =>
-							unit.placeholders.purpose.rotation := rotation;
-
-					end case;
+					rotate_placeholder (unit, meaning, toggle, rotation);
 				end rotate_placeholder;
 
 				

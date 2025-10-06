@@ -87,8 +87,10 @@ package et_schematic_text is
         rotation	: et_text.type_rotation_documentation := et_text.type_rotation_documentation'first;
 	end record;
 
-	
-	
+
+	-- Toggles between horizontal and vertical rotation:
+	procedure toggle_rotation (
+		text : in out type_text_basic);
 
 	
 

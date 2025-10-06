@@ -55,6 +55,8 @@ with et_port_names;						use et_port_names;
 with et_symbol_ports;					use et_symbol_ports;
 with et_symbol_library;					use et_symbol_library;
 with et_symbol_model;					use et_symbol_model;
+with et_text;							use et_text;
+with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_unit_name;						use et_unit_name;
@@ -267,6 +269,18 @@ package et_units is
 		unit : in out type_unit);
 	
 
+
+	-- Rotates the placeholder given by meaning.
+	-- If toggle is true, then the rotation toggles between
+	-- horizonal and vertical. Otherwise, the rotation is
+	-- set as given by rotation:
+	procedure rotate_placeholder (
+		unit		: in out type_unit;
+		meaning		: in type_placeholder_meaning;					 
+		toggle		: in boolean;
+		rotation	: in type_rotation_documentation);
+
+	
 	
 	-- Units of a device are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	

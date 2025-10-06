@@ -62,6 +62,9 @@ package et_text is
 	
 -- CONTENT
 	
+	-- CS: Move stuff to separate packages:
+
+	
 	-- A text may have up to 200 characters which seems sufficient for now.
 	text_length_max : constant natural := 200;
 	package pac_text_content is new generic_bounded_length (text_length_max);
@@ -185,7 +188,8 @@ package et_text is
 
 
 		-- This is the root type of all text types:
-		type type_text is abstract tagged record
+		--type type_text is abstract tagged record
+		type type_text is tagged record
 			size		: type_text_size := size_default;
 			alignment	: type_text_alignment;
 			status		: et_object_status.type_object_status;
