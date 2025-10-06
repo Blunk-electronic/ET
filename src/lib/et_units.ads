@@ -270,6 +270,19 @@ package et_units is
 	
 
 
+	-- Moves the placeholder given by meaning.
+	-- If coordinates is absolute, then the placeholder
+	-- is moved to the given point.
+	-- If coordinates is relative, then the placeholder
+	-- is moved by the x/y-distance given by point:
+	procedure move_placeholder (
+		unit		: in out type_unit;
+		meaning		: in type_placeholder_meaning;					 
+		coordinates	: in type_coordinates; -- relative/absolute
+		point		: in type_vector_model); -- x/y
+
+
+	
 	-- Rotates the placeholder given by meaning.
 	-- If toggle is true, then the rotation toggles between
 	-- horizonal and vertical. Otherwise, the rotation is

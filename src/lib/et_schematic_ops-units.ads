@@ -680,7 +680,7 @@ package et_schematic_ops.units is
 
 
 	-- Moves the a unit placeholder of the given unit.
-	procedure move_unit_placeholder ( -- CS rename to move_placeholder
+	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A

@@ -3833,7 +3833,7 @@ package body et_schematic_ops.units is
 
 	
 
-	procedure move_unit_placeholder (
+	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
@@ -3842,122 +3842,55 @@ package body et_schematic_ops.units is
 		meaning			: in type_placeholder_meaning; -- name, value, purpose
 		log_threshold	: in type_log_level)
 	is
-		use pac_unit_name;
+		device_cursor_sch : pac_devices_sch.cursor;
 
-		-- CS rework
 		
-		procedure query_devices (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			device_cursor : pac_devices_sch.cursor;
-
-			procedure query_units (
+			-- Query whether the given unit is deployed in the schematic:
+			unit_query : constant type_unit_query := 
+				get_unit_position (device_cursor_sch, unit_name);
+			
+			
+			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch)
+				device		: in out type_device_sch) 
 			is
-				unit_cursor : pac_units.cursor;
+				-- Locate the targeted unit:
+				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
+
 
 				procedure move_placeholder (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
-				is
-					-- In case absolute movement is required, calculate the
-					-- new position of the placeholder relative to the unit origin:
-					pos_abs : constant type_vector_model :=
-						get_distance_relative (unit.position.place, point);
-					
-				begin -- move_placeholder
-					
-					-- The given meaning determines the placeholder to be moved:
-					case meaning is
-						when NAME =>
-							case coordinates is
-								when ABSOLUTE =>
-									--log (text => "pos " & to_string (point));
-									unit.placeholders.name.position := pos_abs;
-
-								when RELATIVE =>
-									move_by (
-										point	=> unit.placeholders.name.position,
-										offset	=> point);
-							end case;
-							
-						when VALUE =>
-							case coordinates is
-								when ABSOLUTE =>
-									unit.placeholders.value.position := pos_abs;
-
-								when RELATIVE =>
-									move_by (
-										point	=> unit.placeholders.value.position,
-										offset	=> point);
-							end case;
-							
-						when PURPOSE =>
-							case coordinates is
-								when ABSOLUTE =>
-									unit.placeholders.purpose.position := pos_abs;
-
-								when RELATIVE =>
-									move_by (
-										point	=> unit.placeholders.purpose.position,
-										offset	=> point);
-							end case;
-
-						when others =>
-							raise constraint_error; -- CS no longer required
-					end case;
-					
-					exception
-						when event: others =>
-							log (ERROR, "coordinates invalid !", console => true); -- CS required more details
-							log (text => ada.exceptions.exception_information (event), console => true);
-							raise;
-					
+				is begin
+					move_placeholder (unit, meaning, coordinates, point);
 				end move_placeholder;
 
 				
-			begin -- query_units
-				if contains (device.units, unit_name) then
-
-					-- locate unit by its name. it should be there.
-					unit_cursor := find (device.units, unit_name);
-
-					update_element (
-						container	=> device.units,
-						position	=> unit_cursor,
-						process		=> move_placeholder'access);
-					
-				else
-					unit_not_found (unit_name);
-				end if;
-			end query_units;
+			begin
+				device.units.update_element (unit_cursor, move_placeholder'access);
+			end query_device;
 
 			
-		begin -- query_devices
-			if contains (module.devices, device_name) then
-
-				-- Locate the device. It should be there.
-				device_cursor := find (module.devices, device_name);
-
-				-- locate the unit
-				update_element (
-					container	=> module.devices,
-					position	=> device_cursor,
-					process		=> query_units'access);
-				
+		begin
+			-- Test whether the desired unit is deployed (in schematic).
+			-- If the unit is deployed, then proceed:
+			if unit_query.exists then
+				module.devices.update_element (device_cursor_sch, query_device'access);
 			else
-				device_not_found (device_name);
+				log (WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
 			end if;
-		end query_devices;
+		end query_module;
 
 		
 	begin
 		case coordinates is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_cursor)
-					& " moving " & to_string (device_name) 
+					& " move " & to_string (device_name) 
 					& " unit " & to_string (unit_name) 
 					& " placeholder " & enclose_in_quotes (to_string (meaning))
 					& " to" & to_string (point),
@@ -3965,7 +3898,7 @@ package body et_schematic_ops.units is
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_cursor)
-					& " moving " & to_string (device_name) 
+					& " move " & to_string (device_name) 
 					& " unit " & to_string (unit_name) 
 					& " placeholder " & enclose_in_quotes (to_string (meaning))
 					& " by" & to_string (point),
@@ -3973,12 +3906,26 @@ package body et_schematic_ops.units is
 		end case;
 
 		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_devices'access);
+		log_indentation_up;
 		
-	end move_unit_placeholder;
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor_sch := locate_device (module_cursor, device_name);
+			
+		if has_element (device_cursor_sch) then -- device exists in schematic
+			
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> query_module'access);
+
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+		end if;
+		
+		log_indentation_down;		
+	end move_placeholder;
 
 
 
@@ -4940,7 +4887,7 @@ package body et_schematic_ops.units is
 
 			when CAT_PLACEHOLDER =>
 				
-				move_unit_placeholder (
+				move_placeholder (
 					module_cursor 	=> module_cursor,
 					device_name		=> get_device_name (object.placeholder),
 					unit_name		=> get_unit_name (object.placeholder),

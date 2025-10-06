@@ -372,6 +372,65 @@ package body et_units is
 
 
 
+	
+
+	procedure move_placeholder (
+		unit		: in out type_unit;
+		meaning		: in type_placeholder_meaning;					 
+		coordinates	: in type_coordinates; -- relative/absolute
+		point		: in type_vector_model) -- x/y
+	is 
+		-- In case absolute movement is required, calculate the
+		-- new position of the placeholder relative to the unit origin:
+		pos_abs : constant type_vector_model :=
+			get_distance_relative (unit.position.place, point);
+
+	begin
+		case meaning is
+			when NAME =>
+				case coordinates is
+					when ABSOLUTE =>
+						--log (text => "pos " & to_string (point));
+						unit.placeholders.name.position := pos_abs;
+
+					when RELATIVE =>
+						move_by (
+							point	=> unit.placeholders.name.position,
+							offset	=> point);
+				end case;
+
+				
+			when VALUE =>
+				case coordinates is
+					when ABSOLUTE =>
+						unit.placeholders.value.position := pos_abs;
+
+					when RELATIVE =>
+						move_by (
+							point	=> unit.placeholders.value.position,
+							offset	=> point);
+				end case;
+
+				
+			when PURPOSE =>
+				case coordinates is
+					when ABSOLUTE =>
+						unit.placeholders.purpose.position := pos_abs;
+
+					when RELATIVE =>
+						move_by (
+							point	=> unit.placeholders.purpose.position,
+							offset	=> point);
+				end case;
+
+		end case;
+	end move_placeholder;
+
+
+	
+
+	
+	
 	procedure rotate_placeholder (
 		unit		: in out type_unit;
 		meaning		: in type_placeholder_meaning;					 

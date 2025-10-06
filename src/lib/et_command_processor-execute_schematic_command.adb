@@ -1331,6 +1331,8 @@ is
 	
 
 
+
+	
 	
 	-- This procedure parses a command that moves a placeholder
 	-- for name, value or purpose of a unit.
@@ -1343,7 +1345,7 @@ is
 			-- schematic led_driver move name R1 1 absolute 10 15
 			case cmd_field_count is
 				when 9 =>
-					move_unit_placeholder (
+					move_placeholder (
 						module_cursor 	=> active_module,
 						device_name		=> to_device_name (get_field (5)), -- IC1
 						unit_name		=> to_unit_name (get_field (6)), -- A
