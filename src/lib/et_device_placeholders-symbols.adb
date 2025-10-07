@@ -78,6 +78,9 @@ package body et_device_placeholders.symbols is
 
 
 
+
+	
+
 	procedure rotate_placeholders (
 		placeholders	: in out type_default_placeholders;
 		rotation		: in type_rotation_model)
@@ -108,6 +111,20 @@ package body et_device_placeholders.symbols is
 
 
 
+
+	function rotate_placeholders (
+		placeholders	: in type_default_placeholders;
+		rotation		: in type_rotation_model)
+		return type_default_placeholders
+	is
+		result : type_default_placeholders := placeholders;
+	begin
+		rotate_placeholders (result, rotation);
+		return result;
+	end;
+	
+
+	
 	
 	
 	procedure write_placeholder_properties (

@@ -108,7 +108,16 @@ package et_device_placeholders.symbols is
 		placeholders	: in out type_default_placeholders;
 		rotation		: in type_rotation_model);
 
+
+	function rotate_placeholders (
+		placeholders	: in type_default_placeholders;
+		rotation		: in type_rotation_model)
+		return type_default_placeholders;
+
+
 	
+	
+
 	
 	
 	-- Writes the properties of the given placeholder.

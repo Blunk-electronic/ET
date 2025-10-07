@@ -944,7 +944,9 @@ procedure draw_units is
 						unit_count		=> unit_add.total,						
 						unit_position	=> destination,
 						unit_rotation	=> unit_add.rotation,						
-						placeholders	=> get_placeholders (symbol_cursor),
+						placeholders	=> rotate_placeholders (
+							get_placeholders (symbol_cursor), unit_add.rotation),
+						
 						brightness		=> brightness,
 						preview			=> true);
 
@@ -959,7 +961,9 @@ procedure draw_units is
 						unit_count		=> unit_add.total,						
 						unit_position	=> destination,
 						unit_rotation	=> unit_add.rotation,						
-						placeholders	=> get_placeholders (unit_cursor.internal),						
+						placeholders	=> rotate_placeholders (
+							get_placeholders (unit_cursor.internal), unit_add.rotation),
+
 						brightness		=> brightness,
 						preview			=> true);
 			end case;
@@ -1004,7 +1008,9 @@ procedure draw_units is
 						unit_count		=> unit_fetch.total,						
 						unit_position	=> destination,
 						unit_rotation	=> unit_fetch.rotation,						
-						placeholders	=> get_placeholders (symbol_cursor),						
+						placeholders	=> rotate_placeholders (
+							get_placeholders (symbol_cursor), unit_fetch.rotation),
+						
 						brightness		=> brightness,
 						preview			=> true);
 
@@ -1019,7 +1025,9 @@ procedure draw_units is
 						unit_count		=> unit_fetch.total,						
 						unit_position	=> destination,
 						unit_rotation	=> unit_fetch.rotation,						
-						placeholders	=> get_placeholders (unit_cursor.internal),						
+						placeholders	=> rotate_placeholders (
+							get_placeholders (unit_cursor.internal), unit_fetch.rotation),
+
 						brightness		=> brightness,
 						preview			=> true);
 			end case;
@@ -1033,7 +1041,7 @@ procedure draw_units is
 	end draw_unit_being_fetched;
 
 	
-	use pac_devices_sch;	
+
 	
 begin
 	-- put_line ("draw units ...");
