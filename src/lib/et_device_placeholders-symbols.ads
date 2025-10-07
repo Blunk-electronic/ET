@@ -95,6 +95,20 @@ package et_device_placeholders.symbols is
 	procedure reset_status (
 		placeholders : in out type_default_placeholders);
 
+
+
+	-- This procedure does the actual rotating of placeholders.
+	-- Rotation is the rotation of the unit in the schematic.
+	-- It performs the following operations with each placeholder:
+	-- 1. Rotates about the origin of the former symbol (which is 0/0)
+	-- 2. Rotates about the origin of the placeholder
+	-- 3. Snaps to horizonal or vertical so that the later text
+	--    can be read from the front or from the right:
+	procedure rotate_placeholders (
+		placeholders	: in out type_default_placeholders;
+		rotation		: in type_rotation_model);
+
+	
 	
 	
 	-- Writes the properties of the given placeholder.

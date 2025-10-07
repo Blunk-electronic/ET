@@ -45,6 +45,7 @@
 with ada.containers; 			use ada.containers;
 with ada.containers.indefinite_ordered_maps;
 
+with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
 
 with et_logging;						use et_logging;
@@ -116,7 +117,21 @@ package et_symbol_library is
 		return type_default_placeholders;
 
 
+	-- In the symbol, the placeholders have a rotation (about itself)
+	-- and a position relative to the origin of the symbol.
+	-- On instanciating a symbol in the schematic, it becomes a unit
+	-- which may have a rotation of its own.
+	-- This function translates from the rotation of placeholders
+	-- described in the symbol model to the rotation of
+	-- placeholders of a unit in the schematic.
+	-- It translates according to the rotation given by destination:
+	function get_default_placeholders (
+		symbol_cursor	: in pac_symbols.cursor;
+		destination		: in type_object_position) -- x/y/rotation of the unit
+		return type_default_placeholders;
 
+
+	
 	function get_symbol (
 		symbol	: in pac_symbols.cursor)
 		return type_symbol;

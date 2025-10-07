@@ -142,6 +142,21 @@ package et_device_model is
 		return type_default_placeholders;
 
 
+	-- In the symbol, the placeholders have a rotation (about itself)
+	-- and a position relative to the origin of the symbol.
+	-- On instanciating a symbol in the schematic, it becomes a unit
+	-- which may have a rotation of its own.
+	-- This function translates from the rotation of placeholders
+	-- described in the internal symbol of the device model to the rotation of
+	-- placeholders of a unit in the schematic.
+	-- It translates according to the rotation given by destination:
+	function get_default_placeholders (
+		symbol_cursor	: in pac_units_internal.cursor;
+		destination		: in type_object_position)
+		return type_default_placeholders;
+
+
+	
 	function get_symbol (
 		unit	: in pac_units_internal.cursor)
 		return type_symbol;

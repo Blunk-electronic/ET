@@ -69,6 +69,29 @@ package body et_device_model is
 
 
 
+
+	function get_default_placeholders (
+		symbol_cursor	: in pac_units_internal.cursor;
+		destination		: in type_object_position)
+		return type_default_placeholders
+	is
+		sym : type_unit_internal renames element (symbol_cursor);
+
+		r : type_default_placeholders; -- to be returned
+	begin
+		r.name		:= sym.symbol.placeholders.name;
+		r.value		:= sym.symbol.placeholders.value;
+		r.purpose	:= sym.symbol.placeholders.purpose;
+
+		-- rotate the positions of placeholders according to rotation given by caller:
+		rotate_placeholders (r, get_rotation (destination));
+		
+		return r;
+	end get_default_placeholders;
+
+	
+
+
 	function get_symbol (
 		unit	: in pac_units_internal.cursor)
 		return type_symbol

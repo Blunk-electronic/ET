@@ -46,7 +46,7 @@ with et_symbol_model;
 with et_device_model;						use et_device_model;
 with et_devices_non_electrical;				use et_devices_non_electrical;
 with et_numbering;
-with et_device_placeholders.symbols;
+with et_device_placeholders.symbols;		use et_device_placeholders.symbols;
 
 
 

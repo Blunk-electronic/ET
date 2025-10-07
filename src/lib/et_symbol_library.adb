@@ -133,6 +133,33 @@ package body et_symbol_library is
 
 
 
+	
+	function get_default_placeholders (
+		symbol_cursor	: in pac_symbols.cursor;
+		destination		: in type_object_position)
+		return type_default_placeholders
+	is
+		use pac_symbols;
+
+		sym : type_symbol renames element (symbol_cursor);
+		
+		r : type_default_placeholders; -- to be returned
+	begin
+		r.name		:= sym.placeholders.name;
+		r.value		:= sym.placeholders.value;
+		r.purpose	:= sym.placeholders.purpose;
+
+		-- Rotate the positions of placeholders 
+		-- according to rotation given by destination:
+		rotate_placeholders (r, get_rotation (destination));
+		
+		return r;
+	end get_default_placeholders;
+
+
+	
+
+
 	function get_symbol (
 		symbol	: in pac_symbols.cursor)
 		return type_symbol

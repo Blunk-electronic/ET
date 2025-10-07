@@ -76,6 +76,39 @@ package body et_device_placeholders.symbols is
 	end;
 	
 
+
+
+	procedure rotate_placeholders (
+		placeholders	: in out type_default_placeholders;
+		rotation		: in type_rotation_model)
+	is begin
+		-- Rotate the POSITIONS	of the placeholders about
+		-- the origin of the symbol:
+		rotate_by (placeholders.name.position, rotation);
+		rotate_by (placeholders.value.position, rotation);
+		rotate_by (placeholders.purpose.position, rotation);
+
+		-- Rotate the placeholders about THEIR OWN ORIGIN.
+		-- The resulting angle is the sum of the initial 
+		-- rotation (given by the symbol model) and the rotation
+		-- of the unit.
+		-- After summing up the rotation must be snapped to either
+		-- HORIZONTAL or VERTICAL so that the text is readable
+		-- from the right or from the front of the drawing.
+		placeholders.name.rotation := 
+			to_rotation_doc (to_rotation (placeholders.name.rotation) + rotation);
+
+		placeholders.value.rotation := 
+			to_rotation_doc (to_rotation (placeholders.value.rotation) + rotation);
+
+		placeholders.purpose.rotation := 
+			to_rotation_doc (to_rotation (placeholders.purpose.rotation) + rotation);
+	end rotate_placeholders;
+
+
+
+
+	
 	
 	procedure write_placeholder_properties (
 		placeholder		: in type_text_placeholder;

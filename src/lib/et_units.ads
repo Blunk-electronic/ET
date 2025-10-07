@@ -49,7 +49,6 @@ with ada.containers.indefinite_ordered_maps;
 
 with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_coordinates;			use et_schematic_coordinates;
-with et_schematic_text;					use et_schematic_text;
 with et_sheets;							use et_sheets;
 with et_port_names;						use et_port_names;
 with et_symbol_ports;					use et_symbol_ports;
@@ -72,47 +71,6 @@ package et_units is
 
 	use pac_geometry_2;
 
-	use pac_text_schematic;
-		
-	
-	-- This procedure does the actual rotating of placeholders.
-	-- Rotation is the rotation of the unit in the schematic.
-	-- It performs the following operations with each placeholder:
-	-- 1. Rotates about the origin of the former symbol (which is 0/0)
-	-- 2. Rotates about the origin of the placeholder
-	-- 3. Snaps to horizonal or vertical so that the later text
-	--    can be read from the front or from the right:
-	procedure rotate_placeholders (
-		placeholders	: in out type_default_placeholders;
-		rotation		: in type_rotation_model);
-
-
-	-- In the symbol, the placeholders have a rotation (about itself)
-	-- and a position relative to the origin of the symbol.
-	-- On instanciating a symbol in the schematic, it becomes a unit
-	-- which may have a rotation of its own.
-	-- This function translates from the rotation of placeholders
-	-- described in the symbol model to the rotation of
-	-- placeholders of a unit in the schematic.
-	-- It translates according to the rotation given by destination:
-	function get_default_placeholders (
-		symbol_cursor	: in pac_symbols.cursor;
-		destination		: in type_object_position) -- x/y/rotation of the unit
-		return type_default_placeholders;
-
-	
-	-- In the symbol, the placeholders have a rotation (about itself)
-	-- and a position relative to the origin of the symbol.
-	-- On instanciating a symbol in the schematic, it becomes a unit
-	-- which may have a rotation of its own.
-	-- This function translates from the rotation of placeholders
-	-- described in the internal symbol of the device model to the rotation of
-	-- placeholders of a unit in the schematic.
-	-- It translates according to the rotation given by destination:
-	function get_default_placeholders (
-		symbol_cursor	: in pac_units_internal.cursor;
-		destination		: in type_object_position)
-		return type_default_placeholders;
 	
 	
 	-- In a schematic we handle only virtual devices (like GND symbols)
