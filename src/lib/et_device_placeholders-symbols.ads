@@ -83,7 +83,7 @@ package et_device_placeholders.symbols is
 
 	
 
-	type type_default_placeholders is record
+	type type_default_placeholders is record -- CS incorrect, rename !
 		name	: type_text_placeholder (meaning => et_device_placeholders.NAME);
 		value	: type_text_placeholder (meaning => et_device_placeholders.VALUE);
 		purpose	: type_text_placeholder (meaning => et_device_placeholders.PURPOSE);

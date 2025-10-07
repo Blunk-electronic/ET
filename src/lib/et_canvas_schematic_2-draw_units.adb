@@ -98,10 +98,10 @@ procedure draw_units is
 		unit_position	: in type_vector_model; -- x/y on the schematic sheet
 		unit_rotation	: in type_rotation := zero_rotation;
 		
-		sch_placeholder_name	: in type_text_placeholder;
-		sch_placeholder_value	: in type_text_placeholder;
-		sch_placeholder_purpose : in type_text_placeholder;
+		placeholders	: in type_default_placeholders;
+		
 		brightness				: in type_brightness := NORMAL;
+		-- CS real				: in boolean; -- use it when drawing placeholders
 		preview					: in boolean := false)
 	is
 		use et_symbol_model;
@@ -566,11 +566,11 @@ procedure draw_units is
 				-- layer is enabled:
 				if device_names_enabled then
 
-					if is_moving (sch_placeholder_name) then
+					if is_moving (placeholders.name) then
 						p := get_object_tool_position;
 					else
 						-- The placeholder position is relative to the unit position:
-						p := sch_placeholder_name.position;
+						p := placeholders.name.position;
 						
 						-- Move placeholder by unit position to the final position:
 						move_by (p, unit_position);
@@ -583,8 +583,8 @@ procedure draw_units is
 						font		=> name_font,
 						anchor		=> p,
 						origin		=> true, -- origin required
-						rotation	=> to_rotation (sch_placeholder_name.rotation),
-						alignment	=> sch_placeholder_name.alignment);
+						rotation	=> to_rotation (placeholders.name.rotation),
+						alignment	=> placeholders.name.alignment);
 
 				end if;
 			end draw_name;
@@ -609,11 +609,11 @@ procedure draw_units is
 					-- The value may be empty. We do not draw it in this case:
 					if not is_empty (device_value) then
 
-						if is_moving (sch_placeholder_value) then
+						if is_moving (placeholders.value) then
 							p := get_object_tool_position;
 						else
 							-- The placeholder position is relative to the unit position:
-							p := sch_placeholder_value.position;
+							p := placeholders.value.position;
 							
 							-- Move placeholder by unit position to the final position:
 							move_by (p, unit_position);
@@ -626,8 +626,8 @@ procedure draw_units is
 							font		=> value_font,
 							anchor		=> p,
 							origin		=> true, -- origin required
-							rotation	=> to_rotation (sch_placeholder_value.rotation),
-							alignment	=> sch_placeholder_value.alignment);
+							rotation	=> to_rotation (placeholders.value.rotation),
+							alignment	=> placeholders.value.alignment);
 					end if;
 				end if;
 			end draw_value;
@@ -652,11 +652,11 @@ procedure draw_units is
 					-- The purpose may be empty. We do not draw it in this case:
 					if not is_empty (device_purpose) then
 
-						if is_moving (sch_placeholder_purpose) then
+						if is_moving (placeholders.purpose) then
 							p := get_object_tool_position;
 						else
 							-- The placeholder position is relative to the unit position:
-							p := sch_placeholder_purpose.position;
+							p := placeholders.purpose.position;
 							
 							-- Move placeholder by unit position to the final position:
 							move_by (p, unit_position);
@@ -669,8 +669,8 @@ procedure draw_units is
 							font		=> purpose_font,
 							anchor		=> p,
 							origin		=> true, -- origin required
-							rotation	=> to_rotation (sch_placeholder_purpose.rotation),
-							alignment	=> sch_placeholder_purpose.alignment);
+							rotation	=> to_rotation (placeholders.purpose.rotation),
+							alignment	=> placeholders.purpose.alignment);
 					end if;
 				end if;
 			end draw_purpose;
@@ -729,11 +729,7 @@ procedure draw_units is
 
 
 
-	-- The placeholders as given by the schematic:
-	sch_placeholder_name	: type_text_placeholder (meaning => NAME);
-	sch_placeholder_value	: type_text_placeholder (meaning => VALUE);
-	sch_placeholder_purpose : type_text_placeholder (meaning => PURPOSE);
-	-- CS: use sch_placeholders : type_default_placeholders;
+
 	
 
 	
@@ -801,9 +797,12 @@ procedure draw_units is
 						unit_position	=> unit_position,
 						unit_rotation	=> unit_rotation,
 
-						sch_placeholder_name	=> sch_placeholder_name,
-						sch_placeholder_value	=> sch_placeholder_value,
-						sch_placeholder_purpose => sch_placeholder_purpose,
+						-- Get the placeholders (for name, value, purpose)
+						-- of the unit as defined in the schematic.
+						-- (If the unit is virtual, then default
+						-- placeholders are returned and later ignored when the
+						-- unit is drawn):
+						placeholders 	=> get_placeholders (unit),
 
 						brightness		=> brightness);
 				end draw_unit;
@@ -833,32 +832,13 @@ procedure draw_units is
 						-- get the rotation of the unit
 						unit_rotation := get_rotation (pos);
 
-						
-						-- If this is a real device, then get a copy of the 
-						-- placeholders of the unit.
-						-- NOTE: The position of the placeholders is relative to
-						-- the unit position !
-						-- If any of the placeholder of the unit is selected
-						-- and being moved, then calculate its new relative
-						-- position according to the tool being used. Otherwise
-						-- the position remains untouched. 
-						-- NOTE: There can only be just one placeholder being moved.
-						-- Which one is determined by the selector placeholder.category.
-						
-						if is_real (unit) then
-							sch_placeholder_name := unit.placeholders.name;
-							sch_placeholder_value := unit.placeholders.value;
-							sch_placeholder_purpose := unit.placeholders.purpose;
-						end if;
-
-
 						-- locate and draw the unit:
 						draw_unit (locate_unit (device_cursor_lib, unit_name));
 					end if;
-
 				end draw_on_active_sheet;
 
 
+				
 				procedure draw_if_sheet_changes is begin
 					-- CASE 2: The unit being moved changes the sheet.
 					-- CS: NOT TESTED !
@@ -876,18 +856,7 @@ procedure draw_units is
 
 							-- get the rotation of the unit
 							unit_rotation := get_rotation (unit);
-
 							
-							-- If this is a real device, then get a copy of the 
-							-- placeholders of the unit.
-							-- NOTE: The position of the placeholders is relative to
-							-- the unit position !
-							if is_real (unit) then
-								sch_placeholder_name := unit.placeholders.name;
-								sch_placeholder_value := unit.placeholders.value;
-								sch_placeholder_purpose := unit.placeholders.purpose;		
-							end if;
-
 							-- locate and draw the unit:
 							draw_unit (locate_unit (device_cursor_lib, unit_name));
 						end if;
@@ -943,60 +912,6 @@ procedure draw_units is
 	
 
 
-	-- When an external unit is being added or fetched, then
-	-- the placeholders for name, value and purpose must be filled
-	-- temporarily as long as the unit is attached to the tool:
-	procedure fetch_placeholders_ext (
-		symbol_cursor : in pac_symbols.cursor)
-	is 
-		use et_symbol_model;
-		use pac_symbols;
-		sym : type_symbol renames element (symbol_cursor);
-	begin
-		-- CS: use sch_placeholders := sym.placeholders ?
-		-- or a function like get_default_placeholders (symbol_cursor) ?
-		
-		if is_real (sym) then
-			sch_placeholder_name	:= sym.placeholders.name;
-			sch_placeholder_value	:= sym.placeholders.value;
-			sch_placeholder_purpose := sym.placeholders.purpose;
-		else
-			sch_placeholder_name	:= (meaning => NAME, others => <>);
-			sch_placeholder_value	:= (meaning => VALUE, others => <>);
-			sch_placeholder_purpose := (meaning => PURPOSE, others => <>);
-		end if;
-	end fetch_placeholders_ext;
-
-	
-
-
-	-- When an internal unit is being added or fetched, then
-	-- the placeholders for name, value and purpose must be filled
-	-- temporarily as long as the unit is attached to the tool:
-	procedure fetch_placeholders_int (
-		unit_cursor : in pac_units_internal.cursor)
-	is
-		use pac_units_internal;
-		sym : type_unit_internal renames element (unit_cursor);
-	begin
-		-- CS: use sch_placeholders := sym.placeholders ?
-		-- or a function like get_default_placeholders (symbol_cursor) ?
-		
-		case element (unit_cursor).appearance is
-			when APPEARANCE_PCB =>
-				sch_placeholder_name	:= sym.symbol.placeholders.name;
-				sch_placeholder_value	:= sym.symbol.placeholders.value;
-				sch_placeholder_purpose := sym.symbol.placeholders.purpose;
-				
-			when APPEARANCE_VIRTUAL =>
-				sch_placeholder_name	:= (meaning => NAME, others => <>);
-				sch_placeholder_value	:= (meaning => VALUE, others => <>);
-				sch_placeholder_purpose := (meaning => PURPOSE, others => <>);
-		end case;
-	end fetch_placeholders_int;
-
-
-
 
 	
 	
@@ -1005,50 +920,31 @@ procedure draw_units is
 	-- then nothing happens here. The unit is drawn in a preview.
 	procedure draw_unit_being_added is
 		brightness : type_brightness := BRIGHT;
-		
-		use pac_devices_lib;
 
 		
 		procedure query_unit (unit_cursor : in type_unit_cursors) is
-			use pac_units_external;
-			use pac_units_internal;
 
 			-- The place where the unit will be drawn.
 			-- Depends on the tool used for placing the unit:
 			destination : type_vector_model := get_primary_tool_position;
 			
-			use et_symbol_model;
-			use et_symbol_name;
-			use pac_symbols;
 			symbol_cursor : pac_symbols.cursor;
-
-			
 		begin
 			case unit_cursor.ext_int is
 				when EXT =>
 					-- put_line ("external unit");
 					-- put_line ("rotation " & to_string (unit_add.rotation));
 					
-					-- If the unit is external, we must fetch the symbol and the placeholders
-					-- via its model file:
 					symbol_cursor := get_symbol (unit_cursor.external);
 
-					fetch_placeholders_ext (symbol_cursor);
-						
 					draw_unit (
-						symbol		=> pac_symbols.element (symbol_cursor),
-
+						symbol			=> get_symbol (symbol_cursor),
 						device_name		=> unit_add.device_pre,
 						unit_name		=> unit_add.name,
-						unit_count		=> unit_add.total,
-						
+						unit_count		=> unit_add.total,						
 						unit_position	=> destination,
-						unit_rotation	=> unit_add.rotation,
-						
-						sch_placeholder_name	=> sch_placeholder_name,
-						sch_placeholder_value	=> sch_placeholder_value,
-						sch_placeholder_purpose => sch_placeholder_purpose,
-
+						unit_rotation	=> unit_add.rotation,						
+						placeholders	=> get_placeholders (symbol_cursor),
 						brightness		=> brightness,
 						preview			=> true);
 
@@ -1056,25 +952,14 @@ procedure draw_units is
 				when INT =>
 					--put_line ("internal unit");						
 					
-					-- If the unit is internal, we fetch it the symbol and the placeholders 
-					-- directly from the unit:
-					
-					fetch_placeholders_int (unit_cursor.internal);
-					
 					draw_unit (
-						symbol		=> element (unit_cursor.internal).symbol,
-
+						symbol			=> get_symbol (unit_cursor.internal),
 						device_name		=> unit_add.device_pre,
 						unit_name		=> unit_add.name,
-						unit_count		=> unit_add.total,
-						
+						unit_count		=> unit_add.total,						
 						unit_position	=> destination,
-						unit_rotation	=> unit_add.rotation,
-						
-						sch_placeholder_name	=> sch_placeholder_name,
-						sch_placeholder_value	=> sch_placeholder_value,
-						sch_placeholder_purpose => sch_placeholder_purpose,
-						
+						unit_rotation	=> unit_add.rotation,						
+						placeholders	=> get_placeholders (unit_cursor.internal),						
 						brightness		=> brightness,
 						preview			=> true);
 			end case;
@@ -1097,47 +982,29 @@ procedure draw_units is
 	procedure draw_unit_being_fetched is
 		brightness : type_brightness := BRIGHT;
 		
-		use pac_devices_lib;
-
 		
 		procedure query_unit (unit_cursor : in type_unit_cursors) is
-			use pac_units_external;
-			use pac_units_internal;
 
 			-- The place where the unit will be drawn.
 			-- Depends on the tool used for placing the unit:
 			destination : type_vector_model := get_primary_tool_position;
 
-			use et_symbol_name;
-			use et_symbol_model;
-			use pac_symbols;
-			symbol_cursor : pac_symbols.cursor;
-			
+			symbol_cursor : pac_symbols.cursor;			
 		begin			
 			case unit_cursor.ext_int is
 				when EXT =>
 					--put_line ("external unit");
 					
-					-- If the unit is external, we must fetch the symbol and the placeholders
-					-- via its model file:
 					symbol_cursor := get_symbol (unit_cursor.external);
 
-					fetch_placeholders_ext (symbol_cursor);
-						
 					draw_unit (
-						symbol			=> pac_symbols.element (symbol_cursor),
-
+						symbol			=> get_symbol (symbol_cursor),
 						device_name		=> unit_fetch.device_pre,
 						unit_name		=> unit_fetch.name,
-						unit_count		=> unit_fetch.total,
-						
+						unit_count		=> unit_fetch.total,						
 						unit_position	=> destination,
-						unit_rotation	=> unit_fetch.rotation,
-						
-						sch_placeholder_name	=> sch_placeholder_name,
-						sch_placeholder_value	=> sch_placeholder_value,
-						sch_placeholder_purpose => sch_placeholder_purpose,
-
+						unit_rotation	=> unit_fetch.rotation,						
+						placeholders	=> get_placeholders (symbol_cursor),						
 						brightness		=> brightness,
 						preview			=> true);
 
@@ -1145,25 +1012,14 @@ procedure draw_units is
 				when INT =>
 					--put_line ("internal unit");						
 					
-					-- If the unit is internal, we fetch it the symbol and the placeholders 
-					-- directly from the unit:
-					
-					fetch_placeholders_int (unit_cursor.internal);
-					
 					draw_unit (
-						symbol			=> element (unit_cursor.internal).symbol,
-
+						symbol			=> get_symbol (unit_cursor.internal),
 						device_name		=> unit_fetch.device_pre,
 						unit_name		=> unit_fetch.name,
-						unit_count		=> unit_fetch.total,
-						
+						unit_count		=> unit_fetch.total,						
 						unit_position	=> destination,
-						unit_rotation	=> unit_fetch.rotation,
-						
-						sch_placeholder_name	=> sch_placeholder_name,
-						sch_placeholder_value	=> sch_placeholder_value,
-						sch_placeholder_purpose => sch_placeholder_purpose,
-						
+						unit_rotation	=> unit_fetch.rotation,						
+						placeholders	=> get_placeholders (unit_cursor.internal),						
 						brightness		=> brightness,
 						preview			=> true);
 			end case;

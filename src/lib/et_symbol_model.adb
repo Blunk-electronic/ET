@@ -76,6 +76,19 @@ package body et_symbol_model is
 
 
 	
+
+
+	function get_placeholders (
+		symbol : in type_symbol)
+		return type_default_placeholders
+	is begin
+		if is_real (symbol) then
+			return symbol.placeholders;
+		else
+			return (others => <>);
+		end if;
+	end;
+
 	
 end et_symbol_model;
 

@@ -372,6 +372,21 @@ package body et_units is
 
 
 
+
+	
+	function get_placeholders (
+		unit : in type_unit)
+		return type_default_placeholders
+	is begin
+		if is_real (unit) then
+			return unit.placeholders;
+		else
+			return (others => <>);
+		end if;
+	end;
+
+
+	
 	
 
 	procedure move_placeholder (

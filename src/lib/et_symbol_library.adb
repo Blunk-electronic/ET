@@ -115,7 +115,34 @@ package body et_symbol_library is
 		return get_port_positions (element (symbol));
 	end get_port_positions;
 
-		
+
+
+
+	function get_placeholders (
+		symbol : in pac_symbols.cursor)
+		return type_default_placeholders
+	is 
+		sym : type_symbol renames element (symbol);
+	begin
+		if is_real (sym) then
+			return sym.placeholders;
+		else
+			return (others => <>);
+		end if;
+	end;
+
+
+
+	function get_symbol (
+		symbol	: in pac_symbols.cursor)
+		return type_symbol
+	is begin
+		return element (symbol);
+	end;
+
+
+
+	
 	
 end et_symbol_library;
 

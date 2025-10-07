@@ -102,7 +102,14 @@ package et_symbol_model is
 		return pac_points.list;
 
 
-
+	
+	-- Returns the placeholders of the symbol.
+	-- If the symbol represents a virtual device,
+	-- then default placeholders are returned:
+	function get_placeholders (
+		symbol	: in type_symbol)
+		return type_default_placeholders;
+	
 
 end et_symbol_model;
 

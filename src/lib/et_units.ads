@@ -270,6 +270,14 @@ package et_units is
 	
 
 
+	-- Returns the placeholders of the unit.
+	-- If the unit is virtual, then default placeholders
+	-- are returned:
+	function get_placeholders (
+		unit : in type_unit)
+		return type_default_placeholders;
+	
+								  
 	-- Moves the placeholder given by meaning.
 	-- If coordinates is absolute, then the placeholder
 	-- is moved to the given point.

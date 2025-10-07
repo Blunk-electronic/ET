@@ -56,6 +56,7 @@ with et_symbol_name;			use et_symbol_name;
 with et_symbol_library;			use et_symbol_library;
 with et_symbol_model;			use et_symbol_model;
 with et_symbol_ports;			use et_symbol_ports;
+with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 with et_device_appearance;		use et_device_appearance;
 with et_device_model_names;		use et_device_model_names;
 with et_device_value;			use et_device_value;
@@ -113,6 +114,14 @@ package et_device_model is
 	end record;
 
 
+	-- Returns the placeholders of an internal unit.
+	-- If the units is part of a virtual device,
+	-- then default placeholders are returned:	
+	function get_placeholders (
+		unit	: in type_unit_internal)
+		return type_default_placeholders;
+
+
 	
 	use pac_unit_name;
 
@@ -125,6 +134,20 @@ package et_device_model is
 	use pac_units_internal;
 
 
+	-- Returns the placeholders of an internal unit.
+	-- If the units is part of a virtual device,
+	-- then default placeholders are returned:	
+	function get_placeholders (
+		unit	: in pac_units_internal.cursor)
+		return type_default_placeholders;
+
+
+	function get_symbol (
+		unit	: in pac_units_internal.cursor)
+		return type_symbol;
+
+	
+	
 	-- Returns the ports of the given internal unit:
 	function get_ports_internal (
 		unit_cursor	: in pac_units_internal.cursor)

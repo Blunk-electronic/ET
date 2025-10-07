@@ -44,6 +44,45 @@ with ada.text_io;				use ada.text_io;
 package body et_device_model is
 
 
+	function get_placeholders (
+		unit	: in type_unit_internal)
+		return type_default_placeholders
+	is begin
+		if unit.appearance = APPEARANCE_PCB then
+			return unit.symbol.placeholders;
+		else
+			return (others => <>);
+		end if;
+	end;
+
+
+
+	function get_placeholders (
+		unit	: in pac_units_internal.cursor)
+		return type_default_placeholders
+	is 
+		u : type_unit_internal renames element (unit);
+	begin
+		return get_placeholders (u);
+	end;
+
+
+
+
+	function get_symbol (
+		unit	: in pac_units_internal.cursor)
+		return type_symbol
+	is
+		u : type_unit_internal renames element (unit);
+	begin
+		return u.symbol;
+	end;
+
+	
+		
+	
+	
+
 	function get_ports_internal (
 		unit_cursor	: in pac_units_internal.cursor)
 		return pac_symbol_ports.map

@@ -52,6 +52,7 @@ with et_symbol_model;					use et_symbol_model;
 with et_symbol_name;					use et_symbol_name;
 with et_device_appearance;				use et_device_appearance;
 with et_string_processing;				use et_string_processing;
+with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 
 package et_symbol_library is
@@ -106,6 +107,21 @@ package et_symbol_library is
 		return pac_points.list;
 
 
+
+	-- Returns the placeholders of a symbol.
+	-- If the symbol represents a virtual device,
+	-- then default placeholders are returned:
+	function get_placeholders (
+		symbol	: in pac_symbols.cursor)
+		return type_default_placeholders;
+
+
+
+	function get_symbol (
+		symbol	: in pac_symbols.cursor)
+		return type_symbol;
+
+							
 end et_symbol_library;
 
 -- Soli Deo Gloria
