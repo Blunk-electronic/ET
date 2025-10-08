@@ -2839,7 +2839,7 @@ package body et_kicad_to_native is
 
 								value		=> element (component_cursor_kicad).value,
 								partcode	=> to_partcode (partcode_default), -- not provided by kicad
-								purpose		=> to_purpose (purpose_default), -- not provided by kicad
+								purpose		=> empty_purpose, -- not provided by kicad
 								variant		=> element (component_cursor_kicad).variant,
 
 								position			=> element (component_cursor_kicad).position,

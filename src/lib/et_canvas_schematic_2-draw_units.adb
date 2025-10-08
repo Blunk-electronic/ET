@@ -43,7 +43,7 @@ with et_text;
 with et_alignment;
 with et_symbol_shapes;
 with et_symbol_text;
-with et_symbol_model;
+with et_symbol_model;					use et_symbol_model;
 with et_port_names;
 with et_port_visibility;
 with et_symbol_library;					use et_symbol_library;
@@ -80,12 +80,12 @@ procedure draw_units is
 	use et_canvas_schematic_units;
 
 
-	
+	-- This procedure draws a single unit:
 	procedure draw_unit (
-		symbol			: in et_symbol_model.type_symbol;
-		device_name		: in type_device_name := (others => <>);
-		device_value	: in pac_device_value.bounded_string := to_value (""); -- like 100R or TL084
-		device_purpose	: in pac_device_purpose.bounded_string := to_purpose (""); -- like "brightness control"
+		symbol			: in type_symbol;
+		device_name		: in type_device_name;
+		device_value	: in pac_device_value.bounded_string; -- like 100R or TL084
+		device_purpose	: in pac_device_purpose.bounded_string := empty_purpose; -- like "brightness control"
 		unit_name		: in pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
 
 		-- The unit count is required in order to decide whether a suffix
@@ -940,6 +940,7 @@ procedure draw_units is
 					draw_unit (
 						symbol			=> get_symbol (symbol_cursor),
 						device_name		=> unit_add.device_pre,
+						device_value	=> unit_add.value,
 						unit_name		=> unit_add.name,
 						unit_count		=> unit_add.total,						
 						unit_position	=> destination,
@@ -957,6 +958,7 @@ procedure draw_units is
 					draw_unit (
 						symbol			=> get_symbol (unit_cursor.internal),
 						device_name		=> unit_add.device_pre,
+						device_value	=> unit_add.value,
 						unit_name		=> unit_add.name,
 						unit_count		=> unit_add.total,						
 						unit_position	=> destination,
@@ -1004,6 +1006,7 @@ procedure draw_units is
 					draw_unit (
 						symbol			=> get_symbol (symbol_cursor),
 						device_name		=> unit_fetch.device_pre,
+						device_value	=> unit_fetch.value,
 						unit_name		=> unit_fetch.name,
 						unit_count		=> unit_fetch.total,						
 						unit_position	=> destination,
@@ -1021,6 +1024,7 @@ procedure draw_units is
 					draw_unit (
 						symbol			=> get_symbol (unit_cursor.internal),
 						device_name		=> unit_fetch.device_pre,
+						device_value	=> unit_fetch.value,
 						unit_name		=> unit_fetch.name,
 						unit_count		=> unit_fetch.total,						
 						unit_position	=> destination,

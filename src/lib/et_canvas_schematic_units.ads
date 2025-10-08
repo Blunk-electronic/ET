@@ -59,6 +59,7 @@ with et_package_variant;			use et_package_variant;
 with et_device_model;				use et_device_model;
 with et_device_library;				use et_device_library;
 with et_device_name;				use et_device_name;
+with et_device_value;				use et_device_value;
 with et_nets;						use et_nets;
 with et_net_segment;				use et_net_segment;
 with et_unit_name;					use et_unit_name;
@@ -220,7 +221,8 @@ package et_canvas_schematic_units is
 		
 		variant		: pac_package_variant_name.bounded_string; -- N, D, S_0805
 		name		: pac_unit_name.bounded_string; -- A, B, PWR_IO3
-
+		value		: pac_device_value.bounded_string; -- 100k
+		
 		-- The total number of units provided by the device model:
 		total		: type_unit_count := type_unit_count'first;
 		
@@ -364,6 +366,8 @@ package et_canvas_schematic_units is
 		-- The name of the unit:
 		name		: pac_unit_name.bounded_string; -- A, B, PWR_IO3
 
+		value		: pac_device_value.bounded_string; -- 100k
+		
 		-- The total number of units provided by the device model:
 		total		: type_unit_count := type_unit_count'first;
 		

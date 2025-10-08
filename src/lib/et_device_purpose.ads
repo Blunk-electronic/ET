@@ -42,10 +42,16 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 
 package et_device_purpose is
 
-	-- Devices that require operator interaction like connectors, LEDs or switches 
-	-- MUST have a purpose assigned.
-	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":
+	-- Devices that require operator interaction 
+	-- like connectors, LEDs or switches 
+	-- MUST have a purpose explicitly assigned.
+	-- The purpose will be visible in the schematic, in
+	-- the silkscreen and other manufcaturing related documentation.
+	
+	-- Example: The purpose of connector X44 
+	-- is "power in". The purpose of LED5 is "system fail":
 
+	
 	keyword_purpose : constant string := "purpose";
 	
 	purpose_characters : character_set := to_set 
@@ -53,10 +59,15 @@ package et_device_purpose is
 
 	purpose_length_max : constant positive := 50;
 
+	
 	package pac_device_purpose is new generic_bounded_length (purpose_length_max);
 	use pac_device_purpose;
 	
-	purpose_default : constant string := "dummy";
+
+
+	-- If no purpose is required, then this default should be used:
+	empty_purpose : constant pac_device_purpose.bounded_string := to_bounded_string ("");
+	
 
 	function to_string (purpose : in pac_device_purpose.bounded_string) return string;
 	
