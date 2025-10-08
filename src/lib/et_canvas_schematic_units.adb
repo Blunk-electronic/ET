@@ -1161,9 +1161,9 @@ package body et_canvas_schematic_units is
 
 		-- This is about a new device being added to the module.
 		-- No value has been assigned yet. For this reason we
-		-- assign the default value as defined in the device model:
+		-- assign the default value as defined in the device model.
+		-- If the device is virtual, then an empty value will be assigned:
 		unit_add.value := get_default_value (device_cursor_lib);
-		-- CS appearance test !
 				
 		-- In the preview, the total number of units determines whether
 		-- to show the unit name as a suffix or not:
@@ -1640,8 +1640,8 @@ package body et_canvas_schematic_units is
 				unit_fetch.device_pre := key (object.unit.device_cursor);
 
 				-- The value of the device is already known. So we
-				-- assign to the preliminary unit the value of the parent device:
-				-- CS appearance test !
+				-- assign to the preliminary unit the value of the parent device.
+				-- If the device is virtual, then an empty value will be assigned:
 				unit_fetch.value := get_value (object.unit.device_cursor);
 				
 				-- Show the menu:

@@ -250,8 +250,9 @@ package et_device_library is
 
 	-- Returns the default value as it is 
 	-- specified in the device model.
-	-- The model must be a model of a real device. Otherwise
-	-- an exception will be raised:
+	-- If the device is virtual (like a GND symbol) or if
+	-- no value is predifined in the model, then an empty
+	-- string will be returned:
 	function get_default_value (
 		device_cursor : in pac_devices_lib.cursor)
 		return pac_device_value.bounded_string;

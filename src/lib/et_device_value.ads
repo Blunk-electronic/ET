@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,6 +35,9 @@
 --
 --   history of changes:
 --
+-- ToDo:
+-- - clean up, more comments
+
 
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
@@ -55,7 +58,13 @@ package et_device_value is
 		or to_set ('-');
 	
 	package pac_device_value is new generic_bounded_length (value_length_max);
+	use pac_device_value;
 
+
+	-- If no value is defined, then this default should be used:
+	empty_value : constant pac_device_value.bounded_string := to_bounded_string ("");
+
+	
 	function to_string (value : in pac_device_value.bounded_string) return string;
 	function to_value (value : in string) return pac_device_value.bounded_string;
 	

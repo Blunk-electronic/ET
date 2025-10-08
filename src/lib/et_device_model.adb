@@ -134,6 +134,20 @@ package body et_device_model is
 
 
 
+
+
+	function is_real (
+		model : in type_device_model)
+		return boolean
+	is begin
+		if model.appearance = APPEARANCE_PCB then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+	
 	
 
 	function get_ports_external (
@@ -325,7 +339,11 @@ package body et_device_model is
 		device_model : in type_device_model)
 		return pac_device_value.bounded_string
 	is begin
-		return device_model.value;
+		if is_real (device_model) then
+			return device_model.value;
+		else
+			return empty_value;
+		end if;
 	end;
 
 	

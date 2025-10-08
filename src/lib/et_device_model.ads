@@ -265,6 +265,14 @@ package et_device_model is
 
 
 
+	-- Returns true if the given model
+	-- represents a real device:
+	function is_real (
+		model : in type_device_model)
+		return boolean;
+	
+
+	
 	-- When querying units of a device this type is required:
 	type type_device_units is record
 		int : pac_units_internal.cursor;
@@ -346,8 +354,9 @@ package et_device_model is
 
 	-- Returns the default value as it is 
 	-- specified in the device model.
-	-- The model must be a model of a real device. Otherwise
-	-- an exception will be raised:
+	-- If the device is virtual (like a GND symbol) or if
+	-- no value is predifined in the model, then an empty
+	-- string will be returned:
 	function get_default_value (
 		device_model : in type_device_model)
 		return pac_device_value.bounded_string;
