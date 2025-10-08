@@ -1471,6 +1471,7 @@ package body et_canvas_schematic_units is
 					end if;
 					
 					unit_add.name := get_first_unit (unit_add.device);
+					unit_add.value := get_value (object.unit.device_cursor);
 					unit_add.total := get_unit_count (object.unit.device_cursor);
 					unit_add.device_pre := get_next_device_name (active_module, get_prefix (unit_add.device));
 					unit_add.rotation := get_rotation (object.unit.unit_cursor);
