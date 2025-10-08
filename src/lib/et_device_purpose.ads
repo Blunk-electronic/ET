@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -102,8 +102,10 @@ package et_device_purpose is
 		return pac_device_purpose.bounded_string;
 
 	
-	-- Returns true if purpose is empty ("").
-	function is_empty (purpose : in pac_device_purpose.bounded_string) return boolean;
+	-- Returns true if purpose is an empty string:
+	function is_empty (
+		purpose : in pac_device_purpose.bounded_string) 
+		return boolean;
 	
 	
 		

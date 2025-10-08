@@ -85,14 +85,20 @@ package et_device_value is
 	procedure value_invalid (value : in string);
 	-- Issues error message and raises constraint error.
 
+
+	
 	function to_value_with_check (
 	-- Tests the given value for length and invalid characters.
 		value						: in string;
 		error_on_invalid_character	: in boolean := true)
 		return pac_device_value.bounded_string;
 
-	-- Returns true if value is empty ("").
-	function is_empty (value : in pac_device_value.bounded_string) return boolean;
+
+	
+	-- Returns true if value is an empty string.
+	function is_empty (
+		value : in pac_device_value.bounded_string) 
+		return boolean;
 
 		
 end et_device_value;

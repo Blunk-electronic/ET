@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -161,12 +161,15 @@ package body et_device_value is
 
 	
 
-	-- Returns true if value is empty ("").
-	function is_empty (value : in pac_device_value.bounded_string) return boolean is 
-		use pac_device_value;
-	begin
-		if length (value) = 0 then return true;
-		else return false;
+
+	function is_empty (
+		value : in pac_device_value.bounded_string) 
+		return boolean 
+	is begin
+		if value = empty_value then
+			return true;
+		else 
+			return false;
 		end if;
 	end is_empty;
 		
