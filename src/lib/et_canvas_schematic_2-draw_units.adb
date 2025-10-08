@@ -80,6 +80,9 @@ procedure draw_units is
 	use et_canvas_schematic_units;
 
 
+	brightness : type_brightness := NORMAL;
+	
+	
 	-- This procedure draws a single unit:
 	procedure draw_unit (
 		symbol			: in type_symbol;
@@ -99,11 +102,9 @@ procedure draw_units is
 		unit_rotation	: in type_rotation := zero_rotation;
 		
 		placeholders	: in type_default_placeholders;
-		
-		brightness				: in type_brightness := NORMAL;
-		-- CS real				: in boolean; -- use it when drawing placeholders
-		preview					: in boolean := false)
+		preview			: in boolean := false)
 	is
+		
 		use et_symbol_model;
 		use et_symbol_ports;
 		use pac_text_schematic;
@@ -344,7 +345,6 @@ procedure draw_units is
 				-- which is a sum of port rotation and unit rotation.
 				use et_alignment;
 				alignment : type_text_alignment := (horizontal => ALIGN_CENTER, vertical => ALIGN_CENTER);
-				
 
 				use pac_draw_text;
 			begin
@@ -652,6 +652,10 @@ procedure draw_units is
 					-- The purpose may be empty. We do not draw it in this case:
 					if not is_empty (device_purpose) then
 
+						-- if is_selected (placeholders.purpose) then
+						-- 	brightness := BRIGHT;
+						-- end if;
+						
 						if is_moving (placeholders.purpose) then
 							p := get_object_tool_position;
 						else
@@ -742,9 +746,6 @@ procedure draw_units is
 		device_cursor : pac_devices_sch.cursor := module.devices.first; 
 
 		
-		brightness : type_brightness := NORMAL;
-
-		
 		-- This procedure draws the units of the candidate device:
 		procedure query_device (
 			device_name	: in type_device_name;
@@ -802,9 +803,7 @@ procedure draw_units is
 						-- (If the unit is virtual, then default
 						-- placeholders are returned and later ignored when the
 						-- unit is drawn):
-						placeholders 	=> get_placeholders (unit),
-
-						brightness		=> brightness);
+						placeholders 	=> get_placeholders (unit));
 				end draw_unit;
 
 
@@ -820,7 +819,7 @@ procedure draw_units is
 						if is_selected (unit) then
 							-- put_line ("selected");
 							
-							-- increase brightness
+							-- The whole unit will be drawn highlighted:
 							brightness := BRIGHT;
 
 							-- overwrite position if unit is moving
@@ -846,7 +845,7 @@ procedure draw_units is
 						
 						if is_selected (unit_cursor) then
 
-							-- increase brightness
+							-- The whole unit will be drawn highlighted:
 							brightness := BRIGHT;
 
 							-- overwrite position if unit is moving
@@ -919,8 +918,6 @@ procedure draw_units is
 	-- Draws the unit being added. If there is no unit being added,
 	-- then nothing happens here. The unit is drawn in a preview.
 	procedure draw_unit_being_added is
-		brightness : type_brightness := BRIGHT;
-
 		
 		procedure query_unit (unit_cursor : in type_unit_cursors) is
 
@@ -930,13 +927,16 @@ procedure draw_units is
 			
 			symbol_cursor : pac_symbols.cursor;
 		begin
+			-- The whole unit will be drawn highlighted:
+			brightness := BRIGHT;
+			
 			case unit_cursor.ext_int is
 				when EXT =>
 					-- put_line ("external unit");
 					-- put_line ("rotation " & to_string (unit_add.rotation));
 					
 					symbol_cursor := get_symbol (unit_cursor.external);
-
+					
 					draw_unit (
 						symbol			=> get_symbol (symbol_cursor),
 						device_name		=> unit_add.device_pre,
@@ -947,8 +947,7 @@ procedure draw_units is
 						unit_rotation	=> unit_add.rotation,						
 						placeholders	=> rotate_placeholders (
 							get_placeholders (symbol_cursor), unit_add.rotation),
-						
-						brightness		=> brightness,
+
 						preview			=> true);
 
 
@@ -966,7 +965,6 @@ procedure draw_units is
 						placeholders	=> rotate_placeholders (
 							get_placeholders (unit_cursor.internal), unit_add.rotation),
 
-						brightness		=> brightness,
 						preview			=> true);
 			end case;
 		end query_unit;
@@ -986,8 +984,6 @@ procedure draw_units is
 	
 	
 	procedure draw_unit_being_fetched is
-		brightness : type_brightness := BRIGHT;
-		
 		
 		procedure query_unit (unit_cursor : in type_unit_cursors) is
 
@@ -996,7 +992,10 @@ procedure draw_units is
 			destination : type_vector_model := get_primary_tool_position;
 
 			symbol_cursor : pac_symbols.cursor;			
-		begin			
+		begin	
+			-- The whole unit will be drawn highlighted:
+			brightness := BRIGHT;
+			
 			case unit_cursor.ext_int is
 				when EXT =>
 					--put_line ("external unit");
@@ -1014,7 +1013,6 @@ procedure draw_units is
 						placeholders	=> rotate_placeholders (
 							get_placeholders (symbol_cursor), unit_fetch.rotation),
 						
-						brightness		=> brightness,
 						preview			=> true);
 
 
@@ -1032,7 +1030,6 @@ procedure draw_units is
 						placeholders	=> rotate_placeholders (
 							get_placeholders (unit_cursor.internal), unit_fetch.rotation),
 
-						brightness		=> brightness,
 						preview			=> true);
 			end case;
 		end query_unit;
