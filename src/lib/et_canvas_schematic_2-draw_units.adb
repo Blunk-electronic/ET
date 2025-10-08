@@ -557,6 +557,11 @@ procedure draw_units is
 				-- determines the anchor point. Otherwise the position
 				-- as defined by the caller of draw_unit will be used:
 				p : type_vector_model;
+
+				-- This flag is required in order to restore
+				-- the previous brightness in case the placeholder is
+				-- to be drawn highlighted:
+				restore_normal_brightness : boolean := false;				
 			begin
 				--put_line (to_string (device_name) & " " 
 				-- & to_string (unit_name) 
@@ -566,6 +571,23 @@ procedure draw_units is
 				-- layer is enabled:
 				if device_names_enabled then
 
+					-- 1. If the whole unit is to be highlighted, then
+					--    the placeholder will also be drawn highlighted.
+					-- 2. If the unit is not selected but only the placeholder,
+					--    then only the placeholder will be highlighted.
+					--    The normal brightness must be restored once the
+					--    placeholder has been drawn:
+					if brightness = NORMAL then 
+						if is_selected (placeholders.name) then
+							set_color_placeholders (BRIGHT);
+							restore_normal_brightness := true;
+						end if;
+					end if;
+
+					
+					-- If the placeholder is being moved, then the
+					-- tool position determines where the placeholder is drawn.
+					-- Otherwise the placeholder is drawn as given by the schematic:
 					if is_moving (placeholders.name) then
 						p := get_object_tool_position;
 					else
@@ -575,6 +597,7 @@ procedure draw_units is
 						-- Move placeholder by unit position to the final position:
 						move_by (p, unit_position);
 					end if;
+
 					
 					-- Draw the full text like IC20.A
 					draw_text (
@@ -586,6 +609,12 @@ procedure draw_units is
 						rotation	=> to_rotation (placeholders.name.rotation),
 						alignment	=> placeholders.name.alignment);
 
+
+					-- Restore the previous brightness if the placeholder
+					-- has been drawn highlighted:
+					if restore_normal_brightness then
+						set_color_placeholders (NORMAL);
+					end if;
 				end if;
 			end draw_name;
 
@@ -601,6 +630,11 @@ procedure draw_units is
 				-- determines the anchor point. Otherwise the position
 				-- as defined by the caller of draw_unit will be used:
 				p : type_vector_model;
+
+				-- This flag is required in order to restore
+				-- the previous brightness in case the placeholder is
+				-- to be drawn highlighted:
+				restore_normal_brightness : boolean := false;				
 			begin
 				-- The placeholder will be drawn only if the corresponding
 				-- layer is enabled:
@@ -609,6 +643,23 @@ procedure draw_units is
 					-- The value may be empty. We do not draw it in this case:
 					if not is_empty (device_value) then
 
+						-- 1. If the whole unit is to be highlighted, then
+						--    the placeholder will also be drawn highlighted.
+						-- 2. If the unit is not selected but only the placeholder,
+						--    then only the placeholder will be highlighted.
+						--    The normal brightness must be restored once the
+						--    placeholder has been drawn:
+						if brightness = NORMAL then 
+							if is_selected (placeholders.value) then
+								set_color_placeholders (BRIGHT);
+								restore_normal_brightness := true;
+							end if;
+						end if;
+
+						
+						-- If the placeholder is being moved, then the
+						-- tool position determines where the placeholder is drawn.
+						-- Otherwise the placeholder is drawn as given by the schematic:						
 						if is_moving (placeholders.value) then
 							p := get_object_tool_position;
 						else
@@ -618,7 +669,8 @@ procedure draw_units is
 							-- Move placeholder by unit position to the final position:
 							move_by (p, unit_position);
 						end if;
-					
+
+						
 						-- Draw the full text like 100k:
 						draw_text (
 							content		=> to_content (to_string (device_value)), -- 100k
@@ -628,6 +680,13 @@ procedure draw_units is
 							origin		=> true, -- origin required
 							rotation	=> to_rotation (placeholders.value.rotation),
 							alignment	=> placeholders.value.alignment);
+
+						
+						-- Restore the previous brightness if the placeholder
+						-- has been drawn highlighted:
+						if restore_normal_brightness then
+							set_color_placeholders (NORMAL);
+						end if;						
 					end if;
 				end if;
 			end draw_value;
@@ -644,6 +703,11 @@ procedure draw_units is
 				-- determines the anchor point. Otherwise the position
 				-- as defined by the caller of draw_unit will be used:
 				p : type_vector_model;
+
+				-- This flag is required in order to restore
+				-- the previous brightness in case the placeholder is
+				-- to be drawn highlighted:
+				restore_normal_brightness : boolean := false;
 			begin
 				-- The placeholder will be drawn only if the corresponding
 				-- layer is enabled:
@@ -652,10 +716,23 @@ procedure draw_units is
 					-- The purpose may be empty. We do not draw it in this case:
 					if not is_empty (device_purpose) then
 
-						-- if is_selected (placeholders.purpose) then
-						-- 	brightness := BRIGHT;
-						-- end if;
-						
+						-- 1. If the whole unit is to be highlighted, then
+						--    the placeholder will also be drawn highlighted.
+						-- 2. If the unit is not selected but only the placeholder,
+						--    then only the placeholder will be highlighted.
+						--    The normal brightness must be restored once the
+						--    placeholder has been drawn:
+						if brightness = NORMAL then 
+							if is_selected (placeholders.purpose) then
+								set_color_placeholders (BRIGHT);
+								restore_normal_brightness := true;
+							end if;
+						end if;
+
+
+						-- If the placeholder is being moved, then the
+						-- tool position determines where the placeholder is drawn.
+						-- Otherwise the placeholder is drawn as given by the schematic:
 						if is_moving (placeholders.purpose) then
 							p := get_object_tool_position;
 						else
@@ -666,6 +743,7 @@ procedure draw_units is
 							move_by (p, unit_position);
 						end if;
 
+						
 						-- Draw the fill text like "Brightness Control":
 						draw_text (
 							content		=> to_content (to_string (device_purpose)), -- "brightness control"
@@ -675,12 +753,22 @@ procedure draw_units is
 							origin		=> true, -- origin required
 							rotation	=> to_rotation (placeholders.purpose.rotation),
 							alignment	=> placeholders.purpose.alignment);
+
+
+						-- Restore the previous brightness if the placeholder
+						-- has been drawn highlighted:
+						if restore_normal_brightness then
+							set_color_placeholders (NORMAL);
+						end if;
 					end if;
 				end if;
 			end draw_purpose;
 		
 			
 		begin
+			-- Set the brightness for all placeholders.
+			-- If the global brightness is NORMAL, then highlighting
+			-- of selected placeholders will be handled individually:
 			set_color_placeholders (brightness);
 
 			draw_name;
