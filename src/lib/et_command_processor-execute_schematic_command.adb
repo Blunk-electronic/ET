@@ -194,6 +194,8 @@ is
 	end;
 	
 
+-----------------------------------------------------------------------------------
+	
 	
 	-- This procedure parses a zoom related command.
 	-- If the runmode is non-graphical (like headless) then
@@ -267,7 +269,72 @@ is
 	end set_scale;
 
 
+	
 
+-----------------------------------------------------------------------------------
+
+-- LAYER OPERATIONS:
+
+
+	-- Enables a certain layer. If status is empty, the layer will be enabled.
+	procedure display is -- GUI related
+
+		
+		procedure do_it ( 
+			layer	: in type_noun;
+			status	: in string := "") is
+
+			ls : type_layer_status;
+		begin
+			-- Convert the given status to type_layer_status.
+			-- If no status given, assume status ON:
+			if status = "" then
+				ls := ON;
+			else
+				ls := to_layer_status (status);
+			end if;
+			
+			log (text => "display " & to_lower (to_string (layer)) 
+					& space & to_string (ls),
+					level => log_threshold + 1);
+			
+			case layer is
+				when NOUN_NAMES		=> layers.device_names := ls;
+				when NOUN_NETS		=> layers.nets := ls;
+				when NOUN_PORTS		=> layers.ports := ls;
+				when NOUN_PURPOSES	=> layers.device_purposes := ls;
+				when NOUN_TEXTS		=> layers.texts := ls;
+				when NOUN_VALUES	=> layers.device_values := ls;
+				
+				when others => 
+					log (importance => ERROR, text => "invalid layer !", console => true);
+			end case;
+
+			-- CS exception handler if status is invalid
+		end do_it;
+
+		
+	begin
+		case cmd_field_count is
+			when 4 => do_it (noun); -- if status is omitted
+			when 5 => do_it (noun, get_field (5));
+			when 6 .. type_field_count'last => too_long; 
+			when others => command_incomplete;
+		end case;
+	end display;
+
+
+
+
+	
+
+	
+
+-----------------------------------------------------------------------------------	
+
+-- OPERATIONS ON ASSEMBLY VARIANTS:
+
+	
 	procedure create_assembly_variant is
 		use et_assembly_variants;
 	begin
@@ -328,6 +395,10 @@ is
 
 	
 
+	
+-----------------------------------------------------------------------------------
+	
+-- DEVICE OPERATIONS:
 	
 	-- This procedure parses a command that adds an electrical
 	-- device to the module.
@@ -404,7 +475,580 @@ is
 	end rename_device;
 
 
+
+
 	
+	-- This procedure parses a command that deletes a 
+	-- whole device (with all units) like
+	-- "schematic led_driver delete unit IC1":
+	procedure delete_device is 
+		device_name : type_device_name;
+	begin
+		device_name := to_device_name (get_field (5));
+		
+		case cmd_field_count is
+			when 5 =>
+				delete_device (
+					module_cursor 	=> active_module,
+					device_name		=> device_name,
+					log_threshold	=> log_threshold + 1);
+
+			when 6 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end delete_device;
+
+
+	
+
+
+	-- This procedure parses a command that copies a 
+	-- device like
+	-- "schematic led_driver copy device IC1 2 210 100 0":	
+	procedure copy_device is
+	begin
+		case cmd_field_count is
+			when 9 =>
+				copy_device (
+					module_cursor 	=> active_module,
+					device_name		=> to_device_name (get_field (5)),
+					destination		=> to_position 
+						(
+						sheet => to_sheet (get_field (6)),
+						point => type_vector_model (set
+									(
+									x => to_distance (get_field (7)),
+									y => to_distance (get_field (8))
+									)),
+						rotation		=> to_rotation (get_field (9))
+						),
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 10 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end copy_device;
+
+	
+
+	
+	
+	
+	-- This procedure parses a command that sets the value of a device like
+	-- "schematic led_driver set value R1 100R"
+	procedure set_device_value is begin
+		case cmd_field_count is
+			when 6 =>
+				declare
+					value : pac_device_value.bounded_string; -- 470R
+				begin
+					-- validate value
+					value := to_value_with_check (get_field (6));
+
+					-- set the value
+					set_value
+						(
+						module_name 	=> module,
+						device_name		=> to_device_name (get_field (5)), -- R1
+						value			=> value, -- 470R
+						log_threshold	=> log_threshold + 1);
+				end;
+
+			when 7 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end set_device_value;
+
+
+
+	
+	-- This procedure parses a command that sets the purpose of a device like
+	-- "schematic led_driver set purpose R1 Temperature"
+	procedure set_device_purpose is begin
+		case cmd_field_count is
+			when 6 =>
+				declare
+					purpose : pac_device_purpose.bounded_string; -- brightness_control
+				begin
+					purpose := to_purpose (get_field (6));
+					
+					-- set the purpose
+					set_purpose
+						(
+						module_name 	=> module,
+						device_name		=> to_device_name (get_field (5)), -- R1
+						purpose			=> purpose, -- brightness_control
+						log_threshold	=> log_threshold + 1
+						);
+				end;
+
+			when 7 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end set_device_purpose;
+
+
+
+
+	-- This procedure parses a command that sets the partcode of a device like
+	-- "schematic led_driver set partcode R1 R_PAC_S_0805_VAL_100R"
+	procedure set_device_partcode is begin
+		case cmd_field_count is
+			when 6 =>
+				declare
+					partcode : pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+				begin
+					partcode := to_partcode (get_field (6));
+
+					-- set the purpose
+					set_partcode
+						(
+						module_name 	=> module,
+						device_name		=> to_device_name (get_field (5)), -- R1
+						partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
+						log_threshold	=> log_threshold + 1
+						);
+				end;
+
+			when 7 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end set_device_partcode;
+
+	
+	 
+	
+
+
+	-- For showing and finding devices and units:
+	type type_show_device is (
+		FIRST_UNIT,
+		BY_UNIT_NAME,
+		FIRST_UNIT_ON_CURRENT_SHEET);
+
+	
+	-- Selects the device so that a certain unit or all its units become
+	-- highlighted in the canvas.
+	-- Sets the sheet where the unit is.
+	-- Pans the canvas so that the unit is in the center of the view.
+	-- 1. If mode is FIRST_UNIT then the sheet where the first unit is
+	--    will be shown in the center of the canvas. All units of the
+	--    device will be selected and highlighted.
+	--    The given unit name will be ignored.
+	-- 2. If mode is BY_UNIT_NAME then the sheet where the given unit is
+	--    will be shown in the center of the canvas. Only that unit
+	--    of the device will be selected and highlighted.
+	-- 3. If mode is FIRST_UNIT_ON_CURRENT_SHEET then the first unit
+	--    on the current sheet will be shown in the center of the canvas.
+	--    All units of the device selected and highlighted.
+	--    The given unit name will be ignored.
+	procedure show_device ( -- GUI related
+		device	: in type_device_name; -- IC45
+		unit	: in pac_unit_name.bounded_string := to_unit_name (""); -- A, B, ..
+		mode	: in type_show_device := FIRST_UNIT)
+	is
+		use pac_unit_name;
+		use et_units;
+		use et_devices_electrical;
+		use et_canvas_schematic_2;
+
+		
+		function locate (unit : in pac_unit_name.bounded_string) 
+			return type_unit_query
+		is begin
+			return get_unit_position (
+				module_cursor	=> active_module,
+				device_name		=> device,
+				unit_name		=> unit);
+			
+		end locate;
+
+		use et_canvas_schematic_units;
+
+		
+		procedure device_not_found is begin
+			raise semantic_error_1 with
+				"ERROR: Device " & to_string (device) & " does not exist !";
+		end device_not_found;
+
+		
+		procedure unit_not_found is begin
+			raise semantic_error_1 with
+				"ERROR: Device " & to_string (device)
+				& " unit " & to_string (unit) & " does not exist !";
+		end unit_not_found;
+
+		
+	begin -- show_device
+		case mode is
+			when FIRST_UNIT =>
+				declare
+					-- The unit name is empty because we will center just 
+					-- on the first unit:
+					location : type_unit_query := locate (to_unit_name (""));
+				begin
+					if location.exists then
+						-- show the sheet where the unit is:
+						active_sheet := get_sheet (location.position);
+
+						-- center on the first unit
+					-- CS center_on (canvas, location.position.place);
+
+						-- CS
+						-- Make the whole device (with all its units) selected:
+						-- proposed_units.append (new_item => (
+						-- 	device	=> locate_device (active_module, device),
+						-- 	unit	=> pac_units.no_element));
+      -- 
+						-- selected_unit := proposed_units.first;
+      -- 
+						-- show_properties_of_selected_device;
+					else
+						device_not_found;
+					end if;
+				end;
+
+				
+			when BY_UNIT_NAME =>
+				declare
+					-- The unit name is explicitely given:
+					location : type_unit_query := locate (unit);
+				begin
+					if location.exists then
+						-- show the sheet where the unit is:
+						active_sheet := get_sheet (location.position);
+
+						-- center on the unit
+					-- CS center_on (canvas, location.position.place);
+
+						-- CS
+						-- Make the whole device (with all its units) selected:
+						-- proposed_units.append (new_item => (
+						-- 	device	=> locate_device (active_module, device),
+						-- 	unit	=> locate_unit (active_module, device, unit)));
+      -- 
+						-- selected_unit := proposed_units.first;
+
+						-- show_properties_of_selected_device;
+					else
+						unit_not_found;
+					end if;
+				end;
+
+				
+			when FIRST_UNIT_ON_CURRENT_SHEET =>
+				declare
+					-- The unit name is empty because we will center just 
+					-- on the first unit on the current sheet:
+					location : type_unit_query := locate (to_unit_name (""));
+				begin
+					if location.exists then
+						if get_sheet (location.position) = active_sheet then
+							null;
+							
+							-- center on the unit
+						-- CS	center_on (canvas, location.position.place);
+
+							-- CS
+							-- Make the whole device (with all its units) selected:
+-- 							proposed_units.append (new_item => (
+-- 								device	=> locate_device (active_module, device),
+-- 								unit	=> pac_units.no_element));
+-- 
+-- 							selected_unit := proposed_units.first;
+-- 							
+-- 							show_properties_of_selected_device;
+						else
+							raise semantic_error_1 with
+								"Device " & to_string (device) & " is not on this sheet !";
+						end if;
+
+					else
+						device_not_found;
+					end if;
+				end;
+				
+		end case;
+	end show_device;
+
+
+
+
+-----------------------------------------------------------------------------------
+
+-- UNIT OPERATIONS:
+
+	-- This procedure parses a command that deletes a unit
+	-- of a device like "schematic led_driver delete unit IC1 C":
+	procedure delete_unit is 
+		device_name : type_device_name;
+		unit_name	: pac_unit_name.bounded_string;
+	begin
+		device_name := to_device_name (get_field (5));
+		unit_name	:= to_unit_name (get_field (6));
+		
+		case cmd_field_count is
+			when 6 =>
+				delete_unit (
+					module_cursor 	=> active_module,
+					device_name		=> device_name,
+					unit_name		=> unit_name,
+					log_threshold	=> log_threshold + 1);
+
+			when 7 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end delete_unit;
+	
+
+
+
+	-- This procedure parses a command that drags a unit
+	-- of a device like "schematic led_driver drag unit IC1 C absolute 100 130":
+	procedure drag_unit is begin
+		case cmd_field_count is
+			when 9 =>
+				drag_unit (
+					module_cursor 	=> active_module,
+					device_name		=> to_device_name (get_field (5)),
+					unit_name		=> to_unit_name (get_field (6)),
+					coordinates		=> to_coordinates (get_field (7)), -- relative/absolute
+					destination		=> type_vector_model (set (
+										x => to_distance (get_field (8)),
+										y => to_distance (get_field (9)))),
+					log_threshold	=> log_threshold + 1);
+
+			when 10 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end drag_unit;
+	
+
+
+
+	-- Parses a command that moves a unit either relatively or
+	-- absolutely:
+	-- example 1: schematic led_driver move unit IC1 A relative -1 2 4
+	-- example 2: schematic led_driver move unit IC1 C absolute 2 210 100
+	procedure move_unit is 
+		device_name : type_device_name;
+		unit_name	: pac_unit_name.bounded_string;
+		coordinates : type_coordinates;
+		sheet		: type_sheet_relative;		
+		destination	: type_vector_model;
+	begin
+		device_name := to_device_name (get_field (5)); -- IC1
+		unit_name	:= to_unit_name (get_field (6)); -- A
+		coordinates := to_coordinates (get_field (7)); -- relative/absolute
+		sheet		:= to_sheet_relative (get_field (8)); -- -1, 2
+
+		destination	:= set (x => to_distance (get_field (9)), -- 2, 210
+							y => to_distance (get_field (10))); -- 4, 100
+
+		case cmd_field_count is
+			when 10 =>
+				move_unit (
+					module_cursor 	=> active_module,
+					device_name		=> device_name,
+					unit_name		=> unit_name,
+					coordinates		=> coordinates,
+					sheet			=> sheet,
+					destination		=> destination,						
+					log_threshold	=> log_threshold + 1);
+
+			when 11 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end move_unit;
+	
+
+	
+	
+	-- Parses a command that rotates a unit either relatively or
+	-- absolutely:
+	-- example 1: schematic led_driver rotate unit IC1 A relative -90
+	-- example 2: schematic led_driver rotate unit IC1 B absolute 90
+	procedure rotate_unit is begin
+		case cmd_field_count is
+			when 8 =>
+				rotate_unit (
+					module_cursor 	=> active_module,
+					device_name		=> to_device_name (get_field (5)), -- IC1
+					unit_name		=> to_unit_name (get_field (6)), -- A
+					coordinates		=> to_coordinates (get_field (7)),  -- relative/absolute
+					rotation		=> to_rotation (get_field (8)), -- 90
+					log_threshold	=> log_threshold + 1);
+
+			when 9 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end rotate_unit;
+		
+	
+
+	
+
+	-- Parses a command that fetches a unit from a device
+	-- and places it in the schematic:
+	-- example: 
+	-- "schematic demo fetch unit IC1 C 1 70 100 -90"
+	procedure fetch_unit is
+		device_name : type_device_name;
+		unit_name	: pac_unit_name.bounded_string;
+		sheet		: type_sheet;
+		place		: type_vector_model;
+		rotation	: type_rotation;
+	begin
+		device_name := to_device_name (get_field (5)); -- IC1
+		unit_name	:= to_unit_name (get_field (6)); -- C
+		sheet		:= to_sheet (get_field (7)); -- 1
+		place		:= set (x => to_distance (get_field (8)), -- 70
+							y => to_distance (get_field (9))); -- 100
+	
+		rotation	:= to_rotation (get_field (10)); -- -90
+
+		case cmd_field_count is
+			when 10 =>
+				fetch_unit (
+					module_cursor	=> active_module,
+					device_name		=> device_name,
+					unit_name		=> unit_name,
+					destination		=> to_position (place, sheet, rotation),
+					log_threshold	=> log_threshold + 1);
+
+			when 11 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end fetch_unit;
+	
+
+
+	
+	
+	
+-----------------------------------------------------------------------------------
+
+-- UNIT PLACEHOLDERS:	
+
+	-- This procedure parses a command that rotates a placeholder
+	-- for name, value or purpose of a unit.
+	-- Example: "schematic led_driver rotate value R1 1 vertical"
+	-- Example: "schematic led_driver rotate value IC1 A horizontal"
+	procedure rotate_unit_placeholder is
+		meaning : type_placeholder_meaning;
+
+		procedure do_it is begin
+			case cmd_field_count is
+				when 7 =>
+					rotate_placeholder (
+						module_cursor 	=> active_module,
+						device_name		=> to_device_name (get_field (5)), -- IC1
+						unit_name		=> to_unit_name (get_field (6)), -- A
+						rotation		=> et_text.to_rotation_documentation (get_field (7)), -- horizontal
+						meaning			=> meaning,
+						log_threshold	=> log_threshold + 1);
+
+				when 8 .. type_field_count'last => too_long; 
+					
+				when others => command_incomplete;
+			end case;
+		end do_it;
+		
+		
+	begin
+		case noun is
+			when NOUN_NAME =>
+				meaning := NAME;
+				
+			when NOUN_VALUE =>
+				meaning := VALUE;
+								
+			when NOUN_PURPOSE =>
+				meaning := PURPOSE;
+
+			-- CS partcode ?
+
+			when others => null; -- CS should never happen
+		end case;
+
+		do_it;		
+	end rotate_unit_placeholder;
+	
+
+
+
+	
+	
+	-- This procedure parses a command that moves a placeholder
+	-- for name, value or purpose of a unit.
+	-- Example: "schematic led_driver move value R1 1 absolute 100 115"
+	-- Example: "schematic led_driver move value IC1 A relative -5 0"
+	procedure move_unit_placeholder is
+		meaning : type_placeholder_meaning;
+
+		procedure do_it is begin
+			-- schematic led_driver move name R1 1 absolute 10 15
+			case cmd_field_count is
+				when 9 =>
+					move_placeholder (
+						module_cursor 	=> active_module,
+						device_name		=> to_device_name (get_field (5)), -- IC1
+						unit_name		=> to_unit_name (get_field (6)), -- A
+						coordinates		=> to_coordinates (get_field (7)),  -- relative/absolute
+						point			=> type_vector_model (set (
+											x => to_distance (get_field (8)),
+											y => to_distance (get_field (9)))),
+						meaning			=> meaning,
+						log_threshold	=> log_threshold + 1);
+
+				when 10 .. type_field_count'last => too_long; 
+					
+				when others => command_incomplete;
+			end case;
+		end do_it;
+
+		
+	begin
+		case noun is
+			when NOUN_NAME =>
+				meaning := NAME;
+				
+			when NOUN_VALUE =>
+				meaning := VALUE;
+								
+			when NOUN_PURPOSE =>
+				meaning := PURPOSE;
+
+			-- CS partcode ?
+
+			when others => null; -- CS should never happen
+		end case;
+
+		do_it;		
+	end move_unit_placeholder;
+
+
+
+	
+
+
+
+
+	
+-----------------------------------------------------------------------------------	
+
+-- OPERATIONS ON NETCHANGERS:
 	
 	
 	procedure add_netchanger is
@@ -528,7 +1172,14 @@ is
 	end rotate_netchanger;
 	
 
-	
+
+
+
+
+-----------------------------------------------------------------------------------	
+
+-- SUBMODULE OPERATIONS:
+
 	
 	procedure add_port_to_submodule is
 		use et_schematic_ops.submodules;
@@ -921,470 +1572,13 @@ is
 	end make_boms;
 		
 
-	
-
-	-- This procedure parses a command that copies a 
-	-- device like
-	-- "schematic led_driver copy device IC1 2 210 100 0":	
-	procedure copy_device is
-	begin
-		case cmd_field_count is
-			when 9 =>
-				copy_device (
-					module_cursor 	=> active_module,
-					device_name		=> to_device_name (get_field (5)),
-					destination		=> to_position 
-						(
-						sheet => to_sheet (get_field (6)),
-						point => type_vector_model (set
-									(
-									x => to_distance (get_field (7)),
-									y => to_distance (get_field (8))
-									)),
-						rotation		=> to_rotation (get_field (9))
-						),
-					log_threshold	=> log_threshold + 1
-					);
-
-			when 10 .. type_field_count'last => too_long;
-				
-			when others => command_incomplete;
-		end case;
-	end copy_device;
-
-	
-	
-	
-	-- For showing and finding devices and units:
-	type type_show_device is (
-		FIRST_UNIT,
-		BY_UNIT_NAME,
-		FIRST_UNIT_ON_CURRENT_SHEET);
-
-	
-	-- Selects the device so that a certain unit or all its units become
-	-- highlighted in the canvas.
-	-- Sets the sheet where the unit is.
-	-- Pans the canvas so that the unit is in the center of the view.
-	-- 1. If mode is FIRST_UNIT then the sheet where the first unit is
-	--    will be shown in the center of the canvas. All units of the
-	--    device will be selected and highlighted.
-	--    The given unit name will be ignored.
-	-- 2. If mode is BY_UNIT_NAME then the sheet where the given unit is
-	--    will be shown in the center of the canvas. Only that unit
-	--    of the device will be selected and highlighted.
-	-- 3. If mode is FIRST_UNIT_ON_CURRENT_SHEET then the first unit
-	--    on the current sheet will be shown in the center of the canvas.
-	--    All units of the device selected and highlighted.
-	--    The given unit name will be ignored.
-	procedure show_device ( -- GUI related
-		device	: in type_device_name; -- IC45
-		unit	: in pac_unit_name.bounded_string := to_unit_name (""); -- A, B, ..
-		mode	: in type_show_device := FIRST_UNIT)
-	is
-		use pac_unit_name;
-		use et_units;
-		use et_devices_electrical;
-		use et_canvas_schematic_2;
-
-		
-		function locate (unit : in pac_unit_name.bounded_string) 
-			return type_unit_query
-		is begin
-			return get_unit_position (
-				module_cursor	=> active_module,
-				device_name		=> device,
-				unit_name		=> unit);
-			
-		end locate;
-
-		use et_canvas_schematic_units;
-		-- use pac_proposed_units;
-
-		
-		procedure device_not_found is begin
-			raise semantic_error_1 with
-				"ERROR: Device " & to_string (device) & " does not exist !";
-		end device_not_found;
-
-		
-		procedure unit_not_found is begin
-			raise semantic_error_1 with
-				"ERROR: Device " & to_string (device)
-				& " unit " & to_string (unit) & " does not exist !";
-		end unit_not_found;
-
-		
-	begin -- show_device
-		case mode is
-			when FIRST_UNIT =>
-				declare
-					-- The unit name is empty because we will center just 
-					-- on the first unit:
-					location : type_unit_query := locate (to_unit_name (""));
-				begin
-					if location.exists then
-						-- show the sheet where the unit is:
-						active_sheet := get_sheet (location.position);
-
-						-- center on the first unit
-					-- CS center_on (canvas, location.position.place);
-
-						-- CS
-						-- Make the whole device (with all its units) selected:
-						-- proposed_units.append (new_item => (
-						-- 	device	=> locate_device (active_module, device),
-						-- 	unit	=> pac_units.no_element));
-      -- 
-						-- selected_unit := proposed_units.first;
-      -- 
-						-- show_properties_of_selected_device;
-					else
-						device_not_found;
-					end if;
-				end;
-
-				
-			when BY_UNIT_NAME =>
-				declare
-					-- The unit name is explicitely given:
-					location : type_unit_query := locate (unit);
-				begin
-					if location.exists then
-						-- show the sheet where the unit is:
-						active_sheet := get_sheet (location.position);
-
-						-- center on the unit
-					-- CS center_on (canvas, location.position.place);
-
-						-- CS
-						-- Make the whole device (with all its units) selected:
-						-- proposed_units.append (new_item => (
-						-- 	device	=> locate_device (active_module, device),
-						-- 	unit	=> locate_unit (active_module, device, unit)));
-      -- 
-						-- selected_unit := proposed_units.first;
-
-						-- show_properties_of_selected_device;
-					else
-						unit_not_found;
-					end if;
-				end;
-
-				
-			when FIRST_UNIT_ON_CURRENT_SHEET =>
-				declare
-					-- The unit name is empty because we will center just 
-					-- on the first unit on the current sheet:
-					location : type_unit_query := locate (to_unit_name (""));
-				begin
-					if location.exists then
-						if get_sheet (location.position) = active_sheet then
-							null;
-							
-							-- center on the unit
-						-- CS	center_on (canvas, location.position.place);
-
-							-- CS
-							-- Make the whole device (with all its units) selected:
--- 							proposed_units.append (new_item => (
--- 								device	=> locate_device (active_module, device),
--- 								unit	=> pac_units.no_element));
--- 
--- 							selected_unit := proposed_units.first;
--- 							
--- 							show_properties_of_selected_device;
-						else
-							raise semantic_error_1 with
-								"Device " & to_string (device) & " is not on this sheet !";
-						end if;
-
-					else
-						device_not_found;
-					end if;
-				end;
-				
-		end case;
-	end show_device;
-
-
-
-	
-	-- This procedure parses a command that deletes a 
-	-- whole device (with all units) like
-	-- "schematic led_driver delete unit IC1":
-	procedure delete_device is 
-		device_name : type_device_name;
-	begin
-		device_name := to_device_name (get_field (5));
-		
-		case cmd_field_count is
-			when 5 =>
-				delete_device (
-					module_cursor 	=> active_module,
-					device_name		=> device_name,
-					log_threshold	=> log_threshold + 1);
-
-			when 6 .. type_field_count'last => too_long; 
-				
-			when others => command_incomplete;
-		end case;
-	end delete_device;
-
-	
-
-	
-
-	-- This procedure parses a command that deletes a unit
-	-- of a device like "schematic led_driver delete unit IC1 C":
-	procedure delete_unit is 
-		device_name : type_device_name;
-		unit_name	: pac_unit_name.bounded_string;
-	begin
-		device_name := to_device_name (get_field (5));
-		unit_name	:= to_unit_name (get_field (6));
-		
-		case cmd_field_count is
-			when 6 =>
-				delete_unit (
-					module_cursor 	=> active_module,
-					device_name		=> device_name,
-					unit_name		=> unit_name,
-					log_threshold	=> log_threshold + 1);
-
-			when 7 .. type_field_count'last => too_long; 
-				
-			when others => command_incomplete;
-		end case;
-	end delete_unit;
-	
-
-
-
-	-- This procedure parses a command that drags a unit
-	-- of a device like "schematic led_driver drag unit IC1 C absolute 100 130":
-	procedure drag_unit is begin
-		case cmd_field_count is
-			when 9 =>
-				drag_unit (
-					module_cursor 	=> active_module,
-					device_name		=> to_device_name (get_field (5)),
-					unit_name		=> to_unit_name (get_field (6)),
-					coordinates		=> to_coordinates (get_field (7)), -- relative/absolute
-					destination		=> type_vector_model (set (
-										x => to_distance (get_field (8)),
-										y => to_distance (get_field (9)))),
-					log_threshold	=> log_threshold + 1);
-
-			when 10 .. type_field_count'last => too_long; 
-				
-			when others => command_incomplete;
-		end case;
-	end drag_unit;
-	
-
-
-
-	-- Parses a command that moves a unit either relatively or
-	-- absolutely:
-	-- example 1: schematic led_driver move unit IC1 A relative -1 2 4
-	-- example 2: schematic led_driver move unit IC1 C absolute 2 210 100
-	procedure move_unit is 
-		device_name : type_device_name;
-		unit_name	: pac_unit_name.bounded_string;
-		coordinates : type_coordinates;
-		sheet		: type_sheet_relative;		
-		destination	: type_vector_model;
-	begin
-		device_name := to_device_name (get_field (5)); -- IC1
-		unit_name	:= to_unit_name (get_field (6)); -- A
-		coordinates := to_coordinates (get_field (7)); -- relative/absolute
-		sheet		:= to_sheet_relative (get_field (8)); -- -1, 2
-
-		destination	:= set (x => to_distance (get_field (9)), -- 2, 210
-							y => to_distance (get_field (10))); -- 4, 100
-
-		case cmd_field_count is
-			when 10 =>
-				move_unit (
-					module_cursor 	=> active_module,
-					device_name		=> device_name,
-					unit_name		=> unit_name,
-					coordinates		=> coordinates,
-					sheet			=> sheet,
-					destination		=> destination,						
-					log_threshold	=> log_threshold + 1);
-
-			when 11 .. type_field_count'last => too_long; 
-				
-			when others => command_incomplete;
-		end case;
-	end move_unit;
-	
-
-	
-	
-	-- Parses a command that rotates a unit either relatively or
-	-- absolutely:
-	-- example 1: schematic led_driver rotate unit IC1 A relative -90
-	-- example 2: schematic led_driver rotate unit IC1 B absolute 90
-	procedure rotate_unit is begin
-		case cmd_field_count is
-			when 8 =>
-				rotate_unit (
-					module_cursor 	=> active_module,
-					device_name		=> to_device_name (get_field (5)), -- IC1
-					unit_name		=> to_unit_name (get_field (6)), -- A
-					coordinates		=> to_coordinates (get_field (7)),  -- relative/absolute
-					rotation		=> to_rotation (get_field (8)), -- 90
-					log_threshold	=> log_threshold + 1);
-
-			when 9 .. type_field_count'last => too_long; 
-				
-			when others => command_incomplete;
-		end case;
-	end rotate_unit;
-		
-	
-
-
-	-- Parses a command that fetches a unit from a device
-	-- and places it in the schematic:
-	-- example: 
-	-- "schematic demo fetch unit IC1 C 1 70 100 -90"
-	procedure fetch_unit is
-		device_name : type_device_name;
-		unit_name	: pac_unit_name.bounded_string;
-		sheet		: type_sheet;
-		place		: type_vector_model;
-		rotation	: type_rotation;
-	begin
-		device_name := to_device_name (get_field (5)); -- IC1
-		unit_name	:= to_unit_name (get_field (6)); -- C
-		sheet		:= to_sheet (get_field (7)); -- 1
-		place		:= set (x => to_distance (get_field (8)), -- 70
-							y => to_distance (get_field (9))); -- 100
-	
-		rotation	:= to_rotation (get_field (10)); -- -90
-
-		case cmd_field_count is
-			when 10 =>
-				fetch_unit (
-					module_cursor	=> active_module,
-					device_name		=> device_name,
-					unit_name		=> unit_name,
-					destination		=> to_position (place, sheet, rotation),
-					log_threshold	=> log_threshold + 1);
-
-			when 11 .. type_field_count'last => too_long;
-				
-			when others => command_incomplete;
-		end case;
-	end fetch_unit;
-	
-
-	
-
-	-- This procedure parses a command that rotates a placeholder
-	-- for name, value or purpose of a unit.
-	-- Example: "schematic led_driver rotate value R1 1 vertical"
-	-- Example: "schematic led_driver rotate value IC1 A horizontal"
-	procedure rotate_unit_placeholder is
-		meaning : type_placeholder_meaning;
-
-		procedure do_it is begin
-			case cmd_field_count is
-				when 7 =>
-					rotate_placeholder (
-						module_cursor 	=> active_module,
-						device_name		=> to_device_name (get_field (5)), -- IC1
-						unit_name		=> to_unit_name (get_field (6)), -- A
-						rotation		=> et_text.to_rotation_documentation (get_field (7)), -- horizontal
-						meaning			=> meaning,
-						log_threshold	=> log_threshold + 1);
-
-				when 8 .. type_field_count'last => too_long; 
-					
-				when others => command_incomplete;
-			end case;
-		end do_it;
-		
-		
-	begin
-		case noun is
-			when NOUN_NAME =>
-				meaning := NAME;
-				
-			when NOUN_VALUE =>
-				meaning := VALUE;
-								
-			when NOUN_PURPOSE =>
-				meaning := PURPOSE;
-
-			-- CS partcode ?
-
-			when others => null; -- CS should never happen
-		end case;
-
-		do_it;		
-	end rotate_unit_placeholder;
-	
-
 
 
 	
 	
-	-- This procedure parses a command that moves a placeholder
-	-- for name, value or purpose of a unit.
-	-- Example: "schematic led_driver move value R1 1 absolute 100 115"
-	-- Example: "schematic led_driver move value IC1 A relative -5 0"
-	procedure move_unit_placeholder is
-		meaning : type_placeholder_meaning;
-
-		procedure do_it is begin
-			-- schematic led_driver move name R1 1 absolute 10 15
-			case cmd_field_count is
-				when 9 =>
-					move_placeholder (
-						module_cursor 	=> active_module,
-						device_name		=> to_device_name (get_field (5)), -- IC1
-						unit_name		=> to_unit_name (get_field (6)), -- A
-						coordinates		=> to_coordinates (get_field (7)),  -- relative/absolute
-						point			=> type_vector_model (set (
-											x => to_distance (get_field (8)),
-											y => to_distance (get_field (9)))),
-						meaning			=> meaning,
-						log_threshold	=> log_threshold + 1);
-
-				when 10 .. type_field_count'last => too_long; 
-					
-				when others => command_incomplete;
-			end case;
-		end do_it;
-
-		
-	begin
-		case noun is
-			when NOUN_NAME =>
-				meaning := NAME;
-				
-			when NOUN_VALUE =>
-				meaning := VALUE;
-								
-			when NOUN_PURPOSE =>
-				meaning := PURPOSE;
-
-			-- CS partcode ?
-
-			when others => null; -- CS should never happen
-		end case;
-
-		do_it;		
-	end move_unit_placeholder;
+-----------------------------------------------------------------------------------
 	
-
-	
-	
+-- OPERATIONS WITH NETS:	
 	
 
 
@@ -1477,8 +1671,6 @@ is
 			when others => command_incomplete;
 		end case;
 	end place_net_label;
-
-
 
 
 	
@@ -1625,6 +1817,7 @@ is
 	
 
 	
+	
 	-- This procedure parses a command that deletes a net label:
 	procedure delete_net_label is begin
 		case cmd_field_count is
@@ -1648,6 +1841,7 @@ is
 	end delete_net_label;
 
 
+	
 
 	-- This procedure parses a command that moves a net label:
 	procedure move_net_label is begin
@@ -1657,6 +1851,8 @@ is
 
 	
 
+
+	
 	procedure delete_net is
 	begin
 		case cmd_field_count is
@@ -1686,6 +1882,8 @@ is
 
 
 
+
+	
 	
 	procedure delete_net_segment is
 		catch_zone : type_catch_zone;
@@ -1712,6 +1910,8 @@ is
 
 
 
+
+	
 	procedure delete_net_strand is
 		catch_zone : type_catch_zone;
 	begin
@@ -1736,6 +1936,8 @@ is
 
 
 	
+
+
 	
 
 	procedure drag_net_segment is
@@ -1764,6 +1966,7 @@ is
 		end case;
 	end drag_net_segment;
 	
+
 
 
 	
@@ -1859,6 +2062,12 @@ is
 
 
 	
+
+-----------------------------------------------------------------------------------	
+
+-- MODULE OPERATIONS:
+	
+	
 	procedure create_module is
 		
 		procedure do_it (
@@ -1953,57 +2162,7 @@ is
 	end show_module;
 
 	
-	
 
-
-
-	-- Enables a certain layer. If status is empty, the layer will be enabled.
-	procedure display is -- GUI related
-
-		
-		procedure do_it ( 
-			layer	: in type_noun;
-			status	: in string := "") is
-
-			ls : type_layer_status;
-		begin
-			-- Convert the given status to type_layer_status.
-			-- If no status given, assume status ON:
-			if status = "" then
-				ls := ON;
-			else
-				ls := to_layer_status (status);
-			end if;
-			
-			log (text => "display " & to_lower (to_string (layer)) 
-					& space & to_string (ls),
-					level => log_threshold + 1);
-			
-			case layer is
-				when NOUN_NAMES		=> layers.device_names := ls;
-				when NOUN_NETS		=> layers.nets := ls;
-				when NOUN_PORTS		=> layers.ports := ls;
-				when NOUN_PURPOSES	=> layers.device_purposes := ls;
-				when NOUN_TEXTS		=> layers.texts := ls;
-				when NOUN_VALUES	=> layers.device_values := ls;
-				
-				when others => 
-					log (importance => ERROR, text => "invalid layer !", console => true);
-			end case;
-
-			-- CS exception handler if status is invalid
-		end do_it;
-
-		
-	begin
-		case cmd_field_count is
-			when 4 => do_it (noun); -- if status is omitted
-			when 5 => do_it (noun, get_field (5));
-			when 6 .. type_field_count'last => too_long; 
-			when others => command_incomplete;
-		end case;
-	end display;
-	
 
 	
 
@@ -2130,7 +2289,7 @@ is
 	
 	
 
-
+-----------------------------------------------------------------------------------
 
 
 	
@@ -2574,51 +2733,11 @@ is
 
 						
 					when NOUN_PARTCODE =>
-						case cmd_field_count is
-							when 6 =>
-								declare
-									partcode : pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-								begin
-									partcode := to_partcode (get_field (6));
-
-									-- set the purpose
-									set_partcode
-										(
-										module_name 	=> module,
-										device_name		=> to_device_name (get_field (5)), -- R1
-										partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
-										log_threshold	=> log_threshold + 1
-										);
-								end;
-
-							when 7 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
+						set_device_partcode;
 
 						
 					when NOUN_PURPOSE =>
-						case cmd_field_count is
-							when 6 =>
-								declare
-									purpose : pac_device_purpose.bounded_string; -- brightness_control
-								begin
-									purpose := to_purpose (get_field (6));
-									
-									-- set the purpose
-									set_purpose
-										(
-										module_name 	=> module,
-										device_name		=> to_device_name (get_field (5)), -- R1
-										purpose			=> purpose, -- brightness_control
-										log_threshold	=> log_threshold + 1
-										);
-								end;
-
-							when 7 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
+						set_device_purpose;
 
 						
 					when NOUN_SCOPE =>
@@ -2642,29 +2761,8 @@ is
 						
 
 					when NOUN_VALUE =>
-						case cmd_field_count is
-							when 6 =>
-								declare
-									value : pac_device_value.bounded_string; -- 470R
-								begin
-									-- validate value
-									value := to_value_with_check (get_field (6));
-
-									-- set the value
-									set_value
-										(
-										module_name 	=> module,
-										device_name		=> to_device_name (get_field (5)), -- R1
-										value			=> value, -- 470R
-										log_threshold	=> log_threshold + 1
-										);
-								end;
-
-							when 7 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
-
+						set_device_value;
+				
 						
 					when NOUN_VARIANT =>
 						case cmd_field_count is

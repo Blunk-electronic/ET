@@ -240,7 +240,7 @@ Devices and Units
 	
 
 
-#. Set value
+#. Set Value
 
 	.. code-block::
 
@@ -251,22 +251,22 @@ Devices and Units
 	
 
 
-#. Set partcode
+#. Set Partcode
 
 	.. code-block::
 
-		set partcode R1 [R_PAC_S_0805_VAL_100R}
+		set partcode R1 R_PAC_S_0805_VAL_100R
 
 	|VNS| s p
 
 	
 
 
-#. Set purpose
+#. Set Purpose
 
 	.. code-block::
 
-		set purpose R1 [brightness]
+		set purpose R1 brightness
 
 	|VNS| s p
 
