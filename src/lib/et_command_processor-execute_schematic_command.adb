@@ -603,13 +603,11 @@ is
 					partcode := to_partcode (get_field (6));
 
 					-- set the purpose
-					set_partcode
-						(
-						module_name 	=> module,
+					set_partcode (
+						module_cursor 	=> active_module,
 						device_name		=> to_device_name (get_field (5)), -- R1
 						partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
-						log_threshold	=> log_threshold + 1
-						);
+						log_threshold	=> log_threshold + 1);
 				end;
 
 			when 7 .. type_field_count'last => too_long; 

@@ -69,7 +69,7 @@ package et_schematic_ops.units is
 	
 	-- Sets the partcode of a device.
 	procedure set_partcode (
-		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
 		partcode			: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		log_threshold		: in type_log_level);

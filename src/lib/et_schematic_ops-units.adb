@@ -220,69 +220,68 @@ package body et_schematic_ops.units is
 	
 	
 	procedure set_partcode (
-		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
 		partcode			: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		log_threshold		: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
+		device_cursor_sch : pac_devices_sch.cursor;
 
 		
-		procedure query_devices (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) is
-			use pac_devices_sch;
-
-			device_cursor : pac_devices_sch.cursor;
+			module		: in out type_generic_module) 
+		is
 
 			procedure set_partcode (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) is
-			begin
+				device		: in out type_device_sch) 
+			is begin
 				device.partcode := partcode;
+				-- CS log old and new partcode
 			end;
 			
 			
-		begin -- query_devices
-			-- locate the device
-			device_cursor := find (module.devices, device_name); -- R1
+		begin
+			-- Only real devices have a purpose. 
+			-- Issue warning if targeted device is virtual.
+			if is_real (device_cursor_sch) then
 
-			if device_cursor /= pac_devices_sch.no_element then -- the device should be there
-
-				-- Only real devices have a purpose. Issue warning if targeted device is virtual.
-				if is_real (device_cursor) then
-
-					update_element (
-						container	=> module.devices,
-						position	=> device_cursor,
-						process		=> set_partcode'access);
-
-				else
-					log (WARNING, "Device " & to_string (device_name) &
-						 " is virtual and has no partcode !");
-				end if;
+				update_element (
+					container	=> module.devices,
+					position	=> device_cursor_sch,
+					process		=> set_partcode'access);
 
 			else
-				device_not_found (device_name);
+				log (WARNING, "Device " & to_string (device_name) 
+					& " is virtual and has no partcode !");
 			end if;
-		end query_devices;
+		end query_module;
 
 		
 	begin -- set_partcode
-		log (text => "module " & to_string (module_name) &
-			" setting " & to_string (device_name) & " partcode to " &
-			enclose_in_quotes (to_string (partcode)),
+		log (text => "module " & to_string (module_cursor) 
+			 & " set " & to_string (device_name) 
+			 & " partcode to " & enclose_in_quotes (to_string (partcode)),
 			level => log_threshold);
 
 		log_indentation_up;
 		
-		-- locate module
-		module_cursor := locate_module (module_name);
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor_sch := locate_device (module_cursor, device_name);
+			
+		if has_element (device_cursor_sch) then -- device exists in schematic
+			
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> query_module'access);
 
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_devices'access);
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+		end if;
 
 		log_indentation_down;
 	end set_partcode;
