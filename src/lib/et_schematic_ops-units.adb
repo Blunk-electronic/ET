@@ -3492,6 +3492,15 @@ package body et_schematic_ops.units is
 	end;
 
 
+
+	function get_device_name (
+		object	: in type_object_unit)
+		return type_device_name
+	is begin
+		return key (object.device_cursor);
+	end;
+
+	
 	
 
 
@@ -5220,6 +5229,41 @@ package body et_schematic_ops.units is
 
 	
 
+
+
+	
+
+	procedure set_value (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		new_value		: in pac_device_value.bounded_string;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " set value of object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_UNIT =>
+
+				set_value (
+					module_cursor	=> module_cursor,
+					device_name		=> get_device_name (object.unit),
+					value			=> new_value,
+					log_threshold	=> log_threshold + 1);
+
+				
+			when others =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end set_value;
+
+	
 	
 	
 end et_schematic_ops.units;

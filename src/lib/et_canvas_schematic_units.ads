@@ -166,6 +166,25 @@ package et_canvas_schematic_units is
 
 
 
+	-- Called when the "on_activate" signal is emitted
+	-- (usually when ENTER pressed) by the entry field
+	-- for the new value in the value window:
+	procedure cb_new_value_entered (
+		self : access gtk.gentry.gtk_entry_record'class);
+
+	
+	-- This procedure shows the window where the
+	-- operator sees the old value of the targeted device
+	-- and where he can enter the new name of the device:
+	procedure show_value_window;
+	
+	
+	procedure set_value (
+		point	: in type_vector_model);
+							
+
+
+
 	
 	-- Called when the "on_activate" signal is emitted
 	-- (usually when ENTER pressed) by the entry field

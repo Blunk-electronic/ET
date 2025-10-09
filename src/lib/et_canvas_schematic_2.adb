@@ -1241,6 +1241,17 @@ package body et_canvas_schematic_2 is
 		reset;
 	end cb_rename_window_destroy;
 
+
+
+
+	procedure cb_value_window_destroy (
+		window : access gtk_widget_record'class)
+	is
+	begin
+		put_line ("cb_value_window_destroy");
+		reset;
+	end cb_value_window_destroy;
+
 	
 	
 end et_canvas_schematic_2;

@@ -608,7 +608,10 @@ is
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when key_space =>
 				case noun is
-					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE | NOUN_VARIANT =>
+					when NOUN_VALUE =>
+						et_canvas_schematic_units.set_value (point);
+
+					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VARIANT =>
 						null;
 						-- CS
 						-- if not clarification_pending then

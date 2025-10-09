@@ -1330,6 +1330,50 @@ package et_canvas is
 	procedure build_rename_window;
 
 
+
+
+
+
+-- DEVICE VALUE WINDOW:
+
+	-- The window to set the value of devices is used in all domains
+	-- and in various situations. For this reason we make it
+	-- a generic object:
+	value_window : gtk.window.gtk_window;
+
+	-- This flag indicates that the value window is open:
+	value_window_open : boolean := false;
+	
+	-- CS: these variables should be moved to procedure
+	-- build_rename_window:
+	-- This is the field inside the value_window 
+	-- where the operator enters the new value of a device:
+	value_new : gtk_gentry;
+	
+	-- This is the field inside the value_window 
+	-- where the old value of a device is shown:
+	value_old : gtk_gentry;
+
+	
+	-- This procedure assembles the value_window with 
+	-- all its basic properties.
+	-- It connects the "on_key_press_event" with the
+	-- callback function cb_value_window_key_pressed (see below).
+	-- This procedure DOES NOT show the value window. It just prepares
+	-- basic things. The actual showing is preformed by a procedure in
+	-- the package where the canvas is instantiated (see
+	-- for example procedure show_value_window 
+	-- in et_canvas_schematic):
+	procedure build_value_window;
+	-- CS pass device name ?
+
+
+
+
+
+
+
+
 	
 
 -- VISIBILITY THRESHOLD:
@@ -1811,6 +1855,33 @@ private
 		cb_gtk_widget_gdk_event_key_boolean := cb_rename_window_key_pressed'access;
 
 
+	
+
+
+
+-- DEVICE VALUE WINDOW:
+
+	-- See comments on device value window above.
+	
+	-- This callback function is called whenever
+	-- the operator presses a key in the value window.
+	-- If ESC key pressed, then the window is destroyed
+	-- by emitting the "destroy" signal. The connection
+	-- to the "destroy" signal is estabilshed in the package
+	-- where the canvas is instantiated.
+	-- All other key-press events are propagated to the
+	-- field where the new name is entered (see 
+	-- variable "value_new" above):
+	function cb_value_window_key_pressed (
+		window	: access gtk_widget_record'class;
+		event	: gdk_event_key)
+		return boolean;
+	
+
+	access_cb_value_window_key_pressed : constant
+		cb_gtk_widget_gdk_event_key_boolean := cb_value_window_key_pressed'access;
+
+	
 	
 end et_canvas;
 

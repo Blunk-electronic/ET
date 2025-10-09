@@ -209,14 +209,11 @@ is
 				
 			when VERB_SET =>
 				case noun is
-					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE | NOUN_VARIANT =>
+					when NOUN_VALUE =>
+						et_canvas_schematic_units.set_value (snap_point);
+
+					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VARIANT =>
 						null;
-						-- CS
-						-- if not clarification_pending then
-						-- 	set_property (event.point);
-						-- else
-						-- 	set_property_selected_unit;
-						-- end if;
 						
 					when others => null;
 				end case;

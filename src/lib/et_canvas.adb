@@ -3711,7 +3711,56 @@ package body et_canvas is
 
 
 
+
+
 	
+	
+
+-- DEVICE VALUE WINDOW:
+	
+	
+	procedure build_value_window is 
+		box : gtk_vbox;
+		label_old, label_new : gtk.label.gtk_label;
+
+		label_status	: gtk.label.gtk_label;
+	begin
+		gtk_new (value_window);
+
+		value_window.set_title ("Set Device Value");
+
+		value_window.set_default_size (300, 100);
+		value_window.set_resizable (false);
+
+		-- Connect the "on_key_press_event" signal:
+		value_window.on_key_press_event (access_cb_value_window_key_pressed);
+		
+		
+		gtk_new_vbox (box);
+		add (value_window, box);
+
+		-- show the old name:
+		gtk_new (label_old, "old:");
+		pack_start (box, label_old);
+		
+		gtk_new (value_old);
+		pack_start (box, value_old);
+
+
+		-- show the new name (will be entered by the operator later):
+		gtk_new (label_new, "new:");
+		pack_start (box, label_new);
+
+		gtk_new (value_new);
+		pack_start (box, value_new);
+
+		-- gtk_new (label_status);
+		-- pack_start (box, label_status);
+
+		
+	end build_value_window;
+
+
 	
 
 
@@ -4768,6 +4817,54 @@ package body et_canvas is
 		return event_handled;
 	end cb_rename_window_key_pressed;
 	
+
+
+
+
+-- DEVICE VALUE WINDOW:
+	
+	function cb_value_window_key_pressed (
+		window	: access gtk_widget_record'class;
+		event	: gdk_event_key)
+		return boolean
+	is
+		debug : boolean := false;
+		
+		event_handled : boolean;
+		key : gdk_key_type := event.keyval;		
+	begin
+		if debug then
+			put_line ("cb_value_window_key_pressed");
+		end if;
+
+		
+		case key is
+			when GDK_ESCAPE =>
+				if debug then
+					put_line ("ESC");
+				end if;
+
+				-- Emit the "destroy" signal.
+				-- The connection to a callback procedure
+				-- is established in the package where
+				-- the canvas is instantiated. For example see procedure
+				-- show_rename_window in et_cnavas_schematic:
+				value_window.destroy;
+				
+				event_handled := true;
+
+				
+			when others =>
+				if debug then
+					put_line ("other key");
+				end if;
+				
+				event_handled := false;
+		end case;
+		
+		return event_handled;
+	end cb_value_window_key_pressed;
+
 	
 	
 end et_canvas;

@@ -257,7 +257,7 @@ package body et_canvas_schematic_units is
 
 		
 	begin
-		log (text => "locate objects", level => log_threshold);
+		log (text => "find_objects", level => log_threshold);
 		log_indentation_up;
 
 		-- Propose objects according to current verb and noun:
@@ -289,6 +289,24 @@ package body et_canvas_schematic_units is
 					when others =>
 						null; -- CS
 				end case;
+
+
+				
+			when VERB_SET =>
+				case noun is
+					when NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE =>
+
+						-- Propose units in the vicinity of the given point:
+						propose_units (
+							module_cursor	=> active_module,
+							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+							count			=> count_total,
+							log_threshold	=> log_threshold + 1);
+
+					when others =>
+						null; -- CS
+				end case;
+				
 						
 			when others =>
 				null; -- CS 
@@ -612,6 +630,169 @@ package body et_canvas_schematic_units is
 	
 
 
+	procedure cb_new_value_entered (
+		self : access gtk.gentry.gtk_entry_record'class) 
+	is 
+		device_value_new : pac_device_value.bounded_string;
+
+		
+		-- Sets the value of the selected object:
+		procedure finalize is
+			use et_modes.schematic;
+			use et_undo_redo;
+			use et_commit;
+
+			object : type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
+		begin
+			log (text => "finalize set value", level => log_threshold);
+			log_indentation_up;
+
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+
+				reset_proposed_objects (active_module, log_threshold + 1);
+				
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+
+				-- Do the set value operation:
+				set_value (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					new_value		=> device_value_new,
+					log_threshold	=> log_threshold + 1);
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+
+				-- If a unit has been deleted, then the board
+				-- must be redrawn:
+				if object.cat = CAT_UNIT then
+					redraw_board;
+				end if;
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+
+			-- CS clear status bar ?
+			-- set_status (status_delete);
+
+			reset_editing_process; -- prepare for a new editing process
+		end finalize;
+
+		
+	begin
+		device_value_new := to_value (self.get_text); -- 100R
+
+		-- CS: Precheck device valuee ?
+		-- put_line ("new value entered: " & to_string (device_value_new));
+		
+		finalize;
+
+		-- If everything was fine, close the window and clean up.
+		-- If one of the operations above has raised an exception then
+		-- nothing will be cleaned up and the window will remain until the
+		-- operator enters a correct property.
+		value_window.destroy;
+
+		-- CS
+		-- Whatever goes wrong, output the message in the status bar
+		-- of the properties window:
+		-- exception when event: others =>
+		-- 	set_status_properties (exception_message (event));
+			
+	end cb_new_value_entered;
+
+
+
+	
+
+
+
+	procedure show_value_window is
+
+		object : constant type_object := get_first_object (
+				active_module, SELECTED, log_threshold + 1);
+
+		use pac_devices_sch;
+		device_name : type_device_name; -- IC1
+		value : pac_device_value.bounded_string;
+		
+	begin
+		build_value_window; -- CS pass device_name
+
+		-- Connect the "destroy" signal.
+		value_window.on_destroy (cb_value_window_destroy'access);
+
+
+		case object.cat is
+			when CAT_UNIT =>
+				--device_name := get_device_name (object.unit.device_cursor);
+				value := get_value (object.unit.device_cursor);
+  
+			when others =>
+				raise constraint_error; -- CS
+		end case;
+  
+		-- Set the text in the window:
+		value_old.set_text (to_string (value));
+  
+		-- Connect the "on_activate" signal (emitted when ENTER pressed)
+		-- of the entry field for the new name:
+		value_new.on_activate (cb_new_value_entered'access);
+		-- gtk_entry (value_window.box.get_child).on_activate (rename_new_name_entered'access);
+		
+		value_new.grab_focus;
+		
+		value_window.show_all;
+
+		value_window_open := true;
+	end show_value_window;
+
+
+	
+
+
+
+	
+
+	procedure set_value (
+		point	: in type_vector_model)
+	is begin
+		if not value_window_open then
+			
+			if not clarification_pending then
+				-- Locate all objects in the vicinity of the given point:
+				find_objects (point);
+				-- NOTE: If many objects have been found, then
+				-- clarification is now pending.
+
+				-- If find_objects has found only one object,				
+				-- then delete the object immediateley.
+				if edit_process_running then
+					show_value_window;
+				end if;
+			else
+				-- Here the clarification procedure ends.
+				-- An object has been selected via procedure clarify_object.
+				show_value_window;
+			end if;
+
+		end if;
+	end set_value;
+
+
+
+	
+
+	
+
+
 	procedure cb_rename_new_name_entered (
 		self : access gtk.gentry.gtk_entry_record'class) 
 	is 
@@ -709,7 +890,7 @@ package body et_canvas_schematic_units is
 
 		case object.cat is
 			when CAT_UNIT =>
-				device_name := key (object.unit.device_cursor);
+				device_name := get_device_name (object.unit.device_cursor);
 
 			when others =>
 				raise constraint_error; -- CS

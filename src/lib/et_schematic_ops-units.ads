@@ -625,13 +625,19 @@ package et_schematic_ops.units is
 	function get_device_name (
 		object	: in type_object_unit)
 		return string;
+
+
+	function get_device_name (
+		object	: in type_object_unit)
+		return type_device_name;
+
 	
-							   
 	-- Returns the full name of the given object
 	-- as string in the form like "IC12.B":
 	function get_object_name (
 		object	: in type_object_unit)
 		return string;
+
 
 	
 
@@ -932,6 +938,14 @@ package et_schematic_ops.units is
 		object			: in type_object;
 		destination		: in type_position;		
 		log_threshold	: in type_log_level);
+
+
+	procedure set_value (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		new_value		: in pac_device_value.bounded_string;
+		log_threshold	: in type_log_level);
+
 
 	
 end et_schematic_ops.units;
