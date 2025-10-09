@@ -138,6 +138,17 @@ package body et_undo_redo is
 						when others => null;
 					end case;
 
+
+				when NOUN_PLACEHOLDER =>
+					case verb is
+						when VERB_MOVE | VERB_ROTATE =>
+							
+							commit_devices;
+
+						when others => null;
+					end case;
+
+					
 				when others => null;
 			end case;
 		end query_module;
