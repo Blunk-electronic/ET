@@ -60,92 +60,83 @@ package body et_schematic_ops.units is
 	
 
 
-	-- Sets the value of a device.
+
 	procedure set_value (
-		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
 		value				: in pac_device_value.bounded_string; -- 470R
 		log_threshold		: in type_log_level) 
 	is		
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
+		device_cursor_sch : pac_devices_sch.cursor;
+		
 
-		procedure query_devices (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			use pac_devices_sch;
 
-			device_cursor : pac_devices_sch.cursor;
 
 			procedure set_value (
 				device_name	: in type_device_name;
 				device		: in out type_device_sch) 
 			is begin
+				-- CS log value old and value new
 				device.value := value;
 			end;
 
 			
-		begin -- query_devices
-			-- locate the device
-			device_cursor := find (module.devices, device_name); -- R1
+		begin
+			-- Only real devices have a value. 
+			-- For virtual devices is issue a warning:
+			if is_real (device_cursor_sch) then
 
-			if device_cursor /= pac_devices_sch.no_element then -- the device should be there
+				-- Check value regarding the device category:
+				if et_conventions.value_valid (value, get_prefix (device_name)) then 
+				
+					update_element (
+						container	=> module.devices,
+						position	=> device_cursor_sch,
+						process		=> set_value'access);
 
-				-- Only real devices have a value.
-				if is_real (device_cursor) then
-
-					-- Check value regarding the device category:
-					if et_conventions.value_valid (value, get_prefix (device_name)) then 
-					
-						update_element (
-							container	=> module.devices,
-							position	=> device_cursor,
-							process		=> set_value'access);
-
-					else
-						--log (ERROR, "value " & enclose_in_quotes (to_string (value)) 
-						--& " invalid for this kind of device !", console => true);
-
-						log_indentation_down;
+				else
+					log (WARNING, "Value " & enclose_in_quotes (to_string (value)) 
+						 & " invalid for this kind of device !");
+					-- CS: ERROR instead ?, exception ?
+					-- CS more details ?
 						
-						raise semantic_error_1 with 
-							"ERROR: Value " & enclose_in_quotes (to_string (value)) 
-							& " invalid for this kind of device !";
-							-- CS more details ?
-							
-					end if;
-
-				else -- virtual device
-					log_indentation_down;
-						
-					raise semantic_error_1 with -- CS semantic_error_2 for warning ?
-						"ERROR: Device " & to_string (device_name) 
-						& " is virtual and has no value !";
 				end if;
 
-			else
-				log_indentation_down;
-				device_not_found (device_name);
+			else -- virtual device
+		
+				log (WARNING, " Device " & to_string (device_name) 
+					& " is virtual and has no value !");
 			end if;
-		end query_devices;
+		end query_module;
 
 		
-	begin -- set_value
-		log (text => "module " 
-			 & enclose_in_quotes (to_string (module_name)) 
-			 & " setting " & to_string (device_name) 
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " set " & to_string (device_name) 
 			 & " value to " & to_string (value),
 			level => log_threshold);
 
 		log_indentation_up;
 		
-		-- locate module
-		module_cursor := locate_module (module_name);
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor_sch := locate_device (module_cursor, device_name);
+			
+		if has_element (device_cursor_sch) then -- device exists in schematic
+			
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> query_module'access);
 
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_devices'access);
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+		end if;
 
 		log_indentation_down;
 	end set_value;

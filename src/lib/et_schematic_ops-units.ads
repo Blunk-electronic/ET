@@ -49,7 +49,7 @@ package et_schematic_ops.units is
 
 	-- Sets the value of a device.
 	procedure set_value (
-		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
 		value				: in pac_device_value.bounded_string; -- 470R
 		log_threshold		: in type_log_level);

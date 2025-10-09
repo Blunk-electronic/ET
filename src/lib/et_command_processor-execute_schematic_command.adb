@@ -549,9 +549,8 @@ is
 					value := to_value_with_check (get_field (6));
 
 					-- set the value
-					set_value
-						(
-						module_name 	=> module,
+					set_value (
+						module_cursor 	=> active_module,
 						device_name		=> to_device_name (get_field (5)), -- R1
 						value			=> value, -- 470R
 						log_threshold	=> log_threshold + 1);
