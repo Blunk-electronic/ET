@@ -373,23 +373,6 @@ package et_canvas_board_2 is
 	-- current active module:
 	procedure update_board_editor;
 
-	
-
-
--- 	-- Saves the current module by calling 
--- 	-- et_canvas_schematic.save_module:
--- 	overriding procedure save_drawing (
--- 		self : not null access type_view);
--- 
--- 
--- 	
--- -- UNDO / REDO:
--- 	
--- 	overriding procedure undo (
--- 		self : not null access type_view);
--- 
--- 	overriding procedure redo (
--- 		self : not null access type_view);
 
 	
 end et_canvas_board_2;
