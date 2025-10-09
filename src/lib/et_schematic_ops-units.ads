@@ -54,16 +54,17 @@ package et_schematic_ops.units is
 		value				: in pac_device_value.bounded_string; -- 470R
 		log_threshold		: in type_log_level);
 
-	-- CS procedure set_value that takes a module cursor and a device cursor.
+	-- CS procedure set_value that takes a device cursor.
+
 	
 	-- Sets the purpose of a device.
 	procedure set_purpose (
-		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
 		purpose				: in pac_device_purpose.bounded_string; -- brightness_control
 		log_threshold		: in type_log_level);
 
-	-- CS procedure set_purpose that takes a module cursor and a device cursor.
+	-- CS procedure set_purpose that takes a device cursor.
 
 	
 	-- Sets the partcode of a device.
@@ -73,7 +74,7 @@ package et_schematic_ops.units is
 		partcode			: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		log_threshold		: in type_log_level);
 
-	-- CS procedure set_partcode that takes a module cursor and a device cursor.
+	-- CS procedure set_partcode that takes a device cursor.
 
 
 

@@ -576,13 +576,11 @@ is
 					purpose := to_purpose (get_field (6));
 					
 					-- set the purpose
-					set_purpose
-						(
-						module_name 	=> module,
+					set_purpose (
+						module_cursor 	=> active_module,
 						device_name		=> to_device_name (get_field (5)), -- R1
 						purpose			=> purpose, -- brightness_control
-						log_threshold	=> log_threshold + 1
-						);
+						log_threshold	=> log_threshold + 1);
 				end;
 
 			when 7 .. type_field_count'last => too_long; 
