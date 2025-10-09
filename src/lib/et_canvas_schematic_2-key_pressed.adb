@@ -589,15 +589,15 @@ is
 	procedure set is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
-			when GDK_LC_p =>
+			when key_noun_partcode =>
 				noun := NOUN_PARTCODE;
 				set_status (et_canvas_schematic_units.status_set_partcode);
 
-			when GDK_LC_u =>
+			when key_noun_purpose =>
 				noun := NOUN_PURPOSE;
 				set_status (et_canvas_schematic_units.status_set_purpose);
 			
-			when GDK_LC_v =>
+			when key_noun_value =>
 				noun := NOUN_VALUE;					
 				set_status (et_canvas_schematic_units.status_set_value);
 
