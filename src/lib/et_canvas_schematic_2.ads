@@ -427,46 +427,6 @@ package et_canvas_schematic_2 is
 
 
 
-	
-	-- CS: This stuff should be removed and
-	-- the properties bar (box_v4) used instead:
-	
-	type type_properties_window is record
-		window	: gtk.window.gtk_window;
-
-		-- This flag indicates that the properties
-		-- window is open. The purpose of this flag is
-		-- to prevent the window from opening multiple
-		-- times:
-		open	: boolean := false;
-	end record;
-	
-	window_properties : type_properties_window;
-	
-	-- Returns the status of the "open" flag.
-	-- True if the properties window is open.
-	-- False if the window is not open.
-	function window_properties_is_open return boolean;
-
-	
-	-- Here we display the property in its old state before changing it:
-	label_property_old	: gtk.label.gtk_label;
-	entry_property_old	: gtk_gentry;
-
-	label_property_new	: gtk.label.gtk_label;
-	
-	label_properties_status	: gtk.label.gtk_label;
-	
-	properties_confirmed : boolean := false;
-
-	
-	
-	procedure build_window_properties;
-
-	procedure set_status_properties (text : in string);
-	procedure set_property_before (text : in string);
-
-
 
 	-- This procedure is called when the signal "destroy" 
 	-- is emitted by the rename window.
