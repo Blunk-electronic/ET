@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -39,11 +39,11 @@
 
 with cairo;						use cairo;
 
-with et_canvas_schematic_2;
+with et_canvas_schematic;
 
 package et_colors.schematic is
 
-	use et_canvas_schematic_2.pac_canvas;
+	use et_canvas_schematic.pac_canvas;
 	-- The global context is now visible
 	-- for all procedures that set the color.
 	-- CS remove the useless argument "context".

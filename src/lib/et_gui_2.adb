@@ -39,7 +39,7 @@
 
 with et_modes;						use et_modes;
 
-with et_canvas_schematic_2;
+with et_canvas_schematic;
 with et_schematic_geometry;
 with et_schematic_coordinates;
 
@@ -63,8 +63,8 @@ package body et_gui_2 is
 		sheet			: in et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
 		log_threshold_in: in type_log_level) 
 	is
-		use et_canvas_schematic_2;
-		use et_canvas_schematic_2.pac_canvas;
+		use et_canvas_schematic;
+		use et_canvas_schematic.pac_canvas;
 		use et_schematic_geometry.pac_geometry_2;
 		use pac_generic_modules;
 		use et_sheets;
@@ -112,7 +112,7 @@ package body et_gui_2 is
 		pac_canvas.set_up_main_window;
 
 		-- Set up special things of the main window:
-		et_canvas_schematic_2.set_up_main_window;
+		et_canvas_schematic.set_up_main_window;
 
 		-- Set the title bar of the main window:
 		set_title_bar (
@@ -147,7 +147,7 @@ package body et_gui_2 is
 		pac_canvas.set_up_canvas;
 
 		-- Set up special things of the canvas:
-		et_canvas_schematic_2.set_up_canvas;
+		et_canvas_schematic.set_up_canvas;
 
 		
 		-- Activate the main window:
@@ -309,7 +309,7 @@ package body et_gui_2 is
 		init_board (project, module, log_threshold + 1);
 
 		-- Activate the schematic window:
-		et_canvas_schematic_2.pac_canvas.main_window.present;
+		et_canvas_schematic.pac_canvas.main_window.present;
 
 		-- CS
 		--et_canvas_schematic.pac_canvas.console.grab_focus;
@@ -319,13 +319,13 @@ package body et_gui_2 is
 		-- NOTE 1: The script execution must start AFTER BOTH schematic and board 
 		--         have been completely displayed.
 		-- NOTE 2: The procedure execute_script_console is available 
-		--         in et_canvas_schematic_2 and et_canvas_board_2.
+		--         in et_canvas_schematic and et_canvas_board_2.
 		--         Both launch the script in the same way. But in case there is no board
 		--         available, it is more reasonable to launch the script from the schematic.
 		if pac_script_name.length (script) > 0 then
   
 			--et_gui.schematic_callbacks.execute_script (script);
-			et_canvas_schematic_2.execute_script_console (script);
+			et_canvas_schematic.execute_script_console (script);
 			-- 1. Composes a command that executes the script
 			--    like "schematic motor_driver execute script my_script.scr"
 			--    as if it was entered by the operator as an ordinary command.
@@ -340,10 +340,10 @@ package body et_gui_2 is
 		end if;
   
 
-		et_canvas_schematic_2.pac_canvas.update_grid_display;
+		et_canvas_schematic.pac_canvas.update_grid_display;
 		et_canvas_board_2.pac_canvas.update_grid_display;
 
-		et_canvas_schematic_2.update_mode_display;
+		et_canvas_schematic.update_mode_display;
 		et_canvas_board_2.update_mode_display;
 		
 		-- CS Init defaults of property bars in schematic.

@@ -57,7 +57,7 @@ with et_modes.board;
 with et_modes.schematic;
 with et_module_names;				use et_module_names;
 
-with et_canvas_schematic_2;
+with et_canvas_schematic;
 with et_canvas_tool;
 with et_display.board;
 with et_colors.board;
@@ -321,11 +321,11 @@ package body et_canvas_board_2 is
 
 				-- Switch between modules:
 				when GDK_F11 =>
-					et_canvas_schematic_2.switch_module (et_canvas_schematic_2.PREVIOUS);
+					et_canvas_schematic.switch_module (et_canvas_schematic.PREVIOUS);
 					event_handled := true;
 					
 				when GDK_F12 =>
-					et_canvas_schematic_2.switch_module (et_canvas_schematic_2.NEXT);
+					et_canvas_schematic.switch_module (et_canvas_schematic.NEXT);
 					event_handled := true;
 
 
@@ -951,7 +951,7 @@ package body et_canvas_board_2 is
 
 				-- Save the module on ctrl-s or ctrl-S:
 				when GDK_LC_s | GDK_s =>
-					et_canvas_schematic_2.save_module;
+					et_canvas_schematic.save_module;
 
 					
 					
@@ -1128,7 +1128,7 @@ package body et_canvas_board_2 is
 
 	
 	procedure redraw_schematic is begin
-		et_canvas_schematic_2.pac_canvas.refresh;
+		et_canvas_schematic.pac_canvas.refresh;
 	end redraw_schematic;
 	
 

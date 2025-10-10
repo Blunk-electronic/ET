@@ -41,7 +41,7 @@
 with et_schematic_text;					use et_schematic_text;
 
 
-separate (et_canvas_schematic_2)
+separate (et_canvas_schematic)
 
 procedure draw_texts is
 

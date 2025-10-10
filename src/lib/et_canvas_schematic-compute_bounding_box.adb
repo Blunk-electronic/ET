@@ -58,7 +58,7 @@ with et_net_strands;
 with et_net_labels;
 
 
-separate (et_canvas_schematic_2)
+separate (et_canvas_schematic)
 
 
 procedure compute_bounding_box (

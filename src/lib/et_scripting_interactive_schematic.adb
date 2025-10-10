@@ -56,8 +56,8 @@ with et_command_processor;			use et_command_processor;
 with et_modes.schematic;			use et_modes.schematic;
 with et_schematic_ops;				use et_schematic_ops;
 with et_schematic_ops.units;		use et_schematic_ops.units;
-with et_canvas_schematic_2;			use et_canvas_schematic_2;
-use et_canvas_schematic_2.pac_canvas;
+with et_canvas_schematic;			use et_canvas_schematic;
+use et_canvas_schematic.pac_canvas;
 
 with et_canvas_schematic_units;		use et_canvas_schematic_units;
 

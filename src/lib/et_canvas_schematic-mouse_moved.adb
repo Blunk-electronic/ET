@@ -41,7 +41,7 @@
 with et_device_library;					use et_device_library;
 
 
-separate (et_canvas_schematic_2)
+separate (et_canvas_schematic)
 
 procedure mouse_moved (
 	point	: in type_vector_model) 

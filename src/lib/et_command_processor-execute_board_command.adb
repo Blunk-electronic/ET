@@ -101,7 +101,7 @@ with et_pcb;
 with et_pcb_stack;
 with et_keywords;					use et_keywords;
 
-with et_canvas_schematic_2;
+with et_canvas_schematic;
 with et_canvas_board_2;
 
 with et_canvas_board_preliminary_object;
@@ -3409,14 +3409,14 @@ is
 		
 		-- Sets the active module and first sheet.
 		procedure module_and_first_sheet is 
-			use et_canvas_schematic_2;
+			use et_canvas_schematic;
 			use et_schematic_coordinates;
 		begin
 			module := to_module_name (get_field (5));
 			set_module (module);
 			active_sheet := sheet;
 			
-			et_canvas_schematic_2.update_schematic_editor;
+			et_canvas_schematic.update_schematic_editor;
 			et_canvas_board_2.update_board_editor;
 		end module_and_first_sheet;
 
@@ -3424,7 +3424,7 @@ is
 
 		-- Sets the active module and sheet.
 		procedure module_and_random_sheet is 
-			use et_canvas_schematic_2;
+			use et_canvas_schematic;
 			use et_schematic_coordinates;
 		begin
 			module := to_module_name (get_field (5));
@@ -3436,7 +3436,7 @@ is
 			sheet := to_sheet (get_field (6));
 			active_sheet := sheet;
 
-			et_canvas_schematic_2.update_schematic_editor;
+			et_canvas_schematic.update_schematic_editor;
 			et_canvas_board_2.update_board_editor;
 		end module_and_random_sheet;
 		

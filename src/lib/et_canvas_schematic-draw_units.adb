@@ -72,7 +72,7 @@ with et_display.schematic;				use et_display.schematic;
 with et_canvas_schematic_preliminary_object; 	use et_canvas_schematic_preliminary_object;
 
 
-separate (et_canvas_schematic_2)
+separate (et_canvas_schematic)
 
 procedure draw_units is
 	

@@ -45,7 +45,6 @@ with gtk.window;
 with gtk.box;
 with gtk.label;
 
-with et_canvas_schematic_2;			use et_canvas_schematic_2;
 with et_module_names;				use et_module_names;
 with et_modes.schematic;			use et_modes.schematic;
 with et_netlists;
@@ -61,7 +60,7 @@ with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary
 package body et_canvas_schematic_nets is
 
 	use et_schematic_ops;
-	use et_canvas_schematic_2.pac_canvas;
+	use et_canvas_schematic.pac_canvas;
 
 	
 

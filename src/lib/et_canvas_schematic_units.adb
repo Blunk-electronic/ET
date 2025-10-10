@@ -81,7 +81,7 @@ with et_meta;
 with et_module_names;				use et_module_names;
 with et_modes.schematic;			use et_modes.schematic;
 
-with et_canvas_schematic_2;			use et_canvas_schematic_2;
+with et_canvas_schematic;			use et_canvas_schematic;
 
 with et_net_strands;
 with et_schematic_ops.nets;
@@ -97,7 +97,7 @@ with et_canvas_schematic_preliminary_object; 	use et_canvas_schematic_preliminar
 
 package body et_canvas_schematic_units is
 
-	use et_canvas_schematic_2.pac_canvas;
+	use et_canvas_schematic.pac_canvas;
 
 
 

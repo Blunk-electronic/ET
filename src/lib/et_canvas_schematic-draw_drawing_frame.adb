@@ -45,7 +45,7 @@ with et_drawing_frame;
 with et_drawing_frame.schematic;
 
 
-separate (et_canvas_schematic_2)
+separate (et_canvas_schematic)
 
 procedure draw_drawing_frame is
 

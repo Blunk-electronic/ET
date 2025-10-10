@@ -82,7 +82,7 @@ with et_device_value;					use et_device_value;
 with et_package_variant;
 with et_canvas.cmd;
 
-with et_canvas_schematic_2;
+with et_canvas_schematic;
 with et_canvas_board_2;
 
 with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
@@ -111,12 +111,12 @@ is
 
 	use pac_text_schematic;
 	use et_device_name;
-	use et_canvas_schematic_2;
-	use et_canvas_schematic_2.pac_canvas;
+	use et_canvas_schematic;
+	use et_canvas_schematic.pac_canvas;
 	use et_display.schematic;
 	use et_modes.schematic;
 
-	package pac_canvas_cmd is new et_canvas_schematic_2.pac_canvas.cmd;
+	package pac_canvas_cmd is new et_canvas_schematic.pac_canvas.cmd;
 	use pac_canvas_cmd;
 
 	
@@ -651,7 +651,7 @@ is
 		use pac_unit_name;
 		use et_units;
 		use et_devices_electrical;
-		use et_canvas_schematic_2;
+		use et_canvas_schematic;
 
 		
 		function locate (unit : in pac_unit_name.bounded_string) 

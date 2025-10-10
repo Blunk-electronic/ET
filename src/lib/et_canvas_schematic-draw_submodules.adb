@@ -50,7 +50,7 @@ with et_display.schematic;
 with et_board_geometry;
 
 
-separate (et_canvas_schematic_2)
+separate (et_canvas_schematic)
 
 
 procedure draw_submodules is

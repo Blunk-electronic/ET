@@ -44,7 +44,7 @@
 -- are specified in their related package specifications.
 
 
-with et_canvas_schematic_2;				use et_canvas_schematic_2;
+with et_canvas_schematic;				use et_canvas_schematic;
 -- with et_coordinates_2;					use et_coordinates_2;
 -- use et_coordinates_2.pac_geometry_2;
 

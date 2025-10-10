@@ -87,7 +87,7 @@ with et_cmd_sts;						use et_cmd_sts;
 with et_script_processor;
 
 
-package body et_canvas_schematic_2 is
+package body et_canvas_schematic is
 
 
 	procedure set_title_bar (
@@ -1241,7 +1241,7 @@ package body et_canvas_schematic_2 is
 
 	
 	
-end et_canvas_schematic_2;
+end et_canvas_schematic;
 
 -- Soli Deo Gloria
 

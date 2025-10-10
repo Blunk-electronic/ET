@@ -40,7 +40,7 @@ with et_device_placeholders;			use et_device_placeholders;
 with et_schematic_verb_noun_keys;		use et_schematic_verb_noun_keys;
 
 
-separate (et_canvas_schematic_2)
+separate (et_canvas_schematic)
 
 procedure key_pressed (
 	key			: in gdk_key_type;

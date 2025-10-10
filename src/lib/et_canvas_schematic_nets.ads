@@ -49,7 +49,7 @@ with gdk.types.keysyms;				use gdk.types.keysyms;
 with gtk.widget;					use gtk.widget;
 with gtk.gentry;
 
-with et_canvas_schematic_2;
+with et_canvas_schematic;			use et_canvas_schematic;
 with et_net_names;					use et_net_names;
 with et_canvas_messages;			use et_canvas_messages;
 with et_canvas_tool;				use et_canvas_tool;
@@ -72,7 +72,7 @@ with et_logging;					use et_logging;
 
 package et_canvas_schematic_nets is
 
-	use et_canvas_schematic_2.pac_canvas;
+	use et_canvas_schematic.pac_canvas;
 	
 	use pac_generic_modules;
 	

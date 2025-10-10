@@ -96,7 +96,7 @@ with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 
 
-package et_canvas_schematic_2 is
+package et_canvas_schematic is
 	
 	use pac_generic_modules;
 
@@ -443,7 +443,7 @@ package et_canvas_schematic_2 is
 		window : access gtk_widget_record'class);
 
 	
-end et_canvas_schematic_2;
+end et_canvas_schematic;
 
 -- Soli Deo Gloria
 

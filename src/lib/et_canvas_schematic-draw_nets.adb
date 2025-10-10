@@ -57,7 +57,7 @@ with et_net_names;						use et_net_names;
 with et_schematic_ops.nets;
 
 
-separate (et_canvas_schematic_2)
+separate (et_canvas_schematic)
 
 procedure draw_nets is
 	use et_canvas_schematic_nets;
