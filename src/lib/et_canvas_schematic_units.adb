@@ -689,7 +689,7 @@ package body et_canvas_schematic_units is
 	begin
 		device_value_new := to_value (self.get_text); -- 100R
 
-		-- CS: Precheck device valuee ?
+		-- CS: Precheck device value ?
 		-- put_line ("new value entered: " & to_string (device_value_new));
 		
 		finalize;

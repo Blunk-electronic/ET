@@ -526,6 +526,7 @@ package body et_canvas_schematic_2 is
 			reset_selections; -- CS
 
 			rename_window_open := false;
+			value_window_open := false;
 		end level_1;
 	
 
