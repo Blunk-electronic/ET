@@ -40,7 +40,7 @@
 
 
 with et_generic_module;				use et_generic_module;
-with et_canvas_board_2;
+with et_canvas_board;
 with et_board_ops.devices;			use et_board_ops.devices;
 
 with et_devices_electrical;			use et_devices_electrical;
@@ -55,7 +55,7 @@ with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 
 package body et_canvas_board_devices is
 
-	use et_canvas_board_2.pac_canvas;
+	use et_canvas_board.pac_canvas;
 	use pac_generic_modules;
 	use pac_devices_sch;
 	use pac_devices_non_electric;

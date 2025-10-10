@@ -43,7 +43,7 @@ with et_pcb_contour;				use et_pcb_contour;
 with et_colors.board;				use et_colors.board;
 
 
-separate (et_canvas_board_2)
+separate (et_canvas_board)
 
 procedure draw_outline is
 	

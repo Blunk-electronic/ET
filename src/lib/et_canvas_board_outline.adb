@@ -59,7 +59,6 @@ with gtk.gentry;						use gtk.gentry;
 with gtk.container;						use gtk.container;
 
 with et_generic_module;					use et_generic_module;
-with et_canvas_board_2;
 
 with et_board_ops;						use et_board_ops;
 with et_board_ops.board_contour;		use et_board_ops.board_contour;

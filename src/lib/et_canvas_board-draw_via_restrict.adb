@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           CANVAS FOR BOARD                               --
+--                      BOARD DRAW VIA RESTRICT                             --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -21,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -37,124 +36,105 @@
 --   history of changes:
 --
 
+with ada.text_io;					use ada.text_io;
+
+with et_primitive_objects;			use et_primitive_objects;
+with et_display.board;				use et_display.board;
+with et_colors;						use et_colors;
+-- with et_conductor_text.boards;	use et_conductor_text.boards;
+with et_via_restrict.boards;		use et_via_restrict.boards;
+with et_pcb_stack;
 
 
-separate (et_canvas_board_2)
 
-procedure mouse_moved (
-	point	: in type_vector_model) 
-is 
-	use et_modes.board;
-
-begin
-	case verb is
-		when VERB_DRAW =>
-			case noun is
-				when NOUN_LINE =>
-					if edit_process_running then
-						redraw_board;
-					end if;
-
-				when NOUN_OUTLINE =>
-					if edit_process_running then
-						redraw_board;
-					end if;
-					
-				when NOUN_ZONE =>
-					if edit_process_running then
-						redraw_board;
-					end if;
-					
-				when others => null;
-			end case;
-			
-			
-		when VERB_MOVE =>
-			case noun is
-				when NOUN_ASSY =>
-					if edit_process_running then
-						redraw_board;
-					end if;
-
-				when NOUN_SILKSCREEN =>
-					if edit_process_running then
-						redraw_board;
-					end if;
-
-				when NOUN_STOPMASK | NOUN_STENCIL | NOUN_KEEPOUT =>
-					if edit_process_running then
-						redraw_board;
-					end if;
-					
-				when NOUN_CONDUCTORS =>
-					if edit_process_running then
-						redraw_board;
-					end if;
-
-				when NOUN_TRACK =>
-					if edit_process_running then
-						redraw_board;
-					end if;
-					
-				when NOUN_FREETRACK =>
-					if edit_process_running then
-						redraw_board;
-					end if;
-					
-				when NOUN_DEVICE =>
-					if edit_process_running then
-						redraw_board;
-					end if;
-
-				-- when NOUN_NON_ELECTRICAL_DEVICE =>
-				-- 	if edit_process_running then
-				-- 		redraw_board;
-				-- 	end if;
-
-				when NOUN_OUTLINE =>
-					if edit_process_running then
-						redraw_board;
-					end if;
-					
-				when NOUN_TEXT =>
-					if edit_process_running then
-						redraw_board;
-					end if;
-					
-				when NOUN_VIA =>
-					if edit_process_running then
-						redraw_board;
-					end if;
-					
-				when others => null;
-			end case;
-			
-
-		when VERB_PLACE =>
-			case noun is
-				when NOUN_TEXT =>
-					redraw_board;
-
-				when NOUN_VIA =>
-					redraw_board;
-					
-				when others => null;
-			end case;
+separate (et_canvas_board)
 
 
-		when VERB_ROUTE =>
-			case noun is
-				when NOUN_NET =>
-					redraw_board;
+procedure draw_via_restrict is
 
-				when others => null;
-			end case;
-			
-			
-		when others => null;
-	end case;
+	use pac_via_restrict_contours;
+	use pac_via_restrict_cutouts;
+
+
+	-- CS must be overwritten according to select status:
+	brightness : type_brightness := NORMAL;
+
+
 	
-end mouse_moved;
+	procedure query_zone (c : in pac_via_restrict_contours.cursor) is
+		-- CS use rename ?
+		use pac_draw_contours;
+	begin
+		-- Draw the polygon if restrict layer is enabled:
+		if via_restrict_layer_enabled (element (c).layers) then
+			
+			draw_contour (
+				contour	=> element (c),
+				filled	=> YES,
+				width	=> zero);
+
+		end if;
+	end query_zone;
+
+	
+	procedure query_cutout (c : in pac_via_restrict_cutouts.cursor) is 
+		-- CS use rename
+		use pac_draw_contours;
+		use et_colors.board;
+	begin
+		-- Draw the zone if restrict layer is enabled:
+		if via_restrict_layer_enabled (element (c).layers) then
+
+			set_color_background;
+			
+			draw_contour (
+				contour	=> element (c),
+				filled	=> YES,
+				width	=> zero);
+
+		end if;
+	end query_cutout;
+
+	
+	procedure query_items (
+		module_name	: in pac_module_name.bounded_string;
+		module		: in type_generic_module) 
+	is
+		use et_colors.board;
+	begin
+		set_color_via_restrict (brightness);
+		
+		iterate (module.board.via_restrict.contours, query_zone'access);
+		iterate (module.board.via_restrict.cutouts, query_cutout'access);
+	end query_items;
+
+
+	
+
+	use et_pcb_stack;
+	
+	-- The top conductor layer 1 is always there:
+	top_layer		: constant type_signal_layer := type_signal_layer'first;
+
+	-- The deepest conductor layer towards bottom is defined by the layer stack:
+	bottom_layer	: constant type_signal_layer := 
+		et_board_ops.get_deepest_conductor_layer (active_module);
+	
+
+	
+begin -- draw_via_restrict
+-- 	put_line ("draw via restrict ...");
+	
+	pac_generic_modules.query_element (
+		position	=> active_module,
+		process		=> query_items'access);
+
+
+	-- Draw the zone begin drawn:
+	draw_live_zone (LAYER_CAT_VIA_RESTRICT);
+
+	
+end draw_via_restrict;
 
 
 -- Soli Deo Gloria

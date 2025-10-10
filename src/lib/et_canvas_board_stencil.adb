@@ -41,7 +41,7 @@
 with ada.text_io;						use ada.text_io;
 
 with et_generic_module;					use et_generic_module;
-with et_canvas_board_2;
+with et_canvas_board;
 with et_pcb_sides;						use et_pcb_sides;
 
 with et_stencil;						use et_stencil;
@@ -59,7 +59,7 @@ with et_pcb_placeholders;
 
 package body et_canvas_board_stencil is
 
-	use et_canvas_board_2.pac_canvas;
+	use et_canvas_board.pac_canvas;
 
 	use pac_stencil_lines;
 	use pac_stencil_arcs;

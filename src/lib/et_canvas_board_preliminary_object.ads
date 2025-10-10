@@ -44,7 +44,7 @@
 -- are specified in their related package specifications.
 
 
-with et_canvas_board_2;					use et_canvas_board_2;
+with et_canvas_board;					use et_canvas_board;
 with et_pcb_sides;						use et_pcb_sides;
 
 with et_board_layer_category;			use et_board_layer_category;

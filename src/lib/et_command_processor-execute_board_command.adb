@@ -102,7 +102,7 @@ with et_pcb_stack;
 with et_keywords;					use et_keywords;
 
 with et_canvas_schematic;
-with et_canvas_board_2;
+with et_canvas_board;
 
 with et_canvas_board_preliminary_object;
 
@@ -132,15 +132,15 @@ is
 	use pac_contours;
 
 	use et_pcb_stack;
-	use et_canvas_board_2;
-	use et_canvas_board_2.pac_canvas;
+	use et_canvas_board;
+	use et_canvas_board.pac_canvas;
 	use et_display.board;
 	use et_modes.board;
 
 	use et_device_name;
 	
 
-	package pac_canvas_cmd is new et_canvas_board_2.pac_canvas.cmd;
+	package pac_canvas_cmd is new et_canvas_board.pac_canvas.cmd;
 	use pac_canvas_cmd;
 
 
@@ -3417,7 +3417,7 @@ is
 			active_sheet := sheet;
 			
 			et_canvas_schematic.update_schematic_editor;
-			et_canvas_board_2.update_board_editor;
+			et_canvas_board.update_board_editor;
 		end module_and_first_sheet;
 
 
@@ -3437,7 +3437,7 @@ is
 			active_sheet := sheet;
 
 			et_canvas_schematic.update_schematic_editor;
-			et_canvas_board_2.update_board_editor;
+			et_canvas_board.update_board_editor;
 		end module_and_random_sheet;
 		
 		

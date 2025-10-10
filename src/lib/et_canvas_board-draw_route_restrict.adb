@@ -45,7 +45,7 @@ with et_route_restrict.boards;		use et_route_restrict.boards;
 with et_pcb_stack;
 
 
-separate (et_canvas_board_2)
+separate (et_canvas_board)
 
 
 procedure draw_route_restrict is

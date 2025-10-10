@@ -143,7 +143,7 @@ package body et_canvas_board_tracks is
 		-- display the affected conductor layer:
 		enable_conductor (object_signal_layer);
 		
-		et_canvas_board_2.redraw_board;		
+		et_canvas_board.redraw_board;		
 	end signal_layer_changed;
 
 	
@@ -159,7 +159,7 @@ package body et_canvas_board_tracks is
 		-- CS validate. output error in status bar
 		object_linewidth := width;
 
-		et_canvas_board_2.redraw_board;
+		et_canvas_board.redraw_board;
 	end apply_line_width;
 
 
@@ -170,7 +170,7 @@ package body et_canvas_board_tracks is
 		event		: gdk_event_key) 
 		return boolean 
 	is
-		use et_canvas_board_2;
+		use et_canvas_board;
 		
 		event_handled : boolean := false;
 		
@@ -257,7 +257,7 @@ package body et_canvas_board_tracks is
 	
 	procedure show_track_properties is
 
-		use et_canvas_board_2.pac_canvas;
+		use et_canvas_board.pac_canvas;
 		
 		use gtk.cell_renderer_text;
 		use gtk.cell_layout;
@@ -712,7 +712,7 @@ package body et_canvas_board_tracks is
 		--put_line ("make path"); --to_string (PT.snap_mode));
 		
 		-- Set the tool being used for this path so that procedure
-		-- draw_track (in et_canvas_board_2-draw_conductors)
+		-- draw_track (in et_canvas_board-draw_conductors)
 		-- knows where to get the end point from.
 		-- Procedure draw_track computes the bend point
 		-- once the edit process has started:
@@ -747,7 +747,7 @@ package body et_canvas_board_tracks is
 				else
 					-- The path is bended. The bend point has been computed
 					-- interactively while moving the mouse or the cursor.
-					-- See for example procedure draw_path in et_canvas_board_2-draw_assy_doc.
+					-- See for example procedure draw_path in et_canvas_board-draw_assy_doc.
 
 					-- insert first line of the path:
 					set_A (line, live_path.A);

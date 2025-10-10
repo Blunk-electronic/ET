@@ -72,7 +72,7 @@ with gtk.text_iter;
 with et_generic_module;				use et_generic_module;
 with et_schematic_ops.nets;
 with et_board_ops.vias;				use et_board_ops.vias;
-with et_canvas_board_2;
+with et_canvas_board;
 with et_canvas_board_tracks;
 
 with et_logging;					use et_logging;
@@ -94,7 +94,7 @@ with et_pcb_stack;					use et_pcb_stack;
 
 package body et_canvas_board_vias is
 
-	use et_canvas_board_2.pac_canvas;
+	use et_canvas_board.pac_canvas;
 	
 
 	
@@ -113,7 +113,7 @@ package body et_canvas_board_vias is
 		preliminary_via.category := to_via_category (glib.values.get_string (item_text));
 		--put_line ("cat " & to_string (text_place.category));
 
-		et_canvas_board_2.redraw_board;
+		et_canvas_board.redraw_board;
 		
 	end category_changed;
 
@@ -139,7 +139,7 @@ package body et_canvas_board_vias is
 		-- Auto-enable the affected conductor layer:
 		enable_conductor (preliminary_via.destination_blind);
 		
-		et_canvas_board_2.redraw_board;
+		et_canvas_board.redraw_board;
 	end destination_changed;
 
 
@@ -163,7 +163,7 @@ package body et_canvas_board_vias is
 
 		-- CS Auto-enable the affected conductor layer
 		
-		et_canvas_board_2.redraw_board;		
+		et_canvas_board.redraw_board;		
 	end upper_layer_changed;
 	
 
@@ -184,7 +184,7 @@ package body et_canvas_board_vias is
 
 		-- CS Auto-enable the affected conductor layer
 		
-		et_canvas_board_2.redraw_board;		
+		et_canvas_board.redraw_board;		
 	end lower_layer_changed;
 
 	
@@ -200,7 +200,7 @@ package body et_canvas_board_vias is
 		-- CS validate. output error in status bar
 		preliminary_via.drill.diameter := size;
 
-		et_canvas_board_2.redraw_board;
+		et_canvas_board.redraw_board;
 	end apply_drill_size;
 	
 
@@ -218,7 +218,7 @@ package body et_canvas_board_vias is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				et_canvas_board_2.reset;
+				et_canvas_board.reset;
 			
 			when GDK_TAB => 
 				--put_line ("size via tab " & text);
@@ -252,7 +252,7 @@ package body et_canvas_board_vias is
 		-- CS validate. output error in status bar
 		preliminary_via.restring_inner := width;
 
-		et_canvas_board_2.redraw_board;
+		et_canvas_board.redraw_board;
 	end apply_restring_inner;
 	
 
@@ -270,7 +270,7 @@ package body et_canvas_board_vias is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				et_canvas_board_2.reset;
+				et_canvas_board.reset;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -305,7 +305,7 @@ package body et_canvas_board_vias is
 		-- CS validate. output error in status bar
 		preliminary_via.restring_outer := width;
 
-		et_canvas_board_2.redraw_board;
+		et_canvas_board.redraw_board;
 	end apply_restring_outer;
 
 
@@ -325,7 +325,7 @@ package body et_canvas_board_vias is
 		
 		case key is
 			when GDK_ESCAPE =>
-				et_canvas_board_2.reset;
+				et_canvas_board.reset;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);

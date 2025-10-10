@@ -83,7 +83,7 @@ with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 
 
-package et_canvas_board_2 is
+package et_canvas_board is
 
 	use pac_generic_modules;
 
@@ -375,7 +375,7 @@ package et_canvas_board_2 is
 
 
 	
-end et_canvas_board_2;
+end et_canvas_board;
 
 -- Soli Deo Gloria
 

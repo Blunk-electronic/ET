@@ -41,7 +41,7 @@ with et_canvas_tool;						use et_canvas_tool;
 
 
 
-separate (et_canvas_board_2)
+separate (et_canvas_board)
 
 procedure button_pressed (
 	event : in type_mouse_event)

@@ -62,7 +62,7 @@ with et_modes;						--use et_modes;
 with et_modes.board;
 with et_modes.schematic;	
 
-with et_canvas_board_2;
+with et_canvas_board;
 with et_display.schematic;			--use et_display.schematic;
 with et_colors.schematic;
 
@@ -604,7 +604,7 @@ package body et_canvas_schematic is
 		set_status (status_text_module_saved);
 
 		-- Show a brief message in the board status bar:
-		et_canvas_board_2.pac_canvas.set_status (status_text_module_saved);
+		et_canvas_board.pac_canvas.set_status (status_text_module_saved);
 	end save_module;
 
 
@@ -890,7 +890,7 @@ package body et_canvas_schematic is
 
 	
 	procedure redraw_board is begin
-		et_canvas_board_2.pac_canvas.refresh;
+		et_canvas_board.pac_canvas.refresh;
 	end redraw_board;
 
 	
@@ -972,7 +972,7 @@ package body et_canvas_schematic is
 		
 		-- Switch module in schematic and board editor:
 		update_schematic_editor;
-		et_canvas_board_2.update_board_editor;
+		et_canvas_board.update_board_editor;
 		
 		redraw; -- schematic and board
 	end switch_module;

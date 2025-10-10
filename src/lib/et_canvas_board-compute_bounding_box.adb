@@ -83,7 +83,7 @@ with et_vias;
 
 with et_undo_redo;
 
-separate (et_canvas_board_2)
+separate (et_canvas_board)
 
 	
 procedure compute_bounding_box (

@@ -45,7 +45,7 @@ with et_modes.board;
 with et_canvas_tool;
 
 
-separate (et_canvas_board_2)
+separate (et_canvas_board)
 
 procedure draw_keepout (
 	face	: in type_face) 

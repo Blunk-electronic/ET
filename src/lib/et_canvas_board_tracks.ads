@@ -43,7 +43,7 @@ with gtk.list_store;					use gtk.list_store;
 with et_canvas;
 with et_canvas_tool;					use et_canvas_tool;
 with et_canvas_messages;				use et_canvas_messages;
-with et_canvas_board_2;
+with et_canvas_board;
 
 with et_primitive_objects;				use et_primitive_objects;
 with et_board_geometry;					use et_board_geometry;
@@ -67,7 +67,7 @@ package et_canvas_board_tracks is
 
 	use pac_geometry_2;
 
-	use et_canvas_board_2.pac_canvas;
+	use et_canvas_board.pac_canvas;
 	use pac_path_and_bend;
 
 	

@@ -43,7 +43,7 @@ with et_drawing_frame.board;
 with et_alignment;
 
 
-separate (et_canvas_board_2)
+separate (et_canvas_board)
 
 procedure draw_drawing_frame is
 

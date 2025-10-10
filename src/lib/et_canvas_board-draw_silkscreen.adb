@@ -45,7 +45,7 @@ with et_board_ops.text;				use et_board_ops.text;
 with et_pcb_placeholders;			use et_pcb_placeholders;
 
 
-separate (et_canvas_board_2)
+separate (et_canvas_board)
 
 
 procedure draw_silkscreen (

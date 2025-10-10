@@ -77,8 +77,8 @@ with gtk.text_iter;
 
 with et_generic_module;					use et_generic_module;
 with et_pcb;
-with et_canvas_board_2;
-use et_canvas_board_2.pac_canvas;
+with et_canvas_board;
+use et_canvas_board.pac_canvas;
 
 with et_board_ops;						use et_board_ops;
 with et_board_ops.assy_doc;
@@ -143,7 +143,7 @@ package body et_canvas_board_texts is
 		object_layer_category := to_layer_category (glib.values.get_string (item_text));
 		--put_line ("cat " & to_string (object_layer_category));
 
-		et_canvas_board_2.redraw_board;
+		et_canvas_board.redraw_board;
 		
 		-- CS display layer ?
 	end layer_category_changed;
@@ -184,7 +184,7 @@ package body et_canvas_board_texts is
 		end case;
 
 		
-		et_canvas_board_2.redraw_board;		
+		et_canvas_board.redraw_board;		
 	end face_changed;
 
 
@@ -213,7 +213,7 @@ package body et_canvas_board_texts is
 		-- Auto-enable the selected conductor layer:
 		enable_conductor (object_signal_layer);
 		
-		et_canvas_board_2.redraw_board;
+		et_canvas_board.redraw_board;
 	end signal_layer_changed;
 
 
@@ -229,7 +229,7 @@ package body et_canvas_board_texts is
 		-- CS validate. output error in status bar
 		preliminary_text.text.size := size;
 
-		et_canvas_board_2.redraw_board;
+		et_canvas_board.redraw_board;
 	end apply_size;
 
 
@@ -252,7 +252,7 @@ package body et_canvas_board_texts is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				et_canvas_board_2.reset;
+				et_canvas_board.reset;
 			
 			when GDK_TAB => 
 				--put_line ("size via tab " & text);
@@ -287,7 +287,7 @@ package body et_canvas_board_texts is
 		-- CS validate. output error in status bar
 		preliminary_text.text.line_width := width;
 
-		et_canvas_board_2.redraw_board;
+		et_canvas_board.redraw_board;
 	end apply_line_width;
 
 
@@ -309,7 +309,7 @@ package body et_canvas_board_texts is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				et_canvas_board_2.reset;
+				et_canvas_board.reset;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -345,7 +345,7 @@ package body et_canvas_board_texts is
 
 		set (preliminary_text.text.position, rotation);
 		--put_line (to_string (preliminary_text.text.position));
-		et_canvas_board_2.redraw_board;
+		et_canvas_board.redraw_board;
 	end apply_rotation;
 
 
@@ -368,7 +368,7 @@ package body et_canvas_board_texts is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				et_canvas_board_2.reset;
+				et_canvas_board.reset;
 				
 			when GDK_TAB => 
 				--put_line ("rotation via tab " & text);
@@ -423,7 +423,7 @@ package body et_canvas_board_texts is
 		use gtk.tree_model;
 		use gtk.text_view;
 
-		use et_canvas_board_2.pac_canvas;
+		use et_canvas_board.pac_canvas;
 		
 
 		box_layer_category, box_face, 

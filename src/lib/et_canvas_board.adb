@@ -97,7 +97,7 @@ with et_project_name;
 with et_ripup;
 
 
-package body et_canvas_board_2 is
+package body et_canvas_board is
 
 
 	procedure set_title_bar (
@@ -1364,7 +1364,7 @@ package body et_canvas_board_2 is
 
 
 	
-end et_canvas_board_2;
+end et_canvas_board;
 
 -- Soli Deo Gloria
 

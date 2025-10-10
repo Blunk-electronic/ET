@@ -101,7 +101,7 @@ with et_contour_to_polygon;			use et_contour_to_polygon;
 
 
 
-separate (et_canvas_board_2)
+separate (et_canvas_board)
 
 
 procedure draw_packages is

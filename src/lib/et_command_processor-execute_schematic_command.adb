@@ -83,7 +83,7 @@ with et_package_variant;
 with et_canvas.cmd;
 
 with et_canvas_schematic;
-with et_canvas_board_2;
+with et_canvas_board;
 
 with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
 
@@ -2085,7 +2085,7 @@ is
 			-- CS update_sheet_number_display;
 			
 			-- Update the board window title bar:
-			-- CS et_canvas_board_2.set_title_bar (active_module);
+			-- CS et_canvas_board.set_title_bar (active_module);
 		end do_it;
 
 		
@@ -2121,7 +2121,7 @@ is
 			active_sheet := sheet;
 			
 			update_schematic_editor;
-			et_canvas_board_2.update_board_editor;
+			et_canvas_board.update_board_editor;
 		end module_and_first_sheet;
 
 
@@ -2138,7 +2138,7 @@ is
 			active_sheet := sheet;
 
 			update_schematic_editor;
-			et_canvas_board_2.update_board_editor;
+			et_canvas_board.update_board_editor;
 		end module_and_random_sheet;
 		
 		
@@ -2194,7 +2194,7 @@ is
 				update_sheet_number_display;
 				
 				-- Update the board window title bar:
-				et_canvas_board_2.set_title_bar (active_module);
+				et_canvas_board.set_title_bar (active_module);
 			else
 				-- CS
 				null;
@@ -2232,7 +2232,7 @@ is
 				update_sheet_number_display;
 				
 				-- Update the board window title bar:
-				et_canvas_board_2.set_title_bar (active_module);
+				et_canvas_board.set_title_bar (active_module);
 			else
 				-- CS
 				null;

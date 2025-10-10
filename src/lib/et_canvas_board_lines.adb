@@ -66,7 +66,6 @@ with gtk.gentry;						use gtk.gentry;
 with gtk.container;						use gtk.container;
 
 with et_generic_module;					use et_generic_module;
-with et_canvas_board_2;
 
 with et_board_ops;						use et_board_ops;
 with et_board_ops.board_contour;
@@ -162,7 +161,7 @@ package body et_canvas_board_lines is
 			when others => null;
 		end case;
 		
-		et_canvas_board_2.redraw_board;
+		et_canvas_board.redraw_board;
 	end layer_category_changed;
 
 
@@ -202,7 +201,7 @@ package body et_canvas_board_lines is
 			when others => null;
 		end case;
 		
-		et_canvas_board_2.redraw_board;
+		et_canvas_board.redraw_board;
 	end face_changed;
 	
 
@@ -229,7 +228,7 @@ package body et_canvas_board_lines is
 		enable_conductor (object_signal_layer);
 		enable_via_restrict (object_signal_layer);
 		
-		et_canvas_board_2.redraw_board;		
+		et_canvas_board.redraw_board;		
 	end signal_layer_changed;
 
 	
@@ -246,7 +245,7 @@ package body et_canvas_board_lines is
 		-- CS validate. output error in status bar
 		object_linewidth := width;
 
-		et_canvas_board_2.redraw_board;
+		et_canvas_board.redraw_board;
 	end apply_line_width;
 
 
@@ -268,7 +267,7 @@ package body et_canvas_board_lines is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				et_canvas_board_2.reset;
+				et_canvas_board.reset;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -296,7 +295,7 @@ package body et_canvas_board_lines is
 
 	procedure show_line_properties is
 
-		use et_canvas_board_2.pac_canvas;
+		use et_canvas_board.pac_canvas;
 		
 		use gtk.gentry;
 		use gtk.cell_renderer_text;

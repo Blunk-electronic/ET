@@ -39,7 +39,7 @@
 -- 
 
 with et_generic_module;						use et_generic_module;
-with et_canvas_board_2;
+with et_canvas_board;
 with et_conductor_text.boards;
 with et_conductor_segment.boards;			use et_conductor_segment.boards;
 with et_board_ops;
@@ -58,7 +58,7 @@ with et_pcb_placeholders;					use et_pcb_placeholders;
 
 package body et_canvas_board_conductors is
 
-	use et_canvas_board_2.pac_canvas;
+	use et_canvas_board.pac_canvas;
 	
 	use pac_conductor_lines;
 	use pac_conductor_arcs;

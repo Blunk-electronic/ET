@@ -45,7 +45,7 @@ with et_board_verb_noun_keys;			use et_board_verb_noun_keys;
 with et_ratsnest;
 
 
-separate (et_canvas_board_2)
+separate (et_canvas_board)
 
 
 procedure key_pressed (

@@ -43,7 +43,7 @@ with et_canvas_schematic;
 with et_schematic_geometry;
 with et_schematic_coordinates;
 
-with et_canvas_board_2;
+with et_canvas_board;
 with et_board_geometry;
 
 with et_schematic_ops.grid;
@@ -188,8 +188,8 @@ package body et_gui_2 is
 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
 		log_threshold_in: in type_log_level) 
 	is
-		use et_canvas_board_2;
-		use et_canvas_board_2.pac_canvas;
+		use et_canvas_board;
+		use et_canvas_board.pac_canvas;
 		use et_board_geometry.pac_geometry_2;
 	begin
 		-- Set the log threshold. Everything that happens in the gui may be logged
@@ -210,7 +210,7 @@ package body et_gui_2 is
 		pac_canvas.set_up_main_window;
 
 		-- Set up special things of the main window:
-		et_canvas_board_2.set_up_main_window;
+		et_canvas_board.set_up_main_window;
 
 		-- Set the title bar of the main window:
 		set_title_bar (
@@ -240,7 +240,7 @@ package body et_gui_2 is
 		pac_canvas.set_up_canvas;
 
 		-- Set up special things of the canvas:
-		et_canvas_board_2.set_up_canvas;
+		et_canvas_board.set_up_canvas;
 
 		
 		-- Activate the main window:
@@ -319,7 +319,7 @@ package body et_gui_2 is
 		-- NOTE 1: The script execution must start AFTER BOTH schematic and board 
 		--         have been completely displayed.
 		-- NOTE 2: The procedure execute_script_console is available 
-		--         in et_canvas_schematic and et_canvas_board_2.
+		--         in et_canvas_schematic and et_canvas_board.
 		--         Both launch the script in the same way. But in case there is no board
 		--         available, it is more reasonable to launch the script from the schematic.
 		if pac_script_name.length (script) > 0 then
@@ -341,10 +341,10 @@ package body et_gui_2 is
   
 
 		et_canvas_schematic.pac_canvas.update_grid_display;
-		et_canvas_board_2.pac_canvas.update_grid_display;
+		et_canvas_board.pac_canvas.update_grid_display;
 
 		et_canvas_schematic.update_mode_display;
-		et_canvas_board_2.update_mode_display;
+		et_canvas_board.update_mode_display;
 		
 		-- CS Init defaults of property bars in schematic.
 
