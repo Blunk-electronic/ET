@@ -745,7 +745,6 @@ package body et_canvas_schematic_units is
 		-- Connect the "on_activate" signal (emitted when ENTER pressed)
 		-- of the entry field for the new name:
 		value_new.on_activate (cb_new_value_entered'access);
-		-- gtk_entry (value_window.box.get_child).on_activate (rename_new_name_entered'access);
 		
 		value_new.grab_focus;
 		
@@ -902,7 +901,6 @@ package body et_canvas_schematic_units is
 		-- Connect the "on_activate" signal (emitted when ENTER pressed)
 		-- of the entry field for the new name:
 		rename_new.on_activate (cb_rename_new_name_entered'access);
-		-- gtk_entry (rename_window.box.get_child).on_activate (rename_new_name_entered'access);
 		
 		rename_new.grab_focus;
 		

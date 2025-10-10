@@ -245,14 +245,6 @@ package et_canvas_schematic_2 is
 -- RESET:
 
 
-	-- Resets global variables required for selections, clarifications, ...
-	-- Verb and noun remain as they are
-	-- so that the mode is unchanged.
-	-- Should be called when exception rises in order to clean up.
-	-- Should also be called when the operator hits ESC.
-	procedure reset_selections;
-
-	
 	-- This procedure resets a lot of stuff and should
 	-- be called when the operator presses the ESCAPE key.
 	-- Here the commands to abort any pending 

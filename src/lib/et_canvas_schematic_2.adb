@@ -481,21 +481,6 @@ package body et_canvas_schematic_2 is
 
 -- RESET:
 	
-	procedure reset_selections is -- CS move this stuff to procedure level_1 below
-		use et_canvas_schematic_nets;
-		use et_canvas_schematic_units;
-	begin
-		-- Verb and noun remain as they are
-		-- so that the mode is unchanged.		
-		
-		reset_preliminary_segment; -- after move/drag/draw of a net segment
-
-		-- reset_activate_counter;
-
-		reset_zoom_area; -- abort zoom-to-area operation
-	end reset_selections;
-
-
 
 	
 	procedure reset is
@@ -523,7 +508,8 @@ package body et_canvas_schematic_2 is
 			
 			unit_fetch.valid := false;
 			
-			reset_selections; -- CS
+			reset_preliminary_segment; -- after move/drag/draw of a net segment
+			reset_zoom_area; -- abort zoom-to-area operation
 
 			rename_window_open := false;
 			value_window_open := false;
