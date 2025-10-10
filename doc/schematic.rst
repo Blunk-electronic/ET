@@ -229,11 +229,11 @@ Devices and Units
 
 
 
-#. Set package variant
+#. Set Package Variant
 
 	.. code-block::
 
-		set variant IC1 [S_0805]
+		set variant IC1 S_0805
 
 	|VNS| s a
 	
@@ -275,7 +275,7 @@ Devices and Units
 
 
 	
-Placeholders for Name, Value, Partcode and Purpose
+Placeholders for Name, Value and Purpose
 ++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Next to a unit usually the name (like R2), the value (like 100R)
@@ -292,6 +292,7 @@ requires it.
 	|VNS| m p
 		
 
+
 #. Move Value
 
 	.. code-block::
@@ -300,6 +301,7 @@ requires it.
 
 	|VNS| m p
 		
+
 
 #. Move Purpose
 
@@ -321,6 +323,7 @@ requires it.
 	|VNS| r p
 		
 
+
 #. Rotate Value
 
 	.. code-block::
@@ -329,6 +332,7 @@ requires it.
 
 	|VNS| r p
 		
+
 
 #. Rotate Purpose
 
