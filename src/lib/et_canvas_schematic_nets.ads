@@ -72,8 +72,6 @@ with et_logging;					use et_logging;
 
 package et_canvas_schematic_nets is
 
-	use et_canvas_schematic.pac_canvas;
-	
 	use pac_generic_modules;
 	
 

@@ -83,7 +83,6 @@ package et_canvas_schematic_units is
 
 
 
-
 -- DELETE UNIT
 
 	-- to be output in the status bar:

@@ -98,7 +98,7 @@ with et_canvas_schematic_preliminary_object; 	use et_canvas_schematic_preliminar
 package body et_canvas_schematic_units is
 
 	use et_canvas_schematic.pac_canvas;
-
+	use et_canvas_schematic.pac_device_ops;
 
 
 

@@ -91,6 +91,7 @@ with et_project;
 
 with et_canvas.drawing_frame;
 with et_canvas.text;
+with et_canvas.device_ops;
 
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
@@ -138,6 +139,8 @@ package et_canvas_schematic is
 
 	package pac_draw_text is new pac_canvas.text;
 
+	package pac_device_ops is new pac_canvas.device_ops;
+	use pac_device_ops;
 	
 
 	-- This procedure parses the whole database of model objects
