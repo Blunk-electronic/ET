@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                          CANVAS DEVICE OPERATIONS                        --
+--                     CANVAS SCHEMATIC DEVICE OPERATIONS                   --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -37,7 +37,7 @@
 --
 
 
-package body et_canvas.device_ops is
+package body et_canvas.schematic_device_ops is
 
 
 	
@@ -238,7 +238,7 @@ package body et_canvas.device_ops is
 
 	
 	
-end et_canvas.device_ops;
+end et_canvas.schematic_device_ops;
 
 -- Soli Deo Gloria
 

@@ -78,7 +78,7 @@ with et_generic_module;				use et_generic_module;
 with et_canvas.drawing_frame;
 with et_canvas.contours;
 with et_canvas.text;
-with et_canvas.device_ops;
+with et_canvas.schematic_device_ops;
 
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
@@ -138,7 +138,7 @@ package et_canvas_board is
 
 	package pac_draw_text is new pac_canvas.text;
 
-	package pac_device_ops is new pac_canvas.device_ops;
+	package pac_device_ops is new pac_canvas.schematic_device_ops;
 	use pac_device_ops;
 
 

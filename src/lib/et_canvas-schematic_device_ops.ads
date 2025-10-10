@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                        CANVAS DEVICE OPERATIONS                          --
+--                   CANVAS SCHEMATIC DEVICE OPERATIONS                     --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -42,7 +42,7 @@ with et_device_name;			use et_device_name;
 generic
 
 	
-package et_canvas.device_ops is
+package et_canvas.schematic_device_ops is
 
 
 
@@ -180,7 +180,7 @@ private
 
 	
 	
-end et_canvas.device_ops;
+end et_canvas.schematic_device_ops;
 
 -- Soli Deo Gloria
 
