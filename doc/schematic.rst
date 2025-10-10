@@ -244,7 +244,7 @@ Devices and Units
 
 	.. code-block::
 
-		set value R1 [100R]
+		set value R1 100R
 		
 	|VNS| s v
 
@@ -257,7 +257,7 @@ Devices and Units
 
 		set partcode R1 R_PAC_S_0805_VAL_100R
 
-	|VNS| s p
+	|VNS| s c
 
 	
 

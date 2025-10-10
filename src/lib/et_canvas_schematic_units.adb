@@ -716,41 +716,49 @@ package body et_canvas_schematic_units is
 
 	procedure show_value_window is
 
+		-- Get the first selected object (which is a unit):
 		object : constant type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
 
-		use pac_devices_sch;
-		device_name : type_device_name; -- IC1
-		value : pac_device_value.bounded_string;
 		
+		procedure do_it is
+			device	: type_device_name; -- IC1
+			value	: pac_device_value.bounded_string;
+		begin
+			-- Get the name of the selected device:
+			device := get_device_name (object.unit.device_cursor);
+
+			-- Get the old value of the selected device:
+			value := get_value (object.unit.device_cursor);
+				
+			build_value_window (device);
+
+			-- Connect the "destroy" signal.
+			value_window.on_destroy (cb_value_window_destroy'access);
+
+			-- Set the old value in the window:
+			value_old.set_text (to_string (value));
+	
+			-- Connect the "on_activate" signal (emitted when ENTER pressed)
+			-- of the entry field for the new value:
+			value_new.on_activate (cb_new_value_entered'access);
+			
+			value_new.grab_focus;
+			
+			value_window.show_all;
+
+			value_window_open := true;
+		end do_it;
+		
+				
 	begin
-		build_value_window; -- CS pass device_name
-
-		-- Connect the "destroy" signal.
-		value_window.on_destroy (cb_value_window_destroy'access);
-
-
 		case object.cat is
 			when CAT_UNIT =>
-				--device_name := get_device_name (object.unit.device_cursor);
-				value := get_value (object.unit.device_cursor);
+				do_it;
   
 			when others =>
 				raise constraint_error; -- CS
 		end case;
-  
-		-- Set the text in the window:
-		value_old.set_text (to_string (value));
-  
-		-- Connect the "on_activate" signal (emitted when ENTER pressed)
-		-- of the entry field for the new name:
-		value_new.on_activate (cb_new_value_entered'access);
-		
-		value_new.grab_focus;
-		
-		value_window.show_all;
-
-		value_window_open := true;
 	end show_value_window;
 
 
@@ -874,39 +882,45 @@ package body et_canvas_schematic_units is
 
 	procedure show_rename_window is
 
+		-- Get the first selected object (which is a unit):
 		object : constant type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
 
-		use pac_devices_sch;
-		device_name : type_device_name; -- IC1
+
+		procedure do_it is
+			device_name : type_device_name; -- IC1
+		begin
+			-- Get the name of the selected device:
+			device_name := get_device_name (object.unit.device_cursor);
+			
+			build_rename_window;
+
+			-- Connect the "destroy" signal.
+			rename_window.on_destroy (cb_rename_window_destroy'access);
+
+			-- Set the old name of the device in the window:
+			rename_old.set_text (to_string (device_name));
+
+			-- Connect the "on_activate" signal (emitted when ENTER pressed)
+			-- of the entry field for the new name:
+			rename_new.on_activate (cb_rename_new_name_entered'access);
+			
+			rename_new.grab_focus;
+			
+			rename_window.show_all;
+
+			rename_window_open := true;			
+		end do_it;
+		
 		
 	begin
-		build_rename_window;
-
-		-- Connect the "destroy" signal.
-		rename_window.on_destroy (cb_rename_window_destroy'access);
-
-
 		case object.cat is
 			when CAT_UNIT =>
-				device_name := get_device_name (object.unit.device_cursor);
+				do_it;
 
 			when others =>
 				raise constraint_error; -- CS
 		end case;
-
-		-- Set the text in the window:
-		rename_old.set_text (to_string (device_name));
-
-		-- Connect the "on_activate" signal (emitted when ENTER pressed)
-		-- of the entry field for the new name:
-		rename_new.on_activate (cb_rename_new_name_entered'access);
-		
-		rename_new.grab_focus;
-		
-		rename_window.show_all;
-
-		rename_window_open := true;
 	end show_rename_window;
 
 

@@ -3666,19 +3666,14 @@ package body et_canvas is
 	
 	procedure build_rename_window is 
 		box : gtk_vbox;
-		-- label : gtk_label;
-		-- rename_new : gtk_gentry;
-
 		label_old, label_new : gtk.label.gtk_label;
-		-- rename_old	: gtk_gentry;
-
 		label_status	: gtk.label.gtk_label;
 	begin
 		gtk_new (rename_window);
 
-		rename_window.set_title ("Rename Object");
+		rename_window.set_title ("Rename Device");
 
-		rename_window.set_default_size (300, 100);
+		rename_window.set_default_size (400, 100);
 		rename_window.set_resizable (false);
 
 		-- Connect the "on_key_press_event" signal:
@@ -3719,17 +3714,18 @@ package body et_canvas is
 -- DEVICE VALUE WINDOW:
 	
 	
-	procedure build_value_window is 
+	procedure build_value_window (
+		device_name : in type_device_name)
+	is 
 		box : gtk_vbox;
 		label_old, label_new : gtk.label.gtk_label;
-
-		label_status	: gtk.label.gtk_label;
+		label_status : gtk.label.gtk_label;
 	begin
 		gtk_new (value_window);
 
-		value_window.set_title ("Set Device Value");
+		value_window.set_title ("Set Value of Device " & to_string (device_name));
 
-		value_window.set_default_size (300, 100);
+		value_window.set_default_size (500, 100);
 		value_window.set_resizable (false);
 
 		-- Connect the "on_key_press_event" signal:

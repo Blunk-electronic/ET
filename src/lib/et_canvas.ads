@@ -84,6 +84,8 @@ with et_geometry_1.et_polygons.offsetting;
 with et_geometry_2a.contours;
 with et_text;
 with et_mirroring;				use et_mirroring;
+with et_device_name;			use et_device_name;
+
 
 
 generic
@@ -1307,8 +1309,6 @@ package et_canvas is
 	-- This flag indicates that the rename window is open:
 	rename_window_open : boolean := false;
 	
-	-- CS: these variables should be moved to procedure
-	-- build_rename_window:
 	-- This is the field inside the rename_window 
 	-- where the operator enters the new name of an object:
 	rename_new : gtk_gentry;
@@ -1344,8 +1344,6 @@ package et_canvas is
 	-- This flag indicates that the value window is open:
 	value_window_open : boolean := false;
 	
-	-- CS: these variables should be moved to procedure
-	-- build_rename_window:
 	-- This is the field inside the value_window 
 	-- where the operator enters the new value of a device:
 	value_new : gtk_gentry;
@@ -1356,7 +1354,9 @@ package et_canvas is
 
 	
 	-- This procedure assembles the value_window with 
-	-- all its basic properties.
+	-- all its basic properties. It sets the title of the 
+	-- window with the targeted device name so that the operator
+	-- knows what device it is about.
 	-- It connects the "on_key_press_event" with the
 	-- callback function cb_value_window_key_pressed (see below).
 	-- This procedure DOES NOT show the value window. It just prepares
@@ -1364,8 +1364,9 @@ package et_canvas is
 	-- the package where the canvas is instantiated (see
 	-- for example procedure show_value_window 
 	-- in et_canvas_schematic):
-	procedure build_value_window;
-	-- CS pass device name ?
+	procedure build_value_window (
+		device_name : in type_device_name);
+
 
 
 
