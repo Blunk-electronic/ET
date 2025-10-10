@@ -139,7 +139,6 @@ package et_canvas_board is
 	package pac_draw_text is new pac_canvas.text;
 
 	package pac_device_ops is new pac_canvas.schematic_device_ops;
-	use pac_device_ops;
 
 
 	
