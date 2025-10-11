@@ -211,14 +211,26 @@ package et_canvas_schematic_nets is
 		self : access gtk.gentry.gtk_entry_record'class);
 
 
-
+	-- This procedure is called when the signal "destroy" 
+	-- is emitted by the rename window.
+	-- This is usually the case when:
+	--  1. the operator terminates the rename window by 
+	--     clicking the X in the upper right corner of the window.
+	--  2. the operator presses the ESC key in the rename window:
+	-- The procedure also calls procedure "reset":
+	procedure cb_rename_window_destroy (
+		window : access gtk_widget_record'class);
+	
 	
 	-- This procedure shows the window where the
 	-- operator sees the old name of the targeted object
 	-- and where he can enter the new name of the object:
 	procedure show_rename_window;
 	
-		
+
+
+
+	
 
 	-- This procedure is required in order to clarify
 	-- which object among the proposed objects is meant.

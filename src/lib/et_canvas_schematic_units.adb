@@ -710,8 +710,19 @@ package body et_canvas_schematic_units is
 
 
 
-	
 
+	
+	procedure cb_value_window_destroy (
+		window : access gtk_widget_record'class)
+	is
+	begin
+		put_line ("cb_value_window_destroy");
+		reset;
+	end cb_value_window_destroy;
+
+
+
+	
 
 
 	procedure show_value_window is
@@ -765,7 +776,6 @@ package body et_canvas_schematic_units is
 	
 
 
-
 	
 
 	procedure set_value (
@@ -797,6 +807,11 @@ package body et_canvas_schematic_units is
 
 
 
+
+
+	
+
+	
 
 
 	procedure cb_new_purpose_entered (
@@ -881,6 +896,15 @@ package body et_canvas_schematic_units is
 
 
 
+	procedure cb_purpose_window_destroy (
+		window : access gtk_widget_record'class)
+	is
+	begin
+		put_line ("cb_purpose_window_destroy");
+		reset;
+	end cb_purpose_window_destroy;
+
+	
 
 	
 
@@ -934,6 +958,8 @@ package body et_canvas_schematic_units is
 
 
 
+
+	
 	
 
 
@@ -1045,6 +1071,17 @@ package body et_canvas_schematic_units is
 
 	
 
+
+	procedure cb_rename_window_destroy (
+		window : access gtk_widget_record'class)
+	is
+	begin
+		put_line ("cb_rename_window_destroy");
+		reset;
+	end cb_rename_window_destroy;
+
+
+	
 	
 	
 

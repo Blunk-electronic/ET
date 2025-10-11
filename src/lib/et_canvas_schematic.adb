@@ -479,8 +479,9 @@ package body et_canvas_schematic is
 
 
 
--- RESET:
+
 	
+-- RESET:
 
 	
 	procedure reset is
@@ -519,6 +520,7 @@ package body et_canvas_schematic is
 		end level_1;
 	
 
+		
 		-- Do a level 2 reset. This is a full reset:
 		procedure level_2 is begin
 			level_1;
@@ -1217,41 +1219,6 @@ package body et_canvas_schematic is
 		move_cursor (snap_to_grid (get_cursor_position));
 		update_cursor_coordinates;
 	end reset_grid_and_cursor;
-
-	
-
-
-
-
-	procedure cb_rename_window_destroy (
-		window : access gtk_widget_record'class)
-	is
-	begin
-		put_line ("cb_rename_window_destroy");
-		reset;
-	end cb_rename_window_destroy;
-
-
-
-
-	procedure cb_value_window_destroy (
-		window : access gtk_widget_record'class)
-	is
-	begin
-		put_line ("cb_value_window_destroy");
-		reset;
-	end cb_value_window_destroy;
-
-
-
-	procedure cb_purpose_window_destroy (
-		window : access gtk_widget_record'class)
-	is
-	begin
-		put_line ("cb_purpose_window_destroy");
-		reset;
-	end cb_purpose_window_destroy;
-
 
 	
 	

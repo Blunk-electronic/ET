@@ -424,6 +424,16 @@ package body et_canvas_schematic_nets is
 
 
 
+	procedure cb_rename_window_destroy (
+		window : access gtk_widget_record'class)
+	is
+	begin
+		put_line ("cb_rename_window_destroy");
+		reset;
+	end cb_rename_window_destroy;
+
+
+	
 
 	
 	
