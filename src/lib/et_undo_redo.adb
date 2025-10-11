@@ -149,6 +149,17 @@ package body et_undo_redo is
 					end case;
 
 					
+				when NOUN_VALUE | NOUN_PURPOSE | NOUN_PARTCODE =>
+					case verb is
+						when VERB_SET =>
+							
+							commit_devices;
+
+						when others => null;
+					end case;
+
+
+					
 				when others => null;
 			end case;
 		end query_module;
