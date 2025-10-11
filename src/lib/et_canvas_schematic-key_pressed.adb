@@ -614,8 +614,11 @@ is
 					when NOUN_PURPOSE =>
 						et_canvas_schematic_units.set_purpose (point);
 
+					when NOUN_PARTCODE =>
+						et_canvas_schematic_units.set_partcode (point);
+
 						
-					when NOUN_PARTCODE | NOUN_VARIANT =>
+					when NOUN_VARIANT =>
 						null;
 						-- CS
 						-- if not clarification_pending then

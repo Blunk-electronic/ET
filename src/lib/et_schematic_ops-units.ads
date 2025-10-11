@@ -954,6 +954,12 @@ package et_schematic_ops.units is
 		log_threshold	: in type_log_level);
 
 
+	procedure set_partcode (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		new_partcode	: in pac_device_partcode.bounded_string;
+		log_threshold	: in type_log_level);
+
 	
 end et_schematic_ops.units;
 

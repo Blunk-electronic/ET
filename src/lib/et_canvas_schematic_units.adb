@@ -871,7 +871,7 @@ package body et_canvas_schematic_units is
 
 		
 	begin
-		device_purpose_new := to_purpose (self.get_text); -- 100R
+		device_purpose_new := to_purpose (self.get_text); -- "Brightness Control"
 
 		-- CS: Precheck device purpose ?
 		-- put_line ("new purpose entered: " & to_string (device_purpose_new));
@@ -956,10 +956,6 @@ package body et_canvas_schematic_units is
 	end show_purpose_window;
 
 
-
-
-
-	
 	
 
 
@@ -993,6 +989,198 @@ package body et_canvas_schematic_units is
 	
 	
 
+
+
+
+	
+
+	procedure cb_new_partcode_entered (
+		self : access gtk.gentry.gtk_entry_record'class) 
+	is 
+		device_partcode_new : pac_device_partcode.bounded_string;
+
+		
+		-- Sets the partcode of the selected object:
+		procedure finalize is
+			use et_modes.schematic;
+			use et_undo_redo;
+			use et_commit;
+
+			object : type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
+		begin
+			log (text => "finalize set partcode", level => log_threshold);
+			log_indentation_up;
+
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+
+				reset_proposed_objects (active_module, log_threshold + 1);
+				
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+
+				-- Do the set partcode operation:
+				set_partcode (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					new_partcode	=> device_partcode_new,
+					log_threshold	=> log_threshold + 1);
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+
+				-- If a unit has been deleted, then the board
+				-- must be redrawn:
+				if object.cat = CAT_UNIT then
+					redraw_board;
+				end if;
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+
+			-- CS clear status bar ?
+			-- set_status (status_delete);
+
+			reset_editing_process; -- prepare for a new editing process
+		end finalize;
+
+		
+	begin
+		device_partcode_new := to_partcode (self.get_text); -- R_PAC_S_0805_VAL_100R
+
+		-- CS: Precheck device partcode ?
+		-- put_line ("new partcode entered: " & to_string (device_partcode_new));
+		
+		finalize;
+
+		-- If everything was fine, close the window and clean up.
+		-- If one of the operations above has raised an exception then
+		-- nothing will be cleaned up and the window will remain until the
+		-- operator enters a correct property.
+		partcode_window.destroy;
+
+		-- CS
+		-- Whatever goes wrong, output the message in the status bar
+		-- of the properties window:
+		-- exception when event: others =>
+		-- 	set_status_properties (exception_message (event));
+			
+	end cb_new_partcode_entered;
+
+	
+
+	
+
+
+	procedure cb_partcode_window_destroy (
+		window : access gtk_widget_record'class)
+	is
+	begin
+		put_line ("cb_partcode_window_destroy");
+		reset;
+	end cb_partcode_window_destroy;
+
+	
+
+	
+	
+
+	procedure show_partcode_window is
+
+		-- Get the first selected object (which is a unit):
+		object : constant type_object := get_first_object (
+				active_module, SELECTED, log_threshold + 1);
+
+		
+		procedure do_it is
+			device	: type_device_name; -- IC1
+			partcode	: pac_device_partcode.bounded_string;
+		begin
+			-- Get the name of the selected device:
+			device := get_device_name (object.unit.device_cursor);
+
+			-- Get the old partcode of the selected device:
+			partcode := get_partcode (object.unit.device_cursor);
+				
+			build_partcode_window (device);
+
+			-- Connect the "destroy" signal.
+			partcode_window.on_destroy (cb_partcode_window_destroy'access);
+
+			-- Set the old partcode in the window:
+			partcode_old.set_text (to_string (partcode));
+	
+			-- Connect the "on_activate" signal (emitted when ENTER pressed)
+			-- of the entry field for the new partcode:
+			partcode_new.on_activate (cb_new_partcode_entered'access);
+			
+			partcode_new.grab_focus;
+			
+			partcode_window.show_all;
+
+			partcode_window_open := true;
+		end do_it;
+		
+				
+	begin
+		case object.cat is
+			when CAT_UNIT =>
+				do_it;
+  
+			when others =>
+				raise constraint_error; -- CS
+		end case;
+	end show_partcode_window;
+
+
+
+
+
+	
+	
+
+
+	procedure set_partcode (
+		point	: in type_vector_model)
+	is begin
+		if not partcode_window_open then
+			
+			if not clarification_pending then
+				-- Locate all objects in the vicinity of the given point:
+				find_objects (point);
+				-- NOTE: If many objects have been found, then
+				-- clarification is now pending.
+
+				-- If find_objects has found only one object,				
+				-- then delete the object immediateley.
+				if edit_process_running then
+					show_partcode_window;
+				end if;
+			else
+				-- Here the clarification procedure ends.
+				-- An object has been selected via procedure clarify_object.
+				show_partcode_window;
+			end if;
+
+		end if;
+	end set_partcode;
+
+
+
+
+
+
+
+
+
+
+
+	
 
 	procedure cb_rename_new_name_entered (
 		self : access gtk.gentry.gtk_entry_record'class) 

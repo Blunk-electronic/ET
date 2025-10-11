@@ -230,6 +230,41 @@ package et_canvas_schematic_units is
 
 
 
+
+
+
+	-- Called when the "on_activate" signal is emitted
+	-- (usually when ENTER pressed) by the entry field
+	-- for the new partcode in the partcode window:
+	procedure cb_new_partcode_entered (
+		self : access gtk.gentry.gtk_entry_record'class);
+
+
+	-- This procedure is called when the signal "destroy" 
+	-- is emitted by the partcode window.
+	-- This is usually the case when:
+	--  1. the operator terminates the partcode window by 
+	--     clicking the X in the upper right corner of the window.
+	--  2. the operator presses the ESC key in the partcode window:
+	-- The procedure also calls procedure "reset":
+	procedure cb_partcode_window_destroy (
+		window : access gtk_widget_record'class);
+
+	
+	-- This procedure shows the window where the
+	-- operator sees the old partcode of the targeted device
+	-- and where he can enter the new partcode of the device:
+	procedure show_partcode_window;
+
+	
+	procedure set_partcode (
+		point	: in type_vector_model);
+
+	
+
+
+	
+	
 	
 	-- Called when the "on_activate" signal is emitted
 	-- (usually when ENTER pressed) by the entry field

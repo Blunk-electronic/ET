@@ -156,6 +156,44 @@ package et_canvas.schematic_device_ops is
 		device_name : in type_device_name);
 
 	
+
+
+
+
+-- PARTCODE WINDOW:
+
+	-- The window to set the value of devices is used in all domains
+	-- and in various situations. For this reason we make it
+	-- a generic object:
+	partcode_window : gtk.window.gtk_window;
+
+	-- This flag indicates that the value window is open:
+	partcode_window_open : boolean := false;
+	
+	-- This is the field inside the partcode_window 
+	-- where the operator enters the new value of a device:
+	partcode_new : gtk_gentry;
+	
+	-- This is the field inside the partcode_window 
+	-- where the old value of a device is shown:
+	partcode_old : gtk_gentry;
+
+	
+	-- This procedure assembles the partcode_window with 
+	-- all its basic properties. It sets the title of the 
+	-- window with the targeted device name so that the operator
+	-- knows what device it is about.
+	-- It connects the "on_key_press_event" with the
+	-- callback function cb_partcode_window_key_pressed (see below).
+	-- This procedure DOES NOT show the value window. It just prepares
+	-- basic things. The actual showing is preformed by a procedure in
+	-- the package where the canvas is instantiated (see
+	-- for example procedure show_partcode_window 
+	-- in et_canvas_schematic_units):
+	procedure build_partcode_window (
+		device_name : in type_device_name);
+
+
 	
 private
 	
@@ -236,6 +274,34 @@ private
 
 	access_cb_purpose_window_key_pressed : constant
 		cb_gtk_widget_gdk_event_key_boolean := cb_purpose_window_key_pressed'access;
+
+
+
+
+
+
+
+-- PARTCODE WINDOW:
+
+	-- See comments on device partcode window above.
+	
+	-- This callback function is called whenever
+	-- the operator presses a key in the value window.
+	-- If ESC key pressed, then the window is destroyed
+	-- by emitting the "destroy" signal. The connection
+	-- to the "destroy" signal is estabilshed in the package
+	-- where the canvas is instantiated.
+	-- All other key-press events are propagated to the
+	-- field where the new name is entered (see 
+	-- variable "partcode_new" above):
+	function cb_partcode_window_key_pressed (
+		window	: access gtk_widget_record'class;
+		event	: gdk_event_key)
+		return boolean;
+	
+
+	access_cb_partcode_window_key_pressed : constant
+		cb_gtk_widget_gdk_event_key_boolean := cb_partcode_window_key_pressed'access;
 
 
 	

@@ -186,6 +186,53 @@ package body et_canvas.schematic_device_ops is
 
 
 
+	procedure build_partcode_window (
+		device_name : in type_device_name)
+	is 
+		box : gtk_vbox;
+		label_old, label_new : gtk.label.gtk_label;
+		label_status : gtk.label.gtk_label;
+	begin
+		gtk_new (partcode_window);
+
+		partcode_window.set_title ("Set partcode of Device " & to_string (device_name));
+
+		partcode_window.set_default_size (500, 100);
+		partcode_window.set_resizable (false);
+
+		-- Connect the "on_key_press_event" signal:
+		partcode_window.on_key_press_event (access_cb_partcode_window_key_pressed);
+		
+		
+		gtk_new_vbox (box);
+		add (partcode_window, box);
+
+		-- show the old name:
+		gtk_new (label_old, "old:");
+		pack_start (box, label_old);
+		
+		gtk_new (partcode_old);
+		pack_start (box, partcode_old);
+
+
+		-- show the new name (will be entered by the operator later):
+		gtk_new (label_new, "new:");
+		pack_start (box, label_new);
+
+		gtk_new (partcode_new);
+		pack_start (box, partcode_new);
+
+		-- gtk_new (label_status);
+		-- pack_start (box, label_status);
+
+		
+	end build_partcode_window;
+
+
+
+	
+	
+
 
 	
 	
@@ -329,6 +376,55 @@ package body et_canvas.schematic_device_ops is
 		
 		return event_handled;
 	end cb_purpose_window_key_pressed;
+
+
+
+
+
+
+
+
+	function cb_partcode_window_key_pressed (
+		window	: access gtk_widget_record'class;
+		event	: gdk_event_key)
+		return boolean
+	is
+		debug : boolean := false;
+		
+		event_handled : boolean;
+		key : gdk_key_type := event.keyval;		
+	begin
+		if debug then
+			put_line ("cb_partcode_window_key_pressed");
+		end if;
+
+		
+		case key is
+			when GDK_ESCAPE =>
+				if debug then
+					put_line ("ESC");
+				end if;
+
+				-- Emit the "destroy" signal.
+				-- The connection to a callback procedure
+				-- is established in the package where
+				-- the canvas is instantiated. For example see procedure
+				-- show_rename_window in et_cnavas_schematic:
+				partcode_window.destroy;
+				
+				event_handled := true;
+
+				
+			when others =>
+				if debug then
+					put_line ("other key");
+				end if;
+				
+				event_handled := false;
+		end case;
+		
+		return event_handled;
+	end cb_partcode_window_key_pressed;
 
 
 	
