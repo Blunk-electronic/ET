@@ -618,6 +618,35 @@ is
 
 	
 	 
+	-- This procedure parses a command that sets the package
+	-- variant of a device.
+	-- Example: "schematic led_driver set variant R1 S_0805"
+	procedure set_device_package_variant is 
+		use et_package_variant;
+		variant : pac_package_variant_name.bounded_string; -- N, D
+	begin			
+		case cmd_field_count is
+			when 6 =>
+
+				-- validate variant
+				check_variant_name_length (get_field (6));
+				variant := to_variant_name (get_field (6));
+				check_variant_name_characters (variant);
+				
+				-- set the variant
+				set_variant (
+					module_cursor	=> active_module,
+					device_name		=> to_device_name (get_field (5)), -- IC1
+					variant			=> variant, -- N, D
+					log_threshold	=> log_threshold + 1);
+
+			when 7 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end set_device_package_variant;
+	
+
 	
 
 
@@ -2760,31 +2789,7 @@ is
 				
 						
 					when NOUN_VARIANT =>
-						case cmd_field_count is
-							when 6 =>
-								declare
-									use et_package_variant;
-									variant : pac_package_variant_name.bounded_string; -- N, D
-								begin
-									-- validate variant
-									check_variant_name_length (get_field (6));
-									variant := to_variant_name (get_field (6));
-									check_variant_name_characters (variant);
-									
-									-- set the variant
-									set_variant
-										(
-										module			=> module,
-										device			=> to_device_name (get_field (5)), -- IC1
-										variant			=> variant, -- N, D
-										log_threshold	=> log_threshold + 1
-										);
-								end;
-
-							when 7 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
+						set_device_package_variant;
 
 						
 					when NOUN_TEXT_SIZE =>

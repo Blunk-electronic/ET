@@ -133,25 +133,14 @@ package et_schematic_ops.units is
 		return pac_package_variant_name.bounded_string; -- D, N
 
 	
-	-- Sets the package variant of a device.
-	-- Raises constraint error if the device does not exist.
-	-- Raises semantic error if the device is virtual.
-	-- Raises semantic error if the variant is not defined
-	-- in the according device model:
-	procedure set_variant (
-		module	: in pac_generic_modules.cursor;
-		device	: in pac_devices_sch.cursor;
-		variant	: in pac_package_variant_name.bounded_string);
-
 	
 	-- Sets the package variant of a device.
-	-- Raises semantic error if the device does not exist.
-	-- Raises semantic error if the device is virtual.
-	-- Raises semantic error if the variant is not defined
-	-- in the according device model:
+	-- The device must exist, it must be a real device and
+	-- the given package variant must be available.
+	-- Otherwise a warning will be issued:
 	procedure set_variant (
-		module			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device			: in type_device_name; -- R2
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- R2
 		variant			: in pac_package_variant_name.bounded_string; -- N, D
 		log_threshold	: in type_log_level);
 
