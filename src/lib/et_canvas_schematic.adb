@@ -513,6 +513,8 @@ package body et_canvas_schematic is
 
 			pac_device_ops.rename_window_open := false;
 			pac_device_ops.value_window_open := false;
+
+			pac_net_ops.rename_window_open := false;
 		end level_1;
 	
 

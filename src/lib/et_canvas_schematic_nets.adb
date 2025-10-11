@@ -61,7 +61,7 @@ package body et_canvas_schematic_nets is
 
 	use et_schematic_ops;
 	use et_canvas_schematic.pac_canvas;
-	use et_canvas_schematic.pac_device_ops;
+	use et_canvas_schematic.pac_net_ops;
 	
 
 

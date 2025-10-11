@@ -92,6 +92,7 @@ with et_project;
 with et_canvas.drawing_frame;
 with et_canvas.text;
 with et_canvas.schematic_device_ops;
+with et_canvas.schematic_net_ops;
 
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
@@ -128,8 +129,7 @@ package et_canvas_schematic is
 		pac_offsetting	=> et_schematic_geometry.pac_polygon_offsetting,
 		pac_polygons	=> et_schematic_geometry.pac_polygons,
 		pac_contours	=> et_schematic_geometry.pac_contours,
-		pac_text		=> pac_text_schematic
-		);
+		pac_text		=> pac_text_schematic);
 		
 	
 	use pac_canvas;
@@ -140,6 +140,7 @@ package et_canvas_schematic is
 	package pac_draw_text is new pac_canvas.text;
 
 	package pac_device_ops is new pac_canvas.schematic_device_ops;
+	package pac_net_ops is new pac_canvas.schematic_net_ops;
 	
 
 	-- This procedure parses the whole database of model objects
