@@ -184,6 +184,24 @@ package et_canvas_schematic_units is
 
 
 
+	-- Called when the "on_activate" signal is emitted
+	-- (usually when ENTER pressed) by the entry field
+	-- for the new purpose in the purpose window:
+	procedure cb_new_purpose_entered (
+		self : access gtk.gentry.gtk_entry_record'class);
+
+	
+	-- This procedure shows the window where the
+	-- operator sees the old purpose of the targeted device
+	-- and where he can enter the new purpose of the device:
+	procedure show_purpose_window;
+
+	
+	procedure set_purpose (
+		point	: in type_vector_model);
+
+	
+
 	
 	-- Called when the "on_activate" signal is emitted
 	-- (usually when ENTER pressed) by the entry field

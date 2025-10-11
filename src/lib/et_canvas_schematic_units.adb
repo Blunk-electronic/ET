@@ -795,8 +795,176 @@ package body et_canvas_schematic_units is
 
 
 
+
+
+
+
+	procedure cb_new_purpose_entered (
+		self : access gtk.gentry.gtk_entry_record'class) 
+	is 
+		device_purpose_new : pac_device_purpose.bounded_string;
+
+		
+		-- Sets the purpose of the selected object:
+		procedure finalize is
+			use et_modes.schematic;
+			use et_undo_redo;
+			use et_commit;
+
+			object : type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
+		begin
+			log (text => "finalize set purpose", level => log_threshold);
+			log_indentation_up;
+
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+
+				reset_proposed_objects (active_module, log_threshold + 1);
+				
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+
+				-- Do the set purpose operation:
+				set_purpose (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					new_purpose		=> device_purpose_new,
+					log_threshold	=> log_threshold + 1);
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+
+				-- If a unit has been deleted, then the board
+				-- must be redrawn:
+				if object.cat = CAT_UNIT then
+					redraw_board;
+				end if;
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+
+			-- CS clear status bar ?
+			-- set_status (status_delete);
+
+			reset_editing_process; -- prepare for a new editing process
+		end finalize;
+
+		
+	begin
+		device_purpose_new := to_purpose (self.get_text); -- 100R
+
+		-- CS: Precheck device purpose ?
+		-- put_line ("new purpose entered: " & to_string (device_purpose_new));
+		
+		finalize;
+
+		-- If everything was fine, close the window and clean up.
+		-- If one of the operations above has raised an exception then
+		-- nothing will be cleaned up and the window will remain until the
+		-- operator enters a correct property.
+		purpose_window.destroy;
+
+		-- CS
+		-- Whatever goes wrong, output the message in the status bar
+		-- of the properties window:
+		-- exception when event: others =>
+		-- 	set_status_properties (exception_message (event));
+			
+	end cb_new_purpose_entered;
+
 	
 
+
+
+
+	
+
+	procedure show_purpose_window is
+
+		-- Get the first selected object (which is a unit):
+		object : constant type_object := get_first_object (
+				active_module, SELECTED, log_threshold + 1);
+
+		
+		procedure do_it is
+			device	: type_device_name; -- IC1
+			purpose	: pac_device_purpose.bounded_string;
+		begin
+			-- Get the name of the selected device:
+			device := get_device_name (object.unit.device_cursor);
+
+			-- Get the old purpose of the selected device:
+			purpose := get_purpose (object.unit.device_cursor);
+				
+			build_purpose_window (device);
+
+			-- Connect the "destroy" signal.
+			purpose_window.on_destroy (cb_purpose_window_destroy'access);
+
+			-- Set the old purpose in the window:
+			purpose_old.set_text (to_string (purpose));
+	
+			-- Connect the "on_activate" signal (emitted when ENTER pressed)
+			-- of the entry field for the new purpose:
+			purpose_new.on_activate (cb_new_purpose_entered'access);
+			
+			purpose_new.grab_focus;
+			
+			purpose_window.show_all;
+
+			purpose_window_open := true;
+		end do_it;
+		
+				
+	begin
+		case object.cat is
+			when CAT_UNIT =>
+				do_it;
+  
+			when others =>
+				raise constraint_error; -- CS
+		end case;
+	end show_purpose_window;
+
+
+
+
+	
+
+
+	procedure set_purpose (
+		point	: in type_vector_model)
+	is begin
+		if not purpose_window_open then
+			
+			if not clarification_pending then
+				-- Locate all objects in the vicinity of the given point:
+				find_objects (point);
+				-- NOTE: If many objects have been found, then
+				-- clarification is now pending.
+
+				-- If find_objects has found only one object,				
+				-- then delete the object immediateley.
+				if edit_process_running then
+					show_purpose_window;
+				end if;
+			else
+				-- Here the clarification procedure ends.
+				-- An object has been selected via procedure clarify_object.
+				show_purpose_window;
+			end if;
+
+		end if;
+	end set_purpose;
+
+
+
+	
 	
 
 

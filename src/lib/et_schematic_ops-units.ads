@@ -947,6 +947,13 @@ package et_schematic_ops.units is
 		log_threshold	: in type_log_level);
 
 
+	procedure set_purpose (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		new_purpose		: in pac_device_purpose.bounded_string;
+		log_threshold	: in type_log_level);
+
+
 	
 end et_schematic_ops.units;
 

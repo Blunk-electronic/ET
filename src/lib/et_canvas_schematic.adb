@@ -513,6 +513,7 @@ package body et_canvas_schematic is
 
 			pac_device_ops.rename_window_open := false;
 			pac_device_ops.value_window_open := false;
+			pac_device_ops.purpose_window_open := false;
 
 			pac_net_ops.rename_window_open := false;
 		end level_1;
@@ -1240,6 +1241,17 @@ package body et_canvas_schematic is
 		put_line ("cb_value_window_destroy");
 		reset;
 	end cb_value_window_destroy;
+
+
+
+	procedure cb_purpose_window_destroy (
+		window : access gtk_widget_record'class)
+	is
+	begin
+		put_line ("cb_purpose_window_destroy");
+		reset;
+	end cb_purpose_window_destroy;
+
 
 	
 	

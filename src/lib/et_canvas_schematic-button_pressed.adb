@@ -212,7 +212,10 @@ is
 					when NOUN_VALUE =>
 						et_canvas_schematic_units.set_value (snap_point);
 
-					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VARIANT =>
+					when NOUN_PURPOSE =>
+						et_canvas_schematic_units.set_purpose (snap_point);
+						
+					when NOUN_PARTCODE | NOUN_VARIANT =>
 						null;
 						
 					when others => null;

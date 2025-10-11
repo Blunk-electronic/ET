@@ -445,6 +445,18 @@ package et_canvas_schematic is
 	procedure cb_value_window_destroy (
 		window : access gtk_widget_record'class);
 
+
+
+	-- This procedure is called when the signal "destroy" 
+	-- is emitted by the purpose window.
+	-- This is usually the case when:
+	--  1. the operator terminates the purpose window by 
+	--     clicking the X in the upper right corner of the window.
+	--  2. the operator presses the ESC key in the purpose window:
+	-- The procedure also calls procedure "reset":
+	procedure cb_purpose_window_destroy (
+		window : access gtk_widget_record'class);
+
 	
 end et_canvas_schematic;
 

@@ -5264,6 +5264,41 @@ package body et_schematic_ops.units is
 	end set_value;
 
 	
+
+
+
+
+	procedure set_purpose (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		new_purpose		: in pac_device_purpose.bounded_string;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " set purpose of object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_UNIT =>
+
+				set_purpose (
+					module_cursor	=> module_cursor,
+					device_name		=> get_device_name (object.unit),
+					purpose			=> new_purpose,
+					log_threshold	=> log_threshold + 1);
+
+				
+			when others =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end set_purpose;
+
+
 	
 	
 end et_schematic_ops.units;
