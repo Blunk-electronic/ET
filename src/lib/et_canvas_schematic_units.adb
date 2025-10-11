@@ -296,11 +296,13 @@ package body et_canvas_schematic_units is
 				case noun is
 					when NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE =>
 
-						-- Propose units in the vicinity of the given point:
+						-- Propose units in the vicinity of the given point.
+						-- This applies for real devices only:
 						propose_units (
 							module_cursor	=> active_module,
 							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
 							count			=> count_total,
+							real_only		=> true,
 							log_threshold	=> log_threshold + 1);
 
 					when others =>

@@ -3592,6 +3592,7 @@ package body et_schematic_ops.units is
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
 		count			: in out natural;
+		real_only		: in boolean := false;
 		log_threshold	: in type_log_level)
 	is
 
@@ -3622,17 +3623,33 @@ package body et_schematic_ops.units is
 					end if;
 				end query_unit;
 
+
+				procedure query_device_2 is begin
+					log (text => to_string (device_name), level => log_threshold + 1);
+					log_indentation_up;
+
+					-- Iterate through the units:
+					while has_element (unit_cursor) loop
+						device.units.update_element (unit_cursor, query_unit'access);
+						next (unit_cursor);
+					end loop;
+					log_indentation_down;
+				end query_device_2;
+
 				
 			begin
-				log (text => to_string (device_name), level => log_threshold + 1);
-				log_indentation_up;
+				-- If only real devices are adressed, then
+				-- the appearance of the candidate device must be real:
+				if real_only then 
+					if is_real (device) then
+						query_device_2;						
+					end if;
 
-				-- Iterate through the units:
-				while has_element (unit_cursor) loop
-					device.units.update_element (unit_cursor, query_unit'access);
-					next (unit_cursor);
-				end loop;
-				log_indentation_down;
+				-- If all devices are addressed, then the appearance
+				-- does not matter:
+				else
+					query_device_2;
+				end if;
 			end query_device;
 
 			
@@ -3643,13 +3660,20 @@ package body et_schematic_ops.units is
 				next (device_cursor);
 			end loop;
 		end query_module;
-		
 
+
+		function get_real return string is begin
+			if real_only then return "real";
+			else return "";
+			end if;
+		end;
+
+		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " proposing units in " & to_string (catch_zone),
+			& " propose " & get_real & " units in " & to_string (catch_zone),
 			level => log_threshold);
-
+		
 		log_indentation_up;
 		
 		generic_modules.update_element (
