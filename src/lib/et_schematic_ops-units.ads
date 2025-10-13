@@ -47,6 +47,8 @@ with et_object_status;					use et_object_status;
 package et_schematic_ops.units is
 
 
+-- BASIC QUERY OPERATIONS ON DEVICES AND DEVICE MODELS:
+	
 
 	-- Returns true if the given module provides the given device.
 	-- The module being searched in must be in the rig already.						
@@ -72,10 +74,21 @@ package et_schematic_ops.units is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
 		return pac_devices_lib.cursor;
+	
+	
+	-- Returns the name of the device model of the
+	-- given device in the given module.
+	-- The model name is the name of the file (like 7400.dev)
+	-- that contains the actual model.
+	-- Raises constraint error if the device does not exist.
+	function get_device_model (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name) -- R2
+		return pac_device_model_file.bounded_string; -- 7400.dev
 
 
 
-
+	
 	
 
 -- VALUE, PURPOSE, PARTCODE:
@@ -154,29 +167,6 @@ package et_schematic_ops.units is
 	
 
 	
-
-
-	
-	
-	-- Locates the given device in the given module and returns
-	-- the name of the device model (like 7400.dev).
-	-- Raises constraint error if the device does not exist.
-	function device_model_name ( -- CS get_device_model_name
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name) -- R2
-		return pac_device_model_file.bounded_string; -- 7400.dev
-
-
-
-
-	
-	-- Locates the given device in the given module and returns
-	-- the cursor to the device model.
-	-- Raises constraint error if the device does not exist.
-	function device_model_cursor ( -- CS rename to get_device_model_cursor
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name) -- R2
-		return pac_devices_lib.cursor;
 
 
 	

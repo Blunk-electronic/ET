@@ -59,6 +59,10 @@ package body et_schematic_ops.units is
 	use pac_text_schematic;
 	
 
+	
+
+-- BASIC QUERY OPERATIONS ON DEVICES AND DEVICE MODELS:
+	
 
 	function device_exists (
 		module	: in pac_generic_modules.cursor;
@@ -138,6 +142,25 @@ package body et_schematic_ops.units is
 
 
 
+
+
+
+
+	
+	function get_device_model (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name) -- R2
+		return pac_device_model_file.bounded_string
+	is 
+		cursor : pac_devices_sch.cursor;
+	begin
+		cursor := get_electrical_device (module, device);
+		return get_device_model_file (cursor);
+	end get_device_model;
+
+
+
+	
 
 	
 
@@ -496,54 +519,6 @@ package body et_schematic_ops.units is
 	
 
 
-
-	
-	
-	
-
-
-
-
-
-
-	
-	function device_model_name (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name) -- R2
-		return pac_device_model_file.bounded_string
-	is 
-		use pac_devices_sch;
-	begin
-		return element (get_electrical_device (module, device)).model;
-	end device_model_name;
-
-
-
-
-
-	
-	
-
-
-
-
-	
-	
-	function device_model_cursor (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name) -- R2
-		return pac_devices_lib.cursor
-	is
-		cursor_sch : pac_devices_sch.cursor;
-		device_model : pac_device_model_file.bounded_string;
-	begin
-		cursor_sch := get_electrical_device (module, device);
-		device_model := pac_devices_sch.element (cursor_sch).model;
-		return get_device_model_cursor (device_model);
-	end device_model_cursor;
-
-
-	
 
 
 
@@ -1563,7 +1538,7 @@ package body et_schematic_ops.units is
 		
 		
 	begin -- unit_available
-		device_cursor_lib := device_model_cursor (module_cursor, device_name);
+		device_cursor_lib := get_device_model (module_cursor, device_name);
 
 		-- get the names of all units of the device
 		all_unit_names := get_all_units (device_cursor_lib);
