@@ -202,6 +202,14 @@ package et_devices_electrical is
 		return pac_devices_lib.cursor;
 
 
+
+	-- Returns the name of the package variant of the device.
+	-- The device must be a real device.
+	-- Otherwise an exception will be raised:
+	function get_package_variant (
+		device : in type_device_sch)
+		return pac_package_variant_name.bounded_string;
+	
 	
 	-- The devices of a module are collected in a map.
 	-- CS: This must be a hashed map:

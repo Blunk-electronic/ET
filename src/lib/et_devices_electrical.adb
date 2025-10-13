@@ -142,6 +142,15 @@ package body et_devices_electrical is
 
 	
 
+
+	function get_package_variant (
+		device : in type_device_sch)
+		return pac_package_variant_name.bounded_string
+	is begin
+		return device.variant;
+	end;
+
+	
 	
 
 	function get_device_model_file (
@@ -1951,8 +1960,10 @@ package body et_devices_electrical is
 	function get_package_variant (
 		device : in pac_devices_sch.cursor)
 		return pac_package_variant_name.bounded_string
-	is begin
-		return pac_devices_sch.element (device).variant;
+	is 
+		d : type_device_sch renames element (device);
+	begin
+		return get_package_variant (d);
 	end get_package_variant;
 
 

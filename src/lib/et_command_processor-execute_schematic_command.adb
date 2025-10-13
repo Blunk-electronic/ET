@@ -634,7 +634,7 @@ is
 				check_variant_name_characters (variant);
 				
 				-- set the variant
-				set_variant (
+				set_package_variant (
 					module_cursor	=> active_module,
 					device_name		=> to_device_name (get_field (5)), -- IC1
 					variant			=> variant, -- N, D

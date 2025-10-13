@@ -60,6 +60,9 @@ package body et_schematic_ops.units is
 	
 
 
+	
+-- VALUE, PURPOSE, PARTCODE:
+	
 
 	procedure set_value (
 		module_cursor		: in pac_generic_modules.cursor;
@@ -288,11 +291,130 @@ package body et_schematic_ops.units is
 
 
 
+	
+
+
+
+-- PACKAGE VARIANT:
+
+
+	function get_available_package_variants (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name) -- R2
+		return pac_package_variants.map
+	is
+		cursor_lib : pac_devices_lib.cursor;	
+	begin
+		cursor_lib := locate_device (module, device);
+		return get_available_variants (cursor_lib);
+	end get_available_package_variants;
+
+
+
+	
+	
+	function get_package_variant (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name) -- R2
+		return pac_package_variant_name.bounded_string -- D, N
+	is
+		cursor_sch : pac_devices_sch.cursor;
+	begin
+		cursor_sch := locate_device (module, device);
+		
+		return get_package_variant (cursor_sch);
+	end get_package_variant;
 
 
 
 
+	
+	
+	procedure set_package_variant (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- R2
+		variant			: in pac_package_variant_name.bounded_string; -- N, D
+		log_threshold	: in type_log_level)
+	is
+		use pac_generic_modules;
+		device_cursor_sch : pac_devices_sch.cursor;
 
+		use pac_package_variant_name;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_sch)
+			is 
+				cursor_lib : pac_devices_lib.cursor;
+			begin
+				-- The device must be real:
+				if is_real (device) then
+					cursor_lib := get_device_model (device);
+
+					-- If the requested package variant is available
+					-- then assign it here. Otherwise issue a warning:
+					if is_variant_available (cursor_lib, variant) then
+						device.variant := variant;
+					else
+						log (WARNING, "Package variant " & to_string (variant) 
+							& " is not defined in device model !"); 
+							-- CS output file name ?
+					end if;
+				else
+					log (WARNING, "The requested device is virtual and has no package !");
+				end if;
+			end query_device;
+
+				
+		begin
+			update_element (
+				container	=> module.devices,
+				position	=> device_cursor_sch,
+				process		=> query_device'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " set package variant of " & to_string (device_name)
+			& " to " & to_string (variant),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor_sch := locate_device (module_cursor, device_name);
+			
+		if has_element (device_cursor_sch) then -- device exists in schematic
+			
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> query_module'access);
+
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+		end if;
+
+		log_indentation_down;		
+	end set_package_variant;
+
+
+
+
+	
+
+
+
+	
 	
 	
 	function device_exists (
@@ -385,115 +507,11 @@ package body et_schematic_ops.units is
 	end device_model_name;
 
 
-	
-	function get_available_variants (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name) -- R2
-		return pac_package_variants.map
-	is
-		cursor_lib : pac_devices_lib.cursor;	
-	begin
-		cursor_lib := locate_device (module, device);
-		return get_available_variants (cursor_lib);
-	end get_available_variants;
-
-
-
-	
-	function get_variant (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name) -- R2
-		return pac_package_variant_name.bounded_string -- D, N
-	is
-		cursor_sch : pac_devices_sch.cursor;
-	begin
-		cursor_sch := locate_device (module, device);
-		
-		return pac_devices_sch.element (cursor_sch).variant;
-	end get_variant;
-
-
 
 
 
 	
 	
-	procedure set_variant (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_device_name; -- R2
-		variant			: in pac_package_variant_name.bounded_string; -- N, D
-		log_threshold	: in type_log_level)
-	is
-		use pac_generic_modules;
-		device_cursor_sch : pac_devices_sch.cursor;
-
-		use pac_package_variant_name;
-
-
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-
-			procedure query_device (
-				device_name	: in type_device_name;
-				device		: in out type_device_sch)
-			is 
-				cursor_lib : pac_devices_lib.cursor;
-			begin
-				-- The device must be real:
-				if is_real (device) then
-					cursor_lib := get_device_model (device);
-
-					-- If the requested package variant is available
-					-- then assign it here. Otherwise issue a warning:
-					if is_variant_available (cursor_lib, variant) then
-						device.variant := variant;
-					else
-						log (WARNING, "Package variant " & to_string (variant) 
-							& " is not defined in device model !"); 
-							-- CS output file name ?
-					end if;
-				else
-					log (WARNING, "The requested device is virtual and has no package !");
-				end if;
-			end query_device;
-
-				
-		begin
-			update_element (
-				container	=> module.devices,
-				position	=> device_cursor_sch,
-				process		=> query_device'access);
-		end query_module;
-
-		
-	begin
-		log (text => "module " & to_string (module_cursor)
-			& " set package variant of " & to_string (device_name)
-			& " to " & to_string (variant),
-			level => log_threshold);
-
-		log_indentation_up;
-		
-		-- Locate the targeted device in the given module.
-		-- If the device exists, then proceed with further actions.
-		-- Otherwise abort this procedure with a warning:
-		device_cursor_sch := locate_device (module_cursor, device_name);
-			
-		if has_element (device_cursor_sch) then -- device exists in schematic
-			
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> query_module'access);
-
-		else
-			log (WARNING, " Device " & to_string (device_name) & " not found !");
-		end if;
-
-		log_indentation_down;		
-	end set_variant;
 
 
 

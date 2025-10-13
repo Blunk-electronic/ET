@@ -47,6 +47,9 @@ with et_object_status;					use et_object_status;
 package et_schematic_ops.units is
 
 
+-- VALUE, PURPOSE, PARTCODE:
+	
+	
 	-- Sets the value of a device.
 	procedure set_value (
 		module_cursor		: in pac_generic_modules.cursor;
@@ -77,6 +80,49 @@ package et_schematic_ops.units is
 	-- CS procedure set_partcode that takes a device cursor.
 
 
+
+
+
+	
+-- PACKAGE VARIANT:
+	
+	-- Returns the package variants available for the
+	-- given device.
+	-- The device must be real. Otherwise constraint error rises.
+	function get_available_package_variants (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name) -- R2
+		return pac_package_variants.map;
+
+
+	
+	-- Returns the name of the package variant of the device.
+	-- The device must exist and it must be a real device.
+	-- Otherwise an exception will be raised:
+	function get_package_variant (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name) -- R2
+		return pac_package_variant_name.bounded_string; -- D, N
+
+	
+	
+	-- Sets the package variant of a device.
+	-- The device must exist, it must be a real device and
+	-- the given package variant must be available.
+	-- Otherwise a warning will be issued:
+	procedure set_package_variant (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- R2
+		variant			: in pac_package_variant_name.bounded_string; -- N, D
+		log_threshold	: in type_log_level);
+
+
+
+
+
+	
+
+	
 
 	-- Returns true if the given module provides the given device.
 	-- The module being searched in must be in the rig already.						
@@ -114,35 +160,7 @@ package et_schematic_ops.units is
 		device	: in type_device_name) -- R2
 		return pac_device_model_file.bounded_string; -- 7400.dev
 
-	
-	-- Returns the package variants available for the
-	-- given device.
-	-- The device must be real. Otherwise constraint error rises.
-	function get_available_variants (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name) -- R2
-		return pac_package_variants.map;
 
-	
-	-- Returns the name of the package variant name of the device.
-	-- Raises constraint error if the device does not exist.
-	-- Raises semantic error if the device is virtual.
-	function get_variant (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name) -- R2
-		return pac_package_variant_name.bounded_string; -- D, N
-
-	
-	
-	-- Sets the package variant of a device.
-	-- The device must exist, it must be a real device and
-	-- the given package variant must be available.
-	-- Otherwise a warning will be issued:
-	procedure set_variant (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_device_name; -- R2
-		variant			: in pac_package_variant_name.bounded_string; -- N, D
-		log_threshold	: in type_log_level);
 
 
 	
