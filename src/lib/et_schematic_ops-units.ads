@@ -288,19 +288,9 @@ package et_schematic_ops.units is
 	
 
 	
-	
-
-	-- Returns the sheet/x/y position of the given device,
-	-- unit and port:
-	function get_position (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_device_name; -- IC34
-		port_name		: in pac_port_name.bounded_string; -- CE
-		log_threshold	: in type_log_level)
-		return type_object_position;
 
 
-
+-- UNIT and PORT:
 	
 	-- Locates the given unit of the given device in the 
 	-- given module and returns the cursor to the unit.
@@ -388,9 +378,6 @@ package et_schematic_ops.units is
 		unit			: in pac_unit_name.bounded_string)
 		return type_object_position;
 
-
-
-	
 	
 	
 	-- Returns the sheet number of the given unit.
@@ -400,7 +387,6 @@ package et_schematic_ops.units is
 		device			: in type_device_name; -- R2
 		unit			: in pac_unit_name.bounded_string)
 		return type_sheet;
-
 
 
 
@@ -471,13 +457,9 @@ package et_schematic_ops.units is
 		return type_port_properties_access;
 
 
-	
-
-
 	-- CS type_port_query
 
 	-- CS function port_position 
-
 
 	
 	-- Deletes a unit of a device. 
@@ -490,6 +472,16 @@ package et_schematic_ops.units is
 		log_threshold	: in type_log_level);
 
 
+
+
+	
+	
+
+
+-- DEVICE DELETE and RENAME:
+
+
+	
 	-- Deletes a whole device (incl. all its units)
 	-- in the module:
 	procedure delete_device (
@@ -521,6 +513,10 @@ package et_schematic_ops.units is
 		device_name_before	: in type_device_name; -- IC1
 		device_name_after	: in type_device_name; -- IC23
 		log_threshold		: in type_log_level);
+
+
+
+
 
 
 	
