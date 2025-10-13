@@ -160,8 +160,423 @@ package body et_schematic_ops.units is
 
 
 
+
 	
 
+-- ASSEMBLY VARIANT:
+
+	
+
+	function device_exists (
+		module	: in pac_generic_modules.cursor; -- the module like motor_driver
+		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
+		device	: in type_device_name)
+		return boolean 
+	is
+		result : boolean := false; -- to be returned
+
+		
+		procedure query_variants (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use pac_assembly_variants;
+			variant_cursor : pac_assembly_variants.cursor;
+
+			
+			procedure query_devices (
+				variant_name	: in pac_assembly_variant_name.bounded_string;
+				variant			: in type_assembly_variant) 
+			is
+				use et_assembly_variants;
+				use pac_device_variants;
+				device_cursor : pac_device_variants.cursor;
+			begin
+				device_cursor := find (variant.devices, device);
+
+				-- The device may be listed in the assembly variant:
+				if device_cursor /= pac_device_variants.no_element then
+					case element (device_cursor).mounted is
+						when YES => result := true; -- mounted with alternative value, partcode or purpose
+						when NO  => result := false; -- not mounted
+					end case;
+				else
+				-- The device may be NOT listed in the assembly variant. Means it is mounted always.
+					result := true;
+				end if;
+					
+			end query_devices;
+
+			
+		begin -- query_variants
+			variant_cursor := find (module.variants, variant);
+
+			query_element (
+				position	=> variant_cursor,
+				process		=> query_devices'access);
+		end;
+
+		
+	begin
+-- 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+-- 			" variant " & enclose_in_quotes (to_variant (variant)) &
+-- 			" querying device " & to_string (device),
+-- 			level => log_threshold);
+
+		pac_generic_modules.query_element (
+			position	=> module,
+			process		=> query_variants'access);
+		
+		return result;
+	end device_exists;
+
+
+
+	
+
+	
+
+	function get_alternative_device (
+		module	: in pac_generic_modules.cursor; -- the module like motor_driver
+		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
+		device	: in type_device_name)
+		return pac_device_variants.cursor 
+	is
+
+		cursor : pac_device_variants.cursor; -- to be returned;
+		
+		procedure query_variants (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) is
+			use pac_assembly_variants;
+			
+			variant_cursor : pac_assembly_variants.cursor;
+
+			procedure query_devices (
+				variant_name	: in pac_assembly_variant_name.bounded_string;
+				variant			: in type_assembly_variant) is
+				use pac_device_variants;
+			begin
+				cursor := find (variant.devices, device);
+			end query_devices;
+				
+		begin -- query_variants
+			variant_cursor := find (module.variants, variant);
+
+			query_element (
+				position	=> variant_cursor,
+				process		=> query_devices'access);
+		end;
+		
+	begin
+		pac_generic_modules.query_element (
+			position	=> module,
+			process		=> query_variants'access);
+		
+		return cursor;
+	end get_alternative_device;
+
+
+
+
+
+
+
+	procedure mount_device (
+		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		device			: in type_device_name; -- R1
+		value			: in pac_device_value.bounded_string; -- 220R
+		partcode		: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
+		purpose			: in pac_device_purpose.bounded_string := pac_device_purpose.to_bounded_string (""); -- set temperature
+		log_threshold	: in type_log_level) 
+	is
+		module_cursor : pac_generic_modules.cursor; -- points to the module
+
+		use et_assembly_variants;
+
+		
+		function write_purpose return string is
+		begin
+			if get_length (purpose) = 0 then
+				return "";
+			else
+				return " purpose " & enclose_in_quotes (to_string (purpose));
+			end if;
+		end;
+
+		
+		procedure mount (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use et_assembly_variants.pac_assembly_variants;
+			cursor : et_assembly_variants.pac_assembly_variants.cursor;
+
+			procedure insert_device (
+				name		: in pac_assembly_variant_name.bounded_string;
+				variant		: in out et_assembly_variants.type_assembly_variant) is
+				use et_assembly_variants.pac_device_variants;
+				cursor : et_assembly_variants.pac_device_variants.cursor;
+				inserted : boolean;
+			begin
+				-- Locate the device in the variant.
+				-- If already there, delete it and insert it anew
+				-- as specified by the operator.
+				cursor := find (variant.devices, device);
+
+				if cursor /= et_assembly_variants.pac_device_variants.no_element then -- device already there
+					delete (variant.devices, cursor);
+				end if;
+					
+				insert (
+					container	=> variant.devices,
+					position	=> cursor,
+					inserted	=> inserted,
+					key			=> device, -- R1
+					new_item	=> (
+							mounted		=> YES,
+							value		=> value,		-- 220R
+							partcode	=> partcode,	-- R_PAC_S_0805_VAL_220R
+							purpose		=> purpose)		-- set temperature
+				   );
+					
+			end insert_device;
+			
+			
+		begin -- mount
+			-- the variant must exists
+			cursor := et_assembly_variants.pac_assembly_variants.find (module.variants, variant_name);
+
+			if cursor /= et_assembly_variants.pac_assembly_variants.no_element then
+
+				et_assembly_variants.pac_assembly_variants.update_element (
+					container	=> module.variants,
+					position	=> cursor,
+					process		=> insert_device'access);
+
+			else
+				assembly_variant_not_found (variant_name);
+			end if;
+
+		end mount;
+
+		
+	begin -- mount_device
+		log (text => "module " & to_string (module_name) &
+			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
+			 " mount device " & to_string (device) &
+			 " value " & to_string (value) &
+			 " partcode " & to_string (partcode) &
+			 write_purpose,
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- Test whether the given device exists in the module.
+		if device_exists (module_cursor, device) then
+		
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> mount'access);
+
+		else
+			device_not_found (device);
+		end if;
+	end mount_device;
+
+
+
+
+	
+
+	
+	procedure unmount_device (
+		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		device			: in type_device_name; -- R1
+		log_threshold	: in type_log_level) 
+	is
+		module_cursor : pac_generic_modules.cursor; -- points to the module
+
+		use et_assembly_variants;
+
+		
+		procedure unmount (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use et_assembly_variants.pac_assembly_variants;
+			cursor : et_assembly_variants.pac_assembly_variants.cursor;
+
+			procedure insert_device (
+				name		: in pac_assembly_variant_name.bounded_string;
+				variant		: in out et_assembly_variants.type_assembly_variant) 
+			is
+				use et_assembly_variants.pac_device_variants;
+				cursor : et_assembly_variants.pac_device_variants.cursor;
+				inserted : boolean;
+			begin
+				-- Locate the device in the variant.
+				-- If already there, delete it and insert it anew.
+				cursor := find (variant.devices, device);
+
+				if cursor /= et_assembly_variants.pac_device_variants.no_element then -- device already there
+					delete (variant.devices, cursor);
+				end if;
+					
+				insert (
+					container	=> variant.devices,
+					position	=> cursor,
+					inserted	=> inserted,
+					key			=> device, -- R1
+					new_item	=> (
+							mounted		=> NO)
+				   );
+					
+			end insert_device;
+
+			
+		begin -- unmount
+			-- the variant must exists
+			cursor := et_assembly_variants.pac_assembly_variants.find (module.variants, variant_name);
+
+			if cursor /= et_assembly_variants.pac_assembly_variants.no_element then
+
+				et_assembly_variants.pac_assembly_variants.update_element (
+					container	=> module.variants,
+					position	=> cursor,
+					process		=> insert_device'access);
+
+			else
+				assembly_variant_not_found (variant_name);
+			end if;
+		end unmount;
+
+		
+	begin -- unmount_device
+		log (text => "module " & to_string (module_name) &
+			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
+			 " unmounting device " & to_string (device),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- Test whether the given device exists in the module.
+		if device_exists (module_cursor, device) then
+			
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> unmount'access);
+
+		else
+			device_not_found (device);
+		end if;
+			
+	end unmount_device;
+
+
+
+
+
+	
+	
+	procedure remove_device (
+		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		device			: in type_device_name; -- R1
+		log_threshold	: in type_log_level) 
+	is
+
+		module_cursor : pac_generic_modules.cursor; -- points to the module
+
+		use et_assembly_variants;
+
+		
+		procedure remove (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use et_assembly_variants.pac_assembly_variants;
+			cursor : et_assembly_variants.pac_assembly_variants.cursor;
+
+			
+			procedure delete_device (
+				name		: in pac_assembly_variant_name.bounded_string;
+				variant		: in out et_assembly_variants.type_assembly_variant) 
+			is
+				use et_assembly_variants.pac_device_variants;
+				cursor : et_assembly_variants.pac_device_variants.cursor;
+			begin
+				-- Locate the device in the variant. Issue error message
+				-- if not found.
+				cursor := find (variant.devices, device);
+
+				if cursor /= et_assembly_variants.pac_device_variants.no_element then  -- device in assembly variant
+					delete (variant.devices, cursor); -- delete device
+				else
+					log (ERROR, "device " & to_string (device) &
+						" not found in assembly variant " &
+						enclose_in_quotes (to_variant (variant_name)) & " !",
+						 console => true);
+					raise constraint_error;
+				end if;
+					
+			end delete_device;
+
+			
+		begin -- remove
+			-- the variant must exist
+			cursor := et_assembly_variants.pac_assembly_variants.find (module.variants, variant_name);
+
+			if cursor /= et_assembly_variants.pac_assembly_variants.no_element then
+
+				et_assembly_variants.pac_assembly_variants.update_element (
+					container	=> module.variants,
+					position	=> cursor,
+					process		=> delete_device'access);
+
+			else
+				assembly_variant_not_found (variant_name);
+			end if;
+
+		end remove;
+
+		
+	begin -- remove_device
+		log (text => "module " & to_string (module_name) &
+			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
+			 " removing device " & to_string (device),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- Test whether the given device exists in the module.
+		if device_exists (module_cursor, device) then
+			
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> remove'access);
+
+		else
+			device_not_found (device);
+		end if;
+		
+	end remove_device;
+
+
+
+
+
+
+
+	
 	
 
 	
@@ -701,402 +1116,6 @@ package body et_schematic_ops.units is
 
 	
 
-	function device_exists (
-		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
-		device	: in type_device_name)
-		return boolean 
-	is
-		result : boolean := false; -- to be returned
-
-		
-		procedure query_variants (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is
-			use pac_assembly_variants;
-			variant_cursor : pac_assembly_variants.cursor;
-
-			
-			procedure query_devices (
-				variant_name	: in pac_assembly_variant_name.bounded_string;
-				variant			: in type_assembly_variant) 
-			is
-				use et_assembly_variants;
-				use pac_device_variants;
-				device_cursor : pac_device_variants.cursor;
-			begin
-				device_cursor := find (variant.devices, device);
-
-				-- The device may be listed in the assembly variant:
-				if device_cursor /= pac_device_variants.no_element then
-					case element (device_cursor).mounted is
-						when YES => result := true; -- mounted with alternative value, partcode or purpose
-						when NO  => result := false; -- not mounted
-					end case;
-				else
-				-- The device may be NOT listed in the assembly variant. Means it is mounted always.
-					result := true;
-				end if;
-					
-			end query_devices;
-
-			
-		begin -- query_variants
-			variant_cursor := find (module.variants, variant);
-
-			query_element (
-				position	=> variant_cursor,
-				process		=> query_devices'access);
-		end;
-
-		
-	begin
--- 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
--- 			" variant " & enclose_in_quotes (to_variant (variant)) &
--- 			" querying device " & to_string (device),
--- 			level => log_threshold);
-
-		pac_generic_modules.query_element (
-			position	=> module,
-			process		=> query_variants'access);
-		
-		return result;
-	end device_exists;
-
-
-
-	
-	
-
-	function get_alternative_device (
-		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
-		device	: in type_device_name)
-		return pac_device_variants.cursor 
-	is
-
-		cursor : pac_device_variants.cursor; -- to be returned;
-		
-		procedure query_variants (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) is
-			use pac_assembly_variants;
-			
-			variant_cursor : pac_assembly_variants.cursor;
-
-			procedure query_devices (
-				variant_name	: in pac_assembly_variant_name.bounded_string;
-				variant			: in type_assembly_variant) is
-				use pac_device_variants;
-			begin
-				cursor := find (variant.devices, device);
-			end query_devices;
-				
-		begin -- query_variants
-			variant_cursor := find (module.variants, variant);
-
-			query_element (
-				position	=> variant_cursor,
-				process		=> query_devices'access);
-		end;
-		
-	begin
-		pac_generic_modules.query_element (
-			position	=> module,
-			process		=> query_variants'access);
-		
-		return cursor;
-	end get_alternative_device;
-
-
-
-
-
-
-
-	procedure mount_device (
-		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
-		device			: in type_device_name; -- R1
-		value			: in pac_device_value.bounded_string; -- 220R
-		partcode		: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
-		purpose			: in pac_device_purpose.bounded_string := pac_device_purpose.to_bounded_string (""); -- set temperature
-		log_threshold	: in type_log_level) 
-	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module
-
-		use et_assembly_variants;
-
-		
-		function write_purpose return string is
-		begin
-			if get_length (purpose) = 0 then
-				return "";
-			else
-				return " purpose " & enclose_in_quotes (to_string (purpose));
-			end if;
-		end;
-
-		
-		procedure mount (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			use et_assembly_variants.pac_assembly_variants;
-			cursor : et_assembly_variants.pac_assembly_variants.cursor;
-
-			procedure insert_device (
-				name		: in pac_assembly_variant_name.bounded_string;
-				variant		: in out et_assembly_variants.type_assembly_variant) is
-				use et_assembly_variants.pac_device_variants;
-				cursor : et_assembly_variants.pac_device_variants.cursor;
-				inserted : boolean;
-			begin
-				-- Locate the device in the variant.
-				-- If already there, delete it and insert it anew
-				-- as specified by the operator.
-				cursor := find (variant.devices, device);
-
-				if cursor /= et_assembly_variants.pac_device_variants.no_element then -- device already there
-					delete (variant.devices, cursor);
-				end if;
-					
-				insert (
-					container	=> variant.devices,
-					position	=> cursor,
-					inserted	=> inserted,
-					key			=> device, -- R1
-					new_item	=> (
-							mounted		=> YES,
-							value		=> value,		-- 220R
-							partcode	=> partcode,	-- R_PAC_S_0805_VAL_220R
-							purpose		=> purpose)		-- set temperature
-				   );
-					
-			end insert_device;
-			
-			
-		begin -- mount
-			-- the variant must exists
-			cursor := et_assembly_variants.pac_assembly_variants.find (module.variants, variant_name);
-
-			if cursor /= et_assembly_variants.pac_assembly_variants.no_element then
-
-				et_assembly_variants.pac_assembly_variants.update_element (
-					container	=> module.variants,
-					position	=> cursor,
-					process		=> insert_device'access);
-
-			else
-				assembly_variant_not_found (variant_name);
-			end if;
-
-		end mount;
-
-		
-	begin -- mount_device
-		log (text => "module " & to_string (module_name) &
-			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
-			 " mount device " & to_string (device) &
-			 " value " & to_string (value) &
-			 " partcode " & to_string (partcode) &
-			 write_purpose,
-			level => log_threshold);
-
-		-- locate module
-		module_cursor := locate_module (module_name);
-
-		-- Test whether the given device exists in the module.
-		if device_exists (module_cursor, device) then
-		
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> mount'access);
-
-		else
-			device_not_found (device);
-		end if;
-	end mount_device;
-
-
-
-
-	
-
-	
-	procedure unmount_device (
-		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
-		device			: in type_device_name; -- R1
-		log_threshold	: in type_log_level) is
-
-		module_cursor : pac_generic_modules.cursor; -- points to the module
-
-		use et_assembly_variants;
-
-		procedure unmount (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) is
-			use et_assembly_variants.pac_assembly_variants;
-			cursor : et_assembly_variants.pac_assembly_variants.cursor;
-
-			procedure insert_device (
-				name		: in pac_assembly_variant_name.bounded_string;
-				variant		: in out et_assembly_variants.type_assembly_variant) is
-				use et_assembly_variants.pac_device_variants;
-				cursor : et_assembly_variants.pac_device_variants.cursor;
-				inserted : boolean;
-			begin
-				-- Locate the device in the variant.
-				-- If already there, delete it and insert it anew.
-				cursor := find (variant.devices, device);
-
-				if cursor /= et_assembly_variants.pac_device_variants.no_element then -- device already there
-					delete (variant.devices, cursor);
-				end if;
-					
-				insert (
-					container	=> variant.devices,
-					position	=> cursor,
-					inserted	=> inserted,
-					key			=> device, -- R1
-					new_item	=> (
-							mounted		=> NO)
-				   );
-					
-			end insert_device;
-
-			
-		begin -- unmount
-			-- the variant must exists
-			cursor := et_assembly_variants.pac_assembly_variants.find (module.variants, variant_name);
-
-			if cursor /= et_assembly_variants.pac_assembly_variants.no_element then
-
-				et_assembly_variants.pac_assembly_variants.update_element (
-					container	=> module.variants,
-					position	=> cursor,
-					process		=> insert_device'access);
-
-			else
-				assembly_variant_not_found (variant_name);
-			end if;
-		end unmount;
-
-		
-	begin -- unmount_device
-		log (text => "module " & to_string (module_name) &
-			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
-			 " unmounting device " & to_string (device),
-			level => log_threshold);
-
-		-- locate module
-		module_cursor := locate_module (module_name);
-
-		-- Test whether the given device exists in the module.
-		if device_exists (module_cursor, device) then
-			
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> unmount'access);
-
-		else
-			device_not_found (device);
-		end if;
-			
-	end unmount_device;
-
-
-
-
-
-	
-	
-	procedure remove_device (
-	-- Removes the gvien device from the given assembly variant.
-		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
-		device			: in type_device_name; -- R1
-		log_threshold	: in type_log_level) is
-
-		module_cursor : pac_generic_modules.cursor; -- points to the module
-
-		use et_assembly_variants;
-
-		
-		procedure remove (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) is
-			use et_assembly_variants.pac_assembly_variants;
-			cursor : et_assembly_variants.pac_assembly_variants.cursor;
-
-			
-			procedure delete_device (
-				name		: in pac_assembly_variant_name.bounded_string;
-				variant		: in out et_assembly_variants.type_assembly_variant) is
-				use et_assembly_variants.pac_device_variants;
-				cursor : et_assembly_variants.pac_device_variants.cursor;
-			begin
-				-- Locate the device in the variant. Issue error message
-				-- if not found.
-				cursor := find (variant.devices, device);
-
-				if cursor /= et_assembly_variants.pac_device_variants.no_element then  -- device in assembly variant
-					delete (variant.devices, cursor); -- delete device
-				else
-					log (ERROR, "device " & to_string (device) &
-						" not found in assembly variant " &
-						enclose_in_quotes (to_variant (variant_name)) & " !",
-						 console => true);
-					raise constraint_error;
-				end if;
-					
-			end delete_device;
-
-			
-		begin -- remove
-			-- the variant must exist
-			cursor := et_assembly_variants.pac_assembly_variants.find (module.variants, variant_name);
-
-			if cursor /= et_assembly_variants.pac_assembly_variants.no_element then
-
-				et_assembly_variants.pac_assembly_variants.update_element (
-					container	=> module.variants,
-					position	=> cursor,
-					process		=> delete_device'access);
-
-			else
-				assembly_variant_not_found (variant_name);
-			end if;
-
-		end remove;
-
-		
-	begin -- remove_device
-		log (text => "module " & to_string (module_name) &
-			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
-			 " removing device " & to_string (device),
-			level => log_threshold);
-
-		-- locate module
-		module_cursor := locate_module (module_name);
-
-		-- Test whether the given device exists in the module.
-		if device_exists (module_cursor, device) then
-			
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> remove'access);
-
-		else
-			device_not_found (device);
-		end if;
-		
-	end remove_device;
 
 	
 

@@ -90,6 +90,77 @@ package et_schematic_ops.units is
 
 
 	
+
+
+-- ASSEMBLY VARIANT:
+	
+	-- Returns true if the given module and assembly variant 
+	-- provides the given device.
+	-- Assumptions: 
+	-- - The module being searched in must be in the rig already.
+	-- - The assembly variant must exist in the module.
+	-- - The device must exist in the module.
+	function device_exists (
+		module	: in pac_generic_modules.cursor; -- the module like motor_driver
+		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
+		device	: in type_device_name)
+		return boolean;
+
+
+
+	-- Returns a cursor to the alternative device in the given module
+	-- and given assembly variant.
+	-- Assumptions: 
+	-- - The module being searched in must be in the rig already.
+	-- - The assembly variant must exist in the module.
+	-- - The device must exist in the module.
+	-- - The device must have an entry in the given assembly variant,
+	--   otherwise the return is no_element.
+	function get_alternative_device (
+		module	: in pac_generic_modules.cursor; -- the module like motor_driver
+		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
+		device	: in type_device_name)
+		return pac_device_variants.cursor;
+
+
+
+
+	-- Sets the value, partcode and (optionally the purpose) of a device in 
+	-- An already existing device will be overwritten without warning.
+	procedure mount_device (
+		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		device			: in type_device_name; -- R1
+		value			: in pac_device_value.bounded_string; -- 220R
+		partcode		: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
+		purpose			: in pac_device_purpose.bounded_string := pac_device_purpose.to_bounded_string (""); -- set temperature
+		log_threshold	: in type_log_level);
+
+	
+	-- Sets the given device as not mounted in the given assembly variant.
+	-- Sets the gvien device as not mounted in 
+	-- the given assembly variant. An already existing device will be overwritten
+	-- without warning.
+	procedure unmount_device (
+		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		device			: in type_device_name; -- R1
+		log_threshold	: in type_log_level);
+
+	
+	-- Removes the given device from the given assembly variant.
+	procedure remove_device (
+		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		device			: in type_device_name; -- R1
+		log_threshold	: in type_log_level);
+
+
+
+
+	
+
+	
 	
 
 -- VALUE, PURPOSE, PARTCODE:
@@ -214,67 +285,7 @@ package et_schematic_ops.units is
 
 
 
-	-- Returns true if the given module and assembly variant 
-	-- provides the given device.
-	-- Assumptions: 
-	-- - The module being searched in must be in the rig already.
-	-- - The assembly variant must exist in the module.
-	-- - The device must exist in the module.
-	function device_exists (
-		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
-		device	: in type_device_name)
-		return boolean;
-
-
-
-	-- Returns a cursor to the alternative device in the given module
-	-- and given assembly variant.
-	-- Assumptions: 
-	-- - The module being searched in must be in the rig already.
-	-- - The assembly variant must exist in the module.
-	-- - The device must exist in the module.
-	-- - The device must have an entry in the given assembly variant,
-	--   otherwise the return is no_element.
-	function get_alternative_device (
-		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
-		device	: in type_device_name)
-		return pac_device_variants.cursor;
-
-
-
-
-	-- Sets the value, partcode and (optionally the purpose) of a device in 
-	-- An already existing device will be overwritten without warning.
-	procedure mount_device (
-		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
-		device			: in type_device_name; -- R1
-		value			: in pac_device_value.bounded_string; -- 220R
-		partcode		: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
-		purpose			: in pac_device_purpose.bounded_string := pac_device_purpose.to_bounded_string (""); -- set temperature
-		log_threshold	: in type_log_level);
-
 	
-	-- Sets the given device as not mounted in the given assembly variant.
-	-- Sets the gvien device as not mounted in 
-	-- the given assembly variant. An already existing device will be overwritten
-	-- without warning.
-	procedure unmount_device (
-		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
-		device			: in type_device_name; -- R1
-		log_threshold	: in type_log_level);
-
-	
-	-- Removes the given device from the given assembly variant.
-	procedure remove_device (
-		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
-		device			: in type_device_name; -- R1
-		log_threshold	: in type_log_level);
-
 
 	
 	
