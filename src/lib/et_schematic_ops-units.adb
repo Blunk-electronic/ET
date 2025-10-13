@@ -99,9 +99,7 @@ package body et_schematic_ops.units is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is
-			use pac_devices_sch;
-		begin
+		is begin
 			result := find (module.devices, device);
 		end;
 
@@ -118,19 +116,25 @@ package body et_schematic_ops.units is
 
 	
 	
-	function locate_device (
+	function get_device_model (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
 		return pac_devices_lib.cursor
 	is
 		cursor_sch : pac_devices_sch.cursor;
 	begin
-		-- find the device in the module
+		-- Locate the device in the module:
 		cursor_sch := get_electrical_device (module, device);
 
-		-- find the device in the library
-		return get_device_model (cursor_sch);
-	end locate_device;
+		-- If the device exists in the module, then
+		-- locate the device model in the library.
+		-- Otherwise return no_element:
+		if has_element (cursor_sch) then
+			return get_device_model (cursor_sch);
+		else
+			return pac_devices_lib.no_element;
+		end if;
+	end get_device_model;
 
 
 
@@ -384,7 +388,7 @@ package body et_schematic_ops.units is
 	is
 		cursor_lib : pac_devices_lib.cursor;	
 	begin
-		cursor_lib := locate_device (module, device);
+		cursor_lib := get_device_model (module, device);
 		return get_available_variants (cursor_lib);
 	end get_available_package_variants;
 

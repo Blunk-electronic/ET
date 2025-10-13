@@ -65,10 +65,10 @@ package et_schematic_ops.units is
 		return pac_devices_sch.cursor;
 
 	
-	-- Returns the cursor of the device model
-	-- for the given device in the module.
-	-- Raises exception if device does not exist.
-	function locate_device (
+	-- Returns the cursor to the device model
+	-- for the given device in the given module.
+	-- If the device does not exist, then no_element is returned:
+	function get_device_model (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
 		return pac_devices_lib.cursor;
