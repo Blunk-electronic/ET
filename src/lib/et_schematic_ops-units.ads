@@ -42,6 +42,7 @@ with et_units;							use et_units;
 with et_unit_name;						use et_unit_name;
 with et_device_placeholders;			use et_device_placeholders;
 with et_object_status;					use et_object_status;
+with et_device_category_electrical_non_electrical;	use et_device_category_electrical_non_electrical;
 
 
 package et_schematic_ops.units is
@@ -164,26 +165,19 @@ package et_schematic_ops.units is
 
 
 
-	
 
 	
+-- DEVICE ADD and COPY:
 
 
-	
-
-
-	-- To distinguish between electrical and non-electrical devices
-	-- use this type:
-	type type_device_category is (ELECTRICAL, NON_ELECTRICAL);
-	-- CS: This type and the function get_next_device_name (see below)
-	-- seem misplaced here.	
-	
-	-- Returns for the given device prefix the next available device name in the module.
-	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 the return will be C2.
-	function get_next_device_name (
+	-- Returns for the given device prefix the next available 
+	-- device name in the module.
+	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 
+	-- then the return will be C2.
+	function get_next_available_device_name (
 		module_cursor	: in pac_generic_modules.cursor;
 		prefix			: in pac_device_prefix.bounded_string; -- C
-		category		: in type_device_category := ELECTRICAL)
+		category		: in type_electrical_non_electrical := CAT_ELECTRICAL)
 		return type_device_name; -- C2
 
 	

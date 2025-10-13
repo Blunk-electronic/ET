@@ -523,10 +523,10 @@ package body et_schematic_ops.units is
 
 
 	
-	function get_next_device_name (
+	function get_next_available_device_name (
 		module_cursor	: in pac_generic_modules.cursor;
 		prefix			: in pac_device_prefix.bounded_string; -- R, L, C, IC, FD, H, ...
-		category		: in type_device_category := ELECTRICAL)
+		category		: in type_electrical_non_electrical := CAT_ELECTRICAL)
 		return type_device_name
 	is
 		-- CS: look up non-electric devices
@@ -657,13 +657,13 @@ package body et_schematic_ops.units is
 
 		-- The device category decides where to look first for a free device name.
 		case category is
-			when ELECTRICAL =>
+			when CAT_ELECTRICAL =>
 				
 				query_element (
 					position	=> module_cursor,
 					process		=> search_gap_electric'access);
 
-			when NON_ELECTRICAL =>
+			when CAT_NON_ELECTRICAL =>
 				
 				query_element (
 					position	=> module_cursor,
@@ -671,7 +671,7 @@ package body et_schematic_ops.units is
 		end case;
 				
 		return next_name;
-	end get_next_device_name;
+	end get_next_available_device_name;
 
 
 
