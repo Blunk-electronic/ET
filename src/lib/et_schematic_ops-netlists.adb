@@ -66,7 +66,7 @@ package body et_schematic_ops.netlists is
 
 			use et_schematic_ops.units;
 		begin
-			device_cursor := locate_device (module_cursor, element (port_cursor).device_name);
+			device_cursor := get_electrical_device (module_cursor, element (port_cursor).device_name);
 
 			-- Get further properties of the current port if the device
 			-- is real (appears in PCB):

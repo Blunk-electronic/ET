@@ -450,7 +450,7 @@ begin
 	-- Locate the targeted device in the given module.
 	-- If the device exists, then proceed with further actions.
 	-- Otherwise abort this procedure with a warning:
-	device_cursor_sch := locate_device (module_cursor, device_name);
+	device_cursor_sch := get_electrical_device (module_cursor, device_name);
 		
 	if has_element (device_cursor_sch) then -- device exists in schematic
 

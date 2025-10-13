@@ -60,6 +60,85 @@ package body et_schematic_ops.units is
 	
 
 
+	function device_exists (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name)
+		return boolean 
+	is
+		device_found : boolean := false; -- to be returned
+		
+		procedure query_devices (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is begin
+			if contains (module.devices, device) then
+				device_found := true;
+			end if;
+		end query_devices;
+		
+	begin
+		pac_generic_modules.query_element (
+			position	=> module,
+			process		=> query_devices'access);
+
+		return device_found;
+	end device_exists;
+
+
+
+	
+
+	
+	function get_electrical_device (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name) -- R2
+		return pac_devices_sch.cursor 
+	is
+		result : pac_devices_sch.cursor;
+		
+		procedure query_devices (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use pac_devices_sch;
+		begin
+			result := find (module.devices, device);
+		end;
+
+	begin
+		pac_generic_modules.query_element (
+			position	=> module,
+			process		=> query_devices'access);
+
+		return result;
+	end get_electrical_device;
+
+
+
+
+	
+	
+	function locate_device (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name) -- R2
+		return pac_devices_lib.cursor
+	is
+		cursor_sch : pac_devices_sch.cursor;
+	begin
+		-- find the device in the module
+		cursor_sch := get_electrical_device (module, device);
+
+		-- find the device in the library
+		return get_device_model (cursor_sch);
+	end locate_device;
+
+
+
+
+	
+
+	
+
 	
 -- VALUE, PURPOSE, PARTCODE:
 	
@@ -128,7 +207,7 @@ package body et_schematic_ops.units is
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.
 		-- Otherwise abort this procedure with a warning:
-		device_cursor_sch := locate_device (module_cursor, device_name);
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
 		if has_element (device_cursor_sch) then -- device exists in schematic
 			
@@ -200,7 +279,7 @@ package body et_schematic_ops.units is
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.
 		-- Otherwise abort this procedure with a warning:
-		device_cursor_sch := locate_device (module_cursor, device_name);
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
 		if has_element (device_cursor_sch) then -- device exists in schematic
 			
@@ -273,7 +352,7 @@ package body et_schematic_ops.units is
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.
 		-- Otherwise abort this procedure with a warning:
-		device_cursor_sch := locate_device (module_cursor, device_name);
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
 		if has_element (device_cursor_sch) then -- device exists in schematic
 			
@@ -320,7 +399,7 @@ package body et_schematic_ops.units is
 	is
 		cursor_sch : pac_devices_sch.cursor;
 	begin
-		cursor_sch := locate_device (module, device);
+		cursor_sch := get_electrical_device (module, device);
 		
 		return get_package_variant (cursor_sch);
 	end get_package_variant;
@@ -391,7 +470,7 @@ package body et_schematic_ops.units is
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.
 		-- Otherwise abort this procedure with a warning:
-		device_cursor_sch := locate_device (module_cursor, device_name);
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
 		if has_element (device_cursor_sch) then -- device exists in schematic
 			
@@ -417,78 +496,6 @@ package body et_schematic_ops.units is
 	
 	
 	
-	function device_exists (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name)
-		return boolean 
-	is
-		device_found : boolean := false; -- to be returned
-		
-		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is begin
-			if contains (module.devices, device) then
-				device_found := true;
-			end if;
-		end query_devices;
-		
-	begin
-		pac_generic_modules.query_element (
-			position	=> module,
-			process		=> query_devices'access);
-
-		return device_found;
-	end device_exists;
-
-
-
-	
-
-	
-	function locate_device (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name) -- R2
-		return pac_devices_sch.cursor 
-	is
-		result : pac_devices_sch.cursor;
-		
-		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is
-			use pac_devices_sch;
-		begin
-			result := find (module.devices, device);
-		end;
-
-	begin
-		pac_generic_modules.query_element (
-			position	=> module,
-			process		=> query_devices'access);
-
-		return result;
-	end locate_device;
-
-
-
-
-	
-	
-	function locate_device (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name) -- R2
-		return pac_devices_lib.cursor
-	is
-		cursor_sch : pac_devices_sch.cursor;
-	begin
-		-- find the device in the module
-		cursor_sch := locate_device (module, device);
-
-		-- find the device in the library
-		return get_device_model (cursor_sch);
-	end locate_device;
-
 
 
 
@@ -503,7 +510,7 @@ package body et_schematic_ops.units is
 	is 
 		use pac_devices_sch;
 	begin
-		return element (locate_device (module, device)).model;
+		return element (get_electrical_device (module, device)).model;
 	end device_model_name;
 
 
@@ -526,7 +533,7 @@ package body et_schematic_ops.units is
 		cursor_sch : pac_devices_sch.cursor;
 		device_model : pac_device_model_file.bounded_string;
 	begin
-		cursor_sch := locate_device (module, device);
+		cursor_sch := get_electrical_device (module, device);
 		device_model := pac_devices_sch.element (cursor_sch).model;
 		return get_device_model_cursor (device_model);
 	end device_model_cursor;
@@ -1243,7 +1250,7 @@ package body et_schematic_ops.units is
 		end query_units;
 	
 	begin -- locate_unit
-		device_cursor := locate_device (module_cursor, device);
+		device_cursor := get_electrical_device (module_cursor, device);
 
 		-- locate the unit
 		query_element (device_cursor, query_units'access);
@@ -1561,7 +1568,7 @@ package body et_schematic_ops.units is
 		if contains (all_unit_names, unit_name) then
 			
 			-- locate the device in the schematic:
-			device_cursor_sch := locate_device (module_cursor, device_name);
+			device_cursor_sch := get_electrical_device (module_cursor, device_name);
 
 			-- Test whether the unit is already in use.
 			-- If device does not exist, a constraint_error will arise here.
@@ -1625,7 +1632,7 @@ package body et_schematic_ops.units is
 		log_indentation_up;
 
 		-- locate the device in the schematic:
-		device_cursor_sch := locate_device (module_cursor, device_name);
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 
 		-- Test whether the unit is already in use.
 		-- If device does not exist, a constraint_error will arise here.
@@ -1671,7 +1678,7 @@ package body et_schematic_ops.units is
 		
 	begin
 		-- locate the device in the schematic:
-		device_cursor_sch := locate_device (module_cursor, device);
+		device_cursor_sch := get_electrical_device (module_cursor, device);
 
 		query_element (
 			position	=> device_cursor_sch,
@@ -2238,7 +2245,7 @@ package body et_schematic_ops.units is
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.
 		-- Otherwise abort this procedure with a warning:
-		device_cursor_sch := locate_device (module_cursor, device_name);
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
 		if has_element (device_cursor_sch) then -- device exists in schematic
 			
@@ -2300,7 +2307,7 @@ package body et_schematic_ops.units is
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.
 		-- Otherwise abort this procedure with a warning:
-		device_cursor_sch := locate_device (module_cursor, device_name);
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
 		if has_element (device_cursor_sch) then -- device exists in schematic
 
@@ -2560,7 +2567,7 @@ package body et_schematic_ops.units is
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.
 		-- Otherwise abort this procedure with a warning:
-		device_cursor_sch := locate_device (module_cursor, device_name_before);
+		device_cursor_sch := get_electrical_device (module_cursor, device_name_before);
 			
 		if has_element (device_cursor_sch) then -- device exists in schematic
 			check_names;
@@ -2719,7 +2726,7 @@ package body et_schematic_ops.units is
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.
 		-- Otherwise abort this procedure with a warning:
-		device_cursor_sch := locate_device (module_cursor, device_name);
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
 		if has_element (device_cursor_sch) then -- device exists in schematic
 			
@@ -3305,7 +3312,7 @@ package body et_schematic_ops.units is
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.
 		-- Otherwise abort this procedure with a warning:
-		device_cursor_sch := locate_device (module_cursor, device_name);
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
 		if has_element (device_cursor_sch) then -- device exists in schematic
 			
@@ -3472,7 +3479,7 @@ package body et_schematic_ops.units is
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.
 		-- Otherwise abort this procedure with a warning:
-		device_cursor_sch := locate_device (module_cursor, device_name);
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
 		if has_element (device_cursor_sch) then -- device exists in schematic
 			
@@ -3944,7 +3951,7 @@ package body et_schematic_ops.units is
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.
 		-- Otherwise abort this procedure with a warning:
-		device_cursor_sch := locate_device (module_cursor, device_name);
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
 		if has_element (device_cursor_sch) then -- device exists in schematic
 			
@@ -4032,7 +4039,7 @@ package body et_schematic_ops.units is
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.
 		-- Otherwise abort this procedure with a warning:
-		device_cursor_sch := locate_device (module_cursor, device_name);
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
 		if has_element (device_cursor_sch) then -- device exists in schematic
 			

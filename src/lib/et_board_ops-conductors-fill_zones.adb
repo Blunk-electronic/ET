@@ -284,7 +284,7 @@ is
 				
 				-- Get the cursor to the device in the schematic:
 				device_cursor : constant pac_devices_sch.cursor := 
-					locate_device (module_cursor, port.device_name);
+					get_electrical_device (module_cursor, port.device_name);
 
 				-- Get the cursor to the physical terminal (in the package model)
 				-- that is linked with the port:

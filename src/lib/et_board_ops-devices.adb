@@ -2117,7 +2117,7 @@ package body et_board_ops.devices is
 			terminal_position : type_vector;
 			terminal_cursor : et_terminals.pac_terminals.cursor;
 		begin
-			device_cursor := locate_device (module_cursor, element (d).device_name);
+			device_cursor := get_electrical_device (module_cursor, element (d).device_name);
 
 			-- Only real devices have terminals. Virtual devices are ignored here:
 			if is_real (device_cursor) then
@@ -2547,7 +2547,7 @@ package body et_board_ops.devices is
 				
 				-- Get the cursor to the device in the schematic:
 				device_cursor : constant pac_devices_sch.cursor := 
-					locate_device (module_cursor, port.device_name);
+					get_electrical_device (module_cursor, port.device_name);
 
 				-- Get the cursor to the physical terminal (in the package model)
 				-- that is linked with the port:
