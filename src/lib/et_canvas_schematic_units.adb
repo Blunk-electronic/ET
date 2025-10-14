@@ -1183,9 +1183,17 @@ package body et_canvas_schematic_units is
 -- PACKAGE VARIANT:
 
 
-	procedure cb_new_package_variant_entered (
-		self : access gtk.gentry.gtk_entry_record'class) 
+	procedure cb_new_package_variant_selected (
+		combo : access gtk_combo_box_record'class)
 	is 
+		-- Get the model and active iter from the combo box:
+		model : constant gtk_tree_model := combo.get_model;
+		iter : constant gtk_tree_iter := combo.get_active_iter;
+
+		use glib.values;
+		name : gvalue;
+
+		
 		variant_new : pac_package_variant_name.bounded_string;
 
 		
@@ -1240,9 +1248,19 @@ package body et_canvas_schematic_units is
 
 		
 	begin
-		variant_new := to_variant_name (self.get_text); -- S_0805
+		log (text => "cb_new_package_variant_selected", level => log_threshold);
+		log_indentation_up;
 
-		-- put_line ("new package_variant entered: " & to_string (variant_new));
+		
+		-- Get the variant name of the entry column 0:
+		gtk.tree_model.get_value (model, iter, 0, name);
+		
+		variant_new := to_variant_name (glib.values.get_string (name)); -- S_0805
+
+		log (text => "selected variant: " & pac_package_variant_name.to_string (variant_new),
+			 level => log_threshold + 1);
+
+		-- put_line ("new package_variant selected: " & to_string (variant_new));
 		
 		finalize;
 
@@ -1257,8 +1275,9 @@ package body et_canvas_schematic_units is
 		-- of the properties window:
 		-- exception when event: others =>
 		-- 	set_status_properties (exception_message (event));
-			
-	end cb_new_package_variant_entered;
+
+		log_indentation_down;
+	end cb_new_package_variant_selected;
 
 	
 
@@ -1297,7 +1316,7 @@ package body et_canvas_schematic_units is
 			-- Get the old variant of the selected device:
 			variant := get_package_variant (object.unit.device_cursor);
 				
-			build_package_variant_window (device);
+			build_package_variant_window (object.unit.device_cursor);
 
 			-- Connect the "destroy" signal.
 			package_variant_window.on_destroy (cb_package_variant_window_destroy'access);
@@ -1305,9 +1324,10 @@ package body et_canvas_schematic_units is
 			-- Set the old variant in the window:
 			package_variant_old.set_text (to_string (variant));
 	
-			-- Connect the "on_activate" signal (emitted when ENTER pressed)
-			-- of the entry field for the new variant:
-			package_variant_new.on_activate (cb_new_package_variant_entered'access);
+			-- Connect the "on_changed" signal that
+			-- is emitted when an entry for the new variant 
+			-- has been selected:
+			package_variant_new.on_changed (cb_new_package_variant_selected'access);
 			
 			package_variant_new.grab_focus;
 			
@@ -1699,6 +1719,7 @@ package body et_canvas_schematic_units is
 
 		log (text => "selected variant: " & pac_package_variant_name.to_string (unit_add.variant),
 			 level => log_threshold + 1);
+		-- CS move downward after unit_add.variant assignment
 		
 		-- Get the variant name of the entry column 0:
 		gtk.tree_model.get_value (model, iter, 0, name);
@@ -1706,7 +1727,7 @@ package body et_canvas_schematic_units is
 		unit_add.variant := to_variant_name (glib.values.get_string (name));
 
 		
-		-- Once the operator has started selecing a package variant, the
+		-- Once the operator has started selecting a package variant, the
 		-- counter that counts the number of ESC hits until a reset 
 		-- is perfomed, must be reset:
 		reset_escape_counter;
@@ -1780,49 +1801,6 @@ package body et_canvas_schematic_units is
 		use pac_package_variants;
 		variants : pac_package_variants.map;
 
-
-		-- This procedure iterates through the list of
-		-- package variants and adds them one by one
-		-- to a so called "store". The store is required
-		-- to fill the combo box for the variants with content:		
-		procedure make_store_for_variants (
-			store : in out gtk_list_store)
-		is
-			use gtk.list_store;
-			
-			column_0 : constant := 0; -- for the variant name
-			column_1 : constant := 1; -- for the variant index
-
-			entry_structure : glib.gtype_array := (
-					column_0 => glib.gtype_string,
-					column_1 => glib.gtype_string);
-
-			use gtk.tree_model;
-			iter : gtk_tree_iter;			
-			index : natural := 0;
-
-			-- Enters the name and index in the storage model:
-			procedure query_variant (c : in pac_package_variants.cursor) is 
-				use pac_package_variant_name;
-			begin
-				store.append (iter);
-				set (store, iter, column_0, to_string (key (c)));
-				set (store, iter, column_1, natural'image (index));
-				index := index + 1;
-			end query_variant;
-
-		begin
-			-- Create the storage model:
-			gtk_new (list_store => store, types => (entry_structure));
-
-			-- Insert the available net names in the storage model:
-			variants.iterate (query_variant'access);	
-		end make_store_for_variants;
-
-
-
-
-
 		
 		-- This procedure builds the box_variant with a
 		-- combo box inside that allows
@@ -1859,7 +1837,7 @@ package body et_canvas_schematic_units is
 			pack_start (box_package_variant, label_variant, padding => box_properties_spacing);
 
 			-- Create the storage model for the content of the combo box:
-			make_store_for_variants (store);
+			make_store_for_variants (variants, store);
 			
 			-- Create the combo box:
 			gtk_new_with_model (

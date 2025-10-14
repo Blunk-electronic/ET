@@ -273,10 +273,10 @@ package et_canvas_schematic_units is
 -- PACKAGE VARIANT:
 	
 	-- Called when the "on_activate" signal is emitted
-	-- (usually when ENTER pressed) by the entry field
-	-- for the new package_variant in the package_variant window:
-	procedure cb_new_package_variant_entered (
-		self : access gtk.gentry.gtk_entry_record'class);
+	-- by the combo box when a variant has been selected
+	-- in the package_variant window:
+	procedure cb_new_package_variant_selected (
+		combo : access gtk_combo_box_record'class);
 
 
 	-- This procedure is called when the signal "destroy" 

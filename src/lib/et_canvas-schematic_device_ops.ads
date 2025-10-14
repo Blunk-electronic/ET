@@ -37,7 +37,11 @@
 --
 
 
-with et_device_name;			use et_device_name;
+with gtk.list_store;				use gtk.list_store;
+
+with et_package_variant;			use et_package_variant;
+with et_devices_electrical;			use et_devices_electrical;
+with et_device_name;				use et_device_name;
 
 generic
 
@@ -203,6 +207,19 @@ package et_canvas.schematic_device_ops is
 
 -- PACKAGE VARIANT WINDOW:
 
+
+
+	-- This procedure iterates through the given list of
+	-- package variants and adds them one by one
+	-- to a so called "store". The store is required
+	-- to fill a combo box for the variants with content:
+	procedure make_store_for_variants (
+		variants	: in pac_package_variants.map;
+		store 		: in out gtk_list_store);
+
+	
+
+	
 	-- The window to set the package_variant of devices is used in all domains
 	-- and in various situations. For this reason we make it
 	-- a generic object:
@@ -211,14 +228,14 @@ package et_canvas.schematic_device_ops is
 	-- This flag indicates that the package_variant window is open:
 	package_variant_window_open : boolean := false;
 	
-	-- This is the field inside the package_variant_window 
-	-- where the operator enters the new package_variant of a device:
-	package_variant_new : gtk_gentry;
+	-- This is the box inside the package_variant_window 
+	-- where the operator selectes the new package_variant of a device:
+	package_variant_new : gtk_combo_box;
 	
 	-- This is the field inside the package_variant_window 
 	-- where the old package_variant of a device is shown:
 	package_variant_old : gtk_gentry;
-
+	
 	
 	-- This procedure assembles the package_variant_window with 
 	-- all its basic properties. It sets the title of the 
@@ -232,7 +249,7 @@ package et_canvas.schematic_device_ops is
 	-- for example procedure show_package_variant_window 
 	-- in et_canvas_schematic_units):
 	procedure build_package_variant_window (
-		device_name : in type_device_name);
+		device_cursor : in pac_devices_sch.cursor);
 
 
 

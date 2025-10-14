@@ -36,6 +36,9 @@
 --   history of changes:
 --
 
+with gtk.tree_model;				use gtk.tree_model;
+with gtk.cell_renderer_text;
+
 
 package body et_canvas.schematic_device_ops is
 
@@ -234,9 +237,61 @@ package body et_canvas.schematic_device_ops is
 
 
 
+
+	procedure make_store_for_variants (
+		variants	: in pac_package_variants.map;
+		store 		: in out gtk_list_store)
+	is
+		column_0 : constant := 0; -- for the variant name
+		column_1 : constant := 1; -- for the variant index
+
+		entry_structure : glib.gtype_array := (
+				column_0 => glib.gtype_string,
+				column_1 => glib.gtype_string);
+
+		use gtk.tree_model;
+		iter : gtk_tree_iter;			
+		index : natural := 0;
+
+		-- Enters the name and index in the storage model:
+		procedure query_variant (c : in pac_package_variants.cursor) is 
+			use pac_package_variants;
+			use pac_package_variant_name;
+		begin
+			store.append (iter);
+			set (store, iter, column_0, to_string (key (c)));
+			set (store, iter, column_1, natural'image (index));
+			index := index + 1;
+		end query_variant;
+
+	begin
+		-- Create the storage model:
+		gtk_new (list_store => store, types => (entry_structure));
+
+		-- Insert the available net names in the storage model:
+		variants.iterate (query_variant'access);	
+	end make_store_for_variants;
+
+
+
+	
+
 	procedure build_package_variant_window (
-		device_name : in type_device_name)
+		device_cursor : in pac_devices_sch.cursor)
 	is 
+		-- Get the device name (like IC2):
+		device_name : constant type_device_name := 
+			get_device_name (device_cursor);
+
+		-- Get the available package variants for the given device:
+		variants : constant pac_package_variants.map := 
+			get_available_package_variants (device_cursor);
+
+		store : gtk_list_store;
+
+		use gtk.cell_renderer_text;
+		render	: gtk_cell_renderer_text;
+		
 		box : gtk_vbox;
 		label_old, label_new : gtk.label.gtk_label;
 		label_status : gtk.label.gtk_label;
@@ -267,12 +322,23 @@ package body et_canvas.schematic_device_ops is
 		gtk_new (label_new, "new:");
 		pack_start (box, label_new);
 
-		gtk_new (package_variant_new);
-		pack_start (box, package_variant_new);
 
-		-- gtk_new (label_status);
-		-- pack_start (box, label_status);
+		-- Create the storage model for the content of the combo box:
+		make_store_for_variants (variants, store);
 
+		-- Create the combo box:
+		gtk_new_with_model (
+			combo_box	=> package_variant_new,
+			model		=> +store); -- ?
+
+		-- Insert the combo box:
+		pack_start (box, package_variant_new, padding => 10);
+
+		-- The purpose of this stuff is unclear, but it
+		-- is required to make the entries in the combo box visible:
+		gtk_new (render);
+		pack_start (package_variant_new, render, expand => true);
+		add_attribute (package_variant_new, render, "markup", 0); -- column 0
 		
 	end build_package_variant_window;
 
