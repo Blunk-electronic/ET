@@ -194,6 +194,48 @@ package et_canvas.schematic_device_ops is
 		device_name : in type_device_name);
 
 
+
+
+
+
+
+
+
+-- PACKAGE VARIANT WINDOW:
+
+	-- The window to set the package_variant of devices is used in all domains
+	-- and in various situations. For this reason we make it
+	-- a generic object:
+	package_variant_window : gtk.window.gtk_window;
+
+	-- This flag indicates that the package_variant window is open:
+	package_variant_window_open : boolean := false;
+	
+	-- This is the field inside the package_variant_window 
+	-- where the operator enters the new package_variant of a device:
+	package_variant_new : gtk_gentry;
+	
+	-- This is the field inside the package_variant_window 
+	-- where the old package_variant of a device is shown:
+	package_variant_old : gtk_gentry;
+
+	
+	-- This procedure assembles the package_variant_window with 
+	-- all its basic properties. It sets the title of the 
+	-- window with the targeted device name so that the operator
+	-- knows what device it is about.
+	-- It connects the "on_key_press_event" with the
+	-- callback function cb_package_variant_window_key_pressed (see below).
+	-- This procedure DOES NOT show the package_variant window. It just prepares
+	-- basic things. The actual showing is preformed by a procedure in
+	-- the package where the canvas is instantiated (see
+	-- for example procedure show_package_variant_window 
+	-- in et_canvas_schematic_units):
+	procedure build_package_variant_window (
+		device_name : in type_device_name);
+
+
+
 	
 private
 	
@@ -304,6 +346,32 @@ private
 		cb_gtk_widget_gdk_event_key_boolean := cb_partcode_window_key_pressed'access;
 
 
+
+
+
+-- PACKAGE VARIANT WINDOW:
+
+	-- See comments on device package_variant window above.
+	
+	-- This callback function is called whenever
+	-- the operator presses a key in the value window.
+	-- If ESC key pressed, then the window is destroyed
+	-- by emitting the "destroy" signal. The connection
+	-- to the "destroy" signal is estabilshed in the package
+	-- where the canvas is instantiated.
+	-- All other key-press events are propagated to the
+	-- field where the new name is entered (see 
+	-- variable "package_variant_new" above):
+	function cb_package_variant_window_key_pressed (
+		window	: access gtk_widget_record'class;
+		event	: gdk_event_key)
+		return boolean;
+	
+
+	access_cb_package_variant_window_key_pressed : constant
+		cb_gtk_widget_gdk_event_key_boolean := cb_package_variant_window_key_pressed'access;
+
+	
 	
 end et_canvas.schematic_device_ops;
 

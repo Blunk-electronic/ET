@@ -517,10 +517,10 @@ package et_schematic_ops.units is
 
 
 
-
-
 	
-	
+
+-- UNIT MOVE, DRAG, FETCH, DELETE:
+		
 
 	-- Moves the given unit within the schematic. Disconnects the unit from
 	-- start or end points of net segments BEFORE the move. 
@@ -965,6 +965,13 @@ package et_schematic_ops.units is
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		new_partcode	: in pac_device_partcode.bounded_string;
+		log_threshold	: in type_log_level);
+
+
+	procedure set_package_variant (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		new_variant		: in pac_package_variant_name.bounded_string;
 		log_threshold	: in type_log_level);
 
 	

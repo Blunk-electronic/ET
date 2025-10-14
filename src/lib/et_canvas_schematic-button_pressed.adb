@@ -219,7 +219,8 @@ is
 						et_canvas_schematic_units.set_partcode (snap_point);
 						
 					when NOUN_VARIANT =>
-						null;
+						et_canvas_schematic_units.set_package_variant (snap_point);
+
 						
 					when others => null;
 				end case;
@@ -388,7 +389,7 @@ is
 				
 			when VERB_SET =>
 				case noun is
-					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE =>
+					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE | NOUN_VARIANT =>
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
 						end if;

@@ -149,7 +149,7 @@ package body et_undo_redo is
 					end case;
 
 					
-				when NOUN_VALUE | NOUN_PURPOSE | NOUN_PARTCODE =>
+				when NOUN_VALUE | NOUN_PURPOSE | NOUN_PARTCODE | NOUN_VARIANT =>
 					case verb is
 						when VERB_SET =>
 							

@@ -601,7 +601,7 @@ is
 				noun := NOUN_VALUE;					
 				set_status (et_canvas_schematic_units.status_set_value);
 
-			when GDK_LC_a =>
+			when key_noun_package_variant =>
 				noun := NOUN_VARIANT;
 				set_status (et_canvas_schematic_units.status_set_variant);
 				
@@ -616,16 +616,9 @@ is
 
 					when NOUN_PARTCODE =>
 						et_canvas_schematic_units.set_partcode (point);
-
 						
 					when NOUN_VARIANT =>
-						null;
-						-- CS
-						-- if not clarification_pending then
-						-- 	set_property (get_cursor_position);
-						-- else
-						-- 	set_property_selected_unit;
-						-- end if;
+						et_canvas_schematic_units.set_package_variant (point);
 						
 					when others => null;
 				end case;

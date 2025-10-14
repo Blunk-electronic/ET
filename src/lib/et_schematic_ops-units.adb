@@ -5286,6 +5286,43 @@ package body et_schematic_ops.units is
 	end set_partcode;
 
 
+
+
+	
+
+
+
+	procedure set_package_variant (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		new_variant		: in pac_package_variant_name.bounded_string;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " set package variant of object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_UNIT =>
+
+				set_package_variant (
+					module_cursor	=> module_cursor,
+					device_name		=> get_device_name (object.unit),
+					variant			=> new_variant,
+					log_threshold	=> log_threshold + 1);
+
+				
+			when others =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end set_package_variant;
+
+	
 	
 end et_schematic_ops.units;
 

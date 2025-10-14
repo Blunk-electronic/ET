@@ -165,7 +165,10 @@ package et_canvas_schematic_units is
 
 
 
+
 	
+
+-- VALUE:
 
 	-- Called when the "on_activate" signal is emitted
 	-- (usually when ENTER pressed) by the entry field
@@ -198,6 +201,7 @@ package et_canvas_schematic_units is
 
 
 	
+-- PURPOSE:
 
 	-- Called when the "on_activate" signal is emitted
 	-- (usually when ENTER pressed) by the entry field
@@ -229,8 +233,9 @@ package et_canvas_schematic_units is
 	
 
 
+	
 
-
+-- PARTCDOE:
 
 
 	-- Called when the "on_activate" signal is emitted
@@ -263,8 +268,42 @@ package et_canvas_schematic_units is
 	
 
 
+
+
+-- PACKAGE VARIANT:
 	
+	-- Called when the "on_activate" signal is emitted
+	-- (usually when ENTER pressed) by the entry field
+	-- for the new package_variant in the package_variant window:
+	procedure cb_new_package_variant_entered (
+		self : access gtk.gentry.gtk_entry_record'class);
+
+
+	-- This procedure is called when the signal "destroy" 
+	-- is emitted by the package_variant window.
+	-- This is usually the case when:
+	--  1. the operator terminates the package_variant window by 
+	--     clicking the X in the upper right corner of the window.
+	--  2. the operator presses the ESC key in the package_variant window:
+	-- The procedure also calls procedure "reset":
+	procedure cb_package_variant_window_destroy (
+		window : access gtk_widget_record'class);
+
 	
+	-- This procedure shows the window where the
+	-- operator sees the old package_variant of the targeted device
+	-- and where he can enter the new package_variant of the device:
+	procedure show_package_variant_window;
+	
+
+	procedure set_package_variant (
+		point	: in type_vector_model);
+
+
+
+
+
+-- RENAME:
 	
 	-- Called when the "on_activate" signal is emitted
 	-- (usually when ENTER pressed) by the entry field

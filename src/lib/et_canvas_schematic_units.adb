@@ -294,7 +294,7 @@ package body et_canvas_schematic_units is
 				
 			when VERB_SET =>
 				case noun is
-					when NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE =>
+					when NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VARIANT =>
 
 						-- Propose units in the vicinity of the given point.
 						-- This applies for real devices only:
@@ -1179,6 +1179,187 @@ package body et_canvas_schematic_units is
 
 
 
+	
+-- PACKAGE VARIANT:
+
+
+	procedure cb_new_package_variant_entered (
+		self : access gtk.gentry.gtk_entry_record'class) 
+	is 
+		variant_new : pac_package_variant_name.bounded_string;
+
+		
+		-- Sets the package_variant of the selected object:
+		procedure finalize is
+			use et_modes.schematic;
+			use et_undo_redo;
+			use et_commit;
+
+			object : type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
+		begin
+			log (text => "finalize set package variant", level => log_threshold);
+			log_indentation_up;
+
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+
+				reset_proposed_objects (active_module, log_threshold + 1);
+				
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+
+				-- Do the set package variant operation:
+				set_package_variant (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					new_variant		=> variant_new,
+					log_threshold	=> log_threshold + 1);
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+
+				-- If a unit has been deleted, then the board
+				-- must be redrawn:
+				if object.cat = CAT_UNIT then
+					redraw_board;
+				end if;
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+
+			-- CS clear status bar ?
+			-- set_status (status_delete);
+
+			reset_editing_process; -- prepare for a new editing process
+		end finalize;
+
+		
+	begin
+		variant_new := to_variant_name (self.get_text); -- S_0805
+
+		-- put_line ("new package_variant entered: " & to_string (variant_new));
+		
+		finalize;
+
+		-- If everything was fine, close the window and clean up.
+		-- If one of the operations above has raised an exception then
+		-- nothing will be cleaned up and the window will remain until the
+		-- operator enters a correct property.
+		package_variant_window.destroy;
+
+		-- CS
+		-- Whatever goes wrong, output the message in the status bar
+		-- of the properties window:
+		-- exception when event: others =>
+		-- 	set_status_properties (exception_message (event));
+			
+	end cb_new_package_variant_entered;
+
+	
+
+	
+
+
+	procedure cb_package_variant_window_destroy (
+		window : access gtk_widget_record'class)
+	is
+	begin
+		put_line ("cb_package_variant_window_destroy");
+		reset;
+	end cb_package_variant_window_destroy;
+
+	
+
+	
+	
+
+	procedure show_package_variant_window is
+
+		-- Get the first selected object (which is a unit):
+		object : constant type_object := get_first_object (
+				active_module, SELECTED, log_threshold + 1);
+
+		
+		procedure do_it is
+			device	: type_device_name; -- IC1
+
+			use pac_package_variant_name;
+			variant	: pac_package_variant_name.bounded_string;
+		begin
+			-- Get the name of the selected device:
+			device := get_device_name (object.unit.device_cursor);
+
+			-- Get the old variant of the selected device:
+			variant := get_package_variant (object.unit.device_cursor);
+				
+			build_package_variant_window (device);
+
+			-- Connect the "destroy" signal.
+			package_variant_window.on_destroy (cb_package_variant_window_destroy'access);
+
+			-- Set the old variant in the window:
+			package_variant_old.set_text (to_string (variant));
+	
+			-- Connect the "on_activate" signal (emitted when ENTER pressed)
+			-- of the entry field for the new variant:
+			package_variant_new.on_activate (cb_new_package_variant_entered'access);
+			
+			package_variant_new.grab_focus;
+			
+			package_variant_window.show_all;
+
+			package_variant_window_open := true;
+		end do_it;
+		
+				
+	begin
+		case object.cat is
+			when CAT_UNIT =>
+				do_it;
+  
+			when others =>
+				raise constraint_error; -- CS
+		end case;
+	end show_package_variant_window;
+
+
+
+	
+
+
+	procedure set_package_variant (
+		point	: in type_vector_model)
+	is begin
+		if not package_variant_window_open then
+			
+			if not clarification_pending then
+				-- Locate all objects in the vicinity of the given point:
+				find_objects (point);
+				-- NOTE: If many objects have been found, then
+				-- clarification is now pending.
+
+				-- If find_objects has found only one object,				
+				-- then delete the object immediateley.
+				if edit_process_running then
+					show_package_variant_window;
+				end if;
+			else
+				-- Here the clarification procedure ends.
+				-- An object has been selected via procedure clarify_object.
+				show_package_variant_window;
+			end if;
+
+		end if;
+	end set_package_variant;
+
+
+
+	
 
 
 
