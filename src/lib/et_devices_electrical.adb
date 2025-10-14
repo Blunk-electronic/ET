@@ -151,6 +151,25 @@ package body et_devices_electrical is
 	end;
 
 	
+
+	function get_available_package_variants (
+		device : in type_device_sch)
+		return pac_package_variants.map
+	is
+		result : pac_package_variants.map;
+
+		device_cursor_lib : pac_devices_lib.cursor;
+	begin
+		device_cursor_lib := get_device_model (device);
+
+		result := get_available_variants (device_cursor_lib);
+
+		return result;
+	end get_available_package_variants;
+	
+
+
+
 	
 
 	function get_device_model_file (
@@ -1967,6 +1986,18 @@ package body et_devices_electrical is
 	end get_package_variant;
 
 
+
+	function get_available_package_variants (
+		device : in pac_devices_sch.cursor)
+		return pac_package_variants.map
+	is
+		d : type_device_sch renames element (device);
+	begin
+		return get_available_package_variants (d);
+	end;
+
+
+	
 
 	function get_port (
 		device		: in pac_devices_sch.cursor;

@@ -209,7 +209,13 @@ package et_devices_electrical is
 	function get_package_variant (
 		device : in type_device_sch)
 		return pac_package_variant_name.bounded_string;
-	
+
+
+	-- Returns a list of available package variants:
+	function get_available_package_variants (
+		device : in type_device_sch)
+		return pac_package_variants.map;
+												
 	
 	-- The devices of a module are collected in a map.
 	-- CS: This must be a hashed map:
@@ -856,6 +862,13 @@ package et_devices_electrical is
 		return pac_package_variant_name.bounded_string;
 
 
+	-- Returns a list of available package variants:
+	function get_available_package_variants (
+		device : in pac_devices_sch.cursor)
+		return pac_package_variants.map;
+
+
+	
 
 	-- Maps from the given terminal to the linked port and unit.
 	-- The given device must be real. Otherwise a constraint error
