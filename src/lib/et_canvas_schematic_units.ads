@@ -353,6 +353,9 @@ package et_canvas_schematic_units is
 		point	: in type_vector_model);
 
 	
+
+
+-- DRAG UNIT:
 	
 	procedure drag_object (
 		tool	: in type_tool;
@@ -363,7 +366,7 @@ package et_canvas_schematic_units is
 
 	
 
--- ADD UNIT/DEVICE
+-- ADD UNIT/DEVICE:
 
 	-- This function returns the top most important path
 	-- of the preferred schematic libraries.
