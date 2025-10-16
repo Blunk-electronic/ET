@@ -660,6 +660,7 @@ is
 	-- Examples:
 	-- "schematic led_driver show device R1"
 	-- "schematic led_driver show device IC1 IO-BANK2"
+	-- "schematic led_driver show device IC1 ."
 	procedure show_device is
 		use et_devices_electrical;
 		use et_units;
@@ -668,171 +669,184 @@ is
 		-- highlighted in the canvas.
 		-- Sets the sheet where the unit is.
 		-- Pans the canvas so that the unit is in the center of the view.
-		-- 1. If mode is FIRST_UNIT then the sheet where the first unit is
+		-- 1. If mode is SEARCH_MODE_FIRST_UNIT then the sheet where the first unit is
 		--    will be shown in the center of the canvas. All units of the
 		--    device will be selected and highlighted.
 		--    The given unit name will be ignored.
-		-- 2. If mode is BY_UNIT_NAME then the sheet where the given unit is
+		--    Example: "schematic led_driver show device R1"
+		--
+		-- 2. If mode is SEARCH_MODE_BY_UNIT_NAME then the sheet where the given unit is
 		--    will be shown in the center of the canvas. Only that unit
 		--    of the device will be selected and highlighted.
-		-- 3. If mode is FIRST_UNIT_ON_CURRENT_SHEET then the first unit
+		--    Example: "schematic led_driver show device IC1 IO-BANK2"
+		--
+		-- 3. If mode is SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET then the first unit
 		--    on the current sheet will be shown in the center of the canvas.
-		--    All units of the device selected and highlighted.
-		--    The given unit name will be ignored.
+		--    All units of the device will be selected and highlighted.
+		--    Example: "schematic led_driver show device IC1 ."
+		--
 		procedure do_it (
 			device	: in type_device_name; -- IC45
 			unit	: in pac_unit_name.bounded_string := to_unit_name (""); -- A, B, ..
 			mode	: in type_device_search_mode := SEARCH_MODE_FIRST_UNIT)
 		is
-			use pac_unit_name;
-			use et_canvas_schematic;
-
 			
-			function locate (unit : in pac_unit_name.bounded_string) 
+			-- This small function performs a unit query:
+			function locate_unit (unit : in pac_unit_name.bounded_string) 
 				return type_unit_query
 			is begin
 				return get_unit_position (
 					module_cursor	=> active_module,
 					device_name		=> device,
-					unit_name		=> unit);
-				
-			end locate;
+					unit_name		=> unit);				
+			end;
 
-			use et_canvas_schematic_units;
+
 
 			
 			procedure device_not_found is begin
-				raise semantic_error_1 with
-					"ERROR: Device " & to_string (device) & " does not exist !";
-			end device_not_found;
+				log (WARNING, " Device " & to_string (device) & " not found !");
+				-- CS output in status bar
+			end;
 
 			
-			procedure unit_not_found is begin
-				raise semantic_error_1 with
-					"ERROR: Device " & to_string (device)
-					& " unit " & to_string (unit) & " does not exist !";
-			end unit_not_found;
+			procedure unit_not_found is 
+				use pac_unit_name;
+			begin
+				log (WARNING, " Device " & to_string (device) 
+					 & " unit " & to_string (unit) & " not found !");
+				-- CS output in status bar
+			end;
 
+			
+
+			-- If no unit was specified by the caller, then this
+			-- procedure searches for the first unit of the given device:
+			procedure show_first_unit is
+				unit_query : constant type_unit_query := locate_unit (to_unit_name (""));
+			begin
+				if unit_query.exists then
+					-- Set the active sheet where the unit is:
+					active_sheet := get_sheet (unit_query.position);
+
+					-- Center on the first unit and leave the
+					-- zoom factor as it is:
+					zoom_to (get_place (unit_query.position), S);
+
+					-- CS
+					-- Make the whole device (with all its units) selected.
+					-- show some basic information in the staus bar.
+				else
+					device_not_found;
+				end if;
+			end show_first_unit;
+
+
+			
+			-- If a unit was specified by the caller, then this
+			-- procedure searches for the given unit of the given device:
+			procedure show_by_unit_name is
+				unit_query : constant type_unit_query := locate_unit (unit);
+			begin
+				if unit_query.exists then
+					-- Set the active sheet where the unit is:
+					active_sheet := get_sheet (unit_query.position);
+
+					-- Center on the first unit and leave the
+					-- zoom factor as it is:
+					zoom_to (get_place (unit_query.position), S);
+
+					-- CS
+					-- Make the whole device (with all its units) selected.
+					-- show some basic information in the staus bar.
+				else
+					unit_not_found;
+				end if;
+			end show_by_unit_name;
+
+
+
+			-- If instead of a unit a "." was specified by the caller
+			-- then the first unit on the active sheet is searched for:
+			procedure show_first_unit_on_active_sheet is
+				unit_query : constant type_unit_query := locate_unit (to_unit_name (""));
+			begin
+				if unit_query.exists then
+					if get_sheet (unit_query.position) = active_sheet then
+						
+						-- Center on the first unit and leave the
+						-- zoom factor as it is:
+						zoom_to (get_place (unit_query.position), S);
+
+						-- CS
+						-- Make the whole device (with all its units) selected.
+						-- show some basic information in the staus bar.
+						
+					else
+						log (WARNING, " Device " & to_string (device) & " is not on this sheet !");
+						-- CS output in status bar
+					end if;
+
+				else
+					device_not_found;
+				end if;
+			end show_first_unit_on_active_sheet;
+			
 			
 		begin
 			case mode is
 				when SEARCH_MODE_FIRST_UNIT =>
-					declare
-						-- The unit name is empty because we will center just 
-						-- on the first unit:
-						location : type_unit_query := locate (to_unit_name (""));
-					begin
-						if location.exists then
-							-- show the sheet where the unit is:
-							active_sheet := get_sheet (location.position);
-
-							-- center on the first unit
-						-- CS center_on (canvas, location.position.place);
-
-							-- CS
-							-- Make the whole device (with all its units) selected:
-							-- proposed_units.append (new_item => (
-							-- 	device	=> locate_device (active_module, device),
-							-- 	unit	=> pac_units.no_element));
-		-- 
-							-- selected_unit := proposed_units.first;
-		-- 
-							-- show_properties_of_selected_device;
-						else
-							device_not_found;
-						end if;
-					end;
-
+					show_first_unit;					
 					
 				when SEARCH_MODE_BY_UNIT_NAME =>
-					declare
-						-- The unit name is explicitely given:
-						location : type_unit_query := locate (unit);
-					begin
-						if location.exists then
-							-- show the sheet where the unit is:
-							active_sheet := get_sheet (location.position);
-
-							-- center on the unit
-						-- CS center_on (canvas, location.position.place);
-
-							-- CS
-							-- Make the whole device (with all its units) selected:
-							-- proposed_units.append (new_item => (
-							-- 	device	=> locate_device (active_module, device),
-							-- 	unit	=> locate_unit (active_module, device, unit)));
-		-- 
-							-- selected_unit := proposed_units.first;
-
-							-- show_properties_of_selected_device;
-						else
-							unit_not_found;
-						end if;
-					end;
-
+					show_by_unit_name;
 					
 				when SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET =>
-					declare
-						-- The unit name is empty because we will center just 
-						-- on the first unit on the current sheet:
-						location : type_unit_query := locate (to_unit_name (""));
-					begin
-						if location.exists then
-							if get_sheet (location.position) = active_sheet then
-								null;
+					show_first_unit_on_active_sheet;
 								
-								-- center on the unit
-							-- CS	center_on (canvas, location.position.place);
-
-								-- CS
-								-- Make the whole device (with all its units) selected:
-	-- 							proposed_units.append (new_item => (
-	-- 								device	=> locate_device (active_module, device),
-	-- 								unit	=> pac_units.no_element));
-	-- 
-	-- 							selected_unit := proposed_units.first;
-	-- 							
-	-- 							show_properties_of_selected_device;
-							else
-								raise semantic_error_1 with
-									"Device " & to_string (device) & " is not on this sheet !";
-							end if;
-
-						else
-							device_not_found;
-						end if;
-					end;
-					
 			end case;
 		end do_it;
 
 
+		procedure runmode_module is begin
+			case cmd_field_count is
+				when 5 => do_it ( -- show device R1
+						device	=> to_device_name (get_field (5)), -- R1, IC1
+						mode	=> SEARCH_MODE_FIRST_UNIT);
+				
+				when 6 =>
+					-- The 6th field may be a period, which means
+					-- the unit is to be shown on the current active sheet.
+					-- Otherwise the field provides an explicit
+					-- unit name:
+					if get_field (6) = here then
+						do_it ( -- show device IC1 .
+							device	=> to_device_name (get_field (5)), -- IC1
+							mode	=> SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET);
+					else
+						do_it ( -- show device IC1 A
+							device	=> to_device_name (get_field (5)), -- IC1
+							unit	=> to_unit_name (get_field (6)), -- A
+							mode	=> SEARCH_MODE_BY_UNIT_NAME);
+					end if;
+					
+				when 7 .. type_field_count'last => too_long;
+				when others => command_incomplete;
+			end case;
+		end runmode_module;
+
 		
 	begin
-		case cmd_field_count is
-			when 5 => do_it ( -- show device R1
-					device	=> to_device_name (get_field (5)), -- R1, IC1
-					mode	=> SEARCH_MODE_FIRST_UNIT);
-			
-			when 6 =>
-				-- The 6th field may be a period, which means
-				-- the unit is to be shown on the current active sheet.
-				-- Otherwise the field provides an explicit
-				-- unit name:
-				if get_field (6) = here then
-					do_it ( -- show device IC1 .
-						device	=> to_device_name (get_field (5)), -- IC1
-						mode	=> SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET);
-				else
-					do_it ( -- show device IC1 A
-						device	=> to_device_name (get_field (5)), -- IC1
-						unit	=> to_unit_name (get_field (6)), -- A
-						mode	=> SEARCH_MODE_BY_UNIT_NAME);
-				end if;
-				
-			when 7 .. type_field_count'last => too_long;
-			when others => command_incomplete;
-		end case;
+		-- Show operations are only useful and possible in graphical
+		-- runmode:
+		case runmode is
+			when MODE_MODULE =>
+				runmode_module;
+
+			when others =>
+				skipped_in_this_runmode (log_threshold + 1);
+					
+		end case;				
 	end show_device;
 
 		
