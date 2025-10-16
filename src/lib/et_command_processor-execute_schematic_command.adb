@@ -650,158 +650,196 @@ is
 	
 
 
-	-- For showing and finding devices and units:
-	type type_show_device is (
-		FIRST_UNIT,
-		BY_UNIT_NAME,
-		FIRST_UNIT_ON_CURRENT_SHEET);
 
 	
-	-- Selects the device so that a certain unit or all its units become
-	-- highlighted in the canvas.
-	-- Sets the sheet where the unit is.
-	-- Pans the canvas so that the unit is in the center of the view.
-	-- 1. If mode is FIRST_UNIT then the sheet where the first unit is
-	--    will be shown in the center of the canvas. All units of the
-	--    device will be selected and highlighted.
-	--    The given unit name will be ignored.
-	-- 2. If mode is BY_UNIT_NAME then the sheet where the given unit is
-	--    will be shown in the center of the canvas. Only that unit
-	--    of the device will be selected and highlighted.
-	-- 3. If mode is FIRST_UNIT_ON_CURRENT_SHEET then the first unit
-	--    on the current sheet will be shown in the center of the canvas.
-	--    All units of the device selected and highlighted.
-	--    The given unit name will be ignored.
-	procedure show_device ( -- GUI related
-		device	: in type_device_name; -- IC45
-		unit	: in pac_unit_name.bounded_string := to_unit_name (""); -- A, B, ..
-		mode	: in type_show_device := FIRST_UNIT)
-	is
-		use pac_unit_name;
-		use et_units;
+
+
+	-- This procedure parses a command that shows a device or a unit thereof.
+	-- "Showing" means the highlight the targeted object and writing
+	-- some basic information in the staturs bar.
+	-- Examples:
+	-- "schematic led_driver show device R1"
+	-- "schematic led_driver show device IC1 IO-BANK2"
+	procedure show_device is
 		use et_devices_electrical;
-		use et_canvas_schematic;
-
+		use et_units;
 		
-		function locate (unit : in pac_unit_name.bounded_string) 
-			return type_unit_query
-		is begin
-			return get_unit_position (
-				module_cursor	=> active_module,
-				device_name		=> device,
-				unit_name		=> unit);
+		-- Selects the device so that a certain unit or all its units become
+		-- highlighted in the canvas.
+		-- Sets the sheet where the unit is.
+		-- Pans the canvas so that the unit is in the center of the view.
+		-- 1. If mode is FIRST_UNIT then the sheet where the first unit is
+		--    will be shown in the center of the canvas. All units of the
+		--    device will be selected and highlighted.
+		--    The given unit name will be ignored.
+		-- 2. If mode is BY_UNIT_NAME then the sheet where the given unit is
+		--    will be shown in the center of the canvas. Only that unit
+		--    of the device will be selected and highlighted.
+		-- 3. If mode is FIRST_UNIT_ON_CURRENT_SHEET then the first unit
+		--    on the current sheet will be shown in the center of the canvas.
+		--    All units of the device selected and highlighted.
+		--    The given unit name will be ignored.
+		procedure do_it (
+			device	: in type_device_name; -- IC45
+			unit	: in pac_unit_name.bounded_string := to_unit_name (""); -- A, B, ..
+			mode	: in type_device_search_mode := SEARCH_MODE_FIRST_UNIT)
+		is
+			use pac_unit_name;
+			use et_canvas_schematic;
+
 			
-		end locate;
-
-		use et_canvas_schematic_units;
-
-		
-		procedure device_not_found is begin
-			raise semantic_error_1 with
-				"ERROR: Device " & to_string (device) & " does not exist !";
-		end device_not_found;
-
-		
-		procedure unit_not_found is begin
-			raise semantic_error_1 with
-				"ERROR: Device " & to_string (device)
-				& " unit " & to_string (unit) & " does not exist !";
-		end unit_not_found;
-
-		
-	begin -- show_device
-		case mode is
-			when FIRST_UNIT =>
-				declare
-					-- The unit name is empty because we will center just 
-					-- on the first unit:
-					location : type_unit_query := locate (to_unit_name (""));
-				begin
-					if location.exists then
-						-- show the sheet where the unit is:
-						active_sheet := get_sheet (location.position);
-
-						-- center on the first unit
-					-- CS center_on (canvas, location.position.place);
-
-						-- CS
-						-- Make the whole device (with all its units) selected:
-						-- proposed_units.append (new_item => (
-						-- 	device	=> locate_device (active_module, device),
-						-- 	unit	=> pac_units.no_element));
-      -- 
-						-- selected_unit := proposed_units.first;
-      -- 
-						-- show_properties_of_selected_device;
-					else
-						device_not_found;
-					end if;
-				end;
-
+			function locate (unit : in pac_unit_name.bounded_string) 
+				return type_unit_query
+			is begin
+				return get_unit_position (
+					module_cursor	=> active_module,
+					device_name		=> device,
+					unit_name		=> unit);
 				
-			when BY_UNIT_NAME =>
-				declare
-					-- The unit name is explicitely given:
-					location : type_unit_query := locate (unit);
-				begin
-					if location.exists then
-						-- show the sheet where the unit is:
-						active_sheet := get_sheet (location.position);
+			end locate;
 
-						-- center on the unit
-					-- CS center_on (canvas, location.position.place);
+			use et_canvas_schematic_units;
 
-						-- CS
-						-- Make the whole device (with all its units) selected:
-						-- proposed_units.append (new_item => (
-						-- 	device	=> locate_device (active_module, device),
-						-- 	unit	=> locate_unit (active_module, device, unit)));
-      -- 
-						-- selected_unit := proposed_units.first;
+			
+			procedure device_not_found is begin
+				raise semantic_error_1 with
+					"ERROR: Device " & to_string (device) & " does not exist !";
+			end device_not_found;
 
-						-- show_properties_of_selected_device;
-					else
-						unit_not_found;
-					end if;
-				end;
+			
+			procedure unit_not_found is begin
+				raise semantic_error_1 with
+					"ERROR: Device " & to_string (device)
+					& " unit " & to_string (unit) & " does not exist !";
+			end unit_not_found;
 
-				
-			when FIRST_UNIT_ON_CURRENT_SHEET =>
-				declare
-					-- The unit name is empty because we will center just 
-					-- on the first unit on the current sheet:
-					location : type_unit_query := locate (to_unit_name (""));
-				begin
-					if location.exists then
-						if get_sheet (location.position) = active_sheet then
-							null;
-							
-							-- center on the unit
-						-- CS	center_on (canvas, location.position.place);
+			
+		begin
+			case mode is
+				when SEARCH_MODE_FIRST_UNIT =>
+					declare
+						-- The unit name is empty because we will center just 
+						-- on the first unit:
+						location : type_unit_query := locate (to_unit_name (""));
+					begin
+						if location.exists then
+							-- show the sheet where the unit is:
+							active_sheet := get_sheet (location.position);
+
+							-- center on the first unit
+						-- CS center_on (canvas, location.position.place);
 
 							-- CS
 							-- Make the whole device (with all its units) selected:
--- 							proposed_units.append (new_item => (
--- 								device	=> locate_device (active_module, device),
--- 								unit	=> pac_units.no_element));
--- 
--- 							selected_unit := proposed_units.first;
--- 							
--- 							show_properties_of_selected_device;
+							-- proposed_units.append (new_item => (
+							-- 	device	=> locate_device (active_module, device),
+							-- 	unit	=> pac_units.no_element));
+		-- 
+							-- selected_unit := proposed_units.first;
+		-- 
+							-- show_properties_of_selected_device;
 						else
-							raise semantic_error_1 with
-								"Device " & to_string (device) & " is not on this sheet !";
+							device_not_found;
 						end if;
+					end;
 
-					else
-						device_not_found;
-					end if;
-				end;
+					
+				when SEARCH_MODE_BY_UNIT_NAME =>
+					declare
+						-- The unit name is explicitely given:
+						location : type_unit_query := locate (unit);
+					begin
+						if location.exists then
+							-- show the sheet where the unit is:
+							active_sheet := get_sheet (location.position);
+
+							-- center on the unit
+						-- CS center_on (canvas, location.position.place);
+
+							-- CS
+							-- Make the whole device (with all its units) selected:
+							-- proposed_units.append (new_item => (
+							-- 	device	=> locate_device (active_module, device),
+							-- 	unit	=> locate_unit (active_module, device, unit)));
+		-- 
+							-- selected_unit := proposed_units.first;
+
+							-- show_properties_of_selected_device;
+						else
+							unit_not_found;
+						end if;
+					end;
+
+					
+				when SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET =>
+					declare
+						-- The unit name is empty because we will center just 
+						-- on the first unit on the current sheet:
+						location : type_unit_query := locate (to_unit_name (""));
+					begin
+						if location.exists then
+							if get_sheet (location.position) = active_sheet then
+								null;
+								
+								-- center on the unit
+							-- CS	center_on (canvas, location.position.place);
+
+								-- CS
+								-- Make the whole device (with all its units) selected:
+	-- 							proposed_units.append (new_item => (
+	-- 								device	=> locate_device (active_module, device),
+	-- 								unit	=> pac_units.no_element));
+	-- 
+	-- 							selected_unit := proposed_units.first;
+	-- 							
+	-- 							show_properties_of_selected_device;
+							else
+								raise semantic_error_1 with
+									"Device " & to_string (device) & " is not on this sheet !";
+							end if;
+
+						else
+							device_not_found;
+						end if;
+					end;
+					
+			end case;
+		end do_it;
+
+
+		
+	begin
+		case cmd_field_count is
+			when 5 => do_it ( -- show device R1
+					device	=> to_device_name (get_field (5)), -- R1, IC1
+					mode	=> SEARCH_MODE_FIRST_UNIT);
+			
+			when 6 =>
+				-- The 6th field may be a period, which means
+				-- the unit is to be shown on the current active sheet.
+				-- Otherwise the field provides an explicit
+				-- unit name:
+				if get_field (6) = here then
+					do_it ( -- show device IC1 .
+						device	=> to_device_name (get_field (5)), -- IC1
+						mode	=> SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET);
+				else
+					do_it ( -- show device IC1 A
+						device	=> to_device_name (get_field (5)), -- IC1
+						unit	=> to_unit_name (get_field (6)), -- A
+						mode	=> SEARCH_MODE_BY_UNIT_NAME);
+				end if;
 				
+			when 7 .. type_field_count'last => too_long;
+			when others => command_incomplete;
 		end case;
 	end show_device;
 
+		
+	 
 
+
+	
 
 
 -----------------------------------------------------------------------------------
@@ -2800,6 +2838,7 @@ is
 
 				
 			when VERB_SHOW => -- GUI related
+			
 				-- There might be objects such as net segments or units selected.
 				-- They must be de-selected first:
 				-- clear_proposed_objects;
@@ -2807,34 +2846,10 @@ is
 				
 				case noun is
 					when NOUN_DEVICE =>
-						case cmd_field_count is
-							when 5 => show_device ( -- show device R1
-									device	=> to_device_name (get_field (5)), -- R1, IC1
-									mode	=> FIRST_UNIT);
-							
-							when 6 =>
-								-- The 6th field may be a period, which means
-								-- the unit is to be shown on the current active sheet.
-								-- Otherwise the field provides an explicit
-								-- unit name:
-								if get_field (6) = here then
-									show_device ( -- show device IC1 .
-										device	=> to_device_name (get_field (5)), -- IC1
-										mode	=> FIRST_UNIT_ON_CURRENT_SHEET);
-								else
-									show_device ( -- show device IC1 A
-										device	=> to_device_name (get_field (5)), -- IC1
-										unit	=> to_unit_name (get_field (6)), -- A
-										mode	=> BY_UNIT_NAME);
-								end if;
-								
-							when 7 .. type_field_count'last => too_long;
-							when others => command_incomplete;
-						end case;
+						show_device;
 
 					when NOUN_MODULE =>
 						show_module;
-
 						
 					when NOUN_NET =>
 						show_net;

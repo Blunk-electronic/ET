@@ -889,11 +889,33 @@ package et_devices_electrical is
 		port	: in pac_port_name.bounded_string)
 		return et_terminals.pac_terminals.cursor;
 
+
+
+
 	
+
+
+-- SEARCH AND FIND:
+
+	-- For showing and finding devices and units:
+	type type_device_search_mode is (
+		SEARCH_MODE_FIRST_UNIT,
+		SEARCH_MODE_BY_UNIT_NAME,
+		SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET);
+
+	
+	function to_string (
+		mode : in type_device_search_mode)
+		return string;
+	
+
+
 
 	
 	
-	-- COMMITS OF ELECTRICAL DEVICES (required for undo/redo operations via the GUI):
+	
+-- COMMITS OF ELECTRICAL DEVICES (required for undo/redo operations via the GUI):
+	
 	use et_commit;
 	
 	package pac_device_commit is new pac_commit (pac_devices_sch.map);
