@@ -1192,11 +1192,44 @@ package body et_canvas_schematic_units is
 
 		use glib.values;
 		name : gvalue;
-
 		
-		variant_new : pac_package_variant_name.bounded_string;
-
+	begin
+		log (text => "cb_new_package_variant_selected", level => log_threshold);
+		log_indentation_up;
 		
+		-- Get the variant name of the entry column 0:
+		gtk.tree_model.get_value (model, iter, 0, name);
+		
+		variant_new := to_variant_name (glib.values.get_string (name)); -- S_0805
+
+		log (text => "selected variant: " 
+			 & pac_package_variant_name.to_string (variant_new),
+			 level => log_threshold + 1);
+		
+		log_indentation_down;
+	end cb_new_package_variant_selected;
+
+	
+
+	
+
+
+	procedure cb_package_variant_window_destroy (
+		window : access gtk_widget_record'class)
+	is begin
+		log (text => "cb_package_variant_window_destroy", level => log_threshold);
+		reset;
+	end cb_package_variant_window_destroy;
+
+	
+
+
+	
+
+	procedure cb_package_variant_apply (
+		button : access gtk_button_record'class)
+	is 
+
 		-- Sets the package_variant of the selected object:
 		procedure finalize is
 			use et_modes.schematic;
@@ -1204,7 +1237,7 @@ package body et_canvas_schematic_units is
 			use et_commit;
 
 			object : type_object := get_first_object (
-					active_module, SELECTED, log_threshold + 1);
+				active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalize set package variant", level => log_threshold);
 			log_indentation_up;
@@ -1246,54 +1279,25 @@ package body et_canvas_schematic_units is
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
-		
+
 	begin
-		log (text => "cb_new_package_variant_selected", level => log_threshold);
+		log (text => "cb_package_variant_apply", level => log_threshold);
 		log_indentation_up;
-
-		
-		-- Get the variant name of the entry column 0:
-		gtk.tree_model.get_value (model, iter, 0, name);
-		
-		variant_new := to_variant_name (glib.values.get_string (name)); -- S_0805
-
-		log (text => "selected variant: " & pac_package_variant_name.to_string (variant_new),
-			 level => log_threshold + 1);
-
-		-- put_line ("new package_variant selected: " & to_string (variant_new));
 		
 		finalize;
 
+		-- put_line ("destroy window");
+
 		-- If everything was fine, close the window and clean up.
-		-- If one of the operations above has raised an exception then
-		-- nothing will be cleaned up and the window will remain until the
-		-- operator enters a correct property.
 		package_variant_window.destroy;
 
-		-- CS
-		-- Whatever goes wrong, output the message in the status bar
-		-- of the properties window:
-		-- exception when event: others =>
-		-- 	set_status_properties (exception_message (event));
-
+		-- put_line ("done");		
 		log_indentation_down;
-	end cb_new_package_variant_selected;
+	end cb_package_variant_apply;
+
+
 
 	
-
-	
-
-
-	procedure cb_package_variant_window_destroy (
-		window : access gtk_widget_record'class)
-	is
-	begin
-		put_line ("cb_package_variant_window_destroy");
-		reset;
-	end cb_package_variant_window_destroy;
-
-	
-
 	
 	
 
@@ -1328,8 +1332,11 @@ package body et_canvas_schematic_units is
 			-- is emitted when an entry for the new variant 
 			-- has been selected:
 			package_variant_new.on_changed (cb_new_package_variant_selected'access);
-			
 			package_variant_new.grab_focus;
+
+			-- Connect the "on_clicked" signal that is emitted
+			-- when the operator clicks the "apply"-button:
+			package_variant_button_apply.on_clicked (cb_package_variant_apply'access);
 			
 			package_variant_window.show_all;
 
@@ -1348,6 +1355,7 @@ package body et_canvas_schematic_units is
 	end show_package_variant_window;
 
 
+	
 
 	
 
@@ -1382,8 +1390,10 @@ package body et_canvas_schematic_units is
 	
 
 
-
 	
+
+
+-- RENAME:
 
 	procedure cb_rename_new_name_entered (
 		self : access gtk.gentry.gtk_entry_record'class) 

@@ -48,6 +48,7 @@ with gtk.menu_shell;
 with gtk.gentry;
 with gtk.file_chooser_button;		use gtk.file_chooser_button;
 with gtk.box;						use gtk.box;
+with gtk.button;					use gtk.button;
 with gtk.combo_box;					use gtk.combo_box;
 
 with et_schematic_geometry;			use et_schematic_geometry;
@@ -271,6 +272,15 @@ package et_canvas_schematic_units is
 
 
 -- PACKAGE VARIANT:
+
+	-- When the operator selects a package variant in the
+	-- "package variant window", then the name of the variant
+	-- is stored here temporarily via procedure
+	-- cb_new_package_variant_selected.
+	-- Procedure cb_package_variant_apply in turn reads
+	-- variant_new and assigns it to the targeted device:
+	variant_new : pac_package_variant_name.bounded_string;
+
 	
 	-- Called when the "on_activate" signal is emitted
 	-- by the combo box when a variant has been selected
@@ -289,6 +299,14 @@ package et_canvas_schematic_units is
 	procedure cb_package_variant_window_destroy (
 		window : access gtk_widget_record'class);
 
+
+	-- This procedure is called once the operator clicks the
+	-- "apply"-button in the package variant window.
+	-- It does the final call to apply the new package variant
+	-- to the targeted device:
+	procedure cb_package_variant_apply (
+		button : access gtk_button_record'class);
+	
 	
 	-- This procedure shows the window where the
 	-- operator sees the old package_variant of the targeted device

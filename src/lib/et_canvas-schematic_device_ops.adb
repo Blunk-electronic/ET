@@ -294,7 +294,6 @@ package body et_canvas.schematic_device_ops is
 		
 		box : gtk_vbox;
 		label_old, label_new : gtk.label.gtk_label;
-		label_status : gtk.label.gtk_label;
 	begin
 		gtk_new (package_variant_window);
 
@@ -339,6 +338,10 @@ package body et_canvas.schematic_device_ops is
 		gtk_new (render);
 		pack_start (package_variant_new, render, expand => true);
 		add_attribute (package_variant_new, render, "markup", 0); -- column 0
+
+		-- Insert the apply-button:
+		gtk_new (package_variant_button_apply, "APPLY");
+		pack_start (box, package_variant_button_apply);
 		
 	end build_package_variant_window;
 

@@ -235,6 +235,10 @@ package et_canvas.schematic_device_ops is
 	-- This is the field inside the package_variant_window 
 	-- where the old package_variant of a device is shown:
 	package_variant_old : gtk_gentry;
+
+	-- If the operator wants to apply the selected
+	-- package variant, then she/he clicks this button:
+	package_variant_button_apply : gtk_button;
 	
 	
 	-- This procedure assembles the package_variant_window with 
@@ -252,7 +256,7 @@ package et_canvas.schematic_device_ops is
 		device_cursor : in pac_devices_sch.cursor);
 
 
-
+	
 	
 private
 	
