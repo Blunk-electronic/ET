@@ -1565,9 +1565,10 @@ package body et_canvas_schematic_units is
 	
 
 	
+
 	
 
-
+-- DRAG UNIT:
 	
 
 	procedure drag_object (
@@ -1676,7 +1677,7 @@ package body et_canvas_schematic_units is
 	
 
 
--- ADD UNIT/DEVICE
+-- ADD UNIT/DEVICE:
 
 	function get_top_most_important_library return string is
 		use et_meta;
