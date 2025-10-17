@@ -216,6 +216,16 @@ package et_devices_electrical is
 		device : in type_device_sch)
 		return pac_package_variants.map;
 												
+
+
+	-- Returns the cursor to the first deployed unit
+	-- of the given device:
+	function get_first_unit (
+		device : in type_device_sch)
+		return pac_units.cursor;
+
+
+	
 	
 	-- The devices of a module are collected in a map.
 	-- CS: This must be a hashed map:
@@ -910,8 +920,16 @@ package et_devices_electrical is
 	
 
 
+	-- Sets all units or an explicitly given unit as selected.
+	-- If all_units is true, then the parameter "unit" is ignored: 
+	procedure select_unit (
+		device		: in out type_device_sch;
+		all_units	: in boolean;
+		unit_name	: in pac_unit_name.bounded_string);
 
-	
+
+
+
 	
 	
 -- COMMITS OF ELECTRICAL DEVICES (required for undo/redo operations via the GUI):

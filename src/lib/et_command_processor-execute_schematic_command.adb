@@ -701,8 +701,6 @@ is
 					unit_name		=> unit);				
 			end;
 
-
-
 			
 			procedure device_not_found is begin
 				log (WARNING, " Device " & to_string (device) & " not found !");
@@ -733,8 +731,15 @@ is
 					-- zoom factor as it is:
 					zoom_to (get_place (unit_query.position), S);
 
+					-- Highlight all units:
+					show_device (
+						module_cursor	=> active_module, 
+						device_name		=> device, 
+						all_units		=> true,
+						unit_name		=> unit_name_default,
+						log_threshold	=> log_threshold + 2);
+					
 					-- CS
-					-- Make the whole device (with all its units) selected.
 					-- show some basic information in the staus bar.
 				else
 					device_not_found;
@@ -756,8 +761,16 @@ is
 					-- zoom factor as it is:
 					zoom_to (get_place (unit_query.position), S);
 
+					-- Highlight the given unit only:
+					show_device (
+						module_cursor	=> active_module, 
+						device_name		=> device, 
+						all_units		=> false, 
+						unit_name		=> unit,
+						log_threshold	=> log_threshold + 2);
+
+					
 					-- CS
-					-- Make the whole device (with all its units) selected.
 					-- show some basic information in the staus bar.
 				else
 					unit_not_found;
@@ -778,8 +791,16 @@ is
 						-- zoom factor as it is:
 						zoom_to (get_place (unit_query.position), S);
 
+						-- Highlight all units:
+						show_device (
+							module_cursor	=> active_module, 
+							device_name		=> device, 
+							all_units		=> true, 
+							unit_name		=> unit_name_default,
+							log_threshold	=> log_threshold + 2);
+
+
 						-- CS
-						-- Make the whole device (with all its units) selected.
 						-- show some basic information in the staus bar.
 						
 					else

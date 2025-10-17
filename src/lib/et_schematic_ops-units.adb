@@ -577,6 +577,91 @@ package body et_schematic_ops.units is
 
 
 	
+
+-- SHOW DEVICE:
+
+	procedure show_device (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name;
+		all_units		: in boolean;
+		unit_name		: in pac_unit_name.bounded_string := unit_name_default;
+		log_threshold	: in type_log_level)
+	is
+		device_cursor_sch : pac_devices_sch.cursor;
+		
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_sch) 
+			is begin
+				-- Independend on the search mode, set the whole device as selected.
+				-- This is relevant for highlighting the package in the board editor. 
+				-- If the device is virtual, then this has no meaning because virtual
+				-- devices do not appear in the board drawing:
+				set_selected (device);
+
+				-- Now select the units:
+				if all_units then
+					-- Set all units as selected:
+
+					select_unit (
+						device		=> device, 
+						all_units	=> true, 
+						unit_name	=> unit_name_default); -- don't care
+
+				else
+					-- Set the given unit as selected:
+					select_unit (
+						device		=> device, 
+						all_units	=> false, 
+						unit_name	=> unit_name);
+
+				end if;
+			end query_device;
+		
+			
+		begin
+			module.devices.update_element (device_cursor_sch, query_device'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " show device " & to_string (device_name),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		
+		-- Deselect all objects of previous show operations:
+		reset_proposed_objects (module_cursor, log_threshold + 1);
+		et_schematic_ops.nets.reset_proposed_objects (module_cursor, log_threshold + 1);
+		
+		
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
+			
+		if has_element (device_cursor_sch) then -- device exists in schematic			
+			generic_modules.update_element (module_cursor, query_module'access);
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+		end if;
+
+		log_indentation_down;
+	end show_device;
+
+	
+	
+
+	
 	
 
 	
@@ -3647,7 +3732,10 @@ package body et_schematic_ops.units is
 				log (text => to_string (device_name), level => log_threshold + 1);
 				log_indentation_up;
 
-				-- Iterate through the units:
+				-- CS ? Reset the device:
+				-- CS reset_status (device);
+
+				-- Iterate through the units and reset each of them:
 				while has_element (unit_cursor) loop
 					device.units.update_element (unit_cursor, query_unit'access);
 					next (unit_cursor);

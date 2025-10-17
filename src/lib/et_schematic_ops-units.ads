@@ -158,7 +158,21 @@ package et_schematic_ops.units is
 
 
 
-	
+-- SHOW DEVICE:
+
+	-- Sets all units or an explicitly given unit as selected.
+	-- The search mode is specified by "all_units".
+	-- If all_units is true, then the parameter "unit" is ignored
+	-- and all units adressed.
+	-- If all_units is false, then only the unit specified by "unit_name"
+	-- will be addressed:
+	procedure show_device (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- R2, IC4
+		all_units		: in boolean;
+		unit_name		: in pac_unit_name.bounded_string := unit_name_default;
+		log_threshold	: in type_log_level);
+
 
 	
 	
@@ -539,7 +553,7 @@ package et_schematic_ops.units is
 
 
 	-- Returns the position of given unit. If the unit_name is empty ("")
-	-- then the position of the first unit is returned.
+	-- then the position of the first unit of the device is returned.
 	-- This is useful when a device has only one unit.
 	-- If the given device or unit does not exist, then the return is false.
 	function get_unit_position (
@@ -671,7 +685,8 @@ package et_schematic_ops.units is
 								
 
 
-	-- Clears the proposed-flag and the selected-flag of all units:
+	-- Clears the proposed-flag and the selected-flag of 
+	-- all devices and their units:
 	procedure reset_proposed_units (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);

@@ -170,6 +170,16 @@ package body et_devices_electrical is
 
 
 
+	function get_first_unit (
+		device : in type_device_sch)
+		return pac_units.cursor
+	is begin
+		return device.units.first;
+	end;
+
+
+
+	
 	
 
 	function get_device_model_file (
@@ -2129,6 +2139,39 @@ package body et_devices_electrical is
 
 	
 
+	procedure select_unit (
+		device		: in out type_device_sch;
+		all_units	: in boolean;
+		unit_name	: in pac_unit_name.bounded_string)
+	is
+		unit_cursor : pac_units.cursor := device.units.first;
+
+		
+		procedure query_unit (
+			unit_name	: in pac_unit_name.bounded_string;
+			unit		: in out type_unit)
+		is begin
+			set_selected (unit);
+		end query_unit;
+
+		
+	begin
+		if all_units then
+			-- Iterate though all units and set each of them
+			-- as selected:
+			while has_element (unit_cursor) loop
+				device.units.update_element (unit_cursor, query_unit'access);
+				next (unit_cursor);
+			end loop;
+
+		else
+			-- Set only the given unit as selected:
+			unit_cursor := locate_unit (device, unit_name);
+			device.units.update_element (unit_cursor, query_unit'access);
+		end if;
+	end select_unit;
+
+	
 	
 end et_devices_electrical;
 
