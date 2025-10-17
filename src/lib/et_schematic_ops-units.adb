@@ -639,7 +639,8 @@ package body et_schematic_ops.units is
 		log_indentation_up;
 
 		
-		-- Deselect all objects of previous show operations:
+		-- Deselect all objects of previous show operations
+		-- so that nothing is highlighted anymore:
 		reset_proposed_objects (module_cursor, log_threshold + 1);
 		et_schematic_ops.nets.reset_proposed_objects (module_cursor, log_threshold + 1);
 		

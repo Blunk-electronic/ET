@@ -687,7 +687,7 @@ package et_schematic_ops.units is
 
 	-- Clears the proposed-flag and the selected-flag of 
 	-- all devices and their units:
-	procedure reset_proposed_units (
+	procedure reset_proposed_units ( -- CS rename to reset_status_units
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
@@ -808,7 +808,7 @@ package et_schematic_ops.units is
 
 
 	-- Clears the proposed-flag and the selected-flag of all placeholders:
-	procedure reset_proposed_placeholders (
+	procedure reset_proposed_placeholders (  -- CS rename to reset_status_placeholders
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
@@ -907,7 +907,7 @@ package et_schematic_ops.units is
 	-- This is a collective procedure that resets
 	-- the proposed-flag and the selected-flag 
 	-- of all objects:
-	procedure reset_proposed_objects (
+	procedure reset_proposed_objects (  -- CS rename to reset_status_objects
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
