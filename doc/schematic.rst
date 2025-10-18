@@ -52,14 +52,14 @@ Devices and Units
 
 
 	
-#. Showing and finding devices and units:
+#. Showing and Finding Devices and Units:
 
 	- To show a device:
 	
 	|VNS| h d
 
 	
-	- To find the first unit of device, use this command:
+	To locate the first unit of a device, use this command:
 
 	.. code-block::
 
@@ -68,16 +68,16 @@ Devices and Units
 	|VNS| |NI|
 	
 		
-	- To find the first unit of a device on the current sheet:
+	To locate the first unit of a device on the current sheet:
 		
 	.. code-block::
 
-		show device IC1 IO-BANK2 .
+		show device IC1 .
 
 	|VNS| |NI|
 	
 		
-	- To find an explicit unit of a device:
+	To locate an explicitly given unit of a device:
 		
 	.. code-block::
 
