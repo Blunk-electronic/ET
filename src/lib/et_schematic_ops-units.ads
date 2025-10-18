@@ -685,13 +685,20 @@ package et_schematic_ops.units is
 								
 
 
-	-- Clears the proposed-flag and the selected-flag of 
-	-- all devices and their units:
+	-- Resets the stautus flags of 
+	-- all devices, their units and packages:
 	procedure reset_proposed_units ( -- CS rename to reset_status_units
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 
+
+	-- Resets the status of packages of all real devices:
+	procedure reset_status_devices (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+	
 
 	-- Returns the first unit according to the given flag.
 	-- If no unit has been found,
@@ -704,6 +711,9 @@ package et_schematic_ops.units is
 
 
 
+
+
+	
 
 -- PLACEHOLDERS:
 
@@ -905,8 +915,7 @@ package et_schematic_ops.units is
 	
 
 	-- This is a collective procedure that resets
-	-- the proposed-flag and the selected-flag 
-	-- of all objects:
+	-- the status flags of all objects (devices, units, placeholders):
 	procedure reset_proposed_objects (  -- CS rename to reset_status_objects
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
