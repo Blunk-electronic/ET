@@ -660,7 +660,13 @@ package et_canvas_schematic_units is
 
 
 
+	
+-- SHOW DEVICE:
+	
+	procedure show_object (
+		position : in type_vector_model);
 
+	
 	status_show_device : constant string := 
 		status_click_left 
 		& "or "

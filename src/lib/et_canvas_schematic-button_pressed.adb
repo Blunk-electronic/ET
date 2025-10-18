@@ -229,14 +229,7 @@ is
 			when VERB_SHOW =>
 				case noun is
 					when NOUN_DEVICE =>
-						null;
-						-- CS
-						-- if not clarification_pending then
-						-- 	find_units_for_show (event.point);
-						-- else
-						-- 	show_properties_of_selected_device;
-						-- end if;
-
+						et_canvas_schematic_units.show_object (snap_point);
 						
 					when NOUN_NET | NOUN_NET_LABEL =>
 						et_canvas_schematic_nets.show_object (snap_point);

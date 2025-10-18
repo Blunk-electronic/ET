@@ -3513,8 +3513,25 @@ package body et_schematic_ops.units is
 	end;
 
 	
+
+	function get_unit_name (
+		object	: in type_object_unit)
+		return string
+	is begin
+		return get_unit_name (object.unit_cursor);
+	end;
+
 	
 
+	function get_unit_name (
+		object	: in type_object_unit)
+		return pac_unit_name.bounded_string
+	is begin
+		return key (object.unit_cursor);
+	end;
+
+
+	
 
 	function get_object_name (
 		object	: in type_object_unit)
@@ -5248,7 +5265,44 @@ package body et_schematic_ops.units is
 
 
 
+	
 
+
+	procedure show_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " show object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_UNIT =>
+
+				show_device (
+					module_cursor	=> module_cursor,
+					device_name		=> get_device_name (object.unit),
+					all_units		=> false,
+					unit_name		=> get_unit_name (object.unit),
+					log_threshold	=> log_threshold + 1);
+
+				
+			when CAT_PLACEHOLDER =>
+				null; -- CS clear content ? or do nothing ?
+
+								
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end show_object;
+
+	
 	
 
 	

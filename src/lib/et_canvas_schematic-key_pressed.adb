@@ -661,15 +661,8 @@ is
 			when key_space =>
 				case noun is
 					when NOUN_DEVICE =>
-						null;
-						-- CS
-						-- if not clarification_pending then
-						-- 	find_units_for_show (get_cursor_position);
-						-- else
-						-- 	show_properties_of_selected_device;
-						-- end if;
-      -- 
-
+						et_canvas_schematic_units.show_object (get_cursor_position);
+						
 					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET =>
 						et_canvas_schematic_nets.show_object (get_cursor_position);
 						
