@@ -687,9 +687,16 @@ package body et_canvas_schematic_nets is
 
 		
 	begin
-		log (text => "locating objects ...", level => log_threshold);
+		log (text => "find_objects", level => log_threshold);
 		log_indentation_up;
 
+		-- CS: Before locating any objects, previous
+		-- proposed or selected objects should be reset:		
+		reset_proposed_objects (active_module, log_threshold + 1);
+		-- CS: Is this a good idea ?
+
+
+		
 		-- Propose objects according to current verb and noun:
 		case verb is
 			when VERB_DELETE | VERB_DRAG =>
@@ -1206,7 +1213,7 @@ package body et_canvas_schematic_nets is
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
-			log (text => "finalizing show ...", level => log_threshold);
+			log (text => "finalize show", level => log_threshold);
 			log_indentation_up;
 
 			-- If a selected object has been found, then
@@ -1221,7 +1228,7 @@ package body et_canvas_schematic_nets is
 				if object.cat = CAT_NET then
 					redraw_board;
 				end if;
-				-- CS unit, device ?
+
 				
 			else
 				log (text => "nothing to do", level => log_threshold);
@@ -1235,9 +1242,16 @@ package body et_canvas_schematic_nets is
 		
 	begin
 		-- Clear all previous selections:
-		reset_proposed_objects (active_module, log_threshold + 1);
+		-- reset_proposed_objects (active_module, log_threshold + 1);
+		-- CS: no longer required. See comments below.
 		
 		if not clarification_pending then
+
+			-- CS: Before locating any objects, previous
+			-- proposed or selected objects should be reset:
+			-- reset_proposed_objects (active_module, log_threshold + 1);
+			-- This action is currently perfomed in procedure find_objects.
+			
 			-- Locate all objects in the vicinity of the given point:
 			find_objects (point);
 			

@@ -6881,19 +6881,34 @@ package body et_schematic_ops.nets is
 	procedure reset_proposed_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
-	is begin
+	is 
+
+		procedure reset_nets is begin
+			reset_segments (module_cursor, log_threshold + 1);
+			reset_strands (module_cursor, log_threshold + 1);
+			reset_nets (module_cursor, log_threshold + 1);
+			
+			reset_labels (module_cursor, log_threshold + 1);
+			reset_connectors (module_cursor, log_threshold + 1);
+		end;
+
+		
+		procedure reset_devices is begin
+			reset_proposed_units (module_cursor, log_threshold + 1);
+			reset_proposed_placeholders (module_cursor, log_threshold + 1);
+		end;
+	
+
+	begin
 		log (text => "module " & to_string (module_cursor) 
-			& " reset proposed objects",
+			& " reset objects",
 			level => log_threshold);
 
 		log_indentation_up;
-		reset_segments (module_cursor, log_threshold + 1);
-		reset_strands (module_cursor, log_threshold + 1);
-		reset_nets (module_cursor, log_threshold + 1);
 		
-		reset_labels (module_cursor, log_threshold + 1);
-		reset_connectors (module_cursor, log_threshold + 1);
-		
+		reset_nets;
+		reset_devices;		
+
 		log_indentation_down;
 	end reset_proposed_objects;
 

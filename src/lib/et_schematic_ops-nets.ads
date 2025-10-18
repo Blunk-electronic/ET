@@ -971,7 +971,7 @@ package et_schematic_ops.nets is
 
 	-- This is a collective procedure that resets
 	-- the proposed-flag and the selected-flag 
-	-- of all objects:
+	-- of all objects (nets, net labels, devices, units, placeholders):
 	procedure reset_proposed_objects ( -- CS rename to reset_status_objects
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);

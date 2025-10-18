@@ -260,6 +260,10 @@ package body et_canvas_schematic_units is
 		log (text => "find_objects", level => log_threshold);
 		log_indentation_up;
 
+		-- CS: Before locating any objects, previous
+		-- proposed or selected objects should be reset:		
+		reset_proposed_objects (active_module, log_threshold + 1);
+		-- CS: Is this a good idea ?
 		
 
 		-- Propose objects according to current verb and noun:
@@ -2662,8 +2666,14 @@ package body et_canvas_schematic_units is
 		end finalize;
 		
 
-	begin
+	begin		
 		if not clarification_pending then
+
+			-- CS: Before locating any objects, previous
+			-- proposed or selected objects should be reset:
+			-- reset_proposed_objects (active_module, log_threshold + 1);
+			-- This action is currently perfomed in procedure find_objects.
+			
 			-- Locate all objects in the vicinity of the given point:
 			find_objects (position);
 			-- NOTE: If many objects have been found, then
