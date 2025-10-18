@@ -381,9 +381,8 @@ package body et_devices_electrical is
 		use et_board_geometry.pac_geometry_2;
 		use et_board_coordinates;
 		use pac_devices_sch;
-		use et_device_appearance;
 	begin
-		if element (device_cursor).appearance = APPEARANCE_PCB then
+		if is_real (device_cursor) then
 			log (text => "location in board:" & 
 				to_string (element (device_cursor).position.place) &
 				" face" & 
@@ -824,7 +823,7 @@ package body et_devices_electrical is
 		use et_board_geometry;
 		use et_board_geometry.pac_geometry_2;
 	begin
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			packge := get_package_model (device_cursor);
 
 			if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
@@ -870,7 +869,7 @@ package body et_devices_electrical is
 		-- use et_board_coordinates.pac_geometry_2;
 
 	begin
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			packge := get_package_model (device_cursor);
 
 			if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
@@ -917,7 +916,7 @@ package body et_devices_electrical is
 		use et_board_geometry;
 		use et_board_geometry.pac_geometry_2;
 	begin
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			packge := get_package_model (device_cursor);
 				
 			if layer_category /= INNER then -- route restrict objects exist in outer layers only
@@ -960,7 +959,7 @@ package body et_devices_electrical is
 
 		result : pac_polygon_list.list;
 	begin
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			packge := get_package_model (device_cursor);
 				
 			if layer_category /= INNER then -- route restrict objects exist in outer layers only
@@ -1007,7 +1006,7 @@ package body et_devices_electrical is
 		use et_board_geometry.pac_geometry_2;
 
 	begin
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			packge := get_package_model (device_cursor);
 				
 			if layer_category /= INNER then -- via restrict objects exist in outer layers only
@@ -1051,7 +1050,7 @@ package body et_devices_electrical is
 		rotation : et_board_geometry.type_rotation_model;
 
 	begin
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
 			
@@ -1109,7 +1108,7 @@ package body et_devices_electrical is
 		packge : pac_package_models.cursor;
 		rotation : et_board_geometry.type_rotation_model;
 	begin
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
 			
@@ -1167,7 +1166,7 @@ package body et_devices_electrical is
 
 		use et_stopmask.packages;
 	begin
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
 
@@ -1234,6 +1233,7 @@ package body et_devices_electrical is
 
 
 
+	
 
 
 	function get_default_text_positions (
@@ -1241,7 +1241,6 @@ package body et_devices_electrical is
 		unit_name		: in pac_unit_name.bounded_string)
 		return type_default_text_positions 
 	is		
-		use et_device_appearance;
 		use pac_devices_lib;
 
 		-- The positions to be returned depend on the appearance of the requested device:
@@ -1444,7 +1443,7 @@ package body et_devices_electrical is
 
 		
 	begin -- get_silkscreen_objects
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
 
@@ -1554,7 +1553,7 @@ package body et_devices_electrical is
 
 		
 	begin -- get_assy_doc_objects
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
 
@@ -1627,7 +1626,7 @@ package body et_devices_electrical is
 
 		rotation : et_board_geometry.type_rotation_model;
 	begin
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
 			
@@ -1650,6 +1649,7 @@ package body et_devices_electrical is
 
 
 	
+
 	
 	function get_hole_polygons (
 		device_cursor	: in pac_devices_sch.cursor)
@@ -1668,7 +1668,7 @@ package body et_devices_electrical is
 		
 		result : pac_polygon_list.list;
 	begin
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
 			
@@ -1698,26 +1698,29 @@ package body et_devices_electrical is
 	procedure set_selected (
 		device : in out type_device_sch)
 	is begin
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			set_selected (device.status);
 		end if;
 	end;
 
+
+	
 	
 	procedure clear_selected (
 		device : in out type_device_sch)
 	is begin
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			clear_selected (device.status);
 		end if;
 	end;
 
 
+	
 	function is_selected (
 		device : in type_device_sch)
 		return boolean
 	is begin
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			if is_selected (device.status) then
 				return true;
 			else
@@ -1730,19 +1733,21 @@ package body et_devices_electrical is
 	
 
 	
+	
 	procedure set_proposed (
 		device : in out type_device_sch)
 	is begin
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			set_proposed (device.status);
 		end if;
 	end;
 	
 
+	
 	procedure clear_proposed (
 		device : in out type_device_sch)
 	is begin
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			clear_proposed (device.status);
 		end if;
 	end;
@@ -1753,7 +1758,7 @@ package body et_devices_electrical is
 		device : in type_device_sch)
 		return boolean
 	is begin
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			if is_proposed (device.status) then
 				return true;
 			else
@@ -1769,7 +1774,7 @@ package body et_devices_electrical is
 	procedure set_moving (
 		device : in out type_device_sch)
 	is begin
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			set_moving (device.status);
 		end if;
 	end;
@@ -1778,7 +1783,7 @@ package body et_devices_electrical is
 	procedure clear_moving (
 		device : in out type_device_sch)
 	is begin
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			clear_moving (device.status);
 		end if;
 	end;
@@ -1789,7 +1794,7 @@ package body et_devices_electrical is
 		device : in type_device_sch)
 		return boolean
 	is begin
-		if device.appearance = APPEARANCE_PCB then
+		if is_real (device) then
 			if is_moving (device.status) then
 				return true;
 			else
@@ -1810,39 +1815,46 @@ package body et_devices_electrical is
 		device		: in out type_device_sch;
 		operation	: in type_status_operation)
 	is begin
-		modify_status (device.status, operation);
+		if is_real (device) then
+			modify_status (device.status, operation);
+		end if;
 	end modify_status;
 
 	
 
+	
 	procedure reset_status (
 		device : in out type_device_sch)
 	is begin
-		reset_status (device.status);
+		if is_real (device) then
+			reset_status (device.status);
+		end if;
 	end;
 
 	
 
 
+	
 	function is_real (
 		device : in pac_devices_sch.cursor)
 		return boolean 
 	is 
-		use pac_devices_sch;
+		d : type_device_sch renames element (device);
 	begin
-		case element (device).appearance is
-			when APPEARANCE_PCB		=> return true;
-			when APPEARANCE_VIRTUAL	=> return false;
-		end case;
+		return is_real (d);
 	end is_real;
 	
 
 
+	
+
 	function is_proposed (
 		device : in pac_devices_sch.cursor)
 		return boolean
-	is begin
-		if is_proposed (element (device)) then
+	is 
+		d : type_device_sch renames element (device);
+	begin
+		if is_proposed (d) then
 			return true;
 		else
 			return false;
@@ -1850,13 +1862,16 @@ package body et_devices_electrical is
 	end is_proposed;
 	
 
+
 	
 
 	function is_selected (
 		device : in pac_devices_sch.cursor)
 		return boolean
-	is begin
-		if is_selected (element (device)) then
+	is 
+		d : type_device_sch renames element (device);
+	begin
+		if is_selected (d) then
 			return true;
 		else
 			return false;
@@ -1864,18 +1879,22 @@ package body et_devices_electrical is
 	end is_selected;
 
 
+	
 
 
 	function is_moving (
 		device : in pac_devices_sch.cursor)
 		return boolean
-	is begin
-		if is_moving (element (device)) then
+	is 
+		d : type_device_sch renames element (device);
+	begin
+		if is_moving (d) then
 			return true;
 		else
 			return false;
 		end if;
 	end is_moving;
+
 
 	
 

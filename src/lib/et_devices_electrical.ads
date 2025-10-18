@@ -165,6 +165,8 @@ package et_devices_electrical is
 	end record;
 
 
+	-- Returns true if the given device has a physical
+	-- representation in the board drawing:
 	function is_real (
 		device : in type_device_sch)
 		return boolean;
@@ -716,14 +718,14 @@ package et_devices_electrical is
 -- DEVICE STATUS OPERATIONS:
 	
 	-- NOTE: Operations regarding the status
-	-- apply to the package of the device (in the board domain).
+	-- apply to the package of the device (in the board domain)
+	-- which implies that the targeted device is real.
 	-- Status opertions for individual units (in the schematic)
 	-- are specified in the package et_units.
 	-- Regarding set and clear operations: If the device
-	-- is not real (APPEARANCE_PCB) then the operation has no effect.
+	-- is not real then the operation has no effect.
 	-- Regarding query operations like is_selected or is_moving: If
-	-- the device is not real (APPEARANCE_PCB) then the return is
-	-- always false.
+	-- the device is not real then the return is always false.
 	
 	procedure set_selected (
 		device : in out type_device_sch);
@@ -789,6 +791,8 @@ package et_devices_electrical is
 		return boolean;
 	
 
+
+	
 	function is_proposed (
 		device : in pac_devices_sch.cursor)
 		return boolean;
