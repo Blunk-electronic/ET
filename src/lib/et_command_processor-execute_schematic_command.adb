@@ -726,7 +726,8 @@ is
 				if unit_query.exists then
 					-- Set the active sheet where the unit is:
 					active_sheet := get_sheet (unit_query.position);
-
+					update_sheet_number_display;
+					
 					-- Center on the first unit and leave the
 					-- zoom factor as it is:
 					zoom_to (get_place (unit_query.position), S);
@@ -756,7 +757,8 @@ is
 				if unit_query.exists then
 					-- Set the active sheet where the unit is:
 					active_sheet := get_sheet (unit_query.position);
-
+					update_sheet_number_display;
+					
 					-- Center on the first unit and leave the
 					-- zoom factor as it is:
 					zoom_to (get_place (unit_query.position), S);

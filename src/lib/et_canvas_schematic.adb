@@ -576,6 +576,7 @@ package body et_canvas_schematic is
 		log_indentation_down;
 		
 		redraw_schematic;
+		redraw_board;
 	end reset;
 
 	
