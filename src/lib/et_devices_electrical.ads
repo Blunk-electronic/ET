@@ -152,9 +152,10 @@ package et_devices_electrical is
 				-- Flipping a device to top or bottom means it will be drawn
 				-- mirrored along its Y-axis.
 				position			: et_board_coordinates.type_package_position; -- incl. rotation and face
-				text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
 
-				-- CS flags that signal whether partcode, purpose, bom are displayed or not.
+				text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
+				-- CS: rename to placeholders
+
 
 				-- The status of the package:
 				status : type_object_status;
