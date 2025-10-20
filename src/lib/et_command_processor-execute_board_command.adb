@@ -3466,6 +3466,11 @@ is
 	-- Parses the given command and dispatches to
 	-- further subroutines:
 	procedure parse is begin
+
+		log (text => "parse", level => log_threshold + 1);
+		log_indentation_up;
+		
+		
 		-- Clear the status bar if we are in graphical mode:
 		if runmode /= MODE_HEADLESS then
 			status_clear;
@@ -3836,6 +3841,7 @@ is
 		end if;
 
 
+		log_indentation_down;
 
 		
 		exception
@@ -3930,6 +3936,8 @@ is
 begin
 	log (text => "execute board command: " & enclose_in_quotes (get_all_fields (cmd)),
 		 level => log_threshold);
+
+	log_indentation_up;
 	
 	log (text => "command origin: " & get_origin (cmd), level => log_threshold);
 
@@ -3967,6 +3975,8 @@ begin
 	-- 	canvas.grab_focus; -- NOTE ! calls "cb_draw"
 	-- end if;
 
+	log_indentation_down;
+	
 
 	-- exception when event: others =>
 

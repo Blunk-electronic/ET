@@ -2381,6 +2381,7 @@ is
 		use et_assembly_variants;
 	begin
 		log (text => "parse", level => log_threshold + 1);
+		log_indentation_up;
 		
 
 		-- Clear the status bar if we are in graphical mode:
@@ -2920,6 +2921,8 @@ is
 			null;			
 		end if;
 
+
+		log_indentation_down;
 		
 		
 		exception
