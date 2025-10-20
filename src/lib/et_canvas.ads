@@ -1051,7 +1051,10 @@ package et_canvas is
 
 	label_status	: gtk_label;
 
+	-- Writes the given text in the status bar
+	-- if graphical mode is active. Otherwise nothing happens:
 	procedure set_status (text : in string);
+	
 	procedure status_clear;
 	procedure status_enter_verb;
 	procedure status_enter_noun;

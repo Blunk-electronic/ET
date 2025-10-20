@@ -2658,6 +2658,7 @@ package body et_canvas_schematic_units is
 			log_indentation_down;			
 
 			-- CS show some basic information about the device
+			-- CS test category first
 			-- set_status (status_delete);
 
 			reset_editing_process; -- prepare for a new editing process

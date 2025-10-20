@@ -729,7 +729,8 @@ is
 					update_sheet_number_display;
 					
 					-- Center on the first unit and leave the
-					-- zoom factor as it is:
+					-- zoom factor as it is. If the runmode is
+					-- headless, then nothing happens here:
 					zoom_to (get_place (unit_query.position), S);
 
 					-- Highlight all units:
@@ -742,6 +743,7 @@ is
 					
 					-- CS
 					-- show some basic information in the staus bar.
+					set_status (to_string (device));
 				else
 					device_not_found;
 				end if;
@@ -760,7 +762,8 @@ is
 					update_sheet_number_display;
 					
 					-- Center on the first unit and leave the
-					-- zoom factor as it is:
+					-- zoom factor as it is. If the runmode is
+					-- headless, then nothing happens here:
 					zoom_to (get_place (unit_query.position), S);
 
 					-- Highlight the given unit only:
@@ -774,6 +777,7 @@ is
 					
 					-- CS
 					-- show some basic information in the staus bar.
+					set_status (to_string (device));
 				else
 					unit_not_found;
 				end if;
@@ -790,7 +794,8 @@ is
 					if get_sheet (unit_query.position) = active_sheet then
 						
 						-- Center on the first unit and leave the
-						-- zoom factor as it is:
+						-- zoom factor as it is. If the runmode is
+						-- headless, then nothing happens here:
 						zoom_to (get_place (unit_query.position), S);
 
 						-- Highlight all units:
@@ -804,6 +809,7 @@ is
 
 						-- CS
 						-- show some basic information in the staus bar.
+						set_status (to_string (device));
 						
 					else
 						log (WARNING, " Device " & to_string (device) & " is not on this sheet !");

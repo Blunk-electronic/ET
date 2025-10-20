@@ -50,6 +50,7 @@ with gtk.main;					use gtk.main;
 with gtkada.types;
 
 with et_mirroring;
+with et_runmode;				use et_runmode;
 
 
 package body et_canvas is
@@ -2718,7 +2719,9 @@ package body et_canvas is
 
 
 	procedure set_status (text : in string) is begin
-		label_status.set_text (text);
+		if runmode /= MODE_HEADLESS then
+			label_status.set_text (text);
+		end if;
 	end set_status;
 
 	
