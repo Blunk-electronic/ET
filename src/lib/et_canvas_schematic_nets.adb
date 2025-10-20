@@ -50,6 +50,7 @@ with et_modes.schematic;			use et_modes.schematic;
 with et_netlists;
 with et_net_class;
 with et_board_ops.ratsnest;
+with et_schematic_ops.groups;
 
 with et_undo_redo;
 with et_commit;
@@ -692,7 +693,7 @@ package body et_canvas_schematic_nets is
 
 		-- CS: Before locating any objects, previous
 		-- proposed or selected objects should be reset:		
-		reset_proposed_objects (active_module, log_threshold + 1);
+		et_schematic_ops.groups.reset_objects (active_module, log_threshold + 1);
 		-- CS: Is this a good idea ?
 
 

@@ -40,6 +40,7 @@
 
 with et_board_ops.ratsnest;					use et_board_ops.ratsnest;
 with et_schematic_ops.nets;
+with et_schematic_ops.groups;
 with et_net_strands;						use et_net_strands;
 with et_port_direction;
 with et_symbol_model;
@@ -640,8 +641,9 @@ package body et_schematic_ops.units is
 		
 		-- Deselect all objects of previous show operations
 		-- so that nothing is highlighted anymore:
-		reset_proposed_objects (module_cursor, log_threshold + 1);
-		et_schematic_ops.nets.reset_proposed_objects (module_cursor, log_threshold + 1);
+		-- reset_proposed_objects (module_cursor, log_threshold + 1);
+		-- et_schematic_ops.nets.reset_proposed_objects (module_cursor, log_threshold + 1);
+		et_schematic_ops.groups.reset_objects (module_cursor, log_threshold + 1);
 		
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.
@@ -4954,17 +4956,6 @@ package body et_schematic_ops.units is
 		log_threshold	: in type_log_level)
 	is 
 
-		procedure reset_nets is 
-			use et_schematic_ops.nets;
-		begin
-			reset_segments (module_cursor, log_threshold + 1);
-			reset_strands (module_cursor, log_threshold + 1);
-			reset_nets (module_cursor, log_threshold + 1);
-			
-			reset_labels (module_cursor, log_threshold + 1);
-			reset_connectors (module_cursor, log_threshold + 1);
-		end;
-
 
 		procedure reset_devices is begin
 			-- Reset devices, units and placeholders:
@@ -4980,7 +4971,6 @@ package body et_schematic_ops.units is
 
 		log_indentation_up;
 
-		reset_nets;
 		reset_devices;
 		
 		log_indentation_down;

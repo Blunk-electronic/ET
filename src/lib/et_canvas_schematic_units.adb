@@ -75,6 +75,7 @@ with et_device_partcode;			use et_device_partcode;
 with et_device_model_names;			use et_device_model_names;
 with et_device_value;				use et_device_value;
 with et_board_ops.ratsnest;
+with et_schematic_ops.groups;
 
 with et_material;
 with et_meta;
@@ -84,7 +85,6 @@ with et_modes.schematic;			use et_modes.schematic;
 with et_canvas_schematic;			use et_canvas_schematic;
 
 with et_net_strands;
-with et_schematic_ops.nets;
 with et_schematic_text;				use et_schematic_text;
 
 with et_commit;
@@ -262,7 +262,7 @@ package body et_canvas_schematic_units is
 
 		-- CS: Before locating any objects, previous
 		-- proposed or selected objects should be reset:		
-		reset_proposed_objects (active_module, log_threshold + 1);
+		et_schematic_ops.groups.reset_objects (active_module, log_threshold + 1);
 		-- CS: Is this a good idea ?
 		
 
@@ -1601,8 +1601,7 @@ package body et_canvas_schematic_units is
 				-- Since the drag operation affects both
 				-- units and connected net segments, a reset
 				-- is required for units and net segments:
-				reset_proposed_objects (active_module, log_threshold + 1);
-				et_schematic_ops.nets.reset_proposed_objects (active_module, log_threshold + 1);
+				et_schematic_ops.groups.reset_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);

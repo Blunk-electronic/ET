@@ -76,6 +76,7 @@ with et_undo_redo;
 with et_schematic_ops.grid;
 with et_schematic_ops.units;
 with et_schematic_ops.nets;
+with et_schematic_ops.groups;
 with et_board_ops.grid;
 with et_system_info;
 with et_project_name;
@@ -501,10 +502,10 @@ package body et_canvas_schematic is
 
 			status_clear;
 
-			et_schematic_ops.nets.reset_proposed_objects (active_module, log_threshold + 1);
+			-- et_schematic_ops.nets.reset_proposed_objects (active_module, log_threshold + 1);			
+			-- et_schematic_ops.units.reset_proposed_objects (active_module, log_threshold + 1);
+			et_schematic_ops.groups.reset_objects (active_module, log_threshold + 1);
 			
-			et_schematic_ops.units.reset_proposed_objects (active_module, log_threshold + 1);
-
 			unit_add.valid := false;
 			
 			unit_fetch.valid := false;

@@ -6892,12 +6892,6 @@ package body et_schematic_ops.nets is
 			reset_connectors (module_cursor, log_threshold + 1);
 		end;
 
-		
-		procedure reset_devices is begin
-			reset_proposed_units (module_cursor, log_threshold + 1);
-			reset_proposed_placeholders (module_cursor, log_threshold + 1);
-		end;
-	
 
 	begin
 		log (text => "module " & to_string (module_cursor) 
@@ -6907,7 +6901,6 @@ package body et_schematic_ops.nets is
 		log_indentation_up;
 		
 		reset_nets;
-		reset_devices;		
 
 		log_indentation_down;
 	end reset_proposed_objects;
