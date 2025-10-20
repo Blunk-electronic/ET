@@ -550,12 +550,19 @@ package et_schematic_ops.nets is
 
 
 	
-	-- Shows/highlights a complete net:
-	-- Currently just sets the status of the
-	-- whole net as "selected":
+	-- Shows/highlights a complete net by just
+	-- setting the status of the whole net as "selected":
 	procedure show_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in pac_nets.cursor;
+		log_threshold	: in type_log_level);
+
+	
+	-- Shows/highlights a complete net by just
+	-- setting the status of the whole net as "selected":
+	procedure show_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string;
 		log_threshold	: in type_log_level);
 
 

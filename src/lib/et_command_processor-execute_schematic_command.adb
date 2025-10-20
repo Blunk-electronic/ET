@@ -1681,40 +1681,20 @@ is
 	
 
 
-	-- This procedure parses a command that highlights a net:
+	-- This procedure parses a command that highlights a net.
+	-- Example: "schematic demo show net RESET_N"
 	procedure show_net is
-		use pac_nets;
-		use et_canvas_schematic_nets;
-
 		net_name : pac_net_name.bounded_string; -- RESET_N
-		net_cursor : pac_nets.cursor;
-
 	begin
 		case cmd_field_count is
 			when 5 => 
 				net_name := to_net_name (get_field (5)); -- RESET_N
-
-				net_cursor := locate_net (active_module, net_name);
-
-				if has_element (net_cursor) then				
-					reset_status_nets (active_module, log_threshold + 1);
-					show_net (active_module, net_cursor, log_threshold + 1);
-				else
-					log (WARNING, "Net " & to_string (net_name) & " does not exist !");
-					-- CS set_status ?
-				end if;
-			
+				show_net (active_module, net_name, log_threshold + 1);
 			
 			when 6 .. type_field_count'last => too_long;
 			
 			when others => command_incomplete;
 		end case;
-
-		-- CS:
-		-- "ERROR: Net " & enclose_in_quotes (to_string (net))
-		-- 	& " is not on this sheet !";
-   		
-
 	end show_net;
 
 
@@ -2400,6 +2380,8 @@ is
 		use et_device_placeholders;
 		use et_assembly_variants;
 	begin
+		log (text => "parse", level => log_threshold + 1);
+		
 
 		-- Clear the status bar if we are in graphical mode:
 		if runmode /= MODE_HEADLESS then
@@ -2875,12 +2857,6 @@ is
 
 				
 			when VERB_SHOW => -- GUI related
-			
-				-- There might be objects such as net segments or units selected.
-				-- They must be de-selected first:
-				-- clear_proposed_objects;
-				-- CS use procedure that resets units, nets, ...
-				
 				case noun is
 					when NOUN_DEVICE =>
 						show_device;
@@ -3669,7 +3645,9 @@ begin
 	log (text => "execute schematic command: " & enclose_in_quotes (get_all_fields (cmd)),
 		 level => log_threshold);
 
-	log (text => "command origin: " & get_origin (cmd), level => log_threshold);
+	log_indentation_up;
+	
+	log (text => "command origin: " & get_origin (cmd), level => log_threshold + 1);
 
 
 	
@@ -3705,6 +3683,9 @@ begin
 	-- if runmode /= MODE_HEADLESS then
 	-- 	canvas.grab_focus; -- NOTE ! calls "cb_draw"
 	-- end if;
+
+	log_indentation_down;
+
 	
 	-- exception when event: others =>
 
