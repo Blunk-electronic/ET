@@ -180,7 +180,7 @@ package body et_schematic_ops.nets is
 
 
 
-	procedure reset_segments (
+	procedure reset_status_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
@@ -253,7 +253,7 @@ package body et_schematic_ops.nets is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_segments;
+	end reset_status_segments;
 
 		
 
@@ -1913,7 +1913,7 @@ package body et_schematic_ops.nets is
 
 	
 
-	procedure reset_strands (
+	procedure reset_status_strands (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
@@ -1998,7 +1998,7 @@ package body et_schematic_ops.nets is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_strands;
+	end reset_status_strands;
 
 	
 
@@ -2443,7 +2443,7 @@ package body et_schematic_ops.nets is
 
 
 
-	procedure reset_nets (
+	procedure reset_status_nets (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
@@ -2486,7 +2486,7 @@ package body et_schematic_ops.nets is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_nets;
+	end reset_status_nets;
 
 
 	
@@ -4446,7 +4446,7 @@ package body et_schematic_ops.nets is
 		
 	
 
-	procedure reset_labels (
+	procedure reset_status_labels (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
@@ -4534,7 +4534,7 @@ package body et_schematic_ops.nets is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_labels;
+	end reset_status_labels;
 
 
 
@@ -5458,7 +5458,7 @@ package body et_schematic_ops.nets is
 -- CONNECTORS:
 
 
-	procedure reset_connectors (
+	procedure reset_status_connectors (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
@@ -5533,7 +5533,7 @@ package body et_schematic_ops.nets is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_connectors;
+	end reset_status_connectors;
 
 	
 
@@ -6878,18 +6878,18 @@ package body et_schematic_ops.nets is
 	
 
 
-	procedure reset_proposed_objects (
+	procedure reset_status_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is 
 
 		procedure reset_nets is begin
-			reset_segments (module_cursor, log_threshold + 1);
-			reset_strands (module_cursor, log_threshold + 1);
-			reset_nets (module_cursor, log_threshold + 1);
+			reset_status_segments (module_cursor, log_threshold + 1);
+			reset_status_strands (module_cursor, log_threshold + 1);
+			reset_status_nets (module_cursor, log_threshold + 1);
 			
-			reset_labels (module_cursor, log_threshold + 1);
-			reset_connectors (module_cursor, log_threshold + 1);
+			reset_status_labels (module_cursor, log_threshold + 1);
+			reset_status_connectors (module_cursor, log_threshold + 1);
 		end;
 
 
@@ -6903,7 +6903,7 @@ package body et_schematic_ops.nets is
 		reset_nets;
 
 		log_indentation_down;
-	end reset_proposed_objects;
+	end reset_status_objects;
 
 
 

@@ -369,7 +369,7 @@ package body et_canvas_schematic_nets is
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
 
-				reset_proposed_objects (active_module, log_threshold + 1);
+				reset_status_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -691,11 +691,9 @@ package body et_canvas_schematic_nets is
 		log (text => "find_objects", level => log_threshold);
 		log_indentation_up;
 
-		-- CS: Before locating any objects, previous
+		-- Before locating any objects, previous
 		-- proposed or selected objects should be reset:		
 		et_schematic_ops.groups.reset_objects (active_module, log_threshold + 1);
-		-- CS: Is this a good idea ?
-
 
 		
 		-- Propose objects according to current verb and noun:
@@ -915,7 +913,7 @@ package body et_canvas_schematic_nets is
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
 
-				reset_proposed_objects (active_module, log_threshold + 1);
+				reset_status_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -1012,7 +1010,7 @@ package body et_canvas_schematic_nets is
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
 
-				reset_proposed_objects (active_module, log_threshold + 1);
+				reset_status_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -1108,7 +1106,7 @@ package body et_canvas_schematic_nets is
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
 
-				reset_proposed_objects (active_module, log_threshold + 1);
+				reset_status_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -1242,17 +1240,8 @@ package body et_canvas_schematic_nets is
 
 		
 	begin
-		-- Clear all previous selections:
-		-- reset_proposed_objects (active_module, log_threshold + 1);
-		-- CS: no longer required. See comments below.
-		
 		if not clarification_pending then
 
-			-- CS: Before locating any objects, previous
-			-- proposed or selected objects should be reset:
-			-- reset_proposed_objects (active_module, log_threshold + 1);
-			-- This action is currently perfomed in procedure find_objects.
-			
 			-- Locate all objects in the vicinity of the given point:
 			find_objects (point);
 			
@@ -1322,7 +1311,7 @@ package body et_canvas_schematic_nets is
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
 				
-				reset_proposed_objects (active_module, log_threshold + 1);
+				reset_status_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -1410,7 +1399,7 @@ package body et_canvas_schematic_nets is
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
 
-				reset_proposed_objects (active_module, log_threshold + 1);
+				reset_status_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);

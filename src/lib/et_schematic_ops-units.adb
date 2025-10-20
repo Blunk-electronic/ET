@@ -641,8 +641,6 @@ package body et_schematic_ops.units is
 		
 		-- Deselect all objects of previous show operations
 		-- so that nothing is highlighted anymore:
-		-- reset_proposed_objects (module_cursor, log_threshold + 1);
-		-- et_schematic_ops.nets.reset_proposed_objects (module_cursor, log_threshold + 1);
 		et_schematic_ops.groups.reset_objects (module_cursor, log_threshold + 1);
 		
 		-- Locate the targeted device in the given module.
@@ -3720,7 +3718,7 @@ package body et_schematic_ops.units is
 
 
 
-	procedure reset_proposed_units (
+	procedure reset_status_units (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
@@ -3788,7 +3786,7 @@ package body et_schematic_ops.units is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_proposed_units;
+	end reset_status_units;
 
 
 
@@ -4367,7 +4365,7 @@ package body et_schematic_ops.units is
 
 	
 
-	procedure reset_proposed_placeholders (
+	procedure reset_status_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
@@ -4433,7 +4431,7 @@ package body et_schematic_ops.units is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_proposed_placeholders;
+	end reset_status_placeholders;
 
 
 
@@ -4951,7 +4949,7 @@ package body et_schematic_ops.units is
 
 
 
-	procedure reset_proposed_objects (
+	procedure reset_status_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is 
@@ -4959,8 +4957,8 @@ package body et_schematic_ops.units is
 
 		procedure reset_devices is begin
 			-- Reset devices, units and placeholders:
-			reset_proposed_units (module_cursor, log_threshold + 1);
-			reset_proposed_placeholders (module_cursor, log_threshold + 1);
+			reset_status_units (module_cursor, log_threshold + 1);
+			reset_status_placeholders (module_cursor, log_threshold + 1);
 		end;
 
 	
@@ -4974,7 +4972,7 @@ package body et_schematic_ops.units is
 		reset_devices;
 		
 		log_indentation_down;
-	end reset_proposed_objects;
+	end reset_status_objects;
 
 
 
