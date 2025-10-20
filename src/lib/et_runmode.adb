@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                           OPERATING MODES                                --
+--                              RUNMODE                                     --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -36,21 +36,32 @@
 --   history of changes:
 --
 
-with et_exceptions;					use et_exceptions;
 
 
-
-package body et_modes is
+package body et_runmode is
 
 	
+	function to_runmode (mode : in string) return type_runmode is begin
+		return type_runmode'value (runmode_prefix & mode);
+	end;
 
-	procedure invalid_noun (noun : in string) is begin
-		raise semantic_error_1 with
-			"ERROR: Noun " & enclose_in_quotes (noun) & " invalid for this operation !";
-	end invalid_noun;
+	function to_string (mode : in type_runmode) return string is 
+		s : string := type_runmode'image (mode);
+	begin
+		return s (runmode_prefix'length + 1 .. s'last);
+	end;
+
+
+
+	procedure skipped_in_this_runmode (log_threshold : in type_log_level) is begin
+		log (text => "skipped in current runmode "
+			& to_string (runmode), level => log_threshold);
+	end skipped_in_this_runmode;
+
+
 
 	
-end et_modes;
+end et_runmode;
 	
 -- Soli Deo Gloria
 

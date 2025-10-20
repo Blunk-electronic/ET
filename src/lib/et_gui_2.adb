@@ -37,6 +37,7 @@
 --   history of changes:
 --
 
+with et_runmode;					use et_runmode;
 with et_modes;						use et_modes;
 
 with et_canvas_schematic;

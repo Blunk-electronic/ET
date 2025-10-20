@@ -43,33 +43,6 @@ with et_logging;				use et_logging;
 
 package et_modes is
 
-	-- CS: Separate package et_runmode
-	
-	-- Prefixes before enumeration types prevent clashes with gnat keywords
-	-- and package names:	
-	runmode_prefix : constant string := "MODE_";
-
-	type type_runmode is (
-		MODE_HEADLESS, -- no GUI. commandline only
-		MODE_SYMBOL,
-		MODE_PACKAGE,
-		MODE_DEVICE,
-		MODE_MODULE,
-		MODE_RIG
-		);
-
-	runmode_default : constant type_runmode := MODE_MODULE;
-
-	runmode : type_runmode := runmode_default;
-	
-	function to_runmode (mode : in string) return type_runmode;
-	function to_string (mode : in type_runmode) return string;
-
-
-	
-	procedure skipped_in_this_runmode (log_threshold : in type_log_level);
-
-	
 	
 	
 	-- Prefixes before enumeration types prevent clashes with gnat keywords

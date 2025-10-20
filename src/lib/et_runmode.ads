@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                           OPERATING MODES                                --
+--                              RUNMODE                                     --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.   
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,23 +35,41 @@
 --
 --   history of changes:
 --
+--   ToDo: 
 
-with et_exceptions;					use et_exceptions;
+with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 
 
-
-package body et_modes is
-
-	
-
-	procedure invalid_noun (noun : in string) is begin
-		raise semantic_error_1 with
-			"ERROR: Noun " & enclose_in_quotes (noun) & " invalid for this operation !";
-	end invalid_noun;
+package et_runmode is
 
 	
-end et_modes;
+	-- Prefixes before enumeration types prevent clashes with gnat keywords
+	-- and package names:	
+	runmode_prefix : constant string := "MODE_";
+
+	type type_runmode is (
+		MODE_HEADLESS, -- no GUI. commandline only
+		MODE_SYMBOL,
+		MODE_PACKAGE,
+		MODE_DEVICE,
+		MODE_MODULE,
+		MODE_RIG
+		);
+
+	runmode_default : constant type_runmode := MODE_MODULE;
+
+	runmode : type_runmode := runmode_default;
 	
+	function to_runmode (mode : in string) return type_runmode;
+	function to_string (mode : in type_runmode) return string;
+
+
+	
+	procedure skipped_in_this_runmode (log_threshold : in type_log_level);
+	
+end et_runmode;
+
 -- Soli Deo Gloria
 
 -- For God so loved the world that he gave 

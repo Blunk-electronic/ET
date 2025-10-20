@@ -48,6 +48,7 @@ with gnat.directory_operations;
 
 with et_exceptions;					use et_exceptions;
 
+with et_runmode;					use et_runmode;
 with et_domains;
 with et_project;
 
