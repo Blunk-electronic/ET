@@ -2657,9 +2657,20 @@ package body et_canvas_schematic_units is
 				
 			log_indentation_down;			
 
-			-- CS show some basic information about the device
-			-- CS test category first
-			-- set_status (status_delete);
+			case object.cat is
+				when CAT_UNIT =>
+					-- Show some basic information about the selected
+					-- device and the unit:
+					set_status (get_properties (
+						device_cursor	=> object.unit.device_cursor,
+						level			=> PROPERTIES_LEVEL_1,						   
+						all_units		=> false,
+						unit_cursor		=> object.unit.unit_cursor));
+
+				when others =>
+					status_clear;
+					-- CS CAT_PLACEHOLDER ?
+			end case;					
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;

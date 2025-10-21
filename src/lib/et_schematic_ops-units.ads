@@ -174,6 +174,27 @@ package et_schematic_ops.units is
 		log_threshold	: in type_log_level);
 
 
+	-- Returns properties of the given device. 
+	-- 1. If the given device does not exist, then error is set and an empty 
+	--    string will be returned.
+	-- 2. Level determines the degree and amount of information to be returned.
+	-- 3. If all_units is true, then no special focus is on a certain unit
+	--    and information about all units is returned.
+	-- 4. If all_units is false, then only properties of the given unit
+	--    (via unit_name) is returned. If a unit named after unit_name does
+	--    not exist, then error is set and an empty string returned:
+	function get_device_properties (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name;
+		level			: in type_properties_level;
+		all_units		: in boolean := true;
+		unit_name		: in pac_unit_name.bounded_string := unit_name_default;
+		-- CS format ?
+		error			: out boolean;
+		log_threshold	: in type_log_level)
+		return string;
+
+
 	
 	
 

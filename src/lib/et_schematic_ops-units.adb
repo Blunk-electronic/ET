@@ -37,6 +37,7 @@
 --
 --   ToDo: 
 
+with ada.strings.unbounded;
 
 with et_board_ops.ratsnest;					use et_board_ops.ratsnest;
 with et_schematic_ops.nets;
@@ -660,7 +661,116 @@ package body et_schematic_ops.units is
 	
 	
 
+
 	
+	function get_device_properties (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name;
+		level			: in type_properties_level;
+		all_units		: in boolean := true;
+		unit_name		: in pac_unit_name.bounded_string := unit_name_default;
+		error			: out boolean;
+		log_threshold	: in type_log_level)
+		return string
+	is
+		device_cursor_sch : pac_devices_sch.cursor;
+
+		use ada.strings.unbounded;
+		result : unbounded_string := to_unbounded_string ("");
+
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+
+
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in type_device_sch) 
+			is 
+				unit_cursor : pac_units.cursor;
+			begin
+				-- Get the cursor to the targeted unit:
+				unit_cursor := locate_unit (device, unit_name);
+
+				-- If the targeted unit exists then get its properties.
+				-- Otherwise set the error-flag and return an empty string:
+				if has_element (unit_cursor) then
+					-- Get the properties of the targeted device
+					-- and the targeted unit:
+					result := to_unbounded_string (get_properties (
+						device_cursor	=> device_cursor_sch,
+						level			=> level,
+						all_units		=> false,
+						unit_cursor		=> unit_cursor));
+
+				else
+					log (WARNING, " Unit " & to_string (unit_name) & " not found !");
+					error := true;
+				end if;
+			end query_device;
+		
+			
+		begin
+			query_element (device_cursor_sch, query_device'access);
+		end query_module;
+
+		
+	begin
+		error := false;
+		
+		log (text => "module " & to_string (module_cursor) 
+			 & " get properties of device " & to_string (device_name)
+			 & " inquiry level " & to_string (level),
+			level => log_threshold);
+
+		
+		if all_units then
+			log (text => "whole device -> all units",
+				 level => log_threshold);
+
+		else
+			log (text => "unit " & to_string (unit_name),
+				 level => log_threshold);
+		end if;
+
+
+				
+		log_indentation_up;
+		
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this function, set the error flag and return
+		-- an empty string:
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
+			
+		if has_element (device_cursor_sch) then -- device exists in schematic
+
+			-- If all units of the device are enquired for,
+			-- then the cursor to the device is sufficient
+			-- to query properties:
+			if all_units then
+				result := to_unbounded_string (get_properties (
+					device_cursor	=> device_cursor_sch,
+					level			=> level));
+			else
+				-- If a dedicated unit is enquired for, then
+				-- the cursor to that unit must be set:
+				query_element (module_cursor, query_module'access);
+			end if;
+				
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+			error := true;			
+		end if;
+
+		log_indentation_down;
+
+		return to_string (result);
+	end get_device_properties;
+
 	
 
 	

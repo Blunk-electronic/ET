@@ -883,6 +883,68 @@ package et_devices_electrical is
 		return pac_package_variants.map;
 
 
+
+
+	
+
+-- PROPERTIES QUERIES:
+	
+
+	type type_properties_level is (
+		PROPERTIES_LEVEL_1, -- basic information
+		PROPERTIES_LEVEL_2, -- moderate information
+		PROPERTIES_LEVEL_3); -- much information
+
+
+	function to_string (
+		level	: in type_properties_level)
+		return string;
+
+
+	function get_unit_properties (
+		unit_cursor		: in pac_units.cursor;
+		level			: in type_properties_level)
+		return string;
+
+	
+	function get_device_properties (
+		device		: in type_device_sch;
+		level		: in type_properties_level)
+		return string;
+
+	
+
+	
+	-- function get_properties (
+	-- 	device		: in type_device_sch;
+	-- 	level		: in type_properties_level;
+	-- 	all_units	: in boolean := true;
+	-- 	unit		: in pac_unit_name.bounded_string := unit_name_default)
+	-- 	-- CS format ?
+	-- 	return string;
+
+
+
+	-- Returns properties of the given device. 
+	-- 1. Level determines the degree and amount of information to be returned.
+	-- 2. If all_units is true, then no special focus is on a certain unit
+	--    and information about all units is returned.
+	-- 3. If all_units is false, then only properties of the given unit
+	--    (via unit_cursor) is returned:
+	function get_properties (
+		device_cursor	: in pac_devices_sch.cursor;
+		level			: in type_properties_level;
+		all_units		: in boolean := true;
+		unit_cursor		: in pac_units.cursor := pac_units.no_element)
+		-- CS format ?
+		return string;
+
+
+
+
+
+
+	
 	
 
 	-- Maps from the given terminal to the linked port and unit.

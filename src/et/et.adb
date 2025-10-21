@@ -50,6 +50,7 @@ with ada.directories;			use ada.directories;
 --with gnat.source_info;
 
 with et_system_info;
+with et_runmode;				use et_runmode;
 with et_modes;					use et_modes;
 with et_module_ops;
 with et_generic_module;			use et_generic_module;

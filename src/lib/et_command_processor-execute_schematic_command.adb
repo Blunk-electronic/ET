@@ -722,6 +722,7 @@ is
 			-- procedure searches for the first unit of the given device:
 			procedure show_first_unit is
 				unit_query : constant type_unit_query := locate_unit (to_unit_name (""));
+				error : boolean := false;
 			begin
 				if unit_query.exists then
 					-- Set the active sheet where the unit is:
@@ -741,9 +742,14 @@ is
 						unit_name		=> unit_name_default,
 						log_threshold	=> log_threshold + 2);
 					
-					-- CS
-					-- show some basic information in the staus bar.
-					set_status (to_string (device));
+					-- Show some basic information in the staus bar:
+					set_status (get_device_properties (
+						module_cursor	=> active_module, 
+						device_name		=> device, 
+						level			=> PROPERTIES_LEVEL_1,
+						error			=> error,
+						log_threshold	=> log_threshold + 2));
+
 				else
 					device_not_found;
 				end if;
@@ -755,6 +761,7 @@ is
 			-- procedure searches for the given unit of the given device:
 			procedure show_by_unit_name is
 				unit_query : constant type_unit_query := locate_unit (unit);
+				error : boolean := false;
 			begin
 				if unit_query.exists then
 					-- Set the active sheet where the unit is:
@@ -773,11 +780,17 @@ is
 						all_units		=> false, 
 						unit_name		=> unit,
 						log_threshold	=> log_threshold + 2);
-
 					
-					-- CS
-					-- show some basic information in the staus bar.
-					set_status (to_string (device));
+					-- Show some basic information in the staus bar:
+					set_status (get_device_properties (
+						module_cursor	=> active_module, 
+						device_name		=> device, 
+						level			=> PROPERTIES_LEVEL_1,
+						all_units		=> false,
+						unit_name		=> unit,
+						error			=> error,
+						log_threshold	=> log_threshold + 2));
+					
 				else
 					unit_not_found;
 				end if;
@@ -789,6 +802,7 @@ is
 			-- then the first unit on the active sheet is searched for:
 			procedure show_first_unit_on_active_sheet is
 				unit_query : constant type_unit_query := locate_unit (to_unit_name (""));
+				error : boolean := false;
 			begin
 				if unit_query.exists then
 					if get_sheet (unit_query.position) = active_sheet then
@@ -806,10 +820,13 @@ is
 							unit_name		=> unit_name_default,
 							log_threshold	=> log_threshold + 2);
 
-
-						-- CS
-						-- show some basic information in the staus bar.
-						set_status (to_string (device));
+						-- Show some basic information in the staus bar:
+						set_status (get_device_properties (
+							module_cursor	=> active_module, 
+							device_name		=> device, 
+							level			=> PROPERTIES_LEVEL_1,
+							error			=> error,
+							log_threshold	=> log_threshold + 2));
 						
 					else
 						log (WARNING, " Device " & to_string (device) & " is not on this sheet !");

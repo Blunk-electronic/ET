@@ -36,7 +36,8 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
+with ada.text_io;					use ada.text_io;
+with ada.strings.unbounded;
 with ada.exceptions;
 
 with et_contour_to_polygon;
@@ -2026,6 +2027,124 @@ package body et_devices_electrical is
 	end;
 
 
+
+
+-- PROPERTIES QUERIES:
+	
+
+	function to_string (
+		level	: in type_properties_level)
+		return string
+	is begin
+		return type_properties_level'image (level);
+	end;
+
+
+
+	function get_unit_properties (
+		unit_cursor		: in pac_units.cursor;
+		level			: in type_properties_level)
+		return string
+	is
+		use ada.strings.unbounded;
+		result : unbounded_string;
+
+		unit : type_unit renames element (unit_cursor);
+	begin
+		return to_string (result);
+	end;
+
+
+	
+	
+	function get_device_properties (
+		device		: in type_device_sch;
+		level		: in type_properties_level)
+		return string
+	is
+		use ada.strings.unbounded;
+		result : unbounded_string;
+	begin
+
+		return to_string (result);
+	end;
+
+
+	
+
+
+
+
+
+	
+	
+	-- function get_unit_properties (
+	-- 	device		: in type_device_sch;
+	-- 	level		: in type_properties_level;
+	-- 	all_units	: in boolean := true;
+	-- 	unit		: in pac_unit_name.bounded_string := unit_name_default)
+	-- 	return string
+	-- is
+	-- begin
+	-- 	return "";
+	-- end;
+
+
+	
+
+	function get_properties (
+		device_cursor	: in pac_devices_sch.cursor;
+		level			: in type_properties_level;
+		all_units		: in boolean := true;
+		unit_cursor		: in pac_units.cursor := pac_units.no_element)
+		return string
+	is
+		use ada.strings.unbounded;
+		result : unbounded_string;
+
+		device : type_device_sch renames element (device_cursor);
+
+		
+		procedure query_units is
+
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in type_device_sch)
+			is 
+				unit_cursor : pac_units.cursor := device.units.first;
+			begin
+				-- Iterate through the units:
+				while has_element (unit_cursor) loop
+					-- append to result
+					result := result & " " & get_unit_properties (unit_cursor, level);
+					next (unit_cursor);
+				end loop;
+			end query_device;
+	
+		begin
+			query_element (device_cursor, query_device'access);
+		end query_units;
+
+			
+	begin
+		if all_units then
+			query_units;
+
+			return "device info all units";
+			-- return get_device_properties (device, level)
+				-- & " " & to_string (result);
+		else
+			
+			-- return get_device_properties (device, level)
+			-- & " " & get_unit_properties (unit_cursor, level);
+
+			return "device info";
+		end if;
+	end get_properties;
+
+
+
+	
 	
 
 	function get_port (
