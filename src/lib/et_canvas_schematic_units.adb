@@ -2650,27 +2650,29 @@ package body et_canvas_schematic_units is
 
 				-- Highlight the package in the board editor:
 				redraw_board;
+
+
+				-- Write some basic information in the status bar:
+				case object.cat is
+					when CAT_UNIT =>
+
+						set_status (get_properties (
+							device_cursor	=> object.unit.device_cursor,
+							level			=> PROPERTIES_LEVEL_1,						   
+							all_units		=> false,
+							unit_cursor		=> object.unit.unit_cursor));
+
+					when others =>
+						status_clear;
+						-- CS CAT_PLACEHOLDER ?
+				end case;					
+
 				
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
 				
 			log_indentation_down;			
-
-			case object.cat is
-				when CAT_UNIT =>
-					-- Show some basic information about the selected
-					-- device and the unit:
-					set_status (get_properties (
-						device_cursor	=> object.unit.device_cursor,
-						level			=> PROPERTIES_LEVEL_1,						   
-						all_units		=> false,
-						unit_cursor		=> object.unit.unit_cursor));
-
-				when others =>
-					status_clear;
-					-- CS CAT_PLACEHOLDER ?
-			end case;					
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;

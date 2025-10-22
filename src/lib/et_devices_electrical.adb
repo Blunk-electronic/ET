@@ -42,7 +42,7 @@ with ada.exceptions;
 
 with et_contour_to_polygon;
 with et_string_processing;			use et_string_processing;
-
+with et_coordinates_formatting;
 with et_symbol_library;
 with et_symbol_text;
 with et_symbol_name;
@@ -2046,13 +2046,28 @@ package body et_devices_electrical is
 		level			: in type_properties_level)
 		return string
 	is
+		use et_coordinates_formatting;
 		use ada.strings.unbounded;
 		result : unbounded_string;
 
 		unit : type_unit renames element (unit_cursor);
+
 	begin
+		case level is
+			when PROPERTIES_LEVEL_1 =>
+				result := result & get_unit_name (unit_cursor);
+
+			when others =>
+				result := result & get_unit_name (unit_cursor)
+						  & " position: " & to_string (get_position (unit), FORMAT_2);
+
+			-- CS symbol model
+		end case;
+				
 		return to_string (result);
 	end;
+
+
 
 
 	
@@ -2064,10 +2079,54 @@ package body et_devices_electrical is
 	is
 		use ada.strings.unbounded;
 		result : unbounded_string;
+
+		
+		procedure get_info_1 is begin
+			if is_real (device) then
+				result := to_unbounded_string (" value: " & to_string (device.value));
+			end if;
+		end;
+
+
+		procedure get_info_2 is begin
+			if is_real (device) then
+				result := result & " partcode: " & to_string (device.partcode);
+				-- CS: If the device is interactive (depends on prefix),
+				-- then get the purpose:
+				-- CS result := result & " purpose " & to_string (device.purpose);
+				-- CS package variant
+			end if;
+		end;
+
+
+		procedure get_info_3 is begin
+			result := result & " device model: " & to_string (get_device_model_file (device));
+
+			if is_real (device) then
+				-- CS package model
+				null;
+			end if;
+		end;
+
+
+		
 	begin
+		case level is
+			when PROPERTIES_LEVEL_1 =>
+				get_info_1;
+
+			when PROPERTIES_LEVEL_2 =>
+				get_info_1; 
+				get_info_2; 
+
+			when PROPERTIES_LEVEL_3 =>
+				get_info_1; 
+				get_info_2; 
+				get_info_3;
+		end case;
 
 		return to_string (result);
-	end;
+	end get_device_properties;
 
 
 	
@@ -2100,12 +2159,14 @@ package body et_devices_electrical is
 		return string
 	is
 		use ada.strings.unbounded;
-		result : unbounded_string;
+		units_info : unbounded_string;
 
 		device : type_device_sch renames element (device_cursor);
 
-		
-		procedure query_units is
+
+		-- This procedure iterates through the units and collects
+		-- information in units_info:
+		procedure get_units_info is
 
 			procedure query_device (
 				device_name	: in type_device_name;
@@ -2113,32 +2174,39 @@ package body et_devices_electrical is
 			is 
 				unit_cursor : pac_units.cursor := device.units.first;
 			begin
-				-- Iterate through the units:
-				while has_element (unit_cursor) loop
-					-- append to result
-					result := result & " " & get_unit_properties (unit_cursor, level);
+				-- Iterate through the units and collect properties:
+				while has_element (unit_cursor) loop					
+					units_info := units_info &
+						" unit: " & get_unit_properties (unit_cursor, level);
+					
 					next (unit_cursor);
 				end loop;
 			end query_device;
 	
 		begin
 			query_element (device_cursor, query_device'access);
-		end query_units;
+		end get_units_info;
 
 			
 	begin
 		if all_units then
-			query_units;
-
-			return "device info all units";
-			-- return get_device_properties (device, level)
-				-- & " " & to_string (result);
-		else
 			
-			-- return get_device_properties (device, level)
-			-- & " " & get_unit_properties (unit_cursor, level);
+			-- Collect information of all units:
+			get_units_info;
 
-			return "device info";
+			-- Get general properties of the device.
+			-- Append the properties of the units:
+			return "device: " & get_device_name (device_cursor) 
+				& get_device_properties (device, level)
+				& to_string (units_info);
+		else
+
+			-- Get general properties of the device.
+			-- Append the properties of the requested unit:
+			return "device: " & get_device_name (device_cursor) 
+				& get_device_properties (device, level)
+				& " unit: " & get_unit_properties (unit_cursor, level);
+
 		end if;
 	end get_properties;
 
