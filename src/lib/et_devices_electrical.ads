@@ -889,7 +889,8 @@ package et_devices_electrical is
 
 -- PROPERTIES QUERIES:
 	
-
+	--property_level_prefix : constant string := ("PROPERTIES_LEVEL_");
+	
 	type type_properties_level is (
 		PROPERTIES_LEVEL_1, -- basic information
 		PROPERTIES_LEVEL_2, -- moderate information
@@ -900,6 +901,17 @@ package et_devices_electrical is
 		level	: in type_properties_level)
 		return string;
 
+
+	-- Maps from a string like "L1", "L2" or "L3"
+	-- to a type_properties_level (capitalzation does not matter).	
+	-- For any other string the return is PROPERTIES_LEVEL_1
+	-- and the error flag is set:
+	function to_properties_level (
+		level	: in string;
+		error	: out boolean)							 
+		return type_properties_level;
+
+	
 
 	-- Returns properties of the given unit.
 	-- 1. By default no linebreaks are inserted in the output,

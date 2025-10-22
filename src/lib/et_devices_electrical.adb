@@ -38,6 +38,7 @@
 
 with ada.text_io;					use ada.text_io;
 with ada.characters.latin_1;
+with ada.characters.handling;
 with ada.strings.unbounded;
 with ada.exceptions;
 
@@ -2041,6 +2042,30 @@ package body et_devices_electrical is
 	end;
 
 
+	
+	
+	function to_properties_level (
+		level	: in string;
+		error	: out boolean)
+		return type_properties_level
+	is 
+		use ada.characters.handling;
+		s : string := to_upper (level);
+	begin
+		error := false;
+		
+		if s = "L1" then
+			return PROPERTIES_LEVEL_1;
+		elsif s = "L2" then
+			return PROPERTIES_LEVEL_2;
+		elsif s = "L3" then
+			return PROPERTIES_LEVEL_3;
+		else
+			error := true;
+			return PROPERTIES_LEVEL_1;
+		end if;
+	end;
+	
 
 	
 
