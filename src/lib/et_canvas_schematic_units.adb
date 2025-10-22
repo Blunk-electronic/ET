@@ -2658,7 +2658,7 @@ package body et_canvas_schematic_units is
 
 						set_status (get_properties (
 							device_cursor	=> object.unit.device_cursor,
-							level			=> PROPERTIES_LEVEL_1,						   
+							level			=> DEVICE_PROPERTIES_LEVEL_1,						   
 							all_units		=> false,
 							unit_cursor		=> object.unit.unit_cursor));
 

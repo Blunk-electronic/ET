@@ -753,7 +753,7 @@ is
 					set_status (get_device_properties (
 						module_cursor	=> active_module, 
 						device_name		=> device, 
-						level			=> PROPERTIES_LEVEL_1,
+						level			=> DEVICE_PROPERTIES_LEVEL_1,
 						error			=> error,
 						log_threshold	=> log_threshold + 2));
 
@@ -761,7 +761,7 @@ is
 					-- the properties window in order to conveniently
 					-- show a lot of information:
 					case properties_level is
-						when PROPERTIES_LEVEL_1 => null;
+						when DEVICE_PROPERTIES_LEVEL_1 => null;
 
 						when others =>
 							
@@ -811,7 +811,7 @@ is
 					set_status (get_device_properties (
 						module_cursor	=> active_module, 
 						device_name		=> device, 
-						level			=> PROPERTIES_LEVEL_1,
+						level			=> DEVICE_PROPERTIES_LEVEL_1,
 						all_units		=> false,
 						unit_name		=> unit,
 						error			=> error,
@@ -821,7 +821,7 @@ is
 					-- the properties window in order to conveniently
 					-- show a lot of information:
 					case properties_level is
-						when PROPERTIES_LEVEL_1 => null;
+						when DEVICE_PROPERTIES_LEVEL_1 => null;
 
 						when others =>
 							
@@ -873,7 +873,7 @@ is
 						set_status (get_device_properties (
 							module_cursor	=> active_module, 
 							device_name		=> device, 
-							level			=> PROPERTIES_LEVEL_1,
+							level			=> DEVICE_PROPERTIES_LEVEL_1,
 							error			=> error,
 							log_threshold	=> log_threshold + 2));
 
@@ -881,7 +881,7 @@ is
 						-- the properties window in order to conveniently
 						-- show a lot of information:
 						case properties_level is
-							when PROPERTIES_LEVEL_1 => null;
+							when DEVICE_PROPERTIES_LEVEL_1 => null;
 
 							when others =>
 								

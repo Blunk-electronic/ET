@@ -889,12 +889,12 @@ package et_devices_electrical is
 
 -- PROPERTIES QUERIES:
 	
-	--property_level_prefix : constant string := ("PROPERTIES_LEVEL_");
+	--property_level_prefix : constant string := ("DEVICE_PROPERTIES_LEVEL_");
 	
 	type type_properties_level is (
-		PROPERTIES_LEVEL_1, -- basic information
-		PROPERTIES_LEVEL_2, -- moderate information
-		PROPERTIES_LEVEL_3); -- much information
+		DEVICE_PROPERTIES_LEVEL_1, -- basic information
+		DEVICE_PROPERTIES_LEVEL_2, -- moderate information
+		DEVICE_PROPERTIES_LEVEL_3); -- much information
 
 
 	function to_string (
@@ -904,7 +904,7 @@ package et_devices_electrical is
 
 	-- Maps from a string like "L1", "L2" or "L3"
 	-- to a type_properties_level (capitalzation does not matter).	
-	-- For any other string the return is PROPERTIES_LEVEL_1
+	-- For any other string the return is DEVICE_PROPERTIES_LEVEL_1
 	-- and the error flag is set:
 	function to_properties_level (
 		level	: in string;

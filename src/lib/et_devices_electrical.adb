@@ -2055,14 +2055,14 @@ package body et_devices_electrical is
 		error := false;
 		
 		if s = "L1" then
-			return PROPERTIES_LEVEL_1;
+			return DEVICE_PROPERTIES_LEVEL_1;
 		elsif s = "L2" then
-			return PROPERTIES_LEVEL_2;
+			return DEVICE_PROPERTIES_LEVEL_2;
 		elsif s = "L3" then
-			return PROPERTIES_LEVEL_3;
+			return DEVICE_PROPERTIES_LEVEL_3;
 		else
 			error := true;
-			return PROPERTIES_LEVEL_1;
+			return DEVICE_PROPERTIES_LEVEL_1;
 		end if;
 	end;
 	
@@ -2098,7 +2098,7 @@ package body et_devices_electrical is
 
 	begin
 		case level is
-			when PROPERTIES_LEVEL_1 =>
+			when DEVICE_PROPERTIES_LEVEL_1 =>
 				result := result & get_unit_name (unit_cursor) & ins_LF;
 
 			when others =>
@@ -2172,14 +2172,14 @@ package body et_devices_electrical is
 		
 	begin
 		case level is
-			when PROPERTIES_LEVEL_1 =>
+			when DEVICE_PROPERTIES_LEVEL_1 =>
 				get_info_1;
 
-			when PROPERTIES_LEVEL_2 =>
+			when DEVICE_PROPERTIES_LEVEL_2 =>
 				get_info_1; 
 				get_info_2; 
 
-			when PROPERTIES_LEVEL_3 =>
+			when DEVICE_PROPERTIES_LEVEL_3 =>
 				get_info_1; 
 				get_info_2; 
 				get_info_3;
