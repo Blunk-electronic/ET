@@ -263,6 +263,9 @@ package et_canvas.schematic_device_ops is
 
 	properties_window : gtk.window.gtk_window;
 
+	-- This flag indicates that the package_variant window is open:	
+	properties_window_open : boolean := false;
+
 	-- This procedure assembles the properties_window.
 	-- It sets the title of the window with the targeted device 
 	-- name so that the operator knows what device it is about.

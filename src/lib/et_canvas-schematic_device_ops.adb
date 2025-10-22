@@ -369,33 +369,38 @@ package body et_canvas.schematic_device_ops is
 		-- CS: It could be useful to use a scrolled window here
 		-- since there can be a lot of text.
 	begin
-		gtk_new (properties_window);
+		if not properties_window_open then
+			
+			gtk_new (properties_window);
 
-		properties_window.set_title ("Properties of Device " & to_string (device));
+			properties_window.set_title ("Properties of Device " & to_string (device));
 
-		properties_window.set_default_size (500, 100);
-		-- properties_window.set_resizable (false);
+			properties_window.set_default_size (500, 100);
+			-- properties_window.set_resizable (false);
 
-		-- Connect the "on_destroy" signal:
-		properties_window.on_destroy (access_cb_properties_window_destroy);
+			-- Connect the "on_destroy" signal:
+			properties_window.on_destroy (access_cb_properties_window_destroy);
+			
+			-- Connect the "on_key_press_event" signal:		
+			properties_window.on_key_press_event (access_cb_properties_window_key_pressed);
 		
-		-- Connect the "on_key_press_event" signal:		
-		properties_window.on_key_press_event (access_cb_properties_window_key_pressed);
-	
-		gtk_new_vbox (box);
-		add (properties_window, box);
+			gtk_new_vbox (box);
+			add (properties_window, box);
 
-		gtk_new (text_view);
-		
-		gtk_new (buffer);
-		buffer.set_text (text); -- "Hello");
+			gtk_new (text_view);
+			
+			gtk_new (buffer);
+			buffer.set_text (text); -- "Hello");
 
-		text_view.set_buffer (buffer);
-		text_view.set_editable (false);
+			text_view.set_buffer (buffer);
+			text_view.set_editable (false);
 
-		pack_start (box, text_view);
-				
-		properties_window.show_all;
+			pack_start (box, text_view);
+
+			properties_window_open := true;
+			
+			properties_window.show_all;
+		end if;
 	end show_properties_window;
 
 
@@ -653,6 +658,7 @@ package body et_canvas.schematic_device_ops is
 	begin
 		null;
 		-- put_line ("cb_properties_window_destroy");
+		properties_window_open := false;
 	end cb_properties_window_destroy;
 
 
