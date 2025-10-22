@@ -37,6 +37,7 @@
 --
 
 with ada.text_io;					use ada.text_io;
+with ada.characters.latin_1;
 with ada.strings.unbounded;
 with ada.exceptions;
 
@@ -2041,25 +2042,43 @@ package body et_devices_electrical is
 
 
 
+	
+
 	function get_unit_properties (
-		unit_cursor		: in pac_units.cursor;
-		level			: in type_properties_level)
+		unit_cursor	: in pac_units.cursor;
+		level		: in type_properties_level;
+		linebreaks	: in boolean := false)
 		return string
 	is
 		use et_coordinates_formatting;
 		use ada.strings.unbounded;
 		result : unbounded_string;
 
+
+		-- If linebreaks are requested by the caller, then
+		-- this function returns a linefeed character on each call.
+		-- If no linefeeds are requested, then the return is an empty string:
+		function ins_LF return string is 
+			use ada.characters.latin_1;
+		begin
+			if linebreaks then
+				return "" & LF;
+			else
+				return "";
+			end if;
+		end;
+		
+		
 		unit : type_unit renames element (unit_cursor);
 
 	begin
 		case level is
 			when PROPERTIES_LEVEL_1 =>
-				result := result & get_unit_name (unit_cursor);
+				result := result & get_unit_name (unit_cursor) & ins_LF;
 
 			when others =>
 				result := result & get_unit_name (unit_cursor)
-						  & " position: " & to_string (get_position (unit), FORMAT_2);
+						  & " position: " & to_string (get_position (unit), FORMAT_2) & ins_LF;
 
 			-- CS symbol model
 		end case;
@@ -2074,23 +2093,39 @@ package body et_devices_electrical is
 	
 	function get_device_properties (
 		device		: in type_device_sch;
-		level		: in type_properties_level)
+		level		: in type_properties_level;
+		linebreaks	: in boolean := false)
 		return string
 	is
 		use ada.strings.unbounded;
 		result : unbounded_string;
 
+
+		-- If linebreaks are requested by the caller, then
+		-- this function returns a linefeed character on each call.
+		-- If no linefeeds are requested, then the return is an empty string:
+		function ins_LF return string is 
+			use ada.characters.latin_1;
+		begin
+			if linebreaks then
+				return "" & LF;
+			else
+				return "";
+			end if;
+		end;
+		
+
 		
 		procedure get_info_1 is begin
 			if is_real (device) then
-				result := to_unbounded_string (" value: " & to_string (device.value));
+				result := to_unbounded_string (" value: " & to_string (device.value) & ins_LF);
 			end if;
 		end;
 
 
 		procedure get_info_2 is begin
 			if is_real (device) then
-				result := result & " partcode: " & to_string (device.partcode);
+				result := result & " partcode: " & to_string (device.partcode) & ins_LF;
 				-- CS: If the device is interactive (depends on prefix),
 				-- then get the purpose:
 				-- CS result := result & " purpose " & to_string (device.purpose);
@@ -2100,7 +2135,7 @@ package body et_devices_electrical is
 
 
 		procedure get_info_3 is begin
-			result := result & " device model: " & to_string (get_device_model_file (device));
+			result := result & " device model: " & to_string (get_device_model_file (device)) & ins_LF;
 
 			if is_real (device) then
 				-- CS package model
@@ -2155,7 +2190,8 @@ package body et_devices_electrical is
 		device_cursor	: in pac_devices_sch.cursor;
 		level			: in type_properties_level;
 		all_units		: in boolean := true;
-		unit_cursor		: in pac_units.cursor := pac_units.no_element)
+		unit_cursor		: in pac_units.cursor := pac_units.no_element;
+		linebreaks		: in boolean := false)
 		return string
 	is
 		use ada.strings.unbounded;
@@ -2163,6 +2199,21 @@ package body et_devices_electrical is
 
 		device : type_device_sch renames element (device_cursor);
 
+
+		-- If linebreaks are requested by the caller, then
+		-- this function returns a linefeed character on each call.
+		-- If no linefeeds are requested, then the return is an empty string:
+		function ins_LF return string is 
+			use ada.characters.latin_1;
+		begin
+			if linebreaks then
+				return "" & LF;
+			else
+				return "";
+			end if;
+		end;
+
+		
 
 		-- This procedure iterates through the units and collects
 		-- information in units_info:
@@ -2176,8 +2227,8 @@ package body et_devices_electrical is
 			begin
 				-- Iterate through the units and collect properties:
 				while has_element (unit_cursor) loop					
-					units_info := units_info &
-						" unit: " & get_unit_properties (unit_cursor, level);
+					units_info := units_info & " unit: " 
+						& get_unit_properties (unit_cursor, level, linebreaks) & ins_LF;
 					
 					next (unit_cursor);
 				end loop;
@@ -2186,8 +2237,8 @@ package body et_devices_electrical is
 		begin
 			query_element (device_cursor, query_device'access);
 		end get_units_info;
-
-			
+		
+		
 	begin
 		if all_units then
 			
@@ -2196,16 +2247,16 @@ package body et_devices_electrical is
 
 			-- Get general properties of the device.
 			-- Append the properties of the units:
-			return "device: " & get_device_name (device_cursor) 
-				& get_device_properties (device, level)
+			return "device: " & get_device_name (device_cursor) & ins_LF
+				& get_device_properties (device, level, linebreaks) & ins_LF
 				& to_string (units_info);
 		else
 
 			-- Get general properties of the device.
 			-- Append the properties of the requested unit:
-			return "device: " & get_device_name (device_cursor) 
-				& get_device_properties (device, level)
-				& " unit: " & get_unit_properties (unit_cursor, level);
+			return "device: " & get_device_name (device_cursor) & ins_LF
+				& get_device_properties (device, level, linebreaks) & ins_LF
+				& " unit: " & get_unit_properties (unit_cursor, level, linebreaks);
 
 		end if;
 	end get_properties;

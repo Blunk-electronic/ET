@@ -669,6 +669,7 @@ package body et_schematic_ops.units is
 		level			: in type_properties_level;
 		all_units		: in boolean := true;
 		unit_name		: in pac_unit_name.bounded_string := unit_name_default;
+		linebreaks		: in boolean := false;
 		error			: out boolean;
 		log_threshold	: in type_log_level)
 		return string
@@ -703,6 +704,7 @@ package body et_schematic_ops.units is
 					result := to_unbounded_string (get_properties (
 						device_cursor	=> device_cursor_sch,
 						level			=> level,
+						linebreaks		=> linebreaks,
 						all_units		=> false,
 						unit_cursor		=> unit_cursor));
 
@@ -723,6 +725,7 @@ package body et_schematic_ops.units is
 		
 		log (text => "module " & to_string (module_cursor) 
 			 & " get properties of device " & to_string (device_name)
+			 & " linebreaks " & boolean'image (linebreaks)
 			 & " inquiry level " & to_string (level),
 			level => log_threshold);
 
@@ -754,6 +757,7 @@ package body et_schematic_ops.units is
 			if all_units then
 				result := to_unbounded_string (get_properties (
 					device_cursor	=> device_cursor_sch,
+					linebreaks		=> linebreaks,											  
 					level			=> level));
 			else
 				-- If a dedicated unit is enquired for, then

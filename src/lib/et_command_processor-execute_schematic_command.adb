@@ -817,7 +817,7 @@ is
 							module_cursor	=> active_module, 
 							device_name		=> device, 
 							all_units		=> true, 
-							unit_name		=> unit_name_default,
+							unit_name		=> unit_name_default,							
 							log_threshold	=> log_threshold + 2);
 
 						-- Show some basic information in the staus bar:

@@ -182,14 +182,20 @@ package et_schematic_ops.units is
 	--    and information about all units is returned.
 	-- 4. If all_units is false, then only properties of the given unit
 	--    (via unit_name) is returned. If a unit named after unit_name does
-	--    not exist, then error is set and an empty string returned:
+	--    not exist, then error is set and an empty string returned.
+	-- 5. By default no linebreaks are inserted in the output,
+	--    so that the result is a single line.
+	-- 6. If linebreaks is true, then linebreaks are
+	--    inserted so that more or less lines are output.
+	--    This is useful when the output is to be displayed
+	--    in a window or if it is to be written in a file:	
 	function get_device_properties (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		level			: in type_properties_level;
 		all_units		: in boolean := true;
 		unit_name		: in pac_unit_name.bounded_string := unit_name_default;
-		-- CS format ?
+		linebreaks		: in boolean := false;
 		error			: out boolean;
 		log_threshold	: in type_log_level)
 		return string;

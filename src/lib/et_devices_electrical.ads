@@ -901,15 +901,27 @@ package et_devices_electrical is
 		return string;
 
 
+	-- Returns properties of the given unit.
+	-- 1. By default no linebreaks are inserted in the output,
+	--    so that the result is a single line.
+	-- 2. If linebreaks is true, then linebreaks are
+	--    inserted so that more or less lines are output.
+	--    This is useful when the output is to be displayed
+	--    in a window or if it is to be written in a file:
 	function get_unit_properties (
-		unit_cursor		: in pac_units.cursor;
-		level			: in type_properties_level)
+		unit_cursor	: in pac_units.cursor;
+		level		: in type_properties_level;
+		linebreaks	: in boolean := false)
 		return string;
 
-	
+
+
+	-- Returns properties of the given device and its units.
+	-- See comments of function get_unit_properties regarding linebreaks:
 	function get_device_properties (
 		device		: in type_device_sch;
-		level		: in type_properties_level)
+		level		: in type_properties_level;
+		linebreaks	: in boolean := false)
 		return string;
 
 	
@@ -930,13 +942,14 @@ package et_devices_electrical is
 	-- 2. If all_units is true, then no special focus is on a certain unit
 	--    and information about all units is returned.
 	-- 3. If all_units is false, then only properties of the given unit
-	--    (via unit_cursor) is returned:
+	--    (via unit_cursor) is returned.
+	-- 4. See comments of function get_unit_properties regarding linebreaks:
 	function get_properties (
 		device_cursor	: in pac_devices_sch.cursor;
 		level			: in type_properties_level;
 		all_units		: in boolean := true;
-		unit_cursor		: in pac_units.cursor := pac_units.no_element)
-		-- CS format ?
+		unit_cursor		: in pac_units.cursor := pac_units.no_element;
+		linebreaks		: in boolean := false)
 		return string;
 
 
