@@ -60,7 +60,7 @@ Devices and Units
 
 	
 	To locate the first unit of a device, use this command.
-	The argument L1 .. L3 controls the amount of information
+	The argument L1 .. L3 controls the level of information
 	to be output. For L1 the status bar will contain some basic
 	information. For L2 or L3 a window opens that contains a lot
 	more information on the requested device: 
