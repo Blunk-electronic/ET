@@ -656,14 +656,21 @@ is
 
 	-- This procedure parses a command that shows a device or a unit thereof.
 	-- "Showing" means the highlight the targeted object and writing
-	-- some basic information in the staturs bar.
+	-- some basic information in the staturs bar. 
+	-- Via the argument L1 .. L3 the amount of information to be output can
+	-- be controlled. For values greate L1 a properties window is opened that
+	-- fits all the information in.
 	-- Examples:
-	-- "schematic led_driver show device R1"
-	-- "schematic led_driver show device IC1 IO-BANK2"
-	-- "schematic led_driver show device IC1 ."
+	-- "schematic led_driver show device L1 R1"
+	-- "schematic led_driver show device L2 IC1 IO-BANK2"
+	-- "schematic led_driver show device L3 IC1 ."
 	procedure show_device is
 		use et_devices_electrical;
 		use et_units;
+
+		-- The degree of how much information is to be inqured:
+		properties_level : type_properties_level;
+
 		
 		-- Selects the device so that a certain unit or all its units become
 		-- highlighted in the canvas.
@@ -750,6 +757,25 @@ is
 						error			=> error,
 						log_threshold	=> log_threshold + 2));
 
+					-- For property levels greater 1 we open
+					-- the properties window in order to conveniently
+					-- show a lot of information:
+					case properties_level is
+						when PROPERTIES_LEVEL_1 => null;
+
+						when others =>
+							
+							pac_device_ops.show_properties_window (
+								device	=> device,
+								text	=> get_device_properties (
+									module_cursor	=> active_module, 
+									device_name		=> device, 
+									linebreaks		=> true,
+									level			=> properties_level,
+									error			=> error,
+									log_threshold	=> log_threshold + 2));
+					end case;
+					
 				else
 					device_not_found;
 				end if;
@@ -790,6 +816,29 @@ is
 						unit_name		=> unit,
 						error			=> error,
 						log_threshold	=> log_threshold + 2));
+
+					-- For property levels greater 1 we open
+					-- the properties window in order to conveniently
+					-- show a lot of information:
+					case properties_level is
+						when PROPERTIES_LEVEL_1 => null;
+
+						when others =>
+							
+							pac_device_ops.show_properties_window (
+								device	=> device,
+								text	=> get_device_properties (
+									module_cursor	=> active_module, 
+									device_name		=> device, 
+									linebreaks		=> true,
+									level			=> properties_level,
+									all_units		=> false,
+									unit_name		=> unit,
+									error			=> error,
+									log_threshold	=> log_threshold + 2));
+
+					end case;
+
 					
 				else
 					unit_not_found;
@@ -827,6 +876,27 @@ is
 							level			=> PROPERTIES_LEVEL_1,
 							error			=> error,
 							log_threshold	=> log_threshold + 2));
+
+						-- For property levels greater 1 we open
+						-- the properties window in order to conveniently
+						-- show a lot of information:
+						case properties_level is
+							when PROPERTIES_LEVEL_1 => null;
+
+							when others =>
+								
+								pac_device_ops.show_properties_window (
+									device	=> device,
+									text	=> get_device_properties (
+										module_cursor	=> active_module, 
+										device_name		=> device, 
+										linebreaks		=> true,
+										level			=> properties_level,
+										error			=> error,
+										log_threshold	=> log_threshold + 2));	   
+
+						end case;
+						
 						
 					else
 						log (WARNING, " Device " & to_string (device) & " is not on this sheet !");
@@ -854,29 +924,42 @@ is
 		end do_it;
 
 
-		procedure runmode_module is begin
+		
+		procedure runmode_module is 
+			error : boolean := false;
+		begin
 			case cmd_field_count is
-				when 5 => do_it ( -- show device R1
-						device	=> to_device_name (get_field (5)), -- R1, IC1
-						mode	=> SEARCH_MODE_FIRST_UNIT);
+				when 6 => 
+					 -- show device L1 R1
+					properties_level := to_properties_level (get_field (5), error); -- L1
+					
+					if not error then						
+						do_it (
+							device	=> to_device_name (get_field (6)), -- R1, IC1
+							mode	=> SEARCH_MODE_FIRST_UNIT);
+					end if;
 				
-				when 6 =>
-					-- The 6th field may be a period, which means
-					-- the unit is to be shown on the current active sheet.
-					-- Otherwise the field provides an explicit
-					-- unit name:
-					if get_field (6) = here then
-						do_it ( -- show device IC1 .
-							device	=> to_device_name (get_field (5)), -- IC1
-							mode	=> SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET);
-					else
-						do_it ( -- show device IC1 A
-							device	=> to_device_name (get_field (5)), -- IC1
-							unit	=> to_unit_name (get_field (6)), -- A
-							mode	=> SEARCH_MODE_BY_UNIT_NAME);
+				when 7 =>
+					properties_level := to_properties_level (get_field (5), error); -- L1
+					
+					if not error then
+						-- The 7th field may be a period, which means
+						-- the unit is to be shown on the current active sheet.
+						-- Otherwise the field provides an explicit
+						-- unit name:
+						if get_field (7) = here then
+							do_it ( -- show device L1 IC1 .
+								device	=> to_device_name (get_field (6)), -- IC1
+								mode	=> SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET);
+						else
+							do_it ( -- show device L1 IC1 A
+								device	=> to_device_name (get_field (6)), -- IC1
+								unit	=> to_unit_name (get_field (7)), -- A
+								mode	=> SEARCH_MODE_BY_UNIT_NAME);
+						end if;
 					end if;
 					
-				when 7 .. type_field_count'last => too_long;
+				when 8 .. type_field_count'last => too_long;
 				when others => command_incomplete;
 			end case;
 		end runmode_module;
