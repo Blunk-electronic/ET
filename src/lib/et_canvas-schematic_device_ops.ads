@@ -257,6 +257,25 @@ package et_canvas.schematic_device_ops is
 
 
 	
+
+
+-- PROPERTIES WINDOW:
+
+	properties_window : gtk.window.gtk_window;
+
+	-- This procedure assembles the properties_window.
+	-- It sets the title of the window with the targeted device 
+	-- name so that the operator knows what device it is about.
+	-- It connects the "on_key_press_event" and the "on_destroy" signel with the
+	-- callback function cb_properties_window_key_pressed and
+	-- cb_properties_window_destroy (see below).
+	-- Via the parameter "text" the text to be shown in the window is passed:
+	procedure show_properties_window (
+		device	: in type_device_name;
+		text	: in string);
+
+
+	
 	
 private
 	
@@ -391,6 +410,36 @@ private
 
 	access_cb_package_variant_window_key_pressed : constant
 		cb_gtk_widget_gdk_event_key_boolean := cb_package_variant_window_key_pressed'access;
+
+
+
+
+
+
+-- PROPERTIES WINDOW:
+
+	-- This callback function is called whenever
+	-- the operator presses a key in the properties window.
+	-- If ESC key pressed, then the window is destroyed
+	-- by emitting the "destroy" signal:
+	function cb_properties_window_key_pressed (
+		window	: access gtk_widget_record'class;
+		event	: gdk_event_key)
+		return boolean;
+	
+	access_cb_properties_window_key_pressed : constant
+		cb_gtk_widget_gdk_event_key_boolean := cb_properties_window_key_pressed'access;
+
+
+
+	
+	-- This procedure is called when the operator closes
+	-- the properties windwo by clicking the X in the upper right corner:
+	procedure cb_properties_window_destroy (
+		window : access gtk_widget_record'class);
+	
+	access_cb_properties_window_destroy : constant
+		cb_gtk_widget_void := cb_properties_window_destroy'access;
 
 	
 	

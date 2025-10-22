@@ -39,6 +39,10 @@
 with gtk.tree_model;				use gtk.tree_model;
 with gtk.cell_renderer_text;
 
+with gtk.text_view;					use gtk.text_view;
+-- with gtk.button;					use gtk.button;
+with gtk.text_buffer;				use gtk.text_buffer;
+
 
 package body et_canvas.schematic_device_ops is
 
@@ -350,6 +354,54 @@ package body et_canvas.schematic_device_ops is
 
 
 	
+
+-- PROPERTIES WINDOW:
+	
+	
+	procedure show_properties_window (
+		device	: in type_device_name;
+		text	: in string)
+	is
+		box 		: gtk_vbox;
+		buffer		: gtk_text_buffer;
+		text_view	: gtk_text_view;
+
+		-- CS: It could be useful to use a scrolled window here
+		-- since there can be a lot of text.
+	begin
+		gtk_new (properties_window);
+
+		properties_window.set_title ("Properties of Device " & to_string (device));
+
+		properties_window.set_default_size (500, 100);
+		-- properties_window.set_resizable (false);
+
+		-- Connect the "on_destroy" signal:
+		properties_window.on_destroy (access_cb_properties_window_destroy);
+		
+		-- Connect the "on_key_press_event" signal:		
+		properties_window.on_key_press_event (access_cb_properties_window_key_pressed);
+	
+		gtk_new_vbox (box);
+		add (properties_window, box);
+
+		gtk_new (text_view);
+		
+		gtk_new (buffer);
+		buffer.set_text (text); -- "Hello");
+
+		text_view.set_buffer (buffer);
+		text_view.set_editable (false);
+
+		pack_start (box, text_view);
+				
+		properties_window.show_all;
+	end show_properties_window;
+
+
+	
+
+	
 	
 	function cb_rename_window_key_pressed (
 		window	: access gtk_widget_record'class;
@@ -591,6 +643,62 @@ package body et_canvas.schematic_device_ops is
 	end cb_package_variant_window_key_pressed;
 
 	
+
+
+
+
+	procedure cb_properties_window_destroy (
+		window : access gtk_widget_record'class)
+	is
+	begin
+		null;
+		-- put_line ("cb_properties_window_destroy");
+	end cb_properties_window_destroy;
+
+
+	
+
+	function cb_properties_window_key_pressed (
+		window	: access gtk_widget_record'class;
+		event	: gdk_event_key)
+		return boolean
+	is
+		debug : boolean := false;
+		
+		event_handled : boolean;
+		key : gdk_key_type := event.keyval;		
+	begin
+		if debug then
+			put_line ("cb_properties_window_key_pressed");
+		end if;
+
+		
+		case key is
+			when GDK_ESCAPE =>
+				if debug then
+					put_line ("ESC");
+				end if;
+
+				-- Emit the "destroy" signal.
+				properties_window.destroy;
+				
+				event_handled := true;
+
+				
+			when others =>
+				if debug then
+					put_line ("other key");
+				end if;
+				
+				event_handled := false;
+		end case;
+		
+		return event_handled;
+	end cb_properties_window_key_pressed;
+
+
+	
+
 	
 end et_canvas.schematic_device_ops;
 
