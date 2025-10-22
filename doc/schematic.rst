@@ -59,11 +59,17 @@ Devices and Units
 	|VNS| h d
 
 	
-	To locate the first unit of a device, use this command:
+	To locate the first unit of a device, use this command.
+	The argument L1 .. L3 controls the amount of information
+	to be output. For L1 the status bar will contain some basic
+	information. For L2 or L3 a window opens that contains a lot
+	more information on the requested device: 
 
 	.. code-block::
 
-		show device R1
+		show device L1 R1
+
+
 
 	|VNS| |NI|
 	
@@ -72,7 +78,7 @@ Devices and Units
 		
 	.. code-block::
 
-		show device IC1 .
+		show device L1 IC1 .
 
 	|VNS| |NI|
 	
@@ -81,7 +87,7 @@ Devices and Units
 		
 	.. code-block::
 
-		show device IC1 IO-BANK2
+		show device L1 IC1 IO-BANK2
 		
 	|VNS| |NI|
 
