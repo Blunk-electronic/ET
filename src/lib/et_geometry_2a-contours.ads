@@ -41,6 +41,7 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
 
+
 generic
 	
 package et_geometry_2a.contours is
@@ -200,9 +201,13 @@ package et_geometry_2a.contours is
 
 	type type_contour is tagged record
 		contour : type_segments;
-		-- CS status: moving, selected, locked, proposed ?
+		status	: type_object_status;
 	end record;
 
+
+	-- CS status operations to query and set status
+	-- see similar operations for type_line in et_geometry_2a.
+	
 
 	-- Returns true if the given contour consists of a circle:
 	function is_circular (

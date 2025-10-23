@@ -192,7 +192,9 @@ package body et_board_read is
 	procedure add_polygon_circle (c : in out type_circle) is begin
 		-- The global contour variable "mutates" so that the contours
 		-- consist of a single circle:
-		contour := (contour => (circular => true, others => <>));
+		contour := (
+			contour	=> (circular => true, others => <>),
+			others	=> <>);
 
 		-- From now on the contour consists of just a single circle.
 		-- Any attempt to append a line or an arc causes a discriminant error.
