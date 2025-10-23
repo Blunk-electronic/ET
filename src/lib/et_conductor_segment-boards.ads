@@ -61,7 +61,11 @@ package et_conductor_segment.boards is
 	-- CS procedure to set linewidth and layer
 
 	
-	-- CS function get_layer
+	-- Returns the signal layer of the given line:
+	function get_layer (
+		line : in type_conductor_line)
+		return type_signal_layer;
+
 	
 	
 	-- Returns the start/end point and layer as string.
@@ -176,6 +180,12 @@ package et_conductor_segment.boards is
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 
+
+	-- Returns the signal layer of the given arc:
+	function get_layer (
+		arc : in type_conductor_arc)
+		return type_signal_layer;
+	
 
 	-- Returns the start/end point, center and layer as string.
 	-- If "width" is true, then the segment width is also output:

@@ -43,6 +43,16 @@ with ada.strings;			use ada.strings;
 package body et_conductor_segment.boards is
 
 
+
+	function get_layer (
+		line : in type_conductor_line)
+		return type_signal_layer
+	is begin
+		return line.layer;
+	end;
+
+
+
 	
 	function to_string (
 		line	: in type_conductor_line;
@@ -254,6 +264,15 @@ package body et_conductor_segment.boards is
 
 -- ARCS:
 
+
+	function get_layer (
+		arc : in type_conductor_arc)
+		return type_signal_layer
+	is begin
+		return arc.layer;
+	end;
+
+	
 	
 	function to_string (
 		arc		: in type_conductor_arc;

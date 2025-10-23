@@ -143,7 +143,7 @@ procedure draw_conductors is
 
 	
 	-- For diplaying net names and classes we need this stuff:
-	is_signal : boolean := false;
+	-- is_signal : boolean := false;
 	net_name : pac_net_name.bounded_string;
 
 
@@ -224,6 +224,42 @@ procedure draw_conductors is
 
 
 
+
+	procedure draw_line (
+		line 			: in type_conductor_line;
+		force_highlight	: in boolean := false)
+	is
+
+		procedure draw is begin
+			draw_line (line => line, width => line.width, do_stroke => true);
+		end draw;
+		
+	begin
+		-- Draw the line if it is in the current layer:
+		if get_layer (line) = current_layer then
+
+			if force_highlight then
+				set_highlight_brightness;
+				draw;
+				set_default_brightness;
+			else
+				
+				-- If the segment is selected, 
+				-- then it must be drawn highlighted:
+				if is_selected (line) then
+					set_highlight_brightness;
+					draw;
+					set_default_brightness;
+				else
+					draw;
+				end if;
+			end if;
+			
+		end if;
+	end draw_line;
+
+	
+
 	
 	
 	procedure query_arc (c : in pac_conductor_arcs.cursor) is 
@@ -251,6 +287,44 @@ procedure draw_conductors is
 
 
 	
+
+
+
+	procedure draw_arc (
+		arc 			: in type_conductor_arc;
+		force_highlight	: in boolean := false)
+	is
+
+		procedure draw is begin
+			draw_arc (arc => arc, width => arc.width, do_stroke => true);
+		end draw;
+		
+	begin
+		-- Draw the arc if it is in the current layer:
+		if get_layer (arc) = current_layer then
+
+			if force_highlight then
+				set_highlight_brightness;
+				draw;
+				set_default_brightness;
+			else
+				
+				-- If the segment is selected, 
+				-- then it must be drawn highlighted:
+				if is_selected (arc) then
+					set_highlight_brightness;
+					draw;
+					set_default_brightness;
+				else
+					draw;
+				end if;
+			end if;
+			
+		end if;
+	end draw_arc;
+
+
+	
 	
 	procedure query_circle (c : in pac_conductor_circles.cursor) is 
 		circle : type_conductor_circle renames element (c);
@@ -269,6 +343,10 @@ procedure draw_conductors is
 	end query_circle;
 
 
+	-- CS draw_circle
+
+
+	
 
 	
 -- CONDUCTOR FILL ZONES
@@ -437,6 +515,39 @@ procedure draw_conductors is
 
 	
 
+	procedure draw_fill_zone (
+		zone 			: in type_route_solid;
+		force_highlight	: in boolean := false)
+	is
+		use pac_reliefes;
+		use pac_draw_contours;
+	begin
+		-- Draw the zone if it is in the current layer:
+		if zone.properties.layer = current_layer then
+
+			-- NOTE: Because this is merely the contour of the zone
+			-- it will not be filled:
+			
+			draw_contour (
+				contour	=> zone,
+				style	=> DASHED,
+				filled	=> NO, 
+				width	=> zone.linewidth);
+   
+			-- All edges of islands and their fill lines 
+			-- have the same linewidth:
+			set_linewidth (zone.linewidth);
+			iterate (zone.islands, query_island'access);
+
+			if zone.connection = THERMAL then
+				iterate (zone.reliefes, query_relief'access);
+			end if;
+
+			stroke;
+		end if;
+	end draw_fill_zone;
+
+	
 	
 	
 	procedure query_fill_zone (c : in pac_route_hatched.cursor) is
@@ -469,6 +580,40 @@ procedure draw_conductors is
 		end if;
 	end query_fill_zone;
 
+
+
+
+	procedure draw_fill_zone (
+		zone			: in type_route_hatched;
+		force_highlight	: in boolean := false)
+	is
+		use pac_reliefes;
+		use pac_draw_contours;
+	begin		
+		-- Draw the zone if it is in the current layer:
+		if zone.properties.layer = current_layer then
+
+			-- NOTE: Because this is merely the contour of the zone
+			-- it will not be filled:
+			
+			draw_contour (
+				contour	=> zone,
+				style	=> DASHED,
+				filled	=> NO, 
+				width	=> zone.linewidth);
+   
+			-- All edges of islands and their fill lines 
+			-- have the same linewidth:
+			set_linewidth (zone.linewidth);
+			iterate (zone.islands, query_island'access);
+
+			if zone.connection = THERMAL then
+				iterate (zone.reliefes, query_relief'access);
+			end if;
+
+			stroke;
+		end if;
+	end draw_fill_zone;
 
 
 	
@@ -569,23 +714,6 @@ procedure draw_conductors is
 
 	
 	
-	procedure query_net_track (n : in pac_nets.cursor) is begin
-		is_signal := true;
-		net_name := key (n);
-		-- net_class := element (n).class;
-	
-		iterate (element (n).route.lines, query_line'access);
-		iterate (element (n).route.arcs, query_arc'access);
-		-- CS ? iterate (element (n).route.circles, query_circle'access);
-		
-		iterate (element (n).route.zones.solid, query_fill_zone'access);
-		iterate (element (n).route.zones.hatched, query_fill_zone'access);
-
-		-- user defined cutout areas:
-		-- CS iterate (element (n).route.cutouts, query_cutout'access);
-	end query_net_track;
-
-
 
 
 
@@ -1147,6 +1275,95 @@ procedure draw_conductors is
 		end draw_vias;
 
 		
+
+
+		-- This procedure draws the conductor tracks of nets:
+		procedure draw_tracks is
+		
+			net_cursor : pac_nets.cursor;
+
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net)
+			is 
+
+				-- If the whole net is selected, then
+				-- this flag should improve perfomance.
+				-- It indicates that individual tracks
+				-- are not to be tested whether they are selected:
+				draw_all_highlighted : boolean := false;
+
+				line_cursor 		: pac_conductor_lines.cursor := net.route.lines.first;
+				arc_cursor			: pac_conductor_arcs.cursor := net.route.arcs.first;
+				-- CS: circles
+				zone_solid_cursor 	: pac_route_solid.cursor := net.route.zones.solid.first;
+				zone_hatched_cursor : pac_route_hatched.cursor := net.route.zones.hatched.first;
+				-- CS: cutout_cursor		: pac_cutouts.cursor := net.route.cutouts.first;
+
+				procedure query_line (line : in type_conductor_line) is begin
+					draw_line (line, draw_all_highlighted);
+				end;
+				
+
+				procedure query_arc (arc : in type_conductor_arc) is begin
+					draw_arc (arc, draw_all_highlighted);
+				end;
+
+
+				procedure query_zone_solid (zone : in type_route_solid) is begin
+					draw_fill_zone (zone, draw_all_highlighted);
+				end;
+				
+
+				procedure query_zone_hatched (zone : in type_route_hatched) is begin
+					draw_fill_zone (zone, draw_all_highlighted);
+				end;
+
+				
+			begin
+				if is_selected (net) then
+					draw_all_highlighted := true;
+				end if;
+
+				while has_element (line_cursor) loop
+					query_element (line_cursor, query_line'access);
+					next (line_cursor);
+				end loop;
+
+				while has_element (arc_cursor) loop
+					query_element (arc_cursor, query_arc'access);
+					next (arc_cursor);
+				end loop;
+				
+				while has_element (zone_solid_cursor) loop
+					query_element (zone_solid_cursor, query_zone_solid'access);
+					next (zone_solid_cursor);
+				end loop;
+
+				while has_element (zone_hatched_cursor) loop
+					query_element (zone_hatched_cursor, query_zone_hatched'access);
+					next (zone_hatched_cursor);
+				end loop;
+				
+			end query_net;
+
+			
+		begin
+			-- Iterate through the nets of the module:
+			net_cursor := module.nets.first;
+			
+			while has_element (net_cursor) loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+			
+		end draw_tracks;
+
+
+		
+
+
 		
 	begin -- query_items
 		
@@ -1166,7 +1383,7 @@ procedure draw_conductors is
 
 				
 				-- freetracks, floating stuff:
-				is_signal := false;
+				-- is_signal := false;
 				iterate (module.board.conductors_floating.lines, query_line'access);
 				iterate (module.board.conductors_floating.arcs, query_arc'access);
 				iterate (module.board.conductors_floating.circles, query_circle'access);
@@ -1178,8 +1395,7 @@ procedure draw_conductors is
 				iterate (module.board.conductors_floating.placeholders, query_placeholder'access);
 				iterate (module.board.conductors_floating.texts, query_text'access);
 
-				-- tracks:
-				iterate (module.nets, query_net_track'access);
+				draw_tracks;
 				
 				draw_text_being_placed (ly);				
 			end if;
