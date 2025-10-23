@@ -515,25 +515,27 @@ procedure draw_conductors is
 
 	
 
+
+	
 	procedure draw_fill_zone (
 		zone 			: in type_route_solid;
 		force_highlight	: in boolean := false)
 	is
-		use pac_reliefes;
-		use pac_draw_contours;
-	begin
-		-- Draw the zone if it is in the current layer:
-		if zone.properties.layer = current_layer then
 
+		
+		procedure draw is
+			use pac_draw_contours;
+			use pac_reliefes;
+		begin
 			-- NOTE: Because this is merely the contour of the zone
 			-- it will not be filled:
-			
+
 			draw_contour (
 				contour	=> zone,
 				style	=> DASHED,
 				filled	=> NO, 
 				width	=> zone.linewidth);
-   
+
 			-- All edges of islands and their fill lines 
 			-- have the same linewidth:
 			set_linewidth (zone.linewidth);
@@ -544,6 +546,29 @@ procedure draw_conductors is
 			end if;
 
 			stroke;
+		end draw;
+
+		
+	begin
+		-- Draw the zone if it is in the current layer:
+		if zone.properties.layer = current_layer then
+
+			if force_highlight then
+				set_highlight_brightness;
+				draw;
+				set_default_brightness;
+			else
+				-- If the zone is selected, 
+				-- then it must be drawn highlighted:
+				if is_selected (zone) then
+					set_highlight_brightness;
+					draw;
+					set_default_brightness;
+				else
+					draw;
+				end if;
+			end if;
+
 		end if;
 	end draw_fill_zone;
 
