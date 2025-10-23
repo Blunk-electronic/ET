@@ -652,29 +652,35 @@ is
 		-- parent net. Does nothing if no parent net given
 		-- by argument parent_net:
 		set_parent_net_name;
-
+		
 		-- Extract conductor objects of nets. 
 		-- Exempt the parent net (if specified by argument parent_net):
+		log (text => "nets", level => log_threshold + 5);
 		element (module_cursor).nets.iterate (extract_conductor_objects'access);
 
 		-- Extract unconnected terminals of devices:
+		log (text => "unconnected terminals", level => log_threshold + 5);
 		element (module_cursor).devices.iterate (extract_unconnected_terminals'access);
 
 		-- board texts:
+		log (text => "board texts", level => log_threshold + 5);
 		element (module_cursor).board.conductors_floating.texts.iterate (query_text'access);
 		
 		-- CS non electrical conductor stuff (foreign floating fill zones, ...)
 
 		-- non-electrical devices (like fiducials):
+		log (text => "non-electrical devcices", level => log_threshold + 5);
 		element (module_cursor).devices_non_electric.iterate (query_non_electrical_device'access);
 
 		-- electrical devices:
+		log (text => "electrial devices", level => log_threshold + 5);
 		element (module_cursor).devices.iterate (query_electrical_device'access);
 		
 		-- Now the polygons held in variable "result"
 		-- - inside the given zone or
 		-- - overlapping the given zone
 		-- must be extracted. 
+		log (text => "extract polygons", level => log_threshold + 5);
 		result.polygons := get_polygons (zone_polygon, result.polygons, overlap_status_set);
 		
 		log_indentation_down;
