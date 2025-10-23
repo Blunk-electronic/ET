@@ -2516,17 +2516,15 @@ package body et_board_ops.devices is
 		device_cursor	: in pac_devices_sch.cursor) -- IC45
 		return pac_terminals.map
 	is
-		use pac_generic_modules;
 		use et_nets;
 		use pac_terminals;
 		use et_schematic_ops;
 
-		-- Get all terminals of the given device (according to its package variant).
-		-- Later the connected terminals will be removed from this list:
-		all_terminals : pac_terminals.map := get_all_terminals (device_cursor);
+		-- To be returned:
+		all_terminals : pac_terminals.map;
 
-		-- Here we will store the terminals of the given device which are
-		-- connected with nets:
+		-- Here we will store the terminals of the given 
+		-- device which are connected with nets:
 		connected_terminals : pac_terminal_names.list;
 
 		
@@ -2581,15 +2579,28 @@ package body et_board_ops.devices is
 	begin
 		--put_line ("device " & to_string (key (device_cursor)));
 		--put_line ("all " & count_type'image (all_terminals.length));
-		
-		element (module_cursor).nets.iterate (query_net'access);
 
-		--put_line ("connected " & count_type'image (connected_terminals.length));
-		
-		-- Remove the connected_terminals from all_terminals
-		-- so that only the unconneced terminals are left:
-		remove_terminals (all_terminals, connected_terminals);
+		-- If the given device is virtual, then there is
+		-- nothing to do and an empty list will be returned:
+		if is_real (device_cursor) then
+			
+			-- Get all terminals of the given device (according 
+			-- to its package variant).
+			-- Later the connected terminals will be removed 
+			-- from this list:
+			all_terminals := get_all_terminals (device_cursor);
 
+			-- Iterate through the nets:
+			element (module_cursor).nets.iterate (query_net'access);
+
+			--put_line ("connected " & count_type'image (connected_terminals.length));
+			
+			-- Remove the connected_terminals from all_terminals
+			-- so that only the unconneced terminals are left:
+			remove_terminals (all_terminals, connected_terminals);
+		end if;
+
+		
 		return all_terminals;
 	end get_unconnected_terminals;
 
