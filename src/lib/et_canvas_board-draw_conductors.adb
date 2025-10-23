@@ -996,40 +996,77 @@ procedure draw_conductors is
 		procedure draw_ratsnest is
 			use et_ratsnest;
 
+			net_cursor : pac_nets.cursor;
+
 			
-			procedure query_net (n : in pac_nets.cursor) is 
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net)
+			is 
 				use pac_airwires;
+				airwire_cursor : pac_airwires.cursor;
+
+				-- If the whole net is selected, then
+				-- this flag should improve perfomance.
+				-- It indicates that individual airwires
+				-- are not to be tested whether they are selected:
+				draw_all_highlighted : boolean := false;
 				
-				procedure query_airwire (c : in pac_airwires.cursor) is 
-					use et_canvas_board_tracks;
-					airwire : type_airwire renames element (c);
+				
+				procedure query_airwire (airwire : in type_airwire) is 
+					use pac_geometry_brd;
 					restore_brightness : boolean := false;
 				begin
-					-- If the candidate airwire is selected, then draw it highlighted:
-					if is_selected (c) then
-						set_color_ratsnest (BRIGHT);
-						restore_brightness := true;
+					-- If the whole net is selected, then the brightness
+					-- remains as it is. Otherwise the candidate airwire
+					-- must be tested whether it is selected:
+					if not draw_all_highlighted then
+						if is_selected (airwire) then
+							set_color_ratsnest (BRIGHT);
+							restore_brightness := true;
+						end if;
 					end if;
 
-					 -- put_line (to_string (c));
+					 -- put_line (to_string (airwire));
 					
 					draw_line (
 						line		=> to_line_coarse (airwire),
 						width		=> 0.0, -- use minimal linewidth
 						do_stroke	=> true);
 					
-					-- restore normal brightness
-					if restore_brightness then
-						set_color_ratsnest;
+					-- Restore normal brightness.
+					-- If the whole net is selected, then nothing happens here:
+					if not draw_all_highlighted then
+						if restore_brightness then
+							set_color_ratsnest;
+						end if;
 					end if;
 				end query_airwire;
 
 
 			begin
-				-- put_line ("draw ratsnest net " & to_string (n));				
+				-- put_line ("draw ratsnest net " & to_string (net_name));
 				
-				if not element (n).route.airwires.hidden then
-					iterate (element (n).route.airwires.lines, query_airwire'access);
+				if not net.route.airwires.hidden then
+
+					-- If the whole net is selected, then we set
+					-- the brightness for all airwires:
+					if is_selected (net) then
+						set_color_ratsnest (BRIGHT);
+
+						-- This flag indicates that individual airwires
+						-- are not to be tested whether they are selected or not:
+						draw_all_highlighted := true;
+					end if;
+
+
+					-- Iterate through the airwires of the candidate net:
+					airwire_cursor := net.route.airwires.lines.first;
+
+					while has_element (airwire_cursor) loop
+						query_element (airwire_cursor, query_airwire'access);
+						next (airwire_cursor);
+					end loop;
 				end if;
 			end query_net;
 
@@ -1039,10 +1076,17 @@ procedure draw_conductors is
 				
 				-- All airwires of all nets are drawn with the same color:
 				set_color_ratsnest;
+
+				-- Iterate through the nets of the module:
+				net_cursor := module.nets.first;
 				
-				pac_nets.iterate (module.nets, query_net'access);
+				while has_element (net_cursor) loop
+					query_element (net_cursor, query_net'access);
+					next (net_cursor);
+				end loop;
 			end if;
 		end draw_ratsnest;
+
 		
 		
 	begin -- query_items

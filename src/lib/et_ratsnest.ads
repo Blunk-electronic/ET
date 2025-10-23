@@ -61,7 +61,7 @@ package et_ratsnest is
 	-- they are lines whose start and end points are
 	-- specified by floating point numbers:
 	subtype type_airwire is type_line_fine;
-	
+	-- CS better a new type: type type_airwire is new type_line_fine ?
 	
 	package pac_airwires is new doubly_linked_lists (type_airwire);
 	use pac_airwires;
@@ -130,7 +130,7 @@ package et_ratsnest is
 		proceed		: not null access boolean);
 
 
-	-- The airwires of a net are just a collection of lines.
+	-- The airwires of a net is just a collection of lines.
 	-- CS: In the future it might be interesting to hide the
 	-- airwires of a net temporarily. This makes laying out tracks easier
 	-- for the operator when too many airwires are confusing
