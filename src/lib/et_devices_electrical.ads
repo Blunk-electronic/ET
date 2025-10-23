@@ -466,7 +466,8 @@ package et_devices_electrical is
 
 	-- Returns ALL terminals of the given device.
 	-- This query assumes the default assembly
-	-- variant, means the device of interest exists in any case:
+	-- variant, means the device of interest exists in any case.
+	-- If the given device is virtual, then an empty list is returned:
 	function get_all_terminals (
 		device_cursor	: in pac_devices_sch.cursor) -- IC45
 		return pac_terminals.map;

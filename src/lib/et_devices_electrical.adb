@@ -729,11 +729,17 @@ package body et_devices_electrical is
 		device_cursor	: in pac_devices_sch.cursor) -- IC45
 		return pac_terminals.map
 	is
+		result : pac_terminals.map;
+		
 		use pac_package_models;
-		package_model : constant pac_package_models.cursor := 
-			get_package_model (device_cursor);
+		package_model : pac_package_models.cursor;
 	begin
-		return element (package_model).terminals;
+		if is_real (device_cursor) then
+			package_model := get_package_model (device_cursor);
+			result := element (package_model).terminals;
+		end if;
+		
+		return result;
 	end get_all_terminals;
 
 
