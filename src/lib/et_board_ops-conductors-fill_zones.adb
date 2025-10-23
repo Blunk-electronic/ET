@@ -635,7 +635,7 @@ is
 		
 	begin -- conductors_to_polygons
 		
-		log (text => "processing conductor objects ...", level => log_threshold + 4);
+		log (text => "process conductor objects", level => log_threshold + 4);
 		log_indentation_up;
 		
 		-- Set the layer category:
