@@ -590,8 +590,7 @@ procedure draw_conductors is
 	
 -- VIAS
 	
-	procedure query_via (via_cursor : in pac_vias.cursor) is 
-		via : type_via renames element (via_cursor);
+	procedure draw_via (via : in type_via) is 
 
 		brightness : type_brightness := NORMAL;
 		
@@ -908,7 +907,7 @@ procedure draw_conductors is
 		use et_canvas_tool;
 		
 		
-	begin -- query_via
+	begin -- draw_via
 		--put_line ("via.diameter" & to_string (via.diameter));
 
 		-- Set the radius and the center of the circle:
@@ -917,12 +916,12 @@ procedure draw_conductors is
 
 		-- Overwrite the via position (circle.center) if the
 		-- via is selected and being moved:
-		if is_selected (via_cursor) then
+		if is_selected (via) then
 
 			-- A selected via must be highlighted:
 			brightness := BRIGHT;
 
-			if is_moving (via_cursor) then
+			if is_moving (via) then
 				case object_tool is
 					when MOUSE =>
 						set_center (circle, snap_to_grid (get_mouse_position));
@@ -961,24 +960,24 @@ procedure draw_conductors is
 
 			end loop;
 		end if;
-	end query_via;
+	end draw_via;
 
 	
 	
 	-- Draws the vias of the current net:
-	procedure query_net_via (n : in pac_nets.cursor) is begin
-		net_name := key (n);
-		net_class := element (n).class;
-
-		-- if is_selected (n) then
-		-- 	put_line ("net " & get_net_name (n) & " selected");
-		-- 	brightness := BRIGHT;
-		-- end if;
-		
-		iterate (element (n).route.vias, query_via'access);
-
-		-- brightness := NORMAL;
-	end query_net_via;
+-- 	procedure query_net_via (n : in pac_nets.cursor) is begin
+-- 		net_name := key (n);
+-- 		net_class := element (n).class;
+-- 
+-- 		-- if is_selected (n) then
+-- 		-- 	put_line ("net " & get_net_name (n) & " selected");
+-- 		-- 	brightness := BRIGHT;
+-- 		-- end if;
+-- 		
+-- 		iterate (element (n).route.vias, draw_via'access);
+-- 
+-- 		-- brightness := NORMAL;
+-- 	end query_net_via;
 
 
 
@@ -992,7 +991,7 @@ procedure draw_conductors is
 		use et_colors.board;
 		
 
-		-- Draw airwires:
+		-- Draw ratsnest (or airwires):
 		procedure draw_ratsnest is
 			use et_ratsnest;
 
@@ -1087,6 +1086,41 @@ procedure draw_conductors is
 			end if;
 		end draw_ratsnest;
 
+
+		
+
+		-- This procedure draws the vias of nets:
+		procedure draw_vias is
+			net_cursor : pac_nets.cursor;
+
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net)
+			is 
+				via_cursor : pac_vias.cursor := net.route.vias.first;
+			begin
+				net_class := net.class;
+				
+				-- Iterate through the vias of the candidate net:
+				while has_element (via_cursor) loop
+					query_element (via_cursor, draw_via'access);
+					next (via_cursor);
+				end loop;
+			end query_net;
+
+			
+		begin
+			-- Iterate through the nets of the module:
+			net_cursor := module.nets.first;
+			
+			while has_element (net_cursor) loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+			
+		end draw_vias;
+
 		
 		
 	begin -- query_items
@@ -1130,8 +1164,10 @@ procedure draw_conductors is
 		draw_ratsnest;
 		
 		-- Draw the vias that exist in the nets:
-		iterate (module.nets, query_net_via'access);
+		draw_vias;
+		
 	end query_items;
+
 
 
 	
@@ -1141,13 +1177,67 @@ procedure draw_conductors is
 	-- properties according to variable preliminary_via:
 	procedure draw_via_being_placed is 
 		use et_canvas_board_vias;
-
-		-- This list will contain only the single via
-		-- that is being placed:
-		vias_being_placed : pac_vias.list;
 		
-		-- The place where the via shall be placed:
+		-- The place where the via shall be drawn while it
+		-- is sticking at the tool (mouse or cursor):
 		position : type_vector_model;
+
+
+		procedure build_via_through is			
+			via : constant type_via := (
+				category 		=> THROUGH,
+				diameter		=> preliminary_via.drill.diameter,
+				position		=> position,
+				restring_inner	=> preliminary_via.restring_inner,
+				restring_outer	=> preliminary_via.restring_outer,
+				others			=> <>);
+		begin
+			draw_via (via);
+		end;
+
+
+		procedure build_via_drilled_from_top is
+			via : constant type_via := (
+				category		=> BLIND_DRILLED_FROM_TOP,
+				diameter		=> preliminary_via.drill.diameter,
+				position		=> position,
+				restring_inner	=> preliminary_via.restring_inner,
+				restring_top	=> preliminary_via.restring_outer,
+				lower			=> preliminary_via.destination_blind,
+				others			=> <>);
+		begin
+			draw_via (via);
+		end;
+			
+
+		procedure build_via_drilled_from_bottom is
+			via : constant type_via := (
+				category		=> BLIND_DRILLED_FROM_BOTTOM,
+				diameter		=> preliminary_via.drill.diameter,
+				position		=> position,
+				restring_inner	=> preliminary_via.restring_inner,
+				restring_bottom	=> preliminary_via.restring_outer,
+				upper			=> preliminary_via.destination_blind,
+				others			=> <>);
+		begin
+			draw_via (via);
+		end;
+
+
+		procedure build_via_buried is
+			via : constant type_via := (
+				category		=> BURIED,
+				diameter		=> preliminary_via.drill.diameter,
+				position		=> position,
+				layers			=> preliminary_via.layers_buried,
+				restring_inner	=> preliminary_via.restring_inner,
+				others			=> <>);
+		begin
+			draw_via (via);
+		end;
+
+
+		
 	begin
 		-- put_line ("draw_via_being_placed");
 		if verb = VERB_PLACE and noun = NOUN_VIA then
@@ -1160,58 +1250,22 @@ procedure draw_conductors is
 			
 			case preliminary_via.category is
 				when THROUGH =>
-					append (
-						container	=> vias_being_placed,
-						new_item	=> (
-							category		=> THROUGH,
-							diameter		=> preliminary_via.drill.diameter,
-							position		=> position,
-							restring_inner	=> preliminary_via.restring_inner,
-							restring_outer	=> preliminary_via.restring_outer,
-							others			=> <>));
+					build_via_through;
 
 				when BLIND_DRILLED_FROM_TOP =>
-					append (
-						container	=> vias_being_placed,
-						new_item	=> (
-							category		=> BLIND_DRILLED_FROM_TOP,
-							diameter		=> preliminary_via.drill.diameter,
-							position		=> position,
-							restring_inner	=> preliminary_via.restring_inner,
-							restring_top	=> preliminary_via.restring_outer,
-							lower			=> preliminary_via.destination_blind,
-							others			=> <>));
+					build_via_drilled_from_top;
 					
 				when BLIND_DRILLED_FROM_BOTTOM =>
-					append (
-						container	=> vias_being_placed,
-						new_item	=> (
-							category		=> BLIND_DRILLED_FROM_BOTTOM,
-							diameter		=> preliminary_via.drill.diameter,
-							position		=> position,
-							restring_inner	=> preliminary_via.restring_inner,
-							restring_bottom	=> preliminary_via.restring_outer,
-							upper			=> preliminary_via.destination_blind,
-							others			=> <>));
+					build_via_drilled_from_bottom;
 					
 				when BURIED =>
-					append (
-						container	=> vias_being_placed,
-						new_item	=> (
-							category		=> BURIED,
-							diameter		=> preliminary_via.drill.diameter,
-							position		=> position,
-							layers			=> preliminary_via.layers_buried,
-							restring_inner	=> preliminary_via.restring_inner,
-							others			=> <>));
+					build_via_buried;
 					
 			end case;
-
-			-- draw the single via that is in container vias_being_placed:
-			vias_being_placed.iterate (query_via'access); 
 		end if;
 	end draw_via_being_placed;
 
+	
 
 
 	-- Draws a conducting track path being drawn.
