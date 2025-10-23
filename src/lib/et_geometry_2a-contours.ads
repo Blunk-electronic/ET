@@ -207,6 +207,11 @@ package et_geometry_2a.contours is
 
 	-- CS status operations to query and set status
 	-- see similar operations for type_line in et_geometry_2a.
+
+	function is_selected (
+		contour : in type_contour)
+		return boolean;
+
 	
 
 	-- Returns true if the given contour consists of a circle:
