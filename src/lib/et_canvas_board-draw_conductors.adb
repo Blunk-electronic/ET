@@ -62,7 +62,7 @@ with et_board_ops.text;
 with et_modes.board;				use et_modes.board;
 
 with et_net_names;
-with et_net_class;
+-- with et_net_class;
 
 with et_ratsnest;
 with et_alignment;
@@ -120,7 +120,7 @@ procedure draw_conductors is
 	
 
 	use et_net_names;
-	use et_net_class;
+	-- use et_net_class;
 	
 	use pac_nets;
 
@@ -145,7 +145,7 @@ procedure draw_conductors is
 	-- For diplaying net names and classes we need this stuff:
 	is_signal : boolean := false;
 	net_name : pac_net_name.bounded_string;
-	net_class : pac_net_class_name.bounded_string;
+
 
 	-- The conductor layers are drawn in the order bottom-to-top so that
 	-- the upper layers always obscure the layers underneath.
@@ -572,7 +572,7 @@ procedure draw_conductors is
 	procedure query_net_track (n : in pac_nets.cursor) is begin
 		is_signal := true;
 		net_name := key (n);
-		net_class := element (n).class;
+		-- net_class := element (n).class;
 	
 		iterate (element (n).route.lines, query_line'access);
 		iterate (element (n).route.arcs, query_arc'access);
@@ -587,11 +587,21 @@ procedure draw_conductors is
 
 
 
+
+
+	
 	
 -- VIAS
-	
-	procedure draw_via (via : in type_via) is 
 
+	-- Draws a given via. If force_highlight is true,
+	-- then the via will be drawn highlighted no matter whether it
+	-- is selected or not:
+	procedure draw_via (
+		via 			: in type_via;
+		force_highlight	: in boolean := false)
+	is 
+		-- By default the via is drawn with normal brightness.
+		-- On caller request, this value will be overridden:
 		brightness : type_brightness := NORMAL;
 		
 		-- When the restring is to be drawn then
@@ -903,9 +913,59 @@ procedure draw_conductors is
 		end query_category;
 
 
-		use et_canvas_board_vias;
-		use et_canvas_tool;
 		
+
+		-- If the via is selected, then sets the 
+		-- brightness and position according to the tool
+		-- being used:
+		procedure set_brightness_and_position is 
+			use et_canvas_tool;
+		begin
+			-- Overwrite the via position (circle.center) if the
+			-- via is selected and being moved:
+			if is_selected (via) then
+
+				-- A selected via must be highlighted:
+				brightness := BRIGHT;
+
+				if is_moving (via) then
+					set_center (circle, get_object_tool_position);
+				end if;
+			end if;
+		end set_brightness_and_position;
+
+	
+		-- Iterates through the signal layers and draws
+		-- the components of the via in each layer.
+		-- If displaying vias is disabled, then nothing happens here:
+		procedure iterate_layers is begin
+			if vias_enabled then
+
+				-- Iterate all conductor layers starting at the bottom layer and ending
+				-- with the top layer:
+				for ly in reverse top_layer .. bottom_layer loop
+
+					-- Draw the layer only if it is enabled. Otherwise skip the layer:
+					if conductor_enabled (ly) then
+						
+						-- Set the layer being drawn:
+						current_layer := ly;
+
+						query_category;
+					end if;
+
+					-- If the cancel flag has been set after drawing the via,
+					-- then exit this iteration. This prevents objects from begin
+					-- drawn multiple times:
+					if cancel then
+						exit;
+					end if;
+
+				end loop;
+			end if;
+		end iterate_layers;
+
+
 		
 	begin -- draw_via
 		--put_line ("via.diameter" & to_string (via.diameter));
@@ -914,71 +974,21 @@ procedure draw_conductors is
 		radius_base := via.diameter / 2.0;
 		set_center (circle, via.position);
 
-		-- Overwrite the via position (circle.center) if the
-		-- via is selected and being moved:
-		if is_selected (via) then
+		set_brightness_and_position;
 
-			-- A selected via must be highlighted:
+		-- Override the brightness if the caller requested so:
+		if force_highlight then
 			brightness := BRIGHT;
-
-			if is_moving (via) then
-				case object_tool is
-					when MOUSE =>
-						set_center (circle, snap_to_grid (get_mouse_position));
-
-					when KEYBOARD =>
-						set_center (circle, get_cursor_position);
-				end case;
-				-- CS use function get_object_tool_position 
-			end if;
-
 		end if;
 
-
+		-- Draw the via in the signal layers:
+		iterate_layers;
 		
-		if vias_enabled then
-
-			-- Iterate all conductor layers starting at the bottom layer and ending
-			-- with the top layer:
-			for ly in reverse top_layer .. bottom_layer loop
-
-				-- Draw the layer only if it is enabled. Otherwise skip the layer:
-				if conductor_enabled (ly) then
-					
-					-- Set the layer being drawn:
-					current_layer := ly;
-
-					query_category;
-				end if;
-
-				-- If the cancel flag has been set after drawing the via,
-				-- then exit this iteration. This prevents objects from begin
-				-- drawn multiple times:
-				if cancel then
-					exit;
-				end if;
-
-			end loop;
-		end if;
 	end draw_via;
 
 	
-	
-	-- Draws the vias of the current net:
--- 	procedure query_net_via (n : in pac_nets.cursor) is begin
--- 		net_name := key (n);
--- 		net_class := element (n).class;
--- 
--- 		-- if is_selected (n) then
--- 		-- 	put_line ("net " & get_net_name (n) & " selected");
--- 		-- 	brightness := BRIGHT;
--- 		-- end if;
--- 		
--- 		iterate (element (n).route.vias, draw_via'access);
--- 
--- 		-- brightness := NORMAL;
--- 	end query_net_via;
 
+	
 
 
 	
@@ -1099,8 +1109,23 @@ procedure draw_conductors is
 				net			: in type_net)
 			is 
 				via_cursor : pac_vias.cursor := net.route.vias.first;
+
+				-- If the whole net is selected, then
+				-- this flag should improve perfomance.
+				-- It indicates that individual vias
+				-- are not to be tested whether they are selected:
+				draw_all_highlighted : boolean := false;
+
+				
+				procedure draw_via (via : in type_via) is begin
+					draw_via (via, draw_all_highlighted);
+				end draw_via;
+
+				
 			begin
-				net_class := net.class;
+				if is_selected (net) then
+					draw_all_highlighted := true;
+				end if;
 				
 				-- Iterate through the vias of the candidate net:
 				while has_element (via_cursor) loop
