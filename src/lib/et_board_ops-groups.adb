@@ -54,7 +54,7 @@ package body et_board_ops.groups is
 		begin
 			log (text => "non-electrical devices", level => log_threshold + 1);
 			log_indentation_up;
-			reset_proposed_objects (module_cursor, log_threshold + 2);
+			reset_status_objects (module_cursor, log_threshold + 2);
 			log_indentation_down;
 		end;
 
@@ -68,7 +68,7 @@ package body et_board_ops.groups is
 		
 		reset_devices;
 
-		-- CS reset placeholders, texts, ... ?
+		-- CS reset board placeholders, texts, ... ?
 
 		log_indentation_down;
 	end reset_objects;

@@ -96,7 +96,8 @@ package et_board_ops.devices is
 		log_threshold	: in type_log_level);
 
 	
-	-- Clears the proposed-flag and the selected-flag of all real devices:
+	-- Resets the status flags of 
+	-- all real devices:
 	procedure reset_proposed_devices (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
@@ -388,10 +389,9 @@ package et_board_ops.devices is
 		log_threshold	: in type_log_level);
 
 
-	-- This is a collective procedure that resets
-	-- the proposed-flag and the selected-flag 
-	-- of all objects:
-	procedure reset_proposed_objects (
+	-- Resets the status flags of 
+	-- all non-electrical devices:
+	procedure reset_status_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
