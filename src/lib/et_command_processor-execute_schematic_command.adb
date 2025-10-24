@@ -664,6 +664,7 @@ is
 	-- "schematic led_driver show device L1 R1"
 	-- "schematic led_driver show device L2 IC1 IO-BANK2"
 	-- "schematic led_driver show device L3 IC1 ."
+	-- CS: For level L3 write in a file given via command argument.
 	procedure show_device is
 		use et_devices_electrical;
 		use et_units;

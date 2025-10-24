@@ -113,6 +113,23 @@ Devices
 There are electrical devices (having a counterpart in the schematic) and
 non-electrical devices (without a representation in the schematic).
 
+#. Showing and Locating Devices
+
+	To locate a device, use this command.
+	The argument L1 .. L3 controls the level of information
+	to be output. For L1 the status bar will contain some basic
+	information. For L2 or L3 a window opens that contains a lot
+	more information on the requested device: 
+
+	.. code-block::
+
+		show device L2 IC20
+
+	|VNS| h d
+
+
+
+
 #. Adding non-electrical Devices
 
 	This command places a fiducial (or reference mark) with prefix FD

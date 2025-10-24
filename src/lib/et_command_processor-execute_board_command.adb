@@ -60,6 +60,7 @@ with et_board_ops.frame;
 with et_sheets;
 with et_drills;
 with et_modes.board;
+with et_devices_electrical;
 with et_canvas_board_devices;
 with et_canvas_board_texts;
 with et_canvas_board_vias;
@@ -86,6 +87,9 @@ with et_board_ops.board_contour;
 with et_board_ops.ratsnest;
 with et_board_ops.text;
 with et_board_ops.grid;
+
+with et_unit_name;
+with et_schematic_ops.units;
 
 with et_canvas.cmd;
 
@@ -2826,10 +2830,60 @@ is
 -- DEVICES:	
 
 
+	-- This procedure parses a command that shows (highlights)
+	-- a device:
+	-- Via the argument L1 .. L3 the amount of information to be output can
+	-- be controlled. For values greate L1 a properties window is opened that
+	-- fits all the information in.
+	-- example: "demo led_driver show device L1 IC12"
+	-- CS: For level L3 write in a file given via command argument.
 	procedure show_device is
+		use et_schematic_ops.units;
+		use et_devices_electrical;
+		
+		-- The degree of how much information is to be inqured:
+		properties_level : type_properties_level;
+
+
+		procedure runmode_module is 
+			use et_unit_name;
+			error : boolean := false;
+		begin
+			case cmd_field_count is
+				when 6 => 
+					 -- show device L1 R1
+					properties_level := to_properties_level (get_field (5), error); -- L1
+					
+					if not error then						
+
+						-- Highlight the device and all its units:
+						show_device (
+							module_cursor	=> active_module, 
+							device_name		=> to_device_name (get_field (6)), -- R1, IC1
+							all_units		=> true,
+							unit_name		=> unit_name_default,
+							log_threshold	=> log_threshold + 1);
+
+						-- CS search also among non-electrical devices
+					end if;
+				
+				when 7 .. type_field_count'last => too_long;
+				when others => command_incomplete;
+			end case;
+		end runmode_module;
+
+		
 	begin
-		-- CS
-		null;
+		-- Show operations are only useful and possible in graphical
+		-- runmode:
+		case runmode is
+			when MODE_MODULE =>
+				runmode_module;
+
+			when others =>
+				skipped_in_this_runmode (log_threshold + 1);
+					
+		end case;
 	end show_device;
 
 
