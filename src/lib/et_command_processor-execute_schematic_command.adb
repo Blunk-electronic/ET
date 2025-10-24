@@ -748,6 +748,7 @@ is
 						device_name		=> device, 
 						all_units		=> true,
 						unit_name		=> unit_name_default,
+						error			=> error,
 						log_threshold	=> log_threshold + 2);
 					
 					-- Show some basic information in the staus bar:
@@ -806,6 +807,7 @@ is
 						device_name		=> device, 
 						all_units		=> false, 
 						unit_name		=> unit,
+						error			=> error,
 						log_threshold	=> log_threshold + 2);
 					
 					-- Show some basic information in the staus bar:
@@ -867,7 +869,8 @@ is
 							module_cursor	=> active_module, 
 							device_name		=> device, 
 							all_units		=> true, 
-							unit_name		=> unit_name_default,							
+							unit_name		=> unit_name_default,
+							error			=> error,
 							log_threshold	=> log_threshold + 2);
 
 						-- Show some basic information in the staus bar:

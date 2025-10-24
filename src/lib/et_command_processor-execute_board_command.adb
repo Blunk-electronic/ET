@@ -2848,6 +2848,7 @@ is
 
 		procedure runmode_module is 
 			use et_unit_name;
+			device_name : type_device_name;
 			error : boolean := false;
 		begin
 			case cmd_field_count is
@@ -2856,26 +2857,46 @@ is
 					properties_level := to_properties_level (get_field (5), error); -- L1
 					
 					if not error then						
+						-- Get the device name:
+						device_name := to_device_name (get_field (6)); -- R1, IC1, FD1
 
 						-- Search among the electrical devices first.
 						-- Highlight the device and all its units if it
 						-- exists.
 						-- If it does not exist, then search among the non-electrical
 						-- devices:
+
+						-- We do not want to generate warnings in case the device
+						-- does not exist. For this reason log_warning is false.
+						-- Instead we generate a warning if the device is not among
+						-- the electrical nor the non-electrical devices.
 						
 						show_device (
 							module_cursor	=> active_module, 
-							device_name		=> to_device_name (get_field (6)), -- R1, IC1
+							device_name		=> device_name,
 							all_units		=> true,
 							unit_name		=> unit_name_default,
+							error			=> error,
+							log_warning		=> false, 
 							log_threshold	=> log_threshold + 1);
 
-						-- CS search also among non-electrical devices
-						show_non_electrical_device (
-							module_cursor	=> active_module, 
-							device_name		=> to_device_name (get_field (6)), -- FD1
-							error			=> error,
-							log_threshold	=> log_threshold + 1);
+						-- If the device could not be located among the
+						-- electrical devices, then search
+						-- among non-electrical devices:
+						if error then
+							
+							show_non_electrical_device (
+								module_cursor	=> active_module, 
+								device_name		=> device_name,
+								error			=> error,
+								log_warning		=> false, 
+								log_threshold	=> log_threshold + 1);
+
+							if error then
+								log (WARNING, "Device " 
+									& to_string (device_name) & " not found !");
+							end if;
+						end if;
 
 				   end if;
 				

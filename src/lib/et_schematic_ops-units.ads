@@ -59,7 +59,7 @@ package et_schematic_ops.units is
 		return boolean;
 
 	
-	-- Returns the cursor to the given electrical
+	-- Returns the cursor to the given electrical device
 	-- in the given module.
 	-- If the device does not exist, then no_element is returned:
 	function get_electrical_device (
@@ -165,12 +165,17 @@ package et_schematic_ops.units is
 	-- If all_units is true, then the parameter "unit" is ignored
 	-- and all units adressed.
 	-- If all_units is false, then only the unit specified by "unit_name"
-	-- will be addressed:
+	-- will be addressed.
+	-- If the given device does not exist, then a warning
+	-- is written in the log and the error flag is set.
+	-- If output_warning is false then no warning will be logged:
 	procedure show_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- R2, IC4
 		all_units		: in boolean;
 		unit_name		: in pac_unit_name.bounded_string := unit_name_default;
+		error			: out boolean;
+		log_warning		: in boolean := true;
 		log_threshold	: in type_log_level);
 
 

@@ -961,6 +961,7 @@ package body et_board_ops.devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- FD1, MH2
 		error			: out boolean;
+		log_warning		: in boolean := true;
 		log_threshold	: in type_log_level)
 	is
 		device_cursor : pac_devices_non_electric.cursor;
@@ -1005,7 +1006,10 @@ package body et_board_ops.devices is
 		if has_element (device_cursor) then -- device exists in board
 			generic_modules.update_element (module_cursor, query_module'access);
 		else
-			log (WARNING, " Device " & to_string (device_name) & " not found !");
+			if log_warning then
+				log (WARNING, " Device " & to_string (device_name) & " not found !");
+			end if;
+
 			error := true;
 		end if;
 

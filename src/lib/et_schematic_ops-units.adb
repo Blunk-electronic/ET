@@ -587,6 +587,8 @@ package body et_schematic_ops.units is
 		device_name		: in type_device_name;
 		all_units		: in boolean;
 		unit_name		: in pac_unit_name.bounded_string := unit_name_default;
+		error			: out boolean;
+		log_warning		: in boolean := true;
 		log_threshold	: in type_log_level)
 	is
 		device_cursor_sch : pac_devices_sch.cursor;
@@ -638,6 +640,8 @@ package body et_schematic_ops.units is
 			 & " show electrical device " & to_string (device_name),
 			level => log_threshold);
 
+		error := false;
+		
 		log_indentation_up;
 		
 		-- Deselect all objects of previous show operations
@@ -652,7 +656,11 @@ package body et_schematic_ops.units is
 		if has_element (device_cursor_sch) then -- device exists in schematic			
 			generic_modules.update_element (module_cursor, query_module'access);
 		else
-			log (WARNING, " Device " & to_string (device_name) & " not found !");
+			if log_warning then
+				log (WARNING, " Device " & to_string (device_name) & " not found !");
+			end if;
+			
+			error := true;
 		end if;
 
 		log_indentation_down;
@@ -5397,7 +5405,9 @@ package body et_schematic_ops.units is
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		log_threshold	: in type_log_level)
-	is begin
+	is 
+		error : boolean := false;
+	begin
 		log (text => "module " & to_string (module_cursor)
 			& " show object",
 			-- CS & to_string (object)
@@ -5413,6 +5423,7 @@ package body et_schematic_ops.units is
 					device_name		=> get_device_name (object.unit),
 					all_units		=> false,
 					unit_name		=> get_unit_name (object.unit),
+					error			=> error,
 					log_threshold	=> log_threshold + 1);
 
 				
