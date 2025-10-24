@@ -68,6 +68,8 @@ package body et_board_ops.groups is
 		
 		reset_devices;
 
+		-- CS reset placeholders, texts, ... ?
+
 		log_indentation_down;
 	end reset_objects;
 

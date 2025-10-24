@@ -81,6 +81,8 @@ package body et_schematic_ops.groups is
 		reset_nets;
 		reset_devices;		
 
+		-- CS reset placeholders, texts, ... ?
+		
 		log_indentation_down;
 	end reset_objects;
 	
