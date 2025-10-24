@@ -612,12 +612,11 @@ procedure draw_conductors is
 		zone			: in type_route_hatched;
 		force_highlight	: in boolean := false)
 	is
-		use pac_reliefes;
-		use pac_draw_contours;
-	begin		
-		-- Draw the zone if it is in the current layer:
-		if zone.properties.layer = current_layer then
 
+		procedure draw is
+			use pac_reliefes;
+			use pac_draw_contours;
+		begin
 			-- NOTE: Because this is merely the contour of the zone
 			-- it will not be filled:
 			
@@ -637,8 +636,32 @@ procedure draw_conductors is
 			end if;
 
 			stroke;
+		end draw;
+
+		
+	begin		
+		-- Draw the zone if it is in the current layer:
+		if zone.properties.layer = current_layer then
+
+			if force_highlight then
+				set_highlight_brightness;
+				draw;
+				set_default_brightness;
+			else
+				-- If the zone is selected, 
+				-- then it must be drawn highlighted:
+				if is_selected (zone) then
+					set_highlight_brightness;
+					draw;
+					set_default_brightness;
+				else
+					draw;
+				end if;
+			end if;
+			
 		end if;
 	end draw_fill_zone;
+
 
 
 	
