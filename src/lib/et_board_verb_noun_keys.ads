@@ -55,6 +55,7 @@ package et_board_verb_noun_keys is
 	key_verb_rotate		: constant gdk_key_type := GDK_LC_o;
 	key_verb_route		: constant gdk_key_type := GDK_LC_r;
 	key_verb_place		: constant gdk_key_type := GDK_LC_p;
+	key_verb_show		: constant gdk_key_type := GDK_LC_h;
 	key_verb_update		: constant gdk_key_type := GDK_LC_u;
 
 

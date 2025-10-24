@@ -532,6 +532,7 @@ is
 	
 
 	
+	
 	-- Enables/disables a certain restrict layer. 
 	-- If status is empty, the layer will be enabled.
 	procedure display_restrict_layer ( -- GUI related
@@ -577,6 +578,7 @@ is
 		
 		-- CS exception handler if status is invalid
 	end display_restrict_layer;
+
 
 
 	
@@ -668,6 +670,7 @@ is
 
 	
 	
+	
 	procedure delete_outline_segment is 
 		use et_board_ops.board_contour;
 		catch_zone : type_catch_zone;
@@ -690,6 +693,7 @@ is
 			when others => command_incomplete;
 		end case;
 	end delete_outline_segment;
+
 
 
 	
@@ -842,6 +846,7 @@ is
 			draw_shape;
 		end if;		
 	end draw_silkscreen;
+
 
 
 	
@@ -2031,6 +2036,14 @@ is
 -- ROUTE / TRACK / POLYGON
 
 
+	
+	procedure show_net is
+	begin
+		-- CS
+		null;
+	end show_net;
+
+	
 	polygon_log_category : type_log_category := log_category_default;
 
 
@@ -2806,8 +2819,24 @@ is
 	end delete_signal_layer;
 
 	
+
+
 	
 
+-- DEVICES:	
+
+
+	procedure show_device is
+	begin
+		-- CS
+		null;
+	end show_device;
+
+
+
+	
+
+	
 	-- This procedure parses a command to add
 	-- a non-electric device:
 	procedure add_device is
@@ -3805,14 +3834,12 @@ is
 					when NOUN_MODULE =>
 						show_module;
 
+					when NOUN_DEVICE =>
+						show_device;
 						
-	-- 					when NOUN_DEVICE =>
-	-- 						case cmd_field_count is
-	-- 							when 5 => null; -- CS
-	-- 							when 6 .. type_field_count'last => too_long;
-	-- 							when others => command_incomplete;
-	-- 						end case;
-							
+					when NOUN_NET =>
+						show_net;
+	
 				when others => invalid_noun (to_string (noun));
 			end case;
 

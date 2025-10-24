@@ -134,7 +134,17 @@ package et_canvas_board_tracks is
 		tool	: in type_tool;
 		point	: in type_vector_model);
 
-	
+
+
+
+	status_show_net : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to select net." 
+		& status_hint_for_abort;
+
+		
 end et_canvas_board_tracks;
 
 -- Soli Deo Gloria

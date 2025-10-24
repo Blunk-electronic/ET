@@ -705,6 +705,62 @@ is
 		end case;
 	end route;
 
+
+
+
+	
+	procedure show is begin
+		case key is
+			-- EVALUATE KEY FOR NOUN:
+			when key_noun_device =>
+				noun := NOUN_DEVICE;
+				set_status (et_canvas_board_devices.status_show_device);
+				
+			when key_noun_net =>
+				noun := NOUN_NET;
+				set_status (et_canvas_board_tracks.status_show_net);
+
+				
+			-- If space pressed, then the operator wishes to operate via keyboard:	
+			when key_space =>
+				case noun is
+					when NOUN_DEVICE =>
+						--et_canvas_schematic_units.show_object (get_cursor_position);
+						null;
+						
+					when NOUN_NET =>
+						--et_canvas_schematic_nets.show_object (get_cursor_position);
+						null;
+						
+					when others => null;
+				end case;
+
+				
+			-- If page down pressed, then the operator is clarifying:
+			when key_clarify =>
+				case noun is
+					when NOUN_DEVICE => 
+						if clarification_pending then
+							null;
+							-- et_canvas_schematic_units.clarify_object;
+						end if;
+
+					when NOUN_NET =>
+						if clarification_pending then
+							-- et_canvas_schematic_nets.clarify_object;
+							null;
+						end if;
+
+					when others => null;
+						
+				end case;
+				
+			when others => status_noun_invalid;
+		end case;
+	end show;
+
+
+	
 	
 	
 	procedure update is 
@@ -803,6 +859,10 @@ begin -- key_pressed
 								verb := VERB_ROUTE;
 								status_enter_noun;
 
+							when key_verb_show =>
+								verb := VERB_SHOW;
+								status_enter_noun;
+								
 							when key_verb_update =>
 								verb := VERB_UPDATE;
 								status_enter_noun;
@@ -835,6 +895,7 @@ begin -- key_pressed
 							when VERB_PLACE		=> place;
 							when VERB_ROTATE	=> rotate;
 							when VERB_ROUTE		=> route;
+							when VERB_SHOW		=> show;
 							when VERB_UPDATE	=> update;
 							when others => null; -- CS
 						end case;

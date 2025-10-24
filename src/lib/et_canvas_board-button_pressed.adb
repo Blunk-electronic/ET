@@ -198,6 +198,21 @@ is
 						
 					when others => null;
 				end case;
+
+
+			when VERB_SHOW =>
+				case noun is
+					when NOUN_DEVICE =>
+						null;
+						-- et_canvas_board_devices.show_object (event.point);
+						
+					when NOUN_NET =>
+						null;
+						-- et_canvas_board_tracks.show_object (event.point);
+						
+					when others => null;
+				end case;
+
 				
 			when others => null;
 
@@ -423,6 +438,25 @@ is
 						
 					when others => null;							
 				end case;
+
+
+			when VERB_SHOW =>
+				case noun is
+					when NOUN_DEVICE =>
+						if clarification_pending then
+							null;
+							-- et_canvas_schematic_units.clarify_object;
+						end if;
+
+					when NOUN_NET =>
+						if clarification_pending then
+							null;
+							-- et_canvas_schematic_nets.clarify_object;
+						end if;
+						
+					when others => null;							
+				end case;
+
 				
 			when others => null;
 		end case;
