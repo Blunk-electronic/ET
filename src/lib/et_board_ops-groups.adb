@@ -37,7 +37,8 @@
 --
 --   ToDo: 
 
-with et_object_status;				use et_object_status;
+
+with et_board_ops.devices;
 
 
 package body et_board_ops.groups is
@@ -47,9 +48,27 @@ package body et_board_ops.groups is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+
+		procedure reset_devices is 
+			use et_board_ops.devices;
+		begin
+			log (text => "non-electrical devices", level => log_threshold + 1);
+			log_indentation_up;
+			reset_proposed_objects (module_cursor, log_threshold + 2);
+			log_indentation_down;
+		end;
+
+
 	begin
-		-- CS
-		null;
+		log (text => "module " & to_string (module_cursor) 
+			 & " reset objects (board)",
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		reset_devices;
+
+		log_indentation_down;
 	end reset_objects;
 
 	

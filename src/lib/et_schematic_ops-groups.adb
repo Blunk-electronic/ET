@@ -64,7 +64,7 @@ package body et_schematic_ops.groups is
 		procedure reset_devices is 
 			use et_schematic_ops.units;
 		begin
-			log (text => "devices and units", level => log_threshold + 1);
+			log (text => "electrical devices and units", level => log_threshold + 1);
 			log_indentation_up;
 			reset_status_objects (module_cursor, log_threshold + 2);
 			log_indentation_down;
@@ -72,7 +72,8 @@ package body et_schematic_ops.groups is
 
 		
 	begin
-		log (text => "module " & to_string (module_cursor) & " reset objects",
+		log (text => "module " & to_string (module_cursor) 
+			 & " reset objects (schematic)",
 			level => log_threshold);
 
 		log_indentation_up;
