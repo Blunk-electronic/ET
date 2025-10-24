@@ -2839,6 +2839,7 @@ is
 	-- CS: For level L3 write in a file given via command argument.
 	procedure show_device is
 		use et_schematic_ops.units;
+		use et_board_ops.devices;
 		use et_devices_electrical;
 		
 		-- The degree of how much information is to be inqured:
@@ -2856,7 +2857,12 @@ is
 					
 					if not error then						
 
-						-- Highlight the device and all its units:
+						-- Search among the electrical devices first.
+						-- Highlight the device and all its units if it
+						-- exists.
+						-- If it does not exist, then search among the non-electrical
+						-- devices:
+						
 						show_device (
 							module_cursor	=> active_module, 
 							device_name		=> to_device_name (get_field (6)), -- R1, IC1
@@ -2865,7 +2871,13 @@ is
 							log_threshold	=> log_threshold + 1);
 
 						-- CS search also among non-electrical devices
-					end if;
+						show_non_electrical_device (
+							module_cursor	=> active_module, 
+							device_name		=> to_device_name (get_field (6)), -- FD1
+							error			=> error,
+							log_threshold	=> log_threshold + 1);
+
+				   end if;
 				
 				when 7 .. type_field_count'last => too_long;
 				when others => command_incomplete;

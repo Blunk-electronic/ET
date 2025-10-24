@@ -635,7 +635,7 @@ package body et_schematic_ops.units is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			 & " show device " & to_string (device_name),
+			 & " show electrical device " & to_string (device_name),
 			level => log_threshold);
 
 		log_indentation_up;

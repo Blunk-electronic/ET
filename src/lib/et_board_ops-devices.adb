@@ -43,6 +43,7 @@ with et_device_model;
 with et_device_library;				use et_device_library;
 with et_schematic_ops;				use et_schematic_ops;
 with et_schematic_ops.units;		use et_schematic_ops.units;
+with et_schematic_ops.groups;
 
 with et_net_ports;
 with et_net_segment;
@@ -52,6 +53,7 @@ with et_package_write;
 
 with et_contour_to_polygon;			use et_contour_to_polygon;
 
+with et_board_ops.groups;
 with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
 with et_mirroring;					use et_mirroring;
 
@@ -863,6 +865,10 @@ package body et_board_ops.devices is
 	
 	
 --------------------------------------------------------------------------------------
+
+-- NON-ELECTRICAL DEVICES:
+
+	
 	
 	function get_devices (
 		module			: in pac_generic_modules.cursor;
@@ -877,7 +883,7 @@ package body et_board_ops.devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			device_cursor : pac_devices_non_electric.cursor := module.devices_non_electric.first;			
+			device_cursor : pac_devices_non_electric.cursor := module.devices_non_electric.first;
 		begin
 			while device_cursor /= pac_devices_non_electric.no_element loop
 
@@ -920,8 +926,95 @@ package body et_board_ops.devices is
 	end get_devices;
 
 
+
+
 	
 
+	function get_non_electrical_device (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name) -- FD1
+		return pac_devices_non_electric.cursor
+	is
+		result : pac_devices_non_electric.cursor;
+		
+		procedure query_devices (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is begin
+			result := find (module.devices_non_electric, device);
+		end;
+
+	begin
+		pac_generic_modules.query_element (
+			position	=> module,
+			process		=> query_devices'access);
+
+		return result;
+	end get_non_electrical_device;
+
+	
+
+	
+	
+
+	procedure show_non_electrical_device (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- FD1, MH2
+		error			: out boolean;
+		log_threshold	: in type_log_level)
+	is
+		device_cursor : pac_devices_non_electric.cursor;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_non_electric) 
+			is begin
+				set_selected (device);
+			end query_device;
+			
+		begin
+			module.devices_non_electric.update_element (device_cursor, query_device'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " show non-electrical device " & to_string (device_name),
+			level => log_threshold);
+
+		error := false;
+		
+		log_indentation_up;
+		
+		-- Deselect all objects of previous show operations
+		-- so that nothing is highlighted anymore:
+		et_schematic_ops.groups.reset_objects (module_cursor, log_threshold + 1);
+		et_board_ops.groups.reset_objects (module_cursor, log_threshold + 1);
+		
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor := get_non_electrical_device (module_cursor, device_name);
+			
+		if has_element (device_cursor) then -- device exists in board
+			generic_modules.update_element (module_cursor, query_module'access);
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+			error := true;
+		end if;
+
+		log_indentation_down;
+	end show_non_electrical_device;
+
+
+
+	
 	
 	
 	procedure modify_status (

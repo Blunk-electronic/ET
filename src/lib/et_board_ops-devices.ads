@@ -182,7 +182,7 @@ package et_board_ops.devices is
 	
 --------------------------------------------------------------------------
 	
--- NON-ELECTICAL DEVICES:
+-- NON-ELECTRICAL DEVICES:
 
 	-- Collects all non-electrical devices in the vicinity of the given point:	
 	function get_devices ( -- CS remove
@@ -191,7 +191,27 @@ package et_board_ops.devices is
 		log_threshold	: in type_log_level)
 		return pac_devices_non_electric.map;
 
+
+	-- Returns the cursor to the given non-electrical device
+	-- in the given module.
+	-- If the device does not exist, then no_element is returned:
+	function get_non_electrical_device (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name) -- FD1
+		return pac_devices_non_electric.cursor;
+
 	
+
+	-- Sets the given non-electrical device as selected.
+	-- If the device does not exist, then error is set:
+	procedure show_non_electrical_device (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- FD1, MH2
+		error			: out boolean;
+		log_threshold	: in type_log_level);
+
+	
+		
 	-- Modifies that status flag of a device (see package et_object_status):
 	procedure modify_status ( -- CS remove
 		module_cursor	: in pac_generic_modules.cursor;
