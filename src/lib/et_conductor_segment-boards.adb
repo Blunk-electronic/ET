@@ -423,6 +423,19 @@ package body et_conductor_segment.boards is
 
 
 
+	
+
+-- CIRCLES:
+
+	function get_layer (
+		circle : in type_conductor_circle)
+		return type_signal_layer
+	is begin
+		return circle.layer;
+	end;
+
+
+	
 	function to_string (
 		circle	: in type_conductor_circle;
 		width	: in boolean)

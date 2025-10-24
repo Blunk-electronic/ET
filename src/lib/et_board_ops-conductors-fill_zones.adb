@@ -635,7 +635,7 @@ is
 		
 	begin -- conductors_to_polygons
 		
-		log (text => "process conductor objects", level => log_threshold + 4);
+		log (text => "process conductor objects ...", level => log_threshold + 4);
 		log_indentation_up;
 		
 		-- Set the layer category:
@@ -666,10 +666,10 @@ is
 		log (text => "board texts", level => log_threshold + 5);
 		element (module_cursor).board.conductors_floating.texts.iterate (query_text'access);
 		
-		-- CS non electrical conductor stuff (foreign floating fill zones, ...)
+		-- CS non electrical conductor stuff (placeholders, foreign floating fill zones, ...)
 
 		-- non-electrical devices (like fiducials):
-		log (text => "non-electrical devcices", level => log_threshold + 5);
+		log (text => "non-electrical devices", level => log_threshold + 5);
 		element (module_cursor).devices_non_electric.iterate (query_non_electrical_device'access);
 
 		-- electrical devices:

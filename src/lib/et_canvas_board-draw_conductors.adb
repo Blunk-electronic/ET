@@ -197,33 +197,9 @@ procedure draw_conductors is
 
 	
 	
--- LINES, ARCS, CIRCLES
 	
-	procedure query_line (c : in pac_conductor_lines.cursor) is
-		line : type_conductor_line renames element (c);
-
-		procedure draw is begin
-			draw_line (line => line, width => line.width, do_stroke => true);
-		end draw;
-		
-	begin
-		-- Draw the line if it is in the current layer:
-		if get_layer (c) = current_layer then
-			
-			-- If the segment is selected, then it must be drawn highlighted:
-			if is_selected (line) then
-				set_highlight_brightness;
-				draw;
-				set_default_brightness;
-			else
-				draw;
-			end if;
-
-		end if;
-	end query_line;
-
-
-
+-- DRAWI LINES, ARCS, CIRCLES:
+	
 
 	procedure draw_line (
 		line 			: in type_conductor_line;
@@ -260,30 +236,6 @@ procedure draw_conductors is
 
 	
 
-	
-	
-	procedure query_arc (c : in pac_conductor_arcs.cursor) is 
-		arc : type_conductor_arc renames element (c);
-
-		procedure draw is begin
-			draw_arc (arc => arc, width => arc.width, do_stroke => true);
-		end draw;
-
-	begin
-		-- Draw the arc if it is in the current layer:
-		if get_layer (c) = current_layer then
-
-			-- If the segment is selected, then it must be drawn highlighted:
-			if is_selected (arc) then
-				set_highlight_brightness;
-				draw;
-				set_default_brightness;
-			else
-				draw;
-			end if;
-
-		end if;
-	end query_arc;
 
 
 	
@@ -325,13 +277,15 @@ procedure draw_conductors is
 
 
 	
+
+
 	
-	procedure query_circle (c : in pac_conductor_circles.cursor) is 
-		circle : type_conductor_circle renames element (c);
-	begin
-		-- Draw the circle if it is in the current layer:
-		if get_layer (c) = current_layer then
-			
+	procedure draw_circle (
+		circle 			: in type_conductor_circle;
+		force_highlight	: in boolean := false)
+	is
+
+		procedure draw is begin
 			-- We draw a normal non-filled circle:
 			draw_circle (
 				circle		=> circle,
@@ -339,11 +293,33 @@ procedure draw_conductors is
 				width		=> circle.width,
 				do_stroke	=> true);
 
+		end draw;
+		
+	begin
+		-- Draw the circle if it is in the current layer:
+		if get_layer (circle) = current_layer then
+
+			if force_highlight then
+				set_highlight_brightness;
+				draw;
+				set_default_brightness;
+			else
+				
+				-- If the segment is selected, 
+				-- then it must be drawn highlighted:
+				if is_selected (circle) then
+					set_highlight_brightness;
+					draw;
+					set_default_brightness;
+				else
+					draw;
+				end if;
+			end if;
+			
 		end if;
-	end query_circle;
+	end draw_circle;
 
 
-	-- CS draw_circle
 
 
 	
@@ -351,9 +327,7 @@ procedure draw_conductors is
 	
 -- CONDUCTOR FILL ZONES
 	
-	
 	use pac_islands;
-
 
 
 	
@@ -400,8 +374,9 @@ procedure draw_conductors is
 
 	
 	
-	procedure query_fill_zone (c : in pac_floating_solid.cursor) is 
-		zone : type_floating_solid renames element (c);
+	procedure draw_fill_zone (
+		zone : in type_floating_solid)
+	is
 		use pac_draw_contours;
 	begin
 		-- Draw the zone if it is in the current layer:
@@ -424,14 +399,15 @@ procedure draw_conductors is
 			stroke;
 
 		end if;
-	end query_fill_zone;
+	end draw_fill_zone;
 
 
 	
 
 	
-	procedure query_fill_zone (c : in pac_floating_hatched.cursor) is 
-		zone : type_floating_hatched renames element (c);
+	procedure draw_fill_zone (
+		zone : in type_floating_hatched)
+	is
 		use pac_draw_contours;
 	begin
 		-- Draw the zone if it is in the current layer:
@@ -454,7 +430,7 @@ procedure draw_conductors is
 			stroke;
 
 		end if;
-	end query_fill_zone;
+	end draw_fill_zone;
 
 
 	
@@ -480,38 +456,6 @@ procedure draw_conductors is
 		iterate (relief.spokes, query_spoke'access);
 	end query_relief;
 
-
-	
-	
-	procedure query_fill_zone (c : in pac_route_solid.cursor) is 
-		zone : type_route_solid renames element (c);
-		use pac_reliefes;
-		use pac_draw_contours;
-	begin
-		-- Draw the zone if it is in the current layer:
-		if zone.properties.layer = current_layer then
-
-			-- NOTE: Because this is merely the contour of the zone
-			-- it will not be filled:
-			
-			draw_contour (
-				contour	=> zone,
-				style	=> DASHED,
-				filled	=> NO, 
-				width	=> zone.linewidth);
-   
-			-- All edges of islands and their fill lines 
-			-- have the same linewidth:
-			set_linewidth (zone.linewidth);
-			iterate (zone.islands, query_island'access);
-
-			if zone.connection = THERMAL then
-				iterate (zone.reliefes, query_relief'access);
-			end if;
-
-			stroke;
-		end if;
-	end query_fill_zone;
 
 	
 
@@ -573,38 +517,6 @@ procedure draw_conductors is
 	end draw_fill_zone;
 
 	
-	
-	
-	procedure query_fill_zone (c : in pac_route_hatched.cursor) is
-		zone : type_route_hatched renames element (c);
-		use pac_reliefes;
-		use pac_draw_contours;
-	begin		
-		-- Draw the zone if it is in the current layer:
-		if zone.properties.layer = current_layer then
-
-			-- NOTE: Because this is merely the contour of the zone
-			-- it will not be filled:
-			
-			draw_contour (
-				contour	=> zone,
-				style	=> DASHED,
-				filled	=> NO, 
-				width	=> zone.linewidth);
-   
-			-- All edges of islands and their fill lines 
-			-- have the same linewidth:
-			set_linewidth (zone.linewidth);
-			iterate (zone.islands, query_island'access);
-
-			if zone.connection = THERMAL then
-				iterate (zone.reliefes, query_relief'access);
-			end if;
-
-			stroke;
-		end if;
-	end query_fill_zone;
-
 
 
 
@@ -665,9 +577,12 @@ procedure draw_conductors is
 
 
 	
+
 	
-	procedure query_cutout (c : in pac_cutouts.cursor) is 
-		cutout : type_cutout renames element (c);
+
+	procedure draw_cutout (
+		cutout : in type_cutout)
+	is
 		use pac_draw_contours;
 	begin
 		-- Draw the zone if it is in the current layer:
@@ -679,6 +594,8 @@ procedure draw_conductors is
 
 			-- NOTE: Because this is merely the contour of the zone
 			-- it will not be filled:
+
+			-- CS: test selected
 			
 			draw_contour (
 				contour	=> cutout,
@@ -687,16 +604,18 @@ procedure draw_conductors is
 				width	=> zero);
    
 		end if;
-	end query_cutout;
+	end draw_cutout;
+
+	
 
 
-
+	
 
 	
 -- 	TEXT PLACEHOLDERS AND TEXTS:
 	
-	procedure query_placeholder (
-		c : in pac_text_placeholders_conductors.cursor) 
+	procedure draw_placeholder (
+		placeholder : in type_text_placeholder_conductors) 
 	is 
 		use et_board_ops.text;
 		use pac_text;		
@@ -709,17 +628,17 @@ procedure draw_conductors is
 		t : type_text_fab_with_content;
 	begin
 		-- Draw the placeholder if it is in the current layer:
-		if get_layer (c) = current_layer then
+		if get_layer (placeholder) = current_layer then
 
 			-- Build the final content to be drawn:
-			content := to_placeholder_content (active_module, element (c).meaning);
+			content := to_placeholder_content (active_module, placeholder.meaning);
 			-- put_line ("content " & to_string (content));
 
 			-- Build the text to be drawn:
-			t := (type_text_fab (element (c)) with content);
+			t := (type_text_fab (placeholder) with content);
 
 			-- Draw the placeholder highlighted if it is selected:
-			if is_selected (c) then
+			if is_selected (placeholder) then
 				set_color_conductor (current_layer, BRIGHT);				
 				draw_vector_text (t);
 				set_color_conductor (current_layer, NORMAL);
@@ -729,35 +648,37 @@ procedure draw_conductors is
 			end if;
 			
 		end if;
-	end query_placeholder;
+	end draw_placeholder;
 
 	
 
 
 
-	procedure query_text (c : in pac_conductor_texts.cursor) is
+	procedure draw_text (
+		text : in type_conductor_text)
+	is
 		use pac_draw_text;
 		use et_colors.board;
 	begin
 		-- Draw the text if it is in the current layer:
-		if get_layer (c) = current_layer then
+		if get_layer (text) = current_layer then
 
-			if is_selected (c) then
+			if is_selected (text) then
 				-- The selected text must be drawn highlighted:
 				set_color_conductor (current_layer, BRIGHT);
 
-				draw_vector_text (element (c));
+				draw_vector_text (text);
 
 				-- After drawing a selected (highlighted) text, the brightness
 				-- must be set back to normal:
 				set_color_conductor (current_layer, NORMAL);
 
 			else -- not selected
-				draw_vector_text (element (c));
+				draw_vector_text (text);
 			end if;
 			
 		end if;
-	end query_text;
+	end draw_text;
 
 
 	
@@ -1410,7 +1331,97 @@ procedure draw_conductors is
 
 
 		
+		-- This procedue draws conducting objects which are not connected with
+		-- and nets like freetracks, texts, floating zones:
+		procedure draw_non_electrical_objects is
+			objects : type_conductors_floating renames module.board.conductors_floating;
+			
+			line_cursor			: pac_conductor_lines.cursor	:= objects.lines.first;
+			arc_cursor			: pac_conductor_arcs.cursor  	:= objects.arcs.first;
+			circle_cursor		: pac_conductor_circles.cursor	:= objects.circles.first;
+			zone_solid_cursor	: pac_floating_solid.cursor		:= objects.zones.solid.first;
+			zone_hatched_cursor	: pac_floating_hatched.cursor	:= objects.zones.hatched.first;
+			cutout_cursor		: pac_cutouts.cursor			:= objects.cutouts.first;
+			placeholder_cursor	: pac_text_placeholders_conductors.cursor	:= objects.placeholders.first;
+			text_cursor			: pac_conductor_texts.cursor	:= objects.texts.first;
 
+			
+			procedure query_line (line : in type_conductor_line) is begin
+				draw_line (line);
+			end;
+
+			procedure query_arc (arc : in type_conductor_arc) is begin
+				draw_arc (arc);
+			end;
+
+			procedure query_circle (circle : in type_conductor_circle) is begin
+				draw_circle (circle);
+			end;
+
+			procedure query_zone_solid (zone : in type_floating_solid) is begin
+				draw_fill_zone (zone);
+			end;
+
+			procedure query_zone_hatched (zone : in type_floating_hatched) is begin
+				draw_fill_zone (zone);
+			end;
+
+			procedure query_cutout (cutout : in type_cutout) is begin
+				draw_cutout (cutout);
+			end;
+
+			procedure query_placeholder (placeholder : in type_text_placeholder_conductors) is begin
+				draw_placeholder (placeholder);
+			end;
+
+			procedure query_text (text : in type_conductor_text) is begin
+				draw_text (text);
+			end;
+
+			
+		begin
+			while has_element (line_cursor) loop
+				query_element (line_cursor, query_line'access);
+				next (line_cursor);
+			end loop;
+
+			while has_element (arc_cursor) loop
+				query_element (arc_cursor, query_arc'access);
+				next (arc_cursor);
+			end loop;
+			
+			while has_element (circle_cursor) loop
+				query_element (circle_cursor, query_circle'access);
+				next (circle_cursor);
+			end loop;
+
+			while has_element (zone_solid_cursor) loop
+				query_element (zone_solid_cursor, query_zone_solid'access);
+				next (zone_solid_cursor);
+			end loop;
+
+			while has_element (zone_hatched_cursor) loop
+				query_element (zone_hatched_cursor, query_zone_hatched'access);
+				next (zone_hatched_cursor);
+			end loop;
+
+			while has_element (cutout_cursor) loop
+				query_element (cutout_cursor, query_cutout'access);
+				next (cutout_cursor);
+			end loop;
+
+			while has_element (placeholder_cursor) loop
+				query_element (placeholder_cursor, query_placeholder'access);
+				next (placeholder_cursor);
+			end loop;
+
+			while has_element (text_cursor) loop
+				query_element (text_cursor, query_text'access);
+				next (text_cursor);
+			end loop;
+
+		end draw_non_electrical_objects;
+		
 
 		
 	begin -- query_items
@@ -1426,30 +1437,21 @@ procedure draw_conductors is
 				current_layer := ly;
 				--put_line (to_string (current_layer));
 
-				-- set color according to layer
+				-- Set the color according to the current signal layer:
 				set_color_conductor (current_layer, brightness);
 
+				-- Draws objects which are not connected with
+				-- and nets like freetracks, texts, floating zones:
+				draw_non_electrical_objects;
 				
-				-- freetracks, floating stuff:
-				-- is_signal := false;
-				iterate (module.board.conductors_floating.lines, query_line'access);
-				iterate (module.board.conductors_floating.arcs, query_arc'access);
-				iterate (module.board.conductors_floating.circles, query_circle'access);
-				iterate (module.board.conductors_floating.zones.solid, query_fill_zone'access);
-				iterate (module.board.conductors_floating.zones.hatched, query_fill_zone'access);
-				iterate (module.board.conductors_floating.cutouts, query_cutout'access);
-
-				-- texts
-				iterate (module.board.conductors_floating.placeholders, query_placeholder'access);
-				iterate (module.board.conductors_floating.texts, query_text'access);
-
+				-- Draw conductor objects which are connected with a net:
 				draw_tracks;
 				
 				draw_text_being_placed (ly);				
 			end if;
 		end loop;
 
-		-- draw unrouted stuff (airwires)
+		-- Draw unrouted stuff (airwires):
 		draw_ratsnest;
 		
 		-- Draw the vias that exist in the nets:

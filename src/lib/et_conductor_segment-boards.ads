@@ -266,11 +266,22 @@ package et_conductor_segment.boards is
 		layer		: in type_signal_layer;
 		arc			: in pac_conductor_arcs.cursor)
 		return boolean;
+
+
+	
+
+-- CIRCLES:
 	
 	type type_conductor_circle is new et_conductor_segment.type_conductor_circle with record
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 
+
+	-- Returns the signal layer of the given circle:
+	function get_layer (
+		circle : in type_conductor_circle)
+		return type_signal_layer;
+	
 	
 	-- Returns the center, radius and layer as string.
 	-- If "width" is true, then the segment width is also output:
