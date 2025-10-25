@@ -415,65 +415,6 @@ package body et_board_ops.devices is
 
 
 	
-
-	
-	
-	procedure next_proposed_device (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in out pac_devices_sch.cursor;							
-		log_threshold	: in type_log_level)
-	is
-
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is
-			dc : pac_devices_sch.cursor := device_cursor;
-
-			subtype type_safety_counter is natural range 0 .. natural (module.devices.length);
-			safety_counter : type_safety_counter := 0;
-			
-		begin
-			-- Advance to the next device after the given device:
-			if dc = module.devices.last then
-				dc := module.devices.first;
-			else
-				next (dc);
-			end if;
-			
-			loop
-				-- Exception is raised in case we get stuck here:
-				safety_counter := safety_counter + 1;
-				
-				if is_proposed (dc) then
-					device_cursor := dc;
-					exit; -- no further probing required
-				end if;
-				
-
-				if dc = module.devices.last then
-					dc := module.devices.first;
-				else
-					next (dc);
-				end if;
-				
-			end loop;
-		end query_module;
-		
-		
-	begin
-		log (text => "module " & to_string (module_cursor)
-			& " advancing to next proposed device",
-			level => log_threshold);
-
-		log_indentation_up;
-		
-		query_element (
-			position	=> module_cursor,
-			process		=> query_module'access);
-
-		log_indentation_down;
-	end next_proposed_device;
 		
 
 	

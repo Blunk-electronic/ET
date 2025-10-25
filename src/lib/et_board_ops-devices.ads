@@ -85,8 +85,8 @@ package et_board_ops.devices is
 
 	
 	
-	-- Sets the proposed-flag of all real electrical 
-	-- devices which are in the
+	-- Sets the proposed-flag of the package of
+	-- all real electrical devices which are in the
 	-- given zone around the given place.
 	-- Adds to count the number of devices that have been found:
 	procedure propose_electrical_devices (
@@ -118,16 +118,6 @@ package et_board_ops.devices is
 		return type_object_electrical;
 
 
-	
-	-- Advances to the next proposed device, starting at
-	-- the device given by device_cursor. If there are no
-	-- proposed devices, then device_cursor is set to no_element.
-	-- If there is only one proposed device, then device_cursor
-	-- is unchanged.
-	procedure next_proposed_device ( -- CS remove
-		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in out pac_devices_sch.cursor;							
-		log_threshold	: in type_log_level);
 
 
 
