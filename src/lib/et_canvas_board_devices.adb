@@ -1149,6 +1149,10 @@ package body et_canvas_board_devices is
 						status_clear;
 						-- CS
 
+						-- set_status (get_properties (
+						-- 	device_cursor	=> object.non_electrical_device.cursor,
+						-- 	level			=> DEVICE_PROPERTIES_LEVEL_1);
+
 						
 					when others =>
 						status_clear;

@@ -2880,6 +2880,10 @@ is
 							log_warning		=> false, 
 							log_threshold	=> log_threshold + 1);
 
+						-- CS if error is false write some basic information
+						-- in the status bar:
+						-- see et_command_processor.execut_schematic_command.show_device
+						
 						-- If the device could not be located among the
 						-- electrical devices, then search
 						-- among non-electrical devices:
@@ -2892,6 +2896,9 @@ is
 								log_warning		=> false, 
 								log_threshold	=> log_threshold + 1);
 
+							-- CS if error is false write some basic information
+							-- in the status bar.
+							
 							if error then
 								log (WARNING, "Device " 
 									& to_string (device_name) & " not found !");
