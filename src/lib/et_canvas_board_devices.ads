@@ -69,20 +69,8 @@ package et_canvas_board_devices is
 	-- - flags object_tool, object_device_name
 	procedure reset_preliminary_non_electrical_device;
 
-	
 
 
-
-
-	-- Advances to next proposed electrical device and
-	-- selects it. The previous device is deselected:
-	procedure clarify_electrical_device;
-
-	
-	-- Advances to next proposed non-electrical device and
-	-- selects it. The previous device is deselected:
-	procedure clarify_non_electrical_device;
-	
 
 	-- This procedure is required in order to clarify
 	-- which object among the proposed objects is meant.

@@ -308,12 +308,12 @@ is
 				case noun is
 					when NOUN_DEVICE =>
 						if clarification_pending then
-							clarify_electrical_device;
+							et_canvas_board_devices.clarify_object;
 						end if;
     
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						if clarification_pending then
-							clarify_non_electrical_device;
+							et_canvas_board_devices.clarify_object;
 						end if;
     
 					when others => null;							
