@@ -75,6 +75,7 @@ with et_device_partcode;			use et_device_partcode;
 with et_device_model_names;			use et_device_model_names;
 with et_device_value;				use et_device_value;
 with et_board_ops.ratsnest;
+with et_board_ops.groups;
 with et_schematic_ops.groups;
 
 with et_material;
@@ -255,73 +256,82 @@ package body et_canvas_schematic_units is
 			end if;
 		end select_first_proposed;
 
+
+		-- This procedure proposes objects according to
+		-- the current verb and noun:
+		procedure propose is begin
+			-- Before locating any objects, previous
+			-- proposed or selected objects should be reset
+			-- in both schematic and board editor:
+			et_schematic_ops.groups.reset_objects (
+				active_module, log_threshold + 1);
+
+			et_board_ops.groups.reset_objects (
+				active_module, log_threshold + 1);
+
+
+			-- Propose objects according to current verb and noun:
+			case verb is
+				when VERB_COPY | VERB_DELETE | VERB_DRAG | VERB_FETCH | VERB_MOVE 
+					| VERB_RENAME | VERB_ROTATE | VERB_SHOW =>
+					
+					case noun is
+						when NOUN_DEVICE | NOUN_UNIT =>
+							
+							-- Propose units in the vicinity of the given point:
+							propose_units (
+								module_cursor	=> active_module,
+								catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+								count			=> count_total,
+								log_threshold	=> log_threshold + 1);
+
+							
+						when NOUN_PLACEHOLDER =>
+							
+							-- Propose placeholders in the vicinity of the given point:
+							propose_placeholders (
+								module_cursor	=> active_module,
+								catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+								count			=> count_total,
+								log_threshold	=> log_threshold + 1);
+
+							
+						when others =>
+							null; -- CS
+					end case;
+
+
+					
+				when VERB_SET =>
+					case noun is
+						when NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VARIANT =>
+
+							-- Propose units in the vicinity of the given point.
+							-- This applies for real devices only:
+							propose_units (
+								module_cursor	=> active_module,
+								catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+								count			=> count_total,
+								real_only		=> true,
+								log_threshold	=> log_threshold + 1);
+
+						when others =>
+							null; -- CS
+					end case;
+					
+							
+				when others =>
+					null; -- CS 
+
+			end case;
+		end propose;
+		
 		
 	begin
 		log (text => "find_objects", level => log_threshold);
 		log_indentation_up;
 
-		-- Before locating any objects, previous
-		-- proposed or selected objects should be reset:		
-		et_schematic_ops.groups.reset_objects (active_module, log_threshold + 1);
-		
-
-		-- Propose objects according to current verb and noun:
-		case verb is
-			when VERB_COPY | VERB_DELETE | VERB_DRAG | VERB_FETCH | VERB_MOVE 
-				| VERB_RENAME | VERB_ROTATE | VERB_SHOW =>
-				
-				case noun is
-					when NOUN_DEVICE | NOUN_UNIT =>
-						
-						-- Propose units in the vicinity of the given point:
-						propose_units (
-							module_cursor	=> active_module,
-							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
-							count			=> count_total,
-							log_threshold	=> log_threshold + 1);
-
-						
-					when NOUN_PLACEHOLDER =>
-						
-						-- Propose placeholders in the vicinity of the given point:
-						propose_placeholders (
-							module_cursor	=> active_module,
-							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
-							count			=> count_total,
-							log_threshold	=> log_threshold + 1);
-
-						
-					when others =>
-						null; -- CS
-				end case;
-
-
-				
-			when VERB_SET =>
-				case noun is
-					when NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VARIANT =>
-
-						-- Propose units in the vicinity of the given point.
-						-- This applies for real devices only:
-						propose_units (
-							module_cursor	=> active_module,
-							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
-							count			=> count_total,
-							real_only		=> true,
-							log_threshold	=> log_threshold + 1);
-
-					when others =>
-						null; -- CS
-				end case;
-				
-						
-			when others =>
-				null; -- CS 
-
-		end case;
-		
-
-
+		propose;
 
 		log (text => "proposed objects total" & natural'image (count_total),
 			 level => log_threshold + 1);
@@ -370,7 +380,7 @@ package body et_canvas_schematic_units is
 
 
 	
-	
+-- MOVE:	
 
 	procedure move_object (
 		tool	: in type_tool;
