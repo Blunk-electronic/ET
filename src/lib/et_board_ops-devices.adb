@@ -1742,7 +1742,7 @@ package body et_board_ops.devices is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of object"
+			& " modifying status of object "
 			& type_object_category'image (object.cat)
 			& " / " & to_string (operation),
 			level => log_threshold);
@@ -1940,6 +1940,52 @@ package body et_board_ops.devices is
 	
 
 
+	
+
+	procedure show_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level)
+	is 
+		error : boolean := false;
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " show object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_ELECTRICAL_DEVICE =>
+
+				show_device (
+					module_cursor	=> module_cursor,
+					device_name		=> get_device_name (object.electrical_device.cursor),
+					all_units		=> true,
+					error			=> error,
+					log_threshold	=> log_threshold + 1);
+
+
+			when CAT_NON_ELECTRICAL_DEVICE =>
+				null;
+
+				
+			-- when CAT_PLACEHOLDER =>
+				-- null; -- CS clear content ? or do nothing ?
+
+								
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end show_object;
+
+	
+
+
+	
 
 	
 	-- Returns the position (x/y/rotation) of a submodule instance.

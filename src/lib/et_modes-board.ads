@@ -44,6 +44,7 @@ package et_modes.board is
 
 		VERB_ADD,
 		VERB_CLEAR,
+		VERB_COPY,
 		VERB_DELETE,
 		VERB_DISPLAY,
 		--DRAG,

@@ -725,11 +725,11 @@ is
 			when key_space =>
 				case noun is
 					when NOUN_DEVICE =>
-						--et_canvas_schematic_units.show_object (get_cursor_position);
+						et_canvas_board_devices.show_object (get_cursor_position);
 						null;
 						
 					when NOUN_NET =>
-						--et_canvas_schematic_nets.show_object (get_cursor_position);
+						-- et_canvas_schematic_nets.show_object (get_cursor_position);
 						null;
 						
 					when others => null;
@@ -741,8 +741,7 @@ is
 				case noun is
 					when NOUN_DEVICE => 
 						if clarification_pending then
-							null;
-							-- et_canvas_schematic_units.clarify_object;
+							et_canvas_board_devices.clarify_object;
 						end if;
 
 					when NOUN_NET =>

@@ -405,6 +405,14 @@ package et_board_ops.devices is
 	
 	
 
+-- SHOW:
+	
+	procedure show_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level);
+
+	
 
 	
 	-- Returns the positions (x/y) of the terminals of

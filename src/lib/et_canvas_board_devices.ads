@@ -243,8 +243,8 @@ package et_canvas_board_devices is
 
 -- SHOW DEVICE:
 	
-	-- procedure show_object (
-	-- 	position : in type_vector_model);
+	procedure show_object (
+		position : in type_vector_model);
 
 	
 	status_show_device : constant string := 

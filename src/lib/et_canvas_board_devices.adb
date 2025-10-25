@@ -40,8 +40,9 @@
 
 
 with et_generic_module;				use et_generic_module;
-with et_canvas_board;
+with et_canvas_board;				use et_canvas_board;
 with et_schematic_ops.units;
+with et_schematic_ops.groups;
 with et_board_ops.devices;			use et_board_ops.devices;
 
 with et_devices_electrical;			use et_devices_electrical;
@@ -384,24 +385,44 @@ package body et_canvas_board_devices is
 
 		
 	begin
-		log (text => "locating non-electrical devices ...", level => log_threshold);
+		log (text => "find_objects", level => log_threshold);
 		log_indentation_up;
 
+		-- Before locating any objects, previous
+		-- proposed or selected objects should be reset:		
+		et_schematic_ops.groups.reset_objects (active_module, log_threshold + 1);
+
 		
-		-- Propose electrical devices in the vicinity of the given point:
-		propose_electrical_devices (
-			module_cursor	=> active_module,
-			catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
-			count			=> count_total,
-			log_threshold	=> log_threshold + 1);
+		-- Propose objects according to current verb and noun:
+		case verb is
+			when VERB_COPY | VERB_DELETE | VERB_MOVE 
+				| VERB_RENAME | VERB_ROTATE | VERB_SHOW =>
+				
+				case noun is
+					when NOUN_DEVICE =>
+		
+						-- Propose electrical devices in the vicinity of the given point:
+						propose_electrical_devices (
+							module_cursor	=> active_module,
+							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+							count			=> count_total,
+							log_threshold	=> log_threshold + 1);
 
-		-- Propose non-electrical devices in the vicinity of the given point:
-		propose_non_electrical_devices (
-			module_cursor	=> active_module,
-			catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
-			count			=> count_total,
-			log_threshold	=> log_threshold + 1);
+						-- Propose non-electrical devices in the vicinity of the given point:
+						propose_non_electrical_devices (
+							module_cursor	=> active_module,
+							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+							count			=> count_total,
+							log_threshold	=> log_threshold + 1);
 
+					when others =>
+						null; -- CS
+				end case;
+
+			when others =>
+				null; -- CS
+		end case;
+		
 
 		log (text => "proposed objects total" & natural'image (count_total),
 			 level => log_threshold + 1);
@@ -1069,6 +1090,87 @@ package body et_canvas_board_devices is
 		end if;
 	end delete_non_electrical_device;
 
+
+
+
+
+	procedure show_object (
+		position : in type_vector_model)
+	is 
+
+		-- Shows some information in the status bar:
+		procedure finalize is
+			object : type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
+		begin
+			log (text => "finalize show", level => log_threshold);
+			log_indentation_up;
+
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+
+				reset_status_objects (active_module, log_threshold + 1);
+
+				-- Show the device:
+				show_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					log_threshold	=> log_threshold + 1);
+
+				-- Highlight the device in the schematic editor:
+				redraw_schematic;
+
+
+				-- Write some basic information in the status bar:
+				-- case object.cat is
+				-- 	when CAT_UNIT =>
+    -- 
+				-- 		set_status (get_properties (
+				-- 			device_cursor	=> object.unit.device_cursor,
+				-- 			level			=> DEVICE_PROPERTIES_LEVEL_1,						   
+				-- 			all_units		=> false,
+				-- 			unit_cursor		=> object.unit.unit_cursor));
+    -- 
+				-- 	when others =>
+				-- 		status_clear;
+				-- 		-- CS CAT_PLACEHOLDER ?
+				-- end case;					
+
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+
+			reset_editing_process; -- prepare for a new editing process
+		end finalize;
+		
+
+	begin		
+		if not clarification_pending then
+
+			-- Locate all objects in the vicinity of the given point:
+			find_objects (position);
+			-- NOTE: If many objects have been found, then
+			-- clarification is now pending.
+
+			-- If find_objects has found only one object
+			-- then the flag edit_process_running is set true.
+			if edit_process_running then
+			 	finalize;
+			end if;
+			
+		else
+			-- Here the clarification procedure ends.
+			-- An object has been selected via procedure clarify_object.
+			reset_request_clarification;
+			finalize;
+		end if;
+	end show_object;
+
+	
 	
 end et_canvas_board_devices;
 

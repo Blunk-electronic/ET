@@ -203,8 +203,7 @@ is
 			when VERB_SHOW =>
 				case noun is
 					when NOUN_DEVICE =>
-						null;
-						-- et_canvas_board_devices.show_object (event.point);
+						et_canvas_board_devices.show_object (event.point);
 						
 					when NOUN_NET =>
 						null;
@@ -218,6 +217,7 @@ is
 
 		end case;			
 	end left_button;
+
 
 	
 	
@@ -444,8 +444,7 @@ is
 				case noun is
 					when NOUN_DEVICE =>
 						if clarification_pending then
-							null;
-							-- et_canvas_schematic_units.clarify_object;
+							et_canvas_board_devices.clarify_object;
 						end if;
 
 					when NOUN_NET =>
