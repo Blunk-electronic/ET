@@ -96,11 +96,6 @@ package et_board_ops.devices is
 		log_threshold	: in type_log_level);
 
 	
-	-- Resets the status flags of 
-	-- all real devices:
-	procedure reset_proposed_devices (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level);
 
 	
 	-- Returns the first device according to the given flag.

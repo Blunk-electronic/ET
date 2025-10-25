@@ -41,6 +41,7 @@
 
 with et_generic_module;				use et_generic_module;
 with et_canvas_board;
+with et_schematic_ops.units;
 with et_board_ops.devices;			use et_board_ops.devices;
 
 with et_devices_electrical;			use et_devices_electrical;
@@ -67,7 +68,8 @@ package body et_canvas_board_devices is
 		object_tool := MOUSE;
 		object_device_name := no_name;
 
-		reset_proposed_devices (active_module, log_threshold + 1);
+		et_schematic_ops.units.reset_status_units (
+			active_module, log_threshold + 1);
 	end reset_preliminary_electrical_device;
 
 

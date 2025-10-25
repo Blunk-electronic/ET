@@ -166,6 +166,8 @@ package et_schematic_ops.units is
 	-- and all units adressed.
 	-- If all_units is false, then only the unit specified by "unit_name"
 	-- will be addressed.
+	-- In any case the package will be set as selected so that is
+	-- becomes highlighted in the board domain.
 	-- If the given device does not exist, then a warning
 	-- is written in the log and the error flag is set.
 	-- If output_warning is false then no warning will be logged:

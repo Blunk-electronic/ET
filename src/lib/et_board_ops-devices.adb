@@ -299,61 +299,6 @@ package body et_board_ops.devices is
 
 
 
-	
-
-	procedure reset_proposed_devices (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level)
-	is
-		
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			
-			procedure query_device (
-				device_name	: in type_device_name;
-				device		: in out type_device_sch)
-			is begin
-				-- log (text => to_string (device_name), level => log_threshold + 1);
-				reset_status (device);
-			end query_device;
-			
-			device_cursor : pac_devices_sch.cursor := module.devices.first;
-			
-		begin
-			while device_cursor /= pac_devices_sch.no_element loop
-				if is_real (device_cursor) then -- ignore virtual devices (like GND symbols)
-					
-					-- log (text => "probing device " & to_string (key (device_cursor)),
-					-- 	 level => log_threshold + 1);
-					-- log_indentation_up;
-						
-					module.devices.update_element (device_cursor, query_device'access);
-
-					-- log_indentation_down;
-				end if;
-				
-				next (device_cursor);
-			end loop;
-		end query_module;
-
-		
-	begin
-		log (text => "module " & to_string (module_cursor)
-			& " resetting proposed devices", 
-			level => log_threshold);
-
-		log_indentation_up;
-		
-		generic_modules.update_element (
-			position	=> module_cursor,
-			process		=> query_module'access);
-
-		log_indentation_down;
-	end reset_proposed_devices;
-
-
 
 	
 	
@@ -1911,8 +1856,13 @@ package body et_board_ops.devices is
 
 		log_indentation_up;
 
-		reset_proposed_devices (module_cursor, log_threshold + 1);
-		reset_proposed_non_electrical_devices (module_cursor, log_threshold + 1);
+		-- Reset electrial devices, units and packages:
+		et_schematic_ops.units.reset_status_units (
+			module_cursor, log_threshold + 1);
+
+		-- Reset non-electrical devices:
+		reset_proposed_non_electrical_devices (
+			module_cursor, log_threshold + 1);
 
 		-- CS placeholders of devices
 		
