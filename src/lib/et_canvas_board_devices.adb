@@ -1135,19 +1135,25 @@ package body et_canvas_board_devices is
 
 
 				-- Write some basic information in the status bar:
-				-- case object.cat is
-				-- 	when CAT_UNIT =>
-    -- 
-				-- 		set_status (get_properties (
-				-- 			device_cursor	=> object.unit.device_cursor,
-				-- 			level			=> DEVICE_PROPERTIES_LEVEL_1,						   
-				-- 			all_units		=> false,
-				-- 			unit_cursor		=> object.unit.unit_cursor));
-    -- 
-				-- 	when others =>
-				-- 		status_clear;
-				-- 		-- CS CAT_PLACEHOLDER ?
-				-- end case;					
+				case object.cat is
+					when CAT_ELECTRICAL_DEVICE =>
+						status_clear;
+						-- CS
+						
+						-- set_status (get_properties (
+						-- 	device_cursor	=> object.electrical_device.cursor,
+						-- 	level			=> DEVICE_PROPERTIES_LEVEL_1,						   
+						-- 	all_units		=> true));
+
+					when CAT_NON_ELECTRICAL_DEVICE =>
+						status_clear;
+						-- CS
+
+						
+					when others =>
+						status_clear;
+						-- CS CAT_PLACEHOLDER ?
+				end case;					
 
 				
 			else

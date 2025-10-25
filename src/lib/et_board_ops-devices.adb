@@ -1968,7 +1968,12 @@ package body et_board_ops.devices is
 
 
 			when CAT_NON_ELECTRICAL_DEVICE =>
-				null;
+
+				show_non_electrical_device (
+					module_cursor	=> module_cursor,
+					device_name		=> get_device_name (object.non_electrical_device.cursor),
+					error			=> error,
+					log_threshold	=> log_threshold + 1);
 
 				
 			-- when CAT_PLACEHOLDER =>
