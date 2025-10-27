@@ -37,6 +37,8 @@
 --
 
 with ada.text_io;					use ada.text_io;
+with ada.characters.latin_1;
+with ada.strings.unbounded;
 
 with et_contour_to_polygon;
 with et_stopmask.packages;
@@ -44,6 +46,7 @@ with et_silkscreen.packages;
 with et_assy_doc.packages;
 with et_logging;
 with et_string_processing;			use et_string_processing;
+
 
 package body et_devices_non_electrical is
 
@@ -76,6 +79,14 @@ package body et_devices_non_electrical is
 	
 
 
+	function get_package_model (
+		device	: in type_device_non_electric)
+		return pac_package_model_file_name.bounded_string
+	is begin
+		return device.package_model;
+	end;
+
+	
 
 
 	procedure set_proposed (
@@ -348,15 +359,116 @@ package body et_devices_non_electrical is
 
 
 
+
+
+	function get_device_properties (
+		device		: in type_device_non_electric;
+		level		: in type_properties_level;
+		linebreaks	: in boolean := false)
+		return string
+	is
+		use ada.strings.unbounded;
+		result : unbounded_string;
+
+
+		-- If linebreaks are requested by the caller, then
+		-- this function returns a linefeed character on each call.
+		-- If no linefeeds are requested, then the return is an empty string:
+		function ins_LF return string is 
+			use ada.characters.latin_1;
+		begin
+			if linebreaks then
+				return "" & LF;
+			else
+				return "";
+			end if;
+		end;
+		
+
+		
+		procedure get_info_1 is begin
+			-- CS
+			null;
+			-- result := to_unbounded_string (" value: " & to_string (device.value) & ins_LF);
+		end;
+
+
+		procedure get_info_2 is begin
+			null;
+			-- CS
+			-- if is_real (device) then
+			-- 	result := result & " partcode: " 
+				-- & to_string (device.partcode) & ins_LF;
+			-- end if;
+		end;
+
+
+		procedure get_info_3 is begin
+			result := result & " package model: "
+				& to_string (get_package_model (device)) & ins_LF;
+		end;
+
+
+		
+	begin
+		case level is
+			when DEVICE_PROPERTIES_LEVEL_1 =>
+				get_info_1;
+  
+			when DEVICE_PROPERTIES_LEVEL_2 =>
+				get_info_1; 
+				get_info_2; 
+  
+			when DEVICE_PROPERTIES_LEVEL_3 =>
+				get_info_1; 
+				get_info_2; 
+				get_info_3;
+		end case;
+
+		return to_string (result);
+	end get_device_properties;
+
+
+
+
+
+
+	
+
 	function get_properties (
 		device_cursor	: in pac_devices_non_electric.cursor;
 		level			: in type_properties_level;
 		linebreaks		: in boolean := false)
 		return string
 	is
+		use ada.strings.unbounded;
+		units_info : unbounded_string;
+
+		device : type_device_non_electric renames element (device_cursor);
+
+
+		-- If linebreaks are requested by the caller, then
+		-- this function returns a linefeed character on each call.
+		-- If no linefeeds are requested, then the return is an empty string:
+		function ins_LF return string is 
+			use ada.characters.latin_1;
+		begin
+			if linebreaks then
+				return "" & LF;
+			else
+				return "";
+			end if;
+		end;
+
+		
 	begin
 		-- CS
-		return "some dummy property test data";
+
+		-- Get general properties of the device.
+		-- Append the properties of the requested unit:
+		return "device: " & get_device_name (device_cursor) & ins_LF
+			& get_device_properties (device, level, linebreaks) & ins_LF;
+
 	end get_properties;
 
 	

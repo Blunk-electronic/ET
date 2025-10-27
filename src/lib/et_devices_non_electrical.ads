@@ -122,6 +122,13 @@ package et_devices_non_electrical is
 	end record;
 	
 
+
+	-- Returns the name of the package model
+	-- like "../lbr/packages/fiducial.pac"
+	function get_package_model (
+		device	: in type_device_non_electric)
+		return pac_package_model_file_name.bounded_string;
+	
 	
 	procedure set_proposed (
 		device : in out type_device_non_electric);
@@ -280,6 +287,24 @@ package et_devices_non_electrical is
 
 	
 
+
+	
+
+-- PROPERTIES QUERIES:
+	
+	
+	-- Returns properties of the given device.
+	-- 1. Level determines the degree and amount of information to be returned.
+	-- 2. If linebreaks is true, then linebreaks are inserted.
+	--    This is useful when the output is to be displayed
+	--    in a window or if it is to be written in a file:
+	function get_device_properties (
+		device		: in type_device_non_electric;
+		level		: in type_properties_level;
+		linebreaks	: in boolean := false)
+		return string;
+
+	
 	-- Returns properties of the given device. 
 	-- 1. Level determines the degree and amount of information to be returned.
 	-- 2. If linebreaks is true, then linebreaks are inserted.

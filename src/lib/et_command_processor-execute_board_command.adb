@@ -2872,6 +2872,13 @@ is
 						-- does not exist. For this reason log_warning is false.
 						-- Instead we generate a warning if the device is not among
 						-- the electrical nor the non-electrical devices.
+
+						-- CS:
+						-- Center on the device and leave the
+						-- zoom factor as it is. If the runmode is
+						-- headless, then nothing happens here:
+						-- zoom_to (get_place (unit_query.position), S);
+
 						
 						show_device (
 							module_cursor	=> active_module, 
@@ -2890,12 +2897,39 @@ is
 								level			=> DEVICE_PROPERTIES_LEVEL_1,
 								error			=> error,
 								log_threshold	=> log_threshold + 1));
+
+							-- For property levels greater 1 we open
+							-- the properties window in order to conveniently
+							-- show a lot of information:
+							case properties_level is
+								when DEVICE_PROPERTIES_LEVEL_1 => null;
+
+								when others =>
+									
+									pac_device_ops.show_properties_window (
+										device	=> device_name,
+										text	=> et_schematic_ops.units.get_device_properties (
+											module_cursor	=> active_module, 
+											device_name		=> device_name, 
+											linebreaks		=> true,
+											level			=> properties_level,
+											error			=> error,
+											log_threshold	=> log_threshold + 2));
+							end case;
+
+							
 						end if;
 						
 						-- If the device could not be located among the
 						-- electrical devices, then search
 						-- among non-electrical devices:
 						if error then
+
+							-- CS:
+							-- Center on the device and leave the
+							-- zoom factor as it is. If the runmode is
+							-- headless, then nothing happens here:
+							-- zoom_to (get_place (unit_query.position), S);
 							
 							show_non_electrical_device (
 								module_cursor	=> active_module, 
@@ -2912,6 +2946,27 @@ is
 									level			=> DEVICE_PROPERTIES_LEVEL_1,
 									error			=> error,
 									log_threshold	=> log_threshold + 1));
+
+
+								-- For property levels greater 1 we open
+								-- the properties window in order to conveniently
+								-- show a lot of information:
+								case properties_level is
+									when DEVICE_PROPERTIES_LEVEL_1 => null;
+
+									when others =>
+										
+										pac_device_ops.show_properties_window (
+											device	=> device_name,
+											text	=> et_board_ops.devices.get_device_properties (
+												module_cursor	=> active_module, 
+												device_name		=> device_name, 
+												linebreaks		=> true,
+												level			=> properties_level,
+												error			=> error,
+												log_threshold	=> log_threshold + 2));
+								end case;
+
 							end if;
 							
 							if error then
