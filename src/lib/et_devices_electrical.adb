@@ -173,6 +173,22 @@ package body et_devices_electrical is
 
 
 
+	function get_package_model_name (
+		device : in type_device_sch)
+		return pac_package_model_file_name.bounded_string
+	is
+		device_cursor_lib : pac_devices_lib.cursor;
+	begin
+		-- Locate the generic device model in the device library
+		device_cursor_lib := get_device_model_cursor (device.model);
+		
+		return get_package_model (device_cursor_lib, device.variant);
+	end get_package_model_name;
+
+
+	
+	
+
 	function get_first_unit (
 		device : in type_device_sch)
 		return pac_units.cursor
@@ -1931,9 +1947,9 @@ package body et_devices_electrical is
 
 	
 
-	function get_package_model (
+	function get_package_model_name (
 		device : in pac_devices_sch.cursor)
-		return pac_package_model_file_name.bounded_string -- libraries/packages/smd/SOT23.pac
+		return pac_package_model_file_name.bounded_string
 	is
 		use et_device_model_names;
 		device_model		: pac_device_model_file.bounded_string;
@@ -1953,7 +1969,10 @@ package body et_devices_electrical is
 		device_cursor_lib := get_device_model_cursor (device_model);
 		
 		return get_package_model (device_cursor_lib, device_variant);
-	end get_package_model;
+	end get_package_model_name;
+
+
+	
 
 
 
@@ -1964,7 +1983,7 @@ package body et_devices_electrical is
 		return pac_package_models.cursor
 	is
 		package_model : constant pac_package_model_file_name.bounded_string :=
-			get_package_model (device);  -- libraries/packages/smd/SOT23.pac
+			get_package_model_name (device);  -- libraries/packages/smd/SOT23.pac
 	begin
 		return get_package_model (package_model);
 	end get_package_model;
@@ -1979,7 +1998,7 @@ package body et_devices_electrical is
 		package_name : pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
 	begin
 		-- get the package name of the given device:
-		package_name := get_package_model (device);
+		package_name := get_package_model_name (device);
 
 		-- ask for the package status (real or virtual) and return the result right away:
 		return is_real (package_name);
@@ -2125,6 +2144,7 @@ package body et_devices_electrical is
 				result := result & " partcode: " & to_string (device.partcode) & ins_LF;
 				-- CS: If the device is interactive (depends on prefix),
 				-- then get the purpose:
+				-- CS write interactive true/false
 				-- CS result := result & " purpose " & to_string (device.purpose);
 				-- CS package variant
 			end if;
@@ -2132,11 +2152,12 @@ package body et_devices_electrical is
 
 
 		procedure get_info_3 is begin
-			result := result & " device model: " & to_string (get_device_model_file (device)) & ins_LF;
+			result := result & " device model: " 
+				& to_string (get_device_model_file (device)) & ins_LF;
 
 			if is_real (device) then
-				-- CS package model
-				null;
+				result := result & " package model: " 
+					& to_string (get_package_model_name (device)) & ins_LF; 
 			end if;
 		end;
 

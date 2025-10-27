@@ -102,10 +102,8 @@ package et_devices_non_electrical is
 	-- (like fiducials, mounting holes, ...). They can have
 	-- terminals. But the terminals are not connected with any net.
 	-- They have names like H1 (hole) or FD (fiducial).
-	-- This is NOT about accessories of the module !
-	-- These devices do NOT appear in the BOM !
-	-- We collect them in an indefinite ordered map.
-	-- CS: Move into a separate package !
+	-- Despite not having a counterpart in the schematic, these devices
+	-- are modelled via package models:
 	
 	type type_device_non_electric is record
 		position			: et_board_coordinates.type_package_position; -- incl. rotation and face
@@ -125,7 +123,7 @@ package et_devices_non_electrical is
 
 	-- Returns the name of the package model
 	-- like "../lbr/packages/fiducial.pac"
-	function get_package_model (
+	function get_package_model_name (
 		device	: in type_device_non_electric)
 		return pac_package_model_file_name.bounded_string;
 	

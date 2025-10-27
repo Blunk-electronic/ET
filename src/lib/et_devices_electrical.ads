@@ -199,6 +199,8 @@ package et_devices_electrical is
 		return pac_device_model_file.bounded_string; -- *.dev
 
 
+	
+
 	-- Maps from schematic device to 
 	-- cursor to device model (in library):
 	function get_device_model (
@@ -221,6 +223,18 @@ package et_devices_electrical is
 		return pac_package_variants.map;
 												
 
+
+	-- Returns the name of the package model of the given device
+	-- according to the current package variant of the device.
+	-- The package model name is something like "libraries/packages/smd/SOT23.pac"
+	-- The given device must be real. Otherwise constraint error arises here.	
+	function get_package_model_name (
+		device : in type_device_sch)
+		return pac_package_model_file_name.bounded_string;
+
+	
+
+	
 
 	-- Returns the cursor to the first deployed unit
 	-- of the given device:
@@ -254,6 +268,7 @@ package et_devices_electrical is
 		device : in pac_devices_sch.cursor)
 		return pac_devices_lib.cursor;
 
+	
 
 
 	-- Locates the given unit in the given device.
@@ -828,10 +843,11 @@ package et_devices_electrical is
 
 	-- Returns the name of the package model of the given device
 	-- according to the current package variant of the device.
+	-- The package model name is something like "libraries/packages/smd/SOT23.pac"
 	-- The given device must be real. Otherwise constraint error arises here.	
-	function get_package_model ( -- CS rename to get_package_model_name
+	function get_package_model_name (
 		device : in pac_devices_sch.cursor)
-		return pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
+		return pac_package_model_file_name.bounded_string;
 	
 
 	-- Returns the cursor to the package model of the given device

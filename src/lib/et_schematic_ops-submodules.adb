@@ -4928,7 +4928,7 @@ package body et_schematic_ops.submodules is
 										value		=> element (cursor_schematic).VALUE,
 										partcode	=> element (cursor_schematic).PARTCODE,
 										purpose		=> element (cursor_schematic).PURPOSE,
-										packge		=> get_package_model (cursor_schematic)),
+										packge		=> get_package_model_name (cursor_schematic)),
 									position	=> cursor_bom,
 									inserted	=> inserted);
 								
@@ -4938,6 +4938,7 @@ package body et_schematic_ops.submodules is
 						end if;
 					end query_properties_default;
 
+					
 					
 					procedure query_properties_variants (cursor_schematic : in pac_devices_sch.cursor) is 
 						cursor_bom : pac_bom_devices.cursor;
@@ -4975,7 +4976,7 @@ package body et_schematic_ops.submodules is
 											value		=> element (cursor_schematic).value,
 											partcode	=> element (cursor_schematic).partcode,	
 											purpose		=> element (cursor_schematic).purpose,
-											packge		=> get_package_model (cursor_schematic)),
+											packge		=> get_package_model_name (cursor_schematic)),
 										position	=> cursor_bom,
 										inserted	=> inserted);
 
@@ -5005,7 +5006,7 @@ package body et_schematic_ops.submodules is
 													value		=> element (alt_dev_cursor).value,
 													partcode	=> element (alt_dev_cursor).partcode,
 													purpose		=> element (alt_dev_cursor).purpose,
-													packge		=> get_package_model (cursor_schematic)),
+													packge		=> get_package_model_name (cursor_schematic)),
 												position	=> cursor_bom,
 												inserted	=> inserted);
 

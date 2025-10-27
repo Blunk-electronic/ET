@@ -79,7 +79,7 @@ package body et_devices_non_electrical is
 	
 
 
-	function get_package_model (
+	function get_package_model_name (
 		device	: in type_device_non_electric)
 		return pac_package_model_file_name.bounded_string
 	is begin
@@ -405,7 +405,7 @@ package body et_devices_non_electrical is
 
 		procedure get_info_3 is begin
 			result := result & " package model: "
-				& to_string (get_package_model (device)) & ins_LF;
+				& to_string (get_package_model_name (device)) & ins_LF;
 		end;
 
 

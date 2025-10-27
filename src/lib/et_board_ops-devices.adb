@@ -2380,7 +2380,7 @@ package body et_board_ops.devices is
 		
 	begin
 		-- Get the package model of the given device:
-		model := get_package_model (device_cursor);
+		model := get_package_model_name (device_cursor);
 
 		-- Get the position of the package as it is in the layout:
 		package_position := pac_devices_sch.element (device_cursor).position;
