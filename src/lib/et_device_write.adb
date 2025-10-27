@@ -79,7 +79,7 @@ with et_symbol_name;				use et_symbol_name;
 with et_symbol_ports;				use et_symbol_ports;
 with et_symbol_text;				use et_symbol_text;
 with et_symbol_model;				use et_symbol_model;
-with et_package_names;				use et_package_names;
+with et_package_name;				use et_package_name;
 with et_device_placeholders;		use et_device_placeholders;
 with et_device_partcode;			use et_device_partcode;
 with et_pcb_stack;
@@ -135,7 +135,6 @@ package body et_device_write is
 		is
 			use pac_package_variant_name;
 			use et_port_names;
-			use et_package_names;
 			use pac_terminal_port_map;	
 			use et_units;
 			

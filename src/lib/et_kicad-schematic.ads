@@ -53,7 +53,7 @@ with et_project_name;			use et_project_name;
 with et_net_labels;				use et_net_labels;
 with et_net_connectors;			use et_net_connectors;
 with et_terminals;
-with et_package_names;			use et_package_names;
+with et_package_name;			use et_package_name;
 with et_pcb;
 with et_kicad_general;			use et_kicad_general;
 with et_import;

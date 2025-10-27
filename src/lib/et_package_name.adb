@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                            PACKAGE NAMES                                 --
+--                             PACKAGE NAME                                 --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                               --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,52 +37,70 @@
 --   history of changes:
 --
 
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
+
+with ada.text_io;				use ada.text_io;
+with ada.characters;			use ada.characters;
+
+with ada.strings;				use ada.strings;
+with ada.strings.fixed; 		use ada.strings.fixed;
+
+with et_logging;				use et_logging;
+with et_string_processing;		use et_string_processing;
 
 
-package et_package_names is
+
+package body et_package_name is
 
 
-	-- A package name is something like "SOT32" or "NDIP14". 
-	-- It is a more or less standardized (JEDEC)
-	-- designator for the housing or the case of an electronical component.
-	--
-	-- The package is independed of
-	-- the actual purpose of a device. An LED can have an SOT23 package and
-	-- a transistor can also come in an SOT23.
-
-	-- Package names like "SOT23" or "TO220" are stored in bounded strings:
-	package_name_characters : character_set := to_set 
-		(ranges => (('a','z'),('A','Z'),('0','9'))) 
-		or to_set('.')
-		or to_set('-')
-		or to_set('_'); 
-
-	package_name_length_max : constant positive := 100;
-	package pac_package_name is new generic_bounded_length (package_name_length_max);
-
-	function to_string (packge : in pac_package_name.bounded_string) return string;
-	-- Returns the given package name as as string.
+	function to_string (packge : in pac_package_name.bounded_string) return string is
 	-- CS: provide a parameter that turns the preamble on/off
+	begin
+		return pac_package_name.to_string (packge);
+	end to_string;
 
-	function to_package_name (package_name : in string) return pac_package_name.bounded_string;
-	-- Converts a string to a pac_package_name.
+
 	
-	procedure check_package_name_length (packge : in string);
-	-- Tests if the given package name is longer than allowed.
+	function to_package_name (package_name : in string) return pac_package_name.bounded_string is
+	begin
+		return pac_package_name.to_bounded_string (package_name);
+	end to_package_name;
+
+
+
+	
+	procedure check_package_name_length (packge : in string) is
+	begin
+		if packge'length > package_name_length_max then
+			log (WARNING, "package name too long. Max. length is" 
+				 & positive'image (package_name_length_max) & " !");
+		end if;
+	end check_package_name_length;
+
+
+
 	
 	procedure check_package_name_characters (
 		packge		: in pac_package_name.bounded_string;
-		characters	: in character_set := package_name_characters);
-	-- Tests if the given package name contains only valid characters as specified
-	-- by given character set.
-	-- Raises exception if invalid character found.
+		characters	: in character_set := package_name_characters)
+	is
+		use pac_package_name;
+		invalid_character_position : natural := 0;
+	begin
+		invalid_character_position := index (
+			source => packge,
+			set => characters,
+			test => outside);
 
+		if invalid_character_position > 0 then
+			log (WARNING, "package name " & enclose_in_quotes (to_string (packge))
+				 & " has invalid character at position"
+				 & natural'image (invalid_character_position));
+		end if;
+	end check_package_name_characters;
 
 	
 	
-end et_package_names;
+end et_package_name;
 
 -- Soli Deo Gloria
 

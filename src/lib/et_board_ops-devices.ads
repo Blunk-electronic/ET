@@ -39,7 +39,7 @@
 
 
 with et_package_model_name;				use et_package_model_name;
-with et_package_names;					use et_package_names;
+with et_package_name;					use et_package_name;
 with et_package_library;				use et_package_library;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;

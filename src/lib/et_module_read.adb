@@ -102,7 +102,7 @@ with et_board_read;					use et_board_read;
 with et_package_read;
 with et_package_sections;
 
-with et_package_names;
+with et_package_name;
 with et_package_model_name;
 with et_drills;
 with et_vias;
@@ -2688,7 +2688,6 @@ package body et_module_read is
 		
 		procedure read_device_non_electric is
 			use et_board_coordinates;
-			use et_package_names;
 			use et_package_model_name;
 			kw : constant string := f (line, 1);
 		begin
@@ -3403,7 +3402,7 @@ package body et_module_read is
 					use et_symbol_model;
 					use et_device_model;
 					use et_device_model_names;
-					use et_package_names;
+					use et_package_name;
 					use et_package_model_name;
 					use et_pcb_stack;
 					use et_package_variant;
@@ -3593,7 +3592,7 @@ package body et_module_read is
 					use et_device_model;
 					use et_device_model_names;
 					use et_pcb_sides;
-					use et_package_names;
+					use et_package_name;
 					use et_pcb_stack;
 					use et_devices_non_electrical;
 					

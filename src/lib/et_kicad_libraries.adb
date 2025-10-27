@@ -1038,7 +1038,6 @@ package body et_kicad_libraries is
 
 		use et_import;
 		use type_project_lib_dirs;
-		use et_package_names;
 		use ada.directories;
 
 		-- V4:
@@ -1182,8 +1181,6 @@ package body et_kicad_libraries is
 	is
 		use type_libraries;
 		library_cursor : type_libraries.cursor;
-
-		use et_package_names;
 
 		
 		-- Test if the terminals of the terminal_port_map are also in the given package.

@@ -66,7 +66,6 @@ with gtk.tree_model;				use gtk.tree_model;
 
 with et_sheets;						use et_sheets;
 with et_device_read;
-with et_package_names;
 with et_package_variant;
 with et_symbol_ports;
 with et_device_appearance;

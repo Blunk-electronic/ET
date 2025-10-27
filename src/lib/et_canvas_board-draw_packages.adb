@@ -56,7 +56,7 @@ with et_device_purpose;
 
 with et_package_model_name;			use et_package_model_name;
 with et_package_model;				use et_package_model;
-with et_package_names;
+with et_package_name;
 with et_package_library;			use et_package_library;
 with et_package_variant;
 with et_terminals;
@@ -1662,7 +1662,6 @@ procedure draw_packages is
 		use et_device_library;
 		device_model_cursor : pac_devices_lib.cursor;
 
-		use et_package_names;
 		package_model_name : pac_package_model_file_name.bounded_string;
 	begin
 		-- put_line ("device " & to_string (name));
@@ -1692,7 +1691,6 @@ procedure draw_packages is
 		name	: in type_device_name;
 		device	: in type_device_non_electric)
 	is
-		use et_package_names;
 		package_model_name : pac_package_model_file_name.bounded_string;
 	begin
 		-- put_line ("device " & to_string (name));	

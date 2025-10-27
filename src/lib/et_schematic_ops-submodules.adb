@@ -46,7 +46,7 @@ with et_board_coordinates;
 with et_generic_stacks;
 with et_symbol_model;
 with et_device_appearance;
-with et_package_names;
+with et_package_name;
 with et_package_model_name;
 with et_net_strands;				use et_net_strands;
 with et_net_ports;
@@ -4949,7 +4949,7 @@ package body et_schematic_ops.submodules is
 						use et_assembly_variants.pac_device_variants;
 						use et_symbol_model;
 						use et_device_appearance;
-						use et_package_names;
+						use et_package_name;
 						use et_package_model_name;
 					begin
 						-- the device must be real

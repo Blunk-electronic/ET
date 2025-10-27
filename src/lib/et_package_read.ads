@@ -61,7 +61,7 @@ with et_keepout;						use et_keepout;
 with et_pcb_stack;						use et_pcb_stack;
 with et_pcb_sides;						use et_pcb_sides;
 with et_drills;							use et_drills;
-with et_package_names;					use et_package_names;
+with et_package_name;					use et_package_name;
 with et_logging;						use et_logging;
 
 

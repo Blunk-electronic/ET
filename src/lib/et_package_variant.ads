@@ -43,7 +43,7 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 with ada.containers.ordered_maps;
 
-with et_package_names;			use et_package_names;
+with et_package_name;			use et_package_name;
 with et_package_model_name;		use et_package_model_name;
 with et_terminals;				use et_terminals;
 with et_port_names;				use et_port_names;

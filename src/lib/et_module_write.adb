@@ -104,7 +104,7 @@ with et_pcb_stack;
 with et_board_write;				use et_board_write;
 
 with et_package_model_name;
-with et_package_names;
+with et_package_name;
 with et_terminals;
 with et_material;
 
@@ -1765,7 +1765,7 @@ package body et_module_write is
 			is
 				use et_board_coordinates;
 				use et_pcb;
-				use et_package_names;
+				-- use et_package_names;
 				use et_package_model_name;
 				use et_pcb_sides;
 

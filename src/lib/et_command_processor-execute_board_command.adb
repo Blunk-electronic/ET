@@ -98,7 +98,6 @@ with et_drawing_frame;
 with et_net_names;					use et_net_names;
 with et_device_name;
 with et_terminals;
-with et_package_names;
 with et_package_model_name;
 with et_mirroring;
 with et_device_prefix;
@@ -3008,7 +3007,6 @@ is
 
 		procedure do_it is
 			use et_board_ops.devices;
-			use et_package_names;
 			use et_device_prefix;
 			use et_package_model_name;
 			

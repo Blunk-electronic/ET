@@ -71,7 +71,7 @@ with et_project;
 with et_script_processor;
 
 with et_package_appearance;
-with et_package_names;			use et_package_names;
+with et_package_name;			use et_package_name;
 with et_package_model_name;		use et_package_model_name;
 with et_package_library;
 

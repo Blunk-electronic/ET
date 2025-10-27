@@ -732,7 +732,7 @@ package body et_schematic_ops.units is
 		error := false;
 		
 		log (text => "module " & to_string (module_cursor) 
-			 & " get properties of device " & to_string (device_name)
+			 & " get properties of electrical device " & to_string (device_name)
 			 & " linebreaks " & boolean'image (linebreaks)
 			 & " inquiry level " & to_string (level),
 			level => log_threshold);

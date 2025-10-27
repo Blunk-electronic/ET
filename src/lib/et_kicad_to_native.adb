@@ -64,7 +64,7 @@ with et_string_processing;			use et_string_processing;
 with et_project;
 with et_generic_module;				use et_generic_module;
 with et_vias;
-with et_package_names;
+with et_package_name;
 with et_package_library;
 with et_kicad_general;
 with et_kicad_libraries;
@@ -2532,7 +2532,7 @@ package body et_kicad_to_native is
 		log_threshold	: in type_log_level) 
 	is
 		use et_project;
-		use et_package_names;
+		use et_package_name;
 		
 -- 		-- When the native project is created we need a project path and a project name:
 -- 		project_path : et_project.type_et_project_path.bounded_string :=
@@ -2653,7 +2653,7 @@ package body et_kicad_to_native is
 		is
 			-- The return is something like: libraries/packages/__-__-lbr-transistors.pretty_S_0805.pac .
 
-			use et_package_names;
+			use et_package_name;
 			use pac_package_model_file_name;
 
 			-- In the containing directory . and / must be replaced by _ and -:

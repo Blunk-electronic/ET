@@ -53,7 +53,7 @@ with et_material;
 with et_device_partcode;		use et_device_partcode;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
-with et_package_names;			use et_package_names;
+with et_package_name;			use et_package_name;
 with et_device_value;			use et_device_value;
 with et_device_prefix;			use et_device_prefix;
 with et_device_name;			use et_device_name;

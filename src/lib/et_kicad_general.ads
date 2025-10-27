@@ -42,7 +42,7 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
-with et_package_names;			use et_package_names;
+with et_package_name;			use et_package_name;
 
 with et_string_processing;		use et_string_processing;
 
