@@ -94,16 +94,16 @@ with et_unit_name;
 with et_unit_swap_level;
 with et_unit_add_level;
 with et_package_variant;
+with et_package_model_name;			use et_package_model_name;
 with et_device_library;				use et_device_library;
 with et_keywords;					use et_keywords;
 with et_symbol_sections;			use et_symbol_sections;
 with et_device_sections;			use et_device_sections;
 with et_terminals;					use et_terminals;
 
+
+
 package body et_device_read is
-
-	
-
 	
 
 	procedure read_device (
@@ -877,7 +877,7 @@ package body et_device_read is
 										check_package_name_length (ada.directories.base_name (f (line, 2)));
 										check_package_name_characters (to_package_name (ada.directories.base_name (f (line, 2))));
 
-										variant.package_model := to_file_name (f (line,2));
+										variant.package_model := to_package_model_name (f (line,2));
 										log (text => "package model " & to_string (variant.package_model), level => log_threshold + 1);
 										
 									else

@@ -5706,7 +5706,7 @@ package body et_kicad.pcb is
 	begin
 		-- extract the library and package name from the given package
 		package_name := to_package_name (ada.directories.simple_name (to_string (packge))); -- S_SO14
-		library_name := to_file_name (ada.directories.containing_directory (to_string (packge))); -- ../lbr/bel_ic.pretty
+		library_name := to_package_model_name (ada.directories.containing_directory (to_string (packge))); -- ../lbr/bel_ic.pretty
 		
 		-- locate the library
 		library_cursor := type_libraries.find (package_libraries, library_name);

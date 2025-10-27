@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                               --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -44,10 +44,11 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 package et_package_names is
 
 
-	-- A package (or a footprint) is something like "SOT32" or "NDIP14". 
+	-- A package name is something like "SOT32" or "NDIP14". 
 	-- It is a more or less standardized (JEDEC)
 	-- designator for the housing or the case of an electronical component.
-	-- The package name is independed of
+	--
+	-- The package is independed of
 	-- the actual purpose of a device. An LED can have an SOT23 package and
 	-- a transistor can also come in an SOT23.
 
@@ -79,20 +80,6 @@ package et_package_names is
 	-- Raises exception if invalid character found.
 
 
-
-	
-
-	package_model_file_name_length_max : constant positive := 300;
-	package pac_package_model_file_name is new generic_bounded_length (package_model_file_name_length_max);
-
-	package_model_file_extension : constant string := "pac";
-	
-	use pac_package_model_file_name;
-	
-	function to_string (name : in pac_package_model_file_name.bounded_string) return string;
-	function to_file_name (name : in string) return pac_package_model_file_name.bounded_string;
-
-	
 	
 	
 end et_package_names;

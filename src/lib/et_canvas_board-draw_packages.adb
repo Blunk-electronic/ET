@@ -54,6 +54,7 @@ with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_device_value;
 with et_device_purpose;
 
+with et_package_model_name;			use et_package_model_name;
 with et_package_model;				use et_package_model;
 with et_package_names;
 with et_package_library;			use et_package_library;

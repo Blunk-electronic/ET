@@ -100,6 +100,7 @@ with et_device_purpose;
 with et_unit_name;					use et_unit_name;
 with et_device_model;				use et_device_model;
 with et_device_library;				use et_device_library;
+with et_package_model_name;			use et_package_model_name;
 with et_package_model;
 with et_package_variant;
 with et_device_name;				--use et_device_name;
@@ -2543,7 +2544,7 @@ package body et_kicad_to_native is
 				directory_libraries, directory_libraries_devices));
 	
 		prefix_packages_dir : pac_package_model_file_name.bounded_string := -- libraries/packages
-			to_file_name (compose (
+			to_package_model_name (compose (
 				directory_libraries, directory_libraries_packages));
 
 		-- Since V4 package libraries are stored in et_kicad_pcb.package_libraries
@@ -2663,7 +2664,7 @@ package body et_kicad_to_native is
 		begin
 			translate (model_copy, characters);
 
-			model_return := to_file_name (compose (
+			model_return := to_package_model_name (compose (
 					containing_directory	=> to_string (name => prefix_packages_dir),
 					name					=> to_string (name => model_copy),
 					extension				=> package_model_file_extension));
@@ -3911,7 +3912,7 @@ package body et_kicad_to_native is
 					--log (text => "package name " & et_libraries.to_string (package_name), level => log_threshold + 2);
 
 					-- build the new native package model name
-					package_model := to_file_name (compose (
+					package_model := to_package_model_name (compose (
 								containing_directory	=> to_string (name => library_name), -- projects/lbr/smd_packages.pretty
 								name					=> to_string (packge => package_name))); -- S_0805
 
@@ -4039,7 +4040,7 @@ package body et_kicad_to_native is
 				et_package_write.write_package (
 					-- package name like: 
 					-- libraries/packages/__-__-lbr-bel_connector_and_jumper_FEMALE_01X06.pac
-					file_name		=> to_file_name (name => to_string (key (package_cursor))),
+					file_name		=> to_package_model_name (name => to_string (key (package_cursor))),
 
 					-- the package model itself:
 					packge			=> element (package_cursor),

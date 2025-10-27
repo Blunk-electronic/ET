@@ -94,6 +94,7 @@ with et_device_partcode;				use et_device_partcode;
 with et_device_library;					use et_device_library;
 with et_device_property_level;			use et_device_property_level;
 with et_package_names;					use et_package_names;
+with et_package_model_name;				use et_package_model_name;
 with et_package_variant;				use et_package_variant;
 with et_terminals;						use et_terminals;
 with et_package_model;					use et_package_model;

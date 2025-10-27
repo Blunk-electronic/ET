@@ -47,6 +47,7 @@ with et_generic_stacks;
 with et_symbol_model;
 with et_device_appearance;
 with et_package_names;
+with et_package_model_name;
 with et_net_strands;				use et_net_strands;
 with et_net_ports;
 with et_module_ops;
@@ -4949,6 +4950,7 @@ package body et_schematic_ops.submodules is
 						use et_symbol_model;
 						use et_device_appearance;
 						use et_package_names;
+						use et_package_model_name;
 					begin
 						-- the device must be real
 						if element (cursor_schematic).appearance = APPEARANCE_PCB then -- skip virtual devices

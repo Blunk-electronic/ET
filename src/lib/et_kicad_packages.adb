@@ -2797,7 +2797,7 @@ package body et_kicad_packages is
 							-- create the (empty) library in container package_libraries
 							type_libraries.insert (
 								container	=> package_libraries,
-								key			=> to_file_name (compose ( -- ../lbr/tht_packages/plcc.pretty 
+								key			=> to_package_model_name (compose ( -- ../lbr/tht_packages/plcc.pretty 
 										containing_directory	=> to_string (element (lib_dir_cursor)),
 										name					=> element (library_name_cursor))),
 								inserted	=> library_inserted,

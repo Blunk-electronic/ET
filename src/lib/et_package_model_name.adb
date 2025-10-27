@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                            PACKAGE NAMES                                 --
+--                         PACKAGE MODEL NAME                               --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -39,68 +39,41 @@
 
 
 with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
-
-with ada.strings;				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-
-with et_logging;				use et_logging;
-with et_string_processing;		use et_string_processing;
-
-
-
-package body et_package_names is
+-- with ada.characters;			use ada.characters;
+-- 
+-- with ada.strings;				use ada.strings;
+-- with ada.strings.fixed; 		use ada.strings.fixed;
+-- 
+-- with et_logging;				use et_logging;
+-- with et_string_processing;		use et_string_processing;
 
 
-	function to_string (packge : in pac_package_name.bounded_string) return string is
-	-- CS: provide a parameter that turns the preamble on/off
-	begin
-		return pac_package_name.to_string (packge);
-	end to_string;
+
+package body et_package_model_name is
 
 
 	
-	function to_package_name (package_name : in string) return pac_package_name.bounded_string is
-	begin
-		return pac_package_name.to_bounded_string (package_name);
-	end to_package_name;
+	function to_string (
+		name : in pac_package_model_file_name.bounded_string) 
+		return string 
+	is begin
+		return pac_package_model_file_name.to_string (name);
+	end;
 
 
 
 	
-	procedure check_package_name_length (packge : in string) is
-	begin
-		if packge'length > package_name_length_max then
-			log (WARNING, "package name too long. Max. length is" 
-				 & positive'image (package_name_length_max) & " !");
-		end if;
-	end check_package_name_length;
-
+	function to_package_model_name (
+		name : in string) 
+		return pac_package_model_file_name.bounded_string 
+	is begin
+		return pac_package_model_file_name.to_bounded_string (name);
+	end;
 
 
 	
-	procedure check_package_name_characters (
-		packge		: in pac_package_name.bounded_string;
-		characters	: in character_set := package_name_characters)
-	is
-		use pac_package_name;
-		invalid_character_position : natural := 0;
-	begin
-		invalid_character_position := index (
-			source => packge,
-			set => characters,
-			test => outside);
-
-		if invalid_character_position > 0 then
-			log (WARNING, "package name " & enclose_in_quotes (to_string (packge))
-				 & " has invalid character at position"
-				 & natural'image (invalid_character_position));
-		end if;
-	end check_package_name_characters;
-
 	
-	
-end et_package_names;
+end et_package_model_name;
 
 -- Soli Deo Gloria
 

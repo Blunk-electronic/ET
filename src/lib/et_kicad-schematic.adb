@@ -55,6 +55,7 @@ with et_alignment;				use et_alignment;
 with et_erc;
 with et_unit_name;
 with et_net_class;				use et_net_class;
+with et_package_model_name;		use et_package_model_name;
 
 
 package body et_kicad.schematic is
@@ -1052,7 +1053,7 @@ package body et_kicad.schematic is
 					-- From the library and package name we can reason the variant name.
 					-- So if both the given library and package name match, the variant name
 					-- is set to be returned.
-					if element (variant_cursor).package_model = to_file_name (compose (
+					if element (variant_cursor).package_model = to_package_model_name (compose (
 							containing_directory	=> to_string (name => full_package_library_name),
 							name					=> to_string (packge => package_name))) 
 					then						
@@ -1093,7 +1094,7 @@ package body et_kicad.schematic is
 
 						-- build the new package variant
 						new_variant := (
-							package_model => to_file_name (compose (
+							package_model => to_package_model_name (compose (
 								containing_directory	=> to_string (name => full_package_library_name),
 								name					=> to_string (packge => package_name))),
 							
@@ -2395,7 +2396,7 @@ package body et_kicad.schematic is
 							-- create empty package/footprint library
 							type_libraries.insert (
 								container	=> package_libraries,
-								key 		=> to_file_name (to_string (uri)),
+								key 		=> to_package_model_name (to_string (uri)),
 								new_item	=> type_packages_library.empty_map
 								); 
 

@@ -54,6 +54,7 @@ with et_symbol_model;			use et_symbol_model;
 with et_terminals;				use et_terminals;
 with et_device_appearance;		use et_device_appearance;
 with et_package_names;			use et_package_names;
+with et_package_model_name;		use et_package_model_name;
 with et_device_purpose;			use et_device_purpose;
 with et_device_model_names;		use et_device_model_names;
 with et_device_value;			use et_device_value;

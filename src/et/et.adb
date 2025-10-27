@@ -72,6 +72,7 @@ with et_script_processor;
 
 with et_package_appearance;
 with et_package_names;			use et_package_names;
+with et_package_model_name;		use et_package_model_name;
 with et_package_library;
 
 with et_board_read;
@@ -250,7 +251,7 @@ procedure et is
 					-- package
 					elsif full_switch = switch_native_package_create then
 						log (text => arg & full_switch); -- no parameter
-						package_name_create := to_file_name (dummy_name);
+						package_name_create := to_package_model_name (dummy_name);
 
 					elsif full_switch = switch_package_appearance then -- virtual/real
 						log (text => arg & full_switch & space & parameter);
@@ -258,11 +259,11 @@ procedure et is
 						
 					elsif full_switch = switch_native_package_open then
 						log (text => arg & full_switch & space & parameter);
-						package_name_open := to_file_name (parameter); -- libraries/packages/smd/SOT23.pac
+						package_name_open := to_package_model_name (parameter); -- libraries/packages/smd/SOT23.pac
 
 					elsif full_switch = switch_native_package_save_as then
 						log (text => arg & full_switch & space & parameter);
-						package_name_save_as := to_file_name (parameter); -- libraries/packages/smd/SOT23.pac
+						package_name_save_as := to_package_model_name (parameter); -- libraries/packages/smd/SOT23.pac
 
 					-- symbol
 					elsif full_switch = switch_native_symbol_create then

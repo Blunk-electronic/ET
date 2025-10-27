@@ -58,6 +58,7 @@ with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_package_model;					use et_package_model;
 with et_package_library;				use et_package_library;
 with et_package_names;					use et_package_names;
+with et_package_model_name;				use et_package_model_name;
 with et_device_name;					use et_device_name;
 with et_device_property_level;			use et_device_property_level;
 with et_pcb_stack;						use et_pcb_stack;

@@ -99,6 +99,7 @@ with et_net_names;					use et_net_names;
 with et_device_name;
 with et_terminals;
 with et_package_names;
+with et_package_model_name;
 with et_mirroring;
 with et_device_prefix;
 with et_vias;
@@ -3009,9 +3010,13 @@ is
 			use et_board_ops.devices;
 			use et_package_names;
 			use et_device_prefix;
+			use et_package_model_name;
 			
-			model : constant pac_package_model_file_name.bounded_string := to_file_name (get_field (5));
-			prefix : constant pac_device_prefix.bounded_string := to_prefix (get_field (6));
+			model : constant pac_package_model_file_name.bounded_string := 
+				to_package_model_name (get_field (5));
+			
+			prefix : constant pac_device_prefix.bounded_string := 
+				to_prefix (get_field (6));
 
 			xy : constant type_vector_model := type_vector_model (set (
 					x => to_distance (dd => get_field (7)),

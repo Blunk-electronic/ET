@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                            PACKAGE WRITE                                 --
+--                         PACKAGE MODEL NAME                               --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -21,9 +21,10 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
+--                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -36,52 +37,45 @@
 --   history of changes:
 --
 
---   do do:
-
-with et_design_rules_board;				use et_design_rules_board;
-with et_string_processing;				use et_string_processing;
-with et_device_placeholders;			use et_device_placeholders;
-with et_device_placeholders.packages;	use et_device_placeholders.packages;
-with et_package_appearance;				use et_package_appearance;
-with et_package_model;					use et_package_model;
-with et_package_library;				use et_package_library;
-with et_fill_zones;						use et_fill_zones;
-with et_route_restrict;					use et_route_restrict;
-with et_via_restrict;					use et_via_restrict;
-with et_board_geometry;					use et_board_geometry;
-with et_board_coordinates;				use et_board_coordinates;
-with et_board_text;						use et_board_text;
-with et_board_write;					use et_board_write;
-with et_conductor_text;					use et_conductor_text;
-with et_stopmask;						use et_stopmask;
-with et_stencil;						use et_stencil;
-with et_silkscreen;						use et_silkscreen;
-with et_assy_doc;						use et_assy_doc;
-with et_keepout;						use et_keepout;
-with et_pcb_stack;						use et_pcb_stack;
-with et_pcb_sides;						use et_pcb_sides;
-with et_drills;							use et_drills;
-with et_package_names;					use et_package_names;
-with et_package_model_name;				use et_package_model_name;
-with et_logging;						use et_logging;
+with ada.strings.maps;			use ada.strings.maps;
+with ada.strings.bounded; 		use ada.strings.bounded;
 
 
+package et_package_model_name is
 
-package et_package_write is
+	-- The package model name is 
+	-- something like "libraries/packages/smd/SOT23.pac".
+	-- So it is about the name of a file that contains
+	-- the actual package model.
 
-	use pac_geometry_2;
-	use pac_contours;
-	use pac_text_board;
+	
+	package_model_file_name_length_max : constant positive := 300;
+	
+	package pac_package_model_file_name is new 
+		generic_bounded_length (package_model_file_name_length_max);
+
+		
+	package_model_file_extension : constant string := "pac";
+
+	
+	use pac_package_model_file_name;
+	
+	function to_string (
+		name : in pac_package_model_file_name.bounded_string) 
+		return string;
+
+	
+	function to_package_model_name (
+		name : in string) 
+		return pac_package_model_file_name.bounded_string;
 
 
 	
-	-- Saves the given package model in a file specified by file_name.							   
-	procedure write_package (
-		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
-		packge			: in type_package_model; -- the actual device model
-		log_threshold	: in type_log_level);
+end et_package_model_name;
 
+-- Soli Deo Gloria
 
-	
-	
-end et_package_write;
+-- For God so loved the world that he gave 
+-- his one and only Son, that whoever believes in him 
+-- shall not perish but have eternal life.
+-- The Bible, John 3.16

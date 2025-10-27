@@ -103,6 +103,7 @@ with et_package_read;
 with et_package_sections;
 
 with et_package_names;
+with et_package_model_name;
 with et_drills;
 with et_vias;
 with et_terminals;
@@ -1478,7 +1479,7 @@ package body et_module_read is
 		
 
 		device_non_electric			: et_devices_non_electrical.type_device_non_electric;
-		device_non_electric_model	: et_package_names.pac_package_model_file_name.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
+		device_non_electric_model	: et_package_model_name.pac_package_model_file_name.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
 
 
 		
@@ -2688,6 +2689,7 @@ package body et_module_read is
 		procedure read_device_non_electric is
 			use et_board_coordinates;
 			use et_package_names;
+			use et_package_model_name;
 			kw : constant string := f (line, 1);
 		begin
 			-- CS: In the following: set a corresponding parameter-found-flag
@@ -2705,7 +2707,7 @@ package body et_module_read is
 				
 			elsif kw = keyword_model then -- model /lib/fiducials/crosshair.pac
 				expect_field_count (line, 2);
-				device_non_electric_model := to_file_name (f (line, 2));
+				device_non_electric_model := to_package_model_name (f (line, 2));
 
 			else
 				invalid_keyword (kw);
@@ -3402,6 +3404,7 @@ package body et_module_read is
 					use et_device_model;
 					use et_device_model_names;
 					use et_package_names;
+					use et_package_model_name;
 					use et_pcb_stack;
 					use et_package_variant;
 					use pac_package_variant_name;

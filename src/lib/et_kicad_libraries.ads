@@ -74,6 +74,7 @@ with et_device_name;			use et_device_name;
 with et_unit_name;				use et_unit_name;
 with et_units;					use et_units;
 with et_package_variant;		use et_package_variant;
+with et_package_model_name;		use et_package_model_name;
 
 with et_device_placeholders;			--use et_device_placeholders;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;

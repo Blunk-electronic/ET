@@ -65,6 +65,7 @@ with et_pcb_contour;					use et_pcb_contour;
 with et_package_model;					use et_package_model;
 with et_package_appearance;				use et_package_appearance;
 with et_package_names;					use et_package_names;
+with et_package_model_name;				use et_package_model_name;
 with et_package_description;			use et_package_description;
 with et_logging;						use et_logging;
 

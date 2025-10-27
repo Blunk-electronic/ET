@@ -65,9 +65,10 @@ with et_keepout;				use et_keepout;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 
-with et_package_names;				use et_package_names;
-with et_package_model;				use et_package_model;
-with et_kicad_general;				use et_kicad_general;
+with et_package_model_name;		use et_package_model_name;
+with et_package_names;			use et_package_names;
+with et_package_model;			use et_package_model;
+with et_kicad_general;			use et_kicad_general;
 with et_import;
 
 with et_board_coordinates;		use et_board_coordinates;
