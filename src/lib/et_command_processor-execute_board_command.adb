@@ -2882,9 +2882,15 @@ is
 							log_warning		=> false, 
 							log_threshold	=> log_threshold + 1);
 
-						-- CS if error is false write some basic information
-						-- in the status bar:
-						-- see et_command_processor.execut_schematic_command.show_device
+						if not error then
+							-- Show some basic information in the staus bar:
+							set_status (et_schematic_ops.units.get_device_properties (
+								module_cursor	=> active_module, 
+								device_name		=> device_name, 
+								level			=> DEVICE_PROPERTIES_LEVEL_1,
+								error			=> error,
+								log_threshold	=> log_threshold + 1));
+						end if;
 						
 						-- If the device could not be located among the
 						-- electrical devices, then search
@@ -2898,8 +2904,15 @@ is
 								log_warning		=> false, 
 								log_threshold	=> log_threshold + 1);
 
-							-- CS if error is false write some basic information
-							-- in the status bar.
+							-- Write some basic information in the status bar:
+							if not error then
+								set_status (et_board_ops.devices.get_device_properties (
+									module_cursor	=> active_module,
+									device_name		=> device_name, 
+									level			=> DEVICE_PROPERTIES_LEVEL_1,
+									error			=> error,
+									log_threshold	=> log_threshold + 1));
+							end if;
 							
 							if error then
 								log (WARNING, "Device " 

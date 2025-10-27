@@ -45,6 +45,7 @@ with et_device_placeholders.packages;
 with et_device_prefix; 					use et_device_prefix;
 with et_device_name;					use et_device_name;
 with et_device_category_electrical_non_electrical;	use et_device_category_electrical_non_electrical;
+with et_device_property_level;			use et_device_property_level;
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_non_electrical;			use et_devices_non_electrical;
 
@@ -186,8 +187,13 @@ package et_board_ops.devices is
 		device	: in type_device_name) -- FD1
 		return pac_devices_non_electric.cursor;
 
+
 	
 
+
+	
+-- SHOW DEVICE:
+	
 	-- Sets the given non-electrical device as selected.
 	-- If the given device does not exist, then a warning
 	-- is written in the log and the error flag is set.
@@ -198,6 +204,25 @@ package et_board_ops.devices is
 		error			: out boolean;
 		log_warning		: in boolean := true;
 		log_threshold	: in type_log_level);
+
+
+	-- Returns properties of the given non-electrical device. 
+	-- 1. If the given device does not exist, then error is set and an empty 
+	--    string will be returned.
+	-- 2. Level determines the degree and amount of information to be returned.
+	-- 3. By default no linebreaks are inserted in the output,
+	--    so that the result is a single line.
+	-- 4. If linebreaks is true, then linebreaks are inserted.
+	--    This is useful when the output is to be displayed
+	--    in a window or if it is to be written in a file:	
+	function get_device_properties (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name;
+		level			: in type_properties_level;
+		linebreaks		: in boolean := false;
+		error			: out boolean;
+		log_threshold	: in type_log_level)
+		return string;
 
 	
 		

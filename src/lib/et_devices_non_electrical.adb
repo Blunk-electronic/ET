@@ -356,7 +356,7 @@ package body et_devices_non_electrical is
 	is
 	begin
 		-- CS
-		return "";
+		return "some dummy property test data";
 	end get_properties;
 
 	

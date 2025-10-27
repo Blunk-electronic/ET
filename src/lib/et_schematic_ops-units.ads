@@ -193,8 +193,7 @@ package et_schematic_ops.units is
 	--    not exist, then error is set and an empty string returned.
 	-- 5. By default no linebreaks are inserted in the output,
 	--    so that the result is a single line.
-	-- 6. If linebreaks is true, then linebreaks are
-	--    inserted so that more or less lines are output.
+	-- 6. If linebreaks is true, then linebreaks are inserted.
 	--    This is useful when the output is to be displayed
 	--    in a window or if it is to be written in a file:	
 	function get_device_properties (
