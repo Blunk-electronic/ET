@@ -74,6 +74,7 @@ with et_device_purpose;				use et_device_purpose;
 with et_device_partcode;			use et_device_partcode;
 with et_device_model_names;			use et_device_model_names;
 with et_device_value;				use et_device_value;
+with et_device_property_level;
 with et_board_ops.ratsnest;
 with et_board_ops.groups;
 with et_schematic_ops.groups;
@@ -2640,6 +2641,8 @@ package body et_canvas_schematic_units is
 
 		-- Shows some information in the status bar:
 		procedure finalize is
+			use et_device_property_level;
+			
 			object : type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin

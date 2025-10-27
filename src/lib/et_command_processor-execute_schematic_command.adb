@@ -79,6 +79,7 @@ with et_device_purpose;					use et_device_purpose;
 with et_device_partcode;				use et_device_partcode;
 with et_device_model_names;
 with et_device_value;					use et_device_value;
+with et_device_property_level;
 with et_package_variant;
 with et_canvas.cmd;
 
@@ -668,7 +669,8 @@ is
 	procedure show_device is
 		use et_devices_electrical;
 		use et_units;
-
+		use et_device_property_level;
+		
 		-- The degree of how much information is to be inqured:
 		properties_level : type_properties_level;
 

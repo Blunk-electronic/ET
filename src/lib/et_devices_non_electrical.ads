@@ -59,6 +59,7 @@ with et_package_model;					use et_package_model;
 with et_package_library;				use et_package_library;
 with et_package_names;					use et_package_names;
 with et_device_name;					use et_device_name;
+with et_device_property_level;			use et_device_property_level;
 with et_pcb_stack;						use et_pcb_stack;
 with et_pcb_contour;					use et_pcb_contour;
 with et_commit;
@@ -279,6 +280,18 @@ package et_devices_non_electrical is
 
 	
 
+	-- Returns properties of the given device. 
+	-- 1. Level determines the degree and amount of information to be returned.
+	-- 2. If linebreaks is true, then linebreaks are inserted.
+	--    This is useful when the output is to be displayed
+	--    in a window or if it is to be written in a file:
+	function get_properties (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		level			: in type_properties_level;
+		linebreaks		: in boolean := false)
+		return string;
+
+	
 
 
 	

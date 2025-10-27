@@ -2039,40 +2039,6 @@ package body et_devices_electrical is
 
 -- PROPERTIES QUERIES:
 	
-
-	function to_string (
-		level	: in type_properties_level)
-		return string
-	is begin
-		return type_properties_level'image (level);
-	end;
-
-
-	
-	
-	function to_properties_level (
-		level	: in string;
-		error	: out boolean)
-		return type_properties_level
-	is 
-		use ada.characters.handling;
-		s : string := to_upper (level);
-	begin
-		error := false;
-		
-		if s = "L1" then
-			return DEVICE_PROPERTIES_LEVEL_1;
-		elsif s = "L2" then
-			return DEVICE_PROPERTIES_LEVEL_2;
-		elsif s = "L3" then
-			return DEVICE_PROPERTIES_LEVEL_3;
-		else
-			error := true;
-			return DEVICE_PROPERTIES_LEVEL_1;
-		end if;
-	end;
-	
-
 	
 
 	function get_unit_properties (

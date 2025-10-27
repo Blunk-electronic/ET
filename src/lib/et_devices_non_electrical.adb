@@ -347,6 +347,21 @@ package body et_devices_non_electrical is
 
 
 
+
+	function get_properties (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		level			: in type_properties_level;
+		linebreaks		: in boolean := false)
+		return string
+	is
+	begin
+		-- CS
+		return "";
+	end get_properties;
+
+	
+
+
 	
 
 	function get_conductor_objects (

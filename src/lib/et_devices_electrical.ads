@@ -92,6 +92,7 @@ with et_device_value;					use et_device_value;
 with et_device_name;					use et_device_name;
 with et_device_partcode;				use et_device_partcode;
 with et_device_library;					use et_device_library;
+with et_device_property_level;			use et_device_property_level;
 with et_package_names;					use et_package_names;
 with et_package_variant;				use et_package_variant;
 with et_terminals;						use et_terminals;
@@ -890,35 +891,12 @@ package et_devices_electrical is
 
 -- PROPERTIES QUERIES:
 	
-	--property_level_prefix : constant string := ("DEVICE_PROPERTIES_LEVEL_");
-	
-	type type_properties_level is (
-		DEVICE_PROPERTIES_LEVEL_1, -- basic information
-		DEVICE_PROPERTIES_LEVEL_2, -- moderate information
-		DEVICE_PROPERTIES_LEVEL_3); -- much information
-
-
-	function to_string (
-		level	: in type_properties_level)
-		return string;
-
-
-	-- Maps from a string like "L1", "L2" or "L3"
-	-- to a type_properties_level (capitalzation does not matter).	
-	-- For any other string the return is DEVICE_PROPERTIES_LEVEL_1
-	-- and the error flag is set:
-	function to_properties_level (
-		level	: in string;
-		error	: out boolean)							 
-		return type_properties_level;
-
 	
 
 	-- Returns properties of the given unit.
 	-- 1. By default no linebreaks are inserted in the output,
 	--    so that the result is a single line.
-	-- 2. If linebreaks is true, then linebreaks are
-	--    inserted so that more or less lines are output.
+	-- 2. If linebreaks is true, then linebreaks are inserted.
 	--    This is useful when the output is to be displayed
 	--    in a window or if it is to be written in a file:
 	function get_unit_properties (

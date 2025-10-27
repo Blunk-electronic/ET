@@ -60,6 +60,7 @@ with et_board_ops.frame;
 with et_sheets;
 with et_drills;
 with et_modes.board;
+with et_device_property_level;
 with et_devices_electrical;
 with et_canvas_board_devices;
 with et_canvas_board_texts;
@@ -2841,6 +2842,7 @@ is
 		use et_schematic_ops.units;
 		use et_board_ops.devices;
 		use et_devices_electrical;
+		use et_device_property_level;
 		
 		-- The degree of how much information is to be inqured:
 		properties_level : type_properties_level;
