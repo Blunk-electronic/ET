@@ -2849,6 +2849,8 @@ is
 
 
 		procedure runmode_module is 
+		-- CS: Clean up. Move stuff in separate procedures.
+			
 			use et_unit_name;
 			device_name : type_device_name;
 			error : boolean := false;
