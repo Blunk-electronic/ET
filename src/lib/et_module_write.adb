@@ -1757,11 +1757,11 @@ package body et_module_write is
 			use pac_keepout_cutouts;
 			use pac_route_restrict_cutouts;
 			use pac_via_restrict_cutouts;
-			use pac_devices_non_electric;
+			use pac_devices_non_electrical;
 
 			
 			procedure query_devices_non_electric (
-				c : in pac_devices_non_electric.cursor) 
+				c : in pac_devices_non_electrical.cursor) 
 			is
 				use et_board_coordinates;
 				use et_pcb;
@@ -1772,7 +1772,7 @@ package body et_module_write is
 				
 				procedure query_placeholders (
 					device_name : in type_device_name;
-					device 		: in type_device_non_electric) 
+					device 		: in type_device_non_electrical) 
 				is
 					use et_device_placeholders;
 					use et_device_placeholders.packages;

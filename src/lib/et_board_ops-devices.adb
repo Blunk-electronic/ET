@@ -63,7 +63,7 @@ with et_mirroring;					use et_mirroring;
 package body et_board_ops.devices is
 
 	use pac_devices_sch;
-	use pac_devices_non_electric;
+	use pac_devices_non_electrical;
 	use pac_nets;
 
 
@@ -435,7 +435,7 @@ package body et_board_ops.devices is
 			module		: in out type_generic_module) 
 		is
 			device_electric		: pac_devices_sch.cursor;
-			device_non_electric	: pac_devices_non_electric.cursor;			
+			device_non_electric	: pac_devices_non_electrical.cursor;			
 
 			
 			procedure set_position ( -- of an electric device
@@ -457,7 +457,7 @@ package body et_board_ops.devices is
 			
 			procedure set_position ( -- of a non-electric device
 				device_name	: in type_device_name;
-				device		: in out type_device_non_electric) 
+				device		: in out type_device_non_electrical) 
 			is begin
 				case coordinates is
 					when ABSOLUTE =>
@@ -545,7 +545,7 @@ package body et_board_ops.devices is
 			module		: in out type_generic_module) 
 		is
 			device_electric		: pac_devices_sch.cursor;
-			device_non_electric	: pac_devices_non_electric.cursor;			
+			device_non_electric	: pac_devices_non_electrical.cursor;			
 
 			procedure set_rotation ( -- of an electric device
 				device_name	: in type_device_name;
@@ -563,7 +563,7 @@ package body et_board_ops.devices is
 			
 			procedure set_rotation ( -- of a non-electric device
 				device_name	: in type_device_name;
-				device		: in out type_device_non_electric) 
+				device		: in out type_device_non_electrical) 
 			is begin
 				case coordinates is
 					when ABSOLUTE =>
@@ -649,7 +649,7 @@ package body et_board_ops.devices is
 			module		: in out type_generic_module) 
 		is
 			device_electric		: pac_devices_sch.cursor;
-			device_non_electric	: pac_devices_non_electric.cursor;			
+			device_non_electric	: pac_devices_non_electrical.cursor;			
 
 			
 			procedure flip ( -- electric device
@@ -678,7 +678,7 @@ package body et_board_ops.devices is
 			
 			procedure flip ( -- non-electric device
 				device_name	: in type_device_name;
-				device		: in out type_device_non_electric) 
+				device		: in out type_device_non_electrical) 
 			is				
 				-- face_before : constant type_face := get_face (device.position);
 			begin
@@ -762,18 +762,18 @@ package body et_board_ops.devices is
 		module			: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
-		return pac_devices_non_electric.map
+		return pac_devices_non_electrical.map
 	is
-		result : pac_devices_non_electric.map;
+		result : pac_devices_non_electrical.map;
 
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			device_cursor : pac_devices_non_electric.cursor := module.devices_non_electric.first;
+			device_cursor : pac_devices_non_electrical.cursor := module.devices_non_electric.first;
 		begin
-			while device_cursor /= pac_devices_non_electric.no_element loop
+			while device_cursor /= pac_devices_non_electrical.no_element loop
 
 				log (text => "probing device " & to_string (key (device_cursor)),
 					 level => log_threshold + 1);
@@ -821,9 +821,9 @@ package body et_board_ops.devices is
 	function get_non_electrical_device (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- FD1
-		return pac_devices_non_electric.cursor
+		return pac_devices_non_electrical.cursor
 	is
-		result : pac_devices_non_electric.cursor;
+		result : pac_devices_non_electrical.cursor;
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
@@ -853,7 +853,7 @@ package body et_board_ops.devices is
 		log_warning		: in boolean := true;
 		log_threshold	: in type_log_level)
 	is
-		device_cursor : pac_devices_non_electric.cursor;
+		device_cursor : pac_devices_non_electrical.cursor;
 
 
 		procedure query_module (
@@ -863,7 +863,7 @@ package body et_board_ops.devices is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_non_electric) 
+				device		: in out type_device_non_electrical) 
 			is begin
 				set_selected (device);
 			end query_device;
@@ -919,7 +919,7 @@ package body et_board_ops.devices is
 		log_threshold	: in type_log_level)
 		return string
 	is
-		device_cursor : pac_devices_non_electric.cursor;
+		device_cursor : pac_devices_non_electrical.cursor;
 
 
 		use ada.strings.unbounded;
@@ -969,7 +969,7 @@ package body et_board_ops.devices is
 	
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
@@ -981,7 +981,7 @@ package body et_board_ops.devices is
 			
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_non_electric)
+				device		: in out type_device_non_electrical)
 			is begin
 				modify_status (device.status, operation);
 			end query_device;
@@ -1026,7 +1026,7 @@ package body et_board_ops.devices is
 			
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_non_electric)
+				device		: in out type_device_non_electrical)
 			is begin
 				modify_status (device, operation);
 			end query_device;
@@ -1072,7 +1072,7 @@ package body et_board_ops.devices is
 			
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_non_electric)
+				device		: in out type_device_non_electrical)
 			is begin
 				log (text => to_string (device_name), level => log_threshold + 1);
 				set_proposed (device.status);
@@ -1080,10 +1080,10 @@ package body et_board_ops.devices is
 			end query_device;
 
 			
-			device_cursor : pac_devices_non_electric.cursor := module.devices_non_electric.first;
+			device_cursor : pac_devices_non_electrical.cursor := module.devices_non_electric.first;
 			
 		begin
-			while device_cursor /= pac_devices_non_electric.no_element loop
+			while device_cursor /= pac_devices_non_electrical.no_element loop
 
 				-- log (text => "probing device " & to_string (key (device_cursor)),
 				-- 	 level => log_threshold + 1);
@@ -1137,16 +1137,16 @@ package body et_board_ops.devices is
 			
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_non_electric)
+				device		: in out type_device_non_electrical)
 			is begin
 				log (text => to_string (device_name), level => log_threshold + 1);
 				reset_status (device);
 			end query_device;
 
 			
-			device_cursor : pac_devices_non_electric.cursor := module.devices_non_electric.first;
+			device_cursor : pac_devices_non_electrical.cursor := module.devices_non_electric.first;
 		begin
-			while device_cursor /= pac_devices_non_electric.no_element loop
+			while device_cursor /= pac_devices_non_electrical.no_element loop
 					
 				-- log (text => "probing device " & to_string (key (device_cursor)),
 				-- 	 level => log_threshold + 1);
@@ -1183,18 +1183,18 @@ package body et_board_ops.devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
-		return pac_devices_non_electric.cursor
+		return pac_devices_non_electrical.cursor
 	is
-		result : pac_devices_non_electric.cursor;
+		result : pac_devices_non_electrical.cursor;
 
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			device_cursor : pac_devices_non_electric.cursor := module.devices_non_electric.first;
+			device_cursor : pac_devices_non_electrical.cursor := module.devices_non_electric.first;
 		begin
-			while device_cursor /= pac_devices_non_electric.no_element loop
+			while device_cursor /= pac_devices_non_electrical.no_element loop
 				case flag is
 					when PROPOSED =>
 						if is_proposed (device_cursor) then
@@ -1250,9 +1250,9 @@ package body et_board_ops.devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			device_cursor : pac_devices_non_electric.cursor := module.devices_non_electric.first;
+			device_cursor : pac_devices_non_electrical.cursor := module.devices_non_electric.first;
 		begin
-			while device_cursor /= pac_devices_non_electric.no_element loop
+			while device_cursor /= pac_devices_non_electrical.no_element loop
 				case flag is
 					when PROPOSED =>
 						if is_proposed (device_cursor) then
@@ -1295,7 +1295,7 @@ package body et_board_ops.devices is
 	
 	procedure next_proposed_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in out pac_devices_non_electric.cursor;							
+		device_cursor	: in out pac_devices_non_electrical.cursor;							
 		log_threshold	: in type_log_level)
 	is
 
@@ -1303,7 +1303,7 @@ package body et_board_ops.devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			dc : pac_devices_non_electric.cursor := device_cursor;
+			dc : pac_devices_non_electrical.cursor := device_cursor;
 
 			subtype type_safety_counter is natural range 0 .. natural (module.devices_non_electric.length);
 			safety_counter : type_safety_counter := 0;
@@ -1396,7 +1396,7 @@ package body et_board_ops.devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			device_cursor : pac_devices_non_electric.cursor;
+			device_cursor : pac_devices_non_electrical.cursor;
 			inserted : boolean;
 
 			-- build the next available device name:
@@ -1406,7 +1406,7 @@ package body et_board_ops.devices is
 			log_indentation_up;
 
 			-- add the device to the collection of non-electic devices:
-			pac_devices_non_electric.insert (
+			pac_devices_non_electrical.insert (
 				container	=> module.devices_non_electric,
 				inserted	=> inserted,
 				position	=> device_cursor,
@@ -1508,7 +1508,7 @@ package body et_board_ops.devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			device_before, device_after : pac_devices_non_electric.cursor;
+			device_before, device_after : pac_devices_non_electrical.cursor;
 
 			inserted : boolean;
 		begin
@@ -1519,7 +1519,7 @@ package body et_board_ops.devices is
 				device_before := find (module.devices_non_electric, device_name_before); -- FD1
 				
 				-- copy elements and properties of the old device to a new one:
-				pac_devices_non_electric.insert (
+				pac_devices_non_electrical.insert (
 					container	=> module.devices_non_electric,
 					key			=> device_name_after, -- FD3
 					new_item	=> element (device_before), -- all elements and properties of FD1
@@ -1589,7 +1589,7 @@ package body et_board_ops.devices is
 		result_electrical 	 	: type_object_electrical;
 		result_non_electrical	: type_object_non_electrical;
 
-		use pac_devices_non_electric;
+		use pac_devices_non_electrical;
 		use pac_devices_sch;
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -1624,7 +1624,7 @@ package body et_board_ops.devices is
 		result_non_electrical := 
 			get_first_non_electrical_device (module_cursor, flag, log_threshold + 1);
 
-		if result_non_electrical.cursor /= pac_devices_non_electric.no_element then
+		if result_non_electrical.cursor /= pac_devices_non_electrical.no_element then
 			-- A device has been found.
 			log (text => get_device_name (result_non_electrical.cursor),
 				 level => log_threshold + 1);
@@ -1677,8 +1677,8 @@ package body et_board_ops.devices is
 			use pac_devices_sch;
 			cursor_electrical : pac_devices_sch.cursor;
 			
-			use pac_devices_non_electric;
-			cursor_non_electrical : pac_devices_non_electric.cursor;
+			use pac_devices_non_electrical;
+			cursor_non_electrical : pac_devices_non_electrical.cursor;
 			
 
 			-- This procedure collects electrical devices
@@ -1718,7 +1718,7 @@ package body et_board_ops.devices is
 			-- according to the given flag:
 			procedure query_non_electrical_device (
 				name	: in type_device_name;
-				device	: in type_device_non_electric) 
+				device	: in type_device_non_electrical) 
 			is 
 
 				procedure collect is begin
@@ -1766,7 +1766,7 @@ package body et_board_ops.devices is
 
 			-- Iterate the non-electrical devices of the module:
 			cursor_non_electrical := module.devices_non_electric.first;
-			while cursor_non_electrical /= pac_devices_non_electric.no_element loop
+			while cursor_non_electrical /= pac_devices_non_electrical.no_element loop
 				query_element (cursor_non_electrical, query_non_electrical_device'access);
 				next (cursor_non_electrical);
 			end loop;

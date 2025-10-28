@@ -177,7 +177,7 @@ package et_board_ops.devices is
 		module			: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
-		return pac_devices_non_electric.map;
+		return pac_devices_non_electrical.map;
 
 
 	-- Returns the cursor to the given non-electrical device
@@ -186,7 +186,7 @@ package et_board_ops.devices is
 	function get_non_electrical_device (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- FD1
-		return pac_devices_non_electric.cursor;
+		return pac_devices_non_electrical.cursor;
 
 
 	
@@ -230,14 +230,14 @@ package et_board_ops.devices is
 	-- Modifies that status flag of a device (see package et_object_status):
 	procedure modify_status ( -- CS remove
 		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
 
 	
 	type type_object_non_electrical is record
-		cursor : pac_devices_non_electric.cursor;
+		cursor : pac_devices_non_electrical.cursor;
 	end record;
 
 
@@ -273,7 +273,7 @@ package et_board_ops.devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
-		return pac_devices_non_electric.cursor;
+		return pac_devices_non_electrical.cursor;
 
 
 	-- Returns the first device according to the given flag.
@@ -293,7 +293,7 @@ package et_board_ops.devices is
 	-- is unchanged. 
 	procedure next_proposed_non_electrical_device ( -- CS remove
 		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in out pac_devices_non_electric.cursor;							
+		device_cursor	: in out pac_devices_non_electrical.cursor;							
 		log_threshold	: in type_log_level);
 
 

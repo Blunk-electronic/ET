@@ -109,8 +109,7 @@ package et_devices_non_electrical is
 	-- Despite not having a counterpart in the schematic, these devices
 	-- are modelled via package models:
 	
-	type type_device_non_electric is record
-	-- CS rename to type_device_non_electrical
+	type type_device_non_electrical is record
 		position			: et_board_coordinates.type_package_position; -- incl. rotation and face
 		text_placeholders	: type_text_placeholders;
 		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
@@ -133,35 +132,95 @@ package et_devices_non_electrical is
 	-- Returns the name of the package model file
 	-- like "../lbr/packages/fiducial.pac"
 	function get_package_model_name (
-		device	: in type_device_non_electric)
+		device	: in type_device_non_electrical)
 		return pac_package_model_file_name.bounded_string;
 
 
 
-	-- CS
-	-- procedure set_value (
-	-- 	device	: in out type_device_non_electric;
-	-- 	value	: in pac_device_value.bounded_string);
-
-	-- function get_value (
-	-- 	device	: in type_device_non_electric)
-	-- 	return pac_device_value.bounded_string;
-
-	-- likewise for partcode and purpose
+-- POSITION:
 
 	-- CS set_position, get_position
+
+
+	
+	
+	
+
+-- VALUE:
+	
+	procedure set_value (
+		device	: in out type_device_non_electrical;
+		value	: in pac_device_value.bounded_string);
+
+	
+	function get_value (
+		device	: in type_device_non_electrical)
+		return pac_device_value.bounded_string;
+
+	
+	function get_value (
+		device	: in type_device_non_electrical)
+		return string;
+
+
+	
+
+-- PARTCODE:
+
+	procedure set_partcode (
+		device		: in out type_device_non_electrical;
+		partcode	: in pac_device_partcode.bounded_string);
+
+	
+	function get_partcode (
+		device	: in type_device_non_electrical)
+		return pac_device_partcode.bounded_string;
+
+	
+	function get_partcode (
+		device	: in type_device_non_electrical)
+		return string;
+
+
+	
+
+
+-- PURPOSE:
+	
+	procedure set_purpose (
+		device	: in out type_device_non_electrical;
+		purpose	: in pac_device_purpose.bounded_string);
+
+	
+	function get_purpose (
+		device	: in type_device_non_electrical)
+		return pac_device_purpose.bounded_string;
+
+	
+	function get_purpose (
+		device	: in type_device_non_electrical)
+		return string;
+
+
+
+	
+
+
+
+
+-- STATUS:
 	
 	
 	procedure set_proposed (
-		device : in out type_device_non_electric);
+		device : in out type_device_non_electrical);
 
 
 	procedure clear_proposed (
-		device : in out type_device_non_electric);
+		device : in out type_device_non_electrical);
 
 
 	function is_proposed (
-		device : in type_device_non_electric)
+		device : in type_device_non_electrical)
 		return boolean;
 
 
@@ -169,30 +228,30 @@ package et_devices_non_electrical is
 
 	
 	procedure set_selected (
-		device : in out type_device_non_electric);
+		device : in out type_device_non_electrical);
 
 	
 	procedure clear_selected (
-		device : in out type_device_non_electric);
+		device : in out type_device_non_electrical);
 
 	
 	function is_selected (
-		device : in type_device_non_electric)
+		device : in type_device_non_electrical)
 		return boolean;
 
 
 	
 
 	procedure set_moving (
-		device : in out type_device_non_electric);
+		device : in out type_device_non_electrical);
 
 
 	procedure clear_moving (
-		device : in out type_device_non_electric);
+		device : in out type_device_non_electrical);
 
 	
 	function is_moving (
-		device : in type_device_non_electric)
+		device : in type_device_non_electrical)
 		return boolean;
 
 
@@ -200,51 +259,50 @@ package et_devices_non_electrical is
 
 	
 	procedure set_locked (
-		device : in out type_device_non_electric);
+		device : in out type_device_non_electrical);
 
 
 	procedure clear_locked (
-		device : in out type_device_non_electric);
+		device : in out type_device_non_electrical);
 
 	
 	function is_locked (
-		device : in type_device_non_electric)
+		device : in type_device_non_electrical)
 		return boolean;
 
 
 
 	procedure modify_status (
-		device		: in out type_device_non_electric;
+		device		: in out type_device_non_electrical;
 		operation	: in type_status_operation);
 
 
 
 	procedure reset_status (
-	   device : in out type_device_non_electric);
+	   device : in out type_device_non_electrical);
 
 	
 	
 	-- CS: this should be a hashed map:
-	package pac_devices_non_electric is new ordered_maps ( 
-	-- CS rename to pac_devices_non_electrical
+	package pac_devices_non_electrical is new ordered_maps ( 
 		key_type		=> type_device_name, -- H1, FD2, ...
-		element_type	=> type_device_non_electric);
+		element_type	=> type_device_non_electrical);
 
-	use pac_devices_non_electric;
+	use pac_devices_non_electrical;
 	
 
 	
 	-- Iterates the non-electric devices. 
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
-		devices	: in pac_devices_non_electric.map;
-		process	: not null access procedure (position : in pac_devices_non_electric.cursor);
+		devices	: in pac_devices_non_electrical.map;
+		process	: not null access procedure (position : in pac_devices_non_electrical.cursor);
 		proceed	: not null access boolean);
 
 	
 
 	function get_device_name (
-		device : in pac_devices_non_electric.cursor)
+		device : in pac_devices_non_electrical.cursor)
 		return type_device_name;
 
 	
@@ -252,7 +310,7 @@ package et_devices_non_electrical is
 	-- Returns the name of the non-electical device
 	-- as string:
 	function get_device_name (
-		device : in pac_devices_non_electric.cursor)
+		device : in pac_devices_non_electrical.cursor)
 		return string;
 	
 
@@ -260,7 +318,7 @@ package et_devices_non_electrical is
 	-- Returns the name of the package model file
 	-- like "../lbr/packages/fiducial.pac"
 	function get_package_model_name (
-		device_cursor : in pac_devices_non_electric.cursor)
+		device_cursor : in pac_devices_non_electrical.cursor)
 		return pac_package_model_file_name.bounded_string;
 
 	
@@ -269,29 +327,29 @@ package et_devices_non_electrical is
 	-- a real package with a height, means if it is relevant 
 	-- for creating bill of materials (BOM):
 	function is_bom_relevant (
-		device_cursor : in pac_devices_non_electric.cursor)
+		device_cursor : in pac_devices_non_electrical.cursor)
 		return boolean;
 
 
 	
 	
 	function is_proposed (
-		device : in pac_devices_non_electric.cursor)
+		device : in pac_devices_non_electrical.cursor)
 		return boolean;
 	
 
 	function is_selected (
-		device : in pac_devices_non_electric.cursor)
+		device : in pac_devices_non_electrical.cursor)
 		return boolean;
 
 
 	function is_moving (
-		device : in pac_devices_non_electric.cursor)
+		device : in pac_devices_non_electrical.cursor)
 		return boolean;
 	
 
 	function is_locked (
-		device : in pac_devices_non_electric.cursor)
+		device : in pac_devices_non_electrical.cursor)
 		return boolean;
 
 
@@ -301,7 +359,7 @@ package et_devices_non_electrical is
 	-- Maps from a given cursor of a non-electrical device
 	-- to a cursor to the package model:
 	function get_package_model (
-		device_cursor	: in pac_devices_non_electric.cursor)
+		device_cursor	: in pac_devices_non_electrical.cursor)
 		return pac_package_models.cursor;
 
 	
@@ -309,7 +367,7 @@ package et_devices_non_electrical is
 	-- Returns the current position (x/y/rotation/face) of the 
 	-- given non-electrical device:
 	function get_position (
-		device_cursor	: in pac_devices_non_electric.cursor) -- FD1
+		device_cursor	: in pac_devices_non_electrical.cursor) -- FD1
 		return type_package_position;
 
 
@@ -317,14 +375,14 @@ package et_devices_non_electrical is
 	-- Returns the current position (x/y) of the 
 	-- given non-electrical device:
 	function get_position (
-		device_cursor	: in pac_devices_non_electric.cursor) -- FD1
+		device_cursor	: in pac_devices_non_electrical.cursor) -- FD1
 		return type_vector_model;
 
 
 
 	-- Returns the current face of the given non-electrical device:
 	function get_face (
-		device_cursor	: in pac_devices_non_electric.cursor) -- FD1
+		device_cursor	: in pac_devices_non_electrical.cursor) -- FD1
 		return type_face; -- top/bottom
 
 	
@@ -341,7 +399,7 @@ package et_devices_non_electrical is
 	--    This is useful when the output is to be displayed
 	--    in a window or if it is to be written in a file:
 	function get_device_properties (
-		device		: in type_device_non_electric;
+		device		: in type_device_non_electrical;
 		level		: in type_properties_level;
 		linebreaks	: in boolean := false)
 		return string;
@@ -353,7 +411,7 @@ package et_devices_non_electrical is
 	--    This is useful when the output is to be displayed
 	--    in a window or if it is to be written in a file:
 	function get_properties (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		level			: in type_properties_level;
 		linebreaks		: in boolean := false)
 		return string;
@@ -366,7 +424,7 @@ package et_devices_non_electrical is
 	-- (according to its flip status, position and rotation in the board) 
 	-- Adresses only those objects affected by the given face:
 	function get_conductor_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		layer_category	: in type_signal_layer_category)
 		return type_conductor_objects;
 
@@ -382,7 +440,7 @@ package et_devices_non_electrical is
 	-- Adresses only those objects which are affected by
 	-- the given layer category:
 	function get_conductor_polygons (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		layer_category	: in type_signal_layer_category) -- outer top, inner, outer bottom 
 		return pac_polygon_list.list;
 
@@ -394,7 +452,7 @@ package et_devices_non_electrical is
 	-- (according to its flip status, position and rotation in the board) 
 	-- Adresses only those objects affected by the given face:	
 	function get_route_restrict_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		layer_category	: in type_signal_layer_category)
 		return et_route_restrict.packages.type_one_side;
 
@@ -409,7 +467,7 @@ package et_devices_non_electrical is
 	-- Adresses only those objects which are affected by
 	-- the given layer category:
 	function get_route_restrict_polygons (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		layer_category	: in type_signal_layer_category)
 		return pac_polygon_list.list;
 
@@ -420,7 +478,7 @@ package et_devices_non_electrical is
 	-- (according to its flip status, position and rotation in the board) 
 	-- Adresses only those objects affected by the given face:	
 	function get_via_restrict_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		layer_category	: in type_signal_layer_category)
 		return et_via_restrict.packages.type_one_side;
 
@@ -431,7 +489,7 @@ package et_devices_non_electrical is
 	-- (according to its flip status, position and rotation in the board) 
 	-- Adresses only those objects affected by the given face:
 	function get_keepout_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		face			: in type_face)
 		return type_keepout;
 
@@ -442,7 +500,7 @@ package et_devices_non_electrical is
 	-- (according to its flip status, position and rotation in the board) 
 	-- Adresses only those objects affected by the given face:
 	function get_stencil_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		face			: in type_face)
 		return type_stencil;
 
@@ -452,7 +510,7 @@ package et_devices_non_electrical is
 	-- (according to its flip status, position and rotation in the board) 
 	-- Adresses only those objects affected by the given face:
 	function get_stopmask_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		face			: in type_face)
 		return type_stopmask;
 
@@ -460,7 +518,7 @@ package et_devices_non_electrical is
 
 	-- Maps from meaning of given placeholder to a text content:
 	function to_placeholder_content (
-		device_cursor	: in pac_devices_non_electric.cursor; -- non-electrical device
+		device_cursor	: in pac_devices_non_electrical.cursor; -- non-electrical device
 		placeholder		: in type_placeholder)
 		return et_text.pac_text_content.bounded_string;
 
@@ -479,7 +537,7 @@ package et_devices_non_electrical is
 	-- This behaviour would be similar to the "smash"-function implemented
 	-- in other CAE systems:
 	function get_silkscreen_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		face			: in type_face)
 		return type_silkscreen;
 	
@@ -497,7 +555,7 @@ package et_devices_non_electrical is
 	-- This behaviour would be similar to the "smash"-function implemented
 	-- in other CAE systems:
 	function get_assy_doc_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		face			: in type_face)
 		return type_assy_doc;
 
@@ -509,7 +567,7 @@ package et_devices_non_electrical is
 	-- Returns the outlines of holes of the non-electrical device
 	-- (according to its position and rotation in the board):
 	function get_holes (
-		device_cursor	: in pac_devices_non_electric.cursor)
+		device_cursor	: in pac_devices_non_electrical.cursor)
 		return pac_holes.list;
 
 	
@@ -517,7 +575,7 @@ package et_devices_non_electrical is
 	-- (according to its position and rotation in the board) as
 	-- a list of polygon:
 	function get_hole_polygons (
-		device_cursor	: in pac_devices_non_electric.cursor)
+		device_cursor	: in pac_devices_non_electrical.cursor)
 		return pac_polygon_list.list;
 
 
@@ -528,7 +586,7 @@ package et_devices_non_electrical is
 	-- COMMITS OF NON-ELECTRICAL DEVICES (required for undo/redo operations via the GUI):
 	use et_commit;
 	
-	package pac_non_electrical_device_commit is new pac_commit (pac_devices_non_electric.map);
+	package pac_non_electrical_device_commit is new pac_commit (pac_devices_non_electrical.map);
 	use pac_non_electrical_device_commit;
 	
 	package pac_non_electrical_device_commits is new doubly_linked_lists (

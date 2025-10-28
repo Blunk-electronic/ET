@@ -80,31 +80,122 @@ package body et_devices_non_electrical is
 
 
 	function get_package_model_name (
-		device	: in type_device_non_electric)
+		device	: in type_device_non_electrical)
 		return pac_package_model_file_name.bounded_string
 	is begin
 		return device.package_model;
 	end;
 
+
+
+	
+-- VALUE:
+
+	procedure set_value (
+		device	: in out type_device_non_electrical;
+		value	: in pac_device_value.bounded_string)
+	is begin
+		device.value := value;
+	end;
+
+
+	function get_value (
+		device	: in type_device_non_electrical)
+		return pac_device_value.bounded_string
+	is begin
+		return device.value;
+	end;
+
+
+	function get_value (
+		device	: in type_device_non_electrical)
+		return string
+	is begin
+		return to_string (get_value (device));
+	end;
+
+
 	
 
+-- PARTCODE:
+
+	procedure set_partcode (
+		device		: in out type_device_non_electrical;
+		partcode	: in pac_device_partcode.bounded_string)
+	is begin
+		device.partcode := partcode;
+	end;
+
+
+	function get_partcode (
+		device	: in type_device_non_electrical)
+		return pac_device_partcode.bounded_string
+	is begin
+		return device.partcode;
+	end;
+
+
+	function get_partcode (
+		device	: in type_device_non_electrical)
+		return string
+	is begin
+		return to_string (get_partcode (device));
+	end;
+
+
+
+
+	
+
+-- PURPOSE:
+
+	procedure set_purpose (
+		device	: in out type_device_non_electrical;
+		purpose	: in pac_device_purpose.bounded_string)
+	is begin
+		device.purpose := purpose;
+	end;
+
+
+	function get_purpose (
+		device	: in type_device_non_electrical)
+		return pac_device_purpose.bounded_string
+	is begin
+		return device.purpose;
+	end;
+
+
+	function get_purpose (
+		device	: in type_device_non_electrical)
+		return string
+	is begin
+		return to_string (get_purpose (device));
+	end;
+
+
+
+
+
+	
+-- STATUS:
+	
 
 	procedure set_proposed (
-		device : in out type_device_non_electric)
+		device : in out type_device_non_electrical)
 	is begin
 		set_proposed (device.status);
 	end;
 
 	
 	procedure clear_proposed (
-		device : in out type_device_non_electric)
+		device : in out type_device_non_electrical)
 	is begin
 		clear_proposed (device.status);
 	end;
 
 	
 	function is_proposed (
-		device : in type_device_non_electric)
+		device : in type_device_non_electrical)
 		return boolean
 	is begin
 		if is_proposed (device.status) then
@@ -118,21 +209,21 @@ package body et_devices_non_electrical is
 	
 
 	procedure set_selected (
-		device : in out type_device_non_electric)
+		device : in out type_device_non_electrical)
 	is begin
 		set_selected (device.status);
 	end;
 
 	
 	procedure clear_selected (
-		device : in out type_device_non_electric)
+		device : in out type_device_non_electrical)
 	is begin
 		clear_selected (device.status);
 	end;
 	
 	
 	function is_selected (
-		device : in type_device_non_electric)
+		device : in type_device_non_electrical)
 		return boolean
 	is begin
 		if is_selected (device.status) then
@@ -146,21 +237,21 @@ package body et_devices_non_electrical is
 
 
 	procedure set_moving (
-		device : in out type_device_non_electric)
+		device : in out type_device_non_electrical)
 	is begin
 		set_moving (device.status);
 	end;
 
 	
 	procedure clear_moving (
-		device : in out type_device_non_electric)
+		device : in out type_device_non_electrical)
 	is begin
 		clear_moving (device.status);
 	end;
 
 	
 	function is_moving (
-		device : in type_device_non_electric)
+		device : in type_device_non_electrical)
 		return boolean
 	is begin
 		if is_moving (device.status) then
@@ -174,21 +265,21 @@ package body et_devices_non_electrical is
 
 
 	procedure set_locked (
-		device : in out type_device_non_electric)
+		device : in out type_device_non_electrical)
 	is begin
 		set_locked (device.status);
 	end;
 
 	
 	procedure clear_locked (
-		device : in out type_device_non_electric)
+		device : in out type_device_non_electrical)
 	is begin
 		clear_locked (device.status);
 	end;
 
 	
 	function is_locked (
-		device : in type_device_non_electric)
+		device : in type_device_non_electrical)
 		return boolean
 	is begin
 		if is_locked (device.status) then
@@ -204,7 +295,7 @@ package body et_devices_non_electrical is
 
 
 	procedure modify_status (
-		device		: in out type_device_non_electric;
+		device		: in out type_device_non_electrical;
 		operation	: in type_status_operation)						
 	is begin
 		modify_status (device.status, operation);
@@ -214,7 +305,7 @@ package body et_devices_non_electrical is
 
 
 	procedure reset_status (
-		device : in out type_device_non_electric)
+		device : in out type_device_non_electrical)
 	is begin
 		reset_status (device.status);
 	end;
@@ -224,12 +315,12 @@ package body et_devices_non_electrical is
 
 	
 	procedure iterate (
-		devices	: in pac_devices_non_electric.map;
-		process	: not null access procedure (position : in pac_devices_non_electric.cursor);
+		devices	: in pac_devices_non_electrical.map;
+		process	: not null access procedure (position : in pac_devices_non_electrical.cursor);
 		proceed	: not null access boolean)
 	is
-		use pac_devices_non_electric;
-		c : pac_devices_non_electric.cursor := devices.first;
+		use pac_devices_non_electrical;
+		c : pac_devices_non_electrical.cursor := devices.first;
 	begin
 		while c /= no_element and proceed.all = TRUE loop
 			process (c);
@@ -240,7 +331,7 @@ package body et_devices_non_electrical is
 
 	
 	function get_device_name (
-		device : in pac_devices_non_electric.cursor)
+		device : in pac_devices_non_electrical.cursor)
 		return type_device_name
 	is begin
 		return key (device);
@@ -250,7 +341,7 @@ package body et_devices_non_electrical is
 	
 	
 	function get_device_name (
-		device : in pac_devices_non_electric.cursor)
+		device : in pac_devices_non_electrical.cursor)
 		return string
 	is begin
 		return to_string (key (device));
@@ -260,10 +351,10 @@ package body et_devices_non_electrical is
 
 
 	function get_package_model_name (
-		device_cursor : in pac_devices_non_electric.cursor)
+		device_cursor : in pac_devices_non_electrical.cursor)
 		return pac_package_model_file_name.bounded_string
 	is 
-		device : type_device_non_electric renames element (device_cursor);
+		device : type_device_non_electrical renames element (device_cursor);
 	begin
 		return get_package_model_name (device);
 	end;
@@ -272,7 +363,7 @@ package body et_devices_non_electrical is
 	
 
 	function is_bom_relevant (
-		device_cursor : in pac_devices_non_electric.cursor)
+		device_cursor : in pac_devices_non_electrical.cursor)
 		return boolean
 	is 
 		package_model : pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
@@ -287,7 +378,7 @@ package body et_devices_non_electrical is
 	
 
 	function is_proposed (
-		device : in pac_devices_non_electric.cursor)
+		device : in pac_devices_non_electrical.cursor)
 		return boolean
 	is begin
 		if is_proposed (element (device)) then
@@ -300,7 +391,7 @@ package body et_devices_non_electrical is
 	
 
 	function is_selected (
-		device : in pac_devices_non_electric.cursor)
+		device : in pac_devices_non_electrical.cursor)
 		return boolean
 	is begin
 		if is_selected (element (device)) then
@@ -313,7 +404,7 @@ package body et_devices_non_electrical is
 
 	
 	function is_moving (
-		device : in pac_devices_non_electric.cursor)
+		device : in pac_devices_non_electrical.cursor)
 		return boolean
 	is begin
 		if is_moving (element (device)) then
@@ -325,7 +416,7 @@ package body et_devices_non_electrical is
 	
 
 	function is_locked (
-		device : in pac_devices_non_electric.cursor)
+		device : in pac_devices_non_electrical.cursor)
 		return boolean		
 	is begin
 		if is_locked (element (device)) then
@@ -339,7 +430,7 @@ package body et_devices_non_electrical is
 
 
 	function get_package_model (
-		device_cursor	: in pac_devices_non_electric.cursor)
+		device_cursor	: in pac_devices_non_electrical.cursor)
 		return pac_package_models.cursor
 	is 
 		result : pac_package_models.cursor;
@@ -353,7 +444,7 @@ package body et_devices_non_electrical is
 
 
 	function get_position (
-		device_cursor	: in pac_devices_non_electric.cursor) -- FD1
+		device_cursor	: in pac_devices_non_electrical.cursor) -- FD1
 		return type_package_position
 	is begin
 		return element (device_cursor).position;
@@ -363,7 +454,7 @@ package body et_devices_non_electrical is
 	
 
 	function get_position (
-		device_cursor	: in pac_devices_non_electric.cursor) -- FD1
+		device_cursor	: in pac_devices_non_electrical.cursor) -- FD1
 		return type_vector_model
 	is begin
 		return get_position (device_cursor).place;
@@ -373,7 +464,7 @@ package body et_devices_non_electrical is
 
 	
 	function get_face (
-		device_cursor	: in pac_devices_non_electric.cursor)
+		device_cursor	: in pac_devices_non_electrical.cursor)
 		return type_face
 	is 
 		position : type_package_position;
@@ -389,7 +480,7 @@ package body et_devices_non_electrical is
 
 
 	function get_device_properties (
-		device		: in type_device_non_electric;
+		device		: in type_device_non_electrical;
 		level		: in type_properties_level;
 		linebreaks	: in boolean := false)
 		return string
@@ -463,7 +554,7 @@ package body et_devices_non_electrical is
 	
 
 	function get_properties (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		level			: in type_properties_level;
 		linebreaks		: in boolean := false)
 		return string
@@ -471,7 +562,7 @@ package body et_devices_non_electrical is
 		use ada.strings.unbounded;
 		units_info : unbounded_string;
 
-		device : type_device_non_electric renames element (device_cursor);
+		device : type_device_non_electrical renames element (device_cursor);
 
 
 		-- If linebreaks are requested by the caller, then
@@ -504,13 +595,13 @@ package body et_devices_non_electrical is
 	
 
 	function get_conductor_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		layer_category	: in type_signal_layer_category)
 		return type_conductor_objects
 	is
 		conductors : type_conductor_objects; -- to be returned
 		
-		device : type_device_non_electric renames element (device_cursor);
+		device : type_device_non_electrical renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 		
 		offset : constant type_vector_model := device.position.place;
@@ -540,13 +631,13 @@ package body et_devices_non_electrical is
 
 
 	function get_conductor_polygons (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		layer_category	: in type_signal_layer_category)
 		return pac_polygon_list.list
 	is
 		result : pac_polygon_list.list;
 		
-		device : type_device_non_electric renames element (device_cursor);
+		device : type_device_non_electrical renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 		
 		offset : constant type_vector_model := device.position.place;
@@ -609,13 +700,13 @@ package body et_devices_non_electrical is
 	
 
 	function get_route_restrict_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		layer_category	: in type_signal_layer_category)
 		return et_route_restrict.packages.type_one_side
 	is
 		use et_route_restrict.packages;
 		restrict : type_one_side; -- to be returned
-		device : type_device_non_electric renames element (device_cursor);
+		device : type_device_non_electrical renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
 		rotation : type_rotation_model renames device.position.rotation;
@@ -643,13 +734,13 @@ package body et_devices_non_electrical is
 	
 	
 	function get_route_restrict_polygons (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		layer_category	: in type_signal_layer_category)
 		return pac_polygon_list.list
 	is
 		result : pac_polygon_list.list;
 		
-		device : type_device_non_electric renames element (device_cursor);
+		device : type_device_non_electrical renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 		
 		use et_route_restrict.packages;
@@ -680,14 +771,14 @@ package body et_devices_non_electrical is
 
 
 	function get_via_restrict_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		layer_category	: in type_signal_layer_category)
 		return et_via_restrict.packages.type_one_side
 	is
 		use et_via_restrict.packages;		
 		restrict : type_one_side; -- to be returned
 		
-		device : type_device_non_electric renames element (device_cursor);
+		device : type_device_non_electrical renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
 		rotation : type_rotation_model renames device.position.rotation;
@@ -715,13 +806,13 @@ package body et_devices_non_electrical is
 
 
 	function get_keepout_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		face			: in type_face)
 		return type_keepout
 	is
 		result : type_keepout;
 
-		device : type_device_non_electric renames element (device_cursor);
+		device : type_device_non_electrical renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
 		rotation : type_rotation_model renames device.position.rotation;
@@ -763,13 +854,13 @@ package body et_devices_non_electrical is
 	
 
 	function get_stencil_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		face			: in type_face)
 		return type_stencil
 	is
 		result : type_stencil;
 
-		device : type_device_non_electric renames element (device_cursor);
+		device : type_device_non_electrical renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
 		rotation : type_rotation_model renames device.position.rotation;
@@ -810,13 +901,13 @@ package body et_devices_non_electrical is
 
 	
 	function get_stopmask_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		face			: in type_face)
 		return type_stopmask
 	is
 		result : type_stopmask;
 
-		device : type_device_non_electric renames element (device_cursor);
+		device : type_device_non_electrical renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
 		rotation : type_rotation_model renames device.position.rotation;
@@ -858,11 +949,11 @@ package body et_devices_non_electrical is
 
 	
 	function to_placeholder_content (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		placeholder		: in type_placeholder)
 		return et_text.pac_text_content.bounded_string 
 	is
-		device : type_device_non_electric renames element (device_cursor);
+		device : type_device_non_electrical renames element (device_cursor);
 
 		use et_text;
 		result : pac_text_content.bounded_string;
@@ -884,13 +975,13 @@ package body et_devices_non_electrical is
 
 
 	function get_silkscreen_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		face			: in type_face)
 		return type_silkscreen
 	is
 		result : type_silkscreen;		
 
-		device : type_device_non_electric renames element (device_cursor);
+		device : type_device_non_electrical renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
 		rotation : type_rotation_model renames device.position.rotation;
@@ -980,13 +1071,13 @@ package body et_devices_non_electrical is
 
 	
 	function get_assy_doc_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
+		device_cursor	: in pac_devices_non_electrical.cursor;
 		face			: in type_face)
 		return type_assy_doc
 	is
 		result : type_assy_doc;		
 
-		device : type_device_non_electric renames element (device_cursor);
+		device : type_device_non_electrical renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
 		rotation : type_rotation_model renames device.position.rotation;
@@ -1086,12 +1177,12 @@ package body et_devices_non_electrical is
 
 
 	function get_holes (
-		device_cursor	: in pac_devices_non_electric.cursor)
+		device_cursor	: in pac_devices_non_electrical.cursor)
 		return pac_holes.list
 	is
 		holes : pac_holes.list; -- to be returned
 		
-		device : type_device_non_electric renames element (device_cursor);
+		device : type_device_non_electrical renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
 		rotation : type_rotation_model renames device.position.rotation;
@@ -1115,13 +1206,13 @@ package body et_devices_non_electrical is
 	
 	
 	function get_hole_polygons (
-		device_cursor	: in pac_devices_non_electric.cursor)
+		device_cursor	: in pac_devices_non_electrical.cursor)
 		return pac_polygon_list.list
 	is
 		result : pac_polygon_list.list;
 		holes : pac_holes.list;
 		
-		device : type_device_non_electric renames element (device_cursor);
+		device : type_device_non_electrical renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 		
 		rotation : type_rotation_model renames device.position.rotation;

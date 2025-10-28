@@ -555,13 +555,13 @@ is
 
 
 		-- NON-ELECTRICAL DEVICES ----------------------------------------------
-		use pac_devices_non_electric;
+		use pac_devices_non_electrical;
 
 		-- This procedure takes a cursor to a non-electrical device (like a fiducial 
 		-- or a mounting hole),
 		-- extracts the contours of all its conducting objects and holes, 
 		-- offsets each of then and appends them to the result:
-		procedure query_non_electrical_device (d : in pac_devices_non_electric.cursor) is
+		procedure query_non_electrical_device (d : in pac_devices_non_electrical.cursor) is
 			polygons : pac_polygon_list.list;
 		begin
 			-- conductors: such as terminals, text, lines, arcs, circles

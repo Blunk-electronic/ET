@@ -1689,7 +1689,7 @@ procedure draw_packages is
 
 	procedure query_non_electrical_device (
 		name	: in type_device_name;
-		device	: in type_device_non_electric)
+		device	: in type_device_non_electrical)
 	is
 		package_model_name : pac_package_model_file_name.bounded_string;
 	begin
@@ -1721,8 +1721,8 @@ procedure draw_packages is
 			module.devices.first;
 
 		use et_pcb;
-		use pac_devices_non_electric;
-		cursor_non_electrical : pac_devices_non_electric.cursor := 
+		use pac_devices_non_electrical;
+		cursor_non_electrical : pac_devices_non_electrical.cursor := 
 			module.devices_non_electric.first;
 
 	begin

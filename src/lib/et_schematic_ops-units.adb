@@ -1223,8 +1223,8 @@ package body et_schematic_ops.units is
 			module		: in type_generic_module) 
 		is
 			use et_devices_non_electrical;
-			use pac_devices_non_electric;
-			device_cursor : pac_devices_non_electric.cursor := module.devices_non_electric.first;
+			use pac_devices_non_electrical;
+			device_cursor : pac_devices_non_electrical.cursor := module.devices_non_electric.first;
 
 			-- We start the search with index 1. Not 0 because this would result in a zero based
 			-- numbering order. Index zero is allowed but not automatically choosen.
@@ -1232,7 +1232,7 @@ package body et_schematic_ops.units is
 
 			gap_found : boolean := false; -- goes true once a gap has been found
 		begin -- search_gap
-			while device_cursor /= pac_devices_non_electric.no_element loop
+			while device_cursor /= pac_devices_non_electrical.no_element loop
 				if get_prefix (key (device_cursor)) = prefix then -- prefix match
 					
 					if get_index (key (device_cursor)) /= index_expected then -- we have a gap

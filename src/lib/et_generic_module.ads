@@ -133,7 +133,7 @@ package et_generic_module is
 		netlists		: et_netlists.pac_netlists.map; -- variant name and netlist
 
 		-- Devices which do not have a counterpart in the schematic:
-		devices_non_electric			: pac_devices_non_electric.map; -- fiducials, mounting holes, ...
+		devices_non_electric			: pac_devices_non_electrical.map; -- fiducials, mounting holes, ...
 		devices_non_electric_commits	: type_non_electrical_devices_undo_redo_stack;
 		
 		-- CS: images

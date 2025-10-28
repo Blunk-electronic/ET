@@ -1478,7 +1478,7 @@ package body et_module_read is
 
 		
 
-		device_non_electric			: et_devices_non_electrical.type_device_non_electric;
+		device_non_electric			: et_devices_non_electrical.type_device_non_electrical;
 		device_non_electric_model	: et_package_model_name.pac_package_model_file_name.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
 
 
@@ -3596,7 +3596,7 @@ package body et_module_read is
 					use et_pcb_stack;
 					use et_devices_non_electrical;
 					
-					device_cursor : pac_devices_non_electric.cursor;
+					device_cursor : pac_devices_non_electrical.cursor;
 					inserted : boolean;
 
 					use et_package_read;
@@ -3618,7 +3618,7 @@ package body et_module_read is
 	-- 						device_non_electric.text_placeholders.silkscreen.top)));
 
 					
-					pac_devices_non_electric.insert (
+					pac_devices_non_electrical.insert (
 						container	=> module.devices_non_electric,
 						position	=> device_cursor,
 						inserted	=> inserted,

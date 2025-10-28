@@ -805,7 +805,7 @@ is
 			procedure process_package (
 				electric			: in boolean;
 				device_electric		: in pac_devices_sch.cursor;
-				device_non_electric	: in pac_devices_non_electric.cursor;
+				device_non_electric	: in pac_devices_non_electrical.cursor;
 				mirror 				: in type_mirror)
 			is
 				use et_package_library;
@@ -1620,7 +1620,7 @@ is
 							process_package (
 								electric			=> true,
 								device_electric		=> device_cursor,
-								device_non_electric	=> pac_devices_non_electric.no_element,
+								device_non_electric	=> pac_devices_non_electrical.no_element,
 								mirror				=> mirror);
 							
 						end if;
@@ -1652,12 +1652,12 @@ is
 					module		: in type_generic_module) 
 				is
 					use et_devices_non_electrical;
-					use pac_devices_non_electric;
+					use pac_devices_non_electrical;
 
 					procedure query_device (
-						device_cursor : in pac_devices_non_electric.cursor) 
+						device_cursor : in pac_devices_non_electrical.cursor) 
 					is 
-						device : type_device_non_electric renames element (device_cursor);
+						device : type_device_non_electrical renames element (device_cursor);
 						mirror : type_mirror;
 					begin
 						case get_face (device.position) is
