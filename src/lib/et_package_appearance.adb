@@ -46,20 +46,21 @@ package body et_package_appearance is
 
 
 	function to_string (
-		appearance : in type_bom_relevant) 
+		bom_relevant : in type_bom_relevant) 
 		return string 
 	is 
-		s : string := to_lower (type_bom_relevant'image (appearance));
+		s : string := to_lower (type_bom_relevant'image (bom_relevant));
 	begin
-		return s (appearance_prefix'length + 1 .. s'last); 
+		return s (bom_relevant_prefix'length + 1 .. s'last); 
 	end;
 
 	
-	function to_appearance (
-		appearance : in string) 
+	
+	function to_bom_relevant (
+		bom_relevant : in string) 
 		return type_bom_relevant 
 	is begin
-		return type_bom_relevant'value (appearance_prefix & appearance);
+		return type_bom_relevant'value (bom_relevant_prefix & bom_relevant);
 	end;
 	
 	

@@ -95,7 +95,7 @@ package body et_package_read is
 		-- Once the appearance has been read, a new package will be created where this 
 		-- pointer is pointing at:
 		packge					: access type_package_model;
-		pac_appearance			: type_bom_relevant := package_appearance_default;
+		pac_appearance			: type_bom_relevant := bom_relevant_default;
 
 		-- The description and technology will be assigned once the complete
 		-- model has been read. See main of this procedure.
@@ -1534,21 +1534,21 @@ package body et_package_read is
 							kw : string := f (line, 1);
 						begin
 							-- CS: In the following: set a corresponding parameter-found-flag
-							if kw = keyword_appearance then -- appearance real/virtual
+							if kw = keyword_bom_relevant then -- bom_relevant yes/no
 								expect_field_count (line, 2);
-								pac_appearance := to_appearance (f (line,2));
+								pac_appearance := to_bom_relevant (f (line,2));
 
 								-- Depending on the appearance we create a virtual or real package
 								-- where pointer packge is pointing at:
 								case pac_appearance is
-									when APPEARANCE_REAL =>
+									when BOM_RELEVANT_YES =>
 										packge := new type_package_model' (
-													appearance	=> APPEARANCE_REAL,
+													appearance	=> BOM_RELEVANT_YES,
 													others		=> <>);
 
-									when APPEARANCE_VIRTUAL =>
+									when BOM_RELEVANT_NO =>
 										packge := new type_package_model' (
-													appearance	=> APPEARANCE_VIRTUAL,
+													appearance	=> BOM_RELEVANT_NO,
 													others		=> <>);
 								end case;
 										

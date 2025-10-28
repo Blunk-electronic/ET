@@ -518,7 +518,7 @@ package body et_kicad.pcb is
 		package_technology 	: type_assembly_technology := THT;
 
 		-- By default a package is something real (with x,y,z dimension)
-		package_appearance 	: type_bom_relevant := APPEARANCE_REAL;
+		package_appearance 	: type_bom_relevant := BOM_RELEVANT_YES;
 
 		package_text 		: type_text_package;
 		package_reference 	: type_device_name := default_component_reference;
@@ -1429,7 +1429,7 @@ package body et_kicad.pcb is
 									if to_string (arg) = attribute_technology_smd then
 										package_technology := SMT; -- overwrite default (see declarations)
 									elsif to_string (arg) = attribute_technology_virtual then
-										package_appearance := APPEARANCE_VIRTUAL;  -- overwrite default (see declarations)
+										package_appearance := BOM_RELEVANT_NO;  -- overwrite default (see declarations)
 									else
 										invalid_attribute;
 									end if;
@@ -3164,14 +3164,14 @@ package body et_kicad.pcb is
 				-- CS warning if value is empty ?
 			
 				case package_appearance is
-					when APPEARANCE_REAL =>
+					when BOM_RELEVANT_YES =>
 						board.packages.insert (
 							position	=> package_cursor,
 							inserted	=> package_inserted,
 							key			=> package_reference,
 							new_item	=> (
 								position		=> package_position,
-								appearance		=> APPEARANCE_REAL, -- !!!!!!!
+								appearance		=> BOM_RELEVANT_YES, -- !!!!!!!
 								technology		=> package_technology,
 								description		=> package_description,
 								time_stamp		=> package_time_stamp,
@@ -3196,14 +3196,14 @@ package body et_kicad.pcb is
 								)
 							);
 						
-					when APPEARANCE_VIRTUAL =>
+					when BOM_RELEVANT_NO =>
 						board.packages.insert (
 							position	=> package_cursor,
 							inserted	=> package_inserted,
 							key			=> package_reference,
 							new_item	=> (
 								position		=> package_position,
-								appearance		=> APPEARANCE_VIRTUAL, --- !!!!!!!!
+								appearance		=> BOM_RELEVANT_NO, --- !!!!!!!!
 								technology		=> package_technology,
 								description		=> package_description,
 								time_stamp		=> package_time_stamp,
@@ -3249,7 +3249,7 @@ package body et_kicad.pcb is
 
 					-- reset technology and appearance
 					package_technology := THT;
-					package_appearance := APPEARANCE_REAL;
+					package_appearance := BOM_RELEVANT_YES;
 
 					-- reset reference and value
 					package_reference := default_component_reference;

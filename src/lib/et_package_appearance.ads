@@ -63,33 +63,35 @@
 
 package et_package_appearance is
 
+	keyword_bom_relevant : constant string := "bom_relevant";
+	
 
-	appearance_prefix : constant string := "APPEARANCE_";
+	bom_relevant_prefix : constant string := "BOM_RELEVANT_";
 
 	
 	type type_bom_relevant is (
 								  
 		-- Real packages with x,y,z dimension:
-		APPEARANCE_REAL,	
+		BOM_RELEVANT_YES,	
 
 		-- For packages that do not appear in
 		-- material lists, which do not have a real package 
 		-- (like testpoints, edge connectors, 
 		-- mounting holes, fiducials, ...):
-		APPEARANCE_VIRTUAL);	
+		BOM_RELEVANT_NO);	
 
 	
 	
-	package_appearance_default : constant type_bom_relevant := APPEARANCE_REAL;
+	bom_relevant_default : constant type_bom_relevant := BOM_RELEVANT_YES;
 
 	
 	function to_string (
-		appearance : in type_bom_relevant) 
+		bom_relevant : in type_bom_relevant) 
 		return string;
 
 	
-	function to_appearance (
-		appearance : in string) 
+	function to_bom_relevant (
+		bom_relevant : in string) 
 		return type_bom_relevant;
 
 	

@@ -4738,6 +4738,7 @@ package body et_schematic_ops.submodules is
 		submod_tree : et_numbering.pac_modules.tree := et_numbering.pac_modules.empty_tree;
 		tree_cursor : et_numbering.pac_modules.cursor := et_numbering.pac_modules.root (submod_tree);
 
+		
 		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
 		package stack is new et_generic_stacks.stack_lifo (
 			item	=> et_numbering.pac_modules.cursor,
@@ -4799,21 +4800,22 @@ package body et_schematic_ops.submodules is
 			end loop;
 		end query_submodules;
 
+		
 		procedure assign_tree (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) is
-		begin
+			module		: in out type_generic_module) 
+		is begin
 			module.submod_tree := submod_tree;
 
 			log_indentation_up;
 			
 			log (text => "submodules total" & 
 				 count_type'image (et_numbering.pac_modules.node_count (module.submod_tree) - 1),
-				 level => log_threshold + 1
-				);
+				 level => log_threshold + 1);
 
 			log_indentation_down;
 		end assign_tree;
+
 		
 	begin -- build_submodules_tree
 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
@@ -4848,6 +4850,8 @@ package body et_schematic_ops.submodules is
 
 
 
+
+	
 
 	procedure make_boms (
 		module_name		: in pac_module_name.bounded_string;
@@ -4901,13 +4905,9 @@ package body et_schematic_ops.submodules is
 					
 					procedure query_properties_default (cursor_schematic : in pac_devices_sch.cursor) is 
 						cursor_bom : pac_bom_devices.cursor;
-
 						use pac_devices_sch;
-						use et_assembly_variants.pac_device_variants;
-						use et_symbol_model;
 					begin
 						-- the device must be real
-						--if element (cursor_schematic).appearance = PCB then -- skip virtual devices
 						if is_real (cursor_schematic) then -- skip virtual devices
 
 							-- the package must be real
@@ -4953,7 +4953,7 @@ package body et_schematic_ops.submodules is
 						use et_package_model_name;
 					begin
 						-- the device must be real
-						if element (cursor_schematic).appearance = APPEARANCE_PCB then -- skip virtual devices
+						if is_real (cursor_schematic) then -- skip virtual devices
 
 							-- the package must be real
 							if is_bom_relevant (cursor_schematic) then

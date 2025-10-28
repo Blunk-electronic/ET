@@ -573,7 +573,7 @@ package body et_kicad_packages is
 
 		-- By default a package is something real (with x,y,z dimension)
 		use et_package_appearance;
-		package_appearance : type_bom_relevant := APPEARANCE_REAL;
+		package_appearance : type_bom_relevant := BOM_RELEVANT_YES;
 
 		line	: type_line;
 		arc		: type_arc;
@@ -1098,7 +1098,7 @@ package body et_kicad_packages is
 									if to_string (arg) = attribute_technology_smd then
 										package_technology := SMT; -- overwrite default (see declarations)
 									elsif to_string (arg) = attribute_technology_virtual then
-										package_appearance := APPEARANCE_VIRTUAL;  -- overwrite default (see declarations)
+										package_appearance := BOM_RELEVANT_NO;  -- overwrite default (see declarations)
 									else
 										invalid_attribute;
 									end if;
@@ -2430,7 +2430,7 @@ package body et_kicad_packages is
 			
 			log (text => "appearance " & to_string (package_appearance), level => log_threshold + 1);
 			
-			if package_appearance = APPEARANCE_REAL then
+			if package_appearance = BOM_RELEVANT_YES then
 				log (text => "assembly technology " & to_string (package_technology), level => log_threshold + 1);
 			
 				while cursor /= et_terminals.pac_terminals.no_element loop
@@ -2561,9 +2561,9 @@ package body et_kicad_packages is
 
 		-- depending on the attribute we return a real or a virtual package
 		case package_appearance is
-			when APPEARANCE_REAL =>
+			when BOM_RELEVANT_YES =>
 				return (
-					appearance			=> APPEARANCE_REAL,
+					appearance			=> BOM_RELEVANT_YES,
 					--package_contour			=> (others => <>), -- CS to be filled from 3d model
 
 					-- CS: pcb contours in a package
@@ -2590,9 +2590,9 @@ package body et_kicad_packages is
 					technology				=> package_technology
 					);
 
-			when APPEARANCE_VIRTUAL => -- no package_contours
+			when BOM_RELEVANT_NO => -- no package_contours
 				return (
-					appearance			=> APPEARANCE_VIRTUAL,
+					appearance			=> BOM_RELEVANT_NO,
 						   
 					-- CS: pcb contours in a package						   
 					holes				=> pac_holes.empty_list,

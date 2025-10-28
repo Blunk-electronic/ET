@@ -191,7 +191,7 @@ package body et_package_model is
 		packge : in type_package_model)
 		return boolean
 	is begin
-		if packge.appearance = APPEARANCE_REAL then
+		if packge.appearance = BOM_RELEVANT_YES then
 			return true;
 		else
 			return false;

@@ -223,10 +223,10 @@ package et_package_model is
 		technology		: type_assembly_technology := SMT; -- set by majority of terminals
 		
 		case appearance is
-			when APPEARANCE_REAL =>				
+			when BOM_RELEVANT_YES =>				
 				null; -- CS
 				
-			when APPEARANCE_VIRTUAL =>
+			when BOM_RELEVANT_NO =>
 				null; -- fiducials, testpoints, board edge connectors, ...
 		end case;
 	end record;

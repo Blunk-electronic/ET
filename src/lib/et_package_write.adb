@@ -704,7 +704,7 @@ package body et_package_write is
 		write (keyword => keyword_description, wrap => true, 
 			   parameters => to_string (packge.description));
 
-		write (keyword => keyword_appearance, parameters => to_string (packge.appearance));
+		write (keyword => keyword_bom_relevant, parameters => to_string (packge.appearance));
 		write (keyword => keyword_assembly_technology, parameters => to_string (packge.technology));
 
 		write_silk_screen;
@@ -720,7 +720,7 @@ package body et_package_write is
 		write_terminals; -- incl. pad properties, drill sizes, millings, ...
 
 		-- 3D stuff
-		if packge.appearance = APPEARANCE_REAL then
+		if packge.appearance = BOM_RELEVANT_YES then
 			null;
 			--write_package_contour;  -- CS uncomment when 3d support available
 		end if;

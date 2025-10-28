@@ -137,18 +137,18 @@ package body et_package_library is
 				 level => log_threshold + 1);
 		else
 			case appearance is
-				when APPEARANCE_REAL =>
+				when BOM_RELEVANT_YES =>
 					pac_package_models.insert (
 						container	=> package_models,
 						key			=> package_name,
-						new_item	=> (appearance => APPEARANCE_REAL, others => <>)
+						new_item	=> (appearance => BOM_RELEVANT_YES, others => <>)
 						);
 
-				when APPEARANCE_VIRTUAL =>
+				when BOM_RELEVANT_NO =>
 					pac_package_models.insert (
 						container	=> package_models,
 						key			=> package_name,
-						new_item	=> (appearance => APPEARANCE_VIRTUAL, others => <>)
+						new_item	=> (appearance => BOM_RELEVANT_NO, others => <>)
 						);
 			end case;					
 		end if;
