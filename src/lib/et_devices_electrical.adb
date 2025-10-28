@@ -916,12 +916,7 @@ package body et_devices_electrical is
 		return type_face
 	is 
 		device : type_device_electrical renames element (device_cursor);
-		-- position : et_board_coordinates.type_package_position;
-		-- face : type_face;
 	begin
-		-- position := element (device_cursor).position;
-		-- face := et_board_coordinates.get_face (position);
-		-- return face;
 		return get_face (device);
 	end get_face;
 
