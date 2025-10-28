@@ -257,6 +257,33 @@ package body et_devices_non_electrical is
 	end get_device_name;
 
 	
+
+
+	function get_package_model_name (
+		device_cursor : in pac_devices_non_electric.cursor)
+		return pac_package_model_file_name.bounded_string
+	is 
+		device : type_device_non_electric renames element (device_cursor);
+	begin
+		return get_package_model_name (device);
+	end;
+
+
+	
+
+	function is_bom_relevant (
+		device_cursor : in pac_devices_non_electric.cursor)
+		return boolean
+	is 
+		package_model : pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
+	begin
+		-- Get the package model name of the given device:
+		package_model := get_package_model_name (device_cursor);
+
+		return is_bom_relevant (package_model);
+	end;
+
+
 	
 
 	function is_proposed (

@@ -122,7 +122,7 @@ package et_devices_non_electrical is
 	
 
 
-	-- Returns the name of the package model
+	-- Returns the name of the package model file
 	-- like "../lbr/packages/fiducial.pac"
 	function get_package_model_name (
 		device	: in type_device_non_electric)
@@ -231,7 +231,26 @@ package et_devices_non_electrical is
 		device : in pac_devices_non_electric.cursor)
 		return string;
 	
-		
+
+
+	-- Returns the name of the package model file
+	-- like "../lbr/packages/fiducial.pac"
+	function get_package_model_name (
+		device_cursor : in pac_devices_non_electric.cursor)
+		return pac_package_model_file_name.bounded_string;
+
+	
+
+	-- Returns true if the given device has a
+	-- a real package with a height, means if it is relevant 
+	-- for creating bill of materials (BOM):
+	function is_bom_relevant (
+		device_cursor : in pac_devices_non_electric.cursor)
+		return boolean;
+
+
+	
+	
 	function is_proposed (
 		device : in pac_devices_non_electric.cursor)
 		return boolean;

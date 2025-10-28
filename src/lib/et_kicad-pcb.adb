@@ -57,7 +57,7 @@ with et_generic_stacks;
 with et_system_info;
 with et_alignment;					use et_alignment;
 with et_package_model;
-with et_package_appearance;
+with et_package_bom_relevance;
 with et_package_description;
 with et_package_variant;
 with et_keywords;					use et_keywords;
@@ -262,7 +262,7 @@ package body et_kicad.pcb is
 		board : type_board; -- to be returned
 
 		use et_pcb;
-		use et_package_appearance;
+		use et_package_bom_relevance;
 		use pac_lines_of_file;
 
 		-- This cursor points to the line being processed (in the list of lines given in "lines"):

@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -42,7 +42,7 @@ with et_design_rules_board;				use et_design_rules_board;
 with et_string_processing;				use et_string_processing;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
-with et_package_appearance;				use et_package_appearance;
+with et_package_bom_relevance;			use et_package_bom_relevance;
 with et_package_library;				use et_package_library;
 with et_package_model_name;				use et_package_model_name;
 with et_fill_zones;						use et_fill_zones;

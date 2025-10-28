@@ -2,9 +2,9 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         PACKAGE APPEARANCE                               --
+--                         PACKAGE BOM RELEVANCE                            --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -36,67 +36,35 @@
 --
 --   history of changes:
 --
--- DESCRIPTION:
---
--- Usually a device has a package (or a housing or a case).
--- Other CAE tools use the term "footprint".
--- There are devices which have a physical representation
--- in the board drawing but they are not mountable, they can not be
--- assembled because:
---
--- 1. they exist just because of a certain shape of the PCB.
---    Examples: edge connectors, mounting holes
---
--- 2. they consist of conductors (copper structures) and some
---    silkscreen. Examples: Testpoints, Conductor pads where spring
---    connectors are hooked up.
---
--- 3. they do not have a height. Means there is no z-component.
---
--- The fact that a packge has no real device implies that such a 
--- device never appears in material lists (BOM - Bill Of Material).
---
--- So in this package the types and subprograms required to
--- distinguish between real packages and virtual packages are
--- provided.
+
+with ada.text_io;					use ada.text_io;
+with ada.characters.handling;		use ada.characters.handling;
 
 
-package et_package_appearance is
 
-	keyword_bom_relevant : constant string := "bom_relevant";
-	
+package body et_package_bom_relevance is
 
-	bom_relevant_prefix : constant string := "BOM_RELEVANT_";
 
-	
-	type type_bom_relevant is (
-								  
-		-- Real packages with x,y,z dimension:
-		BOM_RELEVANT_YES,	
-
-		-- For packages that do not appear in
-		-- material lists, which do not have a real package 
-		-- (like testpoints, edge connectors, 
-		-- mounting holes, fiducials, ...):
-		BOM_RELEVANT_NO);	
-
-	
-	
-	bom_relevant_default : constant type_bom_relevant := BOM_RELEVANT_YES;
-
-	
 	function to_string (
 		bom_relevant : in type_bom_relevant) 
-		return string;
+		return string 
+	is 
+		s : string := to_lower (type_bom_relevant'image (bom_relevant));
+	begin
+		return s (bom_relevant_prefix'length + 1 .. s'last); 
+	end;
 
+	
 	
 	function to_bom_relevant (
 		bom_relevant : in string) 
-		return type_bom_relevant;
-
+		return type_bom_relevant 
+	is begin
+		return type_bom_relevant'value (bom_relevant_prefix & bom_relevant);
+	end;
 	
 	
-end et_package_appearance;
+end et_package_bom_relevance;
 
 -- Soli Deo Gloria
 

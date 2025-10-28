@@ -70,7 +70,7 @@ with et_project;
 -- with et_scripting;
 with et_script_processor;
 
-with et_package_appearance;
+with et_package_bom_relevance;
 with et_package_name;			use et_package_name;
 with et_package_model_name;		use et_package_model_name;
 with et_package_library;
@@ -125,7 +125,7 @@ procedure et is
 	package_name_import		: pac_package_model_file_name.bounded_string; -- the package to be imported
 	package_name_open		: pac_package_model_file_name.bounded_string; -- the package to be opened
 	package_name_save_as	: pac_package_model_file_name.bounded_string; -- the package to be saved as
-	package_appearance		: et_package_appearance.type_bom_relevant := et_package_appearance.BOM_RELEVANT_YES;
+	package_appearance		: et_package_bom_relevance.type_bom_relevant := et_package_bom_relevance.BOM_RELEVANT_YES;
 
 	symbol_name_create		: et_symbol_name.pac_symbol_model_file.bounded_string; -- the symbol to be created like libraries/symbols/nand.sym
 	symbol_name_open		: et_symbol_name.pac_symbol_model_file.bounded_string; -- the symbol to be opened
@@ -255,7 +255,7 @@ procedure et is
 
 					elsif full_switch = switch_package_appearance then -- virtual/real
 						log (text => arg & full_switch & space & parameter);
-						package_appearance := et_package_appearance.to_bom_relevant (parameter); -- if not provided -> default used
+						package_appearance := et_package_bom_relevance.to_bom_relevant (parameter); -- if not provided -> default used
 						
 					elsif full_switch = switch_native_package_open then
 						log (text => arg & full_switch & space & parameter);

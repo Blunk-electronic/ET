@@ -59,7 +59,7 @@ with et_silkscreen.packages;			use et_silkscreen.packages;
 with et_assy_doc.packages;				use et_assy_doc.packages;
 with et_keepout;						use et_keepout;
 with et_pcb_contour;					use et_pcb_contour;
-with et_package_appearance;				use et_package_appearance;
+with et_package_bom_relevance;			use et_package_bom_relevance;
 with et_package_name;					use et_package_name;
 with et_package_description;			use et_package_description;
 

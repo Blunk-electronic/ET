@@ -53,7 +53,7 @@ with et_directory_and_file_ops;
 with et_generic_stacks;
 with et_alignment;
 with et_package_model;
-with et_package_appearance;
+with et_package_bom_relevance;
 with et_package_description;			use et_package_description;
 
 
@@ -572,7 +572,7 @@ package body et_kicad_packages is
 		package_technology : type_assembly_technology := THT;
 
 		-- By default a package is something real (with x,y,z dimension)
-		use et_package_appearance;
+		use et_package_bom_relevance;
 		package_appearance : type_bom_relevant := BOM_RELEVANT_YES;
 
 		line	: type_line;
