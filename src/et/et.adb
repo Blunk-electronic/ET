@@ -125,7 +125,7 @@ procedure et is
 	package_name_import		: pac_package_model_file_name.bounded_string; -- the package to be imported
 	package_name_open		: pac_package_model_file_name.bounded_string; -- the package to be opened
 	package_name_save_as	: pac_package_model_file_name.bounded_string; -- the package to be saved as
-	package_appearance		: et_package_appearance.type_package_appearance := et_package_appearance.APPEARANCE_REAL; -- virtual/real. mostly real.
+	package_appearance		: et_package_appearance.type_bom_relevant := et_package_appearance.APPEARANCE_REAL; -- virtual/real. mostly real.
 
 	symbol_name_create		: et_symbol_name.pac_symbol_model_file.bounded_string; -- the symbol to be created like libraries/symbols/nand.sym
 	symbol_name_open		: et_symbol_name.pac_symbol_model_file.bounded_string; -- the symbol to be opened
