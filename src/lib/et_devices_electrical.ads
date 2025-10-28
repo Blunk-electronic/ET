@@ -79,7 +79,8 @@ with et_stencil;						use et_stencil;
 with et_pcb_stack;						use et_pcb_stack;
 with et_pcb_sides;						use et_pcb_sides;
 with et_board_geometry;
-with et_board_coordinates;
+with et_board_coordinates;				use et_board_coordinates;
+with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_material;
 with et_text;
 with et_symbol_model;					use et_symbol_model;
@@ -155,7 +156,7 @@ package et_devices_electrical is
 				-- or vice versa.
 				-- Flipping a device to top or bottom means it will be drawn
 				-- mirrored along its Y-axis.
-				position			: et_board_coordinates.type_package_position; -- incl. rotation and face
+				position	: type_package_position; -- incl. rotation and face
 
 				text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
 				-- CS: rename to placeholders
@@ -197,19 +198,128 @@ package et_devices_electrical is
 
 
 
-	-- CS
-	-- procedure set_value (
-	-- 	device	: in out type_device_electrical;
-	-- 	value	: in pac_device_value.bounded_string);
+	
 
-	-- function get_value (
-	-- 	device	: in type_device_electrical)
-	-- 	return pac_device_value.bounded_string;
+-- POSITION:
 
-	-- likewise for partcode and purpose
+	-- IMPORTANT: For the following subprograms applies:
+	-- These procedures and functions address the package
+	-- of a device.
+	-- The targeted device must be real. Otherwise an exception is raised:
 
-	-- CS set_position, get_position
+	-- Sets the position of the package in the board drawing.
+	procedure set_position (
+		device		: in out type_device_electrical;
+		position	: in type_package_position);
 
+
+	-- Returns the position of the package in the board drawing.
+	function get_position (
+		device : in type_device_electrical)
+		return type_package_position;
+							   
+
+	-- Returns the position of the package in the board drawing.
+	function get_position (
+		device	: in type_device_electrical;
+		format	: in type_output_format := FORMAT_1)
+		return string;
+
+
+	procedure set_face (
+		device	: in out type_device_electrical;
+		face	: in type_face);				   
+						   
+
+	function get_face (
+		device	: in type_device_electrical)
+		return type_face;
+
+	
+	function get_face (
+		device	: in type_device_electrical)
+		return string;
+
+	
+	procedure set_place (
+		device	: in out type_device_electrical;
+		place	: in et_board_geometry.pac_geometry_2.type_vector_model);
+
+
+	function get_place (
+		device	: in type_device_electrical)
+		return et_board_geometry.pac_geometry_2.type_vector_model;
+	
+
+	function get_place (
+		device	: in type_device_electrical;
+		format	: in type_output_format := FORMAT_1)
+		return string;
+
+
+
+
+-- VALUE:
+	
+	procedure set_value (
+		device	: in out type_device_electrical;
+		value	: in pac_device_value.bounded_string);
+
+	
+	function get_value (
+		device	: in type_device_electrical)
+		return pac_device_value.bounded_string;
+
+	
+	function get_value (
+		device	: in type_device_electrical)
+		return string;
+
+	
+
+-- PARTCODE:
+
+	procedure set_partcode (
+		device		: in out type_device_electrical;
+		partcode	: in pac_device_partcode.bounded_string);
+
+	
+	function get_partcode (
+		device	: in type_device_electrical)
+		return pac_device_partcode.bounded_string;
+
+	
+	function get_partcode (
+		device	: in type_device_electrical)
+		return string;
+
+
+	
+
+
+-- PURPOSE:
+	
+	procedure set_purpose (
+		device	: in out type_device_electrical;
+		purpose	: in pac_device_purpose.bounded_string);
+
+	
+	function get_purpose (
+		device	: in type_device_electrical)
+		return pac_device_purpose.bounded_string;
+
+	
+	function get_purpose (
+		device	: in type_device_electrical)
+		return string;
+
+
+
+
+
+
+	
+	
 
 	
 
@@ -476,6 +586,12 @@ package et_devices_electrical is
 
 								   
 
+
+-- POSITION:
+
+	-- IMPORTANT: The following subprograms address the
+	-- package of a device. The package must be real. Otherwise
+	-- an exception will be raised.
 	
 	-- Returns the current position (x/y/rotation/face) of the 
 	-- given electrical device:
@@ -486,7 +602,7 @@ package et_devices_electrical is
 
 	-- Returns the current position (x/y) of the 
 	-- given electrical device:
-	function get_position (
+	function get_place (
 		device_cursor	: in pac_devices_electrical.cursor) -- IC45
 		return et_board_geometry.pac_geometry_2.type_vector_model;
 

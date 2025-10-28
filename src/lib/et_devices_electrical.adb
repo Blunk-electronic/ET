@@ -116,6 +116,184 @@ package body et_devices_electrical is
 	end;
 
 
+
+	
+
+
+-- POSITION:
+
+	procedure set_position (
+		device		: in out type_device_electrical;
+		position	: in type_package_position)
+	is begin
+		device.position := position;
+	end;
+
+
+	function get_position (
+		device : in type_device_electrical)
+		return type_package_position
+	is begin
+		return device.position;
+	end;
+
+
+
+	function get_position (
+		device	: in type_device_electrical;
+		format	: in type_output_format := FORMAT_1)
+		return string
+	is begin
+		return to_string (device.position, format);
+	end;
+
+	
+
+
+	procedure set_face (
+		device	: in out type_device_electrical;
+		face	: in type_face)
+	is begin
+		set_face (device.position, face);
+	end;
+	
+						   
+
+	function get_face (
+		device	: in type_device_electrical)
+		return type_face
+	is begin
+		return get_face (device.position);
+	end;
+
+
+
+	function get_face (
+		device	: in type_device_electrical)
+		return string
+	is begin
+		return to_string (get_face (device.position));
+	end;
+
+	
+
+	procedure set_place (
+		device	: in out type_device_electrical;
+		place	: in et_board_geometry.pac_geometry_2.type_vector_model)
+	is begin
+		set_place (device.position, place);
+	end;
+
+
+
+	function get_place (
+		device	: in type_device_electrical)
+		return et_board_geometry.pac_geometry_2.type_vector_model
+	is begin
+		return get_place (device.position);
+	end;
+
+	
+
+	function get_place (
+		device	: in type_device_electrical;
+		format	: in type_output_format := FORMAT_1)		   
+		return string
+	is begin
+		return et_board_geometry.pac_geometry_2.to_string (
+			get_place (device.position), format);
+	end;
+
+
+
+
+
+	
+-- VALUE:
+
+	procedure set_value (
+		device	: in out type_device_electrical;
+		value	: in pac_device_value.bounded_string)
+	is begin
+		device.value := value;
+	end;
+
+
+	function get_value (
+		device	: in type_device_electrical)
+		return pac_device_value.bounded_string
+	is begin
+		return device.value;
+	end;
+
+
+	function get_value (
+		device	: in type_device_electrical)
+		return string
+	is begin
+		return to_string (get_value (device));
+	end;
+
+
+
+	
+-- PARTCODE:
+
+	procedure set_partcode (
+		device		: in out type_device_electrical;
+		partcode	: in pac_device_partcode.bounded_string)
+	is begin
+		device.partcode := partcode;
+	end;
+
+
+	function get_partcode (
+		device	: in type_device_electrical)
+		return pac_device_partcode.bounded_string
+	is begin
+		return device.partcode;
+	end;
+
+
+	function get_partcode (
+		device	: in type_device_electrical)
+		return string
+	is begin
+		return to_string (get_partcode (device));
+	end;
+
+
+
+
+	
+
+-- PURPOSE:
+
+	procedure set_purpose (
+		device	: in out type_device_electrical;
+		purpose	: in pac_device_purpose.bounded_string)
+	is begin
+		device.purpose := purpose;
+	end;
+
+
+	function get_purpose (
+		device	: in type_device_electrical)
+		return pac_device_purpose.bounded_string
+	is begin
+		return device.purpose;
+	end;
+
+
+	function get_purpose (
+		device	: in type_device_electrical)
+		return string
+	is begin
+		return to_string (get_purpose (device));
+	end;
+
+
+
 	
 
 	function get_device_model_file (
@@ -414,6 +592,8 @@ package body et_devices_electrical is
 	
 
 
+
+
 	function get_position (
 		device	: in pac_devices_electrical.cursor; -- R2
 		unit	: in pac_units.cursor)
@@ -703,23 +883,29 @@ package body et_devices_electrical is
 
 
 
+
 	
+-- POSITION:
 	
 	function get_position (
 		device_cursor	: in pac_devices_electrical.cursor) -- IC45
 		return et_board_coordinates.type_package_position
-	is begin
-		return element (device_cursor).position;
+	is 
+		device : type_device_electrical renames element (device_cursor);
+	begin
+		return get_position (device);
 	end get_position;
 
 
 	
-	function get_position (
+	function get_place (
 		device_cursor	: in pac_devices_electrical.cursor) -- IC45
 		return et_board_geometry.pac_geometry_2.type_vector_model
-	is begin
-		return get_position (device_cursor).place;
-	end get_position;
+	is 
+		device : type_device_electrical renames element (device_cursor);
+	begin
+		return get_place (device);
+	end get_place;
 
 	
 
@@ -729,12 +915,14 @@ package body et_devices_electrical is
 		device_cursor	: in pac_devices_electrical.cursor) -- IC45
 		return type_face
 	is 
-		position : et_board_coordinates.type_package_position;
-		face : type_face;
+		device : type_device_electrical renames element (device_cursor);
+		-- position : et_board_coordinates.type_package_position;
+		-- face : type_face;
 	begin
-		position := element (device_cursor).position;
-		face := et_board_coordinates.get_face (position);
-		return face;
+		-- position := element (device_cursor).position;
+		-- face := et_board_coordinates.get_face (position);
+		-- return face;
+		return get_face (device);
 	end get_face;
 
 
