@@ -88,6 +88,95 @@ package body et_devices_non_electrical is
 
 
 
+
+	
+
+-- POSITION:
+
+	procedure set_position (
+		device		: in out type_device_non_electrical;
+		position	: in type_package_position)
+	is begin
+		device.position := position;
+	end;
+
+	
+
+	function get_position (
+		device : in type_device_non_electrical)
+		return type_package_position
+	is begin
+		return device.position;
+	end;
+
+	
+
+	function get_position (
+		device	: in type_device_non_electrical;
+		format	: in type_output_format := FORMAT_1)
+		return string
+	is begin
+		return to_string (device.position);
+	end;
+
+
+	
+	procedure set_face (
+		device	: in out type_device_non_electrical;
+		face	: in type_face)
+	is begin
+		set_face (device.position, face);
+	end;
+	
+						   
+
+	function get_face (
+		device	: in type_device_non_electrical)
+		return type_face
+	is begin
+		return get_face (device.position);
+	end;
+
+
+
+	function get_face (
+		device	: in type_device_non_electrical)
+		return string
+	is begin
+		return to_string (get_face (device.position));
+	end;
+
+	
+
+	procedure set_place (
+		device	: in out type_device_non_electrical;
+		place	: in type_vector_model)
+	is begin
+		set_place (device.position, place);
+	end;
+
+
+
+	function get_place (
+		device	: in type_device_non_electrical)
+		return type_vector_model
+	is begin
+		return get_place (device.position);
+	end;
+
+	
+
+	function get_place (
+		device	: in type_device_non_electrical;
+		format	: in type_output_format := FORMAT_1)		   
+		return string
+	is begin
+		return to_string (get_place (device.position), format);
+	end;
+
+
+
+	
 	
 -- VALUE:
 
@@ -377,6 +466,9 @@ package body et_devices_non_electrical is
 
 	
 
+
+-- STATUS:
+	
 	function is_proposed (
 		device : in pac_devices_non_electrical.cursor)
 		return boolean
@@ -441,14 +533,34 @@ package body et_devices_non_electrical is
 
 
 
+	
 
 
+-- POSITION:
+	
 	function get_position (
 		device_cursor	: in pac_devices_non_electrical.cursor) -- FD1
 		return type_package_position
-	is begin
-		return element (device_cursor).position;
+	is 
+		device : type_device_non_electrical renames element (device_cursor);
+	begin
+		return get_position (device);
 	end get_position;
+
+
+
+	function get_position (
+		device_cursor	: in pac_devices_non_electrical.cursor; -- FD1
+		format			: in type_output_format := FORMAT_1)					  
+		return string
+	is 
+		p : type_package_position;
+	begin
+		p := get_position (device_cursor);
+		
+		return to_string (p, format);
+	end get_position;
+
 
 
 	
@@ -456,11 +568,28 @@ package body et_devices_non_electrical is
 	function get_position (
 		device_cursor	: in pac_devices_non_electrical.cursor) -- FD1
 		return type_vector_model
-	is begin
-		return get_position (device_cursor).place;
+	is 
+		device : type_device_non_electrical renames element (device_cursor);
+	begin
+		return get_place (device);
 	end get_position;
 
 
+
+
+	function get_place (
+		device_cursor	: in pac_devices_non_electrical.cursor; -- FD1
+		format			: in type_output_format := FORMAT_1)					  
+		return string
+	is
+		p : type_vector_model;
+	begin
+		p := get_position (device_cursor);
+		return to_string (p, format);
+	end;
+
+	
+	
 
 	
 	function get_face (
@@ -476,6 +605,87 @@ package body et_devices_non_electrical is
 
 
 
+
+	
+
+-- VALUE:
+	
+	
+	function get_value (
+		device_cursor : in pac_devices_non_electrical.cursor)
+		return pac_device_value.bounded_string
+	is 
+		device : type_device_non_electrical renames element (device_cursor);
+	begin
+		return get_value (device);
+	end;
+	
+
+	
+	function get_value (
+		device_cursor : in pac_devices_non_electrical.cursor)
+		return string
+	is 
+		device : type_device_non_electrical renames element (device_cursor);
+	begin
+		return to_string (get_value (device));
+	end;
+
+
+	
+
+-- PARTCODE:
+
+	
+	function get_partcode (
+		device_cursor : in pac_devices_non_electrical.cursor)
+		return pac_device_partcode.bounded_string
+	is
+		device : type_device_non_electrical renames element (device_cursor);
+	begin
+		return get_partcode (device);
+	end;
+	
+
+	
+	function get_partcode (
+		device_cursor : in pac_devices_non_electrical.cursor)
+		return string
+	is
+		device : type_device_non_electrical renames element (device_cursor);
+	begin
+		return to_string (get_partcode (device));
+	end;
+
+	
+
+
+-- PURPOSE:	
+	
+	function get_purpose (
+		device_cursor : in pac_devices_non_electrical.cursor)
+		return pac_device_purpose.bounded_string
+	is
+		device : type_device_non_electrical renames element (device_cursor);
+	begin
+		return get_purpose (device);
+	end;
+
+	
+	
+	function get_purpose (
+		device_cursor : in pac_devices_non_electrical.cursor)
+		return string
+	is
+		device : type_device_non_electrical renames element (device_cursor);
+	begin
+		return to_string (get_purpose (device));
+	end;
+
+
+
+	
+	
 
 
 

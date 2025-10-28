@@ -53,6 +53,7 @@ with et_pcb_sides;						use et_pcb_sides;
 with et_board_geometry;					use et_board_geometry;
 with et_board_coordinates;				use et_board_coordinates;
 with et_board_text;						use et_board_text;
+with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_package_model;					use et_package_model;
@@ -110,7 +111,7 @@ package et_devices_non_electrical is
 	-- are modelled via package models:
 	
 	type type_device_non_electrical is record
-		position			: et_board_coordinates.type_package_position; -- incl. rotation and face
+		position			: type_package_position; -- incl. rotation and face
 		text_placeholders	: type_text_placeholders;
 		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
 		-- CS cursor to package model instead ?
@@ -137,15 +138,59 @@ package et_devices_non_electrical is
 
 
 
+	
+
 -- POSITION:
 
-	-- CS set_position, get_position
+	procedure set_position (
+		device		: in out type_device_non_electrical;
+		position	: in type_package_position);
+
+
+	function get_position (
+		device : in type_device_non_electrical)
+		return type_package_position;
+							   
+
+	function get_position (
+		device	: in type_device_non_electrical;
+		format	: in type_output_format := FORMAT_1)
+		return string;
+
+	
+	procedure set_face (
+		device	: in out type_device_non_electrical;
+		face	: in type_face);				   
+						   
+
+	function get_face (
+		device	: in type_device_non_electrical)
+		return type_face;
+
+	
+	function get_face (
+		device	: in type_device_non_electrical)
+		return string;
+
+	
+	procedure set_place (
+		device	: in out type_device_non_electrical;
+		place	: in type_vector_model);					
+
+
+	function get_place (
+		device	: in type_device_non_electrical)
+		return type_vector_model;
+	
+
+	function get_place (
+		device	: in type_device_non_electrical;
+		format	: in type_output_format := FORMAT_1)
+		return string;
 
 
 	
 	
-	
-
 -- VALUE:
 	
 	procedure set_value (
@@ -331,7 +376,9 @@ package et_devices_non_electrical is
 		return boolean;
 
 
+
 	
+-- STATUS:
 	
 	function is_proposed (
 		device : in pac_devices_non_electrical.cursor)
@@ -362,7 +409,11 @@ package et_devices_non_electrical is
 		device_cursor	: in pac_devices_non_electrical.cursor)
 		return pac_package_models.cursor;
 
+
+
 	
+
+-- POSITION:
 	
 	-- Returns the current position (x/y/rotation/face) of the 
 	-- given non-electrical device:
@@ -371,14 +422,26 @@ package et_devices_non_electrical is
 		return type_package_position;
 
 
+	function get_position (
+		device_cursor	: in pac_devices_non_electrical.cursor; -- FD1
+		format			: in type_output_format := FORMAT_1)					  
+		return string;
+
+	
 	
 	-- Returns the current position (x/y) of the 
 	-- given non-electrical device:
-	function get_position (
+	function get_position ( -- CS rename to get_place
 		device_cursor	: in pac_devices_non_electrical.cursor) -- FD1
 		return type_vector_model;
 
 
+	function get_place (
+		device_cursor	: in pac_devices_non_electrical.cursor; -- FD1
+		format			: in type_output_format := FORMAT_1)					  
+		return string;
+
+	
 
 	-- Returns the current face of the given non-electrical device:
 	function get_face (
@@ -386,6 +449,52 @@ package et_devices_non_electrical is
 		return type_face; -- top/bottom
 
 	
+
+
+
+-- VALUE:
+	
+	
+	function get_value (
+		device_cursor : in pac_devices_non_electrical.cursor)
+		return pac_device_value.bounded_string;
+
+	
+	function get_value (
+		device_cursor : in pac_devices_non_electrical.cursor)
+		return string;
+
+
+	
+
+-- PARTCODE:
+
+	
+	function get_partcode (
+		device_cursor : in pac_devices_non_electrical.cursor)
+		return pac_device_partcode.bounded_string;
+
+	
+	function get_partcode (
+		device_cursor : in pac_devices_non_electrical.cursor)
+		return string;
+
+
+	
+
+
+-- PURPOSE:
+	
+	
+	function get_purpose (
+		device_cursor : in pac_devices_non_electrical.cursor)
+		return pac_device_purpose.bounded_string;
+
+	
+	function get_purpose (
+		device_cursor : in pac_devices_non_electrical.cursor)
+		return string;
+
 
 
 	
