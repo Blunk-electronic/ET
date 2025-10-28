@@ -88,7 +88,7 @@ is
 		-- For the moment, no units are added:
 		procedure add_virtual_device is 
 			inserted : boolean;
-			device : type_device_sch (APPEARANCE_VIRTUAL);
+			device : type_device_electrical (APPEARANCE_VIRTUAL);
 		begin
 			log (text => "add_virtual_device", level => log_threshold + 2);
 			log_indentation_up;
@@ -125,7 +125,7 @@ is
 			-- Compose and insert the device in the schematic.
 			-- For the moment the device has no units yet:
 			procedure insert_device is 
-				device : type_device_sch (appearance => APPEARANCE_PCB);
+				device : type_device_electrical (appearance => APPEARANCE_PCB);
 				inserted : boolean;
 			begin
 				log (text => "insert_device", level => log_threshold + 3);
@@ -241,7 +241,7 @@ is
 		-- The unit to be added is accessed by first_available_unit.int.
 		procedure add_unit_internal (
 			device_name	: in type_device_name;
-			device		: in out type_device_sch) 
+			device		: in out type_device_electrical) 
 		is 
 
 			-- This procedure composes the virtual unit and adds
@@ -317,7 +317,7 @@ is
 		-- The unit to be added is accessed by first_available_unit.ext.
 		procedure add_unit_external (
 			device_name	: in type_device_name;
-			device		: in out type_device_sch) 
+			device		: in out type_device_electrical) 
 		is
 
 

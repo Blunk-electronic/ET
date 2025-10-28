@@ -602,7 +602,7 @@ package body et_schematic_ops.units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) 
+				device		: in out type_device_electrical) 
 			is begin
 				-- Independend on the search mode, set the whole device as selected.
 				-- This is relevant for highlighting the package in the board editor. 
@@ -697,7 +697,7 @@ package body et_schematic_ops.units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in type_device_sch) 
+				device		: in type_device_electrical) 
 			is 
 				unit_cursor : pac_units.cursor;
 			begin
@@ -808,7 +808,7 @@ package body et_schematic_ops.units is
 
 			procedure set_value (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) 
+				device		: in out type_device_electrical) 
 			is begin
 				-- CS log value old and value new
 				device.value := value;
@@ -892,7 +892,7 @@ package body et_schematic_ops.units is
 
 			procedure set_purpose (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) 
+				device		: in out type_device_electrical) 
 			is begin
 				device.purpose := purpose;
 				-- CS log purpose before and after
@@ -965,7 +965,7 @@ package body et_schematic_ops.units is
 
 			procedure set_partcode (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) 
+				device		: in out type_device_electrical) 
 			is begin
 				device.partcode := partcode;
 				-- CS log old and new partcode
@@ -1076,7 +1076,7 @@ package body et_schematic_ops.units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch)
+				device		: in out type_device_electrical)
 			is 
 				cursor_lib : pac_devices_lib.cursor;
 			begin
@@ -1350,7 +1350,7 @@ package body et_schematic_ops.units is
 
 		procedure query_units (
 			device_name	: in type_device_name; -- R2
-			device		: in type_device_sch)
+			device		: in type_device_electrical)
 		is begin
 			unit_cursor := find (device.units, unit);
 		end query_units;
@@ -1410,7 +1410,7 @@ package body et_schematic_ops.units is
 			
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in type_device_sch) 
+				device		: in type_device_electrical) 
 			is
 				unit_cursor : pac_units.cursor := device.units.first;
 				use pac_symbol_ports;
@@ -1482,7 +1482,7 @@ package body et_schematic_ops.units is
 			
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in type_device_sch)
+				device		: in type_device_electrical)
 			is
 				use pac_symbol_ports;
 				ports : pac_symbol_ports.map;
@@ -1561,7 +1561,7 @@ package body et_schematic_ops.units is
 			-- Sets the in_use flag if given unit is already in use:
 			procedure query_in_use (
 				device_name	: in type_device_name;
-				device		: in type_device_sch) 
+				device		: in type_device_electrical) 
 			is
 			begin
 				if contains (device.units, element (c)) then
@@ -1656,7 +1656,7 @@ package body et_schematic_ops.units is
 		-- Clears the "available" flag if given unit is already in use:
 		procedure query_in_use (
 			device_name	: in type_device_name;
-			device		: in type_device_sch) 
+			device		: in type_device_electrical) 
 		is
 		begin
 			if contains (device.units, unit_name) then
@@ -1709,7 +1709,7 @@ package body et_schematic_ops.units is
 		
 		procedure query_units (
 			device_name	: in type_device_name;
-			device		: in type_device_sch)
+			device		: in type_device_electrical)
 		is 
 			procedure query_unit (c : in pac_units.cursor) is 
 				use pac_unit_name;
@@ -1771,7 +1771,7 @@ package body et_schematic_ops.units is
 		
 		procedure query_unit (
 			device_name	: in type_device_name;
-			device		: in type_device_sch)
+			device		: in type_device_electrical)
 		is 
 			unit_cursor : pac_units.cursor;
 		begin
@@ -2290,7 +2290,7 @@ package body et_schematic_ops.units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) 
+				device		: in out type_device_electrical) 
 			is
 				-- Locate the targeted unit:
 				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
@@ -2729,7 +2729,7 @@ package body et_schematic_ops.units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) 
+				device		: in out type_device_electrical) 
 			is
 				
 				-- Does the actual move of the unit:
@@ -2978,7 +2978,7 @@ package body et_schematic_ops.units is
 			
 			procedure query_units (
 				device_name	: in type_device_name; -- IC45
-				device		: in type_device_sch) 
+				device		: in type_device_electrical) 
 			is
 				unit_cursor : pac_units.cursor;				
 			begin
@@ -3320,7 +3320,7 @@ package body et_schematic_ops.units is
 			
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) 
+				device		: in out type_device_electrical) 
 			is
 				
 				-- Moves the the unit:
@@ -3482,7 +3482,7 @@ package body et_schematic_ops.units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) 
+				device		: in out type_device_electrical) 
 			is
 				
 				-- Does the actual rotation of the unit:
@@ -3681,7 +3681,7 @@ package body et_schematic_ops.units is
 			
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch)
+				device		: in out type_device_electrical)
 			is 
 
 				procedure query_unit (
@@ -3755,7 +3755,7 @@ package body et_schematic_ops.units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch)
+				device		: in out type_device_electrical)
 			is 
 				unit_cursor : pac_units.cursor := device.units.first;
 
@@ -3852,7 +3852,7 @@ package body et_schematic_ops.units is
 			
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch)
+				device		: in out type_device_electrical)
 			is 
 				unit_cursor : pac_units.cursor := device.units.first;
 
@@ -3928,7 +3928,7 @@ package body et_schematic_ops.units is
 			
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch)
+				device		: in out type_device_electrical)
 			is begin
 				log (text => to_string (device_name), level => log_threshold + 1);
 
@@ -3992,7 +3992,7 @@ package body et_schematic_ops.units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device 		: in type_device_sch)
+				device 		: in type_device_electrical)
 			is 
 
 				procedure query_unit (unit_cursor : in pac_units.cursor) is 
@@ -4090,7 +4090,7 @@ package body et_schematic_ops.units is
 			
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) 
+				device		: in out type_device_electrical) 
 			is
 				-- Locate the targeted unit:
 				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
@@ -4190,7 +4190,7 @@ package body et_schematic_ops.units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) 
+				device		: in out type_device_electrical) 
 			is
 				-- Locate the targeted unit:
 				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
@@ -4333,7 +4333,7 @@ package body et_schematic_ops.units is
 			
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch)
+				device		: in out type_device_electrical)
 			is 
 
 				procedure query_unit (
@@ -4402,7 +4402,7 @@ package body et_schematic_ops.units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch)
+				device		: in out type_device_electrical)
 			is 
 				unit_cursor : pac_units.cursor := device.units.first;
 
@@ -4499,7 +4499,7 @@ package body et_schematic_ops.units is
 			
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch)
+				device		: in out type_device_electrical)
 			is 
 				unit_cursor : pac_units.cursor := device.units.first;
 
@@ -4581,7 +4581,7 @@ package body et_schematic_ops.units is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device 		: in type_device_sch)
+				device 		: in type_device_electrical)
 			is 
 				unit_cursor : pac_units.cursor := device.units.first;
 
@@ -4819,7 +4819,7 @@ package body et_schematic_ops.units is
 
 				procedure query_device (
 					name	: in type_device_name;
-					device	: in type_device_sch) 
+					device	: in type_device_electrical) 
 				is 
 
 					-- Queries a unit for its status flag
@@ -4891,7 +4891,7 @@ package body et_schematic_ops.units is
 
 				procedure query_device (
 					name	: in type_device_name;
-					device	: in type_device_sch) 
+					device	: in type_device_electrical) 
 				is 
 					unit_cursor : pac_units.cursor := device.units.first;
 
@@ -5219,7 +5219,7 @@ package body et_schematic_ops.units is
 			
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in type_device_sch)
+				device		: in type_device_electrical)
 			is 
 
 				procedure query_unit (unit_cursor : in pac_units.cursor) is

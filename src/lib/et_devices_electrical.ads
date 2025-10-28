@@ -117,8 +117,9 @@ package et_devices_electrical is
 	
 
 	-- This is a device as it appears in the schematic.
-	type type_device_sch (appearance : type_appearance_schematic) is record
-	-- CS: rename to type_device_electrical
+	type type_device_electrical (
+		appearance : type_appearance_schematic) 
+	is record
 
 		-- The link to the device model like ../libraries/devices/transistor/pnp.dev
 		model	: pac_device_model_file.bounded_string;
@@ -172,26 +173,26 @@ package et_devices_electrical is
 	-- Returns true if the given device has a physical
 	-- representation in the board drawing:
 	function is_real (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return boolean;
 	
 
 	-- Returns the names of all deployed units:
 	function get_unit_names_deployed (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return pac_unit_names.list;
 	
 								
 	-- Returns the total number of units that
 	-- the device provides according to its model:
 	function get_unit_count (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return natural;
 
 	
 	-- Returns the number of units that are deployed:
 	function get_unit_count_deployed (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return natural;
 
 
@@ -213,7 +214,7 @@ package et_devices_electrical is
 	
 
 	function get_device_model_file (
-		device : type_device_sch)
+		device : type_device_electrical)
 		return pac_device_model_file.bounded_string; -- *.dev
 
 
@@ -222,7 +223,7 @@ package et_devices_electrical is
 	-- Maps from schematic device to 
 	-- cursor to device model (in library):
 	function get_device_model (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return pac_devices_lib.cursor;
 
 
@@ -231,13 +232,13 @@ package et_devices_electrical is
 	-- The device must be a real device.
 	-- Otherwise an exception will be raised:
 	function get_package_variant (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return pac_package_variant_name.bounded_string;
 
 
 	-- Returns a list of available package variants:
 	function get_available_package_variants (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return pac_package_variants.map;
 												
 
@@ -247,7 +248,7 @@ package et_devices_electrical is
 	-- The package model name is something like "libraries/packages/smd/SOT23.pac"
 	-- The given device must be real. Otherwise constraint error arises here.	
 	function get_package_model_name (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return pac_package_model_file_name.bounded_string;
 
 	
@@ -257,7 +258,7 @@ package et_devices_electrical is
 	-- Returns the cursor to the first deployed unit
 	-- of the given device:
 	function get_first_unit (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return pac_units.cursor;
 
 
@@ -268,7 +269,7 @@ package et_devices_electrical is
 	package pac_devices_sch is new indefinite_ordered_maps (
 	-- CS rename to pac_devices_electrical
 		key_type		=> type_device_name, -- something like "IC43"
- 		element_type	=> type_device_sch);
+ 		element_type	=> type_device_electrical);
 
 	use pac_devices_sch;
 	
@@ -295,7 +296,7 @@ package et_devices_electrical is
 	-- deployed yet or does not exist at all), then 
 	-- the result is no_element:
 	function locate_unit (
-		device	: in type_device_sch;
+		device	: in type_device_electrical;
 		unit	: in pac_unit_name.bounded_string)
 		return pac_units.cursor;
 
@@ -765,57 +766,57 @@ package et_devices_electrical is
 	-- the device is not real then the return is always false.
 	
 	procedure set_selected (
-		device : in out type_device_sch);
+		device : in out type_device_electrical);
 	
 
 	procedure clear_selected (
-		device : in out type_device_sch);
+		device : in out type_device_electrical);
 	
 
 	function is_selected (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return boolean;
 	
 
 	
 	procedure set_proposed (
-		device : in out type_device_sch);
+		device : in out type_device_electrical);
 	
 
 	procedure clear_proposed (
-		device : in out type_device_sch);
+		device : in out type_device_electrical);
 
 	
 	function is_proposed (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return boolean;
 
 
 
 	
 	procedure set_moving (
-		device : in out type_device_sch);
+		device : in out type_device_electrical);
 	
 
 	procedure clear_moving (
-		device : in out type_device_sch);
+		device : in out type_device_electrical);
 
 	
 	function is_moving (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return boolean;
 
 
 	
 	
 	procedure modify_status (
-		device		: in out type_device_sch;
+		device		: in out type_device_electrical;
 		operation	: in type_status_operation);
 	
 
 	
 	procedure reset_status (
-		device : in out type_device_sch);
+		device : in out type_device_electrical);
 
 
 
@@ -947,7 +948,7 @@ package et_devices_electrical is
 	-- Returns properties of the given device and its units.
 	-- See comments of function get_unit_properties regarding linebreaks:
 	function get_device_properties (
-		device		: in type_device_sch;
+		device		: in type_device_electrical;
 		level		: in type_properties_level;
 		linebreaks	: in boolean := false)
 		return string;
@@ -956,7 +957,7 @@ package et_devices_electrical is
 
 	
 	-- function get_properties (
-	-- 	device		: in type_device_sch;
+	-- 	device		: in type_device_electrical;
 	-- 	level		: in type_properties_level;
 	-- 	all_units	: in boolean := true;
 	-- 	unit		: in pac_unit_name.bounded_string := unit_name_default)
@@ -1031,7 +1032,7 @@ package et_devices_electrical is
 	-- Sets all units or an explicitly given unit as selected.
 	-- If all_units is true, then the parameter "unit" is ignored: 
 	procedure select_unit (
-		device		: in out type_device_sch;
+		device		: in out type_device_electrical;
 		all_units	: in boolean;
 		unit_name	: in pac_unit_name.bounded_string);
 

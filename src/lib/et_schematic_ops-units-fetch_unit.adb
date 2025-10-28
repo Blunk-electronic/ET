@@ -93,7 +93,7 @@ is
 			-- The unit to be added is accessed by unit_cursors.int.
 			procedure do_it (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) 
+				device		: in out type_device_electrical) 
 			is
 				placeholders : type_default_placeholders;
 			begin
@@ -157,7 +157,7 @@ is
 			-- The unit to be added is accessed by unit_cursors.ext.
 			procedure do_it (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) 
+				device		: in out type_device_electrical) 
 			is
 				use et_symbol_name;
 				use et_symbol_library;

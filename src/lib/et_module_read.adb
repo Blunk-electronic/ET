@@ -1429,7 +1429,7 @@ package body et_module_read is
 		schematic_text : et_schematic_text.type_text;
 
 		-- The temporarily device will exist where "device" points at:
-		device					: access et_devices_electrical.type_device_sch;
+		device					: access et_devices_electrical.type_device_electrical;
 		
 		device_name				: et_device_name.type_device_name; -- C12
 		device_model			: et_device_model_names.pac_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
@@ -2641,12 +2641,12 @@ package body et_module_read is
 
 				case device_appearance is
 					when APPEARANCE_VIRTUAL =>
-						device := new type_device_sch'(
+						device := new type_device_electrical'(
 							appearance	=> APPEARANCE_VIRTUAL,
 							others		=> <>);
 
 					when APPEARANCE_PCB =>
-						device := new type_device_sch'(
+						device := new type_device_electrical'(
 							appearance	=> APPEARANCE_PCB,
 							others		=> <>);
 				end case;

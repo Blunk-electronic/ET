@@ -1656,7 +1656,7 @@ procedure draw_packages is
 	
 	procedure query_electrical_device (
 		name	: in type_device_name;
-		device	: in type_device_sch)
+		device	: in type_device_electrical)
 	is
 		-- The cursor to the actual device model:
 		use et_device_library;

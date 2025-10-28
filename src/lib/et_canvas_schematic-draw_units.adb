@@ -837,7 +837,7 @@ procedure draw_units is
 		-- This procedure draws the units of the candidate device:
 		procedure query_device (
 			device_name	: in type_device_name;
-			device		: in type_device_sch)
+			device		: in type_device_electrical)
 		is
 			use pac_units;
 			unit_cursor : pac_units.cursor := device.units.first;

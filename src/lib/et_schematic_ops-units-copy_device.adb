@@ -90,7 +90,7 @@ is
 		-- Afterward the cursor device_cursor_sch will be pointing to
 		-- the new device:
 		procedure copy_bare_device is
-			original : type_device_sch renames element (device_cursor_sch);
+			original : type_device_electrical renames element (device_cursor_sch);
 			inserted : boolean;
 		begin
 			log (text => "copy_bare_device", level => log_threshold + 1);
@@ -149,7 +149,7 @@ is
 		-- The unit to be added is accessed by first_available_unit.int.
 		procedure add_unit_internal (
 			device_name	: in type_device_name;
-			device		: in out type_device_sch) 
+			device		: in out type_device_electrical) 
 		is 
 
 			-- This procedure composes the virtual unit and adds
@@ -225,7 +225,7 @@ is
 		-- The unit to be added is accessed by unit_cursors.ext.
 		procedure add_unit_external (
 			device_name	: in type_device_name;
-			device		: in out type_device_sch) 
+			device		: in out type_device_electrical) 
 		is
 
 

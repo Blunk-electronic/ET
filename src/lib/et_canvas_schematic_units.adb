@@ -2354,7 +2354,7 @@ package body et_canvas_schematic_units is
 				-- Sets the in_use flag if given unit is already in use:
 				procedure query_in_use (
 					device_name	: in type_device_name;
-					device		: in type_device_sch) 
+					device		: in type_device_electrical) 
 				is
 					use pac_units;
 				begin

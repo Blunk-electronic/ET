@@ -1607,7 +1607,7 @@ is
 					procedure query_device (
 						device_cursor : in pac_devices_sch.cursor) 
 					is
-						device : type_device_sch renames element (device_cursor);
+						device : type_device_electrical renames element (device_cursor);
 						mirror : type_mirror;
 					begin						
 						if is_real (device_cursor) then

@@ -1031,7 +1031,7 @@ package body et_module_write is
 			
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in type_device_sch) 
+				device		: in type_device_electrical) 
 			is
 				use et_schematic_coordinates;
 				use et_units;
@@ -1095,7 +1095,7 @@ package body et_module_write is
 			
 			procedure query_placeholders (
 				device_name : in type_device_name;
-				device 		: in type_device_sch) 
+				device 		: in type_device_electrical) 
 			is
 				use et_pcb_sides;
 				use et_board_coordinates;

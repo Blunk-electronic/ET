@@ -148,7 +148,7 @@ package body et_board_ops.devices is
 			
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch)
+				device		: in out type_device_electrical)
 			is begin
 				modify_status (device, operation);
 			end query_device;
@@ -197,7 +197,7 @@ package body et_board_ops.devices is
 			
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch)
+				device		: in out type_device_electrical)
 			is begin
 				modify_status (device, operation);
 			end query_device;
@@ -246,7 +246,7 @@ package body et_board_ops.devices is
 			
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch)
+				device		: in out type_device_electrical)
 			is begin
 				log (text => to_string (device_name), level => log_threshold + 1);
 				set_proposed (device.status);
@@ -440,7 +440,7 @@ package body et_board_ops.devices is
 			
 			procedure set_position ( -- of an electric device
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) 
+				device		: in out type_device_electrical) 
 			is begin
 				case coordinates is
 					when ABSOLUTE =>
@@ -549,7 +549,7 @@ package body et_board_ops.devices is
 
 			procedure set_rotation ( -- of an electric device
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) 
+				device		: in out type_device_electrical) 
 			is begin
 				case coordinates is
 					when ABSOLUTE =>
@@ -654,7 +654,7 @@ package body et_board_ops.devices is
 			
 			procedure flip ( -- electric device
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) 
+				device		: in out type_device_electrical) 
 			is				
 				-- face_before : constant type_face := get_face (device.position);
 			begin
@@ -1685,7 +1685,7 @@ package body et_board_ops.devices is
 			-- according to the given flag:
 			procedure query_electrical_device (
 				name	: in type_device_name;
-				device	: in type_device_sch) 
+				device	: in type_device_electrical) 
 			is 
 
 				procedure collect is begin

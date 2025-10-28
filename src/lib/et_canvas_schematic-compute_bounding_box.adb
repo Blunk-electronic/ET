@@ -250,7 +250,7 @@ is
 
 				
 				procedure query_device (c : in pac_devices_sch.cursor) is
-					device : type_device_sch renames element (c);					
+					device : type_device_electrical renames element (c);					
 				begin
 					if debug then
 						put_line (get_device_name (c));

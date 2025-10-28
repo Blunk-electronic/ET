@@ -55,7 +55,7 @@ package body et_devices_electrical is
 
 
 	function is_real (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return boolean
 	is begin
 		if device.appearance = APPEARANCE_PCB then
@@ -69,7 +69,7 @@ package body et_devices_electrical is
 	
 	
 	function get_unit_names_deployed (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return pac_unit_names.list
 	is 
 		result : pac_unit_names.list;
@@ -89,7 +89,7 @@ package body et_devices_electrical is
 
 	
 	function get_unit_count (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return natural
 	is 
 		result : natural;
@@ -109,7 +109,7 @@ package body et_devices_electrical is
 
 	
 	function get_unit_count_deployed (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return natural
 	is begin
 		return natural (device.units.length);
@@ -119,7 +119,7 @@ package body et_devices_electrical is
 	
 
 	function get_device_model_file (
-		device : type_device_sch)
+		device : type_device_electrical)
 		return pac_device_model_file.bounded_string
 	is begin
 		return device.model;
@@ -129,7 +129,7 @@ package body et_devices_electrical is
 	
 
 	function get_device_model (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return pac_devices_lib.cursor
 	is
 		use et_device_model_names;
@@ -147,7 +147,7 @@ package body et_devices_electrical is
 
 
 	function get_package_variant (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return pac_package_variant_name.bounded_string
 	is begin
 		return device.variant;
@@ -156,7 +156,7 @@ package body et_devices_electrical is
 	
 
 	function get_available_package_variants (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return pac_package_variants.map
 	is
 		result : pac_package_variants.map;
@@ -174,7 +174,7 @@ package body et_devices_electrical is
 
 
 	function get_package_model_name (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return pac_package_model_file_name.bounded_string
 	is
 		device_cursor_lib : pac_devices_lib.cursor;
@@ -190,7 +190,7 @@ package body et_devices_electrical is
 	
 
 	function get_first_unit (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return pac_units.cursor
 	is begin
 		return device.units.first;
@@ -230,7 +230,7 @@ package body et_devices_electrical is
 	
 
 	function locate_unit (
-		device	: in type_device_sch;
+		device	: in type_device_electrical;
 		unit	: in pac_unit_name.bounded_string)
 		return pac_units.cursor
 	is begin
@@ -424,7 +424,7 @@ package body et_devices_electrical is
 		
 		procedure query_unit (
 			device_name	: in type_device_name;
-			device		: in type_device_sch)
+			device		: in type_device_electrical)
 		is begin
 			-- get the coordinates of the unit
 			unit_position := element (unit).position;
@@ -470,7 +470,7 @@ package body et_devices_electrical is
 		
 		procedure query_device (
 			device_name	: in type_device_name;
-			device		: in type_device_sch)
+			device		: in type_device_electrical)
 		is 
 			unit_cursor : pac_units.cursor;
 		begin
@@ -511,7 +511,7 @@ package body et_devices_electrical is
 		
 		procedure get_positions (
 			device_name : in type_device_name;
-			device		: in type_device_sch) 
+			device		: in type_device_electrical) 
 		is begin
 			positions := get_unit_positions (device.units);
 		end;
@@ -775,7 +775,7 @@ package body et_devices_electrical is
 		
 		procedure query_unit (
 			device_name	: in type_device_name;
-			device		: in type_device_sch)
+			device		: in type_device_electrical)
 		is begin
 			-- get the coordinates of the unit
 			unit_position := element (unit).position;
@@ -842,7 +842,7 @@ package body et_devices_electrical is
 		return type_conductor_objects
 	is
 		conductors : type_conductor_objects; -- to be returned
-		device : type_device_sch renames element (device_cursor);
+		device : type_device_electrical renames element (device_cursor);
 		packge : pac_package_models.cursor;
 
 		use et_board_geometry;
@@ -886,7 +886,7 @@ package body et_devices_electrical is
 		result : pac_polygon_list.list;
 		use et_contour_to_polygon;
 		
-		device : type_device_sch renames element (device_cursor);
+		device : type_device_electrical renames element (device_cursor);
 		packge : pac_package_models.cursor;
 		conductors : type_conductor_objects; -- non-electrical
 
@@ -935,7 +935,7 @@ package body et_devices_electrical is
 	is	
 		use et_route_restrict.packages;
 		restrict : type_one_side; -- to be returned
-		device : type_device_sch renames element (device_cursor);
+		device : type_device_electrical renames element (device_cursor);
 		packge : pac_package_models.cursor;
 
 		use et_board_geometry;
@@ -972,7 +972,7 @@ package body et_devices_electrical is
 		return et_board_geometry.pac_polygons.pac_polygon_list.list
 	is
 		
-		device : type_device_sch renames element (device_cursor);
+		device : type_device_electrical renames element (device_cursor);
 		packge : pac_package_models.cursor;
 
 		use et_route_restrict.packages;
@@ -1024,7 +1024,7 @@ package body et_devices_electrical is
 		use et_via_restrict.packages;
 		restrict : type_one_side; -- to be returned
 		
-		device : type_device_sch renames element (device_cursor);
+		device : type_device_electrical renames element (device_cursor);
 		packge : pac_package_models.cursor;
 
 		use et_board_geometry;
@@ -1070,7 +1070,7 @@ package body et_devices_electrical is
 		use et_board_geometry.pac_geometry_2;
 
 		result : type_keepout;
-		device : type_device_sch renames element (device_cursor);
+		device : type_device_electrical renames element (device_cursor);
 		packge : pac_package_models.cursor;
 		rotation : et_board_geometry.type_rotation_model;
 
@@ -1129,7 +1129,7 @@ package body et_devices_electrical is
 		use et_board_geometry.pac_geometry_2;
 		
 		result : type_stencil;
-		device : type_device_sch renames element (device_cursor);
+		device : type_device_electrical renames element (device_cursor);
 		packge : pac_package_models.cursor;
 		rotation : et_board_geometry.type_rotation_model;
 	begin
@@ -1185,7 +1185,7 @@ package body et_devices_electrical is
 		use et_board_geometry.pac_geometry_2;
 		
 		result : type_stopmask;
-		device : type_device_sch renames element (device_cursor);
+		device : type_device_electrical renames element (device_cursor);
 		packge : pac_package_models.cursor;
 		rotation : et_board_geometry.type_rotation_model;
 
@@ -1240,7 +1240,7 @@ package body et_devices_electrical is
 		placeholder		: in et_device_placeholders.packages.type_placeholder)
 		return et_text.pac_text_content.bounded_string 
 	is
-		device : type_device_sch renames element (device_cursor);
+		device : type_device_electrical renames element (device_cursor);
 
 		use et_text;
 		result : pac_text_content.bounded_string;
@@ -1434,7 +1434,7 @@ package body et_devices_electrical is
 		use et_board_text;
 		
 		result : type_silkscreen;
-		device : type_device_sch renames element (device_cursor);
+		device : type_device_electrical renames element (device_cursor);
 		packge : pac_package_models.cursor;
 		rotation : et_board_geometry.type_rotation_model;
 
@@ -1544,7 +1544,7 @@ package body et_devices_electrical is
 		use et_board_text;
 
 		result : type_assy_doc;
-		device : type_device_sch renames element (device_cursor);
+		device : type_device_electrical renames element (device_cursor);
 		packge : pac_package_models.cursor;
 		rotation : et_board_geometry.type_rotation_model;
 
@@ -1646,7 +1646,7 @@ package body et_devices_electrical is
 		
 		holes : pac_holes.list; -- to be returned
 		
-		device : type_device_sch renames element (device_cursor);
+		device : type_device_electrical renames element (device_cursor);
 		packge : pac_package_models.cursor;
 
 		rotation : et_board_geometry.type_rotation_model;
@@ -1682,7 +1682,7 @@ package body et_devices_electrical is
 	is
 		holes : pac_holes.list;
 		
-		device : type_device_sch renames element (device_cursor);
+		device : type_device_electrical renames element (device_cursor);
 		packge : pac_package_models.cursor;
 		
 		use et_board_geometry;
@@ -1721,7 +1721,7 @@ package body et_devices_electrical is
 	
 	
 	procedure set_selected (
-		device : in out type_device_sch)
+		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
 			set_selected (device.status);
@@ -1732,7 +1732,7 @@ package body et_devices_electrical is
 	
 	
 	procedure clear_selected (
-		device : in out type_device_sch)
+		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
 			clear_selected (device.status);
@@ -1742,7 +1742,7 @@ package body et_devices_electrical is
 
 	
 	function is_selected (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return boolean
 	is begin
 		if is_real (device) then
@@ -1760,7 +1760,7 @@ package body et_devices_electrical is
 	
 	
 	procedure set_proposed (
-		device : in out type_device_sch)
+		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
 			set_proposed (device.status);
@@ -1770,7 +1770,7 @@ package body et_devices_electrical is
 
 	
 	procedure clear_proposed (
-		device : in out type_device_sch)
+		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
 			clear_proposed (device.status);
@@ -1780,7 +1780,7 @@ package body et_devices_electrical is
 	
 	
 	function is_proposed (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return boolean
 	is begin
 		if is_real (device) then
@@ -1797,7 +1797,7 @@ package body et_devices_electrical is
 
 
 	procedure set_moving (
-		device : in out type_device_sch)
+		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
 			set_moving (device.status);
@@ -1806,7 +1806,7 @@ package body et_devices_electrical is
 	
 
 	procedure clear_moving (
-		device : in out type_device_sch)
+		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
 			clear_moving (device.status);
@@ -1816,7 +1816,7 @@ package body et_devices_electrical is
 	
 	
 	function is_moving (
-		device : in type_device_sch)
+		device : in type_device_electrical)
 		return boolean
 	is begin
 		if is_real (device) then
@@ -1837,7 +1837,7 @@ package body et_devices_electrical is
 	
 
 	procedure modify_status (
-		device		: in out type_device_sch;
+		device		: in out type_device_electrical;
 		operation	: in type_status_operation)
 	is begin
 		if is_real (device) then
@@ -1849,7 +1849,7 @@ package body et_devices_electrical is
 
 	
 	procedure reset_status (
-		device : in out type_device_sch)
+		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
 			reset_status (device.status);
@@ -1864,7 +1864,7 @@ package body et_devices_electrical is
 		device : in pac_devices_sch.cursor)
 		return boolean 
 	is 
-		d : type_device_sch renames element (device);
+		d : type_device_electrical renames element (device);
 	begin
 		return is_real (d);
 	end is_real;
@@ -1877,7 +1877,7 @@ package body et_devices_electrical is
 		device : in pac_devices_sch.cursor)
 		return boolean
 	is 
-		d : type_device_sch renames element (device);
+		d : type_device_electrical renames element (device);
 	begin
 		if is_proposed (d) then
 			return true;
@@ -1894,7 +1894,7 @@ package body et_devices_electrical is
 		device : in pac_devices_sch.cursor)
 		return boolean
 	is 
-		d : type_device_sch renames element (device);
+		d : type_device_electrical renames element (device);
 	begin
 		if is_selected (d) then
 			return true;
@@ -1911,7 +1911,7 @@ package body et_devices_electrical is
 		device : in pac_devices_sch.cursor)
 		return boolean
 	is 
-		d : type_device_sch renames element (device);
+		d : type_device_electrical renames element (device);
 	begin
 		if is_moving (d) then
 			return true;
@@ -2037,7 +2037,7 @@ package body et_devices_electrical is
 		device : in pac_devices_sch.cursor)
 		return pac_package_variant_name.bounded_string
 	is 
-		d : type_device_sch renames element (device);
+		d : type_device_electrical renames element (device);
 	begin
 		return get_package_variant (d);
 	end get_package_variant;
@@ -2048,7 +2048,7 @@ package body et_devices_electrical is
 		device : in pac_devices_sch.cursor)
 		return pac_package_variants.map
 	is
-		d : type_device_sch renames element (device);
+		d : type_device_electrical renames element (device);
 	begin
 		return get_available_package_variants (d);
 	end;
@@ -2108,7 +2108,7 @@ package body et_devices_electrical is
 	
 	
 	function get_device_properties (
-		device		: in type_device_sch;
+		device		: in type_device_electrical;
 		level		: in type_properties_level;
 		linebreaks	: in boolean := false)
 		return string
@@ -2191,7 +2191,7 @@ package body et_devices_electrical is
 	
 	
 	-- function get_unit_properties (
-	-- 	device		: in type_device_sch;
+	-- 	device		: in type_device_electrical;
 	-- 	level		: in type_properties_level;
 	-- 	all_units	: in boolean := true;
 	-- 	unit		: in pac_unit_name.bounded_string := unit_name_default)
@@ -2215,7 +2215,7 @@ package body et_devices_electrical is
 		use ada.strings.unbounded;
 		units_info : unbounded_string;
 
-		device : type_device_sch renames element (device_cursor);
+		device : type_device_electrical renames element (device_cursor);
 
 
 		-- If linebreaks are requested by the caller, then
@@ -2239,7 +2239,7 @@ package body et_devices_electrical is
 
 			procedure query_device (
 				device_name	: in type_device_name;
-				device		: in type_device_sch)
+				device		: in type_device_electrical)
 			is 
 				unit_cursor : pac_units.cursor := device.units.first;
 			begin
@@ -2415,7 +2415,7 @@ package body et_devices_electrical is
 	
 
 	procedure select_unit (
-		device		: in out type_device_sch;
+		device		: in out type_device_electrical;
 		all_units	: in boolean;
 		unit_name	: in pac_unit_name.bounded_string)
 	is
