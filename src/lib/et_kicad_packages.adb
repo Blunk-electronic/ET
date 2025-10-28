@@ -573,7 +573,7 @@ package body et_kicad_packages is
 
 		-- By default a package is something real (with x,y,z dimension)
 		use et_package_appearance;
-		package_appearance : type_package_appearance := APPEARANCE_REAL;
+		package_appearance : type_bom_relevant := APPEARANCE_REAL;
 
 		line	: type_line;
 		arc		: type_arc;

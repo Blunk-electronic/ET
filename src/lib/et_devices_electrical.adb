@@ -1991,19 +1991,19 @@ package body et_devices_electrical is
 
 
 
-	function has_real_package (
+	function is_bom_relevant (
 		device : in pac_devices_sch.cursor) 
 		return boolean 
 	is
-		package_name : pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
+		package_model : pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
 	begin
-		-- get the package name of the given device:
-		package_name := get_package_model_name (device);
+		-- Get the package model name of the given device:
+		package_model := get_package_model_name (device);
 
-		-- ask for the package status (real or virtual) and return the result right away:
-		return is_real (package_name);
-	end has_real_package;
+		return is_bom_relevant (package_model);
+	end is_bom_relevant;
 
+	
 	
 
 	function get_value (

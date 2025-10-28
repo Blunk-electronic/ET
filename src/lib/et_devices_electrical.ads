@@ -859,10 +859,12 @@ package et_devices_electrical is
 		return pac_package_models.cursor;
 
 
-	-- Returns true if the given device has a real package.
-	-- The given device must have appearance SCH_PCB. 
-	-- Otherwise a constraint error is raised.
-	function has_real_package (
+	-- Returns true if the given device has a
+	-- a real package with a height, means if it is relevant 
+	-- for creating bill of materials (BOM).	
+	-- The given device itself must be real (means it has a counterpart
+	-- in the board drawing). Otherwise a constraint error is raised.
+	function is_bom_relevant (
 		device : in pac_devices_sch.cursor)
 		return boolean;
 

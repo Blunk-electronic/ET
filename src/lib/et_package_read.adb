@@ -95,7 +95,7 @@ package body et_package_read is
 		-- Once the appearance has been read, a new package will be created where this 
 		-- pointer is pointing at:
 		packge					: access type_package_model;
-		pac_appearance			: type_package_appearance := package_appearance_default;
+		pac_appearance			: type_bom_relevant := package_appearance_default;
 
 		-- The description and technology will be assigned once the complete
 		-- model has been read. See main of this procedure.

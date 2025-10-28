@@ -418,7 +418,7 @@ package body et_board_ops is
 						if element (cursor_schematic).appearance = APPEARANCE_PCB then -- skip virtual devices
 
 							-- the package of the device must be real
-							if has_real_package (cursor_schematic) then
+							if is_bom_relevant (cursor_schematic) then
 							
 								device_name := pac_devices_sch.key (cursor_schematic);
 
@@ -461,7 +461,7 @@ package body et_board_ops is
 						if element (cursor_schematic).appearance = APPEARANCE_PCB then -- skip virtual devices
 
 							-- the package of the device must be real
-							if has_real_package (cursor_schematic) then
+							if is_bom_relevant (cursor_schematic) then
 													
 								device_name := pac_devices_sch.key (cursor_schematic);
 								

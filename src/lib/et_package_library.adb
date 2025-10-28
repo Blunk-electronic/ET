@@ -121,7 +121,7 @@ package body et_package_library is
 	
 	procedure create_package (
 		package_name 	: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
-		appearance		: in type_package_appearance;
+		appearance		: in type_bom_relevant;
 		log_threshold	: in type_log_level) 
 	is begin
 		log (text => "creating package" & pac_package_model_file_name.to_string (package_name),
@@ -169,19 +169,32 @@ package body et_package_library is
 	end;
 
 
+
+
+	function is_bom_relevant (
+		package_cursor : in pac_package_models.cursor) 
+		return boolean 
+	is
+		p : type_package_model renames element (package_cursor);
+	begin
+		return is_bom_relevant (p);
+	end is_bom_relevant;
+
+
+
 	
-	function is_real (package_name : in pac_package_model_file_name.bounded_string) return boolean is
-			use pac_package_models;
+	
+	function is_bom_relevant (
+		package_model : in pac_package_model_file_name.bounded_string) 
+		return boolean 
+	is
 		cursor : pac_package_models.cursor;
 	begin
-		cursor := find (package_models, package_name);
+		cursor := get_package_model (package_model);
 
-		if element (cursor).appearance = APPEARANCE_REAL then
-			return true;
-		else
-			return false;
-		end if;
-	end is_real;
+		return is_bom_relevant (cursor);
+	end is_bom_relevant;
+
 
 
 	

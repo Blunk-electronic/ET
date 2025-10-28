@@ -181,7 +181,7 @@ package et_package_library is
 	-- Creates a package and stores the package in container et_packages.packages.								 
 	procedure create_package (
 		package_name 	: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
-		appearance		: in type_package_appearance;
+		appearance		: in type_bom_relevant;
 		log_threshold	: in type_log_level);
 
 
@@ -192,9 +192,21 @@ package et_package_library is
 		model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
 		return pac_package_models.cursor;
 
+
+	-- Returns true if the given package is
+	-- a real package with a height, means if it is relevant 
+	-- for creating bill of materials (BOM):
+	function is_bom_relevant (
+		package_cursor : in pac_package_models.cursor)
+		return boolean;
+
 	
-	-- Returns true if the given package is real (means it has a height).
-	function is_real (package_name : in pac_package_model_file_name.bounded_string) return boolean;
+	
+	-- Returns true if the given package model (via the model file name)
+	-- is relevant for creating bill of materials (BOM):
+	function is_bom_relevant (
+		package_model : in pac_package_model_file_name.bounded_string) 
+		return boolean;
 
 	
 	-- Returns a cursor to the requested terminal (with all its properties) 

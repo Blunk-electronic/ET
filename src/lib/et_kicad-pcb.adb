@@ -518,7 +518,7 @@ package body et_kicad.pcb is
 		package_technology 	: type_assembly_technology := THT;
 
 		-- By default a package is something real (with x,y,z dimension)
-		package_appearance 	: type_package_appearance := APPEARANCE_REAL;
+		package_appearance 	: type_bom_relevant := APPEARANCE_REAL;
 
 		package_text 		: type_text_package;
 		package_reference 	: type_device_name := default_component_reference;

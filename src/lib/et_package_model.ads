@@ -206,7 +206,7 @@ package et_package_model is
 -- PACKAGE MODEL
 	
 	-- This is the base type of a package:
-	type type_package_base (appearance : type_package_appearance) is abstract tagged record
+	type type_package_base (appearance : type_bom_relevant) is abstract tagged record
 		description		: pac_package_description.bounded_string;
 		conductors		: type_conductor_objects_both_sides; -- non-electric objects
 		keepout 		: type_keepout_both_sides;
@@ -222,10 +222,10 @@ package et_package_model is
 		
 		technology		: type_assembly_technology := SMT; -- set by majority of terminals
 		
-		-- Only REAL packages have 3d contours:
 		case appearance is
-			when APPEARANCE_REAL =>
+			when APPEARANCE_REAL =>				
 				null; -- CS
+				
 			when APPEARANCE_VIRTUAL =>
 				null; -- fiducials, testpoints, board edge connectors, ...
 		end case;
@@ -247,6 +247,13 @@ package et_package_model is
 
 
 
+	-- Returns true if the given package is
+	-- a real package with a height, means if it is relevant 
+	-- for creating bill of materials (BOM):
+	function is_bom_relevant (
+		packge : in type_package_model)
+		return boolean;
+	
 
 
 	-- Rotates/mirrors/moves the contours of stop mask, stencil, holes, ...

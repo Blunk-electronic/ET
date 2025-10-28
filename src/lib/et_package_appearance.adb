@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -46,10 +46,10 @@ package body et_package_appearance is
 
 
 	function to_string (
-		appearance : in type_package_appearance) 
+		appearance : in type_bom_relevant) 
 		return string 
 	is 
-		s : string := to_lower (type_package_appearance'image (appearance));
+		s : string := to_lower (type_bom_relevant'image (appearance));
 	begin
 		return s (appearance_prefix'length + 1 .. s'last); 
 	end;
@@ -57,9 +57,9 @@ package body et_package_appearance is
 	
 	function to_appearance (
 		appearance : in string) 
-		return type_package_appearance 
+		return type_bom_relevant 
 	is begin
-		return type_package_appearance'value (appearance_prefix & appearance);
+		return type_bom_relevant'value (appearance_prefix & appearance);
 	end;
 	
 	

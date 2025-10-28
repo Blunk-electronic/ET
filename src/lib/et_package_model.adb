@@ -186,6 +186,18 @@ package body et_package_model is
 	
 	
 	
+
+	function is_bom_relevant (
+		packge : in type_package_model)
+		return boolean
+	is begin
+		if packge.appearance = APPEARANCE_REAL then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
 	
 
 	

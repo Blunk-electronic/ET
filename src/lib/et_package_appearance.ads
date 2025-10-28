@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,32 +36,61 @@
 --
 --   history of changes:
 --
-
+-- DESCRIPTION:
+--
+-- Usually a device has a package (or a housing or a case).
+-- Other CAE tools use the term "footprint".
+-- There are devices which have a physical representation
+-- in the board drawing but they are not mountable, they can not be
+-- assembled because:
+--
+-- 1. they exist just because of a certain shape of the PCB.
+--    Examples: edge connectors, mounting holes
+--
+-- 2. they consist of conductors (copper structures) and some
+--    silkscreen. Examples: Testpoints, Conductor pads where spring
+--    connectors are hooked up.
+--
+-- 3. they do not have a height. Means there is no z-component.
+--
+-- The fact that a packge has no real device implies that such a 
+-- device never appears in material lists (BOM - Bill Of Material).
+--
+-- So in this package the types and subprograms required to
+-- distinguish between real packages and virtual packages are
+-- provided.
 
 
 package et_package_appearance is
 
 
 	appearance_prefix : constant string := "APPEARANCE_";
-	
-	type type_package_appearance is (
-		APPEARANCE_REAL,	-- packages with x,y,z dimension
-		APPEARANCE_VIRTUAL -- for things that do not have a real package 
-				-- (like testpoints, edge connectors, mounting holes, fiducials, ...)
-		);	
 
 	
-	package_appearance_default : constant type_package_appearance := APPEARANCE_REAL;
+	type type_bom_relevant is (
+								  
+		-- Real packages with x,y,z dimension:
+		APPEARANCE_REAL,	
+
+		-- For packages that do not appear in
+		-- material lists, which do not have a real package 
+		-- (like testpoints, edge connectors, 
+		-- mounting holes, fiducials, ...):
+		APPEARANCE_VIRTUAL);	
+
+	
+	
+	package_appearance_default : constant type_bom_relevant := APPEARANCE_REAL;
 
 	
 	function to_string (
-		appearance : in type_package_appearance) 
+		appearance : in type_bom_relevant) 
 		return string;
 
 	
 	function to_appearance (
 		appearance : in string) 
-		return type_package_appearance;
+		return type_bom_relevant;
 
 	
 	
