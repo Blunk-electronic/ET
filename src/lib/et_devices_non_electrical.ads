@@ -431,7 +431,7 @@ package et_devices_non_electrical is
 	
 	-- Returns the current position (x/y) of the 
 	-- given non-electrical device:
-	function get_position ( -- CS rename to get_place
+	function get_place (
 		device_cursor	: in pac_devices_non_electrical.cursor) -- FD1
 		return type_vector_model;
 

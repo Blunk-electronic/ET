@@ -565,14 +565,14 @@ package body et_devices_non_electrical is
 
 	
 
-	function get_position (
+	function get_place (
 		device_cursor	: in pac_devices_non_electrical.cursor) -- FD1
 		return type_vector_model
 	is 
 		device : type_device_non_electrical renames element (device_cursor);
 	begin
 		return get_place (device);
-	end get_position;
+	end;
 
 
 
@@ -584,7 +584,7 @@ package body et_devices_non_electrical is
 	is
 		p : type_vector_model;
 	begin
-		p := get_position (device_cursor);
+		p := get_place (device_cursor);
 		return to_string (p, format);
 	end;
 

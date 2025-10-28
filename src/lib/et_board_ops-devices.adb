@@ -1091,7 +1091,7 @@ package body et_board_ops.devices is
 					
 				if in_catch_zone (
 					zone	=> catch_zone, 
-					point	=> get_position (device_cursor)) 
+					point	=> get_place (device_cursor)) 
 				then
 					-- log_indentation_up;
 					-- log (text => "in catch zone", level => log_threshold + 1);
