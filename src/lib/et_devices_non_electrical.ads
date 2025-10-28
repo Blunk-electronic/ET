@@ -60,6 +60,9 @@ with et_package_library;				use et_package_library;
 with et_package_name;					use et_package_name;
 with et_package_model_name;				use et_package_model_name;
 with et_device_name;					use et_device_name;
+with et_device_value;					use et_device_value;
+with et_device_purpose;					use et_device_purpose;
+with et_device_partcode;				use et_device_partcode;
 with et_device_property_level;			use et_device_property_level;
 with et_pcb_stack;						use et_pcb_stack;
 with et_pcb_contour;					use et_pcb_contour;
@@ -107,15 +110,20 @@ package et_devices_non_electrical is
 	-- are modelled via package models:
 	
 	type type_device_non_electric is record
+	-- CS rename to type_device_non_electrical
 		position			: et_board_coordinates.type_package_position; -- incl. rotation and face
 		text_placeholders	: type_text_placeholders;
 		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
 		-- CS cursor to package model instead ?
 
-		-- CS ?
-		--value		: pac_device_value.bounded_string; -- 470R
-		--partcode	: pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-		--purpose		: pac_device_purpose.bounded_string; -- brightness_control
+		-- A value will rarely be assigned. But in case it is required:
+		value		: pac_device_value.bounded_string;
+
+		-- The partcode:
+		partcode	: pac_device_partcode.bounded_string;
+
+		-- A purpose will rarely be assigned. But in case it is required:
+		purpose		: pac_device_purpose.bounded_string;
 
 		status : type_object_status;
 	end record;
@@ -127,6 +135,21 @@ package et_devices_non_electrical is
 	function get_package_model_name (
 		device	: in type_device_non_electric)
 		return pac_package_model_file_name.bounded_string;
+
+
+
+	-- CS
+	-- procedure set_value (
+	-- 	device	: in out type_device_non_electric;
+	-- 	value	: in pac_device_value.bounded_string);
+
+	-- function get_value (
+	-- 	device	: in type_device_non_electric)
+	-- 	return pac_device_value.bounded_string;
+
+	-- likewise for partcode and purpose
+
+	-- CS set_position, get_position
 	
 	
 	procedure set_proposed (
@@ -202,7 +225,8 @@ package et_devices_non_electrical is
 	
 	
 	-- CS: this should be a hashed map:
-	package pac_devices_non_electric is new ordered_maps ( -- CS rename to pac_devices_non_electrical
+	package pac_devices_non_electric is new ordered_maps ( 
+	-- CS rename to pac_devices_non_electrical
 		key_type		=> type_device_name, -- H1, FD2, ...
 		element_type	=> type_device_non_electric);
 

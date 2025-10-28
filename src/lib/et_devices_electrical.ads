@@ -118,6 +118,7 @@ package et_devices_electrical is
 
 	-- This is a device as it appears in the schematic.
 	type type_device_sch (appearance : type_appearance_schematic) is record
+	-- CS: rename to type_device_electrical
 
 		-- The link to the device model like ../libraries/devices/transistor/pnp.dev
 		model	: pac_device_model_file.bounded_string;
@@ -193,6 +194,22 @@ package et_devices_electrical is
 		device : in type_device_sch)
 		return natural;
 
+
+
+	-- CS
+	-- procedure set_value (
+	-- 	device	: in out type_device_electrical;
+	-- 	value	: in pac_device_value.bounded_string);
+
+	-- function get_value (
+	-- 	device	: in type_device_electrical)
+	-- 	return pac_device_value.bounded_string;
+
+	-- likewise for partcode and purpose
+
+	-- CS set_position, get_position
+
+
 	
 
 	function get_device_model_file (
@@ -248,7 +265,8 @@ package et_devices_electrical is
 	
 	-- The devices of a module are collected in a map.
 	-- CS: This must be a hashed map:
- 	package pac_devices_sch is new indefinite_ordered_maps (
+	package pac_devices_sch is new indefinite_ordered_maps (
+	-- CS rename to pac_devices_electrical
 		key_type		=> type_device_name, -- something like "IC43"
  		element_type	=> type_device_sch);
 

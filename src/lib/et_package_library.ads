@@ -174,7 +174,7 @@ package et_package_library is
 	-- THIS IS THE RIG WIDE PACKAGE (FOOTPRINT) LIBRARY:
 	
 	package_models	 : pac_package_models.map;
-	-- CS rename to library_electrical_devices
+
 
 
 
