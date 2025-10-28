@@ -281,7 +281,7 @@ package body et_canvas.schematic_device_ops is
 	
 
 	procedure build_package_variant_window (
-		device_cursor : in pac_devices_sch.cursor)
+		device_cursor : in pac_devices_electrical.cursor)
 	is 
 		-- Get the device name (like IC2):
 		device_name : constant type_device_name := 

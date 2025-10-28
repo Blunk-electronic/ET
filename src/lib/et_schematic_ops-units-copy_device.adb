@@ -61,7 +61,7 @@ procedure copy_device (
 	log_threshold	: in type_log_level)
 is
 	-- The pointer to the device in the schematic:	
-	device_cursor_sch : pac_devices_sch.cursor;
+	device_cursor_sch : pac_devices_electrical.cursor;
 
 	-- The pointer to the device model:		
 	device_cursor_lib : pac_devices_lib.cursor;

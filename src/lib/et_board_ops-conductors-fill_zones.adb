@@ -283,7 +283,7 @@ is
 				-- Now port contains the device name, unit name and port name.
 				
 				-- Get the cursor to the device in the schematic:
-				device_cursor : constant pac_devices_sch.cursor := 
+				device_cursor : constant pac_devices_electrical.cursor := 
 					get_electrical_device (module_cursor, port.device_name);
 
 				-- Get the cursor to the physical terminal (in the package model)
@@ -499,7 +499,7 @@ is
 		-- offsets them by the zone_clearance + half_linewidth_float and
 		-- finally appends them to the result:
 		procedure extract_unconnected_terminals (
-			device_cursor : in pac_devices_sch.cursor) 
+			device_cursor : in pac_devices_electrical.cursor) 
 		is
 			use et_board_ops.devices;
 			
@@ -595,12 +595,12 @@ is
 												  
 
 		-- ELECTRICAL DEVICES ----------------------------------------------
-		use pac_devices_sch;
+		use pac_devices_electrical;
 
 		-- This procedure takes a cursor to an electrical device,
 		-- extracts the contours of all its conducting objects and holes, 
 		-- offsets each of then and appends them to the result:
-		procedure query_electrical_device (d : in pac_devices_sch.cursor) is
+		procedure query_electrical_device (d : in pac_devices_electrical.cursor) is
 			polygons : pac_polygon_list.list;
 		begin
 			-- conductors: such text, lines, arcs, circles

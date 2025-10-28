@@ -830,8 +830,8 @@ procedure draw_units is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module)
 	is
-		use pac_devices_sch;
-		device_cursor : pac_devices_sch.cursor := module.devices.first; 
+		use pac_devices_electrical;
+		device_cursor : pac_devices_electrical.cursor := module.devices.first; 
 
 		
 		-- This procedure draws the units of the candidate device:

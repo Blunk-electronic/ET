@@ -2687,8 +2687,8 @@ package body et_kicad_to_native is
 			components_kicad		: et_kicad.schematic.type_components_schematic.map;
 			component_cursor_kicad	: et_kicad.schematic.type_components_schematic.cursor;
 
-			use pac_devices_sch;
-			component_cursor_native	: pac_devices_sch.cursor;
+			use pac_devices_electrical;
+			component_cursor_native	: pac_devices_electrical.cursor;
 			component_inserted		: boolean;
 
 			
@@ -2794,7 +2794,7 @@ package body et_kicad_to_native is
 				case element (component_cursor_kicad).appearance is
 					when APPEARANCE_VIRTUAL =>
 						
-						pac_devices_sch.insert (
+						pac_devices_electrical.insert (
 							container	=> module.devices,
 							key			=> key (component_cursor_kicad), -- PWR04, FLG01
 							position	=> component_cursor_native,
@@ -2826,7 +2826,7 @@ package body et_kicad_to_native is
 -- 						log (text => "placeholders assy bottom" & count_type'image (et_package_library.pac_text_placeholders.length (
 -- 							element (component_cursor_kicad).text_placeholders.assy_doc.bottom)));
 						
-						pac_devices_sch.insert (
+						pac_devices_electrical.insert (
 							container	=> module.devices,
 							key			=> key (component_cursor_kicad), -- IC308, R12
 							position	=> component_cursor_native,
@@ -2851,7 +2851,7 @@ package body et_kicad_to_native is
 				end case;
 
 				-- copy the units from the kicad component to the native device
-				pac_devices_sch.update_element (
+				pac_devices_electrical.update_element (
 					container	=> module.devices,
 					position	=> component_cursor_native,
 					process		=> copy_units'access);

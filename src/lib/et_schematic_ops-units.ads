@@ -66,7 +66,7 @@ package et_schematic_ops.units is
 	function get_electrical_device (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return pac_devices_sch.cursor;
+		return pac_devices_electrical.cursor;
 
 	
 	-- Returns the cursor to the device model
@@ -663,7 +663,7 @@ package et_schematic_ops.units is
 	-- This composite type is meant to identify a unit
 	-- and its parent device in the schematic:
 	type type_object_unit is record
-		device_cursor	: pac_devices_sch.cursor;
+		device_cursor	: pac_devices_electrical.cursor;
 
 		-- If the cursor to the unit is no_element then
 		-- the whole device is addressed:
@@ -797,7 +797,7 @@ package et_schematic_ops.units is
 	-- placeholder of a unit
 	-- and its parent device in the schematic:
 	type type_object_placeholder is record
-		device_cursor	: pac_devices_sch.cursor;
+		device_cursor	: pac_devices_electrical.cursor;
 		unit_cursor		: pac_units.cursor;
 		meaning			: type_placeholder_meaning;
 	end record;

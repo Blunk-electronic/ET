@@ -71,8 +71,8 @@ is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in out type_generic_module) 
 	is
-		use pac_devices_sch;
-		device_cursor_sch : pac_devices_sch.cursor;
+		use pac_devices_electrical;
+		device_cursor_sch : pac_devices_electrical.cursor;
 
 		-- CS:
 		-- There is a lot of code almost the same as with
@@ -100,7 +100,7 @@ is
 				units		=> pac_units.empty_map); -- no units yet
 
 			-- Insert the device in the schematic:
-			pac_devices_sch.insert (
+			pac_devices_electrical.insert (
 				container	=> module.devices,
 				inserted	=> inserted,
 				position	=> device_cursor_sch,
@@ -149,7 +149,7 @@ is
 
 				
 				-- Insert the device in the schematic:
-				pac_devices_sch.insert (
+				pac_devices_electrical.insert (
 					container	=> module.devices,
 					inserted	=> inserted,
 					position	=> device_cursor_sch,

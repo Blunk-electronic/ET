@@ -253,7 +253,7 @@ package et_canvas.schematic_device_ops is
 	-- for example procedure show_package_variant_window 
 	-- in et_canvas_schematic_units):
 	procedure build_package_variant_window (
-		device_cursor : in pac_devices_sch.cursor);
+		device_cursor : in pac_devices_electrical.cursor);
 
 
 	

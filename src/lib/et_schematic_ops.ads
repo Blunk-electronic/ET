@@ -150,7 +150,7 @@ package et_schematic_ops is
 	-- Assumes the default assembly variant:
 	function get_net (
 		module		: in pac_generic_modules.cursor;
-		device		: in pac_devices_sch.cursor;
+		device		: in pac_devices_electrical.cursor;
 		terminal	: in et_terminals.pac_terminal_name.bounded_string) -- H7, 1, 16
 		return pac_nets.cursor;
 

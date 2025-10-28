@@ -2319,7 +2319,7 @@ package body et_canvas_schematic_units is
 		object : constant type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
 		
-		use pac_devices_sch;
+		use pac_devices_electrical;
 	
 		
 		device_model : pac_device_model_file.bounded_string;
@@ -2726,7 +2726,7 @@ package body et_canvas_schematic_units is
 -- 	procedure property_entered (self : access gtk.gentry.gtk_entry_record'class) is 
 -- 		su : type_selected_unit := element (selected_unit);
 -- 
--- 		use pac_devices_sch;
+-- 		use pac_devices_electrical;
 -- 
 -- 		value	: pac_device_value.bounded_string;
 -- 		purpose	: pac_device_purpose.bounded_string;
@@ -2830,7 +2830,7 @@ package body et_canvas_schematic_units is
 -- 		
 -- 		su : type_selected_unit := element (selected_unit);
 -- 
--- 		use pac_devices_sch;
+-- 		use pac_devices_electrical;
 -- 		device_name : constant string := to_string (key (su.device)); -- IC2
 -- 
 -- 		use pac_package_variant_name;
@@ -2918,7 +2918,7 @@ package body et_canvas_schematic_units is
 
 -- 	procedure show_properties_of_selected_device is
 -- 		use et_device_appearance;
--- 		use pac_devices_sch;
+-- 		use pac_devices_electrical;
 -- 		use pac_units;
 -- 		
 -- 		su		: constant type_selected_unit := element (selected_unit);

@@ -60,7 +60,7 @@ package body et_canvas_board_devices is
 
 	use et_canvas_board.pac_canvas;
 	use pac_generic_modules;
-	use pac_devices_sch;
+	use pac_devices_electrical;
 	use pac_devices_non_electrical;
 	
 
@@ -150,7 +150,7 @@ package body et_canvas_board_devices is
 
 		
 		procedure select_first_proposed is 
-			proposed_device : pac_devices_sch.cursor;
+			proposed_device : pac_devices_electrical.cursor;
 			use et_object_status;
 		begin
 			proposed_device := get_first_device (active_module, PROPOSED, log_threshold + 1);
@@ -485,14 +485,14 @@ package body et_canvas_board_devices is
 			use et_commit;
 			use et_object_status;
 
-			selected_device : pac_devices_sch.cursor;
+			selected_device : pac_devices_electrical.cursor;
 		begin
 			log (text => "finalize move", level => log_threshold);
 			log_indentation_up;
 
 			selected_device := get_first_device (active_module, SELECTED, log_threshold + 1);
 			
-			if selected_device /= pac_devices_sch.no_element then
+			if selected_device /= pac_devices_electrical.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -744,14 +744,14 @@ package body et_canvas_board_devices is
 			use et_commit;
 			use et_object_status;
 
-			selected_device : pac_devices_sch.cursor;
+			selected_device : pac_devices_electrical.cursor;
 		begin
 			log (text => "finalizing rotation ...", level => log_threshold);
 			log_indentation_up;
 
 			selected_device := get_first_device (active_module, SELECTED, log_threshold + 1);
 			
-			if selected_device /= pac_devices_sch.no_element then
+			if selected_device /= pac_devices_electrical.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -896,14 +896,14 @@ package body et_canvas_board_devices is
 			use et_commit;
 			use et_object_status;
 
-			selected_device : pac_devices_sch.cursor;
+			selected_device : pac_devices_electrical.cursor;
 		begin
 			log (text => "finalizing flipping ...", level => log_threshold);
 			log_indentation_up;
 
 			selected_device := get_first_device (active_module, SELECTED, log_threshold + 1);
 			
-			if selected_device /= pac_devices_sch.no_element then
+			if selected_device /= pac_devices_electrical.no_element then
 
 				face := get_face (selected_device);
 				toggle (face);

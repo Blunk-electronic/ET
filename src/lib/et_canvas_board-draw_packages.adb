@@ -1716,8 +1716,8 @@ procedure draw_packages is
 	is
 		debug : boolean := false;
 		
-		use pac_devices_sch;
-		cursor_electrical : pac_devices_sch.cursor := 
+		use pac_devices_electrical;
+		cursor_electrical : pac_devices_electrical.cursor := 
 			module.devices.first;
 
 		use et_pcb;

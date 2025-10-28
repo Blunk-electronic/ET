@@ -3408,7 +3408,7 @@ package body et_module_read is
 					use et_package_variant;
 					use pac_package_variant_name;
 					
-					device_cursor : pac_devices_sch.cursor;
+					device_cursor : pac_devices_electrical.cursor;
 					inserted : boolean;
 
 					
@@ -3526,7 +3526,7 @@ package body et_module_read is
 						-- CS: warn operator if provided but ignored due to the fact that device is virtual
 					end if;
 
-					pac_devices_sch.insert (
+					pac_devices_electrical.insert (
 						container	=> module.devices,
 						position	=> device_cursor,
 						inserted	=> inserted,

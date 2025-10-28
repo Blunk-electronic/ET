@@ -89,7 +89,7 @@ package et_generic_module is
 		board_available	: type_board_available := FALSE;
 
 		-- ALL devices of the module independent of the assembly variant:
-		devices			: pac_devices_sch.map;
+		devices			: pac_devices_electrical.map;
 		device_commits	: type_devices_undo_redo_stack;
 		
 		net_classes		: pac_net_classes.map;		-- the net classes

@@ -62,7 +62,7 @@ with et_mirroring;					use et_mirroring;
 
 package body et_board_ops.devices is
 
-	use pac_devices_sch;
+	use pac_devices_electrical;
 	use pac_devices_non_electrical;
 	use pac_nets;
 
@@ -72,19 +72,19 @@ package body et_board_ops.devices is
 		module			: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
-		return pac_devices_sch.map
+		return pac_devices_electrical.map
 	is
-		use pac_devices_sch;
-		result : pac_devices_sch.map;
+		use pac_devices_electrical;
+		result : pac_devices_electrical.map;
 
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			device_cursor : pac_devices_sch.cursor := module.devices.first;			
+			device_cursor : pac_devices_electrical.cursor := module.devices.first;			
 		begin
-			while device_cursor /= pac_devices_sch.no_element loop
+			while device_cursor /= pac_devices_electrical.no_element loop
 
 				if is_real (device_cursor) then -- ignore virtual devices (like GND symbols)
 					
@@ -136,7 +136,7 @@ package body et_board_ops.devices is
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
@@ -254,10 +254,10 @@ package body et_board_ops.devices is
 			end query_device;
 
 			
-			device_cursor : pac_devices_sch.cursor := module.devices.first;
+			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 			
 		begin
-			while device_cursor /= pac_devices_sch.no_element loop
+			while device_cursor /= pac_devices_electrical.no_element loop
 
 				if is_real (device_cursor) then -- ignore virtual devices (like GND symbols)
 					
@@ -309,18 +309,18 @@ package body et_board_ops.devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
-		return pac_devices_sch.cursor
+		return pac_devices_electrical.cursor
 	is
-		result : pac_devices_sch.cursor;
+		result : pac_devices_electrical.cursor;
 
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			device_cursor : pac_devices_sch.cursor := module.devices.first;
+			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 		begin
-			while device_cursor /= pac_devices_sch.no_element loop
+			while device_cursor /= pac_devices_electrical.no_element loop
 				case flag is
 					when PROPOSED =>
 						if is_proposed (device_cursor) then
@@ -375,9 +375,9 @@ package body et_board_ops.devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			device_cursor : pac_devices_sch.cursor := module.devices.first;
+			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 		begin
-			while device_cursor /= pac_devices_sch.no_element loop
+			while device_cursor /= pac_devices_electrical.no_element loop
 				case flag is
 					when PROPOSED =>
 						if is_proposed (device_cursor) then
@@ -434,7 +434,7 @@ package body et_board_ops.devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			device_electric		: pac_devices_sch.cursor;
+			device_electric		: pac_devices_electrical.cursor;
 			device_non_electric	: pac_devices_non_electrical.cursor;			
 
 			
@@ -544,7 +544,7 @@ package body et_board_ops.devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			device_electric		: pac_devices_sch.cursor;
+			device_electric		: pac_devices_electrical.cursor;
 			device_non_electric	: pac_devices_non_electrical.cursor;			
 
 			procedure set_rotation ( -- of an electric device
@@ -648,7 +648,7 @@ package body et_board_ops.devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			device_electric		: pac_devices_sch.cursor;
+			device_electric		: pac_devices_electrical.cursor;
 			device_non_electric	: pac_devices_non_electrical.cursor;			
 
 			
@@ -1590,7 +1590,7 @@ package body et_board_ops.devices is
 		result_non_electrical	: type_object_non_electrical;
 
 		use pac_devices_non_electrical;
-		use pac_devices_sch;
+		use pac_devices_electrical;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first object / " & to_string (flag),
@@ -1604,7 +1604,7 @@ package body et_board_ops.devices is
 		-- If a device has been found, then go to the end of this procedure:
 		result_electrical := get_first_device (module_cursor, flag, log_threshold + 1);
 
-		if result_electrical.cursor /= pac_devices_sch.no_element then
+		if result_electrical.cursor /= pac_devices_electrical.no_element then
 			-- A device has been found.
 			log (text => get_device_name (result_electrical.cursor),
 				 level => log_threshold + 1);
@@ -1674,8 +1674,8 @@ package body et_board_ops.devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			use pac_devices_sch;
-			cursor_electrical : pac_devices_sch.cursor;
+			use pac_devices_electrical;
+			cursor_electrical : pac_devices_electrical.cursor;
 			
 			use pac_devices_non_electrical;
 			cursor_non_electrical : pac_devices_non_electrical.cursor;
@@ -1753,7 +1753,7 @@ package body et_board_ops.devices is
 
 			-- Iterate the electrical devices of the module:
 			cursor_electrical := module.devices.first;
-			while cursor_electrical /= pac_devices_sch.no_element loop
+			while cursor_electrical /= pac_devices_electrical.no_element loop
 				query_element (cursor_electrical, query_electrical_device'access);
 				next (cursor_electrical);
 			end loop;
@@ -2091,7 +2091,7 @@ package body et_board_ops.devices is
 	
 	--function get_terminal_position (
 		--module_cursor	: in et_project.modules.pac_generic_modules.cursor;
-		--device_cursor	: in pac_devices_sch.cursor; -- IC45
+		--device_cursor	: in pac_devices_electrical.cursor; -- IC45
 		--terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
 		--return type_terminal_position_fine
 	--is
@@ -2117,7 +2117,7 @@ package body et_board_ops.devices is
 		--model := get_package_model (device_cursor);
 
 		---- Get the position of the package as it is in the layout:
-		--package_position := pac_devices_sch.element (device_cursor).position;
+		--package_position := pac_devices_electrical.element (device_cursor).position;
 		
 		---- Set the cursor to package model:
 		--package_model_cursor := get_package_model (model);
@@ -2216,7 +2216,7 @@ package body et_board_ops.devices is
 			port : type_device_port renames element (d);
 			
 			-- CS use rename
-			device_cursor : pac_devices_sch.cursor;
+			device_cursor : pac_devices_electrical.cursor;
 			terminal_position : type_vector;
 			terminal_cursor : et_terminals.pac_terminals.cursor;
 		begin
@@ -2357,7 +2357,7 @@ package body et_board_ops.devices is
 
 	function get_terminal_position (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in pac_devices_sch.cursor; -- IC45
+		device_cursor	: in pac_devices_electrical.cursor; -- IC45
 		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position_fine
 	is
@@ -2383,7 +2383,7 @@ package body et_board_ops.devices is
 		model := get_package_model_name (device_cursor);
 
 		-- Get the position of the package as it is in the layout:
-		package_position := pac_devices_sch.element (device_cursor).position;
+		package_position := pac_devices_electrical.element (device_cursor).position;
 		
 		-- Set the cursor to package model:
 		package_model_cursor := get_package_model (model);
@@ -2469,7 +2469,7 @@ package body et_board_ops.devices is
 
 	function to_polygon (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		terminal_cursor	: in pac_terminals.cursor;
 		layer_category	: in type_signal_layer_category;
 		tolerance		: in type_distance_positive)
@@ -2616,7 +2616,7 @@ package body et_board_ops.devices is
 
 	function get_unconnected_terminals (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in pac_devices_sch.cursor) -- IC45
+		device_cursor	: in pac_devices_electrical.cursor) -- IC45
 		return pac_terminals.map
 	is
 		use et_nets;
@@ -2647,7 +2647,7 @@ package body et_board_ops.devices is
 				-- Now port contains the device name, unit name and port name.
 				
 				-- Get the cursor to the device in the schematic:
-				device_cursor : constant pac_devices_sch.cursor := 
+				device_cursor : constant pac_devices_electrical.cursor := 
 					get_electrical_device (module_cursor, port.device_name);
 
 				-- Get the cursor to the physical terminal (in the package model)

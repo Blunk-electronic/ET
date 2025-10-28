@@ -804,7 +804,7 @@ is
 			-- be processed as mirrored along the y-axis:
 			procedure process_package (
 				electric			: in boolean;
-				device_electric		: in pac_devices_sch.cursor;
+				device_electric		: in pac_devices_electrical.cursor;
 				device_non_electric	: in pac_devices_non_electrical.cursor;
 				mirror 				: in type_mirror)
 			is
@@ -1602,10 +1602,10 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in type_generic_module) 
 				is
-					use pac_devices_sch;
+					use pac_devices_electrical;
 
 					procedure query_device (
-						device_cursor : in pac_devices_sch.cursor) 
+						device_cursor : in pac_devices_electrical.cursor) 
 					is
 						device : type_device_electrical renames element (device_cursor);
 						mirror : type_mirror;
@@ -1667,7 +1667,7 @@ is
 						
 						process_package (
 							electric			=> false,
-							device_electric		=> pac_devices_sch.no_element,
+							device_electric		=> pac_devices_electrical.no_element,
 							device_non_electric	=> device_cursor,
 							mirror				=> mirror);
 					end query_device;

@@ -300,7 +300,7 @@ package body et_board_ops.conductors is
 		line : type_conductor_line;
 
 		use et_devices_electrical;		
-		device_cursor : pac_devices_sch.cursor;
+		device_cursor : pac_devices_electrical.cursor;
 
 		
 		procedure make_line (terminal_position : in type_terminal_position_fine) is begin
@@ -373,7 +373,7 @@ package body et_board_ops.conductors is
 		line : type_conductor_line;
 
 		use et_devices_electrical;		
-		device_cursor : pac_devices_sch.cursor;
+		device_cursor : pac_devices_electrical.cursor;
 
 		
 		procedure make_line (terminal_position : in type_terminal_position_fine) is begin
@@ -442,7 +442,7 @@ package body et_board_ops.conductors is
 		line : type_conductor_line;
 
 		use et_devices_electrical;		
-		device_cursor : pac_devices_sch.cursor;
+		device_cursor : pac_devices_electrical.cursor;
 
 		
 		procedure make_line (terminal_position : in type_terminal_position_fine) is begin
@@ -509,7 +509,7 @@ package body et_board_ops.conductors is
 		line : type_conductor_line;
 		
 		use et_devices_electrical;
-		device_cursor : pac_devices_sch.cursor;
+		device_cursor : pac_devices_electrical.cursor;
 
 		
 		procedure make_line (terminal_position : in type_terminal_position_fine) is begin

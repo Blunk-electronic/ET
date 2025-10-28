@@ -1026,7 +1026,7 @@ package body et_module_write is
 			use et_devices_electrical;
 			use et_symbol_model;
 			use et_device_placeholders.symbols;
-			use pac_devices_sch;
+			use pac_devices_electrical;
 
 			
 			procedure query_units (
@@ -1139,7 +1139,7 @@ package body et_module_write is
 
 
 			
-			procedure write (d : in pac_devices_sch.cursor) is 
+			procedure write (d : in pac_devices_electrical.cursor) is 
 				use et_pcb_sides;
 				use et_material;
 				use et_device_appearance;

@@ -4903,9 +4903,9 @@ package body et_schematic_ops.submodules is
 					end;
 
 					
-					procedure query_properties_default (cursor_schematic : in pac_devices_sch.cursor) is 
+					procedure query_properties_default (cursor_schematic : in pac_devices_electrical.cursor) is 
 						cursor_bom : pac_bom_devices.cursor;
-						use pac_devices_sch;
+						use pac_devices_electrical;
 					begin
 						-- the device must be real
 						if is_real (cursor_schematic) then -- skip virtual devices
@@ -4913,7 +4913,7 @@ package body et_schematic_ops.submodules is
 							-- the package must be real
 							if is_bom_relevant (cursor_schematic) then
 
-								device_name := pac_devices_sch.key (cursor_schematic);
+								device_name := pac_devices_electrical.key (cursor_schematic);
 
 								-- issue warning if device has no partcode
 								test_partcode (element (cursor_schematic).partcode);
@@ -4941,10 +4941,10 @@ package body et_schematic_ops.submodules is
 
 					
 					
-					procedure query_properties_variants (cursor_schematic : in pac_devices_sch.cursor) is 
+					procedure query_properties_variants (cursor_schematic : in pac_devices_electrical.cursor) is 
 						cursor_bom : pac_bom_devices.cursor;
 
-						use pac_devices_sch;
+						use pac_devices_electrical;
 						alt_dev_cursor : et_assembly_variants.pac_device_variants.cursor;
 						use et_assembly_variants.pac_device_variants;
 						use et_symbol_model;
@@ -4958,7 +4958,7 @@ package body et_schematic_ops.submodules is
 							-- the package must be real
 							if is_bom_relevant (cursor_schematic) then
 							
-								device_name := pac_devices_sch.key (cursor_schematic);
+								device_name := pac_devices_electrical.key (cursor_schematic);
 								
 								-- Get a cursor to the alternative device as specified in the assembly variant:
 								alt_dev_cursor := get_alternative_device (module_cursor, variant, device_name); 
@@ -5043,7 +5043,7 @@ package body et_schematic_ops.submodules is
 						
 						log_indentation_up;
 						
-						pac_devices_sch.iterate (
+						pac_devices_electrical.iterate (
 							container	=> module.devices,
 							process		=> query_properties_default'access);
 
@@ -5058,7 +5058,7 @@ package body et_schematic_ops.submodules is
 						
 						log_indentation_up;
 					
-						pac_devices_sch.iterate (
+						pac_devices_electrical.iterate (
 							container	=> module.devices,
 							process		=> query_properties_variants'access);
 
@@ -5285,12 +5285,12 @@ package body et_schematic_ops.submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			use pac_devices_sch;
+			use pac_devices_electrical;
 
-			device_cursor : pac_devices_sch.cursor := module.devices.first;
+			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 			index_current : type_name_index;
 		begin
-			while device_cursor /= pac_devices_sch.no_element loop
+			while device_cursor /= pac_devices_electrical.no_element loop
 
 				index_current := get_index (key (device_cursor));
 				

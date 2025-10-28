@@ -54,7 +54,7 @@ with et_device_placeholders.symbols;		use et_device_placeholders.symbols;
 
 package body et_schematic_ops.units is
 
-	use pac_devices_sch;
+	use pac_devices_electrical;
 	use pac_units;
 	
 	use pac_unit_name;
@@ -98,9 +98,9 @@ package body et_schematic_ops.units is
 	function get_electrical_device (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return pac_devices_sch.cursor 
+		return pac_devices_electrical.cursor 
 	is
-		result : pac_devices_sch.cursor;
+		result : pac_devices_electrical.cursor;
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
@@ -127,7 +127,7 @@ package body et_schematic_ops.units is
 		device	: in type_device_name) -- R2
 		return pac_devices_lib.cursor
 	is
-		cursor_sch : pac_devices_sch.cursor;
+		cursor_sch : pac_devices_electrical.cursor;
 	begin
 		-- Locate the device in the module:
 		cursor_sch := get_electrical_device (module, device);
@@ -154,7 +154,7 @@ package body et_schematic_ops.units is
 		device	: in type_device_name) -- R2
 		return pac_device_model_file.bounded_string
 	is 
-		cursor : pac_devices_sch.cursor;
+		cursor : pac_devices_electrical.cursor;
 	begin
 		cursor := get_electrical_device (module, device);
 		return get_device_model_file (cursor);
@@ -591,7 +591,7 @@ package body et_schematic_ops.units is
 		log_warning		: in boolean := true;
 		log_threshold	: in type_log_level)
 	is
-		device_cursor_sch : pac_devices_sch.cursor;
+		device_cursor_sch : pac_devices_electrical.cursor;
 		
 
 		procedure query_module (
@@ -682,7 +682,7 @@ package body et_schematic_ops.units is
 		log_threshold	: in type_log_level)
 		return string
 	is
-		device_cursor_sch : pac_devices_sch.cursor;
+		device_cursor_sch : pac_devices_electrical.cursor;
 
 		use ada.strings.unbounded;
 		result : unbounded_string := to_unbounded_string ("");
@@ -797,7 +797,7 @@ package body et_schematic_ops.units is
 		value				: in pac_device_value.bounded_string; -- 470R
 		log_threshold		: in type_log_level) 
 	is		
-		device_cursor_sch : pac_devices_sch.cursor;
+		device_cursor_sch : pac_devices_electrical.cursor;
 		
 
 		procedure query_module (
@@ -882,7 +882,7 @@ package body et_schematic_ops.units is
 		purpose				: in pac_device_purpose.bounded_string; -- brightness_control
 		log_threshold		: in type_log_level) 
 	is
-		device_cursor_sch : pac_devices_sch.cursor;
+		device_cursor_sch : pac_devices_electrical.cursor;
 		
 
 		procedure query_module (
@@ -955,7 +955,7 @@ package body et_schematic_ops.units is
 		partcode			: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		log_threshold		: in type_log_level) 
 	is
-		device_cursor_sch : pac_devices_sch.cursor;
+		device_cursor_sch : pac_devices_electrical.cursor;
 
 		
 		procedure query_module (
@@ -1045,7 +1045,7 @@ package body et_schematic_ops.units is
 		device	: in type_device_name) -- R2
 		return pac_package_variant_name.bounded_string -- D, N
 	is
-		cursor_sch : pac_devices_sch.cursor;
+		cursor_sch : pac_devices_electrical.cursor;
 	begin
 		cursor_sch := get_electrical_device (module, device);
 		
@@ -1064,7 +1064,7 @@ package body et_schematic_ops.units is
 		log_threshold	: in type_log_level)
 	is
 		use pac_generic_modules;
-		device_cursor_sch : pac_devices_sch.cursor;
+		device_cursor_sch : pac_devices_electrical.cursor;
 
 		use pac_package_variant_name;
 
@@ -1164,8 +1164,8 @@ package body et_schematic_ops.units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			use pac_devices_sch;
-			device_cursor : pac_devices_sch.cursor := module.devices.first;
+			use pac_devices_electrical;
+			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
 			-- We start the search with index 1. Not 0 because this would result in a zero based
 			-- numbering order. Index zero is allowed but not automatically choosen.
@@ -1173,7 +1173,7 @@ package body et_schematic_ops.units is
 
 			gap_found : boolean := false; -- goes true once a gap has been found
 		begin
-			while device_cursor /= pac_devices_sch.no_element loop
+			while device_cursor /= pac_devices_electrical.no_element loop
 				if get_prefix (key (device_cursor)) = prefix then -- prefix match
 					
 					if get_index (key (device_cursor)) /= index_expected then -- we have a gap
@@ -1345,7 +1345,7 @@ package body et_schematic_ops.units is
 		unit			: in pac_unit_name.bounded_string)
 		return pac_units.cursor
 	is
-		device_cursor : pac_devices_sch.cursor;
+		device_cursor : pac_devices_electrical.cursor;
 		unit_cursor : pac_units.cursor; -- to be returned
 
 		procedure query_units (
@@ -1405,7 +1405,7 @@ package body et_schematic_ops.units is
 			module		: in type_generic_module)
 		is
 			use pac_unit_name;
-			device_cursor : pac_devices_sch.cursor;
+			device_cursor : pac_devices_electrical.cursor;
 
 			
 			procedure query_units (
@@ -1477,7 +1477,7 @@ package body et_schematic_ops.units is
 			module		: in type_generic_module) 
 		is
 			use pac_unit_name;
-			device_cursor : pac_devices_sch.cursor;
+			device_cursor : pac_devices_electrical.cursor;
 
 			
 			procedure query_units (
@@ -1544,7 +1544,7 @@ package body et_schematic_ops.units is
 		log_threshold	: in type_log_level)
 		return pac_unit_names.list
 	is
-		device_cursor_sch : pac_devices_sch.cursor;
+		device_cursor_sch : pac_devices_electrical.cursor;
 
 		device_model : pac_device_model_file.bounded_string;
 		device_cursor_lib : pac_devices_lib.cursor;
@@ -1645,7 +1645,7 @@ package body et_schematic_ops.units is
 	is
 		available : boolean := true; -- to be returned
 
-		device_cursor_sch : pac_devices_sch.cursor;
+		device_cursor_sch : pac_devices_electrical.cursor;
 		
 		device_cursor_lib : pac_devices_lib.cursor;
 		
@@ -1702,7 +1702,7 @@ package body et_schematic_ops.units is
 		log_threshold	: in type_log_level)
 		return pac_unit_names.list
 	is
-		device_cursor_sch : pac_devices_sch.cursor;
+		device_cursor_sch : pac_devices_electrical.cursor;
 
 		names_of_units : pac_unit_names.list;
 
@@ -1764,7 +1764,7 @@ package body et_schematic_ops.units is
 		unit			: in pac_unit_name.bounded_string)
 		return type_object_position
 	is
-		device_cursor_sch : pac_devices_sch.cursor;
+		device_cursor_sch : pac_devices_electrical.cursor;
 
 		unit_position : type_object_position;
 
@@ -2164,7 +2164,7 @@ package body et_schematic_ops.units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			device_cursor_sch	: pac_devices_sch.cursor;
+			device_cursor_sch	: pac_devices_electrical.cursor;
 			variant 			: pac_package_variant_name.bounded_string; -- D, N
 			device_cursor_lib	: pac_devices_lib.cursor;
 
@@ -2214,7 +2214,7 @@ package body et_schematic_ops.units is
 			-- locate the device in schematic (default assembly variant):
 			device_cursor_sch := find (module.devices, device_name);
 
--- 			if device_cursor_sch /= pac_devices_sch.no_element then
+-- 			if device_cursor_sch /= pac_devices_electrical.no_element then
 			
 				variant := element (device_cursor_sch).variant;
 
@@ -2271,7 +2271,7 @@ package body et_schematic_ops.units is
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level) 
 	is
-		device_cursor_sch : pac_devices_sch.cursor;
+		device_cursor_sch : pac_devices_electrical.cursor;
 
 
 		procedure query_module (
@@ -2386,7 +2386,7 @@ package body et_schematic_ops.units is
 		device_name		: in type_device_name; -- IC45
 		log_threshold	: in type_log_level) 
 	is
-		device_cursor_sch : pac_devices_sch.cursor;
+		device_cursor_sch : pac_devices_electrical.cursor;
 
 		-- We use list of deployed units here. By iterating the names
 		-- the procedure delete_unit (see above) is called for each unit:
@@ -2589,14 +2589,14 @@ package body et_schematic_ops.units is
 		device_name_after	: in type_device_name; -- IC23
 		log_threshold		: in type_log_level) 
 	is
-		device_cursor_sch : pac_devices_sch.cursor;
+		device_cursor_sch : pac_devices_electrical.cursor;
 
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			device_cursor_after  : pac_devices_sch.cursor;
+			device_cursor_after  : pac_devices_electrical.cursor;
 			inserted : boolean;
 
 			-- Temporarily storage of unit coordinates:
@@ -2610,7 +2610,7 @@ package body et_schematic_ops.units is
 			
 			-- Copy elements and properties of the old device to a new one.
 			-- This includes deployed units, the position in the board, everything:
-			pac_devices_sch.insert (
+			pac_devices_electrical.insert (
 				container	=> module.devices,
 				key			=> device_name_after, -- IC23
 				new_item	=> element (device_cursor_sch), -- all elements and properties of IC1
@@ -2619,7 +2619,7 @@ package body et_schematic_ops.units is
 
 				
 			-- Delete the old device:
-			pac_devices_sch.delete (
+			pac_devices_electrical.delete (
 				container	=> module.devices,
 				position	=> device_cursor_sch);
 
@@ -2709,7 +2709,7 @@ package body et_schematic_ops.units is
 		log_threshold	: in type_log_level) 
 	is
 
-		device_cursor_sch : pac_devices_sch.cursor;
+		device_cursor_sch : pac_devices_electrical.cursor;
 		
 		
 		procedure query_module (
@@ -2973,7 +2973,7 @@ package body et_schematic_ops.units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			device_cursor : pac_devices_sch.cursor;
+			device_cursor : pac_devices_electrical.cursor;
 
 			
 			procedure query_units (
@@ -3013,10 +3013,10 @@ package body et_schematic_ops.units is
 			
 		begin -- query_devices
 			-- locate the device:
-			device_cursor := pac_devices_sch.find (module.devices, device_name);
+			device_cursor := pac_devices_electrical.find (module.devices, device_name);
 
-			if device_cursor /= pac_devices_sch.no_element then -- device exists
-				pac_devices_sch.query_element (device_cursor, query_units'access);
+			if device_cursor /= pac_devices_electrical.no_element then -- device exists
+				pac_devices_electrical.query_element (device_cursor, query_units'access);
 			else
 				exists := false; -- device does not exist
 			end if;
@@ -3298,7 +3298,7 @@ package body et_schematic_ops.units is
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level) 
 	is
-		device_cursor_sch : pac_devices_sch.cursor;
+		device_cursor_sch : pac_devices_electrical.cursor;
 		
 		
 		
@@ -3461,7 +3461,7 @@ package body et_schematic_ops.units is
 		rotation		: in type_rotation_model; -- 90
 		log_threshold	: in type_log_level) 
 	is
-		device_cursor_sch : pac_devices_sch.cursor;
+		device_cursor_sch : pac_devices_electrical.cursor;
 
 
 		procedure query_module (
@@ -3751,7 +3751,7 @@ package body et_schematic_ops.units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			device_cursor : pac_devices_sch.cursor := module.devices.first;
+			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
 			procedure query_device (
 				device_name	: in type_device_name;
@@ -3885,7 +3885,7 @@ package body et_schematic_ops.units is
 			end query_device;
 
 			
-			device_cursor : pac_devices_sch.cursor := module.devices.first;
+			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 			
 		begin
 			-- Iterate through the devices:
@@ -3937,7 +3937,7 @@ package body et_schematic_ops.units is
 			end query_device;
 
 			
-			device_cursor : pac_devices_sch.cursor := module.devices.first;
+			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 			
 		begin
 			-- Iterate through the devices:
@@ -3985,7 +3985,7 @@ package body et_schematic_ops.units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			device_cursor : pac_devices_sch.cursor := module.devices.first;
+			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
 			proceed : aliased boolean := true;
 
@@ -4036,7 +4036,7 @@ package body et_schematic_ops.units is
 		begin
 			-- Iterate through the devices:
 			while has_element (device_cursor) and proceed loop
-				pac_devices_sch.query_element (device_cursor, query_device'access);
+				pac_devices_electrical.query_element (device_cursor, query_device'access);
 				next (device_cursor);
 			end loop;
 
@@ -4076,7 +4076,7 @@ package body et_schematic_ops.units is
 		meaning			: in type_placeholder_meaning; -- name, value, purpose
 		log_threshold	: in type_log_level)
 	is
-		device_cursor_sch : pac_devices_sch.cursor;
+		device_cursor_sch : pac_devices_electrical.cursor;
 
 		
 		procedure query_module (
@@ -4176,7 +4176,7 @@ package body et_schematic_ops.units is
 		meaning			: in type_placeholder_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level) 
 	is
-		device_cursor_sch : pac_devices_sch.cursor;
+		device_cursor_sch : pac_devices_electrical.cursor;
 
 		
 		procedure query_module (
@@ -4398,7 +4398,7 @@ package body et_schematic_ops.units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			device_cursor : pac_devices_sch.cursor := module.devices.first;
+			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
 			procedure query_device (
 				device_name	: in type_device_name;
@@ -4531,7 +4531,7 @@ package body et_schematic_ops.units is
 			end query_device;
 
 			
-			device_cursor : pac_devices_sch.cursor := module.devices.first;
+			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 			
 		begin
 			-- Iterate through the devices:
@@ -4574,7 +4574,7 @@ package body et_schematic_ops.units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			device_cursor : pac_devices_sch.cursor := module.devices.first;
+			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
 			proceed : aliased boolean := true;
 
@@ -4670,7 +4670,7 @@ package body et_schematic_ops.units is
 		begin
 			-- Iterate through the devices:
 			while has_element (device_cursor) and proceed loop
-				pac_devices_sch.query_element (device_cursor, query_device'access);
+				pac_devices_electrical.query_element (device_cursor, query_device'access);
 				next (device_cursor);
 			end loop;
 
@@ -4814,7 +4814,7 @@ package body et_schematic_ops.units is
 			-- This procedure queries the devices and their units
 			-- and collects those which have the given flag set:			
 			procedure query_devices is
-				device_cursor : pac_devices_sch.cursor := module.devices.first;
+				device_cursor : pac_devices_electrical.cursor := module.devices.first;
 				
 
 				procedure query_device (
@@ -4886,7 +4886,7 @@ package body et_schematic_ops.units is
 			-- This procedure queries the devices, their units and their placeholders
 			-- and collects those which have the given flag set:
 			procedure query_placeholders is
-				device_cursor : pac_devices_sch.cursor := module.devices.first;
+				device_cursor : pac_devices_electrical.cursor := module.devices.first;
 				
 
 				procedure query_device (
@@ -5214,7 +5214,7 @@ package body et_schematic_ops.units is
 			module		: in out type_generic_module) 
 		is
 			
-			device_cursor : pac_devices_sch.cursor := module.devices.first;
+			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
 			
 			procedure query_device (

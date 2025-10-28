@@ -52,7 +52,7 @@ procedure fetch_unit (
 	log_threshold	: in type_log_level) 
 is
 		
-	device_cursor_sch : pac_devices_sch.cursor;
+	device_cursor_sch : pac_devices_electrical.cursor;
 
 	
 	procedure query_module (
@@ -69,7 +69,7 @@ is
 		
 		use et_device_appearance;
 		use et_devices_electrical;
-		use pac_devices_sch;
+		use pac_devices_electrical;
 
 		-- Query whehter the given unit is available:
 		unit_query : constant type_unit_query := 
@@ -130,7 +130,7 @@ is
 
 			
 		begin
-			pac_devices_sch.update_element (
+			pac_devices_electrical.update_element (
 				container	=> module.devices,
 				position	=> device_cursor_sch,
 				process		=> do_it'access);
@@ -208,7 +208,7 @@ is
 
 			
 		begin			
-			pac_devices_sch.update_element (
+			pac_devices_electrical.update_element (
 				container	=> module.devices,
 				position	=> device_cursor_sch,
 				process		=> do_it'access);

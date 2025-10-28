@@ -112,7 +112,7 @@ package et_devices_electrical is
 	use pac_geometry_2;
 	
 	use pac_units;
-	-- use pac_unit_names;
+
 
 	
 
@@ -266,18 +266,17 @@ package et_devices_electrical is
 	
 	-- The devices of a module are collected in a map.
 	-- CS: This must be a hashed map:
-	package pac_devices_sch is new indefinite_ordered_maps (
-	-- CS rename to pac_devices_electrical
+	package pac_devices_electrical is new indefinite_ordered_maps (
 		key_type		=> type_device_name, -- something like "IC43"
  		element_type	=> type_device_electrical);
 
-	use pac_devices_sch;
+	use pac_devices_electrical;
 	
 	
 	
 	
 	function get_device_model_file (
-		device : pac_devices_sch.cursor)
+		device : pac_devices_electrical.cursor)
 		return pac_device_model_file.bounded_string; -- *.dev
 
 
@@ -285,7 +284,7 @@ package et_devices_electrical is
 	-- Maps from schematic device cursor to 
 	-- cursor to device model (in library):
 	function get_device_model (
-		device : in pac_devices_sch.cursor)
+		device : in pac_devices_electrical.cursor)
 		return pac_devices_lib.cursor;
 
 	
@@ -329,7 +328,7 @@ package et_devices_electrical is
 
 	-- Returns the names of deployed units:
 	function get_unit_names_deployed (
-		device : in pac_devices_sch.cursor)
+		device : in pac_devices_electrical.cursor)
 		return pac_unit_names.list;
 
 	
@@ -337,25 +336,25 @@ package et_devices_electrical is
 	-- Returns the total number of units that the
 	-- given device provides according to the device model:
 	function get_unit_count (
-		device : in pac_devices_sch.cursor)
+		device : in pac_devices_electrical.cursor)
 		return type_unit_count;
 	
 
 	-- Returns the number of units that are deployed:
 	function get_unit_count_deployed (
-		device : in pac_devices_sch.cursor)
+		device : in pac_devices_electrical.cursor)
 		return natural;
 
 	
 	
 	function get_device_name (
-		device : in pac_devices_sch.cursor)
+		device : in pac_devices_electrical.cursor)
 		return type_device_name;
 
 	
 	-- Returns the name of a device as string:
 	function get_device_name (
-		device : in pac_devices_sch.cursor)
+		device : in pac_devices_electrical.cursor)
 		return string;
 	
 
@@ -367,7 +366,7 @@ package et_devices_electrical is
 	-- If the device has only one unit, then only the device name 
 	-- will be returned as string like IC4:
 	function get_full_name (
-		device	: in pac_devices_sch.cursor;
+		device	: in pac_devices_electrical.cursor;
 		unit	: in pac_units.cursor)
 		return string;
 
@@ -395,7 +394,7 @@ package et_devices_electrical is
 	-- Writes the position of the package in the log file. 
 	-- If device is virtual, nothing happens:
 	procedure log_package_position (
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		log_threshold	: in type_log_level);
 
 
@@ -403,7 +402,7 @@ package et_devices_electrical is
 	-- Returns the position (x/y/sheet) of the given unit.
 	-- Raises constraint error if device or unit does not exist.
 	function get_position (
-		device	: in pac_devices_sch.cursor; -- R2
+		device	: in pac_devices_electrical.cursor; -- R2
 		unit	: in pac_units.cursor) -- A, B, C
 		return type_object_position;
 
@@ -412,7 +411,7 @@ package et_devices_electrical is
 	-- Returns the sheet of the given unit.
 	-- Raises constraint error if device or unit does not exist.
 	function get_sheet (
-		device	: in pac_devices_sch.cursor; -- R2
+		device	: in pac_devices_electrical.cursor; -- R2
 		unit	: in pac_units.cursor) -- A, B, C
 		return type_sheet;
 
@@ -426,7 +425,7 @@ package et_devices_electrical is
 	-- name. So it does not distinguish between "not deployed"
 	-- or "not available or "not existing":
 	function get_unit_position (
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return type_unit_query;
 
@@ -436,7 +435,7 @@ package et_devices_electrical is
 	-- Collects the positions of all units (in schematic) of 
 	-- the given device and returns them in a list.
 	function get_unit_positions (
-		device_cursor : in pac_devices_sch.cursor) 
+		device_cursor : in pac_devices_electrical.cursor) 
 		return pac_unit_positions.map;
 
 
@@ -452,7 +451,7 @@ package et_devices_electrical is
 	-- the schematic. The position, mirror style and rotation
 	-- the the unit in the schematic is taken into account:
 	function get_port_positions (
-		device	: in pac_devices_sch.cursor;
+		device	: in pac_devices_electrical.cursor;
 		unit	: in pac_units.cursor)
 		return pac_points.list;
 	
@@ -462,7 +461,7 @@ package et_devices_electrical is
 	-- The coordinates of the ports are the default x/y-positions relative
 	-- to the origin of the unit as they are defined in the symbol model.
 	function get_ports_of_unit (
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return pac_symbol_ports.map;
 
@@ -471,7 +470,7 @@ package et_devices_electrical is
 	-- The coordinates of the ports are the
 	-- absolute x/y-positions in the schematic::
 	function get_ports_of_unit (
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		unit_cursor		: in pac_units.cursor)
 		return pac_symbol_ports.map;
 
@@ -481,21 +480,21 @@ package et_devices_electrical is
 	-- Returns the current position (x/y/rotation/face) of the 
 	-- given electrical device:
 	function get_position (
-		device_cursor	: in pac_devices_sch.cursor) -- IC45
+		device_cursor	: in pac_devices_electrical.cursor) -- IC45
 		return et_board_coordinates.type_package_position;
 
 
 	-- Returns the current position (x/y) of the 
 	-- given electrical device:
 	function get_position (
-		device_cursor	: in pac_devices_sch.cursor) -- IC45
+		device_cursor	: in pac_devices_electrical.cursor) -- IC45
 		return et_board_geometry.pac_geometry_2.type_vector_model;
 
 	
 	
 	-- Returns the current face of the given electrical device:
 	function get_face (
-		device_cursor	: in pac_devices_sch.cursor) -- IC45
+		device_cursor	: in pac_devices_electrical.cursor) -- IC45
 		return type_face; -- top/bottom
 
 
@@ -505,7 +504,7 @@ package et_devices_electrical is
 	-- variant, means the device of interest exists in any case.
 	-- If the given device is virtual, then an empty list is returned:
 	function get_all_terminals (
-		device_cursor	: in pac_devices_sch.cursor) -- IC45
+		device_cursor	: in pac_devices_electrical.cursor) -- IC45
 		return pac_terminals.map;
 
 
@@ -515,7 +514,7 @@ package et_devices_electrical is
 	-- of the given unit.
 	-- Raises constraint error if device or unit does not exist.
 	function get_position (
-		device		: in pac_devices_sch.cursor; -- R2
+		device		: in pac_devices_electrical.cursor; -- R2
 		unit		: in pac_units.cursor;
 		category	: in type_placeholder_meaning)
 		return type_vector_model;
@@ -524,7 +523,7 @@ package et_devices_electrical is
 
 -- CS	
 	-- procedure add_first_available_unit (
-	-- 	device			: in pac_devices_sch.cursor; -- IC2
+	-- 	device			: in pac_devices_electrical.cursor; -- IC2
 	-- 	log_threshold	: in type_log_level);
 	
 	
@@ -536,7 +535,7 @@ package et_devices_electrical is
 	-- (according to its flip status, position and rotation in the board) 
 	-- Adresses only those objects affected by the given face:
 	function get_conductor_objects (
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		layer_category	: in type_signal_layer_category)
 		return type_conductor_objects;
 
@@ -553,7 +552,7 @@ package et_devices_electrical is
 	-- the given layer category.
 	-- If the device is virtual, then the returned list is empty:
 	function get_conductor_polygons (
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		layer_category	: in type_signal_layer_category) -- outer top, inner, outer bottom 
 		return et_board_geometry.pac_polygons.pac_polygon_list.list;
 
@@ -566,7 +565,7 @@ package et_devices_electrical is
 	-- (according to its flip status, position and rotation in the board) 
 	-- Adresses only those objects affected by the given face:	
 	function get_route_restrict_objects (
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		layer_category	: in type_signal_layer_category)
 		return et_route_restrict.packages.type_one_side;
 
@@ -579,7 +578,7 @@ package et_devices_electrical is
 	-- Adresses only those objects which are affected by
 	-- the given layer category:
 	function get_route_restrict_polygons (
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		layer_category	: in type_signal_layer_category)
 		return et_board_geometry.pac_polygons.pac_polygon_list.list;
 
@@ -593,7 +592,7 @@ package et_devices_electrical is
 	-- (according to its flip status, position and rotation in the board) 
 	-- Adresses only those objects affected by the given face:
 	function get_via_restrict_objects (
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		layer_category	: in type_signal_layer_category)
 		return et_via_restrict.packages.type_one_side;
 
@@ -607,7 +606,7 @@ package et_devices_electrical is
 	-- (according to its flip status, position and rotation in the board) 
 	-- Adresses only those objects affected by the given face:
 	function get_keepout_objects (
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		face			: in type_face)
 		return type_keepout;
 
@@ -620,7 +619,7 @@ package et_devices_electrical is
 	-- (according to its flip status, position and rotation in the board) 
 	-- Adresses only those objects affected by the given face:
 	function get_stencil_objects (
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		face			: in type_face)
 		return type_stencil;
 
@@ -632,7 +631,7 @@ package et_devices_electrical is
 	-- (according to its flip status, position and rotation in the board) 
 	-- Adresses only those objects affected by the given face:
 	function get_stopmask_objects (
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		face			: in type_face)
 		return type_stopmask;
 
@@ -652,7 +651,7 @@ package et_devices_electrical is
 	-- This behaviour would be similar to the "smash"-function implemented
 	-- in other CAE systems:
 	function get_silkscreen_objects (
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		face			: in type_face)
 		return type_silkscreen;
 
@@ -666,7 +665,7 @@ package et_devices_electrical is
 	
 	-- Maps from meaning of given placeholder to a text content:
 	function to_placeholder_content (
-		device_cursor	: in pac_devices_sch.cursor; -- electrical device
+		device_cursor	: in pac_devices_electrical.cursor; -- electrical device
 		placeholder		: in et_device_placeholders.packages.type_placeholder)
 		return et_text.pac_text_content.bounded_string;
 
@@ -699,7 +698,7 @@ package et_devices_electrical is
 	-- Returns the default positions of placeholders and texts of a unit
 	-- as they are defined in the symbol model.
 	function get_default_text_positions (
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return type_default_text_positions;
 
@@ -720,7 +719,7 @@ package et_devices_electrical is
 	-- This behaviour would be similar to the "smash"-function implemented
 	-- in other CAE systems:
 	function get_assy_doc_objects (
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		face			: in type_face)
 		return type_assy_doc;
 
@@ -734,7 +733,7 @@ package et_devices_electrical is
 	-- (according to its position and rotation in the board).
 	-- If the device is virtual, then the returned list is empty:
 	function get_holes (
-		device_cursor	: in pac_devices_sch.cursor)
+		device_cursor	: in pac_devices_electrical.cursor)
 		return pac_holes.list;
 	
 
@@ -743,7 +742,7 @@ package et_devices_electrical is
 	-- a list of polygons.
 	-- If the device is virtual, then the returned list is empty:
 	function get_hole_polygons (
-		device_cursor	: in pac_devices_sch.cursor)
+		device_cursor	: in pac_devices_electrical.cursor)
 		return et_board_geometry.pac_polygons.pac_polygon_list.list;
 
 	
@@ -825,32 +824,32 @@ package et_devices_electrical is
 	-- counterpart in the PCB layout). For a resistor it returns true.
 	-- For a GND symbol it returns false:
 	function is_real (
-		device : in pac_devices_sch.cursor) 
+		device : in pac_devices_electrical.cursor) 
 		return boolean;
 	
 
 
 	
 	function is_proposed (
-		device : in pac_devices_sch.cursor)
+		device : in pac_devices_electrical.cursor)
 		return boolean;
 	
 
 	function is_selected (
-		device : in pac_devices_sch.cursor)
+		device : in pac_devices_electrical.cursor)
 		return boolean;
 
 	
 	function is_moving (
-		device : in pac_devices_sch.cursor)
+		device : in pac_devices_electrical.cursor)
 		return boolean;
 
 	
 	
 	-- Iterates the devices. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
-		devices	: in pac_devices_sch.map;
-		process	: not null access procedure (position : in pac_devices_sch.cursor);
+		devices	: in pac_devices_electrical.map;
+		process	: not null access procedure (position : in pac_devices_electrical.cursor);
 		proceed	: not null access boolean);
 
 	
@@ -866,7 +865,7 @@ package et_devices_electrical is
 	-- The package model name is something like "libraries/packages/smd/SOT23.pac"
 	-- The given device must be real. Otherwise constraint error arises here.	
 	function get_package_model_name (
-		device : in pac_devices_sch.cursor)
+		device : in pac_devices_electrical.cursor)
 		return pac_package_model_file_name.bounded_string;
 	
 
@@ -874,7 +873,7 @@ package et_devices_electrical is
 	-- according to the current package variant of the device.
 	-- The given device must be real. Otherwise constraint error arises here.	
 	function get_package_model (
-		device : in pac_devices_sch.cursor)
+		device : in pac_devices_electrical.cursor)
 		return pac_package_models.cursor;
 
 
@@ -884,28 +883,28 @@ package et_devices_electrical is
 	-- The given device itself must be real (means it has a counterpart
 	-- in the board drawing). Otherwise a constraint error is raised.
 	function is_bom_relevant (
-		device : in pac_devices_sch.cursor)
+		device : in pac_devices_electrical.cursor)
 		return boolean;
 
 	
 	-- Returns the value of the given device.
 	-- The device must be real. Otherwise constraint error is raised.
 	function get_value (
-		device : in pac_devices_sch.cursor)
+		device : in pac_devices_electrical.cursor)
 		return pac_device_value.bounded_string;
 
 	
 	-- Returns the purpose of the given device.
 	-- The device must be real. Otherwise constraint error is raised.
 	function get_purpose (
-		device : in pac_devices_sch.cursor)
+		device : in pac_devices_electrical.cursor)
 		return pac_device_purpose.bounded_string;
 
 
 	-- Returns the partcode of the given device.
 	-- The device must be real. Otherwise constraint error is raised.
 	function get_partcode (
-		device : in pac_devices_sch.cursor)
+		device : in pac_devices_electrical.cursor)
 		return pac_device_partcode.bounded_string;
 
 
@@ -913,13 +912,13 @@ package et_devices_electrical is
 	-- Returns the package variant of the given device.
 	-- The device must be real. Otherwise constraint error is raised.
 	function get_package_variant (
-		device : in pac_devices_sch.cursor)
+		device : in pac_devices_electrical.cursor)
 		return pac_package_variant_name.bounded_string;
 
 
 	-- Returns a list of available package variants:
 	function get_available_package_variants (
-		device : in pac_devices_sch.cursor)
+		device : in pac_devices_electrical.cursor)
 		return pac_package_variants.map;
 
 
@@ -974,7 +973,7 @@ package et_devices_electrical is
 	--    (via unit_cursor) is returned.
 	-- 4. See comments of function get_unit_properties regarding linebreaks:
 	function get_properties (
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		level			: in type_properties_level;
 		all_units		: in boolean := true;
 		unit_cursor		: in pac_units.cursor := pac_units.no_element;
@@ -993,7 +992,7 @@ package et_devices_electrical is
 	-- The given device must be real. Otherwise a constraint error
 	-- will be raised:
 	function get_port (
-		device		: in pac_devices_sch.cursor;
+		device		: in pac_devices_electrical.cursor;
 		terminal	: in et_terminals.pac_terminal_name.bounded_string) -- H7, 1, 14
 		return type_get_port_result;
 
@@ -1003,7 +1002,7 @@ package et_devices_electrical is
 	-- A port is always linked with a terminal.
 	-- The given device must be real. Otherwise a constraint error will be raised:
 	function get_terminal (
-		device	: in pac_devices_sch.cursor;
+		device	: in pac_devices_electrical.cursor;
 		unit	: in pac_unit_name.bounded_string;
 		port	: in pac_port_name.bounded_string)
 		return et_terminals.pac_terminals.cursor;
@@ -1045,7 +1044,7 @@ package et_devices_electrical is
 	
 	use et_commit;
 	
-	package pac_device_commit is new pac_commit (pac_devices_sch.map);
+	package pac_device_commit is new pac_commit (pac_devices_electrical.map);
 	use pac_device_commit;
 	
 	package pac_device_commits is new doubly_linked_lists (

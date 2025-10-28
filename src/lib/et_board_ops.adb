@@ -57,7 +57,7 @@ with et_generic_stacks;
 package body et_board_ops is
 
 
-	use pac_devices_sch;
+	use pac_devices_electrical;
 	-- use pac_devices_non_electric;
 	use pac_nets;
 
@@ -405,7 +405,7 @@ package body et_board_ops is
 					end;
 
 					
-					procedure query_properties_default (cursor_schematic : in pac_devices_sch.cursor) is 
+					procedure query_properties_default (cursor_schematic : in pac_devices_electrical.cursor) is 
 						cursor_pnp : et_pick_and_place.pac_devices.cursor;
 
 						use et_assembly_variants.pac_device_variants;
@@ -420,7 +420,7 @@ package body et_board_ops is
 							-- the package of the device must be real
 							if is_bom_relevant (cursor_schematic) then
 							
-								device_name := pac_devices_sch.key (cursor_schematic);
+								device_name := pac_devices_electrical.key (cursor_schematic);
 
 								-- Store device in pnp list as it is:
 								apply_offset (device_name, offset, log_threshold + 2);
@@ -446,7 +446,7 @@ package body et_board_ops is
 
 					
 					procedure query_properties_variants (
-						cursor_schematic : in pac_devices_sch.cursor) 
+						cursor_schematic : in pac_devices_electrical.cursor) 
 					is 
 						cursor_pnp : et_pick_and_place.pac_devices.cursor;
 
@@ -463,7 +463,7 @@ package body et_board_ops is
 							-- the package of the device must be real
 							if is_bom_relevant (cursor_schematic) then
 													
-								device_name := pac_devices_sch.key (cursor_schematic);
+								device_name := pac_devices_electrical.key (cursor_schematic);
 								
 								-- Get a cursor to the alternative device as specified in the assembly variant:
 								alt_dev_cursor := get_alternative_device (module_cursor, variant, device_name); 
@@ -537,7 +537,7 @@ package body et_board_ops is
 
 						log_indentation_up;
 						
-						pac_devices_sch.iterate (
+						pac_devices_electrical.iterate (
 							container	=> module.devices,
 							process		=> query_properties_default'access);
 
@@ -554,7 +554,7 @@ package body et_board_ops is
 
 						log_indentation_up;
 						
-						pac_devices_sch.iterate (
+						pac_devices_electrical.iterate (
 							container	=> module.devices,
 							process		=> query_properties_variants'access);
 

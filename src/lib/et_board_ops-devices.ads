@@ -62,19 +62,19 @@ package et_board_ops.devices is
 		module			: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
-		return pac_devices_sch.map;
+		return pac_devices_electrical.map;
 
 
 	-- Modifies that status flag of a device (see package et_object_status):
 	procedure modify_status ( -- CS remove
 		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
 	
 	type type_object_electrical is record
-		cursor : pac_devices_sch.cursor;
+		cursor : pac_devices_electrical.cursor;
 	end record;
 
 
@@ -107,7 +107,7 @@ package et_board_ops.devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
-		return pac_devices_sch.cursor; -- CS remove
+		return pac_devices_electrical.cursor; -- CS remove
 	
 
 	-- Returns the first device according to the given flag.
@@ -163,7 +163,7 @@ package et_board_ops.devices is
 	-- CS
 	--procedure flip_device (
 		--module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		--device_cursor	: in pac_devices_sch.cursor; -- IC45
+		--device_cursor	: in pac_devices_electrical.cursor; -- IC45
 		--face			: in type_face; -- top/bottom
 		--log_threshold	: in type_log_level);
 
@@ -464,7 +464,7 @@ package et_board_ops.devices is
 	-- The device must be real (appearance SCH_PCB).
 	function get_terminal_position (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in pac_devices_sch.cursor; -- IC45
+		device_cursor	: in pac_devices_electrical.cursor; -- IC45
 		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position_fine;
 
@@ -473,7 +473,7 @@ package et_board_ops.devices is
 	-- Same as above function but takes a terminal cursor instead of a terminal name
 	--function get_terminal_position (
 		--module_cursor	: in pac_generic_modules.cursor;
-		--device_cursor	: in et_schematic.pac_devices_sch.cursor; -- IC45
+		--device_cursor	: in et_schematic.pac_devices_electrical.cursor; -- IC45
 		--terminal_cursor	: in pac_terminals.cursor) -- H7, 14
 		--return type_terminal_position_fine;
 
@@ -498,7 +498,7 @@ package et_board_ops.devices is
 	-- See specification of type_terminal_polygon above.
 	function to_polygon (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in pac_devices_sch.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
 		terminal_cursor	: in pac_terminals.cursor;
 		layer_category	: in type_signal_layer_category;
 		tolerance		: in type_distance_positive)
@@ -513,7 +513,7 @@ package et_board_ops.devices is
 	-- If the given device is virtual, then an empty list will be returned:
 	function get_unconnected_terminals (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in pac_devices_sch.cursor) -- IC45
+		device_cursor	: in pac_devices_electrical.cursor) -- IC45
 		return pac_terminals.map;
 
 	

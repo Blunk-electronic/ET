@@ -238,7 +238,7 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
 			is
-				use pac_devices_sch;
+				use pac_devices_electrical;
 				use pac_units;
 
 
@@ -249,7 +249,7 @@ is
 				end query_unit;
 
 				
-				procedure query_device (c : in pac_devices_sch.cursor) is
+				procedure query_device (c : in pac_devices_electrical.cursor) is
 					device : type_device_electrical renames element (c);					
 				begin
 					if debug then

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -188,7 +188,7 @@ package body et_schematic_ops is
 	
 	function get_net (
 		module		: in pac_generic_modules.cursor;
-		device		: in pac_devices_sch.cursor;
+		device		: in pac_devices_electrical.cursor;
 		terminal	: in et_terminals.pac_terminal_name.bounded_string)
 		return pac_nets.cursor
 	is
@@ -223,7 +223,7 @@ package body et_schematic_ops is
 					use pac_device_ports;
 					use pac_port_name;
 					use pac_unit_name;
-					use pac_devices_sch;
+					use pac_devices_electrical;
 				begin
 					--log (text => to_string (element (p).device_name)
 						--& " " & et_symbols.to_string (element (p).port_name));
@@ -283,11 +283,11 @@ package body et_schematic_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			use pac_devices_sch;
+			use pac_devices_electrical;
 			use et_submodules.pac_netchangers;			
 
 			
-			procedure query_devices (device_cursor : in pac_devices_sch.cursor) is
+			procedure query_devices (device_cursor : in pac_devices_electrical.cursor) is
 
 				procedure query_units (unit_cursor : in pac_units.cursor) is
 					use pac_units;
@@ -694,10 +694,10 @@ package body et_schematic_ops is
 -- 			module_name	: in pac_module_name.bounded_string;
 -- 			module		: in out type_generic_module) 
 -- 		is
--- 			use pac_devices_sch;
+-- 			use pac_devices_electrical;
 -- 
--- 			device_cursor_before : pac_devices_sch.cursor;
--- 			device_cursor_after  : pac_devices_sch.cursor;
+-- 			device_cursor_before : pac_devices_electrical.cursor;
+-- 			device_cursor_after  : pac_devices_electrical.cursor;
 -- 			inserted : boolean;
 -- 
 -- 			-- temporarily storage of unit coordinates:
@@ -709,7 +709,7 @@ package body et_schematic_ops is
 -- 			device_cursor_before := find (module.devices, device_name_before); -- IC1
 -- 
 -- 			-- copy elements and properties of the old device to a new one:
--- 			pac_devices_sch.insert (
+-- 			pac_devices_electrical.insert (
 -- 				container	=> module.devices,
 -- 				key			=> device_name_after, -- IC23
 -- 				new_item	=> element (device_cursor_before), -- all elements and properties of IC1
@@ -724,7 +724,7 @@ package body et_schematic_ops is
 -- 				position_of_units := get_unit_positions (device_cursor_before);
 -- 				
 -- 				-- delete the old device
--- 				pac_devices_sch.delete (
+-- 				pac_devices_electrical.delete (
 -- 					container	=> module.devices,
 -- 					position	=> device_cursor_before);
 -- 
@@ -780,9 +780,9 @@ package body et_schematic_ops is
 			module		: in type_generic_module)
 		is
 
-			procedure query_units (device_cursor : in pac_devices_sch.cursor) is
+			procedure query_units (device_cursor : in pac_devices_electrical.cursor) is
 				use pac_units;
-				device_name : type_device_name := pac_devices_sch.key (device_cursor); -- R1
+				device_name : type_device_name := pac_devices_electrical.key (device_cursor); -- R1
 
 				
 				procedure sort (
@@ -830,7 +830,7 @@ package body et_schematic_ops is
 				log_indentation_up;
 				
 				pac_units.iterate (
-					container	=> pac_devices_sch.element (device_cursor).units,
+					container	=> pac_devices_electrical.element (device_cursor).units,
 					process		=> sort'access);
 
 				log_indentation_down;
@@ -838,7 +838,7 @@ package body et_schematic_ops is
 			
 			
 		begin -- query_devices
-			pac_devices_sch.iterate (
+			pac_devices_electrical.iterate (
 				container	=> module.devices,
 				process		=> query_units'access);
 		end query_devices;
