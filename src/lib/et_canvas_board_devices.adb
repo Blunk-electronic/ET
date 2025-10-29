@@ -46,7 +46,9 @@ with et_schematic_ops.groups;
 with et_board_ops.devices;			use et_board_ops.devices;
 with et_board_ops.groups;
 
+with et_device_property_level;
 with et_devices_electrical;				use et_devices_electrical;
+with et_devices_electrical.units;
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
 with et_devices_non_electrical;			use et_devices_non_electrical;
 
@@ -1114,6 +1116,9 @@ package body et_canvas_board_devices is
 
 		-- Shows some information in the status bar:
 		procedure finalize is
+			use et_device_property_level;
+			use et_devices_electrical.units;
+			
 			object : type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -1140,20 +1145,19 @@ package body et_canvas_board_devices is
 				case object.cat is
 					when CAT_ELECTRICAL_DEVICE =>
 						status_clear;
-						-- CS
 						
-						-- set_status (get_properties (
-						-- 	device_cursor	=> object.electrical_device.cursor,
-						-- 	level			=> DEVICE_PROPERTIES_LEVEL_1,						   
-						-- 	all_units		=> true));
+						set_status (get_properties (
+							device_cursor	=> object.electrical_device.cursor,
+							level			=> DEVICE_PROPERTIES_LEVEL_1,						   
+							all_units		=> true));
 
+						
 					when CAT_NON_ELECTRICAL_DEVICE =>
 						status_clear;
-						-- CS
 
-						-- set_status (get_properties (
-						-- 	device_cursor	=> object.non_electrical_device.cursor,
-						-- 	level			=> DEVICE_PROPERTIES_LEVEL_1);
+						set_status (get_properties (
+							device_cursor	=> object.non_electrical_device.cursor,
+							level			=> DEVICE_PROPERTIES_LEVEL_1));
 
 						
 					when others =>
