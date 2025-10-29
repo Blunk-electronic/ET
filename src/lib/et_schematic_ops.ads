@@ -90,7 +90,9 @@ with et_device_partcode;		use et_device_partcode;
 with et_conventions;
 
 with et_schematic_text;			use et_schematic_text;
-with et_devices_electrical;		use et_devices_electrical;
+
+with et_devices_electrical;			use et_devices_electrical;
+with et_devices_electrical.units;	use et_devices_electrical.units;
 
 with et_logging;				use et_logging;
 with et_exceptions;				use et_exceptions;

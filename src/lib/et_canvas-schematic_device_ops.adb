@@ -43,6 +43,9 @@ with gtk.text_view;					use gtk.text_view;
 -- with gtk.button;					use gtk.button;
 with gtk.text_buffer;				use gtk.text_buffer;
 
+with et_devices_electrical.packages;	use et_devices_electrical.packages;
+
+
 
 package body et_canvas.schematic_device_ops is
 

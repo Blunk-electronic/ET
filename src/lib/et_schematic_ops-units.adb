@@ -46,7 +46,10 @@ with et_net_strands;						use et_net_strands;
 with et_port_direction;
 with et_symbol_model;
 with et_device_model;						use et_device_model;
+
 with et_devices_non_electrical;				use et_devices_non_electrical;
+with et_devices_electrical.packages;		use et_devices_electrical.packages;
+
 with et_numbering;
 with et_device_placeholders.symbols;		use et_device_placeholders.symbols;
 

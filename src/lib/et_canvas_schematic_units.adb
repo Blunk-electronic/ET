@@ -74,6 +74,8 @@ with et_device_partcode;			use et_device_partcode;
 with et_device_model_names;			use et_device_model_names;
 with et_device_value;				use et_device_value;
 with et_device_property_level;
+with et_devices_electrical.packages;	use et_devices_electrical.packages;
+with et_devices_electrical.units;		use et_devices_electrical.units;
 with et_board_ops.ratsnest;
 with et_board_ops.groups;
 with et_schematic_ops.groups;

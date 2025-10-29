@@ -46,8 +46,10 @@ with et_schematic_ops.groups;
 with et_board_ops.devices;			use et_board_ops.devices;
 with et_board_ops.groups;
 
-with et_devices_electrical;			use et_devices_electrical;
-with et_devices_non_electrical;		use et_devices_non_electrical;
+with et_devices_electrical;				use et_devices_electrical;
+with et_devices_electrical.packages;	use et_devices_electrical.packages;
+with et_devices_non_electrical;			use et_devices_non_electrical;
+
 with et_modes.board;
 with et_undo_redo;
 with et_commit;

@@ -61,8 +61,10 @@ with et_package_library;			use et_package_library;
 with et_package_variant;
 with et_terminals;
 
-with et_devices_electrical;			use et_devices_electrical;
-with et_devices_non_electrical;		use et_devices_non_electrical;
+with et_devices_electrical;				use et_devices_electrical;
+with et_devices_electrical.packages;	use et_devices_electrical.packages;
+with et_devices_non_electrical;			use et_devices_non_electrical;
+
 with et_pcb_contour;
 with et_pcb_stack;					use et_pcb_stack;
 

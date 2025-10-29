@@ -71,7 +71,10 @@ with et_assembly_variant_name;			use et_assembly_variant_name;
 -- with et_pick_and_place;
 with et_netlists;
 with et_device_name;
+
 with et_devices_electrical;
+with et_devices_electrical.units;
+
 with et_device_library;					use et_device_library;
 with et_device_placeholders;			use et_device_placeholders;
 
@@ -668,6 +671,7 @@ is
 	-- CS: For level L3 write in a file given via command argument.
 	procedure show_device is
 		use et_devices_electrical;
+		use et_devices_electrical.units;
 		use et_units;
 		use et_device_property_level;
 		

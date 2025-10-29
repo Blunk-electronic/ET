@@ -52,6 +52,8 @@ with ada.containers;
 with et_drawing_frame;
 with et_drawing_frame.board;
 with et_devices_electrical;
+with et_devices_electrical.packages;
+
 with et_nets;
 with et_pcb;
 with et_devices_non_electrical;
@@ -791,6 +793,7 @@ is
 		-- This procedure parses the packages of devices:
 		procedure process_devices is
 			use et_devices_electrical;
+			use et_devices_electrical.packages;
 			use et_devices_non_electrical;
 
 
