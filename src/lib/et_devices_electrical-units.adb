@@ -42,6 +42,8 @@ with ada.characters.handling;
 with ada.strings.unbounded;
 with ada.exceptions;
 
+with et_devices_electrical.packages;
+
 with et_symbol_library;
 with et_symbol_text;
 with et_symbol_name;
@@ -857,6 +859,8 @@ package body et_devices_electrical.units is
 		linebreaks	: in boolean := false)
 		return string
 	is
+		use et_devices_electrical.packages;
+		
 		use ada.strings.unbounded;
 		result : unbounded_string;
 
@@ -875,17 +879,22 @@ package body et_devices_electrical.units is
 		end;
 		
 
+		-- CS: Refinement required about what
+		-- should be output on which level.
+
 		
 		procedure get_info_1 is begin
 			if is_real (device) then
-				result := to_unbounded_string (" value: " & to_string (device.value) & ins_LF);
+				result := to_unbounded_string (" value: " 
+					& get_value (device) & ins_LF);
 			end if;
 		end;
 
 
 		procedure get_info_2 is begin
 			if is_real (device) then
-				result := result & " partcode: " & to_string (device.partcode) & ins_LF;
+				result := result & " partcode: " 
+					& get_partcode (device) & ins_LF;
 				-- CS: If the device is interactive (depends on prefix),
 				-- then get the purpose:
 				-- CS write interactive true/false

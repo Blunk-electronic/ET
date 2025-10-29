@@ -713,21 +713,18 @@ package body et_devices_non_electrical is
 		end;
 		
 
+		-- CS: Refinement required about what
+		-- should be output on which level.
 		
 		procedure get_info_1 is begin
-			-- CS
-			null;
-			-- result := to_unbounded_string (" value: " & to_string (device.value) & ins_LF);
+			result := to_unbounded_string (" value: " 
+				& get_value (device) & ins_LF);
 		end;
 
 
 		procedure get_info_2 is begin
-			null;
-			-- CS
-			-- if is_real (device) then
-			-- 	result := result & " partcode: " 
-				-- & to_string (device.partcode) & ins_LF;
-			-- end if;
+			result := result & " partcode: " 
+				& get_partcode (device) & ins_LF;
 		end;
 
 
@@ -790,10 +787,9 @@ package body et_devices_non_electrical is
 
 		
 	begin
-		-- CS
-
 		-- Get general properties of the device.
-		-- Append the properties of the requested unit:
+		-- Append further properties according to the
+		-- properties level:
 		return "device: " & get_device_name (device_cursor) & ins_LF
 			& get_device_properties (device, level, linebreaks) & ins_LF;
 
