@@ -83,6 +83,19 @@ package body et_devices_electrical.packages is
 	end get_value;
 
 
+
+	function has_value (
+		device	: in type_device_electrical)
+		return boolean
+	is begin
+		if is_empty (get_value (device)) then
+			return false;
+		else
+			return true;
+		end if;
+	end;
+
+	
 	
 	
 -- PARTCODE:
@@ -121,6 +134,16 @@ package body et_devices_electrical.packages is
 
 
 
+	function has_partcode (
+		device	: in type_device_electrical)
+		return boolean
+	is begin
+		if is_empty (get_partcode (device)) then
+			return false;
+		else
+			return true;
+		end if;
+	end;
 	
 
 	
@@ -160,6 +183,19 @@ package body et_devices_electrical.packages is
 	end get_purpose;
 
 	
+
+	function has_purpose (
+		device	: in type_device_electrical)
+		return boolean
+	is begin
+		if is_empty (get_purpose (device)) then
+			return false;
+		else
+			return true;
+		end if;
+	end;
+
+
 	
 
 -- PACKAGE VARIANTS:

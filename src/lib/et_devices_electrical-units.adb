@@ -885,20 +885,27 @@ package body et_devices_electrical.units is
 		
 		procedure get_info_1 is begin
 			if is_real (device) then
-				result := to_unbounded_string (" value: " 
-					& get_value (device) & ins_LF);
+				if has_value (device) then
+					result := to_unbounded_string (" value: " 
+						& get_value (device) & ins_LF);
+				end if;
+
+				if has_purpose (device) then
+					result := result & " purpose: " 
+						& get_purpose (device) & ins_LF;
+				end if;
 			end if;
 		end;
 
 
 		procedure get_info_2 is begin
 			if is_real (device) then
-				result := result & " partcode: " 
-					& get_partcode (device) & ins_LF;
-				-- CS: If the device is interactive (depends on prefix),
-				-- then get the purpose:
-				-- CS write interactive true/false
-				-- CS result := result & " purpose " & to_string (device.purpose);
+				if has_partcode (device) then
+					result := result & " partcode: " 
+						& get_partcode (device) & ins_LF;
+				end if;
+
+				-- CS write interactive status true/false
 				-- CS package variant
 			end if;
 		end;

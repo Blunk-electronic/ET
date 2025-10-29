@@ -118,6 +118,11 @@ package et_devices_electrical.packages is
 		return pac_device_value.bounded_string;
 
 
+	function has_value (
+		device	: in type_device_electrical)
+		return boolean;
+
+	
 	
 
 -- PARTCODE:
@@ -144,6 +149,9 @@ package et_devices_electrical.packages is
 		return pac_device_partcode.bounded_string;
 
 
+	function has_partcode (
+		device	: in type_device_electrical)
+		return boolean;
 
 	
 
@@ -172,6 +180,12 @@ package et_devices_electrical.packages is
 		return pac_device_purpose.bounded_string;
 	
 
+	function has_purpose (
+		device	: in type_device_electrical)
+		return boolean;
+	
+
+	
 	
 -- PACKAGE VARIANTS:
 	

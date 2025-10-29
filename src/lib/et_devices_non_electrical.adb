@@ -204,6 +204,17 @@ package body et_devices_non_electrical is
 	end;
 
 
+	function has_value (
+		device	: in type_device_non_electrical)
+		return boolean
+	is begin
+		if is_empty (get_value (device)) then
+			return false;
+		else
+			return true;
+		end if;
+	end;
+
 	
 
 -- PARTCODE:
@@ -232,6 +243,16 @@ package body et_devices_non_electrical is
 	end;
 
 
+	function has_partcode (
+		device	: in type_device_non_electrical)
+		return boolean
+	is begin
+		if is_empty (get_partcode (device)) then
+			return false;
+		else
+			return true;
+		end if;
+	end;
 
 
 	
@@ -262,7 +283,18 @@ package body et_devices_non_electrical is
 	end;
 
 
+	function has_purpose (
+		device	: in type_device_non_electrical)
+		return boolean
+	is begin
+		if is_empty (get_purpose (device)) then
+			return false;
+		else
+			return true;
+		end if;
+	end;
 
+	
 
 
 	
@@ -449,6 +481,16 @@ package body et_devices_non_electrical is
 	end;
 
 
+
+
+	function is_bom_relevant (
+		device : in type_device_non_electrical)
+		return boolean
+	is begin
+		return is_bom_relevant (device.package_model);
+	end;
+
+	
 	
 
 	function is_bom_relevant (
@@ -717,14 +759,23 @@ package body et_devices_non_electrical is
 		-- should be output on which level.
 		
 		procedure get_info_1 is begin
-			result := to_unbounded_string (" value: " 
-				& get_value (device) & ins_LF);
+			if has_value (device) then
+				result := to_unbounded_string (" value: " 
+					& get_value (device) & ins_LF);
+			end if;
+
+			if has_purpose (device) then
+				result := to_unbounded_string (" purpose: " 
+					& get_purpose (device) & ins_LF);
+			end if;
 		end;
 
 
 		procedure get_info_2 is begin
-			result := result & " partcode: " 
-				& get_partcode (device) & ins_LF;
+			if has_partcode (device) then
+				result := result & " partcode: " 
+					& get_partcode (device) & ins_LF;
+			end if;
 		end;
 
 
