@@ -731,151 +731,83 @@ package body et_canvas_board_devices is
 
 	
 	
+
 	
+
 	
 -- ROTATE:
 
-	procedure rotate_electrical_device (
-		tool	: in type_tool;
-		point	: in type_vector_model)
+
+	procedure rotate_object (
+		position : in type_vector_model)
 	is 
 
-		-- Rotates the selected electrical device by default_rotation.
-		-- Resets global variable preliminary_electrical_device:
 		procedure finalize is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
-			use et_object_status;
 
-			selected_device : pac_devices_electrical.cursor;
+			object : type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
 		begin
-			log (text => "finalizing rotation ...", level => log_threshold);
+			log (text => "finalize rotate", level => log_threshold);
 			log_indentation_up;
 
-			selected_device := get_first_device (active_module, SELECTED, log_threshold + 1);
-			
-			if selected_device /= pac_devices_electrical.no_element then
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
 
+				reset_status_objects (active_module, log_threshold + 1);
+				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 				
-				rotate_device (
-					module_cursor	=> active_module,
-					device_name		=> key (selected_device),
-					coordinates		=> RELATIVE,
-					rotation		=> default_rotation,
-					log_threshold	=> log_threshold);
+				rotate_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					log_threshold	=> log_threshold + 1);
 
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
 				
 			log_indentation_down;			
-			set_status (status_rotate_device);			
-			reset_preliminary_electrical_device;
-		end finalize;
-
-
-	begin
-		-- Set the tool being used:
-		object_tool := tool;
-		
-		if not clarification_pending then
-			-- Locate all devices in the vicinity of the given point:
-			find_electrical_devices (point);
-			-- NOTE: If many devices have been found, then
-			-- clarification is now pending.
-
-			-- If find_electrical_devices has found only one device
-			-- then rotate that device immediately.
-			if edit_process_running then
-				finalize;
-			end if;
-
-		else
-			-- Here the clarification procedure ends.
-			-- A device has been selected
-			-- via procedure clarify_electrical_device.
-			reset_request_clarification;
-			finalize;
-		end if;
-	end rotate_electrical_device;
-
-
-
-	
-	
-	procedure rotate_non_electrical_device (
-		tool	: in type_tool;
-		point	: in type_vector_model)
-	is 
-
-		-- Rotates the selected non-electrical device by default_rotation.
-		-- Resets global variable preliminary_non_electrical_device:
-		procedure finalize is 
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-			use et_object_status;
-
-			selected_device : pac_devices_non_electrical.cursor;
-		begin
-			log (text => "finalizing rotation ...", level => log_threshold);
-			log_indentation_up;
-
-			selected_device := get_first_non_electrical_device (active_module, SELECTED, log_threshold + 1);
 			
-			if selected_device /= pac_devices_non_electrical.no_element then
+			status_clear;
 
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-
-				rotate_device (
-					module_cursor	=> active_module,
-					device_name		=> key (selected_device),
-					coordinates		=> RELATIVE,
-					rotation		=> default_rotation,
-					log_threshold	=> log_threshold);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);				
-			else
-				log (text => "nothing to do", level => log_threshold);
-			end if;
-				
-			log_indentation_down;			
-			set_status (status_rotate_device);			
-			reset_preliminary_non_electrical_device;
+			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
 		
-	begin
-		-- Set the tool being used:
-		object_tool := tool;
-		
+
+	begin		
 		if not clarification_pending then
-			-- Locate all devices in the vicinity of the given point:
-			find_non_electrical_devices (point);
-			-- NOTE: If many devices have been found, then
+
+			-- Locate all objects in the vicinity of the given point:
+			find_objects (position);
+			-- NOTE: If many objects have been found, then
 			-- clarification is now pending.
 
-			-- If find_non_electrical_devices has found only one device
-			-- then rotate that device immediately.
+			-- If find_objects has found only one object
+			-- then the flag edit_process_running is set true.
 			if edit_process_running then
-				finalize;
+			 	finalize;
 			end if;
-
+			
 		else
 			-- Here the clarification procedure ends.
-			-- A device has been selected (indicated by cursor selected_non_electrical_device)
-			-- via procedure clarify_non_electrical_device.
+			-- An object has been selected via procedure clarify_object.
 			reset_request_clarification;
 			finalize;
 		end if;
-	end rotate_non_electrical_device;
+	end rotate_object;
+
+
+
+
 
 
 	

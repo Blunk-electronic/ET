@@ -301,14 +301,15 @@ package body et_undo_redo is
 					end case;
 
 
-				when NOUN_NON_ELECTRICAL_DEVICE =>
-					case verb is
-						when VERB_MOVE | VERB_DELETE | VERB_ROTATE | VERB_ADD | VERB_FLIP =>
-							commit_non_electrical_devices;
-			
-						when others =>
-							null;
-					end case;
+-- CS:
+-- 				when NOUN_NON_ELECTRICAL_DEVICE =>
+-- 					case verb is
+-- 						when VERB_MOVE | VERB_DELETE | VERB_ROTATE | VERB_ADD | VERB_FLIP =>
+-- 							commit_non_electrical_devices;
+-- 			
+-- 						when others =>
+-- 							null;
+-- 					end case;
 
 
 				when NOUN_SILKSCREEN | NOUN_ASSY | NOUN_STOPMASK | NOUN_ROUTE_RESTRICT |

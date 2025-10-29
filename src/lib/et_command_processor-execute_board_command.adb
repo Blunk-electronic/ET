@@ -3134,6 +3134,25 @@ is
 	end move_device;
 
 
+
+	procedure rotate_device is begin
+		case cmd_field_count is
+			when 7 =>
+				et_board_ops.devices.rotate_device (
+					module_cursor 	=> active_module,
+					device_name		=> to_device_name (get_field (5)), -- IC1
+					coordinates		=> to_coordinates (get_field (6)),  -- relative/absolute
+					rotation		=> to_rotation (get_field (7)),
+					log_threshold	=> log_threshold + 1);
+
+			when 8 .. type_field_count'last =>
+				too_long;
+				
+			when others =>
+				command_incomplete;
+		end case;
+	end rotate_device;
+
 	
 	
 	-- This procedure parses a command to
@@ -3944,22 +3963,7 @@ is
 			when VERB_ROTATE =>
 				case noun is
 					when NOUN_DEVICE =>
-						case cmd_field_count is
-							when 7 =>
-								et_board_ops.devices.rotate_device (
-									module_cursor 	=> active_module,
-									device_name		=> to_device_name (get_field (5)), -- IC1
-									coordinates		=> to_coordinates (get_field (6)),  -- relative/absolute
-									rotation		=> to_rotation (get_field (7)),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 8 .. type_field_count'last =>
-								too_long;
-								
-							when others =>
-								command_incomplete;
-						end case;
+						rotate_device;
 
 					when others => invalid_noun (to_string (noun));
 				end case;

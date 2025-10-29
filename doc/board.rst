@@ -161,26 +161,21 @@ non-electrical devices (without a representation in the schematic).
 	|VNS| m d
 
 
+
+
 	
-#. Rotate electrical device
+#. Rotate Device
 
 	.. code-block::
 
 		rotate device R1 absolute 10
 		rotate device R1 relative -45
-
-	|VNS| o d
-	
-	
-
-#. Rotate non-electrical device
-
-	.. code-block::
-
 		rotate device FD1 absolute 10
 		rotate device MH1 relative -45
 
-	|VNS| o n
+	|VNS| o d
+
+
 
 
 	

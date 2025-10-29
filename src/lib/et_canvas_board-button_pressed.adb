@@ -62,9 +62,6 @@ is
 						et_canvas_board_devices.flip_electrical_device (MOUSE, event.point);
 						-- CS use snap_point ?
 						
-					when NOUN_NON_ELECTRICAL_DEVICE =>
-						et_canvas_board_devices.flip_non_electrical_device (MOUSE, event.point);
-						-- CS use snap_point ?
 						
 					when others => null;
 				end case;
@@ -99,8 +96,6 @@ is
 					when NOUN_DEVICE =>
 						et_canvas_board_devices.move_object (MOUSE, snap_point);
 
-					-- when NOUN_NON_ELECTRICAL_DEVICE =>
-					-- 	et_canvas_board_devices.move_non_electrical_device (MOUSE, snap_point);
 
 					when NOUN_OUTLINE =>
 						et_canvas_board_outline.move_object (MOUSE, snap_point);
@@ -141,11 +136,8 @@ is
 			when VERB_ROTATE =>
 				case noun is
 					when NOUN_DEVICE =>
-						et_canvas_board_devices.rotate_electrical_device (MOUSE, event.point);
+						et_canvas_board_devices.rotate_object (event.point);
 
-					when NOUN_NON_ELECTRICAL_DEVICE =>
-						et_canvas_board_devices.rotate_non_electrical_device (MOUSE, event.point);
-						
 					when others => null;
 				end case;
 
@@ -176,7 +168,8 @@ is
 					when NOUN_KEEPOUT =>
 						et_canvas_board_keepout.delete_object (event.point);
 						
-					when NOUN_NON_ELECTRICAL_DEVICE =>
+					when NOUN_DEVICE =>
+						-- CS						
 						et_canvas_board_devices.delete_non_electrical_device (MOUSE, event.point);
 
 					when NOUN_OUTLINE =>
@@ -283,10 +276,6 @@ is
 							et_canvas_board_devices.clarify_object;
 						end if;
 
-					-- when NOUN_NON_ELECTRICAL_DEVICE =>
-					-- 	if clarification_pending then
-					-- 		et_canvas_board_devices.clarify_non_electrical_device;
-					-- 	end if;
 
 					when NOUN_OUTLINE =>
 						if clarification_pending then
@@ -332,11 +321,6 @@ is
 						if clarification_pending then
 							et_canvas_board_devices.clarify_object;
 						end if;
-
-					when NOUN_NON_ELECTRICAL_DEVICE =>
-						if clarification_pending then
-							et_canvas_board_devices.clarify_object;
-						end if;
 						
 					when others => null;							
 				end case;
@@ -369,7 +353,7 @@ is
 							et_canvas_board_keepout.clarify_object;
 						end if;
 						
-					when NOUN_NON_ELECTRICAL_DEVICE =>
+					when NOUN_DEVICE =>
 						if clarification_pending then
 							et_canvas_board_devices.clarify_object;
 						end if;

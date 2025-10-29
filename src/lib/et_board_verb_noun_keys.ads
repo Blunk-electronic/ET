@@ -72,7 +72,6 @@ package et_board_verb_noun_keys is
 	-- CS: This is a multi-assignment to key "n".
 	-- For the moment it seems not to cause trouble:
 	key_noun_net 		: constant gdk_key_type := GDK_LC_n;
-	key_noun_non_electrical_device	: constant gdk_key_type := GDK_LC_n;
 	
 	-- CS ? key_noun_contour		: constant gdk_key_type := GDK_LC_c;
 

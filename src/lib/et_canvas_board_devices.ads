@@ -147,9 +147,15 @@ package et_canvas_board_devices is
 		tool	: in type_tool;
 		point	: in type_vector_model);
 
-	
--- ROTATION:
 
+	
+-- ROTATE:
+
+	procedure rotate_object (
+		position : in type_vector_model);
+
+	
+	
 	status_rotate_device : constant string :=
 		status_click_left 
 		& "or "
@@ -158,27 +164,8 @@ package et_canvas_board_devices is
 		& status_hint_for_abort;
 
 	
-	default_rotation : constant type_rotation_model := 90.0;
-	
-	-- Locates electrical devices in the vicinity of the given point.
-	-- Depending on how many devices have been found, the behaviour is:
-	-- - If only one device found, then it is rotated immediately.
-	-- - If more than one device found, then clarification is requested.
-	--   No device will be rotated.
-	--   The next call of this procedure rotates the selected device.
-	-- The rotation is always by 90 degree counter-clockwise:
-	procedure rotate_electrical_device (
-		tool	: in type_tool;
-		point	: in type_vector_model);
-	
 
-	-- Similar to procedure rotate_electrical_device but works 
-	-- on non-electrical devices:
-	procedure rotate_non_electrical_device (
-		tool	: in type_tool;
-		point	: in type_vector_model);
 
-	
 
 	
 

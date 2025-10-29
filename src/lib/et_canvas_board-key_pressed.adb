@@ -103,12 +103,12 @@ is
 				noun := NOUN_KEEPOUT;
 				set_status (et_canvas_board_keepout.status_delete_object);
 				
-			when key_noun_non_electrical_device =>
-				noun := NOUN_NON_ELECTRICAL_DEVICE;
+			when key_noun_device =>
+				noun := NOUN_DEVICE;
 				set_status (et_canvas_board_devices.status_delete_device);
 
-			-- NOTE: Electrical devices can be deleted in
-			-- schematic only !
+				-- NOTE: This applies for non-electrical devices.
+				-- Electrical devices can be deleted in schematic only !
 
 
 			when key_noun_outline =>
@@ -180,9 +180,6 @@ is
 					when NOUN_KEEPOUT =>
 						et_canvas_board_keepout.delete_object (point);
 -- 
--- 					when NOUN_NON_ELECTRICAL_DEVICE =>
--- 						delete_non_electrical_device (KEYBOARD, point);
--- 
 -- 					when NOUN_VIA =>
 -- 						delete_via (KEYBOARD, point);
 						
@@ -219,13 +216,7 @@ is
 						if clarification_pending then
 							et_canvas_board_keepout.clarify_object;
 						end if;
-
 						
-						
--- 					when NOUN_NON_ELECTRICAL_DEVICE =>
--- 						if clarification_pending then
--- 							clarify_non_electrical_device;
--- 						end if;
 -- 
 -- 					when NOUN_VIA =>
 -- 						if clarification_pending then
@@ -285,19 +276,12 @@ is
 				noun := NOUN_DEVICE;
 				set_status (status_flip_device);
 
-			when key_noun_non_electrical_device =>
-				noun := NOUN_NON_ELECTRICAL_DEVICE;
-				set_status (status_flip_device);
-
 				
 			-- If space pressed then the operator wishes to operate by keyboard:
 			when key_space =>		
 				case noun is
 					when NOUN_DEVICE =>				
 						flip_electrical_device (KEYBOARD, point);
-
-					when NOUN_NON_ELECTRICAL_DEVICE =>
-						flip_non_electrical_device (KEYBOARD, point);
 						
 					when others => null;
 				end case;		
@@ -311,10 +295,6 @@ is
 							et_canvas_board_devices.clarify_object;
 						end if;
     
-					when NOUN_NON_ELECTRICAL_DEVICE =>
-						if clarification_pending then
-							et_canvas_board_devices.clarify_object;
-						end if;
     
 					when others => null;							
 				end case;
@@ -363,10 +343,6 @@ is
 				noun := NOUN_DEVICE;
 				set_status (et_canvas_board_devices.status_move_device);
 
-			-- when key_noun_non_electrical_device =>
-			-- 	noun := NOUN_NON_ELECTRICAL_DEVICE;
-			-- 	set_status (et_canvas_board_devices.status_move_device);
-
 			when key_noun_outline =>
 				noun := NOUN_OUTLINE;
 				set_status (et_canvas_board_outline.status_move_object);
@@ -411,8 +387,6 @@ is
 					when NOUN_DEVICE =>		
 						et_canvas_board_devices.move_object (KEYBOARD, point);
 						
-					-- when NOUN_NON_ELECTRICAL_DEVICE =>
-					-- 	et_canvas_board_devices.move_non_electrical_device (KEYBOARD, point);
 
 					when NOUN_OUTLINE =>
 						et_canvas_board_outline.move_object (KEYBOARD, point);
@@ -485,10 +459,6 @@ is
 							et_canvas_board_devices.clarify_object;
 						end if;
 
-					-- when NOUN_NON_ELECTRICAL_DEVICE =>
-					-- 	if clarification_pending then
-					-- 		et_canvas_board_devices.clarify_non_electrical_device;
-					-- 	end if;
 
 					when NOUN_OUTLINE =>
 						if clarification_pending then
@@ -599,46 +569,30 @@ is
 		case key is
 			when key_noun_device =>
 				noun := NOUN_DEVICE;
-				-- CS set_status (status_rotate_device);
-
-			when key_noun_non_electrical_device =>
-				noun := NOUN_NON_ELECTRICAL_DEVICE;
-				-- CS set_status (status_rotate_device);
-
+				set_status (et_canvas_board_devices.status_rotate_device);
 				
 			-- If space pressed then the operator wishes to operate
 			-- by keyboard:
 			when key_space =>		
-				null;
-				-- CS
--- 				case noun is
--- 					when NOUN_DEVICE =>
--- 						rotate_electrical_device (KEYBOARD, point);
--- 
--- 					when NOUN_NON_ELECTRICAL_DEVICE =>							
--- 						rotate_non_electrical_device (KEYBOARD, point);
--- 						
--- 					when others => null;
--- 				end case;		
+				case noun is
+					when NOUN_DEVICE =>
+						et_canvas_board_devices.rotate_object (get_cursor_position);
+
+					when others => null;
+				end case;
 
 
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
-				null;
-				-- CS
--- 				case noun is
--- 					when NOUN_DEVICE =>
--- 						if clarification_pending then
--- 							clarify_electrical_device;
--- 						end if;
--- 
--- 					when NOUN_NON_ELECTRICAL_DEVICE =>
--- 						if clarification_pending then
--- 							clarify_non_electrical_device;
--- 						end if;
--- 						
--- 					when others => null;							
--- 				end case;
+				case noun is
+					when NOUN_DEVICE => 
+						if clarification_pending then
+							et_canvas_board_devices.clarify_object;
+						end if;
+
+					when others => null;
+				end case;
+
 				
 			when others => status_noun_invalid;
 		end case;
@@ -726,7 +680,7 @@ is
 				case noun is
 					when NOUN_DEVICE =>
 						et_canvas_board_devices.show_object (get_cursor_position);
-						null;
+
 						
 					when NOUN_NET =>
 						-- et_canvas_schematic_nets.show_object (get_cursor_position);
