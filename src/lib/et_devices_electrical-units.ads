@@ -36,18 +36,13 @@
 --   history of changes:
 --
 --   ToDo: 
---		1. device accessories
+--
 -- 
 -- DESCRIPTION:
 -- 
 -- This package is about the type, basic properties and subprograms related
--- to so called "electrical" devices as they are modelled in the schematic
--- and in the board.
--- These devices have a representation in schematic and mostly in the board.
+-- to so units of electrical devices as they appear in the schematic drawing.
 
-with ada.containers;           			use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_ordered_maps;
 
 with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_coordinates;			use et_schematic_coordinates;

@@ -53,7 +53,7 @@ with et_assembly_variants;				use et_assembly_variants;
 with et_assembly_variant_name;			use et_assembly_variant_name;
 
 with et_device_placeholders;			use et_device_placeholders;
-with et_device_placeholders.packages;	--use et_device_placeholders.packages;
+with et_device_placeholders.packages;
 
 with et_board_coordinates;
 with et_text;

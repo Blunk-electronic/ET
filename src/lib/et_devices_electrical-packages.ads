@@ -74,7 +74,6 @@ with et_material;
 with et_text;
 with et_device_purpose;					use et_device_purpose;
 with et_device_value;					use et_device_value;
--- with et_device_name;					use et_device_name;
 with et_port_names;						use et_port_names;
 with et_unit_name;						use et_unit_name;
 with et_device_partcode;				use et_device_partcode;
