@@ -51,6 +51,7 @@ with et_module_names;					use et_module_names;
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_non_electrical;			use et_devices_non_electrical;
 
+with et_board_ops.ratsnest;
 
 
 package body et_undo_redo is
@@ -355,6 +356,8 @@ package body et_undo_redo is
 		message	: in out pac_undo_message.bounded_string;
 		lth		: in type_log_level)
 	is
+		use et_board_ops.ratsnest;
+		
 		use pac_undo_message;
 		use pac_commit_message;
 
@@ -592,6 +595,8 @@ package body et_undo_redo is
 			position	=> active_module,
 			process		=> query_module'access);
 
+		update_ratsnest (active_module, lth + 1);
+		
 		log_indentation_down;
 	end undo;
 	
@@ -605,6 +610,7 @@ package body et_undo_redo is
 		message	: in out pac_redo_message.bounded_string;
 		lth		: in type_log_level)
 	is
+		use et_board_ops.ratsnest;
 		use pac_redo_message;
 		use pac_commit_message;
 
@@ -858,6 +864,8 @@ package body et_undo_redo is
 			position	=> active_module,
 			process		=> query_module'access);
 
+		update_ratsnest (active_module, lth + 1);
+		
 		log_indentation_down;		
 	end redo;
 
