@@ -1787,6 +1787,12 @@ package et_geometry_2a is
 		position	: in out type_position;
 		place		: in type_vector_model);
 	
+
+	-- Moves a position by the given offset:
+	procedure set_place_relative (
+		position	: in out type_position;
+		offset		: in type_vector_model);
+
 	
 	function get_x (
 		position : in type_position)

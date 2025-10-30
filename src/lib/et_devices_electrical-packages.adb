@@ -351,7 +351,16 @@ package body et_devices_electrical.packages is
 	end;
 
 
+	
+	procedure set_place_relative (
+		device	: in out type_device_electrical;
+		offset	: in type_vector_model)
+	is begin
+		set_place_relative (device.position, offset);
+	end;
 
+
+	
 	function get_place (
 		device	: in type_device_electrical)
 		return type_vector_model

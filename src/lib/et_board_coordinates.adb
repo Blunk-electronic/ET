@@ -194,6 +194,8 @@ package body et_board_coordinates is
 	end;
 	
 
+
+
 	
 	function get_position (
 		position : in type_package_position)

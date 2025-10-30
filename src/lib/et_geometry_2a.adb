@@ -3825,6 +3825,15 @@ end;
 	end set;
 	
 	
+
+	procedure set_place_relative (
+		position	: in out type_position;
+		offset		: in type_vector_model)
+	is begin
+		move_by (position.place, offset);
+	end;
+
+
 	
 
 	function get_x (

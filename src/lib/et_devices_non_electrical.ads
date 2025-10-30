@@ -197,6 +197,12 @@ package et_devices_non_electrical is
 		place	: in type_vector_model);					
 
 
+	-- Moves the device by the given offset:
+	procedure set_place_relative (
+		device	: in out type_device_non_electrical;
+		offset	: in type_vector_model);					
+
+	
 	function get_place (
 		device	: in type_device_non_electrical)
 		return type_vector_model;
