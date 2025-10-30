@@ -297,6 +297,15 @@ package body et_devices_electrical.packages is
 	end;
 	
 
+	procedure set_rotation_relative (
+		device		: in out type_device_electrical;
+		rotation	: in type_rotation_model)
+	is begin
+		set_rotation_relative (device.position, rotation);
+	end;
+
+
+	
 	procedure set_face (
 		device	: in out type_device_electrical;
 		face	: in type_face)

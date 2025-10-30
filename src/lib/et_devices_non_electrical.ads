@@ -167,6 +167,11 @@ package et_devices_non_electrical is
 		device		: in out type_device_non_electrical;
 		rotation	: in type_rotation_model);
 
+
+	procedure set_rotation_relative (
+		device		: in out type_device_non_electrical;
+		rotation	: in type_rotation_model);
+
 	
 	procedure set_face (
 		device	: in out type_device_non_electrical;

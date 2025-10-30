@@ -3864,11 +3864,11 @@ end;
 	
 
 
-	procedure rotate_about_itself (
+	procedure set_rotation_relative (
 		position	: in out type_position;
-		offset		: in type_rotation)
+		rotation	: in type_rotation)
 	is begin
-		position.rotation := add (position.rotation, offset);
+		position.rotation := add (position.rotation, rotation);
 	end;
 
 

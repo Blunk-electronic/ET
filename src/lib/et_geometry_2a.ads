@@ -1813,9 +1813,9 @@ package et_geometry_2a is
 	
 	-- Changes the rotation of the given position by the given offset.
 	-- Preserves x/y. Changes position.rotation only.
-	procedure rotate_about_itself (
+	procedure set_rotation_relative (
 		position	: in out type_position;
-		offset		: in type_rotation);
+		rotation	: in type_rotation);
 
 
 

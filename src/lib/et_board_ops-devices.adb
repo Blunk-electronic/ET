@@ -563,7 +563,7 @@ package body et_board_ops.devices is
 						set_rotation (device, rotation); -- preserve x/y and face
 
 					when RELATIVE =>
-						rotate_about_itself (position => device.position, offset => rotation); -- preserve x/y and face
+						set_rotation_relative (device, rotation); -- preserve x/y and face
 				end case;
 			end;
 
@@ -577,7 +577,7 @@ package body et_board_ops.devices is
 						set_rotation (device, rotation); -- preserve x/y and face
 
 					when RELATIVE =>
-						rotate_about_itself (position => device.position, offset => rotation); -- preserve x/y and face
+						set_rotation_relative (device, rotation); -- preserve x/y and face
 				end case;
 			end;
 

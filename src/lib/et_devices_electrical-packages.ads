@@ -255,6 +255,11 @@ package et_devices_electrical.packages is
 		device		: in out type_device_electrical;
 		rotation	: in type_rotation_model);
 
+
+	procedure set_rotation_relative (
+		device		: in out type_device_electrical;
+		rotation	: in type_rotation_model);
+
 	
 	procedure set_face (
 		device	: in out type_device_electrical;
