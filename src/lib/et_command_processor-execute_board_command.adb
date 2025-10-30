@@ -3136,10 +3136,18 @@ is
 
 
 	-- This procedure parses a command that rotates a device.
+	-- Example: schematic led_driver rotate device IC20
 	-- Example: schematic led_driver rotate device IC20 absolute 45
 	-- Example: schematic led_driver rotate device IC20 relative 10
 	procedure rotate_device is begin
 		case cmd_field_count is
+			when 5 =>
+				et_board_ops.devices.rotate_device (
+					module_cursor 	=> active_module,
+					device_name		=> to_device_name (get_field (5)), -- IC1
+					coordinates		=> RELATIVE,
+					log_threshold	=> log_threshold + 1);
+
 			when 7 =>
 				et_board_ops.devices.rotate_device (
 					module_cursor 	=> active_module,

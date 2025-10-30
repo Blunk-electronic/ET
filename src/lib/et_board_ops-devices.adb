@@ -541,7 +541,7 @@ package body et_board_ops.devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
-		rotation		: in et_board_geometry.type_rotation_model; -- 90
+		rotation		: in et_board_geometry.type_rotation_model := 90.0;
 		log_threshold	: in type_log_level) 
 	is
 
@@ -1918,9 +1918,7 @@ package body et_board_ops.devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		log_threshold	: in type_log_level)
-	is 
-		default_rotation : constant type_rotation_model := 90.0;
-	begin
+	is begin
 		log (text => "module " & to_string (module_cursor)
 			& " rotate object ",
 			-- CS & to_string (object)
@@ -1935,7 +1933,6 @@ package body et_board_ops.devices is
 					module_cursor	=> module_cursor,
 					device_name		=> key (object.electrical_device.cursor),
 					coordinates		=> relative,
-					rotation		=> default_rotation,
 					log_threshold	=> log_threshold + 1);
 
 				
@@ -1945,7 +1942,6 @@ package body et_board_ops.devices is
 					module_cursor	=> module_cursor,
 					device_name		=> key (object.non_electrical_device.cursor),
 					coordinates		=> relative,
-					rotation		=> default_rotation,
 					log_threshold	=> log_threshold + 1);
 
 				

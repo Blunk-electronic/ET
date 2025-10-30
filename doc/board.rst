@@ -168,6 +168,7 @@ non-electrical devices (without a representation in the schematic).
 
 	.. code-block::
 
+		rotate device R1
 		rotate device R1 absolute 10
 		rotate device R1 relative -45
 		rotate device FD1 absolute 10

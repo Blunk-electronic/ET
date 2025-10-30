@@ -143,7 +143,7 @@ package et_board_ops.devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
-		rotation		: in et_board_geometry.type_rotation_model; -- 90 -- CS default rotation ?
+		rotation		: in et_board_geometry.type_rotation_model := 90.0;
 		log_threshold	: in type_log_level);
 
 
