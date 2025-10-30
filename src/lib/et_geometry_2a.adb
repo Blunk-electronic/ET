@@ -3817,12 +3817,12 @@ end;
 	end set;
 
 
-	procedure set (
+	procedure set_place (
 		position	: in out type_position;
 		place		: in type_vector_model)
 	is begin
 		position.place := place;
-	end set;
+	end;
 	
 	
 

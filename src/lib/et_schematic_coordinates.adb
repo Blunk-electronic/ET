@@ -136,7 +136,7 @@ package body et_schematic_coordinates is
 	is
 		p : type_object_position;
 	begin
-		set (p, point);
+		set_place (p, point);
 		set_sheet (p, sheet);
 		set_rotation (p, rotation);
 		return p;
@@ -153,7 +153,7 @@ package body et_schematic_coordinates is
 	is
 		p : type_object_position_relative;
 	begin
-		set (p, point);
+		set_place (p, point);
 		p.sheet := sheet;
 		set_rotation (p, rotation);
 		return p;

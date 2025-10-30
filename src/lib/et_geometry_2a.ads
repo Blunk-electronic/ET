@@ -1783,7 +1783,7 @@ package et_geometry_2a is
 		value		: in type_position_axis);
 
 	
-	procedure set (
+	procedure set_place (
 		position	: in out type_position;
 		place		: in type_vector_model);
 	

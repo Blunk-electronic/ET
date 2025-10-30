@@ -2407,7 +2407,7 @@ package body et_schematic_ops.submodules is
 					when ABSOLUTE =>
 						-- The absolute position is defined by the given point (x/y).
 						-- The sheet number does not change.
-						set (location, point);
+						set_place (location, point);
 
 					when RELATIVE =>
 						-- The new relative position is the netchanger position BEFORE 
@@ -3531,7 +3531,7 @@ package body et_schematic_ops.submodules is
 				-- NOTE: The sheet number does not change in drag operations.
 				case coordinates is
 					when ABSOLUTE =>
-						set (submodule.position, point);
+						set_place (submodule.position, point);
 
 					when RELATIVE =>
 						move_by (

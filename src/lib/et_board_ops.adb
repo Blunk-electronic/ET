@@ -271,7 +271,7 @@ package body et_board_ops is
 			is begin
 				case coordinates is
 					when ABSOLUTE =>
-						set (submodule.position_in_board, point);
+						set_place (submodule.position_in_board, point);
 
 					when RELATIVE =>
 						move_by (submodule.position_in_board.place, point);

@@ -136,7 +136,7 @@ package body et_board_coordinates is
 		return type_package_position 
 	is begin
 		return pos : type_package_position do
-			set (pos, point);
+			set_place (pos, point);
 			set_rotation (pos, rotation);
 			pos.face := face;
 		end return;
@@ -214,7 +214,7 @@ package body et_board_coordinates is
 		pos : type_position;
 	begin
 		--pos := (point with rotation);
-		set (pos, point);
+		set_place (pos, point);
 		set_rotation (pos, rotation);
 		return pos;
 	end to_terminal_position;
