@@ -177,24 +177,6 @@ package body et_board_coordinates is
 
 	
 	
-	function get_place (
-		position : in type_package_position)
-		return type_vector_model
-	is begin
-		return position.place;
-	end get_place;
-
-
-
-	procedure set_place (
-		position 	: in out type_package_position;
-		place		: in type_vector_model)
-	is begin
-		position.place := place;
-	end;
-	
-
-
 
 	
 	function get_position (

@@ -103,18 +103,6 @@ package et_board_coordinates is
 		position : in out type_package_position);
 	
 	
-	-- Returns the location vector of the given
-	-- package position:
-	function get_place (
-		position : in type_package_position)
-		return type_vector_model;
-
-
-	procedure set_place (
-		position 	: in out type_package_position;
-		place		: in type_vector_model);					
-
-	
 							
 	-- Returns the location vector and rotation of
 	-- the given package position:

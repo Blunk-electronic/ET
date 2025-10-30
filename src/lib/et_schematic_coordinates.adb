@@ -292,26 +292,6 @@ package body et_schematic_coordinates is
 	
 
 	
-	
-	function get_place (
-		position : in type_object_position)
-		return type_vector_model
-	is 
-		result : type_vector_model;
-	begin
-		result := position.place;
-		return result;
-	end get_place;
-
-
-
-
-	procedure set_place (
-		position 	: in out type_object_position;
-		place		: in type_vector_model)
-	is begin
-		position.place := place;
-	end set_place;
 
 
 

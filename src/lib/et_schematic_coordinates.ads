@@ -133,18 +133,7 @@ package et_schematic_coordinates is
 
 	
 	
--- PLACE (X/Y):
-	
-	-- Returns x and y of a given object position:
-	function get_place (
-		position : in type_object_position)
-		return type_vector_model;
 
-
-	procedure set_place (
-		position 	: in out type_object_position;
-		place		: in type_vector_model);
-	
 
 	
 -- ROTATION:

@@ -3817,6 +3817,16 @@ end;
 	end set;
 
 
+
+	function get_place (
+		position : in type_position)
+		return type_vector_model
+	is begin
+		return position.place;
+	end get_place;
+
+
+	
 	procedure set_place (
 		position	: in out type_position;
 		place		: in type_vector_model)

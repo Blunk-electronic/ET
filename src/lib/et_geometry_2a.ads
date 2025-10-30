@@ -1782,6 +1782,11 @@ package et_geometry_2a is
 		axis 		: in type_axis_2d;
 		value		: in type_position_axis);
 
+
+	function get_place (
+		position : in type_position)
+		return type_vector_model;
+
 	
 	procedure set_place (
 		position	: in out type_position;
