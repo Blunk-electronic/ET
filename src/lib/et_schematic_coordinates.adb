@@ -138,7 +138,7 @@ package body et_schematic_coordinates is
 	begin
 		set (p, point);
 		set_sheet (p, sheet);
-		set (p, rotation);
+		set_rotation (p, rotation);
 		return p;
 	end;
 
@@ -155,7 +155,7 @@ package body et_schematic_coordinates is
 	begin
 		set (p, point);
 		p.sheet := sheet;
-		set (p, rotation);
+		set_rotation (p, rotation);
 		return p;
 	end;
 
@@ -228,7 +228,7 @@ package body et_schematic_coordinates is
 
 
 			elsif get_field (line, place) = keyword_rotation then
-				position.set (to_rotation (get_field (line, place + 1)));
+				position.set_rotation (to_rotation (get_field (line, place + 1)));
 
 			else
 				invalid_keyword (get_field (line, place));
@@ -276,7 +276,7 @@ package body et_schematic_coordinates is
 
 
 			elsif get_field (line, place) = keyword_rotation then
-				position.set (to_rotation (get_field (line, place + 1)));
+				position.set_rotation (to_rotation (get_field (line, place + 1)));
 
 			else
 				invalid_keyword (get_field (line, place));

@@ -2796,7 +2796,7 @@ package body et_schematic_ops.submodules is
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger) is
 			begin
-				set (netchanger.position_sch, rotation);
+				set_rotation (netchanger.position_sch, rotation);
 			end;
 
 

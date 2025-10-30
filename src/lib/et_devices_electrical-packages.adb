@@ -293,7 +293,7 @@ package body et_devices_electrical.packages is
 		device		: in out type_device_electrical;
 		rotation	: in type_rotation_model)
 	is begin
-		null;
+		set_rotation (device.position, rotation);
 	end;
 	
 

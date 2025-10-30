@@ -3771,7 +3771,7 @@ end;
 
 			-- We expect after "rotation" the corresponding value for the rotation
 			elsif get_field (line, place) = keyword_rotation then
-				set (point, to_rotation (get_field (line, place + 1)));
+				set_rotation (point, to_rotation (get_field (line, place + 1)));
 				
 			else
 				-- CS invalid_keyword (f (line, place));
@@ -3825,14 +3825,6 @@ end;
 	end set;
 	
 	
-	procedure set (
-		position	: in out type_position;
-		rotation	: in type_rotation) 
-	is begin
-		position.rotation := rotation;
-	end;
-
-
 	
 
 	function get_x (
@@ -3862,6 +3854,14 @@ end;
 	end;
 
 
+	procedure set_rotation (
+		position	: in out type_position;
+		rotation	: in type_rotation) 
+	is begin
+		position.rotation := rotation;
+	end;
+
+	
 
 
 	procedure rotate_about_itself (

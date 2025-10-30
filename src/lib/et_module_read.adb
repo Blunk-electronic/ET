@@ -1897,7 +1897,7 @@ package body et_module_read is
 
 			elsif kw = keyword_rotation_in_schematic then -- rotation_in_schematic 180.0
 				expect_field_count (line, 2);
-				set (netchanger.position_sch, pac_geometry_2.to_rotation (f (line, 2)));
+				set_rotation (netchanger.position_sch, pac_geometry_2.to_rotation (f (line, 2)));
 
 			elsif kw = keyword_position_in_board then -- position_in_board x 55.000 y 7.555
 				expect_field_count (line, 5);

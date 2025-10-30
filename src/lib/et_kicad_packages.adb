@@ -1497,7 +1497,7 @@ package body et_kicad_packages is
 				when SEC_AT =>
 					case section.parent is
 						when SEC_PAD =>
-							set (terminal_position, pac_geometry_2.zero_rotation); -- angle is optionally provided as last argument. if not provided default to zero.
+							set_rotation (terminal_position, pac_geometry_2.zero_rotation); -- angle is optionally provided as last argument. if not provided default to zero.
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -1505,13 +1505,13 @@ package body et_kicad_packages is
 								when 2 => 
 									set (axis => AXIS_Y, point => terminal_position.place, value => to_distance (to_string (arg)));
 								when 3 => 
-									set (terminal_position, to_rotation (to_string (arg)));
+									set_rotation (terminal_position, to_rotation (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_FP_TEXT =>
 							--text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
-							set (text.position, pac_geometry_2.zero_rotation);
+							set_rotation (text.position, pac_geometry_2.zero_rotation);
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -1520,7 +1520,7 @@ package body et_kicad_packages is
 									set (axis => AXIS_Y, point => text.position.place, value => to_distance (to_string (arg)));
 								when 3 => 
 									--text.angle := to_angle (to_string (arg));
-									set (text.position, to_rotation (to_string (arg)));
+									set_rotation (text.position, to_rotation (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 							

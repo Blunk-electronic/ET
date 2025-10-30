@@ -1788,12 +1788,6 @@ package et_geometry_2a is
 		place		: in type_vector_model);
 	
 	
-	-- Sets the rotation of a position. (position.rotation)
-	procedure set ( -- CS rename to set_rotation
-		position	: in out type_position;
-		rotation	: in type_rotation);
-
-
 	function get_x (
 		position : in type_position)
 		return type_distance;
@@ -1802,16 +1796,21 @@ package et_geometry_2a is
 	function get_y (
 		position : in type_position)
 		return type_distance;
-
 	
 
 	
-	-- Returns the rotation of the given position.
+
 	function get_rotation (
 		position : in type_position) 
 		return type_rotation;
 
 
+	procedure set_rotation (
+		position	: in out type_position;
+		rotation	: in type_rotation);
+
+	
+	
 	-- Changes the rotation of the given position by the given offset.
 	-- Preserves x/y. Changes position.rotation only.
 	procedure rotate_about_itself (

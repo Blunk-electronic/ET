@@ -134,7 +134,7 @@ package body et_devices_non_electrical is
 		device		: in out type_device_non_electrical;
 		rotation	: in type_rotation_model)
 	is begin
-		null;
+		set_rotation (device.position, rotation);
 	end;
 
 	

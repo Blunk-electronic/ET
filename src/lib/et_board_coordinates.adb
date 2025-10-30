@@ -107,7 +107,7 @@ package body et_board_coordinates is
 
 			-- We expect after "rotation" the corresponding value for the rotation
 			elsif get_field (line, place) = keyword_rotation then
-				set (position, to_rotation (get_field (line, place + 1)));
+				set_rotation (position, to_rotation (get_field (line, place + 1)));
 
 			-- We expect after "face" the actual face (top/bottom)
 			elsif get_field (line, place) = keyword_face then
@@ -137,7 +137,7 @@ package body et_board_coordinates is
 	is begin
 		return pos : type_package_position do
 			set (pos, point);
-			set (pos, rotation);
+			set_rotation (pos, rotation);
 			pos.face := face;
 		end return;
 	end to_package_position;
@@ -213,7 +213,7 @@ package body et_board_coordinates is
 	begin
 		--pos := (point with rotation);
 		set (pos, point);
-		set (pos, rotation);
+		set_rotation (pos, rotation);
 		return pos;
 	end to_terminal_position;
 

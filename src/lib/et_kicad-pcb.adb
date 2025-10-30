@@ -1408,7 +1408,7 @@ package body et_kicad.pcb is
 								when 2 =>
 									set (point => package_position.place, axis => AXIS_Y, value => to_distance (to_string (arg)));
 								when 3 =>
-									set (package_position, to_rotation (to_string (arg)));
+									set_rotation (package_position, to_rotation (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -1532,7 +1532,7 @@ package body et_kicad.pcb is
 					case section.name is
 						when SEC_AT =>
 							--package_text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
-							set (package_text.position, zero_rotation);
+							set_rotation (package_text.position, zero_rotation);
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -1541,7 +1541,7 @@ package body et_kicad.pcb is
 									set (point => package_text.position.place, axis => AXIS_Y, value => to_distance (to_string (arg)));
 								when 3 => 
 									--package_text.angle := to_angle (to_string (arg));
-									set (package_text.position, to_rotation (to_string (arg)));
+									set_rotation (package_text.position, to_rotation (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -1577,7 +1577,7 @@ package body et_kicad.pcb is
 					case section.name is
 						when SEC_AT =>
 							--board_text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
-							set (board_text.position, zero_rotation);
+							set_rotation (board_text.position, zero_rotation);
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -1586,7 +1586,7 @@ package body et_kicad.pcb is
 									set (axis => AXIS_Y, point => board_text.position.place, value => to_distance (to_string (arg)));
 								when 3 => 
 									--board_text.angle := to_angle (to_string (arg));
-									set (board_text.position, to_rotation (to_string (arg)));
+									set_rotation (board_text.position, to_rotation (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -1925,7 +1925,7 @@ package body et_kicad.pcb is
 							
 						when SEC_AT =>
 							--terminal_angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
-							set (terminal_position, zero_rotation);
+							set_rotation (terminal_position, zero_rotation);
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -1933,7 +1933,7 @@ package body et_kicad.pcb is
 								when 2 => 
 									set (axis => AXIS_Y, point => terminal_position.place, value => to_distance (to_string (arg)));
 								when 3 => 
-									set (terminal_position, to_rotation (to_string (arg)));
+									set_rotation (terminal_position, to_rotation (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 							

@@ -343,7 +343,7 @@ package body et_canvas_board_texts is
 		--put_line (to_string (rotation));
 		-- CS validate. output error in status bar
 
-		set (preliminary_text.text.position, rotation);
+		set_rotation (preliminary_text.text.position, rotation);
 		--put_line (to_string (preliminary_text.text.position));
 		et_canvas_board.redraw_board;
 	end apply_rotation;
