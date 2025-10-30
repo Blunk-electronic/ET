@@ -404,7 +404,7 @@ package body et_canvas_board_devices is
 			
 			-- Propose objects according to current verb and noun:
 			case verb is
-				when VERB_COPY | VERB_DELETE | VERB_MOVE 
+				when VERB_COPY | VERB_DELETE | VERB_MOVE | VERB_FLIP
 					| VERB_RENAME | VERB_ROTATE | VERB_SHOW =>
 					
 					case noun is
@@ -475,172 +475,6 @@ package body et_canvas_board_devices is
 	
 -- MOVE:
 
-	procedure move_electrical_device ( -- CS no need anymore ?
-		tool	: in type_tool;
-		point	: in type_vector_model)
-	is 
-
-		-- Assigns the final position after the move to the selected 
-		-- electrical device.
-		-- Resets global variable preliminary_electrical_device:
-		procedure finalize is
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-			use et_object_status;
-
-			selected_device : pac_devices_electrical.cursor;
-		begin
-			log (text => "finalize move", level => log_threshold);
-			log_indentation_up;
-
-			selected_device := get_first_device (active_module, SELECTED, log_threshold + 1);
-			
-			if selected_device /= pac_devices_electrical.no_element then
-
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
-				move_device (
-					module_cursor	=> active_module,
-					device_name		=> key (selected_device),
-					coordinates		=> ABSOLUTE,
-					point			=> point,
-					log_threshold	=> log_threshold);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);				
-			else
-				log (text => "nothing to do", level => log_threshold);
-			end if;
-				
-			log_indentation_down;			
-			set_status (status_move_device);			
-			reset_preliminary_electrical_device;
-		end finalize;
-
-		
-	begin
-		-- Initially the preliminary_electrical_device is not ready.
-		if not edit_process_running then
-
-			-- Set the tool being used:
-			object_tool := tool;
-			
-			if not clarification_pending then
-				-- Locate all devices in the vicinity of the given point:
-				find_electrical_devices (point);
-				-- NOTE: If many devices have been found, then
-				-- clarification is now pending.
-
-				-- If find_electrical_devices has found only one device
-				-- then the flag preliminary_electrical_device.read is set true.
-				
-			else
-				-- Here the clarification procedure ends.
-				-- A device has been selected
-				-- via procedure clarify_electrical_device.
-				-- By setting edit_process_running, the selected
-				-- device will be drawn at the tool position
-				-- when packages are drawn on the canvas.
-				-- Furtheron, on the next call of this procedure
-				-- the selected device will be assigned its final position.
-				set_edit_process_running;
-				reset_request_clarification;
-			end if;
-			
-		else
-			-- Finally move the selected device:
-			finalize;
-		end if;
-	end move_electrical_device;
-
-
-
-	
-	
-	procedure move_non_electrical_device (  -- CS no need anymore ?
-		tool	: in type_tool;
-		point	: in type_vector_model)
-	is 
-		
-		-- Assigns the final position after the move to the selected 
-		-- non-electrical device.
-		-- Resets global variable preliminary_non_electrical_device:
-		procedure finalize is 
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-			use et_object_status;
-
-			selected_device : pac_devices_non_electrical.cursor;
-		begin
-			log (text => "finalize move", level => log_threshold);
-			log_indentation_up;
-
-			selected_device := get_first_non_electrical_device (active_module, SELECTED, log_threshold + 1);
-			
-			if selected_device /= pac_devices_non_electrical.no_element then
-
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
-				move_device (
-					module_cursor	=> active_module,
-					device_name		=> key (selected_device),
-					coordinates		=> ABSOLUTE,
-					point			=> point,
-					log_threshold	=> log_threshold);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);			
-			else
-				log (text => "nothing to do", level => log_threshold);
-			end if;
-				
-			log_indentation_down;			
-			set_status (status_move_device);			
-			reset_preliminary_non_electrical_device;
-		end finalize;
-
-		
-	begin
-		-- Initially the editing process is not running:
-		if not edit_process_running then
-
-			-- Set the tool being used:
-			object_tool := tool;
-			
-			if not clarification_pending then
-				-- Locate all devices in the vicinity of the given point:
-				find_non_electrical_devices (point);
-				-- NOTE: If many devices have been found, then
-				-- clarification is now pending.
-
-				-- If find_non_electrical_devices has found only one device
-				-- then the flag edit_process_running is set true.
-			else
-				-- Here the clarification procedure ends.
-				-- A device has been selected
-				-- via procedure clarify_non_electrical_device.
-				-- By setting edit_process_running, the selected
-				-- device will be drawn at the tool position
-				-- when packages are drawn on the canvas.
-				-- Furtheron, on the next call of this procedure
-				-- the selected device will be assigned its final position.
-				set_edit_process_running;
-				reset_request_clarification;
-			end if;
-			
-		else
-			-- Finally move the selected device:
-			finalize;
-		end if;
-	end move_non_electrical_device;
-
-
-
-	
 
 	procedure move_object (
 		tool	: in type_tool;
@@ -684,8 +518,7 @@ package body et_canvas_board_devices is
 				
 			log_indentation_down;			
 			
-			set_status (status_move_device);
-			-- CS clear ?
+			status_clear;
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
@@ -816,155 +649,79 @@ package body et_canvas_board_devices is
 -- FLIP / MIRROR:
 
 
-	procedure flip_electrical_device (
-		tool	: in type_tool;
-		point	: in type_vector_model)
-	is 
-		use et_pcb_sides;
 
-		
-		-- Flips the selected electrical device.
-		-- Resets global variable preliminary_electrical_device:
+	procedure flip_object (
+		position : in type_vector_model)
+	is 
+
 		procedure finalize is
-			face : type_face;
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
-			use et_object_status;
 
-			selected_device : pac_devices_electrical.cursor;
+			object : type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
 		begin
-			log (text => "finalizing flipping ...", level => log_threshold);
+			log (text => "finalize flip", level => log_threshold);
 			log_indentation_up;
 
-			selected_device := get_first_device (active_module, SELECTED, log_threshold + 1);
-			
-			if selected_device /= pac_devices_electrical.no_element then
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
 
-				face := get_face (selected_device);
-				toggle (face);
-
+				reset_status_objects (active_module, log_threshold + 1);
+				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 				
-				flip_device (
-					module_cursor	=> active_module,
-					device_name		=> key (selected_device),
-					face			=> face,
-					log_threshold	=> log_threshold);
+				flip_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					log_threshold	=> log_threshold + 1);
 
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
 				
 			log_indentation_down;			
-			set_status (status_flip_device);			
-			reset_preliminary_electrical_device;
+			
+			status_clear;
+
+			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
 		
-	begin
-		-- Set the tool being used:
-		object_tool := tool;
-		
+
+	begin		
 		if not clarification_pending then
-			-- Locate all devices in the vicinity of the given point:
-			find_electrical_devices (point);
-			-- NOTE: If many devices have been found, then
+
+			-- Locate all objects in the vicinity of the given point:
+			find_objects (position);
+			-- NOTE: If many objects have been found, then
 			-- clarification is now pending.
 
-			-- If find_electrical_devices has found only one device
-			-- then flip that device immediately.
+			-- If find_objects has found only one object
+			-- then the flag edit_process_running is set true.
 			if edit_process_running then
-				finalize;
+			 	finalize;
 			end if;
 			
 		else
 			-- Here the clarification procedure ends.
-			-- A device has been selected
-			-- via procedure clarify_electrical_device.
+			-- An object has been selected via procedure clarify_object.
 			reset_request_clarification;
 			finalize;
 		end if;
-	end flip_electrical_device;
-
-
+	end flip_object;
 
 	
-	
-	procedure flip_non_electrical_device (
-		tool	: in type_tool;
-		point	: in type_vector_model)
-	is 
-		use et_pcb_sides;
 
-		
-		procedure finalize is
-			face : type_face;
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-			use et_object_status;
 
-			selected_device : pac_devices_non_electrical.cursor;
-		begin
-			log (text => "finalizing flipping ...", level => log_threshold);
-			log_indentation_up;
 
-			selected_device := get_first_non_electrical_device (active_module, SELECTED, log_threshold + 1);
 
-			if selected_device /= pac_devices_non_electrical.no_element then
-
-				face := get_face (selected_device);
-				toggle (face);
-
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
-				flip_device (
-					module_cursor	=> active_module,
-					device_name		=> key (selected_device),
-					face			=> face,
-					log_threshold	=> log_threshold);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);				
-			else
-				log (text => "nothing to do", level => log_threshold);
-			end if;
-				
-			log_indentation_down;			
-			set_status (status_flip_device);			
-			reset_preliminary_non_electrical_device;
-		end finalize;
-
-		
-	begin
-		-- Set the tool being used:
-		object_tool := tool;
-		
-		if not clarification_pending then
-			-- Locate all devices in the vicinity of the given point:
-			find_non_electrical_devices (point);
-			-- NOTE: If many devices have been found, then
-			-- clarification is now pending.
-
-			-- If find_non_electrical_devices has found only one device
-			-- then flip that device immediately.
-			if edit_process_running then
-				finalize;
-			end if;
-			
-		else
-			-- Here the clarification procedure ends.
-			-- A device has been selected
-			-- via procedure clarify_non_electrical_device.
-			reset_request_clarification;
-			finalize;
-		end if;
-	end flip_non_electrical_device;
 
 
 

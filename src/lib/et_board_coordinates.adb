@@ -166,7 +166,7 @@ package body et_board_coordinates is
 
 	
 
-	procedure flip (
+	procedure toggle_face (
 		position : in out type_package_position)
 	is begin
 		case get_face (position) is

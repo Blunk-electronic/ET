@@ -98,7 +98,8 @@ package et_board_coordinates is
 		return type_face;
 
 
-	procedure flip (
+	-- Changes from top to bottom or vice versa:
+	procedure toggle_face (
 		position : in out type_package_position);
 	
 	

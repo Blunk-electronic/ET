@@ -249,7 +249,11 @@ package et_devices_electrical.packages is
 	procedure set_face (
 		device	: in out type_device_electrical;
 		face	: in type_face);				   
-						   
+
+
+	procedure toggle_face (
+		device	: in out type_device_electrical);
+	
 
 	function get_face (
 		device	: in type_device_electrical)

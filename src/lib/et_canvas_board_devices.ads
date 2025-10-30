@@ -120,28 +120,6 @@ package et_canvas_board_devices is
 		& status_hint_for_abort;
 
 	
-	-- Locates devices in the vicinity of the given point.
-	-- Depending on how many devices have been found, the behaviour is:
-	-- - If only one device found, then it is selected and 
-	--   the flag preliminary_electrical_device.ready will be set.
-	--   This causes the selected device to be drawn at the tool position.
-	-- - If more than one device found, then clarification is requested.
-	--   No device will be moved.
-	--   The next call of this procedure sets preliminary_electrical_device.ready
-	--   so that the selected device will be drawn at the tool position.
-	--   The next call of this procedure assigns the final position 
-	--   to the selected device:
-	procedure move_electrical_device (
-		tool	: in type_tool;
-		point	: in type_vector_model);
-	
-
-	-- Similar to procedure move_electrical_device but works 
-	-- on non-electrical devices:
-	procedure move_non_electrical_device (
-		tool	: in type_tool;
-		point	: in type_vector_model);
-
 
 	procedure move_object (
 		tool	: in type_tool;
@@ -171,6 +149,11 @@ package et_canvas_board_devices is
 
 -- FLIP / MIRROR:
 
+	procedure flip_object (
+		position : in type_vector_model);
+
+
+	
 	-- to be output in the status bar:
 	status_flip_device : constant string :=
 		status_click_left 
@@ -180,25 +163,7 @@ package et_canvas_board_devices is
 		& status_hint_for_abort;
 	
 
-	-- Locates electrical devices in the vicinity of the given point.
-	-- Depending on how many devices have been found, the behaviour is:
-	-- - If only one device found, then it is flipped immediately.
-	-- - If more than one device found, then clarification is requested.
-	--   No device will be flipped.
-	--   The next call of this procedure flips the selected device.
-	procedure flip_electrical_device (
-		tool	: in type_tool;
-		point	: in type_vector_model);
 	
-	
-	-- Similar to procedure flip_electrical_device but works 
-	-- on non-electrical devices:
-	procedure flip_non_electrical_device (
-		tool	: in type_tool;
-		point	: in type_vector_model);
-
-
-
 
 	
 -- DELETE:

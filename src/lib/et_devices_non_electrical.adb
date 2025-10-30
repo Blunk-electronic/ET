@@ -128,7 +128,16 @@ package body et_devices_non_electrical is
 		set_face (device.position, face);
 	end;
 	
-						   
+
+
+	procedure toggle_face (
+		device	: in out type_device_non_electrical)
+	is begin
+		toggle_face (device.position);
+	end;
+
+
+	
 
 	function get_face (
 		device	: in type_device_non_electrical)

@@ -58,9 +58,7 @@ is
 			when VERB_FLIP =>
 				case noun is
 					when NOUN_DEVICE =>
-						put_line ("flip device");
-						et_canvas_board_devices.flip_electrical_device (MOUSE, event.point);
-						-- CS use snap_point ?
+						et_canvas_board_devices.flip_object (snap_point);
 						
 						
 					when others => null;

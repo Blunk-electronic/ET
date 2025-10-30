@@ -289,7 +289,17 @@ package body et_devices_electrical.packages is
 		set_face (device.position, face);
 	end;
 	
-						   
+
+
+	procedure toggle_face (
+		device	: in out type_device_electrical)
+	is begin
+		toggle_face (device.position);
+	end;
+							  
+
+
+	
 
 	function get_face (
 		device	: in type_device_electrical)

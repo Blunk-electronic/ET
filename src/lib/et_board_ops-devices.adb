@@ -643,110 +643,91 @@ package body et_board_ops.devices is
 	procedure flip_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
-		face			: in type_face; -- top/bottom
+		toggle			: in boolean := false;
+		face			: in type_face := TOP; -- top/bottom
 		log_threshold	: in type_log_level) 
 	is
 
-		procedure query_devices (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			device_electric		: pac_devices_electrical.cursor;
-			device_non_electric	: pac_devices_non_electrical.cursor;			
+			device_electrical		: pac_devices_electrical.cursor;
+			device_non_electrical	: pac_devices_non_electrical.cursor;			
 
 			
-			procedure flip ( -- electric device
+			procedure flip_electrical (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
-			is				
-				-- face_before : constant type_face := get_face (device.position);
-			begin
-				flip (device.position);
-				
--- 				if face_before /= face then
--- 					set_face (position => device.position, face => face); -- preserve x/y and rotation
--- 
--- 					-- toggle the flipped flag
--- 					if device.flipped = NO then
--- 						device.flipped := YES;
--- 					else
--- 						device.flipped := NO;
--- 					end if;
--- 					
--- 				else
--- 					log (WARNING, "package already on " & to_string (face) & " !");
--- 				end if;
-			end flip;
+			is begin
+				if toggle then
+					toggle_face (device);
+				else
+					set_face (device, face);
+				end if;
+			end flip_electrical;
+			
 
 			
-			procedure flip ( -- non-electric device
+			procedure flip_non_electrical (
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical) 
-			is				
-				-- face_before : constant type_face := get_face (device.position);
-			begin
-				flip (device.position);
-
--- 				if face_before /= face then
--- 					set_face (position => device.position, face => face); -- preserve x/y and rotation
--- 
--- 					-- toggle the flipped flag
--- 					if device.flipped = NO then
--- 						device.flipped := YES;
--- 					else
--- 						device.flipped := NO;
--- 					end if;
--- 	
--- 				else
--- 					log (WARNING, "package already on " & to_string (face) & " !");
--- 				end if;
-			end flip;
+			is begin
+				if toggle then
+					toggle_face (device);
+				else
+					set_face (device, face);
+				end if;
+			end flip_non_electrical;
 
 			
-		begin -- query_devices
+		begin
 
-			-- Search the device first among the electric devices.
+			-- Search the device first among the electrical devices.
 			-- Most likely it will be among them. If not,
-			-- search in non-electric devices.
-			if contains (module.devices, device_name) then
+			-- search in non-electrical devices:
+			
+			device_electrical := get_electrical_device (module_cursor, device_name);
+			
+			if has_element (device_electrical) then
 
-				device_electric := find (module.devices, device_name);
-
-				-- set new position
 				update_element (
 					container	=> module.devices,
-					position	=> device_electric,
-					process		=> flip'access);
+					position	=> device_electrical,
+					process		=> flip_electrical'access);
 
 			else
-				-- search among non-electric devices:
-				if contains (module.devices_non_electric, device_name) then
+				-- Search among non-electrical devices:
+				device_non_electrical := get_non_electrical_device (module_cursor, device_name);
 
-					device_non_electric := find (module.devices_non_electric, device_name);
+				if has_element (device_non_electrical) then
 
-					-- set new position
 					update_element (
 						container	=> module.devices_non_electric,
-						position	=> device_non_electric,
-						process		=> flip'access);
+						position	=> device_non_electrical,
+						process		=> flip_non_electrical'access);
 
+				-- If the requested device has not been found,
+				-- then log a warning:
 				else
-					device_not_found (device_name);
+					log (WARNING, " Device " & to_string (device_name) & " not found !");
 				end if;
 
 			end if;
-		end query_devices;
+		end query_module;
 
 		
 	begin
-		log (text => "module " & to_string (module_cursor) &
-			" flipping device " & to_string (device_name) &
-			" to " & to_string (face), level => log_threshold);
+		log (text => "module " & to_string (module_cursor)
+			 & " flip device " & to_string (device_name),
+			 -- & " to " & to_string (face), 
+			 -- CS: toggle, face
+			 level => log_threshold);
 
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
-			process		=> query_devices'access);
+			process		=> query_module'access);
 
 		update_ratsnest (module_cursor, log_threshold + 1);		
 	end flip_device;
@@ -2013,11 +1994,10 @@ package body et_board_ops.devices is
 	procedure flip_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		face			: in type_face; -- top/bottom
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " flipping object",
+			& " flip object",
 			-- CS & to_string (object)
 			level => log_threshold);
 
@@ -2029,7 +2009,7 @@ package body et_board_ops.devices is
 				flip_device (
 					module_cursor	=> module_cursor,
 					device_name		=> key (object.electrical_device.cursor),
-					face			=> face,
+					toggle			=> true,
 					log_threshold	=> log_threshold + 1);
 
 				
@@ -2038,7 +2018,7 @@ package body et_board_ops.devices is
 				flip_device (
 					module_cursor	=> module_cursor,
 					device_name		=> key (object.non_electrical_device.cursor),
-					face			=> face,
+					toggle			=> true,
 					log_threshold	=> log_threshold + 1);
 
 				

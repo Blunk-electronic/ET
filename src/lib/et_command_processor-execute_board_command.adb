@@ -3185,15 +3185,24 @@ is
 
 
 
+	-- This procedure parses a command that flips a device.
+	-- Example: schematic led_driver flip device IC20
+	-- Example: schematic led_driver flip device IC20 bottom/top
 	procedure flip_device is begin
 		case cmd_field_count is
+			when 5 =>
+				et_board_ops.devices.flip_device (
+					module_cursor 	=> active_module,
+					device_name		=> to_device_name (get_field (5)), -- IC1
+					toggle			=> true,
+					log_threshold	=> log_threshold + 1);
+
 			when 6 =>
 				et_board_ops.devices.flip_device (
 					module_cursor 	=> active_module,
 					device_name		=> to_device_name (get_field (5)), -- IC1
 					face			=> to_face  (get_field (6)),  -- top/bottom
-					log_threshold	=> log_threshold + 1
-					);
+					log_threshold	=> log_threshold + 1);
 
 			when 7 .. type_field_count'last => too_long;
 				

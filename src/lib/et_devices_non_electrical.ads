@@ -163,6 +163,10 @@ package et_devices_non_electrical is
 		face	: in type_face);				   
 						   
 
+	procedure toggle_face (
+		device	: in out type_device_non_electrical);
+
+	
 	function get_face (
 		device	: in type_device_non_electrical)
 		return type_face;

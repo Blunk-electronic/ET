@@ -150,13 +150,18 @@ package et_board_ops.devices is
 
 	-- Flips a device in the board layout from top to bottom or vice versa.
 	-- Leaves x/y and rotation as it is.
-	-- Warns operator if device already on desired face of board.
 	-- Automatically detects whether the given device is
-	-- electrical or non-electrical:
+	-- electrical or non-electrical.
+	-- 1. If toggle is false, then the destination face must be
+	-- provided. 
+	-- 2. If toggle is true, then the face of the targeted device
+	--    is changed from top to bottom or vice versa.
+	--    The argument face is then ignored.
 	procedure flip_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
-		face			: in type_face; -- top/bottom
+		toggle			: in boolean := false;
+		face			: in type_face := TOP; -- top/bottom
 		log_threshold	: in type_log_level);
 
 
@@ -433,7 +438,6 @@ package et_board_ops.devices is
 	procedure flip_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		face			: in type_face; -- top/bottom
 		log_threshold	: in type_log_level);
 	
 	

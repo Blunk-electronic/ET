@@ -281,7 +281,7 @@ is
 			when key_space =>		
 				case noun is
 					when NOUN_DEVICE =>				
-						flip_electrical_device (KEYBOARD, point);
+						et_canvas_board_devices.flip_object (point);
 						
 					when others => null;
 				end case;		

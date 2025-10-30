@@ -180,7 +180,20 @@ non-electrical devices (without a representation in the schematic).
 
 	
 	
-#. Flip/mirror electrical device
+#. Flip Device
+
+	Flipping a device means to change the assembly side
+	from top to bottom or vice versa. The package of the device
+	is mirrored along its y-axis:
+
+	This command toggles the assembly side:
+
+	.. code-block::
+
+		flip device C1
+
+
+	This command sets an explicitly given assembly side:
 
 	.. code-block::
 
@@ -191,13 +204,6 @@ non-electrical devices (without a representation in the schematic).
 
 	
 
-#. Flip/mirror non-electrical device
-
-	.. code-block::
-
-		flip device FD1 bottom
-
-	|VNS| l n
 
 	
 	
