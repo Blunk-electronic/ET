@@ -120,6 +120,24 @@ package body et_devices_non_electrical is
 	end;
 
 
+
+	function get_rotation (
+		device	: in out type_device_non_electrical)
+		return type_rotation_model
+	is begin
+		return get_rotation (device.position);
+	end;
+
+	
+	
+	procedure set_rotation (
+		device		: in out type_device_non_electrical;
+		rotation	: in type_rotation_model)
+	is begin
+		null;
+	end;
+
+	
 	
 	procedure set_face (
 		device	: in out type_device_non_electrical;

@@ -246,6 +246,16 @@ package et_devices_electrical.packages is
 		return string;
 
 
+	function get_rotation (
+		device	: in out type_device_electrical)
+		return type_rotation_model;
+
+	
+	procedure set_rotation (
+		device		: in out type_device_electrical;
+		rotation	: in type_rotation_model);
+
+	
 	procedure set_face (
 		device	: in out type_device_electrical;
 		face	: in type_face);				   

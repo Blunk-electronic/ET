@@ -3135,6 +3135,9 @@ is
 
 
 
+	-- This procedure parses a command that rotates a device.
+	-- Example: schematic led_driver rotate device IC20 absolute 45
+	-- Example: schematic led_driver rotate device IC20 relative 10
 	procedure rotate_device is begin
 		case cmd_field_count is
 			when 7 =>

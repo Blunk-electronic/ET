@@ -533,6 +533,8 @@ package body et_board_ops.devices is
 
 
 
+
+
 	
 	
 	procedure rotate_device (
@@ -543,20 +545,22 @@ package body et_board_ops.devices is
 		log_threshold	: in type_log_level) 
 	is
 
-		procedure query_devices (
+		
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			device_electric		: pac_devices_electrical.cursor;
-			device_non_electric	: pac_devices_non_electrical.cursor;			
+			device_electrical		: pac_devices_electrical.cursor;
+			device_non_electrical	: pac_devices_non_electrical.cursor;			
 
-			procedure set_rotation ( -- of an electric device
+			
+			procedure rotate_electrical (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
 			is begin
 				case coordinates is
 					when ABSOLUTE =>
-						set (device.position, rotation); -- preserve x/y and face
+						set_rotation (device, rotation); -- preserve x/y and face
 
 					when RELATIVE =>
 						rotate_about_itself (position => device.position, offset => rotation); -- preserve x/y and face
@@ -564,13 +568,13 @@ package body et_board_ops.devices is
 			end;
 
 			
-			procedure set_rotation ( -- of a non-electric device
+			procedure rotate_non_electrical (
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical) 
 			is begin
 				case coordinates is
 					when ABSOLUTE =>
-						set (device.position, rotation); -- preserve x/y and face
+						set_rotation (device, rotation); -- preserve x/y and face
 
 					when RELATIVE =>
 						rotate_about_itself (position => device.position, offset => rotation); -- preserve x/y and face
@@ -578,62 +582,65 @@ package body et_board_ops.devices is
 			end;
 
 			
-		begin -- query_devices
+		begin
 
-			-- Search the device first among the electric devices.
+			-- Search the device first among the electrical devices.
 			-- Most likely it will be among them. If not,
-			-- search in non-electric devices.
-			if contains (module.devices, device_name) then
+			-- search in non-electrical devices:
+			
+			device_electrical := get_electrical_device (module_cursor, device_name);
+			
+			if has_element (device_electrical) then
 
-				device_electric := find (module.devices, device_name);
-
-				-- set new position
 				update_element (
 					container	=> module.devices,
-					position	=> device_electric,
-					process		=> set_rotation'access);
+					position	=> device_electrical,
+					process		=> rotate_electrical'access);
 
 			else
-				-- search among non-electric devices:
-				if contains (module.devices_non_electric, device_name) then
+				-- Search among non-electrical devices:
+				device_non_electrical := get_non_electrical_device (module_cursor, device_name);
 
-					device_non_electric := find (module.devices_non_electric, device_name);
+				if has_element (device_non_electrical) then
 
-					-- set new position
 					update_element (
 						container	=> module.devices_non_electric,
-						position	=> device_non_electric,
-						process		=> set_rotation'access);
+						position	=> device_non_electrical,
+						process		=> rotate_non_electrical'access);
 
+				-- If the requested device has not been found,
+				-- then log a warning:
 				else
-					device_not_found (device_name);
+					log (WARNING, " Device " & to_string (device_name) & " not found !");
 				end if;
-			end if;
 
-		end query_devices;
+			end if;
+		end query_module;
+
 
 		
-	begin -- rotate_device
+	begin
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " & to_string (module_cursor) &
-					" rotating device " & to_string (device_name) &
-					" to " & to_string (rotation), level => log_threshold);
+				log (text => "module " & to_string (module_cursor) 
+					 & " rotate device " & to_string (device_name) 
+					 & " to " & to_string (rotation), level => log_threshold);
 
 			when RELATIVE =>
-				log (text => "module " & to_string (module_cursor) &
-					" rotating device " & to_string (device_name) &
-					" by " & to_string (rotation), level => log_threshold);
+				log (text => "module " & to_string (module_cursor) 
+					 & " rotating device " & to_string (device_name) 
+					 & " by " & to_string (rotation), level => log_threshold);
 		end case;
 
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
-			process		=> query_devices'access);
+			process		=> query_module'access);
 
 		update_ratsnest (module_cursor, log_threshold + 1);
 	end rotate_device;
+
 
 
 

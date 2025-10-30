@@ -157,6 +157,16 @@ package et_devices_non_electrical is
 		format	: in type_output_format := FORMAT_1)
 		return string;
 
+
+	function get_rotation (
+		device	: in out type_device_non_electrical)
+		return type_rotation_model;
+
+	
+	procedure set_rotation (
+		device		: in out type_device_non_electrical;
+		rotation	: in type_rotation_model);
+
 	
 	procedure set_face (
 		device	: in out type_device_non_electrical;
