@@ -2053,6 +2053,8 @@ package body et_board_ops.devices is
 		case object.cat is
 			when CAT_ELECTRICAL_DEVICE =>
 
+				-- Show the device in the schematic drawing
+				-- and in the board drawing:
 				show_device (
 					module_cursor	=> module_cursor,
 					device_name		=> get_device_name (object.electrical_device.cursor),
@@ -2063,6 +2065,7 @@ package body et_board_ops.devices is
 
 			when CAT_NON_ELECTRICAL_DEVICE =>
 
+				-- Show the device in the board drawing:
 				show_non_electrical_device (
 					module_cursor	=> module_cursor,
 					device_name		=> get_device_name (object.non_electrical_device.cursor),
