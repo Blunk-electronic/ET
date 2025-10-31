@@ -208,13 +208,13 @@ non-electrical devices (without a representation in the schematic).
 
 	
 	
-#. Delete non-electrical device
+#. Delete Non-Electrical Device
 
 	.. code-block::
 
 		delete device FD1
 
-	|VNS| del n
+	|VNS| del d
 
 	Note: Electrical devices can only be deleted in the schematic !
 	
@@ -227,7 +227,9 @@ non-electrical devices (without a representation in the schematic).
 
 		rename device FD1 FD2
 
+	|VNS| n d
 
+	Note: Electrical devices can only be renamed in the schematic !
 	
 	
 +++++++++++++++++++++
