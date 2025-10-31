@@ -51,8 +51,7 @@ package et_schematic_ops.units is
 -- BASIC QUERY OPERATIONS ON DEVICES AND DEVICE MODELS:
 	
 
-	-- Returns true if the given module provides the given device.
-	-- The module being searched in must be in the rig already.						
+	-- Returns true if the device exists in the given module:
 	function electrical_device_exists (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name)

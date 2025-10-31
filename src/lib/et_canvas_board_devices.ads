@@ -111,6 +111,27 @@ package et_canvas_board_devices is
 		point	: in type_vector_model);
 
 
+
+
+-- RENAME:
+
+	procedure rename_object (
+		position : in type_vector_model);
+
+	
+	
+	status_rename_device : constant string :=
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to rename device." 
+		& status_hint_for_abort;
+
+
+
+
+
+	
 	
 -- ROTATE:
 

@@ -569,6 +569,42 @@ is
 	end place;
 
 
+
+	procedure rename is begin
+		case key is
+			when key_noun_device =>
+				noun := NOUN_DEVICE;
+				set_status (et_canvas_board_devices.status_rename_device);
+				
+			-- If space pressed then the operator wishes to operate
+			-- by keyboard:
+			when key_space =>		
+				case noun is
+					when NOUN_DEVICE =>
+						et_canvas_board_devices.rename_object (get_cursor_position);
+
+					when others => null;
+				end case;
+
+
+			-- If page down pressed, then the operator is clarifying:
+			when key_clarify =>
+				case noun is
+					when NOUN_DEVICE => 
+						if clarification_pending then
+							et_canvas_board_devices.clarify_object;
+						end if;
+
+					when others => null;
+				end case;
+
+				
+			when others => status_noun_invalid;
+		end case;
+	end rename;
+
+	
+	
 	
 	procedure rotate is begin
 		case key is
@@ -809,6 +845,10 @@ begin -- key_pressed
 								verb := VERB_PLACE;
 								status_enter_noun;
 
+							when key_verb_rename =>
+								verb := VERB_RENAME;
+								status_enter_noun;
+								
 							when key_verb_rotate =>
 								verb := VERB_ROTATE;
 								status_enter_noun;
@@ -851,6 +891,7 @@ begin -- key_pressed
 							when VERB_FLIP		=> flip;
 							when VERB_MOVE		=> move;
 							when VERB_PLACE		=> place;
+							when VERB_RENAME	=> rename;
 							when VERB_ROTATE	=> rotate;
 							when VERB_ROUTE		=> route;
 							when VERB_SHOW		=> show;

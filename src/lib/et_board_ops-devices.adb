@@ -70,6 +70,37 @@ package body et_board_ops.devices is
 	use pac_nets;
 
 
+
+	function non_electrical_device_exists (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name)
+		return boolean
+	is
+		device_found : boolean := false; -- to be returned
+		
+		procedure query_devices (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is begin
+			if contains (module.devices_non_electric, device) then
+				device_found := true;
+			end if;
+		end query_devices;
+		
+	begin
+		pac_generic_modules.query_element (
+			position	=> module,
+			process		=> query_devices'access);
+
+		return device_found;
+	end non_electrical_device_exists;
+
+
+	
+
+
+	
+
 	
 	function get_devices (
 		module			: in pac_generic_modules.cursor;
@@ -1492,7 +1523,7 @@ package body et_board_ops.devices is
 	
 	
 	procedure rename_device (
-		module_cursor	: in pac_generic_modules.cursor;
+		module_cursor		: in pac_generic_modules.cursor;
 		device_name_before	: in type_device_name; -- FD1
 		device_name_after	: in type_device_name; -- FD3
 		log_threshold		: in type_log_level) 
@@ -1536,8 +1567,7 @@ package body et_board_ops.devices is
 
 					-- A device having the new name must
 					-- not exist yet:
-					if not electrical_device_exists (module_cursor, device_name_after) then
-					-- CS use non_electrical_device_exists !
+					if not non_electrical_device_exists (module_cursor, device_name_after) then
 						
 						update_element (
 							container	=> generic_modules,

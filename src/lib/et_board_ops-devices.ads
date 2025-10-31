@@ -54,6 +54,14 @@ with et_devices_non_electrical;			use et_devices_non_electrical;
 package et_board_ops.devices is
 
 
+	-- Returns true if the device exists in the given module:
+	function non_electrical_device_exists (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name)
+		return boolean;
+
+	
+	
 -- ELECTICAL DEVICES:
 	
 	
@@ -303,7 +311,7 @@ package et_board_ops.devices is
 
 
 	-- Adds a non-electrical device to the board:
-	procedure add_device (
+	procedure add_device ( -- CS rename to add_non_electrical_device
 		module_cursor	: in pac_generic_modules.cursor;
 		package_model	: in pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
 		position		: in type_package_position; -- x,y,rotation,face
@@ -316,14 +324,14 @@ package et_board_ops.devices is
 
 	-- Deletes a non-electric device in the board layout.
 	-- Electric devices must be deleted in the schematic domain !
-	procedure delete_device (
+	procedure delete_device ( -- CS rename to delete_non_electrical_device
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- FD1 -- CS cursor insted ?
 		log_threshold	: in type_log_level);
 
 	
 	-- Renames a non-electric device in the board layout.
-	procedure rename_device (
+	procedure rename_device ( -- CS rename to rename_non_electrical_device
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name_before	: in type_device_name; -- FD1
 		device_name_after	: in type_device_name; -- FD3

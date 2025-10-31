@@ -140,6 +140,15 @@ is
 				end case;
 
 
+			when VERB_RENAME =>
+				case noun is
+					when NOUN_DEVICE =>
+						et_canvas_board_devices.rename_object (event.point);
+
+					when others => null;
+				end case;
+
+				
 			when VERB_ROUTE =>
 				case noun is
 					when NOUN_NET =>
@@ -403,6 +412,17 @@ is
 				end case;
 
 
+			when VERB_RENAME =>
+				case noun is
+					when NOUN_DEVICE =>
+						if clarification_pending then
+							et_canvas_board_devices.clarify_object;
+						end if;
+						
+					when others => null;							
+				end case;
+
+				
 			when VERB_ROUTE =>
 				case noun is
 					when NOUN_NET =>

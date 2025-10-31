@@ -3136,10 +3136,12 @@ is
 
 
 
+	
+
 	-- This procedure parses a command that rotates a device.
-	-- Example: schematic led_driver rotate device IC20
-	-- Example: schematic led_driver rotate device IC20 absolute 45
-	-- Example: schematic led_driver rotate device IC20 relative 10
+	-- Example: board led_driver rotate device IC20
+	-- Example: board led_driver rotate device IC20 absolute 45
+	-- Example: board led_driver rotate device IC20 relative 10
 	procedure rotate_device is begin
 		case cmd_field_count is
 			when 5 =>
@@ -3165,15 +3167,17 @@ is
 		end case;
 	end rotate_device;
 
-	
-	
-	-- This procedure parses a command to
-	-- rename a non-electrical device:
-	procedure rename_device is		
-		use et_board_ops.devices;
 
+
+	
+	
+	-- This procedure parses a command to rename a non-electrical device:
+	-- Example: board led_driver rename device FD1 FD2
+	procedure rename_device is
 		
-		procedure do_it is begin
+		procedure do_it is 
+			use et_board_ops.devices;
+		begin
 			rename_device (
 				module_cursor		=> active_module,
 				device_name_before	=> to_device_name (get_field (5)),
@@ -3186,7 +3190,6 @@ is
 	begin
 		case cmd_field_count is
 			when 6 => do_it; 
-			-- exampe: board led_driver rename device FD1 FD3
 
 			when 7 .. type_field_count'last => too_long;
 			
@@ -3195,11 +3198,12 @@ is
 	end rename_device;
 
 
+	
 
 
 	-- This procedure parses a command that flips a device.
-	-- Example: schematic led_driver flip device IC20
-	-- Example: schematic led_driver flip device IC20 bottom/top
+	-- Example: board led_driver flip device IC20
+	-- Example: board led_driver flip device IC20 bottom/top
 	procedure flip_device is begin
 		case cmd_field_count is
 			when 5 =>
