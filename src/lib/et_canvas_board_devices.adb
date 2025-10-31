@@ -144,121 +144,6 @@ package body et_canvas_board_devices is
 	
 	
 
-	
-
-	
-	procedure find_electrical_devices (
-		point : in type_vector_model)
-	is 
-		count : natural := 0;
-
-		
-		procedure select_first_proposed is 
-			proposed_device : pac_devices_electrical.cursor;
-			use et_object_status;
-		begin
-			proposed_device := get_first_device (active_module, PROPOSED, log_threshold + 1);
-
-			modify_status (active_module, proposed_device, to_operation (SET, SELECTED), log_threshold + 1);
-			
-			-- If only one device found, then show its name in the status bar:
-			if count = 1 then
-				show_selected_device (name => key (proposed_device), electrical => true);		
-			end if;
-		end select_first_proposed;
-		
-		
-	begin
-		log (text => "locating devices ...", level => log_threshold);
-		log_indentation_up;
-		
-		-- Propose all devices in the vicinity of the given point:
-		propose_electrical_devices (
-			module_cursor	=> active_module,
-			catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
-			count			=> count,
-			log_threshold	=> log_threshold + 1);
-		
-		-- Evaluate the number of devices found here:
-		case count is
-			when 0 =>
-				reset_request_clarification;
-				reset_preliminary_electrical_device;
-				
-			when 1 =>
-				set_edit_process_running;
-				select_first_proposed;
-				reset_request_clarification;
-				
-			when others =>
-				-- Preselect the first device among the proposed device:
-				--log (text => "many objects", level => log_threshold + 2);
-				set_request_clarification;
-				select_first_proposed;			
-		end case;
-
-		log_indentation_down;
-	end find_electrical_devices;
-	
-
-	
-	
-	
-	procedure find_non_electrical_devices (
-		point : in type_vector_model)
-	is 
-		count : natural := 0;
-
-		
-		procedure select_first_proposed is 
-			proposed_device : pac_devices_non_electrical.cursor;
-			use et_object_status;
-		begin
-			proposed_device := get_first_non_electrical_device (active_module, PROPOSED, log_threshold + 1);
-
-			modify_status (active_module, proposed_device, to_operation (SET, SELECTED), log_threshold + 1);
-			
-			-- If only one device found, then show its name in the status bar:
-			if count = 1 then
-				show_selected_device (name => key (proposed_device), electrical => false);		
-			end if;
-		end select_first_proposed;
-
-		
-	begin
-		log (text => "locating non-electrical devices ...", level => log_threshold);
-		log_indentation_up;
-		
-		-- Propose all devices in the vicinity of the given point:
-		propose_non_electrical_devices (
-			module_cursor	=> active_module,
-			catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
-			count			=> count,
-			log_threshold	=> log_threshold + 1);
-		
-		-- Evaluate the number of devices found here:
-		case count is
-			when 0 =>
-				reset_request_clarification;
-				reset_preliminary_non_electrical_device;
-				
-			when 1 =>
-				set_edit_process_running;
-				select_first_proposed;
-				reset_request_clarification;
-				
-			when others =>
-				-- Preselect the first device among the proposed device:
-				--log (text => "many objects", level => log_threshold + 2);
-				set_request_clarification;
-				select_first_proposed;
-		end case;
-
-		log_indentation_down;
-	end find_non_electrical_devices;
-
-
-
 
 
 	
@@ -487,6 +372,7 @@ package body et_canvas_board_devices is
 	end find_objects;
 
 
+	
 
 	
 	
@@ -584,6 +470,7 @@ package body et_canvas_board_devices is
 	
 
 	
+	
 
 	
 -- ROTATE:
@@ -667,7 +554,6 @@ package body et_canvas_board_devices is
 -- FLIP / MIRROR:
 
 
-
 	procedure flip_object (
 		position : in type_vector_model)
 	is 
@@ -748,77 +634,6 @@ package body et_canvas_board_devices is
 
 -- DELETE:	
 	
-	procedure delete_non_electrical_device (
-		tool	: in type_tool;
-		point	: in type_vector_model)
-	is 
-
-		procedure finalize is 
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-			use et_object_status;
-
-			selected_device : pac_devices_non_electrical.cursor;
-		begin
-			log (text => "finalizing deletion ...", level => log_threshold);
-			log_indentation_up;
-
-			selected_device := get_first_non_electrical_device (active_module, SELECTED, log_threshold + 1);
-			
-			if selected_device /= pac_devices_non_electrical.no_element then
-
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
-				delete_device (
-					module_cursor	=> active_module,
-					device_name		=> key (selected_device),
-					log_threshold	=> log_threshold);
-
-				-- Commit the current state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
-			else
-				log (text => "nothing to do", level => log_threshold);
-			end if;
-				
-			log_indentation_down;			
-			set_status (status_delete_device);			
-			reset_preliminary_non_electrical_device;
-		end finalize;
-
-
-	begin
-		-- Set the tool being used:
-		object_tool := tool;
-		
-		if not clarification_pending then
-			-- Locate all devices in the vicinity of the given point:
-			find_non_electrical_devices (point);
-			-- NOTE: If many devices have been found, then
-			-- clarification is now pending.
-
-			-- If find_non_electrical_devices has found only one device
-			-- then delete that device immediately.
-			if edit_process_running then
-				finalize;
-			end if;
-
-		else
-			-- Here the clarification procedure ends.
-			-- A device has been selected
-			-- via procedure clarify_non_electrical_device.
-			reset_request_clarification;
-			finalize;
-		end if;
-	end delete_non_electrical_device;
-
-
-
-
-
-	
-
 
 	procedure delete_object (
 		position : in type_vector_model)
@@ -891,6 +706,8 @@ package body et_canvas_board_devices is
 
 
 	
+
+-- SHOW:
 
 
 	procedure show_object (

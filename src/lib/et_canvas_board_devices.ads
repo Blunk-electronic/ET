@@ -91,21 +91,6 @@ package et_canvas_board_devices is
 		point : in type_vector_model);
 
 	
-	
-	-- Locates all devices in the vicinity of given point.
-	-- Marks the affected devices as "proposed" and marks the the first
-	-- of them as "selected".
-	-- If more than one device found, then it requests for clarification.
-	procedure find_electrical_devices (
-		point : in type_vector_model);
-	
-
-	-- Locates all devices in the vicinity of given point.
-	-- Marks the affected devices as "proposed" and marks the the first
-	-- of them as "selected".
-	-- If more than one device found, then it requests for clarification.
-	procedure find_non_electrical_devices (
-		point : in type_vector_model);
 
 
 	
@@ -175,16 +160,7 @@ package et_canvas_board_devices is
 		& "to delete device." 
 		& status_hint_for_abort;
 
-	
-	-- Locates non-electrical devices in the vicinity of the given point.
-	-- Depending on how many devices have been found, the behaviour is:
-	-- - If only one device found, then it is flipped immediately.
-	-- - If more than one device found, then clarification is requested.
-	--   No device will be flipped.
-	--   The next call of this procedure flips the selected device.
-	procedure delete_non_electrical_device (
-		tool	: in type_tool;
-		point	: in type_vector_model);
+
 
 	
 	-- NOTE: Electrical devices must be deleted in the schematic !
