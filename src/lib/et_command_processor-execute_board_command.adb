@@ -3086,11 +3086,12 @@ is
 	
 	-- This procedure parses a command to delete
 	-- a non-electrical device:
+	-- Example: "board led_driver delete device FD1"
 	procedure delete_device is
-		use et_board_ops.devices;
-
 		
-		procedure do_it is begin
+		procedure do_it is 
+			use et_board_ops.devices;
+		begin
 			delete_device (
 				module_cursor	=> active_module,
 				device_name		=> to_device_name (get_field (5)),
@@ -3100,14 +3101,14 @@ is
 
 	begin
 		case cmd_field_count is
-			when 5 => do_it;
-				-- example: board led_driver delete device FD1
+			when 5 => do_it;				
 			
 			when 6 .. type_field_count'last => too_long;
 			
 			when others => command_incomplete;
 		end case;		
 	end delete_device;
+
 
 
 	

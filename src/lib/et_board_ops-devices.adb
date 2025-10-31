@@ -1455,32 +1455,36 @@ package body et_board_ops.devices is
 		device_name		: in type_device_name; -- FD1
 		log_threshold	: in type_log_level) 
 	is
+		device_cursor : pac_devices_non_electrical.cursor;
 
 		
-		procedure query_devices (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is begin
-			-- Search the device among the non-electric devices.
-			if contains (module.devices_non_electric, device_name) then
-
-				delete (module.devices_non_electric, device_name);
-			else
-				device_not_found (device_name);
-			end if;
-		end query_devices;
+			delete (module.devices_non_electric, device_cursor);
+		end query_module;
 
 		
 	begin
-		log (text => "module " & to_string (module_cursor) &
-			 " deleting device (non-electric) " & to_string (device_name),
+		log (text => "module " & to_string (module_cursor) 
+			& " delete non-electrical device" & to_string (device_name),
 			 level => log_threshold);
 
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_devices'access);
+		log_indentation_up;
+		
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor := get_non_electrical_device (module_cursor, device_name);
+			
+		if has_element (device_cursor) then -- device exists in board
+			generic_modules.update_element (module_cursor, query_module'access);
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+		end if;
 
+		log_indentation_down;
 	end delete_device;
 
 
