@@ -1968,7 +1968,7 @@ package body et_board_ops.devices is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting object",
+			& " delete object",
 			-- CS & to_string (object)
 			level => log_threshold);
 

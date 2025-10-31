@@ -167,8 +167,7 @@ is
 						et_canvas_board_keepout.delete_object (event.point);
 						
 					when NOUN_DEVICE =>
-						-- CS						
-						et_canvas_board_devices.delete_non_electrical_device (MOUSE, event.point);
+						et_canvas_board_devices.delete_object (event.point);
 
 					when NOUN_OUTLINE =>
 						et_canvas_board_outline.delete_object (event.point);

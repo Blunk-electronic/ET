@@ -190,7 +190,10 @@ package et_canvas_board_devices is
 	-- NOTE: Electrical devices must be deleted in the schematic !
 	-- For this reason there is no procedure here to delete an electrical device.
 
+	procedure delete_object (
+		position : in type_vector_model);
 
+	
 
 
 -- SHOW DEVICE:

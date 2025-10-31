@@ -58,7 +58,6 @@ is
 	use et_modes;
 	use et_modes.board;
 
-	-- use et_canvas_board_devices;
 	
 	
 	point : type_vector_model renames get_cursor_position;
@@ -148,15 +147,17 @@ is
 
 				
 				
-			-- If space pressed then the operator wishes to operate by keyboard:
+			-- If space pressed then the operator wishes to 
+			-- operate by keyboard:
 			when key_space =>		
-				null;
-				-- CS
 				case noun is
 					when NOUN_CONDUCTORS =>
 						et_canvas_board_conductors.delete_object (point);
 
-					-- when NOUN_TRACK =>
+					when NOUN_DEVICE =>
+						et_canvas_board_devices.delete_object (point);
+
+						-- when NOUN_TRACK =>
 					-- 	et_canvas_board_tracks.ripup (point);
 
 					when NOUN_FREETRACK =>
@@ -187,14 +188,18 @@ is
 				end case;		
 
 
-			-- If page down pressed, then the operator is clarifying:
+			-- If page down pressed, then 
+			-- the operator is clarifying:
 			when key_clarify =>
-
-				-- CS
 				case noun is
 					when NOUN_ASSY =>
 						if clarification_pending then
 							et_canvas_board_assy_doc.clarify_object;
+						end if;
+
+					when NOUN_DEVICE =>
+						if clarification_pending then
+							et_canvas_board_devices.clarify_object;
 						end if;
 
 					when NOUN_SILKSCREEN =>
