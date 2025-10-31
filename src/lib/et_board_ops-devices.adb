@@ -1497,60 +1497,86 @@ package body et_board_ops.devices is
 		device_name_after	: in type_device_name; -- FD3
 		log_threshold		: in type_log_level) 
 	is		
-		
-		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			device_before, device_after : pac_devices_non_electrical.cursor;
+		device_cursor : pac_devices_non_electrical.cursor;
 
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is 
+			device_after : pac_devices_non_electrical.cursor;
 			inserted : boolean;
 		begin
-			-- Search the old device among the non-electric devices.
-			if contains (module.devices_non_electric, device_name_before) then
+			-- Copy elements and properties of the old device to a new one:
+			pac_devices_non_electrical.insert (
+				container	=> module.devices_non_electric,
+				key			=> device_name_after, -- FD3
+				new_item	=> element (device_cursor), -- all elements and properties of FD1
+				inserted	=> inserted,
+				position	=> device_after);
 
-				-- locate the device by the old name
-				device_before := find (module.devices_non_electric, device_name_before); -- FD1
-				
-				-- copy elements and properties of the old device to a new one:
-				pac_devices_non_electrical.insert (
-					container	=> module.devices_non_electric,
-					key			=> device_name_after, -- FD3
-					new_item	=> element (device_before), -- all elements and properties of FD1
-					inserted	=> inserted,
-					position	=> device_after);
-
-				if not inserted then
-					device_already_exists (device_name_after);
-				end if;
-
-				-- check conformity of prefix
-				if not et_conventions.prefix_valid (device_name_after) then
-					null;
-					--device_prefix_invalid (device_after);
-				end if;
-
-				-- delete the old device
-				delete (module.devices_non_electric, device_before);
-				
-			else
-				device_not_found (device_name_before);
+			if not inserted then
+				log (WARNING, "Device " & to_string (device_name_after)
+					 & " already exists !");
 			end if;
-		end query_devices;
 
+			-- Delete the old device:
+			delete (module.devices_non_electric, device_cursor);
+		end query_module;
+
+
+
+		procedure check_names is begin
+			-- The old and new name must not be the same:
+			if device_name_after /= device_name_before then
+
+				-- The old and new prefix must be the same in order to
+				-- prevent an inadvertently category change:
+				if same_prefix (device_name_after, device_name_before) then
+
+					-- A device having the new name must
+					-- not exist yet:
+					if not device_exists (module_cursor, device_name_after) then
+						
+						update_element (
+							container	=> generic_modules,
+							position	=> module_cursor,
+							process		=> query_module'access);
+
+					else
+						log (WARNING, "Device " & to_string (device_name_after)
+							 & " already exists !");
+					end if;
+				else
+					log (WARNING, "Changing the prefix is not allowed !");
+				end if;
+			else
+				log (WARNING, "Old and new device name are equal !");
+			end if;
+		end check_names;
+		
+		
 		
 	begin
-		log (text => "module " & to_string (module_cursor) &
-			 " renaming device (non-electric) " & to_string (device_name_before) & " to " & 
-			to_string (device_name_after),
+		log (text => "module " & to_string (module_cursor) 
+			 & " rename non-electrical device " & to_string (device_name_before) 
+			 & " to " &  to_string (device_name_after),
 			level => log_threshold);
+				
+		log_indentation_up;
 		
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_devices'access);
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor := get_non_electrical_device (module_cursor, device_name_before);
+			
+		if has_element (device_cursor) then -- device exists in board
+			check_names;			
+		else
+			log (WARNING, " Device " & to_string (device_name_before) & " not found !");
+		end if;
 
+		log_indentation_down;
 	end rename_device;
 	
 
