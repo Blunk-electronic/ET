@@ -53,7 +53,7 @@ package et_schematic_ops.units is
 
 	-- Returns true if the given module provides the given device.
 	-- The module being searched in must be in the rig already.						
-	function device_exists (
+	function electrical_device_exists (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name)
 		return boolean;

@@ -1536,7 +1536,8 @@ package body et_board_ops.devices is
 
 					-- A device having the new name must
 					-- not exist yet:
-					if not device_exists (module_cursor, device_name_after) then
+					if not electrical_device_exists (module_cursor, device_name_after) then
+					-- CS use non_electrical_device_exists !
 						
 						update_element (
 							container	=> generic_modules,

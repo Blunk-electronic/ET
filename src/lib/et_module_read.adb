@@ -1534,7 +1534,7 @@ package body et_module_read is
 				device_name := to_device_name (f (line, 2));
 
 				-- test whether device exists
-				if not device_exists (module_cursor, device_name) then
+				if not electrical_device_exists (module_cursor, device_name) then
 					log (ERROR, "device " &
 							enclose_in_quotes (to_string (device_name)) &
 							" does not exist !", console => true);

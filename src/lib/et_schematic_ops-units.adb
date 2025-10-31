@@ -69,7 +69,7 @@ package body et_schematic_ops.units is
 -- BASIC QUERY OPERATIONS ON DEVICES AND DEVICE MODELS:
 	
 
-	function device_exists (
+	function electrical_device_exists (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name)
 		return boolean 
@@ -91,7 +91,7 @@ package body et_schematic_ops.units is
 			process		=> query_devices'access);
 
 		return device_found;
-	end device_exists;
+	end electrical_device_exists;
 
 
 
@@ -380,7 +380,7 @@ package body et_schematic_ops.units is
 		module_cursor := locate_module (module_name);
 
 		-- Test whether the given device exists in the module.
-		if device_exists (module_cursor, device) then
+		if electrical_device_exists (module_cursor, device) then
 		
 			update_element (
 				container	=> generic_modules,
@@ -471,7 +471,7 @@ package body et_schematic_ops.units is
 		module_cursor := locate_module (module_name);
 
 		-- Test whether the given device exists in the module.
-		if device_exists (module_cursor, device) then
+		if electrical_device_exists (module_cursor, device) then
 			
 			update_element (
 				container	=> generic_modules,
@@ -562,7 +562,7 @@ package body et_schematic_ops.units is
 		module_cursor := locate_module (module_name);
 
 		-- Test whether the given device exists in the module.
-		if device_exists (module_cursor, device) then
+		if electrical_device_exists (module_cursor, device) then
 			
 			update_element (
 				container	=> generic_modules,
@@ -2649,7 +2649,7 @@ package body et_schematic_ops.units is
 
 					-- A device having the new name must
 					-- not exist yet:
-					if not device_exists (module_cursor, device_name_after) then
+					if not electrical_device_exists (module_cursor, device_name_after) then
 						
 						update_element (
 							container	=> generic_modules,
