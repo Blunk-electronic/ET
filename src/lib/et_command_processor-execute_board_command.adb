@@ -3025,7 +3025,7 @@ is
 		begin
 			case cmd_field_count is
 				when 8 =>
-					add_device (
+					add_non_electrical_device (
 						module_cursor	=> active_module,
 						package_model	=> model,
 						position		=> to_package_position
@@ -3037,7 +3037,7 @@ is
 
 					
 				when 9 =>
-					add_device (
+					add_non_electrical_device (
 						module_cursor	=> active_module,
 						package_model	=> model,
 						position		=> to_package_position
@@ -3050,7 +3050,7 @@ is
 
 					
 				when 10 =>
-					add_device (
+					add_non_electrical_device (
 						module_cursor	=> active_module,
 						package_model	=> model,
 						position		=> to_package_position

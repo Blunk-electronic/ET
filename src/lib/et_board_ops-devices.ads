@@ -311,7 +311,7 @@ package et_board_ops.devices is
 
 
 	-- Adds a non-electrical device to the board:
-	procedure add_device ( -- CS rename to add_non_electrical_device
+	procedure add_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		package_model	: in pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
 		position		: in type_package_position; -- x,y,rotation,face

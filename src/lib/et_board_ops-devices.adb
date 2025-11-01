@@ -1402,7 +1402,7 @@ package body et_board_ops.devices is
 
 
 	
-	procedure add_device ( -- non-electric !
+	procedure add_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		package_model	: in pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
 		position		: in type_package_position; -- x,y,rotation,face
@@ -1423,7 +1423,7 @@ package body et_board_ops.devices is
 			-- build the next available device name:
 			next_name : type_device_name := get_next_available_device_name (module_cursor, prefix, CAT_NON_ELECTRICAL);
 		begin
-			log (text => "adding device " & to_string (next_name), level => log_threshold + 1);
+			log (text => "add device " & to_string (next_name), level => log_threshold + 1);
 			log_indentation_up;
 
 			-- add the device to the collection of non-electic devices:
@@ -1450,7 +1450,7 @@ package body et_board_ops.devices is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& " add non-electric device " & to_string (package_model) 
+			& " add non-electrical device " & to_string (package_model) 
 			& " at " & to_string (position),
 			level => log_threshold);
 
@@ -1474,7 +1474,7 @@ package body et_board_ops.devices is
 			process		=> add'access);
 		
 		log_indentation_down;
-	end add_device;
+	end add_non_electrical_device;
 
 	
 
