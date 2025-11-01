@@ -960,7 +960,7 @@ package et_schematic_ops.units is
 
 	-- This is a collective procedure that resets
 	-- the status flags of all 
-	-- objects (devices, units, placeholders, nets, net labels):
+	-- objects (electrical devices, units, placeholders, nets, net labels):
 	procedure reset_status_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);

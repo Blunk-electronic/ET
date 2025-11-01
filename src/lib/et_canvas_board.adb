@@ -809,23 +809,9 @@ package body et_canvas_board is
 			et_board_ops.groups.reset_objects (active_module, log_threshold + 1);
 			
 			reset_preliminary_text; -- after placing a text
-			
-			et_board_ops.ratsnest.reset_proposed_airwires (active_module, log_threshold + 1);
-			reset_ripup_mode;
 
 			reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
 			reset_preliminary_non_electrical_device;
-
-
-			
-			et_board_ops.assy_doc.reset_proposed_objects (active_module, log_threshold + 1);
-			et_board_ops.silkscreen.reset_proposed_objects (active_module, log_threshold + 1);
-			et_board_ops.stopmask.reset_proposed_objects (active_module, log_threshold + 1);
-			et_board_ops.stencil.reset_proposed_objects (active_module, log_threshold + 1);
-			et_board_ops.keepout.reset_proposed_objects (active_module, log_threshold + 1);
-			et_board_ops.board_contour.reset_proposed_objects (active_module, log_threshold + 1);
-			et_board_ops.conductors.reset_proposed_objects (active_module, log_threshold + 1);
-			et_board_ops.vias.reset_proposed_vias (active_module, log_threshold + 1);
 
 			pac_device_ops.reset_window_open_flags;
 		end level_1;

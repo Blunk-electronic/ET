@@ -39,6 +39,17 @@
 
 
 with et_board_ops.devices;
+with et_board_ops.assy_doc;
+with et_board_ops.silkscreen;
+with et_board_ops.stopmask;
+with et_board_ops.stencil;
+with et_board_ops.keepout;
+with et_board_ops.board_contour;
+with et_board_ops.conductors;
+with et_board_ops.vias;
+
+with et_ripup;
+with et_board_ops.ratsnest;
 
 
 package body et_board_ops.groups is
@@ -52,7 +63,7 @@ package body et_board_ops.groups is
 		procedure reset_devices is 
 			use et_board_ops.devices;
 		begin
-			log (text => "non-electrical devices", level => log_threshold + 1);
+			log (text => "devices (electrical and non-electrical)", level => log_threshold + 1);
 			log_indentation_up;
 			reset_status_objects (module_cursor, log_threshold + 2);
 			log_indentation_down;
@@ -69,6 +80,18 @@ package body et_board_ops.groups is
 		reset_devices;
 
 		-- CS reset board placeholders, texts, ... ?
+
+		et_board_ops.assy_doc.reset_proposed_objects (active_module, log_threshold + 1);
+		et_board_ops.silkscreen.reset_proposed_objects (active_module, log_threshold + 1);
+		et_board_ops.stopmask.reset_proposed_objects (active_module, log_threshold + 1);
+		et_board_ops.stencil.reset_proposed_objects (active_module, log_threshold + 1);
+		et_board_ops.keepout.reset_proposed_objects (active_module, log_threshold + 1);
+		et_board_ops.board_contour.reset_proposed_objects (active_module, log_threshold + 1);
+		et_board_ops.conductors.reset_proposed_objects (active_module, log_threshold + 1);
+		et_board_ops.vias.reset_proposed_vias (active_module, log_threshold + 1);
+
+		et_board_ops.ratsnest.reset_proposed_airwires (active_module, log_threshold + 1);
+		et_ripup.reset_ripup_mode;
 
 		log_indentation_down;
 	end reset_objects;
