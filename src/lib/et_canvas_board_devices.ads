@@ -38,6 +38,9 @@
 -- DESCRIPTION:
 -- 
 
+with gtk.widget;					use gtk.widget;
+with gtk.gentry;					use gtk.gentry;
+
 with et_canvas;
 with et_canvas_tool;				use et_canvas_tool;
 with et_canvas_messages;			use et_canvas_messages;
@@ -115,8 +118,22 @@ package et_canvas_board_devices is
 
 -- RENAME:
 
+
+	procedure cb_rename_new_name_entered (
+		self : access gtk_entry_record'class);
+	
+
+	procedure cb_rename_window_destroy (
+		window : access gtk_widget_record'class);
+
+	
+
+	procedure show_rename_window;
+
+	
+	
 	procedure rename_object (
-		position : in type_vector_model);
+		point : in type_vector_model);
 
 	
 	

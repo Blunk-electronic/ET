@@ -2097,6 +2097,45 @@ package body et_board_ops.devices is
 
 	
 
+	procedure rename_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		new_name_device	: in type_device_name;
+		-- CS add argument for new names of other kinds of objects
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " rename object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_NON_ELECTRICAL_DEVICE =>
+				
+				rename_device (
+					module_cursor		=> module_cursor,
+					device_name_before	=> key (object.non_electrical_device.cursor),
+					device_name_after	=> new_name_device,
+					log_threshold		=> log_threshold + 1);
+					-- CS: use get_device_name
+				
+			when others =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end rename_object;
+
+
+	
+
+
+	
+
+	
+
 	procedure show_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;

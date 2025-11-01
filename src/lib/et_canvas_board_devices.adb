@@ -38,6 +38,7 @@
 -- DESCRIPTION:
 -- 
 
+with ada.text_io;					use ada.text_io;
 
 with et_generic_module;				use et_generic_module;
 with et_canvas_board;				use et_canvas_board;
@@ -63,6 +64,7 @@ with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 package body et_canvas_board_devices is
 
 	use et_canvas_board.pac_canvas;
+	use et_canvas_board.pac_device_ops;
 	use pac_generic_modules;
 	use pac_devices_electrical;
 	use pac_devices_non_electrical;
@@ -552,16 +554,19 @@ package body et_canvas_board_devices is
 -- RENAME:
 
 
-	procedure rename_object (
-		position : in type_vector_model)
+	procedure cb_rename_new_name_entered (
+		self : access gtk_entry_record'class) 
 	is 
+		device_name_new : type_device_name;
 
+		
+		-- Renames the selected object:
 		procedure finalize is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
 
-			object : type_object := get_first_object (
+			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalize rename", level => log_threshold);
@@ -576,50 +581,146 @@ package body et_canvas_board_devices is
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 				
-				-- rename_object (
-				-- 	module_cursor	=> active_module, 
-				-- 	object			=> object, 
-				-- 	log_threshold	=> log_threshold + 1);
+				rename_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					new_name_device	=> device_name_new,
+					log_threshold	=> log_threshold + 1);
+
 
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
 
+				redraw_board;
+				
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
 				
 			log_indentation_down;			
-			
-			status_clear;
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
 		
+		
+	begin
+		device_name_new := to_device_name (self.get_text); -- IC2
 
-	begin		
-		if not clarification_pending then
+		-- CS: Precheck device name ?
+		-- put_line ("new name entered: " & to_string (device_name_new));
+		
+		finalize;
 
-			-- Locate all objects in the vicinity of the given point:
-			find_objects (position);
-			-- NOTE: If many objects have been found, then
-			-- clarification is now pending.
+		-- If everything was fine, close the window and clean up.
+		-- If one of the operations above has raised an exception then
+		-- nothing will be cleaned up and the window will remain until the
+		-- operator enters a correct property.
+		rename_window.destroy;
 
-			-- If find_objects has found only one object
-			-- then the flag edit_process_running is set true.
-			if edit_process_running then
-			 	finalize;
-			end if;
+		-- CS
+		-- Whatever goes wrong, output the message in the status bar
+		-- of the properties window:
+		-- exception when event: others =>
+		-- 	set_status_properties (exception_message (event));
 			
-		else
-			-- Here the clarification procedure ends.
-			-- An object has been selected via procedure clarify_object.
-			reset_request_clarification;
-			finalize;
+	end cb_rename_new_name_entered;
+
+
+
+
+	
+
+	procedure cb_rename_window_destroy (
+		window : access gtk_widget_record'class)
+	is
+	begin
+		put_line ("cb_rename_window_destroy");
+		reset;
+	end cb_rename_window_destroy;
+
+
+	
+
+
+	
+	procedure show_rename_window is
+
+		-- Get the first selected object (which is a unit):
+		object : constant type_object := get_first_object (
+				active_module, SELECTED, log_threshold + 1);
+
+
+		procedure do_it is
+			device_name : type_device_name; -- IC1
+		begin
+			-- Get the name of the selected device:
+			device_name := get_device_name (object.non_electrical_device.cursor);
+			
+			build_rename_window;
+
+			-- Connect the "destroy" signal.
+			rename_window.on_destroy (cb_rename_window_destroy'access);
+
+			-- Set the old name of the device in the window:
+			rename_old.set_text (to_string (device_name));
+
+			-- Connect the "on_activate" signal (emitted when ENTER pressed)
+			-- of the entry field for the new name:
+			rename_new.on_activate (cb_rename_new_name_entered'access);
+			
+			rename_new.grab_focus;
+			
+			rename_window.show_all;
+
+			rename_window_open := true;			
+		end do_it;
+		
+		
+	begin
+		case object.cat is
+			when CAT_NON_ELECTRICAL_DEVICE =>
+				do_it;
+
+			when others =>
+				raise constraint_error; -- CS
+		end case;
+	end show_rename_window;
+
+
+	
+
+	
+
+	procedure rename_object (
+		point : in type_vector_model)
+	is begin		
+		if not rename_window_open then
+		
+			if not clarification_pending then
+				-- Locate all objects in the vicinity of the given point:
+				find_objects (point);
+				-- NOTE: If many objects have been found, then
+				-- clarification is now pending.
+
+				-- If find_objects has found only one object,				
+				-- then delete the object immediateley.
+				if edit_process_running then
+					show_rename_window;
+				end if;
+			else
+				-- Here the clarification procedure ends.
+				-- An object has been selected via procedure clarify_object.
+
+				show_rename_window;
+			end if;
 		end if;
 	end rename_object;
 
 
+
+
+	
 	
 	
 
