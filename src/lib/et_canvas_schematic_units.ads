@@ -42,10 +42,9 @@ with ada.containers;	            use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with gtk.widget;					use gtk.widget;
-with gtk.window;					use gtk.window;
 with gtk.menu_item;					use gtk.menu_item;
 with gtk.menu_shell;
-with gtk.gentry;
+with gtk.gentry;					use gtk.gentry;
 with gtk.file_chooser_button;		use gtk.file_chooser_button;
 with gtk.box;						use gtk.box;
 with gtk.button;					use gtk.button;
@@ -175,7 +174,7 @@ package et_canvas_schematic_units is
 	-- (usually when ENTER pressed) by the entry field
 	-- for the new value in the value window:
 	procedure cb_new_value_entered (
-		self : access gtk.gentry.gtk_entry_record'class);
+		self : access gtk_entry_record'class);
 
 
 	-- This procedure is called when the signal "destroy" 
@@ -208,7 +207,7 @@ package et_canvas_schematic_units is
 	-- (usually when ENTER pressed) by the entry field
 	-- for the new purpose in the purpose window:
 	procedure cb_new_purpose_entered (
-		self : access gtk.gentry.gtk_entry_record'class);
+		self : access gtk_entry_record'class);
 
 
 	-- This procedure is called when the signal "destroy" 
@@ -243,7 +242,7 @@ package et_canvas_schematic_units is
 	-- (usually when ENTER pressed) by the entry field
 	-- for the new partcode in the partcode window:
 	procedure cb_new_partcode_entered (
-		self : access gtk.gentry.gtk_entry_record'class);
+		self : access gtk_entry_record'class);
 
 
 	-- This procedure is called when the signal "destroy" 
@@ -327,7 +326,7 @@ package et_canvas_schematic_units is
 	-- (usually when ENTER pressed) by the entry field
 	-- for the new name in the rename window:
 	procedure cb_rename_new_name_entered (
-		self : access gtk.gentry.gtk_entry_record'class);
+		self : access gtk_entry_record'class);
 	
 
 	-- This procedure is called when the signal "destroy" 

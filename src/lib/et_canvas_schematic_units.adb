@@ -52,15 +52,10 @@ with gtk.file_chooser;
 with gtk.file_filter;
 
 with gtk.main;
-with gtk.widget;					use gtk.widget;
-with gtk.window;
-with gtk.box;
 with gtk.combo_box_text;			use gtk.combo_box_text;
 with gtk.label;
-with gtk.gentry;
 with gtk.menu;
 with gtk.cell_renderer_text;		
--- with gtk.cell_layout;        		
 with gtk.list_store;				use gtk.list_store;
 with gtk.tree_model;				use gtk.tree_model;
 
@@ -650,7 +645,7 @@ package body et_canvas_schematic_units is
 
 
 	procedure cb_new_value_entered (
-		self : access gtk.gentry.gtk_entry_record'class) 
+		self : access gtk_entry_record'class) 
 	is 
 		device_value_new : pac_device_value.bounded_string;
 
@@ -834,7 +829,7 @@ package body et_canvas_schematic_units is
 
 
 	procedure cb_new_purpose_entered (
-		self : access gtk.gentry.gtk_entry_record'class) 
+		self : access gtk_entry_record'class) 
 	is 
 		device_purpose_new : pac_device_purpose.bounded_string;
 
@@ -1014,7 +1009,7 @@ package body et_canvas_schematic_units is
 	
 
 	procedure cb_new_partcode_entered (
-		self : access gtk.gentry.gtk_entry_record'class) 
+		self : access gtk_entry_record'class) 
 	is 
 		device_partcode_new : pac_device_partcode.bounded_string;
 
@@ -1413,7 +1408,7 @@ package body et_canvas_schematic_units is
 -- RENAME:
 
 	procedure cb_rename_new_name_entered (
-		self : access gtk.gentry.gtk_entry_record'class) 
+		self : access gtk_entry_record'class) 
 	is 
 		device_name_new : type_device_name;
 
