@@ -623,7 +623,7 @@ package et_board_ops.assy_doc is
 	-- This is a collective procedure that resets
 	-- the proposed-flag and the selected-flag 
 	-- of texts, lines, arcs, circles and zone segments:
-	procedure reset_proposed_objects (
+	procedure reset_proposed_objects ( -- CS rename to reset_status_objects
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
