@@ -407,6 +407,19 @@ package body et_canvas.schematic_device_ops is
 	end show_properties_window;
 
 
+
+
+
+	procedure reset_window_open_flags is begin
+		rename_window_open := false;
+		value_window_open := false;
+		purpose_window_open := false;
+		partcode_window_open := false;
+		package_variant_window_open := false;
+	end reset_window_open_flags;
+	
+
+
 	
 
 	

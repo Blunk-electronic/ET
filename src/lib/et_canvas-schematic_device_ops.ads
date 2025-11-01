@@ -47,7 +47,7 @@ generic
 
 	
 package et_canvas.schematic_device_ops is
-
+-- CS rename to device_ops
 
 
 
@@ -278,7 +278,12 @@ package et_canvas.schematic_device_ops is
 		text	: in string);
 
 
-	
+
+
+
+	procedure reset_window_open_flags;
+
+
 	
 private
 	
