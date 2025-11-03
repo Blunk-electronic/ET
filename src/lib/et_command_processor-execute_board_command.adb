@@ -3111,6 +3111,29 @@ is
 
 
 
+
+	-- This procedure parses a command to copy
+	-- a non-electrical device:
+	-- Example: "board led_driver copy device FD1 230 100"
+	procedure copy_device is begin
+		case cmd_field_count is
+			when 7 =>
+				null;
+				-- CS
+				-- copy_non_electrical_device (
+				-- 	module_cursor 	=> active_module,
+				-- 	device_name		=> to_device_name (get_field (5)),
+				-- 	destination		=> to_position ( 
+				-- 	log_threshold	=> log_threshold + 1);
+
+			when 8 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end copy_device;
+
+
+	
 	
 
 	procedure move_device is begin
@@ -3739,7 +3762,16 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-						
+
+			when VERB_COPY =>
+				case noun is
+					when NOUN_DEVICE =>
+						copy_device;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+				
 			when VERB_DELETE =>
 				case noun is
 					when NOUN_DEVICE =>

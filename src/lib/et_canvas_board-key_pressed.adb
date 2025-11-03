@@ -77,6 +77,46 @@ is
 	end clear;
 
 	
+
+
+	procedure copy is begin
+		case key is
+			when key_noun_device =>
+				noun := NOUN_DEVICE;
+				set_status (et_canvas_board_devices.status_copy);
+
+
+			-- If space pressed then the operator wishes to 
+			-- operate by keyboard:
+			when key_space =>		
+				case noun is
+					when NOUN_DEVICE =>
+						et_canvas_board_devices.copy_object (KEYBOARD, point);
+
+					when others => null;
+				end case;
+
+
+			-- If page down pressed, then the operator is clarifying:
+			when key_clarify =>
+				case noun is
+					when NOUN_DEVICE =>
+						if clarification_pending then
+							et_canvas_board_devices.clarify_object;
+						end if;
+						
+					when others => null;							
+				end case;
+						
+				
+			when others => status_noun_invalid;
+		end case;
+	end copy;
+
+
+
+	
+
 	
 	procedure delete is 
 		use et_ripup;
@@ -821,6 +861,10 @@ begin -- key_pressed
 								verb := VERB_CLEAR;
 								status_enter_noun;
 
+							when key_verb_copy =>
+								verb := VERB_COPY;
+								status_enter_noun;
+								
 							when key_verb_delete =>
 								verb := VERB_DELETE;
 								status_enter_noun;
@@ -885,6 +929,7 @@ begin -- key_pressed
 
 						case verb is
 							when VERB_CLEAR		=> clear;
+							when VERB_COPY		=> copy;
 							when VERB_DELETE	=> delete;
 							when VERB_DRAW		=> draw;
 							when VERB_FILL		=> fill;

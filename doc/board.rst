@@ -141,20 +141,23 @@ non-electrical devices (without a representation in the schematic).
 		
 
 
-#. Move electrical device
+#. Copy Non-Electrical Device
+
+	.. code-block::
+
+		copy device FD1 140 27
+
+	|VNS| c d
+
+
+
+
+#. Move Device
 
 	.. code-block::
 
 		move device X1 absolute -14 24
 		move device X1 relative 1 0
-
-	|VNS| m d
-
-
-#. Move non-electrical device
-
-	.. code-block::
-
 		move device FD1 absolute -14 24
 		move device MH1 relative 1 0
 
@@ -565,13 +568,13 @@ Fill Zones in Conductor Layers
 
 
 	
-#. Clear Fill Zone
+#. Empty/Clear Fill Zone
 
 	.. code-block::
 
 		clear zone [net name] [net name] [net name] ... 
 
-	|VNS| c z
+	|VNS| e z
 
 	
 

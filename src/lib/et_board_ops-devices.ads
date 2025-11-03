@@ -345,7 +345,14 @@ package et_board_ops.devices is
 		log_threshold	: in type_log_level);
 
 	-- CS procedure add_device with explicit device name like MH1
-	-- CS procedure copy_device
+
+	
+	procedure copy_non_electrical_device (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- FD1
+		destination		: in type_vector_model; -- x,y
+		log_threshold	: in type_log_level);
+
 
 
 	-- Deletes a non-electrical device in the board layout.
@@ -447,6 +454,17 @@ package et_board_ops.devices is
 
 	
 
+	
+-- COPY:
+	
+	procedure copy_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+
+	
 -- MOVE, DELETE, FLIP:
 	
 	procedure move_object (

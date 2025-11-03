@@ -55,6 +55,16 @@ is
 	begin
 		
 		case verb is				
+			when VERB_COPY =>
+				case noun is
+					when NOUN_DEVICE =>
+						et_canvas_board_devices.copy_object (MOUSE, snap_point);
+						
+						
+					when others => null;
+				end case;
+
+				
 			when VERB_FLIP =>
 				case noun is
 					when NOUN_DEVICE =>
@@ -224,6 +234,17 @@ is
 		use et_ripup;
 	begin
 		case verb is
+			when VERB_COPY =>
+				case noun is
+					when NOUN_DEVICE =>
+						if clarification_pending then
+							et_canvas_board_devices.clarify_object;
+						end if;
+
+					when others => null;
+				end case;
+
+					
 			when VERB_MOVE | VERB_ROTATE =>
 				case noun is
 					

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -95,6 +95,24 @@ package et_canvas_board_devices is
 
 	
 
+
+-- COPY DEVICE:
+	
+	-- to be output in the status bar:
+	status_copy : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to copy a device." 
+		& status_hint_for_abort;
+
+
+	procedure copy_object (
+		tool	: in type_tool;
+		point	: in type_vector_model);
+
+
+	
 
 	
 	

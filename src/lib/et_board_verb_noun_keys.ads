@@ -46,7 +46,8 @@ package et_board_verb_noun_keys is
 
 -- VERBS:
 	
-	key_verb_clear		: constant gdk_key_type := GDK_LC_c;
+	key_verb_clear		: constant gdk_key_type := GDK_LC_e;
+	key_verb_copy		: constant gdk_key_type := GDK_LC_c;
 	key_verb_delete		: constant gdk_key_type := GDK_Delete;
 	key_verb_draw		: constant gdk_key_type := GDK_LC_d;
 	key_verb_fill		: constant gdk_key_type := GDK_LC_f;

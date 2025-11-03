@@ -375,6 +375,153 @@ package body et_canvas_board_devices is
 
 	
 
+
+
+
+
+-- COPY:
+	
+
+	procedure copy_object (
+		tool	: in type_tool;
+		point	: in type_vector_model)
+	is 
+		
+		-- Deletes the selected object:
+		procedure finalize is
+			use et_modes.board;
+			use et_undo_redo;
+			use et_commit;
+
+			object : type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
+		begin
+			log (text => "finalize copy", level => log_threshold);
+			log_indentation_up;
+
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+
+				reset_status_objects (active_module, log_threshold + 1);
+				
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+
+				-- Do the copy operation:
+				-- copy_object (
+				-- 	module_cursor	=> active_module, 
+				-- 	object			=> object, 
+				-- 	destination		=> type_position (to_position (point, unit_add.rotation)),
+				-- 	log_threshold	=> log_threshold + 1);
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+
+				-- If a device has been copied, then the board
+				-- must be redrawn:
+				if object.cat = CAT_NON_ELECTRICAL_DEVICE then
+					redraw_board;
+				end if;
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+
+			-- CS clear status bar ?
+			-- set_status (status_delete);
+
+			-- The preview-object is no longer required:
+			-- reset_unit_add;
+			
+			reset_editing_process; -- prepare for a new editing process
+		end finalize;
+
+
+		
+		-- After the orignial object has been selected, and the the operator is moving 
+		-- the pointer or the cursor, a preview of the copied object is attached to
+		-- the tool. The "preview object" is floating:
+		procedure build_preview is
+
+			-- Get the selected original object:
+			object : type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
+
+		begin
+			case object.cat is
+				when CAT_NON_ELECTRICAL_DEVICE =>
+					null;
+-- 					-- Build the preview of the unit that is going to
+-- 					-- be added as part of a new device:
+-- 					unit_add.device := get_device_model (object.unit.device_cursor);
+-- 
+-- 					-- If the device is real, then get the package variant:
+-- 					if is_real (unit_add.device) then
+-- 						unit_add.variant := get_package_variant (object.unit.device_cursor);
+-- 					end if;
+-- 					
+-- 					unit_add.name := get_first_unit (unit_add.device);
+-- 					unit_add.value := get_value (object.unit.device_cursor);
+-- 					unit_add.total := get_unit_count (object.unit.device_cursor);
+-- 					unit_add.device_pre := get_next_available_device_name (active_module, get_prefix (unit_add.device));
+-- 					unit_add.rotation := get_rotation (object.unit.unit_cursor);
+-- 					unit_add.valid := true;
+					
+				when others =>
+					-- CS
+					null;
+			end case;
+		end build_preview;
+
+		
+		
+	begin
+		-- Initially the editing process is not running:
+		if not edit_process_running then
+		
+			-- Set the tool being used:
+			object_tool := tool;
+			
+			if not clarification_pending then
+				-- Locate all objects in the vicinity of the given point:
+				find_objects (point);
+				-- NOTE: If many objects have been found, then
+				-- clarification is now pending.
+
+				-- If find_objects has found only one object,				
+				-- then the flag edit_process_running is set true.
+
+				-- Build the floating "preview-object" that is attached
+				-- to the tool being used:
+				if edit_process_running then
+					build_preview;
+				end if;
+				
+			else
+				-- Here the clarification procedure ends.
+				-- An object has been selected via procedure clarify_object.
+
+				-- Build the floating "preview-object" that is attached
+				-- to the tool being used:
+				build_preview;
+
+				set_edit_process_running;
+				reset_request_clarification;
+			end if;
+
+		else
+			finalize;
+		end if;			
+	end copy_object;
+
+
+
+
+
+	
 	
 	
 	

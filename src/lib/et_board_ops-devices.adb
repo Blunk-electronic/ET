@@ -1521,6 +1521,20 @@ package body et_board_ops.devices is
 	
 
 
+	procedure copy_non_electrical_device (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- FD1
+		destination		: in type_vector_model; -- x,y
+		log_threshold	: in type_log_level)
+	is
+	begin
+		-- CS
+		null;
+	end copy_non_electrical_device;
+
+
+
+	
 
 	
 	procedure delete_non_electrical_device (
@@ -1965,6 +1979,49 @@ package body et_board_ops.devices is
 
 
 
+
+	
+
+
+	procedure copy_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " copy object " 
+			-- CS & to_string (object)
+			& " to " & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_ELECTRICAL_DEVICE =>
+				null;
+
+				
+			when CAT_NON_ELECTRICAL_DEVICE =>
+
+				copy_non_electrical_device (
+					module_cursor	=> module_cursor,
+					device_name		=> get_device_name (object.non_electrical_device),
+					destination		=> destination,
+					log_threshold	=> log_threshold + 1);
+
+				
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end copy_object;
+	
+
+
+
+	
 	
 	
 
