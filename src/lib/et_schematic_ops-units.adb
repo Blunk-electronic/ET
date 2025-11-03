@@ -5124,13 +5124,12 @@ package body et_schematic_ops.units is
 
 				move_unit (
 					module_cursor	=> module_cursor,
-					device_name		=> key (object.unit.device_cursor),
-					unit_name		=> key (object.unit.unit_cursor),
+					device_name		=> get_device_name (object.unit),
+					unit_name		=> get_unit_name (object.unit),
 					coordinates		=> absolute,
 					sheet			=> active_sheet,
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
-				-- CS: use get_device_name and get_unit_name
 				
 
 			when CAT_PLACEHOLDER =>
@@ -5175,12 +5174,11 @@ package body et_schematic_ops.units is
 			when CAT_UNIT =>
 				rotate_unit (
 					module_cursor	=> module_cursor,
-					device_name		=> key (object.unit.device_cursor),
-					unit_name		=> key (object.unit.unit_cursor),
+					device_name		=> get_device_name (object.unit),
+					unit_name		=> get_unit_name (object.unit),
 					coordinates		=> relative, -- in order to rotate by 90 degrees
 					rotation		=> 90.0,
 					log_threshold	=> log_threshold + 1);
-				-- CS: use get_device_name and get_unit_name
 				
 
 			when CAT_PLACEHOLDER =>
@@ -5321,12 +5319,11 @@ package body et_schematic_ops.units is
 
 				drag_unit (
 					module_cursor	=> module_cursor,
-					device_name		=> key (object.unit.device_cursor),
-					unit_name		=> key (object.unit.unit_cursor),
+					device_name		=> get_device_name (object.unit),
+					unit_name		=> get_unit_name (object.unit),
 					coordinates		=> absolute,
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
-				-- CS: use get_device_name and get_unit_name
 				
 				
 			when CAT_PLACEHOLDER =>
@@ -5371,17 +5368,15 @@ package body et_schematic_ops.units is
 					
 					delete_unit (
 						module_cursor	=> module_cursor,
-						device_name		=> key (object.unit.device_cursor),
-						unit_name		=> key (object.unit.unit_cursor),
+						device_name		=> get_device_name (object.unit),
+						unit_name		=> get_unit_name (object.unit),
 						log_threshold	=> log_threshold + 1);
-					-- CS: use get_device_name and get_unit_name
 					
 				else
 					delete_electrical_device (
 						module_cursor	=> module_cursor,
-						device_name		=> key (object.unit.device_cursor),
+						device_name		=> get_device_name (object.unit),
 						log_threshold	=> log_threshold + 1);
-					-- CS: use get_device_name
 					
 				end if;
 
@@ -5462,10 +5457,9 @@ package body et_schematic_ops.units is
 			when CAT_UNIT =>
 				rename_electrical_device (
 					module_cursor		=> module_cursor,
-					device_name_before	=> key (object.unit.device_cursor),
+					device_name_before	=> get_device_name (object.unit),
 					device_name_after	=> new_name_device,
 					log_threshold		=> log_threshold + 1);
-					-- CS: use get_device_name
 				
 			when CAT_VOID | CAT_PLACEHOLDER =>
 				null;
