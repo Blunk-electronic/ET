@@ -322,9 +322,9 @@ package et_board_ops.devices is
 	-- CS procedure copy_device
 
 
-	-- Deletes a non-electric device in the board layout.
-	-- Electric devices must be deleted in the schematic domain !
-	procedure delete_device ( -- CS rename to delete_non_electrical_device
+	-- Deletes a non-electrical device in the board layout.
+	-- Electrical devices must be deleted in the schematic domain !
+	procedure delete_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- FD1 -- CS cursor insted ?
 		log_threshold	: in type_log_level);

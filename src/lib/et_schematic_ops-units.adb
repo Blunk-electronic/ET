@@ -2384,7 +2384,7 @@ package body et_schematic_ops.units is
 -- DEVICE DELETE:
 	
 
-	procedure delete_device (
+	procedure delete_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		log_threshold	: in type_log_level) 
@@ -2413,7 +2413,7 @@ package body et_schematic_ops.units is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " delete " & to_string (device_name), 
+			 & " delete electrical device " & to_string (device_name), 
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -2438,7 +2438,7 @@ package body et_schematic_ops.units is
 		update_ratsnest (module_cursor, log_threshold + 1);
 		
 		log_indentation_down;
-	end delete_device;
+	end delete_electrical_device;
 
 
 
@@ -5377,7 +5377,7 @@ package body et_schematic_ops.units is
 					-- CS: use get_device_name and get_unit_name
 					
 				else
-					delete_device (
+					delete_electrical_device (
 						module_cursor	=> module_cursor,
 						device_name		=> key (object.unit.device_cursor),
 						log_threshold	=> log_threshold + 1);

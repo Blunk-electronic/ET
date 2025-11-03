@@ -492,7 +492,7 @@ is
 		
 		case cmd_field_count is
 			when 5 =>
-				delete_device (
+				delete_electrical_device (
 					module_cursor 	=> active_module,
 					device_name		=> device_name,
 					log_threshold	=> log_threshold + 1);

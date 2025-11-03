@@ -530,7 +530,7 @@ package et_schematic_ops.units is
 	
 	-- Deletes a whole device (incl. all its units)
 	-- in the module:
-	procedure delete_device (
+	procedure delete_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		log_threshold	: in type_log_level);

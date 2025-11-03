@@ -3092,7 +3092,7 @@ is
 		procedure do_it is 
 			use et_board_ops.devices;
 		begin
-			delete_device (
+			delete_non_electrical_device (
 				module_cursor	=> active_module,
 				device_name		=> to_device_name (get_field (5)),
 				log_threshold	=> log_threshold + 1);

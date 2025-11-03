@@ -1481,7 +1481,7 @@ package body et_board_ops.devices is
 
 
 	
-	procedure delete_device (
+	procedure delete_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- FD1
 		log_threshold	: in type_log_level) 
@@ -1499,7 +1499,7 @@ package body et_board_ops.devices is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& " delete non-electrical device" & to_string (device_name),
+			& " delete non-electrical device " & to_string (device_name),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -1516,7 +1516,7 @@ package body et_board_ops.devices is
 		end if;
 
 		log_indentation_down;
-	end delete_device;
+	end delete_non_electrical_device;
 
 
 
@@ -2037,7 +2037,7 @@ package body et_board_ops.devices is
 				
 			when CAT_NON_ELECTRICAL_DEVICE =>
 
-				delete_device (
+				delete_non_electrical_device (
 					module_cursor	=> module_cursor,
 					device_name		=> key (object.non_electrical_device.cursor),
 					log_threshold	=> log_threshold + 1);
