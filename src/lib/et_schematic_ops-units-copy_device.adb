@@ -458,7 +458,8 @@ begin
 		device_cursor_lib := get_device_model (device_cursor_sch);
 		
 		-- Build the next available device name:
-		next_name := get_next_available_device_name (module_cursor, get_prefix (device_name)); -- IC46
+		next_name := get_next_available_electrical_device_name (
+				module_cursor, get_prefix (device_name)); -- IC46
 
 		log (text => "auto generated next device name: " & to_string (next_name),
 			level => log_threshold);

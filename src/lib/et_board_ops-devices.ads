@@ -336,6 +336,17 @@ package et_board_ops.devices is
 		log_threshold	: in type_log_level);
 
 
+	-- Returns for the given device prefix the next available 
+	-- device name in the module.
+	-- Example: prefix is FD. If there are FD1, FD4 and FD4, then 
+	-- then the return will be FD2:
+	function get_next_available_non_electrical_device_name (
+		module_cursor	: in pac_generic_modules.cursor;
+		prefix			: in pac_device_prefix.bounded_string) -- FD
+		return type_device_name; -- FD2
+
+	
+
 	-- Adds a non-electrical device to the board:
 	procedure add_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;

@@ -291,10 +291,9 @@ package et_schematic_ops.units is
 	-- device name in the module.
 	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 
 	-- then the return will be C2.
-	function get_next_available_device_name (
+	function get_next_available_electrical_device_name (
 		module_cursor	: in pac_generic_modules.cursor;
-		prefix			: in pac_device_prefix.bounded_string; -- C
-		category		: in type_electrical_non_electrical := CAT_ELECTRICAL)
+		prefix			: in pac_device_prefix.bounded_string) -- C
 		return type_device_name; -- C2
 
 	
