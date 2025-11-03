@@ -1521,15 +1521,53 @@ package body et_board_ops.devices is
 	
 
 
+	
+
 	procedure copy_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- FD1
 		destination		: in type_vector_model; -- x,y
 		log_threshold	: in type_log_level)
 	is
+		device_cursor : pac_devices_non_electrical.cursor;
+
+		
+		-- The next available device name:
+		next_name : type_device_name;
+
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is 
+			original : type_device_non_electrical renames element (device_cursor);
+		begin
+			null;
+			--delete (module.devices_non_electric, device_cursor);
+		end query_module;
+
+		
 	begin
-		-- CS
-		null;
+		log (text => "module " & to_string (module_cursor) 
+			 & " copy non-electrical device " & to_string (device_name)
+			 & " to destination " & to_string (destination),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor := get_non_electrical_device (module_cursor, device_name);
+			
+		if has_element (device_cursor) then -- device exists in board
+			generic_modules.update_element (module_cursor, query_module'access);
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+		end if;
+
+		log_indentation_down;
 	end copy_non_electrical_device;
 
 
