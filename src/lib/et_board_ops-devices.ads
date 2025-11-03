@@ -331,7 +331,7 @@ package et_board_ops.devices is
 
 	
 	-- Renames a non-electric device in the board layout.
-	procedure rename_device ( -- CS rename to rename_non_electrical_device
+	procedure rename_non_electrical_device (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name_before	: in type_device_name; -- FD1
 		device_name_after	: in type_device_name; -- FD3

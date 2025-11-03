@@ -1522,7 +1522,7 @@ package body et_board_ops.devices is
 
 	
 	
-	procedure rename_device (
+	procedure rename_non_electrical_device (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name_before	: in type_device_name; -- FD1
 		device_name_after	: in type_device_name; -- FD3
@@ -1608,7 +1608,7 @@ package body et_board_ops.devices is
 		end if;
 
 		log_indentation_down;
-	end rename_device;
+	end rename_non_electrical_device;
 	
 
 

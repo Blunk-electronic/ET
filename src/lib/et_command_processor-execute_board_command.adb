@@ -3178,7 +3178,7 @@ is
 		procedure do_it is 
 			use et_board_ops.devices;
 		begin
-			rename_device (
+			rename_non_electrical_device (
 				module_cursor		=> active_module,
 				device_name_before	=> to_device_name (get_field (5)),
 				device_name_after	=> to_device_name (get_field (6)),
