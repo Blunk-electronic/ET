@@ -554,7 +554,7 @@ package et_schematic_ops.units is
 	-- Changing the prefix is not allowed. A warning will be issued.
 	-- For example renaming from R1 to C1 is forbidden as this would 
 	-- change the device category:
-	procedure rename_device (
+	procedure rename_electrical_device (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name_before	: in type_device_name; -- IC1
 		device_name_after	: in type_device_name; -- IC23

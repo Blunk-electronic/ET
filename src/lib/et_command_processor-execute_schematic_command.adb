@@ -466,7 +466,7 @@ is
 	begin
 		case cmd_field_count is
 			when 6 =>
-				rename_device (
+				rename_electrical_device (
 					module_cursor 		=> active_module,
 					device_name_before	=> to_device_name (get_field (5)), -- IC1
 					device_name_after	=> to_device_name (get_field (6)), -- IC23

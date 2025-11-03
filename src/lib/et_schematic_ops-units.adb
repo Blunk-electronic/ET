@@ -2586,7 +2586,7 @@ package body et_schematic_ops.units is
 	
 	
 
-	procedure rename_device (
+	procedure rename_electrical_device (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name_before	: in type_device_name; -- IC1
 		device_name_after	: in type_device_name; -- IC23
@@ -2690,7 +2690,7 @@ package body et_schematic_ops.units is
 		end if;
 		
 		log_indentation_down;
-	end rename_device;
+	end rename_electrical_device;
 
 	
 
@@ -5460,7 +5460,7 @@ package body et_schematic_ops.units is
 
 		case object.cat is
 			when CAT_UNIT =>
-				rename_device (
+				rename_electrical_device (
 					module_cursor		=> module_cursor,
 					device_name_before	=> key (object.unit.device_cursor),
 					device_name_after	=> new_name_device,

@@ -2114,7 +2114,7 @@ package body et_board_ops.devices is
 		case object.cat is
 			when CAT_NON_ELECTRICAL_DEVICE =>
 				
-				rename_device (
+				rename_non_electrical_device (
 					module_cursor		=> module_cursor,
 					device_name_before	=> key (object.non_electrical_device.cursor),
 					device_name_after	=> new_name_device,
