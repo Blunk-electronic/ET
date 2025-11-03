@@ -215,6 +215,29 @@ package body et_board_ops.devices is
 
 
 
+	function get_device_name (
+		object	: in type_object_electrical)
+		return string
+	is begin
+		return to_string (key (object.cursor));
+	end;
+
+
+
+
+	function get_device_name (
+		object	: in type_object_electrical)
+		return type_device_name
+	is begin
+		return key (object.cursor);
+	end;
+
+
+
+
+	
+	
+
 	
 
 	procedure modify_status (
@@ -1031,6 +1054,25 @@ package body et_board_ops.devices is
 
 
 
+
+	
+	function get_device_name (
+		object	: in type_object_non_electrical)
+		return string
+	is begin
+		return to_string (key (object.cursor));
+	end;
+
+
+
+	function get_device_name (
+		object	: in type_object_non_electrical)
+		return type_device_name
+	is begin
+		return key (object.cursor);
+	end;
+
+	
 	
 
 	procedure modify_status (
@@ -2039,7 +2081,7 @@ package body et_board_ops.devices is
 
 				delete_non_electrical_device (
 					module_cursor	=> module_cursor,
-					device_name		=> key (object.non_electrical_device.cursor),
+					device_name		=> get_device_name (object.non_electrical_device),
 					log_threshold	=> log_threshold + 1);
 				
 			when CAT_VOID =>
@@ -2071,7 +2113,7 @@ package body et_board_ops.devices is
 
 				flip_device (
 					module_cursor	=> module_cursor,
-					device_name		=> key (object.electrical_device.cursor),
+					device_name		=> get_device_name (object.electrical_device),
 					toggle			=> true,
 					log_threshold	=> log_threshold + 1);
 
@@ -2080,7 +2122,7 @@ package body et_board_ops.devices is
 
 				flip_device (
 					module_cursor	=> module_cursor,
-					device_name		=> key (object.non_electrical_device.cursor),
+					device_name		=> get_device_name (object.non_electrical_device),
 					toggle			=> true,
 					log_threshold	=> log_threshold + 1);
 
@@ -2116,10 +2158,9 @@ package body et_board_ops.devices is
 				
 				rename_non_electrical_device (
 					module_cursor		=> module_cursor,
-					device_name_before	=> key (object.non_electrical_device.cursor),
+					device_name_before	=> get_device_name (object.non_electrical_device),
 					device_name_after	=> new_name_device,
 					log_threshold		=> log_threshold + 1);
-					-- CS: use get_device_name
 				
 			when others =>
 				null;

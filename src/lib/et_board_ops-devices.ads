@@ -86,6 +86,19 @@ package et_board_ops.devices is
 	end record;
 
 
+	-- Returns the device name of the given object
+	-- as string in the form like "T1":
+	function get_device_name (
+		object	: in type_object_electrical)
+		return string;
+
+
+	function get_device_name (
+		object	: in type_object_electrical)
+		return type_device_name;
+	
+	
+
 	-- Modifies that status flag of an electrical device:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -254,6 +267,19 @@ package et_board_ops.devices is
 	end record;
 
 
+	-- Returns the device name of the given object
+	-- as string in the form like "FD1":
+	function get_device_name (
+		object	: in type_object_non_electrical)
+		return string;
+
+
+	function get_device_name (
+		object	: in type_object_non_electrical)
+		return type_device_name;
+
+
+	
 	-- Modifies that status flag of a non-electrical device:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
