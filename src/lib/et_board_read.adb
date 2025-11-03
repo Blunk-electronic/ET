@@ -217,14 +217,14 @@ package body et_board_read is
 			expect_field_count (line, 5);
 
 			-- extract the start position starting at field 2 of line
-			vm := to_position (line, 2);
+			vm := to_vector_model (line, 2);
 			set_A (board_line, vm);
 			
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
-			vm := to_position (line, 2);
+			vm := to_vector_model (line, 2);
 			set_B (board_line, vm);
 			
 		else
@@ -246,7 +246,7 @@ package body et_board_read is
 			expect_field_count (line, 5);
 
 			-- extract the start position starting at field 2 of line
-			vm := to_position (line, 2);
+			vm := to_vector_model (line, 2);
 			set_A (board_line, vm);
 			return true;
 			
@@ -254,7 +254,7 @@ package body et_board_read is
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
-			vm := to_position (line, 2);
+			vm := to_vector_model (line, 2);
 			set_B (board_line, vm);
 			return true;
 		else
@@ -286,19 +286,19 @@ package body et_board_read is
 			expect_field_count (line, 5);
 
 			-- extract the start position starting at field 2 of line
-			set_A (board_arc, to_position (line, 2));
+			set_A (board_arc, to_vector_model (line, 2));
 
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
-			set_B (board_arc, to_position (line, 2));
+			set_B (board_arc, to_vector_model (line, 2));
 			
 		elsif kw = keyword_center then -- center x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			set_center (board_arc, to_position (line, 2));
+			set_center (board_arc, to_vector_model (line, 2));
 
 		elsif kw = keyword_direction then -- direction ccw
 			expect_field_count (line, 2);
@@ -322,7 +322,7 @@ package body et_board_read is
 			expect_field_count (line, 5);
 
 			-- extract the start position starting at field 2 of line
-			set_A (board_arc, to_position (line, 2));
+			set_A (board_arc, to_vector_model (line, 2));
 
 			return true;
 
@@ -330,7 +330,7 @@ package body et_board_read is
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
-			set_B (board_arc, to_position (line, 2));
+			set_B (board_arc, to_vector_model (line, 2));
 
 			return true;
 			
@@ -338,7 +338,7 @@ package body et_board_read is
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			set_center (board_arc, to_position (line, 2));
+			set_center (board_arc, to_vector_model (line, 2));
 
 			return true;
 
@@ -366,7 +366,7 @@ package body et_board_read is
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			set_center (board_circle, to_position (line, 2));
+			set_center (board_circle, to_vector_model (line, 2));
 			
 		elsif kw = keyword_radius then -- radius 22
 			expect_field_count (line, 2);
@@ -388,7 +388,7 @@ package body et_board_read is
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			set_center (board_circle, to_position (line, 2));
+			set_center (board_circle, to_vector_model (line, 2));
 
 			return true;
 			

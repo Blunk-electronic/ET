@@ -508,7 +508,7 @@ package body et_geometry_2a is
 
 	
 
-	function to_position (
+	function to_vector_model (
 		line : in type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
 		from : in type_field_count_positive)
 		return type_vector_model 
@@ -537,7 +537,7 @@ package body et_geometry_2a is
 		end loop;
 		
 		return point;
-	end to_position;
+	end to_vector_model;
 
 
 	

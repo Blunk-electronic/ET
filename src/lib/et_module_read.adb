@@ -903,14 +903,14 @@ package body et_module_read is
 				expect_field_count (line, 5);
 
 				-- extract start position starting at field 2
-				vm := to_position (line, from => 2);
+				vm := to_vector_model (line, from => 2);
 				set_A (net_segment, vm);
 				
 			elsif kw = keyword_end then -- "end x 6 y 4"
 				expect_field_count (line, 5);
 
 				-- extract end position starting at field 2
-				vm := to_position (line, from => 2);
+				vm := to_vector_model (line, from => 2);
 				set_B (net_segment, vm);
 
 			else
@@ -1135,7 +1135,7 @@ package body et_module_read is
 				expect_field_count (line, 5);
 
 				-- extract label position starting at field 2 of line
-				net_label.position := to_position (line, 2);
+				net_label.position := to_vector_model (line, 2);
 
 				
 			elsif kw = keyword_rotation then -- rotation 0.0
@@ -1762,7 +1762,7 @@ package body et_module_read is
 				expect_field_count (line, 5);
 
 				-- extract position of placeholder starting at field 2
-				unit_placeholder_position := to_position (line, 2);
+				unit_placeholder_position := to_vector_model (line, 2);
 
 			elsif kw = keyword_size then -- size 3.0
 				expect_field_count (line, 2);
@@ -1903,7 +1903,7 @@ package body et_module_read is
 				expect_field_count (line, 5);
 
 				-- extract position (in board) starting at field 2
-				netchanger.position_brd := to_position (line, 2);
+				netchanger.position_brd := to_vector_model (line, 2);
 
 			elsif kw = keyword_layer then -- layer 3 (signal layer in board)
 				expect_field_count (line, 2);
@@ -2259,7 +2259,7 @@ package body et_module_read is
 				expect_field_count (line, 5);
 
 				-- extract port position starting at field 2
-				submodule_port.position := to_position (line, 2);
+				submodule_port.position := to_vector_model (line, 2);
 
 			elsif kw = keyword_direction then -- direction master/slave
 				expect_field_count (line, 2);
@@ -2743,7 +2743,7 @@ package body et_module_read is
 				expect_field_count (line, 5);
 
 				-- extract the position starting at field 2 of line
-				drill.position := to_position (line, 2);
+				drill.position := to_vector_model (line, 2);
 
 			elsif kw = keyword_via_category then -- category through/buried/...
 				expect_field_count (line, 2);

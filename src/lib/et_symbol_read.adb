@@ -501,13 +501,13 @@ package body et_symbol_read is
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
-										set_A (symbol_line, to_position (line, 2));
+										set_A (symbol_line, to_vector_model (line, 2));
 										
 									elsif kw = keyword_end then -- end x 0.00 y 0.00
 										expect_field_count (line, 5);
 
 										-- extract the end position starting at field 2
-										set_B (symbol_line, to_position (line,2));
+										set_B (symbol_line, to_vector_model (line, 2));
 
 									elsif kw = keyword_width then
 										expect_field_count (line, 2);
@@ -532,19 +532,19 @@ package body et_symbol_read is
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
-										set_center (symbol_arc, to_position (line, 2));
+										set_center (symbol_arc, to_vector_model (line, 2));
 
 									elsif kw = keyword_start then -- start x 1 y 2
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
-										set_A (symbol_arc, to_position (line, 2));
+										set_A (symbol_arc, to_vector_model (line, 2));
 										
 									elsif kw = keyword_end then -- end x 0.00 y 0.00
 										expect_field_count (line, 5);
 
 										-- extract the end position starting at field 2
-										set_B (symbol_arc, to_position (line, 2));
+										set_B (symbol_arc, to_vector_model (line, 2));
 
 									elsif kw = keyword_direction then -- direction ccw
 										expect_field_count (line, 2);
@@ -574,7 +574,7 @@ package body et_symbol_read is
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
-										set_center (symbol_circle, to_position (line,2));
+										set_center (symbol_circle, to_vector_model (line,2));
 
 									elsif kw = keyword_width then -- widht 0.2
 										expect_field_count (line, 2);
@@ -607,7 +607,7 @@ package body et_symbol_read is
 										expect_field_count (line, 5);
 
 										-- extract the text position starting at field 2
-										symbol_text_position := to_position (line,2);
+										symbol_text_position := to_vector_model (line,2);
 
 									elsif kw = keyword_content then -- content "dummy NAND gate"
 										expect_field_count (line, 2);
@@ -648,7 +648,7 @@ package body et_symbol_read is
 										expect_field_count (line, 5);
 
 										-- extract the placeholder position starting at field 2
-										symbol_text_position := to_position (line,2);
+										symbol_text_position := to_vector_model (line, 2);
 
 									elsif kw = keyword_meaning then -- meaning reference
 										expect_field_count (line, 2);
@@ -690,7 +690,7 @@ package body et_symbol_read is
 										expect_field_count (line, 5);
 
 										-- extract the port position starting at field 2
-										port.position := to_position (line,2);
+										port.position := to_vector_model (line, 2);
 
 									elsif kw = keyword_name then -- name I1A
 										expect_field_count (line, 2);
