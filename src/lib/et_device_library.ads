@@ -38,7 +38,7 @@
 -- DESCRIPTION:
 --
 -- This package describes the structure of
--- the rig-wide li	brary of devices models.
+-- the rig-wide library of devices models.
 
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
@@ -104,8 +104,7 @@ package et_device_library is
 	use pac_devices_lib;
 
 
-	-- Returns the name prefix for a given 
-	-- device cursor:
+	-- Returns the name prefix for a given device cursor:
 	function get_prefix (
 		cursor	: in pac_devices_lib.cursor)
 		return pac_device_prefix.bounded_string;

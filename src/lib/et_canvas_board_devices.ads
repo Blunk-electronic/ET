@@ -51,8 +51,10 @@ with et_board_geometry;				use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 
 with et_pcb;						use et_pcb;
+with et_package_library;			use et_package_library;
 with et_device_model;				use et_device_model;
 with et_device_name;				use et_device_name;
+with et_device_value;				use et_device_value;
 with et_logging;					use et_logging;
 
 
@@ -107,6 +109,41 @@ package et_canvas_board_devices is
 		& status_hint_for_abort;
 
 
+	-- When a non-electrical device is being added this type is required.
+	-- The process of adding a non-electrical device is just about a package:
+	type type_device_being_added is record
+		-- The cursor to the package model:
+		packge		: pac_package_models.cursor;
+
+		value		: pac_device_value.bounded_string; -- 100k
+		
+		-- The prospective device name (like FD4) once the 
+		-- add operation is complete.
+		-- This is relevant for the preview only:
+		device_pre	: type_device_name := (others => <>);
+
+		-- The rotation of the device:
+		rotation	: type_rotation := 0.0;
+		
+		-- Indicates that the information above is valid
+		-- and a device has been selected by the operator:
+		valid		: boolean := false;
+	end record;
+
+
+
+	-- If a non-electrical device is being added, then
+	-- all the required preliminary information is stored here:
+	device_add : type_device_being_added;
+
+
+	-- Resets device_add to its default values:
+	procedure reset_device_add;
+
+
+	
+		
+	
 	procedure copy_object (
 		tool	: in type_tool;
 		point	: in type_vector_model);

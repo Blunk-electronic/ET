@@ -1793,7 +1793,22 @@ procedure draw_packages is
 	end query_module;
 
 
+
+
+	procedure draw_device_being_added is
+		use et_canvas_board_devices;
+		use pac_package_models;
+	begin
+		if device_add.valid then
+			device_name := device_add.device_pre;
+			set_place (package_position, get_primary_tool_position);
+			set_rotation (package_position, device_add.rotation);
+			
+			draw_package (element (device_add.packge));
+		end if;
+	end draw_device_being_added;
 	
+
 	
 begin
 -- 	put_line ("draw packages ...");
@@ -1803,6 +1818,10 @@ begin
 		position	=> active_module,
 		process		=> query_module'access);
 
+
+	-- Draw the non-electrical device being added.
+	-- If no device is being added, then nothing happens here:
+	draw_device_being_added;
 	
 end draw_packages;
 

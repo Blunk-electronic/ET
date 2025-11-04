@@ -122,7 +122,7 @@ package body et_devices_non_electrical is
 
 
 	function get_rotation (
-		device	: in out type_device_non_electrical)
+		device	: in type_device_non_electrical)
 		return type_rotation_model
 	is begin
 		return get_rotation (device.position);
@@ -478,6 +478,19 @@ package body et_devices_non_electrical is
 
 
 
+	function get_prefix (
+		cursor	: in pac_devices_non_electrical.cursor)
+		return pac_device_prefix.bounded_string
+	is
+		name : type_device_name := key (cursor);
+	begin
+		return get_prefix (name);
+	end;
+
+
+
+	
+
 
 	
 	procedure iterate (
@@ -692,7 +705,18 @@ package body et_devices_non_electrical is
 
 
 
+	function get_rotation (
+		device_cursor	: in pac_devices_non_electrical.cursor) -- FD1
+		return type_rotation_model
+	is 
+		device : type_device_non_electrical renames element (device_cursor);
+	begin
+		return get_rotation (device);
+	end;
+		
 
+
+	
 	
 
 -- VALUE:

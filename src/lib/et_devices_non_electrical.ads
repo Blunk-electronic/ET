@@ -61,6 +61,7 @@ with et_package_library;				use et_package_library;
 with et_package_name;					use et_package_name;
 with et_package_model_name;				use et_package_model_name;
 with et_device_name;					use et_device_name;
+with et_device_prefix;					use et_device_prefix;
 with et_device_value;					use et_device_value;
 with et_device_purpose;					use et_device_purpose;
 with et_device_partcode;				use et_device_partcode;
@@ -159,7 +160,7 @@ package et_devices_non_electrical is
 
 
 	function get_rotation (
-		device	: in out type_device_non_electrical)
+		device	: in type_device_non_electrical)
 		return type_rotation_model;
 
 	
@@ -371,6 +372,13 @@ package et_devices_non_electrical is
 	use pac_devices_non_electrical;
 	
 
+
+	-- Returns the name prefix for a given device cursor:
+	function get_prefix (
+		cursor	: in pac_devices_non_electrical.cursor)
+		return pac_device_prefix.bounded_string;
+
+
 	
 	-- Iterates the non-electric devices. 
 	-- Aborts the process when the proceed-flag goes false:
@@ -494,6 +502,12 @@ package et_devices_non_electrical is
 
 	
 
+	-- Returns the rotation of the given non-electrical device:
+	function get_rotation (
+		device_cursor	: in pac_devices_non_electrical.cursor) -- FD1
+		return type_rotation_model;
+
+	
 
 
 -- VALUE:

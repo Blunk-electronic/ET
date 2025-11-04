@@ -380,6 +380,16 @@ package body et_canvas_board_devices is
 
 
 -- COPY:
+
+
+
+	procedure reset_device_add is begin
+		device_add := (others => <>);
+	end;
+
+
+
+	
 	
 
 	procedure copy_object (
@@ -409,11 +419,11 @@ package body et_canvas_board_devices is
 				commit (PRE, verb, noun, log_threshold + 1);
 
 				-- Do the copy operation:
-				-- copy_object (
-				-- 	module_cursor	=> active_module, 
-				-- 	object			=> object, 
-				-- 	destination		=> type_position (to_position (point, unit_add.rotation)),
-				-- 	log_threshold	=> log_threshold + 1);
+				copy_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					destination		=> point,
+					log_threshold	=> log_threshold + 1);
 
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
@@ -430,18 +440,18 @@ package body et_canvas_board_devices is
 				
 			log_indentation_down;			
 
-			-- CS clear status bar ?
-			-- set_status (status_delete);
+			-- clear status bar
+			status_clear;
 
 			-- The preview-object is no longer required:
-			-- reset_unit_add;
+			reset_device_add;
 			
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
 
 		
-		-- After the orignial object has been selected, and the the operator is moving 
+		-- After the original object has been selected, and the the operator is moving 
 		-- the pointer or the cursor, a preview of the copied object is attached to
 		-- the tool. The "preview object" is floating:
 		procedure build_preview is
@@ -453,22 +463,18 @@ package body et_canvas_board_devices is
 		begin
 			case object.cat is
 				when CAT_NON_ELECTRICAL_DEVICE =>
-					null;
--- 					-- Build the preview of the unit that is going to
--- 					-- be added as part of a new device:
--- 					unit_add.device := get_device_model (object.unit.device_cursor);
--- 
--- 					-- If the device is real, then get the package variant:
--- 					if is_real (unit_add.device) then
--- 						unit_add.variant := get_package_variant (object.unit.device_cursor);
--- 					end if;
--- 					
--- 					unit_add.name := get_first_unit (unit_add.device);
--- 					unit_add.value := get_value (object.unit.device_cursor);
--- 					unit_add.total := get_unit_count (object.unit.device_cursor);
--- 					unit_add.device_pre := get_next_available_device_name (active_module, get_prefix (unit_add.device));
--- 					unit_add.rotation := get_rotation (object.unit.unit_cursor);
--- 					unit_add.valid := true;
+					-- Build the preview of the device that is going to
+					-- be added:
+					device_add.packge := get_package_model (object.non_electrical_device.cursor);
+
+					device_add.value := get_value (object.non_electrical_device.cursor);
+					
+					device_add.device_pre := get_next_available_non_electrical_device_name (
+						active_module, get_prefix (object.non_electrical_device.cursor));
+
+					device_add.rotation := get_rotation (object.non_electrical_device.cursor);
+
+					device_add.valid := true;
 					
 				when others =>
 					-- CS

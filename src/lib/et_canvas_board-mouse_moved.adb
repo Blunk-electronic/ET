@@ -48,6 +48,17 @@ is
 
 begin
 	case verb is
+		when VERB_COPY =>
+			case noun is
+				when NOUN_DEVICE =>
+					if edit_process_running then
+						redraw_board;
+					end if;
+
+				when others => null;
+			end case;
+
+			
 		when VERB_DRAW =>
 			case noun is
 				when NOUN_LINE =>
