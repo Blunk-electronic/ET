@@ -117,6 +117,8 @@ package et_meta is
 
 	-- PATHS FOR PREFERRED LIBRARIES:
 
+	-- CS: separate package !!!
+	
 	-- NOTE: System ET does not follow the classical approach of
 	-- search paths for libraries. A library here is just a directory where
 	-- device models (*.dev) or non-electrical packages (*.pac) live.
@@ -132,6 +134,7 @@ package et_meta is
 	prf_lib_sch_length_max : constant positive := 100;
 	package pac_preferred_library_schematic is new generic_bounded_length (prf_lib_sch_length_max);
 	use pac_preferred_library_schematic;
+	-- CS rename to pac_preferred_library_devices
 
 	-- Returns true if the given path exists:
 	function exists (lib : in pac_preferred_library_schematic.bounded_string)
@@ -145,14 +148,17 @@ package et_meta is
 	
 	package pac_preferred_libraries_schematic is new 
 		doubly_linked_lists (pac_preferred_library_schematic.bounded_string);
-
+	-- CS rename to pac_preferred_libraries_devices ?
+		
 
 	-- A preferred directory that contains non-electrical packages (*.pac)
 	-- like "$HOME/git/BEL/ET_component_library/packages":
 	prf_lib_brd_length_max : constant positive := 100;
 	package pac_preferred_library_board is new generic_bounded_length (prf_lib_brd_length_max);
 	use pac_preferred_library_board;
-
+	-- CS rename to pac_preferred_library_package
+	
+	
 	-- Returns true if the given path exists:
 	function exists (lib : in pac_preferred_library_board.bounded_string)
 		return boolean;
@@ -165,6 +171,7 @@ package et_meta is
 	
 	package pac_preferred_libraries_board is new 
 		doubly_linked_lists (pac_preferred_library_board.bounded_string);
+	-- CS rename to pac_preferred_libraries_packages
 
 	
 	
