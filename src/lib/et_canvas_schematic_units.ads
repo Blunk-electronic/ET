@@ -368,7 +368,8 @@ package et_canvas_schematic_units is
 -- ADD UNIT/DEVICE:
 
 	-- This function returns the top most important path
-	-- of the preferred schematic libraries.
+	-- of the preferred schematic libraries
+	-- for electrical devices:
 	function get_top_most_important_library return string;
 
 		
