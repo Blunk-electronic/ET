@@ -940,6 +940,10 @@ package et_canvas is
 	procedure draw_cursor;
 
 
+
+
+
+	
 	
 -- MOUSE / POINTER POSITION:
 

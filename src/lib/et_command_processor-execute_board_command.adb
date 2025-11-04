@@ -3004,8 +3004,11 @@ is
 
 	
 	-- This procedure parses a command to add
-	-- a non-electric device:
-	procedure add_device is
+	-- a non-electric device.
+	-- Example 1: add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac FD 5 10
+	-- Example 2: add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac FD 5 10 45
+	-- Example 3: add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac FD 5 10 45 bottom	
+	procedure add_non_electrical_device is
 
 		procedure do_it is
 			use et_board_ops.devices;
@@ -3078,7 +3081,7 @@ is
 			
 			when others => command_incomplete;
 		end case;
-	end add_device;
+	end add_non_electrical_device;
 	
 
 
@@ -3744,7 +3747,7 @@ is
 			when VERB_ADD =>
 				case noun is
 					when NOUN_DEVICE =>
-						add_device;
+						add_non_electrical_device;
 
 					when NOUN_LAYER =>
 						add_signal_layer;

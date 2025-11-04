@@ -141,11 +141,21 @@ package et_canvas_board_devices is
 	procedure reset_device_add;
 
 
-	
+	procedure rotate_device_add;
 
 
 -- COPY:
 
+
+	status_add_device : constant string :=
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to add device." 
+		& status_hint_for_abort;
+
+
+	
 	
 	procedure copy_object (
 		tool	: in type_tool;

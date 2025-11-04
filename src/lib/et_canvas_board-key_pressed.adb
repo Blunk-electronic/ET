@@ -64,6 +64,65 @@ is
 	
 
 
+	procedure add is 
+		use et_canvas_board_devices;
+	begin
+		case key is
+			when key_noun_device =>
+				noun := NOUN_DEVICE;
+				set_status (et_canvas_board_devices.status_add_device);
+
+				-- When adding devices, we enforce the default grid
+				-- and snap the cursor position to the default grid:
+				reset_grid_and_cursor;
+				
+				-- open package model selection
+				-- show_device_model_selection; 
+
+				
+			-- If space pressed, then the operator wishes to operate via keyboard:	
+			when key_space =>
+				case noun is
+
+					when NOUN_DEVICE =>
+						if device_add.valid then
+							-- When adding devicess, we enforce the default grid
+							-- and snap the cursor position to the default grid:
+							reset_grid_and_cursor;
+
+							-- If a package model has been selected, then
+							-- a device will be dropped at the current 
+							-- cursor position. The properties of the new device
+							-- are taken from the preliminary device_add:
+
+							-- CS
+							-- add_device (get_cursor_position);
+						end if;
+						
+					when others => null;						
+				end case;
+				
+
+			-- If the operator wants to rotate the device
+			-- being added, then add 90 degrees to the
+			-- temporaily unit:
+			when key_verb_rotate =>
+				case noun is
+					when NOUN_DEVICE =>
+						put_line ("rotate");
+						rotate_device_add;
+
+					when others => null;						
+				end case;
+
+				
+			when others => null;
+		end case;
+	end add;
+	
+
+	
+
 	procedure clear is begin
 		case key is
 			when key_noun_zone =>
@@ -857,6 +916,10 @@ begin -- key_pressed
 						noun := noun_default;
 						
 						case key is
+							when key_verb_add =>
+								verb := VERB_ADD;
+								status_enter_noun;
+
 							when key_verb_clear =>
 								verb := VERB_CLEAR;
 								status_enter_noun;
@@ -928,6 +991,7 @@ begin -- key_pressed
 						--put_line ("NOUN entered");
 
 						case verb is
+							when VERB_ADD		=> add;
 							when VERB_CLEAR		=> clear;
 							when VERB_COPY		=> copy;
 							when VERB_DELETE	=> delete;

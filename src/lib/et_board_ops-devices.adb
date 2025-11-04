@@ -1535,7 +1535,7 @@ package body et_board_ops.devices is
 		package_cursor_lib : pac_package_models.cursor;
 
 		
-		procedure add (						  
+		procedure query_module (						  
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
@@ -1546,10 +1546,12 @@ package body et_board_ops.devices is
 			next_name : type_device_name := 
 				get_next_available_non_electrical_device_name (module_cursor, prefix);
 		begin
-			log (text => "add device " & to_string (next_name), level => log_threshold + 1);
+			log (text => "add device " & to_string (next_name), 
+				 level => log_threshold + 1);
+			
 			log_indentation_up;
 
-			-- add the device to the collection of non-electic devices:
+			-- Add the non-electrical device to the module:
 			pac_devices_non_electrical.insert (
 				container	=> module.devices_non_electric,
 				inserted	=> inserted,
@@ -1568,7 +1570,7 @@ package body et_board_ops.devices is
 			end if;
 
 			log_indentation_down;
-		end add;
+		end query_module;
 
 		
 	begin
@@ -1594,7 +1596,7 @@ package body et_board_ops.devices is
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
-			process		=> add'access);
+			process		=> query_module'access);
 		
 		log_indentation_down;
 	end add_non_electrical_device;

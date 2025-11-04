@@ -45,7 +45,8 @@ with gdk.types.keysyms;				use gdk.types.keysyms;
 package et_board_verb_noun_keys is
 
 -- VERBS:
-	
+
+	key_verb_add		: constant gdk_key_type := GDK_LC_a;
 	key_verb_clear		: constant gdk_key_type := GDK_LC_e;
 	key_verb_copy		: constant gdk_key_type := GDK_LC_c;
 	key_verb_delete		: constant gdk_key_type := GDK_Delete;

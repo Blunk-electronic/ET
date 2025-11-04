@@ -130,7 +130,7 @@ non-electrical devices (without a representation in the schematic).
 
 
 
-#. Adding non-electrical Devices
+#. Add Non-Electrical Devices
 
 	This command places a fiducial (or reference mark) with prefix FD
 	at position 5/10:
@@ -138,7 +138,9 @@ non-electrical devices (without a representation in the schematic).
 	.. code-block::
 
 		add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac FD 5 10
-		
+		add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac FD 5 10 45		
+		add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac FD 5 10 45 bottom
+
 
 
 #. Copy Non-Electrical Device

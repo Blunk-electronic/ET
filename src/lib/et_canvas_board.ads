@@ -376,6 +376,12 @@ package et_canvas_board is
 	procedure update_board_editor;
 
 
+	-- Resets the grid density to default and snaps the cursor
+	-- to the nearest grid point.
+	-- Updates the coordinates display.
+	procedure reset_grid_and_cursor;
+
+	
 	
 end et_canvas_board;
 

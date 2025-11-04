@@ -387,6 +387,14 @@ package body et_canvas_board_devices is
 
 
 
+	procedure rotate_device_add is begin
+		-- CS
+		null;
+	end rotate_device_add;
+
+
+	
+	
 
 
 -- COPY:	

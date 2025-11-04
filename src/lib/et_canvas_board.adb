@@ -1356,6 +1356,18 @@ package body et_canvas_board is
 	end execute_command;
 
 
+
+	
+	procedure reset_grid_and_cursor	is 
+	begin
+		-- CS et_board_coordinates.pac_grid.reset_grid_density (grid);
+		-- CS update_grid_display;
+		
+		move_cursor (snap_to_grid (get_cursor_position));
+		update_cursor_coordinates;
+	end reset_grid_and_cursor;
+
+	
 	
 end et_canvas_board;
 
