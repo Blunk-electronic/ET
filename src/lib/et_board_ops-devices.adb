@@ -1621,10 +1621,15 @@ package body et_board_ops.devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is 
-			original : type_device_non_electrical renames element (device_cursor);
+			-- Take a copy of the original device:
+			new_device : type_device_non_electrical := element (device_cursor);
 		begin
-			null;
-			--delete (module.devices_non_electric, device_cursor);
+			-- Set the position of the new device as
+			-- given by the destination:
+			set_place (new_device, destination);
+
+			-- Insert the new device in the module:
+			module.devices_non_electric.insert (next_name, new_device);
 		end query_module;
 
 		

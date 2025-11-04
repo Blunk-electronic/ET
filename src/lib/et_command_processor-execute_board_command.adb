@@ -3122,7 +3122,7 @@ is
 				et_board_ops.devices.copy_non_electrical_device (
 					module_cursor 	=> active_module,
 					device_name		=> to_device_name (get_field (5)),
-					destination		=> to_vector_model (get_field (6), get_field (6)), -- x/y
+					destination		=> to_vector_model (get_field (6), get_field (7)), -- x/y
 					log_threshold	=> log_threshold + 1);
 
 			when 8 .. type_field_count'last => too_long;
