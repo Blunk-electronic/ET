@@ -53,6 +53,8 @@ with et_devices_electrical.units;
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
 with et_devices_non_electrical;			use et_devices_non_electrical;
 
+with et_package_library;
+
 with et_modes.board;
 with et_undo_redo;
 with et_commit;
@@ -388,12 +390,67 @@ package body et_canvas_board_devices is
 
 
 	procedure rotate_device_add is begin
-		-- CS
-		null;
+		if device_add.valid then
+			add (device_add.rotation, 90.0);
+		end if;
 	end rotate_device_add;
 
 
 	
+
+
+
+	procedure show_package_model_selection is
+	begin
+		null;
+	end show_package_model_selection;
+
+	
+
+
+
+	procedure add_non_electrical_device (
+		position	: in type_vector_model)
+	is 
+		use et_package_library;
+		use pac_package_models;
+		
+		use et_modes.board;
+		use et_commit;
+		use et_undo_redo;
+	begin
+		log (text => "add_device", level => log_threshold);
+		log_indentation_up;
+		
+		-- Commit the current state of the design:
+		commit (PRE, verb, noun, log_threshold);
+		
+		-- add_non_electrical_device (
+		-- 	module_cursor	=> active_module,
+		-- 	package_model	=> key (device_add.packge),
+		-- 	position		=> position,
+		-- 	prefix			=> get_prefix (device_add.device_pre),
+		-- 	log_threshold	=> log_threshold + 1);
+
+		-- Commit the new state of the design:
+		commit (POST, verb, noun, log_threshold);
+
+		status_clear;
+
+		redraw_board;
+
+		-- In case further devices are to be added,
+		-- assign the prospective next device name:
+		-- CS
+		-- device_add.device_pre := get_next_available_non_electrical_device_name (
+		-- 	active_module, get_prefix (device_add.packge));
+		
+		log_indentation_down;
+	end add_non_electrical_device;
+
+
+
+
 	
 
 

@@ -48,7 +48,7 @@ is
 
 begin
 	case verb is
-		when VERB_COPY =>
+		when VERB_ADD | VERB_COPY =>
 			case noun is
 				when NOUN_DEVICE =>
 					if edit_process_running then

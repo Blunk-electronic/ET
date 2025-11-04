@@ -52,14 +52,42 @@ is
 
 	
 	procedure left_button is 
+
+		procedure add_device is 
+			use et_canvas_board_devices;
+		begin
+			-- If the operator is done with the package model
+			-- selection, then the package can be dropped:
+			if device_add.valid then
+				-- When adding packages, we enforce the default grid
+				-- and snap the cursor position to the default grid:
+				reset_grid_and_cursor;
+
+				-- If a device model has been selected, then
+				-- a package will be dropped at the current 
+				-- cursor position. The properties of the new device
+				-- are taken from the preliminary device_add:
+				add_non_electrical_device (snap_point);
+			end if;
+		end add_device;
+
+		
 	begin
 		
 		case verb is				
+			when VERB_ADD =>
+				case noun is
+					when NOUN_DEVICE =>
+						add_device;
+										
+					when others => null;
+				end case;
+
+				
 			when VERB_COPY =>
 				case noun is
 					when NOUN_DEVICE =>
 						et_canvas_board_devices.copy_object (MOUSE, snap_point);
-						
 						
 					when others => null;
 				end case;

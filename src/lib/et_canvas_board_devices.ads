@@ -141,9 +141,30 @@ package et_canvas_board_devices is
 	procedure reset_device_add;
 
 
+	-- Rotates the device_add by 90 degrees counter-clockwise
+	-- if it is valid:	
 	procedure rotate_device_add;
 
 
+	
+
+-- ADD:
+
+
+	-- When the operator wants to add a non-electrical 
+	-- device to the drawing then this procedure should be called first.
+	-- It builds the widgets for the package model selection
+	-- in the properties box so that the operator can
+	-- select the directory and package model:
+	procedure show_package_model_selection;
+
+
+
+	procedure add_non_electrical_device (
+		position	: in type_vector_model);
+	
+	
+	
 -- COPY:
 
 

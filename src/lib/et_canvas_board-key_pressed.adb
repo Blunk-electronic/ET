@@ -77,7 +77,7 @@ is
 				reset_grid_and_cursor;
 				
 				-- open package model selection
-				-- show_device_model_selection; 
+				show_package_model_selection; 
 
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
@@ -94,9 +94,7 @@ is
 							-- a device will be dropped at the current 
 							-- cursor position. The properties of the new device
 							-- are taken from the preliminary device_add:
-
-							-- CS
-							-- add_device (get_cursor_position);
+							add_non_electrical_device (get_cursor_position);
 						end if;
 						
 					when others => null;						
@@ -171,8 +169,6 @@ is
 			when others => status_noun_invalid;
 		end case;
 	end copy;
-
-
 
 	
 
