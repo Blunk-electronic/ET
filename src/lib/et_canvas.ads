@@ -943,6 +943,12 @@ package et_canvas is
 
 
 
+	-- Resets the grid density to default and snaps the cursor
+	-- to the nearest grid point.
+	-- Updates the coordinates display.
+	procedure reset_grid_and_cursor;
+
+	
 	
 	
 -- MOUSE / POINTER POSITION:

@@ -410,16 +410,6 @@ package et_canvas_schematic is
 		module	: in pac_module_name.bounded_string); -- motor_driver
 
 	
-
-
-	-- Resets the grid density to default and snaps the cursor
-	-- to the nearest grid point.
-	-- Updates the coordinates display.
-	procedure reset_grid_and_cursor;
-	
-
-
-	
 end et_canvas_schematic;
 
 -- Soli Deo Gloria
