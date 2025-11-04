@@ -39,7 +39,13 @@
 -- 
 
 with gtk.widget;					use gtk.widget;
+with gtk.menu_item;					use gtk.menu_item;
+with gtk.menu_shell;
 with gtk.gentry;					use gtk.gentry;
+with gtk.file_chooser_button;		use gtk.file_chooser_button;
+with gtk.box;						use gtk.box;
+with gtk.button;					use gtk.button;
+with gtk.combo_box;					use gtk.combo_box;
 
 with et_canvas;
 with et_canvas_tool;				use et_canvas_tool;
@@ -151,6 +157,31 @@ package et_canvas_board_devices is
 -- ADD:
 
 
+	-- This function returns the top most important path
+	-- of the preferred schematic libraries
+	-- for electrical devices:
+	function get_top_most_important_library return string;
+
+
+	-- This procedure is called when the operator
+	-- has selected a library directory from inside 
+	-- the properties box:
+	procedure cb_model_directory_selected (
+		button : access gtk_file_chooser_button_record'class);
+
+	
+
+	-- This procedure is called when the operator
+	-- has selected a package model file from inside
+	-- the properties box.
+	-- Once the operator has selected a model file,
+	-- the combo box for the available package variants
+	-- is updated:
+	procedure cb_package_model_selected (
+		button : access gtk_file_chooser_button_record'class);
+
+
+	
 	-- When the operator wants to add a non-electrical 
 	-- device to the drawing then this procedure should be called first.
 	-- It builds the widgets for the package model selection

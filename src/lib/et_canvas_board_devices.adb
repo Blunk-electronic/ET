@@ -40,10 +40,20 @@
 
 with ada.text_io;					use ada.text_io;
 
+-- with gtkada.file_selection;
+with gtk.file_chooser;
+-- with gtk.file_chooser_dialog;
+with gtk.file_filter;
+with gtk.main;
+with gtk.label;
+
+with et_meta;
+
 with et_generic_module;				use et_generic_module;
 with et_canvas_board;				use et_canvas_board;
 with et_schematic_ops.units;
 with et_schematic_ops.groups;
+with et_board_ops;
 with et_board_ops.devices;			use et_board_ops.devices;
 with et_board_ops.groups;
 
@@ -54,10 +64,13 @@ with et_devices_electrical.packages;	use et_devices_electrical.packages;
 with et_devices_non_electrical;			use et_devices_non_electrical;
 
 with et_package_library;
+with et_package_model_name;
+with et_package_read;
 
 with et_modes.board;
 with et_undo_redo;
 with et_commit;
+with et_directory_and_file_ops;
 with et_object_status;				use et_object_status;
 
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
@@ -398,13 +411,251 @@ package body et_canvas_board_devices is
 
 	
 
+	
 
+
+	function get_top_most_important_library return string is
+		use et_meta;
+		use et_meta.pac_preferred_libraries_board;
+		all_lib_dirs : pac_preferred_libraries_board.list;
+		top_lib_dir : pac_preferred_library_board.bounded_string;
+
+		use et_directory_and_file_ops;
+		use et_board_ops;
+	begin
+		all_lib_dirs := get_preferred_libraries (active_module);
+		top_lib_dir := element (all_lib_dirs.first);
+		
+		return expand (to_string (top_lib_dir));
+	end get_top_most_important_library;
+
+
+	
+
+
+	
+	procedure cb_model_directory_selected (
+		button : access gtk_file_chooser_button_record'class) 
+	is begin
+		log (text => "cb_model_directory_selected", level => log_threshold);
+		
+		log_indentation_up;
+		log (text => "directory: " & button.get_current_folder,
+			 level => log_threshold + 1);
+		
+		log_indentation_down;
+	end cb_model_directory_selected;
+
+
+
+	
+
+
+	procedure cb_package_model_selected (
+		button : access gtk_file_chooser_button_record'class) 
+	is
+		use et_package_model_name;
+		
+		-- The delected package model file (*.pac) is stored here:
+		package_model_file : pac_package_model_file_name.bounded_string;
+
+		use pac_package_models;
+		-- This cursor points to the package model in the library:
+		package_cursor_lib : pac_package_models.cursor;
+
+		
+
+	begin -- cb_package_model_selected
+		log (text => "cb_package_model_selected", level => log_threshold);
+
+		-- Once the operator has started selecing a package model, the
+		-- counter that counts the number of ESC hits until a reset 
+		-- is perfomed, must be reset:
+		reset_escape_counter;
+		
+		log_indentation_up;
+
+		-- Get the name of the device model file from the button:
+		package_model_file := to_package_model_name (button.get_filename);
+		
+		log (text => "selected package model file: " & to_string (package_model_file), 
+			 level => log_threshold + 1);
+		
+		log_indentation_up;
+		
+		-- Read the package model file and store it in the 
+		-- rig wide package library.
+		-- If the packagedevice is already in the library, then nothing happpens:
+		et_package_read.read_package (
+			file_name		=> package_model_file, -- ../lbr/packages/SOT23.pac
+			log_threshold	=> log_threshold + 2);
+		-- CS add error flag output by read_package and evaluate accordingly.
+		-- Wrap follwing actions in a procedure.
+		-- CS use package cursor output by read_package instead 
+		-- the following statement.
+		
+		-- Locate the package in the library:
+		package_cursor_lib := get_package_model (package_model_file);
+
+		-- Assign the cursor to the device_add:
+		device_add.packge := package_cursor_lib;
+
+		-- This is about a new device being added to the module.
+		-- No value has been assigned yet. For this reason we
+		-- assign the default value as defined in the device model.
+		-- If the device is virtual, then an empty value will be assigned:
+		-- CS unit_add.value := get_default_value (package_cursor_lib);
+				
+
+		-- CS
+		-- Assign the prospective device name:
+		-- device_add.device_pre := get_next_available_non_electrical_device_name (
+			-- active_module, get_prefix (package_cursor_lib));
+		
+		log_indentation_down;
+		log_indentation_down;
+
+		status_clear;
+		
+		-- Now the information in device_add is complete.
+		-- By setting the flag "valid" the draw operation of the package
+		-- starts drawing the package as it is sticking at the current tool
+		-- (cursor or mouse):
+		device_add.valid := true;
+
+		focus_canvas;
+	end cb_package_model_selected;
+
+
+	
+
+
+	
+	
 
 	procedure show_package_model_selection is
+		use gtk.box;
+		use gtk.label;
+		use gtk.file_chooser;
+		
+
+		-- The button for the directory:		
+		button_model_directory : gtk_file_chooser_button;
+
+		-- The button for the model file:
+		button_model_file : gtk_file_chooser_button;
+		
+		
+		-- This procedure creates a button by which the operator
+		-- selects the directory where a package model can be taken from:
+		procedure make_button_directory is 
+			box_directory : gtk_vbox;
+			label_directory : gtk_label;
+		begin
+			-- Make a box and insert it in the properties box:
+			gtk_new_vbox (box_directory, homogeneous => false);
+			pack_start (box_v4, box_directory, padding => box_properties_spacing);
+
+			-- Makre a label for the box and insert it in the box_directory:
+			gtk_new (label_directory, "Model Directory");
+			pack_start (box_directory, label_directory, padding => box_properties_spacing);
+
+			-- Create a button by which the operator can select a directory:
+			gtk_new (
+				button		=> button_model_directory,
+				title		=> "Select a Directory",
+				action		=> ACTION_SELECT_FOLDER);
+
+			-- CS: Currently the button_directory shows only the most important
+			-- library path. It would be convenient if the operator would be shown
+			-- all preferred library paths sorted by their rank.
+			if button_model_directory.set_current_folder_uri (get_top_most_important_library) then
+				null; -- Testing the existence of the folder is not required.
+			end if;
+
+			-- Insert the button_model_directory in the box_directory:
+			pack_start (box_directory, button_model_directory, padding => box_properties_spacing);
+
+			-- Connect the "on_file_set" signal with procedure
+			-- cb_model_directory_selected:
+			button_model_directory.on_file_set (cb_model_directory_selected'access);
+			
+			-- NOTE: Key pressed events are handled by the main window.
+		end make_button_directory;
+
+		
+
+		-- This procedure creates a button by which the operator
+		-- selects the model file (*.dev):
+		procedure make_button_model is 
+			box_model : gtk_vbox;
+			label_model : gtk_label;
+			
+			use et_directory_and_file_ops;
+			use et_package_model_name;
+			use gtk.file_filter;
+			file_filter : gtk_file_filter;
+		begin
+			-- Make a box and insert it in the properties box:
+			gtk_new_vbox (box_model, homogeneous => false);
+			pack_start (box_v4, box_model, padding => box_properties_spacing);
+
+			-- Make a label for the box and insert it in the box_model:
+			gtk_new (label_model, "Model File");
+			pack_start (box_model, label_model, padding => box_properties_spacing);
+
+			-- Create a file filter so that only *.dev files are shown
+			-- to the operator:
+			gtk_new (file_filter);
+			add_pattern (file_filter, make_filter_pattern (package_model_file_extension));
+			set_name (file_filter, "Package Models");
+
+			-- Create a button by which the operator can select a model file:
+			gtk_new (
+				button		=> button_model_file,
+				title		=> "Select a Package Model",
+				action		=> ACTION_OPEN);
+
+			-- Add the file filter to the button_model_file:
+			button_model_file.add_filter (file_filter);
+
+			if button_model_file.set_current_folder (button_model_directory.get_current_folder_uri) then
+				null; -- Testing the existence of the package model is not required.
+			end if;
+
+			-- Insert the button_model_file in the box_model:
+			pack_start (box_model, button_model_file, padding => box_properties_spacing);
+
+			-- Connect the "on_file_set" signal with procedure cb_device_model_selected:
+			-- button_model_file.on_file_set (cb_device_model_selected'access);
+
+			-- NOTE: Key pressed events are handled by the main window.
+		end make_button_model;
+
+
+		
 	begin
-		null;
+		log (text => "show_package_model_selection", level => log_threshold);
+		log_indentation_up;
+		
+		-- Before inserting any widgets, the properties box must be cleared:
+		clear_out_properties_box;
+
+		-- Since the device model selection (re)starts here,
+		-- a possible still active preview must be turned off:
+		device_add.valid := false;
+
+		-- Build the elements of the properties bar:
+		make_button_directory;
+		make_button_model;
+
+		-- Show the properties box:
+		box_v4.show_all;
+
+		log_indentation_down;		
 	end show_package_model_selection;
 
+	
 	
 
 
