@@ -379,8 +379,6 @@ package body et_canvas_board_devices is
 
 
 
--- COPY:
-
 
 
 	procedure reset_device_add is begin
@@ -389,7 +387,9 @@ package body et_canvas_board_devices is
 
 
 
-	
+
+
+-- COPY:	
 	
 
 	procedure copy_object (

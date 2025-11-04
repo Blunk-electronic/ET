@@ -142,7 +142,10 @@ package et_canvas_board_devices is
 
 
 	
-		
+
+
+-- COPY:
+
 	
 	procedure copy_object (
 		tool	: in type_tool;
