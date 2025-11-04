@@ -54,6 +54,8 @@ package et_package_model_name is
 	package pac_package_model_file_name is new 
 		generic_bounded_length (package_model_file_name_length_max);
 
+	-- CS rename to pac_package_model_file
+		
 		
 	package_model_file_extension : constant string := "pac";
 

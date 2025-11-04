@@ -62,7 +62,7 @@ package et_device_model_names is
 	function to_string (name : in pac_device_model_file.bounded_string) return string;
 
 	function to_file_name (name : in string) return pac_device_model_file.bounded_string;
-
+	-- CS rename to to_device_model_name
 	
 		
 end et_device_model_names;
