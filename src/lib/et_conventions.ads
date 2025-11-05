@@ -350,29 +350,35 @@ package et_conventions is
 	partcode_keyword_argument_lenght_max : constant positive := 10;
 	package type_partcode_keyword_argument is new generic_bounded_length (partcode_keyword_argument_lenght_max);
 
-	function to_partcode_keyword_argument (argument : in string) return type_partcode_keyword_argument.bounded_string;
+	
 	-- Converts a string to a type_partcode_keyword_argument.
+	function to_partcode_keyword_argument (argument : in string) return type_partcode_keyword_argument.bounded_string;
 
-	function to_string (argument : in type_partcode_keyword_argument.bounded_string) return string;
+	
 	-- Converts a type_partcode_keyword_argument to a string.
+	function to_string (argument : in type_partcode_keyword_argument.bounded_string) return string;
+
 	
-	function to_string (keyword : in type_partcode_keyword.bounded_string) return string;
 	-- Converts a type_partcode_keyword to a string.
+	function to_string (keyword : in type_partcode_keyword.bounded_string) return string;
+
 	
-	procedure check_partcode_keyword_length (keyword : in string);
 	-- Tests if the given partcode keyword is longer than allowed.
+	procedure check_partcode_keyword_length (keyword : in string);
+
 	
-	procedure check_partcode_keyword_characters (
-		keyword		: in type_partcode_keyword.bounded_string;
-		characters	: in character_set := partcode_keyword_characters);
 	-- Tests if the given keyword contains only valid characters as specified
 	-- by given character set.
 	-- Raises exception if invalid character found.
+	procedure check_partcode_keyword_characters (
+		keyword		: in type_partcode_keyword.bounded_string;
+		characters	: in character_set := partcode_keyword_characters);
 
-	procedure validate_partcode_keyword (keyword : in type_partcode_keyword.bounded_string);
+	
 	-- Checks whehter given keyword is specified in 
 	-- in the conventions file section [PART_CODE_KEYWORDS].
 	-- NOTE: Assumes there are keywords specified at all.
+	procedure validate_partcode_keyword (keyword : in type_partcode_keyword.bounded_string);
 
 	
 	-- Converts a string to a type_partcode_keyword.
@@ -386,21 +392,24 @@ package et_conventions is
 
 	partcode_keyword_separator : constant character := '_';
 
+	
+	-- Converts a string to a type_partcode_section:
 	function to_partcode_section (text : in string) return type_partcode_section;
-	-- converts a string to a type_partcode_section.
 
+	
+	-- Converts a type_partcode_section to a string:
 	function to_string (partcode_section : in type_partcode_section) return string;
-	-- converts a type_partcode_section to a string.
 	
 	partcode_keywords : type_partcode_keywords.map;
 
-	function partcode_keywords_specified return boolean;
 	-- Returns true if any part code keywords are specified via conventions file.
+	function partcode_keywords_specified return boolean;
+
 	
-	function to_partcode_keyword (section : in type_partcode_section) return string;
 	-- Returns for the given partcode section the corresponding keyword as specified
 	-- in the conventions file section [PART_CODE_KEYWORDS].
 	-- If no keyword specified (or no conf. file applied) returns an empty string.
+	function to_partcode_keyword (section : in type_partcode_section) return string;
 
 	
 	-- Tests if the given partcode of a device is correct.
@@ -429,16 +438,18 @@ package et_conventions is
 	function to_string (file : in pac_file_name.bounded_string) return string;
 
 	
+	-- Creates a default conventions file:
 	procedure make_default_conventions (
 		file_name		: in pac_file_name.bounded_string;
 		log_threshold	: in type_log_level);
-	-- Creates a default conventions file.
 
+	
+	-- Reads the given conventions file:
 	procedure read_conventions (
 		file_name		: in pac_file_name.bounded_string;
 		log_threshold	: in type_log_level);
-	-- Reads the given conventions file.
-
+	-- CS separate body !
+	
 	
 	-- Tests if the given device value meets certain conventions.
 	-- This test depends on the category of the device. If no prefixes specified
@@ -454,12 +465,14 @@ package et_conventions is
 	-- Raises warning if not and returns false. 
 	-- Returns true if no prefixes specified or if prefix is valid.
 	function prefix_valid (prefix : in pac_device_prefix.bounded_string) return boolean;
+
 	
 	-- Tests if the given device name has a valid prefix as specified in the conventions file.
 	-- Raises warning if not and returns false. 
 	-- Returns true if no prefixes specified or if prefix is valid.
 	function prefix_valid (device_name : in type_device_name) return boolean;
 
+	
 end et_conventions;
 
 -- Soli Deo Gloria
