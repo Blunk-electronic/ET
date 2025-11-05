@@ -46,18 +46,14 @@ with gdk.types;						use gdk.types;
 with gdk.event;						use gdk.event;
 with gdk.types.keysyms;				use gdk.types.keysyms;
 
-with gtkada.file_selection;
-with gtk.file_chooser_dialog;
 with gtk.file_chooser;
 with gtk.file_filter;
-
 with gtk.main;
-with gtk.combo_box_text;			use gtk.combo_box_text;
 with gtk.label;
 with gtk.menu;
 with gtk.cell_renderer_text;		
-with gtk.list_store;				use gtk.list_store;
-with gtk.tree_model;				use gtk.tree_model;
+with gtk.list_store;
+with gtk.tree_model;
 
 with et_sheets;						use et_sheets;
 with et_device_read;
@@ -1199,6 +1195,7 @@ package body et_canvas_schematic_units is
 		combo : access gtk_combo_box_record'class)
 	is 
 		-- Get the model and active iter from the combo box:
+		use gtk.tree_model;
 		model : constant gtk_tree_model := combo.get_model;
 		iter : constant gtk_tree_iter := combo.get_active_iter;
 
@@ -1730,6 +1727,7 @@ package body et_canvas_schematic_units is
 		combo : access gtk_combo_box_record'class) 
 	is
 		-- Get the model and active iter from the combo box:
+		use gtk.tree_model;
 		model : constant gtk_tree_model := combo.get_model;
 		iter : constant gtk_tree_iter := combo.get_active_iter;
 
@@ -1831,7 +1829,8 @@ package body et_canvas_schematic_units is
 		procedure make_combo_box_package_variant is
 			use gtk.label;			
 			use gtk.cell_renderer_text;
-
+			use gtk.list_store;
+			
 			label_variant : gtk_label;
 			store : gtk_list_store;			
 			render	: gtk_cell_renderer_text;
