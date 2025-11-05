@@ -180,7 +180,7 @@ package et_canvas_board_devices is
 	procedure cb_package_model_selected (
 		button : access gtk_file_chooser_button_record'class);
 
-
+	
 	
 	-- When the operator wants to add a non-electrical 
 	-- device to the drawing then this procedure should be called first.

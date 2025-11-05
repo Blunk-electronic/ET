@@ -40,12 +40,12 @@
 
 with ada.text_io;					use ada.text_io;
 
--- with gtkada.file_selection;
 with gtk.file_chooser;
--- with gtk.file_chooser_dialog;
 with gtk.file_filter;
 with gtk.main;
 with gtk.label;
+with gtk.cell_renderer_text;
+with gtk.list_store;
 
 with et_meta;
 
@@ -485,7 +485,7 @@ package body et_canvas_board_devices is
 		
 		-- Read the package model file and store it in the 
 		-- rig wide package library.
-		-- If the packagedevice is already in the library, then nothing happpens:
+		-- If the package is already in the library, then nothing happpens:
 		et_package_read.read_package (
 			file_name		=> package_model_file, -- ../lbr/packages/SOT23.pac
 			log_threshold	=> log_threshold + 2);
@@ -503,7 +503,6 @@ package body et_canvas_board_devices is
 		-- This is about a new device being added to the module.
 		-- No value has been assigned yet. For this reason we
 		-- assign the default value as defined in the device model.
-		-- If the device is virtual, then an empty value will be assigned:
 		-- CS unit_add.value := get_default_value (package_cursor_lib);
 				
 
@@ -626,13 +625,72 @@ package body et_canvas_board_devices is
 			-- Insert the button_model_file in the box_model:
 			pack_start (box_model, button_model_file, padding => box_properties_spacing);
 
-			-- Connect the "on_file_set" signal with procedure cb_device_model_selected:
-			-- button_model_file.on_file_set (cb_device_model_selected'access);
+			-- Connect the "on_file_set" signal with procedure cb_package_model_selected:
+			button_model_file.on_file_set (cb_package_model_selected'access);
 
 			-- NOTE: Key pressed events are handled by the main window.
 		end make_button_model;
 
 
+
+		-- This procedure builds the box_prefix with a
+		-- combo box inside that allows
+		-- the operator to select a package variant for the
+		-- currently selected device model:
+		procedure make_combo_box_prefix is
+			use gtk.label;			
+			use gtk.cell_renderer_text;
+			use gtk.list_store;
+
+			box_prefix : gtk_vbox;
+			label_prefix : gtk_label;
+			store : gtk_list_store;			
+			render	: gtk_cell_renderer_text;
+
+			-- This is the combo box that allows the operator
+			-- to select among a list of prefixes.
+			-- It is filled with allowed prefixes each time the operator selects
+			-- a new package model file:
+			cbox_prefix : gtk_combo_box;
+			
+		begin
+			-- put_line ("make_combo_box_prefix");
+
+			-- Create the box_prefix and insert it in the properties box:
+			gtk_new_vbox (box_prefix, homogeneous => false);
+			pack_start (box_v4, box_prefix, padding => box_properties_spacing);
+
+			-- Create a label for the box and insert it in box_prefix:
+			gtk_new (label_prefix, "prefix");
+			pack_start (box_prefix, label_prefix, padding => box_properties_spacing);
+
+			-- Create the storage model for the content of the combo box:
+			-- CS  make_store_for_prefixes (variants, store);
+			
+			-- Create the combo box:
+			gtk_new_with_model (
+				combo_box	=> cbox_prefix,
+				model		=> +store); -- ?
+
+			-- Insert the combo box in box_variant:
+			pack_start (box_prefix, cbox_prefix, padding => box_properties_spacing);
+
+			-- Connect the "on_changed" signal with procedure
+			-- cb_package_variant_selected:
+			-- CS cbox_prefix.on_changed (cb_package_prefix_selected'access);
+
+			-- The purpose of this stuff is unclear, but it
+			-- is required to make the entries in the combo box visible:
+			gtk_new (render);
+			pack_start (cbox_prefix, render, expand => true);
+			add_attribute (cbox_prefix, render, "markup", 0); -- column 0
+
+			-- Show the box_variant with all its content:
+			box_prefix.show_all;			
+		end make_combo_box_prefix;
+
+
+		
 		
 	begin
 		log (text => "show_package_model_selection", level => log_threshold);
@@ -648,6 +706,7 @@ package body et_canvas_board_devices is
 		-- Build the elements of the properties bar:
 		make_button_directory;
 		make_button_model;
+		make_combo_box_prefix;
 
 		-- Show the properties box:
 		box_v4.show_all;
@@ -660,6 +719,9 @@ package body et_canvas_board_devices is
 
 
 
+
+
+	
 	procedure add_non_electrical_device (
 		position	: in type_vector_model)
 	is 
