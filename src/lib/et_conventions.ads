@@ -201,15 +201,21 @@ package et_conventions is
 
 	function to_category (category : in string) return type_device_category;
 	-- Converts a string to type_device_category.
+
+
+
 	
 	-- Device prefixes and their category are stored in a map:
-	package type_component_prefixes is new ordered_maps (
+	package pac_device_prefixes is new ordered_maps (
 		key_type 		=> pac_device_prefix.bounded_string, -- IC
 		element_type 	=> type_device_category, -- INTEGRATED_CIRCUIT
 		"<" 			=> pac_device_prefix."<");
 
 	-- After reading the conventions, we store the device prefixes for the design here:
-	component_prefixes : type_component_prefixes.map;
+	component_prefixes : pac_device_prefixes.map;
+
+
+	
 
 	function component_prefixes_specified return boolean;
 	-- Returns true if any component prefixes are specified via conventions file.

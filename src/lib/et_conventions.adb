@@ -800,7 +800,7 @@ package body et_conventions is
 	
 	function component_prefixes_specified return boolean is
 	-- Returns true if any component prefixes are specified via conventions file.
-		use type_component_prefixes;
+		use pac_device_prefixes;
 	begin
 		if is_empty (component_prefixes) then -- no prefixes specified
 			return false;
@@ -815,16 +815,16 @@ package body et_conventions is
 		prefix : in pac_device_prefix.bounded_string) 
 		return type_device_category 
 	is
-		use type_component_prefixes;
+		use pac_device_prefixes;
 
-		prefix_cursor : type_component_prefixes.cursor;
+		prefix_cursor : pac_device_prefixes.cursor;
 	begin
 		-- locate prefix as specified by conventions file
 		prefix_cursor := component_prefixes.find (prefix);
 
 		-- If prefix not specified (or no conventions at all) return category UNKNOWN.
 		-- Otherwise return the respecitve category.
-		if prefix_cursor = type_component_prefixes.no_element then
+		if prefix_cursor = pac_device_prefixes.no_element then
 			log (WARNING, "category of prefix " 
 				 & to_string (prefix)
 				 & latin_1.space
@@ -842,16 +842,16 @@ package body et_conventions is
 	-- Returns the category of the given component reference. If no category could be
 	-- found, returns category UNKNOWN.
 		use pac_device_prefix;
-		use type_component_prefixes;
+		use pac_device_prefixes;
 
-		prefix_cursor : type_component_prefixes.cursor;
+		prefix_cursor : pac_device_prefixes.cursor;
 	begin
 		-- locate prefix as specified by conventions file
 		prefix_cursor := component_prefixes.find (reference.prefix);
 
 		-- If prefix not specified (or no conventions at all) return category UNKNOWN.
 		-- Otherwise return the respecitve category.
-		if prefix_cursor = type_component_prefixes.no_element then
+		if prefix_cursor = pac_device_prefixes.no_element then
 			log (WARNING, " category of device " 
 				 & to_string (reference)
 				 & latin_1.space & to_string (UNKNOWN) & " !");
@@ -2724,7 +2724,7 @@ package body et_conventions is
 		-- Clears "lines" after processing.
 		procedure process_previous_section is
 			line_cursor : type_lines.cursor := lines.first; -- points to the line being processed
-			component_prefix_cursor : type_component_prefixes.cursor; -- CS: rename to prefix_cursor
+			component_prefix_cursor : pac_device_prefixes.cursor; -- CS: rename to prefix_cursor
 			unit_cursor : type_units_of_measurement.cursor;
 			inserted : boolean := false;
 
@@ -2787,7 +2787,7 @@ package body et_conventions is
 						cat := to_category (get_field (element (line_cursor), 2));
 						
 						-- insert the prefix assignment in container component_prefixes
-						type_component_prefixes.insert (
+						pac_device_prefixes.insert (
 							container	=> et_conventions.component_prefixes,
 							position	=> component_prefix_cursor,
 							key 		=> prefix,
@@ -2801,7 +2801,7 @@ package body et_conventions is
 					end loop;
 
 					-- Notify operator if no prefixes specified:
-					if type_component_prefixes.is_empty (et_conventions.component_prefixes) then
+					if pac_device_prefixes.is_empty (et_conventions.component_prefixes) then
 						log (WARNING, "no device prefixes specified !" & reduced_check_coverage);
 					end if;
 					
@@ -2989,7 +2989,7 @@ package body et_conventions is
 
 		if exists (to_string (file_name)) then
 
-			et_conventions.component_prefixes := type_component_prefixes.empty_map;
+			et_conventions.component_prefixes := pac_device_prefixes.empty_map;
 
 			open (file => conventions_file_handle, mode => in_file, name => to_string (file_name));
 			set_input (conventions_file_handle);
@@ -3296,7 +3296,7 @@ package body et_conventions is
 	
 	function prefix_valid (prefix : in pac_device_prefix.bounded_string) return boolean is
 		use pac_device_prefix;
-		use type_component_prefixes;
+		use pac_device_prefixes;
 		result : boolean := true;
 	begin
 		-- The given prefix could be a predefined prefix of a
@@ -3307,7 +3307,7 @@ package body et_conventions is
 		
 		-- If there are prefixes specified, test if the given prefix is among them:
 		if component_prefixes_specified then
-			if component_prefixes.find (prefix) = type_component_prefixes.no_element then
+			if component_prefixes.find (prefix) = pac_device_prefixes.no_element then
 				log (WARNING, "invalid prefix " & to_string (prefix => prefix) & " !");
 				result := false;
 			end if;
@@ -3320,12 +3320,12 @@ package body et_conventions is
 	
 	function prefix_valid (device_name : in type_device_name) return boolean is
 		use pac_device_prefix;
-		use type_component_prefixes;
+		use pac_device_prefixes;
 		result : boolean := true;
 	begin
 		-- if there are prefixes specified, test if the given particular prefix is among them
 		if component_prefixes_specified then
-			if component_prefixes.find (device_name.prefix) = type_component_prefixes.no_element then
+			if component_prefixes.find (device_name.prefix) = pac_device_prefixes.no_element then
 				log (WARNING, "invalid prefix in device name "
 					 & to_string (device_name) & " !");
 				result := false;
