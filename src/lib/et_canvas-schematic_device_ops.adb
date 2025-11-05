@@ -44,10 +44,52 @@ with gtk.text_view;					use gtk.text_view;
 with gtk.text_buffer;				use gtk.text_buffer;
 
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
-
+with et_device_prefix;
 
 
 package body et_canvas.schematic_device_ops is
+
+
+
+	procedure make_store_for_prefixes (
+		prefixes	: in pac_device_prefixes.map;
+		store 		: in out gtk_list_store)
+	is
+		column_0 : constant := 0; -- for the prefix name
+		column_1 : constant := 1; -- for the prefix index
+
+		entry_structure : glib.gtype_array := (
+				column_0 => glib.gtype_string,
+				column_1 => glib.gtype_string);
+
+		use gtk.tree_model;
+		iter : gtk_tree_iter;			
+		index : natural := 0;
+
+		-- Writes the prefix and index in the storage model:
+		procedure query_prefix (c : in pac_device_prefixes.cursor) is 
+			use pac_device_prefixes;
+			use et_device_prefix;
+		begin
+			store.append (iter);
+			set (store, iter, column_0, to_string (key (c)));
+			set (store, iter, column_1, natural'image (index));
+			index := index + 1;
+		end query_prefix;
+
+	begin
+		-- Create the storage model:
+		gtk_new (list_store => store, types => (entry_structure));
+
+		-- Insert the available prefixes in the storage model:
+		prefixes.iterate (query_prefix'access);	
+
+	end make_store_for_prefixes;
+
+
+	
+
+
 
 
 	
@@ -260,7 +302,7 @@ package body et_canvas.schematic_device_ops is
 		iter : gtk_tree_iter;			
 		index : natural := 0;
 
-		-- Enters the name and index in the storage model:
+		-- Writes the name and index in the storage model:
 		procedure query_variant (c : in pac_package_variants.cursor) is 
 			use pac_package_variants;
 			use pac_package_variant_name;

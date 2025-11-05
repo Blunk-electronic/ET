@@ -39,9 +39,11 @@
 
 with gtk.list_store;				use gtk.list_store;
 
+with et_conventions;				use et_conventions;
 with et_package_variant;			use et_package_variant;
 with et_devices_electrical;			use et_devices_electrical;
 with et_device_name;				use et_device_name;
+
 
 generic
 
@@ -50,7 +52,18 @@ package et_canvas.schematic_device_ops is
 -- CS rename to device_ops
 
 
+	-- This procedure iterates through the given list of
+	-- device prefixes and adds them one by one
+	-- to a so called "store". The store is required
+	-- to fill a combo box for device prefixes with content:
+	procedure make_store_for_prefixes (
+		prefixes	: in pac_device_prefixes.map;
+		store 		: in out gtk_list_store);
 
+
+
+
+	
 
 -- RENAME WINDOW:
 

@@ -48,7 +48,18 @@ is
 
 begin
 	case verb is
-		when VERB_ADD | VERB_COPY =>
+		when VERB_ADD =>
+			case noun is
+				when NOUN_DEVICE =>
+					if et_canvas_board_devices.device_add.valid then
+						redraw_board;
+					end if;
+
+				when others => null;
+			end case;
+
+
+		when VERB_COPY =>
 			case noun is
 				when NOUN_DEVICE =>
 					if edit_process_running then

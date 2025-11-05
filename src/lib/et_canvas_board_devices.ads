@@ -180,6 +180,13 @@ package et_canvas_board_devices is
 	procedure cb_package_model_selected (
 		button : access gtk_file_chooser_button_record'class);
 
+
+
+	-- This procedure is called when the operator
+	-- has selected a prefix for the new device:
+	procedure cb_package_prefix_selected (
+		combo : access gtk_combo_box_record'class);
+
 	
 	
 	-- When the operator wants to add a non-electrical 

@@ -40,15 +40,20 @@
 
 with ada.text_io;					use ada.text_io;
 
+with glib;
+with glib.values;
+
 with gtk.file_chooser;
 with gtk.file_filter;
 with gtk.main;
 with gtk.label;
 with gtk.cell_renderer_text;
 with gtk.list_store;
+with gtk.tree_model;
 
 with et_meta;
 
+with et_conventions;
 with et_generic_module;				use et_generic_module;
 with et_canvas_board;				use et_canvas_board;
 with et_schematic_ops.units;
@@ -57,6 +62,7 @@ with et_board_ops;
 with et_board_ops.devices;			use et_board_ops.devices;
 with et_board_ops.groups;
 
+with et_device_prefix;
 with et_device_property_level;
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_electrical.units;
@@ -458,11 +464,10 @@ package body et_canvas_board_devices is
 		
 		-- The delected package model file (*.pac) is stored here:
 		package_model_file : pac_package_model_file_name.bounded_string;
-
-		use pac_package_models;
+		
 		-- This cursor points to the package model in the library:
+		use pac_package_models;
 		package_cursor_lib : pac_package_models.cursor;
-
 		
 
 	begin -- cb_package_model_selected
@@ -505,17 +510,51 @@ package body et_canvas_board_devices is
 		-- assign the default value as defined in the device model.
 		-- CS unit_add.value := get_default_value (package_cursor_lib);
 				
-
-		-- CS
-		-- Assign the prospective device name:
-		-- device_add.device_pre := get_next_available_non_electrical_device_name (
-			-- active_module, get_prefix (package_cursor_lib));
-		
 		log_indentation_down;
 		log_indentation_down;
 
 		status_clear;
+	end cb_package_model_selected;
+
+
+	
+
+
+
+	procedure cb_package_prefix_selected (
+		combo : access gtk_combo_box_record'class) 
+	is
+		-- Get the model and active iter from the combo box:
+		use gtk.tree_model;
+		model : constant gtk_tree_model := combo.get_model;
+		iter : constant gtk_tree_iter := combo.get_active_iter;
+
+		use glib.values;
+		name : gvalue;
+
+		use et_device_prefix;
+		prefix : pac_device_prefix.bounded_string; -- FD1
+	begin
+		log (text => "cb_package_prefix_selected", level => log_threshold);
+		log_indentation_up;
 		
+		-- Get the prefix of the entry column 0:
+		gtk.tree_model.get_value (model, iter, 0, name);
+
+		prefix := to_prefix (glib.values.get_string (name));
+		
+		log (text => "selected prefix: " & to_string (prefix),
+			 level => log_threshold + 1);
+		
+		-- Assign the prospective device name:
+		device_add.device_pre := get_next_available_non_electrical_device_name (
+			active_module, prefix);
+		
+		-- Once the operator has started selecting a package variant, the
+		-- counter that counts the number of ESC hits until a reset 
+		-- is perfomed, must be reset:
+		reset_escape_counter;
+
 		-- Now the information in device_add is complete.
 		-- By setting the flag "valid" the draw operation of the package
 		-- starts drawing the package as it is sticking at the current tool
@@ -523,12 +562,13 @@ package body et_canvas_board_devices is
 		device_add.valid := true;
 
 		focus_canvas;
-	end cb_package_model_selected;
+		
+		log_indentation_down;
+	end cb_package_prefix_selected;
+
 
 
 	
-
-
 	
 	
 
@@ -665,7 +705,7 @@ package body et_canvas_board_devices is
 			pack_start (box_prefix, label_prefix, padding => box_properties_spacing);
 
 			-- Create the storage model for the content of the combo box:
-			-- CS  make_store_for_prefixes (variants, store);
+			make_store_for_prefixes (et_conventions.device_prefixes, store);
 			
 			-- Create the combo box:
 			gtk_new_with_model (
@@ -676,8 +716,8 @@ package body et_canvas_board_devices is
 			pack_start (box_prefix, cbox_prefix, padding => box_properties_spacing);
 
 			-- Connect the "on_changed" signal with procedure
-			-- cb_package_variant_selected:
-			-- CS cbox_prefix.on_changed (cb_package_prefix_selected'access);
+			-- cb_package_prefix_selected:
+			cbox_prefix.on_changed (cb_package_prefix_selected'access);
 
 			-- The purpose of this stuff is unclear, but it
 			-- is required to make the entries in the combo box visible:
