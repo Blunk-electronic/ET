@@ -58,6 +58,7 @@ with et_device_category;		use et_device_category;
 with et_device_value;			use et_device_value;
 with et_device_prefix;			use et_device_prefix;
 with et_device_name;			use et_device_name;
+with et_units_of_measurement;	use et_units_of_measurement;
 
 
 package et_conventions is
@@ -143,11 +144,15 @@ package et_conventions is
 -- 	-- Tests if module interconnections at net level make sense.
 -- 	-- NOTE: call AFTER modules have been imported !
 
+
+	
 	subtype type_net_label_text_size is et_schematic_geometry.type_distance_model range 1.0 .. 5.0; -- unit is mm
 	net_label_text_size_default : constant type_net_label_text_size := 1.3;
+
+
 	
-	function to_net_label_text_size (text : in string) return type_net_label_text_size;
 	-- Converts a string to type_net_label_text_size.
+	function to_net_label_text_size (text : in string) return type_net_label_text_size;
 
 	
 
@@ -166,19 +171,25 @@ package et_conventions is
 
 	
 
-	function component_prefixes_specified return boolean;
 	-- Returns true if any component prefixes are specified via conventions file.
+	function component_prefixes_specified return boolean;
+
+
 	
-	function category (prefix : in pac_device_prefix.bounded_string) return
-		type_device_category;
 	-- Returns the category of the given device prefix. If no category could be
 	-- found, returns category UNKNOWN.
-	
-	function category (reference : in type_device_name) return
+	function category (prefix : in pac_device_prefix.bounded_string) return
 		type_device_category;
+
+		
 	-- Returns the category of the given component reference. If no category could be
 	-- found, returns category UNKNOWN.
+	function category (reference : in type_device_name) return
+		type_device_category;
 
+
+
+		
 -- 	function ports_in_net (
 -- 		module 			: in et_schematic_coordinates.type_submodule_name.bounded_string;	-- led_matrix_2
 -- 		net				: in et_schematic.pac_net_name.bounded_string;			-- motor_on_off
@@ -240,69 +251,26 @@ package et_conventions is
 -- 	-- Requires that procedure make_routing_tables has been executed before.
 -- 	-- CS: Export routing tables for projects separately.
 
-	
-	type type_unit_of_measurement is (
-		MILLIOHM,
-		OHM,
-		KILOOHM,
-		MEGAOHM,
-		GIGAOHM,
 
-		PICOFARAD,
-		NANOFARAD,
-		MICROFARAD,
-		MILLIFARAD,
-		FARAD,
 		
-		NANOHENRY,
-		MICROHENRY,		
-		MILLIHENRY,	
-		HENRY,
-
-		VOLT,
-
-		MILLIAMPERE,
-		AMPERE,
-
-		KILOHERTZ,
-		MEGAHERTZ,
-		GIGAHERTZ
-		);
-
-	function to_unit_of_measurement (unit : in string) return type_unit_of_measurement;
-	-- Converts a string to type_unit_of_measurement.
-	
-	function to_string (unit : in type_unit_of_measurement) return string;
-	-- returns the given unit of measurement as string. (things like OHM, KILOOHM, MEGAOHM, ...)
-
-	-- The abbrevations of units of measurement are limited to two characters.
-	-- So the user could define units like uF or mH. More than two characters are not common.
-	-- However, the recommendation is to use just one character like u, m, k, M. Reason: how to express
-	-- something like 3.3Ohms since the Ohm character is a special character ?
-	-- By the category of the component we can reason that it is about Ohms, Henry or Farad.
-	unit_abbrevation_characters : character_set := to_set (ranges => (('A','Z'),('a','z')));
-	unit_abbrevation_length_max : constant positive := 2;
-	package type_unit_abbrevation is new generic_bounded_length (unit_abbrevation_length_max);
-
-	procedure check_abbrevation_of_unit_characters (
-		abbrevation : in type_unit_abbrevation.bounded_string;
-		characters : in character_set);
-	-- Tests if the given abbrevation contains only valid characters as specified
-	-- by given character set. Raises exception if invalid character found.
-	
 	-- Units of measurement and their abbrevation are stored in a map:
-	package type_units_of_measurement is new ordered_maps (
-		key_type => type_unit_of_measurement, -- OHMS, KILOOHM, MEGAOHM, ...
-		element_type => type_unit_abbrevation.bounded_string, -- R, m, k, ...
-		"=" => type_unit_abbrevation."=");
+	package pac_units_of_measurement is new ordered_maps (
+		key_type 		=> type_unit_of_measurement, -- OHMS, KILOOHM, MEGAOHM, ...
+		element_type	=> pac_unit_abbrevation.bounded_string, -- R, m, k, ...
+		"=" 			=> pac_unit_abbrevation."=");
 
-	-- After reading the conventions, we store the units of measurement for the design here:
-	component_units : type_units_of_measurement.map;
+	-- After reading the conventions, we store the units of 
+	-- measurement for the design here:
+	component_units : pac_units_of_measurement.map;
 
-	function to_abbrevation (unit : in type_unit_of_measurement) 
+
+	
 	-- Translates from given unit_of_measurement (like OHM or VOLT) to the
 	-- actual abbrevation like R or V.
-		return type_unit_abbrevation.bounded_string;
+	function to_abbrevation (unit : in type_unit_of_measurement) 
+		return pac_unit_abbrevation.bounded_string;
+
+	
 	
 	-- Component categories that requires operator interaction are stored in a set.
 	package type_categories_with_operator_interacton is new ordered_sets (
@@ -310,6 +278,8 @@ package et_conventions is
 	-- After reading the conventions, we store them here:
 	component_categories_with_operator_interaction : type_categories_with_operator_interacton.set;
 
+
+	
 	type type_component_requires_operator_interaction is (YES, NO);
 	
 	function requires_operator_interaction (

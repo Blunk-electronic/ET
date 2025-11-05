@@ -1803,76 +1803,15 @@ package body et_conventions is
 
 
 	
-	function to_unit_of_measurement (unit : in string) return type_unit_of_measurement is
-	-- Converts a string to type_component_unit_meaning.
-		use et_string_processing;
-		unit_out : type_unit_of_measurement;
-	begin
-		unit_out := type_unit_of_measurement'value (unit);
-		return unit_out;
-
-		exception
-			when others =>
-				log (ERROR, unit & " is not a supported unit of measurement !",
-					 console => true);
-
-				log (text => "supported units are:");
-				for uom in type_unit_of_measurement'pos (type_unit_of_measurement'first) .. 
-					type_unit_of_measurement'pos (type_unit_of_measurement'last) loop
-					log (text => "- " & to_string (type_unit_of_measurement'val (uom)));
-				end loop;
-						
-				raise constraint_error;
-	end to_unit_of_measurement;
-
-
-
-
-	
-	function to_string (unit : in type_unit_of_measurement) return string is
-	-- returns the given unit of measurement as string. (things like OHM, KILOOHM, MEGAOHM, ...)
-	begin
-		return type_unit_of_measurement'image (unit);
-	end to_string;
-
-
-
-
-	
-	procedure check_abbrevation_of_unit_characters (
-		abbrevation : in type_unit_abbrevation.bounded_string;
-		characters : in character_set) is
-	-- Tests if the given abbrevation contains only valid characters as specified
-	-- by given character set. Raises exception if invalid character found.
-		use et_string_processing;
-		use type_unit_abbrevation;
-		invalid_character_position : natural := 0;
-	begin
-		invalid_character_position := index (
-			source => abbrevation,
-			set => characters,
-			test => outside);
-
-		if invalid_character_position > 0 then
-			log (ERROR, "abbrevaton of unit of measurement " 
-				& to_string (abbrevation) 
-				& " has invalid character at position"
-				& natural'image (invalid_character_position),
-				console => true);
-			raise constraint_error;
-		end if;
-	end check_abbrevation_of_unit_characters;
-
 
 
 	
 	function to_abbrevation (unit : in type_unit_of_measurement) 
-	-- Translates from given unit_of_measurement (like OHM or VOLT) to the
-	-- actual abbrevation like R or V.
-		return type_unit_abbrevation.bounded_string is
-		use type_units_of_measurement;
+		return pac_unit_abbrevation.bounded_string 
+	is
+		use pac_units_of_measurement;
 	begin
-		return element (type_units_of_measurement.find (component_units, unit));
+		return element (pac_units_of_measurement.find (component_units, unit));
 	end;
 
 
@@ -2697,7 +2636,7 @@ package body et_conventions is
 		procedure process_previous_section is
 			line_cursor : type_lines.cursor := lines.first; -- points to the line being processed
 			component_prefix_cursor : pac_device_prefixes.cursor; -- CS: rename to prefix_cursor
-			unit_cursor : type_units_of_measurement.cursor;
+			unit_cursor : pac_units_of_measurement.cursor;
 			inserted : boolean := false;
 
 			-- we deal with columns and need to index them
@@ -2724,7 +2663,7 @@ package body et_conventions is
 			prefix 		: pac_device_prefix.bounded_string;
 			cat 		: type_device_category;
 			
-			abbrevation	: type_unit_abbrevation.bounded_string;
+			abbrevation	: pac_unit_abbrevation.bounded_string;
 			unit		: type_unit_of_measurement;
 
 			text		: type_text_schematic;
@@ -2790,14 +2729,14 @@ package body et_conventions is
 						-- Build the unit abbrevation from field #1:
 						-- Test if abbrevation contains only allowed characters.
 						-- We test against the character set specified for abbrevations of units of measurement.
-						abbrevation := type_unit_abbrevation.to_bounded_string (get_field (element (line_cursor), 1));
+						abbrevation := pac_unit_abbrevation.to_bounded_string (get_field (element (line_cursor), 1));
 						check_abbrevation_of_unit_characters (abbrevation, unit_abbrevation_characters);
 
 						-- Build the unit of measurement from field #2:
 						unit := to_unit_of_measurement (get_field (element (line_cursor), 2));
 						
 						-- insert the abbrevation to unit of measurement assignment in container component_units
-						type_units_of_measurement.insert (
+						pac_units_of_measurement.insert (
 							container	=> et_conventions.component_units,
 							position	=> unit_cursor,
 
@@ -2816,7 +2755,7 @@ package body et_conventions is
 					end loop;
 
 					-- Notify operator if no units of measurement specified:
-					if type_units_of_measurement.is_empty (et_conventions.component_units) then
+					if pac_units_of_measurement.is_empty (et_conventions.component_units) then
 						log (WARNING, "no units of measurement specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
@@ -3085,8 +3024,8 @@ package body et_conventions is
 			-- goes true once a valid abbrevation of a unit of measurement is found
 			unit_ok 	: boolean := false; 
 		
-			use type_unit_abbrevation;
-			use type_units_of_measurement;
+			use pac_unit_abbrevation;
+			use pac_units_of_measurement;
 
 			
 			-- Sets unit_ok flag true if the given abbrevation starts at position "place".
@@ -3096,7 +3035,7 @@ package body et_conventions is
 				return boolean 
 			is
 				use pac_device_value;
-				abbrevation : type_unit_abbrevation.bounded_string := to_abbrevation (unit);
+				abbrevation : pac_unit_abbrevation.bounded_string := to_abbrevation (unit);
 			begin
 				if index (value, to_string (abbrevation), place) = place then
 					-- abbrevation valid. advance place to end of abbrevation.

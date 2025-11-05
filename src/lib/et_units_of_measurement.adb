@@ -1,0 +1,121 @@
+------------------------------------------------------------------------------
+--                                                                          --
+--                             SYSTEM ET                                    --
+--                                                                          --
+--                        UNITS OF MEASUREMENT                              --
+--                                                                          --
+--                              B o d y                                     --
+--                                                                          --
+-- Copyright (C) 2017 - 2025                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
+--                                                                          --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
+--                                                                          --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
+------------------------------------------------------------------------------
+
+--   For correct displaying set tab width in your edtior to 4.
+
+--   The two letters "CS" indicate a "construction site" where things are not
+--   finished yet or intended for the future.
+
+--   Please send your questions and comments to:
+--
+--   info@blunk-electronic.de
+--   or visit <http://www.blunk-electronic.de> for more contact data
+--
+--   history of changes:
+--
+
+with ada.strings; 				use ada.strings;
+
+
+with et_string_processing;		use et_string_processing;
+
+
+
+
+package body et_units_of_measurement is
+
+	
+
+	function to_unit_of_measurement (
+		unit : in string) 
+		return type_unit_of_measurement 
+	is
+		unit_out : type_unit_of_measurement;
+	begin
+		unit_out := type_unit_of_measurement'value (unit);
+		return unit_out;
+
+		exception
+			when others =>
+				log (ERROR, unit & " is not a supported unit of measurement !",
+					 console => true);
+
+				log (text => "supported units are:");
+				for uom in type_unit_of_measurement'pos (type_unit_of_measurement'first) .. 
+					type_unit_of_measurement'pos (type_unit_of_measurement'last) loop
+					log (text => "- " & to_string (type_unit_of_measurement'val (uom)));
+				end loop;
+						
+				raise constraint_error;
+	end to_unit_of_measurement;
+
+
+
+
+	
+	function to_string (
+		unit : in type_unit_of_measurement) 
+		return string 
+	is begin
+		return type_unit_of_measurement'image (unit);
+	end to_string;
+
+
+
+
+	
+	procedure check_abbrevation_of_unit_characters (
+		abbrevation	: in pac_unit_abbrevation.bounded_string;
+		characters	: in character_set) 
+	is
+		invalid_character_position : natural := 0;
+	begin
+		invalid_character_position := index (
+			source => abbrevation,
+			set => characters,
+			test => outside);
+
+		if invalid_character_position > 0 then
+			log (ERROR, "abbrevaton of unit of measurement " 
+				& to_string (abbrevation) 
+				& " has invalid character at position"
+				& natural'image (invalid_character_position),
+				console => true);
+			raise constraint_error;
+		end if;
+	end check_abbrevation_of_unit_characters;
+
+
+
+	
+		
+end et_units_of_measurement;
+
+-- Soli Deo Gloria
+
+-- For God so loved the world that he gave 
+-- his one and only Son, that whoever believes in him 
+-- shall not perish but have eternal life.
+-- The Bible, John 3.16
