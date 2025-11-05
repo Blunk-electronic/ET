@@ -767,34 +767,6 @@ package body et_conventions is
 -- 		log_indentation_down;
 -- 	end validate_module_interconnections;
 	
-	function to_string (cat : in type_device_category) return string is
-	-- returns the given component category as string
-	begin
-		return " " & type_device_category'image (cat);
-	end to_string;
-
-	function to_category (category : in string) return type_device_category is
-	-- Converts a string to type_device_category.
-		use et_string_processing;
-		category_out : type_device_category;
-	begin
-		category_out := type_device_category'value (category);
-		return category_out;
-
-		exception
-			when others =>
-				log (ERROR, category & " is not a supported device category !",
-					 console => true);
-
-				log (text => "supported categories are:");
-				for cat in type_device_category'pos (type_device_category'first) .. 
-					type_device_category'pos (type_device_category'last) loop
-
-					log (text => "- " & to_string (type_device_category'val (cat)));
-				end loop;
-				
-				raise constraint_error;
-	end to_category;
 
 
 	

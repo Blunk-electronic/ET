@@ -49,6 +49,7 @@ with ada.environment_variables;
 with et_generic_stacks;
 with et_axes;					use et_axes;
 with et_sheets;					use et_sheets;
+with et_device_category;
 with et_conventions;
 with et_kicad.pcb;				use et_kicad.pcb;
 with et_alignment;				use et_alignment;
@@ -6450,6 +6451,7 @@ package body et_kicad.schematic is
 				-- CS ? power_in_count	: natural := 0; -- CS: test if power_in name matches net name ?
 
 				-- for counting ports by component category
+				use et_device_category;
 				use et_conventions;
 				connector_count	: natural := 0;
 				testpoint_count	: natural := 0;

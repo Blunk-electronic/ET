@@ -54,6 +54,7 @@ with et_device_partcode;		use et_device_partcode;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_package_name;			use et_package_name;
+with et_device_category;		use et_device_category;
 with et_device_value;			use et_device_value;
 with et_device_prefix;			use et_device_prefix;
 with et_device_name;			use et_device_name;
@@ -133,53 +134,6 @@ package et_conventions is
 -- 
 -- 	module_interconnections : type_module_interconnections.list;
 
-	type type_device_category is (
-		ANTENNA,
-		BATTERY,
-		BUZZER,
--- 		CABLE,
-		CAPACITOR,
-		CAPACITOR_ADJUSTABLE,	-- adjustable capacitor (also known as trimmer)
-		CONNECTOR,				-- component where another component of opposide gender is plugged
-		DIAC,
-		DIODE,
-		DIODE_PHOTO,			-- light sensitive diode
-		DISPLAY,				-- display, LCD, LED, VFD, ...
-		FIDUCIAL,				-- non-electric device
-		FUSE,
-		HEATSINK,				-- a bulk of metal that absorbs and dissipates excessive heat
-		INDUCTOR,
-		INDUCTOR_ADJUSTABLE,
-		INTEGRATED_CIRCUIT,
-		JUMPER,					-- a component that allows tieing nets via a removable bridge
-		KEYPAD,					-- array of push buttons, keys, switches, ...
-		LIGHT_EMMITTING_DIODE,	-- an LED, LASER-diode, IRED-LED, ...
-		LIGHT_EMMITTING_DIODE_ARRAY,
-		LOUDSPEAKER,
-		MICROPHONE,
-		NETCHANGER,				-- ties two nets together
-		MOTOR,
-		MOUNTING_HOLE,			-- non-electric device
-		OPTOCOUPLER,
-		QUARTZ,					-- quartz crystal resonators
-		POTENTIOMETER,			-- variable resistor
-		RELAY,
-		RESISTOR,				-- varistors, trimmers, potentiometers, photoresistors
-		RESISTOR_ADJUSTABLE,	-- adjustable resistor
-		RESISTOR_NETWORK,		-- a collection of resistors in a single housing
-		RESISTOR_PHOTO,			-- light sensitive resistor
-		SWITCH,					-- push buttons, breakers, makers, rotary encoders, ...
-		TESTPOINT,				-- a point where measurements can be taken
-		THYRISTOR,
-		THYRISTOR_PHOTO,		-- light sensitive thyristor
-		TRANSFORMER,
-		TRANSISTOR,				-- NPN, PNP, NFET, MOSFET, ...
-		TRANSISTOR_PHOTO,		-- light sensitive transistor
-		TRIAC,
-		TUBE,					-- triodes, pentodes, thyratrons, klystrons, ...
-		UNKNOWN					-- not specified
--- 		WIRE
-		);
 
 -- 	procedure validate_module_interconnection (connection : in type_module_interconnection);
 -- 	-- checks if something like "NCC 1 MOTOR_CTRL_OUT_2 MOT 2 MOTOR_CTRL_IN" makes sense
@@ -196,11 +150,6 @@ package et_conventions is
 	-- Converts a string to type_net_label_text_size.
 
 	
-	function to_string (cat : in type_device_category) return string;
-	-- returns the given component category as string
-
-	function to_category (category : in string) return type_device_category;
-	-- Converts a string to type_device_category.
 
 
 

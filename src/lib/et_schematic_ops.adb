@@ -39,10 +39,11 @@
 with et_symbol_model;
 with et_units;							use et_units;
 with et_unit_name;						use et_unit_name;
+with et_device_category;
 with et_devices_non_electrical;
 with et_device_appearance;
-with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
-with et_net_strands;				use et_net_strands;
+with et_board_ops.ratsnest;				use et_board_ops.ratsnest;
+with et_net_strands;					use et_net_strands;
 
 
 package body et_schematic_ops is
@@ -875,6 +876,7 @@ package body et_schematic_ops is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
+		use et_device_category;
 		use et_conventions;
 		use et_numbering;
 		use pac_unit_name;
@@ -890,7 +892,7 @@ package body et_schematic_ops is
 		-- Marks every renamed unit in the device list so that the second
 		-- run of this function does not try to renumber them again.
 		function renumber (
-			cat : in et_conventions.type_device_category) 
+			cat : in type_device_category) 
 			return boolean 
 		is
 			result : boolean := true;
@@ -1039,25 +1041,25 @@ package body et_schematic_ops is
 		-- Renumber for each device category. If the first run fails, start another
 		-- iteration. If that fails too, issue error and abort.
 		-- Devices of unknown category are exampted from renumbering.
-		for cat in et_conventions.type_device_category'pos (et_conventions.type_device_category'first) .. 
-			et_conventions.type_device_category'pos (et_conventions.type_device_category'last) loop
+		for cat in type_device_category'pos (type_device_category'first) .. 
+			type_device_category'pos (type_device_category'last) loop
 
-			case et_conventions.type_device_category'val (cat) is
+			case type_device_category'val (cat) is
 				when UNKNOWN => null;
 				
 				when others =>
 
-					log (text => "category" & to_string (et_conventions.type_device_category'val (cat)),
+					log (text => "category" & to_string (type_device_category'val (cat)),
 						 level => log_threshold + 1);
 
 					log_indentation_up;
-					if renumber (et_conventions.type_device_category'val (cat)) = false then
+					if renumber (type_device_category'val (cat)) = false then
 						-- first iteration failed. start a second:
 						
 						log (text => "another iteration required", level => log_threshold + 2);
 						log_indentation_up;
 						
-						if renumber (et_conventions.type_device_category'val (cat)) = false then
+						if renumber (type_device_category'val (cat)) = false then
 							-- second iteration failed: abort
 							log (ERROR, "renumbering failed !", console => true);
 							raise constraint_error;
