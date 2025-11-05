@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -47,19 +47,32 @@ package et_device_prefix is
 	-- and a consecutive number. Both form something like "IC702"
 	prefix_characters : character_set := to_set (span => ('A','Z'));
 	prefix_length_max : constant natural := 10; -- CS: there is no reason for longer prefixes.
+	
 	package pac_device_prefix is new generic_bounded_length (prefix_length_max);
 	use pac_device_prefix;
-	
-	function to_string (prefix : in pac_device_prefix.bounded_string) return string;
-	function to_prefix (prefix : in string) return pac_device_prefix.bounded_string;
 
-	procedure check_prefix_length (prefix : in string);
-	-- Tests if the given prefix is longer than allowed.
 	
-	procedure check_prefix_characters (prefix : in pac_device_prefix.bounded_string);
+	function to_string (
+		prefix : in pac_device_prefix.bounded_string) 
+		return string;
+
+	
+	function to_prefix (
+		prefix : in string) 
+		return pac_device_prefix.bounded_string;
+
+	
+	-- Tests if the given prefix is longer than allowed.
+	procedure check_prefix_length (
+		prefix : in string);
+
+	
 	-- Tests if the given prefix contains only valid characters.
 	-- Raises exception if invalid character found.
+	procedure check_prefix_characters (
+		prefix : in pac_device_prefix.bounded_string);
 
+	
 	-- Predefined prefixes:
 	-- - for power symbols:
 	prefix_pwr : constant string := "PWR";

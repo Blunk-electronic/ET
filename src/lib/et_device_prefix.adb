@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -46,22 +46,28 @@ package body et_device_prefix is
 
 
 
-	function to_string (prefix : in pac_device_prefix.bounded_string) return string is
-	begin
+	function to_string (
+		prefix : in pac_device_prefix.bounded_string) 
+		return string
+	is begin
 		return pac_device_prefix.to_string (prefix); -- leading space not allowd !
 	end to_string;
 
 
 	
-	function to_prefix (prefix : in string) return pac_device_prefix.bounded_string is begin
+	function to_prefix (
+		prefix : in string) 
+		return pac_device_prefix.bounded_string 
+	is begin
 		return pac_device_prefix.to_bounded_string (prefix);
 	end to_prefix;
 
 
 	
-	procedure check_prefix_length (prefix : in string) is
-	-- Tests if the given prefix is longer than allowed.
-	begin
+	
+	procedure check_prefix_length (
+		prefix : in string) 
+	is begin
 		if prefix'length > prefix_length_max then
 			log (ERROR, "max. number of characters for device name prefix is" 
 				 & positive'image (prefix_length_max) & " !",
@@ -72,9 +78,10 @@ package body et_device_prefix is
 
 	
 	
-	procedure check_prefix_characters (prefix : in pac_device_prefix.bounded_string) is
-	-- Tests if the given prefix contains only valid characters.
-	-- Raises exception if invalid character found.
+	
+	procedure check_prefix_characters (
+		prefix : in pac_device_prefix.bounded_string) 
+	is
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
