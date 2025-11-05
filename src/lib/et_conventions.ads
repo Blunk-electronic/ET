@@ -148,26 +148,26 @@ package et_conventions is
 	
 	subtype type_net_label_text_size is et_schematic_geometry.type_distance_model range 1.0 .. 5.0; -- unit is mm
 	net_label_text_size_default : constant type_net_label_text_size := 1.3;
-
+	-- CS: no longer required ?
 
 	
 	-- Converts a string to type_net_label_text_size.
 	function to_net_label_text_size (text : in string) return type_net_label_text_size;
-
+	-- CS: no longer required ?
 	
 
 
 
 	
-	-- Device prefixes and their category are stored in a map:
+	-- Device prefixes and their category are liked via this map:
 	package pac_device_prefixes is new ordered_maps (
 		key_type 		=> pac_device_prefix.bounded_string, -- IC
 		element_type 	=> type_device_category, -- INTEGRATED_CIRCUIT
 		"<" 			=> pac_device_prefix."<");
 
-	-- After reading the conventions, we store the device 
-	-- prefixes for the design here:
-	component_prefixes : pac_device_prefixes.map;
+	-- After reading the conventions, we store the 
+	-- allowed device prefixes for the design here:
+	device_prefixes : pac_device_prefixes.map;
 
 
 	
@@ -257,7 +257,7 @@ package et_conventions is
 
 	-- After reading the conventions, we store the units of 
 	-- measurement for the design here:
-	component_units : pac_units_of_measurement.map;
+	units_of_measurement : pac_units_of_measurement.map;
 
 
 	
@@ -271,19 +271,22 @@ package et_conventions is
 	-- Component categories that requires operator interaction are stored in a set.
 	package type_categories_with_operator_interacton is new ordered_sets (
 		element_type => type_device_category);
+
+	
 	-- After reading the conventions, we store them here:
 	component_categories_with_operator_interaction : type_categories_with_operator_interacton.set;
 
 
 	
 	type type_component_requires_operator_interaction is (YES, NO);
+
 	
-	function requires_operator_interaction (
-		prefix : in pac_device_prefix.bounded_string) 
-		return type_component_requires_operator_interaction;
 	-- Returns YES is given prefix requires operator interaction.
 	-- Returns NO if prefixs does not require interaction or if no prefixes
 	-- specified at all (in conventions file section COMPONENT_PREFIXES).
+	function requires_operator_interaction (
+		prefix : in pac_device_prefix.bounded_string) 
+		return type_component_requires_operator_interaction;
 
 	
 -- 	function requires_operator_interaction (

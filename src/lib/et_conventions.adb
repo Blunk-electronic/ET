@@ -41,12 +41,8 @@ with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
---with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.maps.constants;
-
--- with ada.characters.handling;	use ada.characters.handling;
 with ada.strings.fixed; 		use ada.strings.fixed;
-
+with ada.strings.maps.constants;
 
 with ada.exceptions;
 
@@ -61,7 +57,6 @@ with et_project;
 
 package body et_conventions is
 
-	use et_string_processing;
 
 	function to_net_label_text_size (text : in string) return type_net_label_text_size is
 	-- Converts a string to type_net_label_text_size.
@@ -774,7 +769,7 @@ package body et_conventions is
 	-- Returns true if any component prefixes are specified via conventions file.
 		use pac_device_prefixes;
 	begin
-		if is_empty (component_prefixes) then -- no prefixes specified
+		if is_empty (device_prefixes) then -- no prefixes specified
 			return false;
 		else -- prefixes are specified
 			return true;
@@ -792,7 +787,7 @@ package body et_conventions is
 		prefix_cursor : pac_device_prefixes.cursor;
 	begin
 		-- locate prefix as specified by conventions file
-		prefix_cursor := component_prefixes.find (prefix);
+		prefix_cursor := device_prefixes.find (prefix);
 
 		-- If prefix not specified (or no conventions at all) return category UNKNOWN.
 		-- Otherwise return the respecitve category.
@@ -819,7 +814,7 @@ package body et_conventions is
 		prefix_cursor : pac_device_prefixes.cursor;
 	begin
 		-- locate prefix as specified by conventions file
-		prefix_cursor := component_prefixes.find (reference.prefix);
+		prefix_cursor := device_prefixes.find (reference.prefix);
 
 		-- If prefix not specified (or no conventions at all) return category UNKNOWN.
 		-- Otherwise return the respecitve category.
@@ -1811,7 +1806,7 @@ package body et_conventions is
 	is
 		use pac_units_of_measurement;
 	begin
-		return element (pac_units_of_measurement.find (component_units, unit));
+		return element (pac_units_of_measurement.find (units_of_measurement, unit));
 	end;
 
 
@@ -1819,10 +1814,8 @@ package body et_conventions is
 	
 	function requires_operator_interaction (
 		prefix : in pac_device_prefix.bounded_string) 
-		return type_component_requires_operator_interaction is
-	-- Returns YES is given prefix requires operator interaction.
-	-- Returns NO if prefixs does not require interaction or if no prefixes
-	-- specified at all (in configuration file section COMPONENT_PREFIXES).
+		return type_component_requires_operator_interaction 
+	is
 		cat : type_device_category;
 		use type_categories_with_operator_interacton;
 		cat_cursor : type_categories_with_operator_interacton.cursor;
@@ -2697,9 +2690,9 @@ package body et_conventions is
 						-- build the component category from field #2:
 						cat := to_category (get_field (element (line_cursor), 2));
 						
-						-- insert the prefix assignment in container component_prefixes
+						-- insert the prefix assignment in container device_prefixes
 						pac_device_prefixes.insert (
-							container	=> et_conventions.component_prefixes,
+							container	=> et_conventions.device_prefixes,
 							position	=> component_prefix_cursor,
 							key 		=> prefix,
 							new_item 	=> cat,
@@ -2712,7 +2705,7 @@ package body et_conventions is
 					end loop;
 
 					-- Notify operator if no prefixes specified:
-					if pac_device_prefixes.is_empty (et_conventions.component_prefixes) then
+					if pac_device_prefixes.is_empty (device_prefixes) then
 						log (WARNING, "no device prefixes specified !" & reduced_check_coverage);
 					end if;
 					
@@ -2735,9 +2728,9 @@ package body et_conventions is
 						-- Build the unit of measurement from field #2:
 						unit := to_unit_of_measurement (get_field (element (line_cursor), 2));
 						
-						-- insert the abbrevation to unit of measurement assignment in container component_units
+						-- insert the abbrevation to unit of measurement assignment in container units_of_measurement
 						pac_units_of_measurement.insert (
-							container	=> et_conventions.component_units,
+							container	=> units_of_measurement,
 							position	=> unit_cursor,
 
 							-- If entry already in map, this flag goes true. Warning issued later. see below.
@@ -2755,7 +2748,7 @@ package body et_conventions is
 					end loop;
 
 					-- Notify operator if no units of measurement specified:
-					if pac_units_of_measurement.is_empty (et_conventions.component_units) then
+					if pac_units_of_measurement.is_empty (units_of_measurement) then
 						log (WARNING, "no units of measurement specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
@@ -2900,7 +2893,7 @@ package body et_conventions is
 
 		if exists (to_string (file_name)) then
 
-			et_conventions.component_prefixes := pac_device_prefixes.empty_map;
+			device_prefixes := pac_device_prefixes.empty_map;
 
 			open (file => conventions_file_handle, mode => in_file, name => to_string (file_name));
 			set_input (conventions_file_handle);
@@ -3218,7 +3211,7 @@ package body et_conventions is
 		
 		-- If there are prefixes specified, test if the given prefix is among them:
 		if component_prefixes_specified then
-			if component_prefixes.find (prefix) = pac_device_prefixes.no_element then
+			if device_prefixes.find (prefix) = pac_device_prefixes.no_element then
 				log (WARNING, "invalid prefix " & to_string (prefix => prefix) & " !");
 				result := false;
 			end if;
@@ -3236,7 +3229,7 @@ package body et_conventions is
 	begin
 		-- if there are prefixes specified, test if the given particular prefix is among them
 		if component_prefixes_specified then
-			if component_prefixes.find (device_name.prefix) = pac_device_prefixes.no_element then
+			if device_prefixes.find (device_name.prefix) = pac_device_prefixes.no_element then
 				log (WARNING, "invalid prefix in device name "
 					 & to_string (device_name) & " !");
 				result := false;
