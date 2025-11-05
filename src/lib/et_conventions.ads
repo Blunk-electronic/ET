@@ -165,7 +165,8 @@ package et_conventions is
 		element_type 	=> type_device_category, -- INTEGRATED_CIRCUIT
 		"<" 			=> pac_device_prefix."<");
 
-	-- After reading the conventions, we store the device prefixes for the design here:
+	-- After reading the conventions, we store the device 
+	-- prefixes for the design here:
 	component_prefixes : pac_device_prefixes.map;
 
 
@@ -253,11 +254,6 @@ package et_conventions is
 
 
 		
-	-- Units of measurement and their abbrevation are stored in a map:
-	package pac_units_of_measurement is new ordered_maps (
-		key_type 		=> type_unit_of_measurement, -- OHMS, KILOOHM, MEGAOHM, ...
-		element_type	=> pac_unit_abbrevation.bounded_string, -- R, m, k, ...
-		"=" 			=> pac_unit_abbrevation."=");
 
 	-- After reading the conventions, we store the units of 
 	-- measurement for the design here:

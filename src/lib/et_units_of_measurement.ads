@@ -39,6 +39,8 @@
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 
+with ada.containers;            use ada.containers;
+with ada.containers.ordered_maps;
 
 
 with et_logging;					use et_logging;
@@ -109,6 +111,13 @@ package et_units_of_measurement is
 	use pac_unit_abbrevation;
 
 
+	-- Units of measurement and their abbrevation are stored in a map:
+	package pac_units_of_measurement is new ordered_maps (
+		key_type 		=> type_unit_of_measurement, -- OHMS, KILOOHM, MEGAOHM, ...
+		element_type	=> pac_unit_abbrevation.bounded_string); -- R, m, k, ...
+
+
+	
 	
 	-- Tests if the given abbrevation contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
