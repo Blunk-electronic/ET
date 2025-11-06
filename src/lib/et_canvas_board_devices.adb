@@ -555,6 +555,9 @@ package body et_canvas_board_devices is
 		-- is perfomed, must be reset:
 		reset_escape_counter;
 
+		-- The initial rotation is always zero:
+		device_add.rotation := 0.0;
+		
 		-- Now the information in device_add is complete.
 		-- By setting the flag "valid" the draw operation of the package
 		-- starts drawing the package as it is sticking at the current tool
@@ -774,10 +777,10 @@ package body et_canvas_board_devices is
 		use et_undo_redo;
 
 		-- Build the full package position from the
-		-- given place, with zero rotation and on the
+		-- given place, with rotation as given by device_add and on the
 		-- top side of the board:
 		position : constant type_package_position := 
-			to_package_position (place, 0.0, TOP);
+			to_package_position (place, device_add.rotation, TOP);
 	begin
 		log (text => "add_device", level => log_threshold);
 		log_indentation_up;
