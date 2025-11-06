@@ -117,6 +117,16 @@ package body et_package_library is
 -- 	end log_plated_millings;
 
 	
+
+	function get_package_model_file (
+		model_cursor : in pac_package_models.cursor)
+		return pac_package_model_file_name.bounded_string
+	is begin
+		return key (model_cursor);
+	end;
+
+
+
 	
 	
 	procedure create_package (

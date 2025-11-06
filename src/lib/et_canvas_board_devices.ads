@@ -199,7 +199,7 @@ package et_canvas_board_devices is
 
 
 	procedure add_non_electrical_device (
-		position	: in type_vector_model);
+		place : in type_vector_model);
 	
 	
 	

@@ -807,6 +807,8 @@ package body et_canvas_board is
 			status_clear;
 
 			et_board_ops.groups.reset_objects (active_module, log_threshold + 1);
+
+			device_add.valid := false;
 			
 			reset_preliminary_text; -- after placing a text
 

@@ -763,14 +763,21 @@ package body et_canvas_board_devices is
 
 	
 	procedure add_non_electrical_device (
-		position	: in type_vector_model)
+		place : in type_vector_model)
 	is 
+		use et_pcb_sides;
 		use et_package_library;
 		use pac_package_models;
 		
 		use et_modes.board;
 		use et_commit;
 		use et_undo_redo;
+
+		-- Build the full package position from the
+		-- given place, with zero rotation and on the
+		-- top side of the board:
+		position : constant type_package_position := 
+			to_package_position (place, 0.0, TOP);
 	begin
 		log (text => "add_device", level => log_threshold);
 		log_indentation_up;
@@ -778,12 +785,12 @@ package body et_canvas_board_devices is
 		-- Commit the current state of the design:
 		commit (PRE, verb, noun, log_threshold);
 		
-		-- add_non_electrical_device (
-		-- 	module_cursor	=> active_module,
-		-- 	package_model	=> key (device_add.packge),
-		-- 	position		=> position,
-		-- 	prefix			=> get_prefix (device_add.device_pre),
-		-- 	log_threshold	=> log_threshold + 1);
+		add_non_electrical_device (
+			module_cursor	=> active_module,
+			package_model	=> get_package_model_file (device_add.packge),
+			position		=> position,
+			prefix			=> get_prefix (device_add.device_pre),
+			log_threshold	=> log_threshold + 1);
 
 		-- Commit the new state of the design:
 		commit (POST, verb, noun, log_threshold);
@@ -794,9 +801,8 @@ package body et_canvas_board_devices is
 
 		-- In case further devices are to be added,
 		-- assign the prospective next device name:
-		-- CS
-		-- device_add.device_pre := get_next_available_non_electrical_device_name (
-		-- 	active_module, get_prefix (device_add.packge));
+		device_add.device_pre := get_next_available_non_electrical_device_name (
+			active_module, get_prefix (device_add.device_pre));
 		
 		log_indentation_down;
 	end add_non_electrical_device;

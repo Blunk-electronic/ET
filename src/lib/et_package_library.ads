@@ -169,6 +169,12 @@ package et_package_library is
 	use pac_package_models;
 
 
+
+	function get_package_model_file (
+		model_cursor : in pac_package_models.cursor)
+		return pac_package_model_file_name.bounded_string;
+
+
 	
 	
 	-- THIS IS THE RIG WIDE PACKAGE (FOOTPRINT) LIBRARY:
