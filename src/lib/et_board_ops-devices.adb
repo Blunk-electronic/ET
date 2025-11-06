@@ -1445,21 +1445,22 @@ package body et_board_ops.devices is
 
 	function get_next_available_non_electrical_device_name (
 		module_cursor	: in pac_generic_modules.cursor;
-		prefix			: in pac_device_prefix.bounded_string)
+		prefix			: in pac_device_prefix.bounded_string;
+		log_threshold	: in type_log_level)
 		return type_device_name
 	is
 		next_name : type_device_name; -- to be returned
 
-		use pac_device_prefix;
-		
-		
+				
 		-- Searches for the lowest available non-electrical device name. Looks at devices
 		-- whose prefix equals the given prefix. Example: If given prefix is MH, it looks
 		-- for the lowest available mounting hole index.
-		procedure search_gap (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+			use pac_device_prefix;
+			
 			device_cursor : pac_devices_non_electrical.cursor := 
 				module.devices_non_electric.first;
 
@@ -1509,11 +1510,21 @@ package body et_board_ops.devices is
 				end loop;
 			end if;
 			
-		end search_gap;
+		end query_module;
 
 		
 	begin
-		query_element (module_cursor, search_gap'access);				
+		log (text => "module " & to_string (module_cursor) 
+			& " search net available non-electrial device name "
+			& " with prefix " & to_string (prefix),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (module_cursor, query_module'access);				
+
+		log_indentation_down;
+		
 		return next_name;
 	end get_next_available_non_electrical_device_name;
 
@@ -1542,10 +1553,12 @@ package body et_board_ops.devices is
 			device_cursor : pac_devices_non_electrical.cursor;
 			inserted : boolean;
 
-			-- build the next available device name:
-			next_name : type_device_name := 
-				get_next_available_non_electrical_device_name (module_cursor, prefix);
+			next_name : type_device_name;
 		begin
+			-- Build the next available device name:
+			next_name := get_next_available_non_electrical_device_name (
+				module_cursor, prefix, log_threshold + 1);
+						
 			log (text => "add device " & to_string (next_name), 
 				 level => log_threshold + 1);
 			
@@ -1650,7 +1663,7 @@ package body et_board_ops.devices is
 
 		-- Build the next available device name:
 		next_name := get_next_available_non_electrical_device_name (
-						module_cursor, get_prefix (device_name)); -- FD2
+			module_cursor, get_prefix (device_name), log_threshold + 1); -- FD2
 
 		
 		if has_element (device_cursor) then -- device exists in board

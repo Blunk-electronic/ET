@@ -1149,22 +1149,21 @@ package body et_schematic_ops.units is
 	
 	function get_next_available_electrical_device_name (
 		module_cursor	: in pac_generic_modules.cursor;
-		prefix			: in pac_device_prefix.bounded_string) -- FD, H, ...
+		prefix			: in pac_device_prefix.bounded_string; -- FD, H, ...
+		log_threshold	: in type_log_level)
 		return type_device_name
 	is
 		next_name : type_device_name; -- to be returned
-
-		use pac_device_prefix;
 
 		
 		-- Searches for the lowest available device name. Looks at devices
 		-- whose prefix equals the given prefix. Example: If given prefix 
 		-- is FD, it looks for the lowest available resistor index.
-		procedure search_gap (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			use pac_devices_electrical;
+			use pac_device_prefix;
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 
 			-- We start the search with index 1. Not 0 because this would 
@@ -1213,13 +1212,22 @@ package body et_schematic_ops.units is
 				end loop;
 			end if;
 			
-		end search_gap;
+		end query_module;
 
 		
 	
 	begin
-		query_element (module_cursor, search_gap'access);
-				
+		log (text => "module " & to_string (module_cursor) 
+			& " search net available electrial device name "
+			& " with prefix " & to_string (prefix),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+		
 		return next_name;
 	end get_next_available_electrical_device_name;
 
