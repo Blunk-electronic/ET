@@ -306,16 +306,16 @@ package et_schematic_ops.units is
 	-- the the device is assumed to be virtual (like a GND symbol). 
 	-- CS: Reject the selected unit if a port overlaps a port of another
 	-- existing unit.
-	procedure add_device (
+	procedure add_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
 		destination		: in type_object_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level);
 
-	-- CS procedure add_device with explicit device name like R12
+	-- CS procedure add_electrical_device with explicit device name like R12
 
-	-- CS procedure add_device that takes model cursor
+	-- CS procedure add_electrical_device that takes model cursor
 
 
 	

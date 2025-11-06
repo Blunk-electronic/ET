@@ -782,7 +782,7 @@ package body et_canvas_board_devices is
 		position : constant type_package_position := 
 			to_package_position (place, device_add.rotation, TOP);
 	begin
-		log (text => "add_device", level => log_threshold);
+		log (text => "add_non_electrical_device", level => log_threshold);
 		log_indentation_up;
 		
 		-- Commit the current state of the design:

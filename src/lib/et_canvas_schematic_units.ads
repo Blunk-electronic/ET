@@ -480,8 +480,8 @@ package et_canvas_schematic_units is
 	-- This procedure adds the unit of a new device
 	-- to the drawing. It takes the information stored
 	-- in unit_add:
-	procedure add_device (
-		position	: in type_vector_model);
+	procedure add_electrical_device (
+		place : in type_vector_model);
 
 
 

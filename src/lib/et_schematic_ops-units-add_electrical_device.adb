@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---              SCHEMATIC OPERATIONS / ADDING DEVICES                       --
+--              SCHEMATIC OPERATIONS / ADD ELECTRICAL DEVICE                --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -50,7 +50,7 @@ with et_device_appearance;				use et_device_appearance;
 
 separate (et_schematic_ops.units)
 
-procedure add_device (
+procedure add_electrical_device (
 	module_cursor	: in pac_generic_modules.cursor;
 	device_model	: in pac_device_model_file.bounded_string;
 	variant			: in pac_package_variant_name.bounded_string;
@@ -526,17 +526,17 @@ is
 
 	
 	
-begin -- add_device
+begin -- add_electrical_device
 	if not is_empty (variant) then -- real device
 		log (text => "module " & to_string (module_cursor) 
-			 & " add real device " & to_string (device_model) 
+			 & " add real electrical device " & to_string (device_model) 
 			 & " package variant " & to_string (variant) 
 			 & " at " & to_string (destination),
 			level => log_threshold);
 		
 	else -- virtual device
 		log (text => "module " & to_string (module_cursor) 
-			 & " add virtual device " & to_string (device_model) 
+			 & " add virtual electrical device " & to_string (device_model) 
 			 & " at " & to_string (destination),
 			level => log_threshold);
 	end if;
@@ -574,7 +574,7 @@ begin -- add_device
 	
 	log_indentation_down;
 
-end add_device;
+end add_electrical_device;
 
 
 -- Soli Deo Gloria

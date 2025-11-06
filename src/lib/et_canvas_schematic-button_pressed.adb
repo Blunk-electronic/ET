@@ -75,7 +75,7 @@ is
 				-- an unit will be dropped at the current 
 				-- cursor position. The properties of the new device
 				-- are taken from the preliminary unit_add:
-				add_device (snap_point);
+				add_electrical_device (snap_point);
 			end if;
 		end add_device;
 

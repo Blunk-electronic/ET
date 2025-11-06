@@ -414,7 +414,7 @@ is
 		case cmd_field_count is
 			when 9 =>
 				-- If a virtual device is added, then no variant is required.
-				add_device (
+				add_electrical_device (
 					module_cursor 	=> active_module,
 					device_model	=> to_file_name (get_field (5)),
 					destination		=> to_position 
@@ -433,7 +433,7 @@ is
 				
 			when 10 =>
 				-- A real device requires specification of a package variant.
-				add_device (
+				add_electrical_device (
 					module_cursor 	=> active_module,
 					device_model	=> to_file_name (get_field (5)),
 					destination		=> to_position 

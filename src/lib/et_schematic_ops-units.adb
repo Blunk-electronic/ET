@@ -1230,7 +1230,7 @@ package body et_schematic_ops.units is
 
 
 	
-	procedure add_device (
+	procedure add_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_model	: in pac_device_model_file.bounded_string;
 		variant			: in pac_package_variant_name.bounded_string;

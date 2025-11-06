@@ -1752,7 +1752,9 @@ package body et_canvas_schematic_units is
 		-- is perfomed, must be reset:
 		reset_escape_counter;
 		
-
+		-- The initial rotation is always zero:
+		unit_add.rotation := 0.0;
+		
 		-- Now the information in unit_add is complete.
 		-- By setting the flag "valid" the draw operation of the unit
 		-- starts drawing the unit as it is sticking at the current tool
@@ -1940,6 +1942,9 @@ package body et_canvas_schematic_units is
 		-- Assign the prospective device name:
 		unit_add.device_pre := get_next_available_electrical_device_name (
 			active_module, get_prefix (device_cursor_lib));
+
+		-- The initial rotation is always zero:
+		unit_add.rotation := 0.0;
 		
 		-- Depending on the nature of the device we
 		-- offer a selection of package variants. Virtual devices
@@ -2118,23 +2123,23 @@ package body et_canvas_schematic_units is
 
 	
 	
-	procedure add_device (
-		position	: in type_vector_model)
+	procedure add_electrical_device (
+		place : in type_vector_model)
 	is 
 		use et_commit;
 		use et_undo_redo;
 	begin
-		log (text => "add_device", level => log_threshold);
+		log (text => "add_electrical_device", level => log_threshold);
 		log_indentation_up;
 		
 		-- Commit the current state of the design:
 		commit (PRE, verb, noun, log_threshold);
 		
-		add_device (
+		add_electrical_device (
 			module_cursor	=> active_module,
 			device_model	=> get_device_model_file (unit_add.device),
 			variant			=> unit_add.variant,
-			destination		=> to_position (position, active_sheet, unit_add.rotation),
+			destination		=> to_position (place, active_sheet, unit_add.rotation),
 			log_threshold	=> log_threshold + 1);
 
 		-- Commit the new state of the design:
@@ -2150,7 +2155,7 @@ package body et_canvas_schematic_units is
 			active_module, get_prefix (unit_add.device));
 		
 		log_indentation_down;
-	end add_device;
+	end add_electrical_device;
 
 
 

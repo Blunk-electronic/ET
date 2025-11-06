@@ -458,7 +458,7 @@ is
 							-- an unit will be dropped at the current 
 							-- cursor position. The properties of the new device
 							-- are taken from the preliminary unit_add:
-							add_device (get_cursor_position);
+							add_electrical_device (get_cursor_position);
 						end if;
 						
 					when others => null;						
