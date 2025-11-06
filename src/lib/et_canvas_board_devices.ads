@@ -198,6 +198,9 @@ package et_canvas_board_devices is
 
 
 
+	-- This procedure adds a new non-electrical device (which is
+	-- just a package) to the drawing. It takes the information stored
+	-- in device_add:
 	procedure add_non_electrical_device (
 		place : in type_vector_model);
 	
