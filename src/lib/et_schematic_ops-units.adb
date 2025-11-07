@@ -1158,19 +1158,19 @@ package body et_schematic_ops.units is
 
 			procedure query_device (c : in pac_devices_electrical.cursor) is
 				use pac_device_prefix;
-				device : type_device_electrical renames element (c);
-				name : type_device_name := key (c);
+				device	: type_device_electrical renames element (c);
+				name 	: constant type_device_name := key (c); -- IC45
 			begin
 				-- Select only those devices which have the given prefix
 				-- and add them to the result:
-				if get_prefix (c) = prefix then
-					log (text => get_device_name (c), level => log_threshold + 1);
-					result.insert (key (c), device);
+				if get_prefix (name) = prefix then
+					log (text => to_string (name), level => log_threshold + 1);
+					result.insert (name, device);
 				end if;
 			end query_device;
 			
 		begin
-			-- Iterate the electrial devices:
+			-- Iterate the electrical devices:
 			module.devices.iterate (query_device'access);
 		end query_module;
 

@@ -51,6 +51,7 @@ package et_device_name is
 	
 	subtype type_name_index is natural range natural'first .. 99_999; -- R1..R99999, IC1..IC99999 should be enough
 	-- CS derive new type instead ?
+	-- CS rename to type_device_name_index
 
 	name_index_default : constant type_name_index := 0;
 

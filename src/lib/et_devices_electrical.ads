@@ -371,7 +371,16 @@ package et_devices_electrical is
 
 
 
-
+	-- Returns the first device name that is not
+	-- in the given list of devices.
+	-- NOTE; It is assumed that all devices in the given
+	-- list have the same prefix. Otherwise the result would be nonsense.
+	-- Example: If the list contains capacitors C1, C2, C50,
+	-- then the return is C2:
+	function get_first_available_name (
+		devices	: in pac_devices_electrical.map;
+		prefix	: in pac_device_prefix.bounded_string) -- C
+		return type_device_name;
 
 
 

@@ -549,6 +549,79 @@ package body et_devices_non_electrical is
 	end;
 
 	
+
+
+
+	
+
+	function get_first_available_name (
+		devices	: in pac_devices_non_electrical.map;
+		prefix	: in pac_device_prefix.bounded_string)
+		return type_device_name
+	is
+		result : type_device_name;
+
+		-- We start the search with index 1. 
+		-- (We do not start with 0 because this would 
+		-- result in a zero based numbering order.
+		-- Index zero is allowed but not automatically choosen.)
+		index_expected : type_name_index := type_name_index'first + 1;
+		
+		cursor : pac_devices_non_electrical.cursor;
+
+		-- This flag indicates that a gap in the
+		-- given list has been found.
+		gap_found : boolean := false;
+		
+	begin
+		-- If the given list is empty, then a device name
+		-- like FD1 or MH1 is returned:
+		if is_empty (devices) then
+			result := to_device_name (prefix, index_expected);
+		else
+
+		-- If the given list contains devices, then find
+		-- the first gap among the indexes:
+		
+			cursor := devices.first;
+			
+			-- Iterate the given devices:
+			while has_element (cursor) loop
+				
+				-- We have a gap if the candidate index differs
+				-- from the expected index:
+				if get_index (key (cursor)) /= index_expected then 
+					result := to_device_name (prefix, index_expected);
+					gap_found := true;
+					exit;
+				end if;
+
+				-- Advance to next device in list:
+				next (cursor);
+
+				-- Advance to next expected index:
+				index_expected := index_expected + 1;
+			end loop;
+
+
+			-- If no gap has been found, then we have reached the
+			-- end of the given list. Now we build a device name
+			-- that could be appended to the given device list.
+			-- index_expected already provides the required device index:
+			if not gap_found then
+				result := to_device_name (prefix, index_expected);
+			end if;
+
+		end if;
+		
+		return result; -- CS should never happen. raise exception ?
+
+	end get_first_available_name;
+
+
+
+	
+
 	
 
 	function is_bom_relevant (
