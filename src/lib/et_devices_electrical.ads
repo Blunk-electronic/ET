@@ -373,13 +373,16 @@ package et_devices_electrical is
 
 	-- Returns the first device name that is not
 	-- in the given list of devices.
+	-- Starts the search with the index given by argument start.
 	-- NOTE; It is assumed that all devices in the given
 	-- list have the same prefix. Otherwise the result would be nonsense.
 	-- Example: If the list contains capacitors C1, C2, C50,
-	-- then the return is C2:
+	-- then the return is C2.
+	-- If the list is empty, then the result is C1, R1, IC1, ...
 	function get_first_available_name (
 		devices	: in pac_devices_electrical.map;
-		prefix	: in pac_device_prefix.bounded_string) -- C
+		prefix	: in pac_device_prefix.bounded_string; -- C
+		start	: in type_name_index := 1)
 		return type_device_name;
 
 

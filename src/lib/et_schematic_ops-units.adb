@@ -39,6 +39,7 @@
 
 with ada.strings.unbounded;
 
+with et_board_ops.devices;
 with et_board_ops.ratsnest;					use et_board_ops.ratsnest;
 with et_schematic_ops.nets;
 with et_schematic_ops.groups;
@@ -1260,17 +1261,36 @@ package body et_schematic_ops.units is
 			
 		end query_module;
 
-		
+
+		procedure search is
+			devices : pac_devices_electrical.map;
+			available : type_device_name;
+
+			use et_board_ops.devices;
+		begin
+			devices := get_electrical_devices_by_prefix (module_cursor, prefix, log_threshold + 1);
+			
+			available := get_first_available_name (devices, prefix);
+
+			while non_electrical_device_exists (module_cursor, available) loop
+				null;
+				available := get_first_available_name (devices, prefix, get_index (available));
+			end loop;
+
+			next_name := available;
+		end search;
+			
 	
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& " search net available electrial device name "
-			& " with prefix " & to_string (prefix),
+			& " search next available electrical device name with prefix " & to_string (prefix),
 			level => log_threshold);
 
 		log_indentation_up;
-		
-		query_element (module_cursor, query_module'access);
+
+		search;
+				
+		-- query_element (module_cursor, query_module'access);
 
 		log_indentation_down;
 		

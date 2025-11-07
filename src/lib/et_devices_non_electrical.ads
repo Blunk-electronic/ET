@@ -431,6 +431,7 @@ package et_devices_non_electrical is
 
 	-- Returns the first device name that is not
 	-- in the given list of devices.
+	-- Starts the search with the index given by argument start.
 	-- NOTE; It is assumed that all devices in the given
 	-- list have the same prefix. Otherwise the result would be nonsense:
 	-- Example: If the list contains mounting holes MH1, MH2, MH50,
@@ -438,7 +439,8 @@ package et_devices_non_electrical is
 	-- If the list is empty, then the result is MH1, FD1, ...
 	function get_first_available_name (
 		devices	: in pac_devices_non_electrical.map;
-		prefix	: in pac_device_prefix.bounded_string) -- MN
+		prefix	: in pac_device_prefix.bounded_string; -- MN
+		start	: in type_name_index := 1)
 		return type_device_name;
 
 	

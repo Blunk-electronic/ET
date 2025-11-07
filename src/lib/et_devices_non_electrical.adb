@@ -556,16 +556,17 @@ package body et_devices_non_electrical is
 
 	function get_first_available_name (
 		devices	: in pac_devices_non_electrical.map;
-		prefix	: in pac_device_prefix.bounded_string)
+		prefix	: in pac_device_prefix.bounded_string;
+		start	: in type_name_index := 1)
 		return type_device_name
 	is
 		result : type_device_name;
 
-		-- We start the search with index 1. 
+		-- We start the search with index 1 by default
 		-- (We do not start with 0 because this would 
 		-- result in a zero based numbering order.
 		-- Index zero is allowed but not automatically choosen.)
-		index_expected : type_name_index := type_name_index'first + 1;
+		index_expected : type_name_index := start;
 		
 		cursor : pac_devices_non_electrical.cursor;
 
@@ -577,7 +578,7 @@ package body et_devices_non_electrical is
 		-- If the given list is empty, then a device name
 		-- like FD1 or MH1 is returned:
 		if is_empty (devices) then
-			result := to_device_name (prefix, index_expected);
+			result := to_device_name (prefix, 1);
 		else
 
 		-- If the given list contains devices, then find

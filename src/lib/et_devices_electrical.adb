@@ -492,51 +492,57 @@ package body et_devices_electrical is
 
 	function get_first_available_name (
 		devices	: in pac_devices_electrical.map;
-		prefix	: in pac_device_prefix.bounded_string)
+		prefix	: in pac_device_prefix.bounded_string;
+		start	: in type_name_index := 1)
 		return type_device_name
 	is
 		result : type_device_name;
 
-		-- We start the search with index 1. 
-		-- (We do not start with 0 because this would 
-		-- result in a zero based numbering order.
-		-- Index zero is allowed but not automatically choosen.)
-		index_expected : type_name_index := type_name_index'first + 1;
+				
+		procedure search_gap is
+			-- We start the search with the index given 
+			-- by argument start:
+			index_expected : type_name_index := start;
 
-		cursor : pac_devices_electrical.cursor;
+			-- This index advances from device to device.
+			-- If it reaches the index_expected then, index_expected
+			-- is also incremented on each device:
+			index_current : type_name_index := type_name_index'first;
+			
+			-- This cursor points to the device candidate:
+			cursor : pac_devices_electrical.cursor;
 
-		-- This flag indicates that a gap in the
-		-- given list has been found.
-		gap_found : boolean := false;
-		
-	begin
-		-- If the given list is empty, then a device name
-		-- like C1 or R1 is returned:
-		if is_empty (devices) then
-			result := to_device_name (prefix, index_expected);
-		else
-
-		-- If the given list contains devices, then find
-		-- the first gap among the indexes:
-		
+			-- This flag indicates that a gap in the
+			-- given list has been found.
+			gap_found : boolean := false;	
+		begin
+			-- Start at the begin of the device list:
 			cursor := devices.first;
 			
 			-- Iterate the given devices:
 			while has_element (cursor) loop
 				
-				-- We have a gap if the candidate index differs
-				-- from the expected index:
-				if get_index (key (cursor)) /= index_expected then 
-					result := to_device_name (prefix, index_expected);
-					gap_found := true;
-					exit;
+				if index_current = index_expected then
+				
+					-- We have a gap if the candidate index differs
+					-- from the expected index:
+					if get_index (key (cursor)) /= index_expected then 
+						result := to_device_name (prefix, index_expected);
+						gap_found := true;
+						exit;
+					end if;
 				end if;
-
+				
 				-- Advance to next device in list:
 				next (cursor);
 
-				-- Advance to next expected index:
-				index_expected := index_expected + 1;
+				index_current := index_current + 1;
+				
+				-- If index_current has reached index_expected
+				-- then index_expected increases along with index_current
+				if index_current >= index_expected then
+					index_expected := index_current;
+				end if;
 			end loop;
 
 
@@ -547,7 +553,20 @@ package body et_devices_electrical is
 			if not gap_found then
 				result := to_device_name (prefix, index_expected);
 			end if;
+		
+		end search_gap;
+		
+		
+	begin
+		-- If the given list is empty, then a device name
+		-- like C1 or R1 is returned:
+		if is_empty (devices) then
+			result := to_device_name (prefix, 1);
+		else
 
+		-- If the given list contains devices, then find
+		-- the first gap among the indexes:
+			search_gap;
 		end if;
 		
 		return result; -- CS should never happen. raise exception ?
