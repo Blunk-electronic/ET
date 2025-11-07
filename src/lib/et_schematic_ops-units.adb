@@ -1140,7 +1140,53 @@ package body et_schematic_ops.units is
 
 
 
-	
+
+
+	function get_electrical_devices_by_prefix (
+		module_cursor	: in pac_generic_modules.cursor;
+		prefix			: in pac_device_prefix.bounded_string; -- C
+		log_threshold	: in type_log_level)
+		return pac_devices_electrical.map
+	is
+		result : pac_devices_electrical.map;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+
+			procedure query_device (c : in pac_devices_electrical.cursor) is
+				use pac_device_prefix;
+				device : type_device_electrical renames element (c);
+				name : type_device_name := key (c);
+			begin
+				-- Select only those devices which have the given prefix
+				-- and add them to the result:
+				if get_prefix (c) = prefix then
+					log (text => get_device_name (c), level => log_threshold + 1);
+					result.insert (key (c), device);
+				end if;
+			end query_device;
+			
+		begin
+			-- Iterate the electrial devices:
+			module.devices.iterate (query_device'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " get electrial devices with prefix " & to_string (prefix),
+			level => log_threshold);
+
+		log_indentation_up;		
+		query_element (module_cursor, query_module'access);
+		log_indentation_down;
+
+		return result;
+	end get_electrical_devices_by_prefix;
+
 
 
 
@@ -1149,7 +1195,7 @@ package body et_schematic_ops.units is
 	
 	function get_next_available_electrical_device_name (
 		module_cursor	: in pac_generic_modules.cursor;
-		prefix			: in pac_device_prefix.bounded_string; -- FD, H, ...
+		prefix			: in pac_device_prefix.bounded_string;
 		log_threshold	: in type_log_level)
 		return type_device_name
 	is

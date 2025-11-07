@@ -170,6 +170,13 @@ package body et_devices_electrical is
 
 
 
+	function get_prefix (
+		device : in pac_devices_electrical.cursor)
+		return pac_device_prefix.bounded_string
+	is begin
+		return get_prefix (key (device));
+	end;
+
 
 
 

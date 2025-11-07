@@ -1443,6 +1443,62 @@ package body et_board_ops.devices is
 	
 
 
+	
+	function get_non_electrical_devices_by_prefix (
+		module_cursor	: in pac_generic_modules.cursor;
+		prefix			: in pac_device_prefix.bounded_string; -- FD
+		log_threshold	: in type_log_level)
+		return pac_devices_non_electrical.map
+	is
+		result : pac_devices_non_electrical.map;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			
+			procedure query_device (c : in pac_devices_non_electrical.cursor) is
+				use pac_device_prefix;
+				device	: type_device_non_electrical renames element (c);
+				name 	: constant type_device_name := key (c); -- FD3
+			begin
+				-- Select only those devices which have the given prefix
+				-- and add them to the result:
+				if get_prefix (name) = prefix then
+					log (text => to_string (name), level => log_threshold + 1);
+					result.insert (name, device);
+				end if;
+			end query_device;
+			
+		begin
+			-- Iterate the electrial devices:
+			module.devices_non_electric.iterate (query_device'access);
+		end query_module;
+
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " get non-electrial devices with prefix " & to_string (prefix),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+
+		
+		return result;
+	end get_non_electrical_devices_by_prefix;
+
+
+
+	
+	
+
+
 	function get_next_available_non_electrical_device_name (
 		module_cursor	: in pac_generic_modules.cursor;
 		prefix			: in pac_device_prefix.bounded_string;

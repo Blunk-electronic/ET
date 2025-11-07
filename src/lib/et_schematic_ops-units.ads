@@ -287,6 +287,15 @@ package et_schematic_ops.units is
 -- DEVICE ADD and COPY:
 
 
+	-- Returns all electrical devices that have the given prefix:
+	function get_electrical_devices_by_prefix (
+		module_cursor	: in pac_generic_modules.cursor;
+		prefix			: in pac_device_prefix.bounded_string; -- C
+		log_threshold	: in type_log_level)
+		return pac_devices_electrical.map;
+	
+	
+
 	-- Returns for the given device prefix the next available 
 	-- device name in the module.
 	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 

@@ -57,6 +57,7 @@ with et_device_placeholders.packages;
 
 with et_board_coordinates;
 with et_text;
+with et_device_prefix;					use et_device_prefix;
 with et_device_model;					use et_device_model;
 with et_device_appearance;				use et_device_appearance;
 with et_device_purpose;					use et_device_purpose;
@@ -208,6 +209,12 @@ package et_devices_electrical is
 	function get_device_name (
 		device : in pac_devices_electrical.cursor)
 		return type_device_name;
+
+
+	function get_prefix (
+		device : in pac_devices_electrical.cursor)
+		return pac_device_prefix.bounded_string;
+
 
 	
 	-- Returns the name of a device as string:

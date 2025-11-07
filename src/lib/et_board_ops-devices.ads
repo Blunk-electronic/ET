@@ -336,6 +336,18 @@ package et_board_ops.devices is
 		log_threshold	: in type_log_level);
 
 
+	
+-- DEVICE ADD and COPY:	
+
+	
+	-- Returns all non-electrical devices that have the given prefix:
+	function get_non_electrical_devices_by_prefix (
+		module_cursor	: in pac_generic_modules.cursor;
+		prefix			: in pac_device_prefix.bounded_string; -- FD
+		log_threshold	: in type_log_level)
+		return pac_devices_non_electrical.map;
+
+	
 	-- Returns for the given device prefix the next available 
 	-- device name in the module.
 	-- Example: prefix is FD. If there are FD1, FD4 and FD4, then 
