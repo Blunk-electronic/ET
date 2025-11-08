@@ -1541,8 +1541,8 @@ package body et_board_ops.devices is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& " search next available non-electrial device name "
-			& " with prefix " & to_string (prefix),
+			 & " search next available non-electrial device name with prefix " 
+			 & to_string (prefix),
 			level => log_threshold);
 
 		log_indentation_up;

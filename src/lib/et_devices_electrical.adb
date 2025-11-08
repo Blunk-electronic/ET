@@ -521,7 +521,7 @@ package body et_devices_electrical is
 		procedure search_gap is
 			-- We start the search with the index given 
 			-- by argument start:
-			index_expected : type_name_index := start;
+			index_expected : type_name_index := start + 1;
 
 			-- This index advances from device to device.
 			-- If it reaches the index_expected then, index_expected
@@ -594,7 +594,7 @@ package body et_devices_electrical is
 		
 		
 	begin
-		log (text => "get_first_available_name", level => log_threshold);
+		log (text => "get_first_available_name (electrical)", level => log_threshold);
 		log_indentation_up;
 		
 		-- If the given list is empty, then a device name
