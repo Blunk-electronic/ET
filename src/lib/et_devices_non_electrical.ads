@@ -79,6 +79,8 @@ with et_stopmask;						use et_stopmask;
 with et_silkscreen;						use et_silkscreen;
 with et_assy_doc;						use et_assy_doc;
 with et_text;
+with et_logging;						use et_logging;
+
 
 
 package et_devices_non_electrical is
@@ -373,6 +375,22 @@ package et_devices_non_electrical is
 	
 
 
+	-- Returns the number of devices that the
+	-- given list contains:
+	function get_count (
+		devices	: in pac_devices_non_electrical.map)
+		return natural;
+		
+
+	function get_count (
+		devices	: in pac_devices_non_electrical.map)
+		return string;
+
+
+	
+
+	
+
 	-- Returns the name prefix for a given device cursor:
 	function get_prefix (
 		cursor	: in pac_devices_non_electrical.cursor)
@@ -438,9 +456,10 @@ package et_devices_non_electrical is
 	-- then the return is MH2.
 	-- If the list is empty, then the result is MH1, FD1, ...
 	function get_first_available_name (
-		devices	: in pac_devices_non_electrical.map;
-		prefix	: in pac_device_prefix.bounded_string; -- MN
-		start	: in type_name_index := 1)
+		devices			: in pac_devices_non_electrical.map;
+		prefix			: in pac_device_prefix.bounded_string; -- MN
+		start			: in type_name_index := 1;
+		log_threshold	: in type_log_level)
 		return type_device_name;
 
 	

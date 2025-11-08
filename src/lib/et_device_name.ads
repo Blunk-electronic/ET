@@ -46,22 +46,35 @@ with et_logging;				use et_logging;
 package et_device_name is
 
 	
-	prefix_default : constant pac_device_prefix.bounded_string := pac_device_prefix.to_bounded_string ("?");
+	prefix_default : constant pac_device_prefix.bounded_string := 
+		pac_device_prefix.to_bounded_string ("?");
 
 	
-	subtype type_name_index is natural range natural'first .. 99_999; -- R1..R99999, IC1..IC99999 should be enough
+	subtype type_name_index is natural range natural'first .. 99_999; 
+	-- Index 0 is allowed in very rare and special cases. In general,
+	-- the index is to start with 1.
+
+	-- R0..R99999, IC0..IC99999 should be enough.
 	-- CS derive new type instead ?
 	-- CS rename to type_device_name_index
 
+	device_name_index_first_default : constant type_name_index := 1;
+	-- Index 0 is allowed in very rare and special cases.
+	-- In general we start with 1.
+
+	
+
 	name_index_default : constant type_name_index := 0;
 
+	
 	
 	function to_string (index : in type_name_index) return string;
 
 	function to_index (index : in string) return type_name_index;
 
 	
-	subtype type_index_width is positive range positive'first .. 5; -- see number of digits of type_device_name_index
+	subtype type_index_width is positive range positive'first .. 5; 
+	-- see number of digits of type_device_name_index
 
 
 	

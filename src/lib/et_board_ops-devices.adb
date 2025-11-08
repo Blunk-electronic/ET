@@ -1487,8 +1487,9 @@ package body et_board_ops.devices is
 		
 		query_element (module_cursor, query_module'access);
 
+		log (text => "device count " & get_count (result), level => log_threshold);
+		
 		log_indentation_down;
-
 		
 		return result;
 	end get_non_electrical_devices_by_prefix;
@@ -1507,78 +1508,45 @@ package body et_board_ops.devices is
 	is
 		next_name : type_device_name; -- to be returned
 
-				
-		-- Searches for the lowest available non-electrical device name. Looks at devices
-		-- whose prefix equals the given prefix. Example: If given prefix is MH, it looks
-		-- for the lowest available mounting hole index.
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is
-			use pac_device_prefix;
+
+
+		procedure search is
+			devices : pac_devices_non_electrical.map;
+			available : type_device_name;
+
+			use et_schematic_ops.units;
+
+			subtype type_safety_counter is natural range 0 .. 10; -- CS
+			sc : type_safety_counter := 0;
 			
-			device_cursor : pac_devices_non_electrical.cursor := 
-				module.devices_non_electric.first;
-
-			-- We start the search with index 1. Not 0 because this 
-			-- would result in a zero based
-			-- numbering order. Index zero is allowed but not automatically choosen.
-			index_expected : type_name_index := type_name_index'first + 1;
-
-			gap_found : boolean := false; -- goes true once a gap has been found
 		begin
-			while device_cursor /= pac_devices_non_electrical.no_element loop
-				if get_prefix (key (device_cursor)) = prefix then -- prefix match
-					
-					if get_index (key (device_cursor)) /= index_expected then -- we have a gap
+			devices := get_non_electrical_devices_by_prefix (
+				module_cursor, prefix, log_threshold + 1);
+			
+			available := get_first_available_name (devices, prefix, 1, log_threshold + 2);
 
-						-- build the next available device name and exit
-						next_name := to_device_name (prefix, index_expected);
-
-						-- The proposed next_name must not be occupied by an electrical device.
-						-- Look up the list of electrical devices. If the name
-						-- is already in use, discard it and try the next name.
-						if not module.devices.contains (next_name) then
-							gap_found := true;
-							exit;
-						end if;
-					end if;
-
-					index_expected := index_expected + 1;
-				end if;
+			while electrical_device_exists (module_cursor, available) loop
+				sc := sc + 1;
 				
-				next (device_cursor);
+				log (text => "device name already used by an electrical device. continue search ...",
+					 level => log_threshold + 2);
+				
+				available := get_first_available_name (
+					devices, prefix, get_index (available), log_threshold + 2);
 			end loop;
 
-			-- If no gap has been found, then the device name must be assembled
-			-- using the latest index_expected.
-			if not gap_found then
-				next_name := to_device_name (prefix, index_expected);
-
-				-- The proposed next_name must not be occupied by an electrical device.
-				-- Increment index and propose a new next_name until it can not be
-				-- found among the electrical devices anymore.
-				while module.devices.contains (next_name) loop
-					index_expected := index_expected + 1;
-
-					-- propose a new next_name
-					next_name := to_device_name (prefix, index_expected);
-				end loop;
-			end if;
-			
-		end query_module;
+			next_name := available;
+		end search;
 
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& " search net available non-electrial device name "
+			& " search next available non-electrial device name "
 			& " with prefix " & to_string (prefix),
 			level => log_threshold);
 
 		log_indentation_up;
-		
-		query_element (module_cursor, query_module'access);				
-
+		search;
 		log_indentation_down;
 		
 		return next_name;

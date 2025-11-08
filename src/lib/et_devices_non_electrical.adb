@@ -478,6 +478,27 @@ package body et_devices_non_electrical is
 
 
 
+
+	function get_count (
+		devices	: in pac_devices_non_electrical.map)
+		return natural
+	is begin
+		return natural (devices.length);
+	end;
+		
+		
+
+	function get_count (
+		devices	: in pac_devices_non_electrical.map)
+		return string
+	is begin
+		return count_type'image (devices.length);
+	end;
+
+
+
+	
+
 	function get_prefix (
 		cursor	: in pac_devices_non_electrical.cursor)
 		return pac_device_prefix.bounded_string
@@ -555,68 +576,111 @@ package body et_devices_non_electrical is
 	
 
 	function get_first_available_name (
-		devices	: in pac_devices_non_electrical.map;
-		prefix	: in pac_device_prefix.bounded_string;
-		start	: in type_name_index := 1)
+		devices			: in pac_devices_non_electrical.map;
+		prefix			: in pac_device_prefix.bounded_string; -- MN
+		start			: in type_name_index := 1;
+		log_threshold	: in type_log_level)
 		return type_device_name
 	is
 		result : type_device_name;
 
-		-- We start the search with index 1 by default
-		-- (We do not start with 0 because this would 
-		-- result in a zero based numbering order.
-		-- Index zero is allowed but not automatically choosen.)
-		index_expected : type_name_index := start;
 		
-		cursor : pac_devices_non_electrical.cursor;
+		procedure search_gap is
+			-- We start the search with the index given 
+			-- by argument start:
+			index_expected : type_name_index := start;
 
-		-- This flag indicates that a gap in the
-		-- given list has been found.
-		gap_found : boolean := false;
-		
-	begin
-		-- If the given list is empty, then a device name
-		-- like FD1 or MH1 is returned:
-		if is_empty (devices) then
-			result := to_device_name (prefix, 1);
-		else
+			-- This index advances from device to device.
+			-- If it reaches the index_expected then, index_expected
+			-- is also incremented on each device:
+			index_current : type_name_index := device_name_index_first_default;
+			
+			-- This cursor points to the device candidate:
+			cursor : pac_devices_non_electrical.cursor;
 
-		-- If the given list contains devices, then find
-		-- the first gap among the indexes:
+			-- This flag indicates that a gap in the
+			-- given list has been found.
+			gap_found : boolean := false;	
+		begin
+			log (text => "search_gap. start with " & to_string (index_expected),
+				level => log_threshold + 1);
+				
+			log_indentation_up;
 		
+			-- Start at the begin of the device list:
 			cursor := devices.first;
 			
 			-- Iterate the given devices:
 			while has_element (cursor) loop
 				
-				-- We have a gap if the candidate index differs
-				-- from the expected index:
-				if get_index (key (cursor)) /= index_expected then 
-					result := to_device_name (prefix, index_expected);
-					gap_found := true;
-					exit;
+				-- Once index_current has reached index_expected
+				-- the index of the device candidate is compared with
+				-- index_expected.
+				if index_current = index_expected then
+				
+					-- We have a gap if the candidate index differs
+					-- from the expected index:
+					if get_index (key (cursor)) /= index_expected then 
+						result := to_device_name (prefix, index_expected);
+						gap_found := true;
+						
+						log (text => "gap found. device name: " & to_string (result),
+							level => log_threshold + 2);
+							
+						exit;
+					end if;
 				end if;
-
+				
 				-- Advance to next device in list:
 				next (cursor);
 
-				-- Advance to next expected index:
-				index_expected := index_expected + 1;
+				index_current := index_current + 1;
+				log (text => "index_current " & to_string (index_current),
+					level => log_threshold + 2);
+				
+				-- If index_current has reached index_expected
+				-- then index_expected increases along with index_current
+				if index_current >= index_expected then
+					index_expected := index_current;
+				end if;
 			end loop;
 
 
 			-- If no gap has been found, then we have reached the
 			-- end of the given list. Now we build a device name
 			-- that could be appended to the given device list.
-			-- index_expected already provides the required device index:
+			-- index_current already provides the required device index:
 			if not gap_found then
-				result := to_device_name (prefix, index_expected);
+				result := to_device_name (prefix, index_current);
+				log (text => "no gap found. device name: " & to_string (result),
+					level => log_threshold + 1);
 			end if;
+		
+			log_indentation_down;
+		end search_gap;
+		
+		
+	begin
+		log (text => "get_first_available_name", level => log_threshold);
+		log_indentation_up;
+		
+		-- If the given list is empty, then a device name
+		-- like C1 or R1 is returned:
+		if is_empty (devices) then
+			result := to_device_name (prefix, 1);
+			
+			log (text => "empty list given -> device name is " & to_string (result),
+				level => log_threshold + 1);
+		else
 
+		-- If the given list contains devices, then find
+		-- the first gap among the indexes:
+			search_gap;
 		end if;
 		
-		return result; -- CS should never happen. raise exception ?
-
+		log_indentation_down;
+		
+		return result;
 	end get_first_available_name;
 
 

@@ -187,8 +187,21 @@ package et_devices_electrical is
 	use pac_devices_electrical;
 	
 	
-	
-	
+
+	-- Returns the number of devices that the
+	-- given list contains:
+	function get_count (
+		devices	: in pac_devices_electrical.map)
+		return natural;
+		
+
+	function get_count (
+		devices	: in pac_devices_electrical.map)
+		return string;
+		
+		
+
+		
 	function get_device_model_file (
 		device : pac_devices_electrical.cursor)
 		return pac_device_model_file.bounded_string; -- *.dev
@@ -380,9 +393,10 @@ package et_devices_electrical is
 	-- then the return is C2.
 	-- If the list is empty, then the result is C1, R1, IC1, ...
 	function get_first_available_name (
-		devices	: in pac_devices_electrical.map;
-		prefix	: in pac_device_prefix.bounded_string; -- C
-		start	: in type_name_index := 1)
+		devices			: in pac_devices_electrical.map;
+		prefix			: in pac_device_prefix.bounded_string; -- C
+		start			: in type_name_index := 1;
+		log_threshold	: in type_log_level)
 		return type_device_name;
 
 
