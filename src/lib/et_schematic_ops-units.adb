@@ -1206,8 +1206,8 @@ package body et_schematic_ops.units is
 
 
 		procedure search is
-			devices : pac_devices_electrical.map;
-			available : type_device_name;
+			devices		: pac_devices_electrical.map;
+			proposed	: type_device_name;
 
 			use et_board_ops.devices;
 
@@ -1215,22 +1215,35 @@ package body et_schematic_ops.units is
 			sc : type_safety_counter := 0;
 			
 		begin
+			-- Get all electrical devices having the given prefix:
 			devices := get_electrical_devices_by_prefix (
 				module_cursor, prefix, log_threshold + 1);
-			
-			available := get_first_available_name (devices, prefix, 1, log_threshold + 2);
 
-			while non_electrical_device_exists (module_cursor, available) loop
+			-- Get the first available device name among the devices.
+			-- Since this is the initial search we start the search after
+			-- the last known index 0:
+			proposed := get_first_available_name (devices, prefix, 0, log_threshold + 2);
+
+			log (text => "proposed device name: " & to_string (proposed),
+				level => log_threshold + 2);
+
+			-- So far we have just a proposed device name. Now we must ensure that the
+			-- device name is not used by any non-electrical device. If it is already
+			-- used, then the next available device among the electrical devices
+			-- must be probed. This repeats until a name has been found that
+			-- is free available:
+			while non_electrical_device_exists (module_cursor, proposed) loop
 				sc := sc + 1;
 				
 				log (text => "device name already used by a non-electrical device. continue search ...",
 					 level => log_threshold + 2);
-				
-				available := get_first_available_name (
-					devices, prefix, get_index (available), log_threshold + 2);
+
+				-- Propose the next electrical device:
+				proposed := get_first_available_name (
+					devices, prefix, get_index (proposed), log_threshold + 2);
 			end loop;
 
-			next_name := available;
+			next_name := proposed;
 		end search;
 			
 	

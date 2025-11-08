@@ -352,6 +352,9 @@ package et_board_ops.devices is
 	-- device name in the module.
 	-- Example: prefix is FD. If there are FD1, FD4 and FD4, then 
 	-- then the return will be FD2:
+	-- Devices names are also used by electrical devices. So this
+	-- function also looks into the electrical devices and returns
+	-- a name that is not used by both electrical and non-electrical devices:
 	function get_next_available_non_electrical_device_name (
 		module_cursor	: in pac_generic_modules.cursor;
 		prefix			: in pac_device_prefix.bounded_string; -- FD

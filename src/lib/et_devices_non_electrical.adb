@@ -578,12 +578,15 @@ package body et_devices_non_electrical is
 	function get_first_available_name (
 		devices			: in pac_devices_non_electrical.map;
 		prefix			: in pac_device_prefix.bounded_string; -- MN
-		start			: in type_name_index := 1;
+		start			: in type_name_index;
 		log_threshold	: in type_log_level)
 		return type_device_name
 	is
 		result : type_device_name;
 
+		-- CS: Maybe the code of this function is way to cumbersome
+		-- and difficult to understand. However, it works somehow ...
+		-- Simplification and rework ?
 		
 		procedure search_gap is
 			-- We start the search with the index given 
@@ -664,10 +667,10 @@ package body et_devices_non_electrical is
 		log (text => "get_first_available_name (non-electrical)", level => log_threshold);
 		log_indentation_up;
 		
-		-- If the given list is empty, then a device name
-		-- like C1 or R1 is returned:
+		-- If the given list is empty, then a device name with 
+		-- index (start + 1) is to be returned:
 		if is_empty (devices) then
-			result := to_device_name (prefix, 1);
+			result := to_device_name (prefix, start + 1);
 			
 			log (text => "empty list given -> device name is " & to_string (result),
 				level => log_threshold + 1);

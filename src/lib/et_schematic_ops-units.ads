@@ -300,6 +300,9 @@ package et_schematic_ops.units is
 	-- device name in the module.
 	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 
 	-- then the return will be C2.
+	-- Devices names are also used by non-electrical devices. So this
+	-- function also looks into the non-electrical devices and returns
+	-- a name that is not used by both electrical and non-electrical devices:
 	function get_next_available_electrical_device_name (
 		module_cursor	: in pac_generic_modules.cursor;
 		prefix			: in pac_device_prefix.bounded_string; -- C
