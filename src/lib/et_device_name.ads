@@ -36,6 +36,9 @@
 --   history of changes:
 --
 
+with ada.containers;			use ada.containers;
+with ada.containers.ordered_sets;
+
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with et_device_prefix;			use et_device_prefix;
@@ -159,6 +162,22 @@ package et_device_name is
 		log_threshold	: in type_log_level);
 
 
+
+	-- In order to collect device names we use a set:
+	package pac_device_names is new ordered_sets (type_device_name);
+
+	use pac_device_names;
+
+
+	-- Merges two lists of device names.
+	-- Example: left contains C1, C2, C4, C10
+	--         right contains C3, C8
+	--        result is C1, C2, C3, C4, C8, C10
+	function merge_device_names (
+		left, right : in pac_device_names.set)
+		return pac_device_names.set;
+
+	
 	
 end et_device_name;
 

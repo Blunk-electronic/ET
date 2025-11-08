@@ -109,6 +109,31 @@ package body et_devices_electrical is
 
 
 	
+	
+	
+	function get_device_names (
+		devices : in pac_devices_electrical.map)
+		return pac_device_names.set
+	is
+		result : pac_device_names.set;
+				
+		procedure query_device (
+			c : in pac_devices_electrical.cursor) 
+		is begin
+			-- Insert the device name in the resulting list:
+			result.insert (key (c));
+		end;
+		
+	begin	
+		-- Iterate through the devices:
+		devices.iterate (query_device'access);
+	
+		return result;
+	end get_device_names;
+
+	
+	
+	
 
 
 	function get_count (

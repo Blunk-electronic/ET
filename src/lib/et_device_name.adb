@@ -352,6 +352,21 @@ package body et_device_name is
 		end if;
 	end;
 	
+
+
+
+
+
+	function merge_device_names (
+		left, right : in pac_device_names.set)
+		return pac_device_names.set
+	is begin
+		return union (left, right);
+	end;
+	
+
+
+	
 	
 end et_device_name;
 

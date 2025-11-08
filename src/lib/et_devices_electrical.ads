@@ -186,6 +186,14 @@ package et_devices_electrical is
 
 	use pac_devices_electrical;
 	
+
+	
+	-- Extracts from the given list of devices the
+	-- names (like IC1, R23, D23):
+	function get_device_names (
+		devices : in pac_devices_electrical.map)
+		return pac_device_names.set;
+	
 	
 
 	-- Returns the number of devices that the

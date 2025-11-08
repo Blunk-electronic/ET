@@ -375,6 +375,17 @@ package et_devices_non_electrical is
 	
 
 
+
+	-- Extracts from the given list of devices the
+	-- names (like FD1, MH23):
+	function get_device_names (
+		devices : in pac_devices_non_electrical.map)
+		return pac_device_names.set;
+
+
+	
+	
+
 	-- Returns the number of devices that the
 	-- given list contains:
 	function get_count (
