@@ -560,7 +560,7 @@ begin -- add_electrical_device
 	
 
 	-- Build the next available device name:
-	next_name := get_next_available_electrical_device_name (
+	next_name := get_next_available_device_name (
 		module_cursor, get_prefix (device_cursor_lib), log_threshold);
 
 	log (text => "auto generated device name: " & to_string (next_name),

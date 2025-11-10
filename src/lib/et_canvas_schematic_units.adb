@@ -1940,7 +1940,7 @@ package body et_canvas_schematic_units is
 		unit_add.total := get_unit_count (unit_add.device);
 		
 		-- Assign the prospective device name:
-		unit_add.device_pre := get_next_available_electrical_device_name (
+		unit_add.device_pre := get_next_available_device_name (
 			active_module, get_prefix (device_cursor_lib), log_threshold + 2);
 
 		-- The initial rotation is always zero:
@@ -2151,7 +2151,7 @@ package body et_canvas_schematic_units is
 
 		-- In case further devices are to be added,
 		-- assign the prospective next device name:
-		unit_add.device_pre := get_next_available_electrical_device_name (
+		unit_add.device_pre := get_next_available_device_name (
 			active_module, get_prefix (unit_add.device), log_threshold + 1);
 		
 		log_indentation_down;
@@ -2247,7 +2247,7 @@ package body et_canvas_schematic_units is
 					unit_add.value := get_value (object.unit.device_cursor);
 					unit_add.total := get_unit_count (object.unit.device_cursor);
 
-					unit_add.device_pre := get_next_available_electrical_device_name (
+					unit_add.device_pre := get_next_available_device_name (
 						active_module, get_prefix (unit_add.device), log_threshold + 1);
 
 					unit_add.rotation := get_rotation (object.unit.unit_cursor);

@@ -547,7 +547,7 @@ package body et_canvas_board_devices is
 			 level => log_threshold + 1);
 		
 		-- Assign the prospective device name:
-		device_add.device_pre := get_next_available_non_electrical_device_name (
+		device_add.device_pre := et_schematic_ops.units.get_next_available_device_name (
 			active_module, prefix, log_threshold + 1);
 		
 		-- Once the operator has started selecting a package variant, the
@@ -804,7 +804,7 @@ package body et_canvas_board_devices is
 
 		-- In case further devices are to be added,
 		-- assign the prospective next device name:
-		device_add.device_pre := get_next_available_non_electrical_device_name (
+		device_add.device_pre := et_schematic_ops.units.get_next_available_device_name (
 			active_module, get_prefix (device_add.device_pre), log_threshold + 1);
 		
 		log_indentation_down;
@@ -896,7 +896,7 @@ package body et_canvas_board_devices is
 
 					device_add.value := get_value (object.non_electrical_device.cursor);
 					
-					device_add.device_pre := get_next_available_non_electrical_device_name (
+					device_add.device_pre := et_schematic_ops.units.get_next_available_device_name (
 						active_module, get_prefix (object.non_electrical_device.cursor), log_threshold + 1);
 
 					device_add.rotation := get_rotation (object.non_electrical_device.cursor);

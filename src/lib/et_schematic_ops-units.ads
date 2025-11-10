@@ -303,7 +303,7 @@ package et_schematic_ops.units is
 	-- Devices names are also used by non-electrical devices. So this
 	-- function also looks into the non-electrical devices and returns
 	-- a name that is not used by both electrical and non-electrical devices:
-	function get_next_available_electrical_device_name (
+	function get_next_available_device_name (
 		module_cursor	: in pac_generic_modules.cursor;
 		prefix			: in pac_device_prefix.bounded_string; -- C
 		log_threshold	: in type_log_level)

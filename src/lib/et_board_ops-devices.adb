@@ -1496,67 +1496,6 @@ package body et_board_ops.devices is
 
 
 
-	
-	
-
-
-	function get_next_available_non_electrical_device_name (
-		module_cursor	: in pac_generic_modules.cursor;
-		prefix			: in pac_device_prefix.bounded_string;
-		log_threshold	: in type_log_level)
-		return type_device_name
-	is
-		next_name : type_device_name; -- to be returned
-
-
-		procedure search_2 is
-			use et_schematic_ops.units;
-			
-			devices_electrical : pac_devices_electrical.map;
-			devices_non_electrical : pac_devices_non_electrical.map;
-
-			names_electrical : pac_device_names.set;
-			names_non_electrical : pac_device_names.set;
-			names_all : pac_device_names.set;
-			
-		begin
-			-- Get all non-electrical devices having the given prefix:
-			devices_electrical := get_electrical_devices_by_prefix (
-				module_cursor, prefix, log_threshold + 1);
-
-			names_electrical := get_device_names (devices_electrical);
-			
-			devices_non_electrical := get_non_electrical_devices_by_prefix (
-				module_cursor, prefix, log_threshold + 1);
-
-			names_non_electrical := get_device_names (devices_non_electrical);
-
-			names_all := merge_device_names (names_electrical, names_non_electrical);
-
-			next_name := get_first_available_name (names_all, prefix, log_threshold + 1);
-
-			log (text => "proposed device name: " & to_string (next_name),
-				level => log_threshold + 2);
-
-		end search_2;
-
-
-		
-	begin
-		log (text => "module " & to_string (module_cursor) 
-			 & " search next available non-electrical device name with prefix " 
-			 & to_string (prefix),
-			level => log_threshold);
-
-		log_indentation_up;
-		search_2;
-		log_indentation_down;
-		
-		return next_name;
-	end get_next_available_non_electrical_device_name;
-
-
-
 
 	
 	
@@ -1583,7 +1522,7 @@ package body et_board_ops.devices is
 			next_name : type_device_name;
 		begin
 			-- Build the next available device name:
-			next_name := get_next_available_non_electrical_device_name (
+			next_name := get_next_available_device_name (
 				module_cursor, prefix, log_threshold + 1);
 						
 			log (text => "add device " & to_string (next_name), 
@@ -1641,6 +1580,7 @@ package body et_board_ops.devices is
 		log_indentation_down;
 	end add_non_electrical_device;
 
+
 	
 
 
@@ -1689,7 +1629,7 @@ package body et_board_ops.devices is
 		device_cursor := get_non_electrical_device (module_cursor, device_name);
 
 		-- Build the next available device name:
-		next_name := get_next_available_non_electrical_device_name (
+		next_name := get_next_available_device_name (
 			module_cursor, get_prefix (device_name), log_threshold + 1); -- FD2
 
 		

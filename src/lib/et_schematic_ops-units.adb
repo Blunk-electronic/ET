@@ -1196,7 +1196,7 @@ package body et_schematic_ops.units is
 
 
 	
-	function get_next_available_electrical_device_name (
+	function get_next_available_device_name (
 		module_cursor	: in pac_generic_modules.cursor;
 		prefix			: in pac_device_prefix.bounded_string;
 		log_threshold	: in type_log_level)
@@ -1239,7 +1239,7 @@ package body et_schematic_ops.units is
 	
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			 & " search next available electrical device name with prefix " 
+			 & " search next available device name with prefix " 
 			 & to_string (prefix),
 			level => log_threshold);
 
@@ -1248,7 +1248,7 @@ package body et_schematic_ops.units is
 		log_indentation_down;
 		
 		return next_name;
-	end get_next_available_electrical_device_name;
+	end get_next_available_device_name;
 
 
 
