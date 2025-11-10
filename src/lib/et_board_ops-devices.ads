@@ -333,6 +333,33 @@ package et_board_ops.devices is
 		log_threshold		: in type_log_level);
 
 
+
+	
+
+-- PLACEHOLDERS:
+
+
+	-- Moves a placeholder of the given device.
+	procedure move_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- IC45
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in type_vector_model; -- x/y
+		meaning			: in type_placeholder_meaning; -- name, value, purpose
+		log_threshold	: in type_log_level);
+
+
+
+	-- Rotates the given placeholder about its origin.
+	procedure rotate_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- IC45
+		toggle			: in boolean := false;
+		rotation		: in et_board_geometry.type_rotation_model := 90.0;
+		meaning			: in type_placeholder_meaning; -- name, value, purpose		
+		log_threshold	: in type_log_level);
+
+
 	
 ------------------------------------------------------------------------
 

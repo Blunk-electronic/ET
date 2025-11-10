@@ -56,6 +56,7 @@ with et_axes;						use et_axes;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 with et_generic_module;				use et_generic_module;
+with et_text;
 with et_terminals;					use et_terminals;
 with et_pcb;						use et_pcb;
 with et_pcb_stack;					use et_pcb_stack;
@@ -64,7 +65,7 @@ with et_board_coordinates;			use et_board_coordinates;
 with et_board_geometry;				use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 
-with et_board_text;
+with et_board_text;					use et_board_text;
 
 with et_assembly_variant_name;		use et_assembly_variant_name;
 with et_pick_and_place;

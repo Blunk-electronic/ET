@@ -68,6 +68,7 @@ package body et_board_ops.devices is
 	use pac_devices_electrical;
 	use pac_devices_non_electrical;
 	use pac_nets;
+	use pac_text_board;
 
 
 
@@ -379,6 +380,8 @@ package body et_board_ops.devices is
 					 & " by " & to_string (point), level => log_threshold);
 		end case;
 
+
+		log_indentation_up;
 		
 		update_element (
 			container	=> generic_modules,
@@ -386,6 +389,8 @@ package body et_board_ops.devices is
 			process		=> query_module'access);
 
 		update_ratsnest (module_cursor, log_threshold + 1);
+
+		log_indentation_down;
 	end move_device;
 
 
@@ -489,6 +494,7 @@ package body et_board_ops.devices is
 					 & " by " & to_string (rotation), level => log_threshold);
 		end case;
 
+		log_indentation_up;
 		
 		update_element (
 			container	=> generic_modules,
@@ -496,6 +502,8 @@ package body et_board_ops.devices is
 			process		=> query_module'access);
 
 		update_ratsnest (module_cursor, log_threshold + 1);
+
+		log_indentation_down;
 	end rotate_device;
 
 
@@ -1453,8 +1461,225 @@ package body et_board_ops.devices is
 
 
 
+	
 
 
+-- PLACEHOLDERS:
+
+
+	procedure move_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- IC45
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in type_vector_model; -- x/y
+		meaning			: in type_placeholder_meaning; -- name, value, purpose
+		log_threshold	: in type_log_level)
+	is
+		
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			device_electrical		: pac_devices_electrical.cursor;
+			device_non_electrical	: pac_devices_non_electrical.cursor;			
+
+			
+			procedure move_electrical (
+				device_name	: in type_device_name;
+				device		: in out type_device_electrical) 
+			is begin
+				case coordinates is
+					when ABSOLUTE =>
+						null;
+				-- move_placeholder (unit, meaning, coordinates, point);
+						
+					when RELATIVE =>
+						null;
+						
+				end case;
+			end;
+
+			
+			procedure move_non_electrical (
+				device_name	: in type_device_name;
+				device		: in out type_device_non_electrical) 
+			is begin
+				case coordinates is
+					when ABSOLUTE =>
+						null;
+
+					when RELATIVE =>
+						null;
+				end case;
+			end;
+
+			
+		begin
+
+			-- Search the device first among the electrical devices.
+			-- Most likely it will be among them. If not,
+			-- search in non-electrical devices:
+			
+			device_electrical := get_electrical_device (module_cursor, device_name);
+			
+			if has_element (device_electrical) then
+
+				update_element (
+					container	=> module.devices,
+					position	=> device_electrical,
+					process		=> move_electrical'access);
+
+			else
+				-- Search among non-electrical devices:
+				device_non_electrical := get_non_electrical_device (module_cursor, device_name);
+
+				if has_element (device_non_electrical) then
+
+					update_element (
+						container	=> module.devices_non_electric,
+						position	=> device_non_electrical,
+						process		=> move_non_electrical'access);
+
+				-- If the requested device has not been found,
+				-- then log a warning:
+				else
+					log (WARNING, " Device " & to_string (device_name) & " not found !");
+				end if;
+
+			end if;
+		end query_module;
+	
+
+		
+	begin
+		case coordinates is
+			when ABSOLUTE =>
+				log (text => "module " & to_string (module_cursor)
+					& " move " & to_string (device_name) 
+					& " placeholder " & enclose_in_quotes (to_string (meaning))
+					& " to" & to_string (point),
+					level => log_threshold);
+
+			when RELATIVE =>
+				log (text => "module " & to_string (module_cursor)
+					& " move " & to_string (device_name) 
+					& " placeholder " & enclose_in_quotes (to_string (meaning))
+					& " by" & to_string (point),
+					level => log_threshold);
+		end case;
+
+		
+		log_indentation_up;
+			
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+	
+		log_indentation_down;		
+	end move_placeholder;
+
+
+
+
+
+	
+
+	
+
+	procedure rotate_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- IC45
+		toggle			: in boolean := false;
+		rotation		: in et_board_geometry.type_rotation_model := 90.0;
+		meaning			: in type_placeholder_meaning; -- name, value, purpose		
+		log_threshold	: in type_log_level) 
+	is
+
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			device_electrical		: pac_devices_electrical.cursor;
+			device_non_electrical	: pac_devices_non_electrical.cursor;			
+
+			
+			procedure rotate_electrical (
+				device_name	: in type_device_name;
+				device		: in out type_device_electrical) 
+			is begin
+					-- rotate_placeholder (unit, meaning, toggle, rotation);
+				null;		
+			end;
+
+			
+			procedure rotate_non_electrical (
+				device_name	: in type_device_name;
+				device		: in out type_device_non_electrical) 
+			is begin
+				null;
+			end;
+
+			
+		begin
+
+			-- Search the device first among the electrical devices.
+			-- Most likely it will be among them. If not,
+			-- search in non-electrical devices:
+			
+			device_electrical := get_electrical_device (module_cursor, device_name);
+			
+			if has_element (device_electrical) then
+
+				update_element (
+					container	=> module.devices,
+					position	=> device_electrical,
+					process		=> rotate_electrical'access);
+
+			else
+				-- Search among non-electrical devices:
+				device_non_electrical := get_non_electrical_device (module_cursor, device_name);
+
+				if has_element (device_non_electrical) then
+
+					update_element (
+						container	=> module.devices_non_electric,
+						position	=> device_non_electrical,
+						process		=> rotate_non_electrical'access);
+
+				-- If the requested device has not been found,
+				-- then log a warning:
+				else
+					log (WARNING, " Device " & to_string (device_name) & " not found !");
+				end if;
+
+			end if;
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " rotate " & to_string (device_name) 
+			 & " placeholder" & to_string (meaning) 
+			 & " to" & to_string (rotation),
+			 level => log_threshold);
+
+		log_indentation_up;
+			
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end rotate_placeholder;
+
+
+
+	
 	
 ------------------------------------------------------------------------------------------
 

@@ -62,6 +62,7 @@ with et_drills;
 with et_modes.board;
 with et_device_property_level;
 with et_devices_electrical;
+with et_device_placeholders;		use et_device_placeholders;
 with et_canvas_board_devices;
 with et_canvas_board_texts;
 with et_canvas_board_vias;
@@ -3252,6 +3253,57 @@ is
 	end flip_device;
 
 	
+
+
+	-- This procedure parses a command that moves a placeholder
+	-- for name, value or purpose of a device.
+	-- Example: "board led_driver move value R1 absolute 100 115"
+	-- Example: "board led_driver move value IC1 relative -5 0"
+	procedure move_device_placeholder is
+		meaning : type_placeholder_meaning;
+		
+		procedure do_it is 
+			use et_board_ops.devices;
+		begin
+			case cmd_field_count is
+				when 8 =>
+					move_placeholder (
+						module_cursor 	=> active_module,
+						device_name		=> to_device_name (get_field (5)), -- IC1
+						coordinates		=> to_coordinates (get_field (6)),  -- relative/absolute
+						point			=> to_vector_model (get_field (7), get_field (8)),
+						meaning			=> meaning,
+						log_threshold	=> log_threshold + 1);
+
+				when 9 .. type_field_count'last => too_long; 
+					
+				when others => command_incomplete;
+			end case;
+		end do_it;
+
+		
+	begin
+		case noun is
+			when NOUN_NAME =>
+				meaning := NAME;
+				
+			when NOUN_VALUE =>
+				meaning := VALUE;
+								
+			when NOUN_PURPOSE =>
+				meaning := PURPOSE;
+
+			-- CS partcode ?
+
+			when others => null; -- CS should never happen
+		end case;
+
+		do_it;		
+	end move_device_placeholder;
+
+
+
+	
 	
 	
 
@@ -3962,6 +4014,9 @@ is
 					when NOUN_DEVICE =>
 						move_device;
 
+					when NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE =>
+						move_device_placeholder;
+						
 					when NOUN_SUBMODULE =>
 						case cmd_field_count is
 							when 8 =>
