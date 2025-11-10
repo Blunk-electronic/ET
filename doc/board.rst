@@ -141,6 +141,9 @@ non-electrical devices (without a representation in the schematic).
 		add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac FD 5 10 45		
 		add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac FD 5 10 45 bottom
 
+	|VNS| a d
+
+
 
 
 #. Copy Non-Electrical Device
