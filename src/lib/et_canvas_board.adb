@@ -812,6 +812,8 @@ package body et_canvas_board is
 			
 			reset_preliminary_text; -- after placing a text
 
+			reset_zoom_area; -- abort zoom-to-area operation
+
 			reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
 			reset_preliminary_non_electrical_device;
 

@@ -509,6 +509,7 @@ package body et_canvas_schematic is
 			unit_fetch.valid := false;
 			
 			reset_preliminary_segment; -- after move/drag/draw of a net segment
+			
 			reset_zoom_area; -- abort zoom-to-area operation
 
 			pac_device_ops.reset_window_open_flags;
