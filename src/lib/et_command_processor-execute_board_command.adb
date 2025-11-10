@@ -4053,6 +4053,8 @@ is
 						
 					when NOUN_ZONE =>
 						set_fill_zone_properties; -- conductor layers related
+
+					-- CS NOUN_VALUE, NOUN_PARTCODE, NOUN_PURPOSE ?
 						
 					when NOUN_VIA =>
 						set_via_properties;
