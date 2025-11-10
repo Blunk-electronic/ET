@@ -79,7 +79,7 @@ with et_commit;
 with et_directory_and_file_ops;
 with et_object_status;				use et_object_status;
 
-with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
+-- with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 
 
 package body et_canvas_board_devices is
@@ -90,27 +90,6 @@ package body et_canvas_board_devices is
 	use pac_devices_electrical;
 	use pac_devices_non_electrical;
 	
-
-	
-	procedure reset_preliminary_electrical_device is begin
-		reset_edit_process_running;
-		object_tool := MOUSE;
-		object_device_name := no_name;
-
-		et_schematic_ops.units.reset_status_units (
-			active_module, log_threshold + 1);
-	end reset_preliminary_electrical_device;
-
-
-
-	
-	procedure reset_preliminary_non_electrical_device is begin
-		reset_edit_process_running;
-		object_tool := MOUSE;
-		object_device_name := no_name;
-
-		reset_proposed_non_electrical_devices (active_module, log_threshold + 1);
-	end reset_preliminary_non_electrical_device;
 	
 
 	

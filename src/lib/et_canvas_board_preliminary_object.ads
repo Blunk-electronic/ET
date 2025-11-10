@@ -66,7 +66,7 @@ package et_canvas_board_preliminary_object is
 
 	object_net_name			: pac_net_name.bounded_string := et_net_names.no_name; -- GND, P3V3
 	
-	object_device_name		: type_device_name := et_device_name.no_name; -- IC45, FD2
+	-- object_device_name		: type_device_name := et_device_name.no_name; -- IC45, FD2
 	
 
 

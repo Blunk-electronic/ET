@@ -68,20 +68,6 @@ with et_logging;					use et_logging;
 package et_canvas_board_devices is
 
 
-	-- This procedure:
-	-- - Resets all proposed electrical devices.
-	-- - flags object_tool, object_device_name
-	procedure reset_preliminary_electrical_device;
-
-
-
-	-- This procedure:
-	-- - Resets all proposed non-electrical devices.
-	-- - flags object_tool, object_device_name
-	procedure reset_preliminary_non_electrical_device;
-
-
-
 
 	-- This procedure is required in order to clarify
 	-- which object among the proposed objects is meant.

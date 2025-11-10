@@ -814,9 +814,6 @@ package body et_canvas_board is
 
 			reset_zoom_area; -- abort zoom-to-area operation
 
-			reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
-			reset_preliminary_non_electrical_device;
-
 			pac_device_ops.reset_window_open_flags;
 		end level_1;
 
