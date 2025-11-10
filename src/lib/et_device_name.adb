@@ -256,6 +256,12 @@ package body et_device_name is
 	end to_string;
 
 
+
+
+
+
+
+	
 	
 	function get_prefix (
 		name : in type_device_name) 
@@ -265,6 +271,20 @@ package body et_device_name is
 	end;
 
 
+
+	procedure set_prefix (
+		name	: in out type_device_name;
+		prefix	: in pac_device_prefix.bounded_string)
+	is begin
+		name.prefix := prefix;
+	end set_prefix;
+
+
+
+	
+
+
+	
 	
 	function get_index (
 		name : in type_device_name) 
@@ -274,6 +294,27 @@ package body et_device_name is
 	end;
 
 
+
+	procedure set_index (
+		name	: in out type_device_name;
+		index	: in type_name_index)
+	is begin
+		name.id := index;
+
+		-- Calculate the width of the index. examples: it is 3 for IC987, 2 for C77
+		-- The width of the index is obtained by converting the given index to a string
+		-- and then by measuring its length:
+		name.id_width := trim (natural'image (index), left)'length;
+		-- CS: Do something more elegant to determine the
+		-- number of digits of the index.
+	end;
+
+
+
+
+
+	
+	
 	
 	function to_device_name (
 		prefix	: in pac_device_prefix.bounded_string; 	-- R, C, L
@@ -290,9 +331,12 @@ package body et_device_name is
 		-- Calculate the width of the index. examples: it is 3 for IC987, 2 for C77
 		-- The width of the index is obtained by converting the given index to a string
 		-- and then by measuring its length:
-		device_name.id_width := trim (natural'image (index),left)'length;
-
-		-- If width IS provided AND wider than the just calculated width,
+		device_name.id_width := trim (natural'image (index), left)'length;
+		-- CS: Do something more elegant to determine the
+		-- number of digits of the index.
+		
+		-- If width IS provided AND if it is wider than the 
+		-- just calculated width,
 		-- then the calculated width is overwritten.
 		if width /= type_index_width'first then
 
@@ -309,6 +353,10 @@ package body et_device_name is
 	end;
 
 
+
+
+
+	
 	
 	procedure offset_index (
 		name	: in out type_device_name;
@@ -366,6 +414,51 @@ package body et_device_name is
 	
 
 
+
+
+	function get_first_available_name (
+		device_names	: in pac_device_names.set;
+		prefix			: in pac_device_prefix.bounded_string;
+		log_threshold	: in type_log_level)
+		return type_device_name
+	is
+		-- CS: This code is easy to understand but probably
+		-- not very efficient because the given list of device names
+		-- is tested for the existence of each proposed device name
+		-- over and over.
+		
+		result : type_device_name;
+
+		-- We start the search with the lowest possible
+		-- index 1 (Index 0 is allowed by definition, but not
+		-- automatically choosen):
+		idx : type_name_index := device_name_index_first_default;
+		
+	begin
+		-- Assemble the first name to be searched for (like C1):
+		set_prefix (result, prefix);
+		set_index (result, idx);
+
+		-- This loop increments the index and searches
+		-- the given device names for the name temporarily
+		-- held in "result". If the name does not exist
+		-- in device_names, then the loop aborts:
+		while device_names.contains (result) loop
+
+			-- Propose a new device name (with the next index):
+			idx := idx + 1;
+			set_index (result, idx);
+		end loop;
+
+		-- The latest calculated index is available
+		-- and now set in the result:
+		return result;
+
+		-- CS exception handler in case idx experiences an overflow ?
+	end get_first_available_name;
+
+
+	
 	
 	
 end et_device_name;

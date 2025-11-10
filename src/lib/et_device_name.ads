@@ -80,6 +80,7 @@ package et_device_name is
 	-- see number of digits of type_device_name_index
 
 
+
 	
 	type type_device_name is record -- CS: should be private
 		prefix		: pac_device_prefix.bounded_string := prefix_default; -- like "IC"
@@ -90,6 +91,10 @@ package et_device_name is
 	end record;
 
 
+
+	-- CS function get_width
+	-- CS procedure set_width
+	
 	
 	
 	-- Returns true if the prefixes of left and right are equal:
@@ -124,11 +129,23 @@ package et_device_name is
 	function to_string (name : in type_device_name) return string;
 
 	
+	
+	
 	-- Returns the prefix of the given device name.
 	function get_prefix (
 		name : in type_device_name) 
 		return pac_device_prefix.bounded_string;
 
+		
+	-- Sets the prefix of the given device name:
+	procedure set_prefix (
+		name	: in out type_device_name;
+		prefix	: in pac_device_prefix.bounded_string);
+		
+	
+	
+	
+	
 	
 	-- Returns the index of the given device name.
 	function get_index (
@@ -136,6 +153,16 @@ package et_device_name is
 		return type_name_index;
 
 
+	-- Sets the index of the given device name:
+	procedure set_index (
+		name	: in out type_device_name;
+		index	: in type_name_index);
+	
+	
+	
+	
+	
+	
 	
 	-- Builds a device name by given prefix (like R) and index (like 23) to a device name (like R23).
 	-- If width is not provided, then the width of the index is calculated automatically. In case of R23 the width is 2.
@@ -177,7 +204,21 @@ package et_device_name is
 		left, right : in pac_device_names.set)
 		return pac_device_names.set;
 
-	
+
+
+	-- Returns the first device name that is not
+	-- in the given list of device names.
+	-- NOTE; It is assumed that all devices in the given
+	-- list have the same prefix. Otherwise the result would be nonsense.
+	-- Example: If the list contains capacitors C1, C2, C50,
+	-- then the return is C3.
+	-- If the list is empty, then the returned index is always 1:
+	function get_first_available_name (
+		device_names	: in pac_device_names.set;
+		prefix			: in pac_device_prefix.bounded_string; -- C
+		log_threshold	: in type_log_level)
+		return type_device_name;
+
 	
 end et_device_name;
 
