@@ -1213,7 +1213,6 @@ is
 		meaning : type_placeholder_meaning;
 
 		procedure do_it is begin
-			-- schematic led_driver move name R1 1 absolute 10 15
 			case cmd_field_count is
 				when 9 =>
 					move_placeholder (
@@ -1221,9 +1220,7 @@ is
 						device_name		=> to_device_name (get_field (5)), -- IC1
 						unit_name		=> to_unit_name (get_field (6)), -- A
 						coordinates		=> to_coordinates (get_field (7)),  -- relative/absolute
-						point			=> type_vector_model (set (
-											x => to_distance (get_field (8)),
-											y => to_distance (get_field (9)))),
+						point			=> to_vector_model (get_field (8), get_field (9)),
 						meaning			=> meaning,
 						log_threshold	=> log_threshold + 1);
 

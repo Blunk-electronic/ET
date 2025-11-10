@@ -773,7 +773,7 @@ package et_schematic_ops.units is
 -- PLACEHOLDERS:
 
 
-	-- Moves the a unit placeholder of the given unit.
+	-- Moves a placeholder of the given unit.
 	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
