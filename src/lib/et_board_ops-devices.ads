@@ -61,24 +61,6 @@ package et_board_ops.devices is
 		return boolean;
 
 	
-	
--- ELECTICAL DEVICES:
-	
-	
-	-- Collects all devices in the vicinity of the given point:	
-	function get_devices ( -- CS remove
-		module			: in pac_generic_modules.cursor;
-		catch_zone		: in type_catch_zone;
-		log_threshold	: in type_log_level)
-		return pac_devices_electrical.map;
-
-
-	-- Modifies that status flag of a device (see package et_object_status):
-	procedure modify_status ( -- CS remove
-		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in pac_devices_electrical.cursor;
-		operation		: in type_status_operation;
-		log_threshold	: in type_log_level);
 
 	
 	type type_object_electrical is record
