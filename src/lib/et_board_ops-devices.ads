@@ -45,7 +45,6 @@ with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;
 with et_device_prefix; 					use et_device_prefix;
 with et_device_name;					use et_device_name;
-with et_device_category_electrical_non_electrical;	use et_device_category_electrical_non_electrical;
 with et_device_property_level;			use et_device_property_level;
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_non_electrical;			use et_devices_non_electrical;
@@ -54,14 +53,9 @@ with et_devices_non_electrical;			use et_devices_non_electrical;
 package et_board_ops.devices is
 
 
-	-- Returns true if the device exists in the given module:
-	function non_electrical_device_exists (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name)
-		return boolean;
 
+-- ELECTRICAL DEVICES:
 	
-
 	
 	type type_object_electrical is record
 		cursor : pac_devices_electrical.cursor;
@@ -103,15 +97,7 @@ package et_board_ops.devices is
 	
 
 	
-	-- Returns the first device according to the given flag.
-	-- If no device has been found,
-	-- then the return is no_element:
-	function get_first_device (
-		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;
-		log_threshold	: in type_log_level)
-		return pac_devices_electrical.cursor; -- CS remove
-	
+
 
 	-- Returns the first device according to the given flag.
 	-- If no device has been found,
@@ -168,25 +154,22 @@ package et_board_ops.devices is
 		log_threshold	: in type_log_level);
 
 
-	-- CS
-	--procedure flip_device (
-		--module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		--device_cursor	: in pac_devices_electrical.cursor; -- IC45
-		--face			: in type_face; -- top/bottom
-		--log_threshold	: in type_log_level);
 
 	
 --------------------------------------------------------------------------
 	
 -- NON-ELECTRICAL DEVICES:
 
-	-- Collects all non-electrical devices in the vicinity of the given point:	
-	function get_devices ( -- CS remove
-		module			: in pac_generic_modules.cursor;
-		catch_zone		: in type_catch_zone;
-		log_threshold	: in type_log_level)
-		return pac_devices_non_electrical.map;
 
+	-- Returns true if the device exists in the given module:
+	function non_electrical_device_exists (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name)
+		return boolean;
+
+
+	
+	
 
 	-- Returns the cursor to the given non-electrical device
 	-- in the given module.
@@ -234,13 +217,6 @@ package et_board_ops.devices is
 		return string;
 
 	
-		
-	-- Modifies that status flag of a device (see package et_object_status):
-	procedure modify_status ( -- CS remove
-		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in pac_devices_non_electrical.cursor;
-		operation		: in type_status_operation;
-		log_threshold	: in type_log_level);
 
 
 	
@@ -307,16 +283,6 @@ package et_board_ops.devices is
 		return type_object_non_electrical;
 	
 	
-	-- Advances to the next proposed device, starting at
-	-- the device given by device_cursor. If there are no
-	-- proposed devices, then device_cursor is set to no_element.
-	-- If there is only one proposed device, then device_cursor
-	-- is unchanged. 
-	procedure next_proposed_non_electrical_device ( -- CS remove
-		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in out pac_devices_non_electrical.cursor;							
-		log_threshold	: in type_log_level);
-
 
 	
 -- DEVICE ADD and COPY:	

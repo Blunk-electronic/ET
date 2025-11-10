@@ -41,7 +41,6 @@ with et_units;							use et_units;
 with et_unit_name;						use et_unit_name;
 with et_device_placeholders;			use et_device_placeholders;
 with et_object_status;					use et_object_status;
-with et_device_category_electrical_non_electrical;	use et_device_category_electrical_non_electrical;
 with et_device_property_level;			use et_device_property_level;
 
 

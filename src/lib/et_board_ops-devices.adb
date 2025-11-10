@@ -71,32 +71,6 @@ package body et_board_ops.devices is
 
 
 
-	function non_electrical_device_exists (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name)
-		return boolean
-	is
-		device_found : boolean := false; -- to be returned
-		
-		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is begin
-			if contains (module.devices_non_electric, device) then
-				device_found := true;
-			end if;
-		end query_devices;
-		
-	begin
-		pac_generic_modules.query_element (
-			position	=> module,
-			process		=> query_devices'access);
-
-		return device_found;
-	end non_electrical_device_exists;
-
-
-
 
 
 
@@ -244,62 +218,6 @@ package body et_board_ops.devices is
 
 
 
-
-	
-	
-
-	function get_first_device (
-		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;
-		log_threshold	: in type_log_level)
-		return pac_devices_electrical.cursor
-	is
-		result : pac_devices_electrical.cursor;
-
-		
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is
-			device_cursor : pac_devices_electrical.cursor := module.devices.first;
-		begin
-			while device_cursor /= pac_devices_electrical.no_element loop
-				case flag is
-					when PROPOSED =>
-						if is_proposed (device_cursor) then
-							result := device_cursor;
-							exit; -- no further probing required
-						end if;
-
-					when SELECTED =>
-						if is_selected (device_cursor) then
-							result := device_cursor;
-							exit; -- no further probing required
-						end if;
-
-					when others => null; -- CS
-				end case;
-						
-				next (device_cursor);
-			end loop;
-		end query_module;
-
-		
-	begin
-		log (text => "module " & to_string (module_cursor)
-			& " looking up the first device /" & to_string (flag),
-			level => log_threshold);
-
-		log_indentation_up;
-		
-		query_element (
-			position	=> module_cursor,
-			process		=> query_module'access);
-
-		log_indentation_down;
-
-		return result;
-	end get_first_device;
 	
 
 
@@ -686,66 +604,37 @@ package body et_board_ops.devices is
 
 -- NON-ELECTRICAL DEVICES:
 
-	
-	
-	function get_devices (
-		module			: in pac_generic_modules.cursor;
-		catch_zone		: in type_catch_zone;
-		log_threshold	: in type_log_level)
-		return pac_devices_non_electrical.map
-	is
-		result : pac_devices_non_electrical.map;
 
+	function non_electrical_device_exists (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name)
+		return boolean
+	is
+		device_found : boolean := false; -- to be returned
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is
-			device_cursor : pac_devices_non_electrical.cursor := module.devices_non_electric.first;
-		begin
-			while device_cursor /= pac_devices_non_electrical.no_element loop
-
-				log (text => "probing device " & to_string (key (device_cursor)),
-					 level => log_threshold + 1);
-				log_indentation_up;
-					 
-				if in_catch_zone (
-					zone	=> catch_zone,
-					point	=> element (device_cursor).position.place) 
-				then
-					log_indentation_up;
-
-					log (text => "in zone", level => log_threshold + 1);
-					result.insert (key (device_cursor), element (device_cursor));
-							
-					log_indentation_down;
-				end if;
-				
-				next (device_cursor);
-
-				log_indentation_down;
-			end loop;
+		is begin
+			if contains (module.devices_non_electric, device) then
+				device_found := true;
+			end if;
 		end query_devices;
-
 		
 	begin
-		log (text => "looking up devices in" & to_string (catch_zone),
-			 level => log_threshold);
-
-		log_indentation_up;
-		
-		query_element (
+		pac_generic_modules.query_element (
 			position	=> module,
 			process		=> query_devices'access);
 
-		log_indentation_down;
-		
-		return result;
-	end get_devices;
+		return device_found;
+	end non_electrical_device_exists;
+
+
+	
 
 
 
-
+	
 	
 
 	function get_non_electrical_device (
@@ -894,50 +783,6 @@ package body et_board_ops.devices is
 
 
 	
-	
-	
-	
-	procedure modify_status (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in pac_devices_non_electrical.cursor;
-		operation		: in type_status_operation;
-		log_threshold	: in type_log_level)
-	is
-
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			
-			procedure query_device (
-				device_name	: in type_device_name;
-				device		: in out type_device_non_electrical)
-			is begin
-				modify_status (device.status, operation);
-			end query_device;
-
-
-		begin
-			module.devices_non_electric.update_element (device_cursor, query_device'access);
-		end query_module;
-
-		
-	begin
-		log (text => "module " & to_string (module_cursor)
-			& " modifying status of "
-			& to_string (key (device_cursor))
-			& " / " & to_string (operation),
-			level => log_threshold);
-
-		log_indentation_up;
-		
-		generic_modules.update_element (
-			position	=> module_cursor,
-			process		=> query_module'access);
-
-		log_indentation_down;
-	end modify_status;
-
 
 
 
@@ -1241,63 +1086,6 @@ package body et_board_ops.devices is
 
 	
 	
-	
-	procedure next_proposed_non_electrical_device (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in out pac_devices_non_electrical.cursor;							
-		log_threshold	: in type_log_level)
-	is
-
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is
-			dc : pac_devices_non_electrical.cursor := device_cursor;
-
-			subtype type_safety_counter is natural range 0 .. natural (module.devices_non_electric.length);
-			safety_counter : type_safety_counter := 0;
-			
-		begin
-			-- Advance to the next device after the given device:
-			if dc = module.devices_non_electric.last then
-				dc := module.devices_non_electric.first;
-			else
-				next (dc);
-			end if;
-			
-			loop
-				-- Exception is raised in case we get stuck here:
-				safety_counter := safety_counter + 1;
-				
-				if is_proposed (dc) then
-					device_cursor := dc;
-					exit; -- no further probing required
-				end if;
-				
-
-				if dc = module.devices_non_electric.last then
-					dc := module.devices_non_electric.first;
-				else
-					next (dc);
-				end if;
-				
-			end loop;
-		end query_module;
-		
-		
-	begin
-		log (text => "module " & to_string (module_cursor)
-			& " advancing to next proposed non-electrical device",
-			level => log_threshold);
-
-		log_indentation_up;
-		
-		query_element (
-			position	=> module_cursor,
-			process		=> query_module'access);
-
-		log_indentation_down;
-	end next_proposed_non_electrical_device;
 		
 
 
