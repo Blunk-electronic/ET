@@ -123,9 +123,8 @@ package et_devices_electrical is
 				-- mirrored along its Y-axis.
 				position	: et_board_coordinates.type_package_position; -- incl. rotation and face
 
-				text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
-				-- CS: rename to placeholders
-
+				-- Text placeholders for value, name, purpose, ...
+				placeholders	: et_device_placeholders.packages.type_text_placeholders;
 
 				-- The status of the package:
 				status : type_object_status;

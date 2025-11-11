@@ -5918,7 +5918,7 @@ package body et_module_read is
 								-- Insert placeholder collection in temporarily device:
 								-- CS: constraint error will arise here if the device is virtual.
 								-- issue warning and skip this statement in this case:
-								device.text_placeholders :=	device_text_placeholders;
+								device.placeholders := device_text_placeholders;
 
 								-- clean up for next collection of placeholders
 								device_text_placeholders := (others => <>);
@@ -5928,7 +5928,7 @@ package body et_module_read is
 									when SEC_DEVICES_NON_ELECTRIC =>
 										
 										-- Insert placeholder collection in temporarily device:
-										device_non_electric.text_placeholders := device_text_placeholders;
+										device_non_electric.placeholders := device_text_placeholders;
 
 										-- clean up for next collection of placeholders
 										device_text_placeholders := (others => <>);

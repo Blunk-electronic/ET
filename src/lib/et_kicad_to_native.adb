@@ -2843,9 +2843,9 @@ package body et_kicad_to_native is
 								purpose		=> empty_purpose, -- not provided by kicad
 								variant		=> element (component_cursor_kicad).variant,
 
-								position			=> element (component_cursor_kicad).position,
-								text_placeholders	=> element (component_cursor_kicad).text_placeholders,
-								others 				=> <>), -- unit list is empty at this time
+								position		=> element (component_cursor_kicad).position,
+								placeholders	=> element (component_cursor_kicad).text_placeholders,
+								others 			=> <>), -- unit list is empty at this time
 
 							inserted	=> component_inserted); -- should always be true
 				end case;

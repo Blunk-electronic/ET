@@ -111,7 +111,7 @@ is
 						partcode	=> original.partcode,
 						purpose		=> original.purpose,
 						variant		=> original.variant,
-						text_placeholders	=> original.text_placeholders, -- layout related
+						placeholders	=> original.placeholders, -- layout related
 						others		=> <> )); 
 						-- CS: The position in layout assumes default. Should be
 						-- so that it is not placed on top of another device.

@@ -114,9 +114,12 @@ package et_devices_non_electrical is
 	-- are modelled via package models:
 	
 	type type_device_non_electrical is record
-		position			: type_package_position; -- incl. rotation and face
-		text_placeholders	: type_text_placeholders;
-		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
+		position		: type_package_position; -- incl. rotation and face
+
+		-- Text placeholders for value, name, purpose, ...
+		placeholders	: type_text_placeholders;
+		
+		package_model	: pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
 		-- CS cursor to package model instead ?
 
 		-- A value will rarely be assigned. But in case it is required:

@@ -876,7 +876,7 @@ package body et_devices_electrical.packages is
 							silkscreen := get_silkscreen_objects (packge, TOP);
 
 							-- overwrite the default placeholders: -- CS see spec of this function
-							silkscreen.placeholders := device.text_placeholders.silkscreen.top;
+							silkscreen.placeholders := device.placeholders.silkscreen.top;
 							convert_placeholders_to_texts;
 							rotate_silkscreen_objects (silkscreen, + rotation);
 							
@@ -884,7 +884,7 @@ package body et_devices_electrical.packages is
 							silkscreen := get_silkscreen_objects (packge, BOTTOM);
 							
 							-- overwrite the default placeholders: -- CS see spec of this function
-							silkscreen.placeholders := device.text_placeholders.silkscreen.bottom;
+							silkscreen.placeholders := device.placeholders.silkscreen.bottom;
 							convert_placeholders_to_texts;
 							mirror_silkscreen_objects (silkscreen);
 							rotate_silkscreen_objects (silkscreen, - rotation);
@@ -897,7 +897,7 @@ package body et_devices_electrical.packages is
 						   silkscreen := get_silkscreen_objects (packge, BOTTOM);
 						
 							-- overwrite the default placeholders: -- CS see spec of this function
-							silkscreen.placeholders := device.text_placeholders.silkscreen.bottom;
+							silkscreen.placeholders := device.placeholders.silkscreen.bottom;
 							convert_placeholders_to_texts;
 							rotate_silkscreen_objects (silkscreen, + rotation);
 							
@@ -905,7 +905,7 @@ package body et_devices_electrical.packages is
 							silkscreen := get_silkscreen_objects (packge, TOP);
 							
 							-- overwrite the default placeholders: -- CS see spec of this function
-							silkscreen.placeholders := device.text_placeholders.silkscreen.top;
+							silkscreen.placeholders := device.placeholders.silkscreen.top;
 							convert_placeholders_to_texts;
 							mirror_silkscreen_objects (silkscreen);
 							rotate_silkscreen_objects (silkscreen, - rotation);
@@ -980,7 +980,7 @@ package body et_devices_electrical.packages is
 							assy_doc := get_assy_doc_objects (packge, TOP);
 							
 							-- overwrite the default placeholders: -- CS see spec of this function
-							assy_doc.placeholders := device.text_placeholders.assy_doc.top;
+							assy_doc.placeholders := device.placeholders.assy_doc.top;
 							convert_placeholders_to_texts;
 							rotate_assy_doc_objects (assy_doc, + rotation);
 
@@ -988,7 +988,7 @@ package body et_devices_electrical.packages is
 							assy_doc := get_assy_doc_objects (packge, BOTTOM);
 							
 							-- overwrite the default placeholders: -- CS see spec of this function
-							assy_doc.placeholders := device.text_placeholders.assy_doc.bottom;
+							assy_doc.placeholders := device.placeholders.assy_doc.bottom;
 							convert_placeholders_to_texts;
 							mirror_assy_doc_objects (assy_doc);
 							rotate_assy_doc_objects (assy_doc, - rotation);
@@ -1000,7 +1000,7 @@ package body et_devices_electrical.packages is
 							assy_doc := get_assy_doc_objects (packge, BOTTOM);
 
 							-- overwrite the default placeholders: -- CS see spec of this function
-							assy_doc.placeholders := device.text_placeholders.assy_doc.bottom;
+							assy_doc.placeholders := device.placeholders.assy_doc.bottom;
 							convert_placeholders_to_texts;
 							rotate_assy_doc_objects (assy_doc, + rotation);
 
@@ -1008,7 +1008,7 @@ package body et_devices_electrical.packages is
 							assy_doc := get_assy_doc_objects (packge, TOP);
 
 							-- overwrite the default placeholders: -- CS see spec of this function
-							assy_doc.placeholders := device.text_placeholders.assy_doc.top;
+							assy_doc.placeholders := device.placeholders.assy_doc.top;
 							convert_placeholders_to_texts;
 							mirror_assy_doc_objects (assy_doc);
 							rotate_assy_doc_objects (assy_doc, - rotation);

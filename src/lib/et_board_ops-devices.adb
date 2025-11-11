@@ -1219,10 +1219,10 @@ package body et_board_ops.devices is
 				position	=> device_cursor,
 				key			=> next_name,
 				new_item	=> (
-					position			=> position,
-					package_model		=> package_model,
-					text_placeholders	=> get_placeholders (package_cursor_lib),
-					others				=> <>)
+					position		=> position,
+					package_model	=> package_model,
+					placeholders	=> get_placeholders (package_cursor_lib),
+					others			=> <>)
 				);
 
 			-- check inserted flag

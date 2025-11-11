@@ -1122,17 +1122,17 @@ package body et_module_write is
 
 				layer := SILK_SCREEN;
 				face := TOP;
-				device.text_placeholders.silkscreen.top.iterate (write_placeholder'access);
+				device.placeholders.silkscreen.top.iterate (write_placeholder'access);
 
 				face := BOTTOM;				
-				device.text_placeholders.silkscreen.bottom.iterate (write_placeholder'access);
+				device.placeholders.silkscreen.bottom.iterate (write_placeholder'access);
 
 				layer := ASSEMBLY_DOCUMENTATION;
 				face := TOP;				
-				device.text_placeholders.assy_doc.top.iterate (write_placeholder'access);
+				device.placeholders.assy_doc.top.iterate (write_placeholder'access);
 
 				face := BOTTOM;
-				device.text_placeholders.assy_doc.bottom.iterate (write_placeholder'access);
+				device.placeholders.assy_doc.bottom.iterate (write_placeholder'access);
 				
 				section_mark (section_placeholders, FOOTER);				
 			end query_placeholders;
@@ -1798,17 +1798,17 @@ package body et_module_write is
 
 					layer := SILK_SCREEN;
 					face := TOP;
-					device.text_placeholders.silkscreen.top.iterate (write_placeholder'access);
+					device.placeholders.silkscreen.top.iterate (write_placeholder'access);
 
 					face := BOTTOM;				
-					device.text_placeholders.silkscreen.bottom.iterate (write_placeholder'access);
+					device.placeholders.silkscreen.bottom.iterate (write_placeholder'access);
 
 					layer := ASSEMBLY_DOCUMENTATION;
 					face := TOP;				
-					device.text_placeholders.assy_doc.top.iterate (write_placeholder'access);
+					device.placeholders.assy_doc.top.iterate (write_placeholder'access);
 
 					face := BOTTOM;
-					device.text_placeholders.assy_doc.bottom.iterate (write_placeholder'access);
+					device.placeholders.assy_doc.bottom.iterate (write_placeholder'access);
 					
 					section_mark (section_placeholders, FOOTER);				
 				end query_placeholders;
