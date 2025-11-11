@@ -632,7 +632,7 @@ package body et_kicad_packages is
 		text : type_text_package;
 
 		-- Temporarily text placeholders for reference and value are required. 
-		placeholder : type_placeholder;
+		placeholder : type_text_placeholder;
 
 
 		
@@ -2367,7 +2367,7 @@ package body et_kicad_packages is
 			use et_board_coordinates;
 			use pac_placeholders;
 			cursor 		: pac_placeholders.cursor;
-			placeholder : type_placeholder;
+			placeholder : type_text_placeholder;
 			reference_found, value_found : boolean := false;
 		begin
 			-- There must be a placeholder for the reference in the top silk screen:

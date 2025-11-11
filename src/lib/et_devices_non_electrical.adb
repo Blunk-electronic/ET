@@ -1328,7 +1328,7 @@ package body et_devices_non_electrical is
 	
 	function to_placeholder_content (
 		device_cursor	: in pac_devices_non_electrical.cursor;
-		placeholder		: in type_placeholder)
+		placeholder		: in type_text_placeholder)
 		return et_text.pac_text_content.bounded_string 
 	is
 		device : type_device_non_electrical renames element (device_cursor);
@@ -1374,7 +1374,7 @@ package body et_devices_non_electrical is
 			use pac_placeholders;
 
 			procedure query_placeholder (c : in pac_placeholders.cursor) is
-				ph : type_placeholder renames element (c);
+				ph : type_text_placeholder renames element (c);
 				use pac_text_board;
 				text : type_silk_text := (type_text_fab (ph) with others => <>);
 				use et_text;
@@ -1470,7 +1470,7 @@ package body et_devices_non_electrical is
 			use pac_placeholders;
 
 			procedure query_placeholder (c : in pac_placeholders.cursor) is
-				ph : type_placeholder renames element (c);
+				ph : type_text_placeholder renames element (c);
 				use pac_text_board;
 				text : type_doc_text := (type_text_fab (ph) with others => <>);
 				use et_text;

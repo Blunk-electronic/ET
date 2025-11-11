@@ -399,7 +399,7 @@ package et_devices_electrical is
 	-- Maps from meaning of given placeholder to a text content:
 	function to_placeholder_content (
 		device_cursor	: in pac_devices_electrical.cursor; -- electrical device
-		placeholder		: in et_device_placeholders.packages.type_placeholder)
+		placeholder		: in et_device_placeholders.packages.type_text_placeholder)
 		return et_text.pac_text_content.bounded_string;
 
 

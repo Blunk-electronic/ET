@@ -62,12 +62,12 @@ package et_device_placeholders.packages is
 	use pac_text_board;
 
 	
-	type type_placeholder is new type_text_fab with record
+	type type_text_placeholder is new type_text_fab with record
 		meaning : type_placeholder_meaning := NAME;
 	end record;
 
 	-- There can be lots of placeholders of this kind. So they are stored in a list:	
-	package pac_placeholders is new doubly_linked_lists (type_placeholder);
+	package pac_placeholders is new doubly_linked_lists (type_text_placeholder);
 	use pac_placeholders;
 	
 

@@ -1684,7 +1684,7 @@ package body et_module_read is
 			et_device_placeholders.packages.type_placeholder_layer'first; -- silkscreen/assembly_documentation
 
 		-- a single temporarily placeholder of a package
-		device_text_placeholder : et_device_placeholders.packages.type_placeholder;
+		device_text_placeholder : et_device_placeholders.packages.type_text_placeholder;
 
 
 		

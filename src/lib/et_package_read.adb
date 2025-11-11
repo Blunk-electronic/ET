@@ -106,7 +106,7 @@ package body et_package_read is
 		--pac_text				: pac_text_fab.type_text_fab;
 		pac_text				: type_text_fab_with_content;
 		--content					: et_text.pac_text_content.bounded_string;
-		pac_text_placeholder	: type_placeholder;
+		pac_text_placeholder	: type_text_placeholder;
 	
 		terminal_position		: type_position := origin_zero_rotation;
 

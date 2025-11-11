@@ -176,7 +176,7 @@ procedure draw_packages is
 		-- This function returns for a given text placeholder
 		-- the related content:
 		function placeholder_to_content (
-			placeholder : in type_placeholder)
+			placeholder : in type_text_placeholder)
 			return et_text.pac_text_content.bounded_string
 		is 
 			use et_text;
@@ -220,7 +220,7 @@ procedure draw_packages is
 			use pac_placeholders;
 
 			procedure query_placeholder (c : in pac_placeholders.cursor) is
-				ph : type_placeholder renames element (c);
+				ph : type_text_placeholder renames element (c);
 
 				use pac_text;
 				text : type_doc_text := (type_text_fab (ph) with others => <>);
@@ -294,7 +294,7 @@ procedure draw_packages is
 			use pac_placeholders;
 
 			procedure query_placeholder (c : in pac_placeholders.cursor) is
-				ph : type_placeholder renames element (c);
+				ph : type_text_placeholder renames element (c);
 
 				use pac_text;
 				text : type_silk_text := (type_text_fab (ph) with others => <>);

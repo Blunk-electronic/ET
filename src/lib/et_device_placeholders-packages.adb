@@ -49,7 +49,7 @@ package body et_device_placeholders.packages is
 		result : pac_placeholders.list;
 
 		procedure query_placeholder (c : in pac_placeholders.cursor) is
-			ph : type_placeholder := element (c);
+			ph : type_text_placeholder := element (c);
 		begin
 			mirror_text (ph, axis);
 			result.append (ph);
@@ -69,7 +69,7 @@ package body et_device_placeholders.packages is
 		result : pac_placeholders.list;
 
 		procedure query_placeholder (c : in pac_placeholders.cursor) is
-			ph : type_placeholder := element (c);
+			ph : type_text_placeholder := element (c);
 		begin
 			rotate_text_by (ph, angle);
 			result.append (ph);
@@ -89,7 +89,7 @@ package body et_device_placeholders.packages is
 		result : pac_placeholders.list;
 
 		procedure query_placeholder (c : in pac_placeholders.cursor) is
-			ph : type_placeholder := element (c);
+			ph : type_text_placeholder := element (c);
 		begin
 			move_text_to (ph, offset); -- CS should be move_text_by ?
 			result.append (ph);
@@ -109,7 +109,7 @@ package body et_device_placeholders.packages is
 		log_threshold 	: in type_log_level) 
 	is
 		use pac_placeholders;
-		placeholder : type_placeholder renames element (cursor);
+		placeholder : type_text_placeholder renames element (cursor);
 	begin
 		log (text => "placeholder face" & to_string (face)
 			 & " for " & to_string (placeholder.meaning), level => log_threshold);
