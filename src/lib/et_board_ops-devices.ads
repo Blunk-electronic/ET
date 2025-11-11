@@ -355,7 +355,7 @@ package et_board_ops.devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		toggle			: in boolean := false;
-		rotation		: in et_board_geometry.type_rotation_model := 90.0;
+		rotation		: in type_rotation_model := 90.0;
 		meaning			: in type_placeholder_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level);
 

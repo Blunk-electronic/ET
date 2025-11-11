@@ -227,7 +227,10 @@ package et_units is
 		unit : in out type_unit);
 	
 
+	
 
+-- PLACEHOLDERS:
+	
 	-- Returns the placeholders of the unit.
 	-- If the unit is virtual, then default placeholders
 	-- are returned:
