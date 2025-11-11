@@ -61,6 +61,7 @@ with et_terminals;					use et_terminals;
 with et_pcb;						use et_pcb;
 with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_sides;					use et_pcb_sides;
+with et_board_layer_category;		use et_board_layer_category;
 with et_board_coordinates;			use et_board_coordinates;
 with et_board_geometry;				use et_board_geometry;
 use et_board_geometry.pac_geometry_2;

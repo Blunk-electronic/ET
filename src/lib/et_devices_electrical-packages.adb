@@ -452,6 +452,7 @@ package body et_devices_electrical.packages is
 	procedure move_placeholder (
 		device		: in out type_device_electrical;
 		meaning		: in type_placeholder_meaning;					 
+		layer		: in type_placeholder_layer;
 		coordinates	: in type_coordinates; -- relative/absolute
 		point		: in type_vector_model) -- x/y
 	is 
@@ -514,7 +515,8 @@ package body et_devices_electrical.packages is
 	
 	procedure rotate_placeholder (
 		device		: in out type_device_electrical;
-		meaning		: in type_placeholder_meaning;					 
+		meaning		: in type_placeholder_meaning;
+		layer		: in type_placeholder_layer;
 		rotation	: in type_rotation_model)
 	is begin
 		case meaning is

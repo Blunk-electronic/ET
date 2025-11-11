@@ -100,8 +100,11 @@ package et_device_placeholders.packages is
 	-- Placeholders for device name and value can be placed in
 	-- silk screen or assembly documentation only:
 	type type_placeholder_layer is (SILK_SCREEN, ASSEMBLY_DOCUMENTATION);
+	-- CS apply prefix !
+	
 	function to_string (layer : in type_placeholder_layer) return string;
 	function to_layer (layer : in string) return type_placeholder_layer;
+	-- CS rename to to_placeholder_layer
 
 
 	

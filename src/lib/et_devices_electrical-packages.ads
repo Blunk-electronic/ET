@@ -43,6 +43,7 @@
 -- This package is about the type, basic properties and subprograms related
 -- to the packages of real devices.
 
+with et_board_layer_category;			use et_board_layer_category;
 with et_board_geometry;					use et_board_geometry;
 with et_board_coordinates;				use et_board_coordinates;
 
@@ -353,6 +354,7 @@ package et_devices_electrical.packages is
 	procedure move_placeholder (
 		device		: in out type_device_electrical;
 		meaning		: in type_placeholder_meaning;					 
+		layer		: in type_placeholder_layer; -- silkscreen, assy doc
 		coordinates	: in type_coordinates; -- relative/absolute
 		point		: in type_vector_model); -- x/y
 
@@ -365,6 +367,7 @@ package et_devices_electrical.packages is
 	procedure rotate_placeholder (
 		device		: in out type_device_electrical;
 		meaning		: in type_placeholder_meaning;					 
+		layer		: in type_placeholder_layer; -- silkscreen, assy doc
 		rotation	: in type_rotation_model);
 
 	

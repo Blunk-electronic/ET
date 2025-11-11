@@ -42,7 +42,7 @@ with et_package_model_name;				use et_package_model_name;
 with et_package_name;					use et_package_name;
 with et_package_library;				use et_package_library;
 with et_device_placeholders;			use et_device_placeholders;
-with et_device_placeholders.packages;
+with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_device_prefix; 					use et_device_prefix;
 with et_device_name;					use et_device_name;
 with et_device_property_level;			use et_device_property_level;
@@ -340,23 +340,28 @@ package et_board_ops.devices is
 
 
 	-- Moves a placeholder of the given device.
+	-- Automatically detects whether the given device is
+	-- electrical or non-electrical:
 	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
+		meaning			: in type_placeholder_meaning; -- name, value, purpose
+		layer			: in type_placeholder_layer; -- silkscreen, assy doc
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
-		meaning			: in type_placeholder_meaning; -- name, value, purpose
 		log_threshold	: in type_log_level);
 
 
 
 	-- Rotates the given placeholder about its origin.
+	-- Automatically detects whether the given device is
+	-- electrical or non-electrical:
 	procedure rotate_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
-		toggle			: in boolean := false;
-		rotation		: in type_rotation_model := 90.0;
 		meaning			: in type_placeholder_meaning; -- name, value, purpose		
+		layer			: in type_placeholder_layer; -- silkscreen, assy doc
+		rotation		: in type_rotation_model := 90.0;
 		log_threshold	: in type_log_level);
 
 
