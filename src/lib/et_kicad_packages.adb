@@ -2365,14 +2365,14 @@ package body et_kicad_packages is
 		procedure check_placeholders is
 			use et_pcb_sides;
 			use et_board_coordinates;
-			use pac_placeholders;
-			cursor 		: pac_placeholders.cursor;
+			use pac_text_placeholders;
+			cursor 		: pac_text_placeholders.cursor;
 			placeholder : type_text_placeholder;
 			reference_found, value_found : boolean := false;
 		begin
 			-- There must be a placeholder for the reference in the top silk screen:
 			cursor := silk_screen.top.placeholders.first;
-			while cursor /= pac_placeholders.no_element loop
+			while cursor /= pac_text_placeholders.no_element loop
 				placeholder := element (cursor);
 				if placeholder.meaning = NAME then
 					reference_found := true;
@@ -2391,7 +2391,7 @@ package body et_kicad_packages is
 
 			-- There must be a placeholder for the value in the top assembly documentation:
 			cursor := assy_doc.top.placeholders.first;
-			while cursor /= pac_placeholders.no_element loop
+			while cursor /= pac_text_placeholders.no_element loop
 				placeholder := element (cursor);
 				if placeholder.meaning = VALUE then
 					value_found := true;

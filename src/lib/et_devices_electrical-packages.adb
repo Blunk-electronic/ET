@@ -841,10 +841,10 @@ package body et_devices_electrical.packages is
 		-- Converts the placeholders to a list of regular texts
 		-- and appends them to the silkscreen.texts:
 		procedure convert_placeholders_to_texts is
-			use pac_placeholders;
+			use pac_text_placeholders;
 
 			
-			procedure query_placeholder (c : in pac_placeholders.cursor) is
+			procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder renames element (c);
 				use pac_text_board;
 				text : type_silk_text := (type_text_fab (ph) with others => <>);
@@ -945,10 +945,10 @@ package body et_devices_electrical.packages is
 		-- Converts the placeholders to a list of regular texts
 		-- and appends them to the assy_doc.texts:
 		procedure convert_placeholders_to_texts is
-			use pac_placeholders;
+			use pac_text_placeholders;
 
 			
-			procedure query_placeholder (c : in pac_placeholders.cursor) is
+			procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder renames element (c);
 				use pac_text_board;
 				text : type_doc_text := (type_text_fab (ph) with others => <>);

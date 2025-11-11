@@ -5147,19 +5147,19 @@ package body et_kicad.pcb is
 						comp_reference	: in type_device_name;
 						comp_package	: in type_package_board) is
 
-						use pac_placeholders;
+						use pac_text_placeholders;
 
 						-- points to a placeholder in the package
-						cursor : pac_placeholders.cursor;
+						cursor : pac_text_placeholders.cursor;
 						
 					begin -- query_placeholders 
 						-- Collect placeholders for REFERENCE in TOP silk screen:
 						cursor := comp_package.silk_screen.top.placeholders.first;
-						while cursor /= pac_placeholders.no_element loop
+						while cursor /= pac_text_placeholders.no_element loop
 
 							if element (cursor).meaning = NAME then
 	
-								pac_placeholders.append (
+								pac_text_placeholders.append (
 									container	=> placeholders.silkscreen.top,
 									new_item	=> (pac_text_board.type_text_fab (element (cursor)) with meaning => NAME));
 	
@@ -5172,11 +5172,11 @@ package body et_kicad.pcb is
 
 						-- Collect placeholders for REFERENCE in BOTTOM silk screen:
 						cursor := comp_package.silk_screen.bottom.placeholders.first;
-						while cursor /= pac_placeholders.no_element loop
+						while cursor /= pac_text_placeholders.no_element loop
 
 							if element (cursor).meaning = NAME then
 
-								pac_placeholders.append (
+								pac_text_placeholders.append (
 									container	=> placeholders.silkscreen.bottom,
 									new_item	=> (pac_text_board.type_text_fab (element (cursor)) with meaning => NAME));
 
@@ -5190,11 +5190,11 @@ package body et_kicad.pcb is
 						
 						-- Collect placeholders for VALUE in TOP assembly documentation:
 						cursor := comp_package.assembly_documentation.top.placeholders.first;
-						while cursor /= pac_placeholders.no_element loop
+						while cursor /= pac_text_placeholders.no_element loop
 
 							if element (cursor).meaning = VALUE then
 
-								pac_placeholders.append (
+								pac_text_placeholders.append (
 									container	=> placeholders.assy_doc.top,
 									new_item	=> (pac_text_board.type_text_fab (element (cursor)) with meaning => VALUE));
 
@@ -5208,11 +5208,11 @@ package body et_kicad.pcb is
 						
 						-- Collect placeholders for VALUE in BOTTOM assembly documentation:
 						cursor := comp_package.assembly_documentation.bottom.placeholders.first;
-						while cursor /= pac_placeholders.no_element loop
+						while cursor /= pac_text_placeholders.no_element loop
 
 							if element (cursor).meaning = VALUE then
 
-								pac_placeholders.append (
+								pac_text_placeholders.append (
 									container	=> placeholders.assy_doc.bottom,
 									new_item	=> (pac_text_board.type_text_fab (element (cursor)) with meaning => VALUE));
 

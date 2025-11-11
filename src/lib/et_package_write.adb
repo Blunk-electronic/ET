@@ -140,8 +140,8 @@ package body et_package_write is
 		end write_conductor;
 
 		
-		use pac_placeholders;		
-		procedure write_placeholder (cursor : in pac_placeholders.cursor) is begin
+		use pac_text_placeholders;		
+		procedure write_placeholder (cursor : in pac_text_placeholders.cursor) is begin
 			placeholder_begin;
 			write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
 			write_text_properties (element (cursor));

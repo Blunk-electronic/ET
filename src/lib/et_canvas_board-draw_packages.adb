@@ -217,9 +217,9 @@ procedure draw_packages is
 
 
 			
-			use pac_placeholders;
+			use pac_text_placeholders;
 
-			procedure query_placeholder (c : in pac_placeholders.cursor) is
+			procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder renames element (c);
 
 				use pac_text;
@@ -291,9 +291,9 @@ procedure draw_packages is
 
 
 			
-			use pac_placeholders;
+			use pac_text_placeholders;
 
-			procedure query_placeholder (c : in pac_placeholders.cursor) is
+			procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder renames element (c);
 
 				use pac_text;

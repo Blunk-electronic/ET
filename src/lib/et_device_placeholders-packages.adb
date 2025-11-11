@@ -43,12 +43,12 @@ package body et_device_placeholders.packages is
 
 
 	procedure mirror_placeholders (
-		placeholders	: in out pac_placeholders.list;
+		placeholders	: in out pac_text_placeholders.list;
 		axis			: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
-		result : pac_placeholders.list;
+		result : pac_text_placeholders.list;
 
-		procedure query_placeholder (c : in pac_placeholders.cursor) is
+		procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 			ph : type_text_placeholder := element (c);
 		begin
 			mirror_text (ph, axis);
@@ -63,12 +63,12 @@ package body et_device_placeholders.packages is
 	
 
 	procedure rotate_placeholders (
-		placeholders	: in out pac_placeholders.list;
+		placeholders	: in out pac_text_placeholders.list;
 		angle			: in type_rotation_model)
 	is
-		result : pac_placeholders.list;
+		result : pac_text_placeholders.list;
 
-		procedure query_placeholder (c : in pac_placeholders.cursor) is
+		procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 			ph : type_text_placeholder := element (c);
 		begin
 			rotate_text_by (ph, angle);
@@ -83,12 +83,12 @@ package body et_device_placeholders.packages is
 
 
 	procedure move_placeholders (
-		placeholders	: in out pac_placeholders.list;
+		placeholders	: in out pac_text_placeholders.list;
 		offset			: in type_vector_model)
 	is
-		result : pac_placeholders.list;
+		result : pac_text_placeholders.list;
 
-		procedure query_placeholder (c : in pac_placeholders.cursor) is
+		procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 			ph : type_text_placeholder := element (c);
 		begin
 			move_text_to (ph, offset); -- CS should be move_text_by ?
@@ -105,10 +105,10 @@ package body et_device_placeholders.packages is
 
 	procedure placeholder_properties (
 		face			: in type_face;
-		cursor			: in pac_placeholders.cursor;
+		cursor			: in pac_text_placeholders.cursor;
 		log_threshold 	: in type_log_level) 
 	is
-		use pac_placeholders;
+		use pac_text_placeholders;
 		placeholder : type_text_placeholder renames element (cursor);
 	begin
 		log (text => "placeholder face" & to_string (face)

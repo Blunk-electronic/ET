@@ -1327,13 +1327,13 @@ package body et_package_read is
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>
 										
-										pac_placeholders.append (
+										pac_text_placeholders.append (
 											container	=> packge.silkscreen.top.placeholders,
 											new_item	=> pac_text_placeholder);
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										
-										pac_placeholders.append (
+										pac_text_placeholders.append (
 											container	=> packge.assy_doc.top.placeholders,
 											new_item	=> pac_text_placeholder);
 										
@@ -1348,13 +1348,13 @@ package body et_package_read is
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>
 										
-										pac_placeholders.append (
+										pac_text_placeholders.append (
 											container	=> packge.silkscreen.bottom.placeholders,
 											new_item	=> pac_text_placeholder);
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										
-										pac_placeholders.append (
+										pac_text_placeholders.append (
 											container	=> packge.assy_doc.bottom.placeholders,
 											new_item	=> pac_text_placeholder);
 										

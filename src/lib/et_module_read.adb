@@ -3263,12 +3263,12 @@ package body et_module_read is
 							case get_face (device_text_placeholder_position) is
 
 								when TOP =>
-									pac_placeholders.append (
+									pac_text_placeholders.append (
 										container	=> device_text_placeholders.silkscreen.top,
 										new_item	=> device_text_placeholder);
 									
 								when BOTTOM =>
-									pac_placeholders.append (
+									pac_text_placeholders.append (
 										container	=> device_text_placeholders.silkscreen.bottom,
 										new_item	=> device_text_placeholder);
 							end case;
@@ -3277,12 +3277,12 @@ package body et_module_read is
 							case get_face (device_text_placeholder_position) is
 
 								when TOP =>
-									pac_placeholders.append (
+									pac_text_placeholders.append (
 										container	=> device_text_placeholders.assy_doc.top,
 										new_item	=> device_text_placeholder);
 
 								when BOTTOM =>
-									pac_placeholders.append (
+									pac_text_placeholders.append (
 										container	=> device_text_placeholders.assy_doc.bottom,
 										new_item	=> device_text_placeholder);
 							end case;

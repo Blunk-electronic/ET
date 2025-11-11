@@ -67,23 +67,23 @@ package et_device_placeholders.packages is
 	end record;
 
 	-- There can be lots of placeholders of this kind. So they are stored in a list:	
-	package pac_placeholders is new doubly_linked_lists (type_text_placeholder);
-	use pac_placeholders;
+	package pac_text_placeholders is new doubly_linked_lists (type_text_placeholder);
+	use pac_text_placeholders;
 	
 
 	-- Mirrors a list of placeholders along the given axis:
 	procedure mirror_placeholders (
-		placeholders	: in out pac_placeholders.list;
+		placeholders	: in out pac_text_placeholders.list;
 		axis			: in type_mirror := MIRROR_ALONG_Y_AXIS);
 	
 	-- Rotates a list of placeholders by the given angle:
 	procedure rotate_placeholders (
-		placeholders	: in out pac_placeholders.list;
+		placeholders	: in out pac_text_placeholders.list;
 		angle			: in type_rotation_model);
 
 	-- Moves a list of placeholders by the given offset:
 	procedure move_placeholders (
-		placeholders	: in out pac_placeholders.list;
+		placeholders	: in out pac_text_placeholders.list;
 		offset			: in type_vector_model);
 
 	
@@ -91,7 +91,7 @@ package et_device_placeholders.packages is
 	-- Logs the properties of the given placeholder:
 	procedure placeholder_properties (
 		face			: in type_face;
-		cursor			: in pac_placeholders.cursor;
+		cursor			: in pac_text_placeholders.cursor;
 		log_threshold 	: in type_log_level);
 	
 	
@@ -110,13 +110,13 @@ package et_device_placeholders.packages is
 	-- The user is then free to change them in the 
 	-- layout (position, text size, rotation, line width ...).
 	type type_placeholders_silkscreen is record
-		top		: pac_placeholders.list;
-		bottom	: pac_placeholders.list;
+		top		: pac_text_placeholders.list;
+		bottom	: pac_text_placeholders.list;
 	end record;
 
 	type type_placeholders_assy_doc is record
-		top		: pac_placeholders.list;
-		bottom	: pac_placeholders.list;
+		top		: pac_text_placeholders.list;
+		bottom	: pac_text_placeholders.list;
 	end record;
 
 
