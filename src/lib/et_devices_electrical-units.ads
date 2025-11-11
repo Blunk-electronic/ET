@@ -325,7 +325,7 @@ package et_devices_electrical.units is
 		-- The placeholders are copies of those in the symbol (see type_symbol):
 		case appearance is
 			when APPEARANCE_PCB =>
-				placeholders : type_default_placeholders;
+				placeholders : type_text_placeholders;
 				
 			when APPEARANCE_VIRTUAL => null;
 		end case;

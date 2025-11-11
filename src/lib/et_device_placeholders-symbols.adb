@@ -68,7 +68,7 @@ package body et_device_placeholders.symbols is
 
 
 	procedure reset_status (
-		placeholders : in out type_default_placeholders)
+		placeholders : in out type_text_placeholders)
 	is begin
 		reset_status (placeholders.name);
 		reset_status (placeholders.value);
@@ -82,7 +82,7 @@ package body et_device_placeholders.symbols is
 	
 
 	procedure rotate_placeholders (
-		placeholders	: in out type_default_placeholders;
+		placeholders	: in out type_text_placeholders;
 		rotation		: in type_rotation_model)
 	is begin
 		-- Rotate the POSITIONS	of the placeholders about
@@ -113,11 +113,11 @@ package body et_device_placeholders.symbols is
 
 
 	function rotate_placeholders (
-		placeholders	: in type_default_placeholders;
+		placeholders	: in type_text_placeholders;
 		rotation		: in type_rotation_model)
-		return type_default_placeholders
+		return type_text_placeholders
 	is
-		result : type_default_placeholders := placeholders;
+		result : type_text_placeholders := placeholders;
 	begin
 		rotate_placeholders (result, rotation);
 		return result;

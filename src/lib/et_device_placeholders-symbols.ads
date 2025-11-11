@@ -83,7 +83,7 @@ package et_device_placeholders.symbols is
 
 	
 
-	type type_default_placeholders is record -- CS incorrect, rename !
+	type type_text_placeholders is record
 		name	: type_text_placeholder (meaning => et_device_placeholders.NAME);
 		value	: type_text_placeholder (meaning => et_device_placeholders.VALUE);
 		purpose	: type_text_placeholder (meaning => et_device_placeholders.PURPOSE);
@@ -93,7 +93,7 @@ package et_device_placeholders.symbols is
 
 	-- Clears the proposed-flag and the selected-flag of the placeholders:	
 	procedure reset_status (
-		placeholders : in out type_default_placeholders);
+		placeholders : in out type_text_placeholders);
 
 
 
@@ -105,14 +105,14 @@ package et_device_placeholders.symbols is
 	-- 3. Snaps to horizonal or vertical so that the later text
 	--    can be read from the front or from the right:
 	procedure rotate_placeholders (
-		placeholders	: in out type_default_placeholders;
+		placeholders	: in out type_text_placeholders;
 		rotation		: in type_rotation_model);
 
 
 	function rotate_placeholders (
-		placeholders	: in type_default_placeholders;
+		placeholders	: in type_text_placeholders;
 		rotation		: in type_rotation_model)
-		return type_default_placeholders;
+		return type_text_placeholders;
 
 
 	

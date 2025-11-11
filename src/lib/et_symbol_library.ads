@@ -114,7 +114,7 @@ package et_symbol_library is
 	-- then default placeholders are returned:
 	function get_placeholders (
 		symbol	: in pac_symbols.cursor)
-		return type_default_placeholders;
+		return type_text_placeholders;
 
 
 	-- In the symbol, the placeholders have a rotation (about itself)
@@ -128,7 +128,7 @@ package et_symbol_library is
 	function get_default_placeholders (
 		symbol_cursor	: in pac_symbols.cursor;
 		destination		: in type_object_position) -- x/y/rotation of the unit
-		return type_default_placeholders;
+		return type_text_placeholders;
 
 
 	

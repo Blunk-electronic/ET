@@ -119,7 +119,7 @@ package et_device_model is
 	-- then default placeholders are returned:	
 	function get_placeholders (
 		unit	: in type_unit_internal)
-		return type_default_placeholders;
+		return type_text_placeholders;
 
 
 	
@@ -139,7 +139,7 @@ package et_device_model is
 	-- then default placeholders are returned:	
 	function get_placeholders (
 		unit	: in pac_units_internal.cursor)
-		return type_default_placeholders;
+		return type_text_placeholders;
 
 
 	-- In the symbol, the placeholders have a rotation (about itself)
@@ -153,7 +153,7 @@ package et_device_model is
 	function get_default_placeholders (
 		symbol_cursor	: in pac_units_internal.cursor;
 		destination		: in type_object_position)
-		return type_default_placeholders;
+		return type_text_placeholders;
 
 
 	

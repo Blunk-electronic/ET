@@ -91,7 +91,7 @@ package et_units is
 				null; -- CS
 
 			when APPEARANCE_PCB =>
-				placeholders : type_default_placeholders;
+				placeholders : type_text_placeholders;
 		end case;
 		-- The plaeholders have only x/y positions relative 
 		-- to the unit position.
@@ -233,7 +233,7 @@ package et_units is
 	-- are returned:
 	function get_placeholders (
 		unit : in type_unit)
-		return type_default_placeholders;
+		return type_text_placeholders;
 	
 								  
 	-- Moves the placeholder given by meaning.

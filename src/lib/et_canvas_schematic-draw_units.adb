@@ -103,7 +103,7 @@ procedure draw_units is
 		unit_position	: in type_vector_model; -- x/y on the schematic sheet
 		unit_rotation	: in type_rotation := zero_rotation;
 		
-		placeholders	: in type_default_placeholders;
+		placeholders	: in type_text_placeholders;
 		preview			: in boolean := false)
 	is
 		

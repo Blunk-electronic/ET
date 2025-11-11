@@ -95,7 +95,7 @@ is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
 			is
-				placeholders : type_default_placeholders;
+				placeholders : type_text_placeholders;
 			begin
 				log (text => "fetch internal unit " 
 					 & to_string (key (unit_cursors.int)),
@@ -162,7 +162,7 @@ is
 				use et_symbol_name;
 				use et_symbol_library;
 				use pac_symbols;
-				placeholders : type_default_placeholders;
+				placeholders : type_text_placeholders;
 				symbol_cursor : pac_symbols.cursor;
 				symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
 			begin

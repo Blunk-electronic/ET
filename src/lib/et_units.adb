@@ -296,7 +296,7 @@ package body et_units is
 	
 	function get_placeholders (
 		unit : in type_unit)
-		return type_default_placeholders
+		return type_text_placeholders
 	is begin
 		if is_real (unit) then
 			return unit.placeholders;

@@ -271,7 +271,7 @@ is
 			-- it to the schematic:
 			procedure add_real is
 				unit : type_unit (APPEARANCE_PCB);
-				placeholders : type_default_placeholders;
+				placeholders : type_text_placeholders;
 			begin
 				log (text => "add_real", level => log_threshold + 3);
 
@@ -349,7 +349,7 @@ is
 			procedure add_real is
 				use et_symbol_library;
 				symbol_cursor : pac_symbols.cursor;
-				placeholders : type_default_placeholders;
+				placeholders : type_text_placeholders;
 
 				use pac_units_external;
 				unit : type_unit (appearance => APPEARANCE_PCB);

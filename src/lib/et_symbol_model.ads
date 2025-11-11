@@ -80,7 +80,7 @@ package et_symbol_model is
 			when APPEARANCE_PCB =>
 				-- Placeholders to be filled with content when 
 				-- a symbol is instantiated:
-				placeholders : type_default_placeholders;
+				placeholders : type_text_placeholders;
 
 			when APPEARANCE_VIRTUAL => null;				
 		end case;
@@ -108,7 +108,7 @@ package et_symbol_model is
 	-- then default placeholders are returned:
 	function get_placeholders (
 		symbol	: in type_symbol)
-		return type_default_placeholders;
+		return type_text_placeholders;
 	
 
 end et_symbol_model;

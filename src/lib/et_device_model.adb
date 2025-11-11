@@ -46,7 +46,7 @@ package body et_device_model is
 
 	function get_placeholders (
 		unit	: in type_unit_internal)
-		return type_default_placeholders
+		return type_text_placeholders
 	is begin
 		if unit.appearance = APPEARANCE_PCB then
 			return unit.symbol.placeholders;
@@ -59,7 +59,7 @@ package body et_device_model is
 
 	function get_placeholders (
 		unit	: in pac_units_internal.cursor)
-		return type_default_placeholders
+		return type_text_placeholders
 	is 
 		u : type_unit_internal renames element (unit);
 	begin
@@ -73,11 +73,11 @@ package body et_device_model is
 	function get_default_placeholders (
 		symbol_cursor	: in pac_units_internal.cursor;
 		destination		: in type_object_position)
-		return type_default_placeholders
+		return type_text_placeholders
 	is
 		sym : type_unit_internal renames element (symbol_cursor);
 
-		r : type_default_placeholders; -- to be returned
+		r : type_text_placeholders; -- to be returned
 	begin
 		r.name		:= sym.symbol.placeholders.name;
 		r.value		:= sym.symbol.placeholders.value;
