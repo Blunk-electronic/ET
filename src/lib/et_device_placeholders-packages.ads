@@ -48,6 +48,7 @@ with ada.strings.maps;			use ada.strings.maps;
 
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
+with ada.containers.vectors;
 
 with et_pcb_sides;				use et_pcb_sides;
 with et_board_geometry;			use et_board_geometry;
@@ -67,23 +68,37 @@ package et_device_placeholders.packages is
 	end record;
 
 	-- There can be lots of placeholders of this kind. So they are stored in a list:	
-	package pac_text_placeholders is new doubly_linked_lists (type_text_placeholder);
+	-- package pac_text_placeholders is new doubly_linked_lists (type_text_placeholder);
+
+	subtype type_placeholder_index is positive range 1 .. 10;
+	
+	
+	function to_placeholder_index (
+		index : in string)
+		return type_placeholder_index;
+		
+		
+	
+	package pac_text_placeholders is new vectors (
+		index_type		=> type_placeholder_index,
+		element_type	=> type_text_placeholder);
+	
 	use pac_text_placeholders;
 	
 
 	-- Mirrors a list of placeholders along the given axis:
 	procedure mirror_placeholders (
-		placeholders	: in out pac_text_placeholders.list;
+		placeholders	: in out pac_text_placeholders.vector;
 		axis			: in type_mirror := MIRROR_ALONG_Y_AXIS);
 	
 	-- Rotates a list of placeholders by the given angle:
 	procedure rotate_placeholders (
-		placeholders	: in out pac_text_placeholders.list;
+		placeholders	: in out pac_text_placeholders.vector;
 		angle			: in type_rotation_model);
 
 	-- Moves a list of placeholders by the given offset:
 	procedure move_placeholders (
-		placeholders	: in out pac_text_placeholders.list;
+		placeholders	: in out pac_text_placeholders.vector;
 		offset			: in type_vector_model);
 
 	
@@ -113,13 +128,13 @@ package et_device_placeholders.packages is
 	-- The user is then free to change them in the 
 	-- layout (position, text size, rotation, line width ...).
 	type type_placeholders_silkscreen is record
-		top		: pac_text_placeholders.list;
-		bottom	: pac_text_placeholders.list;
+		top		: pac_text_placeholders.vector;
+		bottom	: pac_text_placeholders.vector;
 	end record;
 
 	type type_placeholders_assy_doc is record
-		top		: pac_text_placeholders.list;
-		bottom	: pac_text_placeholders.list;
+		top		: pac_text_placeholders.vector;
+		bottom	: pac_text_placeholders.vector;
 	end record;
 
 

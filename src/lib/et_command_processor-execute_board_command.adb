@@ -3258,8 +3258,8 @@ is
 
 	-- This procedure parses a command that moves a placeholder
 	-- for name, value or purpose of a device.
-	-- Example: "board led_driver move value R1 silkscreen absolute 100 115"
-	-- Example: "board led_driver move value IC1 assy relative -5 0"
+	-- Example: "board led_driver move value R1 silkscreen top 2 absolute 100 115"
+	-- Example: "board led_driver move value IC1 assy bottom 2 relative -5 0"
 	procedure move_device_placeholder is
 		meaning : type_placeholder_meaning;
 		
@@ -3268,17 +3268,19 @@ is
 			use et_device_placeholders.packages;
 		begin
 			case cmd_field_count is
-				when 9 =>
+				when 11 =>
 					move_placeholder (
 						module_cursor 	=> active_module,
 						device_name		=> to_device_name (get_field (5)), -- IC1
 						meaning			=> meaning,
 						layer			=> to_layer (get_field (6)), -- assy
-						coordinates		=> to_coordinates (get_field (7)),  -- relative/absolute
-						point			=> to_vector_model (get_field (8), get_field (9)),
+						face			=> to_face (get_field (7)), -- top
+						index			=> to_placeholder_index (get_field (8)), -- 2
+						coordinates		=> to_coordinates (get_field (9)),  -- relative/absolute
+						point			=> to_vector_model (get_field (10), get_field (11)),
 						log_threshold	=> log_threshold + 1);
 
-				when 10 .. type_field_count'last => too_long; 
+				when 12 .. type_field_count'last => too_long; 
 					
 				when others => command_incomplete;
 			end case;

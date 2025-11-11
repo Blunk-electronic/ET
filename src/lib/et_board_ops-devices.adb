@@ -1469,11 +1469,13 @@ package body et_board_ops.devices is
 
 	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_device_name; -- IC45
-		meaning			: in type_placeholder_meaning; -- name, value, purpose
+		device_name		: in type_device_name;
+		meaning			: in type_placeholder_meaning;
 		layer			: in type_placeholder_layer;
-		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_vector_model; -- x/y
+		face			: in type_face;
+		index			: in type_placeholder_index;
+		coordinates		: in type_coordinates;
+		point			: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is
 		
@@ -1490,15 +1492,7 @@ package body et_board_ops.devices is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
 			is begin
-				case coordinates is
-					when ABSOLUTE =>
-						null;
-				-- move_placeholder (unit, meaning, coordinates, point);
-						
-					when RELATIVE =>
-						null;
-						
-				end case;
+				move_placeholder (device, meaning, layer, face, index, coordinates, point);
 			end;
 
 			
@@ -1506,13 +1500,7 @@ package body et_board_ops.devices is
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical) 
 			is begin
-				case coordinates is
-					when ABSOLUTE =>
-						null;
-
-					when RELATIVE =>
-						null;
-				end case;
+				move_placeholder (device, meaning, layer, face, index, coordinates, point);
 			end;
 
 			
@@ -1562,12 +1550,16 @@ package body et_board_ops.devices is
 					& " to" & to_string (point),
 					level => log_threshold);
 
+				-- CS log layer, face, index
+
 			when RELATIVE =>
 				log (text => "module " & to_string (module_cursor)
 					& " move " & to_string (device_name) 
 					& " placeholder " & enclose_in_quotes (to_string (meaning))
 					& " by" & to_string (point),
 					level => log_threshold);
+
+				-- CS log layer, face, index
 		end case;
 
 		
@@ -1591,9 +1583,11 @@ package body et_board_ops.devices is
 
 	procedure rotate_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_device_name; -- IC45
-		meaning			: in type_placeholder_meaning; -- name, value, purpose		
+		device_name		: in type_device_name;
+		meaning			: in type_placeholder_meaning;
 		layer			: in type_placeholder_layer;
+		face			: in type_face;
+		index			: in type_placeholder_index;
 		rotation		: in type_rotation_model := 90.0;
 		log_threshold	: in type_log_level) 
 	is
@@ -1612,8 +1606,7 @@ package body et_board_ops.devices is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
 			is begin
-					-- rotate_placeholder (unit, meaning, toggle, rotation);
-				null;		
+				rotate_placeholder (device, meaning, layer, face, index, rotation);
 			end;
 
 			
@@ -1621,7 +1614,7 @@ package body et_board_ops.devices is
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical) 
 			is begin
-				null;
+				rotate_placeholder (device, meaning, layer, face, index, rotation);
 			end;
 
 			
@@ -1668,6 +1661,8 @@ package body et_board_ops.devices is
 			 & " to" & to_string (rotation),
 			 level => log_threshold);
 
+			-- CS log layer, face, index
+		
 		log_indentation_up;
 			
 		update_element (

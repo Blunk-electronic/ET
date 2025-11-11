@@ -339,7 +339,7 @@ package et_board_ops.devices is
 -- PLACEHOLDERS:
 
 
-	-- Moves a placeholder of the given device.
+	-- Moves the placeholder given by meaning, layer, face and index.
 	-- Automatically detects whether the given device is
 	-- electrical or non-electrical:
 	procedure move_placeholder (
@@ -347,13 +347,16 @@ package et_board_ops.devices is
 		device_name		: in type_device_name; -- IC45
 		meaning			: in type_placeholder_meaning; -- name, value, purpose
 		layer			: in type_placeholder_layer; -- silkscreen, assy doc
+		face			: in type_face; -- top/bottom
+		index			: in type_placeholder_index; -- 1, 2, 3, ...
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
 
 
-	-- Rotates the given placeholder about its origin.
+	-- Rotates the placeholder given by meaning, layer, face and index.
+	-- about its origin.
 	-- Automatically detects whether the given device is
 	-- electrical or non-electrical:
 	procedure rotate_placeholder (
@@ -361,6 +364,8 @@ package et_board_ops.devices is
 		device_name		: in type_device_name; -- IC45
 		meaning			: in type_placeholder_meaning; -- name, value, purpose		
 		layer			: in type_placeholder_layer; -- silkscreen, assy doc
+		face			: in type_face; -- top/bottom
+		index			: in type_placeholder_index; -- 1, 2, 3, ...
 		rotation		: in type_rotation_model := 90.0;
 		log_threshold	: in type_log_level);
 

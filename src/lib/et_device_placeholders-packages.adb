@@ -42,11 +42,21 @@
 package body et_device_placeholders.packages is
 
 
+	function to_placeholder_index (
+		index : in string)
+		return type_placeholder_index
+	is begin
+		return type_placeholder_index'value (index);
+	end;
+
+
+
+	
 	procedure mirror_placeholders (
-		placeholders	: in out pac_text_placeholders.list;
+		placeholders	: in out pac_text_placeholders.vector;
 		axis			: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
-		result : pac_text_placeholders.list;
+		result : pac_text_placeholders.vector;
 
 		procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 			ph : type_text_placeholder := element (c);
@@ -63,10 +73,10 @@ package body et_device_placeholders.packages is
 	
 
 	procedure rotate_placeholders (
-		placeholders	: in out pac_text_placeholders.list;
+		placeholders	: in out pac_text_placeholders.vector;
 		angle			: in type_rotation_model)
 	is
-		result : pac_text_placeholders.list;
+		result : pac_text_placeholders.vector;
 
 		procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 			ph : type_text_placeholder := element (c);
@@ -83,10 +93,10 @@ package body et_device_placeholders.packages is
 
 
 	procedure move_placeholders (
-		placeholders	: in out pac_text_placeholders.list;
+		placeholders	: in out pac_text_placeholders.vector;
 		offset			: in type_vector_model)
 	is
-		result : pac_text_placeholders.list;
+		result : pac_text_placeholders.vector;
 
 		procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 			ph : type_text_placeholder := element (c);

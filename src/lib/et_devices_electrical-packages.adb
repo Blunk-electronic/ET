@@ -453,6 +453,8 @@ package body et_devices_electrical.packages is
 		device		: in out type_device_electrical;
 		meaning		: in type_placeholder_meaning;					 
 		layer		: in type_placeholder_layer;
+		face		: in type_face;
+		index		: in type_placeholder_index;
 		coordinates	: in type_coordinates; -- relative/absolute
 		point		: in type_vector_model) -- x/y
 	is 
@@ -517,6 +519,8 @@ package body et_devices_electrical.packages is
 		device		: in out type_device_electrical;
 		meaning		: in type_placeholder_meaning;
 		layer		: in type_placeholder_layer;
+		face		: in type_face;
+		index		: in type_placeholder_index;
 		rotation	: in type_rotation_model)
 	is begin
 		case meaning is

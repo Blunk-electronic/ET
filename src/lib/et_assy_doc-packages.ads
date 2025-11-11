@@ -45,7 +45,7 @@ package et_assy_doc.packages is
 	-- Assembly documentation objects include placeholders for device name,
 	-- value, purpose:
 	type type_assy_doc_package is new type_assy_doc with record
-		placeholders : pac_text_placeholders.list;
+		placeholders : pac_text_placeholders.vector;
 	end record;
 
 	

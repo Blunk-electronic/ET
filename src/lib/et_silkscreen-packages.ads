@@ -45,7 +45,7 @@ package et_silkscreen.packages is
 	-- Silkscreen objects include placeholders for device name,
 	-- value, purpose:
 	type type_silkscreen_package is new type_silkscreen with record
-		placeholders : pac_text_placeholders.list;
+		placeholders : pac_text_placeholders.vector;
 	end record;
 
 	
