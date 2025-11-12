@@ -7,7 +7,7 @@
 - We need a text based, machine and human readable format for design files.
 - Design checks provided by common ECAD tools are way too superficial and trivial.
 - Style guides must be checked against.
-- The tool must be highly scripting capable.
+- The tool must be highly scripting capable (Everything that can be done via the GUI must also be possible via commandline or script.).
 - We want to do agile hardware develpment which requires the features mentioned above.
 - The tool must be open sourced.
 - Currently the GUI is under construction.
