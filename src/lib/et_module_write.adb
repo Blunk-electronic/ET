@@ -1120,14 +1120,14 @@ package body et_module_write is
 			begin -- query_placeholders
 				section_mark (section_placeholders, HEADER);
 
-				layer := SILK_SCREEN;
+				layer := SILKSCREEN;
 				face := TOP;
 				device.placeholders.silkscreen.top.iterate (write_placeholder'access);
 
 				face := BOTTOM;				
 				device.placeholders.silkscreen.bottom.iterate (write_placeholder'access);
 
-				layer := ASSEMBLY_DOCUMENTATION;
+				layer := ASSY_DOC;
 				face := TOP;				
 				device.placeholders.assy_doc.top.iterate (write_placeholder'access);
 
@@ -1796,14 +1796,14 @@ package body et_module_write is
 				begin -- query_placeholders
 					section_mark (section_placeholders, HEADER);
 
-					layer := SILK_SCREEN;
+					layer := SILKSCREEN;
 					face := TOP;
 					device.placeholders.silkscreen.top.iterate (write_placeholder'access);
 
 					face := BOTTOM;				
 					device.placeholders.silkscreen.bottom.iterate (write_placeholder'access);
 
-					layer := ASSEMBLY_DOCUMENTATION;
+					layer := ASSY_DOC;
 					face := TOP;				
 					device.placeholders.assy_doc.top.iterate (write_placeholder'access);
 

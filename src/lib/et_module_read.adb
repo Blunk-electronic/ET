@@ -1701,9 +1701,9 @@ package body et_module_read is
 				expect_field_count (line, 2);
 				device_text_placeholder.meaning := to_meaning (f (line, 2));
 				
-			elsif kw = keyword_layer then -- layer silkscreen/assembly_documentation
+			elsif kw = keyword_layer then -- layer silkscreen/assy_doc
 				expect_field_count (line, 2);
-				device_text_placeholder_layer := to_layer (f (line, 2));
+				device_text_placeholder_layer := to_placeholder_layer (f (line, 2));
 				
 			elsif kw = keyword_position then -- position x 0.000 y 5.555 rotation 0.00 face top
 				expect_field_count (line, 9);
@@ -3259,7 +3259,7 @@ package body et_module_read is
 					device_text_placeholder.position := et_board_geometry.pac_geometry_2.type_position (device_text_placeholder_position);
 					
 					case device_text_placeholder_layer is
-						when SILK_SCREEN => 
+						when SILKSCREEN => 
 							case get_face (device_text_placeholder_position) is
 
 								when TOP =>
@@ -3273,7 +3273,7 @@ package body et_module_read is
 										new_item	=> device_text_placeholder);
 							end case;
 							
-						when ASSEMBLY_DOCUMENTATION =>
+						when ASSY_DOC =>
 							case get_face (device_text_placeholder_position) is
 
 								when TOP =>

@@ -3273,7 +3273,7 @@ is
 						module_cursor 	=> active_module,
 						device_name		=> to_device_name (get_field (5)), -- IC1
 						meaning			=> meaning,
-						layer			=> to_layer (get_field (6)), -- assy
+						layer			=> to_placeholder_layer (get_field (6)), -- assy
 						face			=> to_face (get_field (7)), -- top
 						index			=> to_placeholder_index (get_field (8)), -- 2
 						coordinates		=> to_coordinates (get_field (9)),  -- relative/absolute

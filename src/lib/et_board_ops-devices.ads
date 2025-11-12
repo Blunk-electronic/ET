@@ -345,6 +345,11 @@ package et_board_ops.devices is
 	-- NOTE: Index identifies the targeted placeholder in connection
 	--       with its meaning. For example, if meaning is "value" and index is 3
 	--       then the 3rd value placeholder is adressed.
+	--
+	-- If no matching placeholder has been found, then nothing happens.
+	-- CS: A log message should be output.
+	-- CS; An error flag output by this procedure could be useful.
+	--
 	-- If coordinates is absolute, then the placeholder
 	-- is moved to the given point.
 	-- If coordinates is relative, then the placeholder
@@ -370,6 +375,11 @@ package et_board_ops.devices is
 	-- NOTE: Index identifies the targeted placeholder in connection
 	--       with its meaning. For example, if meaning is "value" and index is 3
 	--       then the 3rd value placeholder is adressed.
+	--
+	-- If no matching placeholder has been found, then nothing happens.
+	-- CS: A log message should be output.
+	-- CS; An error flag output by this procedure could be useful.
+	--
 	-- If coordinates is absolute, then the placeholder
 	-- is rotated to the given rotation.
 	-- If coordinates is relative, then the placeholder

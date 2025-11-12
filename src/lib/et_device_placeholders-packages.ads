@@ -67,8 +67,6 @@ package et_device_placeholders.packages is
 		meaning : type_placeholder_meaning := NAME;
 	end record;
 
-	-- There can be lots of placeholders of this kind. So they are stored in a list:	
-	-- package pac_text_placeholders is new doubly_linked_lists (type_text_placeholder);
 
 	subtype type_placeholder_index is positive range 1 .. 10;
 	
@@ -78,13 +76,30 @@ package et_device_placeholders.packages is
 		return type_placeholder_index;
 		
 		
-	
+	-- Due to packages that require a lot of area, it is useful to
+	-- have a lot of placeholders for value, name, purpose.
+	-- So for example the name X2 of a long edge connector can be
+	-- placed on three different positions. For this reason we store
+	-- the placeholders in vectors so that each of them has an index.
+	-- NOTE: The index is independend of the meaning !
 	package pac_text_placeholders is new vectors (
 		index_type		=> type_placeholder_index,
 		element_type	=> type_text_placeholder);
 	
 	use pac_text_placeholders;
 	
+	
+	
+	-- Locates the placeholder as specified by meaning and index.
+	-- If no matching placeholder has been found, then the result
+	-- is no_element:
+	function locate_placeholder (
+		placeholders	: in pac_text_placeholders.vector;
+		meaning			: in type_placeholder_meaning;
+		index			: in type_placeholder_index)
+		return pac_text_placeholders.cursor;
+		
+		
 
 	-- Mirrors a list of placeholders along the given axis:
 	procedure mirror_placeholders (
@@ -114,13 +129,21 @@ package et_device_placeholders.packages is
 
 	-- Placeholders for device name and value can be placed in
 	-- silk screen or assembly documentation only:
-	type type_placeholder_layer is (SILK_SCREEN, ASSEMBLY_DOCUMENTATION);
+	type type_placeholder_layer is (SILKSCREEN, ASSY_DOC);
 	-- CS apply prefix !
 	
-	function to_string (layer : in type_placeholder_layer) return string;
-	function to_layer (layer : in string) return type_placeholder_layer;
-	-- CS rename to to_placeholder_layer
+	function to_string (
+		layer : in type_placeholder_layer) 
+		return string;
 
+		
+	function to_placeholder_layer (
+		layer : in string) 
+		return type_placeholder_layer;
+
+
+		
+		
 
 	
 	-- Initially, when a device is added to the schematic, these placeholders are 
@@ -151,12 +174,16 @@ package et_device_placeholders.packages is
 	-- NOTE: Index identifies the targeted placeholder in connection
 	--       with its meaning. For example, if meaning is "value" and index is 3
 	--       then the 3rd value placeholder is adressed.
+	--
+	-- If no matching placeholder has been found, then nothing happens.
+	-- CS; An error flag output by this procedure could be useful.
+	--
 	-- If coordinates is absolute, then the placeholder
 	-- is moved to the given point.
 	-- If coordinates is relative, then the placeholder
 	-- is moved by the x/y-distance given by point:
 	procedure move_placeholder (
-		placeholders	: in type_text_placeholders;
+		placeholders	: in out type_text_placeholders;
 		meaning			: in type_placeholder_meaning;					 
 		layer			: in type_placeholder_layer; -- silkscreen, assy doc
 		face			: in type_face;
@@ -170,12 +197,16 @@ package et_device_placeholders.packages is
 	-- NOTE: Index identifies the targeted placeholder in connection
 	--       with its meaning. For example, if meaning is "value" and index is 3
 	--       then the 3rd value placeholder is adressed.
+	--
+	-- If no matching placeholder has been found, then nothing happens.
+	-- CS; An error flag output by this procedure could be useful.
+	--
 	-- If coordinates is absolute, then the placeholder
 	-- is rotated to the given rotation.
 	-- If coordinates is relative, then the placeholder
 	-- is rotated by the given rotation:
 	procedure rotate_placeholder (
-		placeholders	: in type_text_placeholders;
+		placeholders	: in out type_text_placeholders;
 		meaning			: in type_placeholder_meaning;					 
 		layer			: in type_placeholder_layer; -- silkscreen, assy doc
 		face			: in type_face;

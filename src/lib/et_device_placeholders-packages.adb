@@ -50,6 +50,24 @@ package body et_device_placeholders.packages is
 	end;
 
 
+	
+	
+	function locate_placeholder (
+		placeholders	: in pac_text_placeholders.vector;
+		meaning			: in type_placeholder_meaning;
+		index			: in type_placeholder_index)
+		return pac_text_placeholders.cursor
+	is
+		result : pac_text_placeholders.cursor;
+	begin
+	
+	
+		return result;
+	end locate_placeholder;
+	
+	
+
+	
 
 	
 	procedure mirror_placeholders (
@@ -129,21 +147,33 @@ package body et_device_placeholders.packages is
 		log_indentation_down;
 	end placeholder_properties;
 
+
+
+
 	
 
-	function to_string (layer : in type_placeholder_layer) return string is begin
+	function to_string (
+		layer : in type_placeholder_layer)
+		return string 
+	is begin
 		return to_lower (type_placeholder_layer'image (layer));
 	end;
 
-	function to_layer (layer : in string) return type_placeholder_layer is begin
+	
+	function to_placeholder_layer (
+		layer : in string) 
+		return type_placeholder_layer 
+	is begin
 		return type_placeholder_layer'value (layer);
 	end;
 
 
+	
+	
 
 
 	procedure move_placeholder (
-		placeholders	: in type_text_placeholders;
+		placeholders	: in out type_text_placeholders;
 		meaning			: in type_placeholder_meaning;					 
 		layer			: in type_placeholder_layer; -- silkscreen, assy doc
 		face			: in type_face;
@@ -151,15 +181,93 @@ package body et_device_placeholders.packages is
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model)
 	is
+		-- The addressed placeholder must be located among the given
+		-- placeholders. If the placeholder exists, then this cursor
+		-- will be pointing to it:
+		cursor : pac_text_placeholders.cursor;
+
+		
+		procedure query_placeholder (
+			p : in out type_text_placeholder)
+		is begin
+			case coordinates is
+				when ABSOLUTE =>
+					move_text_to (p, point);
+					
+				when RELATIVE =>
+					move_text_by (p, point);
+			end case;
+		end query_placeholder;
+		
+		
+		
+		procedure do_silkscreen is begin
+			case face is
+				when TOP => 
+					cursor := locate_placeholder (placeholders.silkscreen.top, meaning, index);
+
+					-- If the specified placeholder exists, then do the actual move:
+					if has_element (cursor) then
+						placeholders.silkscreen.top.update_element (cursor, query_placeholder'access);
+					end if;
+
+					
+				when BOTTOM	=>
+					cursor := locate_placeholder (placeholders.silkscreen.bottom, meaning, index);
+
+					-- If the specified placeholder exists, then do the actual move:
+					if has_element (cursor) then
+						placeholders.silkscreen.bottom.update_element (cursor, query_placeholder'access);
+					end if;
+				
+			end case;
+		end do_silkscreen;
+		
+		
+		
+		procedure do_assy_doc is begin
+			case face is
+				when TOP => 
+					cursor := locate_placeholder (placeholders.assy_doc.top, meaning, index);
+		
+					-- If the specified placeholder exists, then do the actual move:
+					if has_element (cursor) then
+						placeholders.assy_doc.top.update_element (cursor, query_placeholder'access);
+					end if;
+
+		
+				when BOTTOM	=> 
+					cursor := locate_placeholder (placeholders.assy_doc.bottom, meaning, index);
+
+					-- If the specified placeholder exists, then do the actual move:
+					if has_element (cursor) then
+						placeholders.assy_doc.bottom.update_element (cursor, query_placeholder'access);
+					end if;
+
+			end case;		
+		end do_assy_doc;
+		
+		
+		
 	begin
-		null;
+		case layer is
+			when SILKSCREEN =>
+				do_silkscreen;
+					
+			when ASSY_DOC =>
+				do_assy_doc;
+		end case;		
 	end move_placeholder;
 
 
 	
+	
+	
+	
+	
 
 	procedure rotate_placeholder (
-		placeholders	: in type_text_placeholders;
+		placeholders	: in out type_text_placeholders;
 		meaning			: in type_placeholder_meaning;					 
 		layer			: in type_placeholder_layer; -- silkscreen, assy doc
 		face			: in type_face;
@@ -169,6 +277,7 @@ package body et_device_placeholders.packages is
 	is
 	begin
 		null;
+		-- CS do similar as in move_placeholder above.
 	end rotate_placeholder;
 
 
