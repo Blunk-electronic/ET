@@ -239,6 +239,56 @@ non-electrical devices (without a representation in the schematic).
 
 	Note: Electrical devices can only be renamed in the schematic !
 	
+
+
+
+
+Placeholders for Name, Value and Purpose
+++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Next to a package usually the name (like R2), the value (like 100R)
+and the purpose (like "Brightness") is displayed via a placeholder.
+The placeholder can be moved or rotated when the board drawing
+requires it. Usually only one placeholder for name, value or purpose
+is sufficient. However, for packages that require more area, more than
+one placeholder is required. For this reason the placholders have
+an index to identify them.
+Placeholders can be part of the silkscreen or the assembly documentation.
+
+#. Move Name
+
+	This example command moves the name placeholder number 2 of IC1
+	in the silkscreen on the top side of the board by -10/3:
+
+	.. code-block::
+
+		move name IC1 silkscreen top 2 relative -10 3
+
+	|VNS| m p
+		
+
+
+#. Move Value
+
+	.. code-block::
+
+		move value IC1 silkscreen top 1 absolute 100 115
+
+	|VNS| m p
+		
+
+
+#. Move Purpose
+
+	.. code-block::
+
+		move purpose RN1 assy bottom 2 relative -10 3
+
+	|VNS| m p
+	
+
+
+
 	
 +++++++++++++++++++++
 Ratsnest and Airwires
