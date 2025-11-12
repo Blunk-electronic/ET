@@ -1619,6 +1619,8 @@ package body et_board_ops.devices is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
 			is begin
+				log (text => "rotate_electrical", level => log_threshold + 1);
+				
 				rotate_placeholder (device, meaning, layer, face,
 					index, coordinates, rotation);
 			end;
@@ -1628,6 +1630,8 @@ package body et_board_ops.devices is
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical) 
 			is begin
+				log (text => "rotate_non_electrical", level => log_threshold + 1);
+				
 				rotate_placeholder (device, meaning, layer, face,
 					index, coordinates, rotation);
 			end;
@@ -1670,13 +1674,30 @@ package body et_board_ops.devices is
 		
 		
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			 & " rotate " & to_string (device_name) 
-			 & " placeholder" & to_string (meaning) 
-			 & " to" & to_string (rotation),
-			 level => log_threshold);
+		case coordinates is
+			when ABSOLUTE =>
+				log (text => "module " & to_string (module_cursor)
+					& " rotate " & to_string (device_name) 
+					& " placeholder " & enclose_in_quotes (to_string (meaning))
+					& " layer " & to_string (layer)
+					& " face " & to_string (face)
+					& " index " & to_string (index)
+					& " to " & to_string (rotation),
+					level => log_threshold);
 
-			-- CS log layer, face, index
+
+			when RELATIVE =>
+				log (text => "module " & to_string (module_cursor)
+					& " rotate " & to_string (device_name) 
+					& " placeholder " & enclose_in_quotes (to_string (meaning))
+					& " layer " & to_string (layer)
+					& " face " & to_string (face)
+					& " index " & to_string (index)
+					& " by " & to_string (rotation),
+					level => log_threshold);
+
+		end case;
+
 		
 		log_indentation_up;
 			

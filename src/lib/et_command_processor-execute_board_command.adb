@@ -3308,10 +3308,66 @@ is
 
 
 
+
+
+
+
+	-- This procedure parses a command that rotates a placeholder
+	-- for name, value or purpose of a device.
+	-- Example: "board led_driver rotate value R1 silkscreen top 2 absolute 45"
+	-- Example: "board led_driver rotate value IC1 assy_doc bottom 2 relative -10"
+	procedure rotate_device_placeholder is
+		meaning : type_placeholder_meaning;
+		
+		procedure do_it is 
+			use et_board_ops.devices;
+			use et_device_placeholders.packages;
+		begin
+			case cmd_field_count is
+				when 10 =>
+					rotate_placeholder (
+						module_cursor 	=> active_module,
+						device_name		=> to_device_name (get_field (5)), -- IC1
+						meaning			=> meaning,
+						layer			=> to_placeholder_layer (get_field (6)), -- assy
+						face			=> to_face (get_field (7)), -- top
+						index			=> to_placeholder_index (get_field (8)), -- 2
+						coordinates		=> to_coordinates (get_field (9)),  -- relative/absolute
+						rotation		=> to_rotation (get_field (10)), -- 45
+						log_threshold	=> log_threshold + 1);
+
+				when 11 .. type_field_count'last => too_long; 
+					
+				when others => command_incomplete;
+			end case;
+		end do_it;
+
+		
+	begin
+		case noun is
+			when NOUN_NAME =>
+				meaning := NAME;
+				
+			when NOUN_VALUE =>
+				meaning := VALUE;
+								
+			when NOUN_PURPOSE =>
+				meaning := PURPOSE;
+
+			-- CS partcode ?
+
+			when others => null; -- CS should never happen
+		end case;
+
+		do_it;		
+	end rotate_device_placeholder;
+
 	
 	
 	
 
+
+	
 	-- This procedure parses a command to 
 	-- delete an object of the silkscreen:
 	procedure delete_silkscreen_object is
@@ -4084,6 +4140,9 @@ is
 					when NOUN_DEVICE =>
 						rotate_device;
 
+					when NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE =>
+						rotate_device_placeholder;
+						
 					when others => invalid_noun (to_string (noun));
 				end case;
 

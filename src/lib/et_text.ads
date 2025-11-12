@@ -284,11 +284,33 @@ package et_text is
 			text	: in out type_text_fab;
 			axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
+
+
+
+		
+		-- Rotates a text to the given angle about
+		-- its own origin:
+		procedure rotate_text_to (
+			text	: in out type_text_fab;
+			angle	: in type_rotation);
+
+		
 		-- Rotates a text by the given angle about the origin:
 		procedure rotate_text_by (
 			text	: in out type_text_fab;
 			angle	: in type_rotation);
 
+
+		-- Rotates a text by the given angle about
+		-- its own origin:
+		procedure rotate_text_by_2 (
+			text	: in out type_text_fab;
+			angle	: in type_rotation);
+
+		
+
+		
+		
 		-- Moves a text by the given offset:
 		procedure move_text_by (
 			text	: in out type_text_fab;

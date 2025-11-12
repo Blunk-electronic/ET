@@ -289,6 +289,39 @@ Placeholders can be part of the silkscreen or the assembly documentation.
 
 
 
+#. Rotate Name
+
+	This example command rotates the name placeholder number 2 of IC1
+	in the silkscreen on the top side of the board by 45 degrees:
+
+	.. code-block::
+
+		rotate name IC1 silkscreen top 2 relative 45
+
+	|VNS| r p
+		
+
+
+#. Rotate Value
+
+	.. code-block::
+
+		rotate value IC1 silkscreen top 1 absolute -45
+
+	|VNS| r p
+		
+
+
+#. Rotate Purpose
+
+	.. code-block::
+
+		rotate purpose RN1 assy bottom 2 relative -10
+
+	|VNS| r p
+
+
+
 	
 +++++++++++++++++++++
 Ratsnest and Airwires

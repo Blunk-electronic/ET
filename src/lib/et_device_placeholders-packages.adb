@@ -362,9 +362,91 @@ package body et_device_placeholders.packages is
 		coordinates		: in type_coordinates;
 		rotation		: in type_rotation_model)
 	is
+		-- The addressed placeholder must be located among the given
+		-- placeholders. If the placeholder exists, then this cursor
+		-- will be pointing to it:
+		cursor : pac_text_placeholders.cursor;
+
+		
+		procedure query_placeholder (
+			p : in out type_text_placeholder)
+		is begin
+			case coordinates is
+				when ABSOLUTE =>
+					rotate_text_to (p, rotation);
+					
+				when RELATIVE =>
+					rotate_text_by_2 (p, rotation);
+			end case;
+		end query_placeholder;
+		
+		
+		
+		procedure do_silkscreen is begin
+			-- put_line ("do_silkscreen");
+			
+			case face is
+				when TOP => 
+					cursor := locate_placeholder (placeholders.silkscreen.top, meaning, index);
+
+					-- If the specified placeholder exists, then do the actual rotation:
+					if has_element (cursor) then
+						-- put_line ("placeholder in silkscreen found");
+						placeholders.silkscreen.top.update_element (cursor, query_placeholder'access);
+					end if;
+
+					
+				when BOTTOM	=>
+					cursor := locate_placeholder (placeholders.silkscreen.bottom, meaning, index);
+
+					-- If the specified placeholder exists, then do the actual rotation:
+					if has_element (cursor) then
+						placeholders.silkscreen.bottom.update_element (cursor, query_placeholder'access);
+					end if;
+				
+			end case;
+		end do_silkscreen;
+		
+		
+		
+		procedure do_assy_doc is begin
+			-- put_line ("do_assy_doc");
+		
+			case face is
+				when TOP => 
+					cursor := locate_placeholder (placeholders.assy_doc.top, meaning, index);
+		
+					-- If the specified placeholder exists, then do the actual rotation:
+					if has_element (cursor) then
+						placeholders.assy_doc.top.update_element (cursor, query_placeholder'access);
+					end if;
+
+		
+				when BOTTOM	=> 
+					cursor := locate_placeholder (placeholders.assy_doc.bottom, meaning, index);
+
+					-- If the specified placeholder exists, then do the actual rotation:
+					if has_element (cursor) then
+						placeholders.assy_doc.bottom.update_element (cursor, query_placeholder'access);
+					end if;
+
+			end case;		
+		end do_assy_doc;
+		
+		
+		
 	begin
-		null;
-		-- CS do similar as in move_placeholder above.
+		-- put_line ("rotate_placeholder");
+		
+		case layer is
+			when SILKSCREEN =>
+				do_silkscreen;
+					
+			when ASSY_DOC =>
+				do_assy_doc;
+		end case;		
+		
+		-- put_line (to_string (placeholders));
 	end rotate_placeholder;
 
 

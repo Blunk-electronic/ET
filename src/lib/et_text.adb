@@ -396,6 +396,18 @@ package body et_text is
 			mirror_point (text.position.place, axis);
 		end mirror_text;
 
+
+
+
+
+		
+		procedure rotate_text_to (
+			text	: in out type_text_fab;
+			angle	: in type_rotation)
+		is begin
+			text.position.rotation := angle;
+		end rotate_text_to;
+		
 		
 		procedure rotate_text_by (
 			text	: in out type_text_fab;
@@ -406,6 +418,19 @@ package body et_text is
 		end rotate_text_by;
 
 
+		procedure rotate_text_by_2 (
+			text	: in out type_text_fab;
+			angle	: in type_rotation)
+		is begin
+			text.position.rotation := add (text.position.rotation, angle);
+		end rotate_text_by_2;
+
+
+
+
+
+
+		
 		procedure move_text_by (
 			text	: in out type_text_fab;
 			offset	: in type_vector_model)
