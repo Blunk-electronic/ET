@@ -148,6 +148,9 @@ package et_device_placeholders.packages is
 	
 	
 	-- Moves the placeholder given by meaning, layer, face and index.
+	-- NOTE: Index identifies the targeted placeholder in connection
+	--       with its meaning. For example, if meaning is "value" and index is 3
+	--       then the 3rd value placeholder is adressed.
 	-- If coordinates is absolute, then the placeholder
 	-- is moved to the given point.
 	-- If coordinates is relative, then the placeholder
@@ -164,6 +167,13 @@ package et_device_placeholders.packages is
 
 	
 	-- Rotates the placeholder given by meaning, layer, face and index.
+	-- NOTE: Index identifies the targeted placeholder in connection
+	--       with its meaning. For example, if meaning is "value" and index is 3
+	--       then the 3rd value placeholder is adressed.
+	-- If coordinates is absolute, then the placeholder
+	-- is rotated to the given rotation.
+	-- If coordinates is relative, then the placeholder
+	-- is rotated by the given rotation:
 	procedure rotate_placeholder (
 		placeholders	: in type_text_placeholders;
 		meaning			: in type_placeholder_meaning;					 

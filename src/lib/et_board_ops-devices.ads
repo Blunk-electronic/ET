@@ -341,7 +341,14 @@ package et_board_ops.devices is
 
 	-- Moves the placeholder given by meaning, layer, face and index.
 	-- Automatically detects whether the given device is
-	-- electrical or non-electrical:
+	-- electrical or non-electrical.
+	-- NOTE: Index identifies the targeted placeholder in connection
+	--       with its meaning. For example, if meaning is "value" and index is 3
+	--       then the 3rd value placeholder is adressed.
+	-- If coordinates is absolute, then the placeholder
+	-- is moved to the given point.
+	-- If coordinates is relative, then the placeholder
+	-- is moved by the x/y-distance given by point:	
 	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
@@ -358,7 +365,15 @@ package et_board_ops.devices is
 	-- Rotates the placeholder given by meaning, layer, face and index.
 	-- about its origin.
 	-- Automatically detects whether the given device is
-	-- electrical or non-electrical:
+	-- electrical or non-electrical.
+	-- Rotates the placeholder given by meaning, layer, face and index.
+	-- NOTE: Index identifies the targeted placeholder in connection
+	--       with its meaning. For example, if meaning is "value" and index is 3
+	--       then the 3rd value placeholder is adressed.
+	-- If coordinates is absolute, then the placeholder
+	-- is rotated to the given rotation.
+	-- If coordinates is relative, then the placeholder
+	-- is rotated by the given rotation:
 	procedure rotate_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
