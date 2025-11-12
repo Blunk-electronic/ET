@@ -366,6 +366,7 @@ package et_board_ops.devices is
 		layer			: in type_placeholder_layer; -- silkscreen, assy doc
 		face			: in type_face; -- top/bottom
 		index			: in type_placeholder_index; -- 1, 2, 3, ...
+		coordinates		: in type_coordinates;
 		rotation		: in type_rotation_model := 90.0;
 		log_threshold	: in type_log_level);
 

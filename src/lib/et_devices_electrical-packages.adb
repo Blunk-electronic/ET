@@ -455,59 +455,12 @@ package body et_devices_electrical.packages is
 		layer		: in type_placeholder_layer;
 		face		: in type_face;
 		index		: in type_placeholder_index;
-		coordinates	: in type_coordinates; -- relative/absolute
-		point		: in type_vector_model) -- x/y
-	is 
-		-- In case absolute movement is required, calculate the
-		-- new position of the placeholder relative to the package origin:
-		pos_abs : constant type_vector_model :=
-			get_distance_relative (device.position.place, point);
+		coordinates	: in type_coordinates;
+		point		: in type_vector_model)
+	is begin
+		move_placeholder (device.placeholders, meaning, layer,
+			face, index, coordinates, point);
 
-	begin
-		case meaning is
-			when NAME =>
-				case coordinates is
-					when ABSOLUTE =>
-						null;
-						--log (text => "pos " & to_string (point));
-						-- device.placeholders.name.position := pos_abs;
-
-					when RELATIVE =>
-						null;
-						-- move_by (
-							-- point	=> unit.placeholders.name.position,
-							-- offset	=> point);
-				end case;
-
-				
-			when VALUE =>
-				case coordinates is					
-					when ABSOLUTE =>
-						null;
-						-- unit.placeholders.value.position := pos_abs;
-
-					when RELATIVE =>
-						null;
-						-- move_by (
-							-- point	=> unit.placeholders.value.position,
-							-- offset	=> point);
-				end case;
-
-				
-			when PURPOSE =>
-				case coordinates is
-					when ABSOLUTE =>
-						null;
-						-- unit.placeholders.purpose.position := pos_abs;
-
-					when RELATIVE =>
-						null;
-						-- move_by (
-							-- point	=> unit.placeholders.purpose.position,
-							-- offset	=> point);
-				end case;
-
-		end case;
 	end move_placeholder;
 
 
@@ -521,36 +474,12 @@ package body et_devices_electrical.packages is
 		layer		: in type_placeholder_layer;
 		face		: in type_face;
 		index		: in type_placeholder_index;
+		coordinates	: in type_coordinates;
 		rotation	: in type_rotation_model)
 	is begin
-		case meaning is
-			when NAME =>
-				null;
-				-- if toggle then
-				-- 	toggle_rotation (unit.placeholders.name);
-				-- else
-				-- 	unit.placeholders.name.rotation := rotation;
-				-- end if;
-
-				
-			when VALUE =>
-				null;
-				-- if toggle then
-				-- 	toggle_rotation (unit.placeholders.value);
-				-- else
-				-- 	unit.placeholders.value.rotation := rotation;
-				-- end if;
-
-				
-			when PURPOSE =>
-				null;
-				-- if toggle then
-				-- 	toggle_rotation (unit.placeholders.purpose);
-				-- else
-				-- 	unit.placeholders.purpose.rotation := rotation;
-				-- end if;
-
-		end case;
+		rotate_placeholder (device.placeholders, meaning, layer,
+			face, index, coordinates, rotation);
+		
 	end rotate_placeholder;
 	
 

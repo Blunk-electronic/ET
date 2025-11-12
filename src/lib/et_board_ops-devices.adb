@@ -1588,6 +1588,7 @@ package body et_board_ops.devices is
 		layer			: in type_placeholder_layer;
 		face			: in type_face;
 		index			: in type_placeholder_index;
+		coordinates		: in type_coordinates;
 		rotation		: in type_rotation_model := 90.0;
 		log_threshold	: in type_log_level) 
 	is
@@ -1606,7 +1607,8 @@ package body et_board_ops.devices is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
 			is begin
-				rotate_placeholder (device, meaning, layer, face, index, rotation);
+				rotate_placeholder (device, meaning, layer, face,
+					index, coordinates, rotation);
 			end;
 
 			
@@ -1614,7 +1616,8 @@ package body et_board_ops.devices is
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical) 
 			is begin
-				rotate_placeholder (device, meaning, layer, face, index, rotation);
+				rotate_placeholder (device, meaning, layer, face,
+					index, coordinates, rotation);
 			end;
 
 			

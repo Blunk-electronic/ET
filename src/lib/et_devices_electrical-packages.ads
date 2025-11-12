@@ -369,6 +369,7 @@ package et_devices_electrical.packages is
 		layer		: in type_placeholder_layer; -- silkscreen, assy doc
 		face		: in type_face;
 		index		: in type_placeholder_index; -- 1, 2, 3, ...
+		coordinates	: in type_coordinates;
 		rotation	: in type_rotation_model);
 
 	
