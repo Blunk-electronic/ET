@@ -124,6 +124,10 @@ procedure draw_packages is
 	device_value	: et_device_value.pac_device_value.bounded_string;
 	device_purpose	: et_device_purpose.pac_device_purpose.bounded_string;
 
+	-- Placeholders for name, value, purpose:
+	device_placeholders	: et_device_placeholders.packages.type_text_placeholders;
+
+	
 
 	-- Translates face (TOP/BOTTOM) to conductor layer 1/bottom_layer.
 	function face_to_layer (f : in type_face) return type_signal_layer is begin
@@ -240,14 +244,14 @@ procedure draw_packages is
 					packge.assy_doc.bottom.lines.iterate (query_line'access);
 					-- CS arcs, circles, zones
 
-					packge.assy_doc.bottom.placeholders.iterate (query_placeholder'access);
+					device_placeholders.assy_doc.bottom.iterate (query_placeholder'access);
 				end if;
 
 				if assy_doc_enabled (BOTTOM) then
 					set_color_assy_doc (BOTTOM, brightness);
 					packge.assy_doc.top.lines.iterate (query_line'access);
 
-					packge.assy_doc.top.placeholders.iterate (query_placeholder'access);
+					device_placeholders.assy_doc.top.iterate (query_placeholder'access);
 				end if;
 
 			else -- not flipped
@@ -255,14 +259,14 @@ procedure draw_packages is
 					set_color_assy_doc (TOP, brightness);
 					packge.assy_doc.top.lines.iterate (query_line'access);
 
-					packge.assy_doc.top.placeholders.iterate (query_placeholder'access);
+					device_placeholders.assy_doc.top.iterate (query_placeholder'access);
 				end if;
 
 				if assy_doc_enabled (BOTTOM) then
 					set_color_assy_doc (BOTTOM, brightness);
 					packge.assy_doc.bottom.lines.iterate (query_line'access);
 
-					packge.assy_doc.bottom.placeholders.iterate (query_placeholder'access);
+					device_placeholders.assy_doc.bottom.iterate (query_placeholder'access);
 				end if;
 
 			end if;
@@ -316,15 +320,14 @@ procedure draw_packages is
 					packge.silkscreen.bottom.lines.iterate (query_line'access);
 					-- CS arcs, circles, zones
 
-					packge.silkscreen.bottom.placeholders.iterate (query_placeholder'access);
+					device_placeholders.silkscreen.bottom.iterate (query_placeholder'access);
 				end if;
 
 				if silkscreen_enabled (BOTTOM) then
 					set_color_silkscreen (BOTTOM, brightness);
 					packge.silkscreen.top.lines.iterate (query_line'access);
 
-					packge.silkscreen.top.placeholders.iterate (query_placeholder'access);
-					
+					device_placeholders.silkscreen.top.iterate (query_placeholder'access);
 				end if;
 
 			else -- not flipped
@@ -332,14 +335,14 @@ procedure draw_packages is
 					set_color_silkscreen (TOP, brightness);
 					packge.silkscreen.top.lines.iterate (query_line'access);
 
-					packge.silkscreen.top.placeholders.iterate (query_placeholder'access);
+					device_placeholders.silkscreen.top.iterate (query_placeholder'access);
 				end if;
 
 				if silkscreen_enabled (BOTTOM) then
 					set_color_silkscreen (BOTTOM, brightness);
 					packge.silkscreen.bottom.lines.iterate (query_line'access);
 
-					packge.silkscreen.bottom.placeholders.iterate (query_placeholder'access);
+					device_placeholders.silkscreen.bottom.iterate (query_placeholder'access);
 				end if;
 
 			end if;
@@ -1671,7 +1674,7 @@ procedure draw_packages is
 		device_name := name;
 		device_value := device.value;
 		device_purpose := device.purpose;
-
+		device_placeholders := device.placeholders;
 		
 		-- Get the cursor to the device model:
 		device_model_cursor := get_device_model_cursor (device.model);
@@ -1698,9 +1701,9 @@ procedure draw_packages is
 		-- put_line ("device " & to_string (name));	
 
 		device_name := name;
-		-- CS
-		-- device_value := device.value;
-		-- device_purpose := device.purpose;
+		device_value := device.value;
+		device_purpose := device.purpose;
+		device_placeholders := device.placeholders;
 
 		
 		-- Send the actual package model to the draw procedure:
