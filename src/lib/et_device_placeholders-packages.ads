@@ -170,6 +170,14 @@ package et_device_placeholders.packages is
 		assy_doc	: type_placeholders_assy_doc;
 	end record;
 
+
+
+	-- Returns the placeholders as a string:
+	function to_string (
+		placeholders : in type_text_placeholders)
+		-- CS parameter to insert linebreaks
+		return string;
+
 	
 	
 	-- Moves the placeholder given by meaning, layer, face and index.
@@ -216,9 +224,8 @@ package et_device_placeholders.packages is
 		coordinates		: in type_coordinates; -- relative/absolute
 		rotation		: in type_rotation_model);
 
-	
-	
-	
+		
+		
 end et_device_placeholders.packages;
 
 -- Soli Deo Gloria

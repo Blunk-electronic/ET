@@ -1492,7 +1492,11 @@ package body et_board_ops.devices is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
 			is begin
+				log (text => "move_electrical", level => log_threshold + 1);
 				move_placeholder (device, meaning, layer, face, index, coordinates, point);
+
+				-- log (text => "new: " & to_string (device.placeholders),
+					 -- level => log_threshold + 2);
 			end;
 
 			
@@ -1500,7 +1504,11 @@ package body et_board_ops.devices is
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electrical) 
 			is begin
+				log (text => "move_non_electrical", level => log_threshold + 1);
 				move_placeholder (device, meaning, layer, face, index, coordinates, point);
+
+				-- log (text => "new: " & to_string (device.placeholders),
+					 -- level => log_threshold + 2);
 			end;
 
 			
@@ -1547,19 +1555,23 @@ package body et_board_ops.devices is
 				log (text => "module " & to_string (module_cursor)
 					& " move " & to_string (device_name) 
 					& " placeholder " & enclose_in_quotes (to_string (meaning))
-					& " to" & to_string (point),
+					& " layer " & to_string (layer)
+					& " face " & to_string (face)
+					& " index " & to_string (index)
+					& " to " & to_string (point),
 					level => log_threshold);
 
-				-- CS log layer, face, index
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_cursor)
 					& " move " & to_string (device_name) 
 					& " placeholder " & enclose_in_quotes (to_string (meaning))
-					& " by" & to_string (point),
+					& " layer " & to_string (layer)
+					& " face " & to_string (face)
+					& " index " & to_string (index)
+					& " by " & to_string (point),
 					level => log_threshold);
 
-				-- CS log layer, face, index
 		end case;
 
 		

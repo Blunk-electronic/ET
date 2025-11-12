@@ -39,6 +39,9 @@
 --   to do:
 
 
+with ada.strings.unbounded;
+
+
 package body et_device_placeholders.packages is
 
 
@@ -65,6 +68,9 @@ package body et_device_placeholders.packages is
 		n : natural := 0;
 		
 	begin
+		-- put_line ("locate_placeholder " & to_string (meaning) & " " 
+			-- & type_placeholder_index'image (index));
+		
 		if not is_empty (placeholders) then
 			cursor := placeholders.first;
 		end if;
@@ -76,10 +82,12 @@ package body et_device_placeholders.packages is
 			-- Test the meaning of the candidate placeholder:
 			if element (cursor).meaning = meaning then
 				n := n + 1;
+				-- put_line ("n: " & natural'image (n));
 		
 				-- Abort the iteration once the placeholder
 				-- given by index has been found:
 				if type_placeholder_index (n) = index then
+					-- put_line ("found");
 					exit;
 				end if;
 				
@@ -198,7 +206,43 @@ package body et_device_placeholders.packages is
 
 	
 	
+	
+	
+	
+	
+	function to_string (
+		placeholders : in type_text_placeholders)
+		return string
+	is
+		use ada.strings.unbounded;
+		result : unbounded_string;
 
+		
+		procedure query_placeholder (c : in pac_text_placeholders.cursor) is
+			p : type_text_placeholder renames element (c);
+		begin
+			result := result & " meaning " & to_string (p.meaning) 
+				& " place " & to_string (get_place (p));
+		end query_placeholder;
+		
+		 
+	begin
+		result := result & " silkscreen top: ";
+		placeholders.silkscreen.top.iterate (query_placeholder'access);
+
+		result := result & " silkscreen bottom: ";
+		placeholders.silkscreen.bottom.iterate (query_placeholder'access);
+
+		-- CS assy doc
+		
+		return to_string (result);
+	end to_string;
+	
+
+	
+	
+
+	
 
 	procedure move_placeholder (
 		placeholders	: in out type_text_placeholders;
@@ -220,22 +264,31 @@ package body et_device_placeholders.packages is
 		is begin
 			case coordinates is
 				when ABSOLUTE =>
+					-- put_line ("move absolute");
 					move_text_to (p, point);
 					
+					-- put_line ("new " & to_string (get_place (p)));
+					
 				when RELATIVE =>
+					-- put_line ("move relative " & to_string (point));
 					move_text_by (p, point);
+					
+					-- put_line ("new " & to_string (get_place (p)));
 			end case;
 		end query_placeholder;
 		
 		
 		
 		procedure do_silkscreen is begin
+			-- put_line ("do_silkscreen");
+			
 			case face is
 				when TOP => 
 					cursor := locate_placeholder (placeholders.silkscreen.top, meaning, index);
 
 					-- If the specified placeholder exists, then do the actual move:
 					if has_element (cursor) then
+						-- put_line ("placeholder in silkscreen found");
 						placeholders.silkscreen.top.update_element (cursor, query_placeholder'access);
 					end if;
 
@@ -254,6 +307,8 @@ package body et_device_placeholders.packages is
 		
 		
 		procedure do_assy_doc is begin
+			-- put_line ("do_assy_doc");
+		
 			case face is
 				when TOP => 
 					cursor := locate_placeholder (placeholders.assy_doc.top, meaning, index);
@@ -278,6 +333,8 @@ package body et_device_placeholders.packages is
 		
 		
 	begin
+		-- put_line ("move_placeholder");
+		
 		case layer is
 			when SILKSCREEN =>
 				do_silkscreen;
@@ -285,6 +342,8 @@ package body et_device_placeholders.packages is
 			when ASSY_DOC =>
 				do_assy_doc;
 		end case;		
+		
+		-- put_line (to_string (placeholders));
 	end move_placeholder;
 
 
@@ -309,6 +368,8 @@ package body et_device_placeholders.packages is
 	end rotate_placeholder;
 
 
+	
+	
 	
 	
 end et_device_placeholders.packages;

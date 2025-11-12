@@ -3259,7 +3259,7 @@ is
 	-- This procedure parses a command that moves a placeholder
 	-- for name, value or purpose of a device.
 	-- Example: "board led_driver move value R1 silkscreen top 2 absolute 100 115"
-	-- Example: "board led_driver move value IC1 assy bottom 2 relative -5 0"
+	-- Example: "board led_driver move value IC1 assy_doc bottom 2 relative -5 0"
 	procedure move_device_placeholder is
 		meaning : type_placeholder_meaning;
 		
