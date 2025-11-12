@@ -58,11 +58,39 @@ package body et_device_placeholders.packages is
 		index			: in type_placeholder_index)
 		return pac_text_placeholders.cursor
 	is
-		result : pac_text_placeholders.cursor;
+		cursor : pac_text_placeholders.cursor;
+		
+		-- This counter increments each time a placeholder
+		-- with the given meaning has been found:
+		n : natural := 0;
+		
 	begin
+		if not is_empty (placeholders) then
+			cursor := placeholders.first;
+		end if;
+		
 	
+		-- Iterate though the given placeholders:
+		while has_element (cursor) loop
+		
+			-- Test the meaning of the candidate placeholder:
+			if element (cursor).meaning = meaning then
+				n := n + 1;
+		
+				-- Abort the iteration once the placeholder
+				-- given by index has been found:
+				if type_placeholder_index (n) = index then
+					exit;
+				end if;
+				
+			end if;
+		
+			next (cursor);
+		end loop;
 	
-		return result;
+		-- If nothing found, then cursor points to no_element.
+		
+		return cursor;
 	end locate_placeholder;
 	
 	

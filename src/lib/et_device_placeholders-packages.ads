@@ -91,6 +91,8 @@ package et_device_placeholders.packages is
 	
 	
 	-- Locates the placeholder as specified by meaning and index.
+	-- With other words: Locates the n'th (index) placeholder 
+	-- having the given meaning.
 	-- If no matching placeholder has been found, then the result
 	-- is no_element:
 	function locate_placeholder (
