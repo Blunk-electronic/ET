@@ -1711,6 +1711,71 @@ package body et_board_ops.devices is
 
 
 
+
+
+	function to_string (
+		placeholder	: in type_object_placeholder)
+		return string
+	is begin
+		-- CS
+		return "dummy text";
+	end to_string;
+
+
+	
+	
+	procedure propose_placeholders (
+		module_cursor	: in pac_generic_modules.cursor;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null;
+	end propose_placeholders;
+
+	
+	
+	
+	
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_object_placeholder;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is begin
+		null;
+	end;
+
+	
+	
+	
+	
+	function get_first_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_placeholder
+	is
+		result : type_object_placeholder;
+	begin
+		-- CS
+		return result;
+	end get_first_placeholder;
+	
+	
+	
+
+	procedure reset_status_placeholders (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null;
+		-- CS
+	end reset_status_placeholders;
+
+	
 	
 	
 ------------------------------------------------------------------------------------------
@@ -1736,6 +1801,7 @@ package body et_board_ops.devices is
 		result_category 		: type_object_category := CAT_VOID;
 		result_electrical 	 	: type_object_electrical;
 		result_non_electrical	: type_object_non_electrical;
+		result_placeholder		: type_object_placeholder;
 
 		use pac_devices_non_electrical;
 		use pac_devices_electrical;
@@ -1746,8 +1812,29 @@ package body et_board_ops.devices is
 
 		log_indentation_up;
 
+
+		-- SEARCH FOR A PLACEHOLDER:
 		
-		-- SEARCH FOR A ELECTRICAL DEVICE:
+		-- If a placeholder has been found, then go to the end of this procedure:
+		result_placeholder := get_first_placeholder (module_cursor, flag, log_threshold + 1);
+
+		if has_element (result_placeholder.device) then
+			-- A placeholder has been found.
+			log (text => to_string (result_placeholder),
+				 level => log_threshold + 1);
+			
+			result_category := CAT_PLACEHOLDER;
+		end if;
+
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
+
+		
+		
+
+		
+		-- SEARCH FOR AN ELECTRICAL DEVICE:
 		
 		-- If a device has been found, then go to the end of this procedure:
 		result_electrical := get_first_device (module_cursor, flag, log_threshold + 1);
@@ -1763,6 +1850,7 @@ package body et_board_ops.devices is
 		if result_category /= CAT_VOID then
 			goto end_of_search;
 		end if;
+
 
 
 		
@@ -1797,6 +1885,9 @@ package body et_board_ops.devices is
 
 			when CAT_NON_ELECTRICAL_DEVICE =>
 				return (CAT_NON_ELECTRICAL_DEVICE, result_non_electrical);
+				
+			when CAT_PLACEHOLDER =>
+				return (CAT_PLACEHOLDER, result_placeholder);
 				
 		end case;
 	end get_first_object;
@@ -1920,6 +2011,17 @@ package body et_board_ops.devices is
 			end loop;
 
 			log_indentation_down;			
+			
+
+			
+			log (text => "placeholders", level => log_threshold + 1);
+			log_indentation_up;
+
+			-- CS query placeholders
+
+			log_indentation_down;
+
+			
 		end query_module;
 
 		
@@ -1940,6 +2042,8 @@ package body et_board_ops.devices is
 	end get_objects;
 
 
+	
+	
 
 	
 
@@ -1963,6 +2067,9 @@ package body et_board_ops.devices is
 
 			when CAT_NON_ELECTRICAL_DEVICE =>
 				modify_status (module_cursor, object.non_electrical_device, operation, log_threshold + 1);
+
+			when CAT_PLACEHOLDER =>
+				modify_status (module_cursor, object.placeholder, operation, log_threshold + 1);
 				
 			when CAT_VOID =>
 				null; -- CS
@@ -1996,9 +2103,7 @@ package body et_board_ops.devices is
 	procedure reset_status_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
-	is 
-
-	begin
+	is begin
 		log (text => "module " & to_string (module_cursor) 
 			& " reset objects",
 			level => log_threshold);
@@ -2013,7 +2118,9 @@ package body et_board_ops.devices is
 		reset_proposed_non_electrical_devices (
 			module_cursor, log_threshold + 1);
 
-		-- CS placeholders of devices
+		-- Reset placeholders:
+		reset_status_placeholders (
+			module_cursor, log_threshold + 1);
 		
 		log_indentation_down;
 	end reset_status_objects;
@@ -2052,6 +2159,8 @@ package body et_board_ops.devices is
 					log_threshold	=> log_threshold + 1);
 
 				
+			when CAT_PLACEHOLDER => null;
+			
 			when CAT_VOID =>
 				null;
 		end case;		
@@ -2101,6 +2210,20 @@ package body et_board_ops.devices is
 					point			=> destination,
 					log_threshold	=> log_threshold + 1);
 
+					
+			when CAT_PLACEHOLDER =>
+
+				move_placeholder (
+					module_cursor	=> module_cursor,
+					device_name		=> get_device_name (object.placeholder.device),
+					meaning			=> object.placeholder.meaning,
+					layer			=> object.placeholder.layer,
+					face			=> object.placeholder.face,
+					index			=> object.placeholder.index,
+					coordinates		=> absolute,
+					point			=> destination,
+					log_threshold	=> log_threshold + 1);
+
 				
 			when CAT_VOID =>
 				null;
@@ -2144,6 +2267,20 @@ package body et_board_ops.devices is
 					coordinates		=> relative,
 					log_threshold	=> log_threshold + 1);
 
+					
+			when CAT_PLACEHOLDER =>
+
+				rotate_placeholder (
+					module_cursor	=> module_cursor,
+					device_name		=> get_device_name (object.placeholder.device),
+					meaning			=> object.placeholder.meaning,
+					layer			=> object.placeholder.layer,
+					face			=> object.placeholder.face,
+					index			=> object.placeholder.index,
+					coordinates		=> relative,
+					rotation		=> 90.0,
+					log_threshold	=> log_threshold + 1);
+					
 				
 			when CAT_VOID =>
 				null;
@@ -2181,6 +2318,10 @@ package body et_board_ops.devices is
 					module_cursor	=> module_cursor,
 					device_name		=> get_device_name (object.non_electrical_device),
 					log_threshold	=> log_threshold + 1);
+				
+				
+			when CAT_PLACEHOLDER => null; -- CS
+			
 				
 			when CAT_VOID =>
 				null;
@@ -2224,6 +2365,8 @@ package body et_board_ops.devices is
 					toggle			=> true,
 					log_threshold	=> log_threshold + 1);
 
+				
+			when CAT_PLACEHOLDER => null;
 				
 			when CAT_VOID =>
 				null;
@@ -2312,8 +2455,8 @@ package body et_board_ops.devices is
 					log_threshold	=> log_threshold + 1);
 
 				
-			-- when CAT_PLACEHOLDER =>
-				-- null; -- CS clear content ? or do nothing ?
+			when CAT_PLACEHOLDER =>
+				null; -- CS clear content ? or do nothing ?
 
 								
 			when CAT_VOID =>

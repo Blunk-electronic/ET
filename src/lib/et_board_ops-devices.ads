@@ -258,7 +258,7 @@ package et_board_ops.devices is
 
 	
 	-- Clears the proposed-flag and the selected-flag of all real devices:
-	procedure reset_proposed_non_electrical_devices (
+	procedure reset_proposed_non_electrical_devices ( -- CS rename to reset_status_non_electrical_devices
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
@@ -396,7 +396,61 @@ package et_board_ops.devices is
 		log_threshold	: in type_log_level);
 
 
+
+	type type_object_placeholder is record
+		device		: pac_devices_non_electrical.cursor;
+		placeholder	: pac_text_placeholders.cursor;
+		layer		: type_placeholder_layer;
+		face		: type_face;
+		index		: type_placeholder_index;
+		meaning		: type_placeholder_meaning;
+	end record;
+
+
+	function to_string (
+		placeholder	: in type_object_placeholder)
+		return string;
 	
+	
+	
+	-- Sets the proposed-flag of all real placeholders which are in the
+	-- given zone around the given place.
+	-- Adds to count the number of placeholders that have been found:
+	procedure propose_placeholders (
+		module_cursor	: in pac_generic_modules.cursor;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural; -- the number of affected placeholders
+		log_threshold	: in type_log_level);
+
+	
+	
+	
+	-- Modifies that status flag of a placeholder:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_object_placeholder;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+	
+	
+		
+	-- Returns the first placeholder according to the given flag.
+	-- If no placeholder has been found, then the return is no_element:
+	function get_first_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_placeholder;
+
+		
+
+	procedure reset_status_placeholders (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+		
+		
 ------------------------------------------------------------------------
 
 
@@ -405,7 +459,9 @@ package et_board_ops.devices is
 	type type_object_category is (
 		CAT_VOID,
 		CAT_ELECTRICAL_DEVICE,
-		CAT_NON_ELECTRICAL_DEVICE);
+		CAT_NON_ELECTRICAL_DEVICE,
+		CAT_PLACEHOLDER
+		);
 
 
 	-- This type wraps all kinds of devices into a single type:
@@ -419,6 +475,8 @@ package et_board_ops.devices is
 			when CAT_NON_ELECTRICAL_DEVICE => 
 				non_electrical_device	: type_object_non_electrical;
 
+			when CAT_PLACEHOLDER =>
+				placeholder : type_object_placeholder;
 		end case;
 	end record;
 

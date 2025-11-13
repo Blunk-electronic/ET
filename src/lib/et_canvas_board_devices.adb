@@ -123,6 +123,7 @@ package body et_canvas_board_devices is
 
 
 
+	
 	procedure show_selected_object (
 		object		: in type_object)
 	is 
@@ -138,6 +139,10 @@ package body et_canvas_board_devices is
 				set_status (praeamble_non_electric & get_device_name (object.non_electrical_device.cursor)
 					& ". " & status_next_object_clarification);
 
+			when CAT_PLACEHOLDER =>
+				set_status ("dummy text");
+				-- CS
+				
 			when CAT_VOID => null; -- CS
 		end case;
 	end show_selected_object;
@@ -310,6 +315,17 @@ package body et_canvas_board_devices is
 								count			=> count_total,
 								log_threshold	=> log_threshold + 1);
 
+							
+						when NOUN_PLACEHOLDER =>
+
+							-- Propose placeholders in the vicinity of the given point:
+							propose_placeholders (
+								module_cursor	=> active_module,
+								catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+								count			=> count_total,
+								log_threshold	=> log_threshold + 1);
+
+							
 						when others =>
 							null; -- CS
 					end case;
