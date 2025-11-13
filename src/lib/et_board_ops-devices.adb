@@ -2086,7 +2086,7 @@ package body et_board_ops.devices is
 
 				move_device (
 					module_cursor	=> module_cursor,
-					device_name		=> key (object.electrical_device.cursor),
+					device_name		=> get_device_name (object.electrical_device),
 					coordinates		=> absolute,
 					point			=> destination,
 					log_threshold	=> log_threshold + 1);
@@ -2096,7 +2096,7 @@ package body et_board_ops.devices is
 
 				move_device (
 					module_cursor	=> module_cursor,
-					device_name		=> key (object.non_electrical_device.cursor),
+					device_name		=> get_device_name (object.non_electrical_device),
 					coordinates		=> absolute,
 					point			=> destination,
 					log_threshold	=> log_threshold + 1);
@@ -2131,7 +2131,7 @@ package body et_board_ops.devices is
 
 				rotate_device (
 					module_cursor	=> module_cursor,
-					device_name		=> key (object.electrical_device.cursor),
+					device_name		=> get_device_name (object.electrical_device),
 					coordinates		=> relative,
 					log_threshold	=> log_threshold + 1);
 
@@ -2140,7 +2140,7 @@ package body et_board_ops.devices is
 
 				rotate_device (
 					module_cursor	=> module_cursor,
-					device_name		=> key (object.non_electrical_device.cursor),
+					device_name		=> get_device_name (object.non_electrical_device),
 					coordinates		=> relative,
 					log_threshold	=> log_threshold + 1);
 
