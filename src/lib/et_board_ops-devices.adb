@@ -1721,7 +1721,11 @@ package body et_board_ops.devices is
 		return "dummy text";
 	end to_string;
 
+	
+	
 
+	
+	
 	
 	
 	procedure propose_placeholders (
@@ -1730,10 +1734,99 @@ package body et_board_ops.devices is
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
+	
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			
+			-- This procedure queries the placeholders of
+			-- all electrical devices:
+			procedure query_electrical_devices is
+				device_cursor : pac_devices_electrical.cursor := module.devices.first;
+			
+				procedure query_device (
+					device_name	: in type_device_name;
+					device		: in out type_device_electrical)
+				is begin
+					log (text => to_string (device_name), level => log_threshold + 2);					
+					propose_placeholders (device.placeholders, catch_zone, count);					
+				end query_device;
+
+				
+			begin
+				log (text => "query_electrical_devices", level => log_threshold + 1);
+				log_indentation_up;
+				
+				while has_element (device_cursor) loop
+
+					if is_real (device_cursor) then -- ignore virtual devices (like GND symbols)
+						module.devices.update_element (device_cursor, query_device'access);
+					end if;
+					
+					next (device_cursor);
+				end loop;
+				
+				log_indentation_down;
+			end query_electrical_devices;
+			
+
+			
+			
+			-- This procedure queries the placeholders of
+			-- all non-electrical devices:			
+			procedure query_non_electrical_devices is
+				device_cursor : pac_devices_non_electrical.cursor := module.devices_non_electric.first;
+						
+				procedure query_device (
+					device_name	: in type_device_name;
+					device		: in out type_device_non_electrical)
+				is begin
+					log (text => to_string (device_name), level => log_threshold + 2);					
+					propose_placeholders (device.placeholders, catch_zone, count);					
+				end query_device;
+
+				
+			begin
+				log (text => "query_non_electrical_devices", level => log_threshold + 1);
+				log_indentation_up;
+				
+				while has_element (device_cursor) loop
+					module.devices_non_electric.update_element (device_cursor, query_device'access);					
+					next (device_cursor);
+				end loop;
+				
+				log_indentation_down;
+			end query_non_electrical_devices;
+
+			
+			
+		begin
+			query_electrical_devices;
+			query_non_electrical_devices;
+		end query_module;
+
+	
+	
 	begin
-		null;
+		log (text => "module " & to_string (module_cursor)
+			& " propose placeholders in " & to_string (catch_zone),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
 	end propose_placeholders;
 
+	
+	
+	
+	
 	
 	
 	
