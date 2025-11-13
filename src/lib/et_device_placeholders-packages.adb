@@ -454,6 +454,88 @@ package body et_device_placeholders.packages is
 	
 	
 	
+	
+	procedure propose_placeholders (
+		placeholders	: in out type_text_placeholders;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural)
+	is
+		
+		-- This cursor points to the placeholder being probed:		
+		cursor : pac_text_placeholders.cursor;
+
+		
+		procedure query_placeholder (
+			p : in out type_text_placeholder)
+		is begin
+		 	if in_catch_zone (
+				zone	=> catch_zone,
+				point	=> get_place (p)) 
+			then
+				set_proposed (p);
+				count := count + 1;				
+			end if;
+		end query_placeholder;
+		
+		
+		
+		procedure do_silkscreen_top is begin
+			cursor := placeholders.silkscreen.top.first;
+			while has_element (cursor) loop
+				placeholders.silkscreen.top.update_element (
+					cursor, query_placeholder'access);
+					
+				next (cursor);
+			end loop;		
+		end;
+		 
+
+		procedure do_silkscreen_bottom is begin
+			cursor := placeholders.silkscreen.bottom.first;
+			while has_element (cursor) loop
+				placeholders.silkscreen.bottom.update_element (
+					cursor, query_placeholder'access);
+					
+				next (cursor);
+			end loop;		
+		end;
+
+
+		
+		procedure do_assy_doc_top is begin
+			cursor := placeholders.assy_doc.top.first;
+			while has_element (cursor) loop
+				placeholders.assy_doc.top.update_element (
+					cursor, query_placeholder'access);
+					
+				next (cursor);
+			end loop;		
+		end;
+		 
+
+		procedure do_assy_doc_bottom is begin
+			cursor := placeholders.assy_doc.bottom.first;
+			while has_element (cursor) loop
+				placeholders.assy_doc.bottom.update_element (
+					cursor, query_placeholder'access);
+					
+				next (cursor);
+			end loop;		
+		end;
+
+		
+	begin
+		do_silkscreen_top;
+		do_silkscreen_bottom;
+		
+		do_assy_doc_top;
+		do_assy_doc_bottom;
+	end propose_placeholders;
+
+	
+	
+	
+	
 end et_device_placeholders.packages;
 
 -- Soli Deo Gloria

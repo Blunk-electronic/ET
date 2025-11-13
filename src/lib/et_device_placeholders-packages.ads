@@ -224,6 +224,15 @@ package et_device_placeholders.packages is
 		coordinates		: in type_coordinates; -- relative/absolute
 		rotation		: in type_rotation_model);
 
+
+
+	-- Sets the proposed-flag of all placeholders which are in the
+	-- given zone around the given place.
+	-- Adds to count the number of placeholders that have been found:
+	procedure propose_placeholders (
+		placeholders	: in out type_text_placeholders;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural);
 		
 		
 end et_device_placeholders.packages;
