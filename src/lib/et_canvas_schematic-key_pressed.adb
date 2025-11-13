@@ -395,7 +395,7 @@ is
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when key_space =>
 				case noun is
-					when NOUN_PURPOSE =>
+					when NOUN_PURPOSE => -- CS remove
 						et_canvas_schematic_units.rotate_object (point);
 
 					when NOUN_UNIT =>
