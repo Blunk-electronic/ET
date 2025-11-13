@@ -182,7 +182,7 @@ non-electrical devices (without a representation in the schematic).
 		rotate device FD1 absolute 10
 		rotate device MH1 relative -45
 
-	|VNS| o d
+	|VNS| r d
 
 
 
@@ -264,7 +264,7 @@ Placeholders can be part of the silkscreen or the assembly documentation.
 
 		move name IC1 silkscreen top 2 relative -10 3
 
-	|VNS| m p
+	|VNS| r p
 		
 
 
@@ -274,7 +274,7 @@ Placeholders can be part of the silkscreen or the assembly documentation.
 
 		move value IC1 silkscreen top 1 absolute 100 115
 
-	|VNS| m p
+	|VNS| r p
 		
 
 
@@ -284,7 +284,7 @@ Placeholders can be part of the silkscreen or the assembly documentation.
 
 		move purpose RN1 assy bottom 2 relative -10 3
 
-	|VNS| m p
+	|VNS| r p
 	
 
 
@@ -345,7 +345,7 @@ Routing, laying out Tracks and Traces
 
 #. Laying out Tacks of a Net
 
-	|VNS| r n
+	|VNS| t n
 	
 	.. code-block::
 
