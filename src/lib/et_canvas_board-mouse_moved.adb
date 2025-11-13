@@ -123,7 +123,7 @@ begin
 						redraw_board;
 					end if;
 					
-				when NOUN_DEVICE =>
+				when NOUN_DEVICE | NOUN_PLACEHOLDER =>
 					if edit_process_running then
 						redraw_board;
 					end if;

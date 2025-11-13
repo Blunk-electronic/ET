@@ -225,6 +225,15 @@ package et_canvas_board_devices is
 
 	
 
+	status_move_placeholder : constant string :=
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to move placeholder." 
+		& status_hint_for_abort;
+
+
+	
 	procedure move_object (
 		tool	: in type_tool;
 		point	: in type_vector_model);
@@ -282,8 +291,17 @@ package et_canvas_board_devices is
 
 	
 
+	status_rotate_placeholder : constant string :=
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to rotate placeholder." 
+		& status_hint_for_abort;
 
 
+
+
+	
 	
 
 -- FLIP / MIRROR:

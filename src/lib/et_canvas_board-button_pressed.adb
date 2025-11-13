@@ -129,9 +129,8 @@ is
 					when NOUN_FREETRACK =>
 						et_canvas_board_conductors.move_object (MOUSE, snap_point);
 						
-					when NOUN_DEVICE =>
+					when NOUN_DEVICE | NOUN_PLACEHOLDER =>
 						et_canvas_board_devices.move_object (MOUSE, snap_point);
-
 
 					when NOUN_OUTLINE =>
 						et_canvas_board_outline.move_object (MOUSE, snap_point);
@@ -171,7 +170,7 @@ is
 
 			when VERB_ROTATE =>
 				case noun is
-					when NOUN_DEVICE =>
+					when NOUN_DEVICE | NOUN_PLACEHOLDER =>
 						et_canvas_board_devices.rotate_object (event.point);
 
 					when others => null;
@@ -276,16 +275,6 @@ is
 			when VERB_MOVE | VERB_ROTATE =>
 				case noun is
 					
-					--when NOUN_NAME => 
-						--if clarification_pending then
-							--clarify_placeholder;
-						--end if;
-
-					--when NOUN_PURPOSE => 
-						--if clarification_pending then
-							--clarify_placeholder;
-						--end if;
-
 					when NOUN_ASSY =>
 						if clarification_pending then
 							et_canvas_board_assy_doc.clarify_object;
@@ -326,7 +315,7 @@ is
 							et_canvas_board_conductors.clarify_object;
 						end if;
 						
-					when NOUN_DEVICE =>
+					when NOUN_DEVICE | NOUN_PLACEHOLDER =>
 						if clarification_pending then
 							et_canvas_board_devices.clarify_object;
 						end if;

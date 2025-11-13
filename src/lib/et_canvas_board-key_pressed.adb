@@ -446,6 +446,10 @@ is
 			when key_noun_outline =>
 				noun := NOUN_OUTLINE;
 				set_status (et_canvas_board_outline.status_move_object);
+
+			when key_noun_placeholder =>
+				noun := NOUN_PLACEHOLDER;					
+				set_status (et_canvas_board_devices.status_move_placeholder);
 				
 			when key_noun_via =>
 				noun := NOUN_VIA;
@@ -486,10 +490,12 @@ is
 
 					when NOUN_DEVICE =>		
 						et_canvas_board_devices.move_object (KEYBOARD, point);
-						
 
 					when NOUN_OUTLINE =>
 						et_canvas_board_outline.move_object (KEYBOARD, point);
+
+					when NOUN_PLACEHOLDER =>		
+						et_canvas_board_devices.move_object (KEYBOARD, point);
 						
 					-- when NOUN_TEXT =>
 					-- 	et_canvas_board_texts.move_text (KEYBOARD, point);
@@ -554,7 +560,7 @@ is
 							et_canvas_board_conductors.clarify_object;
 						end if;
 						
-					when NOUN_DEVICE =>
+					when NOUN_DEVICE | NOUN_PLACEHOLDER =>
 						if clarification_pending then
 							et_canvas_board_devices.clarify_object;
 						end if;
@@ -706,14 +712,20 @@ is
 			when key_noun_device =>
 				noun := NOUN_DEVICE;
 				set_status (et_canvas_board_devices.status_rotate_device);
+
 				
+			when key_noun_placeholder =>
+				noun := NOUN_PLACEHOLDER;					
+				set_status (et_canvas_board_devices.status_rotate_placeholder);
+
+
 			-- If space pressed then the operator wishes to operate
 			-- by keyboard:
 			when key_space =>		
 				case noun is
-					when NOUN_DEVICE =>
+					when NOUN_DEVICE | NOUN_PLACEHOLDER =>
 						et_canvas_board_devices.rotate_object (get_cursor_position);
-
+						
 					when others => null;
 				end case;
 
@@ -721,7 +733,7 @@ is
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
-					when NOUN_DEVICE => 
+					when NOUN_DEVICE | NOUN_PLACEHOLDER => 
 						if clarification_pending then
 							et_canvas_board_devices.clarify_object;
 						end if;
@@ -734,6 +746,8 @@ is
 		end case;
 	end rotate;
 
+
+	
 
 	
 	procedure route is 

@@ -71,6 +71,7 @@ package et_board_verb_noun_keys is
 	key_noun_freetrack	: constant gdk_key_type := GDK_LC_f;
 	key_noun_line		: constant gdk_key_type := GDK_LC_l;
 	key_noun_outline	: constant gdk_key_type := GDK_LC_o;
+	key_noun_placeholder: constant gdk_key_type := GDK_LC_p;
 	
 	-- CS: This is a multi-assignment to key "n".
 	-- For the moment it seems not to cause trouble:
