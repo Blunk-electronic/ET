@@ -55,6 +55,7 @@ with et_board_geometry;			use et_board_geometry;
 with et_board_text;				use et_board_text;
 with et_logging;				use et_logging;
 with et_mirroring;				use et_mirroring;
+with et_object_status;			use et_object_status;
 
 
 package et_device_placeholders.packages is
@@ -68,6 +69,12 @@ package et_device_placeholders.packages is
 	end record;
 
 
+	function get_meaning (
+		placeholder : in type_text_placeholder)
+		return type_placeholder_meaning;
+
+	
+	
 	subtype type_placeholder_index is positive range 1 .. 10;
 	
 	
@@ -89,6 +96,15 @@ package et_device_placeholders.packages is
 	use pac_text_placeholders;
 	
 	
+	
+		
+		
+	function get_meaning (
+		placeholder : in pac_text_placeholders.cursor)
+		return type_placeholder_meaning;
+		
+		
+		
 	
 	-- Locates the placeholder as specified by meaning and index.
 	-- With other words: Locates the n'th (index) placeholder 
@@ -239,6 +255,51 @@ package et_device_placeholders.packages is
 		count				: in out natural);
 		
 		
+		
+		
+		
+	-- This stuff is required when cursors of placeholders
+	-- are to be collected:
+		
+	type type_placeholder_cursor is record
+		cursor : pac_text_placeholders.cursor;
+		index  : type_placeholder_index;
+	end record;
+	
+		
+	package pac_placeholder_cursors is 
+		new doubly_linked_lists (type_placeholder_cursor);
+		
+		
+	type type_placeholder_cursors_assy is record
+		top		: pac_placeholder_cursors.list;
+		bottom	: pac_placeholder_cursors.list;
+	end record;
+
+	
+	type type_placeholder_cursors_silkscreen is record
+		top		: pac_placeholder_cursors.list;
+		bottom	: pac_placeholder_cursors.list;
+	end record;
+
+		
+		
+	type type_placeholder_cursors is record
+		assy_doc	: type_placeholder_cursors_assy;
+		silkscreen	: type_placeholder_cursors_silkscreen;
+	end record;
+		
+		
+	-- Extracts from the given placeholders those
+	-- which have the given status flag set.
+	-- The result are cursors of placeholders:
+	function get_placeholder_cursors (
+		placeholders	: in type_text_placeholders;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_placeholder_cursors;
+		
+	
 end et_device_placeholders.packages;
 
 -- Soli Deo Gloria

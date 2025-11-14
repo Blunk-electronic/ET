@@ -44,6 +44,15 @@ with ada.strings.unbounded;
 
 package body et_device_placeholders.packages is
 
+	function get_meaning (
+		placeholder : in type_text_placeholder)
+		return type_placeholder_meaning
+	is begin
+		return placeholder.meaning;
+	end;
+
+
+
 
 	function to_placeholder_index (
 		index : in string)
@@ -53,6 +62,20 @@ package body et_device_placeholders.packages is
 	end;
 
 
+	
+
+	
+	
+	
+	function get_meaning (
+		placeholder : in pac_text_placeholders.cursor)
+		return type_placeholder_meaning
+	is begin
+		return element (placeholder).meaning;
+	end;
+
+
+	
 	
 	
 	function locate_placeholder (
@@ -545,6 +568,131 @@ package body et_device_placeholders.packages is
 
 	
 	
+	
+	
+	
+	function get_placeholder_cursors (
+		placeholders	: in type_text_placeholders;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_placeholder_cursors
+	is
+		result : type_placeholder_cursors;
+		
+		layer	: type_placeholder_layer;
+		face	: type_face;
+		index	: type_placeholder_index := 1;
+		meaning	: type_placeholder_meaning;
+		
+		
+		-- This procedure queries a given candidate placeholder,
+		-- tests it s status flag and appends the cursor of
+		-- the placeholder to the result:
+		procedure query_placeholder (c : in pac_text_placeholders.cursor) is
+			p : type_text_placeholder renames element (c);
+			
+			
+			procedure collect is 
+				pc : type_placeholder_cursor;
+			begin
+				pc.cursor := c;
+				pc.index := index;
+				index := index + 1; -- prepare for next placeholder
+				
+				case layer is
+					when SILKSCREEN =>
+						case face is
+							when TOP	=> result.silkscreen.top.append (pc);
+							when BOTTOM	=> result.silkscreen.bottom.append (pc);
+						end case;
+						
+					when ASSY_DOC =>
+						case face is
+							when TOP	=> result.assy_doc.top.append (pc);
+							when BOTTOM	=> result.assy_doc.bottom.append (pc);
+						end case;
+				end case;
+			end collect;
+
+			
+		begin
+			if p.meaning = meaning then
+				case flag is
+					when PROPOSED =>
+						if is_proposed (p) then
+							collect;
+						end if;
+
+					when SELECTED =>
+						if is_selected (p) then
+							collect;
+						end if;
+
+					when others => null; -- CS
+				end case;
+			end if;
+		end query_placeholder;
+		
+		
+	begin
+		log (text => "get_placeholder_cursors", level => log_threshold);
+		log_indentation_up;
+		
+		
+		-- Iterate the placeholders in silkscreen top and bottom:
+		layer := SILKSCREEN;
+		face := TOP;
+		index := 1;
+		
+		-- Iterate for each available meaning:
+		meaning := type_placeholder_meaning'first;
+		while meaning /= type_placeholder_meaning'last loop
+			placeholders.silkscreen.top.iterate (query_placeholder'access);
+			meaning := type_placeholder_meaning'succ (meaning);
+		end loop;
+		
+		face := BOTTOM;
+		index := 1;
+
+		-- Iterate for each available meaning:
+		meaning := type_placeholder_meaning'first;
+		while meaning /= type_placeholder_meaning'last loop
+			placeholders.silkscreen.bottom.iterate (query_placeholder'access);
+			meaning := type_placeholder_meaning'succ (meaning);
+		end loop;
+		
+		
+		
+		
+		-- Iterate the placeholders in assy_doc top and bottom:
+		layer := ASSY_DOC;
+		face := TOP;
+		index := 1;
+
+		-- Iterate for each available meaning:
+		meaning := type_placeholder_meaning'first;
+		while meaning /= type_placeholder_meaning'last loop
+			placeholders.assy_doc.top.iterate (query_placeholder'access);
+			meaning := type_placeholder_meaning'succ (meaning);
+		end loop;
+		
+		face := BOTTOM;
+		index := 1;
+
+		-- Iterate for each available meaning:
+		meaning := type_placeholder_meaning'first;
+		while meaning /= type_placeholder_meaning'last loop
+			placeholders.assy_doc.bottom.iterate (query_placeholder'access);
+			meaning := type_placeholder_meaning'succ (meaning);
+		end loop;
+
+		
+		log_indentation_down;
+		
+		return result;
+	end get_placeholder_cursors;
+	
+
 	
 	
 end et_device_placeholders.packages;
