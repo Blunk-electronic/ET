@@ -228,11 +228,15 @@ package et_device_placeholders.packages is
 
 	-- Sets the proposed-flag of all placeholders which are in the
 	-- given zone around the given place.
+	-- Since the placeholders have a position that is relative to
+	-- the parent package, the absolute package position must also
+	-- be provided.
 	-- Adds to count the number of placeholders that have been found:
 	procedure propose_placeholders (
-		placeholders	: in out type_text_placeholders;
-		catch_zone		: in type_catch_zone;
-		count			: in out natural);
+		placeholders		: in out type_text_placeholders;
+		package_position	: in type_vector_model;
+		catch_zone			: in type_catch_zone;
+		count				: in out natural);
 		
 		
 end et_device_placeholders.packages;
