@@ -398,12 +398,13 @@ package et_board_ops.devices is
 
 
 	type type_object_placeholder is record
+			-- device_electrical		: pac_devices_electrical.cursor;
+		-- device_non_electrical	: pac_devices_non_electrical.cursor;
 		device		: pac_devices_non_electrical.cursor;
 		placeholder	: pac_text_placeholders.cursor;
 		layer		: type_placeholder_layer;
 		face		: type_face;
 		index		: type_placeholder_index;
-		meaning		: type_placeholder_meaning;
 	end record;
 
 
@@ -425,7 +426,7 @@ package et_board_ops.devices is
 	
 	
 	
-	-- Modifies that status flag of a placeholder:
+	-- Modifies the status flag of a placeholder:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_object_placeholder;
