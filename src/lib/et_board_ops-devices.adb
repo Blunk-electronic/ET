@@ -1750,8 +1750,10 @@ package body et_board_ops.devices is
 					device_name	: in type_device_name;
 					device		: in out type_device_electrical)
 				is begin
-					log (text => to_string (device_name), level => log_threshold + 2);					
-					propose_placeholders (device.placeholders, catch_zone, count);					
+					log (text => to_string (device_name), level => log_threshold + 2);
+					
+					propose_placeholders (device.placeholders, 
+						get_place (device), catch_zone, count);					
 				end query_device;
 
 				
@@ -1783,8 +1785,10 @@ package body et_board_ops.devices is
 					device_name	: in type_device_name;
 					device		: in out type_device_non_electrical)
 				is begin
-					log (text => to_string (device_name), level => log_threshold + 2);					
-					propose_placeholders (device.placeholders, catch_zone, count);					
+					log (text => to_string (device_name), level => log_threshold + 2);	
+					
+					propose_placeholders (device.placeholders,
+						get_place (device), catch_zone, count);					
 				end query_device;
 
 				

@@ -413,7 +413,7 @@ package et_board_ops.devices is
 	
 	
 	
-	-- Sets the proposed-flag of all real placeholders which are in the
+	-- Sets the proposed-flag of all placeholders which are in the
 	-- given zone around the given place.
 	-- Adds to count the number of placeholders that have been found:
 	procedure propose_placeholders (
