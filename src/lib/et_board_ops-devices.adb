@@ -1991,6 +1991,7 @@ package body et_board_ops.devices is
 
 
 	
+	
 
 	
 
@@ -2002,7 +2003,7 @@ package body et_board_ops.devices is
 	is
 		use pac_objects;
 
-		-- Here the device objects are collected:
+		-- Here the objects are collected:
 		result : pac_objects.list;
 
 		
@@ -2010,115 +2011,135 @@ package body et_board_ops.devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			use pac_devices_electrical;
-			cursor_electrical : pac_devices_electrical.cursor;
-			
-			use pac_devices_non_electrical;
-			cursor_non_electrical : pac_devices_non_electrical.cursor;
-			
-
+	
 			-- This procedure collects electrical devices
 			-- according to the given flag:
-			procedure query_electrical_device (
-				name	: in type_device_name;
-				device	: in type_device_electrical) 
-			is 
+			procedure query_electrical_devices is
 
-				procedure collect is begin
-					result.append ((
-						cat					=> CAT_ELECTRICAL_DEVICE,
-						electrical_device	=> (cursor => cursor_electrical)));
-
-					log (text => get_device_name (cursor_electrical), level => log_threshold + 2);
-				end collect;
-				
-			begin
-				case flag is
-					when PROPOSED =>
-						if is_proposed (device) then
-							collect;
-						end if;
-
-					when SELECTED =>
-						if is_selected (device) then
-							collect;
-						end if;
-
-					when others => null; -- CS
-				end case;
-			end query_electrical_device;
+				use pac_devices_electrical;
+				cursor : pac_devices_electrical.cursor;
 
 			
+				procedure query_device (
+					name	: in type_device_name;
+					device	: in type_device_electrical) 
+				is 
 
+					procedure collect is begin
+						result.append ((
+							cat					=> CAT_ELECTRICAL_DEVICE,
+							electrical_device	=> (cursor => cursor)));
+
+						log (text => get_device_name (cursor), level => log_threshold + 2);
+					end collect;
+					
+				begin
+					case flag is
+						when PROPOSED =>
+							if is_proposed (device) then
+								collect;
+							end if;
+
+						when SELECTED =>
+							if is_selected (device) then
+								collect;
+							end if;
+
+						when others => null; -- CS
+					end case;
+				end query_device;
+
+			
+			begin
+				log (text => "electrical devices", level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate the electrical devices of the module:
+				cursor := module.devices.first;
+				while has_element (cursor) loop
+					query_element (cursor, query_device'access);
+					next (cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_electrical_devices;
+			
+
+			
+			
 			-- This procedure collects non-electrical devices
 			-- according to the given flag:
-			procedure query_non_electrical_device (
-				name	: in type_device_name;
-				device	: in type_device_non_electrical) 
-			is 
+			procedure query_non_electrical_devices is
 
-				procedure collect is begin
-					result.append ((
-						cat						=> CAT_NON_ELECTRICAL_DEVICE,
-						non_electrical_device	=> (cursor => cursor_non_electrical)));
+				use pac_devices_non_electrical;
+				cursor : pac_devices_non_electrical.cursor;
 
-					log (text => get_device_name (cursor_non_electrical), level => log_threshold + 2);
-				end collect;
+						
+				procedure query_device (
+					name	: in type_device_name;
+					device	: in type_device_non_electrical) 
+				is 
+
+					procedure collect is begin
+						result.append ((
+							cat						=> CAT_NON_ELECTRICAL_DEVICE,
+							non_electrical_device	=> (cursor => cursor)));
+
+						log (text => get_device_name (cursor), level => log_threshold + 2);
+					end collect;
+
+					
+				begin
+					case flag is
+						when PROPOSED =>
+							if is_proposed (device) then
+								collect;
+							end if;
+
+						when SELECTED =>
+							if is_selected (device) then
+								collect;
+							end if;
+
+						when others => null; -- CS
+					end case;
+				end query_device;
 
 				
 			begin
-				case flag is
-					when PROPOSED =>
-						if is_proposed (device) then
-							collect;
-						end if;
+				log (text => "non-electrical devices", level => log_threshold + 1);
+				log_indentation_up;
 
-					when SELECTED =>
-						if is_selected (device) then
-							collect;
-						end if;
+				-- Iterate the non-electrical devices of the module:
+				cursor := module.devices_non_electric.first;
+				while has_element (cursor) loop
+					query_element (cursor, query_device'access);
+					next (cursor);
+				end loop;
 
-					when others => null; -- CS
-				end case;
-			end query_non_electrical_device;
+				log_indentation_down;			
+			end query_non_electrical_devices;
+			
+			
+			
+			
+			-- This procedure collects placeholders of devices
+			-- according to the given flag:
+			procedure query_placeholders is
+			begin
+				log (text => "placeholders", level => log_threshold + 1);
+				log_indentation_up;
 
+				-- CS query placeholders
+
+				log_indentation_down;
+			end query_placeholders;
+			
 			
 		begin
-			log (text => "electrical devices", level => log_threshold + 1);
-			log_indentation_up;
-
-			-- Iterate the electrical devices of the module:
-			cursor_electrical := module.devices.first;
-			while cursor_electrical /= pac_devices_electrical.no_element loop
-				query_element (cursor_electrical, query_electrical_device'access);
-				next (cursor_electrical);
-			end loop;
-
-			log_indentation_down;
-
-
-			log (text => "non-electrical devices", level => log_threshold + 1);
-			log_indentation_up;
-
-			-- Iterate the non-electrical devices of the module:
-			cursor_non_electrical := module.devices_non_electric.first;
-			while cursor_non_electrical /= pac_devices_non_electrical.no_element loop
-				query_element (cursor_non_electrical, query_non_electrical_device'access);
-				next (cursor_non_electrical);
-			end loop;
-
-			log_indentation_down;			
-			
-
-			
-			log (text => "placeholders", level => log_threshold + 1);
-			log_indentation_up;
-
-			-- CS query placeholders
-
-			log_indentation_down;
-
-			
+			query_electrical_devices;			
+			query_non_electrical_devices;
+			query_placeholders;			
 		end query_module;
 
 		

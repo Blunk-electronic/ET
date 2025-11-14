@@ -492,7 +492,7 @@ package et_board_ops.devices is
 	
 
 
-	-- Returns the first object (electrical or non-electrical device)
+	-- Returns the first object (electrical, non-electrical device, placeholder)
 	-- according to the given flag.
 	-- If nothing found, then the return is a void object (CAT_VOID):
 	function get_first_object (
@@ -502,7 +502,7 @@ package et_board_ops.devices is
 		return type_object;
 
 	
-	-- Collects all objects (electrical and non-electrical devices)
+	-- Collects all objects (electrical, non-electrical devices, placeholders)
 	-- according to the given flag and returns them in a list:
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
