@@ -186,6 +186,16 @@ package body et_board_coordinates is
 		return type_position (position);
 	end get_position;
 
+
+	
+	function get_place (
+		position : in type_package_position)
+		return type_vector_model
+	is begin
+		return position.place;
+	end;
+
+
 	
 	
 	function to_terminal_position (

@@ -109,8 +109,14 @@ package et_board_coordinates is
 	function get_position (
 		position : in type_package_position)
 		return type_position;
-							  
-	
+
+
+	-- Returns the x/y position of a package:
+	function get_place (
+		position : in type_package_position)
+		return type_vector_model;
+
+						   
 	-- Composes from a given point and angle the terminal position.
 	function to_terminal_position (
 		point		: in type_vector_model;
