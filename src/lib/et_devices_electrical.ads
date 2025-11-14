@@ -83,7 +83,7 @@ package et_devices_electrical is
 	
 
 	-- This is a device as it appears in the schematic.
-	type type_device_electrical (
+	type type_device_electrical (  -- CS should be private
 		appearance : type_appearance_schematic) 
 	is record
 

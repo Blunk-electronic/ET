@@ -113,7 +113,7 @@ package et_devices_non_electrical is
 	-- Despite not having a counterpart in the schematic, these devices
 	-- are modelled via package models:
 	
-	type type_device_non_electrical is record
+	type type_device_non_electrical is record   -- CS should be private
 		position		: type_package_position; -- incl. rotation and face
 
 		-- Text placeholders for value, name, purpose, ...
