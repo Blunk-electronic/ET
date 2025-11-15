@@ -650,8 +650,71 @@ package body et_device_placeholders.packages is
 	procedure reset_status (
 		placeholders		: in out type_text_placeholders)
 	is 
+	
+		procedure query_placeholder (
+			p : in out type_text_placeholder)
+		is begin
+			reset_status (p);
+		end;
+		
+	
+		procedure do_silkscreen_top is
+			c : pac_text_placeholders.cursor;
+		begin
+			c := placeholders.silkscreen.top.first;
+			while has_element (c) loop
+				placeholders.silkscreen.top.update_element (
+					c, query_placeholder'access);
+					
+				next (c);
+			end loop;
+		end;
+
+		
+		procedure do_silkscreen_bottom is
+			c : pac_text_placeholders.cursor;
+		begin
+			c := placeholders.silkscreen.bottom.first;
+			while has_element (c) loop
+				placeholders.silkscreen.bottom.update_element (
+					c, query_placeholder'access);
+					
+				next (c);
+			end loop;
+		end;
+		
+
+		procedure do_assy_doc_top is
+			c : pac_text_placeholders.cursor;
+		begin
+			c := placeholders.assy_doc.top.first;
+			while has_element (c) loop
+				placeholders.assy_doc.top.update_element (
+					c, query_placeholder'access);
+					
+				next (c);
+			end loop;
+		end;
+
+		
+		procedure do_assy_doc_bottom is
+			c : pac_text_placeholders.cursor;
+		begin
+			c := placeholders.assy_doc.bottom.first;
+			while has_element (c) loop
+				placeholders.assy_doc.bottom.update_element (
+					c, query_placeholder'access);
+					
+				next (c);
+			end loop;
+		end;
+
+		
 	begin
-		null;
+		do_silkscreen_top;
+		do_silkscreen_bottom;
+		do_assy_doc_top;
+		do_assy_doc_bottom;
 	end reset_status;
 
 	

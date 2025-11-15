@@ -2101,7 +2101,9 @@ package body et_board_ops.devices is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is begin
-				reset_status (device.placeholders);
+				if is_real (device) then
+					reset_status (device.placeholders);
+				end if;
 			end query_electrical_device;
 
 
