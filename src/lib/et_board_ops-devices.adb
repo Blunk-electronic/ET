@@ -1712,6 +1712,42 @@ package body et_board_ops.devices is
 
 
 
+	
+	function get_device_name (
+		placeholder	: in type_object_placeholder)
+		return type_device_name
+	is begin
+		if has_element (placeholder.device_electrical) then
+			return get_device_name (placeholder.device_electrical);
+		else
+			return get_device_name (placeholder.device_non_electrical);
+		end if;
+	end;
+	
+	
+
+
+	function get_device_name (
+		placeholder	: in type_object_placeholder)
+		return string
+	is begin
+		return to_string (get_device_name (placeholder));
+	end;
+	
+	
+
+	
+	function get_meaning (
+		placeholder	: in type_object_placeholder)
+		return type_placeholder_meaning
+	is begin
+		return get_meaning (placeholder.placeholder);
+	end;
+
+	
+	
+	
+
 
 	function to_string (
 		placeholder	: in type_object_placeholder)
@@ -1840,10 +1876,73 @@ package body et_board_ops.devices is
 		placeholder		: in type_object_placeholder;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
-	is begin
-		null;
-	end;
+	is 
+	
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_electrical_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_electrical)
+			is begin
+				modify_status (
+					placeholders		=> device.placeholders, 
+					layer				=> placeholder.layer, 
+					face				=> placeholder.face,
+					placeholder_cursor	=> placeholder.placeholder, 
+					operation			=> operation);
+			end query_electrical_device;
 
+
+			procedure query_non_electrical_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_non_electrical)
+			is begin
+				modify_status (
+					placeholders		=> device.placeholders, 
+					layer				=> placeholder.layer, 
+					face				=> placeholder.face,
+					placeholder_cursor	=> placeholder.placeholder, 
+					operation			=> operation);
+			end query_non_electrical_device;
+
+			
+			
+		begin
+			if has_element (placeholder.device_electrical) then
+				module.devices.update_element (
+					placeholder.device_electrical, query_electrical_device'access);
+					
+			else
+				module.devices_non_electric.update_element (
+					placeholder.device_non_electrical, query_non_electrical_device'access);
+			
+			end if;
+		end query_module;
+	
+	
+	
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modify status of placeholder "
+			& get_device_name (placeholder)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+	
+	
+	
 	
 	
 	
@@ -1855,10 +1954,134 @@ package body et_board_ops.devices is
 		return type_object_placeholder
 	is
 		result : type_object_placeholder;
+		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+		
+			-- This procedure searches among the electrical devices
+			-- for the one that has the first placeholder set as
+			-- given by "flag". On the first match, the search is stopped
+			-- and the result set accordingly:
+			procedure query_electrical_devices is
+				device_cursor : pac_devices_electrical.cursor := 
+					module.devices.first;
+					
+					
+				procedure query_device (
+					device_name	: in type_device_name;
+					device		: in type_device_electrical)
+				is 
+					use pac_text_placeholders;
+				begin
+					get_first_placeholder (
+						placeholders		=> device.placeholders,
+						flag				=> flag,
+						placeholder_cursor	=> result.placeholder,
+						layer				=> result.layer,
+						face				=> result.face,
+						index				=> result.index);
+
+					-- If a matching placeholder has been found, then
+					-- set the cursor of the device in the result:
+					if has_element (result.placeholder) then
+						result.device_electrical := device_cursor;
+					end if;
+				end;
+				 
+			begin
+				while has_element (device_cursor) loop
+					query_element (device_cursor, query_device'access);
+					
+					-- A device has been found -> abort the search:
+					if has_element (result.device_electrical) then
+						exit;
+					end if;
+					
+					next (device_cursor);
+				end loop;				
+			end query_electrical_devices;
+			
+			
+
+
+			-- This procedure searches among the non-electrical devices
+			-- for the one that has the first placeholder set as
+			-- given by "flag". On the first match, the search is stopped
+			-- and the result set accordingly:			
+			procedure query_non_electrical_devices is
+				device_cursor : pac_devices_non_electrical.cursor := 
+					module.devices_non_electric.first;
+
+					
+				procedure query_device (
+					device_name	: in type_device_name;
+					device		: in type_device_non_electrical)
+				is 
+					use pac_text_placeholders;
+				begin
+					get_first_placeholder (
+						placeholders		=> device.placeholders,
+						flag				=> flag,
+						placeholder_cursor	=> result.placeholder,
+						layer				=> result.layer,
+						face				=> result.face,
+						index				=> result.index);
+
+					-- If a matching placeholder has been found, then
+					-- set the cursor of the device in the result:
+					if has_element (result.placeholder) then
+						result.device_non_electrical := device_cursor;
+					end if;
+				end;
+		
+					
+			begin
+				while has_element (device_cursor) loop
+					query_element (device_cursor, query_device'access);
+					
+					-- A device has been found -> abort the search:
+					if has_element (result.device_non_electrical) then
+						exit;
+					end if;
+					
+					next (device_cursor);
+				end loop;
+			end query_non_electrical_devices;
+
+			
+			
+		begin
+			-- First search among the electrical devices.
+			-- If nothing found, search in non-electrical devices:
+			query_electrical_devices;
+			
+			if not has_element (result.device_electrical) then
+				query_non_electrical_devices;
+			end if;
+		end query_module;
+		
+		
 	begin
-		-- CS
+		log (text => "module " & to_string (module_cursor)
+			& " look up the first placeholder /" & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+
 		return result;
 	end get_first_placeholder;
+	
+	
+	
 	
 	
 	
@@ -1915,7 +2138,8 @@ package body et_board_ops.devices is
 		-- If a placeholder has been found, then go to the end of this procedure:
 		result_placeholder := get_first_placeholder (module_cursor, flag, log_threshold + 1);
 
-		if has_element (result_placeholder.device) then
+		if has_element (result_placeholder.device_electrical) or
+		   has_element (result_placeholder.device_non_electrical) then
 			-- A placeholder has been found.
 			log (text => to_string (result_placeholder),
 				 level => log_threshold + 1);
@@ -2011,6 +2235,7 @@ package body et_board_ops.devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
+		-- DEVICES ---------------------------------------------
 	
 			-- This procedure collects electrical devices
 			-- according to the given flag:
@@ -2122,7 +2347,8 @@ package body et_board_ops.devices is
 			
 			
 			
-			
+		-- PLACEHOLDERS ----------------------------------------
+		
 			-- This procedure collects placeholders of devices
 			-- according to the given flag:
 			procedure query_placeholders is
@@ -2149,7 +2375,7 @@ package body et_board_ops.devices is
 							pc : type_placeholder_cursor renames element (c);
 							p : type_object_placeholder;
 						begin
-							-- p.device := device_cursor;
+							p.device_electrical := device_cursor;
 							p.placeholder := pc.cursor;
 							p.layer := layer;
 							p.face := face;
@@ -2163,6 +2389,7 @@ package body et_board_ops.devices is
 						-- to the given flag. Then iterate through them and append
 						-- them to the result:
 						if is_real (device) then
+						
 							placeholders := get_placeholder_cursors (
 								device.placeholders, flag, log_threshold + 2);
 						
@@ -2198,12 +2425,85 @@ package body et_board_ops.devices is
 				end query_electrical_devices;
 
 				
-				 
+
+				
+				
+				procedure query_non_electrical_devices is
+
+					use pac_devices_non_electrical;
+					device_cursor : pac_devices_non_electrical.cursor;
+
+				
+					procedure query_device (
+						name	: in type_device_name;
+						device	: in type_device_non_electrical) 
+					is 
+						placeholders : type_placeholder_cursors;
+						
+						use pac_placeholder_cursors;
+
+						layer : type_placeholder_layer;
+						face : type_face;
+
+					
+						procedure query_placeholder (c : in pac_placeholder_cursors.cursor) is 
+							pc : type_placeholder_cursor renames element (c);
+							p : type_object_placeholder;
+						begin
+							p.device_non_electrical := device_cursor;
+							p.placeholder := pc.cursor;
+							p.layer := layer;
+							p.face := face;
+							p.index := pc.index;
+														
+							result.append ((CAT_PLACEHOLDER, p));
+						end;
+						
+					begin
+						-- Get the placeholders of the candidate device according
+						-- to the given flag. Then iterate through them and append
+						-- them to the result:
+						placeholders := get_placeholder_cursors (
+							device.placeholders, flag, log_threshold + 2);
+					
+						layer := SILKSCREEN;
+						face := TOP;
+						placeholders.silkscreen.top.iterate (query_placeholder'access);
+						
+						face := BOTTOM;
+						placeholders.silkscreen.bottom.iterate (query_placeholder'access);
+						
+						layer := ASSY_DOC;							
+						face := TOP;
+						placeholders.assy_doc.top.iterate (query_placeholder'access);
+						
+						face := BOTTOM;
+						placeholders.assy_doc.bottom.iterate (query_placeholder'access);							
+					end query_device;
+
+				
+				begin
+					log (text => "non-electrical devices", level => log_threshold + 1);
+					log_indentation_up;
+
+					-- Iterate the non-electrical devices of the module:
+					device_cursor := module.devices_non_electric.first;
+					while has_element (device_cursor) loop
+						query_element (device_cursor, query_device'access);
+						next (device_cursor);
+					end loop;
+
+					log_indentation_down;
+				end query_non_electrical_devices;
+
+				
+				
 			begin
 				log (text => "placeholders", level => log_threshold + 1);
 				log_indentation_up;
 
 				query_electrical_devices;
+				query_non_electrical_devices;
 
 				log_indentation_down;
 			end query_placeholders;
@@ -2406,8 +2706,8 @@ package body et_board_ops.devices is
 
 				move_placeholder (
 					module_cursor	=> module_cursor,
-					device_name		=> get_device_name (object.placeholder.device),
-					meaning			=> get_meaning (object.placeholder.placeholder),
+					device_name		=> get_device_name (object.placeholder),
+					meaning			=> get_meaning (object.placeholder),
 					layer			=> object.placeholder.layer,
 					face			=> object.placeholder.face,
 					index			=> object.placeholder.index,
@@ -2463,8 +2763,8 @@ package body et_board_ops.devices is
 
 				rotate_placeholder (
 					module_cursor	=> module_cursor,
-					device_name		=> get_device_name (object.placeholder.device),
-					meaning			=> get_meaning (object.placeholder.placeholder),
+					device_name		=> get_device_name (object.placeholder),
+					meaning			=> get_meaning (object.placeholder),
 					layer			=> object.placeholder.layer,
 					face			=> object.placeholder.face,
 					index			=> object.placeholder.index,

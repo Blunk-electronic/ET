@@ -388,7 +388,7 @@ package et_board_ops.devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		meaning			: in type_placeholder_meaning; -- name, value, purpose		
-		layer			: in type_placeholder_layer; -- silkscreen, assy doc
+		layer			: in type_placeholder_layer; -- silkscreen, assy_doc
 		face			: in type_face; -- top/bottom
 		index			: in type_placeholder_index; -- 1, 2, 3, ...
 		coordinates		: in type_coordinates;
@@ -397,16 +397,33 @@ package et_board_ops.devices is
 
 
 
-	type type_object_placeholder is record
-			-- device_electrical		: pac_devices_electrical.cursor;
-		-- device_non_electrical	: pac_devices_non_electrical.cursor;
-		device		: pac_devices_non_electrical.cursor;
+	type type_object_placeholder is record -- CS discriminant ?
+		device_electrical		: pac_devices_electrical.cursor;
+		device_non_electrical	: pac_devices_non_electrical.cursor;
+		-- device		: pac_devices_non_electrical.cursor;
 		placeholder	: pac_text_placeholders.cursor;
 		layer		: type_placeholder_layer;
 		face		: type_face;
 		index		: type_placeholder_index;
 	end record;
 
+	
+	
+	function get_device_name (
+		placeholder	: in type_object_placeholder)
+		return type_device_name;
+		
+
+	function get_device_name (
+		placeholder	: in type_object_placeholder)
+		return string;
+
+		
+		
+	function get_meaning (
+		placeholder	: in type_object_placeholder)
+		return type_placeholder_meaning;
+		
 
 	function to_string (
 		placeholder	: in type_object_placeholder)

@@ -256,6 +256,30 @@ package et_device_placeholders.packages is
 		
 		
 		
+	-- Modifies the status of a placeholder among a given
+	-- list of placeholders. The placeholder is identified by
+	-- the layer, face and the cursor to the placeholder:
+	procedure modify_status (
+		placeholders		: in out type_text_placeholders;
+		layer				: in type_placeholder_layer;
+		face				: in type_face;
+		placeholder_cursor	: in pac_text_placeholders.cursor;
+		operation			: in type_status_operation);
+
+		
+		
+	-- Returns the first placeholder among the given placeholders
+	-- that has the given status flag set.
+	-- If nothing has been found, then placeholder_cursor is no_element.
+	-- Searches in this order: silkscreen top/bottom, assy_doc top/bottom:
+	procedure get_first_placeholder (
+		placeholders		: in type_text_placeholders;
+		flag				: in type_flag;
+		placeholder_cursor	: out pac_text_placeholders.cursor;
+		layer				: out type_placeholder_layer; -- silkscreen, assy_doc
+		face				: out type_face; -- top/bottom
+		index				: out type_placeholder_index); -- 1, 2, 3, ...
+
 		
 		
 	-- This stuff is required when cursors of placeholders

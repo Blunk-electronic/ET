@@ -571,6 +571,82 @@ package body et_device_placeholders.packages is
 	
 	
 	
+	
+	procedure modify_status (
+		placeholders		: in out type_text_placeholders;
+		layer				: in type_placeholder_layer;
+		face				: in type_face;
+		placeholder_cursor	: in pac_text_placeholders.cursor;
+		operation			: in type_status_operation)
+	is 
+	
+		procedure query_placeholder (
+			p : in out type_text_placeholder)
+		is 
+		begin
+			modify_status (p, operation);
+		end;
+	
+	
+	
+		procedure do_silkscreen is begin
+			case face is
+				when TOP =>
+					placeholders.silkscreen.top.update_element (
+						placeholder_cursor, query_placeholder'access);
+
+				when BOTTOM => 
+					placeholders.silkscreen.bottom.update_element (
+						placeholder_cursor, query_placeholder'access);
+			end case;
+		end;
+		
+
+		procedure do_assy_doc is begin
+			case face is
+				when TOP =>
+					placeholders.assy_doc.top.update_element (
+						placeholder_cursor, query_placeholder'access);
+
+				when BOTTOM => 
+					placeholders.assy_doc.bottom.update_element (
+						placeholder_cursor, query_placeholder'access);
+			end case;
+		end;
+
+		
+		 
+	begin
+		case layer is
+			when SILKSCREEN => do_silkscreen;
+			when ASSY_DOC => do_assy_doc;
+		end case;
+	end modify_status;
+
+	
+	
+	
+	
+	
+	
+	procedure get_first_placeholder (
+		placeholders		: in type_text_placeholders;
+		flag				: in type_flag;
+		placeholder_cursor	: out pac_text_placeholders.cursor;
+		layer				: out type_placeholder_layer;
+		face				: out type_face;
+		index				: out type_placeholder_index)
+	is
+	begin
+		null;
+	end get_first_placeholder;
+	
+	
+	
+	
+	
+	
+	
 	function get_placeholder_cursors (
 		placeholders	: in type_text_placeholders;
 		flag			: in type_flag;
