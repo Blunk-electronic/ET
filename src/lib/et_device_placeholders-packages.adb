@@ -744,11 +744,6 @@ package body et_device_placeholders.packages is
 		procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 			p : type_text_placeholder renames element (c);
 		begin
-			-- For each matching meaning, the index increments:
-			if p.meaning = meaning then
-				index := index + 1;
-			end if;
-			
 			-- Test the status flag of the candidate placeholder.
 			-- On match copy the candidate cursor to the result
 			-- and abort the search because no more testing is required:
@@ -767,6 +762,12 @@ package body et_device_placeholders.packages is
 
 				when others => null; -- CS
 			end case;
+
+			-- For each matching meaning, the index 
+			-- must be incremented for the next placeholder:
+			if p.meaning = meaning then
+				index := index + 1;
+			end if;
 		end query_placeholder;
 		
 
@@ -778,6 +779,7 @@ package body et_device_placeholders.packages is
 			-- Iterate for each available meaning:
 			meaning := type_placeholder_meaning'first;
 			while meaning /= type_placeholder_meaning'last loop
+				index := 1; -- restart index
 				iterate (placeholders.silkscreen.top, query_placeholder'access, proceed'access);
 				
 				-- Exit the loop once a placeholder has been found:
@@ -796,6 +798,7 @@ package body et_device_placeholders.packages is
 				-- Iterate for each available meaning:
 				meaning := type_placeholder_meaning'first;
 				while meaning /= type_placeholder_meaning'last loop
+					index := 1; -- restart index
 					iterate (placeholders.silkscreen.bottom, query_placeholder'access, proceed'access);
 					
 					-- Exit the loop once a placeholder has been found:
@@ -816,6 +819,7 @@ package body et_device_placeholders.packages is
 				-- Iterate for each available meaning:
 				meaning := type_placeholder_meaning'first;
 				while meaning /= type_placeholder_meaning'last loop
+					index := 1; -- restart index
 					iterate (placeholders.assy_doc.top, query_placeholder'access, proceed'access);
 					
 					-- Exit the loop once a placeholder has been found:
@@ -835,6 +839,7 @@ package body et_device_placeholders.packages is
 				-- Iterate for each available meaning:
 				meaning := type_placeholder_meaning'first;
 				while meaning /= type_placeholder_meaning'last loop
+					index := 1; -- restart index
 					iterate (placeholders.assy_doc.bottom, query_placeholder'access, proceed'access);
 					
 					-- Exit the loop once a placeholder has been found:
