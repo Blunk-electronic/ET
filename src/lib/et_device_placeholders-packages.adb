@@ -66,6 +66,23 @@ package body et_device_placeholders.packages is
 
 	
 	
+	procedure iterate (
+		placeholders	: in pac_text_placeholders.vector;
+		process			: not null access procedure (position : in pac_text_placeholders.cursor);
+		proceed			: not null access boolean)
+	is
+		c : pac_text_placeholders.cursor := placeholders.first;
+	begin
+		while c /= pac_text_placeholders.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+	
+	
+	
+	
 	
 	function get_meaning (
 		placeholder : in pac_text_placeholders.cursor)
@@ -637,8 +654,126 @@ package body et_device_placeholders.packages is
 		face				: out type_face;
 		index				: out type_placeholder_index)
 	is
+		-- The search must be conducted for each layer,
+		-- for each face and for each meaning.
+		
+		-- This flag is used in order to abort a search.
+		proceed : aliased boolean := true;
+		
+		meaning : type_placeholder_meaning;
+				
+		
+		procedure query_placeholder (c : in pac_text_placeholders.cursor) is
+			p : type_text_placeholder renames element (c);
+		begin
+			-- For each matching meaning, the index increments:
+			if p.meaning = meaning then
+				index := index + 1;
+			end if;
+			
+			-- Test the status flag of the candidate placeholder.
+			-- On match copy the candidate cursor to the result
+			-- and abort the search because no more testing is required:
+			case flag is
+				when PROPOSED =>
+					if is_proposed (p) then
+						placeholder_cursor := c;
+						proceed := false; -- abort 
+					end if;
+
+				when SELECTED =>
+					if is_selected (p) then
+						placeholder_cursor := c;
+						proceed := false; -- abort
+					end if;
+
+				when others => null; -- CS
+			end case;
+		end query_placeholder;
+		
+
+		
+		procedure do_silkscreen_top is begin
+			layer := SILKSCREEN;
+			face := TOP;
+			
+			-- Iterate for each available meaning:
+			meaning := type_placeholder_meaning'first;
+			while meaning /= type_placeholder_meaning'last loop
+				iterate (placeholders.silkscreen.top, query_placeholder'access, proceed'access);
+				
+				-- Exit the loop once a placeholder has been found:
+				if not proceed then exit; end if;
+				
+				-- Advance to next available meaning:
+				meaning := type_placeholder_meaning'succ (meaning);
+			end loop;
+		end;
+
+		
+		procedure do_silkscreen_bottom is begin			
+			if proceed then
+				face := BOTTOM;
+				
+				-- Iterate for each available meaning:
+				meaning := type_placeholder_meaning'first;
+				while meaning /= type_placeholder_meaning'last loop
+					iterate (placeholders.silkscreen.bottom, query_placeholder'access, proceed'access);
+					
+					-- Exit the loop once a placeholder has been found:
+					if not proceed then exit; end if;
+					
+					-- Advance to next available meaning:
+					meaning := type_placeholder_meaning'succ (meaning);
+				end loop;
+			end if;
+		end do_silkscreen_bottom;
+
+		
+		procedure do_assy_doc_top is begin
+			if proceed then
+				layer := ASSY_DOC;
+				face := TOP;
+			
+				-- Iterate for each available meaning:
+				meaning := type_placeholder_meaning'first;
+				while meaning /= type_placeholder_meaning'last loop
+					iterate (placeholders.assy_doc.top, query_placeholder'access, proceed'access);
+					
+					-- Exit the loop once a placeholder has been found:
+					if not proceed then exit; end if;
+					
+					-- Advance to next available meaning:
+					meaning := type_placeholder_meaning'succ (meaning);
+				end loop;
+			end if;
+		end;
+		
+
+		procedure do_assy_doc_bottom is begin			
+			if proceed then
+				face := BOTTOM;
+				
+				-- Iterate for each available meaning:
+				meaning := type_placeholder_meaning'first;
+				while meaning /= type_placeholder_meaning'last loop
+					iterate (placeholders.assy_doc.bottom, query_placeholder'access, proceed'access);
+					
+					-- Exit the loop once a placeholder has been found:
+					if not proceed then exit; end if;
+					
+					-- Advance to next available meaning:
+					meaning := type_placeholder_meaning'succ (meaning);
+				end loop;
+			end if;
+		end do_assy_doc_bottom;
+		
+		
 	begin
-		null;
+		do_silkscreen_top;
+		do_silkscreen_bottom;
+		do_assy_doc_top;
+		do_assy_doc_bottom;
 	end get_first_placeholder;
 	
 	

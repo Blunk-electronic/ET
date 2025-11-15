@@ -97,6 +97,15 @@ package et_device_placeholders.packages is
 	
 	
 	
+	
+	-- Iterates the placeholders. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		placeholders	: in pac_text_placeholders.vector;
+		process			: not null access procedure (position : in pac_text_placeholders.cursor);
+		proceed			: not null access boolean);
+
+	
+	
 		
 		
 	function get_meaning (
