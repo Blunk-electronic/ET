@@ -646,6 +646,21 @@ package body et_device_placeholders.packages is
 	
 	
 	
+	
+	procedure reset_status (
+		placeholders		: in out type_text_placeholders)
+	is 
+	begin
+		null;
+	end reset_status;
+
+	
+	
+	
+	
+	
+	
+	
 	procedure get_first_placeholder (
 		placeholders		: in type_text_placeholders;
 		flag				: in type_flag;

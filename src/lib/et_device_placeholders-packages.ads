@@ -276,6 +276,10 @@ package et_device_placeholders.packages is
 		operation			: in type_status_operation);
 
 		
+	-- Resets all status flags of the given placeholders:
+	procedure reset_status (
+		placeholders		: in out type_text_placeholders);
+		
 		
 	-- Returns the first placeholder among the given placeholders
 	-- that has the given status flag set.

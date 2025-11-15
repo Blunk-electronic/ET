@@ -2085,14 +2085,74 @@ package body et_board_ops.devices is
 	
 	
 	
+	
 
 	procedure reset_status_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+	
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_electrical_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_electrical)
+			is begin
+				reset_status (device.placeholders);
+			end query_electrical_device;
+
+
+			procedure query_non_electrical_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_non_electrical)
+			is begin
+				reset_status (device.placeholders);
+			end query_non_electrical_device;
+
+			
+			device_electrical : pac_devices_electrical.cursor := 
+				module.devices.first;
+				
+			device_non_electrical : pac_devices_non_electrical.cursor := 
+				module.devices_non_electric.first;
+				
+		begin
+			-- Iterate though all electrical devices:
+			while has_element (device_electrical) loop
+				module.devices.update_element (
+					device_electrical, query_electrical_device'access);
+					
+				next (device_electrical);
+			end loop;
+
+			
+			-- Iterate though all non-electrical devices:
+			while has_element (device_non_electrical) loop
+				module.devices_non_electric.update_element (
+					device_non_electrical, query_non_electrical_device'access);
+					
+				next (device_non_electrical);
+			end loop;
+		end query_module;
+
+	
+	
 	begin
 		null;
-		-- CS
+		log (text => "module " & to_string (module_cursor) 
+			& "reset placeholders of devices", 
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
 	end reset_status_placeholders;
 
 	

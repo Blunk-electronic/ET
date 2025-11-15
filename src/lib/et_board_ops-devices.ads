@@ -463,6 +463,7 @@ package et_board_ops.devices is
 
 		
 
+	-- Resets the status flags of all placeholders of all devices:
 	procedure reset_status_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
