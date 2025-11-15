@@ -2451,9 +2451,11 @@ package body et_board_ops.devices is
 						-- to the given flag. Then iterate through them and append
 						-- them to the result:
 						if is_real (device) then
-						
+							log (text => to_string (name), level => log_threshold + 2);
+							log_indentation_up;
+							
 							placeholders := get_placeholder_cursors (
-								device.placeholders, flag, log_threshold + 2);
+								device.placeholders, flag, log_threshold + 3);
 						
 							layer := SILKSCREEN;
 							face := TOP;
@@ -2467,7 +2469,9 @@ package body et_board_ops.devices is
 							placeholders.assy_doc.top.iterate (query_placeholder'access);
 							
 							face := BOTTOM;
-							placeholders.assy_doc.bottom.iterate (query_placeholder'access);							
+							placeholders.assy_doc.bottom.iterate (query_placeholder'access);
+							
+							log_indentation_down;
 						end if;
 					end query_device;
 
@@ -2522,11 +2526,14 @@ package body et_board_ops.devices is
 						end;
 						
 					begin
+						log (text => to_string (name), level => log_threshold + 2);
+						log_indentation_up;
+						
 						-- Get the placeholders of the candidate device according
 						-- to the given flag. Then iterate through them and append
 						-- them to the result:
 						placeholders := get_placeholder_cursors (
-							device.placeholders, flag, log_threshold + 2);
+							device.placeholders, flag, log_threshold + 3);
 					
 						layer := SILKSCREEN;
 						face := TOP;
@@ -2540,7 +2547,9 @@ package body et_board_ops.devices is
 						placeholders.assy_doc.top.iterate (query_placeholder'access);
 						
 						face := BOTTOM;
-						placeholders.assy_doc.bottom.iterate (query_placeholder'access);							
+						placeholders.assy_doc.bottom.iterate (query_placeholder'access);
+						
+						log_indentation_down;
 					end query_device;
 
 				
