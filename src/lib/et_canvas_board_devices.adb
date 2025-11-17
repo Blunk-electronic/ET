@@ -233,13 +233,20 @@ package body et_canvas_board_devices is
 			objects : constant pac_objects.list :=
 				get_objects (active_module, SELECTED, log_threshold + 1);
 
+			use pac_objects;
 			c : pac_objects.cursor;
 		begin
 			-- Get a cursor to the candidate object
 			-- among all selected objects:
 			c := objects.find (selected_object);
+
+			if has_element (c) then
+				log (text => "modify status", level => log_threshold + 1);
 			
-			modify_status (active_module, c, to_operation (SET, MOVING), log_threshold + 1);
+				modify_status (active_module, c, to_operation (SET, MOVING), log_threshold + 1);
+			else
+				log (ERROR, text => "nothing found");
+			end if;
 		end do_it;
 		
 		

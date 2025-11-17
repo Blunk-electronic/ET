@@ -419,6 +419,15 @@ package et_board_ops.devices is
 		return string;
 
 		
+	function get_place (
+		placeholder	: in type_object_placeholder)
+		return type_vector_model;
+		
+
+	function get_layer (
+		placeholder	: in type_object_placeholder)
+		return string;
+
 		
 	function get_meaning (
 		placeholder	: in type_object_placeholder)

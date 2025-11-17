@@ -52,6 +52,17 @@ package body et_device_placeholders.packages is
 	end;
 
 
+	
+	
+	function to_string (
+		placeholder : in type_text_placeholder)
+		return string
+	is begin
+		return "meaning " & to_string (placeholder.meaning)
+			& " place " & to_string (get_place (placeholder))
+			& " rotation " & to_string (get_rotation (placeholder));
+	end;
+	
 
 
 	function to_placeholder_index (
@@ -261,8 +272,7 @@ package body et_device_placeholders.packages is
 		procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 			p : type_text_placeholder renames element (c);
 		begin
-			result := result & " meaning " & to_string (p.meaning) 
-				& " place " & to_string (get_place (p));
+			result := result & to_string (p);
 		end query_placeholder;
 		
 		 
@@ -273,7 +283,11 @@ package body et_device_placeholders.packages is
 		result := result & " silkscreen bottom: ";
 		placeholders.silkscreen.bottom.iterate (query_placeholder'access);
 
-		-- CS assy doc
+		result := result & " assy_doc top: ";
+		placeholders.assy_doc.top.iterate (query_placeholder'access);
+
+		result := result & " assy_doc bottom: ";
+		placeholders.assy_doc.bottom.iterate (query_placeholder'access);
 		
 		return to_string (result);
 	end to_string;
@@ -499,7 +513,8 @@ package body et_device_placeholders.packages is
 		placeholders		: in out type_text_placeholders;
 		package_position	: in type_vector_model;
 		catch_zone			: in type_catch_zone;
-		count				: in out natural)
+		count				: in out natural;
+		log_threshold		: in type_log_level)
 	is
 		
 		-- This cursor points to the placeholder being probed:		
@@ -513,6 +528,8 @@ package body et_device_placeholders.packages is
 			-- to its parent package:
 			pos : type_vector_model := get_place (p);
 		begin
+			log_indentation_up;
+			
 			-- Move the position by the package position
 			-- to get the absolute position of the placeholder:
 			move_by (pos, package_position);
@@ -522,15 +539,20 @@ package body et_device_placeholders.packages is
 				zone	=> catch_zone,
 				point	=> pos)
 			then
+				log (text => to_string (p), level => log_threshold + 2);
+				
 				-- Set the proposed flag:
 				set_proposed (p);
 				count := count + 1;				
 			end if;
+			
+			log_indentation_down;
 		end query_placeholder;
 		
 		
 		
 		procedure do_silkscreen_top is begin
+			log (text => "do_silkscreen_top", level => log_threshold + 1);
 			cursor := placeholders.silkscreen.top.first;
 			while has_element (cursor) loop
 				placeholders.silkscreen.top.update_element (
@@ -542,6 +564,7 @@ package body et_device_placeholders.packages is
 		 
 
 		procedure do_silkscreen_bottom is begin
+		log (text => "do_silkscreen_bottom", level => log_threshold + 1);
 			cursor := placeholders.silkscreen.bottom.first;
 			while has_element (cursor) loop
 				placeholders.silkscreen.bottom.update_element (
@@ -554,6 +577,7 @@ package body et_device_placeholders.packages is
 
 		
 		procedure do_assy_doc_top is begin
+			log (text => "do_assy_doc_top", level => log_threshold + 1);		
 			cursor := placeholders.assy_doc.top.first;
 			while has_element (cursor) loop
 				placeholders.assy_doc.top.update_element (
@@ -565,6 +589,7 @@ package body et_device_placeholders.packages is
 		 
 
 		procedure do_assy_doc_bottom is begin
+			log (text => "do_assy_doc_bottom", level => log_threshold + 1);
 			cursor := placeholders.assy_doc.bottom.first;
 			while has_element (cursor) loop
 				placeholders.assy_doc.bottom.update_element (
@@ -576,11 +601,16 @@ package body et_device_placeholders.packages is
 
 		
 	begin
+		log (text => "propose_placeholders", level => log_threshold);
+		log_indentation_up;
+		
 		do_silkscreen_top;
 		do_silkscreen_bottom;
 		
 		do_assy_doc_top;
 		do_assy_doc_bottom;
+		
+		log_indentation_down;
 	end propose_placeholders;
 
 	
@@ -765,7 +795,7 @@ package body et_device_placeholders.packages is
 
 			-- For each matching meaning, the index 
 			-- must be incremented for the next placeholder:
-			if p.meaning = meaning then
+			if proceed and p.meaning = meaning then
 				index := index + 1;
 			end if;
 		end query_placeholder;

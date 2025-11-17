@@ -74,6 +74,10 @@ package et_device_placeholders.packages is
 		return type_placeholder_meaning;
 
 	
+	function to_string (
+		placeholder : in type_text_placeholder)
+		return string;
+		
 	
 	subtype type_placeholder_index is positive range 1 .. 10;
 	
@@ -261,7 +265,8 @@ package et_device_placeholders.packages is
 		placeholders		: in out type_text_placeholders;
 		package_position	: in type_vector_model;
 		catch_zone			: in type_catch_zone;
-		count				: in out natural);
+		count				: in out natural;
+		log_threshold		: in type_log_level);
 		
 		
 		

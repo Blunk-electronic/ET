@@ -1737,6 +1737,28 @@ package body et_board_ops.devices is
 	
 
 	
+	function get_place (
+		placeholder	: in type_object_placeholder)
+		return type_vector_model
+	is 
+		use pac_text_placeholders;
+	begin
+		return get_place (element (placeholder.placeholder));
+	end;
+
+	
+	
+	
+	function get_layer (
+		placeholder	: in type_object_placeholder)
+		return string
+	is begin
+		return to_string (placeholder.layer);
+	end;
+
+	
+	
+	
 	function get_meaning (
 		placeholder	: in type_object_placeholder)
 		return type_placeholder_meaning
@@ -1752,9 +1774,15 @@ package body et_board_ops.devices is
 	function to_string (
 		placeholder	: in type_object_placeholder)
 		return string
-	is begin
-		-- CS
-		return "dummy text";
+	is 
+		use pac_text_placeholders;
+	begin
+		return "device " & get_device_name (placeholder)
+			& " meaning " & to_string (get_meaning (placeholder))
+			& to_string (element (placeholder.placeholder))
+			& " layer " & get_layer (placeholder)
+			& " face " & to_string (placeholder.face)
+			& " index " & to_string (placeholder.index);
 	end to_string;
 
 	
@@ -1782,6 +1810,7 @@ package body et_board_ops.devices is
 			procedure query_electrical_devices is
 				device_cursor : pac_devices_electrical.cursor := module.devices.first;
 			
+			
 				procedure query_device (
 					device_name	: in type_device_name;
 					device		: in out type_device_electrical)
@@ -1789,7 +1818,7 @@ package body et_board_ops.devices is
 					log (text => to_string (device_name), level => log_threshold + 2);
 					
 					propose_placeholders (device.placeholders, 
-						get_place (device), catch_zone, count);					
+						get_place (device), catch_zone, count, log_threshold + 3);					
 				end query_device;
 
 				
@@ -1816,7 +1845,8 @@ package body et_board_ops.devices is
 			-- all non-electrical devices:			
 			procedure query_non_electrical_devices is
 				device_cursor : pac_devices_non_electrical.cursor := module.devices_non_electric.first;
-						
+					
+					
 				procedure query_device (
 					device_name	: in type_device_name;
 					device		: in out type_device_non_electrical)
@@ -1824,7 +1854,7 @@ package body et_board_ops.devices is
 					log (text => to_string (device_name), level => log_threshold + 2);	
 					
 					propose_placeholders (device.placeholders,
-						get_place (device), catch_zone, count);					
+						get_place (device), catch_zone, count, log_threshold + 3);					
 				end query_device;
 
 				
@@ -2438,11 +2468,13 @@ package body et_board_ops.devices is
 							p : type_object_placeholder;
 						begin
 							p.device_electrical := device_cursor;
+							p.device_non_electrical := pac_devices_non_electrical.no_element;
 							p.placeholder := pc.cursor;
 							p.layer := layer;
 							p.face := face;
 							p.index := pc.index;
-														
+										
+							log (text => to_string (p), level => log_threshold + 4);
 							result.append ((CAT_PLACEHOLDER, p));
 						end;
 						
@@ -2457,6 +2489,8 @@ package body et_board_ops.devices is
 							placeholders := get_placeholder_cursors (
 								device.placeholders, flag, log_threshold + 3);
 						
+							log_indentation_up;
+							
 							layer := SILKSCREEN;
 							face := TOP;
 							placeholders.silkscreen.top.iterate (query_placeholder'access);
@@ -2471,6 +2505,7 @@ package body et_board_ops.devices is
 							face := BOTTOM;
 							placeholders.assy_doc.bottom.iterate (query_placeholder'access);
 							
+							log_indentation_down;
 							log_indentation_down;
 						end if;
 					end query_device;
@@ -2517,11 +2552,13 @@ package body et_board_ops.devices is
 							p : type_object_placeholder;
 						begin
 							p.device_non_electrical := device_cursor;
+							p.device_electrical := pac_devices_electrical.no_element;
 							p.placeholder := pc.cursor;
 							p.layer := layer;
 							p.face := face;
 							p.index := pc.index;
-														
+									
+							log (text => to_string (p), level => log_threshold + 4);
 							result.append ((CAT_PLACEHOLDER, p));
 						end;
 						
@@ -2535,6 +2572,8 @@ package body et_board_ops.devices is
 						placeholders := get_placeholder_cursors (
 							device.placeholders, flag, log_threshold + 3);
 					
+						log_indentation_up;
+						
 						layer := SILKSCREEN;
 						face := TOP;
 						placeholders.silkscreen.top.iterate (query_placeholder'access);
@@ -2549,6 +2588,7 @@ package body et_board_ops.devices is
 						face := BOTTOM;
 						placeholders.assy_doc.bottom.iterate (query_placeholder'access);
 						
+						log_indentation_down;
 						log_indentation_down;
 					end query_device;
 
@@ -2600,6 +2640,9 @@ package body et_board_ops.devices is
 		
 		log_indentation_down;
 
+		-- log (text => "total " & natural'image (get_count (result)), 
+		--	level => log_threshold);
+		
 		return result;
 	end get_objects;
 
@@ -2655,6 +2698,7 @@ package body et_board_ops.devices is
 		use pac_objects;
 		object : constant type_object := element (object_cursor);
 	begin
+		log (text => "modify status", level => log_threshold);
 		modify_status (module_cursor, object, operation, log_threshold);
 	end modify_status;
 
