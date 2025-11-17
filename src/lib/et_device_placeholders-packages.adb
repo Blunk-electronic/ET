@@ -775,29 +775,34 @@ package body et_device_placeholders.packages is
 		procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 			p : type_text_placeholder renames element (c);
 		begin
-			-- Test the status flag of the candidate placeholder.
-			-- On match copy the candidate cursor to the result
-			-- and abort the search because no more testing is required:
-			case flag is
-				when PROPOSED =>
-					if is_proposed (p) then
-						placeholder_cursor := c;
-						proceed := false; -- abort 
-					end if;
+			-- Look only at placeholders that have the
+			-- currently addressed meaning:
+			if p.meaning = meaning then
 
-				when SELECTED =>
-					if is_selected (p) then
-						placeholder_cursor := c;
-						proceed := false; -- abort
-					end if;
+				-- Test the status flag of the candidate placeholder.
+				-- On match copy the candidate cursor to the result
+				-- and abort the search because no more testing is required:
+				case flag is
+					when PROPOSED =>
+						if is_proposed (p) then
+							placeholder_cursor := c;
+							proceed := false; -- abort 
+						end if;
 
-				when others => null; -- CS
-			end case;
+					when SELECTED =>
+						if is_selected (p) then
+							placeholder_cursor := c;
+							proceed := false; -- abort
+						end if;
 
-			-- For each matching meaning, the index 
-			-- must be incremented for the next placeholder:
-			if proceed and p.meaning = meaning then
-				index := index + 1;
+					when others => null; -- CS
+				end case;
+
+				-- For each matching meaning, the index 
+				-- must be incremented for the next placeholder:
+				if proceed then
+					index := index + 1;
+				end if;
 			end if;
 		end query_placeholder;
 		
