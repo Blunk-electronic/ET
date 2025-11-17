@@ -140,7 +140,7 @@ package body et_canvas_board_devices is
 					& ". " & status_next_object_clarification);
 
 			when CAT_PLACEHOLDER =>
-				set_status ("dummy text");
+				set_status ("selected placeholder: " & to_string (object.placeholder));
 				-- CS
 				
 			when CAT_VOID => null; -- CS

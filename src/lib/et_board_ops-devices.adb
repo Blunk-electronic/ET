@@ -1778,8 +1778,7 @@ package body et_board_ops.devices is
 		use pac_text_placeholders;
 	begin
 		return "device " & get_device_name (placeholder)
-			& " meaning " & to_string (get_meaning (placeholder))
-			& to_string (element (placeholder.placeholder))
+			& " " & to_string (element (placeholder.placeholder))
 			& " layer " & get_layer (placeholder)
 			& " face " & to_string (placeholder.face)
 			& " index " & to_string (placeholder.index);
