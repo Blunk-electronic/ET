@@ -760,7 +760,8 @@ package body et_device_placeholders.packages is
 		placeholder_cursor	: out pac_text_placeholders.cursor;
 		layer				: out type_placeholder_layer;
 		face				: out type_face;
-		index				: out type_placeholder_index)
+		index				: out type_placeholder_index;
+		log_threshold		: in type_log_level)
 	is
 		-- The search must be conducted for each layer,
 		-- for each face and for each meaning.
@@ -803,6 +804,9 @@ package body et_device_placeholders.packages is
 
 		
 		procedure do_silkscreen_top is begin
+			log (text => "do_silkscreen_top", level => log_threshold + 1);
+			log_indentation_up;
+			
 			layer := SILKSCREEN;
 			face := TOP;
 			
@@ -818,10 +822,15 @@ package body et_device_placeholders.packages is
 				-- Advance to next available meaning:
 				meaning := type_placeholder_meaning'succ (meaning);
 			end loop;
+			
+			log_indentation_down;
 		end;
 
 		
 		procedure do_silkscreen_bottom is begin			
+			log (text => "do_silkscreen_bottom", level => log_threshold + 1);
+			log_indentation_up;
+		
 			if proceed then
 				face := BOTTOM;
 				
@@ -838,10 +847,15 @@ package body et_device_placeholders.packages is
 					meaning := type_placeholder_meaning'succ (meaning);
 				end loop;
 			end if;
+			
+			log_indentation_down;
 		end do_silkscreen_bottom;
 
 		
 		procedure do_assy_doc_top is begin
+			log (text => "do_assy_doc_top", level => log_threshold + 1);
+			log_indentation_up;
+
 			if proceed then
 				layer := ASSY_DOC;
 				face := TOP;
@@ -859,10 +873,15 @@ package body et_device_placeholders.packages is
 					meaning := type_placeholder_meaning'succ (meaning);
 				end loop;
 			end if;
+			
+			log_indentation_down;
 		end;
 		
 
 		procedure do_assy_doc_bottom is begin			
+			log (text => "do_assy_doc_bottom", level => log_threshold + 1);
+			log_indentation_up;
+		
 			if proceed then
 				face := BOTTOM;
 				
@@ -879,14 +898,21 @@ package body et_device_placeholders.packages is
 					meaning := type_placeholder_meaning'succ (meaning);
 				end loop;
 			end if;
+			
+			log_indentation_down;
 		end do_assy_doc_bottom;
 		
 		
 	begin
+		log (text => "get_first_placeholder", level => log_threshold);
+		log_indentation_up;
+		
 		do_silkscreen_top;
 		do_silkscreen_bottom;
 		do_assy_doc_top;
 		do_assy_doc_bottom;
+		
+		log_indentation_down;
 	end get_first_placeholder;
 	
 	

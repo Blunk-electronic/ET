@@ -296,8 +296,8 @@ package et_device_placeholders.packages is
 		placeholder_cursor	: out pac_text_placeholders.cursor;
 		layer				: out type_placeholder_layer; -- silkscreen, assy_doc
 		face				: out type_face; -- top/bottom
-		index				: out type_placeholder_index); -- 1, 2, 3, ...
-
+		index				: out type_placeholder_index; -- 1, 2, 3, ...
+		log_threshold		: in type_log_level);
 		
 		
 	-- This stuff is required when cursors of placeholders

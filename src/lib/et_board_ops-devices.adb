@@ -2005,22 +2005,31 @@ package body et_board_ops.devices is
 				is 
 					use pac_text_placeholders;
 				begin
+					log (text => to_string (device_name), level => log_threshold + 2);
+					log_indentation_up;
+
 					get_first_placeholder (
 						placeholders		=> device.placeholders,
 						flag				=> flag,
 						placeholder_cursor	=> result.placeholder,
 						layer				=> result.layer,
 						face				=> result.face,
-						index				=> result.index);
+						index				=> result.index,
+						log_threshold		=> log_threshold + 3);
 
 					-- If a matching placeholder has been found, then
 					-- set the cursor of the device in the result:
 					if has_element (result.placeholder) then
 						result.device_electrical := device_cursor;
 					end if;
+					
+					log_indentation_down;
 				end;
 				 
 			begin
+				log (text => "query_electrical_devices", level => log_threshold + 1);
+				log_indentation_up;
+				
 				while has_element (device_cursor) loop
 					query_element (device_cursor, query_device'access);
 					
@@ -2030,7 +2039,9 @@ package body et_board_ops.devices is
 					end if;
 					
 					next (device_cursor);
-				end loop;				
+				end loop;			
+				
+				log_indentation_down;
 			end query_electrical_devices;
 			
 			
@@ -2051,23 +2062,32 @@ package body et_board_ops.devices is
 				is 
 					use pac_text_placeholders;
 				begin
+					log (text => to_string (device_name), level => log_threshold + 2);
+					log_indentation_up;
+					
 					get_first_placeholder (
 						placeholders		=> device.placeholders,
 						flag				=> flag,
 						placeholder_cursor	=> result.placeholder,
 						layer				=> result.layer,
 						face				=> result.face,
-						index				=> result.index);
+						index				=> result.index,
+						log_threshold		=> log_threshold + 3);
 
 					-- If a matching placeholder has been found, then
 					-- set the cursor of the device in the result:
 					if has_element (result.placeholder) then
 						result.device_non_electrical := device_cursor;
 					end if;
+					
+					log_indentation_down;
 				end;
 		
 					
 			begin
+				log (text => "query_non_electrical_devices", level => log_threshold + 1);
+				log_indentation_up;
+			
 				while has_element (device_cursor) loop
 					query_element (device_cursor, query_device'access);
 					
@@ -2078,6 +2098,8 @@ package body et_board_ops.devices is
 					
 					next (device_cursor);
 				end loop;
+				
+				log_indentation_down;
 			end query_non_electrical_devices;
 
 			
