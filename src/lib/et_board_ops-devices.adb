@@ -2005,25 +2005,27 @@ package body et_board_ops.devices is
 				is 
 					use pac_text_placeholders;
 				begin
-					log (text => to_string (device_name), level => log_threshold + 2);
-					log_indentation_up;
+					if is_real (device) then
+						log (text => to_string (device_name), level => log_threshold + 2);
+						log_indentation_up;
 
-					get_first_placeholder (
-						placeholders		=> device.placeholders,
-						flag				=> flag,
-						placeholder_cursor	=> result.placeholder,
-						layer				=> result.layer,
-						face				=> result.face,
-						index				=> result.index,
-						log_threshold		=> log_threshold + 3);
+						get_first_placeholder (
+							placeholders		=> device.placeholders,
+							flag				=> flag,
+							placeholder_cursor	=> result.placeholder,
+							layer				=> result.layer,
+							face				=> result.face,
+							index				=> result.index,
+							log_threshold		=> log_threshold + 3);
 
-					-- If a matching placeholder has been found, then
-					-- set the cursor of the device in the result:
-					if has_element (result.placeholder) then
-						result.device_electrical := device_cursor;
+						-- If a matching placeholder has been found, then
+						-- set the cursor of the device in the result:
+						if has_element (result.placeholder) then
+							result.device_electrical := device_cursor;
+						end if;
+						
+						log_indentation_down;
 					end if;
-					
-					log_indentation_down;
 				end;
 				 
 			begin
