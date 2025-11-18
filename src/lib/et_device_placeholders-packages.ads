@@ -52,6 +52,7 @@ with ada.containers.vectors;
 
 with et_pcb_sides;				use et_pcb_sides;
 with et_board_geometry;			use et_board_geometry;
+with et_board_coordinates;		use et_board_coordinates;
 with et_board_text;				use et_board_text;
 with et_logging;				use et_logging;
 with et_mirroring;				use et_mirroring;
@@ -263,7 +264,7 @@ package et_device_placeholders.packages is
 	-- Adds to count the number of placeholders that have been found:
 	procedure propose_placeholders (
 		placeholders		: in out type_text_placeholders;
-		package_position	: in type_vector_model;
+		package_position	: in type_package_position;
 		catch_zone			: in type_catch_zone;
 		count				: in out natural;
 		log_threshold		: in type_log_level);
