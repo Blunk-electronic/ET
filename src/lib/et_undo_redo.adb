@@ -303,6 +303,15 @@ package body et_undo_redo is
 					end case;
 
 
+				when NOUN_PLACEHOLDER =>
+					case verb is
+						when VERB_MOVE | VERB_ROTATE =>							
+							commit_devices;
+							commit_non_electrical_devices;
+
+						when others => null;
+					end case;
+					
 
 				when NOUN_SILKSCREEN | NOUN_ASSY | NOUN_STOPMASK | NOUN_ROUTE_RESTRICT |
 					NOUN_KEEPOUT | NOUN_VIA_RESTRICT | NOUN_LINE | NOUN_ARC | NOUN_TEXT => -- CS others ?
