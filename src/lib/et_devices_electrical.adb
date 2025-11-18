@@ -62,6 +62,17 @@ package body et_devices_electrical is
 
 	
 	
+	function get_position (
+		device : in type_device_electrical)
+		return et_board_coordinates.type_package_position
+	is begin
+		return device.position;
+	end;
+
+	
+	
+	
+	
 
 	function get_device_model_file (
 		device : type_device_electrical)
