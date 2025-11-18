@@ -511,7 +511,7 @@ package body et_device_placeholders.packages is
 	
 	procedure propose_placeholders (
 		placeholders		: in out type_text_placeholders;
-		package_position	: in type_vector_model;
+		package_position	: in type_package_position;
 		catch_zone			: in type_catch_zone;
 		count				: in out natural;
 		log_threshold		: in type_log_level)
@@ -525,21 +525,28 @@ package body et_device_placeholders.packages is
 			p : in out type_text_placeholder)
 		is 
 			-- Get the position of the placeholder relative
-			-- to its parent package:
+			-- to its parent package.
+			-- NOTE: This is the posiition relative to
+			-- the package. It assumes that the package is
+			-- not rotated.
 			pos : type_vector_model := get_place (p);
 		begin
 			log_indentation_up;
 			
-			-- Move the position by the package position
+			-- Rotate and move the position by the package position
 			-- to get the absolute position of the placeholder:
-			move_by (pos, package_position);
+			rotate_by (pos, get_rotation (package_position));
+			move_by (pos, get_place (package_position));
+
+			-- log (text => "placeholder " & to_string (pos), level => log_threshold + 2);
+
 			
 			-- Test whether the placeholder is in the given catch zone:			
 		 	if in_catch_zone (
 				zone	=> catch_zone,
 				point	=> pos)
 			then
-				log (text => to_string (p), level => log_threshold + 2);
+				log (text => "in catch zone", level => log_threshold + 2);
 				
 				-- Set the proposed flag:
 				set_proposed (p);
