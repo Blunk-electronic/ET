@@ -70,6 +70,14 @@ package et_device_placeholders.packages is
 	end record;
 
 
+	-- Returns the absolute x/y position of a placeholder:
+	function get_absolute_position (
+		placeholder			: in type_text_placeholder;
+		package_position	: in type_package_position)
+		return type_vector_model;
+
+	
+	
 	function get_meaning (
 		placeholder : in type_text_placeholder)
 		return type_placeholder_meaning;
@@ -209,6 +217,8 @@ package et_device_placeholders.packages is
 		return string;
 
 	
+	
+		
 	
 	-- Moves the placeholder given by meaning, layer, face and index.
 	-- NOTE: Index identifies the targeted placeholder in connection

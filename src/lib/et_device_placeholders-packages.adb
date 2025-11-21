@@ -44,6 +44,31 @@ with ada.strings.unbounded;
 
 package body et_device_placeholders.packages is
 
+
+	function get_absolute_position (
+		placeholder			: in type_text_placeholder;
+		package_position	: in type_package_position)
+		return type_vector_model
+	is 
+		result : type_vector_model;
+		
+		placeholder_place : type_vector_model;
+		
+		package_place : type_vector_model := get_place (package_position);
+		
+	begin
+		placeholder_place := get_place (placeholder);
+		
+		move_by (placeholder_place, package_place);
+		
+		return placeholder_place;
+	end;
+
+	
+	
+
+
+
 	function get_meaning (
 		placeholder : in type_text_placeholder)
 		return type_placeholder_meaning
@@ -294,6 +319,8 @@ package body et_device_placeholders.packages is
 	
 
 	
+
+	
 	
 
 	
@@ -316,7 +343,11 @@ package body et_device_placeholders.packages is
 		
 		procedure query_placeholder (
 			p : in out type_text_placeholder)
-		is begin
+		is 
+			tp_1, tp_2 : type_vector_model;
+			a : type_rotation_model := get_rotation (package_position);
+			pp : type_vector_model := get_place (package_position);
+		begin
 			case coordinates is
 				when ABSOLUTE =>
 					-- put_line ("move absolute");
@@ -326,8 +357,24 @@ package body et_device_placeholders.packages is
 					
 				when RELATIVE =>
 					-- put_line ("move relative " & to_string (point));
-					move_text_by (p, point);
+					--move_text_by (p, point);
 					-- rotate_text_by (p, - get_rotation (package_position));
+					
+					-- Get the current absolute posiition:
+					tp_1 := get_absolute_position (p, package_position);
+					-- put_line ("tp1 " & to_string (tp_1));
+					
+					tp_2 := tp_1;
+					move_by (tp_2, point);
+					-- put_line ("tp2 " & to_string (tp_2));
+					
+					rotate_by (tp_2, -a, tp_1);
+					-- put_line ("tp2 " & to_string (tp_2));
+					
+					-- Get the new relative position:
+					move_by (tp_2, invert (pp));
+					-- put_line ("tp2 " & to_string (tp_2));
+					set_place (p, tp_2);
 					
 					-- put_line ("new " & to_string (get_place (p)));
 			end case;
