@@ -267,6 +267,12 @@ package et_text is
 		function get_place (text : in type_text_fab)
 			return type_vector_model;
 		
+
+		procedure set_place (
+			text	: in out type_text_fab;
+			place	: in type_vector_model);
+
+		
 		-- Returns the rotation of a text:
 		function get_rotation (text : in type_text_fab)
 			return type_rotation;

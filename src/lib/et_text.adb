@@ -371,6 +371,15 @@ package body et_text is
 			return text.position.place;
 		end get_place;
 
+
+		procedure set_place (
+			text	: in out type_text_fab;
+			place	: in type_vector_model)
+		is begin
+			text.position.place := place;
+		end;
+
+		
 		
 		function get_rotation (text : in type_text_fab)
 			return type_rotation
