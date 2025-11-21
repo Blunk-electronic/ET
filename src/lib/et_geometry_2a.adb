@@ -646,10 +646,12 @@ package body et_geometry_2a is
 		rotation	: in type_rotation;
 		center		: in type_vector_model := origin)
 	is			
-		v : type_vector := to_vector (point);
+		v : type_vector;
 		a : constant type_angle := type_angle (rotation);
 	begin
 		if center = origin then
+			
+			v := to_vector (point);
 			
 			rotate_by (
 				vector		=> v,
@@ -659,11 +661,14 @@ package body et_geometry_2a is
 		else
 			move_by (point, invert (center));
 
+			v := to_vector (point);
+			
 			rotate_by (
 				vector		=> v,
 				rotation	=> a,
 				debug		=> false);
 
+			point := to_vector_model (v);
 
 			move_by (point, center);
 		end if;
