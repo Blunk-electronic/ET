@@ -657,6 +657,8 @@ package body et_geometry_2a is
 				vector		=> v,
 				rotation	=> a,
 				debug		=> false);
+		
+			point := to_vector_model (v);
 			
 		else
 			move_by (point, invert (center));
@@ -671,10 +673,7 @@ package body et_geometry_2a is
 			point := to_vector_model (v);
 
 			move_by (point, center);
-		end if;
-
-		
-		point := to_vector_model (v);
+		end if;		
 	end rotate_by;
 	
 
