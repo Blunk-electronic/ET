@@ -352,11 +352,12 @@ package et_geometry_2a is
 		offset	: in type_vector_model);
 
 
-	-- Rotates the given point BY the given angle about the origin.
-	-- Changes point.x and point.y only.
+	-- Rotates the given point BY the given angle about the 
+	-- given center (default is origin):
 	procedure rotate_by (
 		point		: in out type_vector_model;
-		rotation	: in type_rotation);
+		rotation	: in type_rotation;
+		center		: in type_vector_model := origin);
 
 
 	-- Rotates the given point TO the given angle about the origin.

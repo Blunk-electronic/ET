@@ -640,21 +640,41 @@ package body et_geometry_2a is
 
 
 
+	
 	procedure rotate_by (
 		point		: in out type_vector_model;
-		rotation	: in type_rotation) 
+		rotation	: in type_rotation;
+		center		: in type_vector_model := origin)
 	is			
-		v_tmp : type_vector := to_vector (point);
+		v : type_vector := to_vector (point);
+		a : constant type_angle := type_angle (rotation);
 	begin
-		rotate_by (
-			vector		=> v_tmp,
-			rotation	=> type_angle (rotation),
-			debug		=> false);
+		if center = origin then
+			
+			rotate_by (
+				vector		=> v,
+				rotation	=> a,
+				debug		=> false);
+			
+		else
+			move_by (point, invert (center));
 
-		point := to_vector_model (v_tmp);
+			rotate_by (
+				vector		=> v,
+				rotation	=> a,
+				debug		=> false);
+
+
+			move_by (point, center);
+		end if;
+
+		
+		point := to_vector_model (v);
 	end rotate_by;
 	
 
+
+	
 
 	procedure rotate_to (
 		point		: in out type_vector_model;
