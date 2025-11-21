@@ -299,13 +299,14 @@ package body et_device_placeholders.packages is
 	
 
 	procedure move_placeholder (
-		placeholders	: in out type_text_placeholders;
-		meaning			: in type_placeholder_meaning;					 
-		layer			: in type_placeholder_layer; -- silkscreen, assy doc
-		face			: in type_face;
-		index			: in type_placeholder_index; -- 1, 2, 3, ...
-		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_vector_model)
+		placeholders		: in out type_text_placeholders;
+		meaning				: in type_placeholder_meaning;					 
+		layer				: in type_placeholder_layer; -- silkscreen, assy doc
+		face				: in type_face;
+		index				: in type_placeholder_index; -- 1, 2, 3, ...
+		package_position	: in type_package_position;
+		coordinates			: in type_coordinates; -- relative/absolute
+		point				: in type_vector_model)
 	is
 		-- The addressed placeholder must be located among the given
 		-- placeholders. If the placeholder exists, then this cursor
@@ -326,6 +327,7 @@ package body et_device_placeholders.packages is
 				when RELATIVE =>
 					-- put_line ("move relative " & to_string (point));
 					move_text_by (p, point);
+					-- rotate_text_by (p, - get_rotation (package_position));
 					
 					-- put_line ("new " & to_string (get_place (p)));
 			end case;

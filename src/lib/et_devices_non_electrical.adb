@@ -865,7 +865,7 @@ package body et_devices_non_electrical is
 		point		: in type_vector_model) -- x/y
 	is begin
 		move_placeholder (device.placeholders, meaning, layer,
-			face, index, coordinates, point);
+			face, index, get_position (device), coordinates, point);
 
 	end move_placeholder;
 

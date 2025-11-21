@@ -618,7 +618,8 @@ package et_devices_non_electrical is
 		index		: in type_placeholder_index; -- 1, 2, 3, ...
 		coordinates	: in type_coordinates; -- relative/absolute
 		point		: in type_vector_model); -- x/y
-
+	-- CS rename to destination_offset rework documentation above
+	
 
 	
 	-- Rotates the placeholder given by meaning, layer, face and index.
