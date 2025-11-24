@@ -452,7 +452,11 @@ package et_board_ops.assy_doc is
 	
 -- TEXT PLACEHOLDERS:
 
-	-- CS remove the following stuff. NO longer required ?
+	-- THIS IS ABOUT GENERAL PLACEHOLDERS RELEVANT FOR THE 
+	-- WHOLE BOARD ! 
+	--
+	-- THIS IS NOT ABOUT PLACEHOLDERS OF PACKAGES !
+	
 	
 	-- Places a text placeholder.
 	-- The caller must take care for mirroring the placeholder
