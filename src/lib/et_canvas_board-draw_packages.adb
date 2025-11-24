@@ -232,7 +232,18 @@ procedure draw_packages is
 				use pac_draw_text;
 			begin
 				text.content := placeholder_to_content (ph);
-				draw_vector_text (text, get_position (package_position), mirror);
+
+				-- If the placeholder is anchored relatively to the package,
+				-- then the package position must be taken into account.
+				-- Otherwise the placeholder position is regarded as absolute
+				-- and the package position must be left off:			
+				case get_anchor_mode (ph) is
+					when ANCHOR_MODE_1 =>
+						draw_vector_text (text, mirror, get_position (package_position));
+
+					when ANCHOR_MODE_2 =>
+						draw_vector_text (text, mirror);
+				end case;				
 			end query_placeholder;
 
 			
@@ -307,12 +318,16 @@ procedure draw_packages is
 			begin
 				text.content := placeholder_to_content (ph);
 
+				-- If the placeholder is anchored relatively to the package,
+				-- then the package position must be taken into account.
+				-- Otherwise the placeholder position is regarded as absolute
+				-- and the package position must be left off:
 				case get_anchor_mode (ph) is
 					when ANCHOR_MODE_1 =>
-						draw_vector_text (text, get_position (package_position), mirror);
+						draw_vector_text (text, mirror, get_position (package_position));
 
 					when ANCHOR_MODE_2 =>
-						draw_vector_text (text, origin_zero_rotation, mirror);
+						draw_vector_text (text, mirror);
 				end case;
 			end query_placeholder;
 
@@ -693,7 +708,7 @@ procedure draw_packages is
 
 				use pac_draw_text;
 			begin
-				draw_vector_text (t, get_position (package_position), mirror);
+				draw_vector_text (t, mirror, get_position (package_position));
 			end query_text;
 
 			
