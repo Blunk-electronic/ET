@@ -358,9 +358,9 @@ package body et_canvas.text is
 
 	
 	procedure draw_vector_text (
-		text	: in pac_text.type_text_fab_with_content'class;
-		pos		: in pac_geometry.type_position := origin_zero_rotation;
-		mirror	: in type_mirror := MIRROR_NO)
+		text			: in pac_text.type_text_fab_with_content'class;
+		mirror			: in type_mirror := MIRROR_NO;
+		parent_position	: in pac_geometry.type_position := origin_zero_rotation)
 	is
 		use pac_text;
 		use pac_character_lines;
@@ -394,7 +394,7 @@ package body et_canvas.text is
 	begin
 		-- Add the text position and the position of the
 		-- parent object:
-		add (position => pos_final, offset => pos, mirror => mirror);
+		add (position => pos_final, offset => parent_position, mirror => mirror);
 
 		-- If the text is being moved, then pos_final will
 		-- be overwritten by the tool position:
