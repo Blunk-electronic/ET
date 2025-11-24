@@ -626,20 +626,31 @@ package body et_device_placeholders.packages is
 		procedure query_placeholder (
 			p : in out type_text_placeholder)
 		is 
-			-- Get the position of the placeholder relative
-			-- to its parent package.
-			-- NOTE: This is the position relative to
-			-- the package. It assumes that the package is
-			-- not rotated.
+			-- Get the position of the placeholder.
+			-- Currently we do not know whether pos is relative
+			-- or absolute. The anchor mode of the placeholder
+			-- provides the required information:
 			pos : type_vector_model := get_place (p);
 		begin
 			log_indentation_up;
 			
-			-- Rotate and move the position by the package position
-			-- to get the absolute position of the placeholder:
-			rotate_by (pos, get_rotation (package_position));
-			move_by (pos, get_place (package_position));
+			case get_anchor_mode (p) is
+				when ANCHOR_MODE_1 =>
+					-- pos is the position relative to
+					-- the package. It assumes that the package is
+					-- not rotated.
+				
+					-- Rotate and move the position by the package position
+					-- to get the absolute position of the placeholder:
+					rotate_by (pos, get_rotation (package_position));
+					move_by (pos, get_place (package_position));
 
+				when ANCHOR_MODE_2 =>
+					-- pos is the absolute position of the placeholder.
+					-- Nothing elss to do.
+					null;
+			end case;
+			
 			-- log (text => "placeholder " & to_string (pos), level => log_threshold + 2);
 
 			
