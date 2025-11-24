@@ -600,6 +600,20 @@ package body et_text is
 
 
 
+		function is_empty (
+			text : in type_text_fab_with_content)
+			return boolean
+		is begin
+			if is_empty (text.content) then
+				return true;
+			else
+				return false;
+			end if;
+		end;
+
+
+
+		
 
 		function get_content (
 			text : in type_text_fab_with_content)

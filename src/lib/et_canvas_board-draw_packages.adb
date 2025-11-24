@@ -233,17 +233,23 @@ procedure draw_packages is
 			begin
 				text.content := placeholder_to_content (ph);
 
-				-- If the placeholder is anchored relatively to the package,
-				-- then the package position must be taken into account.
-				-- Otherwise the placeholder position is regarded as absolute
-				-- and the package position must be left off:			
-				case get_anchor_mode (ph) is
-					when ANCHOR_MODE_1 =>
-						draw_vector_text (text, mirror, get_position (package_position));
+				if not is_empty (text) then
 
-					when ANCHOR_MODE_2 =>
-						draw_vector_text (text, mirror);
-				end case;				
+					-- brightness := BRIGHT;
+					
+					-- If the placeholder is anchored relatively to the package,
+					-- then the package position must be taken into account.
+					-- Otherwise the placeholder position is regarded as absolute
+					-- and the package position must be left off:			
+					case get_anchor_mode (ph) is
+						when ANCHOR_MODE_1 =>
+							draw_vector_text (text, mirror, get_position (package_position));
+
+						when ANCHOR_MODE_2 =>
+							draw_vector_text (text, mirror);
+					end case;				
+				
+				end if;
 			end query_placeholder;
 
 			
@@ -318,17 +324,20 @@ procedure draw_packages is
 			begin
 				text.content := placeholder_to_content (ph);
 
-				-- If the placeholder is anchored relatively to the package,
-				-- then the package position must be taken into account.
-				-- Otherwise the placeholder position is regarded as absolute
-				-- and the package position must be left off:
-				case get_anchor_mode (ph) is
-					when ANCHOR_MODE_1 =>
-						draw_vector_text (text, mirror, get_position (package_position));
+				if not is_empty (text) then
+				
+					-- If the placeholder is anchored relatively to the package,
+					-- then the package position must be taken into account.
+					-- Otherwise the placeholder position is regarded as absolute
+					-- and the package position must be left off:
+					case get_anchor_mode (ph) is
+						when ANCHOR_MODE_1 =>
+							draw_vector_text (text, mirror, get_position (package_position));
 
-					when ANCHOR_MODE_2 =>
-						draw_vector_text (text, mirror);
-				end case;
+						when ANCHOR_MODE_2 =>
+							draw_vector_text (text, mirror);
+					end case;
+				end if;
 			end query_placeholder;
 
 			

@@ -1807,6 +1807,11 @@ package et_text is
 		end record;
 
 
+		function is_empty (
+			text : in type_text_fab_with_content)
+			return boolean;
+		
+
 		function get_content (
 			text : in type_text_fab_with_content)
 			return string;
