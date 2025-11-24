@@ -239,9 +239,12 @@ procedure draw_packages is
 			
 		begin
 			-- We draw the placeholder only if it has content:
-			if not is_empty (content) then
+			-- if not is_empty (content) then
+			-- CS: It seems better to draw the placeholder even if
+			-- its content is empty. The operator must see the origin
+			-- of the placeholder.
 				build_text;
-			end if;
+			-- end if;
 		end query_placeholder;
 
 

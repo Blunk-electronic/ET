@@ -41,6 +41,9 @@
 
 with ada.strings.unbounded;
 
+with et_display.board;
+
+
 
 package body et_device_placeholders.packages is
 
@@ -618,6 +621,7 @@ package body et_device_placeholders.packages is
 		count				: in out natural;
 		log_threshold		: in type_log_level)
 	is
+		use et_display.board;
 		
 		-- This cursor points to the placeholder being probed:		
 		cursor : pac_text_placeholders.cursor;
@@ -673,50 +677,62 @@ package body et_device_placeholders.packages is
 		
 		procedure do_silkscreen_top is begin
 			log (text => "do_silkscreen_top", level => log_threshold + 1);
-			cursor := placeholders.silkscreen.top.first;
-			while has_element (cursor) loop
-				placeholders.silkscreen.top.update_element (
-					cursor, query_placeholder'access);
-					
-				next (cursor);
-			end loop;		
+			
+			if silkscreen_enabled (top) then
+				cursor := placeholders.silkscreen.top.first;
+				while has_element (cursor) loop
+					placeholders.silkscreen.top.update_element (
+						cursor, query_placeholder'access);
+						
+					next (cursor);
+				end loop;
+			end if;
 		end;
 		 
 
 		procedure do_silkscreen_bottom is begin
-		log (text => "do_silkscreen_bottom", level => log_threshold + 1);
-			cursor := placeholders.silkscreen.bottom.first;
-			while has_element (cursor) loop
-				placeholders.silkscreen.bottom.update_element (
-					cursor, query_placeholder'access);
-					
-				next (cursor);
-			end loop;		
+			log (text => "do_silkscreen_bottom", level => log_threshold + 1);
+			
+			if silkscreen_enabled (bottom) then
+				cursor := placeholders.silkscreen.bottom.first;
+				while has_element (cursor) loop
+					placeholders.silkscreen.bottom.update_element (
+						cursor, query_placeholder'access);
+						
+					next (cursor);
+				end loop;		
+			end if;
 		end;
 
 
 		
-		procedure do_assy_doc_top is begin
+		procedure do_assy_doc_top is begin		
 			log (text => "do_assy_doc_top", level => log_threshold + 1);		
-			cursor := placeholders.assy_doc.top.first;
-			while has_element (cursor) loop
-				placeholders.assy_doc.top.update_element (
-					cursor, query_placeholder'access);
-					
-				next (cursor);
-			end loop;		
+			
+			if assy_doc_enabled (top) then
+				cursor := placeholders.assy_doc.top.first;
+				while has_element (cursor) loop
+					placeholders.assy_doc.top.update_element (
+						cursor, query_placeholder'access);
+						
+					next (cursor);
+				end loop;		
+			end if;
 		end;
 		 
 
 		procedure do_assy_doc_bottom is begin
 			log (text => "do_assy_doc_bottom", level => log_threshold + 1);
-			cursor := placeholders.assy_doc.bottom.first;
-			while has_element (cursor) loop
-				placeholders.assy_doc.bottom.update_element (
-					cursor, query_placeholder'access);
-					
-				next (cursor);
-			end loop;		
+			
+			if assy_doc_enabled (bottom) then
+				cursor := placeholders.assy_doc.bottom.first;
+				while has_element (cursor) loop
+					placeholders.assy_doc.bottom.update_element (
+						cursor, query_placeholder'access);
+						
+					next (cursor);
+				end loop;		
+			end if;
 		end;
 
 		
