@@ -201,6 +201,52 @@ procedure draw_packages is
 
 		
 
+
+		-- This procedure draws a placeholder and its content:
+		procedure query_placeholder (c : in pac_text_placeholders.cursor) is
+			use pac_text_placeholders;
+			ph : type_text_placeholder renames element (c);
+
+			use et_text;
+			
+			-- Build the content of the placeholder:
+			content : pac_text_content.bounded_string := placeholder_to_content (ph);
+
+
+			-- This procedure converts the placeholder to a complete
+			-- text and draws it at the position as specified by the
+			-- anchor mode of the candidate placeholder:
+			procedure build_text is
+				use pac_draw_text;
+				use pac_text;
+				text : type_text_fab_with_content := (type_text_fab (ph) with others => <>);
+			begin
+				text.content := content;
+
+				-- If the placeholder is anchored relatively to the package,
+				-- then the package position must be taken into account.
+				-- Otherwise the placeholder position is regarded as absolute
+				-- and the package position must be left off:
+				case get_anchor_mode (ph) is
+					when ANCHOR_MODE_1 =>
+						draw_vector_text (text, mirror, get_position (package_position));
+
+					when ANCHOR_MODE_2 =>
+						draw_vector_text (text, mirror);
+				end case;
+			end;
+
+			
+		begin
+			-- We draw the placeholder only if it has content:
+			if not is_empty (content) then
+				build_text;
+			end if;
+		end query_placeholder;
+
+
+
+			
 		
 
 		procedure draw_assy is
@@ -217,41 +263,6 @@ procedure draw_packages is
 					mirror		=> mirror,
 					do_stroke	=> true);
 			end query_line;
-
-
-
-			
-			use pac_text_placeholders;
-
-			procedure query_placeholder (c : in pac_text_placeholders.cursor) is
-				ph : type_text_placeholder renames element (c);
-
-				use pac_text;
-				text : type_doc_text := (type_text_fab (ph) with others => <>);
-
-				use pac_draw_text;
-			begin
-				text.content := placeholder_to_content (ph);
-
-				if not is_empty (text) then
-
-					-- brightness := BRIGHT;
-					
-					-- If the placeholder is anchored relatively to the package,
-					-- then the package position must be taken into account.
-					-- Otherwise the placeholder position is regarded as absolute
-					-- and the package position must be left off:			
-					case get_anchor_mode (ph) is
-						when ANCHOR_MODE_1 =>
-							draw_vector_text (text, mirror, get_position (package_position));
-
-						when ANCHOR_MODE_2 =>
-							draw_vector_text (text, mirror);
-					end case;				
-				
-				end if;
-			end query_placeholder;
-
 			
 			
 		begin
@@ -308,38 +319,6 @@ procedure draw_packages is
 					mirror		=> mirror,
 					do_stroke	=> true);
 			end query_line;
-
-
-
-			
-			use pac_text_placeholders;
-
-			procedure query_placeholder (c : in pac_text_placeholders.cursor) is
-				ph : type_text_placeholder renames element (c);
-
-				use pac_text;
-				text : type_silk_text := (type_text_fab (ph) with others => <>);
-
-				use pac_draw_text;
-			begin
-				text.content := placeholder_to_content (ph);
-
-				if not is_empty (text) then
-				
-					-- If the placeholder is anchored relatively to the package,
-					-- then the package position must be taken into account.
-					-- Otherwise the placeholder position is regarded as absolute
-					-- and the package position must be left off:
-					case get_anchor_mode (ph) is
-						when ANCHOR_MODE_1 =>
-							draw_vector_text (text, mirror, get_position (package_position));
-
-						when ANCHOR_MODE_2 =>
-							draw_vector_text (text, mirror);
-					end case;
-				end if;
-			end query_placeholder;
-
 			
 			
 		begin
