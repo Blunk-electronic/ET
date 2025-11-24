@@ -419,6 +419,8 @@ package et_board_ops.silkscreen is
 	
 -- TEXT PLACEHOLDERS:
 
+	-- CS remove the following stuff. NO longer required ?
+	
 	-- Places a text placeholder.
 	-- The caller must take care for mirroring the placeholder
 	-- in case its at the bottom of the board:
