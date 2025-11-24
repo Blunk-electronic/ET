@@ -255,6 +255,27 @@ one placeholder is required. For this reason the placholders have
 an index to identify them.
 Placeholders can be part of the silkscreen or the assembly documentation.
 
+By default placeholders are tied to the package and thus have a
+position relative to the reference point of the parent package. This implies:
+- If the package moves then the placeholder moves along.
+- If the package rotates then the placeholder rotates about the 
+  reference point of the package. The new rotation of the actual 
+  placeholder content about its own origin is the sum of the new 
+  rotation of the package and the rotation of the placeholder.
+- If a console command is applied that performs a relative movement
+  then the placeholder is anchored relatively to the package.
+
+Alternatively the connection between placeholder and package can be
+breached so that the placeholder gets an absolute position. This implies:
+- If the package moves or rotates then the placeholder stays where it is.
+- The placeholder can be moved independently of the package.
+- If a console command is applied that performs an absolute positioning
+  then the connection with the package is severed.
+- If the operator moves a placeholder via the GUI then the connection
+  with the package is severed automatically. The connection can be
+  restored by assigning a relative position.
+
+
 #. Move Name
 
 	This example command moves the name placeholder number 2 of IC1
@@ -264,9 +285,10 @@ Placeholders can be part of the silkscreen or the assembly documentation.
 
 		move name IC1 silkscreen top 2 relative -10 3
 
-	|VNS| r p
-		
+	|VNS| m p
 
+	
+		
 
 #. Move Value
 
@@ -274,7 +296,7 @@ Placeholders can be part of the silkscreen or the assembly documentation.
 
 		move value IC1 silkscreen top 1 absolute 100 115
 
-	|VNS| r p
+	|VNS| m p
 		
 
 
@@ -284,7 +306,7 @@ Placeholders can be part of the silkscreen or the assembly documentation.
 
 		move purpose RN1 assy bottom 2 relative -10 3
 
-	|VNS| r p
+	|VNS| m p
 	
 
 
@@ -790,7 +812,7 @@ Texts and Placeholders
 	ASSEMBLY_VARIANT, PROJECT, MODULE, REVISION.
 	
 	Once a placeholder has been placed, its content will be
-	filled automaticall according to its meaning.
+	filled automatically according to its meaning.
 
 	This command places a placeholder in conductor layer 3.
 	The linewidth is 0.15mm, the text size 1mm.

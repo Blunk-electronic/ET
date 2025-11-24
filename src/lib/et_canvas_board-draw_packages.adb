@@ -306,7 +306,14 @@ procedure draw_packages is
 				use pac_draw_text;
 			begin
 				text.content := placeholder_to_content (ph);
-				draw_vector_text (text, get_position (package_position), mirror);
+
+				case get_anchor_mode (ph) is
+					when ANCHOR_MODE_1 =>
+						draw_vector_text (text, get_position (package_position), mirror);
+
+					when ANCHOR_MODE_2 =>
+						draw_vector_text (text, origin_zero_rotation, mirror);
+				end case;
 			end query_placeholder;
 
 			

@@ -64,12 +64,29 @@ package et_device_placeholders.packages is
 	use pac_geometry_2;
 	use pac_text_board;
 
+		
+		
 	
 	type type_text_placeholder is new type_text_fab with record
-		meaning : type_placeholder_meaning := NAME;
+		meaning		: type_placeholder_meaning := NAME;
+		anchor_mode	: type_anchor_mode := ANCHOR_MODE_1;
 	end record;
 
+	
+	
+	
+	procedure set_anchor_mode (
+		placeholder		: in out type_text_placeholder;
+		mode			: in type_anchor_mode);
+		
 
+	function get_anchor_mode (
+		placeholder		: in type_text_placeholder)
+		return type_anchor_mode;
+		
+		
+		
+		
 	-- Returns the absolute x/y position of a placeholder:
 	function get_absolute_position (
 		placeholder			: in type_text_placeholder;
@@ -81,6 +98,10 @@ package et_device_placeholders.packages is
 	function get_meaning (
 		placeholder : in type_text_placeholder)
 		return type_placeholder_meaning;
+	
+	
+	-- CS function set_meaning
+	
 
 	
 	function to_string (
@@ -228,10 +249,11 @@ package et_device_placeholders.packages is
 	-- If no matching placeholder has been found, then nothing happens.
 	-- CS; An error flag output by this procedure could be useful.
 	--
-	-- If coordinates is absolute, then the placeholder
-	-- is moved to the given point.
-	-- If coordinates is relative, then the placeholder
-	-- is moved by the x/y-distance given by point:
+	-- If coordinates is absolute, then the affected placeholder
+	-- is moved to the given point and its anchor mode set accordingly.
+	-- If coordinates is relative, then the affected placeholder
+	-- is moved by the x/y-distance given by point and its anchor mode
+	-- set accordingly:
 	procedure move_placeholder (
 		placeholders		: in out type_text_placeholders;
 		meaning				: in type_placeholder_meaning;					 

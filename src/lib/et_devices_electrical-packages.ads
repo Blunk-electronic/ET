@@ -354,10 +354,11 @@ package et_devices_electrical.packages is
 	-- If no matching placeholder has been found, then nothing happens.
 	-- CS; An error flag output by this procedure could be useful.
 	--
-	-- If coordinates is absolute, then the placeholder
-	-- is moved to the given point.
-	-- If coordinates is relative, then the placeholder
-	-- is moved by the x/y-distance given by point:
+	-- If coordinates is absolute, then the affected placeholder
+	-- is moved to the given point and its anchor mode set accordingly.
+	-- If coordinates is relative, then the affected placeholder
+	-- is moved by the x/y-distance given by point and its anchor mode
+	-- set accordingly:
 	procedure move_placeholder (
 		device		: in out type_device_electrical;
 		meaning		: in type_placeholder_meaning;					 

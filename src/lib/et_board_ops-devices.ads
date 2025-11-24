@@ -350,10 +350,11 @@ package et_board_ops.devices is
 	-- CS: A log message should be output.
 	-- CS; An error flag output by this procedure could be useful.
 	--
-	-- If coordinates is absolute, then the placeholder
-	-- is moved to the given point.
-	-- If coordinates is relative, then the placeholder
-	-- is moved by the x/y-distance given by point:	
+	-- If coordinates is absolute, then the affected placeholder
+	-- is moved to the given point and its anchor mode set accordingly.
+	-- If coordinates is relative, then the affected placeholder
+	-- is moved by the x/y-distance given by point and its anchor mode
+	-- set accordingly:
 	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45

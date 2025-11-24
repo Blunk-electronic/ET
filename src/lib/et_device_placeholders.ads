@@ -75,6 +75,41 @@ package et_device_placeholders is
 		text_meaning : in string) 
 		return type_placeholder_meaning;
 	
+
+
+
+	-- This enumeration type shall be used in order to
+	-- specify how a placeholder is tied to a package.
+	type type_anchor_mode is (
+	
+		-- The placeholder position is relative to the 
+		-- origin of the complex parent object.
+		-- If the object is moved or rotated, then the 
+		-- placeholder moves along:
+		ANCHOR_MODE_1,
+		
+		-- The placeholder position is absolute, independend
+		-- of the parent object position. So the placeholder is completely
+		-- disconnected from the object:
+		ANCHOR_MODE_2);
+
+
+
+	function to_string (
+		mode : in type_anchor_mode)
+		return string;
+
+
+	function to_anchor_mode (
+		mode : in string)
+		return type_anchor_mode;
+	
+	
+	
+	-- CS ?
+	-- type type_rotation_mode is (
+	-- 	MODE_ROTATE_WITH_PACKAGE
+	-- 	...);
 	
 	
 end et_device_placeholders;

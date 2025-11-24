@@ -45,6 +45,29 @@ with ada.strings.unbounded;
 package body et_device_placeholders.packages is
 
 
+
+
+	procedure set_anchor_mode (
+		placeholder		: in out type_text_placeholder;
+		mode			: in type_anchor_mode)
+	is begin
+		placeholder.anchor_mode := mode;
+	end;
+	
+		
+
+	function get_anchor_mode (
+		placeholder		: in type_text_placeholder)
+		return type_anchor_mode
+	is begin
+		return placeholder.anchor_mode;
+	end;
+
+
+
+
+
+
 	function get_absolute_position (
 		placeholder			: in type_text_placeholder;
 		package_position	: in type_package_position)
@@ -344,39 +367,69 @@ package body et_device_placeholders.packages is
 		procedure query_placeholder (
 			p : in out type_text_placeholder)
 		is 
-			tp_1, tp_2 : type_vector_model;
-			a : type_rotation_model := get_rotation (package_position);
-			pp : type_vector_model := get_place (package_position);
-		begin
+			
+
+			-- This procedure switches the anchor mode
+			-- and assigns the given relative position to
+			-- the given placeholder:
+			procedure move_relative (offset : in type_vector_model) is
+				-- tp_1, tp_2 : type_vector_model;
+				-- a : type_rotation_model := get_rotation (package_position);
+				-- pp : type_vector_model := get_place (package_position);
+			begin
+				-- put_line ("move relative " & to_string (point));
+
+				set_anchor_mode (p, ANCHOR_MODE_1);
+				set_place (p, point);
+				
+-- 				CS: This is experimental stuff. It moves the placeholder
+--				independend of the rotation of the package to the
+--				given relative position. If this stuff is not required
+--				anymore then delete the declarations (above) and the parameter
+--				"offset" of this procedure.
+--
+-- 				-- Get the current absolute position:
+-- 				tp_1 := get_absolute_position (p, package_position);
+-- 				-- put_line ("tp1 " & to_string (tp_1));
+-- 				
+-- 				tp_2 := tp_1;
+-- 				move_by (tp_2, offset);
+-- 				-- put_line ("tp2 " & to_string (tp_2));
+-- 				
+-- 				rotate_by (tp_2, -a, tp_1);
+-- 				-- put_line ("tp2 " & to_string (tp_2));
+-- 				
+-- 				-- Get the new relative position:
+-- 				move_by (tp_2, invert (pp));
+-- 				-- put_line ("tp2 " & to_string (tp_2));
+-- 				set_place (p, tp_2);
+				
+				-- put_line ("new " & to_string (get_place (p)));
+			end move_relative;
+			
+
+			
+			-- This procedure switches the anchor mode
+			-- and assigns the given absolute position to
+			-- the given placeholder:
+			procedure move_absolute is begin
+				-- put_line ("move absolute");
+				
+				set_anchor_mode (p, ANCHOR_MODE_2);
+				set_place (p, point);
+				
+				-- put_line ("new " & to_string (get_place (p)));
+			end move_absolute;
+			
+			
+		begin		
 			case coordinates is
-				when ABSOLUTE =>
-					-- put_line ("move absolute");
-					move_text_to (p, point);
-					
-					-- put_line ("new " & to_string (get_place (p)));
-					
 				when RELATIVE =>
-					-- put_line ("move relative " & to_string (point));
-					--move_text_by (p, point);
-					-- rotate_text_by (p, - get_rotation (package_position));
+					move_relative (point);
 					
-					-- Get the current absolute posiition:
-					tp_1 := get_absolute_position (p, package_position);
-					-- put_line ("tp1 " & to_string (tp_1));
-					
-					tp_2 := tp_1;
-					move_by (tp_2, point);
-					-- put_line ("tp2 " & to_string (tp_2));
-					
-					rotate_by (tp_2, -a, tp_1);
-					-- put_line ("tp2 " & to_string (tp_2));
-					
-					-- Get the new relative position:
-					move_by (tp_2, invert (pp));
-					-- put_line ("tp2 " & to_string (tp_2));
-					set_place (p, tp_2);
-					
-					-- put_line ("new " & to_string (get_place (p)));
+				when ABSOLUTE =>
+					move_absolute;
+
 			end case;
 		end query_placeholder;
 		
@@ -575,7 +628,7 @@ package body et_device_placeholders.packages is
 		is 
 			-- Get the position of the placeholder relative
 			-- to its parent package.
-			-- NOTE: This is the posiition relative to
+			-- NOTE: This is the position relative to
 			-- the package. It assumes that the package is
 			-- not rotated.
 			pos : type_vector_model := get_place (p);

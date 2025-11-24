@@ -55,6 +55,25 @@ package body et_device_placeholders is
 		return type_placeholder_meaning'value (text_meaning);
 	end;
 
+
+	
+	function to_string (
+		mode : in type_anchor_mode)
+		return string
+	is begin
+		return type_anchor_mode'image (mode);
+	end;
+
+	
+
+	function to_anchor_mode (
+		mode : in string)
+		return type_anchor_mode
+	is begin
+		return type_anchor_mode'value (mode);
+	end;
+
+	
 	
 end et_device_placeholders;
 

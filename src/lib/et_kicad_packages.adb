@@ -2242,7 +2242,8 @@ package body et_kicad_packages is
 				case text.meaning is
 					when REFERENCE =>
 						--placeholder := (et_packages.type_text (text) with meaning => NAME);
-						placeholder := (type_text_fab (text) with meaning => NAME);
+						placeholder := (type_text_fab (text) with
+							meaning => NAME, others => <>);
 						
 						case text.layer is
 							when TOP_SILK =>
@@ -2259,7 +2260,8 @@ package body et_kicad_packages is
 
 					when VALUE =>
 						--placeholder := (et_packages.type_text (text) with meaning => VALUE);
-						placeholder := (type_text_fab (text) with meaning => VALUE);
+						placeholder := (type_text_fab (text) with
+							meaning => VALUE, others => <>);
 						
 						case text.layer is
 							when TOP_ASSY =>
