@@ -650,6 +650,11 @@ package body et_device_placeholders.packages is
 	is
 		use et_display.board;
 		
+		-- This flag indicates that the package is on 
+		-- the back side of the board.
+		-- Depening on this flag, either the placeholders 
+		-- on the top or bottom side of the package are searched:
+		flip : constant boolean := is_flipped (package_position);
 		
 		
 		-- This cursor points to the placeholder being probed:		
@@ -660,13 +665,15 @@ package body et_device_placeholders.packages is
 			p : in out type_text_placeholder)
 		is 
 			-- Get the position of the placeholder.
-			pos : type_vector_model := get_absolute_position (p, package_position);
+			pos : constant type_vector_model := 
+				get_absolute_position (p, package_position);
 		begin
 			log_indentation_up;
 			
 			-- log (text => "placeholder " & to_string (pos), level => log_threshold + 2);
 			
-			-- Test whether the placeholder is in the given catch zone:			
+			-- Test whether the placeholder is in the 
+			-- given catch zone:			
 		 	if in_catch_zone (
 				zone	=> catch_zone,
 				point	=> pos)
@@ -686,14 +693,28 @@ package body et_device_placeholders.packages is
 		procedure do_silkscreen_top is begin
 			log (text => "do_silkscreen_top", level => log_threshold + 1);
 			
-			if silkscreen_enabled (top) then				
-				cursor := placeholders.silkscreen.top.first;
-				while has_element (cursor) loop
-					placeholders.silkscreen.top.update_element (
-						cursor, query_placeholder'access);
-						
-					next (cursor);
-				end loop;
+			if silkscreen_enabled (top) then
+				if not flip then
+					-- Search among the placeholders of the TOP side
+					-- of the package:
+					cursor := placeholders.silkscreen.top.first;
+					while has_element (cursor) loop
+						placeholders.silkscreen.top.update_element (
+							cursor, query_placeholder'access);
+							
+						next (cursor);
+					end loop;
+				else
+					-- Search among the placeholders of the BOTTOM side
+					-- of the package:
+					cursor := placeholders.silkscreen.bottom.first;
+					while has_element (cursor) loop
+						placeholders.silkscreen.bottom.update_element (
+							cursor, query_placeholder'access);
+							
+						next (cursor);
+					end loop;
+				end if;
 			end if;
 		end;
 		 
@@ -702,13 +723,27 @@ package body et_device_placeholders.packages is
 			log (text => "do_silkscreen_bottom", level => log_threshold + 1);
 			
 			if silkscreen_enabled (bottom) then
-				cursor := placeholders.silkscreen.bottom.first;
-				while has_element (cursor) loop
-					placeholders.silkscreen.bottom.update_element (
-						cursor, query_placeholder'access);
-						
-					next (cursor);
-				end loop;		
+				if not flip then
+					-- Search among the placeholders of the BOTTOM side
+					-- of the package:
+					cursor := placeholders.silkscreen.bottom.first;
+					while has_element (cursor) loop
+						placeholders.silkscreen.bottom.update_element (
+							cursor, query_placeholder'access);
+							
+						next (cursor);
+					end loop;
+				else
+					-- Search among the placeholders of the TOP side
+					-- of the package:
+					cursor := placeholders.silkscreen.top.first;
+					while has_element (cursor) loop
+						placeholders.silkscreen.top.update_element (
+							cursor, query_placeholder'access);
+							
+						next (cursor);
+					end loop;
+				end if;
 			end if;
 		end;
 
@@ -718,13 +753,27 @@ package body et_device_placeholders.packages is
 			log (text => "do_assy_doc_top", level => log_threshold + 1);		
 			
 			if assy_doc_enabled (top) then
-				cursor := placeholders.assy_doc.top.first;
-				while has_element (cursor) loop
-					placeholders.assy_doc.top.update_element (
-						cursor, query_placeholder'access);
-						
-					next (cursor);
-				end loop;		
+				if not flip then
+					-- Search among the placeholders of the TOP side
+					-- of the package:
+					cursor := placeholders.assy_doc.top.first;
+					while has_element (cursor) loop
+						placeholders.assy_doc.top.update_element (
+							cursor, query_placeholder'access);
+							
+						next (cursor);
+					end loop;		
+				else
+					-- Search among the placeholders of the BOTTOM side
+					-- of the package:
+					cursor := placeholders.assy_doc.bottom.first;
+					while has_element (cursor) loop
+						placeholders.assy_doc.bottom.update_element (
+							cursor, query_placeholder'access);
+							
+						next (cursor);
+					end loop;		
+				end if;
 			end if;
 		end;
 		 
@@ -733,13 +782,27 @@ package body et_device_placeholders.packages is
 			log (text => "do_assy_doc_bottom", level => log_threshold + 1);
 			
 			if assy_doc_enabled (bottom) then
-				cursor := placeholders.assy_doc.bottom.first;
-				while has_element (cursor) loop
-					placeholders.assy_doc.bottom.update_element (
-						cursor, query_placeholder'access);
-						
-					next (cursor);
-				end loop;		
+				if not flip then
+					-- Search among the placeholders of the BOTTOM side
+					-- of the package:
+					cursor := placeholders.assy_doc.bottom.first;
+					while has_element (cursor) loop
+						placeholders.assy_doc.bottom.update_element (
+							cursor, query_placeholder'access);
+							
+						next (cursor);
+					end loop;		
+				else
+					-- Search among the placeholders of the TOP side
+					-- of the package:
+					cursor := placeholders.assy_doc.top.first;
+					while has_element (cursor) loop
+						placeholders.assy_doc.top.update_element (
+							cursor, query_placeholder'access);
+							
+						next (cursor);
+					end loop;
+				end if;
 			end if;
 		end;
 
