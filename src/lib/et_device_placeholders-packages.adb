@@ -642,7 +642,10 @@ package body et_device_placeholders.packages is
 				when ANCHOR_MODE_1 =>
 					-- pos is the position relative to
 					-- the package. It assumes that the package is
-					-- not rotated.
+					-- not rotated (as defined in the package model).
+					-- So the actual position of the placeholder candidate
+					-- must be calculated using the package position. The 
+					-- package position includes x/y, rotation and face.
 				
 					-- Rotate and move the position by the package position
 					-- to get the absolute position of the placeholder:
