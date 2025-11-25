@@ -448,7 +448,16 @@ package body et_devices_electrical.packages is
 
 -- PLACEHOLDERS:
 
+	
+	procedure reset_placeholder_positions (
+		device		: in out type_device_electrical)
+	is begin
+		null;
+	end reset_placeholder_positions;
+	
 
+
+	
 	procedure move_placeholder (
 		device		: in out type_device_electrical;
 		meaning		: in type_placeholder_meaning;					 

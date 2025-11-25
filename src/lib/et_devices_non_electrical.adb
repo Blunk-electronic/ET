@@ -855,6 +855,15 @@ package body et_devices_non_electrical is
 -- PLACEHOLDERS:
 
 
+	procedure reset_placeholder_positions (
+		device		: in out type_device_non_electrical)
+	is begin
+		null;
+	end reset_placeholder_positions;
+
+	
+	
+
 	procedure move_placeholder (
 		device		: in out type_device_non_electrical;
 		meaning		: in type_placeholder_meaning;					 

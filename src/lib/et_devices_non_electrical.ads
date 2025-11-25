@@ -598,6 +598,13 @@ package et_devices_non_electrical is
 
 -- PLACEHOLDERS:
 
+	-- Resets the positions of placeholders back to the
+	-- defaults as specified in the package model:
+	procedure reset_placeholder_positions (
+		device		: in out type_device_non_electrical);
+	
+
+	
 	-- Moves the placeholder given by meaning, layer, face and index.
 	-- NOTE: Index identifies the targeted placeholder in connection
 	--       with its meaning. For example, if meaning is "value" and index is 3

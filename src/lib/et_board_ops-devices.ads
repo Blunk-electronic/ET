@@ -338,6 +338,14 @@ package et_board_ops.devices is
 
 -- PLACEHOLDERS:
 
+	-- Resets the positions of placeholders back to the
+	-- defaults as specified in the package model:
+	procedure reset_placeholder_positions (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- IC45
+		log_threshold	: in type_log_level);
+
+
 
 	-- Moves the placeholder given by meaning, layer, face and index.
 	-- Automatically detects whether the given device is

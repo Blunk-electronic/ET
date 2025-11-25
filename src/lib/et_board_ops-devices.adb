@@ -1467,6 +1467,94 @@ package body et_board_ops.devices is
 -- PLACEHOLDERS:
 
 
+	procedure reset_placeholder_positions (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- IC45
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			device_electrical		: pac_devices_electrical.cursor;
+			device_non_electrical	: pac_devices_non_electrical.cursor;			
+
+			
+			procedure reset_electrical (
+				device_name	: in type_device_name;
+				device		: in out type_device_electrical) 
+			is begin
+				log (text => "reset_electrical", level => log_threshold + 1);
+				reset_placeholder_positions (device);
+			end;
+
+			
+			procedure reset_non_electrical (
+				device_name	: in type_device_name;
+				device		: in out type_device_non_electrical) 
+			is begin
+				log (text => "reset_non_electrical", level => log_threshold + 1);
+				reset_placeholder_positions (device);
+			end;
+
+			
+		begin
+
+			-- Search the device first among the electrical devices.
+			-- Most likely it will be among them. If not,
+			-- search in non-electrical devices:
+			
+			device_electrical := get_electrical_device (module_cursor, device_name);
+			
+			if has_element (device_electrical) then
+
+				update_element (
+					container	=> module.devices,
+					position	=> device_electrical,
+					process		=> reset_electrical'access);
+
+			else
+				-- Search among non-electrical devices:
+				device_non_electrical := get_non_electrical_device (module_cursor, device_name);
+
+				if has_element (device_non_electrical) then
+
+					update_element (
+						container	=> module.devices_non_electric,
+						position	=> device_non_electrical,
+						process		=> reset_non_electrical'access);
+
+				-- If the requested device has not been found,
+				-- then log a warning:
+				else
+					log (WARNING, " Device " & to_string (device_name) & " not found !");
+				end if;
+
+			end if;
+		end query_module;
+	
+	
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " reset " & to_string (device_name) 
+			& " placeholder positions",
+			level => log_threshold);
+	
+
+		log_indentation_up;
+			
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+	
+		log_indentation_down;
+	end reset_placeholder_positions;
+	
+	
+
+
 	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
