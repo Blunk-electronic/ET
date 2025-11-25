@@ -116,7 +116,14 @@ package et_board_coordinates is
 		position : in type_package_position)
 		return type_vector_model;
 
-						   
+
+	-- Returns true if the face of the given package
+	-- position is BOTTOM:
+	function is_flipped (
+		position : in type_package_position)
+		return boolean;
+	
+							
 	-- Composes from a given point and angle the terminal position.
 	function to_terminal_position (
 		point		: in type_vector_model;

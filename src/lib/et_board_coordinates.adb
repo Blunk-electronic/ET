@@ -196,6 +196,19 @@ package body et_board_coordinates is
 	end;
 
 
+
+	function is_flipped (
+		position : in type_package_position)
+		return boolean
+	is begin
+		if position.face = BOTTOM then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+	
 	
 	
 	function to_terminal_position (

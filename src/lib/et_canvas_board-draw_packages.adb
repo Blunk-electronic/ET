@@ -1642,7 +1642,7 @@ procedure draw_packages is
 		--put_line ("draw_package");
 
 		-- Set the "flip" flag if the package is on the backside of the board:
-		if get_face (package_position) = BOTTOM then
+		if is_flipped (package_position) then
 			flip := true;
 			mirror := MIRROR_ALONG_Y_AXIS;
 		end if;
