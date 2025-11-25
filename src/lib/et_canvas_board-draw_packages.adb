@@ -219,20 +219,28 @@ procedure draw_packages is
 			procedure build_text is
 				use pac_draw_text;
 				use pac_text;
+
+				-- A temporary text that will be drawn:
 				text : type_text_fab_with_content := (type_text_fab (ph) with others => <>);
 			begin
 				text.content := content;
 
-				-- If the placeholder is anchored relatively to the package,
-				-- then the package position must be taken into account.
-				-- Otherwise the placeholder position is regarded as absolute
-				-- and the package position must be left off:
 				case get_anchor_mode (ph) is
 					when ANCHOR_MODE_1 =>
+						-- If the placeholder is anchored relatively to the package,
+						-- then the package position (incl. rotation) must be taken into account.
 						draw_vector_text (text, mirror, get_position (package_position));
 
 					when ANCHOR_MODE_2 =>
-						draw_vector_text (text, mirror);
+						-- If the placeholder is anchored with absolute coordinates,
+						-- then the coordinates must be converted back to relative coordinates.
+						-- The text is assigned with the relative coordinates and then
+						-- drawn relative to the package position.
+						-- This seems cumbersome but it is required because draw_vector_text
+						-- mirrors the text position properly if it is relative to a
+						-- reference (the package position):
+						set_place (text, get_relative_position (ph, package_position));
+						draw_vector_text (text, mirror, get_position (package_position));
 				end case;
 			end;
 
