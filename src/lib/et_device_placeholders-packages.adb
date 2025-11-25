@@ -76,19 +76,46 @@ package body et_device_placeholders.packages is
 		package_position	: in type_package_position)
 		return type_vector_model
 	is 
-		result : type_vector_model;
-		
-		placeholder_place : type_vector_model;
-		
-		package_place : type_vector_model := get_place (package_position);
-		
+		result : type_vector_model;		
 	begin
-		placeholder_place := get_place (placeholder);
+		-- Get the position of the placeholder.
+		-- Currently we do not know whether pos is relative
+		-- or absolute. The anchor mode of the placeholder
+		-- provides the required information:
+		result := get_place (placeholder);
 		
-		move_by (placeholder_place, package_place);
+		case get_anchor_mode (placeholder) is
+			when ANCHOR_MODE_1 =>
+				-- "result" contains the position relative to
+				-- the package. It assumes that the package is
+				-- not rotated (as defined in the package model).
+				-- So the actual position of the placeholder candidate
+				-- must be calculated using the package position. The 
+				-- package position includes x/y, rotation and face.
+			
+				-- Rotate and move the position by the package position
+				-- to get the absolute position of the placeholder.
+				-- If the package is flipped to the bottom side of
+				-- the board, then the result must be mirrored along
+				-- the Y-axis:
+			
+				rotate_by (result, get_rotation (package_position));
+				
+				if get_face (package_position) = BOTTOM then
+					mirror_point (result, MIRROR_ALONG_Y_AXIS);
+				end if;
+				
+				move_by (result, get_place (package_position));
+
+				
+			when ANCHOR_MODE_2 =>
+				null;
+				-- "result" contains alreadey the absolute
+				-- position of the placeholder. Nothing else to do.
+		end case;
 		
-		return placeholder_place;
-	end;
+		return result;
+	end get_absolute_position;
 
 	
 	
@@ -623,6 +650,8 @@ package body et_device_placeholders.packages is
 	is
 		use et_display.board;
 		
+		
+		
 		-- This cursor points to the placeholder being probed:		
 		cursor : pac_text_placeholders.cursor;
 
@@ -631,35 +660,11 @@ package body et_device_placeholders.packages is
 			p : in out type_text_placeholder)
 		is 
 			-- Get the position of the placeholder.
-			-- Currently we do not know whether pos is relative
-			-- or absolute. The anchor mode of the placeholder
-			-- provides the required information:
-			pos : type_vector_model := get_place (p);
+			pos : type_vector_model := get_absolute_position (p, package_position);
 		begin
 			log_indentation_up;
 			
-			case get_anchor_mode (p) is
-				when ANCHOR_MODE_1 =>
-					-- pos is the position relative to
-					-- the package. It assumes that the package is
-					-- not rotated (as defined in the package model).
-					-- So the actual position of the placeholder candidate
-					-- must be calculated using the package position. The 
-					-- package position includes x/y, rotation and face.
-				
-					-- Rotate and move the position by the package position
-					-- to get the absolute position of the placeholder:
-					rotate_by (pos, get_rotation (package_position));
-					move_by (pos, get_place (package_position));
-
-				when ANCHOR_MODE_2 =>
-					-- pos is the absolute position of the placeholder.
-					-- Nothing elss to do.
-					null;
-			end case;
-			
 			-- log (text => "placeholder " & to_string (pos), level => log_threshold + 2);
-
 			
 			-- Test whether the placeholder is in the given catch zone:			
 		 	if in_catch_zone (
@@ -681,7 +686,7 @@ package body et_device_placeholders.packages is
 		procedure do_silkscreen_top is begin
 			log (text => "do_silkscreen_top", level => log_threshold + 1);
 			
-			if silkscreen_enabled (top) then
+			if silkscreen_enabled (top) then				
 				cursor := placeholders.silkscreen.top.first;
 				while has_element (cursor) loop
 					placeholders.silkscreen.top.update_element (

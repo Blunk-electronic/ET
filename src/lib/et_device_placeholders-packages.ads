@@ -87,7 +87,11 @@ package et_device_placeholders.packages is
 		
 		
 		
-	-- Returns the absolute x/y position of a placeholder:
+	-- Returns the absolute x/y position of a placeholder.
+	-- Since the placeholder can be positioned relative to
+	-- a package, the package position (x/y, rotation, face)
+	-- must be taken into account. If the placeholder position
+	-- is absolute, then the package position is irrelevant:
 	function get_absolute_position (
 		placeholder			: in type_text_placeholder;
 		package_position	: in type_package_position)
