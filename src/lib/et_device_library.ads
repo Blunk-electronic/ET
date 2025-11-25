@@ -323,10 +323,11 @@ package et_device_library is
 	
 
 
-	-- Returns the placeholders of the package of a device. 
+	-- Returns the default placeholders of the package of a device
+	-- as they are specified in the package model.
 	-- The package is indirectly selected by the given variant name.
 	-- The given device is accessed by the given device cursor.
-	function get_package_placeholders (
+	function get_package_placeholders ( -- CS rename to get_default_package_placeholders
 		device	: in pac_devices_lib.cursor;
 		variant	: in pac_package_variant_name.bounded_string) -- N, D, S_0805
 		return type_text_placeholders;

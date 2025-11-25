@@ -451,12 +451,26 @@ package body et_devices_electrical.packages is
 	
 	procedure reset_placeholder_positions (
 		device		: in out type_device_electrical)
-	is begin
-		null;
+	is 
+		cursor_lib : pac_devices_lib.cursor;
+		default_placeholders : type_text_placeholders;
+	begin
+		-- Locate the device in the device library:
+		cursor_lib := get_device_model_cursor (device.model);
+
+		-- Get the default placeholders as they are specified
+		-- in the package model:
+		default_placeholders := get_package_placeholders (
+			cursor_lib, get_package_variant (device));
+
+		-- Assign the default placeholders to the given device:
+		device.placeholders := default_placeholders;		
 	end reset_placeholder_positions;
 	
 
 
+	
+	
 	
 	procedure move_placeholder (
 		device		: in out type_device_electrical;
