@@ -98,6 +98,16 @@ package et_device_placeholders.packages is
 		return type_vector_model;
 
 	
+	-- Returns the relative position of the placeholder
+	-- to the given package position. The result represents
+	-- the relative position for a non-rotated and non-flipped
+	-- package:
+	function get_relative_position (
+		placeholder			: in type_text_placeholder;
+		package_position	: in type_package_position)
+		return type_vector_model;
+
+		
 	
 	function get_meaning (
 		placeholder : in type_text_placeholder)

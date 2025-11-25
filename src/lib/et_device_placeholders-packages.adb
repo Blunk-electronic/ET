@@ -101,7 +101,7 @@ package body et_device_placeholders.packages is
 			
 				rotate_by (result, get_rotation (package_position));
 				
-				if get_face (package_position) = BOTTOM then
+				if is_flipped (package_position) then
 					mirror_point (result, MIRROR_ALONG_Y_AXIS);
 				end if;
 				
@@ -110,7 +110,7 @@ package body et_device_placeholders.packages is
 				
 			when ANCHOR_MODE_2 =>
 				null;
-				-- "result" contains alreadey the absolute
+				-- "result" contains already the absolute
 				-- position of the placeholder. Nothing else to do.
 		end case;
 		
@@ -120,7 +120,48 @@ package body et_device_placeholders.packages is
 	
 	
 
+	
+	
+	function get_relative_position (
+		placeholder			: in type_text_placeholder;
+		package_position	: in type_package_position)
+		return type_vector_model
+	is
+		result : type_vector_model;
+	begin
+		case get_anchor_mode (placeholder) is
+			when ANCHOR_MODE_1 =>
+				-- If the given placeholder
+				-- is already positioned relative to the 
+				-- package position its position
+				-- can be copied as it is:
+				result := get_place (placeholder);
+				
+			when ANCHOR_MODE_2 =>
+				-- If the given placeholder is positioned
+				-- absolute, then the distance from package position
+				-- to placeholder position must be computed first:
+				result := get_distance_relative (
+					get_place (package_position),
+					get_place (placeholder));
+					
+				-- If the package is on the bottom side, then
+				-- "result" must be mirrored back to top side:
+				if is_flipped (package_position) then
+					mirror_point (result, MIRROR_ALONG_Y_AXIS);
+				end if;
+					
+				-- Rotate back by the package position:
+				rotate_by (result, - get_rotation (package_position));
+		end case;
 
+		return result;
+	end get_relative_position;
+	
+
+	
+	
+	
 
 	function get_meaning (
 		placeholder : in type_text_placeholder)
