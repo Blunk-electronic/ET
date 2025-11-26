@@ -139,6 +139,8 @@ package et_board_ops.devices is
 
 	-- Flips a device in the board layout from top to bottom or vice versa.
 	-- Leaves x/y and rotation as it is.
+	-- Resets the positions of all placeholders to their default
+	-- as specified in the package model.
 	-- Automatically detects whether the given device is
 	-- electrical or non-electrical.
 	-- 1. If toggle is false, then the destination face must be

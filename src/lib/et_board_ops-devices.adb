@@ -537,6 +537,8 @@ package body et_board_ops.devices is
 				else
 					set_face (device, face);
 				end if;
+				
+				reset_placeholder_positions (device);
 			end flip_electrical;
 			
 
@@ -550,6 +552,8 @@ package body et_board_ops.devices is
 				else
 					set_face (device, face);
 				end if;
+				
+				reset_placeholder_positions (device);
 			end flip_non_electrical;
 
 			

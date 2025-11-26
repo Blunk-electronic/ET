@@ -212,6 +212,9 @@ non-electrical devices (without a representation in the schematic).
 	|VNS| l d
 
 	
+	The flip operation causes the placeholders for
+	name, value and purpose to be reset to the default
+	position (as specified in the package model).
 
 
 	
