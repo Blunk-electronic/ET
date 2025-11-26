@@ -68,6 +68,14 @@ package body et_device_placeholders.packages is
 
 
 
+	function get_anchor_mode (
+		placeholder		: in type_text_placeholder)
+		return string
+	is begin
+		return to_string (placeholder.anchor_mode);
+	end;
+
+	
 
 
 

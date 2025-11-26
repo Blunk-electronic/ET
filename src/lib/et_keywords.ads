@@ -45,6 +45,7 @@ package et_keywords is
 	keyword_active					: constant string := "active";	
 	keyword_add_level				: constant string := "add_level";
 	keyword_alignment				: constant string := "alignment";
+	keyword_anchor					: constant string := "anchor";
 	keyword_assembly_technology		: constant string := "technology";
 	keyword_assembly_variant		: constant string := "assembly_variant";
 

@@ -85,6 +85,10 @@ package et_device_placeholders.packages is
 		return type_anchor_mode;
 		
 		
+	function get_anchor_mode (
+		placeholder		: in type_text_placeholder)
+		return string;
+
 		
 		
 	-- Returns the absolute x/y position of a placeholder.

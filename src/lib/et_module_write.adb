@@ -1024,11 +1024,12 @@ package body et_module_write is
 		
 		procedure query_devices is
 			use et_devices_electrical;
-			use et_symbol_model;
-			use et_device_placeholders.symbols;
+			use et_symbol_model;			
 			use pac_devices_electrical;
 
 			
+			-- This procedure queries the units of
+			-- the device candidate:
 			procedure query_units (
 				device_name	: in type_device_name;
 				device		: in type_device_electrical) 
@@ -1040,7 +1041,8 @@ package body et_module_write is
 				unit_cursor : pac_units.cursor := device.units.first;
 
 				use et_schematic_geometry.pac_geometry_2;
-
+				use et_device_placeholders.symbols;
+				
 				
 				procedure write_placeholder (
 					ph : in type_text_placeholder) 
@@ -1092,7 +1094,9 @@ package body et_module_write is
 			end query_units;
 
 
-			
+
+			-- This procedure queries the placeholders of
+			-- the package of the device candidate:
 			procedure query_placeholders (
 				device_name : in type_device_name;
 				device 		: in type_device_electrical) 
@@ -1106,13 +1110,15 @@ package body et_module_write is
 				layer : type_placeholder_layer;
 
 				
-				procedure write_placeholder (placeholder_cursor : in pac_text_placeholders.cursor) is 
+				procedure write_placeholder (c : in pac_text_placeholders.cursor) is 
+					ph : type_text_placeholder renames element (c);
 					use et_device_placeholders;
 				begin
 					section_mark (section_placeholder, HEADER);
 					write (keyword => keyword_layer, parameters => to_string (layer));
-					write (keyword => keyword_meaning, parameters => to_string (element (placeholder_cursor).meaning));
-					write_text_properties_with_face (element (placeholder_cursor), face);
+					write (keyword => keyword_meaning, parameters => to_string (get_meaning (ph)));
+					write (keyword => keyword_anchor, parameters => get_anchor_mode (ph));
+					write_text_properties_with_face (element (c), face);
 					section_mark (section_placeholder, FOOTER);
 				end write_placeholder;
 				
