@@ -319,7 +319,7 @@ package et_package_library is
 
 	-- Returns the default placeholders of the package
 	-- as they are specified in the package model:
-	function get_placeholders (
+	function get_default_placeholders (
 		package_cursor : in pac_package_models.cursor)
 		return type_text_placeholders;
 

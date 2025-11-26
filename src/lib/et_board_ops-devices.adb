@@ -1194,7 +1194,7 @@ package body et_board_ops.devices is
 				new_item	=> (
 					position		=> position,
 					package_model	=> package_model,
-					placeholders	=> get_placeholders (package_cursor_lib),
+					placeholders	=> get_default_placeholders (package_cursor_lib),
 					others			=> <>)
 				);
 

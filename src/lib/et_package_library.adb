@@ -460,7 +460,7 @@ package body et_package_library is
 	
 
 
-	function get_placeholders (
+	function get_default_placeholders (
 		package_cursor : in pac_package_models.cursor)
 		return type_text_placeholders 
 	is
@@ -478,7 +478,7 @@ package body et_package_library is
 		p.assy_doc.bottom := element (package_cursor).assy_doc.bottom.placeholders;
 		
 		end return;
-	end get_placeholders;
+	end get_default_placeholders;
 
 
 
