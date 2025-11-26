@@ -1531,6 +1531,9 @@ package body et_board_ops.devices is
 	
 	
 
+	
+	
+	
 
 	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
