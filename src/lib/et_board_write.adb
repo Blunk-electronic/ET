@@ -78,11 +78,14 @@ package body et_board_write is
 	procedure write_text_properties (
 		t : in type_text_fab'class) 
 	is begin
+		-- CS rework !
+		
 -- 		write (keyword => keyword_position, parameters => position (text.position) & 
 -- 			space & keyword_rotation & to_string (get_angle (text.position))
 -- 			  ); -- position x 0.000 y 5.555 rotation 0.00
 
-		write (keyword => keyword_position, parameters => to_string (t.position));
+		write (keyword => keyword_position, parameters => 
+			to_string (get_position (t), FORMAT_2));
 			-- position x 0.000 y 5.555 rotation 0.00
 		
 		write (keyword => keyword_size, parameters => to_string (t.size)); -- size 1.000
@@ -91,7 +94,8 @@ package body et_board_write is
 		write (keyword => keyword_alignment, parameters =>
 			keyword_horizontal & space & to_string (t.alignment.horizontal) & space &
 			keyword_vertical   & space & to_string (t.alignment.vertical));
-	
+
+		-- CS use et_alignment.to_string 
 	end write_text_properties;
 
 	
@@ -99,22 +103,29 @@ package body et_board_write is
 	procedure write_text_properties_with_face (
 		t		: in type_text_fab'class;
 		face	: in type_face) 
-	is begin
-		write (keyword => keyword_position, parameters => to_string (t.position) & 
-			space & keyword_face & to_string (face)); -- position x 0.000 y 5.555 rotation 0.00 face top
+	is 
+		position : type_package_position;
+	begin
+		-- CS rework !
 
-		-- CS this could be more elegant way. did not get it working
-		-- 		write (keyword => keyword_position, parameters => 
-		-- 			   position (type_position (text.position with face => face))
-		-- 			  );
-		
+		-- Assemble the text position:
+		set_position (position, get_position (t));
+		set_face (position, face);
+					  
+		write (keyword => keyword_position, parameters => 
+			   to_string (position, FORMAT_2)); 
+		-- position x 0.000 y 5.555 rotation 0.00 face top
+
 		write (keyword => keyword_size, parameters => to_string (t.size)); -- size 1.000
 		
 		write (keyword => keyword_linewidth, parameters => to_string (t.line_width));
 		write (keyword => keyword_alignment, parameters =>
 				keyword_horizontal & space & to_string (t.alignment.horizontal) & space &
 				keyword_vertical   & space & to_string (t.alignment.vertical)
-				);
+			  );
+
+		-- CS use et_alignment.to_string 
+		
 		-- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
 	end write_text_properties_with_face;
 
