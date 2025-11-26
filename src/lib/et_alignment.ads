@@ -77,6 +77,7 @@ package et_alignment is
 
 	
 	function to_string (alignment : in type_text_alignment) return string;
+	-- CS parameter for format ?
 
 
 end et_alignment;
