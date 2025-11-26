@@ -111,6 +111,13 @@ package et_board_coordinates is
 		return type_position;
 
 
+	-- Sets the position (x/y/rotation) of
+	-- the given package position:
+	procedure set_position (
+		package_position	: in out type_package_position;
+		position			: in type_position);
+	
+							  
 	-- Returns the x/y position of a package:
 	function get_place (
 		position : in type_package_position)

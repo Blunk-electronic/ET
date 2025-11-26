@@ -66,7 +66,7 @@ package body et_board_coordinates is
 				return "x/y/rotation/face " & x & separator & y & separator & r & separator & f;
 
 			when FORMAT_2 =>
-				return "x " & x & " y " & y & " rotation " & r & " f " & f;
+				return "x " & x & " y " & y & " rotation " & r & " face " & f;
 
 			when FORMAT_3 =>
 				return x & space & y & space & r & space & f;
@@ -187,6 +187,17 @@ package body et_board_coordinates is
 	end get_position;
 
 
+
+
+	procedure set_position (
+		package_position	: in out type_package_position;
+		position			: in type_position)
+	is begin
+		package_position.place := get_place (position);
+		package_position.rotation := get_rotation (position);
+	end;
+
+	
 	
 	function get_place (
 		position : in type_package_position)
