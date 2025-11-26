@@ -804,6 +804,7 @@ package body et_device_library is
 		package_cursor		: pac_package_models.cursor;
 
 	begin -- get_package_placeholders
+		-- CS rework
 		
 		-- locate the given variant in the device:
 		variant_cursor := pac_package_variants.find (variants_available, variant);

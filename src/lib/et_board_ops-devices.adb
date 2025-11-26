@@ -1095,34 +1095,7 @@ package body et_board_ops.devices is
 	
 	
 		
-
-
-
-
-
-	function get_placeholders (
-		package_cursor : in pac_package_models.cursor)
-		return et_device_placeholders.packages.type_text_placeholders 
-	is
-		use et_device_placeholders.packages;
-		use pac_package_models;
-	begin
-		return p : type_text_placeholders do
 		
-			-- fetch the placeholders of silk screen top and bottom
-			p.silkscreen.top := element (package_cursor).silkscreen.top.placeholders;
-			p.silkscreen.bottom := element (package_cursor).silkscreen.bottom.placeholders;
-
-			-- fetch the placeholders of assembly documentation top and bottom
-			p.assy_doc.top := element (package_cursor).assy_doc.top.placeholders;
-		p.assy_doc.bottom := element (package_cursor).assy_doc.bottom.placeholders;
-		
-		end return;
-	end get_placeholders;
-	
-
-
-	
 
 
 	

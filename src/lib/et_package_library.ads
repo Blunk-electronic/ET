@@ -67,6 +67,7 @@ with et_package_bom_relevance;			use et_package_bom_relevance;
 with et_package_name;					use et_package_name;
 with et_package_model_name;				use et_package_model_name;
 with et_package_description;			use et_package_description;
+with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_logging;						use et_logging;
 
 
@@ -314,7 +315,13 @@ package et_package_library is
 		face			: in type_face)
 		return type_assy_doc_package;
 	
-	
+
+
+	-- Returns the default placeholders of the package
+	-- as they are specified in the package model:
+	function get_placeholders (
+		package_cursor : in pac_package_models.cursor)
+		return type_text_placeholders;
 
 	
 	
