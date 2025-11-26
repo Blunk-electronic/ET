@@ -787,43 +787,22 @@ package body et_device_library is
 
 	function get_package_placeholders (
 		device	: in pac_devices_lib.cursor;
-		variant	: in pac_package_variant_name.bounded_string) -- N, D, S_0805
+		variant	: in pac_package_variant_name.bounded_string)
 		return type_text_placeholders
 	is
-		use pac_package_variants;
-		placeholders		: type_text_placeholders; -- to be returned
-
-		-- fetch the package variants available for the given device:
-		variants_available	: pac_package_variants.map := element (device).variants;
-		
-		variant_cursor		: pac_package_variants.cursor;
-		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/smd/SO15.pac
+		package_model : pac_package_model_file_name.bounded_string;
+		-- like ../lbr/smd/SO15.pac
 
 		use et_package_library;
-		use pac_package_models;
-		package_cursor		: pac_package_models.cursor;
+		package_cursor : pac_package_models.cursor;
+	begin
+		-- Get the package model name:		
+		package_model := get_package_model (device, variant);
 
-	begin -- get_package_placeholders
-		-- CS rework
-		
-		-- locate the given variant in the device:
-		variant_cursor := pac_package_variants.find (variants_available, variant);
+		-- Locate the package model in the package library:
+		package_cursor := get_package_model (package_model);
 
-		-- get the package model name:
-		package_model := element (variant_cursor).package_model; -- ../lbr/smd/SO15.pac
-
-		-- locate the package model in the package library:
-		package_cursor := pac_package_models.find (package_models, package_model);
-
-		-- fetch the placeholders of silk screen top and bottom
-		placeholders.silkscreen.top := element (package_cursor).silkscreen.top.placeholders;
-		placeholders.silkscreen.bottom := element (package_cursor).silkscreen.bottom.placeholders;
-
-		-- fetch the placeholders of assembly documentation top and bottom
-		placeholders.assy_doc.top := element (package_cursor).assy_doc.top.placeholders;
-		placeholders.assy_doc.bottom := element (package_cursor).assy_doc.bottom.placeholders;
-		
-		return placeholders;
+		return get_default_placeholders (package_cursor);
 	end get_package_placeholders;
 
 
