@@ -1687,7 +1687,9 @@ package body et_module_read is
 		device_text_placeholder : et_device_placeholders.packages.type_text_placeholder;
 
 
-		
+
+		-- This procdure reads a property of a placeholder
+		-- of a device package (board):
 		procedure read_device_text_placeholder is
 			use et_device_placeholders;
 			use et_device_placeholders.packages;
@@ -1704,6 +1706,10 @@ package body et_module_read is
 			elsif kw = keyword_layer then -- layer silkscreen/assy_doc
 				expect_field_count (line, 2);
 				device_text_placeholder_layer := to_placeholder_layer (f (line, 2));
+
+			elsif kw = keyword_anchor then -- anchor relative/absolute
+				expect_field_count (line, 2);
+				device_text_placeholder.anchor_mode := to_anchor_mode (f (line, 2));
 				
 			elsif kw = keyword_position then -- position x 0.000 y 5.555 rotation 0.00 face top
 				expect_field_count (line, 9);
@@ -1746,6 +1752,8 @@ package body et_module_read is
 
 
 		
+		-- This procdure reads a property of a placeholder
+		-- of a device unit (schematic):
 		procedure read_unit_placeholder is
 			use et_device_placeholders;
 			use et_schematic_text;
@@ -1797,7 +1805,9 @@ package body et_module_read is
 		board_text : type_text_fab_with_content;
 		board_text_placeholder : et_pcb_placeholders.type_text_placeholder;
 
-		
+
+		-- This procdure reads a property of a general 
+		-- placeholder in the board drawing (like project name, material code, ...):
 		procedure read_board_text_placeholder is
 			use et_board_geometry.pac_geometry_2;
 			use et_pcb_placeholders;

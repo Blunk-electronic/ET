@@ -1118,7 +1118,7 @@ package body et_module_write is
 					write (keyword => keyword_layer, parameters => to_string (layer));
 					write (keyword => keyword_meaning, parameters => to_string (get_meaning (ph)));
 					write (keyword => keyword_anchor, parameters => get_anchor_mode (ph));
-					write_text_properties_with_face (element (c), face);
+					write_text_properties_with_face (ph, face);
 					section_mark (section_placeholder, FOOTER);
 				end write_placeholder;
 				
