@@ -58,6 +58,7 @@ package et_modes.board is
 		VERB_PLACE,
 		VERB_QUIT,
 		VERB_RENAME,
+		VERB_RESTORE,
 		VERB_ROTATE,
 		VERB_ROUTE,
 		VERB_SAVE,
@@ -102,6 +103,7 @@ package et_modes.board is
 		NOUN_OUTLINE,
 		NOUN_PARTCODE,
 		NOUN_PLACEHOLDER,
+		NOUN_PLACEHOLDERS,
 		NOUN_PNP, -- pick & place
 		NOUN_PURPOSE,
 		NOUN_RATSNEST,

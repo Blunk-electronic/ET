@@ -347,6 +347,22 @@ breached so that the placeholder gets an absolute position. This implies:
 
 
 
+
+#. Reset Placholders
+
+	The package model of a device specifies the default positions
+	of placeholders. In order to restore the default 
+	positions of all placeholders this command shall be 
+	applied:
+
+	.. code-block::
+
+		restore placeholders R1
+
+	This command also changes the anchor mode so that
+	the placeholders are positioned relative to the package.
+
+
 	
 +++++++++++++++++++++
 Ratsnest and Airwires

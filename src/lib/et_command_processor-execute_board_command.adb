@@ -3366,6 +3366,28 @@ is
 	
 	
 
+	-- This procedure parses a command that restores
+	-- the placeholders of a device.
+	-- Example: "board led_driver restore placeholders R1"
+	procedure restore_device_placeholders is 
+		use et_board_ops.devices;
+	begin
+		case cmd_field_count is
+			when 5 =>
+				reset_placeholder_positions (
+					module_cursor 	=> active_module,
+					device_name		=> to_device_name (get_field (5)), -- IC1
+					log_threshold	=> log_threshold + 1);
+
+			when 6 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;		
+	end restore_device_placeholders;
+
+
+
+	
 
 	
 	-- This procedure parses a command to 
@@ -4119,6 +4141,15 @@ is
 					when NOUN_DEVICE =>
 						rename_device;
 
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+
+			when VERB_RESTORE =>
+				case noun is
+					when NOUN_PLACEHOLDERs =>
+						restore_device_placeholders;
+						
 					when others => invalid_noun (to_string (noun));
 				end case;
 
