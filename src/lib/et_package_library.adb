@@ -466,18 +466,7 @@ package body et_package_library is
 	is
 		use pac_package_models;
 	begin
-		-- CS rework
-		return p : type_text_placeholders do
-		
-			-- fetch the placeholders of silk screen top and bottom
-			p.silkscreen.top := element (package_cursor).silkscreen.top.placeholders;
-			p.silkscreen.bottom := element (package_cursor).silkscreen.bottom.placeholders;
-
-			-- fetch the placeholders of assembly documentation top and bottom
-			p.assy_doc.top := element (package_cursor).assy_doc.top.placeholders;
-		p.assy_doc.bottom := element (package_cursor).assy_doc.bottom.placeholders;
-		
-		end return;
+		return get_default_placeholders (element (package_cursor));
 	end get_default_placeholders;
 
 

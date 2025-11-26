@@ -62,6 +62,7 @@ with et_pcb_contour;					use et_pcb_contour;
 with et_package_bom_relevance;			use et_package_bom_relevance;
 with et_package_name;					use et_package_name;
 with et_package_description;			use et_package_description;
+with et_device_placeholders.packages;	use et_device_placeholders.packages;
 
 with et_logging;						use et_logging;
 
@@ -253,6 +254,16 @@ package et_package_model is
 	function is_bom_relevant (
 		packge : in type_package_model)
 		return boolean;
+
+
+
+
+	-- Returns the default placeholders of the package
+	-- as they are specified in the package model:
+	function get_default_placeholders (
+		packge : in type_package_model)
+		return type_text_placeholders;
+
 	
 
 

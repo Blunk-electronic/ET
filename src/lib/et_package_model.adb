@@ -202,6 +202,29 @@ package body et_package_model is
 
 	
 
+
+	function get_default_placeholders (
+		packge : in type_package_model)
+		return type_text_placeholders
+	is
+		result : type_text_placeholders;
+	begin
+		-- Fetch the placeholders in silkscreen top and bottom:
+		result.silkscreen.top := packge.silkscreen.top.placeholders;
+		result.silkscreen.bottom := packge.silkscreen.bottom.placeholders;
+
+		-- Fetch the placeholders in assembly documentation top and bottom:
+		result.assy_doc.top := packge.assy_doc.top.placeholders;
+		result.assy_doc.bottom := packge.assy_doc.bottom.placeholders;
+		
+		return result;
+	end;
+
+
+	
+
+
+
 	
 
 

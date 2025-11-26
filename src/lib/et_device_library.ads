@@ -39,6 +39,10 @@
 --
 -- This package describes the structure of
 -- the rig-wide library of devices models.
+--
+-- ToDo:
+-- - move stuff related to packages to a child package.
+-- - move stuff related to units to a child package.
 
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
