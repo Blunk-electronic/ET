@@ -855,18 +855,21 @@ package body et_devices_non_electrical is
 -- PLACEHOLDERS:
 
 
+	
 	procedure reset_placeholder_positions (
 		device		: in out type_device_non_electrical)
 	is 
 		cursor_lib : pac_package_models.cursor;
 		default_placeholders : type_text_placeholders;
 	begin
+		-- Locate the device in the package library:
 		cursor_lib := get_package_model (device.package_model);
-		null;
 
-		-- default_placeholders := get_placeholders (cursor_lib);
+		-- Assign the default placeholders to the device:
+		default_placeholders := get_default_placeholders (cursor_lib);
 	end reset_placeholder_positions;
 
+	
 	
 	
 
