@@ -33,6 +33,12 @@
 --
 --   history of changes:
 --
+-- ToDo:
+-- - clean up
+-- - simplify code
+-- - use renames instead of element (c)
+-- - separate schematic and board stuff in et_module_write.board/schematic
+--
 
 with ada.text_io;					use ada.text_io;
 with ada.characters;				use ada.characters;
@@ -1118,7 +1124,9 @@ package body et_module_write is
 					write (keyword => keyword_layer, parameters => to_string (layer));
 					write (keyword => keyword_meaning, parameters => to_string (get_meaning (ph)));
 					write (keyword => keyword_anchor, parameters => get_anchor_mode (ph));
+
 					write_text_properties_with_face (ph, face);
+					
 					section_mark (section_placeholder, FOOTER);
 				end write_placeholder;
 				
@@ -1144,8 +1152,11 @@ package body et_module_write is
 			end query_placeholders;
 
 
+
 			
 			procedure write (d : in pac_devices_electrical.cursor) is 
+				device : type_device_electrical renames element (d);
+				-- CS use "device" instead of "element (d)"
 				use et_pcb_sides;
 				use et_material;
 				use et_device_appearance;
@@ -1184,7 +1195,7 @@ package body et_module_write is
 
 						-- This is the position of the package in the layout, 
 						write (keyword => keyword_position, parameters => -- position x 34.5 y 60.1 face top/bottom
-							et_board_coordinates.to_string (element (d).position));
+							et_board_coordinates.to_string (get_position (device), FORMAT_2));
 					
 						query_element (d, query_placeholders'access);
 						section_mark (section_package, FOOTER);
@@ -1577,6 +1588,8 @@ package body et_module_write is
 		end query_texts;
 
 		
+
+
 		
 		procedure query_board is
 			use et_devices_non_electrical;
@@ -1641,10 +1654,14 @@ package body et_module_write is
 			-- general stuff
 			use pac_text_placeholders_conductors;
 			procedure write_placeholder (cursor : in pac_text_placeholders.cursor) is
+				ph : type_text_placeholder renames element (cursor);
 			begin
 				placeholder_begin;
+
 				write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
-				write_text_properties (element (cursor));
+
+				write_text_properties (ph);
+
 				placeholder_end;
 			end write_placeholder;
 
@@ -1738,16 +1755,22 @@ package body et_module_write is
 
 			
 			-- texts in any signal layers
-			procedure write_text (cursor : in pac_conductor_texts.cursor) is begin
+			procedure write_text (cursor : in pac_conductor_texts.cursor) is 
+				text : et_conductor_text.boards.type_conductor_text renames element (cursor);
+			begin
 				text_begin;
+
 				write (keyword => keyword_content, wrap => true,
 					parameters => to_string (element (cursor).content));
-				
-				write_text_properties (element (cursor));
+
+				write_text_properties (text);
+
 				write (keyword => keyword_layer, 
 					parameters => to_string (element (cursor).layer));
+
 				text_end;
 			end write_text;
+
 
 			
 			-- text placeholders in any signal layers
@@ -1766,9 +1789,10 @@ package body et_module_write is
 			use pac_devices_non_electrical;
 
 			
-			procedure query_devices_non_electric (
-				c : in pac_devices_non_electrical.cursor) 
-			is
+			procedure query_devices_non_electric (c : in pac_devices_non_electrical.cursor) is
+				device : type_device_non_electrical renames element (c);
+				-- CS use "device" instead of "element (c)"
+
 				use et_board_coordinates;
 				use et_pcb;
 				-- use et_package_names;
@@ -1789,12 +1813,17 @@ package body et_module_write is
 
 					
 					procedure write_placeholder (
-						placeholder_cursor : in et_device_placeholders.packages.pac_text_placeholders.cursor)
-					is begin
+						c : in et_device_placeholders.packages.pac_text_placeholders.cursor)
+					is 
+						ph : et_device_placeholders.packages.type_text_placeholder renames element (c);
+					begin
 						section_mark (section_placeholder, HEADER);
 						write (keyword => keyword_layer, parameters => to_string (layer));
-						write (keyword => keyword_meaning, parameters => to_string (element (placeholder_cursor).meaning));
-						write_text_properties_with_face (element (placeholder_cursor), face);
+						write (keyword => keyword_meaning, parameters => to_string (element (c).meaning));
+						write (keyword => keyword_anchor, parameters => to_string (get_anchor_mode (ph)));
+						
+						write_text_properties_with_face (ph, face);
+
 						section_mark (section_placeholder, FOOTER);
 					end write_placeholder;
 
@@ -1824,7 +1853,9 @@ package body et_module_write is
 				section_mark (section_device, HEADER);
 
 				write (keyword => keyword_name, parameters => to_string (key (c))); -- name FD1
-				write (keyword => keyword_position, parameters => to_string (element (c).position));
+				write (keyword => keyword_position, parameters =>
+					et_board_coordinates.to_string (get_position (device), FORMAT_2));
+				
 				write (keyword => keyword_model, parameters => to_string (element (c).package_model));
 
 				query_element (c, query_placeholders'access);
@@ -1910,6 +1941,7 @@ package body et_module_write is
 			
 
 
+
 			procedure write_board_contours is 
 				use et_pcb_contour;
 				use pac_holes;
@@ -1937,16 +1969,24 @@ package body et_module_write is
 			end write_board_contours;
 
 
+
+
 			procedure write_silkscreen is
 				use et_silkscreen;
 				use pac_silk_texts;
 
+
 				-- CS move this procedure to et_pcb_rw
-				procedure write_text (cursor : in pac_silk_texts.cursor) is begin
+				procedure write_text (cursor : in pac_silk_texts.cursor) is 
+					text : type_silk_text renames element (cursor);
+				begin
 					text_begin;
+
 					write (keyword => keyword_content, wrap => true,
 						parameters => to_string (element (cursor).content));
-					write_text_properties (element (cursor));
+
+					write_text_properties (text);
+
 					text_end;
 				end write_text;
 
@@ -1975,16 +2015,23 @@ package body et_module_write is
 			end write_silkscreen;
 
 
+
 			
 			procedure write_assy_doc is
 				use et_assy_doc;
 				use pac_doc_texts;
 
-				procedure write_text (cursor : in pac_doc_texts.cursor) is begin
+
+				procedure write_text (cursor : in pac_doc_texts.cursor) is 
+					text : type_doc_text renames element (cursor);
+				begin
 					text_begin;
+
 					write (keyword => keyword_content, wrap => true,
 						parameters => to_string (element (cursor).content));
-					write_text_properties (element (cursor));
+
+					write_text_properties (text);
+
 					text_end;
 				end write_text;
 				
@@ -2014,6 +2061,7 @@ package body et_module_write is
 			
 
 			
+
 			procedure write_stencil is
 				use et_stencil;
 			begin			
@@ -2038,17 +2086,25 @@ package body et_module_write is
 
 
 			
+
 			procedure write_stop_mask is
 				use et_stopmask;
 				use pac_stop_texts;
+
 				
-				procedure write_text (cursor : in pac_stop_texts.cursor) is begin
+				procedure write_text (cursor : in pac_stop_texts.cursor) is 
+					text : type_stop_text renames element (cursor);
+				begin
 					text_begin;
+
 					write (keyword => keyword_content, wrap => true,
 						parameters => to_string (element (cursor).content));
-					write_text_properties (element (cursor));
+
+					write_text_properties (text);
+
 					text_end;
 				end write_text;
+
 
 			begin
 				section_mark (section_stopmask, HEADER);
@@ -2073,6 +2129,8 @@ package body et_module_write is
 			end write_stop_mask;
 
 
+
+
 			procedure write_keepout is
 				use et_keepout;
 			begin
@@ -2092,6 +2150,7 @@ package body et_module_write is
 			end write_keepout;
 
 			
+
 			procedure write_route_restrict is begin
 				section_mark (section_route_restrict, HEADER);
 				iterate (element (module_cursor).board.route_restrict.lines, write_line'access);
@@ -2103,12 +2162,14 @@ package body et_module_write is
 			end write_route_restrict;
 
 
+
 			procedure write_via_restrict is begin
 				section_mark (section_via_restrict, HEADER);
 				iterate (element (module_cursor).board.via_restrict.contours, write_contour'access);
 				iterate (element (module_cursor).board.via_restrict.cutouts, write_cutout'access);
 				section_mark (section_via_restrict, FOOTER);
 			end write_via_restrict;
+
 
 
 			procedure Write_conductors is begin

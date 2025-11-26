@@ -36,6 +36,11 @@
 --
 --   history of changes:
 --
+-- ToDo:
+-- - clean up
+-- - simplify code
+-- - separate schematic and board stuff in et_module_write.board/schematic
+--
 
 with ada.text_io;					use ada.text_io;
 with ada.characters;				use ada.characters;
