@@ -41,9 +41,20 @@ with cairo;						use cairo;
 
 package et_colors is
 
+	function to_string (
+		col_range : in color_range)
+		return string;
+
+
 	type type_color is record
 		red, green, blue : color_range := 0.0;
 	end record;
+
+
+	function to_string (
+		color	: in type_color)
+		return string;
+	
 
 
 	white		: constant type_color := (1.0, 1.0, 1.0);

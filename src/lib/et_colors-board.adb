@@ -38,6 +38,7 @@
 --
 --   ToDo: 
 
+with ada.text_io;					use ada.text_io;
 
 with glib;
 with cairo.pattern;
@@ -170,6 +171,34 @@ package body et_colors.board is
 
 
 
+	
+
+	procedure set_brightness (
+		brightness	: in type_brightness)
+	is 
+		c : type_color;
+	begin
+		-- If the given brightness differes from the
+		-- current brightness, then do the following.
+		-- Otherwise do nothing here:
+		if brightness /= current_foreground_brightness then
+
+			-- Dim or highlight the current color:
+			c := dim (current_foreground_color, brightness);
+
+			-- Apply the brightness modified color:
+			set_source_rgb (context, c.red, c.green, c.blue);
+			
+			-- Update global foreground brightness:
+			current_foreground_brightness := brightness;
+		end if;
+	end;
+
+
+
+	
+	
+
 	procedure set_color (
 		color		: in type_color;
 		brightness	: in type_brightness;
@@ -177,15 +206,26 @@ package body et_colors.board is
 	is 
 		c : type_color;
 	begin
+		-- Modify the given color by the given brightness:
 		case brightness is
 			when DARK 	=>	c := dim (color, dim_factor_dark);
 			when NORMAL	=>	c := dim (color, dim_factor_default);
 			when BRIGHT	=>	c := dim (color, dim_factor_bright);
 		end case;
 
+		-- Apply the modified color:
 		set_source_rgb (context, c.red, c.green, c.blue);
+
+		-- Update the global foreground color:
+		current_foreground_color := color;
+
+		-- Update the global foreground brightness:
+		current_foreground_brightness := brightness;
 	end set_color;
 
+
+
+	
 
 	
 	procedure set_color_frame (

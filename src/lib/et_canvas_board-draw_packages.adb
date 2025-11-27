@@ -222,7 +222,26 @@ procedure draw_packages is
 
 				-- A temporary text that will be drawn:
 				text : type_text_fab_with_content := (type_text_fab (ph) with others => <>);
+
+				-- This flag is required in order to restore
+				-- the previous brightness in case the placeholder is
+				-- to be drawn highlighted:
+				restore_normal_brightness : boolean := false;				
+
 			begin
+				-- 1. If the whole package is to be highlighted, then
+				--    the placeholder will also be drawn highlighted.
+				-- 2. If the package is not selected but only the placeholder,
+				--    then only the placeholder will be highlighted.
+				--    The normal brightness must be restored once the
+				--    placeholder has been drawn:
+				if is_selected (text) then
+					set_brightness (BRIGHT);
+					restore_normal_brightness := true;
+				end if;
+
+
+				
 				text.content := content;
 
 				case get_anchor_mode (ph) is
@@ -242,6 +261,14 @@ procedure draw_packages is
 						set_place (text, get_relative_position (ph, package_position));
 						draw_vector_text (text, mirror, get_position (package_position));
 				end case;
+
+
+				-- Restore the previous brightness if the placeholder
+				-- has been drawn highlighted:
+				if restore_normal_brightness then
+					set_brightness (NORMAL);
+				end if;
+
 			end;
 
 			

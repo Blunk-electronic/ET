@@ -150,7 +150,33 @@ package et_colors.board is
 
 
 
-	-- Sets the given color, brightness and opacity in the given context:
+	-- The foreground color for drawing objects frequently 
+	-- changes while complex objects are drawn.
+	-- After each color change the latest color is stored here
+	-- so that the current color can be inquired any time:
+	current_foreground_color : type_color;
+
+	-- Similar to the foreground color the latest 
+	-- brightness is stored here:
+	current_foreground_brightness : type_brightness := NORMAL;
+	
+
+	-- This procedure applies the given brightness to
+	-- the currently active color.
+	-- It updates the global variable current_foreground_brightness
+	-- accordingly:
+	procedure set_brightness (
+		brightness	: in type_brightness);
+
+
+	
+	-- This procedure
+	-- 1. Sets the given color, brightness and opacity 
+	--    in the current context.
+	-- 2. Updates the global variable current_foreground_color
+	--    with the given color.
+	-- 3. Updates the global variable current_foreground_brightness
+	--    with the given brightness:
 	procedure set_color (
 		color		: in type_color;
 		brightness	: in type_brightness;
