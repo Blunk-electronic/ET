@@ -1676,10 +1676,12 @@ procedure draw_packages is
 	
 	use et_device_name;
 
+
 	
 
 
-	
+	-- This procedure draws the package of an
+	-- electrical device:
 	procedure query_electrical_device (
 		name	: in type_device_name;
 		device	: in type_device_electrical)
@@ -1692,27 +1694,52 @@ procedure draw_packages is
 	begin
 		-- put_line ("device " & to_string (name));
 
-		device_name := name;
-		device_value := device.value;
-		device_purpose := device.purpose;
-		device_placeholders := device.placeholders;
-		
-		-- Get the cursor to the device model:
-		device_model_cursor := get_device_model_cursor (device.model);
+		-- Here we address only real devices (which have 
+		-- a physical representation in the board):
+		if is_real (device) then
 
-		-- Get the name of the package model:
-		package_model_name := get_package_model (device_model_cursor, device.variant);
+			-- If the device is selected then draw it highlighted:
+			if is_selected (device) then
+				brightness := BRIGHT;
+			else
+				brightness := NORMAL;
+			end if;
 
-		-- Send the actual package model to the draw procedure:
-		draw_package (
-			packge	=> pac_package_models.element (package_models, package_model_name));
-		
+
+			-- Fetch the complete position of the device
+			-- (incl. x/y/rotaton/face) from the database:
+			package_position := et_devices_electrical.packages.get_position (device);
+
+			if is_moving (device) then
+				-- Override package position by tool position:
+				package_position.place := get_object_tool_position;
+			end if;
+
+			
+			device_name := name;
+			device_value := device.value;
+			device_purpose := device.purpose;
+			device_placeholders := device.placeholders;
+			
+			-- Get the cursor to the device model:
+			device_model_cursor := get_device_model_cursor (device.model);
+
+			-- Get the name of the package model:
+			package_model_name := get_package_model (device_model_cursor, device.variant);
+
+			-- Send the actual package model to the draw procedure:
+			draw_package (
+				packge	=> pac_package_models.element (package_models, package_model_name));
+
+		end if;
 	end query_electrical_device;
 
 
 
-	
 
+	
+	-- This procedure draws the package of a
+	-- non-electrical device:
 	procedure query_non_electrical_device (
 		name	: in type_device_name;
 		device	: in type_device_non_electrical)
@@ -1721,6 +1748,23 @@ procedure draw_packages is
 	begin
 		-- put_line ("device " & to_string (name));	
 
+		-- If the device is selected then draw it highlighted:
+		if is_selected (device) then
+			brightness := BRIGHT;
+		else
+			brightness := NORMAL;
+		end if;
+
+		-- Fetch the complete position of the device
+		-- (incl. x/y/rotaton/face) from the database:
+		package_position := get_position (device);
+		
+		if is_moving (device) then
+			-- Override package position by tool position:
+			package_position.place := get_object_tool_position;
+		end if;
+
+		
 		device_name := name;
 		device_value := device.value;
 		device_purpose := device.purpose;
@@ -1735,7 +1779,9 @@ procedure draw_packages is
 
 
 	
-
+	
+	-- This procedure queries the active module and iterates
+	-- through the electrical and non-electrical devices:
 	procedure query_module (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module)
@@ -1759,57 +1805,18 @@ procedure draw_packages is
 		
 		-- Iterate electrical devices:
 		while has_element (cursor_electrical) loop
-
-			-- Here we address only real devices (which have 
-			-- a physical representation in the board):
-			if is_real (cursor_electrical) then
-
-				-- If the device is selected then draw it highlighted:
-				if is_selected (cursor_electrical) then
-					brightness := BRIGHT;
-				else
-					brightness := NORMAL;
-				end if;
-
-				-- Fetch the complete position of the device
-				-- (incl. x/y/rotaton/face) from the database:
-				package_position := get_position (cursor_electrical);
-
-				if is_moving (cursor_electrical) then
-					-- Override package position by tool position:
-					package_position.place := get_object_tool_position;
-				end if;
-
-				query_element (cursor_electrical, query_electrical_device'access);
-			end if;
-			
+			query_element (cursor_electrical, query_electrical_device'access);
 			next (cursor_electrical);
 		end loop;
 
 
 		if debug then
-			put_line (" non electrical devices");
+			put_line (" non-electrical devices");
 		end if;
 
 		
 		-- Iterate non-electrical devices:
 		while has_element (cursor_non_electrical) loop
-			-- If the device is selected then draw it highlighted:
-			if is_selected (cursor_non_electrical) then
-				brightness := BRIGHT;
-			else
-				brightness := NORMAL;
-			end if;
-
-			-- Fetch the complete position of the device
-			-- (incl. x/y/rotaton/face) from the database:
-			package_position := get_position (cursor_non_electrical);
-			
-			if is_moving (cursor_non_electrical) then
-				-- Override package position by tool position:
-				package_position.place := get_object_tool_position;
-			end if;
-			
 			query_element (cursor_non_electrical, query_non_electrical_device'access);
 			next (cursor_non_electrical);
 		end loop;
@@ -1819,6 +1826,7 @@ procedure draw_packages is
 
 
 
+	
 	procedure draw_device_being_added is
 		use et_canvas_board_devices;
 		use pac_package_models;
