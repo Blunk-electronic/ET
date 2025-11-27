@@ -130,12 +130,14 @@ package et_canvas.text is
 
 	
 	-- Draws a text. Draws the origin and vectorizes the text.
-	-- If the text has no content, then only the origin
-	-- will be drawn.
-	-- The argument pos contains the position and rotation
-	-- of the parent complex object.
-	-- In case there is no parent object then the pos argument
-	-- can be omitted which results in a default of (0;0) and 0 degree:
+	-- 1. If the text has no content, then only the origin
+	--    will be drawn.
+	-- 2. The argument pos contains the position and rotation
+	--    of the parent complex object.
+	-- 3. If the text is being moved (status flag of the text), 
+	--    then its position will be overridden by the tool position.
+	-- 4. In case there is no parent object then the pos argument
+	--    can be omitted which results in a default of (0;0) and 0 degree:
 	procedure draw_vector_text (
 		text			: in pac_text.type_text_fab_with_content'class;
 		mirror			: in type_mirror := MIRROR_NO;
