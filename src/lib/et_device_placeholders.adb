@@ -61,7 +61,7 @@ package body et_device_placeholders is
 		mode : in type_anchor_mode)
 		return string
 	is begin
-		return type_anchor_mode'image (mode);
+		return to_lower (type_anchor_mode'image (mode));
 	end;
 
 	

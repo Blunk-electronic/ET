@@ -93,7 +93,7 @@ package body et_device_placeholders.packages is
 		result := get_place (placeholder);
 		
 		case get_anchor_mode (placeholder) is
-			when ANCHOR_MODE_1 =>
+			when RELATIVE =>
 				-- "result" contains the position relative to
 				-- the package. It assumes that the package is
 				-- not rotated (as defined in the package model).
@@ -116,7 +116,7 @@ package body et_device_placeholders.packages is
 				move_by (result, get_place (package_position));
 
 				
-			when ANCHOR_MODE_2 =>
+			when ABSOLUTE =>
 				null;
 				-- "result" contains already the absolute
 				-- position of the placeholder. Nothing else to do.
@@ -138,14 +138,14 @@ package body et_device_placeholders.packages is
 		result : type_vector_model;
 	begin
 		case get_anchor_mode (placeholder) is
-			when ANCHOR_MODE_1 =>
+			when RELATIVE =>
 				-- If the given placeholder
 				-- is already positioned relative to the 
 				-- package position its position
 				-- can be copied as it is:
 				result := get_place (placeholder);
 				
-			when ANCHOR_MODE_2 =>
+			when ABSOLUTE =>
 				-- If the given placeholder is positioned
 				-- absolute, then the distance from package position
 				-- to placeholder position must be computed first:
@@ -458,7 +458,7 @@ package body et_device_placeholders.packages is
 			begin
 				-- put_line ("move relative " & to_string (point));
 
-				set_anchor_mode (p, ANCHOR_MODE_1);
+				set_anchor_mode (p, RELATIVE);
 				set_place (p, point);
 				
 -- 				CS: This is experimental stuff. It moves the placeholder
@@ -494,7 +494,7 @@ package body et_device_placeholders.packages is
 			procedure move_absolute is begin
 				-- put_line ("move absolute");
 				
-				set_anchor_mode (p, ANCHOR_MODE_2);
+				set_anchor_mode (p, ABSOLUTE);
 				set_place (p, point);
 				
 				-- put_line ("new " & to_string (get_place (p)));

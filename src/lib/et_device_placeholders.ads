@@ -86,12 +86,12 @@ package et_device_placeholders is
 		-- origin of the complex parent object.
 		-- If the object is moved or rotated, then the 
 		-- placeholder moves along:
-		ANCHOR_MODE_1,
+		RELATIVE,
 		
 		-- The placeholder position is absolute, independend
 		-- of the parent object position. So the placeholder is completely
 		-- disconnected from the object:
-		ANCHOR_MODE_2);
+		ABSOLUTE);
 
 
 

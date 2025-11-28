@@ -69,7 +69,7 @@ package et_device_placeholders.packages is
 	
 	type type_text_placeholder is new type_text_fab with record
 		meaning		: type_placeholder_meaning := NAME;
-		anchor_mode	: type_anchor_mode := ANCHOR_MODE_1;
+		anchor_mode	: type_anchor_mode := RELATIVE;
 	end record;
 
 	

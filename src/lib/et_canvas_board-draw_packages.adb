@@ -245,12 +245,12 @@ procedure draw_packages is
 				text.content := content;
 
 				case get_anchor_mode (ph) is
-					when ANCHOR_MODE_1 =>
+					when RELATIVE =>
 						-- If the placeholder is anchored relatively to the package,
 						-- then the package position (incl. rotation) must be taken into account.
 						draw_vector_text (text, mirror, get_position (package_position));
 
-					when ANCHOR_MODE_2 =>
+					when ABSOLUTE =>
 						-- If the placeholder is anchored with absolute coordinates,
 						-- then the coordinates must be converted back to relative coordinates.
 						-- The text is assigned with the relative coordinates and then
