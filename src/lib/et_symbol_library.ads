@@ -66,19 +66,19 @@ package et_symbol_library is
 	-- symbol name (like "libraries/symbols/nand.sym")
 	-- is also the key to the symbol library:
 	
-	package pac_symbols is new indefinite_ordered_maps (
+	package pac_symbol_models is new indefinite_ordered_maps (
 		key_type		=> pac_symbol_model_file.bounded_string,
 		"<"				=> pac_symbol_model_file."<",
 		element_type	=> type_symbol);
 
-	use pac_symbols;
+	use pac_symbol_models;
 
 
 
 	
 	-- THIS IS THE RIG WIDE LIBRARY OF SYMBOLS:
 	
-	symbol_library : pac_symbols.map;
+	symbol_library : pac_symbol_models.map;
 
 
 	-- Creates a symbol and stores it in symbol library:
@@ -97,18 +97,18 @@ package et_symbol_library is
 	-- set to no_element:
 	procedure get_symbol_model (
 		model_file	: in pac_symbol_model_file.bounded_string;
-		cursor		: in out pac_symbols.cursor);
+		cursor		: in out pac_symbol_models.cursor);
 	
 		
 	-- Returns true if the given symbol will be part of a real device:
 	function is_real (
-		symbol : in pac_symbols.cursor)
+		symbol : in pac_symbol_models.cursor)
 		return boolean;
 
 
 	-- Returns the x/y-positions of the given symbol:
 	function get_port_positions (
-		symbol	: in pac_symbols.cursor)
+		symbol	: in pac_symbol_models.cursor)
 		return pac_points.list;
 
 
@@ -117,7 +117,7 @@ package et_symbol_library is
 	-- If the symbol represents a virtual device,
 	-- then default placeholders are returned:
 	function get_placeholders (
-		symbol	: in pac_symbols.cursor)
+		symbol	: in pac_symbol_models.cursor)
 		return type_text_placeholders;
 
 
@@ -130,14 +130,14 @@ package et_symbol_library is
 	-- placeholders of a unit in the schematic.
 	-- It translates according to the rotation given by destination:
 	function get_default_placeholders (
-		symbol_cursor	: in pac_symbols.cursor;
+		symbol_cursor	: in pac_symbol_models.cursor;
 		destination		: in type_object_position) -- x/y/rotation of the unit
 		return type_text_placeholders;
 
 
 	
 	function get_symbol (
-		symbol	: in pac_symbols.cursor)
+		symbol	: in pac_symbol_models.cursor)
 		return type_symbol;
 
 							

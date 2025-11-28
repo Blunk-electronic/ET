@@ -1016,7 +1016,7 @@ procedure draw_units is
 			-- Depends on the tool used for placing the unit:
 			destination : type_vector_model := get_primary_tool_position;
 			
-			symbol_cursor : pac_symbols.cursor;
+			symbol_cursor : pac_symbol_models.cursor;
 		begin
 			-- The whole unit will be drawn highlighted:
 			brightness := BRIGHT;
@@ -1082,7 +1082,7 @@ procedure draw_units is
 			-- Depends on the tool used for placing the unit:
 			destination : type_vector_model := get_primary_tool_position;
 
-			symbol_cursor : pac_symbols.cursor;			
+			symbol_cursor : pac_symbol_models.cursor;			
 		begin	
 			-- The whole unit will be drawn highlighted:
 			brightness := BRIGHT;

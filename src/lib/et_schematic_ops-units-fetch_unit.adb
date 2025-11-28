@@ -161,9 +161,9 @@ is
 			is
 				use et_symbol_name;
 				use et_symbol_library;
-				use pac_symbols;
+				use pac_symbol_models;
 				placeholders : type_text_placeholders;
-				symbol_cursor : pac_symbols.cursor;
+				symbol_cursor : pac_symbol_models.cursor;
 				symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
 			begin
 				log (text => "fetch external unit " 

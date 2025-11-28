@@ -219,7 +219,7 @@ package et_device_model is
 	-- in the symbol library:
 	function get_symbol (
 		unit	: in pac_units_external.cursor)
-		return pac_symbols.cursor;
+		return pac_symbol_models.cursor;
 	
 
 

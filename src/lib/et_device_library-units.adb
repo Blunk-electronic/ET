@@ -433,7 +433,7 @@ package body et_device_library.units is
 		model_name : pac_symbol_model_file.bounded_string;
 		-- like libraries/symbols/NAND.sym
 		
-		symbol_cursor : pac_symbols.cursor;
+		symbol_cursor : pac_symbol_models.cursor;
 	begin
 		case unit.ext_int is
 			when EXT =>
@@ -444,7 +444,7 @@ package body et_device_library.units is
 				model_name := element (unit.external).model;
 				get_symbol_model (model_name, symbol_cursor);
 
-				return pac_symbols.element (symbol_cursor);
+				return pac_symbol_models.element (symbol_cursor);
 
 			when INT =>
 				-- put_line ("internal unit");
@@ -501,8 +501,8 @@ package body et_device_library.units is
 			is
 				use et_symbol_name;
 				use et_symbol_library;
-				use pac_symbols;
-				symbol_cursor : pac_symbols.cursor;
+				use pac_symbol_models;
+				symbol_cursor : pac_symbol_models.cursor;
 
 				procedure query_ports (
 					file	: in pac_symbol_model_file.bounded_string; -- ../libraries/symbols/NAND.sym

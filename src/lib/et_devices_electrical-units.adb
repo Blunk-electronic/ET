@@ -742,8 +742,8 @@ package body et_devices_electrical.units is
 
 				-- Fetch the ports of the external unit.
 				-- CS: constraint_error arises here if symbol model could not be located.
-				pac_symbols.query_element (
-					position	=> pac_symbols.find (symbol_library, sym_model),
+				pac_symbol_models.query_element (
+					position	=> pac_symbol_models.find (symbol_library, sym_model),
 					process		=> query_symbol'access);
 			else
 				unit_status := INT;

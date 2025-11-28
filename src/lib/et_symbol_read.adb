@@ -101,7 +101,7 @@ package body et_symbol_read is
 		symbol_circle		: type_symbol_circle;
 		symbol_text_base	: type_text_basic;
 
-		symbol_cursor		: pac_symbols.cursor;
+		symbol_cursor		: pac_symbol_models.cursor;
 		symbol_inserted		: boolean;
 		
 		symbol_text_position		: type_vector_model;
@@ -777,7 +777,7 @@ package body et_symbol_read is
 		
 		-- test if container et_symbol_model.symbols already contains the symbol
 		-- named "file_name". If so, there would be no need to read the file_name again.
-		if pac_symbols.contains (symbol_library, file_name) then
+		if pac_symbol_models.contains (symbol_library, file_name) then
 			log (text => "already read -> skipped", level => log_threshold + 1);
 		else
 			
@@ -817,7 +817,7 @@ package body et_symbol_read is
 			close (file_handle);
 
 			-- Insert the symbol (accessed by pointer symbol) in et_symbol_model.symbols:
-			pac_symbols.insert (
+			pac_symbol_models.insert (
 				container	=> symbol_library, 
 				key			=> file_name, -- libraries/symbols/nand.sym
 				position	=> symbol_cursor,

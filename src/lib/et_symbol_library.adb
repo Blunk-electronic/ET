@@ -41,18 +41,14 @@ with ada.text_io;				use ada.text_io;
 -- with ada.exceptions; 			use ada.exceptions;
 
 
-
 package body et_symbol_library is
-
 	
 
 	procedure create_symbol (
 		symbol_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		appearance		: in type_appearance;
 		log_threshold	: in type_log_level) 
-	is
-		use pac_symbols;
-	begin
+	is begin
 		log (text => "creating symbol " & to_string (symbol_name) & " ...", level => log_threshold);
 		log_indentation_up;
 		log (text => "appearance " & to_string (appearance) & " ...", level => log_threshold);
@@ -87,7 +83,7 @@ package body et_symbol_library is
 	
 	procedure get_symbol_model (
 		model_file	: in pac_symbol_model_file.bounded_string;
-		cursor		: in out pac_symbols.cursor)
+		cursor		: in out pac_symbol_models.cursor)
 	is begin
 		cursor := symbol_library.find (model_file);
 	end;
@@ -97,7 +93,7 @@ package body et_symbol_library is
 	
 	
 	function is_real (
-		symbol : in pac_symbols.cursor)
+		symbol : in pac_symbol_models.cursor)
 		return boolean
 	is begin
 		case element (symbol).appearance is
@@ -109,7 +105,7 @@ package body et_symbol_library is
 
 
 	function get_port_positions (
-		symbol	: in pac_symbols.cursor)
+		symbol	: in pac_symbol_models.cursor)
 		return pac_points.list
 	is begin
 		return get_port_positions (element (symbol));
@@ -119,7 +115,7 @@ package body et_symbol_library is
 
 
 	function get_placeholders (
-		symbol : in pac_symbols.cursor)
+		symbol : in pac_symbol_models.cursor)
 		return type_text_placeholders
 	is 
 		sym : type_symbol renames element (symbol);
@@ -135,12 +131,10 @@ package body et_symbol_library is
 
 	
 	function get_default_placeholders (
-		symbol_cursor	: in pac_symbols.cursor;
+		symbol_cursor	: in pac_symbol_models.cursor;
 		destination		: in type_object_position)
 		return type_text_placeholders
 	is
-		use pac_symbols;
-
 		sym : type_symbol renames element (symbol_cursor);
 		
 		r : type_text_placeholders; -- to be returned
@@ -161,7 +155,7 @@ package body et_symbol_library is
 
 
 	function get_symbol (
-		symbol	: in pac_symbols.cursor)
+		symbol	: in pac_symbol_models.cursor)
 		return type_symbol
 	is begin
 		return element (symbol);

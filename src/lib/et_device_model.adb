@@ -173,8 +173,8 @@ package body et_device_model is
 
 		-- Fetch the ports of the external unit.
 		-- CS: constraint_error arises here if symbol model could not be located.
-		pac_symbols.query_element (
-			position	=> pac_symbols.find (symbol_library, sym_model),
+		pac_symbol_models.query_element (
+			position	=> pac_symbol_models.find (symbol_library, sym_model),
 			process		=> query_symbol'access);
 		
 		return result;
@@ -197,9 +197,9 @@ package body et_device_model is
 	
 	function get_symbol (
 		unit	: in pac_units_external.cursor)
-		return pac_symbols.cursor
+		return pac_symbol_models.cursor
 	is
-		result : pac_symbols.cursor;
+		result : pac_symbol_models.cursor;
 		symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
 	begin
 		symbol_file := get_symbol_model_file (unit);
@@ -225,7 +225,7 @@ package body et_device_model is
 
 		-- The cursor of the actual symbol in
 		-- the symbol library:
-		sym_cursor : pac_symbols.cursor;
+		sym_cursor : pac_symbol_models.cursor;
 	
 	begin
 		-- If the given cursor points to a unit, then
