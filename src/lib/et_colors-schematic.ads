@@ -46,7 +46,7 @@ package et_colors.schematic is
 	use et_canvas_schematic.pac_canvas;
 	-- The global context is now visible
 	-- for all procedures that set the color.
-	-- CS remove the useless argument "context".
+
 	
 	cursor			: type_color := white;
 	background 		: type_color := black;
@@ -59,9 +59,11 @@ package et_colors.schematic is
 	submodules		: type_color := mangenta;
 	symbols			: type_color := red;
 	texts			: type_color := turquise;
+
 	
-	procedure set_color_cursor (context : in cairo_context);	
-	procedure set_color_background (context : in cairo_context);
+	procedure set_color_cursor;	
+	
+	procedure set_color_background;
 
 
 	-- Sets the given color, brightness and opacity in the given context:

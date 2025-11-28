@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -39,15 +39,18 @@
 
 package body et_colors.schematic is
 
-	procedure set_color_cursor (context : in cairo_context) is begin		
+	
+	procedure set_color_cursor is begin		
 		set_source_rgb (
 			context, 
 			cursor.red,
 			cursor.green,
 			cursor.blue);
 	end set_color_cursor;
+
+
 	
-	procedure set_color_background (context : in cairo_context) is begin
+	procedure set_color_background is begin
 		set_source_rgb (
 			context, 
 			background.red,
@@ -75,6 +78,7 @@ package body et_colors.schematic is
 
 
 	
+	
 	procedure set_color_frame (
 		brightness	: in type_brightness := brightness_default)
 	is begin
@@ -96,6 +100,8 @@ package body et_colors.schematic is
 		set_color (nets, brightness);
 	end set_color_nets;
 
+
+
 	
 	procedure set_color_origin (
 		brightness	: in type_brightness := brightness_default)
@@ -105,6 +111,8 @@ package body et_colors.schematic is
 		
 		set_color (origin, brightness);
 	end set_color_origin;
+
+
 
 	
 	procedure set_color_placeholders (
@@ -116,6 +124,8 @@ package body et_colors.schematic is
 		set_color (placeholders, brightness);
 	end set_color_placeholders;
 
+
+
 	
 	procedure set_color_ports (
 		brightness	: in type_brightness := brightness_default)
@@ -126,6 +136,8 @@ package body et_colors.schematic is
 		set_color (ports, brightness);
 	end set_color_ports;
 
+
+	
 	
 	procedure set_color_submodules (
 		brightness	: in type_brightness := brightness_default)
@@ -136,6 +148,8 @@ package body et_colors.schematic is
 		set_color (submodules, brightness);
 	end set_color_submodules;
 
+
+	
 	
 	procedure set_color_symbols (
 		brightness	: in type_brightness := brightness_default)
@@ -146,6 +160,8 @@ package body et_colors.schematic is
 		set_color (symbols, brightness);
 	end set_color_symbols;
 
+
+	
 	
 	procedure set_color_texts (
 		brightness	: in type_brightness := brightness_default)
@@ -155,6 +171,8 @@ package body et_colors.schematic is
 		
 		set_color (texts, brightness);
 	end set_color_texts;
+
+
 	
 end et_colors.schematic;
 
