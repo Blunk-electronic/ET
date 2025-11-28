@@ -160,7 +160,7 @@ package et_devices_electrical is
 	-- cursor to device model (in library):
 	function get_device_model (
 		device : in type_device_electrical)
-		return pac_devices_lib.cursor;
+		return pac_device_models.cursor;
 
 
 
@@ -222,7 +222,7 @@ package et_devices_electrical is
 	-- cursor to device model (in library):
 	function get_device_model (
 		device : in pac_devices_electrical.cursor)
-		return pac_devices_lib.cursor;
+		return pac_device_models.cursor;
 
 	
 

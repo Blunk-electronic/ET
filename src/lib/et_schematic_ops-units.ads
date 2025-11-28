@@ -73,7 +73,7 @@ package et_schematic_ops.units is
 	function get_device_model (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return pac_devices_lib.cursor;
+		return pac_device_models.cursor;
 	
 	
 	-- Returns the name of the device model of the

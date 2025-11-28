@@ -56,7 +56,7 @@ package body et_device_library.packages is
 	
 
 	function get_package_variant (
-		device_cursor	: in pac_devices_lib.cursor;
+		device_cursor	: in pac_device_models.cursor;
 		variant			: in pac_package_variant_name.bounded_string)
 		return pac_package_variants.cursor
 	is 
@@ -90,7 +90,7 @@ package body et_device_library.packages is
 	
 	
 	function is_variant_available (
-		device_cursor	: in pac_devices_lib.cursor;
+		device_cursor	: in pac_device_models.cursor;
 		variant			: in pac_package_variant_name.bounded_string)  -- D, N
 		return boolean is
 		
@@ -106,7 +106,7 @@ package body et_device_library.packages is
 		end;
 		
 	begin
-		pac_devices_lib.query_element (
+		pac_device_models.query_element (
 			position	=> device_cursor,
 			process		=> query_variants'access);
 		
@@ -117,7 +117,7 @@ package body et_device_library.packages is
 	
 
 	function get_available_variants (
-		device_cursor	: in pac_devices_lib.cursor)
+		device_cursor	: in pac_device_models.cursor)
 		return pac_package_variants.map
 	is
 		result : pac_package_variants.map; -- to be returned
@@ -136,7 +136,7 @@ package body et_device_library.packages is
 
 
 	function get_first_package_variant (
-		device_cursor : in pac_devices_lib.cursor)
+		device_cursor : in pac_device_models.cursor)
 		return pac_package_variant_name.bounded_string
 	is
 		device_model : type_device_model renames element (device_cursor);
@@ -152,7 +152,7 @@ package body et_device_library.packages is
 	
 	
 	function get_package_model (
-		device_cursor	: in pac_devices_lib.cursor;
+		device_cursor	: in pac_device_models.cursor;
 		variant			: in pac_package_variant_name.bounded_string)
 		return pac_package_model_file.bounded_string 
 	is
@@ -170,7 +170,7 @@ package body et_device_library.packages is
 		end;
 		
 	begin
-		pac_devices_lib.query_element (
+		pac_device_models.query_element (
 			position	=> device_cursor,
 			process		=> query_variants'access);
 
@@ -185,7 +185,7 @@ package body et_device_library.packages is
 
 
 	function get_default_placeholders (
-		device	: in pac_devices_lib.cursor;
+		device	: in pac_device_models.cursor;
 		variant	: in pac_package_variant_name.bounded_string)
 		return type_text_placeholders
 	is

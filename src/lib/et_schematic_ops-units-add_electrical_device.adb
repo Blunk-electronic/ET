@@ -60,8 +60,8 @@ procedure add_electrical_device (
 is	
 	use pac_package_variant_name;
 	
-	use pac_devices_lib;
-	device_cursor_lib : pac_devices_lib.cursor; -- points to the device in the library
+	use pac_device_models;
+	device_cursor_lib : pac_device_models.cursor; -- points to the device in the library
 
 	-- The next available device name:
 	next_name : type_device_name;

@@ -59,7 +59,7 @@ package et_device_library.packages is
 	-- If the package variant is not defined in the model, then
 	-- then the result is no_element:
 	function get_package_variant (
-		device_cursor	: in pac_devices_lib.cursor;
+		device_cursor	: in pac_device_models.cursor;
 		variant			: in pac_package_variant_name.bounded_string)  -- D, N
 		return pac_package_variants.cursor;
 
@@ -68,7 +68,7 @@ package et_device_library.packages is
 	-- Returns true if given device provides the given package variant.								   
 	-- The given device must be real. Means appearance SCH_PCB.
 	function is_variant_available (
-		device_cursor	: in pac_devices_lib.cursor;
+		device_cursor	: in pac_device_models.cursor;
 		variant			: in pac_package_variant_name.bounded_string)  -- D, N
 		return boolean;
 
@@ -77,7 +77,7 @@ package et_device_library.packages is
 	-- Returns a list of available variants of the given device.
 	-- If the device is virtual, then an empty list will be returned.
 	function get_available_variants (
-		device_cursor	: in pac_devices_lib.cursor)
+		device_cursor	: in pac_device_models.cursor)
 		return pac_package_variants.map;
 	
 
@@ -86,7 +86,7 @@ package et_device_library.packages is
 	-- The model must be a model of a real device. Otherwise
 	-- an exception will be raised:
 	function get_first_package_variant (
-		device_cursor : in pac_devices_lib.cursor)
+		device_cursor : in pac_device_models.cursor)
 		return pac_package_variant_name.bounded_string;
 
 
@@ -96,7 +96,7 @@ package et_device_library.packages is
 	-- Returns the name of the package model of the given device according to the given variant.
 	-- The given device must be real. Means appearance SCH_PCB.							  
 	function get_package_model (
-		device_cursor	: in pac_devices_lib.cursor;
+		device_cursor	: in pac_device_models.cursor;
 		variant			: in pac_package_variant_name.bounded_string) -- D, N
 		return pac_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 
@@ -104,7 +104,7 @@ package et_device_library.packages is
 	-- 	function terminal_name (
 -- 	-- Returns the name of the terminal name of the given device according to the given variant.
 -- 	-- The given device must be real. Means appearance SCH_PCB.							  
--- 		device_cursor	: in pac_devices_lib.cursor;
+-- 		device_cursor	: in pac_device_models.cursor;
 -- 		port_name		: in pac_port_name.bounded_string;
 -- 		variant			: in pac_package_variant_name.bounded_string) -- D, N
 -- 		return pac_terminal_name.bounded_string; -- 14, H4
@@ -117,7 +117,7 @@ package et_device_library.packages is
 	-- The package is indirectly selected by the given variant name.
 	-- The given device is accessed by the given device cursor.
 	function get_default_placeholders (
-		device	: in pac_devices_lib.cursor;
+		device	: in pac_device_models.cursor;
 		variant	: in pac_package_variant_name.bounded_string) -- N, D, S_0805
 		return type_text_placeholders;
 

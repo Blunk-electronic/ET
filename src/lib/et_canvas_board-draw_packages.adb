@@ -1716,7 +1716,7 @@ procedure draw_packages is
 	is
 		-- The cursor to the actual device model:
 		use et_device_library;
-		device_model_cursor : pac_devices_lib.cursor;
+		device_model_cursor : pac_device_models.cursor;
 
 		package_model_name : pac_package_model_file.bounded_string;
 	begin

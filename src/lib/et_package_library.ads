@@ -183,6 +183,8 @@ package et_package_library is
 		return pac_package_model_file.bounded_string;
 
 
+
+
 	
 	
 	-- THIS IS THE RIG WIDE PACKAGE (FOOTPRINT) LIBRARY:
@@ -191,6 +193,8 @@ package et_package_library is
 
 
 
+
+	
 
 	-- Creates a package and stores it in the package library:
 	procedure create_package (

@@ -59,7 +59,7 @@ package body et_device_library.units is
 	
 	
 	function provides_unit (
-		device_cursor	: in pac_devices_lib.cursor;
+		device_cursor	: in pac_device_models.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return boolean
 	is
@@ -90,10 +90,10 @@ package body et_device_library.units is
 		-- First search among internal units.
 		-- If not found there, search among external units.
 		
-		pac_devices_lib.query_element (device_cursor, query_internal'access);
+		pac_device_models.query_element (device_cursor, query_internal'access);
 
 		if not found then
-			pac_devices_lib.query_element (device_cursor, query_external'access);
+			pac_device_models.query_element (device_cursor, query_external'access);
 		end if;
 		
 		return found;
@@ -105,7 +105,7 @@ package body et_device_library.units is
 	
 	
 	function get_first_unit (
-		device_cursor : in pac_devices_lib.cursor) 
+		device_cursor : in pac_device_models.cursor) 
 		return type_device_units
 	is
 		cursors : type_device_units; -- to be returned
@@ -231,7 +231,7 @@ package body et_device_library.units is
 	
 
 	function get_first_unit (
-		device_cursor : in pac_devices_lib.cursor) 
+		device_cursor : in pac_device_models.cursor) 
 		return pac_unit_name.bounded_string
 	is
 		fu : constant type_device_units := get_first_unit (device_cursor);
@@ -267,7 +267,7 @@ package body et_device_library.units is
 	
 	
 	function get_unit (
-		device_cursor	: in pac_devices_lib.cursor;
+		device_cursor	: in pac_device_models.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return type_device_units 
 	is
@@ -332,7 +332,7 @@ package body et_device_library.units is
 	
 	
 	function get_all_units (
-		device_cursor	: in pac_devices_lib.cursor)
+		device_cursor	: in pac_device_models.cursor)
 		return pac_unit_names.list
 	is
 		result : pac_unit_names.list; -- to be returned
@@ -362,7 +362,7 @@ package body et_device_library.units is
 
 	
 	function get_unit_count (
-		device_cursor	: in pac_devices_lib.cursor)
+		device_cursor	: in pac_device_models.cursor)
 		return type_unit_count 
 	is begin
 		return get_unit_count (element (device_cursor));
@@ -375,7 +375,7 @@ package body et_device_library.units is
 
 	
 	function locate_unit (
-		device_cursor	: in pac_devices_lib.cursor;
+		device_cursor	: in pac_device_models.cursor;
 		unit_name		: in pac_unit_name.bounded_string) -- like "I/O-Bank 3"
 		return type_unit_cursors 
 	is
@@ -407,7 +407,7 @@ package body et_device_library.units is
 		end;
 		
 	begin -- locate_unit
-		--put_line (to_string (pac_devices_lib.key (device_cursor)));
+		--put_line (to_string (pac_device_models.key (device_cursor)));
 
 		query_element (device_cursor, query_units'access);
 
@@ -464,7 +464,7 @@ package body et_device_library.units is
 	
 
 	function get_properties (
-		device_cursor	: in pac_devices_lib.cursor;
+		device_cursor	: in pac_device_models.cursor;
 		port_name		: in pac_port_name.bounded_string)
 		return pac_symbol_ports.cursor 
 	is
@@ -573,7 +573,7 @@ package body et_device_library.units is
 
 
 	function get_ports_of_unit (
-		device_cursor	: in pac_devices_lib.cursor;
+		device_cursor	: in pac_device_models.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return pac_symbol_ports.map 
 	is

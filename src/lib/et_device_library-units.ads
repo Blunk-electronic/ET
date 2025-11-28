@@ -64,7 +64,7 @@ package et_device_library.units is
 	-- Returns true if the given device (via a cursor) 
 	-- does provide the given unit.
 	function provides_unit (
-		device_cursor	: in pac_devices_lib.cursor;
+		device_cursor	: in pac_device_models.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return boolean;
 
@@ -80,7 +80,7 @@ package et_device_library.units is
 	--  If no suitable external unit found, the cursor of external
 	-- units in the return is no_element.
 	function get_first_unit (
-		device_cursor : in pac_devices_lib.cursor) 
+		device_cursor : in pac_device_models.cursor) 
 		return type_device_units;
 
 
@@ -88,7 +88,7 @@ package et_device_library.units is
 	-- Returns the name of the first unit.
 	-- It can be an internal or an external unit.
 	function get_first_unit (
-		device_cursor : in pac_devices_lib.cursor) 
+		device_cursor : in pac_device_models.cursor) 
 		return pac_unit_name.bounded_string;
 
 
@@ -96,7 +96,7 @@ package et_device_library.units is
 							
 	-- Returns the cursor of the desired internal or external unit.
 	function get_unit (
-		device_cursor	: in pac_devices_lib.cursor;
+		device_cursor	: in pac_device_models.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return type_device_units;
 
@@ -109,7 +109,7 @@ package et_device_library.units is
 	
 	-- Returns a list of all unit names of the given device:
 	function get_all_units (
-		device_cursor	: in pac_devices_lib.cursor)
+		device_cursor	: in pac_device_models.cursor)
 		return pac_unit_names.list;
 
 
@@ -117,7 +117,7 @@ package et_device_library.units is
 	-- Returns the total number of units
 	-- that the given device model provides:
 	function get_unit_count (
-		device_cursor	: in pac_devices_lib.cursor)
+		device_cursor	: in pac_device_models.cursor)
 		return type_unit_count;
 
 	
@@ -144,7 +144,7 @@ package et_device_library.units is
 	-- Searches the given unit in the given device. Returns a cursor to 
 	-- either the internal or external unit.
 	function locate_unit (
-		device_cursor	: in pac_devices_lib.cursor;
+		device_cursor	: in pac_device_models.cursor;
 		unit_name		: in pac_unit_name.bounded_string) -- like "I/O-Bank 3"
 		return type_unit_cursors;
 
@@ -166,7 +166,7 @@ package et_device_library.units is
 	
 	-- Returns the properties of the given port of the given device.
 	function get_properties (
-		device_cursor	: in pac_devices_lib.cursor;
+		device_cursor	: in pac_device_models.cursor;
 		port_name		: in pac_port_name.bounded_string)
 		return pac_symbol_ports.cursor;
 
@@ -179,7 +179,7 @@ package et_device_library.units is
 	-- The coordinates of the ports are the default x/y-positions relative
 	-- to the origin of the unit as they are defined in the symbol model.
 	function get_ports_of_unit (
-		device_cursor	: in pac_devices_lib.cursor;
+		device_cursor	: in pac_device_models.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return pac_symbol_ports.map;
 

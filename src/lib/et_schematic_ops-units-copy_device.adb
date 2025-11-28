@@ -64,7 +64,7 @@ is
 	device_cursor_sch : pac_devices_electrical.cursor;
 
 	-- The pointer to the device model:		
-	device_cursor_lib : pac_devices_lib.cursor;
+	device_cursor_lib : pac_device_models.cursor;
 		
 	-- The next available device name:
 	next_name : type_device_name;

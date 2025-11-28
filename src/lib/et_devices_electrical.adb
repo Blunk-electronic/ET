@@ -88,7 +88,7 @@ package body et_devices_electrical is
 
 	function get_device_model (
 		device : in type_device_electrical)
-		return pac_devices_lib.cursor
+		return pac_device_models.cursor
 	is
 		use et_device_model_names;
 		model_file : pac_device_model_file.bounded_string;
@@ -113,7 +113,7 @@ package body et_devices_electrical is
 		return pac_package_model_file.bounded_string
 	is
 		use et_device_library.packages;
-		device_cursor_lib : pac_devices_lib.cursor;
+		device_cursor_lib : pac_device_models.cursor;
 	begin
 		-- Locate the device model in the device library
 		device_cursor_lib := get_device_model (device.model);
@@ -183,7 +183,7 @@ package body et_devices_electrical is
 
 	function get_device_model (
 		device : in pac_devices_electrical.cursor)
-		return pac_devices_lib.cursor
+		return pac_device_models.cursor
 	is
 		use et_device_model_names;
 		model_file : pac_device_model_file.bounded_string;
@@ -493,7 +493,7 @@ package body et_devices_electrical is
 		use et_device_library.packages;
 		use et_device_model_names;
 		device_model		: pac_device_model_file.bounded_string;
-		device_cursor_lib	: pac_devices_lib.cursor;
+		device_cursor_lib	: pac_device_models.cursor;
 		device_variant		: pac_package_variant_name.bounded_string; -- N, D
 	begin
 		-- CS: The device is located twice here. Consumes too much time.

@@ -846,7 +846,7 @@ procedure draw_units is
 			unit_cursor : pac_units.cursor := device.units.first;
 			
 			-- Get the device model of the candidate device:
-			device_cursor_lib : constant pac_devices_lib.cursor := get_device_model (device);
+			device_cursor_lib : constant pac_device_models.cursor := get_device_model (device);
 			
 			-- The number of units provided by the current device:
 			unit_count : constant type_unit_count := get_unit_count (device_cursor_lib);

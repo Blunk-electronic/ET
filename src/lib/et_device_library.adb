@@ -72,7 +72,7 @@ package body et_device_library is
 
 
 	function get_prefix (
-		cursor	: in pac_devices_lib.cursor)
+		cursor	: in pac_device_models.cursor)
 		return pac_device_prefix.bounded_string
 	is begin
 		return element (cursor).prefix;
@@ -82,7 +82,7 @@ package body et_device_library is
 	
 
 	function get_device_model_file (
-		cursor	: in pac_devices_lib.cursor)
+		cursor	: in pac_device_models.cursor)
 		return pac_device_model_file.bounded_string
 	is begin
 		return key (cursor);
@@ -97,7 +97,7 @@ package body et_device_library is
 		log_threshold	: in type_log_level) 
 	is
 		use et_string_processing;
-		use pac_devices_lib;
+		use pac_device_models;
 	begin
 		log (text => "creating device " & to_string (device_name) & " ...", level => log_threshold);
 		log_indentation_up;
@@ -133,9 +133,9 @@ package body et_device_library is
 
 	function get_device_model (
 		model : in pac_device_model_file.bounded_string)
-		return pac_devices_lib.cursor 
+		return pac_device_models.cursor 
 	is
-		cursor : pac_devices_lib.cursor := find (device_library, model);
+		cursor : pac_device_models.cursor := find (device_library, model);
 	begin
 		return cursor;
 	end;
@@ -146,7 +146,7 @@ package body et_device_library is
 
 	
 	function is_real (
-		device_cursor : in pac_devices_lib.cursor)
+		device_cursor : in pac_device_models.cursor)
 		return boolean
 	is begin
 		case element (device_cursor).appearance is
@@ -164,7 +164,7 @@ package body et_device_library is
 
 
 	function get_default_value (
-		device_cursor : in pac_devices_lib.cursor)
+		device_cursor : in pac_device_models.cursor)
 		return pac_device_value.bounded_string
 	is
 		device_model : type_device_model renames element (device_cursor);

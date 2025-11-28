@@ -3374,7 +3374,7 @@ package body et_kicad_to_native is
 				generic_name : et_kicad_libraries.type_component_generic_name.bounded_string; -- 7400
 				device_model : pac_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
 
-				device_cursor : pac_devices_lib.cursor;
+				device_cursor : pac_device_models.cursor;
 				inserted : boolean;
 
 
@@ -3820,7 +3820,7 @@ package body et_kicad_to_native is
 
 					case element (component_cursor).appearance is
 						when APPEARANCE_VIRTUAL =>
-							pac_devices_lib.insert (
+							pac_device_models.insert (
 								container	=> device_library,
 								position	=> device_cursor,
 								inserted	=> inserted,
@@ -3837,7 +3837,7 @@ package body et_kicad_to_native is
 						when APPEARANCE_PCB =>
 							--log (text => "variant count " & count_type'image (pac_package_variants.length (element (component_cursor).variants)));
 							
-							pac_devices_lib.insert (
+							pac_device_models.insert (
 								container	=> device_library,
 								position	=> device_cursor,
 								inserted	=> inserted,
@@ -3862,7 +3862,7 @@ package body et_kicad_to_native is
 								-- again because it had been done in ealier project conversions:
 								if inserted then
 									-- rename package model file name in variants
-									pac_devices_lib.update_element (
+									pac_device_models.update_element (
 										container	=> device_library,
 										position	=> device_cursor,
 										process		=> rename_package_model_in_variants'access);
@@ -3875,7 +3875,7 @@ package body et_kicad_to_native is
 					-- in this case. Copying units must not take place again:
 					if inserted then
 						-- Copy units.
-						pac_devices_lib.update_element (
+						pac_device_models.update_element (
 							container	=> device_library,
 							position	=> device_cursor,
 							process		=> copy_units'access);
@@ -4016,10 +4016,10 @@ package body et_kicad_to_native is
 			log_threshold	: in type_log_level) 
 		is
 			use et_string_processing;
-			use pac_devices_lib;
+			use pac_device_models;
 
 			
-			procedure save_device (device_cursor : in pac_devices_lib.cursor) is
+			procedure save_device (device_cursor : in pac_device_models.cursor) is
 			begin
 				et_device_write.write_device (
 					-- library name like: 

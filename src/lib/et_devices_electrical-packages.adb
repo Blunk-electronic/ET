@@ -217,7 +217,7 @@ package body et_devices_electrical.packages is
 	is
 		result : pac_package_variants.map;
 
-		device_cursor_lib : pac_devices_lib.cursor;
+		device_cursor_lib : pac_device_models.cursor;
 	begin
 		device_cursor_lib := get_device_model (device);
 
@@ -454,7 +454,7 @@ package body et_devices_electrical.packages is
 	procedure reset_placeholder_positions (
 		device		: in out type_device_electrical)
 	is 
-		cursor_lib : pac_devices_lib.cursor;
+		cursor_lib : pac_device_models.cursor;
 		default_placeholders : type_text_placeholders;
 	begin
 		-- Locate the device in the device library:
@@ -1187,8 +1187,8 @@ package body et_devices_electrical.packages is
 		use pac_terminals;
 
 		-- Get the cursor to the full device model in the library:
-		use pac_devices_lib;
-		device_model_lib : constant pac_devices_lib.cursor := get_device_model (device);
+		use pac_device_models;
+		device_model_lib : constant pac_device_models.cursor := get_device_model (device);
 
 		-- This is the name of the package variant used by the given device:
 		variant_sch : constant pac_package_variant_name.bounded_string :=

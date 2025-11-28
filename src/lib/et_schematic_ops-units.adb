@@ -131,7 +131,7 @@ package body et_schematic_ops.units is
 	function get_device_model (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return pac_devices_lib.cursor
+		return pac_device_models.cursor
 	is
 		cursor_sch : pac_devices_electrical.cursor;
 	begin
@@ -144,7 +144,7 @@ package body et_schematic_ops.units is
 		if has_element (cursor_sch) then
 			return get_device_model (cursor_sch);
 		else
-			return pac_devices_lib.no_element;
+			return pac_device_models.no_element;
 		end if;
 	end get_device_model;
 
@@ -1037,7 +1037,7 @@ package body et_schematic_ops.units is
 		return pac_package_variants.map
 	is
 		use et_device_library.packages;
-		cursor_lib : pac_devices_lib.cursor;	
+		cursor_lib : pac_device_models.cursor;	
 	begin
 		cursor_lib := get_device_model (module, device);
 		return get_available_variants (cursor_lib);
@@ -1086,7 +1086,7 @@ package body et_schematic_ops.units is
 				device		: in out type_device_electrical)
 			is 
 				use et_device_library.packages;
-				cursor_lib : pac_devices_lib.cursor;
+				cursor_lib : pac_device_models.cursor;
 			begin
 				-- The device must be real:
 				if is_real (device) then
@@ -1507,7 +1507,7 @@ package body et_schematic_ops.units is
 		device_cursor_sch : pac_devices_electrical.cursor;
 
 		device_model : pac_device_model_file.bounded_string;
-		device_cursor_lib : pac_devices_lib.cursor;
+		device_cursor_lib : pac_device_models.cursor;
 
 		use pac_unit_names;
 		all_unit_names : pac_unit_names.list;
@@ -1607,7 +1607,7 @@ package body et_schematic_ops.units is
 
 		device_cursor_sch : pac_devices_electrical.cursor;
 		
-		device_cursor_lib : pac_devices_lib.cursor;
+		device_cursor_lib : pac_device_models.cursor;
 		
 		use pac_unit_names;
 		all_unit_names : pac_unit_names.list;
@@ -2126,7 +2126,7 @@ package body et_schematic_ops.units is
 		is
 			device_cursor_sch	: pac_devices_electrical.cursor;
 			variant 			: pac_package_variant_name.bounded_string; -- D, N
-			device_cursor_lib	: pac_devices_lib.cursor;
+			device_cursor_lib	: pac_device_models.cursor;
 
 			
 			procedure query_variants (
@@ -2183,7 +2183,7 @@ package body et_schematic_ops.units is
 
 				-- Get the name of the terminal (the pin or pad) according to the device variant.
 				-- Store it in variable terminal_name:
-				pac_devices_lib.query_element (
+				pac_device_models.query_element (
 					position	=> device_cursor_lib,
 					process		=> query_variants'access);
 

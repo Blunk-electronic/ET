@@ -96,35 +96,40 @@ package et_device_library is
 	-- device name (like "libraries/devices/7400.dev")
 	-- is also the key to the device library:
 	
-	package pac_devices_lib is new indefinite_ordered_maps (
+	package pac_device_models is new indefinite_ordered_maps (
 		key_type 		=> pac_device_model_file.bounded_string,
 		"<"				=> pac_device_model_file."<",
 		element_type	=> type_device_model);
 
-	use pac_devices_lib;
+	use pac_device_models;
 
 
 	
 
 	-- Returns the name prefix for a given device cursor:
 	function get_prefix (
-		cursor	: in pac_devices_lib.cursor)
+		cursor	: in pac_device_models.cursor)
 		return pac_device_prefix.bounded_string;
 
 		
 	-- Returns the name of the device model for 
 	-- a given device cursor:
 	function get_device_model_file (
-		cursor	: in pac_devices_lib.cursor)
+		cursor	: in pac_device_models.cursor)
 		return pac_device_model_file.bounded_string;
+
 
 	
 
 	-- THIS IS THE RIG WIDE LIBRARY OF ELECTRICAL DEVICES:
 	
-	device_library : pac_devices_lib.map;
+	device_library : pac_device_models.map;
+
+	
 
 
+
+	
 	-- Creates a device and stores it in device library:
 	procedure create_device (
 		device_name		: in pac_device_model_file.bounded_string;
@@ -139,7 +144,7 @@ package et_device_library is
 	-- the device model in the device library:
 	function get_device_model (
 		model : in pac_device_model_file.bounded_string)
-		return pac_devices_lib.cursor;
+		return pac_device_models.cursor;
 
 	
 	
@@ -147,7 +152,7 @@ package et_device_library is
 	-- Returns true if the given device has a physical counterpart in 
 	-- the layout, means if it is not virtual:
 	function is_real (
-		device_cursor : in pac_devices_lib.cursor)
+		device_cursor : in pac_device_models.cursor)
 		return boolean;
 
 	
@@ -160,7 +165,7 @@ package et_device_library is
 	-- no value is predifined in the model, then an empty
 	-- string will be returned:
 	function get_default_value (
-		device_cursor : in pac_devices_lib.cursor)
+		device_cursor : in pac_device_models.cursor)
 		return pac_device_value.bounded_string;
 
 

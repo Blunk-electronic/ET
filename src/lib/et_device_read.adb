@@ -1318,7 +1318,7 @@ package body et_device_read is
 		
 		-- test if container device_library already contains a model
 		-- named "file_name". If so, there would be no need to read the file_name again.
-		if pac_devices_lib.contains (device_library, file_name) then
+		if pac_device_models.contains (device_library, file_name) then
 			log (text => "already read -> skipped", level => log_threshold + 1);
 		else
 			-- If the model file is to be read, first check if the file exists.
@@ -1385,7 +1385,7 @@ package body et_device_read is
 						end if;
 					end if;
 
-					pac_devices_lib.insert (
+					pac_device_models.insert (
 						container	=> device_library, 
 						key			=> file_name, -- libraries/devices/7400.dev
 						new_item	=> (
@@ -1398,7 +1398,7 @@ package body et_device_read is
 								variants		=> variants));
 
 				when APPEARANCE_VIRTUAL =>
-					pac_devices_lib.insert (
+					pac_device_models.insert (
 						container	=> device_library, 
 						key			=> file_name, -- libraries/devices/power_gnd.dev
 						new_item	=> (

@@ -75,13 +75,13 @@ is
 		unit_query : constant type_unit_query := 
 			get_unit_position (device_cursor_sch, unit_name);
 		
-		device_cursor_lib : pac_devices_lib.cursor;
+		device_cursor_lib : pac_device_models.cursor;
 		unit_cursors : type_device_units;
 
 		
 		use pac_units_external;
 		use pac_units_internal;
-		use pac_devices_lib;
+		use pac_device_models;
 
 		ports : pac_symbol_ports.map; -- the positions of the unit ports
 

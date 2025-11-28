@@ -80,7 +80,7 @@ package body et_devices_electrical.units is
 		return natural
 	is 
 		result : natural;
-		cursor : pac_devices_lib.cursor;
+		cursor : pac_device_models.cursor;
 	begin
 		-- Get a cursor to the device in the library.
 		-- Map from schematic cursor to library cursor:
@@ -179,7 +179,7 @@ package body et_devices_electrical.units is
 	is 
 		result : type_unit_count := 1;
 		
-		cursor : pac_devices_lib.cursor;
+		cursor : pac_device_models.cursor;
 	begin
 		-- Get a cursor to the device in the library.
 		-- Map from schematic cursor to library cursor:
@@ -413,10 +413,10 @@ package body et_devices_electrical.units is
 		-- So the device model is the link between schematic unit
 		-- and port positions.
 
-		use pac_devices_lib;
+		use pac_device_models;
 
 		-- This cursor points to the device model in the device library:
-		device_cursor_lib : pac_devices_lib.cursor := get_device_model (device);
+		device_cursor_lib : pac_device_models.cursor := get_device_model (device);
 		-- CS: constraint_error will arise here if no associated device exists.
 
 		-- In order to locate a unit inside the device model,
@@ -502,7 +502,7 @@ package body et_devices_electrical.units is
 		return pac_symbol_ports.map 
 	is
 		ports : pac_symbol_ports.map; -- to be returned
-		device_cursor_lib : pac_devices_lib.cursor;
+		device_cursor_lib : pac_device_models.cursor;
 	begin
 		device_cursor_lib := get_device_model (device_cursor);
 		ports := get_ports_of_unit (device_cursor_lib, unit_name);
@@ -605,7 +605,7 @@ package body et_devices_electrical.units is
 -- 		log_threshold	: in type_log_level)
 -- 	is
 -- 		--- The pointer to the device model:		
--- 		device_cursor_lib : pac_devices_lib.cursor;
+-- 		device_cursor_lib : pac_device_models.cursor;
 -- 
 -- 
 -- 	begin
@@ -638,13 +638,13 @@ package body et_devices_electrical.units is
 		unit_name		: in pac_unit_name.bounded_string)
 		return type_default_text_positions 
 	is		
-		use pac_devices_lib;
+		use pac_device_models;
 
 		-- The positions to be returned depend on the appearance of the requested device:
 		result : type_default_text_positions (element (device_cursor).appearance); -- to be returned
 		
 		model : pac_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
-		device_cursor_lib : pac_devices_lib.cursor;
+		device_cursor_lib : pac_device_models.cursor;
 
 		use et_symbol_text;
 		use pac_symbol_texts;
@@ -1056,7 +1056,7 @@ package body et_devices_electrical.units is
 		result : type_get_port_result;
 
 		-- Get the cursor to the full device model in the library:
-		device_model : constant pac_devices_lib.cursor := 
+		device_model : constant pac_device_models.cursor := 
 			get_device_model (pac_devices_electrical.element (device).model);
 
 		-- This is the package variant used by the given device:
@@ -1113,7 +1113,7 @@ package body et_devices_electrical.units is
 
 		
 	begin
-		pac_devices_lib.query_element (device_model, query_model'access);
+		pac_device_models.query_element (device_model, query_model'access);
 			
 		return result;
 	end get_port;

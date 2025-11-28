@@ -76,10 +76,15 @@ package et_symbol_library is
 
 
 	
+	
 	-- THIS IS THE RIG WIDE LIBRARY OF SYMBOLS:
 	
 	symbol_library : pac_symbol_models.map;
 
+
+
+
+	
 
 	-- Creates a symbol and stores it in symbol library:
 	procedure create_symbol (

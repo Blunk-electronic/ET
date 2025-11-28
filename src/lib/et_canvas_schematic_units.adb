@@ -1813,9 +1813,9 @@ package body et_canvas_schematic_units is
 		-- The delected device model file (*.dev) is stored here:
 		device_model_file : pac_device_model_file.bounded_string;
 
-		use pac_devices_lib;
+		use pac_device_models;
 		-- This cursor points to the device model in the library:
-		device_cursor_lib : pac_devices_lib.cursor;
+		device_cursor_lib : pac_device_models.cursor;
 
 		use pac_unit_name;
 		unit_name : pac_unit_name.bounded_string;
@@ -2329,7 +2329,7 @@ package body et_canvas_schematic_units is
 	
 		
 		device_model : pac_device_model_file.bounded_string;
-		device_cursor_lib : pac_devices_lib.cursor;
+		device_cursor_lib : pac_device_models.cursor;
 
 		units_total : type_unit_count;
 
