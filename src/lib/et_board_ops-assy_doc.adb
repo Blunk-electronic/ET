@@ -302,7 +302,7 @@ package body et_board_ops.assy_doc is
 
 	
 	
-	procedure reset_proposed_lines (
+	procedure reset_status_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
@@ -354,7 +354,7 @@ package body et_board_ops.assy_doc is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " resetting proposed lines",
+			 & " reset lines",
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -364,7 +364,7 @@ package body et_board_ops.assy_doc is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_proposed_lines;
+	end reset_status_lines;
 
 	
 
@@ -887,7 +887,7 @@ package body et_board_ops.assy_doc is
 	
 
 
-	procedure reset_proposed_arcs (
+	procedure reset_status_arcs (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
@@ -939,7 +939,7 @@ package body et_board_ops.assy_doc is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " resetting proposed arcs",
+			 & " reset arcs",
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -949,7 +949,7 @@ package body et_board_ops.assy_doc is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_proposed_arcs;
+	end reset_status_arcs;
 
 
 	
@@ -1499,7 +1499,7 @@ package body et_board_ops.assy_doc is
 
 	
 	
-	procedure reset_proposed_segments (
+	procedure reset_status_zone_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
@@ -1576,7 +1576,7 @@ package body et_board_ops.assy_doc is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " resetting proposed segments of zones in assembly documentation",
+			& " reset zone segments",
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -1586,7 +1586,7 @@ package body et_board_ops.assy_doc is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_proposed_segments;
+	end reset_status_zone_segments;
 
 
 
@@ -2500,7 +2500,7 @@ package body et_board_ops.assy_doc is
 
 	
 
-	procedure reset_proposed_texts (
+	procedure reset_status_texts (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
@@ -2552,7 +2552,7 @@ package body et_board_ops.assy_doc is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " resetting proposed texts",
+			 & " reset texts",
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -2562,7 +2562,7 @@ package body et_board_ops.assy_doc is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_proposed_texts;
+	end reset_status_texts;
 
 
 
@@ -2919,7 +2919,7 @@ package body et_board_ops.assy_doc is
 
 
 
-	procedure reset_proposed_placeholders (
+	procedure reset_status_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
@@ -2958,7 +2958,7 @@ package body et_board_ops.assy_doc is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " resetting proposed text placeholders",
+			 & " reset text placeholders",
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -2968,7 +2968,7 @@ package body et_board_ops.assy_doc is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_proposed_placeholders;
+	end reset_status_placeholders;
 
 
 
@@ -3610,26 +3610,26 @@ package body et_board_ops.assy_doc is
 
 
 	
-	procedure reset_proposed_objects (
+	procedure reset_status_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor) &
-			" resetting proposed objects",
+			" reset objects",
 			level => log_threshold);
 
 		log_indentation_up;
 
-		reset_proposed_lines (module_cursor, log_threshold + 1);
-		reset_proposed_arcs (module_cursor, log_threshold + 1);
+		reset_status_lines (module_cursor, log_threshold + 1);
+		reset_status_arcs (module_cursor, log_threshold + 1);
 		-- CS circles
 		
-		reset_proposed_texts (module_cursor, log_threshold + 1);
-		reset_proposed_placeholders (module_cursor, log_threshold + 1);
-		reset_proposed_segments (module_cursor, log_threshold + 1);
+		reset_status_texts (module_cursor, log_threshold + 1);
+		reset_status_placeholders (module_cursor, log_threshold + 1);
+		reset_status_zone_segments (module_cursor, log_threshold + 1);
 
 		log_indentation_down;
-	end reset_proposed_objects;
+	end reset_status_objects;
 	
 
 

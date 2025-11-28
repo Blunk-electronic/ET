@@ -112,8 +112,8 @@ package et_board_ops.assy_doc is
 
 
 	
-	-- Clears the proposed-flag and the selected-flag of all lines:
-	procedure reset_proposed_lines (
+	-- Clears the status flags of all lines:
+	procedure reset_status_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
@@ -203,8 +203,8 @@ package et_board_ops.assy_doc is
 
 
 
-	-- Clears the proposed-flag and the selected-flag of all arcs:
-	procedure reset_proposed_arcs (
+	-- Clears the status flags of all arcs:
+	procedure reset_status_arcs (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
@@ -305,9 +305,8 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level);
 
 
-	-- Clears the proposed-flag and the selected-flag 
-	-- of all line and arc segments:
-	procedure reset_proposed_segments (
+	-- Resets the status flags of all zone contour segments:
+	procedure reset_status_zone_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
@@ -441,9 +440,8 @@ package et_board_ops.assy_doc is
 		return type_object_text;
 
 
-	-- Clears the proposed-flag and the selected-flag 
-	-- of all texts:
-	procedure reset_proposed_texts (
+	-- Resets the status flags of all texts:
+	procedure reset_status_texts (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
@@ -519,9 +517,8 @@ package et_board_ops.assy_doc is
 		return type_object_placeholder;
  
 
-	-- Clears the proposed-flag and the selected-flag 
-	-- of all placeholders:
-	procedure reset_proposed_placeholders (
+	-- Resets the status flags of all placeholders:
+	procedure reset_status_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
@@ -629,7 +626,7 @@ package et_board_ops.assy_doc is
 	-- This is a collective procedure that resets
 	-- the proposed-flag and the selected-flag 
 	-- of texts, lines, arcs, circles and zone segments:
-	procedure reset_proposed_objects ( -- CS rename to reset_status_objects
+	procedure reset_status_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 

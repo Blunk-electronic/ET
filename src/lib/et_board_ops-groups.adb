@@ -81,7 +81,7 @@ package body et_board_ops.groups is
 
 		-- CS reset board placeholders, texts, ... ?
 
-		et_board_ops.assy_doc.reset_proposed_objects (active_module, log_threshold + 1);
+		et_board_ops.assy_doc.reset_status_objects (active_module, log_threshold + 1);
 		et_board_ops.silkscreen.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops.stopmask.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops.stencil.reset_proposed_objects (active_module, log_threshold + 1);

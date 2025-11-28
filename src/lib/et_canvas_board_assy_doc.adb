@@ -413,7 +413,7 @@ package body et_canvas_board_assy_doc is
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
 
-				reset_proposed_objects (active_module, log_threshold + 1);
+				reset_status_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
@@ -507,7 +507,7 @@ package body et_canvas_board_assy_doc is
 			-- we do the actual finalizing:
 			if object.cat /= CAT_VOID then
 
-				reset_proposed_objects (active_module, log_threshold + 1);
+				reset_status_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
