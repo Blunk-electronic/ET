@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -48,7 +48,6 @@ package body et_colors.board is
 
 
 	procedure create_fill_pattern (
-		context			: in cairo_context;
 		color			: in type_color;
 		opacity			: in type_opacity;
 		gap_brightness	: in type_dim_factor := fill_pattern_gap_brightness_default;
@@ -113,6 +112,7 @@ package body et_colors.board is
 			-- gradient from top left to bottom right (in the view, in pixels)
 			p := pattern_create_linear (gl, zero, zero, gl);
 		end make_gradient_135;
+
 		
 	begin -- create_fill_pattern
 		case style is
@@ -156,6 +156,7 @@ package body et_colors.board is
 			cursor.green,
 			cursor.blue);
 	end set_color_cursor;
+
 
 	
 	procedure set_color_background (
@@ -237,6 +238,8 @@ package body et_colors.board is
 		set_color (frame, brightness);
 	end set_color_frame;
 
+
+	
 	
 	procedure set_color_origin (
 		brightness	: in type_brightness := brightness_default)
@@ -248,11 +251,14 @@ package body et_colors.board is
 	end set_color_origin;
 
 
+	
+
 	procedure set_color_ratsnest (
 		brightness	: in type_brightness := brightness_default)
 	is begin
 		set_color (ratsnest, brightness);
 	end set_color_ratsnest;
+
 
 	
 	
@@ -262,6 +268,8 @@ package body et_colors.board is
 		set_color (outline, brightness);
 	end set_color_outline;
 
+
+	
 	
 -- VIAS
 
@@ -272,6 +280,8 @@ package body et_colors.board is
 		set_color (via_restring, brightness, opacity);
 	end set_color_via_restring;
 
+
+	
 	
 	procedure set_color_via_layers (
 		opacity : in type_opacity := default_opacity)
@@ -283,6 +293,8 @@ package body et_colors.board is
 			via_layers.blue,
 			color_range (opacity));
 	end set_color_via_layers;
+
+
 
 	
 	procedure set_color_via_net_name (
@@ -296,6 +308,8 @@ package body et_colors.board is
 			color_range (opacity));
 	end set_color_via_net_name;
 
+
+
 	
 	procedure set_color_via_drill_size (
 		opacity : in type_opacity := default_opacity)
@@ -308,6 +322,8 @@ package body et_colors.board is
 			color_range (opacity));
 	end set_color_via_drill_size;
 	
+
+
 	
 	procedure set_color_silkscreen (
 		face		: in type_face;
@@ -323,6 +339,8 @@ package body et_colors.board is
 		end case;
 	end set_color_silkscreen;
 
+
+	
 	
 	procedure set_color_assy_doc (
 		face		: in type_face;
@@ -338,6 +356,9 @@ package body et_colors.board is
 		end case;
 	end set_color_assy_doc;
 
+
+
+	
 	
 	procedure set_color_stop_mask (
 		face		: in type_face;
@@ -347,14 +368,12 @@ package body et_colors.board is
 		case face is
 			when TOP =>
 				create_fill_pattern (
-					context		=> context,
 					color		=> dim (stop_mask_top, brightness),
 					opacity		=> opacity,
 					style		=> stop_mask_fill);
 
 			when BOTTOM =>
 				create_fill_pattern (
-					context		=> context,
 					color		=> dim (stop_mask_bottom, brightness),
 					opacity		=> opacity,
 					style		=> stop_mask_fill);
@@ -362,6 +381,9 @@ package body et_colors.board is
 	end set_color_stop_mask;
 	
 
+
+	
+	
 	procedure set_color_stencil (
 		face		: in type_face;
 		brightness	: in type_brightness;
@@ -370,20 +392,21 @@ package body et_colors.board is
 		case face is
 			when TOP =>
 				create_fill_pattern (
-					context		=> context,
 					color		=> dim (stencil_top, brightness),
 					opacity		=> opacity,
 					style		=> stencil_fill);
 
 			when BOTTOM =>
 				create_fill_pattern (
-					context		=> context,
 					color		=> dim (stencil_bottom, brightness),
 					opacity		=> opacity,
 					style		=> stencil_fill);
 				
 		end case;
 	end set_color_stencil;
+
+
+
 	
 
 	procedure set_color_keepout (
@@ -400,6 +423,9 @@ package body et_colors.board is
 		end case;
 	end set_color_keepout;
 
+
+
+
 	
 	procedure set_color_route_restrict (
 		brightness	: in type_brightness;
@@ -407,6 +433,8 @@ package body et_colors.board is
 	is begin		
 		set_color (route_restrict, brightness, opacity);
 	end set_color_route_restrict;
+
+
 
 	
 	procedure set_color_via_restrict (
@@ -416,6 +444,9 @@ package body et_colors.board is
 		set_color (via_restrict, brightness, opacity);
 	end set_color_via_restrict;
 
+
+
+	
 	
 	procedure set_color_conductor (
 		layer		: in type_signal_layer;
@@ -426,12 +457,17 @@ package body et_colors.board is
 	end set_color_conductor;
 	
 
+
+
+	
 	procedure set_color_terminal_name (
 		brightness	: in type_brightness;
 		opacity		: in type_opacity := default_opacity)
 	is begin
 		set_color (terminal_names, brightness, opacity);
 	end set_color_terminal_name;
+
+
 	
 		
 	procedure set_color_tht_pad (

@@ -46,9 +46,9 @@ with et_canvas_board;
 package et_colors.board is
 
 	use et_canvas_board.pac_canvas;
-	-- The global context is now visible
+	-- The global variable "context" is now visible
 	-- for all procedures that set the color.
-	-- CS remove the useless argument "context".
+
 
 
 	type type_fill_style is (
@@ -128,7 +128,6 @@ package et_colors.board is
 	
 	-- Creates a fill pattern in the given context:
 	procedure create_fill_pattern (
-		context			: in cairo_context;
 		color			: in type_color;		-- the color of the pattern
 		opacity			: in type_opacity;		-- the opacity of the pattern
 		-- background	: in type_color; ?
