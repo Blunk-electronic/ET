@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+with et_device_library.units;			use et_device_library.units;
 with et_schematic_ops.submodules;
 with et_schematic_ops.units;
 with et_generic_stacks;

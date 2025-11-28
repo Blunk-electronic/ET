@@ -42,12 +42,13 @@ with et_conventions;
 with et_assembly_variants;
 with et_netlists;
 with et_device_model;
-with et_device_library;				use et_device_library;
+with et_device_library;					use et_device_library;
+with et_device_library.units;			use et_device_library.units;
 
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
 
-with et_schematic_ops;				use et_schematic_ops;
-with et_schematic_ops.units;		use et_schematic_ops.units;
+with et_schematic_ops;					use et_schematic_ops;
+with et_schematic_ops.units;			use et_schematic_ops.units;
 with et_schematic_ops.groups;
 
 with et_net_ports;

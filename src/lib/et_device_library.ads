@@ -42,7 +42,7 @@
 --
 -- ToDo:
 -- - move stuff related to packages to a child package.
--- - move stuff related to units to a child package.
+
 
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
@@ -51,10 +51,6 @@ with ada.containers.indefinite_ordered_maps;
 with et_schematic_geometry;		use et_schematic_geometry;
 with et_schematic_coordinates;	use et_schematic_coordinates;
 with et_logging;				use et_logging;
-with et_port_direction;			use et_port_direction;
-with et_port_names;				use et_port_names;
-with et_symbol_ports;			use et_symbol_ports;
-with et_symbol_model;			use et_symbol_model;
 with et_terminals;				use et_terminals;
 with et_device_appearance;		use et_device_appearance;
 with et_package_name;			use et_package_name;
@@ -64,9 +60,6 @@ with et_device_model_names;		use et_device_model_names;
 with et_device_value;			use et_device_value;
 with et_device_prefix;			use et_device_prefix;
 with et_device_name;			use et_device_name;
-with et_unit_name;				use et_unit_name;
-with et_unit_swap_level;		use et_unit_swap_level;
-with et_unit_add_level;			use et_unit_add_level;
 with et_package_variant;		use et_package_variant;
 with et_device_model;			use et_device_model;
 
@@ -77,7 +70,6 @@ package et_device_library is
 
 	use pac_geometry_2;
 
-	use pac_unit_name;
 
 
 	
@@ -172,67 +164,6 @@ package et_device_library is
 
 
 	
-	
-	-- Returns true if the given device (via a cursor) 
-	-- does provide the given unit.
-	function provides_unit (
-		device_cursor	: in pac_devices_lib.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
-		return boolean;
-
-
-	
-	-- Returns the cursor of the first internal or external unit.
-	-- Searches first in internal and then in external units. 
-	--  The search order is further-on determined
-	-- by the add levels of the units. Priority is add level MUST,
-	-- then ALWAYS, then NEXT, then REQUEST, then CAN.
-	--  If no suitable internal unit found, the cursor of internal 
-	-- units in the return is no_element.
-	--  If no suitable external unit found, the cursor of external
-	-- units in the return is no_element.
-	function get_first_unit (
-		device_cursor : in pac_devices_lib.cursor) 
-		return type_device_units;
-
-
-	
-	-- Returns the name of the first unit.
-	-- It can be an internal or an external unit.
-	function get_first_unit (
-		device_cursor : in pac_devices_lib.cursor) 
-		return pac_unit_name.bounded_string;
-
-
-	
-							
-	-- Returns the cursor of the desired internal or external unit.
-	function get_unit (
-		device_cursor	: in pac_devices_lib.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
-		return type_device_units;
-
-
-	-- If unit names are to be stored in lists:
-	package pac_unit_names is new 
-		doubly_linked_lists (pac_unit_name.bounded_string);
-
-
-	
-	-- Returns a list of all unit names of the given device:
-	function get_all_units (
-		device_cursor	: in pac_devices_lib.cursor)
-		return pac_unit_names.list;
-
-
-	
-	-- Returns the total number of units
-	-- that the given device model provides:
-	function get_unit_count (
-		device_cursor	: in pac_devices_lib.cursor)
-		return type_unit_count;
-
-	
 
 	-- Returns full information about the given package variant.
 	-- If the package variant is not defined in the model, then
@@ -280,34 +211,6 @@ package et_device_library is
 
 
 	
-
-	
-	-- For locating units this type is required by function locate_unit.
-	-- A unit can either be external (most likely) or internal to the device:
-	type type_unit_ext_int is (EXT, INT);
-	type type_unit_cursors (ext_int : type_unit_ext_int) is record
-		case ext_int is
-			when EXT => 
-				external	: pac_units_external.cursor;
-			when INT =>
-				internal	: pac_units_internal.cursor;
-		end case;
-	end record;
-
-	
-	
-	-- Searches the given unit in the given device. Returns a cursor to 
-	-- either the internal or external unit.
-	function locate_unit (
-		device_cursor	: in pac_devices_lib.cursor;
-		unit_name		: in pac_unit_name.bounded_string) -- like "I/O-Bank 3"
-		return type_unit_cursors;
-
-
-	-- Maps from the given symbol cursor to the actual symbol:
-	function get_symbol (
-		unit : in type_unit_cursors)
-		return type_symbol;
 		
 	
 	-- Returns the name of the package model of the given device according to the given variant.
@@ -327,21 +230,6 @@ package et_device_library is
 -- 		return pac_terminal_name.bounded_string; -- 14, H4
 
 	
-	-- Used for netlists and ratsnest:
-	type type_port_properties (direction : type_port_direction) is record
-		terminal	: et_terminals.pac_terminal_name.bounded_string; -- H4, 1, 16
-		properties	: type_symbol_port (direction);
-	end record;
-
-	
-	-- Returns the properties of the given port of the given device.
-	function get_properties (
-		device_cursor	: in pac_devices_lib.cursor;
-		port_name		: in pac_port_name.bounded_string)
-		return pac_symbol_ports.cursor;
-
-	type type_port_properties_access is access type_port_properties;	
-	
 
 
 	-- Returns the default placeholders of the package of a device
@@ -353,15 +241,6 @@ package et_device_library is
 		variant	: in pac_package_variant_name.bounded_string) -- N, D, S_0805
 		return type_text_placeholders;
 
-	
-
-	-- Returns the ports of the given device and unit.
-	-- The coordinates of the ports are the default x/y-positions relative
-	-- to the origin of the unit as they are defined in the symbol model.
-	function get_ports_of_unit (
-		device_cursor	: in pac_devices_lib.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
-		return pac_symbol_ports.map;
 
 
 	

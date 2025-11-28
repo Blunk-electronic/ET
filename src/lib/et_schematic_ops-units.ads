@@ -37,6 +37,7 @@
 --
 --   ToDo: 
 
+with et_device_library.units;			use et_device_library.units;
 with et_units;							use et_units;
 with et_unit_name;						use et_unit_name;
 with et_device_placeholders;			use et_device_placeholders;
