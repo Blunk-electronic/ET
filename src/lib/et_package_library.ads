@@ -176,7 +176,8 @@ package et_package_library is
 	use pac_package_models;
 
 
-
+	-- Returns the name of the package model for 
+	-- a given package cursor:
 	function get_package_model_file (
 		model_cursor : in pac_package_models.cursor)
 		return pac_package_model_file.bounded_string;
