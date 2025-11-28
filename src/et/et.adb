@@ -121,10 +121,10 @@ procedure et is
 	module_file_name		: pac_module_file_name.bounded_string;	-- the name of the module file like "motor_driver.mod"
 	module_sheet			: et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
 	
-	package_name_create		: pac_package_model_file_name.bounded_string; -- the package to be created like libraries/packages/S_SO14.pac
-	package_name_import		: pac_package_model_file_name.bounded_string; -- the package to be imported
-	package_name_open		: pac_package_model_file_name.bounded_string; -- the package to be opened
-	package_name_save_as	: pac_package_model_file_name.bounded_string; -- the package to be saved as
+	package_name_create		: pac_package_model_file.bounded_string; -- the package to be created like libraries/packages/S_SO14.pac
+	package_name_import		: pac_package_model_file.bounded_string; -- the package to be imported
+	package_name_open		: pac_package_model_file.bounded_string; -- the package to be opened
+	package_name_save_as	: pac_package_model_file.bounded_string; -- the package to be saved as
 	package_appearance		: et_package_bom_relevance.type_bom_relevant := et_package_bom_relevance.BOM_RELEVANT_YES;
 
 	symbol_name_create		: et_symbol_name.pac_symbol_model_file.bounded_string; -- the symbol to be created like libraries/symbols/nand.sym
@@ -468,7 +468,7 @@ procedure et is
 	
 	procedure save_package_as is 
 		use et_package_library;
-		use pac_package_model_file_name;
+		use pac_package_model_file;
 	begin
 		-- If package_name_save_as is empty nothing happens.
 		-- Otherwise the latest and only package is saved.
@@ -478,7 +478,8 @@ procedure et is
 		if length (package_name_save_as) > 0 then
 			et_package_write.write_package (
 				file_name 		=> package_name_save_as,
-				packge			=> pac_package_models.last_element (et_package_library.package_models),
+				packge			=> pac_package_models.last_element (
+									et_package_library.package_library),
 				log_threshold	=> 0);
 		end if;
 	end;
@@ -585,7 +586,7 @@ procedure et is
 	
 	procedure process_commandline_arguments is
 		use et_conventions.pac_file_name;
-		use pac_package_model_file_name;
+		use pac_package_model_file;
 		use et_symbol_name.pac_symbol_model_file;
 		use pac_device_model_file;
 		use et_drawing_frame.pac_template_name;
