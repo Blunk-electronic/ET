@@ -61,9 +61,13 @@ package et_symbol_library is
 	use pac_geometry_2;
 
 
+	-- Symbol models are are stored in files ending with *.sym.
+	-- At the same time a
+	-- symbol name (like "libraries/symbols/nand.sym")
+	-- is also the key to the symbol library:
 	
 	package pac_symbols is new indefinite_ordered_maps (
-		key_type		=> pac_symbol_model_file.bounded_string, -- ../libraries/symbols/NAND.sym
+		key_type		=> pac_symbol_model_file.bounded_string,
 		"<"				=> pac_symbol_model_file."<",
 		element_type	=> type_symbol);
 
@@ -77,22 +81,22 @@ package et_symbol_library is
 	symbol_library : pac_symbols.map;
 
 
-	-- Creates a symbol and stores it in container symbols.
+	-- Creates a symbol and stores it in symbol library:
 	procedure create_symbol (
-		symbol_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
+		symbol_name		: in pac_symbol_model_file.bounded_string;
 		appearance		: in type_appearance;
 		log_threshold	: in type_log_level);
 
 
 	
 	
-	
-	-- Locates the symbol model in the rig wide symbol library 
-	-- by the given file name. Set the cursor accordingly.
-	-- If the model has not been found, then the cursor is
+	-- Returns for a given symbol model file name
+	-- (like ../libraries/symbols/nand.sym)
+	-- the symbol model in the symbol library.
+	-- If the symbol can not be located then cursor is
 	-- set to no_element:
 	procedure locate_symbol (
-		model_file	: in pac_symbol_model_file.bounded_string;  -- ../libraries/symbols/NAND.sym
+		model_file	: in pac_symbol_model_file.bounded_string;
 		cursor		: in out pac_symbols.cursor);
 	
 		
