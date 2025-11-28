@@ -60,6 +60,7 @@ with et_device_read;
 with et_package_variant;
 with et_symbol_ports;
 with et_device_library.units;			use et_device_library.units;
+with et_device_library.packages;		use et_device_library.packages;
 with et_device_appearance;
 with et_device_purpose;					use et_device_purpose;
 with et_device_partcode;				use et_device_partcode;

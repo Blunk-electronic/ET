@@ -54,6 +54,8 @@ with et_devices_electrical.packages;		use et_devices_electrical.packages;
 with et_numbering;
 with et_device_placeholders.symbols;		use et_device_placeholders.symbols;
 
+with et_device_library.packages;
+
 
 
 package body et_schematic_ops.units is
@@ -1034,6 +1036,7 @@ package body et_schematic_ops.units is
 		device	: in type_device_name) -- R2
 		return pac_package_variants.map
 	is
+		use et_device_library.packages;
 		cursor_lib : pac_devices_lib.cursor;	
 	begin
 		cursor_lib := get_device_model (module, device);
@@ -1082,6 +1085,7 @@ package body et_schematic_ops.units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is 
+				use et_device_library.packages;
 				cursor_lib : pac_devices_lib.cursor;
 			begin
 				-- The device must be real:

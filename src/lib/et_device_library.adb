@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -47,8 +47,6 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 
 with et_string_processing;		use et_string_processing;
 with et_exceptions;				use et_exceptions;
-
-with et_package_library;
 
 
 package body et_device_library is
@@ -162,96 +160,6 @@ package body et_device_library is
 
 	
 
-	function get_package_variant (
-		device_cursor	: in pac_devices_lib.cursor;
-		variant			: in pac_package_variant_name.bounded_string)
-		return pac_package_variants.cursor
-	is 
-		result : pac_package_variants.cursor;
-
-		procedure query_variants (
-			device_name	: in pac_device_model_file.bounded_string;
-			device		: in type_device_model) 
-		is 
-			use pac_package_variants;
-			--vc : constant pac_package_variants.cursor := find (device.variants, variant);
-		begin
-			result := find (device.variants, variant);
-			--if vc /= pac_package_variants.no_element then
-				--result := vc;
-			--else
-				--raise semantic_error_1 with "Package variant " 
-					--& enclose_in_quotes (to_string (variant)) &
-					--" not defined."; 
-					---- CS output model name. Mind max. string length of error message.
-			--end if;
-		end query_variants;
-		
-	begin
-		query_element (device_cursor, query_variants'access);
-		return result;
-	end get_package_variant;
-
-
-	
-	
-	
-	function is_variant_available (
-		device_cursor	: in pac_devices_lib.cursor;
-		variant			: in pac_package_variant_name.bounded_string)  -- D, N
-		return boolean is
-		
-		result : boolean := false; -- to be returned
-		
-		procedure query_variants (
-			device_name	: in pac_device_model_file.bounded_string;
-			device		: in type_device_model) is
-		begin
-			if pac_package_variants.contains (device.variants, variant) then
-				result := true;
-			end if;
-		end;
-		
-	begin
-		pac_devices_lib.query_element (
-			position	=> device_cursor,
-			process		=> query_variants'access);
-		
-		return result;
-	end is_variant_available;
-
-
-	
-
-	function get_available_variants (
-		device_cursor	: in pac_devices_lib.cursor)
-		return pac_package_variants.map
-	is
-		result : pac_package_variants.map; -- to be returned
-	begin
-		case element (device_cursor).appearance is
-			when APPEARANCE_PCB		=> result := element (device_cursor).variants;
-			when APPEARANCE_VIRTUAL	=> null;
-		end case;
-		
-		return result;
-	end get_available_variants;
-
-
-
-	
-
-
-	function get_first_package_variant (
-		device_cursor : in pac_devices_lib.cursor)
-		return pac_package_variant_name.bounded_string
-	is
-		device_model : type_device_model renames element (device_cursor);
-	begin
-		return get_first_package_variant (device_model);
-	end;
-
-
 
 
 
@@ -263,66 +171,6 @@ package body et_device_library is
 	begin
 		return get_default_value (device_model);
 	end;
-
-	
-
-
-
-	
-	
-	function get_package_model (
-		device_cursor	: in pac_devices_lib.cursor;
-		variant			: in pac_package_variant_name.bounded_string)
-		return pac_package_model_file_name.bounded_string 
-	is
-		package_model : pac_package_model_file_name.bounded_string; -- to be returned (packages/smd/SOT23.pac)
-		
-		procedure query_variants (
-			device_name	: in pac_device_model_file.bounded_string;
-			device		: in type_device_model) 
-		is
-			use pac_package_variants;
-			variant_cursor : pac_package_variants.cursor;
-		begin
-			variant_cursor := pac_package_variants.find (device.variants, variant);
-			package_model := element (variant_cursor).package_model;
-		end;
-		
-	begin
-		pac_devices_lib.query_element (
-			position	=> device_cursor,
-			process		=> query_variants'access);
-
-		return package_model;
-	end get_package_model;
-
-
-	
-
-
-
-
-
-	function get_package_placeholders (
-		device	: in pac_devices_lib.cursor;
-		variant	: in pac_package_variant_name.bounded_string)
-		return type_text_placeholders
-	is
-		package_model : pac_package_model_file_name.bounded_string;
-		-- like ../lbr/smd/SO15.pac
-
-		use et_package_library;
-		package_cursor : pac_package_models.cursor;
-	begin
-		-- Get the package model name:		
-		package_model := get_package_model (device, variant);
-
-		-- Locate the package model in the package library:
-		package_cursor := get_package_model (package_model);
-
-		return get_default_placeholders (package_cursor);
-	end get_package_placeholders;
-
 
 
 	

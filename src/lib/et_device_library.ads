@@ -39,38 +39,28 @@
 --
 -- This package describes the structure of
 -- the rig-wide library of devices models.
+-- Child packages describe units and packages.
 --
 -- ToDo:
--- - move stuff related to packages to a child package.
-
+--
+--
 
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_ordered_maps;
 
-with et_schematic_geometry;		use et_schematic_geometry;
-with et_schematic_coordinates;	use et_schematic_coordinates;
 with et_logging;				use et_logging;
 with et_terminals;				use et_terminals;
 with et_device_appearance;		use et_device_appearance;
-with et_package_name;			use et_package_name;
-with et_package_model_name;		use et_package_model_name;
-with et_device_purpose;			use et_device_purpose;
 with et_device_model_names;		use et_device_model_names;
 with et_device_value;			use et_device_value;
 with et_device_prefix;			use et_device_prefix;
 with et_device_name;			use et_device_name;
-with et_package_variant;		use et_package_variant;
 with et_device_model;			use et_device_model;
 
-with et_device_placeholders.packages;	use et_device_placeholders.packages;
 
 
 package et_device_library is
-
-	use pac_geometry_2;
-
-
 
 	
 	-- CS: experimental stuff in order to improve
@@ -163,42 +153,6 @@ package et_device_library is
 	
 
 
-	
-
-	-- Returns full information about the given package variant.
-	-- If the package variant is not defined in the model, then
-	-- then the result is no_element:
-	function get_package_variant (
-		device_cursor	: in pac_devices_lib.cursor;
-		variant			: in pac_package_variant_name.bounded_string)  -- D, N
-		return pac_package_variants.cursor;
-
-	
-	
-	-- Returns true if given device provides the given package variant.								   
-	-- The given device must be real. Means appearance SCH_PCB.
-	function is_variant_available (
-		device_cursor	: in pac_devices_lib.cursor;
-		variant			: in pac_package_variant_name.bounded_string)  -- D, N
-		return boolean;
-
-	
-	
-	-- Returns a list of available variants of the given device.
-	-- If the device is virtual, then an empty list will be returned.
-	function get_available_variants (
-		device_cursor	: in pac_devices_lib.cursor)
-		return pac_package_variants.map;
-	
-
-	-- Returns the name of the first package variant
-	-- of the given device model.
-	-- The model must be a model of a real device. Otherwise
-	-- an exception will be raised:
-	function get_first_package_variant (
-		device_cursor : in pac_devices_lib.cursor)
-		return pac_package_variant_name.bounded_string;
-
 
 	-- Returns the default value as it is 
 	-- specified in the device model.
@@ -208,39 +162,6 @@ package et_device_library is
 	function get_default_value (
 		device_cursor : in pac_devices_lib.cursor)
 		return pac_device_value.bounded_string;
-
-
-	
-		
-	
-	-- Returns the name of the package model of the given device according to the given variant.
-	-- The given device must be real. Means appearance SCH_PCB.							  
-	function get_package_model (
-		device_cursor	: in pac_devices_lib.cursor;
-		variant			: in pac_package_variant_name.bounded_string) -- D, N
-		return pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
-
-	
-	-- 	function terminal_name (
--- 	-- Returns the name of the terminal name of the given device according to the given variant.
--- 	-- The given device must be real. Means appearance SCH_PCB.							  
--- 		device_cursor	: in pac_devices_lib.cursor;
--- 		port_name		: in pac_port_name.bounded_string;
--- 		variant			: in pac_package_variant_name.bounded_string) -- D, N
--- 		return pac_terminal_name.bounded_string; -- 14, H4
-
-	
-
-
-	-- Returns the default placeholders of the package of a device
-	-- as they are specified in the package model.
-	-- The package is indirectly selected by the given variant name.
-	-- The given device is accessed by the given device cursor.
-	function get_package_placeholders ( -- CS rename to get_default_placeholders
-		device	: in pac_devices_lib.cursor;
-		variant	: in pac_package_variant_name.bounded_string) -- N, D, S_0805
-		return type_text_placeholders;
-
 
 
 	

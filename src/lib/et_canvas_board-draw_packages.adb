@@ -48,6 +48,7 @@ with et_drills;						use et_drills;
 
 with et_device_name;
 with et_device_library;
+with et_device_library.packages;		use et_device_library.packages;
 with et_device_model_names;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;

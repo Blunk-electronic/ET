@@ -43,6 +43,8 @@ with ada.exceptions;
 
 with et_string_processing;			use et_string_processing;
 
+with et_device_library.packages;
+
 
 
 package body et_devices_electrical is
@@ -110,6 +112,7 @@ package body et_devices_electrical is
 		device : in type_device_electrical)
 		return pac_package_model_file_name.bounded_string
 	is
+		use et_device_library.packages;
 		device_cursor_lib : pac_devices_lib.cursor;
 	begin
 		-- Locate the device model in the device library
@@ -487,6 +490,7 @@ package body et_devices_electrical is
 		device : in pac_devices_electrical.cursor)
 		return pac_package_model_file_name.bounded_string
 	is
+		use et_device_library.packages;
 		use et_device_model_names;
 		device_model		: pac_device_model_file.bounded_string;
 		device_cursor_lib	: pac_devices_lib.cursor;

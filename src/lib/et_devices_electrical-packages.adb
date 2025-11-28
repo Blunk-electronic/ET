@@ -43,6 +43,8 @@ with ada.exceptions;
 
 with et_contour_to_polygon;
 
+with et_device_library.packages;	use et_device_library.packages;
+
 
 
 package body et_devices_electrical.packages is
