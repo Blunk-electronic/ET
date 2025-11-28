@@ -462,7 +462,7 @@ package body et_devices_electrical.packages is
 
 		-- Get the default placeholders as they are specified
 		-- in the package model:
-		default_placeholders := get_package_placeholders (
+		default_placeholders := get_default_placeholders (
 			cursor_lib, get_package_variant (device));
 
 		-- Assign the default placeholders to the given device:

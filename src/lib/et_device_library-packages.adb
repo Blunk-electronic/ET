@@ -184,7 +184,7 @@ package body et_device_library.packages is
 
 
 
-	function get_package_placeholders (
+	function get_default_placeholders (
 		device	: in pac_devices_lib.cursor;
 		variant	: in pac_package_variant_name.bounded_string)
 		return type_text_placeholders
@@ -202,7 +202,7 @@ package body et_device_library.packages is
 		package_cursor := get_package_model (package_model);
 
 		return get_default_placeholders (package_cursor);
-	end get_package_placeholders;
+	end get_default_placeholders;
 
 	
 		

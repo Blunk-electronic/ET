@@ -142,7 +142,7 @@ is
 					-- Initially, the text placeholders are copies of 
 					-- the placeholders as they are defined in the package model.
 					-- Extract them from the device model and the package variant:
-					placeholders	=> get_package_placeholders (device_cursor_lib, selected_variant),
+					placeholders	=> get_default_placeholders (device_cursor_lib, selected_variant),
 
 					-- Use default position of the device in the layout.
 					-- CS: do not place the package on top of others

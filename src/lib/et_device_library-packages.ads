@@ -116,7 +116,7 @@ package et_device_library.packages is
 	-- as they are specified in the package model.
 	-- The package is indirectly selected by the given variant name.
 	-- The given device is accessed by the given device cursor.
-	function get_package_placeholders ( -- CS rename to get_default_placeholders
+	function get_default_placeholders (
 		device	: in pac_devices_lib.cursor;
 		variant	: in pac_package_variant_name.bounded_string) -- N, D, S_0805
 		return type_text_placeholders;
