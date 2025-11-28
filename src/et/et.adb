@@ -497,7 +497,7 @@ procedure et is
 		if length (symbol_name_save_as) > 0 then
 			et_symbol_write.save_symbol (
 				file_name 		=> symbol_name_save_as,
-				symbol			=> pac_symbols.last_element (symbol_library),
+				symbol			=> pac_symbol_models.last_element (symbol_library),
 				log_threshold	=> 0);
 		end if;
 	end;
@@ -515,7 +515,7 @@ procedure et is
 		if length (device_name_save_as) > 0 then
 			et_device_write.write_device (
 				file_name 		=> device_name_save_as,
-				device			=> pac_devices_lib.last_element (device_library),
+				device			=> pac_device_models.last_element (device_library),
 				log_threshold	=> 0);
 		end if;
 	end;
