@@ -154,9 +154,9 @@ package body et_device_library.packages is
 	function get_package_model (
 		device_cursor	: in pac_devices_lib.cursor;
 		variant			: in pac_package_variant_name.bounded_string)
-		return pac_package_model_file_name.bounded_string 
+		return pac_package_model_file.bounded_string 
 	is
-		package_model : pac_package_model_file_name.bounded_string; -- to be returned (packages/smd/SOT23.pac)
+		package_model : pac_package_model_file.bounded_string; -- to be returned (packages/smd/SOT23.pac)
 		
 		procedure query_variants (
 			device_name	: in pac_device_model_file.bounded_string;
@@ -189,7 +189,7 @@ package body et_device_library.packages is
 		variant	: in pac_package_variant_name.bounded_string)
 		return type_text_placeholders
 	is
-		package_model : pac_package_model_file_name.bounded_string;
+		package_model : pac_package_model_file.bounded_string;
 		-- like ../lbr/smd/SO15.pac
 
 		use et_package_library;

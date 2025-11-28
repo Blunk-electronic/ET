@@ -160,7 +160,7 @@ package et_package_library is
 
 
 
-	use pac_package_model_file_name;
+	use pac_package_model_file;
 
 	
 	-- Package (or footprint) models are are stored in files ending with *.pac.
@@ -170,7 +170,7 @@ package et_package_library is
 	
 	-- CS: this should be a hashed map:
 	package pac_package_models is new indefinite_ordered_maps ( -- CS ordered_maps ?
-		key_type		=> pac_package_model_file_name.bounded_string,
+		key_type		=> pac_package_model_file.bounded_string,
 		element_type	=> type_package_model);
 
 	use pac_package_models;
@@ -179,7 +179,7 @@ package et_package_library is
 
 	function get_package_model_file (
 		model_cursor : in pac_package_models.cursor)
-		return pac_package_model_file_name.bounded_string;
+		return pac_package_model_file.bounded_string;
 
 
 	
@@ -193,7 +193,7 @@ package et_package_library is
 
 	-- Creates a package and stores it in the package library:
 	procedure create_package (
-		package_name 	: in pac_package_model_file_name.bounded_string;
+		package_name 	: in pac_package_model_file.bounded_string;
 		appearance		: in type_bom_relevant;
 		log_threshold	: in type_log_level);
 
@@ -204,7 +204,7 @@ package et_package_library is
 	-- (like "../lbr/smd/SO15.pac")
 	-- the package model in the package library:
 	function get_package_model (
-		model_name : in pac_package_model_file_name.bounded_string)
+		model_name : in pac_package_model_file.bounded_string)
 		return pac_package_models.cursor;
 
 
@@ -221,7 +221,7 @@ package et_package_library is
 	-- Returns true if the given package model (via the model file name)
 	-- is relevant for creating bill of materials (BOM):
 	function is_bom_relevant (
-		package_model : in pac_package_model_file_name.bounded_string) 
+		package_model : in pac_package_model_file.bounded_string) 
 		return boolean;
 
 	

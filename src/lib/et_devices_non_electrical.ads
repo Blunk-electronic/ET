@@ -119,7 +119,7 @@ package et_devices_non_electrical is
 		-- Text placeholders for value, name, purpose, ...
 		placeholders	: type_text_placeholders;
 		
-		package_model	: pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
+		package_model	: pac_package_model_file.bounded_string; -- ../lbr/packages/fiducial.pac
 		-- CS cursor to package model instead ?
 
 		-- A value will rarely be assigned. But in case it is required:
@@ -140,7 +140,7 @@ package et_devices_non_electrical is
 	-- like "../lbr/packages/fiducial.pac"
 	function get_package_model_name (
 		device	: in type_device_non_electrical)
-		return pac_package_model_file_name.bounded_string;
+		return pac_package_model_file.bounded_string;
 
 
 
@@ -439,7 +439,7 @@ package et_devices_non_electrical is
 	-- like "../lbr/packages/fiducial.pac"
 	function get_package_model_name (
 		device_cursor : in pac_devices_non_electrical.cursor)
-		return pac_package_model_file_name.bounded_string;
+		return pac_package_model_file.bounded_string;
 
 	
 

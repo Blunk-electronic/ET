@@ -173,7 +173,7 @@ package et_devices_electrical is
 	-- The given device must be real. Otherwise constraint error arises here.	
 	function get_package_model_name (
 		device : in type_device_electrical)
-		return pac_package_model_file_name.bounded_string;
+		return pac_package_model_file.bounded_string;
 
 	
 
@@ -372,7 +372,7 @@ package et_devices_electrical is
 	-- The given device must be real. Otherwise constraint error arises here.	
 	function get_package_model_name (
 		device : in pac_devices_electrical.cursor)
-		return pac_package_model_file_name.bounded_string;
+		return pac_package_model_file.bounded_string;
 	
 
 	-- Returns the cursor to the package model of the given device

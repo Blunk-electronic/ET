@@ -842,7 +842,7 @@ package et_kicad_libraries is
 		library_name	: in type_library_name.bounded_string; -- bel_logic
 		package_name 	: in pac_package_name.bounded_string; -- S_SO14
 		log_threshold	: in type_log_level)
-		return pac_package_model_file_name.bounded_string;
+		return pac_package_model_file.bounded_string;
 
 
 	
@@ -850,7 +850,7 @@ package et_kicad_libraries is
 	-- The given package is specified by the library name and package name.
 	-- Returns true if the terminal_port_map fits on the given package.
 	function terminal_port_map_fits (
-		library_name		: in pac_package_model_file_name.bounded_string;		-- ../lbr/bel_ic.pretty
+		library_name		: in pac_package_model_file.bounded_string;		-- ../lbr/bel_ic.pretty
 		package_name 		: in pac_package_name.bounded_string;	-- S_SO14
 		terminal_port_map	: in pac_terminal_port_map.map) 
 		return boolean;

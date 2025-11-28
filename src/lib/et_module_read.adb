@@ -1484,7 +1484,7 @@ package body et_module_read is
 		
 
 		device_non_electric			: et_devices_non_electrical.type_device_non_electrical;
-		device_non_electric_model	: et_package_model_name.pac_package_model_file_name.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
+		device_non_electric_model	: et_package_model_name.pac_package_model_file.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
 
 
 		

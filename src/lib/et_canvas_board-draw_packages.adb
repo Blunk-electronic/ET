@@ -1718,7 +1718,7 @@ procedure draw_packages is
 		use et_device_library;
 		device_model_cursor : pac_devices_lib.cursor;
 
-		package_model_name : pac_package_model_file_name.bounded_string;
+		package_model_name : pac_package_model_file.bounded_string;
 	begin
 		-- put_line ("device " & to_string (name));
 
@@ -1771,9 +1771,7 @@ procedure draw_packages is
 	procedure query_non_electrical_device (
 		name	: in type_device_name;
 		device	: in type_device_non_electrical)
-	is
-		package_model_name : pac_package_model_file_name.bounded_string;
-	begin
+	is begin
 		-- put_line ("device " & to_string (name));	
 
 		-- If the device is selected then draw it highlighted:

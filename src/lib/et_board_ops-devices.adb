@@ -1163,7 +1163,7 @@ package body et_board_ops.devices is
 	
 	procedure add_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
-		package_model	: in pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
+		package_model	: in pac_package_model_file.bounded_string; -- ../lbr/packages/fiducial.pac
 		position		: in type_package_position; -- x,y,rotation,face
 		prefix			: in pac_device_prefix.bounded_string; -- FD
 		log_threshold	: in type_log_level) 
@@ -3220,7 +3220,7 @@ package body et_board_ops.devices is
 		--terminal_rotation : type_angle;
 		--terminal_position_face : type_face := TOP; -- top/bottom
 
-		--model : pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
+		--model : pac_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 		--package_model_cursor : pac_package_models.cursor;
 
 		--use pac_terminals;
@@ -3486,7 +3486,7 @@ package body et_board_ops.devices is
 		terminal_rotation : type_angle;
 		terminal_position_face : type_face := TOP; -- top/bottom
 
-		model : pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
+		model : pac_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 		package_model_cursor : pac_package_models.cursor;
 
 		use pac_terminals;

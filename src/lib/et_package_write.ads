@@ -77,7 +77,7 @@ package et_package_write is
 	
 	-- Saves the given package model in a file specified by file_name.							   
 	procedure write_package (
-		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
+		file_name 		: in pac_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
 		packge			: in type_package_model; -- the actual device model
 		log_threshold	: in type_log_level);
 

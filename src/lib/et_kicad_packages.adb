@@ -2669,7 +2669,7 @@ package body et_kicad_packages is
 		-- Creates empty packages in the package_libraries. The package names are
 		-- named after the packages found in the library directories.
 		procedure read_packages (
-			library_name	: in pac_package_model_file_name.bounded_string;
+			library_name	: in pac_package_model_file.bounded_string;
 			packages		: in out type_packages_library.map) 
 		is
 			package_names : pac_directory_entries.list;

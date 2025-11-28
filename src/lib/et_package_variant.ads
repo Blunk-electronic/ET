@@ -105,7 +105,7 @@ package et_package_variant is
 
 	
 	type type_package_variant is record
-		package_model		: pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
+		package_model		: pac_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 		terminal_port_map	: pac_terminal_port_map.map; -- which port is connected with with terminal
 	end record;
 

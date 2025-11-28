@@ -98,7 +98,7 @@ package et_device_library.packages is
 	function get_package_model (
 		device_cursor	: in pac_devices_lib.cursor;
 		variant			: in pac_package_variant_name.bounded_string) -- D, N
-		return pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
+		return pac_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 
 	
 	-- 	function terminal_name (

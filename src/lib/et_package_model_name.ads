@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -51,25 +51,24 @@ package et_package_model_name is
 	
 	package_model_file_name_length_max : constant positive := 300;
 	
-	package pac_package_model_file_name is new 
+	package pac_package_model_file is new 
 		generic_bounded_length (package_model_file_name_length_max);
 
-	-- CS rename to pac_package_model_file
 		
 		
 	package_model_file_extension : constant string := "pac";
 
 	
-	use pac_package_model_file_name;
+	use pac_package_model_file;
 	
 	function to_string (
-		name : in pac_package_model_file_name.bounded_string) 
+		name : in pac_package_model_file.bounded_string) 
 		return string;
 
 	
 	function to_package_model_name (
 		name : in string) 
-		return pac_package_model_file_name.bounded_string;
+		return pac_package_model_file.bounded_string;
 
 
 	

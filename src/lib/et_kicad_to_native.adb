@@ -2543,7 +2543,7 @@ package body et_kicad_to_native is
 			to_file_name (compose (
 				directory_libraries, directory_libraries_devices));
 	
-		prefix_packages_dir : pac_package_model_file_name.bounded_string := -- libraries/packages
+		prefix_packages_dir : pac_package_model_file.bounded_string := -- libraries/packages
 			to_package_model_name (compose (
 				directory_libraries, directory_libraries_packages));
 
@@ -2648,19 +2648,19 @@ package body et_kicad_to_native is
 		
 
 		function rename_package_model (
-			model_in : in pac_package_model_file_name.bounded_string) -- ../../lbr/transistors.pretty/S_0805
-			return pac_package_model_file_name.bounded_string 
+			model_in : in pac_package_model_file.bounded_string) -- ../../lbr/transistors.pretty/S_0805
+			return pac_package_model_file.bounded_string 
 		is
 			-- The return is something like: libraries/packages/__-__-lbr-transistors.pretty_S_0805.pac .
 
 			use et_package_name;
-			use pac_package_model_file_name;
+			use pac_package_model_file;
 
 			-- In the containing directory . and / must be replaced by _ and -:
 			characters : character_mapping := to_mapping ("./","_-");
 
-			model_copy : pac_package_model_file_name.bounded_string := model_in; -- ../../lbr/transistors.pretty/S_0805
-			model_return : pac_package_model_file_name.bounded_string;
+			model_copy : pac_package_model_file.bounded_string := model_in; -- ../../lbr/transistors.pretty/S_0805
+			model_return : pac_package_model_file.bounded_string;
 		begin
 			translate (model_copy, characters);
 
@@ -3358,7 +3358,7 @@ package body et_kicad_to_native is
 			use et_kicad_packages.type_libraries;
 			package_library_cursor : et_kicad_packages.type_libraries.cursor := module.footprints.first;
 
-			-- use pac_package_model_file_name;
+			-- use pac_package_model_file;
 
 			
 			procedure query_components (
@@ -3893,14 +3893,14 @@ package body et_kicad_to_native is
 			
 			-- Creates with the library name and package name new native package models.
 			procedure query_packages (
-				library_name	: in pac_package_model_file_name.bounded_string; -- projects/lbr/smd_packages.pretty
+				library_name	: in pac_package_model_file.bounded_string; -- projects/lbr/smd_packages.pretty
 				library			: in et_kicad_packages.type_packages_library.map) 
 			is
 
 				use et_kicad_packages.type_packages_library;
 				package_cursor_kicad	: et_kicad_packages.type_packages_library.cursor := library.first;
 				package_name			: pac_package_name.bounded_string;
-				package_model			: pac_package_model_file_name.bounded_string := library_name; -- projects/lbr/smd_packages.pretty
+				package_model			: pac_package_model_file.bounded_string := library_name; -- projects/lbr/smd_packages.pretty
 
 				use et_package_library.pac_package_models;
 				package_cursor			: et_package_library.pac_package_models.cursor;

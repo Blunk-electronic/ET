@@ -299,10 +299,10 @@ package et_kicad_packages is
 		element_type 	=> type_package_library);
 	
 	package type_libraries is new ordered_maps ( -- CS rename to pac_package_libraries
-		key_type		=> pac_package_model_file_name.bounded_string, -- projects/lbr/smd_packages.pretty
+		key_type		=> pac_package_model_file.bounded_string, -- projects/lbr/smd_packages.pretty
 		element_type	=> type_packages_library.map,
 		"="				=> type_packages_library."=",
-		"<"				=> pac_package_model_file_name."<");
+		"<"				=> pac_package_model_file."<");
 	-- CS the element could be a record consisting of type_packages_library.map, lib_type, options and desrciption
 	-- lib_type, options and description are provided in V5 and should be stored here in the future.
 	

@@ -79,7 +79,7 @@ package et_package_read is
 	-- whether all conductor layers are are in 
 	-- range type_signal_layer'first .. deepest conductor layer.
 	procedure read_package (
-		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
+		file_name 		: in pac_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
 		log_threshold	: in type_log_level);
 		-- CS error : out boolean;

@@ -3017,7 +3017,7 @@ is
 			use et_device_prefix;
 			use et_package_model_name;
 			
-			model : constant pac_package_model_file_name.bounded_string := 
+			model : constant pac_package_model_file.bounded_string := 
 				to_package_model_name (get_field (5));
 			
 			prefix : constant pac_device_prefix.bounded_string := 
