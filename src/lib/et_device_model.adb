@@ -204,7 +204,7 @@ package body et_device_model is
 	begin
 		symbol_file := get_symbol_model_file (unit);
 
-		locate_symbol (symbol_file, result);
+		get_symbol_model (symbol_file, result);
 		return result;
 	end;
 
@@ -239,7 +239,7 @@ package body et_device_model is
 
 			-- Locate the symbol in the rig wide 
 			-- symbol model library:
-			locate_symbol (sym_name, sym_cursor);
+			get_symbol_model (sym_name, sym_cursor);
 
 			-- Get the port positions via the symbol cursor:
 			result := get_port_positions (sym_cursor);

@@ -95,7 +95,7 @@ package et_symbol_library is
 	-- the symbol model in the symbol library.
 	-- If the symbol can not be located then cursor is
 	-- set to no_element:
-	procedure locate_symbol (
+	procedure get_symbol_model (
 		model_file	: in pac_symbol_model_file.bounded_string;
 		cursor		: in out pac_symbols.cursor);
 	

@@ -442,7 +442,7 @@ package body et_device_library.units is
 				-- If the unit is external, we must fetch the symbol 
 				-- via its model file:
 				model_name := element (unit.external).model;
-				locate_symbol (model_name, symbol_cursor);
+				get_symbol_model (model_name, symbol_cursor);
 
 				return pac_symbols.element (symbol_cursor);
 
@@ -512,7 +512,7 @@ package body et_device_library.units is
 				end;
 				
 			begin
-				locate_symbol (unit.model, symbol_cursor);
+				get_symbol_model (unit.model, symbol_cursor);
 				
 				query_element (
 					position	=> symbol_cursor,

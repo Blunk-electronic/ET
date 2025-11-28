@@ -85,12 +85,12 @@ package body et_symbol_library is
 	
 
 	
-	procedure locate_symbol (
+	procedure get_symbol_model (
 		model_file	: in pac_symbol_model_file.bounded_string;
 		cursor		: in out pac_symbols.cursor)
 	is begin
 		cursor := symbol_library.find (model_file);
-	end locate_symbol;
+	end;
 
 	
 
