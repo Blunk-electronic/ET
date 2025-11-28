@@ -414,7 +414,7 @@ package et_geometry_2a is
 	-- Returns the rotation of the given point about the origin.
 	-- If for example point is (1/1) then the return is 45 degree.
 	-- if point is (-1/-1) then the return is -135 degree.
-	function get_rotation ( -- CS rename to get_rotation_about_origin
+	function get_rotation_about_origin (
 		point : in type_vector_model)
 		return type_rotation;
 

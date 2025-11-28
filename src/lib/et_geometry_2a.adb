@@ -824,12 +824,12 @@ package body et_geometry_2a is
 
 
 
-	function get_rotation (
+	function get_rotation_about_origin (
 		point : in type_vector_model) 
 		return type_rotation 
 	is begin
 		return to_rotation (get_angle (get_distance (null_vector, to_vector (point))));
-	end get_rotation;
+	end;
 
 	
 	
