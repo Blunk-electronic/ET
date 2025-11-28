@@ -2589,6 +2589,10 @@ package body et_canvas_schematic_units is
 			-- Commit the current state of the design:
 			commit (POST, verb, noun, log_threshold);
 
+			-- If a unit has been fetched, then the board
+			-- must be redrawn:
+			redraw_board;
+			
 			-- Clean up for the next unit to be fetched:
 			reset_unit_fetch;			
 			reset_request_clarification;
