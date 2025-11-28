@@ -96,7 +96,7 @@ package body et_device_library is
 
 
 	procedure create_device (
-		device_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
+		device_name		: in pac_device_model_file.bounded_string;
 		appearance		: in type_appearance;
 		log_threshold	: in type_log_level) 
 	is
@@ -135,7 +135,7 @@ package body et_device_library is
 
 	
 
-	function get_device_model_cursor (
+	function get_device_model (
 		model : in pac_device_model_file.bounded_string)
 		return pac_devices_lib.cursor 
 	is

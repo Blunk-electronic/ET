@@ -80,6 +80,10 @@ package et_device_library is
 	use pac_unit_name;
 
 
+	
+	-- CS: experimental stuff in order to improve
+	-- preformance of the device library using a hashed map:
+	
 	--function hash_device_model (
 		--model	: in pac_device_model_file.bounded_string)
 		--return hash_type;
@@ -99,14 +103,26 @@ package et_device_library is
 
 	-- https://github.com/PiEqThree/Ada_Hash_Map/blob/main/main.adb
 
+
+
+
+	
+	
+
+	-- Device models are are stored in files ending with *.dev.
+	-- At the same time a
+	-- device name (like "libraries/devices/7400.dev")
+	-- is also the key to the device library:
 	
 	package pac_devices_lib is new indefinite_ordered_maps (
-		key_type 		=> pac_device_model_file.bounded_string, -- ../libraries/devices/logic_ttl/7400.dev
+		key_type 		=> pac_device_model_file.bounded_string,
 		"<"				=> pac_device_model_file."<",
 		element_type	=> type_device_model);
 
 	use pac_devices_lib;
 
+
+	
 
 	-- Returns the name prefix for a given device cursor:
 	function get_prefix (
@@ -127,19 +143,20 @@ package et_device_library is
 	device_library : pac_devices_lib.map;
 
 
-	-- Creates a device and stores it in device_library:
+	-- Creates a device and stores it in device library:
 	procedure create_device (
-		device_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
+		device_name		: in pac_device_model_file.bounded_string;
 		appearance		: in type_appearance;
 		log_threshold	: in type_log_level);
 
 
 	
 
-	-- Maps from device model file (*.dev) to a
-	-- cursor in the device library:
-	function get_device_model_cursor ( -- CS rename to get_device_model
-		model : in pac_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
+	-- Returns for a given device model file name
+	-- (like ../libraries/devices/transistor/pnp.dev)
+	-- the device model in the device library:
+	function get_device_model (
+		model : in pac_device_model_file.bounded_string)
 		return pac_devices_lib.cursor;
 
 	

@@ -1057,7 +1057,7 @@ package body et_devices_electrical.units is
 
 		-- Get the cursor to the full device model in the library:
 		device_model : constant pac_devices_lib.cursor := 
-			get_device_model_cursor (pac_devices_electrical.element (device).model);
+			get_device_model (pac_devices_electrical.element (device).model);
 
 		-- This is the package variant used by the given device:
 		variant_sch : constant pac_package_variant_name.bounded_string :=

@@ -1567,7 +1567,7 @@ package body et_schematic_ops.units is
 		query_element (module_cursor, get_device_model'access);
 				
 		-- locate the device in the library
-		device_cursor_lib := get_device_model_cursor (device_model);
+		device_cursor_lib := get_device_model (device_model);
 
 		log_indentation_up;
 		
@@ -2175,7 +2175,7 @@ package body et_schematic_ops.units is
 				variant := element (device_cursor_sch).variant;
 
 				-- get the name of the device model (or the generic name)
-				device_cursor_lib := get_device_model_cursor (element (device_cursor_sch).model);
+				device_cursor_lib := get_device_model (element (device_cursor_sch).model);
 
 				-- Get the name of the terminal (the pin or pad) according to the device variant.
 				-- Store it in variable terminal_name:

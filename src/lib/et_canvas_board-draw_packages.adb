@@ -1749,7 +1749,7 @@ procedure draw_packages is
 			device_placeholders := device.placeholders;
 			
 			-- Get the cursor to the device model:
-			device_model_cursor := get_device_model_cursor (device.model);
+			device_model_cursor := get_device_model (device.model);
 
 			-- Get the name of the package model:
 			package_model_name := get_package_model (device_model_cursor, device.variant);

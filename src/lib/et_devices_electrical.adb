@@ -96,7 +96,7 @@ package body et_devices_electrical is
 		model_file := get_device_model_file (device);
 
 		-- Locate the device model in the library:
-		return get_device_model_cursor (model_file);
+		return get_device_model (model_file);
 	end get_device_model;
 
 	
@@ -112,8 +112,8 @@ package body et_devices_electrical is
 	is
 		device_cursor_lib : pac_devices_lib.cursor;
 	begin
-		-- Locate the generic device model in the device library
-		device_cursor_lib := get_device_model_cursor (device.model);
+		-- Locate the device model in the device library
+		device_cursor_lib := get_device_model (device.model);
 		
 		return get_package_model (device_cursor_lib, device.variant);
 	end get_package_model_name;
@@ -190,7 +190,7 @@ package body et_devices_electrical is
 		model_file := get_device_model_file (device);
 
 		-- Locate the device model in the library:
-		return get_device_model_cursor (model_file);
+		return get_device_model (model_file);
 	end get_device_model;
 
 
@@ -501,8 +501,8 @@ package body et_devices_electrical is
 		-- load the name of the generic device model
 		device_model := pac_devices_electrical.element (device).model;
 		
-		-- locate the generic device model in the device library
-		device_cursor_lib := get_device_model_cursor (device_model);
+		-- locate the device model in the device library
+		device_cursor_lib := get_device_model (device_model);
 		
 		return get_package_model (device_cursor_lib, device_variant);
 	end get_package_model_name;

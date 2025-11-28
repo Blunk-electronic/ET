@@ -1918,7 +1918,7 @@ package body et_canvas_schematic_units is
 		-- the following statement.
 		
 		-- Locate the device in the library:
-		device_cursor_lib := get_device_model_cursor (device_model_file);
+		device_cursor_lib := get_device_model (device_model_file);
 
 		-- Assign the cursor to the unit_add:
 		unit_add.device := device_cursor_lib;
@@ -2457,7 +2457,7 @@ package body et_canvas_schematic_units is
 				device_model := get_device_model_file (object.unit.device_cursor);
 				-- put_line ("model " & to_string (device_model));
 				
-				device_cursor_lib := get_device_model_cursor (device_model);
+				device_cursor_lib := get_device_model (device_model);
 
 				-- CS use device_cursor_lib := get_device_model (object.unit.device_cursor);
 				-- instead of the statements above.
