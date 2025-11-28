@@ -1757,7 +1757,7 @@ procedure draw_packages is
 
 			-- Send the actual package model to the draw procedure:
 			draw_package (
-				packge	=> pac_package_models.element (package_models, package_model_name));
+				packge	=> pac_package_models.element (package_library, package_model_name));
 
 		end if;
 	end query_electrical_device;
@@ -1801,7 +1801,7 @@ procedure draw_packages is
 		
 		-- Send the actual package model to the draw procedure:
 		draw_package (
-			packge	=> pac_package_models.element (package_models, device.package_model));
+			packge	=> pac_package_models.element (package_library, device.package_model));
 	end query_non_electrical_device;
 
 

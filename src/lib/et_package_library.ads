@@ -161,10 +161,16 @@ package et_package_library is
 
 
 	use pac_package_model_file_name;
+
+	
+	-- Package (or footprint) models are are stored in files ending with *.pac.
+	-- At the same time a
+	-- package name (like "libraries/packages/smd/SO14.pac")
+	-- is also the key to the package library:
 	
 	-- CS: this should be a hashed map:
 	package pac_package_models is new indefinite_ordered_maps ( -- CS ordered_maps ?
-		key_type		=> pac_package_model_file_name.bounded_string, -- ../lbr/smd/SO15.pac
+		key_type		=> pac_package_model_file_name.bounded_string,
 		element_type	=> type_package_model);
 
 	use pac_package_models;
@@ -180,26 +186,29 @@ package et_package_library is
 	
 	-- THIS IS THE RIG WIDE PACKAGE (FOOTPRINT) LIBRARY:
 	
-	package_models	 : pac_package_models.map;
+	package_library	 : pac_package_models.map;
 
 
 
 
-	-- Creates a package and stores the package in container et_packages.packages.								 
+	-- Creates a package and stores it in the package library:
 	procedure create_package (
-		package_name 	: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
+		package_name 	: in pac_package_model_file_name.bounded_string;
 		appearance		: in type_bom_relevant;
 		log_threshold	: in type_log_level);
 
 
 
 	
-	-- Returns a cursor to the given package model.
+	-- Returns for a given package model file name
+	-- (like "../lbr/smd/SO15.pac")
+	-- the package model in the package library:
 	function get_package_model (
-		model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
+		model_name : in pac_package_model_file_name.bounded_string)
 		return pac_package_models.cursor;
 
 
+	
 	-- Returns true if the given package is
 	-- a real package with a height, means if it is relevant 
 	-- for creating bill of materials (BOM):

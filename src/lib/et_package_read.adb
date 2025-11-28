@@ -1916,7 +1916,7 @@ package body et_package_read is
 		
 		-- test if container et_pcb.packages already contains the package
 		-- named "file_name". If so, there would be no need to read the file_name again.
-		if pac_package_models.contains (package_models, file_name) then
+		if pac_package_models.contains (package_library, file_name) then
 			log (text => "already read -> skipped", level => log_threshold + 1);
 		else
 			
@@ -1961,7 +1961,7 @@ package body et_package_read is
 
 			-- Insert the package (accessed by pointer packge) in et_pcb.packages:
 			pac_package_models.insert (
-				container	=> package_models, 
+				container	=> package_library, 
 				key			=> file_name, -- libraries/packages/S_SO14.pac
 				new_item	=> packge.all);
 

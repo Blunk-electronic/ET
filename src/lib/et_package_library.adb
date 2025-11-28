@@ -142,21 +142,21 @@ package body et_package_library is
 			 level => log_threshold);
 		
 		-- Test if package already exists. If already exists, issue warning and exit.
-		if pac_package_models.contains (package_models, package_name) then
+		if pac_package_models.contains (package_library, package_name) then
 			log (WARNING, text => "package already exists -> skipped", 
 				 level => log_threshold + 1);
 		else
 			case appearance is
 				when BOM_RELEVANT_YES =>
 					pac_package_models.insert (
-						container	=> package_models,
+						container	=> package_library,
 						key			=> package_name,
 						new_item	=> (appearance => BOM_RELEVANT_YES, others => <>)
 						);
 
 				when BOM_RELEVANT_NO =>
 					pac_package_models.insert (
-						container	=> package_models,
+						container	=> package_library,
 						key			=> package_name,
 						new_item	=> (appearance => BOM_RELEVANT_NO, others => <>)
 						);
@@ -175,7 +175,7 @@ package body et_package_library is
 	function get_package_model (model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
 		return pac_package_models.cursor 
 	is begin
-		return pac_package_models.find (package_models, model_name);
+		return pac_package_models.find (package_library, model_name);
 	end;
 
 
