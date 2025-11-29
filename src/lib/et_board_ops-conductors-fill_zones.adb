@@ -151,6 +151,8 @@ is
 	end expand_holes;
 
 
+
+	
 	
 	-- Clips the given zone by the outer board contours.
 	-- The result - a list of islands - will be cropped by the holes.
@@ -196,6 +198,7 @@ is
 		return islands;
 	end zone_to_polygons;
 
+	
 
 	-- Temporarily storage for properties of zones connected with a net:
 	relief_properties	: type_relief_properties;
@@ -210,6 +213,8 @@ is
 		terminals_with_relief	: pac_terminals_with_relief.list;
 	end record;
 	
+
+
 	
 	-- Returns a list of polygons caused by conductor
 	-- objects (tracks, terminals, vias, texts, fiducials) in the given signal layer.
@@ -243,6 +248,8 @@ is
 		default_offset : constant type_float_positive :=
 			half_linewidth_float + zone_clearance_float;
 		
+
+
 		
 		-- NETS -------------------------------------------------------------
 
@@ -346,6 +353,9 @@ is
 			return result;
 		end get_terminal_polygons;
 
+
+
+
 		
 		-- Extracts all conductor objects connected with the given net
 		-- offsets them by half_linewidth_float + a special clearance
@@ -366,6 +376,7 @@ is
 			
 			route : et_pcb.type_route renames element (net_cursor).route;
 
+			
 			procedure query_line (l : in pac_conductor_lines.cursor) is
 				use pac_conductor_lines;
 				line : type_conductor_line renames element (l);
@@ -375,6 +386,7 @@ is
 				end if;
 			end query_line;
 
+			
 			
 			procedure query_arc (a : in pac_conductor_arcs.cursor) is
 				use pac_conductor_arcs;
@@ -387,6 +399,7 @@ is
 
 			
 
+			
 			procedure query_via (v : in pac_vias.cursor) is
 				use pac_vias;
 				via : type_via renames element (v);
@@ -422,6 +435,8 @@ is
 			end query_via;
 
 
+
+			
 			-- Converts tracks, vias and terminals to polygons,
 			-- expands them by the clearance and appends them to
 			-- the result:
@@ -496,6 +511,8 @@ is
 
 		end extract_conductor_objects;
 
+
+		
 		
 		-- This procedure takes a cursor to a device in the schematic,
 		-- converts the outlines of its unconnected terminals to polygons,
@@ -530,9 +547,12 @@ is
 			terminals.iterate (query_terminal'access);
 		end extract_unconnected_terminals;
 
+
+
 		
 		
 		-- TEXTS ---------------------------------------------------------------
+		
 		use et_conductor_text.boards.pac_conductor_texts;
 		
 		procedure query_text (t : in pac_conductor_texts.cursor) is 
@@ -556,8 +576,11 @@ is
 		end query_text;
 
 
+		
+
 
 		-- NON-ELECTRICAL DEVICES ----------------------------------------------
+		
 		use pac_devices_non_electrical;
 
 		-- This procedure takes a cursor to a non-electrical device (like a fiducial 
@@ -595,9 +618,12 @@ is
 
 			-- CS union ?
 		end query_non_electrical_device;
-												  
+
+
+		
 
 		-- ELECTRICAL DEVICES ----------------------------------------------
+		
 		use pac_devices_electrical;
 
 		-- This procedure takes a cursor to an electrical device,
@@ -634,6 +660,7 @@ is
 
 			-- CS union ?
 		end query_electrical_device;
+
 
 		
 	begin -- conductors_to_polygons
@@ -692,6 +719,7 @@ is
 	end conductors_to_polygons;
 	
 
+	
 
 	-- Returns a list of polygons caused by route restrict
 	-- objects in the given signal layer.
@@ -711,6 +739,8 @@ is
 		return result;
 	end restrict_to_polygons;
 
+
+	
 
 	-- Returns a list of polygons caused by cutout areas
 	-- in the given signal layer.
@@ -754,6 +784,8 @@ is
 	end put_into_basket;
 
 
+	
+
 	-- Fills the given zone that is in the given layer
 	-- with the given linewidth and clearance to foreign conductor
 	-- objects. If a certain conductor object requires a greater
@@ -784,6 +816,8 @@ is
 			0.5 * type_float_positive (linewidth);
 
 		use ada.characters.latin_1;
+
+
 		
 		
 		-- Iterates the islands and assigns them to the given zone.
@@ -819,6 +853,8 @@ is
 			islands.iterate (query_island'access);
 		end set_islands;
 
+
+		
 
 		-- Iterates the islands, detects polygons that
 		-- form the lakes (inside the islands). Lakes are caused by objects
@@ -878,6 +914,7 @@ is
 			end loop;					
 		end set_lakes;
 
+
 		
 		-- Fills the islands according to the fill style
 		-- of the given zone:
@@ -925,9 +962,9 @@ is
 		end fill_islands;
 
 
-		procedure make_thermal_reliefes is
-		begin
-			log (text => "making thermal reliefes", level => log_threshold + 4);
+		
+		procedure make_thermal_reliefes is begin
+			log (text => "make_thermal_reliefes", level => log_threshold + 4);
 
 			-- Delete all reliefes left over from the previous zone:
 			terminal_reliefes.clear;
@@ -941,6 +978,7 @@ is
 
 		end make_thermal_reliefes;
 
+		
 		
 	begin -- fill_zone
 		log (text => "zone with corner nearest to origin:" 
@@ -1114,7 +1152,8 @@ is
 	
 
 	
-	procedure floating_zones is
+	
+	procedure fill_floating_zones is
 		use pac_floating_solid;
 		use pac_floating_hatched;
 		
@@ -1136,11 +1175,13 @@ is
 			end do_it;
 
 		begin
-			while zone_cursor /= pac_floating_solid.no_element loop
+			while has_element (zone_cursor) loop
 				module.board.conductors_floating.zones.solid.update_element (zone_cursor, do_it'access);
 				next (zone_cursor);
 			end loop;
 		end floating_solid;
+
+
 
 		
 		procedure floating_hatched (
@@ -1149,6 +1190,7 @@ is
 		is
 			zone_cursor : pac_floating_hatched.cursor := module.board.conductors_floating.zones.hatched.first;
 
+			
 			procedure do_it (
 				zone : in out type_floating_hatched)
 			is begin
@@ -1158,38 +1200,46 @@ is
 					layer		=> zone.properties.layer,
 					clearance	=> zone.isolation);
 			end do_it;
+
 			
 		begin
-			while zone_cursor /= pac_floating_hatched.no_element loop
+			while has_element (zone_cursor) loop
 				module.board.conductors_floating.zones.hatched.update_element (zone_cursor, do_it'access);
 				next (zone_cursor);
 			end loop;
 		end floating_hatched;
 
 		
-	begin -- floating_zones
-		log (text => "floating zones ...", level => log_threshold + 1);
+	begin
+		log (text => "fill_floating_zones", level => log_threshold + 1);
 		update_element (generic_modules, module_cursor, floating_solid'access);
 		update_element (generic_modules, module_cursor, floating_hatched'access);
-	end floating_zones;
+	end fill_floating_zones;
+
+
 
 
 	
-	-- Fills polygons that are connected with a net:
-	procedure connected_zones is
+	
+	
+	-- Fills zones that are connected with a net:
+	procedure fill_connected_zones is
 		use et_nets;
 		
 		use pac_nets;
 		use pac_route_solid;
 		use pac_route_hatched;
 
-		procedure query_nets (
+
+		
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
 			net_cursor : pac_nets.cursor;
 			net_class : type_net_class;		
 
+			
 			
 			procedure route_solid (
 				net_name	: in pac_net_name.bounded_string;
@@ -1250,8 +1300,8 @@ is
 				end do_it;
 				
 				
-			begin -- route_solid
-				while zone_cursor /= pac_route_solid.no_element loop
+			begin
+				while has_element (zone_cursor) loop
 
 					-- do the filling
 					net.route.zones.solid.update_element (zone_cursor, do_it'access);
@@ -1259,6 +1309,7 @@ is
 					next (zone_cursor);
 				end loop;
 			end route_solid;
+
 
 			
 			procedure route_hatched (
@@ -1280,20 +1331,18 @@ is
 					if zone.connection = SOLID then
 						terminal_technology	:= zone.technology;
 					end if;
-
 					
 					fill_zone (
 						zone		=> zone,
 						linewidth	=> element (zone_cursor).linewidth,
 						layer		=> zone.properties.layer,
 						clearance	=> get_greatest (zone.isolation, net_class.clearance),
-						parent_net	=> net_cursor
-						);
+						parent_net	=> net_cursor);
 				end do_it;
 					
 				
-			begin -- route_hatched				
-				while zone_cursor /= pac_route_hatched.no_element loop
+			begin
+				while has_element (zone_cursor) loop
 
 					-- do the filling
 					net.route.zones.hatched.update_element (zone_cursor, do_it'access);
@@ -1303,8 +1352,9 @@ is
 			end route_hatched;
 
 
+			
 			procedure query_net is begin
-				log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 2);
+				log (text => "net " & get_net_name (net_cursor), level => log_threshold + 2);
 				
 				log_indentation_up;
 
@@ -1317,12 +1367,13 @@ is
 			end query_net;
 			
 
+			
 			procedure query_given_net (gn : pac_net_names.cursor) is begin
 				-- Locate the given net in the module.
 				-- If if does not exist, issue a warning.
 				net_cursor := find (module.nets, element (gn));
 
-				if net_cursor /= pac_nets.no_element then
+				if has_element (net_cursor) then
 					query_net;
 				else
 					log (
@@ -1332,16 +1383,17 @@ is
 						level => log_threshold + 2);
 				end if;
 			end query_given_net;
+
 			
 			
-		begin -- query_nets
+		begin
 			if all_zones then
 
 				-- we must query all nets:
 				net_cursor := module.nets.first;
 
 				-- Iterate through all nets of the module:
-				while net_cursor /= pac_nets.no_element loop
+				while has_element (net_cursor) loop
 					query_net;
 					next (net_cursor);
 				end loop;
@@ -1350,30 +1402,30 @@ is
 				-- we query only the nets given by argument "nets":
 				nets.iterate (query_given_net'access);
 			end if;
-		end query_nets;
+		end query_module;
+
 
 		
 	begin 
-		log (text => "connected zones ...", level => log_threshold + 1);
+		log (text => "fill_connected_zones", level => log_threshold + 1);
 		log_indentation_up;
-		update_element (generic_modules, module_cursor, query_nets'access);
+		update_element (generic_modules, module_cursor, query_module'access);
 		log_indentation_down;
-	end connected_zones;
+	end fill_connected_zones;
 
+	
 
 	--offset_scratch : type_distance_model;
 	
 begin -- fill_zones
 
-	log (text => "module " 
-		& enclose_in_quotes (to_string (key (module_cursor)))
-		& " filling zones. Log category " 
-		& to_string (log_category) & " ...",
+	log (text => "module " & to_string (module_cursor)
+		& " fill zones. Log category " & to_string (log_category),
 		level => log_threshold);
 
 	log_indentation_up;
 
-	log (text => "converting outer board contour to polygon ...", level => log_threshold + 1);
+	log (text => "convert outer board contour to polygon", level => log_threshold + 1);
 	
 	board_outer_contour_master := to_polygon (
 		contour		=> get_outer_contour (module_cursor),
@@ -1383,7 +1435,7 @@ begin -- fill_zones
 	
 	-- Shrink the outer board edge by the conductor-to-edge clearance
 	-- as given by the design rules:
-	log (text => "offsetting by DRU parameter " -- CS use predefined string
+	log (text => "offset by DRU parameter " -- CS use predefined string
 		& enclose_in_quotes (dru_parameter_clearance_conductor_to_board_edge) 
 		& to_string (- clearance_conductor_to_edge),
 		level => log_threshold + 1);
@@ -1393,7 +1445,7 @@ begin -- fill_zones
 
 
 	
-	log (text => "converting holes to polygons ...", level => log_threshold + 1);
+	log (text => "convert holes to polygons", level => log_threshold + 1);
 	
 	board_holes_master := to_polygons (
 		holes		=> get_holes (module_cursor),
@@ -1401,7 +1453,7 @@ begin -- fill_zones
 
 	-- Expand the holes by the conductor-to-edge clearance
 	-- as given by the design rules:
-	log (text => "offsetting by DRU parameter " -- CS use predefined string 
+	log (text => "offset by DRU parameter " -- CS use predefined string 
 		& enclose_in_quotes (dru_parameter_clearance_conductor_to_board_edge) 
 		& to_string (clearance_conductor_to_edge),
 		level => log_threshold + 1);
@@ -1414,24 +1466,24 @@ begin -- fill_zones
 		
 		-- Fill all zones if no explicit net names given:
 		
-		log (text => "filling all zones ...", level => log_threshold + 1);
+		log (text => "fill all zones", level => log_threshold + 1);
 
 		all_zones := true;
 		
 		log_indentation_up;
-		connected_zones;
+		fill_connected_zones;
 
-		floating_zones;
+		fill_floating_zones;
 
 		log_indentation_down;
 					
 	else
-		log (text => "filling zones of dedicated nets ...", level => log_threshold + 1);
+		log (text => "fill zones of dedicated nets", level => log_threshold + 1);
 
 		all_zones := false;
 		
 		log_indentation_up;
-		connected_zones;
+		fill_connected_zones;
 		log_indentation_down;
 		
 	end if;
