@@ -36,7 +36,8 @@
 --   history of changes:
 --
 --   ToDo: 
-
+-- 1. Separate stuff related to schematic and board in a child package.
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.characters;			use ada.characters;
@@ -55,7 +56,6 @@ with et_net_names;					use et_net_names;
 with et_text;
 with et_schematic_geometry;			use et_schematic_geometry;
 with et_schematic_coordinates;		use et_schematic_coordinates;
-with et_pcb;
 with et_pcb_stack;
 with et_board_coordinates;
 with et_board_geometry;
