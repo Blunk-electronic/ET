@@ -57,10 +57,9 @@ with et_primitive_objects;		use et_primitive_objects;
 with et_string_processing;		use et_string_processing;
 
 with et_board_geometry;			use et_board_geometry;
--- with et_board_coordinates;		use et_board_coordinates;
 with et_pcb_stack;
 with et_design_rules_board;		use et_design_rules_board;
-
+with et_logging;				use et_logging;
 
 
 package et_fill_zones is
@@ -363,6 +362,11 @@ package et_fill_zones is
 		debug			: in boolean := false)
 		return type_distance_to_conducting_area;
 	
+
+
+
+	
+
 	
 -- SOLID FILLED ZONE:
 	

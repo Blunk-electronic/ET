@@ -49,7 +49,7 @@ with et_logging;				use et_logging;
 with et_net_names;				use et_net_names;
 with et_net_class;				use et_net_class;
 with et_netlists;
-with et_pcb;
+with et_route;
 with et_commit;
 with et_sheets;					use et_sheets;
 with et_net_ports;				use et_net_ports;
@@ -95,7 +95,7 @@ package et_nets is
 	
 
 	type type_net_base is tagged record
-		route	: et_pcb.type_route; -- routing information -> pcb related
+		route	: et_route.type_net_route; -- routing information -> pcb related
 
 		-- The net class of the net: default, High_Voltage, EM/SI-critical, ...
 		class 	: pac_net_class_name.bounded_string := net_class_name_default;

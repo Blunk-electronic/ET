@@ -51,6 +51,7 @@ with et_devices_electrical.packages;	use et_devices_electrical.packages;
 with et_devices_non_electrical;			use et_devices_non_electrical;
 
 with et_net_ports;
+with et_route;						use et_route;
 
 
 separate (et_board_ops.conductors)
@@ -374,7 +375,7 @@ is
 			polygons : pac_polygon_list.list;
 
 			
-			route : et_pcb.type_route renames element (net_cursor).route;
+			route : type_net_route renames element (net_cursor).route;
 
 			
 			procedure query_line (l : in pac_conductor_lines.cursor) is

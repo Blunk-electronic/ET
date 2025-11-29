@@ -584,6 +584,9 @@ package body et_fill_zones is
 		
 	end get_distance_to_nearest_island;
 
+
+
+
 	
 	
 	function get_distance_to_conducting_area (
@@ -688,6 +691,12 @@ package body et_fill_zones is
 
 	
 
+
+	
+
+
+
+	
 	
 -- 	procedure route_fill_zone_properties (
 -- 	-- Logs the properties of the given fill_zone of a route

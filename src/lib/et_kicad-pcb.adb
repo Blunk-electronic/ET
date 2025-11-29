@@ -48,6 +48,7 @@ with et_import;
 with et_vias;
 with et_pcb_stack;
 with et_nets;
+with et_route;						use et_route;
 
 with et_device_appearance;			use et_device_appearance;
 with et_device_prefix;
@@ -4931,9 +4932,9 @@ package body et_kicad.pcb is
 				-- Collects segments and vias by the given net_id and returns them as a type_route.
 				function route (
 					net_id : in type_net_id) 
-					return et_pcb.type_route 
+					return type_net_route
 				is
-					route : et_pcb.type_route; -- to be returned
+					route : type_net_route; -- to be returned
 					use type_segments;
 					segment_cursor : type_segments.cursor := board.segments.first;
 					line : type_conductor_line; -- an ET segment

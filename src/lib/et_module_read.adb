@@ -66,6 +66,7 @@ with et_primitive_objects;			use et_primitive_objects;
 with et_axes;						use et_axes;
 with et_module_instance;			use et_module_instance;
 with et_nets;
+with et_route;						use et_route;
 with et_net_strands;				use et_net_strands;
 with et_net_names;					use et_net_names;
 with et_net_junction;
@@ -1345,7 +1346,7 @@ package body et_module_read is
 
 	-- ROUTE:
 		
-		route		: et_pcb.type_route;
+		route		: type_net_route;
 
 		
 		sheet_descriptions			: et_drawing_frame.schematic.pac_schematic_descriptions.map;

@@ -55,7 +55,8 @@ with et_devices_electrical;
 with et_devices_electrical.packages;
 
 with et_nets;
-with et_pcb;
+-- with et_pcb;
+with et_route;
 with et_devices_non_electrical;
 with et_package_model;				use et_package_model;
 with et_package_library;
@@ -1710,12 +1711,13 @@ is
 				module		: in type_generic_module) 
 			is
 				use et_nets;
+				use et_route;
 				use pac_nets;
 				nets : pac_nets.map renames module.nets;
 
 				
 				procedure query_net (c : in pac_nets.cursor) is
-					route : et_pcb.type_route renames element (c).route;
+					route : type_net_route renames element (c).route;
 
 					-------------------------------
 					use et_conductor_segment.boards;

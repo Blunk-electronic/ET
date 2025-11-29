@@ -154,26 +154,6 @@ package et_pcb is
 
 
 
-	
-
-	
-	-- A fully routed net may consist of these conductor objects:
-	
-	type type_route is record
-		airwires	: et_ratsnest.type_airwires;
-		
-		lines 		: pac_conductor_lines.list;
-		arcs		: pac_conductor_arcs.list;
-		-- CS: circles ?
-		vias		: pac_vias.list;
-
-		-- fill zones:
-		zones	: boards.type_route;
-
-		-- user defined restrictions. currently not supported. CS
-		restrict	: et_route_restrict.boards.type_route_restrict;
-	end record;
-	
 
 
 
