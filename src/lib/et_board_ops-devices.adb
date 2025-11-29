@@ -3828,6 +3828,108 @@ package body et_board_ops.devices is
 	
 
 	
+	procedure get_terminal_polygons (
+		module_cursor			: in pac_generic_modules.cursor;
+		layer_category 			: in type_signal_layer_category;
+		zone_polygon			: in pac_polygons.type_polygon;
+		net_cursor 				: in pac_nets.cursor;
+		polygons				: out pac_polygons.pac_polygon_list.list;		
+		with_reliefes			: in boolean;
+		terminals_with_relief	: out pac_terminals_with_relief.list;
+		log_threshold			: in type_log_level)
+	is 
+		use pac_polygons;
+		use et_nets;
+
+		use et_net_ports;
+		use pac_device_ports;
+		
+		ports : type_ports;
+
+		
+		
+		-- Converts the terminal, that is linked to the given device port,
+		-- to a polygon and appends it to the result:
+		procedure query_device_port (d : in pac_device_ports.cursor) is
+
+			port : type_device_port renames element (d);
+			-- Now port contains the device name, unit name and port name.
+			
+			-- Get the cursor to the device in the schematic:
+			device_cursor : constant pac_devices_electrical.cursor := 
+				get_electrical_device (module_cursor, port.device_name);
+
+			-- Get the cursor to the physical terminal (in the package model)
+			-- that is linked with the port:
+			terminal_cursor : constant pac_terminals.cursor := 
+				get_terminal (device_cursor, port.unit_name, port.port_name);
+
+			-- Convert the terminal outline to a polygon:
+			use et_board_ops.devices;
+			terminal_polygon : constant type_terminal_polygon := to_polygon (
+				module_cursor, device_cursor, terminal_cursor, layer_category, fill_tolerance);
+
+			terminal_zone_overlap : type_overlap_status;
+			
+		begin
+			-- If the terminal does not affect the current signal layer,
+			-- then nothing happens here. Otherwise the outline of the terminal
+			-- will be appended to the result:
+			if terminal_polygon.exists then
+				polygons.append (terminal_polygon.polygon);
+
+				-- If the terminals of this net require thermal reliefes, then
+				-- collect the necessary information:
+				if with_reliefes then
+
+					-- Do a preselection of those terminals that are overlapping
+					-- the given zone or are inside the given zone:
+					terminal_zone_overlap := get_overlap_status (
+						polygon_A => terminal_polygon.polygon,
+						polygon_B => zone_polygon);
+
+					case terminal_zone_overlap is
+						when A_INSIDE_B | A_OVERLAPS_B =>
+							terminals_with_relief.append ((
+								position => terminal_polygon.position, -- in the board
+								outline	 => terminal_polygon.polygon, -- in the board
+								terminal => terminal_cursor));  -- in the package model
+
+						when others => null;
+					end case;
+				end if;
+
+			end if;
+		end query_device_port;
+
+		
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " get_terminal_polygons",
+			-- & " layer cat: " & to_string (layer_category),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		-- Get the ports of all devices connected with the given net.
+		-- Therefore we do not pass a specific assembly variant here.
+		ports := get_ports (net_cursor); 
+
+		-- In variable "ports" we are interested in selector "devices" exclusively.
+		-- Submodule ports and netchangers are just virtual devices
+		-- that connect two conductor tracks. They can therefore be ignored:
+		ports.devices.iterate (query_device_port'access);
+
+		log_indentation_down;
+	end get_terminal_polygons;
+	
+	
+
+	
+	
+	
 end et_board_ops.devices;
 	
 -- Soli Deo Gloria

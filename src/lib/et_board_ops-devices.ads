@@ -49,6 +49,11 @@ with et_device_property_level;			use et_device_property_level;
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_non_electrical;			use et_devices_non_electrical;
 
+with et_board_geometry;
+-- use et_board_geometry.pac_polygons;
+with et_thermal_relief;					use et_thermal_relief;
+
+
 
 package et_board_ops.devices is
 
@@ -712,6 +717,23 @@ package et_board_ops.devices is
 		device_cursor	: in pac_devices_electrical.cursor) -- IC45
 		return pac_terminals.map;
 
+	
+	
+	
+	-- Converts the terminals of packages that are connected with
+	-- of the given net to a list of polygons.
+	-- If the flag "with_relief" is true, then the information required
+	-- to compute thermal reliefes is collected in 
+	-- list "terminals_with_relief":
+	procedure get_terminal_polygons (
+		module_cursor			: in pac_generic_modules.cursor;
+		layer_category 			: in type_signal_layer_category;
+		zone_polygon			: in pac_polygons.type_polygon;
+		net_cursor 				: in pac_nets.cursor;
+		polygons				: out pac_polygons.pac_polygon_list.list;		
+		with_reliefes			: in boolean;
+		terminals_with_relief	: out pac_terminals_with_relief.list;
+		log_threshold			: in type_log_level);
 	
 	
 end et_board_ops.devices;

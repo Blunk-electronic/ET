@@ -274,6 +274,7 @@ is
 		-- If the flag "collect_terminals_with_relief" is true, then the information required
 		-- to compute the thermal reliefes is collected in 
 		-- list "terminals_with_thermal_relief":
+		-- CS remove
 		function get_terminal_polygons (net_cursor : in pac_nets.cursor)
 			return pac_polygon_list.list
 		is
@@ -457,7 +458,19 @@ is
 				-- CS fill zones, ... see et_pcb.type_route
 
 				-- terminals of packages
-				terminals := get_terminal_polygons (net_cursor);
+				-- terminals := get_terminal_polygons (net_cursor);
+
+				get_terminal_polygons (
+					module_cursor			=> module_cursor,
+					layer_category			=> layer_category,
+					zone_polygon			=> zone_polygon,
+					net_cursor				=> net_cursor,
+					polygons				=> terminals,
+					with_reliefes			=> collect_terminals_with_relief,
+					terminals_with_relief	=> result.terminals_with_relief,
+					log_threshold			=> log_threshold + 6);
+
+										  
 				polygons.splice (before => pac_polygon_list.no_element, source => terminals);
 
 				-- expand polygons by clearance
