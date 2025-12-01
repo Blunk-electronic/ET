@@ -397,7 +397,21 @@ package et_terminals is
 		key_type		=> pac_terminal_name.bounded_string, -- H7, 14
 		element_type	=> type_terminal);
 
+	use pac_terminals;
 
+	
+
+	function get_terminal_name (
+		terminal_cursor	: in pac_terminals.cursor)
+		return pac_terminal_name.bounded_string;
+
+
+	function get_terminal_name (
+		terminal_cursor	: in pac_terminals.cursor)
+		return string;
+
+	
+	
 	-- Returns the assembly technology of the given terminal:
 	function get_technology (
 		terminal_cursor	: in pac_terminals.cursor)

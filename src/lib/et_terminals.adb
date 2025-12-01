@@ -280,6 +280,28 @@ package body et_terminals is
 
 
 
+	
+
+	function get_terminal_name (
+		terminal_cursor	: in pac_terminals.cursor)
+		return pac_terminal_name.bounded_string
+	is begin
+		return key (terminal_cursor);
+	end;
+
+
+
+	function get_terminal_name (
+		terminal_cursor	: in pac_terminals.cursor)
+		return string
+	is begin
+		return to_string (get_terminal_name (terminal_cursor));
+	end;
+
+
+
+	
+
 	function get_technology (
 		terminal_cursor	: in pac_terminals.cursor)
 		return type_assembly_technology
