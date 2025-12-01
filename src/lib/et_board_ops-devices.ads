@@ -711,10 +711,12 @@ package et_board_ops.devices is
 	-- Returns the unconnected terminals of the given device
 	-- in the given module. This query assumes the default assembly
 	-- variant, means the device of interest exists in any case.
-	-- If the given device is virtual, then an empty list will be returned:
+	-- If the given device is virtual (like a GND),
+	-- then an empty list will be returned:
 	function get_unconnected_terminals (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in pac_devices_electrical.cursor) -- IC45
+		device_cursor	: in pac_devices_electrical.cursor; -- IC45
+		log_threshold	: in type_log_level)
 		return pac_terminals.map;
 
 	
