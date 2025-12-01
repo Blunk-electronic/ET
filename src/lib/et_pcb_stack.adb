@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -45,6 +45,16 @@ with et_string_processing;		use et_string_processing;
 
 package body et_pcb_stack is
 
+
+	function to_string (
+		category	: in type_signal_layer_category)
+		return string
+	is begin
+		return type_signal_layer_category'image (category);
+	end;
+
+
+	
 		
 	function invert_category (cat : in type_signal_layer_category)
 		return type_signal_layer_category

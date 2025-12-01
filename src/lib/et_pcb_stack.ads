@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -66,6 +66,12 @@ package et_pcb_stack is
 
 	--CS subtype type_signal_layer_category_outer is type_signal_layer_category
 		--range (OUTER_BOTTOM .. OUTER_BOTTOM);
+
+
+	function to_string (
+		category	: in type_signal_layer_category)
+		return string;
+
 	
 	function invert_category (cat : in type_signal_layer_category)
 		return type_signal_layer_category;
