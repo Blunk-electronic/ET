@@ -58,8 +58,16 @@ package et_net_ports is
 	-- This is the port of a device as it appears in a net segment:
 	type type_device_port is record
 		device_name	: type_device_name; -- IC4
+		-- CS cursor to the electrical device instead ?
+		-- could improve performance.
+		
 		unit_name	: pac_unit_name.bounded_string; -- A
+		-- CS cursor to the unit instead ?
+		-- could improve performance.
+		
 		port_name	: pac_port_name.bounded_string; -- IN1
+		-- CS cursor to the port instead ?
+		-- could improve performance.
 	end record;
 
 
