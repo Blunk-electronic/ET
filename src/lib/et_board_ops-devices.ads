@@ -721,18 +721,35 @@ package et_board_ops.devices is
 	
 	
 	-- Converts the terminals of packages that are connected with
-	-- of the given net to a list of polygons.
+	-- the given net to a list of polygons.
 	-- If the flag "with_relief" is true, then the information required
 	-- to compute thermal reliefes is collected in 
 	-- list "terminals_with_relief":
 	procedure get_terminal_polygons (
 		module_cursor			: in pac_generic_modules.cursor;
+		
+		-- This is specifies whether the affected
+		-- conductor layer is a top, bottom or inner signal layer:
 		layer_category 			: in type_signal_layer_category;
+		
+		-- This is the zone inside which therminals
+		-- are searched for:
 		zone_polygon			: in pac_polygons.type_polygon;
+		
+		-- This is the net for which terminals are searched for:
 		net_cursor 				: in pac_nets.cursor;
-		polygons				: out pac_polygons.pac_polygon_list.list;		
+		
+		-- This is the outcome of the procedure, a list
+		-- of polygons:
+		terminal_polygons		: out pac_polygons.pac_polygon_list.list;
+		
+		-- This flag specifies whether additional information
+		-- for thermal reliefes is also to be collected:
 		with_reliefes			: in boolean;
+		
+		-- The output providing information about thermal reliefes:
 		terminals_with_relief	: out pac_terminals_with_relief.list;
+		
 		log_threshold			: in type_log_level);
 	
 	
