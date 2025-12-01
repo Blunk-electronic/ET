@@ -594,6 +594,12 @@ package et_devices_electrical.packages is
 		return et_terminals.pac_terminals.cursor;
 
 
+	-- CS function get_terminal (
+		-- device	: in pac_devices_electrical.cursor;
+		-- unit	: in pac_units.cursor;
+		-- port	: in pac_ports.cursor)
+		-- return et_terminals.pac_terminals.cursor;
+	
 
 	-- Returns ALL terminals of the given device.
 	-- This query assumes the default assembly
