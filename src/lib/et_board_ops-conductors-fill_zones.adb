@@ -270,95 +270,6 @@ is
 			
 
 		
-		-- Converts the terminals of the given net to a list of polygons.
-		-- If the flag "collect_terminals_with_relief" is true, then the information required
-		-- to compute the thermal reliefes is collected in 
-		-- list "terminals_with_thermal_relief":
-		-- CS remove
-		function get_terminal_polygons (net_cursor : in pac_nets.cursor)
-			return pac_polygon_list.list
-		is
-			use et_nets;
-			
-			result : pac_polygon_list.list; -- a list of polygons to be returned
-
-			use et_net_ports;
-			use pac_device_ports;
-			ports : type_ports;
-
-			
-			-- Converts the terminal, that is linked to the given device port,
-			-- to a polygon and appends it to the result:
-			procedure query_device_port (d : in pac_device_ports.cursor) is
-
-				port : type_device_port renames element (d);
-				-- Now port contains the device name, unit name and port name.
-				
-				-- Get the cursor to the device in the schematic:
-				device_cursor : constant pac_devices_electrical.cursor := 
-					get_electrical_device (module_cursor, port.device_name);
-
-				-- Get the cursor to the physical terminal (in the package model)
-				-- that is linked with the port:
-				terminal_cursor : constant pac_terminals.cursor := 
-					get_terminal (device_cursor, port.unit_name, port.port_name);
-
-				-- Convert the terminal outline to a polygon:
-				use et_board_ops.devices;
-				terminal_polygon : constant type_terminal_polygon := to_polygon (
-					module_cursor, device_cursor, terminal_cursor, layer_category, fill_tolerance);
-
-				terminal_zone_overlap : type_overlap_status;
-				
-			begin -- query_device_port
-				-- If the terminal does not affect the current signal layer,
-				-- then nothing happens here. Otherwise the outline of the terminal
-				-- will be appended to the result:
-				if terminal_polygon.exists then
-					result.append (terminal_polygon.polygon);
-
-					-- If the terminals of this net require thermal reliefes, then
-					-- collect the necessary information:
-					if collect_terminals_with_relief then
-
-						-- Do a preselection of those terminals that are overlapping
-						-- the given zone or are inside the given zone:
-						terminal_zone_overlap := get_overlap_status (
-							polygon_A => terminal_polygon.polygon,
-							polygon_B => zone_polygon);
-
-						case terminal_zone_overlap is
-							when A_INSIDE_B | A_OVERLAPS_B =>
-								conductors_to_polygons.result.terminals_with_relief.append ((
-									position => terminal_polygon.position, -- in the board
-									outline	 => terminal_polygon.polygon, -- in the board
-									terminal => terminal_cursor));  -- in the package model
-
-							when others => null;
-						end case;
-					end if;
-
-				end if;
-			end query_device_port;
-
-			
-		begin
-			-- Get the ports of all devices connected with the given net.
-			-- Therefore we do not pass a specific assembly variant here.
-			ports := get_ports (net_cursor); 
-
-			-- In variable "ports" we are interested in selector "devices" exclusively.
-			-- Submodule ports and netchangers are just virtual devices
-			-- that connect two conductor tracks. They can therefore be ignored:
-			ports.devices.iterate (query_device_port'access);
-	
-			return result;
-		end get_terminal_polygons;
-
-
-
-
-		
 		-- Extracts all conductor objects connected with the given net
 		-- offsets them by half_linewidth_float + a special clearance
 		-- and appends them to the result:
@@ -465,7 +376,7 @@ is
 					layer_category			=> layer_category,
 					zone_polygon			=> zone_polygon,
 					net_cursor				=> net_cursor,
-					polygons				=> terminals,
+					terminal_polygons		=> terminals,
 					with_reliefes			=> collect_terminals_with_relief,
 					terminals_with_relief	=> result.terminals_with_relief,
 					log_threshold			=> log_threshold + 6);
@@ -528,41 +439,27 @@ is
 
 		
 		
-		-- This procedure takes a cursor to a device in the schematic,
-		-- converts the outlines of its unconnected terminals to polygons,
-		-- offsets them by the zone_clearance + half_linewidth_float and
-		-- finally appends them to the result:
-		procedure extract_unconnected_terminals (
-			device_cursor : in pac_devices_electrical.cursor) 
-		is
-			use et_board_ops.devices;
-			
-			terminals : constant pac_terminals.map := 
-				get_unconnected_terminals (module_cursor, device_cursor);
-
-			
-			procedure query_terminal (terminal_cursor : in pac_terminals.cursor) is
-				-- Convert the terminal outline to a polygon:
-				terminal_polygon : type_terminal_polygon := to_polygon (
-					module_cursor, device_cursor, terminal_cursor, 
-					layer_category, fill_tolerance);
-			begin
-				--put_line ("nc " & to_string (pac_terminals.key (terminal_cursor)));
-				
-				if terminal_polygon.exists then
-					offset_polygon (terminal_polygon.polygon, default_offset);
-					result.polygons.append (terminal_polygon.polygon);
-				end if;
-			end query_terminal;
-
-			
+		-- This procedure converts the outlines of unconnected terminals
+		-- to polygons, offsets them by the default_offset and
+		-- appends them to the result:
+		procedure extract_unconnected_terminals is
 		begin
-			--put_line ("dev " & to_string (key (device_cursor)));
-			terminals.iterate (query_terminal'access);
-		end extract_unconnected_terminals;
+			log (text => "unconnected terminals", level => log_threshold + 5);
+			log_indentation_up;
 
+			get_polygons_of_unconnected_terminals (
+			 	module_cursor		=> module_cursor,
+			 	layer_category		=> layer_category,
+				zone_polygon		=> zone_polygon,
+				offset				=> default_offset,
+				terminal_polygons	=> result.polygons,
+				log_threshold		=> log_threshold + 6);
 
+			log_indentation_down;
+		end;
+	
 
+		
 		
 		
 		-- TEXTS ---------------------------------------------------------------
@@ -703,8 +600,9 @@ is
 		element (module_cursor).nets.iterate (extract_conductor_objects'access);
 
 		-- Extract unconnected terminals of devices:
-		log (text => "unconnected terminals", level => log_threshold + 5);
-		element (module_cursor).devices.iterate (extract_unconnected_terminals'access);
+		extract_unconnected_terminals;
+
+		
 
 		-- board texts:
 		log (text => "board texts", level => log_threshold + 5);
