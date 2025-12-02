@@ -148,6 +148,10 @@ package et_thermal_relief is
 	package pac_terminals_with_relief is new doubly_linked_lists (type_terminal_with_relief);
 
 
+	procedure append_relieves (
+		target	: in out pac_terminals_with_relief.list;
+		source	: in pac_terminals_with_relief.list);
+	
 
 	-- The spokes of a thermal symbol. These are straight conductor tracks
 	-- that start inside the pad and run outward into the surrounding fill zone.

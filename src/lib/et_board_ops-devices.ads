@@ -743,6 +743,7 @@ package et_board_ops.devices is
 		
 		-- This is the outcome of the procedure, a list of polygons:
 		terminal_polygons		: out pac_polygons.pac_polygon_list.list;
+		-- CS rename to polygons, should be in out
 		
 		-- This flag specifies whether additional information
 		-- for thermal reliefes is also to be collected:
@@ -752,6 +753,9 @@ package et_board_ops.devices is
 		terminals_with_relief	: out pac_terminals_with_relief.list;
 		
 		log_threshold			: in type_log_level);
+	
+	
+	
 	
 	
 	
@@ -769,10 +773,12 @@ package et_board_ops.devices is
 		zone_polygon			: in pac_polygons.type_polygon;
 		-- CS currently not used
 		
+		-- The offset by which the polygons are to be expanded:
 		offset					: in et_board_geometry.pac_geometry_brd.type_float_positive;
 		
 		-- This is the outcome of the procedure, a list of polygons:
 		terminal_polygons		: out pac_polygons.pac_polygon_list.list;
+		-- CS rename to polygons ?
 		
 		log_threshold			: in type_log_level);
 	

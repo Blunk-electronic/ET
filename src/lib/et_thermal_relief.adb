@@ -64,7 +64,19 @@ package body et_thermal_relief is
 	end to_pad_technology;
 	
 
-														 
+
+	procedure append_relieves (
+		target	: in out pac_terminals_with_relief.list;
+		source	: in pac_terminals_with_relief.list)
+	is 
+		scratch : pac_terminals_with_relief.list := source;
+	begin
+		target.splice (before => pac_terminals_with_relief.no_element,
+					   source => scratch);
+	end;
+
+
+	
 
 	function make_relief (
 		zone				: in type_zone'class;

@@ -228,7 +228,7 @@ is
 	function conductors_to_polygons (
 		zone_polygon	: in type_polygon;
 		zone_clearance	: in type_track_clearance;
-		linewidth		: in type_track_width;								
+		linewidth		: in type_track_width;
 		layer 			: in type_signal_layer;
 		parent_net		: in pac_nets.cursor := pac_nets.no_element)
 		return type_conductor_to_polygons_result
@@ -266,184 +266,40 @@ is
 		end set_parent_net_name;
 	
 
-		collect_terminals_with_relief : boolean := false;
-			
-
+	
 		
-		-- Extracts all conductor objects connected with the given net
-		-- offsets them by half_linewidth_float + a special clearance
+		-- Extracts the polygons of all conductor objects which are 
+		-- connected with the given net
 		-- and appends them to the result:
-		procedure extract_conductor_objects (net_cursor : in pac_nets.cursor) is
-
-			-- The clearance between net and zone is either the given zone_clearance
-			-- or the clearance of the net itself. However, the greater value is applied:
-			net_class : constant type_net_class := get_net_class (module_cursor, net_cursor);
+		procedure extract_conductor_objects_of_nets is begin
+			log (text => "conductor objects of nets", level => log_threshold + 5);
 			
-			clearance : constant type_track_clearance := 
-				get_greatest (zone_clearance, net_class.clearance);
-
-			-- The polygons of the candidate net are collected here
-			-- (later they will be appended to the result):
-			polygons : pac_polygon_list.list;
-
+			log_indentation_up;
 			
-			route : type_net_route renames element (net_cursor).route;
-
+			get_polygons_of_nets (
+				module_cursor			=> module_cursor,
+				layer_category			=> layer_category,
+				zone					=> zone_polygon,
+				linewidth				=> linewidth,
+				layer					=> layer,
+				zone_clearance			=> zone_clearance,
+				bottom_layer			=> bottom_layer,
+				parent_net				=> parent_net,
+				result					=> result.polygons,
+				terminal_connection		=> terminal_connection,
+				terminals_with_relief	=> result.terminals_with_relief,
+				log_threshold			=> log_threshold + 6);
 			
-			procedure query_line (l : in pac_conductor_lines.cursor) is
-				use pac_conductor_lines;
-				line : type_conductor_line renames element (l);
-			begin
-				if line.layer = layer then
-					polygons.append (to_polygon (line, fill_tolerance));
-				end if;
-			end query_line;
+			log_indentation_down;
+		end extract_conductor_objects_of_nets;
 
-			
-			
-			procedure query_arc (a : in pac_conductor_arcs.cursor) is
-				use pac_conductor_arcs;
-				arc : type_conductor_arc renames element (a);
-			begin
-				if arc.layer = layer then
-					polygons.append (to_polygon (arc, fill_tolerance));
-				end if;
-			end query_arc;
-
-			
-
-			
-			procedure query_via (v : in pac_vias.cursor) is
-				use pac_vias;
-				via : type_via renames element (v);
-			begin
-				case via.category is
-					when THROUGH =>
-						if layer_category = OUTER_TOP or layer_category = OUTER_BOTTOM then
-							polygons.append (to_polygon (via.position, via.restring_outer, via.diameter, fill_tolerance));
-						else
-							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
-						end if;
-
-					when BLIND_DRILLED_FROM_TOP =>
-						if layer_category = OUTER_TOP then
-							polygons.append (to_polygon (via.position, via.restring_top, via.diameter, fill_tolerance));
-						elsif blind_via_uses_layer (via, layer, bottom_layer) then
-							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
-						end if;
-
-					when BLIND_DRILLED_FROM_BOTTOM =>
-						if layer_category = OUTER_BOTTOM then
-							polygons.append (to_polygon (via.position, via.restring_bottom, via.diameter, fill_tolerance));
-						elsif blind_via_uses_layer (via, layer, bottom_layer) then
-							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
-						end if;
-						
-					when BURIED =>
-						if layer_category = INNER and then
-						   buried_via_uses_layer (via, layer) then
-							polygons.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
-						end if;
-				end case;
-			end query_via;
-
-
-
-			
-			-- Converts tracks, vias and terminals to polygons,
-			-- expands them by the clearance and appends them to
-			-- the result:
-			procedure convert_conductor_objects_to_polygons is 
-				terminals : pac_polygon_list.list;
-			begin
-				-- Query track segments:
-				route.lines.iterate (query_line'access);
-				route.arcs.iterate (query_arc'access);
-				
-				-- Query vias:
-				route.vias.iterate (query_via'access);
-				
-				-- CS evaluate native_tracks_embedded ?
-
-				
-				-- CS fill zones, ... see et_pcb.type_route
-
-				-- terminals of packages
-				-- terminals := get_terminal_polygons (net_cursor);
-
-				get_terminal_polygons (
-					module_cursor			=> module_cursor,
-					layer_category			=> layer_category,
-					zone_polygon			=> zone_polygon,
-					net_cursor				=> net_cursor,
-					terminal_polygons		=> terminals,
-					with_reliefes			=> collect_terminals_with_relief,
-					terminals_with_relief	=> result.terminals_with_relief,
-					log_threshold			=> log_threshold + 6);
-
-										  
-				polygons.splice (before => pac_polygon_list.no_element, source => terminals);
-
-				-- expand polygons by clearance
-				offset_polygons (polygons, half_linewidth_float + type_float_positive (clearance));
-
-				result.polygons.splice (before => pac_polygon_list.no_element, source => polygons);
-			end convert_conductor_objects_to_polygons;
-			
-
-			-- If we are processing a zone that is connected with a net,
-			-- and the candidate is the parent net of the zone, then this
-			-- flag is set to true:
-			in_parent_net : boolean := false;
-
-			
-		begin -- extract_conductor_objects
-			
-			-- If no parent net was given, then the given zone is 
-			-- assumed to be a floating zone. If a parent net was given,
-			-- then the zone is connected with a net:
-			if parent_net = pac_nets.no_element then -- floating zone
-				collect_terminals_with_relief := false;
-				convert_conductor_objects_to_polygons;
-			else
-				-- Zone is connected with a net:
-				-- NOTE: This is relevant exclusively for zones connected with a net !
-
-				if key (net_cursor) = parent_net_name then
-					in_parent_net := true;
-				end if;
-
-				
-				case terminal_connection is
-					when SOLID =>
-						-- Skip the parent net and process all other nets.
-						-- Thus all conductor objects of the parent net will be completely
-						-- embedded in the fill zone:
-						if not in_parent_net then
-							collect_terminals_with_relief := false;
-							convert_conductor_objects_to_polygons;
-						end if;
-
-					when THERMAL =>
-						if in_parent_net then
-							collect_terminals_with_relief := true;
-						else
-							collect_terminals_with_relief := false;
-						end if;
-						convert_conductor_objects_to_polygons;
-				end case;
-			end if;
-
-		end extract_conductor_objects;
 
 
 		
 		
 		-- This procedure converts the outlines of unconnected terminals
-		-- to polygons, offsets them by the default_offset and
-		-- appends them to the result:
-		procedure extract_unconnected_terminals is
-		begin
+		-- to polygons and appends them to the result:
+		procedure extract_unconnected_terminals is begin
 			log (text => "unconnected terminals", level => log_threshold + 5);
 			log_indentation_up;
 
@@ -594,10 +450,8 @@ is
 		-- by argument parent_net:
 		set_parent_net_name;
 		
-		-- Extract conductor objects of nets. 
-		-- Exempt the parent net (if specified by argument parent_net):
-		log (text => "nets", level => log_threshold + 5);
-		element (module_cursor).nets.iterate (extract_conductor_objects'access);
+		-- Extract conductor objects of nets.
+		extract_conductor_objects_of_nets;
 
 		-- Extract unconnected terminals of devices:
 		extract_unconnected_terminals;
