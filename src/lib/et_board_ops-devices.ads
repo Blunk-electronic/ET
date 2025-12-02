@@ -719,36 +719,8 @@ package et_board_ops.devices is
 		log_threshold	: in type_log_level)
 		return pac_terminals.map;
 
-	
-	
 
-	
-	
-	
-	
-	-- This procedure collects terminals of packages that are not
-	-- connected with any net and appends them to the terminal_polygons:
-	procedure get_polygons_of_unconnected_terminals (
-		module_cursor			: in pac_generic_modules.cursor;
-		
-		-- This is specifies whether the affected
-		-- conductor layer is a top, bottom or inner signal layer:
-		layer_category 			: in type_signal_layer_category;
-		
-		-- This is the zone inside which therminals
-		-- are searched for:
-		zone_polygon			: in pac_polygons.type_polygon;
-		-- CS currently not used
-		
-		-- The offset by which the polygons are to be expanded:
-		offset					: in et_board_geometry.pac_geometry_brd.type_float_positive;
-		
-		-- This is the outcome of the procedure, a list of polygons:
-		terminal_polygons		: out pac_polygons.pac_polygon_list.list;
-		-- CS rename to polygons ?
-		
-		log_threshold			: in type_log_level);
-	
+
 	
 end et_board_ops.devices;
 
