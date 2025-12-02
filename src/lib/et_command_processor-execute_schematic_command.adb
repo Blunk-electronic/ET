@@ -1866,7 +1866,24 @@ is
 
 
 	
-
+	-- This procedure parses a command that set the 
+	-- class of a net.
+	-- Example: "schematic demo set class GND pwr"
+	procedure set_net_class is begin
+		case cmd_field_count is
+			when 6 =>
+				set_net_class (
+					module_cursor	=> active_module,
+					net_name		=> to_net_name (get_field (5)),
+					net_class		=> to_net_class_name (get_field (6)),
+					log_threshold	=> log_threshold + 1);
+				
+			when 7 .. type_field_count'last => too_long;
+			when others => command_incomplete;
+		end case;
+	end set_net_class;
+	
+	
 	
 
 	-- Parses a command like:
@@ -2899,20 +2916,8 @@ is
 			when VERB_SET =>
 				case noun is
 					when NOUN_CLASS =>
-						case cmd_field_count is
-							when 6 =>
-								-- schematic led_driver set class GND pwr
-								set_net_class (
-									module_cursor	=> active_module,
-									net_name		=> to_net_name (get_field (5)),
-									net_class		=> to_net_class_name (get_field (6)),
-									log_threshold	=> log_threshold + 1);
-								
-							when 7 .. type_field_count'last => too_long;
-							when others => command_incomplete;
-						end case;
-						
-						
+						set_net_class;
+											
 					when NOUN_GRID =>
 						set_grid;
 

@@ -594,6 +594,25 @@ Nets and Net Labels
 	|VNS| del c
 
 	
+
+
+#. Set Net Class
+
+	By default a net is member of class 'default'.
+	These figures apply for the default class:
+	- clearance 0.3mm
+	- minimal track width 0.3mm
+	- restring minimum 0.3mm
+
+
+	This example makes net GND a member of class pwr:
+
+	.. code-block::
+	
+		demo set class GND pwr
+
+
+	
 	
 ++++++++++++++++++
 Displaying Objects
