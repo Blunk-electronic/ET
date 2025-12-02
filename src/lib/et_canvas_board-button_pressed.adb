@@ -47,9 +47,14 @@ procedure button_pressed (
 	event : in type_mouse_event)
 is
 	use et_modes.board;
-	
+
+	-- The exact place of the pointer:
+	click_point : constant type_vector_model := event.point;
+
+	-- The grid point nearest to the point:
 	snap_point : constant type_vector_model := snap_to_grid (event.point);
 
+	
 	
 	procedure left_button is 
 

@@ -50,9 +50,15 @@ procedure button_pressed (
 is
 	use et_modes.schematic;
 	
-	snap_point : constant type_vector_model := snap_to_grid (event.point);
-	-- CS rename to point
 
+	-- The exact place of the pointer:
+	click_point : constant type_vector_model := event.point;
+
+	-- The grid point nearest to the point:
+	snap_point : constant type_vector_model := snap_to_grid (event.point);
+
+
+	
 	-- CS global variable for the tool MOUSE
 	
 	procedure left_button is 
