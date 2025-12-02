@@ -673,71 +673,10 @@ Displaying Objects
 	|VNS| |NI|
 
 
-	
-	
-++++++++++++++++++++++++
-Zooming, Cursor and Grid
-++++++++++++++++++++++++
-
-#. Zoom to fit
-
-	Zooms to all objects on the canvas.
-
-	.. code-block::
-
-		zoom fit
-
-	|VNS| |CS|
-
-	
-#. Zoom by level
-
-	Sets the zoom factor.
-	
-	.. code-block::
-
-		zoom level 10
-	
-	|VNS| |NI|
-
-	
-#. Zoom at
-
-	Places the cursor at the given position and zooms on the cursor.
-	
-	.. code-block::
-
-		zoom center 140 78 10
-
-	|VNS| |NI|
-	
-
-#. Positioning the Cursor
-
-	.. code-block::
-
-		position cursor absolute 25 30
-	
-	|VNS| |NI|
-
-	.. code-block::
-
-		position cursor relative -5 0
-	
-	|VNS| |NI|
 
 
-#. Grid
 
-	.. code-block::
 
-		set grid 2 2
-
-	.. code-block::
-
-		set grid 10 5
-	
-	|VNS| |NI|
 
 	
 ++++++

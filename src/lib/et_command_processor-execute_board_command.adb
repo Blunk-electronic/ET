@@ -262,7 +262,8 @@ is
 
 	-- This procedure parses the command to set the grid.
 	-- It sets the grid of the canvas and assigns it in
-	-- the database accordingly:
+	-- the database accordingly.
+	-- Example: "board demo set grid spacing 1 1"
 	procedure set_grid is 
 		use et_board_ops.grid;
 	begin
