@@ -37,33 +37,41 @@
 --
 --   ToDo: 
 
-with et_text;
-with et_conductor_segment.boards;		use et_conductor_segment.boards;
-with et_fill_zones;						use et_fill_zones;
-with et_fill_zones.boards;				use et_fill_zones.boards;
-with et_conductor_text.boards;			use et_conductor_text.boards;
-with et_pcb_placeholders;				use et_pcb_placeholders;
-with et_device_name;					use et_device_name;
-with et_ripup;							use et_ripup;
 
+
+with et_devices_electrical;				use et_devices_electrical;
 with et_board_geometry;
--- use et_board_geometry.pac_polygons;
-
 with et_thermal_relief;					use et_thermal_relief;
 
 
 package et_board_ops.fill_zones is
 
-	-- CS rework procedures so that a module cursor
-	-- is used instead the module_name.
 
-	use et_board_text;
-	use pac_text_board;
-	use pac_net_name;
-	use pac_grid;
+	-- This controlled type is used by the functon to_polygon below:
+	type type_terminal_polygon (exists : boolean) is record
+		case exists is
+			when TRUE	=> 
+				polygon		: et_board_geometry.pac_polygons.type_polygon;
+				position	: type_terminal_position_fine;
+				
+			when FALSE	=> null;
+		end case;
+	end record;
 
+	
+	-- Returns the position of a terminal and its contour as a polygon.
+	-- If the terminal does not affect the given layer category,
+	-- then nothing happens here -> returns just a "false".
+	-- See specification of type_terminal_polygon above.
+	function to_polygon (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
+		terminal_cursor	: in pac_terminals.cursor;
+		layer_category	: in type_signal_layer_category;
+		tolerance		: in type_distance_positive)
+		return type_terminal_polygon;
 
-
+	
 
 
 	-- This procedure collects terminals of packages that are connected with

@@ -49,11 +49,6 @@ with et_device_property_level;			use et_device_property_level;
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_non_electrical;			use et_devices_non_electrical;
 
-with et_board_geometry;
--- use et_board_geometry.pac_polygons;
-with et_thermal_relief;					use et_thermal_relief;
-
-
 
 package et_board_ops.devices is
 
@@ -642,6 +637,9 @@ package et_board_ops.devices is
 	
 
 	
+	
+-- TERMINALS:
+	
 	-- Returns the positions (x/y) of the terminals of
 	-- devices, netchangers and submodules of the given net.
 	-- The default assembly variant is assumed (means all devices are mounted).
@@ -678,34 +676,6 @@ package et_board_ops.devices is
 		--terminal_cursor	: in pac_terminals.cursor) -- H7, 14
 		--return type_terminal_position_fine;
 
-
-
-
-	-- This controlled type is used by the functon to_polygon below:
-	type type_terminal_polygon (exists : boolean) is record
-		case exists is
-			when TRUE	=> 
-				polygon		: et_board_geometry.pac_polygons.type_polygon;
-				position	: type_terminal_position_fine;
-				
-			when FALSE	=> null;
-		end case;
-	end record;
-
-	
-	-- Returns the position of a terminal and its contour as a polygon.
-	-- If the terminal does not affect the given layer category,
-	-- then nothing happens here -> returns just a "false".
-	-- See specification of type_terminal_polygon above.
-	function to_polygon (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in pac_devices_electrical.cursor;
-		terminal_cursor	: in pac_terminals.cursor;
-		layer_category	: in type_signal_layer_category;
-		tolerance		: in type_distance_positive)
-		return type_terminal_polygon;
-
-	
 
 
 	-- Returns the unconnected terminals of the given device
