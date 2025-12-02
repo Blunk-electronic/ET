@@ -44,11 +44,13 @@ with et_routing;					use et_routing;
 with et_vias;						use et_vias;
 with et_board_ops.devices;
 with et_board_ops.board_contour;	use et_board_ops.board_contour;
+with et_board_ops.fill_zones;		use et_board_ops.fill_zones;
 with et_thermal_relief;				use et_thermal_relief;
 
 with et_devices_electrical; 			use et_devices_electrical;
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
 with et_devices_non_electrical;			use et_devices_non_electrical;
+
 
 with et_net_ports;
 with et_route;						use et_route;
