@@ -993,7 +993,7 @@ package body et_canvas_board_devices is
 				move_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
-					destination		=> point,
+					destination		=> snap_to_grid (point),
 					log_threshold	=> log_threshold + 1);
 
 				-- Commit the new state of the design:
