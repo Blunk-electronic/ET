@@ -322,115 +322,153 @@ is
 		
 		-- TEXTS ---------------------------------------------------------------
 		
-		use et_conductor_text.boards.pac_conductor_texts;
 		
-		procedure query_text (t : in pac_conductor_texts.cursor) is 
-			text : type_conductor_text renames element (t);
-			borders : pac_polygon_list.list;
+		procedure process_board_texts is
+
+			use et_conductor_text.boards.pac_conductor_texts;
+		
+			procedure query_text (t : in pac_conductor_texts.cursor) is 
+				text : type_conductor_text renames element (t);
+				borders : pac_polygon_list.list;
+			begin
+				if text.layer = layer then
+
+					borders := get_borders (text.vectors);
+
+					offset_polygons (borders, default_offset);
+					
+					-- NOTE: The borders of the characters of the text should not overlap.
+					-- Therefore there is no need for unioning the characters at this time.
+					
+					-- CS test whether zone is affected
+					
+					result.polygons.splice (
+						before => pac_polygon_list.no_element,
+						source => borders);
+
+				end if;
+			end query_text;
+		
+		
 		begin
-			if text.layer = layer then
-
-				borders := get_borders (text.vectors);
-
-				offset_polygons (borders, default_offset);
-				
-				-- NOTE: The borders of the characters of the text should not overlap.
-				-- Therefore there is no need for unioning the characters at this time.
-				
-				result.polygons.splice (
-					before => pac_polygon_list.no_element,
-					source => borders);
-
-			end if;
-		end query_text;
-
-
+			log (text => "board texts", level => log_threshold + 5);
+		
+			element (module_cursor).board.conductors_floating.texts.iterate (query_text'access);
+		end process_board_texts;
+		
+		
+		
 		
 
 
 		-- NON-ELECTRICAL DEVICES ----------------------------------------------
 		
-		use pac_devices_non_electrical;
 
-		-- This procedure takes a cursor to a non-electrical device (like a fiducial 
-		-- or a mounting hole),
-		-- extracts the contours of all its conducting objects and holes, 
-		-- offsets each of then and appends them to the result:
-		procedure query_non_electrical_device (d : in pac_devices_non_electrical.cursor) is
-			polygons : pac_polygon_list.list;
+		procedure process_non_electrical_devices is 
+
+			use pac_devices_non_electrical;
+
+			-- This procedure takes a cursor to a non-electrical device (like a fiducial 
+			-- or a mounting hole),
+			-- extracts the contours of all its conducting objects and holes, 
+			-- offsets each of then and appends them to the result:
+			procedure query_non_electrical_device (d : in pac_devices_non_electrical.cursor) is
+				polygons : pac_polygon_list.list;
+			begin
+				-- CS test whether zone is affected
+				
+				-- conductors: such as terminals, text, lines, arcs, circles
+				polygons := get_conductor_polygons (d, layer_category);
+				offset_polygons (polygons, default_offset);
+
+				result.polygons.splice (
+					before => pac_polygon_list.no_element,
+					source => polygons);
+
+				
+				-- holes:
+				polygons := get_hole_polygons (d);
+				offset_holes (polygons, half_linewidth + clearance_conductor_to_edge);
+
+				result.polygons.splice (
+					before => pac_polygon_list.no_element,
+					source => polygons);
+
+
+				-- route restrict:
+				polygons := get_route_restrict_polygons (d, layer_category);
+				offset_polygons (polygons, half_linewidth_float);
+
+				result.polygons.splice (
+					before => pac_polygon_list.no_element,
+					source => polygons);
+
+				-- CS union ?
+			end query_non_electrical_device;
+
+		
 		begin
-			-- conductors: such as terminals, text, lines, arcs, circles
-			polygons := get_conductor_polygons (d, layer_category);
-			offset_polygons (polygons, default_offset);
-
-			result.polygons.splice (
-				before => pac_polygon_list.no_element,
-				source => polygons);
-
-			
-			-- holes:
-			polygons := get_hole_polygons (d);
-			offset_holes (polygons, half_linewidth + clearance_conductor_to_edge);
-
-			result.polygons.splice (
-				before => pac_polygon_list.no_element,
-				source => polygons);
-
-
-			-- route restrict:
-			polygons := get_route_restrict_polygons (d, layer_category);
-			offset_polygons (polygons, half_linewidth_float);
-
-			result.polygons.splice (
-				before => pac_polygon_list.no_element,
-				source => polygons);
-
-			-- CS union ?
-		end query_non_electrical_device;
-
-
+			-- non-electrical devices (like fiducials):
+			log (text => "non-electrical devices", level => log_threshold + 5);
+			element (module_cursor).devices_non_electric.iterate (query_non_electrical_device'access);
+		end process_non_electrical_devices;
+		
+		
 		
 
 		-- ELECTRICAL DEVICES ----------------------------------------------
+				
+		procedure process_electrical_devices is
+				
+			use pac_devices_electrical;
+
+			-- This procedure takes a cursor to an electrical device,
+			-- extracts the contours of all its conducting objects and holes, 
+			-- offsets each of then and appends them to the result:
+			procedure query_electrical_device (d : in pac_devices_electrical.cursor) is
+				polygons : pac_polygon_list.list;
+			begin
+				-- CS test whether zone is affected
+				
+				-- conductors: such text, lines, arcs, circles
+				polygons := get_conductor_polygons (d, layer_category);
+				offset_polygons (polygons, default_offset);
+
+				result.polygons.splice (
+					before => pac_polygon_list.no_element,
+					source => polygons);
+
+				
+				-- holes:
+				polygons := get_hole_polygons (d);
+				offset_holes (polygons, half_linewidth + clearance_conductor_to_edge);
+
+				result.polygons.splice (
+					before => pac_polygon_list.no_element,
+					source => polygons);
+
+
+				-- route restrict:
+				polygons := get_route_restrict_polygons (d, layer_category);
+				offset_polygons (polygons, half_linewidth_float);
+
+				result.polygons.splice (
+					before => pac_polygon_list.no_element,
+					source => polygons);
+
+				-- CS union ?
+			end query_electrical_device;
+
 		
-		use pac_devices_electrical;
-
-		-- This procedure takes a cursor to an electrical device,
-		-- extracts the contours of all its conducting objects and holes, 
-		-- offsets each of then and appends them to the result:
-		procedure query_electrical_device (d : in pac_devices_electrical.cursor) is
-			polygons : pac_polygon_list.list;
 		begin
-			-- conductors: such text, lines, arcs, circles
-			polygons := get_conductor_polygons (d, layer_category);
-			offset_polygons (polygons, default_offset);
-
-			result.polygons.splice (
-				before => pac_polygon_list.no_element,
-				source => polygons);
-
-			
-			-- holes:
-			polygons := get_hole_polygons (d);
-			offset_holes (polygons, half_linewidth + clearance_conductor_to_edge);
-
-			result.polygons.splice (
-				before => pac_polygon_list.no_element,
-				source => polygons);
-
-
-			-- route restrict:
-			polygons := get_route_restrict_polygons (d, layer_category);
-			offset_polygons (polygons, half_linewidth_float);
-
-			result.polygons.splice (
-				before => pac_polygon_list.no_element,
-				source => polygons);
-
-			-- CS union ?
-		end query_electrical_device;
-
-
+			-- electrical devices:
+			log (text => "electrial devices", level => log_threshold + 5);
+			element (module_cursor).devices.iterate (query_electrical_device'access);
+		end process_electrical_devices;
+	
+	
+	
+		
 		
 	begin -- conductors_to_polygons
 		
@@ -458,21 +496,13 @@ is
 		-- Extract unconnected terminals of devices:
 		extract_unconnected_terminals;
 
-		
+		process_board_texts;
 
-		-- board texts:
-		log (text => "board texts", level => log_threshold + 5);
-		element (module_cursor).board.conductors_floating.texts.iterate (query_text'access);
+		process_non_electrical_devices;
+		process_electrical_devices;
 		
 		-- CS non electrical conductor stuff (placeholders, foreign floating fill zones, ...)
-
-		-- non-electrical devices (like fiducials):
-		log (text => "non-electrical devices", level => log_threshold + 5);
-		element (module_cursor).devices_non_electric.iterate (query_non_electrical_device'access);
-
-		-- electrical devices:
-		log (text => "electrial devices", level => log_threshold + 5);
-		element (module_cursor).devices.iterate (query_electrical_device'access);
+		
 		
 		-- Now the polygons held in variable "result"
 		-- - inside the given zone or
