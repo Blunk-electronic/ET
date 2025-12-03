@@ -41,6 +41,7 @@ with et_mirroring;					use et_mirroring;
 with et_schematic_ops.units;		use et_schematic_ops.units;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
 with et_schematic_ops;				use et_schematic_ops;
+with et_board_text;
 with et_board_ops.devices;			use et_board_ops.devices;
 with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
 
@@ -49,6 +50,7 @@ with et_fill_zones.boards;			use et_fill_zones.boards;
 with et_net_ports;
 with et_devices_electrical.packages;
 
+with et_conductor_text.boards;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
 with et_contour_to_polygon;			use et_contour_to_polygon;
 with et_vias;
@@ -60,6 +62,11 @@ package body et_board_ops.fill_zones is
 
 	use pac_nets;
 	use pac_net_name;
+
+	-- use pac_polygon_clipping;
+	-- use pac_polygon_cropping;
+	use pac_polygon_offsetting;
+	-- use pac_polygon_union;
 
 	
 	function to_polygon (
@@ -688,9 +695,88 @@ package body et_board_ops.fill_zones is
 		log_indentation_down;
 	end get_polygons_of_unconnected_terminals;
 	
+
+
+
+
+
+
+
+
+	procedure get_polygons_of_board_texts (
+		module_cursor			: in pac_generic_modules.cursor;
+		zone					: in pac_polygons.type_polygon;
+		zone_clearance			: in type_track_clearance;
+		linewidth				: in type_track_width;
+		layer 					: in type_signal_layer;
+		polygons				: in out pac_polygons.pac_polygon_list.list;
+		log_threshold			: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is
+			use et_conductor_text.boards;
+			use pac_conductor_texts;
+
+			
+			procedure query_text (t : in pac_conductor_texts.cursor) is 
+				text : type_conductor_text renames element (t);
+				borders : pac_polygon_list.list;
+
+				offset : type_float_positive;
+				use et_board_text;
+				use pac_text_board;
+			begin
+				if text.layer = layer then
+
+					borders := get_borders (text.vectors);
+
+					offset := type_float_positive (linewidth * 0.5 + zone_clearance);
+					-- CS function to_offset (linewidth, zone_clearance)
+					-- might already be available
+					
+					offset_polygons (borders, offset);
+					
+					-- NOTE: The borders of the characters of the text should not overlap.
+					-- Therefore there is no need for unioning the characters at this time.
+					
+					-- CS test whether zone is affected
+					
+					polygons.splice (
+						before => pac_polygon_list.no_element,
+						source => borders);
+
+				end if;
+			end query_text;
+
+			
+		begin
+			module.board.conductors_floating.texts.iterate (query_text'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " get_polygons_of_board_texts"
+			& " layer: " & to_string (layer),
+			level => log_threshold);
+		-- CS more log messages
+
+		log_indentation_up;
 	
+		query_element (module_cursor, query_module'access);
+
+		-- CS log number of polygons
+		
+		log_indentation_down;
+	end get_polygons_of_board_texts;
 	
 
+
+
+	
 end et_board_ops.fill_zones;
 	
 -- Soli Deo Gloria

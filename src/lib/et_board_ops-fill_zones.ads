@@ -177,7 +177,8 @@ package et_board_ops.fill_zones is
 
 
 	-- This procedure collects terminals of packages that are not
-	-- connected with any net and appends them to "polygons":
+	-- connected with any net, converts them to polygons
+	-- and appends them to "polygons":
 	procedure get_polygons_of_unconnected_terminals (
 		module_cursor			: in pac_generic_modules.cursor;
 		
@@ -194,6 +195,14 @@ package et_board_ops.fill_zones is
 		
 		-- The offset by which the polygons are to be expanded:
 		offset					: in type_float_positive;
+
+		-- CS instead of offset use this:
+		-- The clearance of the zone to foreign objects:
+		-- zone_clearance			: in type_track_clearance;
+
+		-- This is the linewidth used for the zone contour
+		-- and the fill lines:
+		--linewidth				: in type_track_width;
 		
 		-- This is the outcome of the procedure, a list of polygons:
 		polygons				: in out pac_polygons.pac_polygon_list.list;
@@ -201,6 +210,33 @@ package et_board_ops.fill_zones is
 		log_threshold			: in type_log_level);
 	
 	
+
+	
+
+	-- This procedure collects board texts, converts them to polygons
+	-- and appends them to "polygons":
+	procedure get_polygons_of_board_texts (
+		module_cursor			: in pac_generic_modules.cursor;
+		
+		-- This is the zone inside which texts are searched for:
+		zone					: in pac_polygons.type_polygon;
+		
+		-- The clearance of the zone to foreign objects:
+		zone_clearance			: in type_track_clearance;
+
+		-- This is the linewidth used for the zone contour
+		-- and the fill lines:
+		linewidth				: in type_track_width;
+		
+		-- The targeted signal layer:		
+		layer 					: in type_signal_layer;
+		
+		-- This is the outcome of the procedure, a list of polygons:
+		polygons				: in out pac_polygons.pac_polygon_list.list;
+		
+		log_threshold			: in type_log_level);
+	
+
 	
 end et_board_ops.fill_zones;
 

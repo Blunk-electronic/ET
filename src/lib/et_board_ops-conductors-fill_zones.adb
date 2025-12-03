@@ -502,7 +502,7 @@ is
 		process_electrical_devices;
 		
 		-- CS non electrical conductor stuff (placeholders, foreign floating fill zones, ...)
-		
+		-- CS route restrict
 		
 		-- Now the polygons held in variable "result"
 		-- - inside the given zone or
