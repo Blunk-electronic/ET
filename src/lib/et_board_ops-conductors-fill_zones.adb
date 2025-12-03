@@ -253,9 +253,6 @@ is
 		
 
 
-		
-		-- NETS -------------------------------------------------------------
-
 		-- If a parent net was given (via argument parent_net) then
 		-- this will hold the actual net name like "GND".
 		-- Otherwise it will be left empty:
@@ -314,46 +311,27 @@ is
 				log_threshold		=> log_threshold + 6);
 
 			log_indentation_down;
-		end;
+		end extract_unconnected_terminals;
 	
 
 		
-		
-		
-		-- TEXTS ---------------------------------------------------------------
-		
-		
-		procedure process_board_texts is
-
-			use et_conductor_text.boards.pac_conductor_texts;
-		
-			procedure query_text (t : in pac_conductor_texts.cursor) is 
-				text : type_conductor_text renames element (t);
-				borders : pac_polygon_list.list;
-			begin
-				if text.layer = layer then
-
-					borders := get_borders (text.vectors);
-
-					offset_polygons (borders, default_offset);
-					
-					-- NOTE: The borders of the characters of the text should not overlap.
-					-- Therefore there is no need for unioning the characters at this time.
-					
-					-- CS test whether zone is affected
-					
-					result.polygons.splice (
-						before => pac_polygon_list.no_element,
-						source => borders);
-
-				end if;
-			end query_text;
-		
-		
-		begin
+		-- This procedure converts the texts in conductor
+		-- layers to polygons and appends them to the result:
+		procedure process_board_texts is begin
 			log (text => "board texts", level => log_threshold + 5);
 		
-			element (module_cursor).board.conductors_floating.texts.iterate (query_text'access);
+			log_indentation_up;
+			
+			get_polygons_of_board_texts (
+				module_cursor	=> module_cursor,
+				zone			=> zone_polygon,
+				zone_clearance	=> zone_clearance,
+				linewidth		=> linewidth,
+				layer			=> layer,
+				polygons		=> result.polygons,
+				log_threshold	=> log_threshold + 6);
+				
+			log_indentation_down;
 		end process_board_texts;
 		
 		
