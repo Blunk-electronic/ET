@@ -287,7 +287,7 @@ is
 				zone_clearance			=> zone_clearance,
 				bottom_layer			=> bottom_layer,
 				parent_net				=> parent_net,
-				result					=> result.polygons,
+				polygons				=> result.polygons,
 				terminal_connection		=> terminal_connection,
 				terminals_with_relief	=> result.terminals_with_relief,
 				log_threshold			=> log_threshold + 6);

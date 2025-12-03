@@ -102,6 +102,8 @@ package et_board_ops.fill_zones is
 		
 		-- This is the outcome of the procedure, a list of polygons:
 		polygons				: in out pac_polygons.pac_polygon_list.list;
+
+		-- CS: expand !
 		
 		-- This flag specifies whether additional information
 		-- for thermal reliefes is also to be collected:
@@ -119,8 +121,9 @@ package et_board_ops.fill_zones is
 	
 	-- Extracts polygons of nets (routed tracks, terminals, vias).
 	-- The polygons are expanded by the zone_clearance or by
-	-- the clearance of a particular net (the greater value of them is applied).
-	-- Returns only those polygons which are inside the given zone.
+	-- the clearance of a particular net (the greater value of them is applied)
+	-- and appended to the argument "polygons".
+	-- Appends only those polygons which are inside the given zone.
 	-- As a byproduct, the et_thermal_relief also contains a list of 
 	-- terminals that require thermal reliefes. If the zone is not 
 	-- connected with the given parent_net, then no thermal reliefes
@@ -153,10 +156,8 @@ package et_board_ops.fill_zones is
 		parent_net				: in pac_nets.cursor;
 		
 		-- This is the outcome of the procedure.
-		-- The polygons found by the procedure are appended
-		-- the given list of polygons:
-		result					: in out et_board_geometry.pac_polygons.pac_polygon_list.list;
-		-- CS rename to polygons ?
+		-- The polygons found by the procedure are appended here:
+		polygons				: in out et_board_geometry.pac_polygons.pac_polygon_list.list;
 		
 		terminal_connection		: in type_pad_connection;
 		

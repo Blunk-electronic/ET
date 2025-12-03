@@ -357,7 +357,7 @@ package body et_board_ops.fill_zones is
 		zone_clearance			: in type_track_clearance;
 		bottom_layer			: in type_signal_layer;
 		parent_net				: in pac_nets.cursor;
-		result					: in out et_board_geometry.pac_polygons.pac_polygon_list.list;
+		polygons					: in out et_board_geometry.pac_polygons.pac_polygon_list.list;
 		terminal_connection		: in type_pad_connection;
 		terminals_with_relief	: out pac_terminals_with_relief.list;
 		log_threshold			: in type_log_level)
@@ -398,16 +398,16 @@ package body et_board_ops.fill_zones is
 		is
 		
 			procedure query_net (net_cursor : in pac_nets.cursor) is
-				-- The clearance between net and zone is either the given zone_clearance
-				-- or the clearance of the net itself. However, the greater value is applied:
 				net_class : constant type_net_class := get_net_class (module_cursor, net_cursor);
 				
+				-- The clearance between net and zone is either the given zone_clearance
+				-- or the clearance of the net itself. The greatest of them is applied:				
 				clearance : constant type_track_clearance := 
 					get_greatest (zone_clearance, net_class.clearance);
 
 				-- The polygons of the candidate net are collected here
-				-- (later they will be appended to the result):
-				polygons : pac_polygon_list.list;
+				-- (later they will be appended to the output polygons):
+				polygons_of_candidate_net : pac_polygon_list.list;
 
 				use et_route;
 				route : type_net_route renames element (net_cursor).route;
@@ -418,7 +418,7 @@ package body et_board_ops.fill_zones is
 					line : type_conductor_line renames element (l);
 				begin
 					if line.layer = layer then
-						polygons.append (to_polygon (line, fill_tolerance));
+						polygons_of_candidate_net.append (to_polygon (line, fill_tolerance));
 					end if;
 				end query_line;
 
@@ -429,7 +429,7 @@ package body et_board_ops.fill_zones is
 					arc : type_conductor_arc renames element (a);
 				begin
 					if arc.layer = layer then
-						polygons.append (to_polygon (arc, fill_tolerance));
+						polygons_of_candidate_net.append (to_polygon (arc, fill_tolerance));
 					end if;
 				end query_arc;
 
@@ -444,29 +444,29 @@ package body et_board_ops.fill_zones is
 					case via.category is
 						when THROUGH =>
 							if layer_category = OUTER_TOP or layer_category = OUTER_BOTTOM then
-								polygons.append (to_polygon (via.position, via.restring_outer, via.diameter, fill_tolerance));
+								polygons_of_candidate_net.append (to_polygon (via.position, via.restring_outer, via.diameter, fill_tolerance));
 							else
-								polygons.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
+								polygons_of_candidate_net.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
 							end if;
 
 						when BLIND_DRILLED_FROM_TOP =>
 							if layer_category = OUTER_TOP then
-								polygons.append (to_polygon (via.position, via.restring_top, via.diameter, fill_tolerance));
+								polygons_of_candidate_net.append (to_polygon (via.position, via.restring_top, via.diameter, fill_tolerance));
 							elsif blind_via_uses_layer (via, layer, bottom_layer) then
-								polygons.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
+								polygons_of_candidate_net.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
 							end if;
 
 						when BLIND_DRILLED_FROM_BOTTOM =>
 							if layer_category = OUTER_BOTTOM then
-								polygons.append (to_polygon (via.position, via.restring_bottom, via.diameter, fill_tolerance));
+								polygons_of_candidate_net.append (to_polygon (via.position, via.restring_bottom, via.diameter, fill_tolerance));
 							elsif blind_via_uses_layer (via, layer, bottom_layer) then
-								polygons.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
+								polygons_of_candidate_net.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
 							end if;
 							
 						when BURIED =>
 							if layer_category = INNER and then
 							buried_via_uses_layer (via, layer) then
-								polygons.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
+								polygons_of_candidate_net.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
 							end if;
 					end case;
 				end query_via;
@@ -476,10 +476,10 @@ package body et_board_ops.fill_zones is
 				
 				-- Converts tracks, vias and terminals to polygons,
 				-- expands them by the clearance and appends them to
-				-- the result:
+				-- the polygons:
 				procedure convert_conductor_objects_to_polygons is 
 					use pac_polygon_offsetting;
-					terminals : pac_polygon_list.list;
+					-- terminals : pac_polygon_list.list;
 					reliefes : pac_terminals_with_relief.list;
 				begin
 					-- Query track segments:
@@ -501,18 +501,20 @@ package body et_board_ops.fill_zones is
 						layer_category			=> layer_category,
 						zone					=> zone,
 						net_cursor				=> net_cursor,
-						polygons				=> terminals,
+						polygons				=> polygons_of_candidate_net, --terminals,
 						with_reliefes			=> collect_terminals_with_relief,
 						terminals_with_relief	=> reliefes,
 						log_threshold			=> log_threshold + 6);
 
 											
-					polygons.splice (before => pac_polygon_list.no_element, source => terminals);
+					-- polygons.splice (before => pac_polygon_list.no_element, source => terminals);
 
 					-- expand polygons by clearance
-					offset_polygons (polygons, half_linewidth_float + type_float_positive (clearance));
+					offset_polygons (polygons_of_candidate_net, 
+							half_linewidth_float + type_float_positive (clearance));
 
-					result.splice (before => pac_polygon_list.no_element, source => polygons);
+					polygons.splice (before => pac_polygon_list.no_element, 
+								   source => polygons_of_candidate_net);
 					
 					append_relieves (terminals_with_relief, reliefes);
 				end convert_conductor_objects_to_polygons;
