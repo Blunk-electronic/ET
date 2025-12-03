@@ -336,6 +336,8 @@ package body et_board_ops.fill_zones is
 		-- that connect two conductor tracks. They can therefore be ignored:
 		ports.devices.iterate (query_device_port'access);
 
+		-- CS log number of polygons
+		
 		log_indentation_down;
 	end get_polygons_of_connected_terminals;
 
@@ -414,6 +416,7 @@ package body et_board_ops.fill_zones is
 				begin
 					if line.layer = layer then
 						polygons_of_candidate_net.append (to_polygon (line, fill_tolerance));
+						-- CS expand and test whether it affects the zone
 					end if;
 				end query_line;
 
@@ -425,6 +428,7 @@ package body et_board_ops.fill_zones is
 				begin
 					if arc.layer = layer then
 						polygons_of_candidate_net.append (to_polygon (arc, fill_tolerance));
+						-- CS expand and test whether it affects the zone
 					end if;
 				end query_arc;
 
@@ -436,6 +440,7 @@ package body et_board_ops.fill_zones is
 					use pac_vias;
 					via : type_via renames element (v);
 				begin
+					-- CS expand and test whether it affects the zone
 					case via.category is
 						when THROUGH =>
 							if layer_category = OUTER_TOP or layer_category = OUTER_BOTTOM then
@@ -497,11 +502,12 @@ package body et_board_ops.fill_zones is
 						with_reliefes			=> collect_terminals_with_relief,
 						terminals_with_relief	=> reliefes,
 						log_threshold			=> log_threshold + 6);
-
+					
 
 					-- expand polygons by clearance
 					offset_polygons (polygons_of_candidate_net, 
-							half_linewidth_float + type_float_positive (clearance));
+									 half_linewidth_float + type_float_positive (clearance));
+					-- CS remove
 
 					polygons.splice (before => pac_polygon_list.no_element, 
 								   source => polygons_of_candidate_net);
@@ -587,6 +593,7 @@ package body et_board_ops.fill_zones is
 		
 		query_element (module_cursor, query_module'access);
 
+		-- CS log number of polygons
 		log_indentation_down;
 
 	end get_polygons_of_nets;
@@ -603,7 +610,7 @@ package body et_board_ops.fill_zones is
 		layer_category 			: in type_signal_layer_category;
 		zone					: in pac_polygons.type_polygon;
 		offset					: in type_float_positive;
-		terminal_polygons		: out pac_polygons.pac_polygon_list.list;
+		polygons				: out pac_polygons.pac_polygon_list.list;
 		log_threshold			: in type_log_level)
 	is
 	
@@ -637,7 +644,7 @@ package body et_board_ops.fill_zones is
 					if terminal_polygon.exists then
 						-- CS more log messages
 						offset_polygon (terminal_polygon.polygon, offset);
-						terminal_polygons.append (terminal_polygon.polygon);
+						polygons.append (terminal_polygon.polygon);
 					end if;
 					
 				end query_terminal;
@@ -675,7 +682,9 @@ package body et_board_ops.fill_zones is
 		log_indentation_up;
 	
 		query_element (module_cursor, query_module'access);
-	
+
+		-- CS log number of polygons
+		
 		log_indentation_down;
 	end get_polygons_of_unconnected_terminals;
 	

@@ -108,6 +108,7 @@ package et_board_ops.fill_zones is
 		polygons				: in out pac_polygon_list.list;
 
 		-- CS: expand !
+		-- CS expand and test whether a single polyon affects the zone
 		
 		-- This flag specifies whether additional information
 		-- for thermal reliefes is also to be collected:
@@ -188,13 +189,14 @@ package et_board_ops.fill_zones is
 		-- are searched for:
 		zone					: in pac_polygons.type_polygon;
 		-- CS currently not used
+
+		-- CS test whether a single polyon affects the zone
 		
 		-- The offset by which the polygons are to be expanded:
 		offset					: in type_float_positive;
 		
 		-- This is the outcome of the procedure, a list of polygons:
-		terminal_polygons		: out pac_polygons.pac_polygon_list.list;
-		-- CS rename to polygons ?
+		polygons				: out pac_polygons.pac_polygon_list.list;
 		
 		log_threshold			: in type_log_level);
 	

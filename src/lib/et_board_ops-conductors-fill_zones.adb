@@ -310,7 +310,7 @@ is
 			 	layer_category		=> layer_category,
 				zone				=> zone_polygon,
 				offset				=> default_offset,
-				terminal_polygons	=> result.polygons,
+				polygons			=> result.polygons,
 				log_threshold		=> log_threshold + 6);
 
 			log_indentation_down;
