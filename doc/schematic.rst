@@ -619,15 +619,6 @@ Displaying Objects
 ++++++++++++++++++
 
 
-#. Display grid
-
-	.. code-block::
-
-		display grid [on/off]
-
-	|VNS| |NI|
-
-
 #. Display nets
 
 	.. code-block::
