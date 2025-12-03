@@ -206,6 +206,39 @@ package et_board_ops.fill_zones is
 	
 
 	
+	-- IMPORTANT: This procedure addresses non-electrical devices only.
+	-- It extracts the contours of all conducting objects (terminals, lines,
+	-- arcs, circles, route restrict and holes),
+	-- offsets each of then and appends them to the result "polygons":
+	procedure get_polygons_of_non_electrical_devices (
+		module_cursor			: in pac_generic_modules.cursor;
+
+		-- This is specifies whether the affected
+		-- conductor layer is a top or, bottom or inner signal layer:
+		layer_category 			: in type_signal_layer_category;
+		
+		-- This is the zone inside which texts are searched for:
+		zone					: in pac_polygons.type_polygon;
+		
+		-- The clearance of the zone to foreign objects:
+		zone_clearance			: in type_track_clearance;
+
+		-- This is the linewidth used for the zone contour
+		-- and the fill lines:
+		linewidth				: in type_track_width;
+
+		-- The clearance between conductor and board edge:
+		clearance_to_edge		: in type_distance_positive;
+		
+		-- This is the outcome of the procedure, a list of polygons:
+		polygons				: in out pac_polygons.pac_polygon_list.list;
+		
+		log_threshold			: in type_log_level);
+
+
+	
+
+	
 
 	-- This procedure collects board texts, converts them to polygons
 	-- and appends them to "polygons":

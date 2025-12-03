@@ -39,12 +39,14 @@
 
 with et_mirroring;
 with et_schematic_ops.units;
+with et_pcb_contour;
 with et_board_text;
 with et_board_ops.devices;			use et_board_ops.devices;
 with et_fill_zones.boards;			use et_fill_zones.boards;
 
 with et_net_ports;
 with et_devices_electrical.packages;
+with et_devices_non_electrical;
 
 with et_conductor_text.boards;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
@@ -711,6 +713,100 @@ package body et_board_ops.fill_zones is
 
 
 
+
+	procedure get_polygons_of_non_electrical_devices (
+		module_cursor			: in pac_generic_modules.cursor;
+		layer_category 			: in type_signal_layer_category;
+		zone					: in pac_polygons.type_polygon;
+		zone_clearance			: in type_track_clearance;
+		linewidth				: in type_track_width;
+		clearance_to_edge		: in type_distance_positive;
+		polygons				: in out pac_polygons.pac_polygon_list.list;
+		log_threshold			: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is
+			use et_devices_non_electrical;
+			use pac_devices_non_electrical;
+
+
+			offset : constant type_float_positive := 
+				type_float_positive (linewidth * 0.5 + zone_clearance);
+			-- CS function to_offset (linewidth, zone_clearance)
+			-- might already be available
+
+
+			
+			procedure query_device (d : in pac_devices_non_electrical.cursor) is
+				use et_pcb_contour;
+				p : pac_polygon_list.list;
+			begin
+				-- conductors: such as terminals, text, lines, arcs, circles
+				p := get_conductor_polygons (d, layer_category);
+				offset_polygons (p, offset);
+
+				-- CS remove those which do not affect the zone
+				
+				polygons.splice (
+					before => pac_polygon_list.no_element,
+					source => p);
+				-- CS use special append procedure
+				-- append (polygons, p);
+				
+				-- holes:
+				p := get_hole_polygons (d);
+				offset_holes (p, linewidth * 0.5 + clearance_to_edge);
+
+				-- CS remove those which do not affect the zone
+				
+				polygons.splice (
+					before => pac_polygon_list.no_element,
+					source => p);
+
+
+				-- route restrict:
+				p := get_route_restrict_polygons (d, layer_category);
+				offset_polygons (p, type_float_positive (linewidth * 0.5));
+
+				-- CS remove those which do not affect the zone
+				
+				polygons.splice (
+					before => pac_polygon_list.no_element,
+					source => p);
+
+				-- CS union ?
+			end query_device;
+
+			
+		begin
+			module.devices_non_electric.iterate (query_device'access);
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " get_polygons_of_non_electrical_devices"
+			& " layer cat: " & to_string (layer_category),
+			level => log_threshold);
+		-- CS log arguments
+		
+		log_indentation_up;
+	
+		query_element (module_cursor, query_module'access);
+
+		-- CS log number of polygons
+		
+		log_indentation_down;
+	end get_polygons_of_non_electrical_devices;
+	
+
+
+
+
+	
 
 
 	procedure get_polygons_of_board_texts (
