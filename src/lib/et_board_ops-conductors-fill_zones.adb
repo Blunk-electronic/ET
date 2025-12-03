@@ -270,7 +270,7 @@ is
 		-- Extracts the polygons of all conductor objects which are 
 		-- connected with the given net
 		-- and appends them to the result:
-		procedure extract_conductor_objects_of_nets is begin
+		procedure process_nets is begin
 			log (text => "conductor objects of nets", level => log_threshold + 5);
 			
 			log_indentation_up;
@@ -290,7 +290,7 @@ is
 				log_threshold			=> log_threshold + 6);
 			
 			log_indentation_down;
-		end extract_conductor_objects_of_nets;
+		end process_nets;
 
 
 
@@ -298,7 +298,7 @@ is
 		
 		-- This procedure converts the outlines of unconnected terminals
 		-- to polygons and appends them to the result:
-		procedure extract_unconnected_terminals is begin
+		procedure process_unconnected_terminals is begin
 			log (text => "unconnected terminals", level => log_threshold + 5);
 			log_indentation_up;
 
@@ -311,7 +311,7 @@ is
 				log_threshold		=> log_threshold + 6);
 
 			log_indentation_down;
-		end extract_unconnected_terminals;
+		end process_unconnected_terminals;
 	
 
 		
@@ -469,10 +469,10 @@ is
 		set_parent_net_name;
 		
 		-- Extract conductor objects of nets.
-		extract_conductor_objects_of_nets;
+		process_nets;
 
 		-- Extract unconnected terminals of devices:
-		extract_unconnected_terminals;
+		process_unconnected_terminals;
 
 		process_board_texts;
 

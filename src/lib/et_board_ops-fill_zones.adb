@@ -37,14 +37,10 @@
 --
 
 
-with et_mirroring;					use et_mirroring;
-with et_schematic_ops.units;		use et_schematic_ops.units;
-with et_schematic_ops.nets;			use et_schematic_ops.nets;
-with et_schematic_ops;				use et_schematic_ops;
+with et_mirroring;
+with et_schematic_ops.units;
 with et_board_text;
 with et_board_ops.devices;			use et_board_ops.devices;
-with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
-
 with et_fill_zones.boards;			use et_fill_zones.boards;
 
 with et_net_ports;
@@ -80,6 +76,7 @@ package body et_board_ops.fill_zones is
 		exists : boolean := false;
 		result : type_polygon; -- to be returned
 
+		use et_mirroring;
 		use pac_contours;
 		use pac_terminals;
 		
@@ -246,6 +243,7 @@ package body et_board_ops.fill_zones is
 			-- Get the cursor to the device in the schematic:
 			use et_devices_electrical;
 			use et_devices_electrical.packages;
+			use et_schematic_ops.units;
 			
 			device_cursor : constant pac_devices_electrical.cursor := 
 				get_electrical_device (module_cursor, port.device_name);
