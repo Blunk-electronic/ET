@@ -176,7 +176,8 @@ package et_board_ops.fill_zones is
 
 
 
-	-- This procedure collects terminals of packages that are not
+	-- IMPORTANT: This procedure addresses only electrical devices.
+	-- It collects terminals of packages that are not
 	-- connected with any net, converts them to polygons
 	-- and appends them to "polygons":
 	procedure get_polygons_of_unconnected_terminals (
@@ -189,20 +190,13 @@ package et_board_ops.fill_zones is
 		-- This is the zone inside which therminals
 		-- are searched for:
 		zone					: in pac_polygons.type_polygon;
-		-- CS currently not used
 
-		-- CS test whether a single polyon affects the zone
-		
-		-- The offset by which the polygons are to be expanded:
-		offset					: in type_float_positive;
-
-		-- CS instead of offset use this:
 		-- The clearance of the zone to foreign objects:
-		-- zone_clearance			: in type_track_clearance;
+		zone_clearance			: in type_track_clearance;
 
 		-- This is the linewidth used for the zone contour
 		-- and the fill lines:
-		--linewidth				: in type_track_width;
+		linewidth				: in type_track_width;
 		
 		-- This is the outcome of the procedure, a list of polygons:
 		polygons				: in out pac_polygons.pac_polygon_list.list;

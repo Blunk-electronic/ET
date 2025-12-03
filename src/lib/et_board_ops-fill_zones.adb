@@ -614,7 +614,8 @@ package body et_board_ops.fill_zones is
 		module_cursor			: in pac_generic_modules.cursor;
 		layer_category 			: in type_signal_layer_category;
 		zone					: in pac_polygons.type_polygon;
-		offset					: in type_float_positive;
+		zone_clearance			: in type_track_clearance;
+		linewidth				: in type_track_width;
 		polygons				: in out pac_polygons.pac_polygon_list.list;
 		log_threshold			: in type_log_level)
 	is
@@ -625,6 +626,11 @@ package body et_board_ops.fill_zones is
 		is
 			use et_devices_electrical;
 
+			offset : constant type_float_positive := 
+				type_float_positive (linewidth * 0.5 + zone_clearance);
+			-- CS function to_offset (linewidth, zone_clearance)
+			-- might already be available
+			
 			
 			procedure query_device (
 				device_cursor : in pac_devices_electrical.cursor)
@@ -648,7 +654,12 @@ package body et_board_ops.fill_zones is
 						
 					if terminal_polygon.exists then
 						-- CS more log messages
+						-- CS test whether zone is affected
+
+						-- Expand the polygon by offset:
 						offset_polygon (terminal_polygon.polygon, offset);
+
+						-- Append the polygon to the result:
 						polygons.append (terminal_polygon.polygon);
 					end if;
 					
@@ -673,8 +684,8 @@ package body et_board_ops.fill_zones is
 			
 		
 		begin
+			-- CS log offset
 			module.devices.iterate (query_device'access);
-			-- CS non-electrical devices ?
 		end query_module;
 		
 		
@@ -683,7 +694,8 @@ package body et_board_ops.fill_zones is
 			& " get_polygons_of_unconnected_terminals"
 			& " layer cat: " & to_string (layer_category),
 			level => log_threshold);
-
+		-- CS log arguments
+		
 		log_indentation_up;
 	
 		query_element (module_cursor, query_module'access);

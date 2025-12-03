@@ -306,7 +306,8 @@ is
 			 	module_cursor		=> module_cursor,
 			 	layer_category		=> layer_category,
 				zone				=> zone_polygon,
-				offset				=> default_offset,
+				zone_clearance		=> zone_clearance,
+				linewidth			=> linewidth,
 				polygons			=> result.polygons,
 				log_threshold		=> log_threshold + 6);
 
