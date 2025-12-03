@@ -585,7 +585,23 @@ procedure draw_packages is
 				-- everything has the same color and linewidth.
 			end query_line;
 
-				
+
+			procedure query_circle (c : in pac_route_restrict_circles.cursor) is
+				circle : type_route_restrict_circle renames element (c);
+			begin
+				draw_circle (
+					circle		=> circle,
+					pos			=> get_position (package_position),		  
+					width		=> zero,
+					mirror		=> mirror,
+					filled		=> NO,
+					do_stroke	=> true);
+				-- CS do not stroke could be possible, because
+				-- everything has the same color and linewidth.
+			end query_circle;
+
+
+			
 		begin
 			-- put_line ("draw_route_restrict");
 
@@ -595,23 +611,27 @@ procedure draw_packages is
 			if flip then
 				if route_restrict_layer_enabled (face_to_layer (TOP)) then
 					packge.route_restrict.bottom.lines.iterate (query_line'access);
-					-- CS arcs, circles, zones, cutout
+					packge.route_restrict.bottom.circles.iterate (query_circle'access);
+					-- CS arcs, zones, cutout
 				end if;
 
 				if route_restrict_layer_enabled (face_to_layer (BOTTOM)) then
 					packge.route_restrict.top.lines.iterate (query_line'access);
-					-- CS arcs, circles, zones
+					packge.route_restrict.top.circles.iterate (query_circle'access);
+					-- CS arcs, zones
 				end if;
 
 			else -- not flipped
 				if route_restrict_layer_enabled (face_to_layer (TOP)) then
 					packge.route_restrict.top.lines.iterate (query_line'access);
-					-- CS arcs, circles, zones
+					packge.route_restrict.top.circles.iterate (query_circle'access);
+					-- CS arcs, zones
 				end if;
 
 				if route_restrict_layer_enabled (face_to_layer (BOTTOM)) then
 					packge.route_restrict.bottom.lines.iterate (query_line'access);
-					-- CS arcs, circles, zones
+					packge.route_restrict.bottom.circles.iterate (query_circle'access);
+					-- CS arcs, zones
 				end if;
 
 			end if;
