@@ -101,8 +101,7 @@ package et_board_ops.fill_zones is
 		net_cursor 				: in pac_nets.cursor;
 		
 		-- This is the outcome of the procedure, a list of polygons:
-		polygons				: out pac_polygons.pac_polygon_list.list;
-		-- CS should be in out
+		polygons				: in out pac_polygons.pac_polygon_list.list;
 		
 		-- This flag specifies whether additional information
 		-- for thermal reliefes is also to be collected:

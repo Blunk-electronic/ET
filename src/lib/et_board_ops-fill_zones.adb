@@ -214,7 +214,7 @@ package body et_board_ops.fill_zones is
 		layer_category 			: in type_signal_layer_category;
 		zone					: in pac_polygons.type_polygon;
 		net_cursor 				: in pac_nets.cursor;
-		polygons				: out pac_polygons.pac_polygon_list.list;		
+		polygons				: in out pac_polygons.pac_polygon_list.list;		
 		with_reliefes			: in boolean;
 		terminals_with_relief	: out pac_terminals_with_relief.list;
 		log_threshold			: in type_log_level)
