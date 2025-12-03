@@ -70,7 +70,6 @@ package body et_board_ops.fill_zones is
 		tolerance		: in type_distance_positive)
 		return type_terminal_polygon
 	is
-		use pac_polygons;
 		exists : boolean := false;
 		result : type_polygon; -- to be returned
 
@@ -214,7 +213,7 @@ package body et_board_ops.fill_zones is
 		layer_category 			: in type_signal_layer_category;
 		zone					: in pac_polygons.type_polygon;
 		net_cursor 				: in pac_nets.cursor;
-		polygons				: in out pac_polygons.pac_polygon_list.list;		
+		polygons				: in out pac_polygon_list.list;		
 		with_reliefes			: in boolean;
 		terminals_with_relief	: out pac_terminals_with_relief.list;
 		log_threshold			: in type_log_level)
@@ -248,7 +247,6 @@ package body et_board_ops.fill_zones is
 			-- This procedure maps from the candidate port to the
 			-- associated terminal and converts the terminal to a polygon:
 			procedure query_port is
-				use pac_polygons;
 			
 				-- Get the cursor to the physical terminal (in the package model)
 				-- that is linked with the port:
@@ -351,20 +349,17 @@ package body et_board_ops.fill_zones is
 	procedure get_polygons_of_nets (
 		module_cursor			: in pac_generic_modules.cursor;
 		layer_category 			: in type_signal_layer_category;
-		zone					: in et_board_geometry.pac_polygons.type_polygon;
+		zone					: in type_polygon;
 		linewidth				: in type_track_width;
 		layer 					: in type_signal_layer;
 		zone_clearance			: in type_track_clearance;
 		bottom_layer			: in type_signal_layer;
 		parent_net				: in pac_nets.cursor;
-		polygons					: in out et_board_geometry.pac_polygons.pac_polygon_list.list;
+		polygons				: in out pac_polygon_list.list;
 		terminal_connection		: in type_pad_connection;
 		terminals_with_relief	: out pac_terminals_with_relief.list;
 		log_threshold			: in type_log_level)
 	is 
-		use pac_geometry_brd;
-		use et_board_geometry.pac_polygons;
-		
 		
 		half_linewidth_float : constant type_float_positive := 
 			type_float_positive (linewidth * 0.5);
@@ -479,7 +474,6 @@ package body et_board_ops.fill_zones is
 				-- the polygons:
 				procedure convert_conductor_objects_to_polygons is 
 					use pac_polygon_offsetting;
-					-- terminals : pac_polygon_list.list;
 					reliefes : pac_terminals_with_relief.list;
 				begin
 					-- Query track segments:
@@ -490,9 +484,7 @@ package body et_board_ops.fill_zones is
 					route.vias.iterate (query_via'access);
 					
 					-- CS evaluate native_tracks_embedded ?
-
-					
-					-- CS fill zones, ... see et_route.type_route
+					-- CS foreign fill zones, ... see et_route.type_route
 
 					-- Get terminal polygons of device packages
 					-- which are connected with the candidate net:
@@ -501,13 +493,11 @@ package body et_board_ops.fill_zones is
 						layer_category			=> layer_category,
 						zone					=> zone,
 						net_cursor				=> net_cursor,
-						polygons				=> polygons_of_candidate_net, --terminals,
+						polygons				=> polygons_of_candidate_net,
 						with_reliefes			=> collect_terminals_with_relief,
 						terminals_with_relief	=> reliefes,
 						log_threshold			=> log_threshold + 6);
 
-											
-					-- polygons.splice (before => pac_polygon_list.no_element, source => terminals);
 
 					-- expand polygons by clearance
 					offset_polygons (polygons_of_candidate_net, 
@@ -611,8 +601,8 @@ package body et_board_ops.fill_zones is
 	procedure get_polygons_of_unconnected_terminals (
 		module_cursor			: in pac_generic_modules.cursor;
 		layer_category 			: in type_signal_layer_category;
-		zone_polygon			: in pac_polygons.type_polygon;
-		offset					: in et_board_geometry.pac_geometry_brd.type_float_positive;
+		zone					: in pac_polygons.type_polygon;
+		offset					: in type_float_positive;
 		terminal_polygons		: out pac_polygons.pac_polygon_list.list;
 		log_threshold			: in type_log_level)
 	is

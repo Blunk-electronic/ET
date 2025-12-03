@@ -308,7 +308,7 @@ is
 			get_polygons_of_unconnected_terminals (
 			 	module_cursor		=> module_cursor,
 			 	layer_category		=> layer_category,
-				zone_polygon		=> zone_polygon,
+				zone				=> zone_polygon,
 				offset				=> default_offset,
 				terminal_polygons	=> result.polygons,
 				log_threshold		=> log_threshold + 6);

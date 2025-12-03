@@ -46,18 +46,22 @@
 
 
 with et_devices_electrical;				use et_devices_electrical;
-with et_board_geometry;
+with et_board_geometry;					use et_board_geometry;
 with et_thermal_relief;					use et_thermal_relief;
 
 
 package et_board_ops.fill_zones is
 
+	use pac_geometry_brd;
+	use pac_polygons;
+
+	
 
 	-- This controlled type is used by the functon to_polygon below:
 	type type_terminal_polygon (exists : boolean) is record
 		case exists is
 			when TRUE	=> 
-				polygon		: et_board_geometry.pac_polygons.type_polygon;
+				polygon		: type_polygon;
 				position	: type_terminal_position_fine;
 				
 			when FALSE	=> null;
@@ -101,7 +105,7 @@ package et_board_ops.fill_zones is
 		net_cursor 				: in pac_nets.cursor;
 		
 		-- This is the outcome of the procedure, a list of polygons:
-		polygons				: in out pac_polygons.pac_polygon_list.list;
+		polygons				: in out pac_polygon_list.list;
 
 		-- CS: expand !
 		
@@ -136,7 +140,7 @@ package et_board_ops.fill_zones is
 		layer_category 			: in type_signal_layer_category;
 		
 		-- This is the zone inside which objects are searched for:
-		zone					: in et_board_geometry.pac_polygons.type_polygon;
+		zone					: in type_polygon;
 
 		-- This is the linewidth used for the zone contour
 		-- and the fill lines:
@@ -157,7 +161,7 @@ package et_board_ops.fill_zones is
 		
 		-- This is the outcome of the procedure.
 		-- The polygons found by the procedure are appended here:
-		polygons				: in out et_board_geometry.pac_polygons.pac_polygon_list.list;
+		polygons				: in out pac_polygon_list.list;
 		
 		terminal_connection		: in type_pad_connection;
 		
@@ -182,11 +186,11 @@ package et_board_ops.fill_zones is
 		
 		-- This is the zone inside which therminals
 		-- are searched for:
-		zone_polygon			: in pac_polygons.type_polygon;
+		zone					: in pac_polygons.type_polygon;
 		-- CS currently not used
 		
 		-- The offset by which the polygons are to be expanded:
-		offset					: in et_board_geometry.pac_geometry_brd.type_float_positive;
+		offset					: in type_float_positive;
 		
 		-- This is the outcome of the procedure, a list of polygons:
 		terminal_polygons		: out pac_polygons.pac_polygon_list.list;
