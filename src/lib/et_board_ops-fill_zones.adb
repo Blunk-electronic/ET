@@ -610,7 +610,7 @@ package body et_board_ops.fill_zones is
 		layer_category 			: in type_signal_layer_category;
 		zone					: in pac_polygons.type_polygon;
 		offset					: in type_float_positive;
-		polygons				: out pac_polygons.pac_polygon_list.list;
+		polygons				: in out pac_polygons.pac_polygon_list.list;
 		log_threshold			: in type_log_level)
 	is
 	

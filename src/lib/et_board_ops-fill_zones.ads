@@ -177,7 +177,7 @@ package et_board_ops.fill_zones is
 
 
 	-- This procedure collects terminals of packages that are not
-	-- connected with any net and appends them to the terminal_polygons:
+	-- connected with any net and appends them to "polygons":
 	procedure get_polygons_of_unconnected_terminals (
 		module_cursor			: in pac_generic_modules.cursor;
 		
@@ -196,7 +196,7 @@ package et_board_ops.fill_zones is
 		offset					: in type_float_positive;
 		
 		-- This is the outcome of the procedure, a list of polygons:
-		polygons				: out pac_polygons.pac_polygon_list.list;
+		polygons				: in out pac_polygons.pac_polygon_list.list;
 		
 		log_threshold			: in type_log_level);
 	
