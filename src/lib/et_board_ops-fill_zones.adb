@@ -209,12 +209,12 @@ package body et_board_ops.fill_zones is
 
 	
 
-	procedure get_terminal_polygons (
+	procedure get_polygons_of_connected_terminals (
 		module_cursor			: in pac_generic_modules.cursor;
 		layer_category 			: in type_signal_layer_category;
-		zone_polygon			: in pac_polygons.type_polygon;
+		zone					: in pac_polygons.type_polygon;
 		net_cursor 				: in pac_nets.cursor;
-		terminal_polygons		: out pac_polygons.pac_polygon_list.list;		
+		polygons				: out pac_polygons.pac_polygon_list.list;		
 		with_reliefes			: in boolean;
 		terminals_with_relief	: out pac_terminals_with_relief.list;
 		log_threshold			: in type_log_level)
@@ -232,7 +232,7 @@ package body et_board_ops.fill_zones is
 		-- This procedure queries a device port.
 		-- From the port we map to the associated physical terminal.
 		-- We then convert the terminal to a polygon and 
-		-- appends it to the resulting list terminal_polygons:
+		-- appends it to the resulting list polygons:
 		procedure query_device_port (c : in pac_device_ports.cursor) is
 			port : type_device_port renames element (c);
 			-- Port contains the device name, unit name and port name.
@@ -274,7 +274,7 @@ package body et_board_ops.fill_zones is
 				-- then nothing happens here. Otherwise the outline of the terminal
 				-- will be appended to the result:
 				if terminal_polygon.exists then
-					terminal_polygons.append (terminal_polygon.polygon);
+					polygons.append (terminal_polygon.polygon);
 
 					-- If the terminals of this net require thermal reliefes, then
 					-- collect the necessary information:
@@ -284,7 +284,7 @@ package body et_board_ops.fill_zones is
 						-- the given zone or are inside the given zone:
 						terminal_zone_overlap := get_overlap_status (
 							polygon_A => terminal_polygon.polygon,
-							polygon_B => zone_polygon);
+							polygon_B => zone);
 
 						case terminal_zone_overlap is
 							when A_INSIDE_B | A_OVERLAPS_B =>
@@ -319,11 +319,12 @@ package body et_board_ops.fill_zones is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " get_terminal_polygons"
+			& " get_polygons_of_connected_terminals"
 			& " layer cat: " & to_string (layer_category)
 			& " net: " & get_net_name (net_cursor)
 			& " thermal " & boolean'image (with_reliefes),
 			level => log_threshold);
+		-- CS log zone ?
 
 		log_indentation_up;
 
@@ -338,7 +339,7 @@ package body et_board_ops.fill_zones is
 		ports.devices.iterate (query_device_port'access);
 
 		log_indentation_down;
-	end get_terminal_polygons;
+	end get_polygons_of_connected_terminals;
 
 
 
@@ -495,12 +496,12 @@ package body et_board_ops.fill_zones is
 
 					-- Get terminal polygons of device packages
 					-- which are connected with the candidate net:
-					get_terminal_polygons (
+					get_polygons_of_connected_terminals (
 						module_cursor			=> module_cursor,
 						layer_category			=> layer_category,
-						zone_polygon			=> zone,
+						zone					=> zone,
 						net_cursor				=> net_cursor,
-						terminal_polygons		=> terminals,
+						polygons				=> terminals,
 						with_reliefes			=> collect_terminals_with_relief,
 						terminals_with_relief	=> reliefes,
 						log_threshold			=> log_threshold + 6);
