@@ -184,6 +184,18 @@ package et_geometry_1.et_polygons is
 	use pac_polygon_list;
 	
 
+	-- Returns the number of polygons in
+	-- the given list:
+	function get_count (
+		polygons : in pac_polygon_list.list)
+		return natural;
+	
+	function get_count (
+		polygons : in pac_polygon_list.list)
+		return string;
+
+	
+	
 	-- Appends the source list to the target list:
 	procedure append (
 		target	: in out pac_polygon_list.list;
@@ -820,6 +832,7 @@ package et_geometry_1.et_polygons is
 	package pac_overlap_status is new ordered_sets (type_overlap_status);
 	use pac_overlap_status;
 	
+
 	
 	overlap_mode_1 : constant pac_overlap_status.set := 
 		union (to_set (B_INSIDE_A), to_set (A_OVERLAPS_B));

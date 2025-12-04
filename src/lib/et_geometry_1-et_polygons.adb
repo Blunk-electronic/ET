@@ -326,6 +326,27 @@ package body et_geometry_1.et_polygons is
 
 
 	
+
+	function get_count (
+		polygons : in pac_polygon_list.list)
+		return natural
+	is begin
+		return natural (polygons.length);
+	end;
+
+	
+	
+	function get_count (
+		polygons : in pac_polygon_list.list)
+		return string
+	is begin
+		return natural'image (natural (polygons.length));
+	end;
+
+
+	
+	
+	
 	procedure append (
 		target	: in out pac_polygon_list.list;
 		source	: in pac_polygon_list.list)
