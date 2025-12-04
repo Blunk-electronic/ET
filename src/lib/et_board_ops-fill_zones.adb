@@ -218,6 +218,7 @@ package body et_board_ops.fill_zones is
 		module_cursor			: in pac_generic_modules.cursor;
 		layer_category 			: in type_signal_layer_category;
 		zone					: in pac_polygons.type_polygon;
+		offset					: in type_float_positive;
 		net_cursor 				: in pac_nets.cursor;
 		polygons				: in out pac_polygon_list.list;		
 		with_reliefes			: in boolean;
@@ -266,45 +267,72 @@ package body et_board_ops.fill_zones is
 					layer_category, fill_tolerance);
 				-- CS difficult to debug. move to a subprocedure
 
+				terminal_polygon_expanded : type_polygon;
+
 				terminal_zone_overlap : type_overlap_status;
 				
 				-- CS: more log messages
 			begin
-				log (text => "terminal " & get_terminal_name (terminal_cursor),
-					level => log_threshold + 2);
-					
-				log_indentation_up;				
-				
 				-- If the terminal does not affect the current signal layer,
 				-- then nothing happens here. Otherwise the outline of the terminal
 				-- will be appended to the result:
 				if terminal_polygon.exists then
-					polygons.append (terminal_polygon.polygon);
 
-					-- If the terminals of this net require thermal reliefes, then
-					-- collect the necessary information:
-					if with_reliefes then
+					terminal_polygon_expanded := terminal_polygon.polygon;
+					offset_polygon (terminal_polygon_expanded, offset);
 
-						-- Do a preselection of those terminals that are overlapping
-						-- the given zone or are inside the given zone:
-						terminal_zone_overlap := get_overlap_status (
-							polygon_A => terminal_polygon.polygon,
-							polygon_B => zone);
+					-- If the polygon is inside the zone then
+					-- we append it to the result:
+					if polygon_touches_area (zone, terminal_polygon_expanded) then
 
-						case terminal_zone_overlap is
-							when A_INSIDE_B | A_OVERLAPS_B =>
+						log (text => "terminal " & get_terminal_name (terminal_cursor),
+							level => log_threshold + 2);
+							
+						log_indentation_up;
+
+						log (text => "expanded: " & to_string (terminal_polygon_expanded),
+							level => log_threshold + 4);
+
+						polygons.append (terminal_polygon_expanded);
+
+						-- If the terminal overlaps the zone or if it is
+						-- inside the zone then thermal reliefes are required.
+						-- If the terminals of this net require thermal reliefes, then
+						-- collect the necessary information:
+						if with_reliefes then
+		
+							-- Do a preselection of those terminals that are overlapping
+							-- the given zone or are inside the given zone:
+-- 							terminal_zone_overlap := get_overlap_status (
+-- 								polygon_A => terminal_polygon.polygon,
+-- 								polygon_B => zone);
+-- 		
+-- 							case terminal_zone_overlap is
+-- 								when A_INSIDE_B | A_OVERLAPS_B =>
+-- 									terminals_with_relief.append ((
+-- 										position => terminal_polygon.position, -- in the board
+-- 										outline	 => terminal_polygon.polygon, -- in the board
+-- 										terminal => terminal_cursor));  -- in the package model
+-- 		
+-- 								when others => null;
+-- 							end case;
+
+							if polygon_touches_area (zone, terminal_polygon.polygon) then
+								log (text => "thermal relief prepared",
+									level => log_threshold + 3);
+
 								terminals_with_relief.append ((
 									position => terminal_polygon.position, -- in the board
 									outline	 => terminal_polygon.polygon, -- in the board
 									terminal => terminal_cursor));  -- in the package model
-
-							when others => null;
-						end case;
+							end if;
+						end if;
+					
+						log_indentation_down;
 					end if;
 
 				end if;		
 				
-				log_indentation_down;
 			end query_port;
 			
 			
@@ -326,6 +354,7 @@ package body et_board_ops.fill_zones is
 		log (text => "module " & to_string (module_cursor)
 			& " get_polygons_of_connected_terminals"
 			& " layer cat: " & to_string (layer_category)
+			& " offset: " & to_string (offset)
 			& " net: " & get_net_name (net_cursor)
 			& " thermal " & boolean'image (with_reliefes),
 			level => log_threshold);
@@ -499,6 +528,11 @@ package body et_board_ops.fill_zones is
 					-- CS evaluate native_tracks_embedded ?
 					-- CS foreign fill zones, ... see et_route.type_route
 
+					-- Expand the polygons which we have collected
+					-- so far by the net specific offset:
+					offset_polygons (polygons_of_candidate_net, offset);
+
+
 					-- Get terminal polygons of device packages
 					-- which are connected with the candidate net:
 					get_polygons_of_connected_terminals (
@@ -506,20 +540,15 @@ package body et_board_ops.fill_zones is
 						layer_category			=> layer_category,
 						zone					=> zone,
 						net_cursor				=> net_cursor,
+						offset					=> offset,
 						polygons				=> polygons_of_candidate_net,
 						with_reliefes			=> collect_terminals_with_relief,
 						terminals_with_relief	=> reliefes,
-						log_threshold			=> log_threshold + 6);
+						log_threshold			=> log_threshold + 2);
 					
+					-- Add the polygons of the candidate net to the result:
+					append (polygons, polygons_of_candidate_net);
 
-					-- expand polygons by clearance
-					offset_polygons (polygons_of_candidate_net, offset);
-									 -- half_linewidth_float + type_float_positive (clearance));
-					-- CS remove
-
-					polygons.splice (before => pac_polygon_list.no_element, 
-								   source => polygons_of_candidate_net);
-					
 					append_relieves (terminals_with_relief, reliefes);
 				end convert_conductor_objects_to_polygons;
 				
