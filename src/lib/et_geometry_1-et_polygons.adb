@@ -325,6 +325,19 @@ package body et_geometry_1.et_polygons is
 
 
 
+	
+	procedure append (
+		target	: in out pac_polygon_list.list;
+		source	: in pac_polygon_list.list)
+	is
+		s : pac_polygon_list.list := source;
+	begin
+		target.splice (before => pac_polygon_list.no_element, source => s);
+	end;
+
+
+	
+
 	procedure update_boundaries (
 		polygon	: in out type_polygon)
 	is begin
