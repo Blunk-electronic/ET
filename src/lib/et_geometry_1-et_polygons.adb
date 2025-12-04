@@ -2934,7 +2934,28 @@ package body et_geometry_1.et_polygons is
 			debug			=> debug);
 	end get_overlap_status;
 
-		
+
+	
+
+	function polygon_touches_area (
+		area		: in type_polygon;
+		polygon		: in type_polygon)
+		return boolean
+	is
+		status : type_overlap_status;
+	begin
+		status := get_overlap_status (polygon_A => polygon, polygon_B => area);
+
+		if status = A_INSIDE_B or status = A_OVERLAPS_B then
+			return true;
+		else
+			return false;
+		end if;
+	end polygon_touches_area;
+
+
+
+	
 	
 	function get_polygons (
 		area		: in type_polygon;

@@ -862,6 +862,15 @@ package et_geometry_1.et_polygons is
 		debug					: in boolean := false)
 		return type_overlap_status;
 
+		
+	-- Returns true if one of these conditions is true:
+	-- 1. the given polygon is inside the given area
+	-- 2. the given polygon overlaps the given area
+	function polygon_touches_area (
+		area		: in type_polygon;
+		polygon		: in type_polygon)
+		return boolean;
+		
 	
 	-- Returns from the given list of polygons those which
 	-- have a given overlap status relative to the area.
