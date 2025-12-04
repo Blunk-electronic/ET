@@ -100,15 +100,15 @@ package et_board_ops.fill_zones is
 		-- We will be searching for therminals of device packages
 		-- that overlap the zone or are inside the zone:
 		zone					: in pac_polygons.type_polygon;
+
+		-- This is the offset by which the polygons must be exapnded:
+		offset					: in type_float_positive;
 		
 		-- This is the net for which terminals are searched for:
 		net_cursor 				: in pac_nets.cursor;
 		
 		-- This is the outcome of the procedure, a list of polygons:
 		polygons				: in out pac_polygon_list.list;
-
-		-- CS: expand !
-		-- CS expand and test whether a single polyon affects the zone
 		
 		-- This flag specifies whether additional information
 		-- for thermal reliefes is also to be collected:
