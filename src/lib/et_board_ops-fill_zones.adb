@@ -621,17 +621,18 @@ package body et_board_ops.fill_zones is
 		polygons				: in out pac_polygons.pac_polygon_list.list;
 		log_threshold			: in type_log_level)
 	is
-	
+
+		offset : constant type_float_positive := 
+			type_float_positive (linewidth * 0.5 + zone_clearance);
+		-- CS function to_offset (linewidth, zone_clearance)
+		-- might already be available
+
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
 			use et_devices_electrical;
-
-			offset : constant type_float_positive := 
-				type_float_positive (linewidth * 0.5 + zone_clearance);
-			-- CS function to_offset (linewidth, zone_clearance)
-			-- might already be available
 			
 			
 			procedure query_device (
@@ -686,7 +687,6 @@ package body et_board_ops.fill_zones is
 			
 		
 		begin
-			-- CS log offset
 			module.devices.iterate (query_device'access);
 		end query_module;
 		
@@ -694,9 +694,12 @@ package body et_board_ops.fill_zones is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " get_polygons_of_unconnected_terminals"
-			& " layer cat: " & to_string (layer_category),
+			& " layer cat: " & to_string (layer_category)
+			& " zone clearance: " & to_string (zone_clearance)
+			& " offset " & to_string (offset)
+			& " zone linewidth: " & to_string (linewidth),			
 			level => log_threshold);
-		-- CS log arguments
+
 		
 		log_indentation_up;
 	
@@ -725,19 +728,18 @@ package body et_board_ops.fill_zones is
 		log_threshold			: in type_log_level)
 	is
 
+		offset : constant type_float_positive := 
+			type_float_positive (linewidth * 0.5 + zone_clearance);
+		-- CS function to_offset (linewidth, zone_clearance)
+		-- might already be available
+
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
 			use et_devices_non_electrical;
 			use pac_devices_non_electrical;
-
-
-			offset : constant type_float_positive := 
-				type_float_positive (linewidth * 0.5 + zone_clearance);
-			-- CS function to_offset (linewidth, zone_clearance)
-			-- might already be available
-
 
 			
 			procedure query_device (d : in pac_devices_non_electrical.cursor) is
@@ -797,6 +799,7 @@ package body et_board_ops.fill_zones is
 			& " layer cat: " & to_string (layer_category)
 			& " zone clearance: " & to_string (zone_clearance)
 			& " zone linewidth: " & to_string (linewidth)
+			& " offset " & to_string (offset)
 			& " zone clearance to edge: " & to_string (clearance_to_edge),
 			level => log_threshold);
 
@@ -827,6 +830,12 @@ package body et_board_ops.fill_zones is
 		log_threshold			: in type_log_level)
 	is
 
+		offset : constant type_float_positive := 
+			type_float_positive (linewidth * 0.5 + zone_clearance);
+		-- CS function to_offset (linewidth, zone_clearance)
+		-- might already be available
+
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
@@ -839,17 +848,12 @@ package body et_board_ops.fill_zones is
 				text : type_conductor_text renames element (t);
 				borders : pac_polygon_list.list;
 
-				offset : type_float_positive;
 				use et_board_text;
 				use pac_text_board;
 			begin
 				if text.layer = layer then
 
 					borders := get_borders (text.vectors);
-
-					offset := type_float_positive (linewidth * 0.5 + zone_clearance);
-					-- CS function to_offset (linewidth, zone_clearance)
-					-- might already be available
 					
 					offset_polygons (borders, offset);
 					
@@ -874,9 +878,12 @@ package body et_board_ops.fill_zones is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " get_polygons_of_board_texts"
-			& " layer: " & to_string (layer),
+			& " layer: " & to_string (layer)
+			& " zone clearance: " & to_string (zone_clearance)
+			& " zone linewidth: " & to_string (linewidth)
+			& " offset " & to_string (offset),			
 			level => log_threshold);
-		-- CS more log messages
+
 
 		log_indentation_up;
 	
