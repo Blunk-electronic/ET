@@ -744,40 +744,45 @@ package body et_board_ops.fill_zones is
 				use et_pcb_contour;
 				p : pac_polygon_list.list;
 			begin
+				log (text => "device " & get_device_name (d),
+					 level => log_threshold + 1);
+
+				log_indentation_up;
+				
 				-- conductors: such as terminals, text, lines, arcs, circles
 				p := get_conductor_polygons (d, layer_category);
 				offset_polygons (p, offset);
+				log (text => "conductors" & get_count (p), level => log_threshold + 2);
 
-				-- CS remove those which do not affect the zone
-				
-				polygons.splice (
-					before => pac_polygon_list.no_element,
-					source => p);
-				-- CS use special append procedure
-				-- append (polygons, p);
+				-- Exract those which are inside the given zone
+				-- or which overlap the given zone
+				-- and append them to the result:
+				append (polygons, get_polygons (zone, p, overlap_mode_1));
 				
 				-- holes:
 				p := get_hole_polygons (d);
 				offset_holes (p, linewidth * 0.5 + clearance_to_edge);
+				log (text => "holes" & get_count (p), level => log_threshold + 2);
 
-				-- CS remove those which do not affect the zone
-				
-				polygons.splice (
-					before => pac_polygon_list.no_element,
-					source => p);
+				-- Exract those which are inside the given zone
+				-- or which overlap the given zone
+				-- and append them to the result:
+				append (polygons, get_polygons (zone, p, overlap_mode_1));
 
 
 				-- route restrict:
 				p := get_route_restrict_polygons (d, layer_category);
 				offset_polygons (p, type_float_positive (linewidth * 0.5));
-
-				-- CS remove those which do not affect the zone
+				log (text => "route restrict" & get_count (p), level => log_threshold + 2);
 				
-				polygons.splice (
-					before => pac_polygon_list.no_element,
-					source => p);
+				-- Exract those which are inside the given zone
+				-- or which overlap the given zone
+				-- and append them to the result:
+				append (polygons, get_polygons (zone, p, overlap_mode_1));
 
 				-- CS union ?
+
+				log_indentation_down;
 			end query_device;
 
 			
@@ -789,9 +794,12 @@ package body et_board_ops.fill_zones is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " get_polygons_of_non_electrical_devices"
-			& " layer cat: " & to_string (layer_category),
+			& " layer cat: " & to_string (layer_category)
+			& " zone clearance: " & to_string (zone_clearance)
+			& " zone linewidth: " & to_string (linewidth)
+			& " zone clearance to edge: " & to_string (clearance_to_edge),
 			level => log_threshold);
-		-- CS log arguments
+
 		
 		log_indentation_up;
 	
