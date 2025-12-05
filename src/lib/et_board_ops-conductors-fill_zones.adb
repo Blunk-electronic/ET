@@ -297,7 +297,7 @@ is
 		
 		
 		-- This procedure converts the outlines of unconnected terminals
-		-- to polygons and appends them to the result:
+		-- of electrical devices to polygons and appends them to the result:
 		procedure process_unconnected_terminals is begin
 			log (text => "unconnected terminals", level => log_threshold + 5);
 			log_indentation_up;
@@ -338,52 +338,9 @@ is
 		
 		
 		
-
-		
-		procedure process_non_electrical_devices is 
-
-			-- use pac_devices_non_electrical;
-
-			-- This procedure takes a cursor to a non-electrical device (like a fiducial 
-			-- or a mounting hole),
-			-- extracts the contours of all its conducting objects and holes, 
-			-- offsets each of then and appends them to the result:
--- 			procedure query_non_electrical_device (d : in pac_devices_non_electrical.cursor) is
--- 				polygons : pac_polygon_list.list;
--- 			begin
--- 				-- CS test whether zone is affected
--- 				
--- 				-- conductors: such as terminals, text, lines, arcs, circles
--- 				polygons := get_conductor_polygons (d, layer_category);
--- 				offset_polygons (polygons, default_offset);
--- 
--- 				result.polygons.splice (
--- 					before => pac_polygon_list.no_element,
--- 					source => polygons);
--- 
--- 				
--- 				-- holes:
--- 				polygons := get_hole_polygons (d);
--- 				offset_holes (polygons, half_linewidth + clearance_conductor_to_edge);
--- 
--- 				result.polygons.splice (
--- 					before => pac_polygon_list.no_element,
--- 					source => polygons);
--- 
--- 
--- 				-- route restrict:
--- 				polygons := get_route_restrict_polygons (d, layer_category);
--- 				offset_polygons (polygons, half_linewidth_float);
--- 
--- 				result.polygons.splice (
--- 					before => pac_polygon_list.no_element,
--- 					source => polygons);
--- 
--- 				-- CS union ?
--- 			end query_non_electrical_device;
-
-		
-		begin
+		-- This procedure converts objects of non-electrial
+		-- devices to polygons and appends them to the result:
+		procedure process_non_electrical_devices is begin
 			log (text => "non-electrical devices", level => log_threshold + 5);
 			-- element (module_cursor).devices_non_electric.iterate (query_non_electrical_device'access);
 			
