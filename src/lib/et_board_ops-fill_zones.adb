@@ -373,8 +373,7 @@ package body et_board_ops.fill_zones is
 		terminal_connection		: in type_pad_connection;
 		terminals_with_relief	: out pac_terminals_with_relief.list;
 		log_threshold			: in type_log_level)
-	is 
-			
+	is 			
 		-- If a parent net was given (via argument parent_net) then
 		-- this will hold the actual net name like "GND".
 		-- Otherwise it will be left empty:
@@ -414,33 +413,47 @@ package body et_board_ops.fill_zones is
 				offset : constant type_float_positive := 
 					type_float_positive (linewidth * 0.5 + clearance);
 				
-				-- The polygons of the candidate net are collected here
-				-- (later they will be appended to the output polygons):
+				-- 1. The tracks and the vias of the candidate net are 
+				--    first converted to polygons and appended to 
+				--    polygons_of_candidate_net. 
+				-- 2. After that the polygons_of_candidate_net are expanded
+				--    by offset.
+				-- 3. Now those polygon which are inside the zone or which
+				--    touch the zone are extracted from polygons_of_candidate_net.
+				-- 4. The polygons_of_candidate_net are then appended
+				--    to the result.
+				-- 5. Then the terminals of connected device terminals
+				--    are collected and also added to polygons_of_candidate_net.
+
+				-- The polygons of the candidate net are collected here:
 				polygons_of_candidate_net : pac_polygon_list.list;
 
+				-- Information about routed stuff of the candidate net
+				-- is stored here (lines, arcs, vias, ...):
 				use et_route;
 				route : type_net_route renames element (net_cursor).route;
 
 				
+				-- This procedure queries a conductor line, converts it
+				-- to a polygon and appends it to the polygons_of_candidate_net:
 				procedure query_line (l : in pac_conductor_lines.cursor) is
 					use pac_conductor_lines;
 					line : type_conductor_line renames element (l);
 				begin
 					if line.layer = layer then
 						polygons_of_candidate_net.append (to_polygon (line, fill_tolerance));
-						-- CS expand and test whether it affects the zone
 					end if;
 				end query_line;
 
 				
-				
+				-- This procedure queries a conductor arc, converts it
+				-- to a polygon and appends it to the polygons_of_candidate_net:				
 				procedure query_arc (a : in pac_conductor_arcs.cursor) is
 					use pac_conductor_arcs;
 					arc : type_conductor_arc renames element (a);
 				begin
 					if arc.layer = layer then
 						polygons_of_candidate_net.append (to_polygon (arc, fill_tolerance));
-						-- CS expand and test whether it affects the zone
 					end if;
 				end query_arc;
 
@@ -448,11 +461,13 @@ package body et_board_ops.fill_zones is
 				use et_vias;
 				use pac_vias;
 				
+				-- This procedure queries a via, converts it
+				-- to a polygon and appends it to the polygons_of_candidate_net:
 				procedure query_via (v : in pac_vias.cursor) is
 					use pac_vias;
 					via : type_via renames element (v);
 				begin
-					-- CS expand and test whether it affects the zone
+					-- CS use function via_to_polyon 
 					case via.category is
 						when THROUGH =>
 							if layer_category = OUTER_TOP or layer_category = OUTER_BOTTOM then
@@ -486,9 +501,7 @@ package body et_board_ops.fill_zones is
 
 
 				
-				-- Converts tracks, vias and terminals to polygons,
-				-- expands them by the clearance and appends them to
-				-- the polygons:
+				-- Converts tracks, vias and terminals to polygons:
 				procedure convert_conductor_objects_to_polygons is 
 					use pac_polygon_offsetting;
 					reliefes : pac_terminals_with_relief.list;
@@ -507,6 +520,12 @@ package body et_board_ops.fill_zones is
 					-- so far by the net specific offset:
 					offset_polygons (polygons_of_candidate_net, offset);
 
+					-- Extract those polygons which are inside the
+					-- zone or which touch the zone:
+					get_touching_polygons (zone, polygons_of_candidate_net);
+
+					-- Append the polygons of the candidate net to the result:
+					append (polygons, polygons_of_candidate_net);
 
 					-- Get terminal polygons of device packages
 					-- which are connected with the candidate net:
@@ -516,14 +535,11 @@ package body et_board_ops.fill_zones is
 						zone					=> zone,
 						net_cursor				=> net_cursor,
 						offset					=> offset,
-						polygons				=> polygons_of_candidate_net,
+						polygons				=> polygons,
 						with_reliefes			=> collect_terminals_with_relief,
 						terminals_with_relief	=> reliefes,
 						log_threshold			=> log_threshold + 2);
 					
-					-- Add the polygons of the candidate net to the result:
-					append (polygons, polygons_of_candidate_net);
-
 					append_relieves (terminals_with_relief, reliefes);
 				end convert_conductor_objects_to_polygons;
 				
@@ -607,7 +623,6 @@ package body et_board_ops.fill_zones is
 
 		-- CS log number of polygons
 		log_indentation_down;
-
 	end get_polygons_of_nets;
 
 
