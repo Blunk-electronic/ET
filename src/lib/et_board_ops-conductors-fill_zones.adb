@@ -212,44 +212,6 @@ is
 
 	
 
-	-- Returns a list of polygons caused by route restrict
-	-- objects in the given signal layer.
-	function restrict_to_polygons (
-		layer : in type_signal_layer)
-		return pac_polygon_list.list
-	is
-		result : pac_polygon_list.list;
-	begin
-		log (text => "processing restrict area ...", level => log_threshold + 4);
-		log_indentation_up;
-
-		-- CS iterate global restrict areas
-		-- CS iterate net specific cutouts ?
-
-		log_indentation_down;
-		return result;
-	end restrict_to_polygons;
-
-
-	
-
-	-- Returns a list of polygons caused by cutout areas
-	-- in the given signal layer.
-	function cutouts_to_polygons (
-		layer : in type_signal_layer)
-		return pac_polygon_list.list
-	is
-		result : pac_polygon_list.list;
-	begin
-		log (text => "processing cutout area ...", level => log_threshold + 4);
-		log_indentation_up;
-		
-		-- CS iterate global cutout areas
-
-		log_indentation_down;
-		return result;
-	end cutouts_to_polygons;
-
 
 	
 
@@ -556,17 +518,6 @@ is
 		put_into_basket (cropping_basket, conductors_to_polygons_result.polygons);
 
 
-		
-		-- Crop the islands by all cutout areas in the affected layer.
-		cutouts := cutouts_to_polygons (layer);
-		put_into_basket (cropping_basket, cutouts);
-		--put_line ("A4");
-		
-		
-		-- Crop the islands by all route restrict objects in the affected layer.
-		restrict := restrict_to_polygons (layer);
-		put_into_basket (cropping_basket, restrict);
-		--put_line ("A5");
 		
 
 		-- Union the content of the cropping basket as much as possible:

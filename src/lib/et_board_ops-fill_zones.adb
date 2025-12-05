@@ -1206,6 +1206,40 @@ package body et_board_ops.fill_zones is
 		
 	
 		
+		-- This procedure converts cutout areas to polygons
+		-- and appends them to the result.
+		-- The purpose of cutout areas is to exempt
+		-- certain areas of fill zones from being filled:
+		procedure process_cutout_areas is begin
+			log (text => "cutout areas", level => log_threshold + 1);
+			log_indentation_up;
+			
+			-- CS todo. 
+			-- iterate global cutout areas in the 
+			-- given signal layer.
+			-- Test whether the given zone is affected
+
+			log_indentation_down;
+		end process_cutout_areas;
+
+
+
+		-- This procedure converts route restrict areas to polygons
+		-- and appends them to the result:
+		procedure process_restrict_areas is begin
+			log (text => "route restrict areas", level => log_threshold + 1);
+			log_indentation_up;
+			
+			-- CS todo. 
+			-- iterate global route restrict lines, arcs, areas in the 
+			-- given signal layer.
+			-- Test whether the given zone is affected
+			-- CS iterate net specific cutouts ?
+
+			log_indentation_down;
+		end process_restrict_areas;
+
+
 		
 	begin		
 		log (text => "process conductor objects", level => log_threshold);
@@ -1236,9 +1270,12 @@ package body et_board_ops.fill_zones is
 		process_non_electrical_devices;
 		process_electrical_devices;
 		
-		-- CS non electrical conductor stuff (placeholders, foreign floating fill zones, ...)
-		-- CS route restrict
+		-- CS non electrical conductor 
+		-- stuff (placeholders, foreign floating fill zones, ...)
 		
+		process_cutout_areas;
+		process_restrict_areas;
+
 		log_indentation_down;
 		
 		return result;

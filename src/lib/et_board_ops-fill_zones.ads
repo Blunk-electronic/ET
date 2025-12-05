@@ -318,7 +318,7 @@ package et_board_ops.fill_zones is
 	-- that require thermal reliefes. If the zone is not connected 
 	-- with the given parent_net, then the list "terminals_with_relief" 
 	-- is empty:
-	function conductors_to_polygons (
+	function conductors_to_polygons ( -- CS rename to get_polygons or similar
 		module_cursor		: in pac_generic_modules.cursor;
 		zone_polygon		: in type_polygon;
 		zone_clearance		: in type_track_clearance;
