@@ -654,13 +654,23 @@ package body et_board_ops.fill_zones is
 		is
 			use et_devices_electrical;
 			
-			
+			-- Temporarily we store the polygons here.
+			-- In the end of this procedure we extract those
+			-- which affect the given zone:
+			polygons_tmp : pac_polygon_list.list;
+
+
+			-- This procedure queries an electrical device and
+			-- processes its terminals:
 			procedure query_device (
 				device_cursor : in pac_devices_electrical.cursor)
 			is
 				terminals : pac_terminals.map;
 				
 				
+				-- This procedure queries an unconnected terminal
+				-- and converts it to a polyon, expands the polygon
+				-- by offset and appends it to the result
 				procedure query_terminal (
 					terminal_cursor : in pac_terminals.cursor) 
 				is
@@ -677,19 +687,20 @@ package body et_board_ops.fill_zones is
 						
 					if terminal_polygon.exists then
 						-- CS more log messages
-						-- CS test whether zone is affected
 
 						-- Expand the polygon by offset:
 						offset_polygon (terminal_polygon.polygon, offset);
 
-						-- Append the polygon to the result:
-						polygons.append (terminal_polygon.polygon);
-					end if;
-					
+						-- Append the polygon to the temporarily
+						-- polygon collection:
+						polygons_tmp.append (terminal_polygon.polygon);
+					end if;					
 				end query_terminal;
 				
 				
 			begin
+				-- Since all this is about board related things,
+				-- we look at real devices exclusively:
 				if is_real (device_cursor) then
 					log (text => "device " & get_device_name (device_cursor),
 						level => log_threshold + 1);
@@ -707,7 +718,15 @@ package body et_board_ops.fill_zones is
 			
 		
 		begin
+			-- Iterate through the electrical devices:
 			module.devices.iterate (query_device'access);
+
+			-- Extract those polygons from the temporarily collection
+			-- which are inside the zone or which touch the zone:
+			get_touching_polygons (zone, polygons_tmp);
+
+			-- Append the temporarily polygon collection to the result:
+			append (polygons, polygons_tmp);
 		end query_module;
 		
 		
