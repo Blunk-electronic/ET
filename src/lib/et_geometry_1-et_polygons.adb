@@ -3020,6 +3020,20 @@ package body et_geometry_1.et_polygons is
 	end get_polygons;
 
 
+
+
+	procedure get_touching_polygons (
+		area		: in type_polygon;
+		polygons	: in out pac_polygon_list.list)
+	is begin
+		polygons := get_polygons (
+			area		=> area, 
+			polygons	=> polygons, 
+			status		=> overlap_mode_1,
+			delete		=> false); -- not relevant but saves time
+	end get_touching_polygons;
+
+	
 	
 	-- Replaces three successive vertices which meet these criterions:
 	-- - having same position,

@@ -876,7 +876,9 @@ package et_geometry_1.et_polygons is
 	-- have a given overlap status relative to the area.
 	-- The overlap status here is a set of statuses.
 	-- Removes the affected polygons from the given list
-	-- if argument "delete" is true:
+	-- if argument "delete" is true.
+	-- If "delete" is true, then the function requires more 
+	-- time to complete:
 	function get_polygons (
 		area		: in type_polygon; -- polygon A
 		polygons	: in out pac_polygon_list.list; -- B-polygons
@@ -885,6 +887,15 @@ package et_geometry_1.et_polygons is
 		return pac_polygon_list.list;
 	
 
+	-- Deletes from the given list of polygons all which
+	-- do not touch the given area.
+	-- So the resulting list of polygons contains only those
+	-- which are inside the given area or which touch the area:
+	procedure get_touching_polygons (
+		area		: in type_polygon;
+		polygons	: in out pac_polygon_list.list);
+
+	
 	-- Returns a list of vertices of the given primary
 	-- polygon merged with the intersections (leaving or entering) with the secondary
 	-- polygon. The returned vertices are ordered counter-clockwise.
