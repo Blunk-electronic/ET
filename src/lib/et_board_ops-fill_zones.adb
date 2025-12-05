@@ -1055,6 +1055,198 @@ package body et_board_ops.fill_zones is
 
 
 
+
+
+
+
+	function conductors_to_polygons (
+		module_cursor		: in pac_generic_modules.cursor;
+		zone_polygon		: in type_polygon;
+		zone_clearance		: in type_track_clearance;
+		linewidth			: in type_track_width;
+		layer 				: in type_signal_layer;
+		parent_net			: in pac_nets.cursor := pac_nets.no_element;
+		terminal_connection	: in type_pad_connection;
+		clearance_to_edge 	: in type_distance_positive;
+		log_threshold		: in type_log_level)
+		return type_conductor_to_polygons_result
+	is
+		result : type_conductor_to_polygons_result;
+
+		layer_category : type_signal_layer_category;
+
+
+		-- The deepest conductor layer towards bottom is 
+		-- defined by the layer stack of the module:
+		bottom_layer : constant type_signal_layer := 
+			get_deepest_conductor_layer (module_cursor);
+
+
+		-- If a parent net was given (via argument parent_net) then
+		-- this will hold the actual net name like "GND".
+		-- Otherwise it will be left empty:
+		parent_net_name : pac_net_name.bounded_string;
+
+		procedure set_parent_net_name is begin
+			if parent_net /= pac_nets.no_element then
+				parent_net_name := key (parent_net);
+			end if;
+		end set_parent_net_name;
+
+	
+		
+		-- Extracts the polygons of all conductor objects which are 
+		-- connected with the given net
+		-- and appends them to the result:
+		procedure process_nets is begin
+			log (text => "conductor objects of nets", level => log_threshold + 5);
+			
+			log_indentation_up;
+			
+			get_polygons_of_nets (
+				module_cursor			=> module_cursor,
+				layer_category			=> layer_category,
+				zone					=> zone_polygon,
+				linewidth				=> linewidth,
+				layer					=> layer,
+				zone_clearance			=> zone_clearance,
+				bottom_layer			=> bottom_layer,
+				parent_net				=> parent_net,
+				polygons				=> result.polygons,
+				terminal_connection		=> terminal_connection,
+				terminals_with_relief	=> result.terminals_with_relief,
+				log_threshold			=> log_threshold + 6);
+			
+			log_indentation_down;
+		end process_nets;
+
+		
+		
+		-- This procedure converts the outlines of unconnected terminals
+		-- of electrical devices to polygons and appends them to the result:
+		procedure process_unconnected_terminals is begin
+			log (text => "unconnected terminals", level => log_threshold + 5);
+			log_indentation_up;
+
+			get_polygons_of_unconnected_terminals (
+			 	module_cursor		=> module_cursor,
+			 	layer_category		=> layer_category,
+				zone				=> zone_polygon,
+				zone_clearance		=> zone_clearance,
+				linewidth			=> linewidth,
+				polygons			=> result.polygons,
+				log_threshold		=> log_threshold + 6);
+
+			log_indentation_down;
+		end process_unconnected_terminals;
+	
+
+		
+		-- This procedure converts the texts in conductor
+		-- layers to polygons and appends them to the result:
+		procedure process_board_texts is begin
+			log (text => "board texts", level => log_threshold + 5);
+		
+			log_indentation_up;
+			
+			get_polygons_of_board_texts (
+				module_cursor	=> module_cursor,
+				zone			=> zone_polygon,
+				zone_clearance	=> zone_clearance,
+				linewidth		=> linewidth,
+				layer			=> layer,
+				polygons		=> result.polygons,
+				log_threshold	=> log_threshold + 6);
+				
+			log_indentation_down;
+		end process_board_texts;
+		
+		
+		
+		
+		-- This procedure converts objects of non-electrial
+		-- devices to polygons and appends them to the result:
+		procedure process_non_electrical_devices is begin
+			log (text => "non-electrical devices", level => log_threshold + 5);
+			log_indentation_up;
+			
+			get_polygons_of_non_electrical_devices (
+				module_cursor		=> module_cursor,
+				layer_category		=> layer_category,
+				zone				=> zone_polygon,
+				zone_clearance		=> zone_clearance,
+				linewidth			=> linewidth,
+				clearance_to_edge	=> clearance_to_edge,
+				polygons			=> result.polygons,
+				log_threshold		=> log_threshold + 6);
+				
+			log_indentation_down;
+		end process_non_electrical_devices;
+		
+		
+		
+		
+		-- This procedure converts objects of electrial
+		-- devices to polygons and appends them to the result:
+		procedure process_electrical_devices is begin
+			log (text => "electrial devices", level => log_threshold + 5);
+			log_indentation_up;
+			
+			get_polygons_of_electrical_devices (
+				module_cursor		=> module_cursor,
+				layer_category		=> layer_category,
+				zone				=> zone_polygon,
+				zone_clearance		=> zone_clearance,
+				linewidth			=> linewidth,
+				clearance_to_edge	=> clearance_to_edge,
+				polygons			=> result.polygons,
+				log_threshold		=> log_threshold + 6);
+				
+			log_indentation_down;
+		end process_electrical_devices;
+		
+	
+		
+		
+	begin -- conductors_to_polygons
+		
+		log (text => "process conductor objects ...", level => log_threshold + 4);
+		log_indentation_up;
+		
+		-- Set the layer category:
+		if layer = 1 then
+			layer_category := OUTER_TOP;
+		elsif layer = bottom_layer then
+			layer_category := OUTER_BOTTOM;
+		else
+			layer_category := INNER;
+		end if;
+		
+
+		-- Assigns to parent_net_name the actual name of the
+		-- parent net. Does nothing if no parent net given
+		-- by argument parent_net:
+		set_parent_net_name;
+		
+		-- Extract conductor objects of nets.
+		process_nets;
+
+		process_unconnected_terminals; -- of electrical devices
+
+		process_board_texts;
+
+		process_non_electrical_devices;
+		process_electrical_devices;
+		
+		-- CS non electrical conductor stuff (placeholders, foreign floating fill zones, ...)
+		-- CS route restrict
+		
+		log_indentation_down;
+		
+		return result;
+	end conductors_to_polygons;
+
+
 	
 end et_board_ops.fill_zones;
 	
