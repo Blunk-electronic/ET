@@ -863,6 +863,118 @@ package body et_board_ops.fill_zones is
 
 
 
+
+
+
+	procedure get_polygons_of_electrical_devices (
+		module_cursor			: in pac_generic_modules.cursor;
+		layer_category 			: in type_signal_layer_category;
+		zone					: in pac_polygons.type_polygon;
+		zone_clearance			: in type_track_clearance;
+		linewidth				: in type_track_width;
+		clearance_to_edge		: in type_distance_positive;
+		polygons				: in out pac_polygons.pac_polygon_list.list;
+		log_threshold			: in type_log_level)
+	is
+
+		offset : constant type_float_positive := 
+			type_float_positive (linewidth * 0.5 + zone_clearance);
+		-- CS function to_offset (linewidth, zone_clearance)
+		-- might already be available
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is
+			use et_devices_electrical;
+			use et_devices_electrical.packages;
+			use pac_devices_electrical;
+
+			
+			-- This procedure queries an electrical device.
+			-- 1. It converts all conductor objects, holes and route restrict
+			--    objects to polygons. NOTE: Terminals are not processed here.
+			-- 2. Expands the polygons, tests whether the given zone is affected
+			--    and appends them to the result:
+			procedure query_device (d : in pac_devices_electrical.cursor) is
+				use et_pcb_contour;
+				p : pac_polygon_list.list;
+			begin
+				log (text => "device " & get_device_name (d),
+					 level => log_threshold + 1);
+
+				log_indentation_up;
+				
+				-- Process conductor objects:
+				p := get_conductor_polygons (d, layer_category);
+				offset_polygons (p, offset);
+				log (text => "conductors" & get_count (p), level => log_threshold + 2);
+
+				-- Exract those which are inside the given zone
+				-- or which overlap the given zone
+				-- and append them to the result:
+				append (polygons, get_polygons (zone, p, overlap_mode_1));
+				
+
+				-- Process holes:
+				p := get_hole_polygons (d);
+				offset_holes (p, linewidth * 0.5 + clearance_to_edge);
+				log (text => "holes" & get_count (p), level => log_threshold + 2);
+
+				-- Exract those which are inside the given zone
+				-- or which overlap the given zone
+				-- and append them to the result:
+				append (polygons, get_polygons (zone, p, overlap_mode_1));
+
+
+				-- route restrict:
+				p := get_route_restrict_polygons (d, layer_category);
+				offset_polygons (p, type_float_positive (linewidth * 0.5));
+				log (text => "route restrict" & get_count (p), level => log_threshold + 2);
+				
+				-- Exract those which are inside the given zone
+				-- or which overlap the given zone
+				-- and append them to the result:
+				append (polygons, get_polygons (zone, p, overlap_mode_1));
+
+				-- CS union ?
+
+				log_indentation_down;
+			end query_device;
+
+			
+		begin
+			-- Iterate through the electrical devices:
+			module.devices.iterate (query_device'access);
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " get_polygons_of_electrical_devices"
+			& " layer cat: " & to_string (layer_category)
+			& " zone clearance: " & to_string (zone_clearance)
+			& " zone linewidth: " & to_string (linewidth)
+			& " offset " & to_string (offset)
+			& " zone clearance to edge: " & to_string (clearance_to_edge),
+			level => log_threshold);
+
+		
+		log_indentation_up;
+	
+		query_element (module_cursor, query_module'access);
+
+		-- CS log number of polygons
+		
+		log_indentation_down;
+	end get_polygons_of_electrical_devices;
+
+
+
+
+
+
 	
 
 

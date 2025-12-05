@@ -342,8 +342,6 @@ is
 		-- devices to polygons and appends them to the result:
 		procedure process_non_electrical_devices is begin
 			log (text => "non-electrical devices", level => log_threshold + 5);
-			-- element (module_cursor).devices_non_electric.iterate (query_non_electrical_device'access);
-			
 			log_indentation_up;
 			
 			get_polygons_of_non_electrical_devices (
@@ -362,55 +360,23 @@ is
 		
 		
 		
-
-		-- ELECTRICAL DEVICES ----------------------------------------------
-				
-		procedure process_electrical_devices is
-				
-			use pac_devices_electrical;
-
-			-- This procedure takes a cursor to an electrical device,
-			-- extracts the contours of all its conducting objects and holes, 
-			-- offsets each of then and appends them to the result:
-			procedure query_electrical_device (d : in pac_devices_electrical.cursor) is
-				polygons : pac_polygon_list.list;
-			begin
-				-- CS test whether zone is affected
-				
-				-- conductors: such text, lines, arcs, circles
-				polygons := get_conductor_polygons (d, layer_category);
-				offset_polygons (polygons, default_offset);
-
-				result.polygons.splice (
-					before => pac_polygon_list.no_element,
-					source => polygons);
-
-				
-				-- holes:
-				polygons := get_hole_polygons (d);
-				offset_holes (polygons, half_linewidth + clearance_conductor_to_edge);
-
-				result.polygons.splice (
-					before => pac_polygon_list.no_element,
-					source => polygons);
-
-
-				-- route restrict:
-				polygons := get_route_restrict_polygons (d, layer_category);
-				offset_polygons (polygons, half_linewidth_float);
-
-				result.polygons.splice (
-					before => pac_polygon_list.no_element,
-					source => polygons);
-
-				-- CS union ?
-			end query_electrical_device;
-
-		
-		begin
-			-- electrical devices:
+		-- This procedure converts objects of electrial
+		-- devices to polygons and appends them to the result:
+		procedure process_electrical_devices is begin
 			log (text => "electrial devices", level => log_threshold + 5);
-			element (module_cursor).devices.iterate (query_electrical_device'access);
+			log_indentation_up;
+			
+			get_polygons_of_electrical_devices (
+				module_cursor		=> module_cursor,
+				layer_category		=> layer_category,
+				zone				=> zone_polygon,
+				zone_clearance		=> zone_clearance,
+				linewidth			=> linewidth,
+				clearance_to_edge	=> clearance_conductor_to_edge,
+				polygons			=> result.polygons,
+				log_threshold		=> log_threshold + 6);
+				
+			log_indentation_down;
 		end process_electrical_devices;
 	
 	
