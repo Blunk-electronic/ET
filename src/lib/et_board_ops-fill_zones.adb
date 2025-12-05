@@ -1099,8 +1099,7 @@ package body et_board_ops.fill_zones is
 		-- connected with the given net
 		-- and appends them to the result:
 		procedure process_nets is begin
-			log (text => "conductor objects of nets", level => log_threshold + 5);
-			
+			log (text => "conductor objects of nets", level => log_threshold + 1);			
 			log_indentation_up;
 			
 			get_polygons_of_nets (
@@ -1115,7 +1114,7 @@ package body et_board_ops.fill_zones is
 				polygons				=> result.polygons,
 				terminal_connection		=> terminal_connection,
 				terminals_with_relief	=> result.terminals_with_relief,
-				log_threshold			=> log_threshold + 6);
+				log_threshold			=> log_threshold + 2);
 			
 			log_indentation_down;
 		end process_nets;
@@ -1125,7 +1124,7 @@ package body et_board_ops.fill_zones is
 		-- This procedure converts the outlines of unconnected terminals
 		-- of electrical devices to polygons and appends them to the result:
 		procedure process_unconnected_terminals is begin
-			log (text => "unconnected terminals", level => log_threshold + 5);
+			log (text => "unconnected terminals", level => log_threshold + 1);
 			log_indentation_up;
 
 			get_polygons_of_unconnected_terminals (
@@ -1135,7 +1134,7 @@ package body et_board_ops.fill_zones is
 				zone_clearance		=> zone_clearance,
 				linewidth			=> linewidth,
 				polygons			=> result.polygons,
-				log_threshold		=> log_threshold + 6);
+				log_threshold		=> log_threshold + 2);
 
 			log_indentation_down;
 		end process_unconnected_terminals;
@@ -1145,7 +1144,7 @@ package body et_board_ops.fill_zones is
 		-- This procedure converts the texts in conductor
 		-- layers to polygons and appends them to the result:
 		procedure process_board_texts is begin
-			log (text => "board texts", level => log_threshold + 5);
+			log (text => "board texts", level => log_threshold + 1);
 		
 			log_indentation_up;
 			
@@ -1156,7 +1155,7 @@ package body et_board_ops.fill_zones is
 				linewidth		=> linewidth,
 				layer			=> layer,
 				polygons		=> result.polygons,
-				log_threshold	=> log_threshold + 6);
+				log_threshold	=> log_threshold + 2);
 				
 			log_indentation_down;
 		end process_board_texts;
@@ -1167,7 +1166,7 @@ package body et_board_ops.fill_zones is
 		-- This procedure converts objects of non-electrial
 		-- devices to polygons and appends them to the result:
 		procedure process_non_electrical_devices is begin
-			log (text => "non-electrical devices", level => log_threshold + 5);
+			log (text => "non-electrical devices", level => log_threshold + 1);
 			log_indentation_up;
 			
 			get_polygons_of_non_electrical_devices (
@@ -1178,7 +1177,7 @@ package body et_board_ops.fill_zones is
 				linewidth			=> linewidth,
 				clearance_to_edge	=> clearance_to_edge,
 				polygons			=> result.polygons,
-				log_threshold		=> log_threshold + 6);
+				log_threshold		=> log_threshold + 2);
 				
 			log_indentation_down;
 		end process_non_electrical_devices;
@@ -1189,7 +1188,7 @@ package body et_board_ops.fill_zones is
 		-- This procedure converts objects of electrial
 		-- devices to polygons and appends them to the result:
 		procedure process_electrical_devices is begin
-			log (text => "electrial devices", level => log_threshold + 5);
+			log (text => "electrial devices", level => log_threshold + 1);
 			log_indentation_up;
 			
 			get_polygons_of_electrical_devices (
@@ -1200,7 +1199,7 @@ package body et_board_ops.fill_zones is
 				linewidth			=> linewidth,
 				clearance_to_edge	=> clearance_to_edge,
 				polygons			=> result.polygons,
-				log_threshold		=> log_threshold + 6);
+				log_threshold		=> log_threshold + 2);
 				
 			log_indentation_down;
 		end process_electrical_devices;
@@ -1208,9 +1207,8 @@ package body et_board_ops.fill_zones is
 	
 		
 		
-	begin -- conductors_to_polygons
-		
-		log (text => "process conductor objects ...", level => log_threshold + 4);
+	begin		
+		log (text => "process conductor objects", level => log_threshold);
 		log_indentation_up;
 		
 		-- Set the layer category:

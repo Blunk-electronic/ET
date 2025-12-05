@@ -209,24 +209,6 @@ is
 	native_tracks_embedded : type_native_tracks_embedded := false;
 
 
-	-- type type_conductor_to_polygons_result is record
-	-- 	polygons				: pac_polygon_list.list;
-	-- 	terminals_with_relief	: pac_terminals_with_relief.list;
-	-- end record;
-	
-
-
-	
-	-- Returns a list of polygons caused by conductor
-	-- objects (tracks, terminals, vias, texts, fiducials) in 
-	-- the given signal layer.
-	-- Returns only those polygons which are inside the given zone
-	-- or which touch the given zone.
-	-- As a byproduct, the return also contains a list of terminals
-	-- that require thermal reliefes. If the zone is not connected 
-	-- with the given parent_net, then the list "terminals_with_relief" 
-	-- is empty:
-	
 
 	
 
