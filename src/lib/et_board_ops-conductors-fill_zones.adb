@@ -210,7 +210,7 @@ is
 
 
 
-	
+		
 
 
 	
@@ -610,16 +610,27 @@ is
 		is
 			zone_cursor : pac_floating_solid.cursor := module.board.conductors_floating.zones.solid.first;
 
+			
 			procedure do_it (
 				zone : in out type_floating_solid)
-			is begin
+			is 
+				reliefes : pac_reliefes.list; -- always empty
+			begin
 				fill_zone (
-					zone		=> zone,
-					linewidth	=> element (zone_cursor).linewidth,
-					layer		=> zone.properties.layer,
-					clearance	=> zone.isolation);
+					module_cursor		=> module_cursor,
+					zone				=> zone,
+					outer_contour		=> board_outer_contour_master,
+					linewidth			=> element (zone_cursor).linewidth,
+					layer				=> zone.properties.layer,
+					clearance			=> zone.isolation,
+					clearance_to_edge	=> clearance_conductor_to_edge,
+					terminal_connection	=> terminal_connection,
+					relief_properties	=> relief_properties,
+					reliefes			=> reliefes,
+					log_threshold		=> log_threshold + 1); -- CS
 			end do_it;
 
+			
 		begin
 			while has_element (zone_cursor) loop
 				module.board.conductors_floating.zones.solid.update_element (zone_cursor, do_it'access);
@@ -639,12 +650,22 @@ is
 			
 			procedure do_it (
 				zone : in out type_floating_hatched)
-			is begin
+			is 
+				reliefes : pac_reliefes.list; -- always empty
+			begin
 				fill_zone (
-					zone		=> zone,
-					linewidth	=> element (zone_cursor).linewidth,
-					layer		=> zone.properties.layer,
-					clearance	=> zone.isolation);
+					module_cursor		=> module_cursor,
+					zone				=> zone,
+					outer_contour		=> board_outer_contour_master,
+					linewidth			=> element (zone_cursor).linewidth,
+					layer				=> zone.properties.layer,
+					clearance			=> zone.isolation,
+					clearance_to_edge	=> clearance_conductor_to_edge,
+					terminal_connection	=> terminal_connection,
+					relief_properties	=> relief_properties,
+					reliefes			=> reliefes,
+					log_threshold		=> log_threshold + 1); -- CS
+		
 			end do_it;
 
 			
@@ -711,18 +732,21 @@ is
 						terminal_technology	:= zone.technology;
 					end if;
 
-					
-					fill_zone (
-						zone		=> zone,
-						linewidth	=> element (zone_cursor).linewidth,
-						layer		=> zone.properties.layer,
-						clearance	=> get_greatest (zone.isolation, net_class.clearance),
-						parent_net	=> net_cursor,
-						debug		=> false
-						--debug		=> true
-						);
 
-					zone.reliefes := terminal_reliefes;
+					fill_zone (
+						module_cursor		=> module_cursor,
+						zone				=> zone,
+						outer_contour		=> board_outer_contour_master,
+						linewidth			=> element (zone_cursor).linewidth,
+						layer				=> zone.properties.layer,
+						clearance			=> get_greatest (zone.isolation, net_class.clearance),
+						clearance_to_edge	=> clearance_conductor_to_edge,
+						parent_net			=> net_cursor,
+						terminal_connection	=> terminal_connection,
+						relief_properties	=> relief_properties,
+						reliefes			=> zone.reliefes,
+						log_threshold		=> log_threshold + 1); -- CS
+						
 
 					-- If something went wrong, output some
 					-- helpful information and restore the zone:
@@ -758,6 +782,8 @@ is
 
 
 			
+			
+			
 			procedure route_hatched (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
@@ -778,12 +804,28 @@ is
 						terminal_technology	:= zone.technology;
 					end if;
 					
+					-- fill_zone (
+					-- 	zone		=> zone,
+					-- 	linewidth	=> element (zone_cursor).linewidth,
+					-- 	layer		=> zone.properties.layer,
+					-- 	clearance	=> get_greatest (zone.isolation, net_class.clearance),
+					-- 	parent_net	=> net_cursor);
+						
 					fill_zone (
-						zone		=> zone,
-						linewidth	=> element (zone_cursor).linewidth,
-						layer		=> zone.properties.layer,
-						clearance	=> get_greatest (zone.isolation, net_class.clearance),
-						parent_net	=> net_cursor);
+						module_cursor		=> module_cursor,
+						zone				=> zone,
+						outer_contour		=> board_outer_contour_master,
+						linewidth			=> element (zone_cursor).linewidth,
+						layer				=> zone.properties.layer,
+						clearance			=> get_greatest (zone.isolation, net_class.clearance),
+						clearance_to_edge	=> clearance_conductor_to_edge,
+						parent_net			=> net_cursor,
+						terminal_connection	=> terminal_connection,
+						relief_properties	=> relief_properties,
+						reliefes			=> zone.reliefes,
+						log_threshold		=> log_threshold + 1); -- CS
+
+						
 				end do_it;
 					
 				
@@ -860,8 +902,7 @@ is
 	end fill_connected_zones;
 
 	
-
-	--offset_scratch : type_distance_model;
+	
 	
 begin -- fill_zones
 
@@ -881,8 +922,8 @@ begin -- fill_zones
 	
 	-- Shrink the outer board edge by the conductor-to-edge clearance
 	-- as given by the design rules:
-	log (text => "offset by DRU parameter " -- CS use predefined string
-		& enclose_in_quotes (dru_parameter_clearance_conductor_to_board_edge) 
+	log (text => "offset by clearance to edge (DRU) "
+		-- & enclose_in_quotes (dru_parameter_clearance_conductor_to_board_edge) 
 		& to_string (- clearance_conductor_to_edge),
 		level => log_threshold + 1);
 	
@@ -891,20 +932,20 @@ begin -- fill_zones
 
 
 	
-	log (text => "convert holes to polygons", level => log_threshold + 1);
-	
-	board_holes_master := to_polygons (
-		holes		=> get_holes (module_cursor),
-		tolerance	=> fill_tolerance);
-
-	-- Expand the holes by the conductor-to-edge clearance
-	-- as given by the design rules:
-	log (text => "offset by DRU parameter " -- CS use predefined string 
-		& enclose_in_quotes (dru_parameter_clearance_conductor_to_board_edge) 
-		& to_string (clearance_conductor_to_edge),
-		level => log_threshold + 1);
-
-	offset_holes (board_holes_master, clearance_conductor_to_edge);
+-- 	log (text => "convert holes to polygons", level => log_threshold + 1);
+-- 	
+-- 	board_holes_master := to_polygons (
+-- 		holes		=> get_holes (module_cursor),
+-- 		tolerance	=> fill_tolerance);
+-- 
+-- 	-- Expand the holes by the conductor-to-edge clearance
+-- 	-- as given by the design rules:
+-- 	log (text => "offset by DRU parameter " -- CS use predefined string 
+-- 		& enclose_in_quotes (dru_parameter_clearance_conductor_to_board_edge) 
+-- 		& to_string (clearance_conductor_to_edge),
+-- 		level => log_threshold + 1);
+-- 
+-- 	offset_holes (board_holes_master, clearance_conductor_to_edge);
 
 
 	

@@ -48,6 +48,7 @@
 with et_devices_electrical;				use et_devices_electrical;
 with et_board_geometry;					use et_board_geometry;
 with et_thermal_relief;					use et_thermal_relief;
+with et_fill_zones;						use et_fill_zones;
 
 
 package et_board_ops.fill_zones is
@@ -332,6 +333,40 @@ package et_board_ops.fill_zones is
 	-- CS rework so that it is a procedure that outputs
 	-- a list of polygons and terminals_with_relief
 
+
+
+	-- Fills the given zone that is in the given layer
+	-- with the given linewidth and clearance to foreign conductor
+	-- objects. If a certain conductor object requires a greater
+	-- clearance, then that clearance will take precedence.
+	-- If a parent net is given - via cursor - then the conductor objects of this
+	-- net will be treated in a special way. Then the given zone must be a 
+	-- type_route_hatched or a type_route_solid.
+	-- - terminals may be embedded in the zone or may get connected via thermal relieves.
+	-- - tracks may be embedded in the zone or the zone will be filled around them.
+	-- - see specification of type_route_solid and type_route_hatched.
+	-- If something goes wrong, an exception is raised.
+	procedure fill_zone (
+		module_cursor		: in pac_generic_modules.cursor;
+
+		-- This is the zone to be filled. It has been defined by the
+		-- operator. It will be clipped by the outer contour:
+		zone				: in out type_zone'class;
+
+		-- The is the outer contour that restricts/clips the given zone:
+		outer_contour		: in type_polygon;
+		
+		linewidth			: in type_track_width;
+		layer 				: in et_pcb_stack.type_signal_layer;
+		clearance			: in type_track_clearance; -- CS rename to isolation
+		clearance_to_edge 	: in type_distance_positive;
+		parent_net			: in pac_nets.cursor := pac_nets.no_element;
+		terminal_connection	: in type_pad_connection;
+		relief_properties	: in type_relief_properties;
+		reliefes			: out pac_reliefes.list;
+		log_threshold		: in type_log_level);
+
+	
 	
 end et_board_ops.fill_zones;
 
