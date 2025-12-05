@@ -254,8 +254,7 @@ package body et_board_ops.fill_zones is
 			
 			-- This procedure maps from the candidate port to the
 			-- associated terminal and converts the terminal to a polygon:
-			procedure query_port is
-			
+			procedure query_port is			
 				-- Get the cursor to the physical terminal (in the package model)
 				-- that is linked with the port:
 				terminal_cursor : constant pac_terminals.cursor := 
@@ -290,33 +289,14 @@ package body et_board_ops.fill_zones is
 							
 						log_indentation_up;
 
-						log (text => "expanded: " & to_string (terminal_polygon_expanded),
+						log (text => "expanded contour: " & to_string (terminal_polygon_expanded),
 							level => log_threshold + 4);
 
 						polygons.append (terminal_polygon_expanded);
 
 						-- If the terminal overlaps the zone or if it is
 						-- inside the zone then thermal reliefes are required.
-						-- If the terminals of this net require thermal reliefes, then
-						-- collect the necessary information:
 						if with_reliefes then
-		
-							-- Do a preselection of those terminals that are overlapping
-							-- the given zone or are inside the given zone:
--- 							terminal_zone_overlap := get_overlap_status (
--- 								polygon_A => terminal_polygon.polygon,
--- 								polygon_B => zone);
--- 		
--- 							case terminal_zone_overlap is
--- 								when A_INSIDE_B | A_OVERLAPS_B =>
--- 									terminals_with_relief.append ((
--- 										position => terminal_polygon.position, -- in the board
--- 										outline	 => terminal_polygon.polygon, -- in the board
--- 										terminal => terminal_cursor));  -- in the package model
--- 		
--- 								when others => null;
--- 							end case;
-
 							if polygon_touches_area (zone, terminal_polygon.polygon) then
 								log (text => "thermal relief prepared",
 									level => log_threshold + 3);
@@ -330,9 +310,7 @@ package body et_board_ops.fill_zones is
 					
 						log_indentation_down;
 					end if;
-
-				end if;		
-				
+				end if;				
 			end query_port;
 			
 			
@@ -347,7 +325,6 @@ package body et_board_ops.fill_zones is
 				log_indentation_down;
 			end if;			
 		end query_device_port;
-		
 		
 		
 	begin
@@ -365,7 +342,6 @@ package body et_board_ops.fill_zones is
 		-- Get the ports of ALL devices connected with the given net.
 		-- Therefore we do not pass a specific assembly variant here.
 		ports := get_ports (net_cursor); 
-
 
 		-- In variable "ports" we are interested in selector "devices" exclusively.
 		-- Submodule ports and netchangers are just virtual devices
@@ -418,7 +394,6 @@ package body et_board_ops.fill_zones is
 			
 			
 		collect_terminals_with_relief : boolean := false;
-
 	
 	
 		procedure query_module (
