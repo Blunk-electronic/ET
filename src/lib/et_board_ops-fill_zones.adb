@@ -41,6 +41,7 @@ with et_mirroring;
 with et_schematic_ops.units;
 with et_pcb_contour;
 with et_board_text;
+with et_board_ops.board_contour;
 with et_board_ops.devices;			use et_board_ops.devices;
 with et_fill_zones.boards;			use et_fill_zones.boards;
 
@@ -1210,10 +1211,11 @@ package body et_board_ops.fill_zones is
 		-- and appends them to the result.
 		-- The purpose of cutout areas is to exempt
 		-- certain areas of fill zones from being filled:
-		procedure process_cutout_areas is begin
+		procedure process_cutout_areas is 
+		begin
 			log (text => "cutout areas", level => log_threshold + 1);
 			log_indentation_up;
-			
+
 			-- CS todo. 
 			-- iterate global cutout areas in the 
 			-- given signal layer.
@@ -1240,6 +1242,38 @@ package body et_board_ops.fill_zones is
 		end process_restrict_areas;
 
 
+
+		-- This procedure converts holes to polygons
+		-- and appends them to the result:
+		procedure process_holes is 
+			use et_board_ops.board_contour;
+			use et_pcb_contour;
+			
+			holes : pac_holes.list;
+			polygons : pac_polygon_list.list;
+		begin
+			log (text => "holes", level => log_threshold + 1);
+			log_indentation_up;
+			
+			-- Get the holes of the module:
+			holes := get_holes (module_cursor);
+
+			-- Convert the holes to polygons:
+			polygons := to_polygons (holes, fill_tolerance);
+
+			-- Expand the polygons:
+			offset_holes (polygons, linewidth * 0.5 + clearance_to_edge);
+
+			-- Extract those polygons which are inside the
+			-- zone or which touch the zone:
+			get_touching_polygons (zone_polygon, polygons);
+
+			-- Append the polygons to the result:
+			append (result.polygons, polygons);
+			log_indentation_down;
+		end process_holes;
+
+
 		
 	begin		
 		log (text => "process conductor objects", level => log_threshold);
@@ -1259,7 +1293,9 @@ package body et_board_ops.fill_zones is
 		-- parent net. Does nothing if no parent net given
 		-- by argument parent_net:
 		set_parent_net_name;
-		
+
+		process_holes;
+
 		-- Extract conductor objects of nets.
 		process_nets;
 

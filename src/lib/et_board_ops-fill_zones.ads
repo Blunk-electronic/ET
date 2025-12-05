@@ -320,7 +320,7 @@ package et_board_ops.fill_zones is
 	-- is empty:
 	function conductors_to_polygons ( -- CS rename to get_polygons or similar
 		module_cursor		: in pac_generic_modules.cursor;
-		zone_polygon		: in type_polygon;
+		zone_polygon		: in type_polygon; -- CS rename to zone
 		zone_clearance		: in type_track_clearance;
 		linewidth			: in type_track_width;
 		layer 				: in type_signal_layer;
