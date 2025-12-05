@@ -220,13 +220,14 @@ is
 
 	
 	-- Returns a list of polygons caused by conductor
-	-- objects (tracks, terminals, vias, texts, fiducials) in the given signal layer.
-	-- The polygons are expanded by the zone_clearance or by
-	-- the clearance of a particular net (the greater value of them is applied).
-	-- Returns only those polygons which are inside the given zone.
-	-- As a byproduct, the return also contains a list of terminals that require
-	-- thermal reliefes. If the zone is not connected with the given parent_net, then the
-	-- list "terminals_with_relief" is empty:
+	-- objects (tracks, terminals, vias, texts, fiducials) in 
+	-- the given signal layer.
+	-- Returns only those polygons which are inside the given zone
+	-- or which touch the given zone.
+	-- As a byproduct, the return also contains a list of terminals
+	-- that require thermal reliefes. If the zone is not connected 
+	-- with the given parent_net, then the list "terminals_with_relief" 
+	-- is empty:
 	function conductors_to_polygons (
 		zone_polygon	: in type_polygon;
 		zone_clearance	: in type_track_clearance;
@@ -239,19 +240,6 @@ is
 
 		layer_category : type_signal_layer_category;
 
-		half_linewidth : constant type_distance_positive := linewidth * 0.5;
-		
-		half_linewidth_float : constant type_float_positive := 
-			type_float_positive (linewidth * 0.5);
-
-		zone_clearance_float : constant type_float_positive :=
-			type_float_positive (zone_clearance);
-
-		-- Most offset operations here use a default value:
-		default_offset : constant type_float_positive :=
-			half_linewidth_float + zone_clearance_float;
-		
-
 
 		-- If a parent net was given (via argument parent_net) then
 		-- this will hold the actual net name like "GND".
@@ -263,7 +251,6 @@ is
 				parent_net_name := key (parent_net);
 			end if;
 		end set_parent_net_name;
-	
 
 	
 		
@@ -291,8 +278,6 @@ is
 			
 			log_indentation_down;
 		end process_nets;
-
-
 
 		
 		
@@ -378,8 +363,7 @@ is
 				
 			log_indentation_down;
 		end process_electrical_devices;
-	
-	
+		
 	
 		
 		
@@ -415,13 +399,6 @@ is
 		
 		-- CS non electrical conductor stuff (placeholders, foreign floating fill zones, ...)
 		-- CS route restrict
-		
-		-- Now the polygons held in variable "result"
-		-- - inside the given zone or
-		-- - overlapping the given zone
-		-- must be extracted. 
-		log (text => "extract polygons", level => log_threshold + 5);
-		result.polygons := get_polygons (zone_polygon, result.polygons, overlap_status_set);
 		
 		log_indentation_down;
 		
