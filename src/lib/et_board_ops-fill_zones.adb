@@ -781,6 +781,11 @@ package body et_board_ops.fill_zones is
 			use pac_devices_non_electrical;
 
 			
+			-- This procedure queries a non-electrical device.
+			-- 1. It converts all conductor objects, holes and route restrict
+			--    objects to polygons.
+			-- 2. Expands the polygons, tests whether the given zone is affected
+			--    and appends them to the result:
 			procedure query_device (d : in pac_devices_non_electrical.cursor) is
 				use et_pcb_contour;
 				p : pac_polygon_list.list;
@@ -790,7 +795,7 @@ package body et_board_ops.fill_zones is
 
 				log_indentation_up;
 				
-				-- conductors: such as terminals, text, lines, arcs, circles
+				-- Process conductor objects:
 				p := get_conductor_polygons (d, layer_category);
 				offset_polygons (p, offset);
 				log (text => "conductors" & get_count (p), level => log_threshold + 2);
@@ -800,7 +805,8 @@ package body et_board_ops.fill_zones is
 				-- and append them to the result:
 				append (polygons, get_polygons (zone, p, overlap_mode_1));
 				
-				-- holes:
+
+				-- Process holes:
 				p := get_hole_polygons (d);
 				offset_holes (p, linewidth * 0.5 + clearance_to_edge);
 				log (text => "holes" & get_count (p), level => log_threshold + 2);
@@ -828,6 +834,7 @@ package body et_board_ops.fill_zones is
 
 			
 		begin
+			-- Iterate through the non-electrical devices:
 			module.devices_non_electric.iterate (query_device'access);
 		end query_module;
 		
