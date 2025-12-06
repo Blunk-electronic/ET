@@ -304,22 +304,21 @@ package et_board_ops.fill_zones is
 
 	
 
-	type type_conductor_to_polygons_result is record
-		polygons				: pac_polygon_list.list;
-		terminals_with_relief	: pac_terminals_with_relief.list;
-	end record;
+	-- type type_conductor_to_polygons_result is record
+	-- 	polygons				: pac_polygon_list.list;
+	-- 	terminals_with_relief	: pac_terminals_with_relief.list;
+	-- end record;
 	
 	
-	-- Returns a list of polygons caused by conductor
-	-- objects (tracks, terminals, vias, texts, fiducials) in 
-	-- the given signal layer.
-	-- Returns only those polygons which are inside the given zone
-	-- or which touch the given zone.
-	-- As a byproduct, the return also contains a list of terminals
+	-- Outputs a list of polygons caused by conductor
+	-- objects (tracks, terminals, vias, texts, fiducials),
+	-- holes, restrict areas, cutouts and foreign fill zones
+	-- which touch the given zone.
+	-- As a byproduct, outputs also a list of terminals
 	-- that require thermal reliefes. If the zone is not connected 
 	-- with the given parent_net, then the list "terminals_with_relief" 
 	-- is empty:
-	function conductors_to_polygons ( -- CS rename to get_polygons or similar
+	procedure get_touching_polygons (
 		module_cursor		: in pac_generic_modules.cursor;
 		zone_polygon		: in type_polygon; -- CS rename to zone
 		zone_clearance		: in type_track_clearance;
@@ -328,10 +327,11 @@ package et_board_ops.fill_zones is
 		parent_net			: in pac_nets.cursor := pac_nets.no_element;
 		terminal_connection	: in type_pad_connection;
 		clearance_to_edge 	: in type_distance_positive;
-		log_threshold		: in type_log_level)
-		return type_conductor_to_polygons_result;
-	-- CS rework so that it is a procedure that outputs
-	-- a list of polygons and terminals_with_relief
+
+		polygons				: out pac_polygon_list.list;
+		terminals_with_relief	: out pac_terminals_with_relief.list;
+		
+		log_threshold		: in type_log_level);
 
 
 
