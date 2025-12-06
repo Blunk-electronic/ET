@@ -64,16 +64,10 @@ procedure fill_zones (
 	log_threshold	: in type_log_level;
 	nets 			: in pac_net_names.list := no_net_names)
 is 
-	-- CS: Most of this stuff can be moved to et_fill_zones.boards
-	-- so that solid and hatched zones inherit from primitive operations
-	-- defined for type_zone. 
+	use pac_polygons;
 	
 	use pac_geometry_brd;
-	use pac_polygons;
-	use pac_polygon_clipping;
-	use pac_polygon_cropping;
 	use pac_polygon_offsetting;
-	use pac_polygon_union;
 	
 	use pac_net_names;
 
@@ -81,123 +75,19 @@ is
 
 	
 	-- Get the design rules:
-	design_rules : constant type_design_rules_board := get_pcb_design_rules (module_cursor);
+	design_rules : constant type_design_rules_board := 
+		get_pcb_design_rules (module_cursor);
 
 	clearance_conductor_to_edge : type_distance_positive renames 
 		design_rules.clearances.conductor_to_board_edge;
 	
 	
-
-
-	use pac_islands;
-	--use pac_cropped;
-	--use pac_clipped;
-
-	
 	-- The outer contour of the board. After shrinking by the
 	-- conductor-to-edge clearance this serves as master for
 	-- filling zones of nets. Each net may have an individual setting for 
 	-- the with of the fill lines.
-	board_outer_contour_master : type_polygon;
+	board_outer_contour : type_polygon;
 
-	-- The holes inside the board area. After expanding by the
-	-- conductor-to-edge clearance this serves as master for
-	-- filling zones of nets. Each net may have an individual setting for 
-	-- the with of the fill lines.
-	use pac_polygon_list;
-	board_holes_master : pac_polygon_list.list;
-
-	-- The holes inside the board area after expanding 
-	-- the board_holes_master by half the
-	-- line width of a particular fill zone:
-	holes : pac_polygon_list.list;
-
-
-	-- The default set to test overlap statuses contains B_INSIDE_A and A_OVERLAPS_B.
-	-- This function creates such a set:
-	function make_overlap_status_set return pac_overlap_status.set is
-		use pac_overlap_status;
-		S : pac_overlap_status.set := to_set (B_INSIDE_A);
-	begin
-		S.insert (A_OVERLAPS_B);
-		return S;
-	end make_overlap_status_set;
-	
-	
-	overlap_status_set : constant pac_overlap_status.set := make_overlap_status_set;
-
-	
-	
-	-- Expands the board_holes_master by half the given linewidth.
-	-- Extracts the holes that are in the given zone and those with 
-	-- overlap the zone.
-	-- Loads variable "holes" with the result:
-	procedure expand_holes (
-		zone		: in type_polygon;
-		linewidth	: in type_track_width)
-	is begin
-		holes := board_holes_master;
-		
-		log (text => "expanding holes (" & count_type'image (holes.length) & ") ...", 
-			 level => log_threshold + 4);
-				
-		-- Expand the holes by half the line width of the fill lines:
-		offset_holes (holes, linewidth * 0.5);
-
-		-- Extract those holes that are inside the zone and those
-		-- with overlap the zone:
-		holes := get_polygons (zone, holes, overlap_status_set);
-				
-		multi_union (holes);
-	end expand_holes;
-
-
-
-	
-	
-	-- Clips the given zone by the outer board contours.
-	-- The result - a list of islands - will be cropped by the holes.
-	-- Assumes that variable "holes" has been updated by procedure expand_holes.
-	-- The result is a list of polygons because the given zone may disintegrate
-	-- into smaller fragments:
-	function zone_to_polygons (
-		zone		: in type_polygon;
-		line_width	: in type_track_width)
-		return pac_polygon_list.list
-	is		
-		outer_contour : type_polygon := board_outer_contour_master;
-
-		-- After clipping the zone by the outer board contours
-		-- we get a list of islands:
-		islands : pac_polygon_list.list;				
-	begin
-		log (text => "processing board contours ...", level => log_threshold + 4);
-		log_indentation_up;
-		
-		-- Shrink the outer contour (of the board) by half the line 
-		-- width of the zone border:
-		log (text => "outer contour ...", level => log_threshold + 4);
-		offset_polygon (outer_contour, - type_float_positive (line_width) * 0.5);
-
-		-- Clip the fill zone by the outer contour of the board.
-		-- The zone may shrink or disintegrate into smaller islands:
-		islands := clip (zone, outer_contour);
-
-		-- Now we crop the islands by the holes. The outcome are even more islands.
-		-- This adresses holes that
-		-- - cause islands to shrink
-		-- - cause a fragmentation of islands
-		-- Holes that are completely inside islands are ignored here.
-		islands := multi_crop_2 (
-			polygon_B_list	=> islands,
-			polygon_A_list	=> holes,
-			debug			=> false);
-			--debug			=> true);
-
-		log_indentation_down;
-
-		return islands;
-	end zone_to_polygons;
 
 	
 
@@ -210,391 +100,6 @@ is
 
 
 
-		
-
-
-	
-
-	-- Clears the given basket:
-	procedure empty_basket (
-		basket : in out pac_polygon_list.list)
-	is begin
-		basket.clear;
-	end empty_basket;
-	
-
-	
-	-- Appends a list of polygons to the given basket.
-	-- NOTE: The given list will be emptied.
-	procedure put_into_basket (
-		basket		: in out pac_polygon_list.list;
-		polygons	: in out pac_polygon_list.list)
-	is begin
-		basket.splice (before => pac_polygon_list.no_element, source => polygons);
-
-		-- Merge overlapping polygons:
-		--multi_union (basket);
-	end put_into_basket;
-
-
-	
-
-	-- Fills the given zone that is in the given layer
-	-- with the given linewidth and clearance to foreign conductor
-	-- objects. If a certain conductor object requires a greater
-	-- clearance, then that clearance will take precedence.
-	-- If a parent net is given - via cursor - then the conductor objects of this
-	-- net will be treated in a special way. Then the given zone must be a 
-	-- type_route_hatched or a type_route_solid.
-	-- - terminals may be embedded in the zone or may get connected via thermal relieves.
-	-- - tracks may be embedded in the zone or the zone will be filled around them.
-	-- - see specification of type_route_solid and type_route_hatched.
-	-- If something goes wrong, an exception is raised.
-	procedure fill_zone (
-		zone		: in out type_zone'class;
-		linewidth	: in type_track_width;
-		layer 		: in et_pcb_stack.type_signal_layer;
-		clearance	: in type_track_clearance;
-		parent_net	: in pac_nets.cursor := pac_nets.no_element;
-		debug		: in boolean := false)
-	is
-		zone_polygon : type_polygon;
-		
-		islands : pac_polygon_list.list;
-		restrict, cutouts : pac_polygon_list.list;
-		conductors_to_polygons_result : type_conductor_to_polygons_result;
-		cropping_basket : pac_polygon_list.list;
-
-		half_linewidth_float : constant type_float_positive :=
-			0.5 * type_float_positive (linewidth);
-
-		use ada.characters.latin_1;
-
-
-		
-		
-		-- Iterates the islands and assigns them to the given zone.
-		-- Computes the outer edges of the islands according to the
-		-- border-width of the candidate zone:
-		procedure set_islands is
-			
-			procedure query_island (i : in pac_polygon_list.cursor) is 
-				island_centerline : type_polygon renames element (i);
-			begin
-				zone.islands.append ((
-					shore		 => (
-						centerline => island_centerline,
-						outer_edge => offset_polygon (island_centerline, half_linewidth_float)),
-					others		 => <>)); 
-
-				-- CS: Currently, the outer edge is just an expansion of the centerline.
-				-- The border is drawn with lines that have round caps. These caps cause
-				-- the outer edge to have rounded corners. The computation of the outer edge
-				-- should take this into account.
-				
-				--put_line ("islands total" & count_type'image (zone.islands.length));
-
-				exception when constraint_error =>
-					log (importance => WARNING,
-						text => "Offsetting centerline of island failed !" & LF
-							& to_string (polygon => island_centerline, lower_left_only => true),
-						level => log_threshold + 3);
-					raise;			
-			end query_island;
-			
-		begin
-			islands.iterate (query_island'access);
-		end set_islands;
-
-
-		
-
-		-- Iterates the islands, detects polygons that
-		-- form the lakes (inside the islands). Lakes are caused by objects
-		-- that are completely inside a particular island.
-		procedure set_lakes is 
-			island_cursor : pac_islands.cursor := zone.islands.first;
-
-			procedure make_lakes (
-				island : in out type_island)
-			is 
-				use pac_overlap_status;
-				centerlines : pac_polygon_list.list;
-				
-				procedure query_centerline (cl : in pac_polygon_list.cursor) is
-					centerline : type_polygon renames element (cl);
-				begin
-					if debug then
-						put_line ("   centerline");
-					end if;
-
-					-- The inner edges are obtained by shrinking the centerline
-					-- by half the fill linewidth:
-					island.lakes.append ((
-						centerline	=> centerline,
-						inner_edge	=> offset_polygon (centerline, - half_linewidth_float)));
-					--inner_edge	=> offset_polygon (centerline, - half_linewidth_float, true)));
-
-					exception when constraint_error =>
-						log (importance => WARNING,
-							text => "Offsetting centerline of lake failed !" & LF
-								& to_string (polygon => centerline, lower_left_only => true),
-							level => log_threshold + 3);
-						raise;
-				end query_centerline;
-				
-			begin
-				-- Get lakes inside the candidate island.
-				-- These are the centerlines of the lakes:
-				centerlines := get_polygons (
-					area		=> island.shore.centerline, 
-					polygons	=> cropping_basket,
-					status		=> to_set (B_INSIDE_A));
-
-				-- Iterate the centerlines and compute the inner edges.
-				centerlines.iterate (query_centerline'access);
-			end make_lakes;					
-				
-		begin
-			while island_cursor /= pac_islands.no_element loop
-
-				if debug then
-					put_line ("  island");
-				end if;
-
-				zone.islands.update_element (island_cursor, make_lakes'access);
-				next (island_cursor);
-			end loop;					
-		end set_lakes;
-
-
-		
-		-- Fills the islands according to the fill style
-		-- of the given zone:
-		procedure fill_islands is 
-			island_cursor : pac_islands.cursor := zone.islands.first;
-		begin
-			case zone.fill_style is
-				when SOLID =>
-					declare
-						style : constant type_style := (
-							style		=> SOLID,
-	   						linewidth	=> linewidth);
-					begin
-						while island_cursor /= pac_islands.no_element loop
-							fill_island (
-								islands		=> zone.islands, 
-								position	=> island_cursor,
-								style		=> style,
-								process		=> make_stripes'access);
-
-							next (island_cursor);
-						end loop;					
-
-					end;
-					
-				when HATCHED =>
-					declare
-						style : constant type_style := (
-							style		=> HATCHED,
-							linewidth	=> linewidth,						   
-							spacing		=> zone.spacing);
-					begin
-						while island_cursor /= pac_islands.no_element loop
-							fill_island (
-								islands		=> zone.islands, 
-								position	=> island_cursor,
-								style		=> style,
-								process		=> make_stripes'access);
-
-							next (island_cursor);
-						end loop;					
-
-					end;					
-			end case;			
-		end fill_islands;
-
-
-		
-		procedure make_thermal_reliefes is begin
-			log (text => "make_thermal_reliefes", level => log_threshold + 4);
-
-			-- Delete all reliefes left over from the previous zone:
-			terminal_reliefes.clear;
-			
-			terminal_reliefes := make_reliefes (
-				zone				=> zone,
-				relief_properties	=> relief_properties,								   
-				terminals			=> conductors_to_polygons_result.terminals_with_relief,
-				zone_clearance		=> clearance,
-				zone_linewidth		=> linewidth);
-
-		end make_thermal_reliefes;
-
-		
-		
-	begin -- fill_zone
-		log (text => "zone with corner nearest to origin:" 
-			 & to_string (get_corner_nearest_to_origin (zone)),
-			level => log_threshold + 3);
-
-
-		if debug then
-			put_line ("fill zone");
-		end if;
-		
-		log_indentation_up;
-
-		--if parent_net /= pac_nets.no_element then
-			--log (text => "parent net " 
-				--& enclose_in_quotes (to_string (key (parent_net))),
-				 --level => log_threshold + 3);
-		--end if;
-
-		
-		-- Remove the old fill (incl. islands, lakes):
-		zone.islands := no_islands;
-
-		
-		-- Convert the contour of the candidate fill zone to a polygon:
-		if debug then
-			put_line (" convert contour to polygon");
-		end if;
-		
-		zone_polygon := to_polygon (zone, fill_tolerance, SHRINK); 
-		-- NOTE: The SHRINK argument applies to the approximation mode of 
-		-- arcs and circles. Has nothing to do with the actual shrinking of the zone
-		-- by the follwing statement.
-
-
-		log (text => "shrinking zone", level => log_threshold + 4);
-
-		-- The border of the zone is drawn with the given linewidth.
-		-- The zone must be shrinked by half the linewidth so that the 
-		-- outline of the border is congruent to the zone drawn by the operator:
-		offset_polygon (zone_polygon, - type_float_positive (linewidth) * 0.5);
-
-		-- CS log lowest left vertex
-
-		-- The holes inside the board area and inside the zone
-		-- will crop the zone later. Since the zone border has a linewidth,
-		-- the holes must be made greater than they acutually are:
-		expand_holes (zone_polygon, linewidth); -- updates variable "holes"
-		
-		-- Crop the zone by the outer board edges and the holes (stored in
-		-- variable "holes").
-		-- As a result, the zone disintegrates. It gets fragmented into islands:
-		islands := zone_to_polygons (
-			zone		=> zone_polygon,
-			line_width	=> linewidth);
-
-		
-		-- Now we start collecting contours of objects inside the zone.
-		-- They will be put in the cropping basket.
-		-- Later everything in the basket will be used to crop the islands (of the zone)
-		-- and to create inner borders inside the islands:
-		empty_basket (cropping_basket);
-		
-		-- Collect holes in basket:
-		put_into_basket (cropping_basket, holes);
-
-		
-		-- Get the contours of all conductor objects in the affected layer
-		-- and in the zone_polygon.
-		-- This is about tracks, terminals, vias, texts and fiducials.
-		-- The clearance of these objects to the zone is determined by
-		-- the zone isolation or the net clearance. The greater value is applied:
-		conductors_to_polygons_result := conductors_to_polygons (
-			module_cursor		=> module_cursor,
-			zone_polygon		=> zone_polygon,
-			zone_clearance		=> clearance,
-			linewidth			=> linewidth,									 
-			layer				=> layer,
-			parent_net			=> parent_net,
-			terminal_connection	=> terminal_connection,
-			clearance_to_edge	=> clearance_conductor_to_edge,
-			log_threshold		=> log_threshold + 5);
-
-		put_into_basket (cropping_basket, conductors_to_polygons_result.polygons);
-
-
-		
-
-		-- Union the content of the cropping basket as much as possible:
-		if debug then
-			put_line (" union cropping basket");
-		end if;
-		
-		--multi_union (cropping_basket, debug);
-		multi_union (cropping_basket);
-		
-		-- Now the basket is ready to crop its content with the islands.
-		-- The result are even more islands:
-
-		--put_line ("B");
-
-
-		-- CS: experimental
-		--multi_union_2 (cropping_basket, debug); -- debug messages on
-		--multi_union (cropping_basket);
-
-		if debug then
-			put_line (" crop islands with cropping basket");
-		end if;
-		
-		islands := multi_crop_2 (
-			polygon_B_list	=> islands,
-			polygon_A_list	=> cropping_basket,
-			debug			=> false);
-
-
-		
-		-- Assign the islands to the zone:
-		if debug then
-			put_line (" set islands");
-		end if;
-
-		set_islands;
-
-
-		
-		-- Assign lakes to the islands of the zone:
-		if debug then
-			put_line (" set lakes");
-		end if;
-
-		set_lakes;
-
-
-
-		
-		if parent_net /= pac_nets.no_element then
-
-			if debug then
-				put_line (" make thermal reliefes");
-			end if;
-			
-			make_thermal_reliefes; 
-			-- bases on the inner borders that we just computed. see statement above
-		end if;
-
-
-
-		
-		-- Fill the islands with stripes:
-		if debug then
-			put_line (" fill islands");
-		end if;
-
-		fill_islands;
-
-
-		
-		log_indentation_down;
-		
-	end fill_zone;
-
-	
 	
 
 	
@@ -614,12 +119,12 @@ is
 			procedure do_it (
 				zone : in out type_floating_solid)
 			is 
-				reliefes : pac_reliefes.list; -- always empty
+				reliefes : pac_reliefes.list; -- always empty with floating zones
 			begin
 				fill_zone (
 					module_cursor		=> module_cursor,
 					zone				=> zone,
-					outer_contour		=> board_outer_contour_master,
+					outer_contour		=> board_outer_contour,
 					linewidth			=> element (zone_cursor).linewidth,
 					layer				=> zone.properties.layer,
 					clearance			=> zone.isolation,
@@ -627,7 +132,7 @@ is
 					terminal_connection	=> terminal_connection,
 					relief_properties	=> relief_properties,
 					reliefes			=> reliefes,
-					log_threshold		=> log_threshold + 1); -- CS
+					log_threshold		=> log_threshold + 2);
 			end do_it;
 
 			
@@ -651,12 +156,12 @@ is
 			procedure do_it (
 				zone : in out type_floating_hatched)
 			is 
-				reliefes : pac_reliefes.list; -- always empty
+				reliefes : pac_reliefes.list; -- always empty with floating zones
 			begin
 				fill_zone (
 					module_cursor		=> module_cursor,
 					zone				=> zone,
-					outer_contour		=> board_outer_contour_master,
+					outer_contour		=> board_outer_contour,
 					linewidth			=> element (zone_cursor).linewidth,
 					layer				=> zone.properties.layer,
 					clearance			=> zone.isolation,
@@ -664,7 +169,7 @@ is
 					terminal_connection	=> terminal_connection,
 					relief_properties	=> relief_properties,
 					reliefes			=> reliefes,
-					log_threshold		=> log_threshold + 1); -- CS
+					log_threshold		=> log_threshold + 2);
 		
 			end do_it;
 
@@ -736,7 +241,7 @@ is
 					fill_zone (
 						module_cursor		=> module_cursor,
 						zone				=> zone,
-						outer_contour		=> board_outer_contour_master,
+						outer_contour		=> board_outer_contour,
 						linewidth			=> element (zone_cursor).linewidth,
 						layer				=> zone.properties.layer,
 						clearance			=> get_greatest (zone.isolation, net_class.clearance),
@@ -745,7 +250,7 @@ is
 						terminal_connection	=> terminal_connection,
 						relief_properties	=> relief_properties,
 						reliefes			=> zone.reliefes,
-						log_threshold		=> log_threshold + 1); -- CS
+						log_threshold		=> log_threshold + 3);
 						
 
 					-- If something went wrong, output some
@@ -804,17 +309,11 @@ is
 						terminal_technology	:= zone.technology;
 					end if;
 					
-					-- fill_zone (
-					-- 	zone		=> zone,
-					-- 	linewidth	=> element (zone_cursor).linewidth,
-					-- 	layer		=> zone.properties.layer,
-					-- 	clearance	=> get_greatest (zone.isolation, net_class.clearance),
-					-- 	parent_net	=> net_cursor);
-						
+		
 					fill_zone (
 						module_cursor		=> module_cursor,
 						zone				=> zone,
-						outer_contour		=> board_outer_contour_master,
+						outer_contour		=> board_outer_contour,
 						linewidth			=> element (zone_cursor).linewidth,
 						layer				=> zone.properties.layer,
 						clearance			=> get_greatest (zone.isolation, net_class.clearance),
@@ -823,7 +322,7 @@ is
 						terminal_connection	=> terminal_connection,
 						relief_properties	=> relief_properties,
 						reliefes			=> zone.reliefes,
-						log_threshold		=> log_threshold + 1); -- CS
+						log_threshold		=> log_threshold + 3);
 
 						
 				end do_it;
@@ -914,7 +413,7 @@ begin -- fill_zones
 
 	log (text => "convert outer board contour to polygon", level => log_threshold + 1);
 	
-	board_outer_contour_master := to_polygon (
+	board_outer_contour := to_polygon (
 		contour		=> get_outer_contour (module_cursor),
 		mode		=> SHRINK,										 
 		tolerance	=> fill_tolerance);
@@ -927,27 +426,9 @@ begin -- fill_zones
 		& to_string (- clearance_conductor_to_edge),
 		level => log_threshold + 1);
 	
-	offset_polygon (board_outer_contour_master, type_float_model (- clearance_conductor_to_edge));
-
-
+	offset_polygon (board_outer_contour, type_float_model (- clearance_conductor_to_edge));
 
 	
--- 	log (text => "convert holes to polygons", level => log_threshold + 1);
--- 	
--- 	board_holes_master := to_polygons (
--- 		holes		=> get_holes (module_cursor),
--- 		tolerance	=> fill_tolerance);
--- 
--- 	-- Expand the holes by the conductor-to-edge clearance
--- 	-- as given by the design rules:
--- 	log (text => "offset by DRU parameter " -- CS use predefined string 
--- 		& enclose_in_quotes (dru_parameter_clearance_conductor_to_board_edge) 
--- 		& to_string (clearance_conductor_to_edge),
--- 		level => log_threshold + 1);
--- 
--- 	offset_holes (board_holes_master, clearance_conductor_to_edge);
-
-
 	
 	if is_empty (nets) then
 		
