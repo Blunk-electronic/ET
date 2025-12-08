@@ -233,6 +233,14 @@ package et_fill_zones is
 	
 
 
+	-- This procedure assigns the given islands to
+	-- the zone and creates the lakes inside the islands:
+	procedure make_islands_and_lakes (
+		zone	: in out type_zone;
+		islands : in pac_polygon_list.list;
+		lakes	: in pac_polygon_list.list);
+
+	
 	
 -- QUERY POINT TO ZONE LOCATION
 
