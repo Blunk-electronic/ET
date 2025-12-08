@@ -42,6 +42,7 @@ with et_exceptions;				use et_exceptions;
 package body et_fill_zones is
 
 
+	
 	procedure iterate (
 		lakes	: in pac_lakes.list;
 		process	: not null access procedure (position : in pac_lakes.cursor);
@@ -78,7 +79,8 @@ package body et_fill_zones is
 		style	: in type_style)
 	is		
 		-- The boundaries of the island (greatest/smallest x/y):
-		boundaries : constant type_boundaries := get_boundaries (island.shore.centerline);
+		-- boundaries : constant type_boundaries := get_boundaries (island.shore.centerline);
+		boundaries : constant type_boundaries := get_boundaries (island.shore);
 
 		height : constant type_float_positive := get_height (boundaries);
 		bottom : constant pac_geometry_brd.type_float := get_bottom (boundaries);
@@ -137,10 +139,13 @@ package body et_fill_zones is
 		-- This procedure queries a lake and appends
 		-- the x-values of the candidate border to the main collection of
 		-- x-values:
-		procedure query_lake (l : in pac_lakes.cursor) is
-			lake : type_lake renames element (l);
+		--procedure query_lake (l : in pac_lakes.cursor) is
+		procedure query_lake (l : in pac_polygon_list.cursor) is
+			--lake : type_lake renames element (l);
+			lake : type_polygon renames element (l);
 		begin			
-			status := get_point_status (lake.centerline, A);
+			--status := get_point_status (lake.centerline, A);
+			status := get_point_status (lake, A);
 
 			splice (
 				target	=> x_main,
@@ -152,7 +157,8 @@ package body et_fill_zones is
 					--put_line ("bottom: " & to_string (bottom));
 					--put_line ("height: " & to_string (height));
 					put_line ("status : " & to_string (
-						get_point_status (lake.centerline, A, true)));
+						-- get_point_status (lake.centerlin	 A, true)));
+						get_point_status (lake, A, true)));
 					
 					raise;
 		end query_lake;
@@ -189,7 +195,8 @@ package body et_fill_zones is
 					A.y := bottom + type_float_positive (row) * stripe_spacing;
 					
 					--put_line (to_string (get_point_status (island.outer_border, set (x_start, y))));
-					status := get_point_status (island.shore.centerline, A, false); -- debug off
+					-- status := get_point_status (island.shore.centerline, A, false); -- debug off
+					status := get_point_status (island.shore, A, false); -- debug off
 					x_main := status.x_intersections;
 
 					-- Compute the intersections with the lakes:
@@ -275,7 +282,8 @@ package body et_fill_zones is
 
 			-- Take the real conducting area of the island into account:
 			status : constant type_point_status :=
-				get_point_status (island.shore.outer_edge, point, debug);
+				--get_point_status (island.shore.outer_edge, point, debug);
+				get_point_status (island.shore, point, debug);
 			
 		begin
 			case status.location is
@@ -295,9 +303,11 @@ package body et_fill_zones is
 		zone	: in type_zone;
 		point	: in type_vector;
 		debug	: in boolean := false)
-		return type_lake
+		--return type_lake
+		return type_polygon
 	is
-		result : type_lake;
+		--result : type_lake;
+		result : type_polygon;
 		proceed : aliased boolean := true;
 
 		
@@ -305,13 +315,16 @@ package body et_fill_zones is
 			island : type_island renames element (i);
 
 			
-			procedure query_lake (l : in pac_lakes.cursor) is
-				lake : type_lake renames element (l);
+			--procedure query_lake (l : in pac_lakes.cursor) is
+			procedure query_lake (l : in pac_polygon_list.cursor) is
+				--lake : type_lake renames element (l);
+				lake : type_polygon renames element (l);
 
 				-- This takes the real conducting area of the surrounding 
 				-- island is taken into account:
 				lake_status : constant type_point_status :=
-					get_point_status (lake.inner_edge, point);
+					--get_point_status (lake.inner_edge, point);
+					get_point_status (lake, point);
 				
 			begin
 				if debug then
@@ -350,8 +363,9 @@ package body et_fill_zones is
 		iterate (zone.islands, query_island'access, proceed'access);
 
 		if debug then
-			put_line (" centerline " & to_string (result.centerline));
-			put_line (" inner edge " & to_string (result.inner_edge));
+			-- put_line (" centerline " & to_string (result.centerline));
+			-- put_line (" inner edge " & to_string (result.inner_edge));
+			put_line (" centerline " & to_string (result));
 		end if;
 
 		--if debug then
@@ -384,17 +398,21 @@ package body et_fill_zones is
 
 			-- Take the real conducting area of the island into account:
 			island_status : constant type_point_status :=
-				get_point_status (island.shore.outer_edge, point);
+				--get_point_status (island.shore.outer_edge, point);
+				get_point_status (island.shore, point);
 
 			proceed_lake : aliased boolean := true;
 
 			
-			procedure query_lake (l : in pac_lakes.cursor) is
-				lake : type_lake renames element (l);
+			--procedure query_lake (l : in pac_lakes.cursor) is
+			procedure query_lake (l : in pac_polygon_list.cursor) is
+				--lake : type_lake renames element (l);
+				lake : type_polygon renames element (l);
 
 				-- This takes the real conducting area of the surrounding island into account.
 				lake_status : constant type_point_status :=
-					get_point_status (lake.inner_edge, point);
+					--get_point_status (lake.inner_edge, point);
+					get_point_status (lake, point);
 
 			begin
 				if debug then
@@ -469,7 +487,7 @@ package body et_fill_zones is
 		half_linewidth : constant type_float_positive := get_half_linewidth (zone);
 		
 		use pac_vectors;
-		intersections_with_edges : pac_vectors.list;
+		-- intersections_with_edges : pac_vectors.list;
 		intersections_with_centerlines : pac_vectors.list;
 
 		
@@ -494,22 +512,22 @@ package body et_fill_zones is
 			end query_centerline;
 
 			
-			procedure query_edge (e : in pac_edges.cursor) is
-				use pac_edges;
-				I : constant type_line_vector_intersection := 
-					get_intersection (ray, element (e));
-			begin
-				case I.status is
-					when EXISTS =>
-						if debug then
-							put_line (" intersection at " & to_string (I.intersection));
-						end if;
-
-						intersections_with_edges.append (I.intersection);
-
-					when others => null;
-				end case;
-			end query_edge;
+			-- procedure query_edge (e : in pac_edges.cursor) is
+			-- 	use pac_edges;
+			-- 	I : constant type_line_vector_intersection := 
+			-- 		get_intersection (ray, element (e));
+			-- begin
+			-- 	case I.status is
+			-- 		when EXISTS =>
+			-- 			if debug then
+			-- 				put_line (" intersection at " & to_string (I.intersection));
+			-- 			end if;
+   -- 
+			-- 			intersections_with_edges.append (I.intersection);
+   -- 
+			-- 		when others => null;
+			-- 	end case;
+			-- end query_edge;
 
 			
 		begin
@@ -517,8 +535,9 @@ package body et_fill_zones is
 				put_line (" island");
 			end if;
 
-			island.shore.centerline.edges.iterate (query_centerline'access);
-			island.shore.outer_edge.edges.iterate (query_edge'access);
+			--island.shore.centerline.edges.iterate (query_centerline'access);
+			island.shore.edges.iterate (query_centerline'access);
+			-- island.shore.outer_edge.edges.iterate (query_edge'access);
 		end query_island;
 
 		
@@ -531,16 +550,16 @@ package body et_fill_zones is
 		-- in container "intersections":
 		zone.islands.iterate (query_island'access);
 
-		if is_empty (intersections_with_edges) then
-			result_edge_exists := false; -- no island found in given direction
-		else
-			-- Extract from intersections the one that is closest to start_point:
-			remove_redundant_vectors (intersections_with_edges);
-			sort_by_distance (intersections_with_edges, start_point);
-
-			result_distance_to_edge := 
-				get_distance_total (start_point, intersections_with_edges.first_element);
-		end if;
+		-- if is_empty (intersections_with_edges) then
+		-- 	result_edge_exists := false; -- no island found in given direction
+		-- else
+		-- 	-- Extract from intersections the one that is closest to start_point:
+		-- 	remove_redundant_vectors (intersections_with_edges);
+		-- 	sort_by_distance (intersections_with_edges, start_point);
+  -- 
+		-- 	result_distance_to_edge := 
+		-- 		get_distance_total (start_point, intersections_with_edges.first_element);
+		-- end if;
 
 
 		if is_empty (intersections_with_centerlines) then
@@ -555,8 +574,8 @@ package body et_fill_zones is
 		end if;
 
 		
-		case result_edge_exists is
-			when TRUE =>
+		-- case result_edge_exists is
+		-- 	when TRUE =>
 
 				case result_centerline_exists is
 					when TRUE =>
@@ -576,11 +595,11 @@ package body et_fill_zones is
 						
 				end case;
 
-			when FALSE =>
-				return (
-					edge_exists => false,
-					centerline_exists => false);
-		end case;
+		-- 	when FALSE =>
+		-- 		return (
+		-- 			edge_exists => false,
+		-- 			centerline_exists => false);
+		-- end case;
 		
 	end get_distance_to_nearest_island;
 
@@ -605,7 +624,8 @@ package body et_fill_zones is
 		result_distance_to_centerline : type_float_positive := 0.0;
 
 		location_computed : type_location;
-		lake : type_lake;
+		--lake : type_lake;
+		lake : type_polygon;
 	begin
 		-- If the location of the start point is already known, then
 		-- use the given location for further steps.
@@ -667,8 +687,8 @@ package body et_fill_zones is
 					--end if;
 					
 					-- Get the distance to the centerline of the shore:					
-					result_distance_to_centerline := 
-						get_distance_to_border (lake.centerline, start_point, direction);
+					-- result_distance_to_centerline := 
+					-- 	get_distance_to_border (lake.centerline, start_point, direction);
 
 					--if debug then
 						--put_line ("distance to centerline of shore" & to_string (result_distance_to_centerline));
@@ -676,7 +696,8 @@ package body et_fill_zones is
 
 					-- Get the distance to the inner edge of the shore:
 					result_distance_to_edge := 
-						get_distance_to_border (lake.inner_edge, start_point, direction);
+						--get_distance_to_border (lake.inner_edge, start_point, direction);
+						get_distance_to_border (lake, start_point, direction);
 
 					return (
 						edge_exists				=> true,

@@ -120,10 +120,12 @@ package et_fill_zones is
 	-- In the best case there is only one island.
 	type type_island is record
 		-- The shoreline around the island:
-		shore	: type_shore;
+		--shore	: type_shore;
+		shore	: type_polygon;
 
 		-- The lakes inside the island:
-		lakes	: pac_lakes.list;
+		-- lakes	: pac_lakes.list;
+		lakes : pac_polygon_list.list;
 
 		-- The horizontal lines that fill the conducting area of the island:		
 		stripes	: pac_stripes.list;
@@ -257,7 +259,8 @@ package et_fill_zones is
 		zone	: in type_zone;
 		point	: in type_vector;
 		debug	: in boolean := false)
-		return type_lake;
+		--return type_lake;
+		return type_polygon;
 	
 								  
 	type type_location is (

@@ -1347,6 +1347,8 @@ package body et_board_ops.fill_zones is
 	is
 		debug : boolean := false;
 
+		outer_contour_tmp : type_polygon := outer_contour;
+
 		zone_polygon : type_polygon;
 		
 		use pac_polygon_clipping;
@@ -1371,9 +1373,10 @@ package body et_board_ops.fill_zones is
 				island_centerline : type_polygon renames element (i);
 			begin
 				zone.islands.append ((
-					shore		 => (
-						centerline => island_centerline,
-						outer_edge => offset_polygon (island_centerline, half_linewidth_float)),
+					-- shore		 => (
+					-- 	centerline => island_centerline,
+					-- 	outer_edge => offset_polygon (island_centerline, half_linewidth_float)),
+					shore		 => island_centerline,
 					others		 => <>)); 
 
 				-- CS: Currently, the outer edge is just an expansion of the centerline.
@@ -1383,12 +1386,12 @@ package body et_board_ops.fill_zones is
 				
 				--put_line ("islands total" & count_type'image (zone.islands.length));
 
-				exception when constraint_error =>
-					log (importance => WARNING,
-						text => "Offsetting centerline of island failed !" & LF
-							& to_string (polygon => island_centerline, lower_left_only => true),
-						level => log_threshold + 3);
-					raise;			
+				-- exception when constraint_error =>
+				-- 	log (importance => WARNING,
+				-- 		text => "Offsetting centerline of island failed !" & LF
+				-- 			& to_string (polygon => island_centerline, lower_left_only => true),
+				-- 		level => log_threshold + 3);
+				-- 	raise;			
 			end query_island;
 			
 		begin
@@ -1414,6 +1417,8 @@ package body et_board_ops.fill_zones is
 				use pac_overlap_status;
 				centerlines : pac_polygon_list.list;
 				
+				use pac_polygon_union;
+
 
 				procedure query_centerline (cl : in pac_polygon_list.cursor) is
 					centerline : type_polygon renames element (cl);
@@ -1424,17 +1429,18 @@ package body et_board_ops.fill_zones is
 
 					-- The inner edges are obtained by shrinking the centerline
 					-- by half the fill linewidth:
-					island.lakes.append ((
-						centerline	=> centerline,
-						inner_edge	=> offset_polygon (centerline, - half_linewidth_float)));
+					island.lakes.append (centerline);
+					-- island.lakes.append (offset_polygon (centerline, - half_linewidth_float));
+						-- centerline	=> centerline,
+						-- inner_edge	=> offset_polygon (centerline, - half_linewidth_float)));
 					--inner_edge	=> offset_polygon (centerline, - half_linewidth_float, true)));
 
-					exception when constraint_error =>
-						log (importance => WARNING,
-							text => "Offsetting centerline of lake failed !" & LF
-								& to_string (polygon => centerline, lower_left_only => true),
-							level => log_threshold + 3);
-						raise;
+					-- exception when constraint_error =>
+					-- 	log (importance => WARNING,
+					-- 		text => "Offsetting centerline of lake failed !" & LF
+					-- 			& to_string (polygon => centerline, lower_left_only => true),
+					-- 		level => log_threshold + 3);
+					-- 	raise;
 				end query_centerline;
 				
 
@@ -1442,9 +1448,12 @@ package body et_board_ops.fill_zones is
 				-- Get lakes inside the candidate island.
 				-- These are the centerlines of the lakes:
 				centerlines := get_polygons (
-					area		=> island.shore.centerline, 
+					-- area		=> island.shore.centerline,
+					area		=> island.shore,  
 					polygons	=> polygons_tmp,
 					status		=> to_set (B_INSIDE_A));
+
+				multi_union (centerlines);
 
 				-- Iterate the centerlines and compute the inner edges.
 				centerlines.iterate (query_centerline'access);
@@ -1547,14 +1556,14 @@ package body et_board_ops.fill_zones is
 			log (text => "process_zone_fragments", level => log_threshold + 1);
 			log_indentation_up;
 
-			zone_fragments := clip (zone_polygon, outer_contour);
+			zone_fragments := clip (zone_polygon, outer_contour_tmp);
 
 			log (text => "fragment count: " & get_count (zone_fragments),
 				level => log_threshold + 2);
 
 			-- Because the border of the zone has a width,
 			-- the islands must be shrinked by half the linewidth:
-			offset_polygons (zone_fragments, - type_float_positive (linewidth) * 0.5);
+			-- offset_polygons (zone_fragments, - type_float_positive (linewidth) * 0.5);
 
 			log_indentation_up;
 
@@ -1595,7 +1604,7 @@ package body et_board_ops.fill_zones is
 				log (text => "resulting islands:" & get_count (islands),
 					level => log_threshold + 4);
 
-				set_islands (islands);
+				set_islands (islands); -- CS rename to assign_islands_to_zone
 
 				set_lakes (polygons);
 				
@@ -1609,7 +1618,7 @@ package body et_board_ops.fill_zones is
 -- 					-- bases on the inner borders that we just computed. see statement above
 -- 				end if;
 
-				-- fill_islands;
+				fill_islands;
 				
 				next (fragment_cursor);
 
@@ -1629,13 +1638,17 @@ package body et_board_ops.fill_zones is
 		
 	begin -- fill_zone
 		log (text => "module " & to_string (module_cursor)
-			& " fill_zone",
-			-- CS
-			-- & " layer: " & to_string (layer)
-			-- & " zone clearance: " & to_string (zone_clearance)
-			-- & " zone linewidth: " & to_string (linewidth)
+			& " fill_zone"
+			& " linewidth: " & to_string (linewidth)
+			& " layer: " & to_string (layer)
+			& " isolation: " & to_string (clearance)
+			& " clearance to edge: " & to_string (clearance_to_edge)
+			& " parent net: dummy" -- CS
+			& " terminal connection: dummy"  -- CS
+			& " relief properties: dummy", -- CS 
+			-- CS number of reliefes ?
 			level => log_threshold);
-
+			-- CS output with linebreaks
 
 		log_indentation_up;
 
@@ -1651,8 +1664,15 @@ package body et_board_ops.fill_zones is
 		log (text => "convert zone to polygon", level => log_threshold + 1);
 		zone_polygon := to_polygon (zone, fill_tolerance, SHRINK); 
 		-- NOTE: The SHRINK argument applies to the approximation mode of 
-		-- arcs and circles. Has nothing to do with the actual shrinking of the zone
-		-- by the follwing statement.
+		-- arcs and circles. Has nothing to do with offsetting the zone.
+
+
+		log (text => "offset (shrink) outer board contour by half linewidth of zone: "
+			& to_string (half_linewidth_float),
+			level => log_threshold + 1);
+
+		offset_polygon (outer_contour_tmp, - half_linewidth_float);
+
 
 		log_indentation_up;
 		process_zone_fragments;

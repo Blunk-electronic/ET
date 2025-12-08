@@ -421,10 +421,10 @@ begin -- fill_zones
 	
 	-- Shrink the outer board edge by the conductor-to-edge clearance
 	-- as given by the design rules:
-	log (text => "offset by clearance to edge (DRU) "
+	log (text => "offset (shrink) outer board contour by clearance to edge (DRU): "
 		-- & enclose_in_quotes (dru_parameter_clearance_conductor_to_board_edge) 
 		& to_string (- clearance_conductor_to_edge),
-		level => log_threshold + 1);
+		level => log_threshold + 1);	
 	
 	offset_polygon (board_outer_contour, type_float_model (- clearance_conductor_to_edge));
 
