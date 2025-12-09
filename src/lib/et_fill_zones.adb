@@ -273,10 +273,11 @@ package body et_fill_zones is
 
 
 	procedure make_islands_and_lakes (
-		zone		: in out type_zone;
-		linewidth	: in type_track_width;								 
-		islands 	: in pac_polygon_list.list;
-		lakes		: in pac_polygon_list.list)
+		zone			: in out type_zone;
+		linewidth		: in type_track_width;								 
+		islands 		: in pac_polygon_list.list;
+		lakes			: in pac_polygon_list.list;
+		log_threshold	: in type_log_level)
 	is
 		debug : boolean := false;
 
@@ -446,6 +447,9 @@ package body et_fill_zones is
 
 
 	begin
+		log (text => "make_islands_and_lakes", level => log_threshold);
+		-- CS log arguments, number of islands and lakes
+
 		set_islands (islands);
 		set_lakes (lakes);
 		fill_islands;

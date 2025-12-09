@@ -1077,6 +1077,8 @@ package body et_board_ops.fill_zones is
 	is
 		layer_category : type_signal_layer_category;
 
+		-- CS: union polygons from time to time and
+		-- at the end of the procedure
 
 		-- The deepest conductor layer towards bottom is 
 		-- defined by the layer stack of the module:
@@ -1347,53 +1349,78 @@ package body et_board_ops.fill_zones is
 	is
 		debug : boolean := false;
 
-		outer_contour_tmp : type_polygon := outer_contour;
-
+		-- The given zone will be converted to a polygon:
 		zone_polygon : type_polygon;
-		
-		use pac_polygon_clipping;
-		use pac_polygon_cropping;
-		use pac_polygon_list;
 
-		polygons				: pac_polygon_list.list;
-		terminals_with_relief	: pac_terminals_with_relief.list;
 
-		cropping_basket : pac_polygon_list.list;
 
 		half_linewidth_float : constant type_float_positive :=
 			0.5 * type_float_positive (linewidth);
 
-
+		-- One of the first steps is to shrink (offset) the 
+		-- outer board contour by half the linewidth of the zone.
+		-- For this reason we take a copy of the given board contour:
+		outer_contour_tmp : type_polygon := outer_contour;
 
 		
-
-
-		
-		procedure make_thermal_reliefes is begin
-			log (text => "make_thermal_reliefes", level => log_threshold + 4);
-
-			-- Delete all reliefes left over from the previous zone:
-			reliefes.clear;
-			
-			reliefes := make_reliefes (
-				zone				=> zone,
-				relief_properties	=> relief_properties,								   
-				terminals			=> terminals_with_relief,
-				zone_clearance		=> clearance,
-				zone_linewidth		=> linewidth);
-
-		end make_thermal_reliefes;
+		use pac_polygon_clipping;
+		use pac_polygon_cropping;
+		use pac_polygon_list;
 
 		
 
 
 
 		procedure process_zone_fragments is
+			-- The zone may disintegrate into smaller fragments
+			-- after it has been clipped with the outer board contour.
+			-- The fragments are stored in this list:
 			zone_fragments : pac_polygon_list.list;
+
+			-- Each fragment must be treated individually.
+			-- This cursor points to a candidate fragment:
 			fragment_cursor : pac_polygon_list.cursor;
+
+			-- If a fragment is being processed then we store
+			-- it here:
 			fragment : type_polygon;
 
+			-- Polygons caused by objects that are inside the 
+			-- candidate fragment or that touch the fragment:
+			polygons				: pac_polygon_list.list;
+
+			-- The polygons will be used to crop the fragment.
+			-- This causes the fragment to disintegrate into
+			-- so called "islands" of conducting material:
 			islands : pac_polygon_list.list;
+
+			-- Information about terminals that are to be 
+			-- connected via thermal reliefes with the fragment:
+			terminals_with_relief	: pac_terminals_with_relief.list;
+
+
+			-- This procedure generates the thermal reliefes
+			-- if the zone is connected to a net. Otherwise
+			-- nothing happens here:
+			procedure make_thermal_reliefes is begin
+				
+				if has_element (parent_net) then
+					log (text => "make_thermal_reliefes", level => log_threshold + 4);
+
+					-- Delete old reliefes:
+					reliefes.clear;
+					
+					reliefes := make_reliefes (
+						zone				=> zone,
+						relief_properties	=> relief_properties,								   
+						terminals			=> terminals_with_relief,
+						zone_clearance		=> clearance,
+						zone_linewidth		=> linewidth);
+
+				end if;
+			end make_thermal_reliefes;
+
+
 		begin
 			-- Clip the zone by the given outer board contour.
 			-- The board contour may assume all kindes of irregular shapes.
@@ -1450,34 +1477,21 @@ package body et_board_ops.fill_zones is
 				log (text => "resulting islands:" & get_count (islands),
 					level => log_threshold + 4);
 
-				
 				make_islands_and_lakes (
-					zone		=> zone,
-					linewidth	=> linewidth,
-					islands		=> islands,
-					lakes		=> polygons);
+					zone			=> zone,
+					linewidth		=> linewidth,
+					islands			=> islands,
+					lakes			=> polygons,
+					log_threshold	=> log_threshold + 4);
 
 
--- 				if parent_net /= pac_nets.no_element then
--- 					if debug then
--- 						put_line (" make thermal reliefes");
--- 					end if;
--- 					
--- 					make_thermal_reliefes; 
--- 					-- bases on the inner borders that we just computed. see statement above
--- 				end if;
-
-				-- fill_islands;
+				-- make_thermal_reliefes; -- if the zone is connected with a net
 				
 				next (fragment_cursor);
-
 				log_indentation_down;
 			end loop;
 
 			log_indentation_down;
-
-
-
 			log_indentation_down;
 		end process_zone_fragments;
 
