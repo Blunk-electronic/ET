@@ -149,9 +149,80 @@ package body et_thermal_relief is
 		
 		angle : type_angle := terminal.position.rotation;
 		relief : type_relief;
+
+		
+
+
+		procedure make_spoke is
+
+			-- Get the distance from center of the terminal to the 
+			-- conducting area in the current direction:
+			D2CA : constant type_distance_to_conducting_area := 
+				get_distance_to_conducting_area (
+					zone			=> zone, 
+					start_point		=> center, 
+					direction		=> angle,
+					location_known	=> true,
+					location		=> NON_CONDUCTING_AREA,
+					debug			=> false);
+					--debug			=> true);						
+
+			-- The distance from terminal edge 
+			-- to the centerline of the nearest conductor line:
+			border_to_centerline : type_float_positive;
+
+			-- The actual gap between terminal and conducting area:
+			gap : type_float_positive;
 			
+		begin
+			-- NOTE: There is no need to test whether the center 
+			-- of the terminal is in the non-conducting area of the zone.
+
+			-- If no centerline exists in the current direction,
+			-- then no spoke will be computed:
+			if D2CA.centerline_exists then
+				log (text => "distance to conducting area: "
+					& " to edge " & to_string (D2CA.distance_to_edge)
+					& " to centerline " & to_string (D2CA.distance_to_centerline),
+					level => log_threshold + 1);
+						
+
+				-- The spoke length is the distance from center of terminal
+				-- to centerline of border.
+				-- If the resulting gap between terminal and conducting area
+				-- is less than the gap_max of the relief_properties, then
+				-- append the spoke to the relief:
+				border_to_centerline := D2CA.distance_to_centerline - D2CA.distance_to_edge;
+
+				gap := D2CA.distance_to_centerline - border_to_centerline
+					- get_distance_to_border (outline, center, angle);
+
+				if debug then
+					put_line ("  gap between pad and conducting area " & to_string (gap));						
+				end if;
+
+				
+				if gap <= type_float_positive (relief_properties.gap_max) then
+					if debug then
+						put_line ("   generate relief spoke");
+					end if;
+					
+					relief.spokes.append ((
+						A		=> center,
+						B		=> move_by (center, angle, D2CA.distance_to_centerline),
+						status	=> <>)); -- default status							
+				end if;
+			end if;
+		end make_spoke;
+
+
+		
 	begin
-		log (text => "make_relief", level => log_threshold);
+		log (text => "make_relief ",
+			-- & " gap max. " & to_string (relief_properties.gap_max)
+			-- & " linewidth " & to_string (relief.width),
+			level => log_threshold);
+		
 		log_indentation_up;
 		
 		-- CS: 
@@ -168,92 +239,27 @@ package body et_thermal_relief is
 		limit_to_minimum (relief.width, relief_properties.width_min);
 		
 
-		if debug then
-			new_line;
-			put_line ("terminal " & to_string (key (terminal.terminal))
-				& " pos. " & to_string (terminal.position.place)
-				& " angle " & to_string (terminal.position.rotation)
-				& " gap max. " & to_string (relief_properties.gap_max)
-				& " linewidth " & to_string (relief.width));
-		end if;
+		-- if debug then
+		-- 	new_line;
+		-- 	put_line ("terminal " & to_string (key (terminal.terminal))
+		-- 		& " pos. " & to_string (terminal.position.place)
+		-- 		& " angle " & to_string (terminal.position.rotation)
+		-- 		& " gap max. " & to_string (relief_properties.gap_max)
+		-- 		& " linewidth " & to_string (relief.width));
+		-- end if;
 
 		-- Since we have to generate 4 spokes, separated by 90 degrees
 		-- from each other, we need a loop construct here:
 		for i in 1 .. 4 loop
-			if debug then
-				put_line (" spoke " & positive'image (i));
-				put_line ("  direction " & to_string (angle));
-			end if;
-				
-			declare
-				-- Get the distance from center of terminal to the 
-				-- conducting area in the current direction:
-				D2CA : constant type_distance_to_conducting_area := 
-					get_distance_to_conducting_area (
-						zone			=> zone, 
-						start_point		=> center, 
-						direction		=> angle,
-						location_known	=> true,
-						location		=> NON_CONDUCTING_AREA,
-						debug			=> false);
-						--debug			=> true);						
+			log (text => "spoke: " & positive'image (i)
+				& " direction: " & to_string (angle), level => log_threshold + 1);
 
-				-- The distance from edge to centerline:
-				border_to_centerline : type_float_positive;
+			log_indentation_up;
+			make_spoke;
+			log_indentation_down;
 
-				-- The actual gap between terminal and conducting area:
-				gap : type_float_positive;
-				
-			begin
-				-- NOTE: There is no need to test whether the center of the terminal
-				-- is in the non-conducting area of the zone.
-
-				-- If no centerline exists in the current direction,
-				-- then no spoke will be computed:
-				if D2CA.centerline_exists then
-
-					if debug then
-						put_line ("  distance to conducting area:");
-						
-						put_line ("   to edge       " 
-							& to_string (D2CA.distance_to_edge));
-
-						put_line ("   to centerline " 
-							& to_string (D2CA.distance_to_centerline));
-						
-					end if;
-
-					-- The spoke length is the distance from center of terminal
-					-- to centerline of border.
-					-- If the resulting gap between terminal and conducting area
-					-- is less than the gap_max of the relief_properties, then
-					-- append the spoke to the relief:
-					border_to_centerline := D2CA.distance_to_centerline - D2CA.distance_to_edge;
-
-					gap := D2CA.distance_to_centerline - border_to_centerline
-						   - get_distance_to_border (outline, center, angle);
-
-					if debug then
-						put_line ("  gap between pad and conducting area " & to_string (gap));						
-					end if;
-
-					
-					if gap <= type_float_positive (relief_properties.gap_max) then
-						if debug then
-							put_line ("   generate relief spoke");
-						end if;
-						
-						relief.spokes.append ((
-							A		=> center,
-							B		=> move_by (center, angle, D2CA.distance_to_centerline),
-							status	=> <>)); -- default status							
-					end if;
-				end if;
-
-				
-				-- Prepare the next spoke:
-				add (angle, 90.0);
-			end;
+			-- Prepare the next spoke:
+			add (angle, 90.0);
 		end loop;
 
 		
@@ -313,7 +319,12 @@ package body et_thermal_relief is
 
 		
 	begin
-		log (text => "make_reliefes", level => log_threshold);
+		log (text => "make_reliefes."
+			 & " zone linewidth: " & to_string (zone_linewidth)
+			 & " zone clearance: " & to_string (zone_clearance),
+			 -- CS & " properties: " & to_string (relief_properties),
+			 level => log_threshold);
+		
 		log_indentation_up;
 		
 		terminals.iterate (query_terminal'access);

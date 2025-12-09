@@ -209,7 +209,8 @@ package et_thermal_relief is
 	
 	
 	-- Creates a thermal relief for the given single terminal.
-	-- The width and length of the generated thermal spokes depends on several things:
+	-- The width and length of the generated thermal spokes 
+	-- depends on several things:
 	-- - zone clearance 
 	-- - zone linewidth
 	-- - pad geometry
