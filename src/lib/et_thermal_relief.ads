@@ -218,7 +218,7 @@ package et_thermal_relief is
 	function make_relief (
 		zone				: in type_zone'class;
 		relief_properties	: in type_relief_properties;
-		terminal_cursor		: in pac_terminals_with_relief.cursor;
+		terminal			: in type_terminal_with_relief;
 		zone_clearance		: in type_track_clearance;
 		zone_linewidth		: in type_track_width;
 		log_threshold		: in type_log_level)

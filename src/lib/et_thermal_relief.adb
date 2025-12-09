@@ -134,7 +134,7 @@ package body et_thermal_relief is
 	function make_relief (
 		zone				: in type_zone'class;
 		relief_properties	: in type_relief_properties;					 
-		terminal_cursor		: in pac_terminals_with_relief.cursor;
+		terminal			: in type_terminal_with_relief;
 		zone_clearance		: in type_track_clearance;
 		zone_linewidth		: in type_track_width;
 		log_threshold		: in type_log_level)
@@ -143,8 +143,6 @@ package body et_thermal_relief is
 		debug : boolean := false;
 		
 		use pac_terminals;
-		use pac_terminals_with_relief;
-		terminal : type_terminal_with_relief renames element (terminal_cursor);
 		
 		center : type_vector renames terminal.position.place;
 		outline : type_polygon renames terminal.outline;
@@ -153,7 +151,8 @@ package body et_thermal_relief is
 		relief : type_relief;
 			
 	begin
-		-- log (text => "make_relief. Terminal: " & to_string (
+		log (text => "make_relief", level => log_threshold);
+		log_indentation_up;
 		
 		-- CS: 
 		-- 1. test thermal_relief on/off flag (see et_terminals.type_terminal)
@@ -257,6 +256,8 @@ package body et_thermal_relief is
 			end;
 		end loop;
 
+		
+		log_indentation_down;
 		return relief;
 	end make_relief;
 
@@ -286,20 +287,28 @@ package body et_thermal_relief is
 		procedure query_terminal (
 			c : in pac_terminals_with_relief.cursor) 
 		is 
-			relief : type_relief;
+			terminal : type_terminal_with_relief renames element (c);
+			relief : type_relief;			
 		begin
+			log (text => "terminal: " & to_string (terminal),
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+			
 			-- Generate the thermal relief for the
 			-- candidate terminal:
 			relief := make_relief (
 				zone				=> zone,
 				relief_properties	=> relief_properties,
-				terminal_cursor		=> c,
+				terminal			=> terminal,
 				zone_clearance		=> zone_clearance, 
 				zone_linewidth		=> zone_linewidth,
 				log_threshold		=> log_threshold + 1);
 
 			-- Append the relief to the result:
 			result.append (relief);
+
+			log_indentation_down;
 		end query_terminal;
 
 		
