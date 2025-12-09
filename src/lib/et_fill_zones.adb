@@ -273,9 +273,10 @@ package body et_fill_zones is
 
 
 	procedure make_islands_and_lakes (
-		zone	: in out type_zone;
-		islands : in pac_polygon_list.list;
-		lakes	: in pac_polygon_list.list)
+		zone		: in out type_zone;
+		linewidth	: in type_track_width;								 
+		islands 	: in pac_polygon_list.list;
+		lakes		: in pac_polygon_list.list)
 	is
 		debug : boolean := false;
 
@@ -394,9 +395,60 @@ package body et_fill_zones is
 		end set_lakes;
 
 
+
+
+		-- Fills the islands according to the fill style
+		-- of the given zone:
+		procedure fill_islands is 
+			use pac_islands;
+			island_cursor : pac_islands.cursor := zone.islands.first;
+		begin
+			case zone.fill_style is
+				when SOLID =>
+					declare
+						style : constant type_style := (
+							style		=> SOLID,
+	   						linewidth	=> linewidth);
+					begin
+						while island_cursor /= pac_islands.no_element loop
+							fill_island (
+								islands		=> zone.islands, 
+								position	=> island_cursor,
+								style		=> style,
+								process		=> make_stripes'access);
+
+							next (island_cursor);
+						end loop;					
+
+					end;
+					
+				when HATCHED =>
+					declare
+						style : constant type_style := (
+							style		=> HATCHED,
+							linewidth	=> linewidth,						   
+							spacing		=> zone.spacing);
+					begin
+						while island_cursor /= pac_islands.no_element loop
+							fill_island (
+								islands		=> zone.islands, 
+								position	=> island_cursor,
+								style		=> style,
+								process		=> make_stripes'access);
+
+							next (island_cursor);
+						end loop;					
+
+					end;					
+			end case;			
+		end fill_islands;
+
+
+
 	begin
 		set_islands (islands);
 		set_lakes (lakes);
+		fill_islands;
 	end make_islands_and_lakes;
 
 

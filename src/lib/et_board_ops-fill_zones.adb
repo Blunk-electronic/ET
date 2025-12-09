@@ -1366,51 +1366,6 @@ package body et_board_ops.fill_zones is
 
 
 		
-		-- Fills the islands according to the fill style
-		-- of the given zone:
-		procedure fill_islands is 
-			use pac_islands;
-			island_cursor : pac_islands.cursor := zone.islands.first;
-		begin
-			case zone.fill_style is
-				when SOLID =>
-					declare
-						style : constant type_style := (
-							style		=> SOLID,
-	   						linewidth	=> linewidth);
-					begin
-						while island_cursor /= pac_islands.no_element loop
-							fill_island (
-								islands		=> zone.islands, 
-								position	=> island_cursor,
-								style		=> style,
-								process		=> make_stripes'access);
-
-							next (island_cursor);
-						end loop;					
-
-					end;
-					
-				when HATCHED =>
-					declare
-						style : constant type_style := (
-							style		=> HATCHED,
-							linewidth	=> linewidth,						   
-							spacing		=> zone.spacing);
-					begin
-						while island_cursor /= pac_islands.no_element loop
-							fill_island (
-								islands		=> zone.islands, 
-								position	=> island_cursor,
-								style		=> style,
-								process		=> make_stripes'access);
-
-							next (island_cursor);
-						end loop;					
-
-					end;					
-			end case;			
-		end fill_islands;
 
 
 		
@@ -1497,9 +1452,10 @@ package body et_board_ops.fill_zones is
 
 				
 				make_islands_and_lakes (
-					zone	=> zone,
-					islands	=> islands,
-					lakes	=> polygons);
+					zone		=> zone,
+					linewidth	=> linewidth,
+					islands		=> islands,
+					lakes		=> polygons);
 
 
 -- 				if parent_net /= pac_nets.no_element then
@@ -1511,7 +1467,7 @@ package body et_board_ops.fill_zones is
 -- 					-- bases on the inner borders that we just computed. see statement above
 -- 				end if;
 
-				fill_islands;
+				-- fill_islands;
 				
 				next (fragment_cursor);
 
