@@ -332,10 +332,11 @@ package et_terminals is
 
 	
 	
-	-- NOTE: This type is used in the board when inquiring for terminal positions.
+	-- NOTE: This type is used in the board when inquiring 
+	-- for absolute terminal positions.
 	-- It uses floating point numbers for the terminal position because: 
-	-- After rotating the package in the board the x/y coordinates are machine-made. 
-	-- Fixed point coordinates would not be useful here.
+	-- After rotating the package in the board the x/y coordinates 
+	-- are machine-made. Fixed point coordinates would not be useful here.
 	type type_terminal_position_fine is record
 		technology	: type_assembly_technology;
 
@@ -348,7 +349,13 @@ package et_terminals is
 		face 		: type_face;
 	end record;
 
-	
+
+
+	function to_string (
+		position : in type_terminal_position_fine)
+		return string;
+
+
 
 	-- If a THT-terminal at a particular position has a drilled hole,
 	-- then this function should be used to get the outline contour

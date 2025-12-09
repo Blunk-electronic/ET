@@ -56,6 +56,8 @@ with et_board_geometry;			use et_board_geometry;
 with et_design_rules_board;		use et_design_rules_board;
 with et_fill_zones;				use et_fill_zones;
 with et_terminals;				use et_terminals;
+with et_logging;				use et_logging;
+
 
 
 package et_thermal_relief is
@@ -135,7 +137,8 @@ package et_thermal_relief is
 	
 	
 	type type_terminal_with_relief is record
-		-- The position, face and rotation of the terminal in the board:
+		-- The absolute position, face and rotation of 
+		-- the terminal in the board:
 		position	: type_terminal_position_fine;
 
 		-- The outline of the terminal in the board:
@@ -143,11 +146,45 @@ package et_thermal_relief is
 
 		-- This cursor points to the terminal as defined in the package model:
 		terminal	: pac_terminals.cursor; 
+
+		-- CS for debugging the name of the device
+		-- would be helpful here.
 	end record;
+
+
+	function to_string (
+		terminal : in type_terminal_with_relief)
+		return string;
+
+
+
 	
-	package pac_terminals_with_relief is new doubly_linked_lists (type_terminal_with_relief);
+	package pac_terminals_with_relief is new 
+		doubly_linked_lists (type_terminal_with_relief);
+	
+	use pac_terminals_with_relief;
 
 
+
+	
+	function get_terminal_name (
+		terminal : in pac_terminals_with_relief.cursor)
+		return pac_terminal_name.bounded_string;
+
+
+	function get_terminal_name (
+		terminal : in pac_terminals_with_relief.cursor)
+		return string;
+
+
+	function to_string (
+		terminal : in pac_terminals_with_relief.cursor)
+		return string;
+
+
+
+	
+	
 	procedure append_relieves (
 		target	: in out pac_terminals_with_relief.list;
 		source	: in pac_terminals_with_relief.list);
@@ -168,6 +205,8 @@ package et_thermal_relief is
 		spokes	: pac_spokes.list;
 	end record;
 
+
+	
 	
 	-- Creates a thermal relief for the given single terminal.
 	-- The width and length of the generated thermal spokes depends on several things:
@@ -182,12 +221,15 @@ package et_thermal_relief is
 		terminal_cursor		: in pac_terminals_with_relief.cursor;
 		zone_clearance		: in type_track_clearance;
 		zone_linewidth		: in type_track_width;
-		debug				: in boolean := false)
+		log_threshold		: in type_log_level)
 		return type_relief;
+
+
 	
 	package pac_reliefes is new doubly_linked_lists (type_relief); -- CS rename to pac_thermal_symbols ?
 
 
+	
 	-- Creates for all given terminals a list of thermal reliefes.
 	-- The width and length of the generated thermal spokes depends on several things:
 	-- - zone clearance 
@@ -200,7 +242,8 @@ package et_thermal_relief is
 		relief_properties	: in type_relief_properties;
 		terminals			: in pac_terminals_with_relief.list;
 		zone_clearance		: in type_track_clearance;
-		zone_linewidth		: in type_track_width)
+		zone_linewidth		: in type_track_width;
+		log_threshold		: in type_log_level)
 		return pac_reliefes.list;
 	
 	

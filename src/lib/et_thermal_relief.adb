@@ -65,6 +65,56 @@ package body et_thermal_relief is
 	
 
 
+	
+
+	function to_string (
+		terminal : in type_terminal_with_relief)
+		return string
+	is begin
+		return "absolute position: " & to_string (terminal.position)
+			& " name: " & get_terminal_name (terminal.terminal);
+			-- CS: outline ?
+	end;
+
+
+	
+
+	
+	function get_terminal_name (
+		terminal : in pac_terminals_with_relief.cursor)
+		return pac_terminal_name.bounded_string
+	is 
+		t : type_terminal_with_relief renames element (terminal);
+	begin
+		return get_terminal_name (t.terminal);
+	end;
+
+
+
+	function get_terminal_name (
+		terminal : in pac_terminals_with_relief.cursor)
+		return string
+	is 
+		t : type_terminal_with_relief renames element (terminal);
+	begin
+		return get_terminal_name (t.terminal);
+	end;
+
+
+
+	function to_string (
+		terminal : in pac_terminals_with_relief.cursor)
+		return string
+	is 
+		t : type_terminal_with_relief renames element (terminal);
+	begin
+		return to_string (t);
+	end;
+
+	
+
+	
+
 	procedure append_relieves (
 		target	: in out pac_terminals_with_relief.list;
 		source	: in pac_terminals_with_relief.list)
@@ -76,6 +126,9 @@ package body et_thermal_relief is
 	end;
 
 
+
+
+	
 	
 
 	function make_relief (
@@ -84,9 +137,11 @@ package body et_thermal_relief is
 		terminal_cursor		: in pac_terminals_with_relief.cursor;
 		zone_clearance		: in type_track_clearance;
 		zone_linewidth		: in type_track_width;
-		debug				: in boolean := false)
+		log_threshold		: in type_log_level)
 		return type_relief
 	is
+		debug : boolean := false;
+		
 		use pac_terminals;
 		use pac_terminals_with_relief;
 		terminal : type_terminal_with_relief renames element (terminal_cursor);
@@ -98,6 +153,8 @@ package body et_thermal_relief is
 		relief : type_relief;
 			
 	begin
+		-- log (text => "make_relief. Terminal: " & to_string (
+		
 		-- CS: 
 		-- 1. test thermal_relief on/off flag (see et_terminals.type_terminal)
 		--    If off, then no thermal relief is to be generated. Skip terminal completely.
@@ -204,6 +261,8 @@ package body et_thermal_relief is
 	end make_relief;
 
 
+
+	
 	
 
 	
@@ -212,7 +271,8 @@ package body et_thermal_relief is
 		relief_properties	: in type_relief_properties;
 		terminals			: in pac_terminals_with_relief.list;
 		zone_clearance		: in type_track_clearance;
-		zone_linewidth		: in type_track_width)
+		zone_linewidth		: in type_track_width;
+		log_threshold		: in type_log_level)
 		return pac_reliefes.list
 	is
 		result : pac_reliefes.list;
@@ -222,14 +282,35 @@ package body et_thermal_relief is
 		
 		use pac_terminals_with_relief;
 
-		procedure query_terminal (c : in pac_terminals_with_relief.cursor) is
+		
+		procedure query_terminal (
+			c : in pac_terminals_with_relief.cursor) 
+		is 
+			relief : type_relief;
 		begin
-			result.append (make_relief (
-				zone, relief_properties, c, zone_clearance, zone_linewidth, debug));
+			-- Generate the thermal relief for the
+			-- candidate terminal:
+			relief := make_relief (
+				zone				=> zone,
+				relief_properties	=> relief_properties,
+				terminal_cursor		=> c,
+				zone_clearance		=> zone_clearance, 
+				zone_linewidth		=> zone_linewidth,
+				log_threshold		=> log_threshold + 1);
+
+			-- Append the relief to the result:
+			result.append (relief);
 		end query_terminal;
+
 		
 	begin
+		log (text => "make_reliefes", level => log_threshold);
+		log_indentation_up;
+		
 		terminals.iterate (query_terminal'access);
+
+		log_indentation_down;
+		
 		return result;
 	end make_reliefes;
 

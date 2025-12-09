@@ -1387,7 +1387,7 @@ package body et_board_ops.fill_zones is
 
 			-- Polygons caused by objects that are inside the 
 			-- candidate fragment or that touch the fragment:
-			polygons				: pac_polygon_list.list;
+			polygons : pac_polygon_list.list;
 
 			-- The polygons will be used to crop the fragment.
 			-- This causes the fragment to disintegrate into
@@ -1396,7 +1396,7 @@ package body et_board_ops.fill_zones is
 
 			-- Information about terminals that are to be 
 			-- connected via thermal reliefes with the fragment:
-			terminals_with_relief	: pac_terminals_with_relief.list;
+			terminals_with_relief : pac_terminals_with_relief.list;
 
 
 			-- This procedure generates the thermal reliefes
@@ -1406,6 +1406,7 @@ package body et_board_ops.fill_zones is
 				
 				if has_element (parent_net) then
 					log (text => "make_thermal_reliefes", level => log_threshold + 4);
+					log_indentation_up;
 
 					-- Delete old reliefes:
 					reliefes.clear;
@@ -1415,8 +1416,12 @@ package body et_board_ops.fill_zones is
 						relief_properties	=> relief_properties,								   
 						terminals			=> terminals_with_relief,
 						zone_clearance		=> clearance,
-						zone_linewidth		=> linewidth);
+						zone_linewidth		=> linewidth,
+						log_threshold		=> log_threshold + 5);
 
+					-- CS log number of reliefes ?
+
+					log_indentation_down;
 				end if;
 			end make_thermal_reliefes;
 
@@ -1485,7 +1490,7 @@ package body et_board_ops.fill_zones is
 					log_threshold	=> log_threshold + 4);
 
 
-				-- make_thermal_reliefes; -- if the zone is connected with a net
+				make_thermal_reliefes; -- if the zone is connected with a net
 				
 				next (fragment_cursor);
 				log_indentation_down;

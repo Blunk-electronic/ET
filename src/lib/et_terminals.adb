@@ -156,6 +156,21 @@ package body et_terminals is
 	end;
 
 
+
+	function to_string (
+		position : in type_terminal_position_fine)
+		return string
+	is begin
+		return 
+			"place: " & to_string (position.place)
+			& " rotation: " & to_string (position.rotation)
+			& " face: " & to_string (position.face)
+			& " technology: " & to_string (position.technology);
+	end;
+
+
+
+	
 	
 	function get_inner_contour (
 		terminal	: in type_terminal;
