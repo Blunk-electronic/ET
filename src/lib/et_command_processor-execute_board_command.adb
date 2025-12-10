@@ -2267,6 +2267,7 @@ is
 		-- Extract from the given command the zone 
 		-- arguments (everything after "zone"):
 		procedure make_fill_zone is
+			use et_board_ops.fill_zones;
 			use et_fill_zones;
 			
 			arguments : constant type_fields_of_line := 
@@ -2401,6 +2402,7 @@ is
 
 		
 		procedure make_fill_zone is
+			use et_board_ops.fill_zones;
 			use et_fill_zones;
 			
 			-- Extract from the given command the polygon arguments (everything after "zone"):
@@ -3689,6 +3691,7 @@ is
 
 	
 	procedure clear_fill_zone is
+		use et_board_ops.fill_zones;
 		nets : pac_net_names.list;
 	begin
 		case cmd_field_count is

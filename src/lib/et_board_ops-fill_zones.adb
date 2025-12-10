@@ -37,39 +37,31 @@
 --
 
 with ada.text_io;					use ada.text_io;
-with ada.characters.latin_1;		use ada.characters.latin_1;
+with ada.tags;
 
 with et_mirroring;
 with et_schematic_ops.units;
-with et_pcb_contour;				use et_pcb_contour;
-with et_board_text;
-with et_board_ops.board_contour;	use et_board_ops.board_contour;
-with et_board_ops.devices;			use et_board_ops.devices;
-with et_fill_zones.boards;			use et_fill_zones.boards;
+with et_schematic_ops.nets;
+with et_pcb_contour;
+with et_board_ops.board_contour;
+with et_board_ops.devices;
+with et_fill_zones.boards;
 
 with et_net_ports;
 
-with et_devices_electrical; 			use et_devices_electrical;
-with et_devices_electrical.packages;	use et_devices_electrical.packages;
-with et_devices_non_electrical;			use et_devices_non_electrical;
-
+with et_devices_electrical.packages;
+with et_devices_non_electrical;
 
 with et_conductor_text.boards;
-with et_conductor_segment.boards;	use et_conductor_segment.boards;
-with et_contour_to_polygon;			use et_contour_to_polygon;
-with et_vias;						use et_vias;
+with et_conductor_segment.boards;
+with et_contour_to_polygon;
+with et_vias;
 with et_route;
-with et_routing;					use et_routing;
-with et_thermal_relief;				use et_thermal_relief;
+
 
 
 package body et_board_ops.fill_zones is
 
-	use pac_nets;
-	use pac_net_name;
-
-	use pac_polygon_offsetting;
-	-- use pac_polygon_union;
 
 	
 	function to_polygon (
@@ -83,6 +75,7 @@ package body et_board_ops.fill_zones is
 		exists : boolean := false;
 		result : type_polygon; -- to be returned
 
+		use et_board_ops.devices;
 		use et_mirroring;
 		use pac_contours;
 		use pac_terminals;
@@ -275,6 +268,8 @@ package body et_board_ops.fill_zones is
 
 				terminal_zone_overlap : type_overlap_status;
 				
+				use pac_polygon_offsetting;
+
 				-- CS: more log messages
 			begin
 				-- If the terminal does not affect the current signal layer,
@@ -379,6 +374,9 @@ package body et_board_ops.fill_zones is
 		terminals_with_relief	: out pac_terminals_with_relief.list;
 		log_threshold			: in type_log_level)
 	is 			
+		use pac_nets;
+		use pac_net_name;
+
 		-- If a parent net was given (via argument parent_net) then
 		-- this will hold the actual net name like "GND".
 		-- Otherwise it will be left empty:
@@ -437,6 +435,8 @@ package body et_board_ops.fill_zones is
 				-- is stored here (lines, arcs, vias, ...):
 				use et_route;
 				route : type_net_route renames element (net_cursor).route;
+
+				use et_conductor_segment.boards;
 
 				
 				-- This procedure queries a conductor line, converts it
@@ -670,6 +670,7 @@ package body et_board_ops.fill_zones is
 			procedure query_device (
 				device_cursor : in pac_devices_electrical.cursor)
 			is
+				use et_board_ops.devices;
 				terminals : pac_terminals.map;
 				
 				
@@ -794,6 +795,8 @@ package body et_board_ops.fill_zones is
 			procedure query_device (d : in pac_devices_non_electrical.cursor) is
 				use et_pcb_contour;
 				p : pac_polygon_list.list;
+
+				use pac_polygon_offsetting;
 			begin
 				log (text => "device " & get_device_name (d),
 					 level => log_threshold + 1);
@@ -905,6 +908,7 @@ package body et_board_ops.fill_zones is
 			procedure query_device (d : in pac_devices_electrical.cursor) is
 				use et_pcb_contour;
 				p : pac_polygon_list.list;
+				use pac_polygon_offsetting;
 			begin
 				log (text => "device " & get_device_name (d),
 					 level => log_threshold + 1);
@@ -1013,6 +1017,7 @@ package body et_board_ops.fill_zones is
 
 				use et_board_text;
 				use pac_text_board;
+				use pac_polygon_offsetting;
 			begin
 				if text.layer = layer then
 
@@ -1089,6 +1094,8 @@ package body et_board_ops.fill_zones is
 		bottom_layer : constant type_signal_layer := 
 			get_deepest_conductor_layer (module_cursor);
 
+
+		use pac_nets;
 
 		-- If a parent net was given (via argument parent_net) then
 		-- this will hold the actual net name like "GND".
@@ -1357,6 +1364,7 @@ package body et_board_ops.fill_zones is
 		zone_polygon : type_polygon;
 
 
+		use et_contour_to_polygon;		
 
 		half_linewidth_float : constant type_float_positive :=
 			0.5 * type_float_positive (linewidth);
@@ -1366,7 +1374,7 @@ package body et_board_ops.fill_zones is
 		-- For this reason we take a copy of the given board contour:
 		outer_contour_tmp : type_polygon := outer_contour;
 
-		
+		use pac_polygon_offsetting;
 		use pac_polygon_clipping;
 		use pac_polygon_cropping;
 		use pac_polygon_list;
@@ -1376,6 +1384,8 @@ package body et_board_ops.fill_zones is
 
 
 		procedure process_zone_fragments is
+			use pac_nets;
+
 			-- The zone may disintegrate into smaller fragments
 			-- after it has been clipped with the outer board contour.
 			-- The fragments are stored in this list:
@@ -1570,9 +1580,12 @@ package body et_board_ops.fill_zones is
 		log_threshold	: in type_log_level;
 		nets 			: in pac_net_names.list := no_net_names)
 	is 
-		use pac_polygons;
-		
+		use et_contour_to_polygon;
+		use et_board_ops.board_contour;
+		use et_fill_zones.boards;
+
 		use pac_geometry_brd;
+		use pac_polygons;		
 		use pac_polygon_offsetting;
 		
 		use pac_net_names;
@@ -1860,7 +1873,9 @@ package body et_board_ops.fill_zones is
 				
 
 				
-				procedure query_given_net (gn : pac_net_names.cursor) is begin
+				procedure query_given_net (gn : pac_net_names.cursor) is 
+					use pac_net_name;
+				begin
 					-- Locate the given net in the module.
 					-- If if does not exist, issue a warning.
 					net_cursor := find (module.nets, element (gn));
@@ -1965,6 +1980,446 @@ package body et_board_ops.fill_zones is
 		
 	end fill_zones;
 
+
+
+
+
+
+
+
+
+	procedure add_zone (
+		module_cursor	: in pac_generic_modules.cursor;
+		zone			: in type_zone'class;
+		log_threshold	: in type_log_level;
+		net_name		: in pac_net_name.bounded_string := et_net_names.no_name)
+	is
+		use ada.tags;
+
+		use et_nets;
+		use pac_nets;
+		use pac_net_name;
+
+		use et_fill_zones.boards;		
+		
+
+		procedure floating_solid (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_floating_solid;
+
+			p : type_floating_solid := 
+				type_floating_solid (zone);
+			
+		begin
+			log (text => to_string (p, p.properties),
+				level => log_threshold + 1);
+
+			module.board.conductors_floating.zones.solid.append (p);
+		end floating_solid;
+
+		
+		procedure floating_hatched (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_floating_hatched;
+
+			p : type_floating_hatched := 
+				type_floating_hatched (zone);
+			
+		begin
+			log (text => to_string (p, p.properties),
+				level => log_threshold + 1);
+
+			module.board.conductors_floating.zones.hatched.append (p);
+		end floating_hatched;
+
+
+		-- Polygons which are connected with a net are part of a route.
+		-- They must be added to the targeted net. So we need a cursor
+		-- to the targeted net:
+		net_cursor : pac_nets.cursor;
+
+		
+		procedure locate_targeted_net is 
+			use et_schematic_ops.nets;
+		begin
+			net_cursor := locate_net (module_cursor, net_name);
+
+			if net_cursor = pac_nets.no_element then
+				raise semantic_error_1 with
+					"ERROR: Net " & enclose_in_quotes (to_string (net_name)) 
+					& " does not exist !";
+			end if;
+		end locate_targeted_net;
+
+		
+		procedure route_solid (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_route_solid;
+
+			p : type_route_solid := 
+				type_route_solid (zone);
+
+
+			procedure add_polygon (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is begin
+				net.route.zones.solid.append (p);
+			end add_polygon;
+		
+	
+		begin --route_solid
+			log (text => to_string (p, p.properties, net_name),
+				level => log_threshold + 1);
+
+			update_element (
+				container	=> module.nets,
+				position	=> net_cursor,
+				process		=> add_polygon'access);
+			
+		end route_solid;
+
+		
+		procedure route_hatched (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_route_hatched;
+
+			p : type_route_hatched := 
+				type_route_hatched (zone);
+		
+	
+			procedure add_polygon (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is begin
+				net.route.zones.hatched.append (p);
+			end add_polygon;
+
+
+		begin
+			log (text => to_string (p, p.properties, net_name),
+				level => log_threshold + 1);
+
+			update_element (
+				container	=> module.nets,
+				position	=> net_cursor,
+				process		=> add_polygon'access);
+
+		end route_hatched;
+
+		
+	begin -- add_zone
+		log (text => "module " & to_string (module_cursor)
+			& " placing fill zone in conductor layer ...",
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		-- floating:
+		if zone'tag = type_floating_solid'tag then
+
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> floating_solid'access);
+
+		elsif zone'tag = type_floating_hatched'tag then
+
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> floating_hatched'access);
+
+
+		-- route:
+		elsif zone'tag = type_route_solid'tag then
+
+			locate_targeted_net;
+						
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> route_solid'access);
+
+		elsif zone'tag = type_route_hatched'tag then
+
+			locate_targeted_net;
+
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> route_hatched'access);
+			
+		else
+			null; -- CS ?
+		end if;
+		
+		log_indentation_down;
+	end add_zone;
+
+
+
+
+
+
+
+
+
+
+	procedure clear_zones (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level;
+		nets 			: in pac_net_names.list := no_net_names)
+	is 
+		-- CS: Most of this stuff can be moved to et_fill_zones.boards
+		-- so that solid and hatched zones inherit from primitive operations
+		-- defined for type_zone. 
+		
+		use et_fill_zones.boards;
+		use pac_geometry_brd;
+		use pac_polygons;
+		use pac_polygon_clipping;
+		use pac_polygon_cropping;
+		use pac_polygon_offsetting;
+		use pac_polygon_union;
+		
+		use pac_net_names;
+
+		all_zones : boolean;
+
+		
+
+		
+		procedure floating_zones is
+			use pac_floating_solid;
+			use pac_floating_hatched;
+			
+
+			procedure floating_solid (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in out type_generic_module) 
+			is
+				zone_cursor : pac_floating_solid.cursor := module.board.conductors_floating.zones.solid.first;
+
+				procedure do_it (
+					zone : in out type_floating_solid)
+				is begin
+					zone.islands.clear;
+				end do_it;
+
+			begin
+				while zone_cursor /= pac_floating_solid.no_element loop
+					module.board.conductors_floating.zones.solid.update_element (zone_cursor, do_it'access);
+					next (zone_cursor);
+				end loop;
+			end floating_solid;
+
+			
+			procedure floating_hatched (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in out type_generic_module) 
+			is
+				zone_cursor : pac_floating_hatched.cursor := module.board.conductors_floating.zones.hatched.first;
+
+				procedure do_it (
+					zone : in out type_floating_hatched)
+				is begin
+					zone.islands.clear;
+				end do_it;
+				
+			begin
+				while zone_cursor /= pac_floating_hatched.no_element loop
+					module.board.conductors_floating.zones.hatched.update_element (zone_cursor, do_it'access);
+					next (zone_cursor);
+				end loop;
+			end floating_hatched;
+
+			
+		begin
+			log (text => "floating zones ...", level => log_threshold + 1);
+			update_element (generic_modules, module_cursor, floating_solid'access);
+			update_element (generic_modules, module_cursor, floating_hatched'access);
+		end floating_zones;
+
+
+		
+		-- Fills polygons that are connected with a net:
+		procedure connected_zones is
+			use et_nets;
+			use pac_net_name;
+			use pac_nets;
+			use pac_route_solid;
+			use pac_route_hatched;
+
+			
+			procedure query_nets (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in out type_generic_module) 
+			is
+				net_cursor : pac_nets.cursor;
+				net_class : type_net_class;		
+
+				
+				procedure route_solid (
+					net_name	: in pac_net_name.bounded_string;
+					net			: in out type_net)
+				is 
+					-- The cursor that points to the zone being filled:
+					use pac_route_solid;
+					zone_cursor : pac_route_solid.cursor := net.route.zones.solid.first;
+
+
+					procedure do_it (
+						zone : in out type_route_solid)
+					is begin
+						zone.islands.clear;
+						zone.reliefes.clear;
+					end do_it;
+					
+					
+				begin -- route_solid
+					while zone_cursor /= pac_route_solid.no_element loop
+
+						-- do the clearing
+						net.route.zones.solid.update_element (zone_cursor, do_it'access);
+					
+						next (zone_cursor);
+					end loop;
+				end route_solid;
+
+
+				
+				procedure route_hatched (
+					net_name	: in pac_net_name.bounded_string;
+					net			: in out type_net)
+				is 
+					use pac_route_hatched;
+					zone_cursor : pac_route_hatched.cursor := net.route.zones.hatched.first;
+
+
+					procedure do_it (
+						zone : in out type_route_hatched)
+					is begin
+						zone.islands.clear;
+						zone.reliefes.clear;
+					end do_it;
+						
+					
+				begin
+					while zone_cursor /= pac_route_hatched.no_element loop
+
+						-- do the clearing
+						net.route.zones.hatched.update_element (zone_cursor, do_it'access);
+
+						next (zone_cursor);
+					end loop;
+				end route_hatched;
+
+
+				procedure query_net is begin
+					log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 2);
+					
+					log_indentation_up;
+					
+					update_element (module.nets, net_cursor, route_solid'access);
+					update_element (module.nets, net_cursor, route_hatched'access);
+
+					log_indentation_down;
+				end query_net;
+				
+
+				procedure query_given_net (gn : pac_net_names.cursor) is begin
+					-- Locate the given net in the module.
+					-- If if does not exist, issue a warning.
+					net_cursor := find (module.nets, element (gn));
+
+					if net_cursor /= pac_nets.no_element then
+						query_net;
+					else
+						log (
+							importance => WARNING, 
+							text => "Net " & enclose_in_quotes (to_string (element (gn))) 
+								& " does not exist !", 
+							level => log_threshold + 2);
+					end if;
+				end query_given_net;
+				
+				
+			begin -- query_nets
+				if all_zones then
+
+					-- we must query all nets:
+					net_cursor := module.nets.first;
+
+					-- Iterate through all nets of the module:
+					while net_cursor /= pac_nets.no_element loop
+						query_net;
+						next (net_cursor);
+					end loop;
+
+				else
+					-- we query only the nets given by argument "nets":
+					nets.iterate (query_given_net'access);
+				end if;
+			end query_nets;
+
+			
+		begin 
+			log (text => "connected zones ...", level => log_threshold + 1);
+			log_indentation_up;
+			update_element (generic_modules, module_cursor, query_nets'access);
+			log_indentation_down;
+		end connected_zones;
+
+
+		
+	begin -- clear_zones
+
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " clearing zones.",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		
+		if is_empty (nets) then
+			
+			-- Clear all zones if no explicit net names given:
+			
+			log (text => "clearing all zones ...", level => log_threshold + 1);
+
+			all_zones := true;
+			
+			log_indentation_up;
+			connected_zones;
+
+			floating_zones;
+
+			log_indentation_down;
+						
+		else
+			log (text => "clearing zones of dedicated nets ...", level => log_threshold + 1);
+
+			all_zones := false;
+			
+			log_indentation_up;
+			connected_zones;
+			log_indentation_down;
+			
+		end if;
+
+		log_indentation_down;
+		
+	end clear_zones;
 
 	
 end et_board_ops.fill_zones;

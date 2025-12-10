@@ -122,7 +122,9 @@ is
 
 	
 
-	procedure clear is begin
+	procedure clear is 
+		use et_board_ops.fill_zones;
+	begin
 		case key is
 			when key_noun_zone =>
 				noun := NOUN_ZONE;

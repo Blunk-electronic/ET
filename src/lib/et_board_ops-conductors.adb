@@ -36,22 +36,18 @@
 --   history of changes:
 --
 
-with ada.tags;
-
-with et_mirroring;					use et_mirroring;
+with et_mirroring;
 with et_schematic_ops.units;		use et_schematic_ops.units;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
 with et_schematic_ops;				use et_schematic_ops;
 with et_board_ops.devices;			use et_board_ops.devices;
 with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
 
-with et_fill_zones.boards;			use et_fill_zones.boards;
-
 with et_devices_electrical;
 
 with et_vias;
 with et_route;
-
+with et_ripup;
 
 
 package body et_board_ops.conductors is
@@ -155,6 +151,7 @@ package body et_board_ops.conductors is
 
 			use et_nets;
 			
+			
 			procedure add (
 			-- Appends the track to the net.
 				net_name	: in pac_net_name.bounded_string;
@@ -167,6 +164,7 @@ package body et_board_ops.conductors is
 					new_item	=> line);
 			end add;
 
+			
 		begin -- add_named_track
 			if net_exists (net_cursor) then
 				
@@ -205,6 +203,7 @@ package body et_board_ops.conductors is
 
 		use pac_conductor_lines;
 		
+		
 		procedure add_freetrack (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -213,6 +212,7 @@ package body et_board_ops.conductors is
 				container	=> module.board.conductors_floating.lines,
 				new_item	=> line);
 		end;
+		
 		
 	begin
 		log (text => "module " & to_string (module_name) &
@@ -356,6 +356,7 @@ package body et_board_ops.conductors is
 
 	
 	
+	
 	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
@@ -427,6 +428,7 @@ package body et_board_ops.conductors is
 
 	
 	
+	
 	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
@@ -491,6 +493,7 @@ package body et_board_ops.conductors is
 
 
 
+	
 	
 	
 	procedure add_line (
@@ -558,6 +561,7 @@ package body et_board_ops.conductors is
 	end add_line;
 
 
+	
 
 
 
@@ -2653,181 +2657,6 @@ package body et_board_ops.conductors is
 
 
 
-
-
-
-	
-	
-
-	procedure add_zone (
-		module_cursor	: in pac_generic_modules.cursor;
-		zone			: in type_zone'class;
-		log_threshold	: in type_log_level;
-		net_name		: in pac_net_name.bounded_string := et_net_names.no_name)
-	is
-		use ada.tags;
-		use et_nets;
-		
-		
-		procedure floating_solid (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			use pac_floating_solid;
-
-			p : type_floating_solid := 
-				type_floating_solid (zone);
-			
-		begin
-			log (text => to_string (p, p.properties),
-				level => log_threshold + 1);
-
-			module.board.conductors_floating.zones.solid.append (p);
-		end floating_solid;
-
-		
-		procedure floating_hatched (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			use pac_floating_hatched;
-
-			p : type_floating_hatched := 
-				type_floating_hatched (zone);
-			
-		begin
-			log (text => to_string (p, p.properties),
-				level => log_threshold + 1);
-
-			module.board.conductors_floating.zones.hatched.append (p);
-		end floating_hatched;
-
-		-- Polygons which are connected with a net are part of a route.
-		-- They must be added to the targeted net. So we need a cursor
-		-- to the targeted net:
-		net_cursor : pac_nets.cursor;
-
-		
-		procedure locate_targeted_net is begin
-			net_cursor := locate_net (module_cursor, net_name);
-
-			if net_cursor = pac_nets.no_element then
-				raise semantic_error_1 with
-					"ERROR: Net " & enclose_in_quotes (to_string (net_name)) 
-					& " does not exist !";
-			end if;
-		end locate_targeted_net;
-
-		
-		procedure route_solid (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			use pac_route_solid;
-
-			p : type_route_solid := 
-				type_route_solid (zone);
-
-
-			procedure add_polygon (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net)
-			is begin
-				net.route.zones.solid.append (p);
-			end add_polygon;
-			
-		begin --route_solid
-			log (text => to_string (p, p.properties, net_name),
-				level => log_threshold + 1);
-
-			update_element (
-				container	=> module.nets,
-				position	=> net_cursor,
-				process		=> add_polygon'access);
-			
-		end route_solid;
-
-		
-		procedure route_hatched (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			use pac_route_hatched;
-
-			p : type_route_hatched := 
-				type_route_hatched (zone);
-			
-			procedure add_polygon (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net)
-			is begin
-				net.route.zones.hatched.append (p);
-			end add_polygon;
-
-		begin -- route_hatched
-			log (text => to_string (p, p.properties, net_name),
-				level => log_threshold + 1);
-
-			update_element (
-				container	=> module.nets,
-				position	=> net_cursor,
-				process		=> add_polygon'access);
-
-		end route_hatched;
-
-		
-	begin -- add_zone
-		log (text => "module " & to_string (module_cursor)
-			& " placing fill zone in conductor layer ...",
-			level => log_threshold);
-
-		log_indentation_up;
-		
-		-- floating:
-		if zone'tag = type_floating_solid'tag then
-
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> floating_solid'access);
-
-		elsif zone'tag = type_floating_hatched'tag then
-
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> floating_hatched'access);
-
-
-		-- route:
-		elsif zone'tag = type_route_solid'tag then
-
-			locate_targeted_net;
-						
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> route_solid'access);
-
-		elsif zone'tag = type_route_hatched'tag then
-
-			locate_targeted_net;
-
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> route_hatched'access);
-			
-		else
-			null; -- CS ?
-		end if;
-		
-		log_indentation_down;
-	end add_zone;
-
-
-
-
 	
 
 	procedure modify_status (
@@ -4119,14 +3948,6 @@ package body et_board_ops.conductors is
 
 
 
-	procedure clear_zones (
-		module_cursor	: in pac_generic_modules.cursor;	
-		log_threshold	: in type_log_level;
-		nets 			: in pac_net_names.list := no_net_names)
-	is separate;
-	
-
-
 
 	procedure add_text (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -5058,6 +4879,7 @@ package body et_board_ops.conductors is
 		end search_for_arc_of_net;
 
 
+		
 		procedure search_for_floating_arc is begin
 			result_arc_floating := get_first_arc_floating (module_cursor, flag, log_threshold + 1);
 			
@@ -5250,6 +5072,7 @@ package body et_board_ops.conductors is
 
 
 
+	
 
 
 	function get_objects (
@@ -5805,6 +5628,7 @@ package body et_board_ops.conductors is
 	end modify_status;
 
 	
+	
 
 	
 
@@ -5942,6 +5766,7 @@ package body et_board_ops.conductors is
 		use pac_nets;
 		use pac_conductor_lines;
 		use pac_conductor_arcs;
+		use et_ripup;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " deleting conductor object",

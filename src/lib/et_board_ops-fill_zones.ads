@@ -38,7 +38,7 @@
 -- DESCRIPTION:
 --
 -- This package contains subprograms which are required in
--- order to fill conductor zones. Other CAE tool refer to them
+-- order to handle conductor zones. Other CAE tool refer to them
 -- as "polygons" or "pour area".
 --
 --   ToDo: 
@@ -46,7 +46,6 @@
 
 
 with et_devices_electrical;				use et_devices_electrical;
-with et_board_geometry;					use et_board_geometry;
 with et_thermal_relief;					use et_thermal_relief;
 with et_fill_zones;						use et_fill_zones;
 
@@ -376,6 +375,29 @@ package et_board_ops.fill_zones is
 	procedure fill_zones (
 		module_cursor	: in pac_generic_modules.cursor;	
 		log_category	: in type_log_category;
+		log_threshold	: in type_log_level;
+		nets 			: in pac_net_names.list := no_net_names); -- GND, GNDA, P3V3, ...
+
+
+
+	-- This procedure adds a fill zone to the board:
+	procedure add_zone (
+		module_cursor	: in pac_generic_modules.cursor;
+		zone			: in type_zone'class;
+		log_threshold	: in type_log_level;
+
+		-- Net name is relevant if filil zone is part of a route.
+		-- The type of the given fill zone is the cirteria:
+		net_name		: in pac_net_name.bounded_string := et_net_names.no_name);
+
+
+
+	-- Clears fill zones. If nets is empty, then all
+	-- zones will be cleared (even those who are floating).
+	-- If nets contains net names then only the zones of these
+	-- nets will be filled:
+	procedure clear_zones (
+		module_cursor	: in pac_generic_modules.cursor;	
 		log_threshold	: in type_log_level;
 		nets 			: in pac_net_names.list := no_net_names); -- GND, GNDA, P3V3, ...
 
