@@ -4117,13 +4117,6 @@ package body et_board_ops.conductors is
 	
 	
 
-	procedure fill_zones (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_category	: in type_log_category;
-		log_threshold	: in type_log_level;
-		nets 			: in pac_net_names.list := no_net_names)
-	is separate;
-	
 
 
 	procedure clear_zones (

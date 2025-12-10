@@ -39,6 +39,7 @@
 with et_canvas_tool;					use et_canvas_tool;
 
 with et_board_ops.conductors;			use et_board_ops.conductors;
+with et_board_ops.fill_zones;
 with et_board_ops.ratsnest;
 with et_board_verb_noun_keys;			use et_board_verb_noun_keys;
 
@@ -354,7 +355,9 @@ is
 
 	
 	
-	procedure fill is begin
+	procedure fill is 
+		use et_board_ops.fill_zones;
+	begin
 		case key is
 			when key_noun_zone =>
 				noun := NOUN_ZONE;

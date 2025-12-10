@@ -55,6 +55,7 @@ with et_text;
 with et_board_text;
 with et_board_layer_category;		use et_board_layer_category;
 with et_board_ops.conductors;
+with et_board_ops.fill_zones;
 with et_board_ops.vias;
 with et_board_ops.frame;
 with et_sheets;
@@ -3658,6 +3659,7 @@ is
 	
 
 	procedure fill_zones is 
+		use et_board_ops.fill_zones;
 		nets : pac_net_names.list;
 	begin
 		case cmd_field_count is
