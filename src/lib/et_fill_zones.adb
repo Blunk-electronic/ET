@@ -277,6 +277,7 @@ package body et_fill_zones is
 		linewidth		: in type_track_width;								 
 		islands 		: in pac_polygon_list.list;
 		lakes			: in pac_polygon_list.list;
+		fill			: in boolean;
 		log_threshold	: in type_log_level)
 	is
 		debug : boolean := false;
@@ -452,7 +453,10 @@ package body et_fill_zones is
 
 		set_islands (islands);
 		set_lakes (lakes);
-		fill_islands;
+
+		if fill then
+			fill_islands;
+		end if;
 	end make_islands_and_lakes;
 
 

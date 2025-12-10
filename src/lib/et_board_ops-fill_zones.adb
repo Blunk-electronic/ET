@@ -1487,6 +1487,7 @@ package body et_board_ops.fill_zones is
 					linewidth		=> linewidth,
 					islands			=> islands,
 					lakes			=> polygons,
+					fill			=> false,
 					log_threshold	=> log_threshold + 4);
 
 

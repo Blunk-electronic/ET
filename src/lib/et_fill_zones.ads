@@ -236,12 +236,13 @@ package et_fill_zones is
 	-- This procedure:
 	-- 1. assigns the given islands to the zone 
 	-- 2. creates the lakes inside the islands
-	-- 3. fills the islands 
+	-- 3. Generates fill lines for the islands if "fill" is true.
 	procedure make_islands_and_lakes (
 		zone			: in out type_zone;
 		linewidth		: in type_track_width;								 
 		islands 		: in pac_polygon_list.list;
 		lakes			: in pac_polygon_list.list;
+		fill			: in boolean;
 		log_threshold	: in type_log_level);
 
 	
