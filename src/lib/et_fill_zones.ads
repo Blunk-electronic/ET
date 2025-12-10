@@ -368,8 +368,11 @@ package et_fill_zones is
 	-- time can be saved. The known location should be
 	-- passed explicitely by the caller. Location_known must be true and
 	-- the actual location given by "location".
+	-- Because the zone has a certain linewidth (for borders of islands and lakes)
+	-- the linewidth is taken into account:
 	function get_distance_to_conducting_area (
 		zone			: in type_zone;
+		linewidth		: in type_track_width; -- of the zone										 
 		start_point		: in type_vector;
 		direction		: in type_angle;
 		location_known	: in type_location_known := false;

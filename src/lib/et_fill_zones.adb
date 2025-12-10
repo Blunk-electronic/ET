@@ -799,10 +799,13 @@ package body et_fill_zones is
 
 
 
+
+
 	
 	
 	function get_distance_to_conducting_area (
 		zone			: in type_zone;
+		linewidth		: in type_track_width;
 		start_point		: in type_vector;
 		direction		: in type_angle;
 		location_known	: in type_location_known := false;
@@ -817,26 +820,36 @@ package body et_fill_zones is
 		result_distance_to_centerline : type_float_positive := 0.0;
 
 		location_computed : type_location;
-		--lake : type_lake;
+
 		lake : type_polygon;
-	begin
+
+
+		-- This procedure determines whether the given start point
+		-- is somewhere inside the conducting area (island) or in 
+		-- a non-conducting area (lake).
 		-- If the location of the start point is already known, then
-		-- use the given location for further steps.
-		-- Otherwise the location must be computed:
-		if location_known then
-			location_computed := location;
+		-- the given location is used for further steps:		
+		procedure compute_location is begin
+			if location_known then
+				location_computed := location;
 
-			if debug then
-				put_line ("location of point already known");
+				if debug then
+					put_line ("location of point already known");
+				end if;
+
+			else
+				-- Compute the location of the start point:
+				if debug then
+					put_line ("compute location of point ...");
+				end if;
+
+				location_computed := get_location (zone, start_point);
 			end if;
+		end compute_location;
 
-		else
-			if debug then
-				put_line ("compute location of point ...");
-			end if;
 
-			location_computed := get_location (zone, start_point);
-		end if;
+	begin
+		compute_location;
 
 		
 		case location_computed is
@@ -846,6 +859,8 @@ package body et_fill_zones is
 					put_line ("in conducting area");
 				end if;
 
+				-- Since the start point is inside the conducting
+				-- area, the distance to the conducting area is zero:
 				return in_conducting_area;
 				
 			
@@ -870,27 +885,35 @@ package body et_fill_zones is
 						put_line ("inside lake");
 					end if;
 				
-					-- Point is in a lake.
-					
+					-- Point is in a lake. Get the lake concerned:					
 					--lake := get_lake (zone, start_point, true);
 					lake := get_lake (zone, start_point);
 
 					--if debug then
 						--put_line ("lake: " & to_string (lake));
 					--end if;
-					
-					-- Get the distance to the centerline of the shore:					
-					-- result_distance_to_centerline := 
-					-- 	get_distance_to_border (lake.centerline, start_point, direction);
+
+					-- The lake has a shore with a certain linewidth.
+					-- So the shore has a centerline.
+					-- Get the distance from the start point to
+					-- the centerline:
+					result_distance_to_centerline := 
+						get_distance_to_border (lake, start_point, direction);
 
 					--if debug then
-						--put_line ("distance to centerline of shore" & to_string (result_distance_to_centerline));
+						--put_line ("distance to centerline of shore" 
+						-- & to_string (result_distance_to_centerline));
 					--end if;
+
+					-- In order to get the inner edge of the shore
+					-- the centerline of the lake must be shrinked by
+					-- half the linewidth of the zone:
+					offset_polygon (lake, - type_float_positive (linewidth * 0.5));
 
 					-- Get the distance to the inner edge of the shore:
 					result_distance_to_edge := 
-						--get_distance_to_border (lake.inner_edge, start_point, direction);
 						get_distance_to_border (lake, start_point, direction);
+
 
 					return (
 						edge_exists				=> true,
@@ -900,7 +923,6 @@ package body et_fill_zones is
 					
 				end if;
 		end case;
-
 	end get_distance_to_conducting_area;
 
 	
