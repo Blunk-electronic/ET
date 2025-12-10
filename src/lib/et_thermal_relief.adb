@@ -176,6 +176,7 @@ package body et_thermal_relief is
 			D2CA : constant type_distance_to_conducting_area := 
 				get_distance_to_conducting_area (
 					zone			=> zone, 
+					linewidth		=> zone_linewidth,								
 					start_point		=> center, 
 					direction		=> direction,
 					location_known	=> true,
@@ -201,24 +202,29 @@ package body et_thermal_relief is
 			-- If no centerline exists in the current direction,
 			-- then no spoke will be computed:
 			if D2CA.centerline_exists then
-				-- log (text => "distance center to centerline of conducting area: "
-				-- 	& to_string (D2CA.distance_to_edge),
-				-- 	level => log_threshold + 1);
+				log (text => "D2CA: "
+					& "to edge: " & to_string (D2CA.distance_to_edge)
+					& " to centerline: " & to_string (D2CA.distance_to_centerline),
+					level => log_threshold + 1);
 
 				-- Compute the distance from the center of the terminal
 				-- to the edge of the terminal:
 				center_to_terminal_edge := 
 					get_distance_to_border (outline, center, direction);
 
-				-- Compute the distance from the center of the terminal
-				-- to the edge of the conducting area (The border of the area
-				-- has a linewidth that must be taken into account):
-				center_to_conducting_area := 
-					D2CA.distance_to_edge - type_float_positive (zone_linewidth * 0.5);
+				-- Get the distance from the center of the terminal
+				-- to the edge of the conducting area:
+				center_to_conducting_area := D2CA.distance_to_edge;
 
 				-- Compute the actual gap between terminal edge and
 				-- conducting area:
 				gap := type_distance_positive (center_to_conducting_area - center_to_terminal_edge);
+				
+				-- CS: Due to the fill tolerance of zones, the gap might be
+				-- slightly too wide. For this reason the global fill_tolerance is subtracted.
+				-- The smaller the fill tolerance, the smaller is the error that develops here:
+				-- CS NOT SURE WHETHER THIS A WISE IDEA !!
+				gap := gap - fill_tolerance;
 				
 				log (text => "detected gap between terminal edge and conducting area: " 
 					 & to_string (gap), level => log_threshold + 1);
@@ -232,7 +238,7 @@ package body et_thermal_relief is
 					-- ends on the centerline of the border of the conducting area:
 					relief.spokes.append ((
 						A		=> center,
-						B		=> move_by (center, direction, D2CA.distance_to_edge),
+						B		=> move_by (center, direction, D2CA.distance_to_centerline),
 						status	=> <>)); -- default status							
 				end if;
 			end if;
