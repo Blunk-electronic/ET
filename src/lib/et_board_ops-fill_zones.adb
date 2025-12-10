@@ -376,6 +376,7 @@ package body et_board_ops.fill_zones is
 	is 			
 		use pac_nets;
 		use pac_net_name;
+		use pac_polygon_union;
 
 		-- If a parent net was given (via argument parent_net) then
 		-- this will hold the actual net name like "GND".
@@ -525,6 +526,8 @@ package body et_board_ops.fill_zones is
 					-- so far by the net specific offset:
 					offset_polygons (polygons_of_candidate_net, offset);
 
+					multi_union (polygons_of_candidate_net);
+
 					-- Extract those polygons which are inside the
 					-- zone or which touch the zone:
 					get_touching_polygons (zone, polygons_of_candidate_net);
@@ -646,6 +649,7 @@ package body et_board_ops.fill_zones is
 		polygons				: in out pac_polygons.pac_polygon_list.list;
 		log_threshold			: in type_log_level)
 	is
+		use pac_polygon_union;
 
 		offset : constant type_float_positive := 
 			type_float_positive (linewidth * 0.5 + zone_clearance);
@@ -718,6 +722,8 @@ package body et_board_ops.fill_zones is
 
 					terminals.iterate (query_terminal'access);
 					
+					multi_union (polygons_tmp);
+
 					log_indentation_down;
 				end if;
 			end query_device;
@@ -752,6 +758,8 @@ package body et_board_ops.fill_zones is
 
 		-- CS log number of polygons
 		
+		multi_union (polygons);
+
 		log_indentation_down;
 	end get_polygons_of_unconnected_terminals;
 	
@@ -772,6 +780,7 @@ package body et_board_ops.fill_zones is
 		polygons				: in out pac_polygons.pac_polygon_list.list;
 		log_threshold			: in type_log_level)
 	is
+		use pac_polygon_union;
 
 		offset : constant type_float_positive := 
 			type_float_positive (linewidth * 0.5 + zone_clearance);
@@ -835,7 +844,7 @@ package body et_board_ops.fill_zones is
 				-- and append them to the result:
 				append (polygons, get_polygons (zone, p, overlap_mode_1));
 
-				-- CS union ?
+				multi_union (polygons);
 
 				log_indentation_down;
 			end query_device;
@@ -862,6 +871,8 @@ package body et_board_ops.fill_zones is
 	
 		query_element (module_cursor, query_module'access);
 
+		multi_union (polygons);
+
 		-- CS log number of polygons
 		
 		log_indentation_down;
@@ -884,6 +895,7 @@ package body et_board_ops.fill_zones is
 		polygons				: in out pac_polygons.pac_polygon_list.list;
 		log_threshold			: in type_log_level)
 	is
+		use pac_polygon_union;
 
 		offset : constant type_float_positive := 
 			type_float_positive (linewidth * 0.5 + zone_clearance);
@@ -947,7 +959,7 @@ package body et_board_ops.fill_zones is
 				-- and append them to the result:
 				append (polygons, get_polygons (zone, p, overlap_mode_1));
 
-				-- CS union ?
+				multi_union (polygons);
 
 				log_indentation_down;
 			end query_device;
@@ -974,6 +986,8 @@ package body et_board_ops.fill_zones is
 	
 		query_element (module_cursor, query_module'access);
 
+		multi_union (polygons);
+
 		-- CS log number of polygons
 		
 		log_indentation_down;
@@ -996,6 +1010,8 @@ package body et_board_ops.fill_zones is
 		polygons				: in out pac_polygons.pac_polygon_list.list;
 		log_threshold			: in type_log_level)
 	is
+		use pac_polygon_union;
+
 
 		offset : constant type_float_positive := 
 			type_float_positive (linewidth * 0.5 + zone_clearance);
@@ -1034,6 +1050,7 @@ package body et_board_ops.fill_zones is
 						before => pac_polygon_list.no_element,
 						source => borders);
 
+					multi_union (polygons);
 				end if;
 			end query_text;
 
@@ -1058,6 +1075,8 @@ package body et_board_ops.fill_zones is
 		query_element (module_cursor, query_module'access);
 
 		-- CS log number of polygons
+
+		multi_union (polygons);
 		
 		log_indentation_down;
 	end get_polygons_of_board_texts;
@@ -1084,10 +1103,9 @@ package body et_board_ops.fill_zones is
 
 		log_threshold		: in type_log_level)
 	is
-		layer_category : type_signal_layer_category;
+		use pac_polygon_union;
 
-		-- CS: union polygons from time to time and
-		-- at the end of the procedure
+		layer_category : type_signal_layer_category;
 
 		-- The deepest conductor layer towards bottom is 
 		-- defined by the layer stack of the module:
@@ -1131,6 +1149,8 @@ package body et_board_ops.fill_zones is
 				terminals_with_relief	=> terminals_with_relief,
 				log_threshold			=> log_threshold + 2);
 			
+			multi_union (polygons);
+
 			log_indentation_down;
 		end process_nets;
 
@@ -1150,6 +1170,8 @@ package body et_board_ops.fill_zones is
 				linewidth			=> linewidth,
 				polygons			=> polygons,
 				log_threshold		=> log_threshold + 2);
+
+			multi_union (polygons);
 
 			log_indentation_down;
 		end process_unconnected_terminals;
@@ -1172,6 +1194,8 @@ package body et_board_ops.fill_zones is
 				polygons		=> polygons,
 				log_threshold	=> log_threshold + 2);
 				
+			multi_union (polygons);
+
 			log_indentation_down;
 		end process_board_texts;
 		
@@ -1194,6 +1218,8 @@ package body et_board_ops.fill_zones is
 				polygons			=> polygons,
 				log_threshold		=> log_threshold + 2);
 				
+			multi_union (polygons);
+
 			log_indentation_down;
 		end process_non_electrical_devices;
 		
@@ -1216,6 +1242,8 @@ package body et_board_ops.fill_zones is
 				polygons			=> polygons,
 				log_threshold		=> log_threshold + 2);
 				
+			multi_union (polygons);
+
 			log_indentation_down;
 		end process_electrical_devices;
 		
@@ -1225,8 +1253,7 @@ package body et_board_ops.fill_zones is
 		-- and appends them to the result.
 		-- The purpose of cutout areas is to exempt
 		-- certain areas of fill zones from being filled:
-		procedure process_cutout_areas is 
-		begin
+		procedure process_cutout_areas is begin
 			log (text => "cutout areas", level => log_threshold + 1);
 			log_indentation_up;
 
@@ -1235,6 +1262,7 @@ package body et_board_ops.fill_zones is
 			-- given signal layer.
 			-- Test whether the given zone is affected
 
+			-- multi_union (polygons);
 			log_indentation_down;
 		end process_cutout_areas;
 
@@ -1252,6 +1280,7 @@ package body et_board_ops.fill_zones is
 			-- Test whether the given zone is affected
 			-- CS iterate net specific cutouts ?
 
+			-- multi_union (polygons);
 			log_indentation_down;
 		end process_restrict_areas;
 
@@ -1282,8 +1311,12 @@ package body et_board_ops.fill_zones is
 			-- zone or which touch the zone:
 			get_touching_polygons (zone_polygon, polygons_tmp);
 
+			multi_union (polygons_tmp);
+
 			-- Append the polygons to the result:
 			append (polygons, polygons_tmp);
+
+			multi_union (polygons);
 			log_indentation_down;
 		end process_holes;
 
@@ -1333,6 +1366,8 @@ package body et_board_ops.fill_zones is
 		
 		process_cutout_areas;
 		process_restrict_areas;
+
+		multi_union (polygons);
 
 		log_indentation_down;
 	end get_touching_polygons;
