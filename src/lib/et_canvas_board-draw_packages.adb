@@ -359,6 +359,20 @@ procedure draw_packages is
 					do_stroke	=> true);
 			end query_line;
 			
+
+			use pac_silk_arcs;
+
+			procedure query_arc (c : in pac_silk_arcs.cursor) is
+				arc : type_silk_arc renames element (c);
+			begin
+				draw_arc (
+					arc			=> arc,
+					pos			=> get_position (package_position),		  
+					width		=> arc.width,
+					mirror		=> mirror,
+					do_stroke	=> true);
+			end query_arc;
+
 			
 		begin
 			-- put_line ("draw_silkscreen");
@@ -367,7 +381,8 @@ procedure draw_packages is
 				if silkscreen_enabled (TOP) then
 					set_color_silkscreen (TOP, brightness);
 					packge.silkscreen.bottom.lines.iterate (query_line'access);
-					-- CS arcs, circles, zones
+					packge.silkscreen.bottom.arcs.iterate (query_arc'access);
+					-- CS circles, zones
 
 					device_placeholders.silkscreen.bottom.iterate (query_placeholder'access);
 				end if;
@@ -375,6 +390,7 @@ procedure draw_packages is
 				if silkscreen_enabled (BOTTOM) then
 					set_color_silkscreen (BOTTOM, brightness);
 					packge.silkscreen.top.lines.iterate (query_line'access);
+					packge.silkscreen.top.arcs.iterate (query_arc'access);
 
 					device_placeholders.silkscreen.top.iterate (query_placeholder'access);
 				end if;
@@ -383,17 +399,18 @@ procedure draw_packages is
 				if silkscreen_enabled (TOP) then
 					set_color_silkscreen (TOP, brightness);
 					packge.silkscreen.top.lines.iterate (query_line'access);
-
+					packge.silkscreen.top.arcs.iterate (query_arc'access);
+					
 					device_placeholders.silkscreen.top.iterate (query_placeholder'access);
 				end if;
 
 				if silkscreen_enabled (BOTTOM) then
 					set_color_silkscreen (BOTTOM, brightness);
 					packge.silkscreen.bottom.lines.iterate (query_line'access);
-
+					packge.silkscreen.bottom.arcs.iterate (query_arc'access);
+					
 					device_placeholders.silkscreen.bottom.iterate (query_placeholder'access);
 				end if;
-
 			end if;
 		end draw_silkscreen;
 
