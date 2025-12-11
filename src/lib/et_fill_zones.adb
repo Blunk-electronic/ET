@@ -283,34 +283,15 @@ package body et_fill_zones is
 		debug : boolean := false;
 
 
-		-- This procedure assigns the given islands to the given zone.
-		-- It computes the outer edges of the islands according to the
-		-- border-width of the candidate zone:
+		-- This procedure assigns the given islands to the given zone:
 		procedure set_islands (islands : in pac_polygon_list.list) is
 			
 			procedure query_island (i : in pac_polygon_list.cursor) is 
-				island_centerline : type_polygon renames element (i);
+				island : type_polygon renames element (i);
 			begin
 				zone.islands.append ((
-					-- shore		 => (
-					-- 	centerline => island_centerline,
-					-- 	outer_edge => offset_polygon (island_centerline, half_linewidth_float)),
-					shore		 => island_centerline,
+					shore		 => island,
 					others		 => <>)); 
-
-				-- CS: Currently, the outer edge is just an expansion of the centerline.
-				-- The border is drawn with lines that have round caps. These caps cause
-				-- the outer edge to have rounded corners. The computation of the outer edge
-				-- should take this into account.
-				
-				--put_line ("islands total" & count_type'image (zone.islands.length));
-
-				-- exception when constraint_error =>
-				-- 	log (importance => WARNING,
-				-- 		text => "Offsetting centerline of island failed !" & LF
-				-- 			& to_string (polygon => island_centerline, lower_left_only => true),
-				-- 		level => log_threshold + 3);
-				-- 	raise;			
 			end query_island;
 
 		begin
@@ -323,78 +304,60 @@ package body et_fill_zones is
 		-- Iterates the islands, detects polygons that
 		-- form the lakes (inside the islands). Lakes are caused by objects
 		-- that are completely inside a particular island.
-		procedure set_lakes (polygons : in pac_polygon_list.list) is
-			polygons_tmp : pac_polygon_list.list := polygons;
+		procedure set_lakes (lakes : in pac_polygon_list.list) is
+			lakes_tmp : pac_polygon_list.list := lakes;
 
 			use pac_islands;
 			island_cursor : pac_islands.cursor := zone.islands.first;
 
 
-			procedure make_lakes (
+			-- This procedure queries an island and assigns
+			-- to it all lakes that are on the island:
+			procedure query_island (
 				island : in out type_island)
 			is 
 				use pac_overlap_status;
-				centerlines : pac_polygon_list.list;
-				
 				use pac_polygon_union;
 
-
-				procedure query_centerline (cl : in pac_polygon_list.cursor) is
-					centerline : type_polygon renames element (cl);
+				-- These are the lakes that lie
+				-- on the candidate island:
+				lakes_on_island : pac_polygon_list.list;
+				
+				-- This procedure queries a lake and appends
+				-- it to the lakes that are on the island:
+				procedure query_lake (c : in pac_polygon_list.cursor) is
+					lake : type_polygon renames element (c);
 				begin
-					if debug then
-						put_line ("   centerline");
-					end if;
-
-					-- The inner edges are obtained by shrinking the centerline
-					-- by half the fill linewidth:
-					island.lakes.append (centerline);
-					-- island.lakes.append (offset_polygon (centerline, - half_linewidth_float));
-						-- centerline	=> centerline,
-						-- inner_edge	=> offset_polygon (centerline, - half_linewidth_float)));
-					--inner_edge	=> offset_polygon (centerline, - half_linewidth_float, true)));
-
-					-- exception when constraint_error =>
-					-- 	log (importance => WARNING,
-					-- 		text => "Offsetting centerline of lake failed !" & LF
-					-- 			& to_string (polygon => centerline, lower_left_only => true),
-					-- 		level => log_threshold + 3);
-					-- 	raise;
-				end query_centerline;
+					island.lakes.append (lake);
+				end query_lake;
 				
 
 			begin
-				-- Get lakes inside the candidate island.
-				-- These are the centerlines of the lakes:
-				centerlines := get_polygons (
-					-- area		=> island.shore.centerline,
+				-- Get lakes on the candidate island:
+				lakes_on_island := get_polygons (
 					area		=> island.shore,  
-					polygons	=> polygons_tmp,
+					polygons	=> lakes_tmp,
 					status		=> to_set (B_INSIDE_A));
 
-				multi_union (centerlines);
+				multi_union (lakes_on_island);
 
-				-- Iterate the centerlines and compute the inner edges.
-				centerlines.iterate (query_centerline'access);
-			end make_lakes;					
+				-- Iterate the lakes:
+				lakes_on_island.iterate (query_lake'access);
+			end query_island;					
 			
 	
 		begin
-			while island_cursor /= pac_islands.no_element loop
-
-				if debug then
-					put_line ("  island");
-				end if;
-
+			while has_element (island_cursor) loop
 				-- CS optimize so that only those islands are queried
 				-- that have been assigned. The given list of lakes
 				-- applies only to those islands.
 				-- So it is a waste of time to query all islands of the zone.
 
-				zone.islands.update_element (island_cursor, make_lakes'access);
+				zone.islands.update_element (island_cursor, query_island'access);
 				next (island_cursor);
 			end loop;					
 		end set_lakes;
+
 
 
 
