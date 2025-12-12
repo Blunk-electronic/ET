@@ -89,7 +89,7 @@ package et_logging is
 
 	-- The log indentation is a global variable that serves to shift log messages
 	-- to the right.
-	log_indentation_max : constant positive := 30;
+	log_indentation_max : constant positive := 100;
 	type type_indentation_level is range 0..log_indentation_max;
 	log_indentation : type_indentation_level := type_indentation_level'first;
 	
