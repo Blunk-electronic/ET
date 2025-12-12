@@ -62,7 +62,7 @@ package et_logging is
 	
 	
 	-- The log level is limited to a reasonable value.
-	log_level_max : constant positive := 50; -- CS increase if neccessary
+	log_level_max : constant positive := 100; -- CS increase if neccessary
 	-- Functions and procedures pass each other this log level type.
 	-- Theoretically it may assume indefinite values (for example during creation of 
 	-- routing tables). However, it is limited to a reasonable value. See above.
@@ -78,7 +78,7 @@ package et_logging is
 	
 	--log_level : type_log_level := type_log_level'first;
 
-	log_level_cmd_line_max : constant type_log_level := 30;
+	log_level_cmd_line_max : constant type_log_level := 50;
 	subtype type_log_level_cmd_line is type_log_level range 0..log_level_cmd_line_max;
 
 	

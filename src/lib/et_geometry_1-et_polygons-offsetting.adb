@@ -106,17 +106,31 @@ package body et_geometry_1.et_polygons.offsetting is
 		offset_edges : pac_offset_edges.list;
 		
 
-		-- This procedure computes an "offset edge" from the cursor to 
-		-- an original edge and stores the offset edge in list "offset_edges":
-		procedure preprocess_edge (c : in pac_edges.cursor) is
-			OE : type_offset_edge;
+
+
+		-- Preprocessing the polygon edges.
+		-- For each edge an "offset edge" is computed and stored
+		-- in list offset_edges:
+		procedure preprocess_edges is
+			
+			-- This procedure computes an "offset edge" from the cursor to 
+			-- an original edge and stores the offset edge in list "offset_edges":
+			procedure query_edge (c : in pac_edges.cursor) is
+				OE : type_offset_edge;
+			begin
+				--put_line ("original edge: " & to_string (element (c)));
+				OE := offset_edge (element (c));
+				offset_edges.append (OE); -- CS pass OE inline
+			end query_edge;
+			
 		begin
-			--put_line ("original edge: " & to_string (element (c)));
-			OE := offset_edge (element (c));
-			offset_edges.append (OE); -- CS pass OE inline
-		end preprocess_edge;
+			log (text => "preproces edges", level => log_threshold + 1);
+			log_indentation_up;
+			polygon.edges.iterate (query_edge'access);
+			log_indentation_down;
+		end preprocess_edges;
 
-
+		
 		
 		-- This procedure takes a cursor to an "offset edge" and 
 		-- computes the intersection of its infinite line with the 
@@ -256,6 +270,7 @@ package body et_geometry_1.et_polygons.offsetting is
 		intersections : pac_edge_intersections.list;
 
 		
+		
 		-- Traverse through the list "offset_edges" and finds intersections between them.
 		-- Fills the list "intersections".
 		-- For each "offset edge" the next indirect intersection is computed. An indirect
@@ -267,7 +282,10 @@ package body et_geometry_1.et_polygons.offsetting is
 			-- This variable may point to the next direct intersection.
 			-- If no direct intersection exists, then it points to no_element:
 			N : type_next_intersection;
-		begin			
+		begin	
+			log (text => "find_intersections", level => log_threshold + 1);
+			log_indentation_up;			
+			
 			while OE /= pac_offset_edges.no_element loop
 				
 				log (text => to_string (element (OE).edge), level => log_threshold + 2);
@@ -312,7 +330,10 @@ package body et_geometry_1.et_polygons.offsetting is
 				
 				next (OE);
 			end loop;
+
+			log_indentation_down;
 		end find_intersections;
+
 
 
 		
@@ -371,6 +392,8 @@ package body et_geometry_1.et_polygons.offsetting is
 
 			
 		begin -- build_vertices
+			log (text => "build_vertices", level => log_threshold + 1);
+			log_indentation_up;
 			
 			log (text => "intersections:", level => log_threshold + 2);
 			log_indentation_up;
@@ -437,9 +460,11 @@ package body et_geometry_1.et_polygons.offsetting is
 			end loop;
 
 			log_indentation_down;
+			log_indentation_down;
 		end build_vertices;
 
 		
+
 		
 	begin -- offset_polygon
 		log (text => "offset_polygon: " & to_string (polygon), 
@@ -451,27 +476,16 @@ package body et_geometry_1.et_polygons.offsetting is
 		if mode /= NOTHING then
 
 		-- STEP 1:
-			-- Preprocessing the polygon edges.
-			-- For each edge an "offset edge" is computed and stored
-			-- in list offset_edges:
-			log (text => "preproces edges", level => log_threshold + 1);
-			log_indentation_up;
-			polygon.edges.iterate (preprocess_edge'access);
-			log_indentation_down;
-			
+			preprocess_edges;
+		
 			
 		-- STEP 2:
-			log (text => "locate intersections", level => log_threshold + 1);
-			log_indentation_up;			
 			find_intersections;
-			log_indentation_down;
 
 			
 		-- STEP 3:
-			log (text => "build vertices", level => log_threshold + 1);
-			log_indentation_up;
 			build_vertices;
-			log_indentation_down;
+
 
 
 		-- STEP 4:
