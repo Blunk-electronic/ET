@@ -821,17 +821,21 @@ package body et_fill_zones is
 		
 		compute_location;
 
+		-- CS rework the follwing code:
 		
 		case location_computed is
 			when CONDUCTING_AREA => 
 				-- Start point is already in conducting area.
 				log (text => "in conducting area", level => log_threshold + 1);
 
+				log_indentation_down;
+				
 				-- Since the start point is inside the conducting
 				-- area, the distance to the conducting area is zero:
 				return in_conducting_area;
 				
-			
+
+				
 			when NON_CONDUCTING_AREA =>
 				-- Start point is either between islands or inside inner borders:
 				log (text => "in non-conducting area", level => log_threshold + 1);
@@ -840,6 +844,8 @@ package body et_fill_zones is
 				if between_islands (zone, start_point) then
 					log (text => "between islands", level => log_threshold + 1);
 
+					log_indentation_down;
+					
 					-- Point is between islands.
 					--return get_distance_to_nearest_island (zone, start_point, direction, debug);
 					return get_distance_to_nearest_island (zone, start_point, direction);
@@ -877,7 +883,8 @@ package body et_fill_zones is
 					result_distance_to_edge := 
 						get_distance_to_border (lake, start_point, direction);
 
-
+					log_indentation_down;
+					
 					return (
 						edge_exists				=> true,
 						distance_to_edge		=> result_distance_to_edge,
@@ -886,8 +893,6 @@ package body et_fill_zones is
 					
 				end if;
 		end case;
-
-		log_indentation_down;
 	end get_distance_to_conducting_area;
 
 	
