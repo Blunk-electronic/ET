@@ -145,10 +145,38 @@ package body et_geometry_1.et_polygons.offsetting is
 			cp : in pac_offset_edges.cursor) 
 			return type_vector
 		is
+			result : type_vector; 
+
 			-- cp is the primary cursor that points to the current edge.
 			-- The secondary cursor that points to the edge that comes
 			-- after the candidate edge:
 			cs : pac_offset_edges.cursor;
+
+			
+			procedure compute_intersection is
+				lp : type_line_vector renames element (cp).line;
+				ls : type_line_vector renames element (cs).line;
+				
+				LVI : type_line_vector_intersection := get_intersection (lp, ls);
+			begin
+				case LVI.status is
+					when EXISTS => 
+						result := LVI.intersection;
+						
+					when NOT_EXISTENT => 
+						log (text => "no intersection exists", level => log_threshold + 2);
+						log (text => "lp: " & to_string (lp), level => log_threshold + 2);
+						log (text => "ls: " & to_string (ls), level => log_threshold + 2);
+						raise constraint_error;
+						
+					when OVERLAP =>
+						log (text => "lines overlap", level => log_threshold + 2);
+						log (text => "lp: " & to_string (lp), level => log_threshold + 2);
+						log (text => "ls: " & to_string (ls), level => log_threshold + 2);
+						raise constraint_error;
+				end case;
+			end;
+			
 		begin
 			-- In case the candidate edge is the last, then the intersection
 			-- with the first edge among the offset_edges must be computed:
@@ -160,7 +188,9 @@ package body et_geometry_1.et_polygons.offsetting is
 				cs := next (cp);
 			end if;
 
-			return get_intersection (element (cp).line, element (cs).line).intersection;
+			compute_intersection;
+			
+			return result;
 		end get_intersection_with_next_edge;
 
 
@@ -476,6 +506,8 @@ package body et_geometry_1.et_polygons.offsetting is
 		log (text => "offset_polygon: " & to_string (polygon), 
 			 level => log_threshold);
 
+		-- log (text => "log level " & to_string (log_threshold), level => log_threshold);
+		
 		log_indentation_up;
 
 		
@@ -514,11 +546,12 @@ package body et_geometry_1.et_polygons.offsetting is
 		-- Convert the polygon specific exception to a constraint error:
 		exception when event: others =>
 			--put_line (exception_name (event) & " " & exception_message (event));
+
+			log_indentation_down;
 		
 			raise constraint_error with 
 				exception_name (event) & " " & exception_message (event);
 
-			-- CS ? log_indentation_down;
 	end offset_polygon;
 
 
