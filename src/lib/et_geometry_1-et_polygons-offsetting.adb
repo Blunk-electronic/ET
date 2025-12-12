@@ -55,6 +55,43 @@ package body et_geometry_1.et_polygons.offsetting is
 	end to_string;
 
 
+
+	
+	
+
+	function offset_edge (
+		edge	: in type_edge;
+		offset	: in type_float_positive;
+		mode	: in type_mode)
+		return type_offset_edge
+	is
+		edge_new : type_edge := edge;
+		edge_direction : constant type_angle := get_direction (edge);
+	begin
+		--put_line ("edge direction:" & to_string (edge_direction));
+		
+		case mode is
+			when EXPAND =>
+				-- Move edge to the right (outside):
+				move_by (edge_new, add (edge_direction, -90.0), offset);
+				
+			when SHRINK =>
+				-- Move the edge to the left (inside):
+				move_by (edge_new, add (edge_direction, +90.0), offset);
+				
+			when NOTHING =>
+				raise constraint_error; -- should never happen
+		end case;
+
+
+		return (
+			edge => edge_new,
+			line => to_line_vector (edge_new));
+	end offset_edge;
+
+
+
+	
 	
 
 	procedure offset_polygon (
@@ -67,39 +104,6 @@ package body et_geometry_1.et_polygons.offsetting is
 		-- Mode tells whether we are shrinking, expanding
 		-- or whether there is nothing to do:
 		mode : constant type_mode := to_mode (offset);	
-
-		
-		-- This procedure computes an "offset edge" from an original edge.
-		-- An "offset edge" is a composite of an edge and an infinite long line.
-		-- See specification of type_offset_edge.
-		-- This approach assumes the given polygon has winding CCW !
-		function offset_edge (
-			edge : in type_edge)
-			return type_offset_edge
-		is
-			edge_new : type_edge := edge;
-			edge_direction : constant type_angle := get_direction (edge);
-		begin
-			--put_line ("edge direction:" & to_string (edge_direction));
-			
-			case mode is
-				when EXPAND =>
-					-- Move edge to the right (outside):
-					move_by (edge_new, add (edge_direction, -90.0), offset_float);
-					
-				when SHRINK =>
-					-- Move the edge to the left (inside):
-					move_by (edge_new, add (edge_direction, +90.0), offset_float);
-					
-				when NOTHING =>
-					raise constraint_error; -- should never happen
-			end case;
-
-
-			return (
-				edge => edge_new,
-				line => to_line_vector (edge_new));
-		end offset_edge;
 	
 
 		-- After preprocessing the offset edges are collected here:
@@ -116,10 +120,11 @@ package body et_geometry_1.et_polygons.offsetting is
 			-- This procedure computes an "offset edge" from the cursor to 
 			-- an original edge and stores the offset edge in list "offset_edges":
 			procedure query_edge (c : in pac_edges.cursor) is
+				edge : type_edge renames element (c);
 				OE : type_offset_edge;
 			begin
 				--put_line ("original edge: " & to_string (element (c)));
-				OE := offset_edge (element (c));
+				OE := offset_edge (edge, offset_float, mode);
 				offset_edges.append (OE); -- CS pass OE inline
 			end query_edge;
 			
@@ -129,6 +134,7 @@ package body et_geometry_1.et_polygons.offsetting is
 			polygon.edges.iterate (query_edge'access);
 			log_indentation_down;
 		end preprocess_edges;
+
 
 		
 		

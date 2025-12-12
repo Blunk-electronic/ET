@@ -67,8 +67,24 @@ package et_geometry_1.et_polygons.offsetting is
 		line	: type_line_vector;
 	end record;
 
+	
 	function to_string (oe : in type_offset_edge) return string;
 
+
+	type type_mode is private;
+
+	
+	-- This procedure computes an "offset edge" from an original edge.
+	-- An "offset edge" is a composite of an edge and an infinite long line.
+	-- See specification of type_offset_edge.
+	-- This approach assumes the given polygon has winding CCW !
+	function offset_edge (
+		edge	: in type_edge;
+		offset	: in type_float_positive;
+		mode	: in type_mode)
+		return type_offset_edge;
+
+	
 	
 	-- When preprocessing the polygon for each edge an "offset edge" is
 	-- created and stored in a list:
