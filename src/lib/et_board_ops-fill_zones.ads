@@ -73,12 +73,13 @@ package et_board_ops.fill_zones is
 	-- If the terminal does not affect the given layer category,
 	-- then nothing happens here -> returns just a "false".
 	-- See specification of type_terminal_polygon above.
-	function to_polygon (
+	function to_polygon ( -- CS rename to get_terminal_polygon
 		module_cursor	: in pac_generic_modules.cursor;
 		device_cursor	: in pac_devices_electrical.cursor;
 		terminal_cursor	: in pac_terminals.cursor;
 		layer_category	: in type_signal_layer_category;
-		tolerance		: in type_distance_positive)
+		tolerance		: in type_distance_positive;
+		log_threshold	: in type_log_level)
 		return type_terminal_polygon;
 
 	

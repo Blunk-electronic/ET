@@ -58,9 +58,9 @@ package body et_geometry_1.et_polygons.offsetting is
 	
 
 	procedure offset_polygon (
-		polygon		: in out type_polygon;
-		offset		: in type_float;
-		debug		: in boolean := false) 
+		polygon			: in out type_polygon;
+		offset			: in type_float;
+		log_threshold	: in type_log_level)
 	is
 		offset_float : constant type_float_positive := abs (offset);
 		
@@ -117,6 +117,7 @@ package body et_geometry_1.et_polygons.offsetting is
 		end preprocess_edge;
 
 
+		
 		-- This procedure takes a cursor to an "offset edge" and 
 		-- computes the intersection of its infinite line with the 
 		-- next infinite line:
@@ -153,8 +154,7 @@ package body et_geometry_1.et_polygons.offsetting is
 		-- location vector is then irrelevant:
 		function get_next_direct_intersection (
 			start	: in pac_offset_edges.cursor;
-			first	: in pac_offset_edges.cursor;
-			debug	: in boolean := false)
+			first	: in pac_offset_edges.cursor)
 			return type_next_intersection
 		is
 			result : type_next_intersection;
@@ -270,14 +270,12 @@ package body et_geometry_1.et_polygons.offsetting is
 		begin			
 			while OE /= pac_offset_edges.no_element loop
 				
-				if debug then
-					--new_line;
-					put_line (to_string (element (OE).edge));
-				end if;
+				log (text => to_string (element (OE).edge), level => log_threshold + 2);
+
 
 				-- Get the intersection of the candidate edge with the next edge:
 				-- NOTE: The edges in list offset_edge are orderd counter clockwise.
-				N := get_next_direct_intersection (OE, offset_edges.first, debug);
+				N := get_next_direct_intersection (OE, offset_edges.first);
 
 				-- N.cursor now tells whether there is a direct intersection or not.
 				-- If none exists, then we add to the list "intersections" only the next indirect
@@ -286,10 +284,8 @@ package body et_geometry_1.et_polygons.offsetting is
 				-- the next indirect and the next direct intersection:
 				
 				if N.cursor = pac_offset_edges.no_element then
-					
-					if debug then
-						put_line (" no direct intersection found");
-					end if;
+					log (text => "no direct intersection found",
+						 level => log_threshold + 2);
 
 					intersections.append ((
 						direct_available	=> FALSE,
@@ -299,10 +295,8 @@ package body et_geometry_1.et_polygons.offsetting is
 
 
 				else
-					
-					if debug then
-						put_line (" next direct intersection: " & to_string (N.place));
-					end if;
+					log (text => "next direct intersection: " & to_string (N.place),
+						level => log_threshold + 2);
 
 					intersections.append ((
 						direct_available	=> TRUE,
@@ -374,13 +368,12 @@ package body et_geometry_1.et_polygons.offsetting is
 
 			-- Used to handle special case A:
 			ignore_next_direct : boolean := false;
+
 			
 		begin -- build_vertices
 			
-			if debug then
-				new_line;
-				put_line ("intersections:");
-			end if;
+			log (text => "intersections:", level => log_threshold + 2);
+			log_indentation_up;
 
 			while c /= pac_edge_intersections.no_element loop
 
@@ -437,54 +430,54 @@ package body et_geometry_1.et_polygons.offsetting is
 				if not vertices.is_empty and then vertices.first_element = vertex then
 					exit;
 				else
-					if debug then
-						put_line (" " & to_string (vertex));
-					end if;
-
+					log (text => to_string (vertex), level => log_threshold + 2);
 					vertices.append (vertex);
 				end if;
 
 			end loop;
 
+			log_indentation_down;
 		end build_vertices;
 
 		
+		
 	begin -- offset_polygon
+		log (text => "offset_polygon: " & to_string (polygon), 
+			 level => log_threshold);
 
+		log_indentation_up;
+
+		
 		if mode /= NOTHING then
 
 		-- STEP 1:
 			-- Preprocessing the polygon edges.
 			-- For each edge an "offset edge" is computed and stored
 			-- in list offset_edges:
-			if debug then
-				put_line ("preprocessing edges ...");
-			end if;
-			
+			log (text => "preproces edges", level => log_threshold + 1);
+			log_indentation_up;
 			polygon.edges.iterate (preprocess_edge'access);
-
+			log_indentation_down;
+			
 			
 		-- STEP 2:
-			if debug then
-				put_line ("locating intersections ...");
-			end if;
-			
+			log (text => "locate intersections", level => log_threshold + 1);
+			log_indentation_up;			
 			find_intersections;
+			log_indentation_down;
 
 			
 		-- STEP 3:
-			if debug then
-				put_line ("building vertices ...");
-			end if;
-
+			log (text => "build vertices", level => log_threshold + 1);
+			log_indentation_up;
 			build_vertices;
+			log_indentation_down;
 
 
 		-- STEP 4:
 			-- Convert the list "vertices" to a polygon.
-			if debug then
-				put_line ("converting vertices to polygon ...");
-			end if;
+			log (text => "convert vertices to polygon", level => log_threshold + 1);
+			log_indentation_up;
 
 			-- Overwrite the given polygon with a new one:
 			polygon := to_polygon (vertices);
@@ -492,38 +485,46 @@ package body et_geometry_1.et_polygons.offsetting is
 			--if not is_closed (polygon).closed then
 				--raise constraint_error with "Polygon NOT closed !";
 			--end if;
+			log_indentation_down;
 		end if;
 
-
+		
+		log_indentation_down;
+		
 		-- Convert the polygon specific exception to a constraint error:
 		exception when event: others =>
 			--put_line (exception_name (event) & " " & exception_message (event));
 		
 			raise constraint_error with 
 				exception_name (event) & " " & exception_message (event);
-		
+
+			-- CS ? log_indentation_down;
 	end offset_polygon;
 
 
+
+	
 	
 	function offset_polygon (
-		polygon		: in type_polygon;
-		offset		: in type_float;
-		debug		: in boolean := false)
+		polygon			: in type_polygon;
+		offset			: in type_float;
+		log_threshold	: in type_log_level)
 		return type_polygon
 	is
 		result : type_polygon := polygon;
 	begin
-		offset_polygon (result, offset, debug);
+		offset_polygon (result, offset, log_threshold);
 		return result;
 	end offset_polygon;
 
 
 	
 
+	
 	function offset_polygons (
-		polygons	: in pac_polygon_list.list;
-		offset		: in type_float)
+		polygons		: in pac_polygon_list.list;
+		offset			: in type_float;
+		log_threshold	: in type_log_level)
 		return pac_polygon_list.list
 	is
 		use pac_polygon_list;
@@ -535,21 +536,36 @@ package body et_geometry_1.et_polygons.offsetting is
 		procedure query_polygon (c : in pac_polygon_list.cursor) is
 			p : type_polygon := element (c);
 		begin
-			offset_polygon (p, offset);
+			-- log (text => to_string (p), level => log_threshold + 1);
+			-- log_indentation_up;
+			offset_polygon (p, offset, log_threshold + 1);
 			result.append (p);
+			-- log_indentation_down;
 		end query_polygon;
 		
 	begin
+		log (text => "offset_polygons. count: " & get_count (polygons)
+			 & " offset: " & to_string (offset),
+			 level => log_threshold);
+		
+		log_indentation_up;
+		
 		polygons.iterate (query_polygon'access);
+
+		log_indentation_down;
+		
 		return result;
 	end offset_polygons;
 
 
+
+	
 	procedure offset_polygons (
-		polygons	: in out pac_polygon_list.list;
-		offset		: in type_float)
+		polygons		: in out pac_polygon_list.list;
+		offset			: in type_float;
+		log_threshold	: in type_log_level)
 	is begin
-		polygons := offset_polygons (polygons, offset);
+		polygons := offset_polygons (polygons, offset, log_threshold);
 	end offset_polygons;
 
 

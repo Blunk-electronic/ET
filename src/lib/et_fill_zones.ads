@@ -378,7 +378,7 @@ package et_fill_zones is
 		direction		: in type_angle;
 		location_known	: in type_location_known := false;
 		location		: in type_location := CONDUCTING_AREA; -- don't care if location_known is false
-		debug			: in boolean := false)
+		log_threshold	: in type_log_level)
 		return type_distance_to_conducting_area;
 	
 

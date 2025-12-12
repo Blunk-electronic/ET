@@ -3982,13 +3982,14 @@ package body et_board_ops.conductors is
 
 			
 			v_text := vectorize_text (
-				content		=> text.content,
-				size		=> text.size,
-				rotation	=> get_rotation (text.position),
-				position	=> text.position.place,
-				mirror		=> mirror,
-				line_width	=> text.line_width,
-				make_border	=> true -- CS should be false for restrict layers
+				content			=> text.content,
+				size			=> text.size,
+				rotation		=> get_rotation (text.position),
+				position		=> text.position.place,
+				mirror			=> mirror,
+				line_width		=> text.line_width,
+				make_border		=> true, -- CS should be false for restrict layers
+				log_threshold	=> log_threshold + 2
 				-- CS alignment
 				); 
 

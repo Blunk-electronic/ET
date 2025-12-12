@@ -1082,8 +1082,9 @@ procedure draw_packages is
 							-- Offset the polygon so that it extends the given hole outline 
 							-- by the restring_width:
 							offset_polygon (
-								polygon		=> polygon_tmp, 
-								offset		=> type_float_model (restring_width));
+								polygon			=> polygon_tmp, 
+								offset			=> type_float_model (restring_width),
+								log_threshold	=> type_log_level'last); -- CS
 
 							-- convert the temporary polygon back to a contour
 							pad_contours := to_contour (polygon_tmp);
@@ -1162,8 +1163,9 @@ procedure draw_packages is
 									
 									-- Expand the polygon according to DRU settings:
 									offset_polygon (
-										polygon		=> polygon_tmp,
-										offset		=> type_float_model (get_stop_mask_expansion));
+										polygon			=> polygon_tmp,
+										offset			=> type_float_model (get_stop_mask_expansion),
+										log_threshold	=> type_log_level'last); -- CS
 
 									-- Convert the temporary polygon back to a contour:
 									stopmask_contours := (to_contour (polygon_tmp) with null record);
@@ -1454,9 +1456,10 @@ procedure draw_packages is
 
 									-- Offset the temporary polygon:
 									offset_polygon (
-										polygon		=> polygon_tmp,
-										offset		=> type_float_model (get_stop_mask_expansion)); -- from DRU
-
+										polygon			=> polygon_tmp,
+										offset			=> type_float_model (get_stop_mask_expansion), -- from DRU
+										log_threshold	=> type_log_level'last); -- CS
+									
 									-- Convert the temporary polygon back to a contour:
 									stopmask_contours := (to_contour (polygon_tmp) with null record);
 									
@@ -1570,8 +1573,9 @@ procedure draw_packages is
 
 									-- Offset the temporary polygon
 									offset_polygon (
-										polygon		=> polygon_tmp,
-										offset		=> type_float_model (stencil.shrink_factor));
+										polygon			=> polygon_tmp,
+										offset			=> type_float_model (stencil.shrink_factor),
+										log_threshold	=> type_log_level'last); -- CS
 
 									-- Convert the temporary polygon back to a contour:
 									stencil_contours := (to_contour (polygon_tmp) with null record);

@@ -636,14 +636,15 @@ package body et_text is
 		
 		
 		function vectorize_text (
-			content		: in pac_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
-			size		: in type_text_size;
-			rotation	: in type_rotation; 
-			position	: in pac_geometry.type_vector_model; -- the anchor point of the text (where the origin is)
-			mirror		: in type_mirror := MIRROR_NO;
-			line_width	: in pac_geometry.type_distance_positive;
-			alignment	: in type_text_alignment := vector_text_alignment_default;
-			make_border	: in boolean := false)
+			content			: in pac_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
+			size			: in type_text_size;
+			rotation		: in type_rotation; 
+			position		: in pac_geometry.type_vector_model; -- the anchor point of the text (where the origin is)
+			mirror			: in type_mirror := MIRROR_NO;
+			line_width		: in pac_geometry.type_distance_positive;
+			alignment		: in type_text_alignment := vector_text_alignment_default;
+			make_border		: in boolean := false;
+			log_threshold	: in type_log_level)
 			return type_vector_text
 		is
 			use pac_character_lines;
@@ -809,7 +810,7 @@ package body et_text is
 					border_vertices := to_list (char.border);
 					scale_and_move_border (border_vertices);
 					p_scratch := to_polygon (border_vertices);
-					offset_polygon (p_scratch, half_line_width);
+					offset_polygon (p_scratch, half_line_width, log_threshold + 2);
 					result.borders.append (p_scratch);
 				end if;
 			end add;
@@ -893,6 +894,9 @@ package body et_text is
 
 			
 		begin -- vectorize_text
+			log (text => "vectorize_text", level => log_threshold);
+			log_indentation_up;
+			
 			-- Read the text to be displayed character by character and
 			-- map from character to the corresponding vectorized character:
 			for c in text'first .. text'last loop
@@ -981,10 +985,13 @@ package body et_text is
 
 			-- Align, mirror and move the text to the final position:
 			finalize;
+
 			
+			log_indentation_down;
 			return result;
 		end vectorize_text;
 
+		
 
 		function first (
 			text	: in type_vector_text)

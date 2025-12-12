@@ -133,7 +133,8 @@ package et_board_geometry is
 
 	--fab_tolerance : constant type_distance_positive := 0.001;
 	--fab_tolerance : constant type_distance_positive := 0.01;
-	fill_tolerance : constant type_distance_positive := 0.05;
+	--fill_tolerance : constant type_distance_positive := 0.05;
+	fill_tolerance : constant type_distance_positive := 0.01;
 
 	
 

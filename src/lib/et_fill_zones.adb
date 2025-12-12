@@ -777,7 +777,7 @@ package body et_fill_zones is
 		direction		: in type_angle;
 		location_known	: in type_location_known := false;
 		location		: in type_location := CONDUCTING_AREA;
-		debug			: in boolean := false)
+		log_threshold	: in type_log_level)
 		return type_distance_to_conducting_area
 	is
 		result_edge_exists : boolean := true;
@@ -800,15 +800,13 @@ package body et_fill_zones is
 			if location_known then
 				location_computed := location;
 
-				if debug then
-					put_line ("location of point already known");
-				end if;
+				log (text => "location of point already known",
+					 level => log_threshold + 1);
 
 			else
 				-- Compute the location of the start point:
-				if debug then
-					put_line ("compute location of point ...");
-				end if;
+				log (text => "compute location of start point",
+					 level => log_threshold + 1);
 
 				location_computed := get_location (zone, start_point);
 			end if;
@@ -816,15 +814,18 @@ package body et_fill_zones is
 
 
 	begin
+		log (text => "get_distance_to_conducting_area",
+			 level => log_threshold);
+
+		log_indentation_up;
+		
 		compute_location;
 
 		
 		case location_computed is
 			when CONDUCTING_AREA => 
 				-- Start point is already in conducting area.
-				if debug then
-					put_line ("in conducting area");
-				end if;
+				log (text => "in conducting area", level => log_threshold + 1);
 
 				-- Since the start point is inside the conducting
 				-- area, the distance to the conducting area is zero:
@@ -832,25 +833,19 @@ package body et_fill_zones is
 				
 			
 			when NON_CONDUCTING_AREA =>
-				if debug then
-					put_line ("in non-conducting area");
-				end if;
-
 				-- Start point is either between islands or inside inner borders:
+				log (text => "in non-conducting area", level => log_threshold + 1);
+
 				
 				if between_islands (zone, start_point) then
-					if debug then
-						put_line ("between islands");
-					end if;
+					log (text => "between islands", level => log_threshold + 1);
 
 					-- Point is between islands.
 					--return get_distance_to_nearest_island (zone, start_point, direction, debug);
 					return get_distance_to_nearest_island (zone, start_point, direction);
 
 				else
-					if debug then
-						put_line ("inside lake");
-					end if;
+					log (text => "inside lake", level => log_threshold + 1);
 				
 					-- Point is in a lake. Get the lake concerned:					
 					--lake := get_lake (zone, start_point, true);
@@ -875,7 +870,8 @@ package body et_fill_zones is
 					-- In order to get the inner edge of the shore
 					-- the centerline of the lake must be shrinked by
 					-- half the linewidth of the zone:
-					offset_polygon (lake, - type_float_positive (linewidth * 0.5));
+					offset_polygon (lake, - type_float_positive (linewidth * 0.5),
+													log_threshold + 2);
 
 					-- Get the distance to the inner edge of the shore:
 					result_distance_to_edge := 
@@ -890,6 +886,8 @@ package body et_fill_zones is
 					
 				end if;
 		end case;
+
+		log_indentation_down;
 	end get_distance_to_conducting_area;
 
 	

@@ -46,6 +46,7 @@ with et_mirroring;					use et_mirroring;
 with et_board_geometry;				use et_board_geometry;
 with et_board_text;					use et_board_text;
 with et_contour_to_polygon;
+with et_logging;					use et_logging;
 
 
 package et_pcb_contour is -- CS rename to et_board_contour ?
@@ -116,7 +117,7 @@ package et_pcb_contour is -- CS rename to et_board_contour ?
 	procedure offset_holes (
 		holes		: in out pac_polygon_list.list;
 		offset		: in type_distance_positive;
-		debug		: in boolean := false);
+		log_threshold	: in type_log_level);
 
 	
 end et_pcb_contour;

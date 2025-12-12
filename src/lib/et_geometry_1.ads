@@ -48,6 +48,7 @@ with et_mirroring;					use et_mirroring;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_object_status;				use et_object_status;
 with et_directions;					use et_directions;
+with et_logging;					use et_logging;
 
 
 generic

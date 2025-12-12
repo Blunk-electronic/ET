@@ -181,8 +181,7 @@ package body et_thermal_relief is
 					direction		=> direction,
 					location_known	=> true,
 					location		=> NON_CONDUCTING_AREA,
-					debug			=> false);
-					--debug			=> true);						
+					log_threshold	=> log_threshold + 3);		
 
 			-- The distance from the center to the edge
 			-- of the terminal:
@@ -205,7 +204,7 @@ package body et_thermal_relief is
 				log (text => "D2CA: "
 					& "to edge: " & to_string (D2CA.distance_to_edge)
 					& " to centerline: " & to_string (D2CA.distance_to_centerline),
-					level => log_threshold + 1);
+					level => log_threshold + 2);
 
 				-- Compute the distance from the center of the terminal
 				-- to the edge of the terminal:
@@ -227,12 +226,12 @@ package body et_thermal_relief is
 				gap := gap - fill_tolerance;
 				
 				log (text => "detected gap between terminal edge and conducting area: " 
-					 & to_string (gap), level => log_threshold + 1);
+					 & to_string (gap), level => log_threshold + 2);
 		
 				-- If the gap is smaller or equal the given relief properties
 				-- then add a spoke that runs into the given direction:
 				if gap <= relief_properties.gap_max then
-					log (text => "add spoke", level => log_threshold + 1);
+					log (text => "add spoke", level => log_threshold + 2);
 
 					-- The spoke starts at the center of the terminal and
 					-- ends on the centerline of the border of the conducting area:

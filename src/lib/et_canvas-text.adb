@@ -410,14 +410,14 @@ package body et_canvas.text is
 		if not is_empty (text.content) then
 			
 			vectors := vectorize_text (
-				content		=> text.content,
-				size		=> text.size,
-				rotation	=> get_rotation (pos_final),
-				position	=> pos_final.place,
-				mirror		=> mirror,
-				line_width	=> text.line_width,
-				alignment	=> text.alignment); -- right, bottom
-
+				content			=> text.content,
+				size			=> text.size,
+				rotation		=> get_rotation (pos_final),
+				position		=> pos_final.place,
+				mirror			=> mirror,
+				line_width		=> text.line_width,
+				alignment		=> text.alignment, -- right, bottom
+				log_threshold	=> type_log_level'last); -- CS
 			
 			-- set_line_join (context.cr, cairo_line_join_miter); -- CS
 

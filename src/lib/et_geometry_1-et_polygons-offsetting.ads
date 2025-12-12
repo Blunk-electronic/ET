@@ -126,28 +126,30 @@ package et_geometry_1.et_polygons.offsetting is
 	-- If offset is negative then the edges are moved inside. The polygon area
 	-- then shrinks.
 	procedure offset_polygon (
-		polygon		: in out type_polygon;
-		offset		: in type_float;
-		debug		: in boolean := false);
+		polygon			: in out type_polygon;
+		offset			: in type_float;
+		log_threshold	: in type_log_level);
 
 	function offset_polygon (
-		polygon		: in type_polygon;
-		offset		: in type_float;
-		debug		: in boolean := false)
+		polygon			: in type_polygon;
+		offset			: in type_float;
+		log_threshold	: in type_log_level)
 		return type_polygon;
 
 
 	
 	-- Offsets a list of polygons:
 	function offset_polygons (
-		polygons	: in pac_polygon_list.list;
-		offset		: in type_float)
+		polygons		: in pac_polygon_list.list;
+		offset			: in type_float;
+		log_threshold	: in type_log_level)
 		return pac_polygon_list.list;
 
 	
 	procedure offset_polygons (
-		polygons	: in out pac_polygon_list.list;
-		offset		: in type_float);
+		polygons		: in out pac_polygon_list.list;
+		offset			: in type_float;
+		log_threshold	: in type_log_level);
 
 private
 	

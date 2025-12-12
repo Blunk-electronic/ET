@@ -69,7 +69,8 @@ package body et_board_ops.fill_zones is
 		device_cursor	: in pac_devices_electrical.cursor;
 		terminal_cursor	: in pac_terminals.cursor;
 		layer_category	: in type_signal_layer_category;
-		tolerance		: in type_distance_positive)
+		tolerance		: in type_distance_positive;
+		log_threshold	: in type_log_level)
 		return type_terminal_polygon
 	is
 		exists : boolean := false;
@@ -137,13 +138,23 @@ package body et_board_ops.fill_zones is
 			move_by (contour, terminal_displacement);
 			make_polygon;
 			if do_offset then
-				offset_polygon (result, type_float_model (terminal.width_inner_layers));
+				offset_polygon (result, type_float_model (terminal.width_inner_layers),
+					log_threshold + 1);
 			end if;
 		end finalize;
 				
 		
 	begin -- to_polygon
+		log (text => "module " & to_string (module_cursor)
+			 & "get terminal polygon of device " & get_device_name (device_cursor)
+			 & " terminal dumy", -- CS terminal name
+			 -- CS layer category
+			 -- CS tolerance
+			 level => log_threshold);
 
+		log_indentation_up;
+
+			 
 		case terminal.technology is
 			when THT => 
 				case layer_category is
@@ -194,7 +205,10 @@ package body et_board_ops.fill_zones is
 				end if;
 		end case;
 
+		
+		log_indentation_down;
 
+		
 		if exists then
 			return (
 				exists		=> TRUE, 
@@ -203,7 +217,6 @@ package body et_board_ops.fill_zones is
 		else
 			return (exists => FALSE);
 		end if;
-
 	end to_polygon;
 
 
@@ -261,7 +274,7 @@ package body et_board_ops.fill_zones is
 				-- Convert the terminal outline to a polygon:
 				terminal_polygon : constant type_terminal_polygon := to_polygon (
 					module_cursor, device_cursor, terminal_cursor, 
-					layer_category, fill_tolerance);
+					layer_category, fill_tolerance, log_threshold + 2);
 				-- CS difficult to debug. move to a subprocedure
 
 				terminal_polygon_expanded : type_polygon;
@@ -278,7 +291,7 @@ package body et_board_ops.fill_zones is
 				if terminal_polygon.exists then
 
 					terminal_polygon_expanded := terminal_polygon.polygon;
-					offset_polygon (terminal_polygon_expanded, offset);
+					offset_polygon (terminal_polygon_expanded, offset, log_threshold + 3);
 
 					-- If the polygon is inside the zone then
 					-- we append it to the result:
@@ -333,11 +346,15 @@ package body et_board_ops.fill_zones is
 			& " layer cat: " & to_string (layer_category)
 			& " offset: " & to_string (offset)
 			& " net: " & get_net_name (net_cursor)
-			& " thermal " & boolean'image (with_reliefes),
+			& " thermal: " & boolean'image (with_reliefes),
 			level => log_threshold);
 		-- CS log zone ?
 
 		log_indentation_up;
+
+		log (text => "polygons in:  " & get_count (polygons),
+			level => log_threshold);
+		
 
 		-- Get the ports of ALL devices connected with the given net.
 		-- Therefore we do not pass a specific assembly variant here.
@@ -348,7 +365,9 @@ package body et_board_ops.fill_zones is
 		-- that connect two conductor tracks. They can therefore be ignored:
 		ports.devices.iterate (query_device_port'access);
 
-		-- CS log number of polygons
+
+		log (text => "polygons out: " & get_count (polygons),
+			level => log_threshold);
 		
 		log_indentation_down;
 	end get_polygons_of_connected_terminals;
@@ -447,6 +466,7 @@ package body et_board_ops.fill_zones is
 					line : type_conductor_line renames element (l);
 				begin
 					if line.layer = layer then
+						log (text => "line: " & to_string (line), level => log_threshold + 2);
 						polygons_of_candidate_net.append (to_polygon (line, fill_tolerance));
 					end if;
 				end query_line;
@@ -459,6 +479,7 @@ package body et_board_ops.fill_zones is
 					arc : type_conductor_arc renames element (a);
 				begin
 					if arc.layer = layer then
+						log (text => "arc: " & to_string (arc), level => log_threshold + 2);
 						polygons_of_candidate_net.append (to_polygon (arc, fill_tolerance));
 					end if;
 				end query_arc;
@@ -522,18 +543,34 @@ package body et_board_ops.fill_zones is
 					-- CS evaluate native_tracks_embedded ?
 					-- CS foreign fill zones, ... see et_route.type_route
 
-					-- Expand the polygons which we have collected
-					-- so far by the net specific offset:
-					offset_polygons (polygons_of_candidate_net, offset);
+					-- -- Expand the polygons which we have collected
+					-- -- so far by the net specific offset:
+					-- offset_polygons (polygons_of_candidate_net, offset);
 
+					log (text => "polygons of tracks. count: " & get_count (polygons_of_candidate_net),
+						 level => log_threshold + 2);
+					
 					multi_union (polygons_of_candidate_net);
 
+					log (text => "union polygons. count: " & get_count (polygons_of_candidate_net),
+						 level => log_threshold + 2);
+
+					-- Expand the polygons which we have collected
+					-- so far by the net specific offset:
+					offset_polygons (polygons_of_candidate_net, offset, log_threshold + 3);
+
+					
+					
 					-- Extract those polygons which are inside the
 					-- zone or which touch the zone:
 					get_touching_polygons (zone, polygons_of_candidate_net);
 
+					log (text => "polygons in zone. count: " & get_count (polygons_of_candidate_net),
+						 level => log_threshold + 2);
+
+					
 					-- Append the polygons of the candidate net to the result:
-					append (polygons, polygons_of_candidate_net);
+					-- append (polygons, polygons_of_candidate_net);
 
 					-- Get terminal polygons of device packages
 					-- which are connected with the candidate net:
@@ -543,11 +580,16 @@ package body et_board_ops.fill_zones is
 						zone					=> zone,
 						net_cursor				=> net_cursor,
 						offset					=> offset,
-						polygons				=> polygons,
+						polygons				=> polygons_of_candidate_net,
 						with_reliefes			=> collect_terminals_with_relief,
 						terminals_with_relief	=> reliefes,
 						log_threshold			=> log_threshold + 2);
+
+					multi_union (polygons_of_candidate_net);
 					
+					-- Append the polygons of the candidate net to the result:
+					append (polygons, polygons_of_candidate_net);
+
 					append_relieves (terminals_with_relief, reliefes);
 				end convert_conductor_objects_to_polygons;
 				
@@ -615,8 +657,8 @@ package body et_board_ops.fill_zones is
 		log (text => "module " & to_string (module_cursor) &
 			" get_polygons_of_nets"
 			& " layer category: " & to_string (layer_category)
-			& " target layer " & to_string (layer)
-			& " bottom layer " & to_string (bottom_layer)
+			& " target layer: " & to_string (layer)
+			& " bottom layer: " & to_string (bottom_layer)
 			& " linewidth: " & to_string (linewidth)
 			& " zone clearance: " & to_string (zone_clearance)
 			& " terminal connection: " & to_string (terminal_connection),
@@ -689,7 +731,7 @@ package body et_board_ops.fill_zones is
 					-- Convert the terminal outline to a polygon:
 					terminal_polygon : type_terminal_polygon := to_polygon (
 						module_cursor, device_cursor, terminal_cursor, 
-						layer_category, fill_tolerance);
+						layer_category, fill_tolerance, log_threshold + 3);
 					-- CS difficult to debug. use subprocedure
 				begin
 					log (text => "terminal " & get_terminal_name (terminal_cursor),
@@ -699,7 +741,7 @@ package body et_board_ops.fill_zones is
 						-- CS more log messages
 
 						-- Expand the polygon by offset:
-						offset_polygon (terminal_polygon.polygon, offset);
+						offset_polygon (terminal_polygon.polygon, offset, log_threshold + 3);
 
 						-- Append the polygon to the temporarily
 						-- polygon collection:
@@ -722,7 +764,7 @@ package body et_board_ops.fill_zones is
 
 					terminals.iterate (query_terminal'access);
 					
-					multi_union (polygons_tmp);
+					-- multi_union (polygons_tmp);
 
 					log_indentation_down;
 				end if;
@@ -758,7 +800,7 @@ package body et_board_ops.fill_zones is
 
 		-- CS log number of polygons
 		
-		multi_union (polygons);
+		-- multi_union (polygons);
 
 		log_indentation_down;
 	end get_polygons_of_unconnected_terminals;
@@ -814,7 +856,7 @@ package body et_board_ops.fill_zones is
 				
 				-- Process conductor objects:
 				p := get_conductor_polygons (d, layer_category);
-				offset_polygons (p, offset);
+				offset_polygons (p, offset, log_threshold + 3);
 				log (text => "conductors" & get_count (p), level => log_threshold + 2);
 
 				-- Exract those which are inside the given zone
@@ -825,7 +867,7 @@ package body et_board_ops.fill_zones is
 
 				-- Process holes:
 				p := get_hole_polygons (d);
-				offset_holes (p, linewidth * 0.5 + clearance_to_edge);
+				offset_holes (p, linewidth * 0.5 + clearance_to_edge, log_threshold + 3);
 				log (text => "holes" & get_count (p), level => log_threshold + 2);
 
 				-- Exract those which are inside the given zone
@@ -836,7 +878,7 @@ package body et_board_ops.fill_zones is
 
 				-- route restrict:
 				p := get_route_restrict_polygons (d, layer_category);
-				offset_polygons (p, type_float_positive (linewidth * 0.5));
+				offset_polygons (p, type_float_positive (linewidth * 0.5), log_threshold + 3);
 				log (text => "route restrict" & get_count (p), level => log_threshold + 2);
 				
 				-- Exract those which are inside the given zone
@@ -844,7 +886,7 @@ package body et_board_ops.fill_zones is
 				-- and append them to the result:
 				append (polygons, get_polygons (zone, p, overlap_mode_1));
 
-				multi_union (polygons);
+				-- multi_union (polygons);
 
 				log_indentation_down;
 			end query_device;
@@ -871,7 +913,7 @@ package body et_board_ops.fill_zones is
 	
 		query_element (module_cursor, query_module'access);
 
-		multi_union (polygons);
+		-- multi_union (polygons);
 
 		-- CS log number of polygons
 		
@@ -929,7 +971,7 @@ package body et_board_ops.fill_zones is
 				
 				-- Process conductor objects:
 				p := get_conductor_polygons (d, layer_category);
-				offset_polygons (p, offset);
+				offset_polygons (p, offset, log_threshold + 3);
 				log (text => "conductors" & get_count (p), level => log_threshold + 2);
 
 				-- Exract those which are inside the given zone
@@ -940,7 +982,7 @@ package body et_board_ops.fill_zones is
 
 				-- Process holes:
 				p := get_hole_polygons (d);
-				offset_holes (p, linewidth * 0.5 + clearance_to_edge);
+				offset_holes (p, linewidth * 0.5 + clearance_to_edge, log_threshold + 3);
 				log (text => "holes" & get_count (p), level => log_threshold + 2);
 
 				-- Exract those which are inside the given zone
@@ -951,7 +993,7 @@ package body et_board_ops.fill_zones is
 
 				-- route restrict:
 				p := get_route_restrict_polygons (d, layer_category);
-				offset_polygons (p, type_float_positive (linewidth * 0.5));
+				offset_polygons (p, type_float_positive (linewidth * 0.5), log_threshold + 3);
 				log (text => "route restrict" & get_count (p), level => log_threshold + 2);
 				
 				-- Exract those which are inside the given zone
@@ -959,7 +1001,7 @@ package body et_board_ops.fill_zones is
 				-- and append them to the result:
 				append (polygons, get_polygons (zone, p, overlap_mode_1));
 
-				multi_union (polygons);
+				-- multi_union (polygons);
 
 				log_indentation_down;
 			end query_device;
@@ -986,7 +1028,7 @@ package body et_board_ops.fill_zones is
 	
 		query_element (module_cursor, query_module'access);
 
-		multi_union (polygons);
+		-- multi_union (polygons);
 
 		-- CS log number of polygons
 		
@@ -1039,7 +1081,7 @@ package body et_board_ops.fill_zones is
 
 					borders := get_borders (text.vectors);
 					
-					offset_polygons (borders, offset);
+					offset_polygons (borders, offset, log_threshold + 2);
 					
 					-- NOTE: The borders of the characters of the text should not overlap.
 					-- Therefore there is no need for unioning the characters at this time.
@@ -1050,7 +1092,7 @@ package body et_board_ops.fill_zones is
 						before => pac_polygon_list.no_element,
 						source => borders);
 
-					multi_union (polygons);
+					-- multi_union (polygons);
 				end if;
 			end query_text;
 
@@ -1076,7 +1118,7 @@ package body et_board_ops.fill_zones is
 
 		-- CS log number of polygons
 
-		multi_union (polygons);
+		-- multi_union (polygons);
 		
 		log_indentation_down;
 	end get_polygons_of_board_texts;
@@ -1149,7 +1191,7 @@ package body et_board_ops.fill_zones is
 				terminals_with_relief	=> terminals_with_relief,
 				log_threshold			=> log_threshold + 2);
 			
-			multi_union (polygons);
+			-- multi_union (polygons);
 
 			log_indentation_down;
 		end process_nets;
@@ -1171,7 +1213,7 @@ package body et_board_ops.fill_zones is
 				polygons			=> polygons,
 				log_threshold		=> log_threshold + 2);
 
-			multi_union (polygons);
+			-- multi_union (polygons);
 
 			log_indentation_down;
 		end process_unconnected_terminals;
@@ -1194,7 +1236,7 @@ package body et_board_ops.fill_zones is
 				polygons		=> polygons,
 				log_threshold	=> log_threshold + 2);
 				
-			multi_union (polygons);
+			-- multi_union (polygons);
 
 			log_indentation_down;
 		end process_board_texts;
@@ -1218,7 +1260,7 @@ package body et_board_ops.fill_zones is
 				polygons			=> polygons,
 				log_threshold		=> log_threshold + 2);
 				
-			multi_union (polygons);
+			-- multi_union (polygons);
 
 			log_indentation_down;
 		end process_non_electrical_devices;
@@ -1242,7 +1284,7 @@ package body et_board_ops.fill_zones is
 				polygons			=> polygons,
 				log_threshold		=> log_threshold + 2);
 				
-			multi_union (polygons);
+			-- multi_union (polygons);
 
 			log_indentation_down;
 		end process_electrical_devices;
@@ -1305,18 +1347,18 @@ package body et_board_ops.fill_zones is
 			polygons_tmp := to_polygons (holes, fill_tolerance);
 
 			-- Expand the polygons:
-			offset_holes (polygons_tmp, linewidth * 0.5 + clearance_to_edge);
+			offset_holes (polygons_tmp, linewidth * 0.5 + clearance_to_edge, log_threshold + 2);
 
 			-- Extract those polygons which are inside the
 			-- zone or which touch the zone:
 			get_touching_polygons (zone_polygon, polygons_tmp);
 
-			multi_union (polygons_tmp);
+			-- multi_union (polygons_tmp);
 
 			-- Append the polygons to the result:
 			append (polygons, polygons_tmp);
 
-			multi_union (polygons);
+			-- multi_union (polygons);
 			log_indentation_down;
 		end process_holes;
 
@@ -1367,7 +1409,7 @@ package body et_board_ops.fill_zones is
 		process_cutout_areas;
 		process_restrict_areas;
 
-		multi_union (polygons);
+		-- multi_union (polygons);
 
 		log_indentation_down;
 	end get_touching_polygons;
@@ -1590,7 +1632,7 @@ package body et_board_ops.fill_zones is
 			& to_string (half_linewidth_float),
 			level => log_threshold + 1);
 
-		offset_polygon (outer_contour_tmp, - half_linewidth_float);
+		offset_polygon (outer_contour_tmp, - half_linewidth_float, log_threshold + 2);
 
 
 		log_indentation_up;
@@ -1982,7 +2024,9 @@ package body et_board_ops.fill_zones is
 			& to_string (- clearance_conductor_to_edge),
 			level => log_threshold + 1);	
 		
-		offset_polygon (board_outer_contour, type_float_model (- clearance_conductor_to_edge));
+		offset_polygon (board_outer_contour, 
+						type_float_model (- clearance_conductor_to_edge),
+						log_threshold + 2);
 
 		
 		

@@ -78,7 +78,7 @@ package et_logging is
 	
 	--log_level : type_log_level := type_log_level'first;
 
-	log_level_cmd_line_max : constant type_log_level := 20;
+	log_level_cmd_line_max : constant type_log_level := 30;
 	subtype type_log_level_cmd_line is type_log_level range 0..log_level_cmd_line_max;
 
 	

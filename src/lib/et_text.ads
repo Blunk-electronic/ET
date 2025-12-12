@@ -1839,14 +1839,15 @@ package et_text is
 		-- This function is required for texts in fill zones. Therefore it is
 		-- turned off by default.
 		function vectorize_text (
-			content		: in pac_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
-			size		: in type_text_size;
-			rotation	: in pac_geometry.type_rotation;
-			position	: in pac_geometry.type_vector_model;
-			mirror		: in type_mirror := MIRROR_NO;
-			line_width	: in pac_geometry.type_distance_positive;
-			alignment	: in type_text_alignment := vector_text_alignment_default;
-			make_border	: in boolean := false)
+			content			: in pac_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
+			size			: in type_text_size;
+			rotation		: in pac_geometry.type_rotation;
+			position		: in pac_geometry.type_vector_model;
+			mirror			: in type_mirror := MIRROR_NO;
+			line_width		: in pac_geometry.type_distance_positive;
+			alignment		: in type_text_alignment := vector_text_alignment_default;
+			make_border		: in boolean := false;
+			log_threshold	: in type_log_level)
 			return type_vector_text;
 
 

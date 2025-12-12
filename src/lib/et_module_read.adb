@@ -4685,13 +4685,14 @@ package body et_module_read is
 
 						-- vectorize the text:
 						board_text_conductor.vectors := vectorize_text (
-							content		=> board_text_conductor.content,
-							size		=> board_text_conductor.size,
-							rotation	=> get_rotation (board_text_conductor.position),
-							position	=> board_text_conductor.position.place,
-							mirror		=> mirror,
-							line_width	=> board_text_conductor.line_width,
-							make_border	=> true
+							content			=> board_text_conductor.content,
+							size			=> board_text_conductor.size,
+							rotation		=> get_rotation (board_text_conductor.position),
+							position		=> board_text_conductor.position.place,
+							mirror			=> mirror,
+							line_width		=> board_text_conductor.line_width,
+							make_border		=> true,
+							log_threshold	=> log_threshold + 2
 							-- CS alignment
 							); 
 

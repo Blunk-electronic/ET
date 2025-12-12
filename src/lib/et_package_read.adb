@@ -449,13 +449,14 @@ package body et_package_read is
 							append (
 								container	=> packge.conductors.top.texts,
 								new_item	=> (pac_text with vectorize_text (
-										content		=> pac_text.content,
-										size		=> pac_text.size,
-										rotation	=> pac_text.position.rotation,
-										position	=> pac_text.position.place,
-										line_width	=> pac_text.line_width,
-										alignment	=> pac_text.alignment,
-										make_border	=> true)));
+										content			=> pac_text.content,
+										size			=> pac_text.size,
+										rotation		=> pac_text.position.rotation,
+										position		=> pac_text.position.place,
+										line_width		=> pac_text.line_width,
+										alignment		=> pac_text.alignment,
+										make_border		=> true,
+										log_threshold	=> log_threshold + 3)));
 
 							
 						when SEC_SILKSCREEN =>
@@ -488,14 +489,15 @@ package body et_package_read is
 							append (
 								container	=> packge.conductors.bottom.texts,
 								new_item	=> (pac_text with vectorize_text (
-										content		=> pac_text.content,
-										size		=> pac_text.size,
-										rotation	=> pac_text.position.rotation,
-										position	=> pac_text.position.place,
-										mirror		=> MIRROR_ALONG_Y_AXIS,
-										line_width	=> pac_text.line_width,
-										alignment	=> pac_text.alignment,
-										make_border	=> true)));
+										content			=> pac_text.content,
+										size			=> pac_text.size,
+										rotation		=> pac_text.position.rotation,
+										position		=> pac_text.position.place,
+										mirror			=> MIRROR_ALONG_Y_AXIS,
+										line_width		=> pac_text.line_width,
+										alignment		=> pac_text.alignment,
+										make_border		=> true,
+										log_threshold	=> log_threshold + 3)));
 
 
 						when SEC_SILKSCREEN =>

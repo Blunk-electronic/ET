@@ -151,10 +151,11 @@ package body et_pcb_contour is
 	end to_polygons;
 	
 
+	
 	procedure offset_holes (
-		holes		: in out pac_polygon_list.list;
-		offset		: in type_distance_positive;
-		debug		: in boolean := false)
+		holes			: in out pac_polygon_list.list;
+		offset			: in type_distance_positive;
+		log_threshold	: in type_log_level)
 	is
 		use pac_polygon_offsetting;
 		
@@ -178,11 +179,11 @@ package body et_pcb_contour is
 		--end query_hole;
 			
 	begin
-		if debug then
-			put_line ("offsetting holes by " & to_string (offset) & "mm");
-		end if;
+		log (text => "offsetting holes by " & to_string (offset) & "mm",
+			 level => log_threshold);
 
-		offset_polygons (holes, type_float_positive (offset));
+
+		offset_polygons (holes, type_float_positive (offset), log_threshold + 1);
 		
 		--holes.iterate (query_hole'access);
 
