@@ -152,30 +152,22 @@ package body et_geometry_1.et_polygons.offsetting is
 			-- after the candidate edge:
 			cs : pac_offset_edges.cursor;
 
-			
+
+			-- The assumption is that the two edges do
+			-- intersect somewhere. Otherwise an exception will
+			-- be raised:
 			procedure compute_intersection is
 				lp : type_line_vector renames element (cp).line;
 				ls : type_line_vector renames element (cs).line;
-				
-				LVI : type_line_vector_intersection := get_intersection (lp, ls);
 			begin
-				case LVI.status is
-					when EXISTS => 
-						result := LVI.intersection;
-						
-					when NOT_EXISTENT => 
-						log (text => "no intersection exists", level => log_threshold + 2);
-						log (text => "lp: " & to_string (lp), level => log_threshold + 2);
-						log (text => "ls: " & to_string (ls), level => log_threshold + 2);
-						raise constraint_error;
-						
-					when OVERLAP =>
-						log (text => "lines overlap", level => log_threshold + 2);
-						log (text => "lp: " & to_string (lp), level => log_threshold + 2);
-						log (text => "ls: " & to_string (ls), level => log_threshold + 2);
-						raise constraint_error;
-				end case;
+				result := get_intersection (lp, ls);
+
+				-- CS exception hanlder
+-- 						log (text => "lines overlap", level => log_threshold + 2);
+-- 						log (text => "lp: " & to_string (lp), level => log_threshold + 2);
+-- 						log (text => "ls: " & to_string (ls), level => log_threshold + 2);
 			end;
+
 			
 		begin
 			-- In case the candidate edge is the last, then the intersection
