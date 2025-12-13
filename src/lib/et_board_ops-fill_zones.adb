@@ -435,9 +435,10 @@ package body et_board_ops.fill_zones is
 
 				offset : constant type_float_positive := 
 					type_float_positive (linewidth * 0.5 + clearance);
-				
-				-- 1. The tracks and the vias of the candidate net are 
-				--    first converted to polygons and appended to 
+
+				-- CS: Update this list:
+				-- 1. The route the candidate net is
+				--    first converted to polygons and stored in
 				--    polygons_of_candidate_net. 
 				-- 2. After that the polygons_of_candidate_net are expanded
 				--    by offset.
@@ -459,73 +460,6 @@ package body et_board_ops.fill_zones is
 				use et_conductor_segment.boards;
 
 				
-				-- This procedure queries a conductor line, converts it
-				-- to a polygon and appends it to the polygons_of_candidate_net:
-				procedure query_line (l : in pac_conductor_lines.cursor) is
-					use pac_conductor_lines;
-					line : type_conductor_line renames element (l);
-				begin
-					if line.layer = layer then
-						log (text => "line: " & to_string (line), level => log_threshold + 2);
-						polygons_of_candidate_net.append (to_polygon (line, fill_tolerance));
-					end if;
-				end query_line;
-
-				
-				-- This procedure queries a conductor arc, converts it
-				-- to a polygon and appends it to the polygons_of_candidate_net:				
-				procedure query_arc (a : in pac_conductor_arcs.cursor) is
-					use pac_conductor_arcs;
-					arc : type_conductor_arc renames element (a);
-				begin
-					if arc.layer = layer then
-						log (text => "arc: " & to_string (arc), level => log_threshold + 2);
-						polygons_of_candidate_net.append (to_polygon (arc, fill_tolerance));
-					end if;
-				end query_arc;
-
-				
-				use et_vias;
-				use pac_vias;
-				
-				-- This procedure queries a via, converts it
-				-- to a polygon and appends it to the polygons_of_candidate_net:
-				procedure query_via (v : in pac_vias.cursor) is
-					use pac_vias;
-					via : type_via renames element (v);
-				begin
-					-- CS use function via_to_polyon 
-					case via.category is
-						when THROUGH =>
-							if layer_category = OUTER_TOP or layer_category = OUTER_BOTTOM then
-								polygons_of_candidate_net.append (to_polygon (via.position, via.restring_outer, via.diameter, fill_tolerance));
-							else
-								polygons_of_candidate_net.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
-							end if;
-
-						when BLIND_DRILLED_FROM_TOP =>
-							if layer_category = OUTER_TOP then
-								polygons_of_candidate_net.append (to_polygon (via.position, via.restring_top, via.diameter, fill_tolerance));
-							elsif blind_via_uses_layer (via, layer, bottom_layer) then
-								polygons_of_candidate_net.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
-							end if;
-
-						when BLIND_DRILLED_FROM_BOTTOM =>
-							if layer_category = OUTER_BOTTOM then
-								polygons_of_candidate_net.append (to_polygon (via.position, via.restring_bottom, via.diameter, fill_tolerance));
-							elsif blind_via_uses_layer (via, layer, bottom_layer) then
-								polygons_of_candidate_net.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
-							end if;
-							
-						when BURIED =>
-							if layer_category = INNER and then
-							buried_via_uses_layer (via, layer) then
-								polygons_of_candidate_net.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
-							end if;
-					end case;
-				end query_via;
-
-
 
 				
 				-- Converts tracks, vias and terminals to polygons:
@@ -533,12 +467,9 @@ package body et_board_ops.fill_zones is
 					use pac_polygon_offsetting;
 					reliefes : pac_terminals_with_relief.list;
 				begin
-					-- Query track segments:
-					route.lines.iterate (query_line'access);
-					route.arcs.iterate (query_arc'access);
-					
-					-- Query vias:
-					route.vias.iterate (query_via'access);
+					-- Get the polygons of the route:
+					polygons_of_candidate_net := 
+						get_polygons (route, layer_category, layer, bottom_layer);
 					
 					-- CS evaluate native_tracks_embedded ?
 					-- CS foreign fill zones, ... see et_route.type_route
@@ -547,18 +478,17 @@ package body et_board_ops.fill_zones is
 					-- -- so far by the net specific offset:
 					-- offset_polygons (polygons_of_candidate_net, offset);
 
-					log (text => "polygons of tracks. count: " & get_count (polygons_of_candidate_net),
+					log (text => "polygons of route: " & get_count (polygons_of_candidate_net),
 						 level => log_threshold + 2);
 					
 					multi_union (polygons_of_candidate_net);
 
-					log (text => "union polygons. count: " & get_count (polygons_of_candidate_net),
+					log (text => "union polygons. remaining: " & get_count (polygons_of_candidate_net),
 						 level => log_threshold + 2);
 
 					-- Expand the polygons which we have collected
 					-- so far by the net specific offset:
 					offset_polygons (polygons_of_candidate_net, offset, log_threshold + 3);
-
 					
 					
 					-- Extract those polygons which are inside the
@@ -1170,7 +1100,8 @@ package body et_board_ops.fill_zones is
 
 	
 		
-		-- Extracts the polygons of all conductor objects which are 
+		-- Extracts the polygons of all conductor 
+		-- objects (tracks, terminals, vias) which are 
 		-- connected with the given net
 		-- and appends them to the result:
 		procedure process_nets is begin
@@ -1191,7 +1122,7 @@ package body et_board_ops.fill_zones is
 				terminals_with_relief	=> terminals_with_relief,
 				log_threshold			=> log_threshold + 2);
 			
-			-- multi_union (polygons);
+			multi_union (polygons);
 
 			log_indentation_down;
 		end process_nets;
@@ -1269,7 +1200,8 @@ package body et_board_ops.fill_zones is
 		
 		
 		-- This procedure converts objects of electrial
-		-- devices to polygons and appends them to the result:
+		-- devices to polygons and appends them to the result.
+		-- NOTE: This does not address connected terminals !
 		procedure process_electrical_devices is begin
 			log (text => "electrial devices", level => log_threshold + 1);
 			log_indentation_up;
@@ -1409,7 +1341,7 @@ package body et_board_ops.fill_zones is
 		process_cutout_areas;
 		process_restrict_areas;
 
-		-- multi_union (polygons);
+		multi_union (polygons);
 
 		log_indentation_down;
 	end get_touching_polygons;
@@ -1583,7 +1515,7 @@ package body et_board_ops.fill_zones is
 					log_threshold	=> log_threshold + 4);
 
 
-				make_thermal_reliefes; -- if the zone is connected with a net
+				-- make_thermal_reliefes; -- if the zone is connected with a net
 				
 				next (fragment_cursor);
 				log_indentation_down;

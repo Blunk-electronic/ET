@@ -38,7 +38,7 @@
 --   to do:
 --
 
-
+with et_pcb_stack;						use et_pcb_stack;
 with et_vias;							use et_vias;
 
 with et_fill_zones;						use et_fill_zones;
@@ -46,13 +46,18 @@ with et_fill_zones.boards;				use et_fill_zones.boards;
 with et_route_restrict.boards;			use et_route_restrict.boards;
 with et_conductor_segment.boards;		use et_conductor_segment.boards;
 
+with et_board_geometry;					use et_board_geometry;
+
 with et_ratsnest;
 
 
 package et_route is
+
+	use pac_polygons;	
 	
 		
-	-- A complete net may consist of these conductor objects:
+	-- A complete net may consist of these conductor objects.
+	-- Everything that is a conducting object is called a "route":
 	
 	type type_net_route is record
 		airwires	: et_ratsnest.type_airwires;
@@ -70,8 +75,17 @@ package et_route is
 	end record;
 
 
-	procedure dummy;
-	 
+	
+	-- Iterates the track segments and vias of the
+	-- given route and converts them to polygons:
+	function get_polygons (
+		route 			: in type_net_route;
+		layer_category 	: in type_signal_layer_category;
+		layer			: in type_signal_layer;
+		bottom_layer	: in type_signal_layer)
+		return pac_polygon_list.list;
+	
+
 	
 end et_route;
 

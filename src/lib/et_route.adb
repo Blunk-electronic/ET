@@ -44,10 +44,93 @@
 package body et_route is
 	
 
+	function get_polygons (
+		route 			: in type_net_route;
+		layer_category 	: in type_signal_layer_category;
+		layer			: in type_signal_layer;
+		bottom_layer	: in type_signal_layer)
+		return pac_polygon_list.list
+	is
+		result : pac_polygon_list.list;
 
-	procedure dummy is begin
-		null;
-	end;
+
+		-- This procedure queries a conductor line, converts it
+		-- to a polygon and appends it to the result:
+		procedure query_line (l : in pac_conductor_lines.cursor) is
+			use pac_conductor_lines;
+			line : type_conductor_line renames element (l);
+		begin
+			if line.layer = layer then
+				-- log (text => "line: " & to_string (line), level => log_threshold + 2);
+				result.append (to_polygon (line, fill_tolerance));
+			end if;
+		end query_line;
+
+		
+		
+		-- This procedure queries a conductor arc, converts it
+		-- to a polygon and appends it to the result:				
+		procedure query_arc (a : in pac_conductor_arcs.cursor) is
+			use pac_conductor_arcs;
+			arc : type_conductor_arc renames element (a);
+		begin
+			if arc.layer = layer then
+				-- log (text => "arc: " & to_string (arc), level => log_threshold + 2);
+				result.append (to_polygon (arc, fill_tolerance));
+			end if;
+		end query_arc;
+
+
+				
+		-- This procedure queries a via, converts it
+		-- to a polygon and appends it to the result:
+		procedure query_via (v : in pac_vias.cursor) is
+			use pac_vias;
+			via : type_via renames element (v);
+		begin
+			-- CS use function via_to_polyon 
+			case via.category is
+				when THROUGH =>
+					if layer_category = OUTER_TOP or layer_category = OUTER_BOTTOM then
+						result.append (to_polygon (via.position, via.restring_outer, via.diameter, fill_tolerance));
+					else
+						result.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
+					end if;
+
+				when BLIND_DRILLED_FROM_TOP =>
+					if layer_category = OUTER_TOP then
+						result.append (to_polygon (via.position, via.restring_top, via.diameter, fill_tolerance));
+					elsif blind_via_uses_layer (via, layer, bottom_layer) then
+						result.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
+					end if;
+
+				when BLIND_DRILLED_FROM_BOTTOM =>
+					if layer_category = OUTER_BOTTOM then
+						result.append (to_polygon (via.position, via.restring_bottom, via.diameter, fill_tolerance));
+					elsif blind_via_uses_layer (via, layer, bottom_layer) then
+						result.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
+					end if;
+					
+				when BURIED =>
+					if layer_category = INNER and then
+					buried_via_uses_layer (via, layer) then
+						result.append (to_polygon (via.position, via.restring_inner, via.diameter, fill_tolerance));
+					end if;
+			end case;
+		end query_via;
+
+		
+	begin
+		-- Iterate the lines, arcs and vias of the given route:
+		route.lines.iterate (query_line'access);
+		route.arcs.iterate (query_arc'access);
+		route.vias.iterate (query_via'access);
+		
+		return result;
+	end get_polygons;
+
+
+
 	 
 	
 end et_route;
