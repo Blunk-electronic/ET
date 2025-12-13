@@ -1473,9 +1473,13 @@ package body et_geometry_1 is
 	end get_normal_vector;
 
 
-	
--- INTERSECTIONS
 
+
+
+	
+
+	
+-- INTERSECTIONS:
 
 
 	function get_angle_of_itersection (
@@ -1508,17 +1512,64 @@ package body et_geometry_1 is
 
 
 
+
+	
+
+
+	function get_intersection (
+		left, right : in type_line_vector)
+		return type_vector
+	is
+		i : type_vector; -- the result
+
+		-- scratch variables:
+		a, b, c, d, e, f, g : type_float;
+		lambda : type_float;
+	begin
+		-- The direction vector of the right vector can be zero in x.
+		-- In order to avoid division by zero we must switch between
+		-- two ways to find the intersection:
+		if left.v_direction.x /= 0.0 then -- CS redefinition required ?
+			a := left.v_start.y;
+			b := right.v_start.x * left.v_direction.y / left.v_direction.x;
+			c := left.v_start.x * left.v_direction.y / left.v_direction.x;
+			d := right.v_start.y;
+			e := right.v_direction.y;
+			f := right.v_direction.x * left.v_direction.y / left.v_direction.x;
+			g := 1.0 / (e - f);
+
+			lambda := (a + b - c - d) * g;
+
+			i := add (right.v_start, scale (right.v_direction, lambda));
+		else
+			a := right.v_start.y;
+			b := left.v_start.x * right.v_direction.y / right.v_direction.x;
+			c := right.v_start.x * right.v_direction.y / right.v_direction.x;
+			d := left.v_start.y;
+			e := left.v_direction.y;
+			f := left.v_direction.x * right.v_direction.y / right.v_direction.x;
+			g := 1.0 / (e - f);
+
+			lambda := (a + b - c - d) * g;
+
+			i := add (left.v_start, scale (left.v_direction, lambda));
+		end if;
+
+		return i;
+	end get_intersection;
+
+
+	
+
+
+	
 	
 	
 	function get_intersection (
 		line_1, line_2	: in type_line_vector)
 		return type_line_vector_intersection
 	is 
-		-- scratch variables:
-		a, b, c, d, e, f, g : type_float;
-		lambda : type_float;
-
-		-- location vector and angle of intersection to be returned:			
+		-- The location vector of the intersection:			
 		i : type_vector;
 
 		
@@ -1580,7 +1631,7 @@ package body et_geometry_1 is
 		end lines_overlap;
 
 		
-	begin -- get_intersection
+	begin
 		--put_line ("");
 		--put_line ("line_1 start" & to_string (to_point (line_1.v_start)) & " direction" & to_string (to_point (line_1.v_direction)));
 		--put_line ("line_2 start" & to_string (to_point (line_2.v_start)) & " direction" & to_string (to_point (line_2.v_direction)));
@@ -1591,53 +1642,27 @@ package body et_geometry_1 is
 		else
 			-- Test whether there is an intersection:
 			if exists_intersection then
+
+				i := get_intersection (line_1, line_2);
+				--put_line ("intersection: " & to_string (i));
 				
-				-- The direction vector of the first line can be zero in x.
-				-- In order to avoid division by zero we must switch between
-				-- two ways to find the intersection:
-				if line_1.v_direction.x /= 0.0 then -- CS redefinition required ?
-					a := line_1.v_start.y;
-					b := line_2.v_start.x * line_1.v_direction.y / line_1.v_direction.x;
-					c := line_1.v_start.x * line_1.v_direction.y / line_1.v_direction.x;
-					d := line_2.v_start.y;
-					e := line_2.v_direction.y;
-					f := line_2.v_direction.x * line_1.v_direction.y / line_1.v_direction.x;
-					g := 1.0 / (e - f);
-
-					lambda := (a + b - c - d) * g;
-
-					i := add (line_2.v_start, scale (line_2.v_direction, lambda));
-				else
-					a := line_2.v_start.y;
-					b := line_1.v_start.x * line_2.v_direction.y / line_2.v_direction.x;
-					c := line_2.v_start.x * line_2.v_direction.y / line_2.v_direction.x;
-					d := line_1.v_start.y;
-					e := line_1.v_direction.y;
-					f := line_1.v_direction.x * line_2.v_direction.y / line_2.v_direction.x;
-					g := 1.0 / (e - f);
-
-					lambda := (a + b - c - d) * g;
-
-					i := add (line_1.v_start, scale (line_1.v_direction, lambda));
-				end if;
-
-				--i.angle := get_angle_of_itersection (line_1, line_2);
-
-				--put_line ("get_intersection: " & to_string (i.vector));
 				return (status => EXISTS, intersection => i);
 			else
-
 				return (status => NOT_EXISTENT);
 			end if;
-		end if;
-		
+		end if;		
 	end get_intersection;
 
 	
 
 
+
+
+
 	
--- BOUNDARIES
+
+	
+-- BOUNDARIES:
 
 	function to_string (boundaries : in type_boundaries) return string is begin
 		return "boundaries: SX:" & to_string (boundaries.smallest_x) 

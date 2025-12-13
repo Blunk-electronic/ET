@@ -391,6 +391,7 @@ package et_geometry_1 is
 		v		: in type_vector;
 		show_z	: in boolean := false)
 		return string;
+		-- CS parameter for format ? see et_coordinates_formatting
 
 	
 	-- Returns the quadrant the point is located in.
@@ -719,7 +720,10 @@ package et_geometry_1 is
 
 	
 
--- INTERSECTIONS
+	
+	
+	
+-- INTERSECTIONS:
 
 	type type_intersection_status_of_two_lines is (
 		-- The two lines do NOT intersect each other:
@@ -755,15 +759,32 @@ package et_geometry_1 is
 	function get_angle_of_itersection (
 		line_1, line_2	: in type_line_vector)
 		return type_angle;
+		-- CS rename parameters to left, right
+
+
+	-- This function computes the location vector where two
+	-- line vectors intersect.
+	-- It assumes that the gvien line vectors
+	-- do intersect each other. In other words: Assumes that
+	-- the line vectors are not parallel to each other.
+	function get_intersection (
+		left, right : in type_line_vector)
+		return type_vector;
 
 	
+		
 	-- Tests whether the given two lines intersect.
 	-- If there is an intersection, returns the location vector.
 	function get_intersection (
 		line_1, line_2	: in type_line_vector)
 		return type_line_vector_intersection;
+		-- CS rename parameters to left, right
 
 
+		
+		
+		
+		
 
 -- BOUNDARIES:
 	
