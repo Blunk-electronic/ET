@@ -395,7 +395,6 @@ package body et_board_ops.fill_zones is
 	is 			
 		use pac_nets;
 		use pac_net_name;
-		use pac_polygon_union;
 
 		-- If a parent net was given (via argument parent_net) then
 		-- this will hold the actual net name like "GND".
@@ -422,7 +421,9 @@ package body et_board_ops.fill_zones is
 			module_name		: in pac_module_name.bounded_string;
 			module			: in type_generic_module)
 		is
-		
+			use pac_polygon_union;
+
+			
 			procedure query_net (net_cursor : in pac_nets.cursor) is
 				net_class : constant type_net_class := get_net_class (module_cursor, net_cursor);
 				
@@ -435,19 +436,6 @@ package body et_board_ops.fill_zones is
 
 				offset : constant type_float_positive := 
 					type_float_positive (linewidth * 0.5 + clearance);
-
-				-- CS: Update this list:
-				-- 1. The route the candidate net is
-				--    first converted to polygons and stored in
-				--    polygons_of_candidate_net. 
-				-- 2. After that the polygons_of_candidate_net are expanded
-				--    by offset.
-				-- 3. Now those polygon which are inside the zone or which
-				--    touch the zone are extracted from polygons_of_candidate_net.
-				-- 4. The polygons_of_candidate_net are then appended
-				--    to the result.
-				-- 5. Then the terminals of connected device terminals
-				--    are collected and also added to polygons_of_candidate_net.
 
 				-- The polygons of the candidate net are collected here:
 				polygons_of_candidate_net : pac_polygon_list.list;
@@ -471,39 +459,24 @@ package body et_board_ops.fill_zones is
 					polygons_of_candidate_net := 
 						get_polygons (route, layer_category, layer, bottom_layer);
 					
-					-- CS evaluate native_tracks_embedded ?
-					-- CS foreign fill zones, ... see et_route.type_route
-
-					-- -- Expand the polygons which we have collected
-					-- -- so far by the net specific offset:
-					-- offset_polygons (polygons_of_candidate_net, offset);
-
 					log (text => "polygons of route: " & get_count (polygons_of_candidate_net),
 						 level => log_threshold + 2);
-					
+
+					-- Union as much polygons as possible:
 					multi_union (polygons_of_candidate_net);
 
 					log (text => "union polygons. remaining: " & get_count (polygons_of_candidate_net),
 						 level => log_threshold + 2);
 
-					-- Expand the polygons which we have collected
-					-- so far by the net specific offset:
+					-- Expand the polygons by the (see offset computation above):
 					offset_polygons (polygons_of_candidate_net, offset, log_threshold + 3);
 					
+					-- CS evaluate native_tracks_embedded ?
+					-- CS foreign fill zones, ... see et_route.type_route
 					
-					-- Extract those polygons which are inside the
-					-- zone or which touch the zone:
-					get_touching_polygons (zone, polygons_of_candidate_net);
-
-					log (text => "polygons in zone. count: " & get_count (polygons_of_candidate_net),
-						 level => log_threshold + 2);
-
-					
-					-- Append the polygons of the candidate net to the result:
-					-- append (polygons, polygons_of_candidate_net);
-
 					-- Get terminal polygons of device packages
-					-- which are connected with the candidate net:
+					-- which are connected with the candidate net.
+					-- These polygons are appended to polygons_of_candidate_net:
 					get_polygons_of_connected_terminals (
 						module_cursor			=> module_cursor,
 						layer_category			=> layer_category,
@@ -515,11 +488,23 @@ package body et_board_ops.fill_zones is
 						terminals_with_relief	=> reliefes,
 						log_threshold			=> log_threshold + 2);
 
+					-- Union the polygons of the route and those of
+					-- the terminals as much as possible:
 					multi_union (polygons_of_candidate_net);
+					
+					-- Extract those polygons which are inside the
+					-- zone or which touch the zone:
+					get_touching_polygons (zone, polygons_of_candidate_net);
+
+					log (text => "polygons in zone: " & get_count (polygons_of_candidate_net),
+						 level => log_threshold + 2);
+					
 					
 					-- Append the polygons of the candidate net to the result:
 					append (polygons, polygons_of_candidate_net);
 
+					-- Append the relief information to the given
+					-- list of terminals_with_relief:
 					append_relieves (terminals_with_relief, reliefes);
 				end convert_conductor_objects_to_polygons;
 				
@@ -580,6 +565,8 @@ package body et_board_ops.fill_zones is
 		
 		begin
 			module.nets.iterate (query_net'access);
+
+			-- CS: multi_union (polygons) ?
 		end query_module;
 		
 		
