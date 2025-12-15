@@ -902,6 +902,70 @@ package body et_fill_zones is
 
 
 
+	procedure get_distance_to_border (
+		zone			: in type_zone;
+		point			: in type_vector;
+		direction		: in type_angle;
+		border_exists	: out boolean;
+		distance		: out type_float_positive;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure between_islands is
+			d : type_distance_to_conducting_area :=
+				get_distance_to_nearest_island (zone, point, direction);
+		begin			
+			if d.centerline_exists then
+				border_exists := true;
+				distance := d.distance_to_centerline;
+			else
+				border_exists := false;
+				distance := type_float_positive'last;
+			end if;
+		end between_islands;
+
+		
+
+		procedure on_island is
+			lake : type_polygon;
+		begin
+			border_exists := true;
+
+			-- CS: For the moment we assume the point
+			-- is in a lake:
+			lake := get_lake (zone, point);
+
+			-- The lake has a shore with a certain linewidth.
+			-- So the shore has a centerline.
+			-- Get the distance from the start point to
+			-- the centerline:
+			distance := get_distance_to_border (lake, point, direction);			
+		end on_island;
+		
+
+		
+	begin
+		log (text => "get_distance_to_border"
+			 & " start point: " & to_string (point)
+			 & " direction: " & to_string (direction),
+			 level => log_threshold);
+		log_indentation_up;
+
+
+		if between_islands (zone, point) then
+			log (text => "point lies between islands", level => log_threshold + 1);
+			between_islands;			
+		else
+			log (text => "point lies on an island", level => log_threshold + 1);
+			on_island;
+		end if;
+		
+		log_indentation_down;
+	end get_distance_to_border;
+
+
+	
+
 	
 	
 -- 	procedure route_fill_zone_properties (

@@ -250,7 +250,8 @@ package et_fill_zones is
 -- QUERY POINT TO ZONE LOCATION
 
 	-- Returns true if the given point lies between
-	-- the islands. If the point lies exactly on the edge
+	-- the islands of the given zone. 
+	-- If the point lies exactly on the edge
 	-- of an island, then it is regarded as lying ON the island,
 	-- thus the return would be false.
 	-- Takes the real conducting area of the island into account,
@@ -382,7 +383,23 @@ package et_fill_zones is
 		return type_distance_to_conducting_area;
 	
 
-
+	-- Outputs the distance from a point into the 
+	-- given direction to the border of the conducting
+	-- area of the zone. 
+	-- 1. The distance to the centerline of the border is output.
+	--    The width of the border is ignored.
+	-- 2. The distance is output via parameter "distance".
+	-- 3. If no border exists in the given direction then
+	--    the flag "border_exists" is false. The value output
+	--    in "distance" assumes the greatest possible distance
+	--    of the type_distance_positive:
+	procedure get_distance_to_border (
+		zone			: in type_zone;
+		point			: in type_vector;
+		direction		: in type_angle;
+		border_exists	: out boolean;
+		distance		: out type_float_positive;
+		log_threshold	: in type_log_level);
 
 	
 

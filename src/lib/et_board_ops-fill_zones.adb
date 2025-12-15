@@ -1502,7 +1502,7 @@ package body et_board_ops.fill_zones is
 					log_threshold	=> log_threshold + 4);
 
 
-				-- make_thermal_reliefes; -- if the zone is connected with a net
+				make_thermal_reliefes; -- if the zone is connected with a net
 				
 				next (fragment_cursor);
 				log_indentation_down;
