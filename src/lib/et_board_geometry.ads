@@ -93,7 +93,8 @@ package et_board_geometry is
 		-- For assumed greatest numbers of 9999.999..
 		-- we have 4 digits left and 14 digits right of comma.
 		-- This leads to an accuracy of:
-		accuracy	=> 1.0E-14
+		-- accuracy	=> 1.0E-14
+		accuracy	=> 1.0E-15
 		-- CS: For numbers greater 9999.9 this accuracy is useless.
 		);
 
