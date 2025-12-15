@@ -628,6 +628,9 @@ package body et_fill_zones is
 	end get_location;
 
 
+
+
+	
 	
 	function get_distance_to_nearest_island (
 		zone		: in type_zone;
@@ -766,8 +769,88 @@ package body et_fill_zones is
 
 
 
+	
+	
+
+	procedure get_distance_to_island (
+		zone			: in type_zone;
+		point			: in type_vector;
+		direction		: in type_angle;
+		island_exists	: out boolean;
+		distance		: out type_float_positive;
+		log_threshold	: in type_log_level)
+	is
+		-- Build a ray that starts at the given point
+		-- and travels into the given direction:
+		ray : constant type_ray := (point, direction);
+
+		
+		use pac_vectors;
+		intersections : pac_vectors.list;
 
 
+
+		procedure query_island (i : in pac_islands.cursor) is
+			island : type_island renames element (i);
+
+			
+			procedure query_centerline (e : in pac_edges.cursor) is
+				use pac_edges;
+				I : constant type_line_vector_intersection := 
+					get_intersection (ray, element (e));
+			begin
+				case I.status is
+					when EXISTS =>
+						intersections.append (I.intersection);
+
+					when others => null;
+				end case;
+			end query_centerline;
+
+			
+		begin
+			island.shore.edges.iterate (query_centerline'access);
+		end query_island;
+
+
+		
+	begin
+		log (text => "get_distance_to_island"
+			 & " point: " & to_string (point)
+			 & " direction: " & to_string (direction),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		-- Collect the intersections of the ray with the islands
+		-- in container "intersections":
+		zone.islands.iterate (query_island'access);
+
+
+		if is_empty (intersections) then
+			-- The ray does not intersect any edge of any island.
+			-- So there is no island in the given direction:
+			island_exists := false;
+			distance := type_float_positive'last;
+		else
+			-- Extract from intersections the one that is 
+			-- closest to the given start point:
+			remove_redundant_vectors (intersections);
+			sort_by_distance (intersections, point);
+
+			island_exists := true;
+			distance := get_distance_total (point, intersections.first_element);
+		end if;
+		
+		
+		log_indentation_down;
+	end get_distance_to_island;
+
+	
+	
+
+
+	
 	
 	
 	function get_distance_to_conducting_area (
@@ -911,18 +994,30 @@ package body et_fill_zones is
 		log_threshold	: in type_log_level)
 	is
 
-		procedure between_islands is
-			d : type_distance_to_conducting_area :=
-				get_distance_to_nearest_island (zone, point, direction);
-		begin			
-			if d.centerline_exists then
-				border_exists := true;
-				distance := d.distance_to_centerline;
-			else
-				border_exists := false;
-				distance := type_float_positive'last;
-			end if;
-		end between_islands;
+		-- procedure between_islands is
+		-- 	d : type_distance_to_conducting_area :=
+		-- 		get_distance_to_nearest_island (zone, point, direction);			
+		-- begin			
+		-- 	if d.centerline_exists then
+		-- 		border_exists := true;
+		-- 		distance := d.distance_to_centerline;
+		-- 	else
+		-- 		border_exists := false;
+		-- 		distance := type_float_positive'last;
+		-- 	end if;		
+		-- end between_islands;
+
+
+		
+		procedure between_islands is begin
+			get_distance_to_island (
+				zone			=> zone,
+				point			=> point,
+				direction		=> direction,
+				island_exists	=> border_exists,
+				distance		=> distance,
+				log_threshold	=> log_threshold + 2);
+		end;
 
 		
 

@@ -352,13 +352,30 @@ package et_fill_zones is
 	-- Returns the distance of a point to the nearest
 	-- island into the given direction.
 	-- Assumes, the given start point is somewhere between the islands.
-	function get_distance_to_nearest_island (
+	function get_distance_to_nearest_island ( -- CS remove ?
 		zone		: in type_zone;
 		start_point	: in type_vector;
 		direction	: in type_angle;
 		debug		: in boolean := false)
 		return type_distance_to_conducting_area;
 
+	-- Outputs the distance of a point to the nearest
+	-- island into the given direction.
+	-- 1. Assumes that the given point is not on an island.
+	-- 2. The distance to the centerline of the island border is output.
+	--    The width of the border is ignored.
+	-- 3. The distance is output via parameter "distance".
+	-- 4. If no island exists in the given direction then
+	--    the flag "island_exists" is false. The value output
+	--    in "distance" assumes the greatest possible distance
+	--    of the type_distance_positive:
+	procedure get_distance_to_island (
+		zone			: in type_zone;
+		point			: in type_vector;
+		direction		: in type_angle;
+		island_exists	: out boolean;
+		distance		: out type_float_positive;
+		log_threshold	: in type_log_level);
 
 	
 	-- Returns the distance of a point to the conducting area
