@@ -440,9 +440,7 @@ package body et_fill_zones is
 		procedure query_island (c : in pac_islands.cursor) is
 			island : type_island renames element (c);
 
-			-- Take the real conducting area of the island into account:
 			status : constant type_point_status :=
-				--get_point_status (island.shore.outer_edge, point, debug);
 				get_point_status (island.shore, point, debug);
 			
 		begin
@@ -459,14 +457,15 @@ package body et_fill_zones is
 
 
 
+	
+
+
 	function get_lake (
 		zone	: in type_zone;
 		point	: in type_vector;
 		debug	: in boolean := false)
-		--return type_lake
 		return type_polygon
 	is
-		--result : type_lake;
 		result : type_polygon;
 		proceed : aliased boolean := true;
 
@@ -475,15 +474,10 @@ package body et_fill_zones is
 			island : type_island renames element (i);
 
 			
-			--procedure query_lake (l : in pac_lakes.cursor) is
 			procedure query_lake (l : in pac_polygon_list.cursor) is
-				--lake : type_lake renames element (l);
 				lake : type_polygon renames element (l);
 
-				-- This takes the real conducting area of the surrounding 
-				-- island is taken into account:
 				lake_status : constant type_point_status :=
-					--get_point_status (lake.inner_edge, point);
 					get_point_status (lake, point);
 				
 			begin
@@ -501,7 +495,7 @@ package body et_fill_zones is
 							--put_line ("  *0 " & to_string (element (result)));
 						end if;
 						
-					when others => null; -- ignore this inner border
+					when others => null;
 				end case;
 			end query_lake;
 
@@ -523,9 +517,7 @@ package body et_fill_zones is
 		iterate (zone.islands, query_island'access, proceed'access);
 
 		if debug then
-			-- put_line (" centerline " & to_string (result.centerline));
-			-- put_line (" inner edge " & to_string (result.inner_edge));
-			put_line (" centerline " & to_string (result));
+			put_line (" lake " & to_string (result));
 		end if;
 
 		--if debug then
@@ -994,20 +986,6 @@ package body et_fill_zones is
 		log_threshold	: in type_log_level)
 	is
 
-		-- procedure between_islands is
-		-- 	d : type_distance_to_conducting_area :=
-		-- 		get_distance_to_nearest_island (zone, point, direction);			
-		-- begin			
-		-- 	if d.centerline_exists then
-		-- 		border_exists := true;
-		-- 		distance := d.distance_to_centerline;
-		-- 	else
-		-- 		border_exists := false;
-		-- 		distance := type_float_positive'last;
-		-- 	end if;		
-		-- end between_islands;
-
-
 		
 		procedure between_islands is begin
 			get_distance_to_island (
@@ -1030,10 +1008,8 @@ package body et_fill_zones is
 			-- is in a lake:
 			lake := get_lake (zone, point);
 
-			-- The lake has a shore with a certain linewidth.
-			-- So the shore has a centerline.
 			-- Get the distance from the start point to
-			-- the centerline:
+			-- the shore of the lake:
 			distance := get_distance_to_border (lake, point, direction);			
 		end on_island;
 		

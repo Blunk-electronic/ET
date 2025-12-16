@@ -254,9 +254,8 @@ package et_fill_zones is
 	-- If the point lies exactly on the edge
 	-- of an island, then it is regarded as lying ON the island,
 	-- thus the return would be false.
-	-- Takes the real conducting area of the island into account,
-	-- means, the full width of the border is considered as part
-	-- of the conducting area:
+	-- Ignores the width of the zone border. So it looks
+	-- at the centerline of the border only:
 	function between_islands (
 		zone	: in type_zone;
 		point	: in type_vector;
@@ -266,15 +265,14 @@ package et_fill_zones is
 
 	-- Assumes the given point is in a lake and returns the
 	-- contours of that lake.
-	-- Takes the real conducting area of the surrounding island into account,
-	-- means, the full width of the shoreline is considered as part
-	-- of the conducting area:
+	-- Ignores the width of the zone border. So it looks
+	-- at the centerline of the border only:
 	function get_lake (
 		zone	: in type_zone;
 		point	: in type_vector;
 		debug	: in boolean := false)
-		--return type_lake;
 		return type_polygon;
+
 	
 								  
 	type type_location is (
@@ -359,11 +357,13 @@ package et_fill_zones is
 		debug		: in boolean := false)
 		return type_distance_to_conducting_area;
 
+
+	
 	-- Outputs the distance of a point to the nearest
 	-- island into the given direction.
 	-- 1. Assumes that the given point is not on an island.
 	-- 2. The distance to the centerline of the island border is output.
-	--    The width of the border is ignored.
+	--    The width of the border is ignored. Only the centerline matters.
 	-- 3. The distance is output via parameter "distance".
 	-- 4. If no island exists in the given direction then
 	--    the flag "island_exists" is false. The value output
@@ -404,7 +404,7 @@ package et_fill_zones is
 	-- given direction to the border of the conducting
 	-- area of the zone. 
 	-- 1. The distance to the centerline of the border is output.
-	--    The width of the border is ignored.
+	--    The width of the border is ignored. Only the centerline matters.
 	-- 2. The distance is output via parameter "distance".
 	-- 3. If no border exists in the given direction then
 	--    the flag "border_exists" is false. The value output
