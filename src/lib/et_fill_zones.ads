@@ -298,7 +298,11 @@ package et_fill_zones is
 
 	-- Outputs the distance from a point into the 
 	-- given direction to the border of the conducting
-	-- area of the zone. 
+	-- area of the zone. For location of the given point only two
+	-- cases exist:
+	-- A. The point lies between islands.
+	-- B: The point lies in a lake (for example due to a not connected terminal).
+	--
 	-- 1. The distance to the centerline of the border is output.
 	--    The width of the border is ignored. Only the centerline matters.
 	-- 2. The distance is output via parameter "distance".

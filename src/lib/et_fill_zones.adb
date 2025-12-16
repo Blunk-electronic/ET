@@ -143,12 +143,9 @@ package body et_fill_zones is
 		-- This procedure queries a lake and appends
 		-- the x-values of the candidate border to the main collection of
 		-- x-values:
-		--procedure query_lake (l : in pac_lakes.cursor) is
 		procedure query_lake (l : in pac_polygon_list.cursor) is
-			--lake : type_lake renames element (l);
 			lake : type_polygon renames element (l);
 		begin			
-			--status := get_point_status (lake.centerline, A);
 			status := get_point_status (lake, A);
 
 			splice (
@@ -161,7 +158,6 @@ package body et_fill_zones is
 					--put_line ("bottom: " & to_string (bottom));
 					--put_line ("height: " & to_string (height));
 					put_line ("status : " & to_string (
-						-- get_point_status (lake.centerlin	 A, true)));
 						get_point_status (lake, A, true)));
 					
 					raise;
@@ -198,8 +194,6 @@ package body et_fill_zones is
 				
 					A.y := bottom + type_float_positive (row) * stripe_spacing;
 					
-					--put_line (to_string (get_point_status (island.outer_border, set (x_start, y))));
-					-- status := get_point_status (island.shore.centerline, A, false); -- debug off
 					status := get_point_status (island.shore, A, false); -- debug off
 					x_main := status.x_intersections;
 
@@ -220,6 +214,7 @@ package body et_fill_zones is
 				-- CS
 		end case;
 
+		
 		exception 
 			when others =>
 				--put_line ("bottom: " & to_string (bottom));
@@ -233,6 +228,8 @@ package body et_fill_zones is
 
 	
 
+
+	
 	
 	procedure fill_island (
 		islands		: in out pac_islands.list;
@@ -250,9 +247,13 @@ package body et_fill_zones is
 
 
 	
+	
 
 
--- EASING
+
+	
+-- EASING:
+	
 	function to_easing_style (easing : in string) return type_easing_style is begin
 		return type_easing_style'value (easing);
 	end;
@@ -275,6 +276,7 @@ package body et_fill_zones is
 
 	
 
+	
 
 
 
@@ -304,7 +306,6 @@ package body et_fill_zones is
 		begin
 			islands.iterate (query_island'access);
 		end set_islands;
-
 
 
 
@@ -364,7 +365,6 @@ package body et_fill_zones is
 				next (island_cursor);
 			end loop;					
 		end set_lakes;
-
 
 
 
@@ -434,6 +434,7 @@ package body et_fill_zones is
 
 
 
+	
 
 	function between_islands (
 		zone	: in type_zone;
@@ -461,6 +462,8 @@ package body et_fill_zones is
 		iterate (zone.islands, query_island'access, proceed'access);
 		return proceed;
 	end between_islands;
+
+
 
 
 
@@ -499,7 +502,6 @@ package body et_fill_zones is
 
 						if debug then
 							put_line ("  inside");
-							--put_line ("  *0 " & to_string (element (result)));
 						end if;
 						
 					when others => null;
@@ -539,6 +541,8 @@ package body et_fill_zones is
 		return result;
 	end get_lake;
 	
+
+
 
 
 
@@ -650,19 +654,19 @@ package body et_fill_zones is
 
 		
 
-		procedure on_island is
+		procedure in_lake is
 			lake : type_polygon;
 		begin
 			border_exists := true;
 
-			-- CS: For the moment we assume the point
-			-- is in a lake:
+			-- Find the lake where the point is
+			-- located in:
 			lake := get_lake (zone, point);
 
-			-- Get the distance from the start point to
+			-- Get the distance from the point to
 			-- the shore of the lake:
 			distance := get_distance_to_border (lake, point, direction);			
-		end on_island;
+		end;
 		
 
 		
@@ -679,7 +683,7 @@ package body et_fill_zones is
 			between_islands;			
 		else
 			log (text => "point lies on an island", level => log_threshold + 1);
-			on_island;
+			in_lake;
 		end if;
 		
 		log_indentation_down;
