@@ -1055,7 +1055,7 @@ package body et_board_ops.fill_zones is
 
 	procedure get_touching_polygons (
 		module_cursor		: in pac_generic_modules.cursor;
-		zone_polygon		: in type_polygon;
+		zone				: in type_polygon;
 		zone_clearance		: in type_track_clearance;
 		linewidth			: in type_track_width;
 		layer 				: in type_signal_layer;
@@ -1104,7 +1104,7 @@ package body et_board_ops.fill_zones is
 			get_polygons_of_nets (
 				module_cursor			=> module_cursor,
 				layer_category			=> layer_category,
-				zone					=> zone_polygon,
+				zone					=> zone,
 				linewidth				=> linewidth,
 				layer					=> layer,
 				zone_clearance			=> zone_clearance,
@@ -1131,7 +1131,7 @@ package body et_board_ops.fill_zones is
 			get_polygons_of_unconnected_terminals (
 			 	module_cursor		=> module_cursor,
 			 	layer_category		=> layer_category,
-				zone				=> zone_polygon,
+				zone				=> zone,
 				zone_clearance		=> zone_clearance,
 				linewidth			=> linewidth,
 				polygons			=> polygons,
@@ -1153,7 +1153,7 @@ package body et_board_ops.fill_zones is
 			
 			get_polygons_of_board_texts (
 				module_cursor	=> module_cursor,
-				zone			=> zone_polygon,
+				zone			=> zone,
 				zone_clearance	=> zone_clearance,
 				linewidth		=> linewidth,
 				layer			=> layer,
@@ -1177,7 +1177,7 @@ package body et_board_ops.fill_zones is
 			get_polygons_of_non_electrical_devices (
 				module_cursor		=> module_cursor,
 				layer_category		=> layer_category,
-				zone				=> zone_polygon,
+				zone				=> zone,
 				zone_clearance		=> zone_clearance,
 				linewidth			=> linewidth,
 				clearance_to_edge	=> clearance_to_edge,
@@ -1202,7 +1202,7 @@ package body et_board_ops.fill_zones is
 			get_polygons_of_electrical_devices (
 				module_cursor		=> module_cursor,
 				layer_category		=> layer_category,
-				zone				=> zone_polygon,
+				zone				=> zone,
 				zone_clearance		=> zone_clearance,
 				linewidth			=> linewidth,
 				clearance_to_edge	=> clearance_to_edge,
@@ -1276,7 +1276,7 @@ package body et_board_ops.fill_zones is
 
 			-- Extract those polygons which are inside the
 			-- zone or which touch the zone:
-			get_touching_polygons (zone_polygon, polygons_tmp);
+			get_touching_polygons (zone, polygons_tmp);
 
 			-- CS multi_union (polygons_tmp);
 
@@ -1472,17 +1472,17 @@ package body et_board_ops.fill_zones is
 				-- Get the polygons of all objects in the
 				-- candidate fragment:
 				get_touching_polygons (
-					module_cursor		=> module_cursor,
-					zone_polygon		=> fragment,
-					zone_clearance		=> clearance,
-					linewidth			=> linewidth,									 
-					layer				=> layer,
-					parent_net			=> parent_net,
-					terminal_connection	=> terminal_connection,
-					clearance_to_edge	=> clearance_to_edge,
+					module_cursor			=> module_cursor,
+					zone					=> fragment,
+					zone_clearance			=> clearance,
+					linewidth				=> linewidth,									 
+					layer					=> layer,
+					parent_net				=> parent_net,
+					terminal_connection		=> terminal_connection,
+					clearance_to_edge		=> clearance_to_edge,
 					polygons				=> polygons,
 					terminals_with_relief	=> terminals_with_relief,
-					log_threshold		=> log_threshold + 4);
+					log_threshold			=> log_threshold + 4);
 
 
 				log (text => "crop fragment with" & get_count (polygons) & " polygons",

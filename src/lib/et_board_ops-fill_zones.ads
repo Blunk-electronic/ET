@@ -300,14 +300,8 @@ package et_board_ops.fill_zones is
 	
 
 
-
-
 	
 
-	-- type type_conductor_to_polygons_result is record
-	-- 	polygons				: pac_polygon_list.list;
-	-- 	terminals_with_relief	: pac_terminals_with_relief.list;
-	-- end record;
 	
 	
 	-- Outputs a list of polygons caused by conductor
@@ -320,7 +314,7 @@ package et_board_ops.fill_zones is
 	-- is empty:
 	procedure get_touching_polygons (
 		module_cursor		: in pac_generic_modules.cursor;
-		zone_polygon		: in type_polygon; -- CS rename to zone
+		zone				: in type_polygon;
 		zone_clearance		: in type_track_clearance;
 		linewidth			: in type_track_width;
 		layer 				: in type_signal_layer;
