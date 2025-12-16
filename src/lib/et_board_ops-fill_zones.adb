@@ -64,7 +64,7 @@ package body et_board_ops.fill_zones is
 
 
 	
-	function to_polygon (
+	function get_terminal_polygon (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_cursor	: in pac_devices_electrical.cursor;
 		terminal_cursor	: in pac_terminals.cursor;
@@ -73,6 +73,8 @@ package body et_board_ops.fill_zones is
 		log_threshold	: in type_log_level)
 		return type_terminal_polygon
 	is
+		-- CS: clean up, move code to subroutines
+		
 		exists : boolean := false;
 		result : type_polygon; -- to be returned
 
@@ -144,9 +146,9 @@ package body et_board_ops.fill_zones is
 		end finalize;
 				
 		
-	begin -- to_polygon
+	begin
 		log (text => "module " & to_string (module_cursor)
-			 & "get terminal polygon of device " & get_device_name (device_cursor)
+			 & "get_terminal_polygon of device " & get_device_name (device_cursor)
 			 & " terminal dumy", -- CS terminal name
 			 -- CS layer category
 			 -- CS tolerance
@@ -217,7 +219,7 @@ package body et_board_ops.fill_zones is
 		else
 			return (exists => FALSE);
 		end if;
-	end to_polygon;
+	end get_terminal_polygon;
 
 
 	
@@ -272,7 +274,7 @@ package body et_board_ops.fill_zones is
 					get_terminal (device_cursor, port.unit_name, port.port_name);
 
 				-- Convert the terminal outline to a polygon:
-				terminal_polygon : constant type_terminal_polygon := to_polygon (
+				terminal_polygon : constant type_terminal_polygon := get_terminal_polygon (
 					module_cursor, device_cursor, terminal_cursor, 
 					layer_category, fill_tolerance, log_threshold + 2);
 				-- CS difficult to debug. move to a subprocedure
@@ -646,7 +648,7 @@ package body et_board_ops.fill_zones is
 					use pac_polygon_offsetting;
 					
 					-- Convert the terminal outline to a polygon:
-					terminal_polygon : type_terminal_polygon := to_polygon (
+					terminal_polygon : type_terminal_polygon := get_terminal_polygon (
 						module_cursor, device_cursor, terminal_cursor, 
 						layer_category, fill_tolerance, log_threshold + 4);
 					-- CS difficult to debug. use subprocedure
