@@ -330,8 +330,8 @@ package et_board_ops.fill_zones is
 
 
 	-- Fills the given zone that is in the given layer
-	-- with the given linewidth and isolation to foreign conductor
-	-- objects.
+	-- with the given linewidth and clearance to 
+	-- foreign conductor objects.
 	-- If a parent net is given - via cursor - then the conductor objects of this
 	-- net will be treated in a special way. Then the given zone must be a 
 	-- type_route_hatched or a type_route_solid.
@@ -351,7 +351,7 @@ package et_board_ops.fill_zones is
 		
 		linewidth			: in type_track_width;
 		layer 				: in et_pcb_stack.type_signal_layer;
-		isolation			: in type_track_clearance;
+		clearance			: in type_track_clearance;
 		clearance_to_edge 	: in type_distance_positive;
 		parent_net			: in pac_nets.cursor := pac_nets.no_element;
 		terminal_connection	: in type_pad_connection;

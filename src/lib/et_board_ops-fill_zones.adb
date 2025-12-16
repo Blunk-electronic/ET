@@ -1345,7 +1345,7 @@ package body et_board_ops.fill_zones is
 		outer_contour		: in type_polygon;
 		linewidth			: in type_track_width;
 		layer 				: in et_pcb_stack.type_signal_layer;
-		isolation			: in type_track_clearance;
+		clearance			: in type_track_clearance;
 		clearance_to_edge 	: in type_distance_positive;
 		parent_net			: in pac_nets.cursor := pac_nets.no_element;
 		terminal_connection	: in type_pad_connection;
@@ -1424,7 +1424,7 @@ package body et_board_ops.fill_zones is
 						zone				=> zone,
 						relief_properties	=> relief_properties,								   
 						terminals			=> terminals_with_relief,
-						zone_clearance		=> isolation,
+						zone_clearance		=> clearance,
 						zone_linewidth		=> linewidth,
 						log_threshold		=> log_threshold + 5);
 
@@ -1467,7 +1467,7 @@ package body et_board_ops.fill_zones is
 				get_touching_polygons (
 					module_cursor			=> module_cursor,
 					zone					=> fragment,
-					zone_clearance			=> isolation,
+					zone_clearance			=> clearance,
 					linewidth				=> linewidth,									 
 					layer					=> layer,
 					parent_net				=> parent_net,
@@ -1515,12 +1515,12 @@ package body et_board_ops.fill_zones is
 
 
 		
-	begin -- fill_zone
+	begin
 		log (text => "module " & to_string (module_cursor)
 			& " fill_zone"
 			& " linewidth: " & to_string (linewidth)
 			& " layer: " & to_string (layer)
-			& " isolation: " & to_string (isolation)
+			& " clearance: " & to_string (clearance)
 			& " clearance to edge: " & to_string (clearance_to_edge)
 			& " parent net: dummy" -- CS
 			& " terminal connection: dummy"  -- CS
@@ -1641,7 +1641,7 @@ package body et_board_ops.fill_zones is
 						outer_contour		=> board_outer_contour,
 						linewidth			=> element (zone_cursor).linewidth,
 						layer				=> zone.properties.layer,
-						isolation			=> zone.isolation,
+						clearance			=> zone.isolation,
 						clearance_to_edge	=> clearance_conductor_to_edge,
 						terminal_connection	=> terminal_connection,
 						relief_properties	=> relief_properties,
@@ -1678,7 +1678,7 @@ package body et_board_ops.fill_zones is
 						outer_contour		=> board_outer_contour,
 						linewidth			=> element (zone_cursor).linewidth,
 						layer				=> zone.properties.layer,
-						isolation			=> zone.isolation,
+						clearance			=> zone.isolation,
 						clearance_to_edge	=> clearance_conductor_to_edge,
 						terminal_connection	=> terminal_connection,
 						relief_properties	=> relief_properties,
@@ -1758,7 +1758,7 @@ package body et_board_ops.fill_zones is
 							outer_contour		=> board_outer_contour,
 							linewidth			=> element (zone_cursor).linewidth,
 							layer				=> zone.properties.layer,
-							isolation			=> get_greatest (zone.isolation, net_class.clearance),
+							clearance			=> get_greatest (zone.isolation, net_class.clearance),
 							clearance_to_edge	=> clearance_conductor_to_edge,
 							parent_net			=> net_cursor,
 							terminal_connection	=> terminal_connection,
@@ -1830,7 +1830,7 @@ package body et_board_ops.fill_zones is
 							outer_contour		=> board_outer_contour,
 							linewidth			=> element (zone_cursor).linewidth,
 							layer				=> zone.properties.layer,
-							isolation			=> get_greatest (zone.isolation, net_class.clearance),
+							clearance			=> get_greatest (zone.isolation, net_class.clearance),
 							clearance_to_edge	=> clearance_conductor_to_edge,
 							parent_net			=> net_cursor,
 							terminal_connection	=> terminal_connection,
