@@ -57,7 +57,7 @@ package et_board_ops.fill_zones is
 
 	
 
-	-- This controlled type is used by the functon to_polygon below:
+	-- This controlled type is used by the functon below:
 	type type_terminal_polygon (exists : boolean) is record
 		case exists is
 			when TRUE	=> 
