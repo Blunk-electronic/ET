@@ -124,7 +124,7 @@ package et_fill_zones.boards is
 	
 -- FLOATING FILL ZONES (not connected to any net):
 	
-	type type_floating_solid is new 
+	type type_floating_solid is new  -- CS make private ?
 		type_zone (fill_style => SOLID)
 	with record
 		properties	: type_properties;
@@ -135,7 +135,7 @@ package et_fill_zones.boards is
 
 		
 		
-	type type_floating_hatched is new 
+	type type_floating_hatched is new  -- CS make private ?
 		type_zone (fill_style => HATCHED) 
 	with record
 		properties	: type_properties;
@@ -169,7 +169,7 @@ package et_fill_zones.boards is
 	type type_native_tracks_embedded is new boolean;
 	
 	
-	type type_route_solid (connection : type_pad_connection) 
+	type type_route_solid (connection : type_pad_connection)  -- CS make private ?
 		is new type_zone_solid
 	with record
 		properties	: type_properties;
@@ -197,8 +197,10 @@ package et_fill_zones.boards is
 	end record;
 
 
+
 	
-	type type_route_hatched (connection : type_pad_connection) 
+	
+	type type_route_hatched (connection : type_pad_connection)  -- CS make private ?
 		is new type_zone_hatched 
 	with record
 		properties	: type_properties;
@@ -239,7 +241,7 @@ package et_fill_zones.boards is
 		solid	: pac_route_solid.list;
 		hatched	: pac_route_hatched.list;
 	end record;
-
+	-- CS make private ?
 
 
 

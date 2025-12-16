@@ -335,7 +335,6 @@ procedure draw_conductors is
 		use pac_geometry_1;
 		
 		use pac_edges;
-		use pac_lakes;
 		use pac_stripes;
 
 		island : type_island renames element (i);
@@ -351,13 +350,10 @@ procedure draw_conductors is
 		end draw_edge;
 
 		
-		--procedure query_lake (l : in pac_lakes.cursor) is begin
 		procedure query_lake (l : in pac_polygon_list.cursor) is 
 			use pac_polygon_list;
 			lake : type_polygon renames element (l);
 		begin
-			--element (l).centerline.edges.iterate (draw_edge'access);
-			--element (l).edges.iterate (draw_edge'access);
 			lake.edges.iterate (draw_edge'access);
 		end query_lake;
 
@@ -371,7 +367,6 @@ procedure draw_conductors is
 		end draw_stripe;
 		
 	begin
-		--island.shore.centerline.edges.iterate (draw_edge'access);
 		island.shore.edges.iterate (draw_edge'access);
 		island.lakes.iterate (query_lake'access);
 		island.stripes.iterate (draw_stripe'access);

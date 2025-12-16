@@ -62,55 +62,21 @@ package et_fill_zones is
 	no_stripes : constant pac_stripes.list := pac_stripes.empty_list;
 
 
-	-- Fill zones contain islands of conducting area. Inside the islands
-	-- lots of lakes can exist. Both, islands and lakes have a shoreline
-	-- that consists of a centerline.
 
 	
--- LAKES
 	
-	-- Lakes have an INNER edge where conducting material of the 
-	-- surrounding area and inner non-conducting material meet each other.
-	-- An island may have multiple inner lakes which are not filled with
-	-- conducting material.
-	-- They are a result of holes in the PCB, tracks, pads, vias, ...
-	-- A lake causes a cutout area inside an island:
-	type type_lake is record
-		centerline	: type_polygon;
-		inner_edge	: type_polygon;
-	end record;
-
-	package pac_lakes is new doubly_linked_lists (type_lake);
-	use pac_lakes;
-
-	-- Iterates the lakes. Aborts the process when the proceed-flag goes false:
-	procedure iterate (
-		lakes	: in pac_lakes.list;
-		process	: not null access procedure (position : in pac_lakes.cursor);
-		proceed	: not null access boolean);
-
-
-	
--- ISLANDS
-	
-	-- Islands have a shore, consisting of an OUTER edge where conducting
-	-- material and non-conducting material meet each other.
-	-- Islands are filled with lots of fill lines.
-	type type_shore is record
-		centerline	: type_polygon;
-		outer_edge	: type_polygon;
-	end record;
+-- ISLANDS AND LAKES:
 	
 	
 	-- The fill zone may disintegrate into smaller islands.
 	-- In the best case there is only one island.
-	type type_island is record
+	type type_island is record -- CS make private ?
 		-- The shoreline around the island:
-		--shore	: type_shore;
 		shore	: type_polygon;
 
 		-- The lakes inside the island:
-		-- lakes	: pac_lakes.list;
+		-- They are a result of holes in the PCB, tracks, pads, vias, ...
+		-- A lake causes a cutout area inside an island:
 		lakes : pac_polygon_list.list;
 
 		-- The horizontal lines that fill the conducting area of the island:		
@@ -133,7 +99,10 @@ package et_fill_zones is
 
 
 
--- FILL STYLE	
+
+
+	
+-- FILL STYLE:
 
 	type type_style (style : type_fill_style) is record
 		linewidth : type_track_width;
@@ -160,8 +129,12 @@ package et_fill_zones is
 						style	: in type_style));
 
 
+
+
+
 	
--- A FILL ZONE IN GENERAL
+	
+-- GENERAL:
 
 
 	hatching_line_width_default : constant pac_geometry_2.type_distance_positive := 0.2;
@@ -191,7 +164,7 @@ package et_fill_zones is
 
 
 	
-	type type_zone (fill_style : type_fill_style) 
+	type type_zone (fill_style : type_fill_style) -- CS make private ?
 		is new type_contour with -- outer contour as drawn by the operator
 	record
 
@@ -307,9 +280,9 @@ package et_fill_zones is
 	
 
 	
--- SOLID FILLED ZONE:
+-- SOLIDLY FILLED ZONE:
 	
-	type type_zone_solid
+	type type_zone_solid  -- CS make private ?
 		is new type_zone (fill_style => SOLID) with null record;
 
 	package pac_zones_solid is new doubly_linked_lists (type_zone_solid);
@@ -319,7 +292,7 @@ package et_fill_zones is
 	
 -- HATCHED FILL ZONE:
 	
-	type type_zone_hatched
+	type type_zone_hatched  -- CS make private ?
 		is new type_zone (fill_style => HATCHED) with null record;
 
 	package pac_zones_hatched is new doubly_linked_lists (type_zone_hatched);

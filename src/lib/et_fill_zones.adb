@@ -48,22 +48,6 @@ package body et_fill_zones is
 
 
 	
-	procedure iterate (
-		lakes	: in pac_lakes.list;
-		process	: not null access procedure (position : in pac_lakes.cursor);
-		proceed	: not null access boolean)
-	is
-		c : pac_lakes.cursor := lakes.first;
-	begin
-		while c /= pac_lakes.no_element and proceed.all = TRUE loop
-			process (c);
-			next (c);
-		end loop;
-	end iterate;
-
-
-
-	
 
 	procedure iterate (
 		islands	: in pac_islands.list;
