@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,6 +37,7 @@
 --
 --   to do:
 
+with ada.strings;					use ada.strings;
 with ada.strings.unbounded;
 with ada.tags;
 with et_keywords;					use et_keywords;

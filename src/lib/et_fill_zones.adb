@@ -36,6 +36,11 @@
 --   history of changes:
 --
 
+
+with ada.text_io;					use ada.text_io;
+with ada.characters.handling;		use ada.characters.handling;
+
+
 with et_exceptions;				use et_exceptions;
 
 
@@ -143,6 +148,8 @@ package body et_fill_zones is
 		-- This procedure queries a lake and appends
 		-- the x-values of the candidate border to the main collection of
 		-- x-values:
+		use pac_polygon_list;
+		
 		procedure query_lake (l : in pac_polygon_list.cursor) is
 			lake : type_polygon renames element (l);
 		begin			
@@ -291,6 +298,8 @@ package body et_fill_zones is
 	is
 		debug : boolean := false;
 
+		use pac_polygon_list;
+		
 
 		-- This procedure assigns the given islands to the given zone:
 		procedure set_islands (islands : in pac_polygon_list.list) is
@@ -485,6 +494,7 @@ package body et_fill_zones is
 
 			
 			procedure query_lake (l : in pac_polygon_list.cursor) is
+				use pac_polygon_list;
 				lake : type_polygon renames element (l);
 
 				lake_status : constant type_point_status :=

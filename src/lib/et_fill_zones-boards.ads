@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,6 +36,9 @@
 --   history of changes:
 --
 --   to do:
+
+with ada.containers.indefinite_doubly_linked_lists;
+
 
 with et_net_names;				use et_net_names;
 with et_pcb_stack;				use et_pcb_stack;
