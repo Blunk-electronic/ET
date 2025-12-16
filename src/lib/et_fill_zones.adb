@@ -56,6 +56,8 @@ package body et_fill_zones is
 		end loop;
 	end iterate;
 
+
+
 	
 
 	procedure iterate (
@@ -70,6 +72,8 @@ package body et_fill_zones is
 			next (c);
 		end loop;
 	end iterate;
+
+
 
 
 	
@@ -228,6 +232,7 @@ package body et_fill_zones is
 	end make_stripes;
 
 	
+
 	
 	procedure fill_island (
 		islands		: in out pac_islands.list;
@@ -243,6 +248,8 @@ package body et_fill_zones is
 		islands.replace_element (position, island);
 	end fill_island;
 
+
+	
 
 
 -- EASING
@@ -533,232 +540,6 @@ package body et_fill_zones is
 	end get_lake;
 	
 
-	
-	
-	function get_location (
-		zone	: in type_zone;
-		point	: in type_vector;
-		debug	: in boolean := false)
-		return type_location
-	is
-		location : type_location := NON_CONDUCTING_AREA;
-		proceed_island : aliased boolean := true;
-
-		
-		procedure query_island (i : in pac_islands.cursor) is
-			island : type_island renames element (i);
-
-			-- Take the real conducting area of the island into account:
-			island_status : constant type_point_status :=
-				--get_point_status (island.shore.outer_edge, point);
-				get_point_status (island.shore, point);
-
-			proceed_lake : aliased boolean := true;
-
-			
-			--procedure query_lake (l : in pac_lakes.cursor) is
-			procedure query_lake (l : in pac_polygon_list.cursor) is
-				--lake : type_lake renames element (l);
-				lake : type_polygon renames element (l);
-
-				-- This takes the real conducting area of the surrounding island into account.
-				lake_status : constant type_point_status :=
-					--get_point_status (lake.inner_edge, point);
-					get_point_status (lake, point);
-
-			begin
-				if debug then
-					put_line ("lake");
-				end if;
-
-				case lake_status.location is
-					when OUTSIDE | ON_VERTEX | ON_EDGE =>
-						if debug then
-							put_line (" outside");
-						end if;
-						
-					when INSIDE => null; -- ignore this inner border
-						location := NON_CONDUCTING_AREA;
-						proceed_lake := false;
-						if debug then
-							put_line (" inside");
-						end if;
-					
-				end case;
-			end query_lake;
-
-			
-		begin -- query_island
-			if debug then
-				put_line ("island");
-			end if;
-			
-			case island_status.location is
-				when INSIDE | ON_VERTEX | ON_EDGE =>
-					location := CONDUCTING_AREA;
-					proceed_island := false;
-					
-					if debug then
-						put_line (" on island");
-					end if;
-					
-					iterate (island.lakes, query_lake'access, proceed_lake'access);
-										
-				when OUTSIDE => null; -- ignore this island
-			end case;
-		end query_island;
-		
-	begin
-		-- location default is NON_CONDUCTING_AREA !
-		
-		if debug then
-			put_line ("get location of point" & to_string (point));
-		end if;
-
-		iterate (zone.islands, query_island'access, proceed_island'access);
-		return location;
-	end get_location;
-
-
-
-
-	
-	
-	function get_distance_to_nearest_island (
-		zone		: in type_zone;
-		start_point	: in type_vector;
-		direction	: in type_angle;
-		debug		: in boolean := false)
-		return type_distance_to_conducting_area
-	is
-		result_edge_exists : boolean := true;
-		result_distance_to_edge : type_float_positive := 0.0;
-		
-		result_centerline_exists : boolean := true;
-		result_distance_to_centerline : type_float_positive := 0.0;
-		
-		ray : constant type_ray := (start_point, direction);
-
-		half_linewidth : constant type_float_positive := get_half_linewidth (zone);
-		
-		use pac_vectors;
-		-- intersections_with_edges : pac_vectors.list;
-		intersections_with_centerlines : pac_vectors.list;
-
-		
-		procedure query_island (i : in pac_islands.cursor) is
-			island : type_island renames element (i);
-
-			procedure query_centerline (e : in pac_edges.cursor) is
-				use pac_edges;
-				I : constant type_line_vector_intersection := 
-					get_intersection (ray, element (e));
-			begin
-				case I.status is
-					when EXISTS =>
-						if debug then
-							put_line (" intersection at " & to_string (I.intersection));
-						end if;
-
-						intersections_with_centerlines.append (I.intersection);
-
-					when others => null;
-				end case;
-			end query_centerline;
-
-			
-			-- procedure query_edge (e : in pac_edges.cursor) is
-			-- 	use pac_edges;
-			-- 	I : constant type_line_vector_intersection := 
-			-- 		get_intersection (ray, element (e));
-			-- begin
-			-- 	case I.status is
-			-- 		when EXISTS =>
-			-- 			if debug then
-			-- 				put_line (" intersection at " & to_string (I.intersection));
-			-- 			end if;
-   -- 
-			-- 			intersections_with_edges.append (I.intersection);
-   -- 
-			-- 		when others => null;
-			-- 	end case;
-			-- end query_edge;
-
-			
-		begin
-			if debug then
-				put_line (" island");
-			end if;
-
-			--island.shore.centerline.edges.iterate (query_centerline'access);
-			island.shore.edges.iterate (query_centerline'access);
-			-- island.shore.outer_edge.edges.iterate (query_edge'access);
-		end query_island;
-
-		
-	begin
-		if debug then
-			put_line ("ray " & to_string (start_point) & " direction " & to_string (direction));
-		end if;
-		
-		-- Collect the intersections of the ray with the islands
-		-- in container "intersections":
-		zone.islands.iterate (query_island'access);
-
-		-- if is_empty (intersections_with_edges) then
-		-- 	result_edge_exists := false; -- no island found in given direction
-		-- else
-		-- 	-- Extract from intersections the one that is closest to start_point:
-		-- 	remove_redundant_vectors (intersections_with_edges);
-		-- 	sort_by_distance (intersections_with_edges, start_point);
-  -- 
-		-- 	result_distance_to_edge := 
-		-- 		get_distance_total (start_point, intersections_with_edges.first_element);
-		-- end if;
-
-
-		if is_empty (intersections_with_centerlines) then
-			result_centerline_exists := false; -- no centerline found in given direction
-		else
-			-- Extract from intersections the one that is closest to start_point:
-			remove_redundant_vectors (intersections_with_centerlines);
-			sort_by_distance (intersections_with_centerlines, start_point);
-
-			result_distance_to_centerline := 
-				get_distance_total (start_point, intersections_with_centerlines.first_element);
-		end if;
-
-		
-		-- case result_edge_exists is
-		-- 	when TRUE =>
-
-				case result_centerline_exists is
-					when TRUE =>
-						return (
-							edge_exists => true,
-							distance_to_edge =>	result_distance_to_edge,
-							centerline_exists => true,
-							distance_to_centerline => result_distance_to_centerline
-							);
-
-						
-					when FALSE =>
-						return (
-							edge_exists => true,
-							distance_to_edge =>	result_distance_to_edge,
-							centerline_exists => false);
-						
-				end case;
-
-		-- 	when FALSE =>
-		-- 		return (
-		-- 			edge_exists => false,
-		-- 			centerline_exists => false);
-		-- end case;
-		
-	end get_distance_to_nearest_island;
-
-
 
 
 	
@@ -840,136 +621,6 @@ package body et_fill_zones is
 
 	
 	
-
-
-	
-	
-	
-	function get_distance_to_conducting_area (
-		zone			: in type_zone;
-		linewidth		: in type_track_width;
-		start_point		: in type_vector;
-		direction		: in type_angle;
-		location_known	: in type_location_known := false;
-		location		: in type_location := CONDUCTING_AREA;
-		log_threshold	: in type_log_level)
-		return type_distance_to_conducting_area
-	is
-		result_edge_exists : boolean := true;
-		result_distance_to_edge : type_float_positive := 0.0;
-		
-		result_centerline_exists : boolean := true;
-		result_distance_to_centerline : type_float_positive := 0.0;
-
-		location_computed : type_location;
-
-		lake : type_polygon;
-
-
-		-- This procedure determines whether the given start point
-		-- is somewhere inside the conducting area (island) or in 
-		-- a non-conducting area (lake).
-		-- If the location of the start point is already known, then
-		-- the given location is used for further steps:		
-		procedure compute_location is begin
-			if location_known then
-				location_computed := location;
-
-				log (text => "location of point already known",
-					 level => log_threshold + 1);
-
-			else
-				-- Compute the location of the start point:
-				log (text => "compute location of start point",
-					 level => log_threshold + 1);
-
-				location_computed := get_location (zone, start_point);
-			end if;
-		end compute_location;
-
-
-	begin
-		log (text => "get_distance_to_conducting_area",
-			 level => log_threshold);
-
-		log_indentation_up;
-		
-		compute_location;
-
-		-- CS rework the follwing code:
-		
-		case location_computed is
-			when CONDUCTING_AREA => 
-				-- Start point is already in conducting area.
-				log (text => "in conducting area", level => log_threshold + 1);
-
-				log_indentation_down;
-				
-				-- Since the start point is inside the conducting
-				-- area, the distance to the conducting area is zero:
-				return in_conducting_area;
-				
-
-				
-			when NON_CONDUCTING_AREA =>
-				-- Start point is either between islands or inside inner borders:
-				log (text => "in non-conducting area", level => log_threshold + 1);
-
-				
-				if between_islands (zone, start_point) then
-					log (text => "between islands", level => log_threshold + 1);
-
-					log_indentation_down;
-					
-					-- Point is between islands.
-					--return get_distance_to_nearest_island (zone, start_point, direction, debug);
-					return get_distance_to_nearest_island (zone, start_point, direction);
-
-				else
-					log (text => "inside lake", level => log_threshold + 1);
-				
-					-- Point is in a lake. Get the lake concerned:					
-					--lake := get_lake (zone, start_point, true);
-					lake := get_lake (zone, start_point);
-
-					--if debug then
-						--put_line ("lake: " & to_string (lake));
-					--end if;
-
-					-- The lake has a shore with a certain linewidth.
-					-- So the shore has a centerline.
-					-- Get the distance from the start point to
-					-- the centerline:
-					result_distance_to_centerline := 
-						get_distance_to_border (lake, start_point, direction);
-
-					--if debug then
-						--put_line ("distance to centerline of shore" 
-						-- & to_string (result_distance_to_centerline));
-					--end if;
-
-					-- In order to get the inner edge of the shore
-					-- the centerline of the lake must be shrinked by
-					-- half the linewidth of the zone:
-					offset_polygon (lake, - type_float_positive (linewidth * 0.5),
-													log_threshold + 2);
-
-					-- Get the distance to the inner edge of the shore:
-					result_distance_to_edge := 
-						get_distance_to_border (lake, start_point, direction);
-
-					log_indentation_down;
-					
-					return (
-						edge_exists				=> true,
-						distance_to_edge		=> result_distance_to_edge,
-						centerline_exists		=> true,
-						distance_to_centerline	=> result_distance_to_centerline);
-					
-				end if;
-		end case;
-	end get_distance_to_conducting_area;
-
 	
 
 

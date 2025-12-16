@@ -246,8 +246,7 @@ package et_fill_zones is
 		log_threshold	: in type_log_level);
 
 	
-	
--- QUERY POINT TO ZONE LOCATION
+
 
 	-- Returns true if the given point lies between
 	-- the islands of the given zone. 
@@ -274,89 +273,6 @@ package et_fill_zones is
 		return type_polygon;
 
 	
-								  
-	type type_location is (
-		-- A place where conducting material is.
-		-- If the place is exactly on the edge between
-		-- conducting and non-conducting area then
-		-- it is regarded as INSIDE the conducting area:
-		CONDUCTING_AREA, 
-
-		-- A place where no conducting material is. This
-		-- can be between islands or inside inner borders:
-		NON_CONDUCTING_AREA
-
-		-- NOTE: The border of islands and inner borders
-		-- has a certain linewidth. The full linewidth
-		-- IS taken into account when it is about this
-		-- type of location !
-		-- The subprograms that use type_location regard
-		-- the full linewidth as conducting area !
-		); 
-
-	
-	type type_location_known is new boolean;
-	
-
-	-- Tests the given point whether it is in the conducting
-	-- area of a zone or outside the conducting area.
-	-- See details in type specification of type_location:
-	function get_location (
-		zone	: in type_zone;
-		point	: in type_vector;
-		debug	: in boolean := false)
-		return type_location;
-
-
-
-	-- The distance between a point and a conducting area is a composite
-	-- of two distances. One is the distance to the edge of the conducting
-	-- area, the other is the distance to the center of the border of the
-	-- conducting area.
-	-- When the distance to a conducting area is computed, a ray is assumed
-	-- that starts at a certain point and travels into a given direction.
-	-- The ray can intersect an edge or the centerline of the border.
-	type type_distance_to_conducting_area (
-		edge_exists			: boolean; -- ray intersects an edge or not
-		centerline_exists	: boolean) -- ray intersects a centerline or not
-	is record
-		case edge_exists is
-			when TRUE => 
-				distance_to_edge : type_float_positive;
-
-				case centerline_exists is
-					when TRUE => 
-						distance_to_centerline : type_float_positive;
-					when FALSE => null;
-				end case;
-
-			-- If the ray does not intersect an edge, then it never
-			-- intersects a centerline:
-			when FALSE => null;
-		end case;
-	end record;	
-
-
-	-- If the ray already starts in a conducting area then the
-	-- return of the functions get_distance_to_nearest_island and
-	-- get_distance_to_conducting_area is just this constant:
-	in_conducting_area : constant type_distance_to_conducting_area := (
-		edge_exists				=> true,
-		distance_to_edge		=> 0.0,
-		centerline_exists		=> true,
-		distance_to_centerline	=> 0.0);
-
-	
-	-- Returns the distance of a point to the nearest
-	-- island into the given direction.
-	-- Assumes, the given start point is somewhere between the islands.
-	function get_distance_to_nearest_island ( -- CS remove ?
-		zone		: in type_zone;
-		start_point	: in type_vector;
-		direction	: in type_angle;
-		debug		: in boolean := false)
-		return type_distance_to_conducting_area;
-
 
 	
 	-- Outputs the distance of a point to the nearest
@@ -378,26 +294,6 @@ package et_fill_zones is
 		log_threshold	: in type_log_level);
 
 	
-	-- Returns the distance of a point to the conducting area
-	-- in the given direction. By default the argument
-	-- location_known is false. This means, that the location of
-	-- the given point must be determined by the function at first.
-	-- In that case, the argument "location" does not matter.
-	-- If the location is already known by the caller, then computing
-	-- time can be saved. The known location should be
-	-- passed explicitely by the caller. Location_known must be true and
-	-- the actual location given by "location".
-	-- Because the zone has a certain linewidth (for borders of islands and lakes)
-	-- the linewidth is taken into account:
-	function get_distance_to_conducting_area (
-		zone			: in type_zone;
-		linewidth		: in type_track_width; -- of the zone										 
-		start_point		: in type_vector;
-		direction		: in type_angle;
-		location_known	: in type_location_known := false;
-		location		: in type_location := CONDUCTING_AREA; -- don't care if location_known is false
-		log_threshold	: in type_log_level)
-		return type_distance_to_conducting_area;
 	
 
 	-- Outputs the distance from a point into the 
