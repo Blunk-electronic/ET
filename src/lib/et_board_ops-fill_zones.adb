@@ -427,17 +427,10 @@ package body et_board_ops.fill_zones is
 
 			
 			procedure query_net (net_cursor : in pac_nets.cursor) is
-				net_class : constant type_net_class := get_net_class (module_cursor, net_cursor);
-				
 				-- The offset by which the polyons of the net
-				-- are to be expanded depends on the candidate net class.
-				-- The clearance between net and zone is either the given zone_clearance
-				-- or the clearance of the net itself. The greatest of them is applied:				
-				clearance : constant type_track_clearance := 
-					get_greatest (zone_clearance, net_class.clearance);
-
+				-- are to be expanded:
 				offset : constant type_float_positive := 
-					type_float_positive (linewidth * 0.5 + clearance);
+					type_float_positive (linewidth * 0.5 + zone_clearance);
 
 				-- The polygons of the candidate net are collected here:
 				polygons_of_candidate_net : pac_polygon_list.list;
@@ -1863,6 +1856,7 @@ package body et_board_ops.fill_zones is
 				
 				procedure query_net is begin
 					log (text => "net " & get_net_name (net_cursor), level => log_threshold + 2);
+					-- CS log net class
 					
 					log_indentation_up;
 

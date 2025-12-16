@@ -331,8 +331,7 @@ package et_board_ops.fill_zones is
 
 	-- Fills the given zone that is in the given layer
 	-- with the given linewidth and isolation to foreign conductor
-	-- objects. If a certain conductor object requires a greater
-	-- clearance than the isolation, then that clearance will take precedence.
+	-- objects.
 	-- If a parent net is given - via cursor - then the conductor objects of this
 	-- net will be treated in a special way. Then the given zone must be a 
 	-- type_route_hatched or a type_route_solid.
