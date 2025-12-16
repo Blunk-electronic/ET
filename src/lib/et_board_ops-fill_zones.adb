@@ -1348,8 +1348,8 @@ package body et_board_ops.fill_zones is
 		clearance			: in type_track_clearance;
 		clearance_to_edge 	: in type_distance_positive;
 		parent_net			: in pac_nets.cursor := pac_nets.no_element;
-		terminal_connection	: in type_pad_connection;
-		relief_properties	: in type_relief_properties;
+		terminal_connection	: in type_pad_connection := pad_connection_default;
+		relief_properties	: in type_relief_properties := relief_properties_default;
 		reliefes			: out pac_reliefes.list;
 		log_threshold		: in type_log_level)
 	is
@@ -1592,7 +1592,9 @@ package body et_board_ops.fill_zones is
 		terminal_reliefes	: pac_reliefes.list;
 		terminal_connection	: type_pad_connection := pad_connection_default;
 		terminal_technology	: type_pad_technology := pad_technology_default;
+		
 		native_tracks_embedded : type_native_tracks_embedded := false;
+		-- CS currently not used
 
 		
 		
@@ -1828,14 +1830,6 @@ package body et_board_ops.fill_zones is
 		clearance_conductor_to_edge : type_distance_positive renames 
 			design_rules.clearances.conductor_to_board_edge;
 
-			
-		-- Temporarily storage for properties of zones connected with a net:
-		relief_properties	: type_relief_properties;
-		terminal_reliefes	: pac_reliefes.list;
-		terminal_connection	: type_pad_connection := pad_connection_default;
-		terminal_technology	: type_pad_technology := pad_technology_default;
-		native_tracks_embedded : type_native_tracks_embedded := false;
-		-- CS no need
 	
 	
 	
@@ -1864,8 +1858,6 @@ package body et_board_ops.fill_zones is
 					layer				=> zone.properties.layer,
 					clearance			=> zone.isolation,
 					clearance_to_edge	=> clearance_conductor_to_edge,
-					terminal_connection	=> terminal_connection,
-					relief_properties	=> relief_properties,
 					reliefes			=> reliefes,
 					log_threshold		=> log_threshold + 2);
 			end do_it;
@@ -1907,8 +1899,6 @@ package body et_board_ops.fill_zones is
 					layer				=> zone.properties.layer,
 					clearance			=> zone.isolation,
 					clearance_to_edge	=> clearance_conductor_to_edge,
-					terminal_connection	=> terminal_connection,
-					relief_properties	=> relief_properties,
 					reliefes			=> reliefes,
 					log_threshold		=> log_threshold + 2);
 		

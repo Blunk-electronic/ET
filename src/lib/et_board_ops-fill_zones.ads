@@ -354,8 +354,8 @@ package et_board_ops.fill_zones is
 		clearance			: in type_track_clearance;
 		clearance_to_edge 	: in type_distance_positive;
 		parent_net			: in pac_nets.cursor := pac_nets.no_element;
-		terminal_connection	: in type_pad_connection;
-		relief_properties	: in type_relief_properties;
+		terminal_connection	: in type_pad_connection := pad_connection_default;
+		relief_properties	: in type_relief_properties := relief_properties_default;
 		reliefes			: out pac_reliefes.list;
 		log_threshold		: in type_log_level);
 

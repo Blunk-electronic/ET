@@ -128,6 +128,9 @@ package et_thermal_relief is
 		gap_max		: type_thermal_gap := type_thermal_gap'first;
 	end record;
 	
+
+	relief_properties_default : constant type_relief_properties := (others => <>);
+	
 	
 
 	keyword_relief_width_min	: constant string := "relief_width_min";
