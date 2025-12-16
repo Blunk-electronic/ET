@@ -1562,11 +1562,385 @@ package body et_board_ops.fill_zones is
 
 
 
+	
 
 
 
+	procedure fill_connected_zones (
+		module_cursor		: in pac_generic_modules.cursor;
+		board_outer_contour : in type_polygon;
+		nets 				: in pac_net_names.list := no_net_names;
+		design_rules		: in type_design_rules_board;
+		log_threshold		: in type_log_level)
+	is
+		use et_fill_zones.boards;
+	
+		use et_nets;
+		use pac_net_names;
+		
+		use pac_nets;
+		use pac_route_solid;
+		use pac_route_hatched;
 
 
+		clearance_conductor_to_edge : type_distance_positive renames 
+			design_rules.clearances.conductor_to_board_edge;
+		
+		
+		-- Temporarily storage for properties of zones connected with a net:
+		relief_properties	: type_relief_properties;
+		terminal_reliefes	: pac_reliefes.list;
+		terminal_connection	: type_pad_connection := pad_connection_default;
+		terminal_technology	: type_pad_technology := pad_technology_default;
+		native_tracks_embedded : type_native_tracks_embedded := false;
+
+		
+		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			net_cursor : pac_nets.cursor;
+			net_class : type_net_class;		
+
+			
+			
+			procedure route_solid (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is 
+				-- The cursor that points to the zone being filled:
+				use pac_route_solid;
+				zone_cursor : pac_route_solid.cursor := net.route.zones.solid.first;
+
+
+				procedure do_it (
+					zone : in out type_route_solid)
+				is 
+					-- Backup the zone in case something went wrong:
+					zone_bakup : constant type_route_solid := zone; 
+				begin
+					-- load temporarily variables of zone properties:
+					relief_properties := zone.relief_properties;
+					terminal_connection	:= zone.connection;
+					native_tracks_embedded := zone.native_tracks_embedded;
+
+					if zone.connection = SOLID then
+						terminal_technology	:= zone.technology;
+					end if;
+
+
+					fill_zone (
+						module_cursor		=> module_cursor,
+						zone				=> zone,
+						outer_contour		=> board_outer_contour,
+						linewidth			=> element (zone_cursor).linewidth,
+						layer				=> zone.properties.layer,
+						clearance			=> get_greatest (zone.isolation, net_class.clearance),
+						clearance_to_edge	=> clearance_conductor_to_edge,
+						parent_net			=> net_cursor,
+						terminal_connection	=> terminal_connection,
+						relief_properties	=> relief_properties,
+						reliefes			=> zone.reliefes,
+						log_threshold		=> log_threshold + 3);
+						
+
+					-- If something went wrong, output some
+					-- helpful information and restore the zone:
+					exception when event:
+						others =>
+						log (
+							importance => WARNING,
+							text => exception_information (event));
+					
+						log (
+							importance => WARNING,
+							text => "Zone at"
+								& to_string (get_corner_nearest_to_origin (zone))
+								& " has NOT been filled !");
+							--level => log_threshold + 3);
+
+						-- CS log zone properties ?
+						-- CS write warning in GUI status bar
+						
+						zone := zone_bakup;			
+				end do_it;
+				
+				
+			begin
+				while has_element (zone_cursor) loop
+
+					-- do the filling
+					net.route.zones.solid.update_element (zone_cursor, do_it'access);
+				
+					next (zone_cursor);
+				end loop;
+			end route_solid;
+
+
+			
+			
+			
+			procedure route_hatched (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is 
+				use pac_route_hatched;
+				zone_cursor : pac_route_hatched.cursor := net.route.zones.hatched.first;
+
+
+				procedure do_it (
+					zone : in out type_route_hatched)
+				is begin
+					-- load temporarily variables of zone properties:
+					relief_properties := zone.relief_properties;
+					terminal_connection	:= zone.connection;
+					native_tracks_embedded := zone.native_tracks_embedded;
+
+					if zone.connection = SOLID then
+						terminal_technology	:= zone.technology;
+					end if;
+					
+		
+					fill_zone (
+						module_cursor		=> module_cursor,
+						zone				=> zone,
+						outer_contour		=> board_outer_contour,
+						linewidth			=> element (zone_cursor).linewidth,
+						layer				=> zone.properties.layer,
+						clearance			=> get_greatest (zone.isolation, net_class.clearance),
+						clearance_to_edge	=> clearance_conductor_to_edge,
+						parent_net			=> net_cursor,
+						terminal_connection	=> terminal_connection,
+						relief_properties	=> relief_properties,
+						reliefes			=> zone.reliefes,
+						log_threshold		=> log_threshold + 3);
+
+						
+				end do_it;
+					
+				
+			begin
+				while has_element (zone_cursor) loop
+
+					-- do the filling
+					net.route.zones.hatched.update_element (zone_cursor, do_it'access);
+
+					next (zone_cursor);
+				end loop;
+			end route_hatched;
+
+
+			
+			procedure query_net is begin
+				log (text => "net " & get_net_name (net_cursor), level => log_threshold + 2);
+				-- CS log net class
+				
+				log_indentation_up;
+
+				net_class := get_net_class (module_cursor, net_cursor);
+				
+				update_element (module.nets, net_cursor, route_solid'access);
+				update_element (module.nets, net_cursor, route_hatched'access);
+
+				log_indentation_down;
+			end query_net;
+			
+
+			
+			procedure query_given_net (gn : pac_net_names.cursor) is 
+				use pac_net_name;
+			begin
+				-- Locate the given net in the module.
+				-- If if does not exist, issue a warning.
+				net_cursor := find (module.nets, element (gn));
+				-- CS rework
+
+				if has_element (net_cursor) then
+					query_net;
+				else
+					log (
+						importance => WARNING, 
+						text => "Net " & enclose_in_quotes (to_string (element (gn))) 
+							& " does not exist !", 
+						level => log_threshold + 2);
+				end if;
+			end query_given_net;
+
+			
+			
+		begin
+			if is_empty (nets) then
+				log (text => "fill all zones in all nets", level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate through all nets of the module:
+				net_cursor := module.nets.first;
+
+				while has_element (net_cursor) loop
+					query_net;
+					next (net_cursor);
+				end loop;
+
+				log_indentation_down;
+				
+			else
+				log (text => "fill zones in dedicated nets", level => log_threshold + 1);
+				log_indentation_up;
+				
+				-- Iterate through the list of given net names:
+				nets.iterate (query_given_net'access);
+				log_indentation_down;
+			end if;
+		end query_module;
+
+
+		
+	begin 
+		log (text => "module " & to_string (module_cursor)
+			& " fill_connected_zones", level => log_threshold);
+			
+		log_indentation_up;
+		
+		update_element (generic_modules, module_cursor, query_module'access);
+		
+		log_indentation_down;		
+	end fill_connected_zones;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	procedure fill_floating_zones (
+		module_cursor		: in pac_generic_modules.cursor;
+		board_outer_contour : in type_polygon;
+		design_rules		: in type_design_rules_board;
+		log_threshold		: in type_log_level)
+	is
+		use et_fill_zones.boards;
+		
+	
+		clearance_conductor_to_edge : type_distance_positive renames 
+			design_rules.clearances.conductor_to_board_edge;
+
+			
+		-- Temporarily storage for properties of zones connected with a net:
+		relief_properties	: type_relief_properties;
+		terminal_reliefes	: pac_reliefes.list;
+		terminal_connection	: type_pad_connection := pad_connection_default;
+		terminal_technology	: type_pad_technology := pad_technology_default;
+		native_tracks_embedded : type_native_tracks_embedded := false;
+		-- CS no need
+	
+	
+	
+		procedure floating_solid (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_floating_solid;
+			
+			zone_cursor : pac_floating_solid.cursor := 
+				module.board.conductors_floating.zones.solid.first;
+
+			
+			procedure do_it (
+				zone : in out type_floating_solid)
+			is 
+				reliefes : pac_reliefes.list; -- always empty with floating zones
+			begin
+				-- CS log lower left corner of zone
+				
+				fill_zone (
+					module_cursor		=> module_cursor,
+					zone				=> zone,
+					outer_contour		=> board_outer_contour,
+					linewidth			=> element (zone_cursor).linewidth,
+					layer				=> zone.properties.layer,
+					clearance			=> zone.isolation,
+					clearance_to_edge	=> clearance_conductor_to_edge,
+					terminal_connection	=> terminal_connection,
+					relief_properties	=> relief_properties,
+					reliefes			=> reliefes,
+					log_threshold		=> log_threshold + 2);
+			end do_it;
+
+			
+		begin
+			while has_element (zone_cursor) loop
+				module.board.conductors_floating.zones.solid.update_element 
+					(zone_cursor, do_it'access);
+					
+				next (zone_cursor);
+			end loop;
+		end floating_solid;
+
+
+
+		
+		procedure floating_hatched (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_floating_hatched;
+			zone_cursor : pac_floating_hatched.cursor := 
+				module.board.conductors_floating.zones.hatched.first;
+
+			
+			procedure do_it (
+				zone : in out type_floating_hatched)
+			is 
+				reliefes : pac_reliefes.list; -- always empty with floating zones
+			begin
+				-- CS log lower left corner of zone
+				
+				fill_zone (
+					module_cursor		=> module_cursor,
+					zone				=> zone,
+					outer_contour		=> board_outer_contour,
+					linewidth			=> element (zone_cursor).linewidth,
+					layer				=> zone.properties.layer,
+					clearance			=> zone.isolation,
+					clearance_to_edge	=> clearance_conductor_to_edge,
+					terminal_connection	=> terminal_connection,
+					relief_properties	=> relief_properties,
+					reliefes			=> reliefes,
+					log_threshold		=> log_threshold + 2);
+		
+			end do_it;
+
+			
+		begin
+			while has_element (zone_cursor) loop
+				module.board.conductors_floating.zones.hatched.update_element
+					(zone_cursor, do_it'access);
+					
+				next (zone_cursor);
+			end loop;
+		end floating_hatched;
+	
+	
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " fill_floating_zones", level => log_threshold);
+			
+		log_indentation_up;
+		
+		update_element (generic_modules, module_cursor, floating_solid'access);
+		update_element (generic_modules, module_cursor, floating_hatched'access);
+		
+		log_indentation_down;	
+	end fill_floating_zones;
+
+		
+		
+		
+									   
 
 
 
@@ -1586,8 +1960,6 @@ package body et_board_ops.fill_zones is
 		
 		use pac_net_names;
 
-		all_zones : boolean;
-
 		
 		-- Get the design rules:
 		design_rules : constant type_design_rules_board := 
@@ -1602,326 +1974,9 @@ package body et_board_ops.fill_zones is
 		-- filling zones of nets. Each net may have an individual setting for 
 		-- the with of the fill lines.
 		board_outer_contour : type_polygon;
-
-		
-
-		-- Temporarily storage for properties of zones connected with a net:
-		relief_properties	: type_relief_properties;
-		terminal_reliefes	: pac_reliefes.list;
-		terminal_connection	: type_pad_connection := pad_connection_default;
-		terminal_technology	: type_pad_technology := pad_technology_default;
-		native_tracks_embedded : type_native_tracks_embedded := false;
-
-
-
-		
-
 		
 		
-		procedure fill_floating_zones is
-			use pac_floating_solid;
-			use pac_floating_hatched;
-			
-
-			procedure floating_solid (
-				module_name	: in pac_module_name.bounded_string;
-				module		: in out type_generic_module) 
-			is
-				zone_cursor : pac_floating_solid.cursor := module.board.conductors_floating.zones.solid.first;
-
-				
-				procedure do_it (
-					zone : in out type_floating_solid)
-				is 
-					reliefes : pac_reliefes.list; -- always empty with floating zones
-				begin
-					fill_zone (
-						module_cursor		=> module_cursor,
-						zone				=> zone,
-						outer_contour		=> board_outer_contour,
-						linewidth			=> element (zone_cursor).linewidth,
-						layer				=> zone.properties.layer,
-						clearance			=> zone.isolation,
-						clearance_to_edge	=> clearance_conductor_to_edge,
-						terminal_connection	=> terminal_connection,
-						relief_properties	=> relief_properties,
-						reliefes			=> reliefes,
-						log_threshold		=> log_threshold + 2);
-				end do_it;
-
-				
-			begin
-				while has_element (zone_cursor) loop
-					module.board.conductors_floating.zones.solid.update_element (zone_cursor, do_it'access);
-					next (zone_cursor);
-				end loop;
-			end floating_solid;
-
-
-
-			
-			procedure floating_hatched (
-				module_name	: in pac_module_name.bounded_string;
-				module		: in out type_generic_module) 
-			is
-				zone_cursor : pac_floating_hatched.cursor := module.board.conductors_floating.zones.hatched.first;
-
-				
-				procedure do_it (
-					zone : in out type_floating_hatched)
-				is 
-					reliefes : pac_reliefes.list; -- always empty with floating zones
-				begin
-					fill_zone (
-						module_cursor		=> module_cursor,
-						zone				=> zone,
-						outer_contour		=> board_outer_contour,
-						linewidth			=> element (zone_cursor).linewidth,
-						layer				=> zone.properties.layer,
-						clearance			=> zone.isolation,
-						clearance_to_edge	=> clearance_conductor_to_edge,
-						terminal_connection	=> terminal_connection,
-						relief_properties	=> relief_properties,
-						reliefes			=> reliefes,
-						log_threshold		=> log_threshold + 2);
-			
-				end do_it;
-
-				
-			begin
-				while has_element (zone_cursor) loop
-					module.board.conductors_floating.zones.hatched.update_element (zone_cursor, do_it'access);
-					next (zone_cursor);
-				end loop;
-			end floating_hatched;
-
-			
-		begin
-			log (text => "fill_floating_zones", level => log_threshold + 1);
-			update_element (generic_modules, module_cursor, floating_solid'access);
-			update_element (generic_modules, module_cursor, floating_hatched'access);
-		end fill_floating_zones;
-
-
-
-
-		
-		
-		
-		-- Fills zones that are connected with a net:
-		procedure fill_connected_zones is
-			use et_nets;
-			
-			use pac_nets;
-			use pac_route_solid;
-			use pac_route_hatched;
-
-
-			
-			procedure query_module (
-				module_name	: in pac_module_name.bounded_string;
-				module		: in out type_generic_module) 
-			is
-				net_cursor : pac_nets.cursor;
-				net_class : type_net_class;		
-
-				
-				
-				procedure route_solid (
-					net_name	: in pac_net_name.bounded_string;
-					net			: in out type_net)
-				is 
-					-- The cursor that points to the zone being filled:
-					use pac_route_solid;
-					zone_cursor : pac_route_solid.cursor := net.route.zones.solid.first;
-
-
-					procedure do_it (
-						zone : in out type_route_solid)
-					is 
-						-- Backup the zone in case something went wrong:
-						zone_bakup : constant type_route_solid := zone; 
-					begin
-						-- load temporarily variables of zone properties:
-						relief_properties := zone.relief_properties;
-						terminal_connection	:= zone.connection;
-						native_tracks_embedded := zone.native_tracks_embedded;
-
-						if zone.connection = SOLID then
-							terminal_technology	:= zone.technology;
-						end if;
-
-
-						fill_zone (
-							module_cursor		=> module_cursor,
-							zone				=> zone,
-							outer_contour		=> board_outer_contour,
-							linewidth			=> element (zone_cursor).linewidth,
-							layer				=> zone.properties.layer,
-							clearance			=> get_greatest (zone.isolation, net_class.clearance),
-							clearance_to_edge	=> clearance_conductor_to_edge,
-							parent_net			=> net_cursor,
-							terminal_connection	=> terminal_connection,
-							relief_properties	=> relief_properties,
-							reliefes			=> zone.reliefes,
-							log_threshold		=> log_threshold + 3);
-							
-
-						-- If something went wrong, output some
-						-- helpful information and restore the zone:
-						exception when event:
-							others =>
-							log (
-								importance => WARNING,
-								text => exception_information (event));
-						
-							log (
-								importance => WARNING,
-								text => "Zone at"
-									& to_string (get_corner_nearest_to_origin (zone))
-									& " has NOT been filled !");
-								--level => log_threshold + 3);
-
-							-- CS log zone properties ?
-							-- CS write warning in GUI status bar
-							
-							zone := zone_bakup;			
-					end do_it;
-					
-					
-				begin
-					while has_element (zone_cursor) loop
-
-						-- do the filling
-						net.route.zones.solid.update_element (zone_cursor, do_it'access);
-					
-						next (zone_cursor);
-					end loop;
-				end route_solid;
-
-
-				
-				
-				
-				procedure route_hatched (
-					net_name	: in pac_net_name.bounded_string;
-					net			: in out type_net)
-				is 
-					use pac_route_hatched;
-					zone_cursor : pac_route_hatched.cursor := net.route.zones.hatched.first;
-
-
-					procedure do_it (
-						zone : in out type_route_hatched)
-					is begin
-						-- load temporarily variables of zone properties:
-						relief_properties := zone.relief_properties;
-						terminal_connection	:= zone.connection;
-						native_tracks_embedded := zone.native_tracks_embedded;
-
-						if zone.connection = SOLID then
-							terminal_technology	:= zone.technology;
-						end if;
-						
-			
-						fill_zone (
-							module_cursor		=> module_cursor,
-							zone				=> zone,
-							outer_contour		=> board_outer_contour,
-							linewidth			=> element (zone_cursor).linewidth,
-							layer				=> zone.properties.layer,
-							clearance			=> get_greatest (zone.isolation, net_class.clearance),
-							clearance_to_edge	=> clearance_conductor_to_edge,
-							parent_net			=> net_cursor,
-							terminal_connection	=> terminal_connection,
-							relief_properties	=> relief_properties,
-							reliefes			=> zone.reliefes,
-							log_threshold		=> log_threshold + 3);
-
-							
-					end do_it;
-						
-					
-				begin
-					while has_element (zone_cursor) loop
-
-						-- do the filling
-						net.route.zones.hatched.update_element (zone_cursor, do_it'access);
-
-						next (zone_cursor);
-					end loop;
-				end route_hatched;
-
-
-				
-				procedure query_net is begin
-					log (text => "net " & get_net_name (net_cursor), level => log_threshold + 2);
-					-- CS log net class
-					
-					log_indentation_up;
-
-					net_class := get_net_class (module_cursor, net_cursor);
-					
-					update_element (module.nets, net_cursor, route_solid'access);
-					update_element (module.nets, net_cursor, route_hatched'access);
-
-					log_indentation_down;
-				end query_net;
-				
-
-				
-				procedure query_given_net (gn : pac_net_names.cursor) is 
-					use pac_net_name;
-				begin
-					-- Locate the given net in the module.
-					-- If if does not exist, issue a warning.
-					net_cursor := find (module.nets, element (gn));
-
-					if has_element (net_cursor) then
-						query_net;
-					else
-						log (
-							importance => WARNING, 
-							text => "Net " & enclose_in_quotes (to_string (element (gn))) 
-								& " does not exist !", 
-							level => log_threshold + 2);
-					end if;
-				end query_given_net;
-
-				
-				
-			begin
-				if all_zones then
-
-					-- we must query all nets:
-					net_cursor := module.nets.first;
-
-					-- Iterate through all nets of the module:
-					while has_element (net_cursor) loop
-						query_net;
-						next (net_cursor);
-					end loop;
-
-				else
-					-- we query only the nets given by argument "nets":
-					nets.iterate (query_given_net'access);
-				end if;
-			end query_module;
-
-
-			
-		begin 
-			log (text => "fill_connected_zones", level => log_threshold + 1);
-			log_indentation_up;
-			update_element (generic_modules, module_cursor, query_module'access);
-			log_indentation_down;
-		end fill_connected_zones;
-
-		
-		
-		
-	begin -- fill_zones
-
+	begin
 		log (text => "module " & to_string (module_cursor)
 			& " fill zones. Log category " & to_string (log_category),
 			level => log_threshold);
@@ -1950,33 +2005,46 @@ package body et_board_ops.fill_zones is
 		
 		
 		if is_empty (nets) then
+			-- Fill all zones if no explicit net names given:			
 			
-			-- Fill all zones if no explicit net names given:
-			
-			log (text => "fill all zones", level => log_threshold + 1);
-
-			all_zones := true;
-			
+			log (text => "fill zones of all nets", level => log_threshold + 1);
 			log_indentation_up;
-			fill_connected_zones;
-
-			fill_floating_zones;
+			
+			fill_connected_zones (
+				module_cursor		=> module_cursor,
+				board_outer_contour	=> board_outer_contour,
+				design_rules		=> design_rules,
+				log_threshold		=> log_threshold + 2);
 
 			log_indentation_down;
 						
 		else
 			log (text => "fill zones of dedicated nets", level => log_threshold + 1);
-
-			all_zones := false;
-			
 			log_indentation_up;
-			fill_connected_zones;
-			log_indentation_down;
+
+			fill_connected_zones (
+				module_cursor		=> module_cursor,
+				board_outer_contour	=> board_outer_contour,
+				nets				=> nets,
+				design_rules		=> design_rules,
+				log_threshold		=> log_threshold + 2);
 			
+			log_indentation_down;			
 		end if;
 
+		
+		log (text => "fill floating zones", level => log_threshold + 1);
+		log_indentation_up;
+		
+		fill_floating_zones (
+			module_cursor		=> module_cursor,
+			board_outer_contour	=> board_outer_contour,
+			design_rules		=> design_rules,
+			log_threshold		=> log_threshold + 2);
+		
 		log_indentation_down;
 		
+		log_indentation_down;		
 	end fill_zones;
 
 

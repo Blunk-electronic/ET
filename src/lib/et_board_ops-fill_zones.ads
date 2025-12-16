@@ -361,6 +361,28 @@ package et_board_ops.fill_zones is
 
 
 
+	-- Fills the zones which are connected with a net.
+	-- If parameter "nets" is empty, then all zones of all
+	-- nets are filled.
+	-- If "nets" contains dedicated net names, then only those
+	-- nets are adressed:
+	procedure fill_connected_zones (
+		module_cursor		: in pac_generic_modules.cursor;
+		board_outer_contour : in type_polygon;
+		nets 				: in pac_net_names.list := no_net_names;
+		design_rules		: in type_design_rules_board;
+		log_threshold		: in type_log_level);
+
+
+
+	-- Fills all zones which are not connected with a net:		
+	procedure fill_floating_zones (
+		module_cursor		: in pac_generic_modules.cursor;
+		board_outer_contour : in type_polygon;
+		design_rules		: in type_design_rules_board;
+		log_threshold		: in type_log_level);
+
+		
 
 	-- Fills fill zones. If nets is empty, then all
 	-- zones will be filled (even those who are floating).
