@@ -648,17 +648,18 @@ package body et_board_ops.fill_zones is
 					-- Convert the terminal outline to a polygon:
 					terminal_polygon : type_terminal_polygon := to_polygon (
 						module_cursor, device_cursor, terminal_cursor, 
-						layer_category, fill_tolerance, log_threshold + 3);
+						layer_category, fill_tolerance, log_threshold + 4);
 					-- CS difficult to debug. use subprocedure
 				begin
 					log (text => "terminal " & get_terminal_name (terminal_cursor),
-						level => log_threshold + 2);
+						level => log_threshold + 3);
 						
 					if terminal_polygon.exists then
 						-- CS more log messages
 
 						-- Expand the polygon by offset:
-						offset_polygon (terminal_polygon.polygon, offset, log_threshold + 3);
+						offset_polygon (terminal_polygon.polygon, offset,
+							log_threshold + 4);
 
 						-- Append the polygon to the temporarily
 						-- polygon collection:
@@ -672,7 +673,7 @@ package body et_board_ops.fill_zones is
 				-- we look at real devices exclusively:
 				if is_real (device_cursor) then
 					log (text => "device " & get_device_name (device_cursor),
-						level => log_threshold + 1);
+						level => log_threshold + 2);
 					
 					log_indentation_up;
 				
@@ -692,10 +693,16 @@ package body et_board_ops.fill_zones is
 			-- Iterate through the electrical devices:
 			module.devices.iterate (query_device'access);
 
+			-- CS ? multi_union (polygons_tmp);
+			
 			-- Extract those polygons from the temporarily collection
 			-- which are inside the zone or which touch the zone:
 			get_touching_polygons (zone, polygons_tmp);
 
+			-- Log the number of polygons that have been found:
+			log (text => "polygons: " & get_count (polygons_tmp),
+				 level => log_threshold + 1);
+			
 			-- Append the temporarily polygon collection to the result:
 			append (polygons, polygons_tmp);
 		end query_module;
@@ -709,16 +716,13 @@ package body et_board_ops.fill_zones is
 			& " offset " & to_string (offset)
 			& " zone linewidth: " & to_string (linewidth),			
 			level => log_threshold);
-
 		
 		log_indentation_up;
 	
 		query_element (module_cursor, query_module'access);
 
-		-- CS log number of polygons
+		-- CS ? multi_union (polygons);
 		
-		-- multi_union (polygons);
-
 		log_indentation_down;
 	end get_polygons_of_unconnected_terminals;
 	
