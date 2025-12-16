@@ -1949,18 +1949,7 @@ package body et_board_ops.fill_zones is
 		log_category	: in type_log_category;
 		log_threshold	: in type_log_level;
 		nets 			: in pac_net_names.list := no_net_names)
-	is 
-		use et_contour_to_polygon;
-		use et_board_ops.board_contour;
-		use et_fill_zones.boards;
-
-		use pac_geometry_brd;
-		use pac_polygons;		
-		use pac_polygon_offsetting;
-		
-		use pac_net_names;
-
-		
+	is		
 		-- Get the design rules:
 		design_rules : constant type_design_rules_board := 
 			get_pcb_design_rules (module_cursor);
@@ -1972,8 +1961,90 @@ package body et_board_ops.fill_zones is
 		-- The outer contour of the board. After shrinking by the
 		-- conductor-to-edge clearance this serves as master for
 		-- filling zones of nets. Each net may have an individual setting for 
-		-- the with of the fill lines.
+		-- the width of the fill lines:
 		board_outer_contour : type_polygon;
+		
+		-- This procedure converts the outer board contour to
+		-- a polygon, offsets it by clearance_conductor_to_edge
+		-- and stores it in board_outer_contour:		
+		procedure process_board_contour is
+			use et_board_ops.board_contour;
+			use et_contour_to_polygon;
+			use pac_polygon_offsetting;		
+		begin
+			log (text => "convert outer board contour to polygon",
+				level => log_threshold + 1);
+			
+			-- Convert to polygon:
+			board_outer_contour := to_polygon (
+				contour		=> get_outer_contour (module_cursor),
+				mode		=> SHRINK,										 
+				tolerance	=> fill_tolerance);
+			
+			-- Shrink the outer board edge by the conductor-to-edge clearance
+			-- as given by the design rules:
+			log (text => "offset (shrink) outer board contour by clearance to edge (DRU): "
+				-- & enclose_in_quotes (dru_parameter_clearance_conductor_to_board_edge) 
+				& to_string (- clearance_conductor_to_edge),
+				level => log_threshold + 1);	
+			
+			offset_polygon (
+				polygon			=> board_outer_contour, 
+				offset			=> type_float_model (- clearance_conductor_to_edge),
+				log_threshold	=> log_threshold + 2);
+			
+		end process_board_contour;
+		
+		
+		-- This procedure fills the zones which are
+		-- connected with nets:
+		procedure process_connected_zones is
+			use pac_net_names;
+		begin
+			if is_empty (nets) then
+				-- Fill all zones if no explicit net names given:			
+				
+				log (text => "fill zones of all nets", level => log_threshold + 1);
+				log_indentation_up;
+				
+				fill_connected_zones (
+					module_cursor		=> module_cursor,
+					board_outer_contour	=> board_outer_contour,
+					design_rules		=> design_rules,
+					log_threshold		=> log_threshold + 2);
+
+				log_indentation_down;
+							
+			else
+				log (text => "fill zones of dedicated nets", level => log_threshold + 1);
+				log_indentation_up;
+
+				fill_connected_zones (
+					module_cursor		=> module_cursor,
+					board_outer_contour	=> board_outer_contour,
+					nets				=> nets,
+					design_rules		=> design_rules,
+					log_threshold		=> log_threshold + 2);
+				
+				log_indentation_down;			
+			end if;
+		end process_connected_zones;
+		
+
+		-- This procedure fills the zones which are
+		-- not connected with nets. We call them "floating zones":
+		procedure process_floating_zones is begin
+			log (text => "fill floating zones", level => log_threshold + 1);
+			log_indentation_up;
+			
+			fill_floating_zones (
+				module_cursor		=> module_cursor,
+				board_outer_contour	=> board_outer_contour,
+				design_rules		=> design_rules,
+				log_threshold		=> log_threshold + 2);
+			
+			log_indentation_down;
+		end process_floating_zones;
 		
 		
 	begin
@@ -1983,67 +2054,10 @@ package body et_board_ops.fill_zones is
 
 		log_indentation_up;
 
-		log (text => "convert outer board contour to polygon", level => log_threshold + 1);
-		
-		board_outer_contour := to_polygon (
-			contour		=> get_outer_contour (module_cursor),
-			mode		=> SHRINK,										 
-			tolerance	=> fill_tolerance);
+		process_board_contour;
+		process_connected_zones;
+		process_floating_zones;
 
-		
-		-- Shrink the outer board edge by the conductor-to-edge clearance
-		-- as given by the design rules:
-		log (text => "offset (shrink) outer board contour by clearance to edge (DRU): "
-			-- & enclose_in_quotes (dru_parameter_clearance_conductor_to_board_edge) 
-			& to_string (- clearance_conductor_to_edge),
-			level => log_threshold + 1);	
-		
-		offset_polygon (board_outer_contour, 
-						type_float_model (- clearance_conductor_to_edge),
-						log_threshold + 2);
-
-		
-		
-		if is_empty (nets) then
-			-- Fill all zones if no explicit net names given:			
-			
-			log (text => "fill zones of all nets", level => log_threshold + 1);
-			log_indentation_up;
-			
-			fill_connected_zones (
-				module_cursor		=> module_cursor,
-				board_outer_contour	=> board_outer_contour,
-				design_rules		=> design_rules,
-				log_threshold		=> log_threshold + 2);
-
-			log_indentation_down;
-						
-		else
-			log (text => "fill zones of dedicated nets", level => log_threshold + 1);
-			log_indentation_up;
-
-			fill_connected_zones (
-				module_cursor		=> module_cursor,
-				board_outer_contour	=> board_outer_contour,
-				nets				=> nets,
-				design_rules		=> design_rules,
-				log_threshold		=> log_threshold + 2);
-			
-			log_indentation_down;			
-		end if;
-
-		
-		log (text => "fill floating zones", level => log_threshold + 1);
-		log_indentation_up;
-		
-		fill_floating_zones (
-			module_cursor		=> module_cursor,
-			board_outer_contour	=> board_outer_contour,
-			design_rules		=> design_rules,
-			log_threshold		=> log_threshold + 2);
-		
-		log_indentation_down;
-		
 		log_indentation_down;		
 	end fill_zones;
 
