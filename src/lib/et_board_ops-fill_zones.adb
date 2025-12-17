@@ -1837,7 +1837,7 @@ package body et_board_ops.fill_zones is
 
 	
 	
-	
+		-- This procedure fills the solid zones:
 		procedure floating_solid (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -1851,9 +1851,17 @@ package body et_board_ops.fill_zones is
 			procedure do_it (
 				zone : in out type_floating_solid)
 			is 
-				reliefes : pac_reliefes.list; -- always empty with floating zones
+				-- A floating zone has no thermal reliefes.
+				-- But the procedure "fill_zone" has an output
+				-- parameter for reliefes that must be adressed,
+				-- even if no reliefes are output:
+				reliefes : pac_reliefes.list;
 			begin
-				-- CS log lower left corner of zone
+				log (text => "zone position: " 
+					& to_string (get_corner_nearest_to_origin (zone)),
+					level => log_threshold + 2);
+				
+				log_indentation_up;
 				
 				fill_zone (
 					module_cursor		=> module_cursor,
@@ -1863,8 +1871,10 @@ package body et_board_ops.fill_zones is
 					layer				=> zone.properties.layer,
 					clearance			=> zone.isolation,
 					clearance_to_edge	=> clearance_conductor_to_edge,
-					reliefes			=> reliefes,
-					log_threshold		=> log_threshold + 2);
+					reliefes			=> reliefes, -- always empty with floating zones
+					log_threshold		=> log_threshold + 3);
+					
+				log_indentation_down;
 			end do_it;
 
 			
@@ -1878,8 +1888,9 @@ package body et_board_ops.fill_zones is
 		end floating_solid;
 
 
-
 		
+
+		-- This procedure fills the hatched zones:
 		procedure floating_hatched (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -1892,9 +1903,17 @@ package body et_board_ops.fill_zones is
 			procedure do_it (
 				zone : in out type_floating_hatched)
 			is 
-				reliefes : pac_reliefes.list; -- always empty with floating zones
+				-- A floating zone has no thermal reliefes.
+				-- But the procedure "fill_zone" has an output
+				-- parameter for reliefes that must be adressed,
+				-- even if no reliefes are output:
+				reliefes : pac_reliefes.list;
 			begin
-				-- CS log lower left corner of zone
+				log (text => "zone position: " 
+					& to_string (get_corner_nearest_to_origin (zone)),
+					level => log_threshold + 2);
+				
+				log_indentation_up;
 				
 				fill_zone (
 					module_cursor		=> module_cursor,
@@ -1904,9 +1923,10 @@ package body et_board_ops.fill_zones is
 					layer				=> zone.properties.layer,
 					clearance			=> zone.isolation,
 					clearance_to_edge	=> clearance_conductor_to_edge,
-					reliefes			=> reliefes,
-					log_threshold		=> log_threshold + 2);
+					reliefes			=> reliefes,  -- always empty with floating zones
+					log_threshold		=> log_threshold + 3);
 		
+				log_indentation_down;
 			end do_it;
 
 			
@@ -1919,16 +1939,31 @@ package body et_board_ops.fill_zones is
 			end loop;
 		end floating_hatched;
 	
+
+	
+		procedure fill_solid is begin
+			log (text => "fill_solid", level => log_threshold + 1);
+			log_indentation_up;
+			update_element (generic_modules, module_cursor, floating_solid'access);
+			log_indentation_down;
+		end fill_solid;
+
+		
+		procedure fill_hatched is begin
+			log (text => "fill_hatched", level => log_threshold + 1);
+			log_indentation_up;
+			update_element (generic_modules, module_cursor, floating_hatched'access);
+			log_indentation_down;
+		end fill_hatched;
+		
 	
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " fill_floating_zones", level => log_threshold);
 			
-		log_indentation_up;
-		
-		update_element (generic_modules, module_cursor, floating_solid'access);
-		update_element (generic_modules, module_cursor, floating_hatched'access);
-		
+		log_indentation_up;		
+		fill_solid;		
+		fill_hatched;		
 		log_indentation_down;	
 	end fill_floating_zones;
 
