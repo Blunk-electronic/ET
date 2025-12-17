@@ -57,6 +57,7 @@ with ada.containers.ordered_sets;
 with et_primitive_objects;			use et_primitive_objects;
 with et_net_names;					use et_net_names;
 with et_net_class;					use et_net_class;
+with et_net_classes;				use et_net_classes;
 with et_net_class_name;				use et_net_class_name;
 with et_terminals;					use et_terminals;
 with et_package_name;				use et_package_name;

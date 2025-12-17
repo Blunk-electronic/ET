@@ -58,7 +58,7 @@ with et_drawing_frame;
 with et_drawing_frame.schematic;
 with et_numbering;
 with et_design_rules;
-with et_net_class;					use et_net_class;
+with et_net_classes;				use et_net_classes;
 with et_devices_electrical;			use et_devices_electrical;
 with et_devices_non_electrical;		use et_devices_non_electrical;
 with et_logging;					use et_logging;

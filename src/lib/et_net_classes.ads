@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                             NET CLASS                                    --
+--                             NET CLASSES                                  --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -36,38 +36,47 @@
 --   history of changes:
 --
 --   to do:
---
+--		- separate in two packages things related to board and device package.
 
 
+with ada.containers; 				use ada.containers;
+with ada.containers.ordered_maps;
 
-with et_net_class_description;		use et_net_class_description;
-with et_board_coordinates;			use et_board_coordinates;
-with et_drills;						use et_drills;
-with et_design_rules_board;			use et_design_rules_board;
+with et_net_class;					use et_net_class;
+with et_net_class_name;				use et_net_class_name;
+-- with et_net_class_description;		use et_net_class_description;
 
 
-package et_net_class is
+package et_net_classes is
 
-	procedure dummy;
+
+	use pac_net_class_name;
 	
+	package pac_net_classes is new ordered_maps (
+		key_type		=> pac_net_class_name.bounded_string,
+		element_type	=> type_net_class);
 	
-	type type_net_class is tagged record
-		description				: pac_net_class_description.bounded_string;
 
-		-- The net class parameters assume default values 
-		-- that cause minimal manufacturing costs even if 
-		-- no net classes have been defined by the operator:
-		clearance				: type_track_clearance := 0.3;
-		track_width_min			: type_track_width := 0.3;
-		via_drill_min			: type_drill_size := 0.3;
-		via_restring_min		: type_restring_width := 0.3;
-		micro_via_drill_min		: type_drill_size := type_drill_size'last; -- CS use reasonable default
-		micro_via_restring_min	: type_restring_width := type_restring_width'last;  -- CS use reasonable default
-	end record;
+	use pac_net_classes;
+
+
+	
+	function get_net_class (
+		class_cursor	: in pac_net_classes.cursor)
+		return type_net_class;
 
 		
-		
-end et_net_class;
+	function get_net_class_name (
+		class_cursor	: in pac_net_classes.cursor)
+		return pac_net_class_name.bounded_string;
+
+
+	function get_net_class_name (
+		class_cursor	: in pac_net_classes.cursor)
+		return string;
+
+	
+end et_net_classes;
 
 -- Soli Deo Gloria
 

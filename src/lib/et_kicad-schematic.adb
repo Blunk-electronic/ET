@@ -56,6 +56,7 @@ with et_alignment;				use et_alignment;
 with et_erc;
 with et_unit_name;
 with et_net_class;				use et_net_class;
+with et_net_classes;			use et_net_classes;
 with et_package_model_name;		use et_package_model_name;
 
 

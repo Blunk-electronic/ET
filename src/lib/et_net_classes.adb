@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                             NET CLASS                                    --
+--                             NET CLASSES                                    --
 --                                                                          --
---                               S p e c                                    --
+--                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,39 +35,41 @@
 --
 --   history of changes:
 --
---   to do:
---
+
+with ada.text_io;					use ada.text_io;
+
+
+package body et_net_classes is
+
+
+	function get_net_class (
+		class_cursor	: in pac_net_classes.cursor)
+		return type_net_class
+	is begin
+		return element (class_cursor);
+	end;
 
 
 
-with et_net_class_description;		use et_net_class_description;
-with et_board_coordinates;			use et_board_coordinates;
-with et_drills;						use et_drills;
-with et_design_rules_board;			use et_design_rules_board;
-
-
-package et_net_class is
-
-	procedure dummy;
+	function get_net_class_name (
+		class_cursor	: in pac_net_classes.cursor)
+		return pac_net_class_name.bounded_string
+	is begin
+		return key (class_cursor);
+	end;
 	
+
 	
-	type type_net_class is tagged record
-		description				: pac_net_class_description.bounded_string;
+	function get_net_class_name (
+		class_cursor	: in pac_net_classes.cursor)
+		return string
+	is begin
+		return pac_net_class_name.to_string (key (class_cursor));
+	end;
 
-		-- The net class parameters assume default values 
-		-- that cause minimal manufacturing costs even if 
-		-- no net classes have been defined by the operator:
-		clearance				: type_track_clearance := 0.3;
-		track_width_min			: type_track_width := 0.3;
-		via_drill_min			: type_drill_size := 0.3;
-		via_restring_min		: type_restring_width := 0.3;
-		micro_via_drill_min		: type_drill_size := type_drill_size'last; -- CS use reasonable default
-		micro_via_restring_min	: type_restring_width := type_restring_width'last;  -- CS use reasonable default
-	end record;
 
-		
-		
-end et_net_class;
+	
+end et_net_classes;
 
 -- Soli Deo Gloria
 

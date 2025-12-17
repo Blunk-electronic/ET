@@ -84,6 +84,7 @@ with et_net_connectors;
 with et_net_class;
 with et_net_class_name;
 with et_net_class_description;
+with et_net_classes;
 with et_port_names;
 with et_symbol_ports;
 with et_symbol_model;
@@ -372,32 +373,37 @@ package body et_module_write is
 
 
 		
+		
 		procedure query_net_classes is
 			use et_net_class;
 			use et_net_class_name;
+			use et_net_classes;
 			use pac_net_classes;
 			use et_net_class_description;
 			use et_board_geometry.pac_geometry_2;
 
 			
-			procedure write (class_cursor : in pac_net_classes.cursor) is begin
-				log (text => "net class " & to_string (key (class_cursor)), level => log_threshold + 1);
+			procedure write (class_cursor : in pac_net_classes.cursor) is 
+				name : string renames get_net_class_name (class_cursor);
+				net_class : type_net_class renames element (class_cursor);
+			begin
+				log (text => "net class " & name, level => log_threshold + 1);
 				section_mark (section_net_class, HEADER);
 
-				write (keyword => keyword_name, parameters => to_string (key (class_cursor)));
-				write (keyword => keyword_description, parameters => to_string (element (class_cursor).description), wrap => true);
-				write (keyword => keyword_clearance, parameters => to_string (element (class_cursor).clearance));
-				write (keyword => keyword_track_width_min, parameters => to_string (element (class_cursor).track_width_min));
-				write (keyword => keyword_via_drill_min, parameters => to_string (element (class_cursor).via_drill_min));
-				write (keyword => keyword_via_restring_min, parameters => to_string (element (class_cursor).via_restring_min));
-				write (keyword => keyword_micro_via_drill_min, parameters => to_string (element (class_cursor).micro_via_drill_min));
-				write (keyword => keyword_micro_via_restring_min, parameters => to_string (element (class_cursor).micro_via_restring_min));
+				write (keyword => keyword_name, parameters => name);
+				write (keyword => keyword_description, parameters => to_string (net_class.description), wrap => true);
+				write (keyword => keyword_clearance, parameters => to_string (net_class.clearance));
+				write (keyword => keyword_track_width_min, parameters => to_string (net_class.track_width_min));
+				write (keyword => keyword_via_drill_min, parameters => to_string (net_class.via_drill_min));
+				write (keyword => keyword_via_restring_min, parameters => to_string (net_class.via_restring_min));
+				write (keyword => keyword_micro_via_drill_min, parameters => to_string (net_class.micro_via_drill_min));
+				write (keyword => keyword_micro_via_restring_min, parameters => to_string (net_class.micro_via_restring_min));
 
 				section_mark (section_net_class, FOOTER);
 			end write;
 
 			
-		begin -- query_net_classes
+		begin
 			log_indentation_up;
 			
 			section_mark (section_net_classes, HEADER);

@@ -77,6 +77,7 @@ with et_net_connectors;
 with et_net_class;
 with et_net_class_name;
 with et_net_class_description;
+with et_net_classes;
 with et_port_names;
 with et_symbol_ports;
 with et_device_name;				use et_device_name;
@@ -667,6 +668,7 @@ package body et_module_read is
 			is
 				use et_net_class;
 				use et_net_class_name;
+				use et_net_classes;
 				inserted : boolean;
 				cursor : pac_net_classes.cursor;
 			begin

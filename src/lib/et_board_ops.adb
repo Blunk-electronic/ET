@@ -43,6 +43,8 @@ with et_schematic_ops.nets;			use et_schematic_ops.nets;
 with et_schematic_ops.submodules;
 with et_schematic_ops;				use et_schematic_ops;
 
+with et_net_classes;				use et_net_classes;
+
 with et_devices_electrical;			use et_devices_electrical;
 with et_submodules;
 with et_numbering;
