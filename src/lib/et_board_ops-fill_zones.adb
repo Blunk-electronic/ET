@@ -1740,13 +1740,16 @@ package body et_board_ops.fill_zones is
 
 
 			
+			-- This procedure queries the net indicated by
+			-- cursor "net_cursor":
 			procedure query_net is begin
-				log (text => "net " & get_net_name (net_cursor), level => log_threshold + 2);
+				net_class := get_net_class (module_cursor, net_cursor);
+				
+				-- log (text => "class " & get_net_name (net_cursor),
+					-- level => log_threshold + 3);
 				-- CS log net class
 				
 				log_indentation_up;
-
-				net_class := get_net_class (module_cursor, net_cursor);
 				
 				update_element (module.nets, net_cursor, route_solid'access);
 				update_element (module.nets, net_cursor, route_hatched'access);
@@ -1757,22 +1760,24 @@ package body et_board_ops.fill_zones is
 
 			
 			procedure query_given_net (gn : pac_net_names.cursor) is 
+				use et_schematic_ops.nets;
 				use pac_net_name;
+				name : pac_net_name.bounded_string renames element (gn);
 			begin
+				log (text => "net " & to_string (name), level => log_threshold + 2);
+				log_indentation_up;
+				
 				-- Locate the given net in the module.
 				-- If if does not exist, issue a warning.
-				net_cursor := find (module.nets, element (gn));
-				-- CS rework
+				net_cursor := locate_net (module_cursor, name);
 
 				if has_element (net_cursor) then
 					query_net;
 				else
-					log (
-						importance => WARNING, 
-						text => "Net " & enclose_in_quotes (to_string (element (gn))) 
-							& " does not exist !", 
-						level => log_threshold + 2);
+					log (WARNING, "Net " & to_string (name) & " does not exist !");
 				end if;
+				
+				log_indentation_down;
 			end query_given_net;
 
 			
