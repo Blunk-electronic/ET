@@ -1941,7 +1941,6 @@ package body et_board_ops.fill_zones is
 
 	procedure fill_zones (
 		module_cursor	: in pac_generic_modules.cursor;
-		log_category	: in type_log_category;
 		log_threshold	: in type_log_level;
 		nets 			: in pac_net_names.list := no_net_names)
 	is		
@@ -1959,16 +1958,20 @@ package body et_board_ops.fill_zones is
 		-- the width of the fill lines:
 		board_outer_contour : type_polygon;
 		
+		
 		-- This procedure converts the outer board contour to
 		-- a polygon, offsets it by clearance_conductor_to_edge
 		-- and stores it in board_outer_contour:		
-		procedure process_board_contour is
+		procedure process_outer_board_contour is
 			use et_board_ops.board_contour;
 			use et_contour_to_polygon;
 			use pac_polygon_offsetting;		
 		begin
+			log (text => "process_outer_board_contour", level => log_threshold + 1);
+			log_indentation_up;
+			
 			log (text => "convert outer board contour to polygon",
-				level => log_threshold + 1);
+				level => log_threshold + 2);
 			
 			-- Convert to polygon:
 			board_outer_contour := to_polygon (
@@ -1978,17 +1981,18 @@ package body et_board_ops.fill_zones is
 			
 			-- Shrink the outer board edge by the conductor-to-edge clearance
 			-- as given by the design rules:
-			log (text => "offset (shrink) outer board contour by clearance to edge (DRU): "
-				-- & enclose_in_quotes (dru_parameter_clearance_conductor_to_board_edge) 
+			log (text => "offset by clearance to edge "
 				& to_string (- clearance_conductor_to_edge),
-				level => log_threshold + 1);	
+				level => log_threshold + 2);	
 			
 			offset_polygon (
 				polygon			=> board_outer_contour, 
 				offset			=> type_float_model (- clearance_conductor_to_edge),
-				log_threshold	=> log_threshold + 2);
+				log_threshold	=> log_threshold + 3);
 			
-		end process_board_contour;
+			log_indentation_down;
+		end process_outer_board_contour;
+		
 		
 		
 		-- This procedure fills the zones which are
@@ -1996,22 +2000,25 @@ package body et_board_ops.fill_zones is
 		procedure process_connected_zones is
 			use pac_net_names;
 		begin
+			log (text => "process_connected_zones", level => log_threshold + 1);
+			log_indentation_up;
+			
 			if is_empty (nets) then
 				-- Fill all zones if no explicit net names given:			
 				
-				log (text => "fill zones of all nets", level => log_threshold + 1);
+				log (text => "fill zones of all nets", level => log_threshold + 2);
 				log_indentation_up;
 				
 				fill_connected_zones (
 					module_cursor		=> module_cursor,
 					board_outer_contour	=> board_outer_contour,
 					design_rules		=> design_rules,
-					log_threshold		=> log_threshold + 2);
+					log_threshold		=> log_threshold + 3);
 
 				log_indentation_down;
 							
 			else
-				log (text => "fill zones of dedicated nets", level => log_threshold + 1);
+				log (text => "fill zones of dedicated nets", level => log_threshold + 2);
 				log_indentation_up;
 
 				fill_connected_zones (
@@ -2019,17 +2026,20 @@ package body et_board_ops.fill_zones is
 					board_outer_contour	=> board_outer_contour,
 					nets				=> nets,
 					design_rules		=> design_rules,
-					log_threshold		=> log_threshold + 2);
+					log_threshold		=> log_threshold + 3);
 				
 				log_indentation_down;			
 			end if;
+			
+			log_indentation_down;
 		end process_connected_zones;
 		
 
+		
 		-- This procedure fills the zones which are
 		-- not connected with nets. We call them "floating zones":
 		procedure process_floating_zones is begin
-			log (text => "fill floating zones", level => log_threshold + 1);
+			log (text => "process_floating_zones", level => log_threshold + 1);
 			log_indentation_up;
 			
 			fill_floating_zones (
@@ -2042,14 +2052,15 @@ package body et_board_ops.fill_zones is
 		end process_floating_zones;
 		
 		
+		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " fill zones. Log category " & to_string (log_category),
+			& " fill_zones",
 			level => log_threshold);
 
 		log_indentation_up;
 
-		process_board_contour;
+		process_outer_board_contour;
 		process_connected_zones;
 		process_floating_zones;
 

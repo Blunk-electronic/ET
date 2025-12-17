@@ -384,7 +384,6 @@ package et_board_ops.fill_zones is
 	-- nets will be filled:
 	procedure fill_zones (
 		module_cursor	: in pac_generic_modules.cursor;	
-		log_category	: in type_log_category;
 		log_threshold	: in type_log_level;
 		nets 			: in pac_net_names.list := no_net_names); -- GND, GNDA, P3V3, ...
 

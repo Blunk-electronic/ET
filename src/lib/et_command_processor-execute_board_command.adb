@@ -2053,7 +2053,6 @@ is
 	end show_net;
 
 	
-	polygon_log_category : type_log_category := log_category_default;
 
 
 	
@@ -2191,9 +2190,6 @@ is
 				elsif get_field (5) = keyword_connection then
 					update_element (generic_modules, module_cursor, set_connection'access);
 
-				-- board demo set zone log NORMAL/HIGH/INSANE
-				elsif get_field (5) = kw_log then
-					polygon_log_category := to_log_category (get_field (6));
 				else
 					expect_keywords;
 				end if;
@@ -3668,7 +3664,7 @@ is
 			when 4 => -- fill all zones
 				
 				-- command: board demo fill zone
-				fill_zones (module_cursor, polygon_log_category, log_threshold + 1);
+				fill_zones (module_cursor, log_threshold + 1);
 
 				
 			when others => 
@@ -3679,7 +3675,7 @@ is
 					nets.append (to_net_name (get_field (place)));
 				end loop;
 
-				fill_zones (module_cursor, polygon_log_category, log_threshold + 1, nets);
+				fill_zones (module_cursor, log_threshold + 1, nets);
 		end case;
 				
 		if runmode /= MODE_HEADLESS then

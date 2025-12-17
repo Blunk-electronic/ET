@@ -363,7 +363,7 @@ is
 		case key is
 			when key_noun_zone =>
 				noun := NOUN_ZONE;
-				fill_zones (active_module, NORMAL, log_threshold + 1);
+				fill_zones (active_module, log_threshold + 1);
 
 				set_status ("conductor zones filled");
 				
