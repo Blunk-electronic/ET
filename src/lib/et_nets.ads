@@ -48,6 +48,7 @@ with et_schematic_geometry;		use et_schematic_geometry;
 with et_logging;				use et_logging;
 with et_net_names;				use et_net_names;
 with et_net_class;				use et_net_class;
+with et_net_class_name;			use et_net_class_name;
 with et_netlists;
 with et_route;
 with et_commit;

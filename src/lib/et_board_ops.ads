@@ -49,6 +49,7 @@ with et_meta;
 with et_nets;						use et_nets;
 with et_net_names;					use et_net_names;
 with et_net_class;					use et_net_class;
+with et_net_class_name;				use et_net_class_name;
 with et_module_names;				use et_module_names;
 with et_module_instance;			use et_module_instance;
 with et_primitive_objects;			use et_primitive_objects;

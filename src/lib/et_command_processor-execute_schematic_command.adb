@@ -61,7 +61,8 @@ with et_net_connectors;					use et_net_connectors;
 with et_net_strands;					use et_net_strands;
 with et_nets;							use et_nets;
 with et_net_names;						use et_net_names;
-with et_net_class;						use et_net_class;
+with et_net_class;						--use et_net_class;
+with et_net_class_name;
 with et_schematic_text;					use et_schematic_text;
 with et_schematic_ops.nets;
 with et_schematic_ops.units;
@@ -1870,7 +1871,9 @@ is
 	-- This procedure parses a command that set the 
 	-- class of a net.
 	-- Example: "schematic demo set class GND pwr"
-	procedure set_net_class is begin
+	procedure set_net_class is 
+		use et_net_class_name;
+	begin
 		case cmd_field_count is
 			when 6 =>
 				set_net_class (

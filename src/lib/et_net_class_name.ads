@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                             NET CLASS                                    --
+--                          NET CLASS NAME                                  --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -41,47 +41,36 @@
 
 with ada.strings.bounded; 			use ada.strings.bounded;
 
-with ada.containers; 				use ada.containers;
-with ada.containers.ordered_maps;
 
-with et_net_class_name;				use et_net_class_name;
-with et_board_coordinates;			use et_board_coordinates;
-with et_drills;						use et_drills;
-with et_design_rules_board;			use et_design_rules_board;
-
-
-package et_net_class is
+package et_net_class_name is
 	
+
+	net_class_name_length_max : constant positive := 50;
+
 	
-	net_class_description_length_max : constant positive := 100;
-	package pac_net_class_description is new generic_bounded_length (net_class_description_length_max);
-
-	function to_string (class_description : in pac_net_class_description.bounded_string) return string;
-	function to_net_class_description (class_description : in string) return pac_net_class_description.bounded_string;
-	
-	type type_net_class is tagged record
-		description				: pac_net_class_description.bounded_string;
-
-		-- The net class parameters assume default values 
-		-- that cause minimal manufacturing costs even if 
-		-- no net classes have been defined by the operator:
-		clearance				: type_track_clearance := 0.3;
-		track_width_min			: type_track_width := 0.3;
-		via_drill_min			: type_drill_size := 0.3;
-		via_restring_min		: type_restring_width := 0.3;
-		micro_via_drill_min		: type_drill_size := type_drill_size'last; -- CS use reasonable default
-		micro_via_restring_min	: type_restring_width := type_restring_width'last;  -- CS use reasonable default
-	end record;
-
-
+	package pac_net_class_name is new generic_bounded_length (
+		net_class_name_length_max); -- hi-voltage, si-critical, ...
+																 
 	use pac_net_class_name;
 	
-	package pac_net_classes is new ordered_maps (
-		key_type		=> pac_net_class_name.bounded_string,
-		element_type	=> type_net_class);
 	
 	
-end et_net_class;
+	net_class_name_default : constant pac_net_class_name.bounded_string := 
+		pac_net_class_name.to_bounded_string ("default");
+	
+	
+	function to_string (
+		net_class_name : in pac_net_class_name.bounded_string) 
+		return string;
+
+		
+	function to_net_class_name (
+		net_class_name : in string) 
+		return pac_net_class_name.bounded_string;
+	
+	
+	
+end et_net_class_name;
 
 -- Soli Deo Gloria
 

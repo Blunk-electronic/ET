@@ -41,6 +41,7 @@ with et_net_strands;				use et_net_strands;
 with et_net_labels;					use et_net_labels;
 with et_net_connectors;				use et_net_connectors;
 with et_net_class;					use et_net_class;
+with et_net_class_name;				use et_net_class_name;
 with et_object_status;				use et_object_status;
 
 

@@ -82,6 +82,7 @@ with et_net_segment;
 with et_net_labels;
 with et_net_connectors;
 with et_net_class;
+with et_net_class_name;
 with et_port_names;
 with et_symbol_ports;
 with et_symbol_model;
@@ -372,6 +373,7 @@ package body et_module_write is
 		
 		procedure query_net_classes is
 			use et_net_class;
+			use et_net_class_name;
 			use pac_net_classes;
 			use et_board_geometry.pac_geometry_2;
 
@@ -999,6 +1001,7 @@ package body et_module_write is
 			
 			procedure write (net_cursor : in pac_nets.cursor) is 
 				use et_net_class;
+				use et_net_class_name;
 			begin
 				log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 				section_mark (section_net, HEADER);

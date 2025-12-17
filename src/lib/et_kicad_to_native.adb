@@ -52,6 +52,7 @@ with et_net_junction;
 with et_net_ports;
 with et_net_segment;
 with et_net_class;
+with et_net_class_name;
 with et_units;
 with et_schematic_text;
 
@@ -3278,6 +3279,7 @@ package body et_kicad_to_native is
 				net			: in out et_nets.type_net) 
 			is 
 				use et_net_class;
+				use et_net_class_name;
 			begin
 				log_indentation_up;
 

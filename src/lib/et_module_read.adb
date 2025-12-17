@@ -75,6 +75,7 @@ with et_net_segment;
 with et_net_labels;
 with et_net_connectors;
 with et_net_class;
+with et_net_class_name;
 with et_port_names;
 with et_symbol_ports;
 with et_device_name;				use et_device_name;
@@ -572,11 +573,12 @@ package body et_module_read is
 	-- NET CLASS:
 		
 		net_class 		: et_net_class.type_net_class;
-		net_class_name	: et_net_class.pac_net_class_name.bounded_string;
+		net_class_name	: et_net_class_name.pac_net_class_name.bounded_string;
 
 		
 		procedure reset_net_class is 
 			use et_net_class;
+			use et_net_class_name;
 		begin
 			net_class_name := net_class_name_default;
 			net_class := (others => <>);
@@ -591,6 +593,7 @@ package body et_module_read is
 			use et_terminals;
 			use et_drills;
 			use et_net_class;
+			use et_net_class_name;
 			use et_board_geometry.pac_geometry_2;
 			kw : constant string := f (line, 1);
 		begin
@@ -661,6 +664,7 @@ package body et_module_read is
 				module		: in out type_generic_module) 
 			is
 				use et_net_class;
+				use et_net_class_name;
 				inserted : boolean;
 				cursor : pac_net_classes.cursor;
 			begin
@@ -715,6 +719,7 @@ package body et_module_read is
 			kw : constant string := f (line, 1);
 			use ada.containers;
 			use et_net_class;
+			use et_net_class_name;
 		begin
 			log (text => "read net", level => log_threshold + 1);
 			log_indentation_up;

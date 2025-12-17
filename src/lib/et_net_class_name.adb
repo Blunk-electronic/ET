@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                             NET CLASS                                    --
+--                           NET CLASS NAME                                 --
 --                                                                          --
---                               S p e c                                    --
+--                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,53 +35,37 @@
 --
 --   history of changes:
 --
---   to do:
---		- separate in two packages things related to board and device package.
+
+with ada.text_io;					use ada.text_io;
 
 
-with ada.strings.bounded; 			use ada.strings.bounded;
-
-with ada.containers; 				use ada.containers;
-with ada.containers.ordered_maps;
-
-with et_net_class_name;				use et_net_class_name;
-with et_board_coordinates;			use et_board_coordinates;
-with et_drills;						use et_drills;
-with et_design_rules_board;			use et_design_rules_board;
+with et_string_processing;				use et_string_processing;
 
 
-package et_net_class is
+
+package body et_net_class_name is
+
+
+	function to_string (
+		net_class_name : in pac_net_class_name.bounded_string) 
+		return string 
+	is begin
+		return pac_net_class_name.to_string (net_class_name);
+	end to_string;
+
 	
 	
-	net_class_description_length_max : constant positive := 100;
-	package pac_net_class_description is new generic_bounded_length (net_class_description_length_max);
-
-	function to_string (class_description : in pac_net_class_description.bounded_string) return string;
-	function to_net_class_description (class_description : in string) return pac_net_class_description.bounded_string;
 	
-	type type_net_class is tagged record
-		description				: pac_net_class_description.bounded_string;
-
-		-- The net class parameters assume default values 
-		-- that cause minimal manufacturing costs even if 
-		-- no net classes have been defined by the operator:
-		clearance				: type_track_clearance := 0.3;
-		track_width_min			: type_track_width := 0.3;
-		via_drill_min			: type_drill_size := 0.3;
-		via_restring_min		: type_restring_width := 0.3;
-		micro_via_drill_min		: type_drill_size := type_drill_size'last; -- CS use reasonable default
-		micro_via_restring_min	: type_restring_width := type_restring_width'last;  -- CS use reasonable default
-	end record;
-
-
-	use pac_net_class_name;
-	
-	package pac_net_classes is new ordered_maps (
-		key_type		=> pac_net_class_name.bounded_string,
-		element_type	=> type_net_class);
+	function to_net_class_name (
+		net_class_name : in string)
+		return pac_net_class_name.bounded_string
+	is begin
+		return pac_net_class_name.to_bounded_string (net_class_name);
+	end to_net_class_name;
 	
 	
-end et_net_class;
+	
+end et_net_class_name;
 
 -- Soli Deo Gloria
 

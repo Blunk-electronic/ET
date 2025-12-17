@@ -4386,12 +4386,12 @@ package body et_schematic_ops.nets is
 			begin
 				if net.class = net_class then
 					log (text => "Net already in class " 
-							& enclose_in_quotes (et_net_class.to_string (net_class)),
+							& enclose_in_quotes (et_net_class_name.to_string (net_class)),
 						level => log_threshold + 1);
 				else
 					log (text => "Changing net class from "
-						 & enclose_in_quotes (et_net_class.to_string (net.class)) 
-						 & " to " & enclose_in_quotes (et_net_class.to_string (net_class)),
+						 & enclose_in_quotes (et_net_class_name.to_string (net.class)) 
+						 & " to " & enclose_in_quotes (et_net_class_name.to_string (net_class)),
 						level => log_threshold + 1);
 
 					net.class := net_class;
