@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                          NET CLASS NAME                                  --
+--                       NET CLASS DESCRIPTION                              --
 --                                                                          --
---                               S p e c                                    --
+--                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,42 +35,44 @@
 --
 --   history of changes:
 --
---   to do:
---
+
+with ada.text_io;					use ada.text_io;
+with ada.characters;				use ada.characters;
+with ada.characters.latin_1;
+with ada.characters.handling;		use ada.characters.handling;
+
+with ada.strings;					use ada.strings;
+with ada.strings.fixed;				use ada.strings.fixed;
+with ada.strings.maps;				use ada.strings.maps;
+
+with ada.strings.unbounded;
+with ada.exceptions;
+
+with et_string_processing;				use et_string_processing;
 
 
-with ada.strings.bounded; 			use ada.strings.bounded;
 
+package body et_net_class_description is
 
-package et_net_class_name is
-	
-
-	net_class_name_length_max : constant positive := 50;
-
-	
-	package pac_net_class_name is new generic_bounded_length (
-		net_class_name_length_max); -- hi-voltage, si-critical, ...
-																 
-	use pac_net_class_name;
-	
-	
-	
-	net_class_name_default : constant pac_net_class_name.bounded_string := 
-		pac_net_class_name.to_bounded_string ("default");
-	
 	
 	function to_string (
-		net_class_name : in pac_net_class_name.bounded_string) 
-		return string;
+		class_description : in pac_net_class_description.bounded_string) 
+		return string 
+	is begin
+		return pac_net_class_description.to_string (class_description);
+	end to_string;
 
-		
-	function to_net_class_name (
-		net_class_name : in string) 
-		return pac_net_class_name.bounded_string;
 	
 	
+	function to_net_class_description (
+		class_description : in string)
+		return pac_net_class_description.bounded_string 
+	is begin
+		return to_bounded_string (class_description);		
+	end to_net_class_description;
 	
-end et_net_class_name;
+	
+end et_net_class_description;
 
 -- Soli Deo Gloria
 

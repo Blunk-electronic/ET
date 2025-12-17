@@ -54,17 +54,16 @@ with et_string_processing;				use et_string_processing;
 
 package body et_net_class is
 
+	procedure dummy is begin null; end;
 
-	
-	function to_string (class_description : in pac_net_class_description.bounded_string) return string is
-	begin
-		return pac_net_class_description.to_string (class_description);
-	end to_string;
 
-	function to_net_class_description (class_description : in string) return pac_net_class_description.bounded_string is
-	begin
-		return pac_net_class_description.to_bounded_string (class_description);
-	end to_net_class_description;
+	-- function get_net_class (
+	-- 	class_cursor	: in pac_net_classes.cursor)
+	-- 	return type_net_class
+	-- is begin
+	-- 	return element (class_cursor);
+	-- end;
+
 	
 	
 end et_net_class;

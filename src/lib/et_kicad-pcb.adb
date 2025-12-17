@@ -48,6 +48,7 @@ with et_import;
 with et_vias;
 with et_pcb_stack;
 with et_nets;
+with et_net_class_description;		use et_net_class_description;
 with et_route;						use et_route;
 
 with et_device_appearance;			use et_device_appearance;

@@ -83,6 +83,7 @@ with et_net_labels;
 with et_net_connectors;
 with et_net_class;
 with et_net_class_name;
+with et_net_class_description;
 with et_port_names;
 with et_symbol_ports;
 with et_symbol_model;
@@ -375,6 +376,7 @@ package body et_module_write is
 			use et_net_class;
 			use et_net_class_name;
 			use pac_net_classes;
+			use et_net_class_description;
 			use et_board_geometry.pac_geometry_2;
 
 			

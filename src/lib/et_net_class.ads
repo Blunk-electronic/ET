@@ -39,25 +39,20 @@
 --		- separate in two packages things related to board and device package.
 
 
-with ada.strings.bounded; 			use ada.strings.bounded;
-
 with ada.containers; 				use ada.containers;
 with ada.containers.ordered_maps;
 
 with et_net_class_name;				use et_net_class_name;
+with et_net_class_description;		use et_net_class_description;
 with et_board_coordinates;			use et_board_coordinates;
 with et_drills;						use et_drills;
 with et_design_rules_board;			use et_design_rules_board;
 
 
 package et_net_class is
-	
-	
-	net_class_description_length_max : constant positive := 100;
-	package pac_net_class_description is new generic_bounded_length (net_class_description_length_max);
 
-	function to_string (class_description : in pac_net_class_description.bounded_string) return string;
-	function to_net_class_description (class_description : in string) return pac_net_class_description.bounded_string;
+	procedure dummy;
+	
 	
 	type type_net_class is tagged record
 		description				: pac_net_class_description.bounded_string;
@@ -80,7 +75,13 @@ package et_net_class is
 		key_type		=> pac_net_class_name.bounded_string,
 		element_type	=> type_net_class);
 	
-	
+
+	-- function get_net_class (
+	-- 	class_cursor	: in pac_net_classes.cursor)
+	-- 	return type_net_class;
+
+		
+		
 end et_net_class;
 
 -- Soli Deo Gloria

@@ -76,6 +76,7 @@ with et_net_labels;
 with et_net_connectors;
 with et_net_class;
 with et_net_class_name;
+with et_net_class_description;
 with et_port_names;
 with et_symbol_ports;
 with et_device_name;				use et_device_name;
@@ -594,6 +595,7 @@ package body et_module_read is
 			use et_drills;
 			use et_net_class;
 			use et_net_class_name;
+			use et_net_class_description;
 			use et_board_geometry.pac_geometry_2;
 			kw : constant string := f (line, 1);
 		begin

@@ -60,7 +60,7 @@ package body et_net_class_name is
 		net_class_name : in string)
 		return pac_net_class_name.bounded_string
 	is begin
-		return pac_net_class_name.to_bounded_string (net_class_name);
+		return to_bounded_string (net_class_name);
 	end to_net_class_name;
 	
 	
