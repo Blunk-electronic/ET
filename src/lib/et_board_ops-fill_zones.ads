@@ -330,15 +330,9 @@ package et_board_ops.fill_zones is
 
 
 	-- Fills the given zone that is in the given layer
-	-- with the given linewidth and clearance to 
-	-- foreign conductor objects.
-	-- If a parent net is given - via cursor - then the conductor objects of this
-	-- net will be treated in a special way. Then the given zone must be a 
-	-- type_route_hatched or a type_route_solid.
-	-- - terminals may be embedded in the zone or may get connected via thermal relieves.
-	-- - tracks may be embedded in the zone or the zone will be filled around them.
-	-- - see specification of type_route_solid and type_route_hatched.
-	-- If something goes wrong, an exception is raised.
+	-- with the given linewidth and clearance to foreign conductor objects.
+	-- If a parent net is given then thermal reliefes for connected
+	-- terminals are generated:
 	procedure fill_zone (
 		module_cursor		: in pac_generic_modules.cursor;
 

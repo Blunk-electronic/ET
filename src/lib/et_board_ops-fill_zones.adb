@@ -1358,27 +1358,51 @@ package body et_board_ops.fill_zones is
 		-- The given zone will be converted to a polygon:
 		zone_polygon : type_polygon;
 
-
-		use et_contour_to_polygon;		
-
-		half_linewidth_float : constant type_float_positive :=
-			0.5 * type_float_positive (linewidth);
-
 		-- One of the first steps is to shrink (offset) the 
 		-- outer board contour by half the linewidth of the zone.
 		-- For this reason we take a copy of the given board contour:
 		outer_contour_tmp : type_polygon := outer_contour;
 
 		use pac_polygon_offsetting;
-		use pac_polygon_clipping;
-		use pac_polygon_cropping;
-		use pac_polygon_list;
+
 
 		
+		procedure preprocess_outer_board_contour is 
+			use et_contour_to_polygon;
+			
+			half_linewidth_float : constant type_float_positive :=
+				0.5 * type_float_positive (linewidth);
+		begin
+			log (text => "preprocess_outer_board_contour", 
+				level => log_threshold + 1);
+				
+			log_indentation_up;
+			
+			-- Convert the given zone to a polygon:
+			log (text => "convert zone to polygon", level => log_threshold + 2);
+			zone_polygon := to_polygon (zone, fill_tolerance, SHRINK); 
+			-- NOTE: The SHRINK argument applies to the approximation mode of 
+			-- arcs and circles. Has nothing to do with offsetting the zone.
 
 
+			log (text => "offset outer board contour by "
+				& to_string (half_linewidth_float),
+				level => log_threshold + 2);
+
+			offset_polygon (outer_contour_tmp, - half_linewidth_float,
+				log_threshold + 3);
+		
+			log_indentation_down;
+		end preprocess_outer_board_contour;
+	
+	
+		
+		
 
 		procedure process_zone_fragments is
+			use pac_polygon_clipping;
+			use pac_polygon_cropping;
+			use pac_polygon_list;
 			use pac_nets;
 
 			-- The zone may disintegrate into smaller fragments
@@ -1443,6 +1467,9 @@ package body et_board_ops.fill_zones is
 			log (text => "process_zone_fragments", level => log_threshold + 1);
 			log_indentation_up;
 
+			-- Remove the old fill (incl. islands, lakes):
+			zone.islands := no_islands;
+			
 			zone_fragments := clip (zone_polygon, outer_contour_tmp);
 
 			log (text => "fragment count: " & get_count (zone_fragments),
@@ -1511,52 +1538,30 @@ package body et_board_ops.fill_zones is
 			log_indentation_down;
 		end process_zone_fragments;
 
-
-
-
+		
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " fill_zone"
+			& " position: " & to_string (get_corner_nearest_to_origin (zone))
 			& " linewidth: " & to_string (linewidth)
 			& " layer: " & to_string (layer)
-			& " clearance: " & to_string (clearance)
-			& " clearance to edge: " & to_string (clearance_to_edge)
-			& " parent net: dummy" -- CS
-			& " terminal connection: dummy"  -- CS
-			& " relief properties: dummy", -- CS 
-			-- CS number of reliefes ?
+			& " clearance: " & to_string (clearance),
 			level => log_threshold);
-			-- CS output with linebreaks
+			
+		log (text => "clearance to edge: " & to_string (clearance_to_edge)
+			& " parent net: " & get_net_name (parent_net)
+			& " terminal connection: " & to_string (terminal_connection)
+			& " relief properties: dummy", -- CS 
+			level => log_threshold);
 
 		log_indentation_up;
-
-		-- log (text => "zone with corner nearest to origin:" 
-		-- 	 & to_string (get_corner_nearest_to_origin (zone)),
-		-- 	level => log_threshold + 1);
-
-		
-		-- Remove the old fill (incl. islands, lakes):
-		zone.islands := no_islands;
-		
-		-- Convert the given zone to a polygon:
-		log (text => "convert zone to polygon", level => log_threshold + 1);
-		zone_polygon := to_polygon (zone, fill_tolerance, SHRINK); 
-		-- NOTE: The SHRINK argument applies to the approximation mode of 
-		-- arcs and circles. Has nothing to do with offsetting the zone.
-
-
-		log (text => "offset (shrink) outer board contour by half linewidth of zone: "
-			& to_string (half_linewidth_float),
-			level => log_threshold + 1);
-
-		offset_polygon (outer_contour_tmp, - half_linewidth_float, log_threshold + 2);
-
-
-		log_indentation_up;
+	
+		preprocess_outer_board_contour;
 		process_zone_fragments;
-		
-		log_indentation_down;
+
+		-- CS log the number of reliefes that have been found
+
 		log_indentation_down;		
 	end fill_zone;
 
