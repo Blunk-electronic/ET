@@ -85,10 +85,10 @@ package body et_board_ops.net_class is
 
 	function get_net_class (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		net		: in et_nets.pac_nets.cursor) -- GND, RESET_N, ...
+		net		: in pac_nets.cursor) -- GND, RESET_N, ...
 		return type_net_class
 	is
-		use et_pcb;
+
 		result : type_net_class;
 
 		
@@ -124,6 +124,44 @@ package body et_board_ops.net_class is
 
 
 
+
+	
+
+
+
+	function get_class_name (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in pac_nets.cursor)
+		return pac_net_class_name.bounded_string
+	is
+		result : pac_net_class_name.bounded_string;
+		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is
+			use pac_nets;
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net)
+			is begin
+				result := get_class_name (net);
+			end;
+			
+		begin
+			query_element (net_cursor, query_net'access);
+		end query_module;
+		
+		
+	begin
+		query_element (module_cursor, query_module'access);
+		return result;
+	end get_class_name;
+
+
+	
 
 	
 

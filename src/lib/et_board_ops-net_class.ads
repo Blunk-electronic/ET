@@ -63,8 +63,15 @@ package et_board_ops.net_class is
 	-- "default" class will be returned:
 	function get_net_class (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		net		: in et_nets.pac_nets.cursor)  -- GND, RESET_N, ...
+		net		: in pac_nets.cursor)  -- GND, RESET_N, ...
 		return type_net_class;
+
+
+
+	function get_class_name (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in pac_nets.cursor)  -- GND, RESET_N, ...
+		return pac_net_class_name.bounded_string;
 
 	
 

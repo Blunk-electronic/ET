@@ -57,6 +57,24 @@ package body et_nets is
 
 
 
+	function get_class_name (
+		net : in type_net)
+		return pac_net_class_name.bounded_string
+	is begin
+		return net.class;
+	end;
+
+
+
+	function get_class_name (
+		net : in type_net)
+		return string
+	is begin
+		return to_string (net.class);
+	end;
+
+	
+
 
 	procedure set_proposed (
 		net : in out type_net)

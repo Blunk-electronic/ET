@@ -99,7 +99,7 @@ package et_nets is
 		route	: et_route.type_net_route; -- routing information -> pcb related
 
 		-- The net class of the net: default, High_Voltage, EM/SI-critical, ...
-		class 	: pac_net_class_name.bounded_string := net_class_name_default;
+		class 	: pac_net_class_name.bounded_string := net_class_name_default;		
 	end record;
 
 	
@@ -116,8 +116,18 @@ package et_nets is
 
 
 
+	function get_class_name (
+		net : in type_net)
+		return pac_net_class_name.bounded_string;
 
 
+	function get_class_name (
+		net : in type_net)
+		return string;
+
+
+	
+	
 
 	procedure set_proposed (
 		net : in out type_net);

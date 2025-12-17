@@ -1582,6 +1582,8 @@ package body et_board_ops.fill_zones is
 		design_rules		: in type_design_rules_board;
 		log_threshold		: in type_log_level)
 	is
+		-- CS: Restructure code, simplify
+		
 		use et_fill_zones.boards;
 	
 		use et_nets;
@@ -1594,9 +1596,9 @@ package body et_board_ops.fill_zones is
 
 		clearance_conductor_to_edge : type_distance_positive renames 
 			design_rules.clearances.conductor_to_board_edge;
+				
 		
-		
-		-- Temporarily storage for properties of zones connected with a net:
+		-- Temporarily storage for properties:
 		relief_properties	: type_relief_properties;
 		terminal_reliefes	: pac_reliefes.list;
 		terminal_connection	: type_pad_connection := pad_connection_default;
@@ -1634,6 +1636,13 @@ package body et_board_ops.fill_zones is
 					-- Backup the zone in case something went wrong:
 					zone_bakup : constant type_route_solid := zone; 
 				begin
+					log (text => "zone position; " 
+						 & to_string (get_corner_nearest_to_origin (zone)),
+						  level => log_threshold + 4);
+
+					log_indentation_up;
+					
+					
 					-- load temporarily variables of zone properties:
 					relief_properties := zone.relief_properties;
 					terminal_connection	:= zone.connection;
@@ -1656,9 +1665,12 @@ package body et_board_ops.fill_zones is
 						terminal_connection	=> terminal_connection,
 						relief_properties	=> relief_properties,
 						reliefes			=> zone.reliefes,
-						log_threshold		=> log_threshold + 3);
+						log_threshold		=> log_threshold + 5);
 						
 
+					log_indentation_down;
+					
+					
 					-- If something went wrong, output some
 					-- helpful information and restore the zone:
 					exception when event:
@@ -1682,11 +1694,9 @@ package body et_board_ops.fill_zones is
 				
 				
 			begin
+				-- Iterate through the solidly filled zones:
 				while has_element (zone_cursor) loop
-
-					-- do the filling
 					net.route.zones.solid.update_element (zone_cursor, do_it'access);
-				
 					next (zone_cursor);
 				end loop;
 			end route_solid;
@@ -1706,6 +1716,12 @@ package body et_board_ops.fill_zones is
 				procedure do_it (
 					zone : in out type_route_hatched)
 				is begin
+					log (text => "zone position; " 
+						 & to_string (get_corner_nearest_to_origin (zone)),
+							  level => log_threshold + 4);
+						 
+					log_indentation_up;
+					
 					-- load temporarily variables of zone properties:
 					relief_properties := zone.relief_properties;
 					terminal_connection	:= zone.connection;
@@ -1715,7 +1731,7 @@ package body et_board_ops.fill_zones is
 						terminal_technology	:= zone.technology;
 					end if;
 					
-		
+					
 					fill_zone (
 						module_cursor		=> module_cursor,
 						zone				=> zone,
@@ -1728,21 +1744,20 @@ package body et_board_ops.fill_zones is
 						terminal_connection	=> terminal_connection,
 						relief_properties	=> relief_properties,
 						reliefes			=> zone.reliefes,
-						log_threshold		=> log_threshold + 3);
+						log_threshold		=> log_threshold + 5);
 
-						
+					log_indentation_down;	
 				end do_it;
 					
 				
 			begin
+				-- Iterate through the hatched zones:
 				while has_element (zone_cursor) loop
-
-					-- do the filling
 					net.route.zones.hatched.update_element (zone_cursor, do_it'access);
-
 					next (zone_cursor);
 				end loop;
 			end route_hatched;
+
 
 
 			
@@ -1750,18 +1765,36 @@ package body et_board_ops.fill_zones is
 			-- cursor "net_cursor":
 			procedure query_net is 
 				use et_board_ops.net_class;
-			begin
-				net_class := get_net_class (module_cursor, net_cursor);
+				use et_net_class_name;
+
 				
-				-- log (text => "class " & get_net_name (net_cursor),
-					-- level => log_threshold + 3);
-				-- CS log net class
+				procedure process_solid_zones is begin
+					log (text => "process_solid_zones", level => log_threshold + 3);
+					log_indentation_up;
+					update_element (module.nets, net_cursor, route_solid'access);
+					log_indentation_down;
+				end;
+
+				
+				procedure process_hatched_zones is begin
+					log (text => "process_hatched_zones", level => log_threshold + 3);
+					log_indentation_up;
+					update_element (module.nets, net_cursor, route_hatched'access);
+					log_indentation_down;
+				end;
+
+				
+			begin
+				log (text => "class: " 
+					 & to_string (get_class_name (module_cursor, net_cursor)),
+					 level => log_threshold + 2);
 				
 				log_indentation_up;
 				
-				update_element (module.nets, net_cursor, route_solid'access);
-				update_element (module.nets, net_cursor, route_hatched'access);
-
+				net_class := get_net_class (module_cursor, net_cursor);
+				
+				process_solid_zones;
+				process_hatched_zones;
 				log_indentation_down;
 			end query_net;
 			
@@ -1799,6 +1832,7 @@ package body et_board_ops.fill_zones is
 				net_cursor := module.nets.first;
 
 				while has_element (net_cursor) loop
+					log (text => "net " & get_net_name (net_cursor), level => log_threshold + 1);
 					query_net;
 					next (net_cursor);
 				end loop;
