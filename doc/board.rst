@@ -591,7 +591,11 @@ Fill Zones in Conductor Layers
 		NOTE: This is currently under construction.
 
 		
+
 #. Set Spacing
+
+	The spacing defines the distance between fill lines
+	if the fill style is hatched.
 
 	.. code-block::
 	
@@ -614,7 +618,7 @@ Fill Zones in Conductor Layers
 
 #. Set Thermal Relief Maxium Gap Width
 
-	This is the maximal space between pad and fill zone.
+	This is the maximal space between terminal edge and fill zone.
 	For spaces greater than gap_max no spoke will be generated:
 
 	.. code-block::
@@ -626,7 +630,7 @@ Fill Zones in Conductor Layers
 #. Set Thermal Relief Minimum Track Width
 
 	This is the minimal width of the thermal relief spokes.
-	It applies to ALL pads connected with the zone.
+	It applies to ALL terminals connected with the zone.
 
 	.. code-block::
 	
