@@ -45,7 +45,11 @@ with et_schematic_ops.nets;
 with et_pcb_contour;
 with et_board_ops.board_contour;
 with et_board_ops.devices;
+with et_board_ops.net_class;
 with et_fill_zones.boards;
+
+with et_net_class;
+with et_net_class_name;
 
 with et_net_ports;
 
@@ -1608,6 +1612,8 @@ package body et_board_ops.fill_zones is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			use et_net_class;
+			
 			net_cursor : pac_nets.cursor;
 			net_class : type_net_class;		
 
@@ -1742,7 +1748,9 @@ package body et_board_ops.fill_zones is
 			
 			-- This procedure queries the net indicated by
 			-- cursor "net_cursor":
-			procedure query_net is begin
+			procedure query_net is 
+				use et_board_ops.net_class;
+			begin
 				net_class := get_net_class (module_cursor, net_cursor);
 				
 				-- log (text => "class " & get_net_name (net_cursor),
@@ -2391,6 +2399,7 @@ package body et_board_ops.fill_zones is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in out type_generic_module) 
 			is
+				use et_net_class;
 				net_cursor : pac_nets.cursor;
 				net_class : type_net_class;		
 

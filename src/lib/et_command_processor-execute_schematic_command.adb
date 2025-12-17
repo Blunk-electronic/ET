@@ -48,7 +48,7 @@ with et_schematic_ops.netlists;
 with et_schematic_ops.grid;
 with et_schematic_ops.submodules;
 with et_board_ops.grid;
-
+with et_board_ops.net_class;
 with et_text;
 with et_schematic_geometry;
 with et_schematic_coordinates;
@@ -1872,6 +1872,7 @@ is
 	-- class of a net.
 	-- Example: "schematic demo set class GND pwr"
 	procedure set_net_class is 
+		use et_board_ops.net_class;
 		use et_net_class_name;
 	begin
 		case cmd_field_count is

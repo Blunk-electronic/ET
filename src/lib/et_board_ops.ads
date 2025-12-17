@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -48,8 +48,6 @@ with ada.containers.indefinite_doubly_linked_lists;
 with et_meta;
 with et_nets;						use et_nets;
 with et_net_names;					use et_net_names;
-with et_net_class;					use et_net_class;
-with et_net_class_name;				use et_net_class_name;
 with et_module_names;				use et_module_names;
 with et_module_instance;			use et_module_instance;
 with et_primitive_objects;			use et_primitive_objects;
@@ -166,29 +164,9 @@ package et_board_ops is
 
 
 
-	-- Returns the settings of the required net class
-	-- of the given module.
-	-- If the given class name is "default" then the settings
-	-- are returned as defined by the design rules (DRU).
-	-- Assumes that the given class exists for the module.
-	-- Otherwise constraint error is raised.
-	function get_net_class (
-		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		class	: in pac_net_class_name.bounded_string) -- hi-voltage, si-critical
-		return type_net_class;
 
-
-
-	-- Returns the class settings of a net in a module.
-	-- If given net is no_element (freetrack) then the settings of the
-	-- "default" class will be returned:
-	function get_net_class (
-		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		net		: in et_nets.pac_nets.cursor)  -- GND, RESET_N, ...
-		return type_net_class;
 
 	
-
 
 
 	-- Returns true if a design rules file for the layout has been
