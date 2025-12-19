@@ -45,8 +45,7 @@
 with ada.text_io;					use ada.text_io;
 with ada.characters;				use ada.characters;
 with ada.strings;					use ada.strings;
-with ada.directories;				use ada.directories;
-with ada.containers;
+with ada.directories;
 
 with et_text;						use et_text;
 with et_schematic_geometry;
@@ -59,31 +58,8 @@ with et_pcb_sides;
 with et_board_geometry;
 with et_board_coordinates;
 
-with et_assembly_variants;			use et_assembly_variants;
-with et_assembly_variant_name;		use et_assembly_variant_name;
 with et_coordinates_formatting;		use et_coordinates_formatting;
-with et_primitive_objects;			use et_primitive_objects;
-with et_axes;						use et_axes;
-with et_module_instance;			use et_module_instance;
-with et_nets;
-with et_route;						use et_route;
-with et_net_strands;				use et_net_strands;
-with et_net_names;					use et_net_names;
-with et_net_junction;
-with et_net_ports;
-with et_net_segment;
-with et_net_labels;
-with et_net_connectors;
-with et_net_class;
-with et_net_class_name;
-with et_net_class_description;
-with et_net_classes;
-with et_port_names;
-with et_symbol_ports;
 with et_device_name;				use et_device_name;
-
-with et_design_rules;				use et_design_rules;
-with et_design_rules_board;			use et_design_rules_board;
 
 with et_device_model;
 with et_device_appearance;
@@ -98,54 +74,26 @@ with et_symbol_model;
 with et_symbol_read;
 with et_schematic_text;
 with et_device_read;
-with et_drawing_frame;
-with et_drawing_frame.schematic;
-with et_drawing_frame_rw;
-with et_sheets;
 with et_devices_electrical;
 with et_devices_non_electrical;
-with et_pcb;
 with et_pcb_stack;
 
-with et_board_read;					use et_board_read;
 with et_package_read;
 with et_package_sections;
 
 with et_package_name;
 with et_package_model_name;
-with et_drills;
-with et_vias;
-with et_terminals;
 
 with et_conventions;
 
-with et_time;
-
 with et_schematic_ops;
 with et_schematic_ops.units;
-with et_schematic_ops.submodules;
 with et_board_ops;
-with et_board_ops.ratsnest;
-
-with et_schematic_text;
-with et_board_text;
-with et_board_layer_category;
 
 with et_device_placeholders;
 with et_device_placeholders.packages;
 with et_device_placeholders.symbols;
 
-with et_submodules;
-
-with et_netlists;
-
-with et_conductor_segment.boards;
-with et_fill_zones;
-with et_fill_zones.boards;
-with et_thermal_relief;
-with et_conductor_text.boards;
-with et_route_restrict.boards;
-with et_via_restrict.boards;
 with et_stopmask;
 with et_stencil;
 with et_silkscreen;
@@ -156,16 +104,14 @@ with et_pcb_placeholders;
 with et_unit_name;
 with et_units;
 with et_mirroring;						use et_mirroring;
-with et_directory_and_file_ops;
 with et_alignment;						use et_alignment;
 with et_object_status;
 
 with et_general_rw;						use et_general_rw;
-with et_meta;							use et_meta;
-with et_exceptions;						use et_exceptions;
 
 
-package body et_module_read_electrical_device is
+
+package body et_module_read_device_electrical is
 
 	use pac_generic_modules;
 
@@ -916,7 +862,7 @@ package body et_module_read_electrical_device is
 	
 	
 	
-end et_module_read_electrical_device;
+end et_module_read_device_electrical;
 
 	
 -- Soli Deo Gloria

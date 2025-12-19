@@ -45,7 +45,7 @@ with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
 
-package et_module_read_electrical_device is
+package et_module_read_device_electrical is
 		
 
 	procedure read_device (
@@ -102,7 +102,7 @@ package et_module_read_electrical_device is
 	procedure insert_placeholders;
 
 	
-end et_module_read_electrical_device;
+end et_module_read_device_electrical;
 
 -- Soli Deo Gloria
 

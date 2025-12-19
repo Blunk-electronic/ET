@@ -153,8 +153,6 @@ with et_assy_doc;
 with et_keepout;
 with et_pcb_contour;
 with et_pcb_placeholders;
-with et_unit_name;
-with et_units;
 with et_mirroring;						use et_mirroring;
 with et_directory_and_file_ops;
 with et_alignment;						use et_alignment;
@@ -164,7 +162,7 @@ with et_general_rw;						use et_general_rw;
 with et_meta;							use et_meta;
 with et_exceptions;						use et_exceptions;
 
-with et_module_read_electrical_device;	use et_module_read_electrical_device;
+with et_module_read_device_electrical;	use et_module_read_device_electrical;
 
 
 package body et_module_read is

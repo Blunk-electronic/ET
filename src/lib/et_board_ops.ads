@@ -36,6 +36,10 @@
 --   history of changes:
 --
 --   ToDo: 
+-- 	  - rework procedures so that a module cursor
+--		is used instead the module_name.
+--    - move stuff related to signal layers to separate child package
+
 
 with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
@@ -78,9 +82,6 @@ with et_exceptions;					use et_exceptions;
 
 
 package et_board_ops is
-
-	-- CS rework procedures so that a module cursor
-	-- is used instead the module_name.
 
 	use pac_generic_modules;
 
