@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                    MODULE READ / ELECTRICAL DEVICE                       --
+--                    MODULE READ / META DATA                               --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -21,9 +21,10 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
+--                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your editor to 4.
+--   For correct displaying set tab with in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,75 +36,62 @@
 --
 --   history of changes:
 --
---  ToDo: 
+-- ToDo:
 -- - clean up
--- - rename global subroutines
-
+--
+--
+--
 
 with et_generic_module;			use et_generic_module;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
 
-package et_module_read_device_electrical is
-		
-
-	procedure read_device (
-		line : in type_fields_of_line);
 
 
+package et_module_read_meta is
 
-	procedure insert_device (
+
+	procedure add_meta_schematic;
+
+	procedure add_meta_board;
+
+	
+	
+	-- Assigns the collected meta data to the module:
+	procedure set_meta (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-
-
-	procedure read_package_position (
-		line : in type_fields_of_line);
-
-	procedure set_package_position;
 	
-
-	procedure read_unit (
-		line : in type_fields_of_line);
-
-
 	
-	procedure insert_unit (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level);
+	function read_meta_basic (
+		line : in type_fields_of_line)
+		return boolean;
 
 
-	procedure insert_units;
-
-
-	procedure read_unit_placeholder (
+	procedure read_meta_schematic (
 		line : in type_fields_of_line);
 
 
 
-	-- Builds a placeholder from unit_placeholder_meaning, unit_placeholder_position and unit_placeholder.
-	-- Depending on the meaning of the placeholder it becomes a placeholder 
-	-- for the reference (like R4), the value (like 100R) or the purpose (like "brightness control").
-	procedure build_unit_placeholder;
+	procedure read_meta_board (
+		line : in type_fields_of_line);
+	
 
 
+	procedure read_preferred_lib_schematic (
+ 		line : in type_fields_of_line);
 
-	-- This procdure reads a property of a placeholder
-	-- of a device package (board):
-	procedure read_device_text_placeholder (
+	
+	procedure read_preferred_lib_board (
 		line : in type_fields_of_line);
 
 	
-	procedure insert_package_placeholder;
 	
-
-	procedure insert_placeholders;
+end et_module_read_meta;
 
 	
-end et_module_read_device_electrical;
-
 -- Soli Deo Gloria
 
 -- For God so loved the world that he gave 

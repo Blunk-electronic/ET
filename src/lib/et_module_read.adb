@@ -146,11 +146,12 @@ with et_alignment;						use et_alignment;
 with et_object_status;
 with et_string_processing;				use et_string_processing;
 with et_general_rw;						use et_general_rw;
-with et_meta;							use et_meta;
 with et_exceptions;						use et_exceptions;
 
 with et_module_read_device_electrical;		use et_module_read_device_electrical;
 with et_module_read_device_non_electrical;	use et_module_read_device_non_electrical;
+
+with et_module_read_meta;				use et_module_read_meta;
 
 
 package body et_module_read is
@@ -192,17 +193,6 @@ package body et_module_read is
 			max 	=> max_section_depth);
 
 
-		-- META DATA
-		meta_basic		: et_meta.type_basic;
-		
-		meta_schematic	: et_meta.type_schematic;
-		prf_libs_sch	: et_meta.pac_preferred_libraries_schematic.list;
-
-		meta_board		: et_meta.type_board;
-		prf_libs_brd	: et_meta.pac_preferred_libraries_board.list;
-
-		
-
 		
 		active_assembly_variant : pac_assembly_variant_name.bounded_string; -- "low_cost"
 
@@ -229,177 +219,7 @@ package body et_module_read is
 			update_element (generic_modules, module_cursor, set_variant'access);
 		end set_active_assembly_variant;
 
-
 		
-		-- Assigns the collected meta data to the module:
-		procedure set_meta is
-			
-			procedure do_it (
-				module_name	: in pac_module_name.bounded_string;
-				module		: in out type_generic_module) 
-			is
-				use et_meta.pac_preferred_libraries_schematic;
-			begin
-				-- CS check whether date drawn <= date checked <= date_approved
-				--  use type_basic for the test of schematic and board data.
-				
-				module.meta.schematic := meta_schematic;
-				module.meta.board := meta_board;
-			end;
-		begin -- set_meta
-			log (text => "meta data ...", level => log_threshold + 1);
-			
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> do_it'access);
-		end set_meta;
-
-
-
-		
-		-- Reads basic meta data. If given line does not contain
-		-- basic meta stuff, returns a false.
-		function read_meta_basic return boolean is
-			use et_meta;
-			use et_time;
-			kw : constant string := f (line, 1);
-			result : boolean := true;
-		begin
-			if kw = keyword_company then
-				expect_field_count (line, 2);
-				meta_basic.company := to_company (f (line, 2));
-
-			elsif kw = keyword_customer then
-				expect_field_count (line, 2);
-				meta_basic.customer := to_customer (f (line, 2));
-				
-			elsif kw = keyword_partcode then
-				expect_field_count (line, 2);
-				meta_basic.partcode := to_partcode (f (line, 2));
-				
-			elsif kw = keyword_drawing_number then
-				expect_field_count (line, 2);
-				meta_basic.drawing_number := to_drawing_number (f (line, 2));
-				
-			elsif kw = keyword_revision then
-				expect_field_count (line, 2);
-				meta_basic.revision := to_revision (f (line, 2));
-				
-			elsif kw = keyword_drawn_by then
-				expect_field_count (line, 2);
-				meta_basic.drawn_by := to_person (f (line, 2));
-				
-			elsif kw = keyword_drawn_date then
-				expect_field_count (line, 2);
-				meta_basic.drawn_date := to_date (f (line, 2));
-				
-			elsif kw = keyword_checked_by then
-				expect_field_count (line, 2);
-				meta_basic.checked_by := to_person (f (line, 2));
-				
-			elsif kw = keyword_checked_date then
-				expect_field_count (line, 2);
-				meta_basic.checked_date := to_date (f (line, 2));
-				
-			elsif kw = keyword_approved_by then
-				expect_field_count (line, 2);
-				meta_basic.approved_by := to_person (f (line, 2));
-				
-			elsif kw = keyword_approved_date then
-				expect_field_count (line, 2);
-				meta_basic.approved_date := to_date (f (line, 2));
-
-			else
-				result := false;
-			end if;
-			
-			return result;
-		end read_meta_basic;
-
-
-		
-		procedure read_meta_schematic is 
-			use et_meta;
-			kw : constant string := f (line, 1);
-		begin
-			-- first parse line for basic meta stuff.
-			-- if no meta stuff found, test for schematic specific meta data:
-			if read_meta_basic = false then
-				-- CS: in the future, if there is schematic specific meta data:
-				-- if kw = keyword_xyz then
-				-- do something
-				--else
-				invalid_keyword (kw);
-			end if;
-		end;
-
-
-		
-		procedure read_meta_board is 
-			use et_meta;			
-			kw : constant string := f (line, 1);
-		begin
-			-- first parse line for basic meta stuff.
-			-- if no meta stuff found, test for bord specific meta data:
-			if read_meta_basic = false then
-				-- CS: in the future, if there is schematic specific meta data:
-				-- if kw = keyword_xyz then
-				-- do something
-				--else
-				invalid_keyword (kw);
-			end if;
-		end;		
-
-
-		
-		procedure read_preferred_lib_schematic is
-			kw : constant string := f (line, 1);
-			use et_meta;
-			lib : pac_preferred_library_schematic.bounded_string;
-		begin
-			if kw = keyword_path then
-				expect_field_count (line, 2);
-
-				lib := to_preferred_library_schematic (f (line, 2));
-				
-				if not exists (lib) then
-					log (WARNING, "Preferred library path for devices " 
-						& enclose_in_quotes (to_string (lib))
-						& " does not exist !");
-				end if;
-
-				-- Collect the library path in temporarily list:
-				prf_libs_sch.append (lib);
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_preferred_lib_schematic;
-
-
-		
-		procedure read_preferred_lib_board is
-			kw : constant string := f (line, 1);
-			use et_meta;
-			lib : pac_preferred_library_board.bounded_string;
-		begin
-			if kw = keyword_path then
-				expect_field_count (line, 2);
-				lib := to_preferred_library_board (f (line, 2));
-
-				if not exists (lib) then
-					log (WARNING, "Preferred library path for non-electrical packages " 
-						& enclose_in_quotes (to_string (lib))
-						& " does not exist !");
-				end if;
-				
-				-- Collect the library path in temporarily list:
-				prf_libs_brd.append (lib);
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_preferred_lib_board;
-
 
 		
 
@@ -5061,19 +4881,8 @@ package body et_module_read is
 							when SEC_DRAWING_GRID => null; -- nothing to do
 
 							when SEC_META =>
-								-- Add the so far collected basic meta data AND the 
-								-- preferred schematic libs to schematic related meta data:
-								meta_schematic := (meta_basic with 
-									preferred_libs => prf_libs_sch);
+								add_meta_schematic;
 
-								-- This clean up is not really required since
-								-- section meta and preferred libs for schematic
-								-- exist only once in the module file:
-								prf_libs_sch.clear;
-								
-								-- Clean up basic meta stuff because
-								-- it will be used for the board also:
-								meta_basic := (others => <>);
 
 							when others => invalid_section;
 						end case;
@@ -5085,24 +4894,11 @@ package body et_module_read is
 
 							when SEC_DRAWING_FRAMES =>
 								set_frame_board;
-
 								
 							when SEC_DRAWING_GRID => null; -- nothing to do
 
 							when SEC_META =>
-								-- Add the so far collected basic meta data AND the 
-								-- preferred board libs to board related meta data:
-								meta_board := (meta_basic with
-									preferred_libs => prf_libs_brd);
-
-								-- This clean up is not really required since
-								-- section meta and preferred libs for board
-								-- exist only once in the module file:
-								prf_libs_brd.clear;
-								
-								-- Clean up basic meta stuff because
-								-- it will be used for the schematic also:
-								meta_basic := (others => <>);
+								add_meta_board;
 							
 							when others => invalid_section;
 						end case;
@@ -5314,12 +5110,16 @@ package body et_module_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_META =>
 						case stack.parent is
-							when SEC_INIT => set_meta;
+							when SEC_INIT => 
+								set_meta (module_cursor, log_threshold);
+								
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_PREFERRED_LIBRARIES =>
 						case stack.parent is
 							when SEC_SCHEMATIC =>
@@ -5336,6 +5136,7 @@ package body et_module_read is
 								
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_RULES =>
 						case stack.parent is
@@ -5633,22 +5434,28 @@ package body et_module_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_PREFERRED_LIBRARIES =>
 						case stack.parent is
 							when SEC_SCHEMATIC =>
 								case stack.parent (degree => 2) is
-									when SEC_META	=> read_preferred_lib_schematic;
-									when others		=> invalid_section;
+									when SEC_META => 
+										read_preferred_lib_schematic (line);
+										
+									when others => invalid_section;
 								end case;
 
 							when SEC_BOARD =>
 								case stack.parent (degree => 2) is
-									when SEC_META	=> read_preferred_lib_board;
-									when others		=> invalid_section;
+									when SEC_META =>
+										read_preferred_lib_board (line);
+										
+									when others	=> invalid_section;
 								end case;
 								
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_RULES =>
 						case stack.parent is
@@ -6103,7 +5910,7 @@ package body et_module_read is
 						case stack.parent is
 							when SEC_DRAWING_FRAMES => read_frame_template_schematic;
 							when SEC_DRAWING_GRID => read_drawing_grid_schematic;
-							when SEC_META => read_meta_schematic;
+							when SEC_META => read_meta_schematic (line);
 							when others => invalid_section;
 						end case;
 
@@ -6113,7 +5920,7 @@ package body et_module_read is
 							when SEC_INIT => null; -- nothing to do
 							when SEC_DRAWING_FRAMES => read_frame_template_board;
 							when SEC_DRAWING_GRID => read_drawing_grid_board;
-							when SEC_META => read_meta_board;
+							when SEC_META => read_meta_board (line);
 							when others => invalid_section;
 						end case;
 
