@@ -47,13 +47,11 @@ with ada.characters;				use ada.characters;
 with ada.strings;					use ada.strings;
 with ada.directories;
 
-with et_text;						use et_text;
 with et_schematic_geometry;
 with et_schematic_coordinates;
 
 with et_section_headers;			use et_section_headers;
 with et_keywords;					use et_keywords;
-with et_module_sections;			use et_module_sections;
 with et_pcb_sides;
 with et_board_geometry;
 with et_board_coordinates;
@@ -70,7 +68,6 @@ with et_device_library;				use et_device_library;
 with et_device_partcode;
 with et_device_sections;
 with et_package_variant;
-with et_symbol_model;
 with et_symbol_read;
 with et_schematic_text;
 with et_device_read;
@@ -79,7 +76,6 @@ with et_devices_non_electrical;
 with et_pcb_stack;
 
 with et_package_read;
-with et_package_sections;
 
 with et_package_name;
 with et_package_model_name;
@@ -94,11 +90,6 @@ with et_device_placeholders;
 with et_device_placeholders.packages;
 with et_device_placeholders.symbols;
 
-with et_stopmask;
-with et_stencil;
-with et_silkscreen;
-with et_assy_doc;
-with et_keepout;
 with et_pcb_contour;
 with et_pcb_placeholders;
 with et_unit_name;
@@ -141,7 +132,6 @@ package body et_module_read_device_electrical is
 	procedure read_device (
 		line : in type_fields_of_line)
 	is
-		use et_symbol_model;
 		use et_device_model;
 		use et_device_purpose;
 		use et_device_model_names;
@@ -230,7 +220,6 @@ package body et_module_read_device_electrical is
 			module		: in out type_generic_module) 
 		is
 			use et_devices_electrical;
-			use et_symbol_model;
 			use et_device_model;
 			use et_device_model_names;
 			use et_package_name;
@@ -538,7 +527,6 @@ package body et_module_read_device_electrical is
 
 		procedure insert_unit is 
 			use et_schematic_coordinates;
-			use et_symbol_model;
 			use et_units;
 			use et_unit_name;
 			use et_device_appearance;
@@ -691,7 +679,6 @@ package body et_module_read_device_electrical is
 		use et_device_placeholders;
 		use et_schematic_coordinates;	
 		use et_schematic_geometry;
-		use et_symbol_model;
 	begin
 		case unit_placeholder_meaning is
 			when NAME =>

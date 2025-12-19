@@ -162,7 +162,8 @@ with et_general_rw;						use et_general_rw;
 with et_meta;							use et_meta;
 with et_exceptions;						use et_exceptions;
 
-with et_module_read_device_electrical;	use et_module_read_device_electrical;
+with et_module_read_device_electrical;		use et_module_read_device_electrical;
+with et_module_read_device_non_electrical;	use et_module_read_device_non_electrical;
 
 
 package body et_module_read is
@@ -1645,74 +1646,6 @@ package body et_module_read is
 		
 
 		
-		-- These two variables assist when a particular placeholder is appended to the
-		-- list of placholders in silk screen, assy doc and their top or bottom face:
-		device_text_placeholder_position: et_board_coordinates.type_package_position := et_board_coordinates.placeholder_position_default; -- incl. rotation and face
-		
-		device_text_placeholder_layer : et_device_placeholders.packages.type_placeholder_layer := 
-			et_device_placeholders.packages.type_placeholder_layer'first; -- silkscreen/assembly_documentation
-
-		-- a single temporarily placeholder of a package
-		device_text_placeholder : et_device_placeholders.packages.type_text_placeholder;
-
-
-
-		-- This procdure reads a property of a placeholder
-		-- of a device package (board):
-		procedure read_device_text_placeholder is
-			use et_device_placeholders;
-			use et_device_placeholders.packages;
-			use et_board_geometry;
-			use et_board_geometry.pac_geometry_2;
-			use et_board_coordinates;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_meaning then -- meaning name, value, ...
-				expect_field_count (line, 2);
-				device_text_placeholder.meaning := to_meaning (f (line, 2));
-				
-			elsif kw = keyword_layer then -- layer silkscreen/assy_doc
-				expect_field_count (line, 2);
-				device_text_placeholder_layer := to_placeholder_layer (f (line, 2));
-
-			elsif kw = keyword_anchor then -- anchor relative/absolute
-				expect_field_count (line, 2);
-				device_text_placeholder.anchor_mode := to_anchor_mode (f (line, 2));
-				
-			elsif kw = keyword_position then -- position x 0.000 y 5.555 rotation 0.00 face top
-				expect_field_count (line, 9);
-
-				-- extract position of placeholder starting at field 2
-				device_text_placeholder_position := to_position (line, 2);
-
-			elsif kw = keyword_size then -- size 5
-				expect_field_count (line, 2);
-				device_text_placeholder.size := to_distance (f (line, 2));
-
-			elsif kw = keyword_linewidth then -- linewidth 0.15
-				expect_field_count (line, 2);
-
-				device_text_placeholder.line_width := to_distance (f (line, 2));
-
-			elsif kw = keyword_alignment then -- alignment horizontal center vertical center
-				expect_field_count (line, 5);
-
-				-- extract alignment of placeholder starting at field 2
-				device_text_placeholder.alignment := to_alignment (line, 2);
-				
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_device_text_placeholder;
-
-
-		
-		-- the temporarily collection of placeholders of packages (in the layout)
-		device_text_placeholders	: et_device_placeholders.packages.type_text_placeholders; -- silk screen, assy doc, top, bottom
-
-
-		
 		
 		-- general board stuff
 		use et_board_text.pac_text_board;
@@ -2236,26 +2169,6 @@ package body et_module_read is
 
 
 		
-		device_position	: et_board_coordinates.type_package_position; -- in the layout ! incl. angle and face
-
-
-		
-		
-		procedure read_package is
-			use et_board_coordinates;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_position then -- position x 163.500 y 92.500 rotation 0.00 face top
-				expect_field_count (line, 9);
-
-				-- extract package position starting at field 2
-				device_position := to_position (line, 2);
-
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_package;
 
 
 		
@@ -2539,33 +2452,6 @@ package body et_module_read is
 
 
 		
-		procedure read_device_non_electric is
-			use et_board_coordinates;
-			use et_package_model_name;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_name then -- name FD1
-				expect_field_count (line, 2);
-				device_name := to_device_name (f (line, 2));
-
-				
-			elsif kw = keyword_position then -- position x 163.500 y 92.500 rotation 0.00 face top
-				expect_field_count (line, 9);
-
-				-- extract device position (in the layout) starting at field 2
-				device_position := to_position (line, 2);
-			
-				
-			elsif kw = keyword_model then -- model /lib/fiducials/crosshair.pac
-				expect_field_count (line, 2);
-				device_non_electric_model := to_package_model_name (f (line, 2));
-
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_device_non_electric;
-
 		
 		
 		-- This variable provides the basic things for a simple drill
@@ -3103,123 +2989,6 @@ package body et_module_read is
 
 
 				
-				
--- 				procedure insert_package_placeholder is
--- 					use et_device_placeholders.packages;
--- 					use et_pcb_sides;
--- 					use et_board_coordinates;
--- 				begin
--- 					device_text_placeholder.position := et_board_geometry.pac_geometry_2.type_position (device_text_placeholder_position);
--- 					
--- 					case device_text_placeholder_layer is
--- 						when SILKSCREEN => 
--- 							case get_face (device_text_placeholder_position) is
--- 
--- 								when TOP =>
--- 									pac_text_placeholders.append (
--- 										container	=> device_text_placeholders.silkscreen.top,
--- 										new_item	=> device_text_placeholder);
--- 									
--- 								when BOTTOM =>
--- 									pac_text_placeholders.append (
--- 										container	=> device_text_placeholders.silkscreen.bottom,
--- 										new_item	=> device_text_placeholder);
--- 							end case;
--- 							
--- 						when ASSY_DOC =>
--- 							case get_face (device_text_placeholder_position) is
--- 
--- 								when TOP =>
--- 									pac_text_placeholders.append (
--- 										container	=> device_text_placeholders.assy_doc.top,
--- 										new_item	=> device_text_placeholder);
--- 
--- 								when BOTTOM =>
--- 									pac_text_placeholders.append (
--- 										container	=> device_text_placeholders.assy_doc.bottom,
--- 										new_item	=> device_text_placeholder);
--- 							end case;
--- 
--- 					end case;
--- 
--- 					-- reset placeholder for next placeholder
--- 					device_text_placeholder := (others => <>);
--- 					device_text_placeholder_position := placeholder_position_default;
--- 
--- 				end insert_package_placeholder;
-
-				
-				
-				procedure insert_device_non_electric (
-					module_name	: in pac_module_name.bounded_string;
-					module		: in out type_generic_module) 
-				is				
-					use et_board_coordinates;
-					use et_pcb;
-					
-					use et_device_model;
-					use et_device_model_names;
-					use et_pcb_sides;
-					use et_package_name;
-					use et_pcb_stack;
-					use et_devices_non_electrical;
-					
-					device_cursor : pac_devices_non_electrical.cursor;
-					inserted : boolean;
-
-					use et_package_read;
-				begin
-					log (text => "device (non-electric) " & to_string (device_name), level => log_threshold + 1);
-					log_indentation_up;
-
-					if not et_conventions.prefix_valid (device_name) then 
-						--log (message_warning & "prefix of device " & et_libraries.to_string (device_name) 
-						--	 & " not conformant with conventions !");
-						null; -- CS output something helpful
-					end if;					
-
-					device_non_electric.position := device_position;
-					device_non_electric.package_model := device_non_electric_model;
-	-- 					device_non_electric.text_placeholders := device_text_placeholders;
-
-	-- 					put_line (count_type'image (et_packages.pac_text_placeholders.length (
-	-- 						device_non_electric.text_placeholders.silkscreen.top)));
-
-					
-					pac_devices_non_electrical.insert (
-						container	=> module.devices_non_electric,
-						position	=> device_cursor,
-						inserted	=> inserted,
-						key			=> device_name, -- FD1, H1
-						new_item	=> device_non_electric);
-
-					-- The device name must not be in use by any non-electrical device:
-					if not inserted then
-						et_devices_non_electrical.device_name_in_use (device_name);
-					end if;
-
-					-- The device name must not be in use by an electrical device:
-					if module.devices.contains (device_name) then
-						et_devices_electrical.device_name_in_use (device_name);
-					end if;
-
-						
-					-- Read the package model (like ../libraries/fiducials/crosshair.pac):
-					read_package (
-						file_name		=> device_non_electric_model,
-	-- CS						check_layers	=> YES,
-						log_threshold	=> log_threshold + 2);
-
-					-- clean up for next non-electic device:
-					device_non_electric 		:= (others => <>);
-					device_name					:= (others => <>);
-					device_position				:= package_position_default;
-					device_text_placeholders	:= (others => <>);
-					-- device_model				:= to_file_name ("");
-
-					log_indentation_down;
-				end insert_device_non_electric;
-
 
 
 				use et_board_layer_category;
@@ -3409,6 +3178,7 @@ package body et_module_read is
 
 
 
+				
 				
 				procedure insert_circle (
 					layer_cat	: in type_layer_category;
@@ -5421,19 +5191,19 @@ package body et_module_read is
 						case stack.parent is
 							when SEC_PLACEHOLDERS =>
 								case stack.parent (degree => 2) is
-									when SEC_DEVICE | SEC_PACKAGE =>
-
-										-- insert package placeholder in collection of text placeholders
-										insert_package_placeholder;
+									when SEC_DEVICE =>
+										et_module_read_device_non_electrical.insert_package_placeholder;
+										
+									when SEC_PACKAGE =>
+										et_module_read_device_electrical.insert_package_placeholder;
 
 									when SEC_UNIT =>
-
-										-- build temporarily unit placeholder
 										build_unit_placeholder;
 
 									when others => invalid_section;
 								end case;
 
+								
 							when SEC_TOP =>
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>
@@ -5453,6 +5223,7 @@ package body et_module_read is
 
 									when others => invalid_section;
 								end case;
+
 								
 							when SEC_BOTTOM =>
 								case stack.parent (degree => 2) is
@@ -5474,6 +5245,7 @@ package body et_module_read is
 									when others => invalid_section;
 								end case;
 
+								
 							when SEC_CONDUCTOR =>
 								insert_board_text_placeholder;
 								
@@ -5484,18 +5256,13 @@ package body et_module_read is
 					when SEC_PLACEHOLDERS =>
 						case stack.parent is
 							when SEC_PACKAGE =>
-								insert_placeholders;
+								et_module_read_device_electrical.insert_placeholders;
 								
 
 							when SEC_DEVICE =>
 								case stack.parent (degree => 2) is
 									when SEC_DEVICES_NON_ELECTRIC =>
-										
-										-- Insert placeholder collection in temporarily device:
-										device_non_electric.placeholders := device_text_placeholders;
-
-										-- clean up for next collection of placeholders
-										device_text_placeholders := (others => <>);
+										et_module_read_device_non_electrical.insert_placeholders;
 
 									when others => invalid_section;
 								end case;
@@ -5505,6 +5272,7 @@ package body et_module_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_PACKAGE =>
 						case stack.parent is
 							when SEC_DEVICE =>
@@ -5513,16 +5281,16 @@ package body et_module_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_UNIT =>
 						case stack.parent is
 							when SEC_UNITS =>
-
-								-- insert unit in temporarily collection of units
 								insert_unit (module_cursor, log_threshold);
 													
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_UNITS =>
 						case stack.parent is
 							when SEC_DEVICE =>
@@ -5531,34 +5299,26 @@ package body et_module_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_DEVICE =>
 						case stack.parent is
 							when SEC_DEVICES =>
 								insert_device (module_cursor, log_threshold);
 
-								-- insert device (where pointer "device" is pointing at) in the module
-								-- update_element (
-								-- 	container	=> generic_modules,
-								-- 	position	=> module_cursor,
-								-- 	process		=> insert_device'access);
-
 							when SEC_DEVICES_NON_ELECTRIC => 
-
-								-- insert device (where pointer "device_non_electric" is pointing at) in the module
-								update_element (
-									container	=> generic_modules,
-									position	=> module_cursor,
-									process		=> insert_device_non_electric'access);
+								insert_device_non_electrical (module_cursor, log_threshold);
 								
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_DEVICES =>
 						case stack.parent is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_ASSEMBLY_VARIANT =>
 						case stack.parent is
 							when SEC_ASSEMBLY_VARIANTS => 
@@ -6417,14 +6177,16 @@ package body et_module_read is
 					when SEC_DEVICE =>
 						case stack.parent is
 							when SEC_DEVICES => read_device (line);
-							when SEC_DEVICES_NON_ELECTRIC => read_device_non_electric;
+							when SEC_DEVICES_NON_ELECTRIC => read_device_non_electric (line);
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_PACKAGE =>
 						case stack.parent is
-							when SEC_DEVICE => read_package_position (line);
+							when SEC_DEVICE =>
+								et_module_read_device_electrical.read_package_position (line);
+								
 							when others => invalid_section;
 						end case;
 
@@ -6433,12 +6195,17 @@ package body et_module_read is
 						case stack.parent is
 							when SEC_PLACEHOLDERS =>
 								case stack.parent (degree => 2) is
-									when SEC_DEVICE => read_device_text_placeholder; -- in layout
-									when SEC_PACKAGE => read_device_text_placeholder (line); -- in layout
+									when SEC_DEVICE => 
+										et_module_read_device_non_electrical.read_device_text_placeholder (line);
+									
+									when SEC_PACKAGE => 
+										et_module_read_device_electrical.read_device_text_placeholder (line);
+										
 									when SEC_UNIT => read_unit_placeholder (line);
 									when others => invalid_section;
 								end case;
 
+								
 							when SEC_TOP | SEC_BOTTOM =>
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION 
