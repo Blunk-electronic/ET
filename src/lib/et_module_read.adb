@@ -153,6 +153,7 @@ with et_module_read_assembly_variant;	use et_module_read_assembly_variant;
 
 with et_module_read_design_rules;		use et_module_read_design_rules;
 with et_module_read_grid;				use et_module_read_grid;
+with et_module_read_net_classes;		use et_module_read_net_classes;
 
 
 package body et_module_read is
@@ -239,140 +240,8 @@ package body et_module_read is
 
 		
 		
-	-- NET CLASS:
-		
-		net_class 		: et_net_class.type_net_class;
-		net_class_name	: et_net_class_name.pac_net_class_name.bounded_string;
 
 		
-		procedure reset_net_class is 
-			use et_net_class;
-			use et_net_class_name;
-		begin
-			net_class_name := net_class_name_default;
-			net_class := (others => <>);
-
-			-- CS reset parameter-found-flags
-		end reset_net_class;
-
-
-		
-		-- Reads a line that describes a net class property:
-		procedure read_net_class is 
-			use et_terminals;
-			use et_drills;
-			use et_net_class;
-			use et_net_class_name;
-			use et_net_class_description;
-			use et_board_geometry.pac_geometry_2;
-			kw : constant string := f (line, 1);
-		begin
-			log (text => "read net class", level => log_threshold + 1);
-			log_indentation_up;
-
-			
-			if kw = keyword_name then
-				expect_field_count (line, 2);
-				net_class_name := to_net_class_name (f (line,2));
-
-			-- CS: In the following: set a corresponding parameter-found-flag
-			elsif kw = keyword_description then
-				expect_field_count (line, 2);
-				net_class.description := to_net_class_description (f (line,2));
-				
-			elsif kw = keyword_clearance then
-				expect_field_count (line, 2);
-				net_class.clearance := to_distance (f (line,2));
-				validate_track_clearance (net_class.clearance);
-				-- CS validate against dru settings
-													
-			elsif kw = keyword_track_width_min then
-				expect_field_count (line, 2);
-				net_class.track_width_min := to_distance (f (line,2));
-				validate_track_width (net_class.track_width_min);
-				-- CS validate against dru settings
-				
-			elsif kw = keyword_via_drill_min then
-				expect_field_count (line, 2);
-				net_class.via_drill_min := to_distance (f (line,2));
-				validate_drill_size (net_class.via_drill_min);
-				-- CS validate against dru settings
-				
-			elsif kw = keyword_via_restring_min then
-				expect_field_count (line, 2);
-				net_class.via_restring_min := to_distance (f (line,2));
-				validate_restring_width (net_class.via_restring_min);
-				-- CS validate against dru settings
-				
-			elsif kw = keyword_micro_via_drill_min then
-				expect_field_count (line, 2);
-				net_class.micro_via_drill_min := to_distance (f (line,2));
-				validate_drill_size (net_class.micro_via_drill_min);
-				-- CS validate against dru settings
-				
-			elsif kw = keyword_micro_via_restring_min then
-				expect_field_count (line, 2);
-				net_class.micro_via_restring_min := to_distance (f (line,2));
-				validate_restring_width (net_class.micro_via_restring_min);
-				-- CS validate against dru settings
-			else
-				invalid_keyword (kw);
-			end if;
-
-			
-			log_indentation_down;
-		end read_net_class;
-
-
-
-		
-		-- Assigns a net class to the module:
-		procedure assign_net_class is
-
-			procedure insert_net_class (
-				module_name	: in pac_module_name.bounded_string;
-				module		: in out type_generic_module) 
-			is
-				use et_net_class;
-				use et_net_class_name;
-				use et_net_classes;
-				inserted : boolean;
-				cursor : pac_net_classes.cursor;
-			begin
-				log (text => "net class " & to_string (net_class_name), level => log_threshold + 1);
-
-				-- CS: notify about missing parameters (by reading the parameter-found-flags)
-				-- If a parameter is missing, the default is assumed. See type_net_class spec.
-				
-				pac_net_classes.insert (
-					container	=> module.net_classes,
-					key			=> net_class_name,
-					new_item	=> net_class,
-					inserted	=> inserted,
-					position	=> cursor);
-
-				if not inserted then
-					log (ERROR, "net class '" & to_string (net_class_name) 
-							& "' already exists !");
-					raise constraint_error;
-				end if;			
-			end insert_net_class;
-
-			
-		begin
-			log (text => "assign net class", level => log_threshold + 1);
-			log_indentation_up;
-			
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> insert_net_class'access);
-
-			reset_net_class; -- clean up for next net class
-			
-			log_indentation_down;
-		end assign_net_class;
-
 		
 
 
@@ -4112,7 +3981,7 @@ package body et_module_read is
 					when SEC_NET_CLASS =>
 						case stack.parent is
 							when SEC_NET_CLASSES =>
-								assign_net_class;
+								assign_net_class (module_cursor, log_threshold);
 								
 							when others => invalid_section;
 						end case;
@@ -5043,7 +4912,7 @@ package body et_module_read is
 						
 					when SEC_NET_CLASS =>
 						case stack.parent is
-							when SEC_NET_CLASSES => read_net_class;
+							when SEC_NET_CLASSES => read_net_class (line, log_threshold);
 							when others => invalid_section;
 						end case;
 

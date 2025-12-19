@@ -48,24 +48,29 @@ with et_logging;				use et_logging;
 
 
 
-package et_module_read_grid is
+package et_module_read_net_classes is
+
+	
+	procedure reset_net_class;
+	
+	
+	-- Reads a line that describes a net class property:
+	procedure read_net_class (
+		line 			: in type_fields_of_line;
+		log_threshold	: in type_log_level);
+	
 
 
-	procedure read_drawing_grid_schematic (
-		line : in type_fields_of_line);
-		
-		
-	procedure read_drawing_grid_board (
-		line : in type_fields_of_line);
-
-
-		
-	procedure set_drawing_grid (
+	-- Assigns a net class to the module:
+	procedure assign_net_class (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 	
-end et_module_read_grid;
+end et_module_read_net_classes;
+
+	
+
 
 	
 -- Soli Deo Gloria
