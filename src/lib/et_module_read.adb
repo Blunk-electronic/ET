@@ -152,7 +152,7 @@ with et_module_read_meta;				use et_module_read_meta;
 with et_module_read_assembly_variant;	use et_module_read_assembly_variant;
 
 with et_module_read_design_rules;		use et_module_read_design_rules;
-
+with et_module_read_grid;				use et_module_read_grid;
 
 
 package body et_module_read is
@@ -234,64 +234,6 @@ package body et_module_read is
 		end to_size;
 
 
-
-
-
-		
-		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
-
-		-- drawing grid
-		grid_schematic : et_schematic_geometry.pac_grid.type_grid; -- CS rename to schematic_grid
-		grid_board : et_board_geometry.pac_grid.type_grid; -- CS rename to board_grid
-
-		
-		
-		procedure read_drawing_grid_schematic is 
-			use et_symbol_read;
-			use et_schematic_geometry.pac_grid;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_spacing then -- spacing x 1.00 y 1.00
-				expect_field_count (line, 5);
-				grid_schematic.spacing := to_grid_spacing (line, 2);
-
-			elsif kw = keyword_on_off then -- on_off on
-				expect_field_count (line, 2);
-				grid_schematic.on_off := to_on_off (f (line, 2));
-
-			elsif kw = keyword_style then -- style lines
-				expect_field_count (line, 2);
-				grid_schematic.style := to_style (f (line, 2));
-				
-			else
-				invalid_keyword (kw);
-			end if;
-		end;
-
-		
-		
-		procedure read_drawing_grid_board is
-			use et_board_geometry.pac_grid;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_spacing then -- spacing x 1.00 y 1.00
-				expect_field_count (line, 5);
-				grid_board.spacing := to_grid_spacing (line, 2);
-
-			elsif kw = keyword_on_off then -- on_off on
-				expect_field_count (line, 2);
-				grid_board.on_off := to_on_off (f (line, 2));
-
-			elsif kw = keyword_style then -- style lines
-				expect_field_count (line, 2);
-				grid_board.style := to_style (f (line, 2));
-
-			else
-				invalid_keyword (kw);
-			end if;
-		end;
 
 
 
@@ -2293,69 +2235,6 @@ package body et_module_read is
 
 
 				
-				
-				procedure set_drawing_grid is
-
-					procedure set (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) 
-					is
-
-						procedure schematic is
-							use et_schematic_geometry;
-							use et_schematic_coordinates;
-							use pac_geometry_2;
-							use pac_grid;
-						begin
-							module.grid := grid_schematic;
-							
-							log (text => "schematic " 
-								& to_string (module.grid.spacing) 
-								& " " & to_string (module.grid.on_off)
-								& " " & to_string (module.grid.style),
-								level => log_threshold + 2);
-
-						end schematic;
-
-
-						procedure board is
-							use et_board_geometry;
-							use pac_geometry_2;
-							use pac_grid;
-						begin
-							module.board.grid := grid_board;
-
-							log (text => "board " 
-								& to_string (module.board.grid.spacing)
-								& " " & to_string (module.board.grid.on_off)
-								& " " & to_string (module.board.grid.style),
-								level => log_threshold + 2);
-						end board;
-						
-					begin
-						schematic;
-						board;
-					end set;
-
-					
-					
-				begin -- set_drawing_grid
-					log (text => "drawing grid", level => log_threshold + 1);
-					log_indentation_up;
-					
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> set'access);
-
-					log_indentation_down;
-				end set_drawing_grid;
-
-
-
-				
-
-				
 				procedure insert_submodule (
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out type_generic_module) 
@@ -4257,7 +4136,9 @@ package body et_module_read is
 						
 					when SEC_DRAWING_GRID =>
 						case stack.parent is
-							when SEC_INIT => set_drawing_grid;
+							when SEC_INIT => 
+								set_drawing_grid (module_cursor, log_threshold);
+								
 							when others => invalid_section;
 						end case;
 
@@ -5606,7 +5487,10 @@ package body et_module_read is
 					when SEC_SCHEMATIC =>
 						case stack.parent is
 							when SEC_DRAWING_FRAMES => read_frame_template_schematic;
-							when SEC_DRAWING_GRID => read_drawing_grid_schematic;
+							
+							when SEC_DRAWING_GRID => 
+								read_drawing_grid_schematic (line);
+								
 							when SEC_META => read_meta_schematic (line);
 							when others => invalid_section;
 						end case;
@@ -5616,7 +5500,10 @@ package body et_module_read is
 						case stack.parent is
 							when SEC_INIT => null; -- nothing to do
 							when SEC_DRAWING_FRAMES => read_frame_template_board;
-							when SEC_DRAWING_GRID => read_drawing_grid_board;
+							
+							when SEC_DRAWING_GRID => 
+								read_drawing_grid_board (line);
+								
 							when SEC_META => read_meta_board (line);
 							when others => invalid_section;
 						end case;
