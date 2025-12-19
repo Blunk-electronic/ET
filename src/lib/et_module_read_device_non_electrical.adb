@@ -46,7 +46,6 @@ with ada.text_io;					use ada.text_io;
 with ada.directories;
 
 with et_module_names;				use et_module_names;
-with et_section_headers;			use et_section_headers;
 with et_keywords;					use et_keywords;
 with et_pcb_sides;
 with et_board_geometry;

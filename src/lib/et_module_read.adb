@@ -80,7 +80,6 @@ with et_port_names;
 with et_symbol_ports;
 with et_device_name;				use et_device_name;
 
-with et_design_rules;				use et_design_rules;
 with et_design_rules_board;			use et_design_rules_board;
 
 with et_device_model;
@@ -152,6 +151,9 @@ with et_module_read_device_non_electrical;	use et_module_read_device_non_electri
 with et_module_read_meta;				use et_module_read_meta;
 with et_module_read_assembly_variant;	use et_module_read_assembly_variant;
 
+with et_module_read_design_rules;		use et_module_read_design_rules;
+
+
 
 package body et_module_read is
 
@@ -193,64 +195,6 @@ package body et_module_read is
 
 
 		
-
-		
-
-	-- RULES
-		rules			: type_design_rules := (others => <>);
-	-- 	rules_layout	: et_design_rules.pac_file_name.bounded_string;
-		-- CS ERC rules ?
-		
-		-- The design rules is simply the name of the DRU file
-		-- like JLP_ML4_standard.dru. The content of the DRU file itself
-		-- will later be stored in project wide container et_design_rules.design_rules.
-		procedure read_rules is
-			kw : constant string := f (line, 1);
-		begin
-			if kw = keyword_layout then -- layout JLP_ML4_standard.dru
-				rules.layout := to_file_name (f (line, 2));
-			end if;
-		end read_rules;
-
-
-		
-		-- Assigns the temporarily rules to the module:
-		procedure set_rules is
-			
-			procedure do_it (
-				module_name	: in pac_module_name.bounded_string;
-				module		: in out type_generic_module)
-			is begin
-				-- assign rules
-				module.rules := rules;
-
-				-- log and read layout design rules if specified. otherwise skip:
-				if not is_empty (rules.layout) then
-					log (text => keyword_layout & space & to_string (module.rules.layout),
-						level => log_threshold + 2);
-
-					-- Read the DRU file like JLP_ML4_standard.dru and store it
-					-- in project wide container et_design_rules.design_rules.
-					read_rules (rules.layout, log_threshold + 3);
-				else
-					log (WARNING, "No layout design rules specified ! Defaults will be applied !");
-				end if;
-					
-				-- CS module.rules.erc ?
-			end;
-			
-		begin -- set_rules
-			log (text => "design rules ...", level => log_threshold + 1);
-			log_indentation_up;
-			
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> do_it'access);
-
-			log_indentation_down;
-		end set_rules;
-
 
 		
 
@@ -4883,9 +4827,12 @@ package body et_module_read is
 						
 					when SEC_RULES =>
 						case stack.parent is
-							when SEC_INIT => set_rules;
+							when SEC_INIT => 
+								set_rules (module_cursor, log_threshold);
+								
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_NETCHANGERS =>
 						case stack.parent is
@@ -5209,7 +5156,7 @@ package body et_module_read is
 						
 					when SEC_RULES =>
 						case stack.parent is
-							when SEC_INIT => read_rules;
+							when SEC_INIT => read_rules (line);
 							when others => invalid_section;
 						end case;
 						
