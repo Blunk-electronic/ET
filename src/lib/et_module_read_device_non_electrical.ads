@@ -36,7 +36,8 @@
 --   history of changes:
 --
 --  ToDo: 
---  
+-- - clean up
+-- - rename global subroutines
 
 
 with et_generic_module;			use et_generic_module;
@@ -51,11 +52,6 @@ package et_module_read_device_non_electrical is
 	procedure read_device_non_electric (
 		line : in type_fields_of_line);
 
-
-
-	-- procedure read_package (
-	-- 	line : in type_fields_of_line);
-
 	
 	
 	procedure insert_device_non_electrical (
@@ -66,10 +62,6 @@ package et_module_read_device_non_electrical is
 
 	procedure read_package_position (
 		line : in type_fields_of_line);
-
-	-- procedure set_package_position;
-	
-
 
 
 

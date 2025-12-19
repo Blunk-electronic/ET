@@ -88,13 +88,9 @@ with et_design_rules_board;			use et_design_rules_board;
 with et_device_model;
 with et_device_appearance;
 with et_device_purpose;
-with et_device_model_names;
 with et_device_value;
-with et_device_library;				use et_device_library;
 with et_device_partcode;
 with et_device_sections;
-with et_package_variant;
-with et_symbol_model;
 with et_symbol_read;
 with et_schematic_text;
 with et_device_read;
@@ -102,17 +98,12 @@ with et_drawing_frame;
 with et_drawing_frame.schematic;
 with et_drawing_frame_rw;
 with et_sheets;
-with et_devices_electrical;
-with et_devices_non_electrical;
 with et_pcb;
 with et_pcb_stack;
 
 with et_board_read;					use et_board_read;
-with et_package_read;
 with et_package_sections;
 
-with et_package_name;
-with et_package_model_name;
 with et_drills;
 with et_vias;
 with et_terminals;
@@ -130,10 +121,6 @@ with et_board_ops.ratsnest;
 with et_schematic_text;
 with et_board_text;
 with et_board_layer_category;
-
-with et_device_placeholders;
-with et_device_placeholders.packages;
-with et_device_placeholders.symbols;
 
 with et_submodules;
 
@@ -1444,17 +1431,6 @@ package body et_module_read is
 
 		schematic_text : et_schematic_text.type_text;
 		
-		device_name				: et_device_name.type_device_name; -- C12
-		
-		device_value			: et_device_value.pac_device_value.bounded_string; -- 470R
-
-		device_partcode	: et_device_partcode.pac_device_partcode.bounded_string;
-		device_purpose	: et_device_purpose.pac_device_purpose.bounded_string;
-		device_variant	: et_package_variant.pac_package_variant_name.bounded_string; -- D, N
-		
-		device_non_electric			: et_devices_non_electrical.type_device_non_electrical;
-		device_non_electric_model	: et_package_model_name.pac_package_model_file.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
-
 
 		
 

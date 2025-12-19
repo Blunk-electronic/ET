@@ -36,7 +36,8 @@
 --   history of changes:
 --
 --  ToDo: 
---  
+-- - clean up
+-- - rename global subroutines
 
 
 with et_generic_module;			use et_generic_module;

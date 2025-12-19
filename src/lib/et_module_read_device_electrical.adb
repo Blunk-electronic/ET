@@ -37,8 +37,8 @@
 --   history of changes:
 --
 -- ToDo:
---
---
+-- - clean up
+-- - rename global variables
 --
 --
 
@@ -126,7 +126,8 @@ package body et_module_read_device_electrical is
 	-- temporarily collection of units:
 	device_units	: et_units.pac_units.map; -- PWR, A, B, ...
 
-
+	device_position	: et_board_coordinates.type_package_position; -- in the layout ! incl. angle and face
+	
 
 		
 	procedure read_device (
@@ -422,8 +423,7 @@ package body et_module_read_device_electrical is
 	
 	
 
-	
-	device_position	: et_board_coordinates.type_package_position; -- in the layout ! incl. angle and face
+
 
 	
 	

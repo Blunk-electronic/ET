@@ -37,8 +37,8 @@
 --   history of changes:
 --
 -- ToDo:
---
---
+-- - clean up
+-- - rename global variables
 --
 --
 
@@ -140,27 +140,6 @@ package body et_module_read_device_non_electrical is
 
 
 		
-		
-	-- procedure read_package (
-	-- 	line : in type_fields_of_line)
-	-- is
-	-- 	use et_board_coordinates;
-	-- 	kw : constant string := f (line, 1);
-	-- begin
-	-- 	-- CS: In the following: set a corresponding parameter-found-flag
-	-- 	if kw = keyword_position then -- position x 163.500 y 92.500 rotation 0.00 face top
-	-- 		expect_field_count (line, 9);
- -- 
-	-- 		-- extract package position starting at field 2
-	-- 		device_position := to_position (line, 2);
- -- 
-	-- 	else
-	-- 		invalid_keyword (kw);
-	-- 	end if;
-	-- end read_package;
-
-
-				
 						
 	
 
@@ -289,28 +268,7 @@ package body et_module_read_device_non_electrical is
 	
 	
 	
-	
-	-- procedure set_package_position is begin
-	-- 	-- Assign coordinates of package to temporarily device:
-	-- 	-- CS: constraint error will arise here if the device is virtual.
-	-- 	-- issue warning and skip this statement in this case:
-	-- 	device.position := device_position;
- -- 
-	-- 	-- reset device package position for next device
-	-- 	device_position := et_board_coordinates.package_position_default;
-	-- end set_package_position;
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 
 
 	
