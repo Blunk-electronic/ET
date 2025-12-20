@@ -154,6 +154,7 @@ with et_module_read_assembly_variant;	use et_module_read_assembly_variant;
 with et_module_read_design_rules;		use et_module_read_design_rules;
 with et_module_read_grid;				use et_module_read_grid;
 with et_module_read_net_classes;		use et_module_read_net_classes;
+with et_module_read_nets;				use et_module_read_nets;
 
 
 package body et_module_read is
@@ -241,649 +242,8 @@ package body et_module_read is
 		
 		
 
+		-- net			: et_nets.type_net;
 		
-		
-
-
-		
-		
-	-- NETS:
-		
-		net_name	: pac_net_name.bounded_string; -- motor_on_off
-		net			: et_nets.type_net;
-
-
-		-- Reads a line that describes a net like "name AGND", "class default"
-		-- or "scope  local":
-		procedure read_net is
-			kw : constant string := f (line, 1);
-			use ada.containers;
-			use et_net_class;
-			use et_net_class_name;
-		begin
-			log (text => "read net", level => log_threshold + 1);
-			log_indentation_up;
-
-			
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_name then
-				expect_field_count (line, 2);
-				net_name := to_net_name (f (line,2));
-				
-			elsif kw = keyword_class then
-				-- CS: imported kicad projects lack the class name sometimes.
-				-- For this reason we do not abort in such cases but issue a warning.
-				-- If abort is a must, the next two statements are required. 
-				-- The "if" construct must be in comments instead.
-				-- It is perhaps more reasonable to care for this flaw in et_kicad_pcb package.
-				
-				-- expect_field_count (line, 2);
-				-- net.class := et_pcb.to_net_class_name (f (line,2));
-				
-				if get_field_count (line) = 2 then
-					net.class := to_net_class_name (f (line,2));
-				else
-					net.class := net_class_name_default;
-					log (text => message_warning & get_affected_line (line) 
-						& "No net class specified ! Assume default class !");
-				end if;
-				
-			elsif kw = keyword_scope then
-				expect_field_count (line, 2);
-				net.scope := et_netlists.to_net_scope (f (line,2));
-				
-			else
-				invalid_keyword (kw);
-			end if;
-
-			log_indentation_down;
-		end read_net;
-
-
-
-		
-		-- Assigns the net to the module:
-		procedure assign_net is 
-
-			procedure insert_net (
-				module_name	: in pac_module_name.bounded_string;
-				module		: in out type_generic_module)
-			is
-				use et_nets;
-				use pac_net_name;
-				inserted : boolean;
-				cursor : pac_nets.cursor;
-			begin
-				log (text => "net " & to_string (net_name), level => log_threshold + 2);
-
-				-- CS: notify about missing parameters (by reading the parameter-found-flags)
-				-- If a parameter is missing, the default is assumed. See type_net spec.
-				
-				pac_nets.insert (
-					container	=> module.nets,
-					key			=> net_name,
-					new_item	=> net,
-					inserted	=> inserted,
-					position	=> cursor);
-
-				if not inserted then
-					log (ERROR, "net " & to_string (net_name) & " already exists !");
-					raise constraint_error;
-				end if;
-			end insert_net;
-
-			
-		begin
-			log (text => "assign net", level => log_threshold + 1);
-			log_indentation_up;
-			
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> insert_net'access);
-
-			-- clean up for next net
-			net_name := to_net_name ("");
-			net := (others => <>);
-			
-			log_indentation_down;
-		end assign_net;
-		
-
-
-		
-
-		
-	-- NET STRANDS:
-		
-		strands : pac_strands.list;
-		strand	: type_strand;
-
-
-		-- Reads a line that describes the position of a strand:
-		procedure read_strand is
-			kw : constant string := f (line, 1);
-		begin
-			log (text => "read strand", level => log_threshold + 1);
-			log_indentation_up;
-
-			
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_position then -- position sheet 1 x 1.000 y 5.555
-				expect_field_count (line, 7);
-
-				-- extract strand position starting at field 2
-				strand.position := to_strand_position (line, 2, log_threshold + 2);
-			else
-				invalid_keyword (kw);
-			end if;
-
-			log_indentation_down;
-		end read_strand;
-		
-
-
-
-		-- Assigns the strand to the list of strands:
-		procedure assign_net_strand is
-			use et_schematic_geometry;
-			use pac_geometry_2;
-			use et_schematic_coordinates;
-			use et_sheets;
-			use pac_net_name;
-			position_found_in_module_file : type_vector_model := strand.position.place;
-		begin
-			log (text => "assign strand", level => log_threshold + 1);
-			log_indentation_up;
-			
-			-- Calculate the lowest x/y position and set sheet number of the strand
-			-- and overwrite previous x/y position. 
-			-- So the calculated position takes precedence over the position found in 
-			-- the module file.
-			set_strand_position (strand);
-
-			-- Issue warning about this mismatch:
-			if strand.position.place /= position_found_in_module_file then
-				
-				log (WARNING, get_affected_line (line) 
-						& "Sheet" & to_string (get_sheet (strand.position))
-						& " net " 
-						& to_string (net_name) & ": Lowest x/y position of strand invalid !");
-				
-				log (text => " Found " & to_string (position_found_in_module_file));
-				log (text => " Will be overridden by calculated position " & 
-						to_string (strand.position.place));
-			end if;
-								
-			-- insert strand in collection of strands
-			pac_strands.append (
-				container	=> strands,
-				new_item	=> strand);
-
-			-- clean up for next single strand
-			strand := (others => <>); 
-
-			log_indentation_down;
-		end assign_net_strand;
-
-
-		
-
-
-		
-	-- NET SEGMENTS:
-		
-		net_segments	: et_net_segment.pac_net_segments.list;
-		net_segment		: et_net_segment.type_net_segment;
-
-		
-		procedure read_net_segment is
-			use et_symbol_read;
-			kw : constant string := f (line, 1);
-
-			use et_net_segment;
-			use et_schematic_geometry.pac_geometry_2;
-			vm : type_vector_model;
-		begin
-			log (text => "read net segment", level => log_threshold + 1);
-			log_indentation_up;
-
-			
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_start then -- "start x 3 y 4"
-				expect_field_count (line, 5);
-
-				-- extract start position starting at field 2
-				vm := to_vector_model (line, from => 2);
-				set_A (net_segment, vm);
-				
-			elsif kw = keyword_end then -- "end x 6 y 4"
-				expect_field_count (line, 5);
-
-				-- extract end position starting at field 2
-				vm := to_vector_model (line, from => 2);
-				set_B (net_segment, vm);
-
-			else
-				invalid_keyword (kw);
-			end if;
-
-			log_indentation_down;
-		end read_net_segment;
-
-
-
-
-		-- Appends the net_segment to the list of net segments:
-		procedure assign_net_segment is 
-			use et_net_segment;
-		begin
-			log (text => "assign net segment", level => log_threshold + 1);
-			log_indentation_up;
-
-			
-			et_net_segment.pac_net_segments.append (
-				container	=> net_segments,
-				new_item	=> net_segment);
-
-			-- Clean up for next net segment:
-			reset_net_segment (net_segment);
-
-			log_indentation_down;
-		end assign_net_segment;
-
-
-
-		
-		
-
-	-- NET JUNCTIONS:
-		
-		net_junctions	: et_net_junction.type_junctions;
-
-		-- Reads a line that describes a net junction
-		-- (like "A/B") that is active on an end
-		-- of a net segment. Once the line is read, the junction
-		-- is activated in variable net_junctions (see above):
-		procedure read_net_junction is
-			use et_net_junction;
-			use et_schematic_geometry.pac_geometry_2;
-
-			AB_end : type_start_end_point;
-			error : boolean := false;
-		begin
-			log (text => "read net junction", level => log_threshold + 1);
-			log_indentation_up;
-			
-			-- There must be only a single field in the line:
-			expect_field_count (line, 1);
-			
-			-- Read the targeted end point of the segment:
-			AB_end := to_start_end_point (f (line, 1)); -- A/B
-
-			log (text => "end " & to_string (AB_end), level => log_threshold + 2);
-
-			-- CS:
-			-- Make a junction:
-			-- make_net_junction (
-			-- 	arguments	=> AB_end,
-			-- 	error		=> error,
-			-- 	connector	=> connector);
-
-			if not error then
-				-- log (text => "direction " & get_direction (connector), level => log_threshold + 2);
-				
-				-- Activate the junction on the targeted end of the segment:
-				case AB_end is
-					when A => net_junctions.A := true;
-					when B => net_junctions.B := true;
-				end case;
-			end if;
-
-			-- CS handle error
-			
-			log_indentation_down;
-		end read_net_junction;
-
-
-		
-
-		-- Assigns the net_junctions to the net:
-		procedure assign_net_junctions is begin
-			log (text => "assign net junctions", level => log_threshold + 1);
-			log_indentation_up;
-			
-			-- Assign the net_junctions to the net segment:
-			net_segment.junctions := net_junctions;
-
-			if net_segment.junctions.A then
-				log (text => "A", level => log_threshold + 2);
-			end if;
-
-			if net_segment.junctions.B then
-				log (text => "B", level => log_threshold + 2);
-			end if;
-			
-			-- clean up for next junctions
-			net_junctions := (others => <>);
-			
-			log_indentation_down;
-		end assign_net_junctions;
-
-
-
-
-		
-
-	-- NET CONNECTORS:
-
-		net_connectors	: et_net_connectors.type_net_connectors;
-		
-
-		-- Reads a line that describes a net connector 
-		-- (like "A/B direction input/output") that is attached to an end
-		-- of a net segment. Once the line is read, the connector
-		-- is assigned to the variable net_connectors (see above):
-		procedure read_net_connector is
-			use et_net_connectors;
-			use et_schematic_geometry.pac_geometry_2;
-
-			AB_end : type_start_end_point;
-			error : boolean := false;
-			connector : type_net_connector (active => true);
-		begin
-			log (text => "read net connector", level => log_threshold + 1);
-			log_indentation_up;
-			
-			-- There must be 3 fields in the line:
-			expect_field_count (line, 3);
-			
-			-- Read the targeted end point of the segment:
-			AB_end := to_start_end_point (f (line, 1)); -- A/B
-
-			log (text => "end " & to_string (AB_end), level => log_threshold + 2);
-			
-			-- Make a net connector from the fields 2 and 3:
-			make_net_connector (
-				arguments	=> remove_field (line, 1, 1),
-				error		=> error,
-				connector	=> connector);
-
-			if not error then
-				log (text => "direction " & get_direction (connector), level => log_threshold + 2);
-				
-				-- Assign the connector to the targeted end of the segment:
-				case AB_end is
-					when A => net_connectors.A := connector;
-					when B => net_connectors.B := connector;
-				end case;
-			end if;
-
-			-- CS handle error
-			
-			log_indentation_down;
-		end read_net_connector;
-
-
-
-
-		-- Assigns the net_connectors to the net_segment:
-		procedure assign_net_connectors is 
-			use et_net_connectors;
-		begin
-			log (text => "assign net connectors", level => log_threshold + 1);
-			log_indentation_up;
-			
-			-- Assign the net connectors to the net segment:
-			net_segment.connectors := net_connectors;
-
-			log (text => "A " & to_string (net_segment.connectors.A), level => log_threshold + 2);
-			log (text => "B " & to_string (net_segment.connectors.B), level => log_threshold + 2);
-			
-			-- clean up for next connectors
-			net_connectors := (others => <>);
-			
-			log_indentation_down;
-		end assign_net_connectors;
-
-		
-
-		
-		
-	-- NET LABELS:
-		
-		net_labels				: et_net_labels.pac_net_labels.list;
-		net_label 				: et_net_labels.type_net_label;
-		
-		net_label_rotation		: et_text.type_rotation_documentation := 
-			et_text.type_rotation_documentation'first;
-
-		-- The net label direction is relevant if it is a tag label:
-		net_label_direction : et_net_connectors.type_connector_direction := 
-			et_net_connectors.type_connector_direction'first;
-
-		-- CS warn about parameter "direction" being ignored
-
-
-		-- Reads a line that describes a net label:
-		procedure read_label is
-			use et_schematic_text;
-			use pac_text_schematic;
-			
-			use et_symbol_read;
-			use et_schematic_coordinates;	
-			use et_schematic_geometry;
-			use pac_geometry_2;
-			use et_net_labels;
-			kw : constant string := f (line, 1);
-		begin
-			log (text => "read net label", level => log_threshold + 1);
-			log_indentation_up;
-
-			
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_position then -- position x 148.59 y 104.59
-				expect_field_count (line, 5);
-
-				-- extract label position starting at field 2 of line
-				net_label.position := to_vector_model (line, 2);
-
-				
-			elsif kw = keyword_rotation then -- rotation 0.0
-				expect_field_count (line, 2);
-				net_label_rotation := to_rotation_doc (to_rotation (f (line, 2)));
-
-				
-			elsif kw = keyword_size then -- size 1.3
-				expect_field_count (line, 2);
-				net_label.size := to_distance (f (line, 2));
-		
-			else
-				invalid_keyword (kw);
-			end if;
-
-			log_indentation_down;		
-		end read_label;
-
-
-
-		-- Assigns the net_labels to the net segment:
-		procedure assign_net_labels is 
-			use et_net_labels;
-		begin
-			log (text => "assign net connectors", level => log_threshold + 1);
-			log_indentation_up;
-			
-			net_segment.labels := net_labels;
-
-			-- clean up for next label collection
-			pac_net_labels.clear (net_labels);
-
-			log_indentation_down;
-		end assign_net_labels;
-
-
-		
-
-
-	-- NET PORTS:
-		
-		net_device_port : et_net_ports.type_device_port;
-		-- net_device_ports : et_net_segment.pac_device_ports.set;
-
-		net_submodule_port : et_net_ports.type_submodule_port;
-		-- net_submodule_ports : et_net_segment.pac_submodule_ports.set;
-
-		net_netchanger_port : et_netlists.type_port_netchanger;
-		-- net_netchanger_ports : et_netlists.pac_netchanger_ports.set;
-
-		net_segment_ports : et_net_ports.type_ports_AB;
-		
-		
-		-- Reads a port of a device, submodule or netchanger
-		-- that is connected with a net segment and sets the variables
-		-- net_device_port, net_submodule_port, net_netchanger_port.
-		-- Appends the port to net_segment_ports.
-		-- NOTE: A device, submodule or netchanger port is defined by a
-		-- single line.
-		-- Upon reading the line like "A/B device/submodule/netchanger x port 1" 
-		-- the port is appended to the corresponding port collection 
-		-- net_segment_ports immediately after the line has been read:
-		procedure read_net_port is
-			use et_module_instance;
-			use et_device_model;
-			use et_port_names;
-			use et_symbol_ports;
-			use et_nets;
-			use et_net_segment;
-			use et_net_ports;
-			use pac_net_name;
-
-			use et_schematic_coordinates;
-			use et_schematic_geometry;
-			use pac_geometry_2;
-			
-			AB_end : type_start_end_point;
-			
-			kw : constant string := f (line, 2);
-
-			error : boolean := false;
-		begin
-			AB_end := to_start_end_point (f (line, 1));
-			
-			if kw = keyword_device then -- A/B device R1 unit 1 port 1
-				expect_field_count (line, 7);
-
-				make_device_port (
-					arguments	=> remove_field (line, 1, 1),
-					error		=> error,
-					port		=> net_device_port);
-
-				if not error then
-
-					-- CS really required ?
-					-- Insert port in port collection of device ports. First make sure it is
-					-- not already in the net segment.
-					-- if pac_device_ports.contains (net_device_ports, net_device_port) then
-					-- 	log (ERROR, "device " & to_string (net_device_port.device_name) &
-					-- 		" port " & to_string (net_device_port.port_name) & 
-					-- 		" already in net segment !", console => true);
-					-- 	raise constraint_error;
-					-- end if;
-
-					case AB_end is
-						when A => net_segment_ports.A.devices.insert (net_device_port); 
-						when B => net_segment_ports.B.devices.insert (net_device_port); 
-					end case;
-
-					net_device_port := (others => <>);
-				else
-					invalid_keyword (f (line, 3));
-					-- CS: improve this message. show details.
-				end if;
-
-				
-			elsif kw = keyword_submodule then -- A/B submodule motor_driver port mot_on_off
-				expect_field_count (line, 5);
-				
-				net_submodule_port.module_name := to_instance_name (f (line, 3)); -- motor_driver
-
-				if f (line, 4) = keyword_port then -- port
-					net_submodule_port.port_name := to_net_name (f (line, 5)); -- A
-
-					-- CS really required ?
-					-- Insert submodule port in collection of submodule ports. First make sure it is
-					-- not already in the net segment.
-					-- if pac_submodule_ports.contains (net_submodule_ports, net_submodule_port) then
-					-- 	log (ERROR, "submodule " & to_string (net_submodule_port.module_name) &
-					-- 		" port " & to_string (net_submodule_port.port_name) & 
-					-- 		" already in net segment !", console => true);
-					-- 	raise constraint_error;
-					-- end if;
-					
-					case AB_end is
-						when A => net_segment_ports.A.submodules.insert (net_submodule_port); 
-						when B => net_segment_ports.B.submodules.insert (net_submodule_port); 
-					end case;
-					
-					-- clean up for next submodule port
-					net_submodule_port := (others => <>);
-				else
-					invalid_keyword (f (line, 4));
-				end if;
-
-				
-				
-			elsif kw = keyword_netchanger then -- A/B netchanger 1 port master/slave
-				expect_field_count (line, 5);
-				
-				net_netchanger_port.index := et_submodules.to_netchanger_id (f (line, 3)); -- 1
-
-				if f (line, 4) = keyword_port then -- port
-					net_netchanger_port.port := et_submodules.to_port_name (f (line, 5)); -- MASTER, SLAVE
-
-					-- CS really required ?
-					-- Insert netchanger port in collection of netchanger ports. First make sure it is
-					-- not already in the net segment.
-					-- if et_netlists.pac_netchanger_ports.contains (net_netchanger_ports, net_netchanger_port) then
-					-- 	log (ERROR, "netchanger" & et_submodules.to_string (net_netchanger_port.index) &
-					-- 		et_submodules.to_string (net_netchanger_port.port) & " port" & 
-					-- 		" already in net segment !", console => true);
-					-- 	raise constraint_error;
-					-- end if;
-					
-					-- et_netlists.pac_netchanger_ports.insert (net_netchanger_ports, net_netchanger_port);
-					case AB_end is
-						when A => net_segment_ports.A.netchangers.insert (net_netchanger_port); 
-						when B => net_segment_ports.B.netchangers.insert (net_netchanger_port); 
-					end case;
-					
-					-- clean up for next netchanger port
-					net_netchanger_port := (others => <>);
-				else
-					invalid_keyword (f (line, 4));
-				end if;
-				
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_net_port;
-
-
-		
-
-		-- Assigns net_segment_ports to the net segment:
-		procedure assign_net_ports is begin
-			log (text => "assign net ports", level => log_threshold + 1);
-			log_indentation_up;
-			
-			net_segment.ports := net_segment_ports;
-			
-			-- clean up for next port collections (of another net segment)
-			net_segment_ports := (others => <>);
-
-			log_indentation_down;
-		end assign_net_ports;
 
 		
 
@@ -3924,22 +3284,10 @@ package body et_module_read is
 
 				
 				procedure build_net_label is
-					use et_schematic_text;
-					use pac_text_schematic;
-					use et_net_labels;
 				begin
 					case stack.parent is
 						when SEC_LABELS =>
-
-							-- insert label in label collection
-
-							-- insert a simple label
-							pac_net_labels.append (
-								container	=> net_labels,
-								new_item	=> net_label);
-
-							-- clean up for next label
-							net_label := (others => <>);
+							insert_net_label;
 
 						when others => invalid_section;
 					end case;
@@ -3954,7 +3302,7 @@ package body et_module_read is
 					when SEC_CONNECTORS =>
 						case stack.parent is
 							when SEC_SEGMENT =>
-								assign_net_connectors;
+								assign_net_connectors (log_threshold);
 
 							when others => invalid_section;
 						end case;
@@ -3972,7 +3320,7 @@ package body et_module_read is
 					when SEC_JUNCTIONS =>
 						case stack.parent is
 							when SEC_SEGMENT =>
-								assign_net_junctions;
+								assign_net_junctions (log_threshold);
 
 							when others => invalid_section;
 						end case;
@@ -4015,7 +3363,7 @@ package body et_module_read is
 					when SEC_NET =>
 						case stack.parent is
 							when SEC_NETS =>
-								assign_net;
+								assign_net (module_cursor, log_threshold);
 						
 							when others => invalid_section;
 						end case;
@@ -4031,10 +3379,7 @@ package body et_module_read is
 					when SEC_STRANDS =>
 						case stack.parent is
 							when SEC_NET =>
-
-								-- insert strand collection in net
-								net.strands := strands;
-								pac_strands.clear (strands); -- clean up for next strand collection
+								insert_strands;
 
 							when others => invalid_section;
 						end case;
@@ -4055,7 +3400,7 @@ package body et_module_read is
 					when SEC_STRAND =>
 						case stack.parent is
 							when SEC_STRANDS =>
-								assign_net_strand;
+								assign_net_strand (line, log_threshold);
 								
 							when others => invalid_section;
 						end case;
@@ -4064,12 +3409,7 @@ package body et_module_read is
 					when SEC_SEGMENTS =>
 						case stack.parent is
 							when SEC_STRAND =>
-
-								-- insert segments in strand
-								strand.segments := net_segments;
-
-								-- clean up for next segment collection
-								et_net_segment.pac_net_segments.clear (net_segments);
+								insert_net_segments;
 								
 							when others => invalid_section;
 						end case;
@@ -4078,7 +3418,7 @@ package body et_module_read is
 					when SEC_SEGMENT =>
 						case stack.parent is
 							when SEC_SEGMENTS =>
-								assign_net_segment;
+								assign_net_segment (log_threshold);
 								
 							when others => invalid_section;
 						end case;
@@ -4087,7 +3427,7 @@ package body et_module_read is
 					when SEC_LABELS =>
 						case stack.parent is
 							when SEC_SEGMENT =>
-								assign_net_labels;
+								assign_net_labels (log_threshold);
 
 							when others => invalid_section;
 						end case;
@@ -4096,7 +3436,7 @@ package body et_module_read is
 					when SEC_PORTS =>
 						case stack.parent is
 							when SEC_SEGMENT =>
-								assign_net_ports;
+								assign_net_ports (log_threshold);
 
 
 							when SEC_SUBMODULE =>
@@ -4797,7 +4137,7 @@ package body et_module_read is
 
 					when SEC_CONNECTORS =>
 						case stack.parent is
-							when SEC_SEGMENT => read_net_connector;
+							when SEC_SEGMENT => read_net_connector (line, log_threshold);
 							when others => invalid_section;
 						end case;
 					
@@ -4810,7 +4150,7 @@ package body et_module_read is
 
 					when SEC_JUNCTIONS =>
 						case stack.parent is
-							when SEC_SEGMENT => read_net_junction;
+							when SEC_SEGMENT => read_net_junction (line, log_threshold);
 							when others => invalid_section;
 						end case;
 						
@@ -4918,7 +4258,7 @@ package body et_module_read is
 
 					when SEC_STRAND =>
 						case stack.parent is
-							when SEC_STRANDS => read_strand;
+							when SEC_STRANDS => read_strand (line, log_threshold);
 							when others => invalid_section;
 						end case;
 						
@@ -4936,7 +4276,7 @@ package body et_module_read is
 					
 					when SEC_NET =>
 						case stack.parent is
-							when SEC_NETS => read_net;
+							when SEC_NETS => read_net (line, log_threshold);
 							when others => invalid_section;
 						end case;
 
@@ -4948,7 +4288,7 @@ package body et_module_read is
 						
 					when SEC_SEGMENT =>
 						case stack.parent is
-							when SEC_SEGMENTS => read_net_segment;
+							when SEC_SEGMENTS => read_net_segment (line, log_threshold);
 							when others => invalid_section;
 						end case;
 
@@ -4966,17 +4306,19 @@ package body et_module_read is
 						
 					when SEC_PORTS =>
 						case stack.parent is 
-							when SEC_SEGMENT => read_net_port;
+							when SEC_SEGMENT => read_net_port (line, log_threshold);
 							when SEC_SUBMODULE => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_LABEL =>
 						case stack.parent is
-							when SEC_LABELS => read_label;
+							when SEC_LABELS => read_label (line, log_threshold);
 							when others => invalid_section;
 						end case;
-					
+
+						
 					when SEC_LINE => -- CS clean up: separate procdures required
 						case stack.parent is
 							when SEC_CONTOURS => read_board_line (line); -- of a cutout or fill zone
