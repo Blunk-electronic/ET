@@ -91,10 +91,6 @@ with et_device_sections;
 with et_symbol_read;
 with et_schematic_text;
 with et_device_read;
-with et_drawing_frame;
-with et_drawing_frame.schematic;
-with et_drawing_frame_rw;
-with et_sheets;
 with et_pcb;
 with et_pcb_stack;
 
@@ -155,6 +151,7 @@ with et_module_read_design_rules;		use et_module_read_design_rules;
 with et_module_read_grid;				use et_module_read_grid;
 with et_module_read_net_classes;		use et_module_read_net_classes;
 with et_module_read_nets;				use et_module_read_nets;
+with et_module_read_frames;				use et_module_read_frames;
 
 
 package body et_module_read is
@@ -244,88 +241,6 @@ package body et_module_read is
 	-- ROUTE:
 		
 		route		: type_net_route;
-
-		
-		sheet_descriptions			: et_drawing_frame.schematic.pac_schematic_descriptions.map;
-		sheet_description_category	: et_drawing_frame.schematic.type_schematic_sheet_category := 
-			et_drawing_frame.schematic.schematic_sheet_category_default; -- product/develpment/routing
-		
-		sheet_description_number	: et_sheets.type_sheet := et_sheets.type_sheet'first; -- 1, 2. 3, ...
-		sheet_description_text		: et_text.pac_text_content.bounded_string;		-- "voltage regulator"
-
-		-- CS frame_count_schematic		: et_schematic_coordinates.type_submodule_sheet_number := et_schematic_coordinates.type_submodule_sheet_number'first; -- 10 frames
-		frame_template_schematic	: et_drawing_frame.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frs
-		frame_template_board		: et_drawing_frame.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frb
-		frame_board_position		: et_drawing_frame.type_position; -- x 0 y 0
-
-
-		
-		-- Reads the name of the schematic frame template.
-		procedure read_frame_template_schematic is
-			use et_drawing_frame_rw;
-			use et_drawing_frame;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_template then -- template $ET_FRAMES/drawing_frame_version_1.frs
-				expect_field_count (line, 2);
-				frame_template_schematic := to_template_name (f (line, 2));
-			else
-				invalid_keyword (kw);
-			end if;
-		end;
-
-		
-
-		
-		-- Reads the name of the board frame template.
-		-- Reads the position of the frame:
-		procedure read_frame_template_board is
-			use et_drawing_frame;
-			use et_drawing_frame_rw;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_template then -- template $ET_FRAMES/drawing_frame_version_2.frb
-				expect_field_count (line, 2);
-				frame_template_board := to_template_name (f (line, 2));
-
-			elsif kw = keyword_position then -- position x 40 y 60
-				expect_field_count (line, 5);
-				frame_board_position := et_drawing_frame_rw.to_position (line, 2);
-			else
-				invalid_keyword (kw);
-			end if;
-		end;
-
-		
-		
-		-- Reads the description of a schematic sheet:
-		procedure read_sheet_description is
-			use et_schematic_coordinates;	
-			use et_drawing_frame.schematic;
-			use et_sheets;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_sheet_number then -- number 2
-				expect_field_count (line, 2);
-				sheet_description_number := to_sheet (f (line, 2));
-
-			elsif kw = keyword_sheet_category then -- category develompent/product/routing
-				expect_field_count (line, 2);
-				sheet_description_category := to_category (f (line, 2));
-
-			elsif kw = keyword_sheet_description then -- text "voltage regulator"
-				expect_field_count (line, 2);
-				sheet_description_text := to_content (f (line, 2));
-				
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_sheet_description;
-
-		
 
 		
 
@@ -1493,110 +1408,6 @@ package body et_module_read is
 				end insert_submodule;
 
 				
-
-				
-
-				procedure set_frame_schematic is
-
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) 
-					is
-						use et_drawing_frame;
-						use et_drawing_frame.schematic;
-						use et_drawing_frame_rw;
-					begin
-						log (text => "drawing frame schematic " & to_string (frame_template_schematic), 
-							level => log_threshold + 1);
-
-						-- set the frame template name
-						module.frames.template := frame_template_schematic;
-
-						-- assign the sheet descriptions:
-						module.frames.descriptions := sheet_descriptions;
-
-						-- Clean up sheet descriptions even if
-						-- there should not be another section for sheet descriptions:
-						pac_schematic_descriptions.clear (sheet_descriptions);
-						
-						-- read the frame template file
-						module.frames.frame := read_frame_schematic (
-							file_name		=> frame_template_schematic,
-							log_threshold	=> log_threshold + 2);
-
-					end do_it;
-					
-
-				begin
-					-- set schematic frame template
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-					
-				end set_frame_schematic;
-
-				
-
-
-				
-				procedure add_sheet_description is 
-					use et_schematic_coordinates;	
-					use et_drawing_frame.schematic;
-					use et_sheets;
-					use pac_schematic_descriptions;
-					inserted : boolean;
-					position : pac_schematic_descriptions.cursor;
-				begin
-					insert (
-						container	=> sheet_descriptions,
-						key			=> sheet_description_number,
-						inserted	=> inserted,
-						position	=> position,
-						new_item	=> (sheet_description_text, sheet_description_category)
-						);
-
-					-- clean up for next sheet description
-					sheet_description_category := schematic_sheet_category_default;
-					sheet_description_number := type_sheet'first;
-					sheet_description_text := to_content("");
-				end add_sheet_description;
-
-		
-				
-
-				procedure set_frame_board is
-
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) 
-					is
-						use et_drawing_frame;
-						use et_drawing_frame_rw;
-					begin
-						log (text => "drawing frame board " & to_string (frame_template_board), level => log_threshold + 1);
-
-						-- set the frame template name
-						module.board.frame.template := frame_template_board;
-
-						-- read the frame template file
-						module.board.frame.frame := read_frame_board (
-							file_name		=> frame_template_board,
-							log_threshold	=> log_threshold + 2);
-
-						-- Set the frame position:
-						module.board.frame.frame.position := frame_board_position;
-					end do_it;
-
-				begin
-					-- set board/layout frame template
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-				end set_frame_board;
-
 
 				
 				
@@ -3645,7 +3456,7 @@ package body et_module_read is
 					when SEC_SCHEMATIC =>
 						case stack.parent is
 							when SEC_DRAWING_FRAMES =>
-								set_frame_schematic;
+								set_frame_schematic (module_cursor, log_threshold);
 
 
 							when SEC_DRAWING_GRID => null; -- nothing to do
@@ -3663,7 +3474,7 @@ package body et_module_read is
 							when SEC_INIT => null;
 
 							when SEC_DRAWING_FRAMES =>
-								set_frame_board;
+								set_frame_board (module_cursor, log_threshold);
 								
 							when SEC_DRAWING_GRID => null; -- nothing to do
 
@@ -4686,7 +4497,8 @@ package body et_module_read is
 						
 					when SEC_SCHEMATIC =>
 						case stack.parent is
-							when SEC_DRAWING_FRAMES => read_frame_template_schematic;
+							when SEC_DRAWING_FRAMES => 
+								read_frame_template_schematic (line);
 							
 							when SEC_DRAWING_GRID => 
 								read_drawing_grid_schematic (line);
@@ -4699,7 +4511,9 @@ package body et_module_read is
 					when SEC_BOARD =>
 						case stack.parent is
 							when SEC_INIT => null; -- nothing to do
-							when SEC_DRAWING_FRAMES => read_frame_template_board;
+							
+							when SEC_DRAWING_FRAMES => 
+								read_frame_template_board (line);
 							
 							when SEC_DRAWING_GRID => 
 								read_drawing_grid_board (line);
@@ -4718,7 +4532,9 @@ package body et_module_read is
 						
 					when SEC_SHEET =>
 						case stack.parent is
-							when SEC_SHEET_DESCRIPTIONS => read_sheet_description;
+							when SEC_SHEET_DESCRIPTIONS => 
+								read_sheet_description (line);
+								
 							when others => invalid_section;
 						end case;
 
