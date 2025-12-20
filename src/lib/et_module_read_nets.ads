@@ -43,6 +43,7 @@
 --
 
 with et_generic_module;			use et_generic_module;
+with et_route;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
@@ -199,6 +200,16 @@ package et_module_read_nets is
 
 	
 	
+	
+	
+-- ROUTE:
+
+	-- Insert route in net:
+	procedure assign_route (
+		route : in out et_route.type_net_route);
+		
+		
+		
 end et_module_read_nets;
 
 	

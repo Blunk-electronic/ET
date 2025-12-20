@@ -240,14 +240,6 @@ package body et_module_read is
 
 
 		
-		
-
-		-- net			: et_nets.type_net;
-		
-
-		
-
-		
 
 	-- ROUTE:
 		
@@ -3388,10 +3380,7 @@ package body et_module_read is
 					when SEC_ROUTE =>
 						case stack.parent is
 							when SEC_NET =>
-
-								-- insert route in net
-								net.route := route;
-								route := (others => <>); -- clean up route for next net
+								assign_route (route);
 								
 							when others => invalid_section;
 						end case;

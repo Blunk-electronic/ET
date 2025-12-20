@@ -777,6 +777,23 @@ package body et_module_read_nets is
 
 	
 	
+	
+	
+	
+-- ROUTE:
+	
+	procedure assign_route (
+		route : in out et_route.type_net_route)
+	is
+		use et_route;
+	begin
+		net.route := route;
+		route := (others => <>); -- clean up route for next net
+
+	end assign_route;
+	
+	
+	
 end et_module_read_nets;
 
 	
