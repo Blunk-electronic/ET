@@ -91,7 +91,6 @@ with et_board_ops;
 with et_board_ops.ratsnest;
 
 with et_schematic_text;
-with et_board_text;
 with et_board_layer_category;
 
 with et_submodules;
@@ -102,7 +101,6 @@ with et_conductor_segment.boards;
 with et_fill_zones;
 with et_fill_zones.boards;
 with et_thermal_relief;
-with et_conductor_text.boards;
 with et_route_restrict.boards;
 with et_via_restrict.boards;
 with et_stopmask;
@@ -133,6 +131,7 @@ with et_module_read_nets;				use et_module_read_nets;
 with et_module_read_frames;				use et_module_read_frames;
 with et_module_read_submodules;			use et_module_read_submodules;
 with et_module_read_netchangers;		use et_module_read_netchangers;
+with et_module_read_text_board;			use et_module_read_text_board;
 
 
 package body et_module_read is
@@ -177,60 +176,12 @@ package body et_module_read is
 		
 
 		
-
-	-- ROUTE:
 		
 		route		: type_net_route;
 
-		
 
 		schematic_text : et_schematic_text.type_text;
 		
-
-		
-		
-		-- general board stuff
-		use et_board_text.pac_text_board;
-		board_text : type_text_fab_with_content;
-		board_text_placeholder : et_pcb_placeholders.type_text_placeholder;
-
-
-		-- This procdure reads a property of a general 
-		-- placeholder in the board drawing (like project name, material code, ...):
-		procedure read_board_text_placeholder is
-			use et_board_geometry.pac_geometry_2;
-			use et_pcb_placeholders;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
-				expect_field_count (line, 7);
-
-				-- extract position of note starting at field 2
-				board_text_placeholder.position := to_position (line, 2);
-
-			elsif kw = keyword_size then -- size 1.000
-				expect_field_count (line, 2);
-				board_text_placeholder.size := to_distance (f (line, 2));
-
-			elsif kw = keyword_linewidth then -- linewidth 0.1
-				expect_field_count (line, 2);
-				board_text_placeholder.line_width := to_distance (f (line, 2));
-
-			elsif kw = keyword_alignment then -- alignment horizontal center vertical center
-				expect_field_count (line, 5);
-
-				-- extract alignment starting at field 2
-				board_text_placeholder.alignment := to_alignment (line, 2);
-				
-			elsif kw = keyword_meaning then -- meaning project_name
-				expect_field_count (line, 2);
-				board_text_placeholder.meaning := to_meaning (f (line, 2));
-				
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_board_text_placeholder;
 
 		
 		signal_layers : et_pcb_stack.type_signal_layers.set;
@@ -551,61 +502,6 @@ package body et_module_read is
 
 	
 
-
-		
-		
-		-- This variable is used for vector texts in conductor layers
-		-- and restrict layers:
-		board_text_conductor : et_conductor_text.boards.type_conductor_text;
-
-		-- This variable is used for text placeholders in conductor layers:
-		board_text_conductor_placeholder : et_pcb_placeholders.type_text_placeholder_conductors;
-
-
-		
-		procedure read_board_text_conductor_placeholder is
-			use et_board_geometry.pac_geometry_2;
-			use et_pcb_stack;
-			use et_pcb_placeholders;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
-				expect_field_count (line, 7);
-
-				-- extract position of note starting at field 2
-				board_text_conductor_placeholder.position := to_position (line, 2);
-
-			elsif kw = keyword_size then -- size 1.000
-				expect_field_count (line, 2);
-				board_text_conductor_placeholder.size := to_distance (f (line, 2));
-
-			elsif kw = keyword_linewidth then -- linewidth 0.1
-				expect_field_count (line, 2);
-				board_text_conductor_placeholder.line_width := to_distance (f (line, 2));
-
-			elsif kw = keyword_alignment then -- alignment horizontal center vertical center
-				expect_field_count (line, 5);
-
-				-- extract alignment starting at field 2
-				board_text_conductor_placeholder.alignment := to_alignment (line, 2);
-				
-			elsif kw = keyword_meaning then -- meaning revision/project_name/...
-				expect_field_count (line, 2);
-				board_text_conductor_placeholder.meaning := to_meaning (f (line, 2));
-
-			elsif kw = keyword_layer then -- layer 15
-				expect_field_count (line, 2);
-				board_text_conductor_placeholder.layer := et_pcb_stack.to_signal_layer (f (line, 2));
-				validate_signal_layer (board_text_conductor_placeholder.layer);
-				
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_board_text_conductor_placeholder;
-
-
-
 		
 		procedure read_schematic_text is
 			use et_schematic_text;
@@ -656,133 +552,6 @@ package body et_module_read is
 		end read_schematic_text;
 
 		
-
-		
-		procedure read_board_text_non_conductor is 
-			use et_board_geometry.pac_geometry_2;
-			kw : constant  string := f (line, 1);
-		begin
-			case stack.parent (degree => 2) is
-				when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STOPMASK 
-					| SEC_KEEPOUT | SEC_STENCIL =>
-
-					-- CS: In the following: set a corresponding parameter-found-flag
-					if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
-						expect_field_count (line, 7);
-
-						-- extract position starting at field 2
-						board_text.position := to_position (line, 2);
-
-					elsif kw = keyword_size then -- size 1.000
-						expect_field_count (line, 2);
-						board_text.size := to_distance (f (line, 2));
-
-					elsif kw = keyword_linewidth then -- linewidth 0.1
-						expect_field_count (line, 2);
-						board_text.line_width := to_distance (f (line, 2));
-
-						-- CS validate against dru settings
-						
-					elsif kw = keyword_alignment then -- alignment horizontal center vertical center
-						expect_field_count (line, 5);
-
-						-- extract alignment starting at field 2
-						board_text.alignment := to_alignment (line, 2);
-						
-					elsif kw = keyword_content then -- content "WATER KETTLE CONTROL"
-						expect_field_count (line, 2); -- actual content in quotes !
-						board_text.content := et_text.to_content (f (line, 2));
-						
-					else
-						invalid_keyword (kw);
-					end if;
-					
-				when others => invalid_section;
-			end case;
-		end read_board_text_non_conductor;
-
-
-
-		
-		procedure read_board_text_conductor is
-			use et_board_geometry.pac_geometry_2;
-			use et_pcb_stack;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
-				expect_field_count (line, 7);
-
-				-- extract position starting at field 2
-				board_text_conductor.position := to_position (line, 2);
-
-			elsif kw = keyword_size then -- size 1.000
-				expect_field_count (line, 2);
-				board_text_conductor.size := to_distance (f (line, 2));
-
-			elsif kw = keyword_linewidth then -- linewidth 0.1
-				expect_field_count (line, 2);
-				board_text_conductor.line_width := to_distance (f (line, 2));
-
-				-- CS validate against dru settings
-				
-			elsif kw = keyword_alignment then -- alignment horizontal center vertical center
-				expect_field_count (line, 5);
-
-				-- extract alignment starting at field 2
-				board_text_conductor.alignment := to_alignment (line, 2);
-				
-			elsif kw = keyword_content then -- content "TOP", "L2", "BOT"
-				expect_field_count (line, 2); -- actual content in quotes !
-				board_text_conductor.content := et_text.to_content (f (line, 2));
-
-			elsif kw = keyword_layer then -- layer 15
-				expect_field_count (line, 2);
-				board_text_conductor.layer := et_pcb_stack.to_signal_layer (f (line, 2));
-				validate_signal_layer (board_text_conductor.layer);
-				
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_board_text_conductor;
-
-		
-
-		
-		procedure read_board_text_contours is 
-			use et_board_geometry.pac_geometry_2;
-			kw : constant  string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
-				expect_field_count (line, 7);
-
-				-- extract position starting at field 2
-				board_text.position := to_position (line, 2);
-
-			elsif kw = keyword_size then -- size 1.000
-				expect_field_count (line, 2);
-				board_text.size := to_distance (f (line, 2));
-
-			elsif kw = keyword_linewidth then -- linewidth 0.1
-				expect_field_count (line, 2);
-				board_text.line_width := to_distance (f (line, 2));
-
-			elsif kw = keyword_alignment then -- alignment horizontal center vertical center
-				expect_field_count (line, 5);
-
-				-- extract alignment starting at field 2
-				board_text.alignment := to_alignment (line, 2);
-				
-			elsif kw = keyword_content then -- content "WATER KETTLE CONTROL"
-				expect_field_count (line, 2); -- actual content in quotes !
-				board_text.content := et_text.to_content (f (line, 2));
-				
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_board_text_contours;
-
 
 		
 		
@@ -1764,92 +1533,6 @@ package body et_module_read is
 
 
 					
-				procedure insert_placeholder (
-					layer_cat	: in type_layer_category;
-					face		: in et_pcb_sides.type_face)  -- TOP, BOTTOM
-				is
-				-- The board_text_placeholder has been a general thing until now. 
-				-- Depending on the layer and the side of the board (face) the board_text_placeholder
-				-- is now assigned to the board where it belongs to.
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) 
-					is
-						use et_pcb_sides;
-						use et_board_coordinates;
-						use et_pcb;
-						use et_board_text;
-						use et_pcb_placeholders;
-					begin
-						case face is
-							when TOP =>
-								case layer_cat is
-									when LAYER_CAT_SILKSCREEN =>
-										pac_text_placeholders.append (
-											container	=> module.board.silkscreen.top.placeholders,
-											new_item	=> board_text_placeholder);
-
-									when LAYER_CAT_ASSY =>
-										pac_text_placeholders.append (
-											container	=> module.board.assy_doc.top.placeholders,
-											new_item	=> board_text_placeholder);
-
-									when LAYER_CAT_STOPMASK =>
-										pac_text_placeholders.append (
-											container	=> module.board.stopmask.top.placeholders,
-											new_item	=> board_text_placeholder);
-
-									-- CS
-									--when KEEPOUT =>
-									--	pac_text_placeholders.append (
-									--		container	=> module.board.keepout.top.placeholders,
-									--		new_item	=> board_text_placeholder);
-
-									when others => invalid_section;
-								end case;
-								
-							when BOTTOM =>
-								case layer_cat is
-									when LAYER_CAT_SILKSCREEN =>
-										pac_text_placeholders.append (
-											container	=> module.board.silkscreen.bottom.placeholders,
-											new_item	=> board_text_placeholder);
-
-									when LAYER_CAT_ASSY =>
-										pac_text_placeholders.append (
-											container	=> module.board.assy_doc.bottom.placeholders,
-											new_item	=> board_text_placeholder);
-										
-									when LAYER_CAT_STOPMASK =>
-										pac_text_placeholders.append (
-											container	=> module.board.stopmask.bottom.placeholders,
-											new_item	=> board_text_placeholder);
-
-									-- CS
-									--when KEEPOUT =>
-									--	pac_text_placeholders.append (
-									--		container	=> module.board.keepout.bottom.placeholders,
-									--		new_item	=> board_text_placeholder);
-
-									when others => invalid_section;
-								end case;
-								
-						end case;
-					end do_it;
-
-					
-				begin -- insert_placeholder
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next board placeholder
-					board_text_placeholder := (others => <>);
-				end insert_placeholder;
-
-
 				
 				procedure insert_line_route_restrict is
 					use et_board_geometry;
@@ -2157,82 +1840,7 @@ package body et_module_read is
 				end insert_circle_track;
 
 
-				
-				
-				procedure build_conductor_text is
-					use et_board_text;
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) 
-					is
-						use et_board_geometry;
-						use pac_geometry_2;
-						
-						use et_pcb;
-						use et_conductor_text.boards;
-						use pac_conductor_texts;
-						use et_board_ops;
-
-						mirror : type_mirror;
-						
-					begin
-						mirror := signal_layer_to_mirror (board_text_conductor.layer, get_deepest_conductor_layer (module_cursor));
-
-						-- vectorize the text:
-						board_text_conductor.vectors := vectorize_text (
-							content			=> board_text_conductor.content,
-							size			=> board_text_conductor.size,
-							rotation		=> get_rotation (board_text_conductor.position),
-							position		=> board_text_conductor.position.place,
-							mirror			=> mirror,
-							line_width		=> board_text_conductor.line_width,
-							make_border		=> true,
-							log_threshold	=> log_threshold + 2
-							-- CS alignment
-							); 
-
-						append (
-							container	=> module.board.conductors_floating.texts,
-							new_item	=> board_text_conductor);
-
-					end do_it;
-
-					
-				begin -- build_conductor_text
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next text in conductor layer
-					board_text_conductor := (others => <>);
-				end build_conductor_text;
-
-				
-				
-				procedure insert_board_text_placeholder is
-					use et_pcb_placeholders;
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) is
-					begin
-						pac_text_placeholders_conductors.append (
-							container	=> module.board.conductors_floating.placeholders,
-							new_item	=> board_text_conductor_placeholder);
-					end do_it;
-
-					
-				begin -- insert_board_text_placeholder
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next placeholder in conductor layer
-					board_text_conductor_placeholder := (others => <>);
-				end insert_board_text_placeholder;
+							
 
 				
 				
@@ -2263,6 +1871,9 @@ package body et_module_read is
 					board_reset_line;
 				end insert_line_outline;
 
+				
+				
+				
 				
 				
 				procedure insert_arc_outline is
@@ -2692,103 +2303,6 @@ package body et_module_read is
 
 				
 				
-				procedure build_non_conductor_text (
-					face : in et_pcb_sides.type_face)  -- TOP, BOTTOM
-				is
-				-- The board_text has been a general thing until now. 
-				-- Depending on the layer category and the side of the board (face) the board_text
-				-- is now assigned to the board where it belongs to.
-					
-					procedure insert_text (
-						layer_cat	: in type_layer_category)
-					is					
-						procedure do_it (
-							module_name	: in pac_module_name.bounded_string;
-							module		: in out type_generic_module) 
-						is
-							use et_pcb_sides;
-							use et_board_geometry;
-							use pac_geometry_2;
-							use et_pcb;
-
-							use et_silkscreen;
-							use et_assy_doc;
-							use et_stopmask;
-
-						begin
-							case face is
-								when TOP =>
-									case layer_cat is
-										when LAYER_CAT_SILKSCREEN =>
-											pac_silk_texts.append (
-												container	=> module.board.silkscreen.top.texts,
-												new_item	=> (board_text with null record));
-
-										when LAYER_CAT_ASSY =>
-											pac_doc_texts.append (
-												container	=> module.board.assy_doc.top.texts,
-												new_item	=> (board_text with null record));
-
-										when LAYER_CAT_STOPMASK =>
-											pac_stop_texts.append (
-												container	=> module.board.stopmask.top.texts,
-												new_item	=> (board_text with null record));
-
-										when others => invalid_section;
-									end case;
-									
-								when BOTTOM =>
-									case layer_cat is
-										when LAYER_CAT_SILKSCREEN =>
-											pac_silk_texts.append (
-												container	=> module.board.silkscreen.bottom.texts,
-												new_item	=> (board_text with null record));
-
-										when LAYER_CAT_ASSY =>
-											pac_doc_texts.append (
-												container	=> module.board.assy_doc.bottom.texts,
-												new_item	=> (board_text with null record));
-
-										when LAYER_CAT_STOPMASK =>
-											pac_stop_texts.append (
-												container	=> module.board.stopmask.bottom.texts,
-												new_item	=> (board_text with null record));
-
-										when others => invalid_section;
-									end case;
-									
-							end case;
-						end do_it;
-
-						
-					begin
-						update_element (
-							container	=> generic_modules,
-							position	=> module_cursor,
-							process		=> do_it'access);
-
-						-- clean up for next board text
-						board_text := (others => <>);
-					end insert_text;
-
-					
-				begin -- build_non_conductor_text
-					case stack.parent (degree => 2) is
-						when SEC_SILKSCREEN =>
-							insert_text (LAYER_CAT_SILKSCREEN);
-
-						when SEC_ASSEMBLY_DOCUMENTATION =>
-							insert_text (LAYER_CAT_ASSY);
-
-						when SEC_STENCIL =>
-							insert_text (LAYER_CAT_STENCIL);
-							
-						when SEC_STOPMASK =>
-							insert_text (LAYER_CAT_STOPMASK);
-							
-						when others => invalid_section;
-					end case;
-				end build_non_conductor_text;
 
 
 				
@@ -3212,13 +2726,61 @@ package body et_module_read is
 									process		=> insert_schematic_text'access);
 
 							when SEC_TOP =>
-								build_non_conductor_text (et_pcb_sides.TOP);
+								case stack.parent (degree => 2) is
+									when SEC_SILKSCREEN =>								
+										build_non_conductor_text (
+											module_cursor	=> module_cursor,
+											layer_cat		=> LAYER_CAT_SILKSCREEN,
+											face			=> et_pcb_sides.TOP,
+											log_threshold	=> log_threshold);
+
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										build_non_conductor_text (
+											module_cursor	=> module_cursor,
+											layer_cat		=> LAYER_CAT_ASSY,
+											face			=> et_pcb_sides.TOP,
+											log_threshold	=> log_threshold);
+										
+									when SEC_STOPMASK =>
+										build_non_conductor_text (
+											module_cursor	=> module_cursor,
+											layer_cat		=> LAYER_CAT_STOPMASK,
+											face			=> et_pcb_sides.TOP,
+											log_threshold	=> log_threshold);
+										
+									when others => invalid_section;
+								end case;
+
 						
 							when SEC_BOTTOM =>
-								build_non_conductor_text (et_pcb_sides.BOTTOM);
+								case stack.parent (degree => 2) is
+									when SEC_SILKSCREEN =>								
+										build_non_conductor_text (
+											module_cursor	=> module_cursor,
+											layer_cat		=> LAYER_CAT_SILKSCREEN,
+											face			=> et_pcb_sides.BOTTOM,
+											log_threshold	=> log_threshold);
+
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										build_non_conductor_text (
+											module_cursor	=> module_cursor,
+											layer_cat		=> LAYER_CAT_ASSY,
+											face			=> et_pcb_sides.BOTTOM,
+											log_threshold	=> log_threshold);
+										
+									when SEC_STOPMASK =>
+										build_non_conductor_text (
+											module_cursor	=> module_cursor,
+											layer_cat		=> LAYER_CAT_STOPMASK,
+											face			=> et_pcb_sides.BOTTOM,
+											log_threshold	=> log_threshold);
+										
+									when others => invalid_section;
+								end case;
+
 
 							when SEC_CONDUCTOR =>
-								build_conductor_text;
+								build_conductor_text (module_cursor, log_threshold);
 
 							when others => invalid_section;
 						end case;
@@ -3259,18 +2821,24 @@ package body et_module_read is
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>
 										insert_placeholder (
-											layer_cat	=> LAYER_CAT_SILKSCREEN,
-											face		=> et_pcb_sides.TOP);
+											module_cursor	=> module_cursor,
+											layer_cat		=> LAYER_CAT_SILKSCREEN,											
+											face			=> et_pcb_sides.TOP,
+											log_threshold	=> log_threshold);
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										insert_placeholder (
-											layer_cat	=> LAYER_CAT_ASSY,
-											face		=> et_pcb_sides.TOP);
+											module_cursor	=> module_cursor,
+											layer_cat		=> LAYER_CAT_ASSY,
+											face			=> et_pcb_sides.TOP,
+											log_threshold	=> log_threshold);
 
 									when SEC_STOPMASK =>
 										insert_placeholder (
-											layer_cat	=> LAYER_CAT_STOPMASK,
-											face		=> et_pcb_sides.TOP);
+											module_cursor	=> module_cursor,
+											layer_cat		=> LAYER_CAT_STOPMASK,
+											face			=> et_pcb_sides.TOP,
+											log_threshold	=> log_threshold);
 
 									when others => invalid_section;
 								end case;
@@ -3280,25 +2848,31 @@ package body et_module_read is
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>
 										insert_placeholder (
-											layer_cat	=> LAYER_CAT_SILKSCREEN,
-											face		=> et_pcb_sides.BOTTOM);
+											module_cursor	=> module_cursor,
+											layer_cat		=> LAYER_CAT_SILKSCREEN,											
+											face			=> et_pcb_sides.BOTTOM,
+											log_threshold	=> log_threshold);
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										insert_placeholder (
-											layer_cat	=> LAYER_CAT_ASSY,
-											face		=> et_pcb_sides.BOTTOM);
+											module_cursor	=> module_cursor,
+											layer_cat		=> LAYER_CAT_ASSY,
+											face			=> et_pcb_sides.BOTTOM,
+											log_threshold	=> log_threshold);
 
 									when SEC_STOPMASK =>
 										insert_placeholder (
-											layer_cat	=> LAYER_CAT_STOPMASK,
-											face		=> et_pcb_sides.BOTTOM);
+											module_cursor	=> module_cursor,
+											layer_cat		=> LAYER_CAT_STOPMASK,
+											face			=> et_pcb_sides.BOTTOM,
+											log_threshold	=> log_threshold);
 
 									when others => invalid_section;
 								end case;
 
 								
 							when SEC_CONDUCTOR =>
-								insert_board_text_placeholder;
+								insert_board_text_placeholder (module_cursor, log_threshold);
 								
 							when others => invalid_section;
 						end case;
@@ -4246,13 +3820,20 @@ package body et_module_read is
 								read_schematic_text;
 
 							when SEC_PCB_CONTOURS_NON_PLATED => -- in board
-								read_board_text_contours;
+								read_board_text_contours (line);
 								
 							when SEC_TOP | SEC_BOTTOM => -- in board
-								read_board_text_non_conductor;
+								case stack.parent (degree => 2) is
+									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION 
+										| SEC_STOPMASK | SEC_KEEPOUT | SEC_STENCIL =>	
+											read_board_text_non_conductor (line);
 
+									when others => invalid_section;
+								end case;
+
+								
 							when SEC_CONDUCTOR | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								read_board_text_conductor;
+								read_board_text_conductor (line);
 								
 							when others => invalid_section;
 						end case;
@@ -4294,12 +3875,14 @@ package body et_module_read is
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION 
 										| SEC_STOPMASK => -- CS SEC_KEEPOUT
-										read_board_text_placeholder;
+										read_board_text_placeholder (line);
 							
 									when others => invalid_section;
 								end case;
 
-							when SEC_CONDUCTOR => read_board_text_conductor_placeholder;
+								
+							when SEC_CONDUCTOR =>
+								read_board_text_conductor_placeholder (line);
 								
 							when others => invalid_section;
 						end case;
