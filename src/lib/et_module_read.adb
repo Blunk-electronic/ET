@@ -152,6 +152,7 @@ with et_module_read_grid;				use et_module_read_grid;
 with et_module_read_net_classes;		use et_module_read_net_classes;
 with et_module_read_nets;				use et_module_read_nets;
 with et_module_read_frames;				use et_module_read_frames;
+with et_module_read_submodules;			use et_module_read_submodules;
 
 
 package body et_module_read is
@@ -194,47 +195,6 @@ package body et_module_read is
 
 
 		
-
-		
-
-		
-		
-		function to_size (
-			line : in type_fields_of_line; -- "size x 30 y 40"
-			from : in type_field_count_positive)
-			return et_submodules.type_submodule_size 
-		is
-			use et_schematic_geometry.pac_geometry_2;
-			use ada.containers;
-			
-			size : et_submodules.type_submodule_size; -- to be returned
-			place : type_field_count_positive := from; -- the field being read from given line
-
-			-- CS: flags to detect missing x or y
-		begin
-			while place <= get_field_count (line) loop
-
-				-- We expect after the x the corresponding value for x
-				if f (line, place) = keyword_x then
-					size.x := to_distance (f (line, place + 1));
-
-				-- We expect after the y the corresponding value for y
-				elsif f (line, place) = keyword_y then
-					size.y := to_distance (f (line, place + 1));
-
-				else
-					invalid_keyword (f (line, place));
-				end if;
-					
-				place := place + 2;
-			end loop;
-			
-			return size;
-		end to_size;
-
-
-
-
 
 		
 
@@ -651,126 +611,7 @@ package body et_module_read is
 
 
 
-		-- submodules	
-		submodule_port_name	: pac_net_name.bounded_string; -- RESET
-		submodule_ports		: et_submodules.pac_submodule_ports.map;
-		submodule_name 		: et_module_instance.pac_module_instance_name.bounded_string; -- MOT_DRV_3
-		submodule_port 		: et_submodules.type_submodule_port;
-		submodule 			: et_submodules.type_submodule;
-
-
-		
-		-- Reads the parameters of a submodule:
-		procedure read_submodule is
-			use et_schematic_coordinates;
-			use et_submodules;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_file then -- file $ET_TEMPLATES/motor_driver.mod
-				expect_field_count (line, 2);
-				submodule.file := et_submodules.to_submodule_path (f (line, 2));
-
-			elsif kw = keyword_name then -- name stepper_driver
-				expect_field_count (line, 2);
-				submodule_name := to_instance_name (f (line, 2));
-
-			elsif kw = keyword_position then -- position sheet 3 x 130 y 210
-				expect_field_count (line, 7);
-
-				-- extract position of submodule starting at field 2
-				submodule.position := to_position (line, 2);
-
-			elsif kw = keyword_size then -- size x 30 y 30
-				expect_field_count (line, 5);
-
-				-- extract size of submodule starting at field 2
-				submodule.size := to_size (line, 2);
-
-			elsif kw = keyword_position_in_board then -- position_in_board x 23 y 0.2 rotation 90.0
-				expect_field_count (line, 7);
-
-				-- extract position of submodule starting at field 2
-				submodule.position_in_board := et_board_geometry.pac_geometry_2.to_position (line, 2);
-
-			elsif kw = keyword_view_mode then -- view_mode origin/instance
-				expect_field_count (line, 2);
-				submodule.view_mode := et_submodules.to_view_mode (f (line, 2));
-
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_submodule;
-
-
-		
-		
-		procedure read_submodule_port is
-			use et_schematic_geometry.pac_geometry_2;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_name then -- name clk_out
-				expect_field_count (line, 2);
-				submodule_port_name := to_net_name (f (line, 2));
-
-			elsif kw = keyword_position then -- position x 0 y 10
-				expect_field_count (line, 5);
-
-				-- extract port position starting at field 2
-				submodule_port.position := to_vector_model (line, 2);
-
-			elsif kw = keyword_direction then -- direction master/slave
-				expect_field_count (line, 2);
-
-				submodule_port.direction := et_submodules.to_port_name (f (line, 2));
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_submodule_port;
-
-
-
-		
-		procedure insert_submodule_port is
-			cursor : et_submodules.pac_submodule_ports.cursor;
-			inserted : boolean;
-
-			use et_schematic_ops.submodules;
-			use pac_net_name;
-		begin
-			-- Test whether the port sits at the edge of the submodule box:
-			if et_submodules.at_edge (submodule_port.position, submodule.size) then
-				
-				-- append port to collection of submodule ports
-				et_submodules.pac_submodule_ports.insert (
-					container	=> submodule_ports,
-					key			=> submodule_port_name, -- RESET
-					new_item	=> submodule_port,
-					inserted	=> inserted,
-					position	=> cursor
-					);
-
-				if not inserted then
-					log (ERROR, "port " & 
-						to_string (submodule_port_name) & " already used !",
-						console => true
-						);
-					raise constraint_error;
-				end if;
-
-			else
-				port_not_at_edge (submodule_port_name);
-			end if;
-
-			-- clean up for next port
-			submodule_port_name := to_net_name ("");
-			submodule_port := (others => <>);
-			
-		end insert_submodule_port;
-
-
-		
+	
 
 
 		
@@ -1365,47 +1206,7 @@ package body et_module_read is
 						get_deepest_conductor_layer (module_cursor);
 
 				end add_board_layer;
-				
-				
-
-
-
-				
-				procedure insert_submodule (
-					module_name	: in pac_module_name.bounded_string;
-					module		: in out type_generic_module) 
-				is
-					inserted : boolean;
-					use et_submodules;
-					use et_submodules.pac_submodules;
-					cursor : et_submodules.pac_submodules.cursor;
-				begin
-					log (text => "submodule " & to_string (submodule_name), level => log_threshold + 1);
-
-					-- CS: notify about missing parameters (by reading the parameter-found-flags)
-					-- If a parameter is missing, the default is assumed. See type_submodule spec.
-					
-					pac_submodules.insert (
-						container	=> module.submods,
-						key			=> submodule_name,	-- the instance name like MOT_DRV_3
-						new_item	=> submodule,
-						inserted	=> inserted,
-						position	=> cursor);
-
-					if not inserted then
-						log (ERROR, "submodule '" & to_string (submodule_name) 
-							& "' already exists !", console => true);
-						raise constraint_error;
-					end if;
-
-					-- The submodule/template (kept in submodule.file) will be read later once the 
-					-- parent module has been read completely.
-					
-					-- clean up for next submodule
-					submodule_name := to_instance_name ("");
-					submodule := (others => <>);
-					
-				end insert_submodule;
+			
 
 				
 
@@ -3238,13 +3039,8 @@ package body et_module_read is
 							when SEC_SEGMENT =>
 								assign_net_ports (log_threshold);
 
-
 							when SEC_SUBMODULE =>
-								-- copy collection of ports to submodule
-								submodule.ports := submodule_ports;
-
-								-- clean up for next collection of ports
-								et_submodules.pac_submodule_ports.clear (submodule_ports);
+								assign_submodule_ports;
 								
 							when others => invalid_section;
 						end case;
@@ -3423,12 +3219,7 @@ package body et_module_read is
 					when SEC_SUBMODULE =>
 						case stack.parent is
 							when SEC_SUBMODULES =>
-
-								-- insert submodule
-								update_element (
-									container	=> generic_modules,
-									position	=> module_cursor,
-									process		=> insert_submodule'access);
+								insert_submodule (module_cursor, log_threshold);
 
 							when others => invalid_section;
 						end case;
@@ -3438,7 +3229,9 @@ package body et_module_read is
 						case stack.parent is
 							when SEC_PORTS =>
 								case stack.parent (degree => 2) is
-									when SEC_SUBMODULE => insert_submodule_port;
+									when SEC_SUBMODULE => 
+										insert_submodule_port (line);
+										
 									when others => invalid_section;
 								end case;
 
@@ -4478,7 +4271,9 @@ package body et_module_read is
 						
 					when SEC_SUBMODULE =>
 						case stack.parent is
-							when SEC_SUBMODULES => read_submodule;
+							when SEC_SUBMODULES => 
+								read_submodule (line);
+								
 							when others => invalid_section;
 						end case;
 
@@ -4487,7 +4282,9 @@ package body et_module_read is
 						case stack.parent is
 							when SEC_PORTS =>
 								case stack.parent (degree => 2) is
-									when SEC_SUBMODULE => read_submodule_port;
+									when SEC_SUBMODULE => 
+										read_submodule_port (line);
+										
 									when others => invalid_section;
 								end case;
 
