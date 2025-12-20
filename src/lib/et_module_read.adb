@@ -48,10 +48,6 @@ with ada.strings;					use ada.strings;
 with ada.directories;				use ada.directories;
 with ada.containers;
 
-with et_text;						use et_text;
-with et_schematic_geometry;
-with et_schematic_coordinates;
-
 with et_section_headers;			use et_section_headers;
 with et_keywords;					use et_keywords;
 with et_module_sections;			use et_module_sections;
@@ -68,7 +64,6 @@ with et_route;						use et_route;
 with et_design_rules_board;			use et_design_rules_board;
 
 with et_device_sections;
-with et_schematic_text;
 with et_device_read;
 with et_pcb;
 with et_pcb_stack;
@@ -85,12 +80,9 @@ with et_conventions;
 with et_time;
 
 with et_schematic_ops;
-with et_schematic_ops.units;
-with et_schematic_ops.submodules;
 with et_board_ops;
 with et_board_ops.ratsnest;
 
-with et_schematic_text;
 with et_board_layer_category;
 
 with et_submodules;
@@ -132,6 +124,7 @@ with et_module_read_frames;				use et_module_read_frames;
 with et_module_read_submodules;			use et_module_read_submodules;
 with et_module_read_netchangers;		use et_module_read_netchangers;
 with et_module_read_text_board;			use et_module_read_text_board;
+with et_module_read_text_schematic;		use et_module_read_text_schematic;
 
 
 package body et_module_read is
@@ -179,11 +172,7 @@ package body et_module_read is
 		
 		route		: type_net_route;
 
-
-		schematic_text : et_schematic_text.type_text;
-		
-
-		
+	
 		signal_layers : et_pcb_stack.type_signal_layers.set;
 		conductor_layer, dielectric_layer : et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
 		conductor_thickness : et_pcb_stack.type_conductor_thickness := et_pcb_stack.conductor_thickness_outer_default;
@@ -501,57 +490,6 @@ package body et_module_read is
 
 
 	
-
-		
-		procedure read_schematic_text is
-			use et_schematic_text;
-			use et_schematic_geometry;
-			use et_schematic_coordinates;	
-			use pac_geometry_2;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_position then -- position sheet 2 x 91.44 y 118.56
-				expect_field_count (line, 7);
-
-				declare
-					-- extract position of schematic_text starting at field 2
-					pos : constant type_object_position := 
-						to_position (line, 2);
-				begin
-					schematic_text.position := pos.place;
-					schematic_text.sheet := get_sheet (pos);
-				end;
-
-			elsif kw = keyword_content then -- content "DUMMY TEXT IN CORE MODULE"
-				expect_field_count (line, 2); -- actual content in quotes !
-				schematic_text.content := et_text.to_content (f (line, 2));
-
-			elsif kw = keyword_size then -- size 1.4
-				expect_field_count (line, 2);
-				schematic_text.size := to_distance (f (line, 2));
-
-			elsif kw = keyword_rotation then -- rotation 90
-				expect_field_count (line, 2);
-				schematic_text.rotation := pac_text_schematic.to_rotation_doc (f (line, 2));
-
-	-- 			elsif kw = keyword_style then -- style normal/italic
-	-- 				expect_field_count (line, 2);
-				-- schematic_text.font := et_symbol_model.to_text_style (f (line, 2)); -- CS
-				-- CS: currently font and style are ignored.
-
-			elsif kw = keyword_alignment then -- alignment horizontal center vertical center
-				expect_field_count (line, 5);
-
-				-- extract alignment starting at field 2
-				schematic_text.alignment := to_alignment (line, 2);
-				
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_schematic_text;
-
-		
 
 		
 		
@@ -914,23 +852,6 @@ package body et_module_read is
 
 				end add_board_layer;
 			
-
-				
-
-				
-				
-				procedure insert_schematic_text (
-					module_name	: in pac_module_name.bounded_string;
-					module		: in out type_generic_module) 
-				is begin
-					-- append schematic note to collection of notes
-					et_schematic_text.pac_texts.append (module.texts, schematic_text);
-
-					-- clean up for next note
-					schematic_text := (others => <>);
-				end insert_schematic_text;
-
-
 				
 
 
@@ -1958,34 +1879,11 @@ package body et_module_read is
 				end append_hole;
 
 				
-				--procedure insert_text_contour is
-					--use et_pcb;
-					
-					--procedure do_it (
-						--module_name	: in pac_module_name.bounded_string;
-						--module		: in out type_generic_module) is
-					--begin
-						--pac_pcb_contour_circles.append (
-							--container	=> module.board.board_contour.texts,
-							--new_item	=> (et_board_text.pac_geometry_2.type_circle (board_circle) with board_lock_status));
-					--end do_it;
-										
-				--begin -- insert_text_contour
-					--update_element (
-						--container	=> generic_modules,
-						--position	=> module_cursor,
-						--process		=> do_it'access);
-
-					---- clean up for next pcb contour circle
-					--board_reset_circle;
-					--board_reset_lock_status;
-				--end insert_text_contour;
 
 				
 				procedure build_non_conductor_line (
 					face : in et_pcb_sides.type_face)
-				is
-				begin
+				is begin
 					case stack.parent (degree => 2) is
 						when SEC_SILKSCREEN =>
 							insert_line (
@@ -2057,8 +1955,7 @@ package body et_module_read is
 				
 				procedure build_non_conductor_circle (
 					face : in et_pcb_sides.type_face)
-				is
-				begin
+				is begin
 					case stack.parent (degree => 2) is
 						when SEC_SILKSCREEN =>
 							insert_circle (
@@ -2718,12 +2615,7 @@ package body et_module_read is
 					when SEC_TEXT =>
 						case stack.parent is
 							when SEC_TEXTS =>
-
-								-- insert note
-								update_element (
-									container	=> generic_modules,
-									position	=> module_cursor,
-									process		=> insert_schematic_text'access);
+								insert_schematic_text (module_cursor, log_threshold);
 
 							when SEC_TOP =>
 								case stack.parent (degree => 2) is
@@ -3817,7 +3709,7 @@ package body et_module_read is
 					when SEC_TEXT =>
 						case stack.parent is
 							when SEC_TEXTS => -- in schematic
-								read_schematic_text;
+								read_schematic_text (line);
 
 							when SEC_PCB_CONTOURS_NON_PLATED => -- in board
 								read_board_text_contours (line);
