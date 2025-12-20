@@ -63,32 +63,11 @@ with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_axes;						use et_axes;
 with et_module_instance;			use et_module_instance;
-with et_nets;
 with et_route;						use et_route;
-with et_net_strands;				use et_net_strands;
-with et_net_names;					use et_net_names;
-with et_net_junction;
-with et_net_ports;
-with et_net_segment;
-with et_net_labels;
-with et_net_connectors;
-with et_net_class;
-with et_net_class_name;
-with et_net_class_description;
-with et_net_classes;
-with et_port_names;
-with et_symbol_ports;
-with et_device_name;				use et_device_name;
 
 with et_design_rules_board;			use et_design_rules_board;
 
-with et_device_model;
-with et_device_appearance;
-with et_device_purpose;
-with et_device_value;
-with et_device_partcode;
 with et_device_sections;
-with et_symbol_read;
 with et_schematic_text;
 with et_device_read;
 with et_pcb;
@@ -153,6 +132,7 @@ with et_module_read_net_classes;		use et_module_read_net_classes;
 with et_module_read_nets;				use et_module_read_nets;
 with et_module_read_frames;				use et_module_read_frames;
 with et_module_read_submodules;			use et_module_read_submodules;
+with et_module_read_netchangers;		use et_module_read_netchangers;
 
 
 package body et_module_read is
@@ -265,10 +245,11 @@ package body et_module_read is
 		-- As preparation we enable the check by setting the "check" to YES.
 		-- When section BOARD_LAYER_STACK closes, we also assign the deepest layer used.
 		check_layers : et_pcb_stack.type_layer_check (check => et_pcb_stack.YES);
-
+		-- CS: DO NOT DELETE !
+		
 		
 		-- Checks the global signal_layer variable against check_layers:
-		procedure validate_signal_layer is 
+		procedure validate_signal_layer is -- CS: DO NOT DELETE !
 			use et_pcb_stack;
 		begin
 			-- Issue warning if signal layer is invalid:
@@ -280,6 +261,7 @@ package body et_module_read is
 		
 
 		-- Checks a given signal layer against check_layers:
+		 -- CS: DO NOT DELETE !
 		procedure validate_signal_layer (l : in et_pcb_stack.type_signal_layer) is
 			use et_pcb_stack;
 		begin
@@ -289,50 +271,6 @@ package body et_module_read is
 			end if;
 		end validate_signal_layer;
 
-
-		
-		-- temporarily a netchanger is stored here:
-		netchanger		: et_submodules.type_netchanger;
-		netchanger_id	: et_submodules.type_netchanger_id := et_submodules.type_netchanger_id'first;
-
-		
-		procedure read_netchanger is
-			use et_schematic_geometry;
-			use et_board_geometry.pac_geometry_2;
-			use et_schematic_coordinates;	
-			kw : constant string := f (line, 1);
-			use et_pcb_stack;
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_name then -- name 1, 2, 304, ...
-				expect_field_count (line, 2);
-				netchanger_id := et_submodules.to_netchanger_id (f (line, 2));
-				
-			elsif kw = keyword_position_in_schematic then -- position_in_schematic sheet 1 x 1.000 y 5.555
-				expect_field_count (line, 7);
-
-				-- extract position (in schematic) starting at field 2
-				netchanger.position_sch := to_position (line, 2);
-
-			elsif kw = keyword_rotation_in_schematic then -- rotation_in_schematic 180.0
-				expect_field_count (line, 2);
-				set_rotation (netchanger.position_sch, pac_geometry_2.to_rotation (f (line, 2)));
-
-			elsif kw = keyword_position_in_board then -- position_in_board x 55.000 y 7.555
-				expect_field_count (line, 5);
-
-				-- extract position (in board) starting at field 2
-				netchanger.position_brd := to_vector_model (line, 2);
-
-			elsif kw = keyword_layer then -- layer 3 (signal layer in board)
-				expect_field_count (line, 2);
-				netchanger.layer := et_pcb_stack.to_signal_layer (f (line, 2));
-				validate_signal_layer (netchanger.layer);
-				
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_netchanger;
 
 
 		
@@ -2541,40 +2479,7 @@ package body et_module_read is
 				end build_non_conductor_circle;							
 
 
-				
-				procedure insert_netchanger (
-					module_name	: in pac_module_name.bounded_string;
-					module		: in out type_generic_module) 
-				is
-					inserted : boolean;
-					use et_submodules;
-					use pac_netchangers;
-					cursor : pac_netchangers.cursor;
-				begin
-					log (text => "netchanger " & to_string (netchanger_id), level => log_threshold + 2);
-
-					-- insert netchanger in container netchangers:
-					insert (
-						container	=> module.netchangers,
-						key			=> netchanger_id,
-						new_item	=> netchanger,
-						inserted	=> inserted,
-						position	=> cursor);
-
-					-- A netchanger name must be unique:
-					if not inserted then
-						log (ERROR, "netchanger id" & to_string (netchanger_id) 
-							& " already used !", console => true);
-						raise constraint_error;
-					end if;
-					
-					-- clean up for next netchanger
-					netchanger_id := type_netchanger_id'first;
-					netchanger := (others => <>);
-				end insert_netchanger;
-
-				
-				
+			
 
 				
 				
@@ -3523,18 +3428,15 @@ package body et_module_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_NETCHANGER =>
 						case stack.parent is
 							when SEC_NETCHANGERS =>
-
-								-- insert netchanger in module
-								update_element (
-									container	=> generic_modules,
-									position	=> module_cursor,
-									process		=> insert_netchanger'access);
+								insert_netchanger (module_cursor, log_threshold);
 								
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_DEVICES_NON_ELECTRIC | SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 						SEC_STOPMASK | SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
@@ -3544,6 +3446,7 @@ package body et_module_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_TOP | SEC_BOTTOM =>
 						case stack.parent is
 							when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
@@ -3552,6 +3455,7 @@ package body et_module_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_USER_SETTINGS =>
 						case stack.parent is
 							when SEC_BOARD		=> assign_user_settings_board;
@@ -4440,7 +4344,9 @@ package body et_module_read is
 						
 					when SEC_NETCHANGER =>
 						case stack.parent is
-							when SEC_NETCHANGERS => read_netchanger;
+							when SEC_NETCHANGERS =>
+								read_netchanger (line);
+								
 							when others => invalid_section;
 						end case;
 
