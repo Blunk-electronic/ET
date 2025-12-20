@@ -123,6 +123,9 @@ with et_module_read_text_board;			use et_module_read_text_board;
 with et_module_read_text_schematic;		use et_module_read_text_schematic;
 with et_module_read_via;				use et_module_read_via;
 
+with et_module_read_board_user_settings;	use et_module_read_board_user_settings;
+
+
 
 package body et_module_read is
 
@@ -535,136 +538,6 @@ package body et_module_read is
 
 	
 				
-
-		
-		-- temporarily storage place for user settings
-		user_settings_board : et_pcb.type_user_settings;
-
-
-		
-		procedure read_user_settings_vias is
-			use et_board_geometry.pac_geometry_2;
-			kw : constant string := f (line, 1);
-		begin
-			-- via drill
-			if kw = keyword_via_drill then
-				expect_field_count (line, 2);
-				
-				if f (line, 2) = keyword_dru then -- drill dru
-					user_settings_board.vias.drill.active := false;
-				else -- drill 0.6
-					user_settings_board.vias.drill.active := true;
-					user_settings_board.vias.drill.size := to_distance (f (line, 2));
-
-					-- CS validate against dru settings
-				end if;
-
-			-- inner restring
-			elsif kw = keyword_restring_inner then
-				expect_field_count (line, 2);
-
-				if f (line, 2) = keyword_dru then -- restring_inner dru
-					user_settings_board.vias.restring_inner.active := false;
-				else -- restring_inner 0.22
-					user_settings_board.vias.restring_inner.active := true;
-					user_settings_board.vias.restring_inner.width := to_distance (f (line, 2));
-					
-					-- CS validate against dru settings
-				end if;
-
-			-- outer restring
-			elsif kw = keyword_restring_outer then
-				expect_field_count (line, 2);
-
-				if f (line, 2) = keyword_dru then -- restring_outer dru
-					user_settings_board.vias.restring_outer.active := false;
-				else -- restring_outer 0.2
-					user_settings_board.vias.restring_outer.active := true;
-					user_settings_board.vias.restring_outer.width := to_distance (f (line, 2));
-
-					-- CS validate against dru settings
-				end if;
-				
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_user_settings_vias;
-
-
-
-		
-		procedure read_user_settings_fill_zones_conductor is
-			use et_fill_zones;
-			use et_fill_zones.boards;		
-			use et_thermal_relief;
-			use et_board_geometry.pac_geometry_2;
-			kw : constant string := f (line, 1);
-		begin
-			if kw = keyword_fill_style then -- fill_style solid/hatched
-				expect_field_count (line, 2);
-				user_settings_board.polygons_conductor.fill_style := to_fill_style (f (line, 2));
-
-			elsif kw = keyword_linewidth then -- linewidth 0.3
-				expect_field_count (line, 2);
-				user_settings_board.polygons_conductor.linewidth := to_distance (f (line, 2));
-
-			elsif kw = keyword_priority then -- priority 2
-				expect_field_count (line, 2);
-				user_settings_board.polygons_conductor.priority_level := to_priority (f (line, 2));
-
-			elsif kw = keyword_isolation then -- isolation 0.4
-				expect_field_count (line, 2);
-				user_settings_board.polygons_conductor.isolation := to_distance (f (line, 2));
-
-			elsif kw = keyword_spacing then -- spacing 0.5
-				expect_field_count (line, 2);
-				user_settings_board.polygons_conductor.spacing := to_distance (f (line, 2));
-
-			elsif kw = keyword_connection then -- connection thermal/solid
-				expect_field_count (line, 2);
-				user_settings_board.polygons_conductor.connection := to_pad_connection (f (line, 2));
-
-			elsif kw = keyword_pad_technology then -- pad_technology smt_and_tht
-				expect_field_count (line, 2);
-				user_settings_board.polygons_conductor.thermal.technology := to_pad_technology (f (line, 2));
-
-			elsif kw = keyword_relief_width_min then -- relief_width_min 0.25
-				expect_field_count (line, 2);
-				user_settings_board.polygons_conductor.thermal.width_min := to_distance (f (line, 2));
-
-			elsif kw = keyword_relief_gap_max then -- relief_gap_max 0.25
-				expect_field_count (line, 2);
-				user_settings_board.polygons_conductor.thermal.gap_max := to_distance (f (line, 2));
-
-			elsif kw = keyword_easing_style then -- easing_style none/chamfer/fillet
-				expect_field_count (line, 2);
-				user_settings_board.polygons_conductor.easing.style := to_easing_style (f (line, 2));
-
-			elsif kw = keyword_easing_radius then -- easing_radius 1.0
-				expect_field_count (line, 2);
-				user_settings_board.polygons_conductor.easing.radius := to_distance (f (line, 2));
-				
-			else
-				invalid_keyword (kw);
-			end if;
-
-			-- CS plausibility check ?
-		end read_user_settings_fill_zones_conductor;
-
-
-
-		
-		procedure assign_user_settings_board is
-			procedure do_it (
-				module_name	: in pac_module_name.bounded_string;
-				module		: in out type_generic_module) 
-			is begin
-				module.board.user_settings := user_settings_board;
-			end do_it;
-		begin
-			update_element (generic_modules, module_cursor, do_it'access);
-		end assign_user_settings_board;
-
 
 		
 		
@@ -2795,7 +2668,8 @@ package body et_module_read is
 						
 					when SEC_USER_SETTINGS =>
 						case stack.parent is
-							when SEC_BOARD		=> assign_user_settings_board;
+							when SEC_BOARD => 
+								assign_user_settings_board (module_cursor, log_threshold);
 							-- CS when SEC_SCHEMATIC	=> null;
 							
 							when others => invalid_section;
@@ -3728,7 +3602,9 @@ package body et_module_read is
 						case stack.parent is
 							when SEC_USER_SETTINGS =>
 								case stack.parent (degree => 2) is
-									when SEC_BOARD	=> read_user_settings_vias;								
+									when SEC_BOARD =>
+										read_user_settings_vias (line);
+										
 									when others		=> invalid_section;
 								end case;
 
@@ -3740,7 +3616,9 @@ package body et_module_read is
 						case stack.parent is
 							when SEC_USER_SETTINGS =>
 								case stack.parent (degree => 2) is
-									when SEC_BOARD	=> read_user_settings_fill_zones_conductor;
+									when SEC_BOARD =>
+										read_user_settings_fill_zones_conductor (line);
+										
 									when others		=> invalid_section;
 								end case;
 
