@@ -61,8 +61,6 @@ with et_axes;						use et_axes;
 with et_module_instance;			use et_module_instance;
 with et_route;						use et_route;
 
-with et_design_rules_board;			use et_design_rules_board;
-
 with et_device_sections;
 with et_device_read;
 with et_pcb;
@@ -99,7 +97,6 @@ with et_silkscreen;
 with et_assy_doc;
 with et_keepout;
 with et_pcb_contour;
-with et_mirroring;						use et_mirroring;
 with et_directory_and_file_ops;
 with et_object_status;
 with et_string_processing;				use et_string_processing;
