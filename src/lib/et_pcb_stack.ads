@@ -113,7 +113,7 @@ package et_pcb_stack is
 
 	
 	-- The layers are collected in vectors:
-	package package_layers is new vectors (
+	package package_layers is new vectors ( -- CS rename to pac_pcb_layers ?
 		index_type		=> type_signal_layer,
 		element_type	=> type_layer);
 

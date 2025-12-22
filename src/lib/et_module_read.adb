@@ -122,9 +122,9 @@ with et_module_read_text_schematic;		use et_module_read_text_schematic;
 with et_module_read_via;				use et_module_read_via;
 with et_module_read_board_zones;		use et_module_read_board_zones;
 with et_module_read_board_zones_route;	use et_module_read_board_zones_route;
+with et_module_read_pcb_layer_stack;	use et_module_read_pcb_layer_stack;
 
 with et_module_read_board_user_settings;	use et_module_read_board_user_settings;
-
 
 
 package body et_module_read is
@@ -215,49 +215,7 @@ package body et_module_read is
 
 	
 		
-		procedure read_layer is
-			kw : constant string := f (line, 1);
-			use et_pcb_stack;
-			use package_layers;
-			use et_board_geometry.pac_geometry_2;
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_conductor then -- conductor 1 0.035
-				expect_field_count (line, 3);
-				conductor_layer := to_signal_layer (f (line, 2));
-				conductor_thickness := to_distance (f (line, 3));
-				board_layer.conductor.thickness := conductor_thickness;
 
-				-- Layer numbers must be continuous from top to bottom.
-				-- After the dielectric of a layer the next conductor layer must
-				-- have the next number:
-				if dielectric_found then
-					if to_index (board_layers.last) /= conductor_layer - 1 then
-						log (ERROR, "expect conductor layer number" &
-							to_string (to_index (board_layers.last) + 1) & " !",
-							console => true);
-						raise constraint_error;
-					end if;
-				end if;
-				
-				dielectric_found := false;
-
-			elsif kw = keyword_dielectric then -- dielectric 1 1.5
-				expect_field_count (line, 3);
-				dielectric_layer := to_signal_layer (f (line, 2));
-				board_layer.dielectric.thickness := to_distance (f (line, 3));
-				dielectric_found := true;
-				
-				if dielectric_layer = conductor_layer then
-					append (board_layers, board_layer);
-				else
-					log (ERROR, "expect dielectric layer number" & to_string (conductor_layer) & " !", console => true);
-					raise constraint_error;
-				end if;
-			else
-				invalid_keyword (kw);
-			end if;
-		end;
 
 	
 				
@@ -270,57 +228,6 @@ package body et_module_read is
 			-- Once a section concludes, the temporarily variables are read, evaluated
 			-- and finally assembled to actual objects:
 			
-
-				procedure add_board_layer is 
-					use et_board_ops;
-					
-
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) 
-					is
-						use et_pcb_stack;
-					begin
-						log (text => "board layer stack", level => log_threshold + 1);
-
-						-- Copy the collected layers (except the bottom conductor layer) into the module:
-						module.board.stack.layers := board_layers;
-
-						-- If the last entry was "conductor n t" then we assume that this
-						-- was the bottom conductor layer (it does not have a dielectric layer underneath).
-						if not dielectric_found then
-							module.board.stack.bottom.thickness := conductor_thickness;
-						else
-							log (ERROR, "dielectric not allowed underneath the bottom conductor layer !", console => true);
-							raise constraint_error;
-						end if;
-						
-						-- reset layer values:
-						dielectric_found := false;
-						conductor_layer := type_signal_layer'first;
-						dielectric_layer := type_signal_layer'first;
-						conductor_thickness := et_pcb_stack.conductor_thickness_outer_default;
-						board_layer := (others => <>);
-						package_layers.clear (board_layers);
-
-					end do_it;
-
-
-				begin							 
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- Now that the board layer stack is complete,
-					-- we assign the deepest layer to check_layers.
-					check_layers.deepest_layer := 
-						get_deepest_conductor_layer (module_cursor);
-
-				end add_board_layer;
-			
-				
-
 
 				use et_board_layer_category;
 				
@@ -1732,7 +1639,7 @@ package body et_module_read is
 					when SEC_BOARD_LAYER_STACK =>
 						case stack.parent is
 							when SEC_INIT =>
-								add_board_layer;
+								add_board_layer (module_cursor, check_layers, log_threshold);
 
 							when others => invalid_section;
 						end case;
@@ -2599,7 +2506,7 @@ package body et_module_read is
 
 					when SEC_BOARD_LAYER_STACK =>
 						case stack.parent is
-							when SEC_INIT => read_layer;
+							when SEC_INIT => read_layer (line, log_threshold);
 							when others => invalid_section;
 						end case;
 						
