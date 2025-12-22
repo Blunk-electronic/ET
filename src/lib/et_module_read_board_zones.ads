@@ -39,7 +39,8 @@
 --
 -- DESCRIPTION:
 -- 1. This package is about fill zones of conductor and non-conductor
---    layers.
+--    layers. With other words: All zones which do not conduct
+--    electrical current.
 -- 2. Zones in conductor layers are not connected with a net here.
 --
 --
