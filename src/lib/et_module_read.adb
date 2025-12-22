@@ -119,6 +119,7 @@ with et_module_read_netchangers;		use et_module_read_netchangers;
 with et_module_read_text_board;			use et_module_read_text_board;
 with et_module_read_text_schematic;		use et_module_read_text_schematic;
 with et_module_read_via;				use et_module_read_via;
+with et_module_read_board_zones;		use et_module_read_board_zones;
 
 with et_module_read_board_user_settings;	use et_module_read_board_user_settings;
 
@@ -240,77 +241,6 @@ package body et_module_read is
 		
 
 		
-		procedure read_cutout_non_conductor is
-			use et_board_geometry.pac_geometry_2;
-			use et_fill_zones;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_easing_style then -- easing_style none/chamfer/fillet
-				expect_field_count (line, 2);													
-				board_easing.style := to_easing_style (f (line, 2));
-
-			elsif kw = keyword_easing_radius then -- easing_radius 0.4
-				expect_field_count (line, 2);													
-				board_easing.radius := to_distance (f (line, 2));
-				
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_cutout_non_conductor;
-
-		
-
-		
-		procedure read_cutout_restrict is
-			use et_pcb_stack;
-			use et_board_geometry.pac_geometry_2;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_layers then -- layers 1 14 3
-
-				-- there must be at least two fields:
-				expect_field_count (line => line, count_expected => 2, warn => false);
-				signal_layers := to_layers (line, check_layers);
-
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_cutout_restrict;
-
-
-		
-		
-		-- Reads cutout zone in conductor layer.
-		-- NOTE: This is about floating conductor zones. Has nothing to
-		-- do with nets and routes.
-		procedure read_cutout_conductor_non_electric is
-			use et_pcb_stack;
-			use et_board_geometry.pac_geometry_2;
-			use et_fill_zones;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_easing_style then -- easing_style none/chamfer/fillet
-				expect_field_count (line, 2);													
-				board_easing.style := to_easing_style (f (line, 2));
-
-			elsif kw = keyword_easing_radius then -- easing_radius 0.4
-				expect_field_count (line, 2);													
-				board_easing.radius := to_distance (f (line, 2));
-				
-			elsif kw = keyword_layer then -- layer 1
-				expect_field_count (line, 2);
-				signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
-				validate_signal_layer;
-
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_cutout_conductor_non_electric;
-
-
 		
 		
 		-- Reads parameters of a conductor fill zone connected with a net:
@@ -379,113 +309,7 @@ package body et_module_read is
 
 
 		
-		
-		procedure read_fill_zone_non_conductor is
-			use et_board_geometry.pac_geometry_2;
-			use et_fill_zones;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_fill_style then -- fill_style solid/hatched
-				expect_field_count (line, 2);													
-				board_fill_style := to_fill_style (f (line, 2));
-			
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_fill_zone_non_conductor;
 
-
-
-		
-		procedure read_fill_zone_keepout is
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_filled then -- filled yes/no
-				expect_field_count (line, 2);													
-				board_filled := to_filled (f (line, 2));
-
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_fill_zone_keepout;
-
-
-
-		
-		procedure read_fill_zone_restrict is
-			use et_pcb_stack;
-			use et_board_geometry.pac_geometry_2;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_filled then -- filled yes/no
-				expect_field_count (line, 2);													
-				board_filled := to_filled (f (line, 2));
-
-			elsif kw = keyword_layers then -- layers 1 14 3
-
-				-- there must be at least two fields:
-				expect_field_count (line => line, count_expected => 2, warn => false);
-				signal_layers := to_layers (line, check_layers);
-
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_fill_zone_restrict;
-
-
-
-		
-		procedure read_fill_zone_conductor_non_electric is
-			use et_pcb_stack;
-			use et_fill_zones;
-			use et_fill_zones.boards;
-			use et_board_geometry.pac_geometry_2;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_fill_style then -- fill_style solid/hatched
-				expect_field_count (line, 2);													
-				board_fill_style := to_fill_style (f (line, 2));
-
-			elsif kw = keyword_easing_style then -- easing_style none/chamfer/fillet
-				expect_field_count (line, 2);													
-				board_easing.style := to_easing_style (f (line, 2));
-
-			elsif kw = keyword_easing_radius then -- easing_radius 0.4
-				expect_field_count (line, 2);													
-				board_easing.radius := to_distance (f (line, 2));
-				
-			elsif kw = keyword_spacing then -- spacing 0.3
-				expect_field_count (line, 2);													
-				fill_spacing := to_distance (f (line, 2));
-
-			elsif kw = keyword_width then -- width 0.5
-				expect_field_count (line, 2);
-				polygon_width_min := to_distance (f (line, 2));
-				
-			elsif kw = keyword_layer then -- layer 1
-				expect_field_count (line, 2);
-				signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
-				validate_signal_layer;
-				
-			elsif kw = keyword_priority then -- priority 2
-				expect_field_count (line, 2);
-				contour_priority := to_priority (f (line, 2));
-
-			elsif kw = keyword_isolation then -- isolation 0.5
-				expect_field_count (line, 2);
-				polygon_isolation := to_distance (f (line, 2));
-				
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_fill_zone_conductor_non_electric;
-
-
-	
 
 		
 		
@@ -3336,7 +3160,8 @@ package body et_module_read is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOPMASK => read_cutout_non_conductor;
+										SEC_STENCIL | SEC_STOPMASK => 
+										read_cutout_non_conductor (line);
 
 									when SEC_KEEPOUT =>
 										-- no parameters allowed here
@@ -3349,8 +3174,11 @@ package body et_module_read is
 									when others => invalid_section;
 								end case;
 
-							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => read_cutout_restrict;
-							when SEC_CONDUCTOR => read_cutout_conductor_non_electric;
+							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => 
+								read_cutout_restrict (line, check_layers);
+								
+							when SEC_CONDUCTOR => 
+								read_cutout_conductor_non_electric (line);
 							when others => invalid_section;
 						end case;
 
@@ -3362,14 +3190,21 @@ package body et_module_read is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOPMASK => read_fill_zone_non_conductor;
+										SEC_STENCIL | SEC_STOPMASK => 
+											read_fill_zone_non_conductor (line);
 
-									when SEC_KEEPOUT => read_fill_zone_keepout;
+									when SEC_KEEPOUT => 
+										read_fill_zone_keepout (line);
+										
 									when others => invalid_section;
 								end case;
 
-							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => read_fill_zone_restrict;
-							when SEC_CONDUCTOR => read_fill_zone_conductor_non_electric;
+							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+								read_fill_zone_restrict (line, check_layers);
+							
+							when SEC_CONDUCTOR => 
+								read_fill_zone_conductor_non_electric (line);
+								
 							when others => invalid_section;
 						end case;
 
