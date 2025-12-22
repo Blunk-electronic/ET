@@ -121,6 +121,7 @@ with et_module_read_text_board;			use et_module_read_text_board;
 with et_module_read_text_schematic;		use et_module_read_text_schematic;
 with et_module_read_via;				use et_module_read_via;
 with et_module_read_board_zones;		use et_module_read_board_zones;
+with et_module_read_board_zones_route;	use et_module_read_board_zones_route;
 
 with et_module_read_board_user_settings;	use et_module_read_board_user_settings;
 
@@ -212,107 +213,7 @@ package body et_module_read is
 
 
 
-		
-		
-		procedure read_cutout_route is
-			use et_board_geometry.pac_geometry_2;
-			use et_pcb_stack;
-			use et_fill_zones;
-			kw : constant  string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_easing_style then -- easing_style none/chamfer/fillet
-				expect_field_count (line, 2);
-				board_easing.style := to_easing_style (f (line, 2));
-
-			elsif kw = keyword_easing_radius then -- easing_radius 0.3
-				expect_field_count (line, 2);
-				board_easing.radius := to_distance (f (line, 2));
-
-			elsif kw = keyword_layer then -- layer 2
-				expect_field_count (line, 2);
-				signal_layer := to_signal_layer (f (line, 2));
-				validate_signal_layer;
-
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_cutout_route;
-
-		
-
-		
-		
-		
-		-- Reads parameters of a conductor fill zone connected with a net:
-		procedure read_fill_zone_route is
-			use et_board_geometry.pac_geometry_2;
-			use et_fill_zones;
-			use et_fill_zones.boards;
-			use et_thermal_relief;
-			use et_pcb_stack;
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_priority then -- priority 2
-				expect_field_count (line, 2);
-				contour_priority := to_priority (f (line, 2));
-
-			elsif kw = keyword_isolation then -- isolation 0.5
-				expect_field_count (line, 2);
-				polygon_isolation := to_distance (f (line, 2));
-				
-			elsif kw = keyword_easing_style then -- easing_style none/chamfer/fillet
-				expect_field_count (line, 2);
-				board_easing.style := to_easing_style (f (line, 2));
-
-			elsif kw = keyword_easing_radius then -- easing_radius 0.3
-				expect_field_count (line, 2);
-				board_easing.radius := to_distance (f (line, 2));
-
-			elsif kw = keyword_fill_style then -- fill_style solid,hatched
-				expect_field_count (line, 2);
-				board_fill_style := to_fill_style (f (line, 2));
-
-			elsif kw = keyword_spacing then -- spacing 1
-				expect_field_count (line, 2);
-				fill_spacing := to_distance (f (line, 2));
-
-			elsif kw = keyword_layer then -- layer 2
-				expect_field_count (line, 2);
-				signal_layer := to_signal_layer (f (line, 2));
-				validate_signal_layer;
-				
-			elsif kw = keyword_width then -- width 0.3
-				expect_field_count (line, 2);
-				polygon_width_min := to_distance (f (line, 2));
-
-			elsif kw = keyword_pad_technology then -- pad_technology smt_only/tht_only/smt_and_tht
-				expect_field_count (line, 2);
-				relief_properties.technology := to_pad_technology (f (line, 2));
-
-			elsif kw = keyword_connection then -- connection thermal/solid
-				expect_field_count (line, 2);
-				pad_connection := to_pad_connection (f (line, 2));
-				
-			elsif kw = keyword_relief_width_min then -- relief_width_min 0.3
-				expect_field_count (line, 2);
-				relief_properties.width_min := to_distance (f (line, 2));
-
-			elsif kw = keyword_relief_gap_max then -- relief_gap_max 0.7
-				expect_field_count (line, 2);
-				relief_properties.gap_max := to_distance (f (line, 2));
-
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_fill_zone_route;
-
-
-		
-
-
-		
+	
 		
 		procedure read_layer is
 			kw : constant string := f (line, 1);
@@ -3157,7 +3058,8 @@ package body et_module_read is
 						
 					when SEC_CUTOUT_ZONE =>
 						case stack.parent is
-							when SEC_ROUTE => read_cutout_route;
+							when SEC_ROUTE => read_cutout_route (line);
+							
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
@@ -3186,7 +3088,7 @@ package body et_module_read is
 						
 					when SEC_ZONE =>
 						case stack.parent is
-							when SEC_ROUTE => read_fill_zone_route;
+							when SEC_ROUTE => read_fill_zone_route (line);
 
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
