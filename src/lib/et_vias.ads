@@ -44,6 +44,7 @@ with ada.containers.indefinite_doubly_linked_lists;
 with et_board_geometry;			use et_board_geometry;
 with et_contour_to_polygon;
 with et_drills;					use et_drills;
+with et_pcb_signal_layers;		use et_pcb_signal_layers;
 with et_pcb_stack;				use et_pcb_stack;
 with et_design_rules_board;		use et_design_rules_board;
 with et_fonts;					use et_fonts;

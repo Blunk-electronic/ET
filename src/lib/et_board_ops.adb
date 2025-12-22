@@ -131,12 +131,14 @@ package body et_board_ops is
 		return last_index (element (module_cursor).board.stack.layers) + 1;
 	end;
 
+
+
 	
 	procedure test_layer (
 		module_cursor	: in pac_generic_modules.cursor;
-		layer			: in et_pcb_stack.type_signal_layer) 
+		layer			: in type_signal_layer) 
 	is
-		layers_used : et_pcb_stack.type_signal_layer := get_layer_count (module_cursor);
+		layers_used : type_signal_layer := get_layer_count (module_cursor);
 	begin
 		if layer > layers_used then
 			log (ERROR, "Layer " & to_string (layer) & " invalid !" &
@@ -146,10 +148,12 @@ package body et_board_ops is
 		end if;
 	end;
 
+
+	
 	
 	procedure delete_layer (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -207,6 +211,7 @@ package body et_board_ops is
 
 
 	
+	
 	-- Returns the position (x/y/rotation) of a submodule instance.
 	-- Assumptions:
 	--  - The module to be searched in must be in the rig already.
@@ -241,6 +246,8 @@ package body et_board_ops is
 
 		return position;
 	end get_position;
+
+
 
 
 
@@ -808,7 +815,7 @@ package body et_board_ops is
 	
 	procedure test_layers (
 		module_cursor	: in pac_generic_modules.cursor;
-		layers 			: in et_pcb_stack.type_signal_layers.set)
+		layers 			: in type_signal_layers.set)
 	is
 		use type_signal_layers;
 		
@@ -827,9 +834,9 @@ package body et_board_ops is
 
 	function get_deepest_conductor_layer (
 		module	: in pac_generic_modules.cursor)
-		return et_pcb_stack.type_signal_layer 
+		return type_signal_layer 
 	is 
-		result : et_pcb_stack.type_signal_layer;
+		result : type_signal_layer;
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;

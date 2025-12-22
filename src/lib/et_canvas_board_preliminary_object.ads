@@ -48,7 +48,7 @@ with et_canvas_board;					use et_canvas_board;
 with et_pcb_sides;						use et_pcb_sides;
 
 with et_board_layer_category;			use et_board_layer_category;
-with et_pcb_stack;						use et_pcb_stack;
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_net_names;						use et_net_names;
 with et_device_name;					use et_device_name;
 

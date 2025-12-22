@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,7 +37,8 @@
 --
 --   to do:
 
-with et_pcb_stack;				use et_pcb_stack;
+with et_pcb_signal_layers;			use et_pcb_signal_layers;
+
 
 package et_via_restrict.boards is
 

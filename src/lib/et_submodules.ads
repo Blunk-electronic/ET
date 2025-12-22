@@ -56,7 +56,7 @@ with et_net_names;					use et_net_names;
 with et_text;
 with et_schematic_geometry;			use et_schematic_geometry;
 with et_schematic_coordinates;		use et_schematic_coordinates;
-with et_pcb_stack;
+with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_board_coordinates;
 with et_board_geometry;
 with et_symbol_ports;				use et_symbol_ports;
@@ -302,7 +302,7 @@ package et_submodules is
 		
 		position_brd	: et_board_geometry.pac_geometry_2.type_vector_model; -- x,y
 		-- in board there is no rotation because the netchanger is just a point in x/y.
-		layer			: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
+		layer			: type_signal_layer := type_signal_layer'first;
 	end record;
 
 	

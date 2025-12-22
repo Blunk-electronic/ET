@@ -39,9 +39,8 @@
 
 with ada.containers.indefinite_doubly_linked_lists;
 
-
 with et_net_names;				use et_net_names;
-with et_pcb_stack;				use et_pcb_stack;
+with et_pcb_signal_layers;		use et_pcb_signal_layers;
 with et_thermal_relief;			use et_thermal_relief;
 
 

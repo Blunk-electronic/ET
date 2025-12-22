@@ -89,6 +89,7 @@ with et_undo_redo;
 with et_commit;
 with et_pcb;
 with et_pcb_stack;					use et_pcb_stack;
+with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
 
 

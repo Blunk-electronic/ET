@@ -52,7 +52,7 @@ use et_vias.pac_vias;
 with et_nets;						use et_nets;
 
 with et_thermal_relief;				use et_thermal_relief;
-with et_pcb_stack;					use et_pcb_stack;
+with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_design_rules_board;			use et_design_rules_board;
 with et_display.board;				use et_display.board;
 with et_colors;						use et_colors;
@@ -87,7 +87,7 @@ procedure draw_conductors is
 	-- The verb must be VERB_PLACE and the noun must be NOUN_TEXT. 
 	-- Otherwise nothing happens here:
 	procedure draw_text_being_placed (
-		layer : in et_pcb_stack.type_signal_layer)
+		layer : in type_signal_layer)
 	is 
 		use et_canvas_board_texts;
 		use pac_draw_text;

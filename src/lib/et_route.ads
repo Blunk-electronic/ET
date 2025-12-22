@@ -38,7 +38,7 @@
 --   to do:
 --
 
-with et_pcb_stack;						use et_pcb_stack;
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_vias;							use et_vias;
 
 with et_fill_zones;						use et_fill_zones;

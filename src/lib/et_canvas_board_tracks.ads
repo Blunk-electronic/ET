@@ -50,7 +50,7 @@ with et_board_geometry;					use et_board_geometry;
 
 with et_conductor_segment.boards;		use et_conductor_segment.boards;
 
-with et_pcb_stack;						use et_pcb_stack;
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_net_names;						use et_net_names;
 
 with et_board_ops.ratsnest;				use et_board_ops.ratsnest;

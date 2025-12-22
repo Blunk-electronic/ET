@@ -52,6 +52,7 @@ with et_keywords;					use et_keywords;
 with et_board_ops;
 with et_pcb;						use et_pcb;
 with et_pcb_stack;					use et_pcb_stack;
+with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_design_rules_board;			use et_design_rules_board;
 with et_board_geometry;				use et_board_geometry;
 with et_vias;						use et_vias;
@@ -123,7 +124,7 @@ package body et_module_read_via is
 			
 		elsif kw = keyword_destination then -- destination 15 (for blind via only)
 			expect_field_count (line, 2);
-			via_layer_blind := et_pcb_stack.to_signal_layer (f (line, 2));
+			via_layer_blind := to_signal_layer (f (line, 2));
 			-- CS exception rises if layer out of range (i.e. less than 2).
 			--validate_signal_layer (via_layers_buried.lower);
 			

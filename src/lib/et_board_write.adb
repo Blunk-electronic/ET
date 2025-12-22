@@ -224,7 +224,7 @@ package body et_board_write is
 	end;
 
 	
-	procedure write_signal_layer (layer : in et_pcb_stack.type_signal_layer) is 
+	procedure write_signal_layer (layer : in type_signal_layer) is 
 		use et_pcb_stack;
 	begin
 		write (keyword => keyword_layer, parameters => to_string (layer));
@@ -256,7 +256,7 @@ package body et_board_write is
 	end;	
 
 	
-	procedure write_signal_layers (layers : in et_pcb_stack.type_signal_layers.set) is
+	procedure write_signal_layers (layers : in type_signal_layers.set) is
 		use et_pcb_stack;
 	begin
 		write (keyword => keyword_layers, parameters => to_string (layers));

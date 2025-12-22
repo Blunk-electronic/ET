@@ -37,7 +37,7 @@
 --
 --   to do:
 
-with et_pcb_stack;				use et_pcb_stack;
+with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
 
 package et_route_restrict.boards is

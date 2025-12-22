@@ -49,7 +49,8 @@ with et_board_text;				use et_board_text;
 with et_drills;					use et_drills;
 with et_pcb;
 with et_pcb_contour;
-with et_pcb_stack;
+with et_pcb_stack;				use et_pcb_stack;
+with et_pcb_signal_layers;		use et_pcb_signal_layers;
 with et_design_rules_board;		use et_design_rules_board;
 with et_fill_zones;				use et_fill_zones;
 with et_fill_zones.boards;		use et_fill_zones.boards;
@@ -76,7 +77,7 @@ package et_board_read is
 	-- signal layer of the pcb stack.
 	procedure signal_layer_invalid (
 		line			: in type_fields_of_line;
-		signal_layer	: in et_pcb_stack.type_signal_layer;
+		signal_layer	: in type_signal_layer;
 		check_layers	: in et_pcb_stack.type_layer_check);
 
 
@@ -89,7 +90,7 @@ package et_board_read is
 	function to_layers (
 		line 			: in type_fields_of_line; -- layers 1 3 17
 		check_layers	: in et_pcb_stack.type_layer_check)
-		return et_pcb_stack.type_signal_layers.set;	
+		return type_signal_layers.set;	
 	
 
 
@@ -163,7 +164,7 @@ package et_board_read is
 	pad_connection		: type_pad_connection := type_pad_connection'first;
 	contour_priority	: type_priority := type_priority'first;
 	relief_properties	: type_relief_properties;
-	signal_layer		: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
+	signal_layer		: type_signal_layer := type_signal_layer'first;
 
 	procedure board_reset_signal_layer;
 

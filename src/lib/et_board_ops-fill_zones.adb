@@ -1348,7 +1348,7 @@ package body et_board_ops.fill_zones is
 		zone				: in out type_zone'class;
 		outer_contour		: in type_polygon;
 		linewidth			: in type_track_width;
-		layer 				: in et_pcb_stack.type_signal_layer;
+		layer 				: in type_signal_layer;
 		clearance			: in type_track_clearance;
 		clearance_to_edge 	: in type_distance_positive;
 		parent_net			: in pac_nets.cursor := pac_nets.no_element;

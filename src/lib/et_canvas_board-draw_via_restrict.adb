@@ -43,7 +43,7 @@ with et_display.board;				use et_display.board;
 with et_colors;						use et_colors;
 -- with et_conductor_text.boards;	use et_conductor_text.boards;
 with et_via_restrict.boards;		use et_via_restrict.boards;
-with et_pcb_stack;
+with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
 
 
@@ -110,8 +110,6 @@ procedure draw_via_restrict is
 
 
 	
-
-	use et_pcb_stack;
 	
 	-- The top conductor layer 1 is always there:
 	top_layer		: constant type_signal_layer := type_signal_layer'first;

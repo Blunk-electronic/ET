@@ -53,7 +53,7 @@ use et_board_geometry.pac_geometry_2;
 use et_board_geometry.pac_path_and_bend;
 
 with et_board_layer_category;			use et_board_layer_category;
-with et_pcb_stack;						use et_pcb_stack;
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
 
 
 

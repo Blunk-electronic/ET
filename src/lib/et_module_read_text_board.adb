@@ -61,7 +61,7 @@ with et_board_text;					use et_board_text;
 with et_alignment;					use et_alignment;
 with et_pcb_placeholders;			use et_pcb_placeholders;
 with et_pcb;
-with et_pcb_stack;
+with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_mirroring;
 
 with et_stopmask;
@@ -178,7 +178,6 @@ package body et_module_read_text_board is
 	procedure read_board_text_conductor (
 		line : in type_fields_of_line)
 	is
-		use et_pcb_stack;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -210,7 +209,7 @@ package body et_module_read_text_board is
 
 		elsif kw = keyword_layer then -- layer 15
 			expect_field_count (line, 2);
-			board_text_conductor.layer := et_pcb_stack.to_signal_layer (f (line, 2));
+			board_text_conductor.layer := to_signal_layer (f (line, 2));
 			-- CS validate_signal_layer (board_text_conductor.layer);
 			
 		else
@@ -231,7 +230,6 @@ package body et_module_read_text_board is
 	procedure read_board_text_conductor_placeholder (
 		line : in type_fields_of_line)
 	is
-		use et_pcb_stack;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -261,7 +259,7 @@ package body et_module_read_text_board is
 
 		elsif kw = keyword_layer then -- layer 15
 			expect_field_count (line, 2);
-			board_text_conductor_placeholder.layer := et_pcb_stack.to_signal_layer (f (line, 2));
+			board_text_conductor_placeholder.layer := to_signal_layer (f (line, 2));
 			-- CS validate_signal_layer (board_text_conductor_placeholder.layer);
 			
 		else

@@ -53,6 +53,7 @@ with et_board_text;						use et_board_text;
 with et_text;							use et_text;
 with et_drills;							use et_drills;
 with et_vias;							use et_vias;
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_pcb_stack;						use et_pcb_stack;
 with et_drawing_frame;
 with et_drawing_frame.board;
@@ -102,8 +103,8 @@ package et_pcb is
 	-- Use it for drawing non-device related texts and placeholders.
 	-- So this function returns either MIRROR_NO or MIRROR_ALONG_Y_AXIS:
 	function signal_layer_to_mirror (
-		current_layer	: in et_pcb_stack.type_signal_layer;
-		bottom_layer	: in et_pcb_stack.type_signal_layer)
+		current_layer	: in type_signal_layer;
+		bottom_layer	: in type_signal_layer)
 		return type_mirror;
 
 	

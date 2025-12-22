@@ -66,7 +66,7 @@ with et_device_value;					use et_device_value;
 with et_device_purpose;					use et_device_purpose;
 with et_device_partcode;				use et_device_partcode;
 with et_device_property_level;			use et_device_property_level;
-with et_pcb_stack;						use et_pcb_stack;
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_pcb_contour;					use et_pcb_contour;
 with et_commit;
 with et_object_status;					use et_object_status;

@@ -42,7 +42,7 @@ with et_primitive_objects;			use et_primitive_objects;
 with et_display.board;				use et_display.board;
 with et_colors;						use et_colors;
 with et_route_restrict.boards;		use et_route_restrict.boards;
-with et_pcb_stack;
+with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
 
 separate (et_canvas_board)
@@ -156,8 +156,6 @@ procedure draw_route_restrict is
 
 
 
-	
-	use et_pcb_stack;
 	
 	-- The top conductor layer 1 is always there:
 	top_layer		: constant type_signal_layer := type_signal_layer'first;

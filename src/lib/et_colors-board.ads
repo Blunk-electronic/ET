@@ -37,7 +37,7 @@
 --
 --   ToDo: 
 
-with et_pcb_stack;				use et_pcb_stack;
+with et_pcb_signal_layers;		use et_pcb_signal_layers;
 with et_pcb_sides;				use et_pcb_sides;
 with et_board_coordinates;		use et_board_coordinates;
 

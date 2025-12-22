@@ -57,7 +57,7 @@ package body et_board_read is
 	
 	procedure signal_layer_invalid (
 		line			: in type_fields_of_line;
-		signal_layer	: in et_pcb_stack.type_signal_layer;
+		signal_layer	: in type_signal_layer;
 		check_layers	: in et_pcb_stack.type_layer_check) 
 	is
 		use et_string_processing;
@@ -81,13 +81,12 @@ package body et_board_read is
 	function to_layers (
 		line			: in type_fields_of_line; -- layers 1 3 17
 		check_layers	: in et_pcb_stack.type_layer_check)
-		return et_pcb_stack.type_signal_layers.set 
+		return type_signal_layers.set 
 	is
 		use et_pcb;
-		use et_pcb_stack;
-		use et_pcb_stack.type_signal_layers;
 		use et_string_processing;
 
+		use type_signal_layers;
 		layers 		: type_signal_layers.set; -- to be returned
 		cursor 		: type_signal_layers.cursor;
 		inserted	: boolean;

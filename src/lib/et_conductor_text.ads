@@ -48,7 +48,7 @@ with et_board_geometry;			use et_board_geometry;
 with et_board_text;				use et_board_text;
 with et_design_rules_board;		use et_design_rules_board;
 with et_text;					use et_text;
-with et_pcb_stack;				use et_pcb_stack;
+with et_pcb_signal_layers;		use et_pcb_signal_layers;
 with et_logging;				use et_logging;
 
 

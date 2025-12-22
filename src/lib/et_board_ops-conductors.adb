@@ -89,7 +89,7 @@ package body et_board_ops.conductors is
 	
 
 	procedure no_net_segment_found (
-		layer		: in et_pcb_stack.type_signal_layer;
+		layer		: in type_signal_layer;
 		zone		: in type_catch_zone) 
 	is begin
 		log (importance => WARNING, text => "no net segment found in layer" 
@@ -106,7 +106,7 @@ package body et_board_ops.conductors is
 	procedure check_terminal_face_vs_layer (
 		module_cursor	: in pac_generic_modules.cursor;											   
 		terminal		: in type_terminal_position_fine;
-		layer			: in et_pcb_stack.type_signal_layer) 
+		layer			: in type_signal_layer) 
 	is
 		procedure warning is begin
 			log (WARNING, "The terminal is an SMT type. Via required to connect with inner layer !");
@@ -287,7 +287,7 @@ package body et_board_ops.conductors is
 	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
 		terminal		: in pac_terminal_name.bounded_string;
@@ -360,7 +360,7 @@ package body et_board_ops.conductors is
 	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
 		terminal		: in pac_terminal_name.bounded_string;
@@ -432,7 +432,7 @@ package body et_board_ops.conductors is
 	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
 		terminal		: in pac_terminal_name.bounded_string;
@@ -499,7 +499,7 @@ package body et_board_ops.conductors is
 	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
 		terminal		: in pac_terminal_name.bounded_string;
@@ -665,7 +665,7 @@ package body et_board_ops.conductors is
 
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_object_lines.list
@@ -740,7 +740,7 @@ package body et_board_ops.conductors is
 	
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_conductor_lines.list
@@ -905,7 +905,7 @@ package body et_board_ops.conductors is
 
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		freetracks		: in boolean;
@@ -1854,7 +1854,7 @@ package body et_board_ops.conductors is
 
 	procedure propose_arcs (
 		module_cursor	: in pac_generic_modules.cursor;
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		freetracks		: in boolean;
@@ -2435,7 +2435,7 @@ package body et_board_ops.conductors is
 	procedure delete_track (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level) 
 	is

@@ -94,7 +94,7 @@ package et_board_ops.conductors is
 	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
 		terminal		: in pac_terminal_name.bounded_string;
@@ -111,7 +111,7 @@ package et_board_ops.conductors is
 	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
 		terminal		: in pac_terminal_name.bounded_string;
@@ -128,7 +128,7 @@ package et_board_ops.conductors is
 	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
 		terminal		: in pac_terminal_name.bounded_string;
@@ -144,7 +144,7 @@ package et_board_ops.conductors is
 	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
 		terminal		: in pac_terminal_name.bounded_string;
@@ -198,7 +198,7 @@ package et_board_ops.conductors is
 	-- NOTE: This is about line connected with nets:
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_object_lines.list;
@@ -211,7 +211,7 @@ package et_board_ops.conductors is
 	-- in the vicinity of the given point.
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_conductor_lines.list;
@@ -240,7 +240,7 @@ package et_board_ops.conductors is
 	-- Adds to count the number of lines that have been found:
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		catch_zone		: in type_catch_zone;
 		count			: in out natural; -- the number of affected lines
 		freetracks		: in boolean;
@@ -390,7 +390,7 @@ package et_board_ops.conductors is
 	-- Adds to count the number of arcs that have been found:
 	procedure propose_arcs (
 		module_cursor	: in pac_generic_modules.cursor;
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		catch_zone		: in type_catch_zone;
 		count			: in out natural; -- the number of affected arcs
 		freetracks		: in boolean;
@@ -481,7 +481,7 @@ package et_board_ops.conductors is
 	procedure delete_track (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 

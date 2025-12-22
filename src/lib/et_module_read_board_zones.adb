@@ -51,6 +51,7 @@ with et_keywords;					use et_keywords;
 with et_fill_zones;					use et_fill_zones;
 with et_fill_zones.boards;			use et_fill_zones.boards;
 with et_pcb;						use et_pcb;
+with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_design_rules_board;			use et_design_rules_board;
 with et_board_geometry;				use et_board_geometry;
 with et_primitive_objects;			use et_primitive_objects;
@@ -77,7 +78,7 @@ package body et_module_read_board_zones is
 	board_easing : type_easing;
 	-- CS rename to zone_easing
 	
-	signal_layer : et_pcb_stack.type_signal_layer;
+	signal_layer : type_signal_layer;
 	-- CS rename to zone_signal_layer
 	
 	contour_priority : type_priority := type_priority'first;
@@ -90,7 +91,7 @@ package body et_module_read_board_zones is
 	-- CS rename to zone_isolation
 	-- applies to conductor zones only
 		
-	signal_layers : et_pcb_stack.type_signal_layers.set;
+	signal_layers : type_signal_layers.set;
 	-- CS rename to zone_signal_layers
 	
 	
@@ -160,7 +161,7 @@ package body et_module_read_board_zones is
 			
 		elsif kw = keyword_layer then -- layer 1
 			expect_field_count (line, 2);
-			signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+			signal_layer := to_signal_layer (f (line, 2));
 			-- CS validate_signal_layer;
 
 		else
@@ -226,7 +227,7 @@ package body et_module_read_board_zones is
 			
 		elsif kw = keyword_layer then -- layer 1
 			expect_field_count (line, 2);
-			signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+			signal_layer := to_signal_layer (f (line, 2));
 			-- CS validate_signal_layer;
 			
 		elsif kw = keyword_priority then -- priority 2

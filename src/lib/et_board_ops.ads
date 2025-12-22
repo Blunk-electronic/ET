@@ -62,6 +62,7 @@ with et_generic_module;				use et_generic_module;
 with et_text;
 with et_terminals;					use et_terminals;
 with et_pcb;						use et_pcb;
+with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_sides;					use et_pcb_sides;
 with et_board_layer_category;		use et_board_layer_category;
@@ -120,14 +121,14 @@ package et_board_ops is
 	-- of the given board.
 	procedure test_layer (
 		module_cursor	: in pac_generic_modules.cursor;
-		layer			: in et_pcb_stack.type_signal_layer);
+		layer			: in type_signal_layer);
 
 	
 	-- Deletes a signal layer in the board.
 	-- Renumbers the signal layers.							   
 	procedure delete_layer (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		layer			: in et_pcb_stack.type_signal_layer;
+		layer			: in type_signal_layer;
 		log_threshold	: in type_log_level);
 
 	
@@ -154,14 +155,14 @@ package et_board_ops is
 	-- according to the current layer stack of the given module.
 	procedure test_layers (
 		module_cursor	: in pac_generic_modules.cursor;
-		layers 			: in et_pcb_stack.type_signal_layers.set);	
+		layers 			: in type_signal_layers.set);	
 
 
 
 	-- Returns the index of the deepest conductor layer of the given module:
 	function get_deepest_conductor_layer (
 		module	: in pac_generic_modules.cursor)
-		return et_pcb_stack.type_signal_layer;
+		return type_signal_layer;
 
 
 

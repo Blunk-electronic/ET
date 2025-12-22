@@ -65,6 +65,7 @@ with et_device_sections;
 with et_device_read;
 with et_pcb;
 with et_pcb_stack;
+with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
 with et_board_read;					use et_board_read;
 with et_package_sections;
@@ -171,8 +172,8 @@ package body et_module_read is
 		route		: type_net_route;
 
 	
-		signal_layers : et_pcb_stack.type_signal_layers.set;
-		conductor_layer, dielectric_layer : et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
+		signal_layers : type_signal_layers.set;
+		conductor_layer, dielectric_layer : type_signal_layer := type_signal_layer'first;
 		conductor_thickness : et_pcb_stack.type_conductor_thickness := et_pcb_stack.conductor_thickness_outer_default;
 		dielectric_found : boolean := false;
 		board_layer : et_pcb_stack.type_layer;
@@ -200,7 +201,7 @@ package body et_module_read is
 
 		-- Checks a given signal layer against check_layers:
 		 -- CS: DO NOT DELETE !
-		procedure validate_signal_layer (l : in et_pcb_stack.type_signal_layer) is
+		procedure validate_signal_layer (l : in type_signal_layer) is
 			use et_pcb_stack;
 		begin
 			-- Issue warning if signal layer is invalid:
@@ -230,7 +231,7 @@ package body et_module_read is
 
 			elsif kw = keyword_layer then -- layer 2
 				expect_field_count (line, 2);
-				signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+				signal_layer := to_signal_layer (f (line, 2));
 				validate_signal_layer;
 
 			else
@@ -279,7 +280,7 @@ package body et_module_read is
 
 			elsif kw = keyword_layer then -- layer 2
 				expect_field_count (line, 2);
-				signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+				signal_layer := to_signal_layer (f (line, 2));
 				validate_signal_layer;
 				
 			elsif kw = keyword_width then -- width 0.3
@@ -395,8 +396,8 @@ package body et_module_read is
 						
 						-- reset layer values:
 						dielectric_found := false;
-						conductor_layer := et_pcb_stack.type_signal_layer'first;
-						dielectric_layer := et_pcb_stack.type_signal_layer'first;
+						conductor_layer := type_signal_layer'first;
+						dielectric_layer := type_signal_layer'first;
 						conductor_thickness := et_pcb_stack.conductor_thickness_outer_default;
 						board_layer := (others => <>);
 						package_layers.clear (board_layers);
@@ -2861,7 +2862,7 @@ package body et_module_read is
 										-- CS: In the following: set a corresponding parameter-found-flag
 										if kw = keyword_layer then -- layer 2
 											expect_field_count (line, 2);
-											signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+											signal_layer := to_signal_layer (f (line, 2));
 											validate_signal_layer;
 
 										elsif kw = keyword_width then -- width 0.5
@@ -2930,7 +2931,7 @@ package body et_module_read is
 
 										elsif kw = keyword_layer then -- layer 1
 											expect_field_count (line, 2);
-											signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+											signal_layer := to_signal_layer (f (line, 2));
 											validate_signal_layer;
 
 										else
@@ -2959,7 +2960,7 @@ package body et_module_read is
 										-- CS: In the following: set a corresponding parameter-found-flag
 										if kw = keyword_layer then -- layer 2
 											expect_field_count (line, 2);
-											signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+											signal_layer := to_signal_layer (f (line, 2));
 											validate_signal_layer;
 											
 										elsif kw = keyword_width then -- width 0.5
@@ -3035,7 +3036,7 @@ package body et_module_read is
 
 										elsif kw = keyword_layer then -- layer 1
 											expect_field_count (line, 2);
-											signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+											signal_layer := to_signal_layer (f (line, 2));
 											validate_signal_layer;
 											
 										else
@@ -3138,7 +3139,7 @@ package body et_module_read is
 											
 										elsif kw = keyword_layer then -- layer 1
 											expect_field_count (line, 2);
-											signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+											signal_layer := to_signal_layer (f (line, 2));
 											validate_signal_layer;
 
 										else

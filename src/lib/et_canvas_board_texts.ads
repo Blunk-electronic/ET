@@ -54,7 +54,7 @@ with et_board_text;						use et_board_text;
 use et_board_text.pac_text_board;
 
 with et_board_layer_category;			use et_board_layer_category;
-with et_pcb_stack;						use et_pcb_stack;
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
 
 with et_silkscreen;						use et_silkscreen;
 with et_assy_doc;						use et_assy_doc;

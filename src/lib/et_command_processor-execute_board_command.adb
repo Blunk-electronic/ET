@@ -107,6 +107,7 @@ with et_device_prefix;
 with et_vias;
 with et_pcb;
 with et_pcb_stack;
+with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_keywords;					use et_keywords;
 
 with et_canvas_schematic;

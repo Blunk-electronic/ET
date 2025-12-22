@@ -109,6 +109,7 @@ with et_sheets;
 with et_devices_non_electrical;
 with et_pcb;
 with et_pcb_stack;
+with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
 with et_board_write;				use et_board_write;
 
@@ -1378,7 +1379,7 @@ package body et_module_write is
 					keyword => keyword_position_in_board, 
 					parameters => et_board_geometry.pac_geometry_2.to_string (element (cursor).position_brd)); -- position_in_board x 1.32 y 6.97
 				
-				write (keyword => keyword_layer, parameters => et_pcb_stack.to_string (element (cursor).layer)); -- layer 2
+				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer)); -- layer 2
 				section_mark (section_netchanger, FOOTER);
 			end query_netchanger;
 

@@ -43,7 +43,7 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
 with et_board_coordinates;		use et_board_coordinates;
-with et_pcb_stack;				use et_pcb_stack;
+with et_pcb_signal_layers;		use et_pcb_signal_layers;
 with et_design_rules_board;		use et_design_rules_board;
 with et_string_processing;		use et_string_processing;
 

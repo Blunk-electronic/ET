@@ -67,7 +67,7 @@ with et_devices_electrical.packages;	use et_devices_electrical.packages;
 with et_devices_non_electrical;			use et_devices_non_electrical;
 
 with et_pcb_contour;
-with et_pcb_stack;					use et_pcb_stack;
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
 
 with et_board_text;
 

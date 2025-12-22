@@ -60,6 +60,7 @@ with et_board_read;						use et_board_read;
 with et_conductor_segment;
 with et_package_sections;				use et_package_sections;
 with et_package_model;					use et_package_model;
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
 
 
 package body et_package_read is

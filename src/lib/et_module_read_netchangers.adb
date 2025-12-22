@@ -52,7 +52,7 @@ with et_keywords;					use et_keywords;
 
 with et_schematic_geometry;
 with et_board_geometry;
-with et_pcb_stack;
+with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
 with et_schematic_coordinates;
 with et_submodules;					use et_submodules;
@@ -79,7 +79,6 @@ package body et_module_read_netchangers is
 		use et_board_geometry.pac_geometry_2;
 		use et_schematic_coordinates;	
 		kw : constant string := f (line, 1);
-		use et_pcb_stack;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_name then -- name 1, 2, 304, ...
@@ -104,7 +103,7 @@ package body et_module_read_netchangers is
 
 		elsif kw = keyword_layer then -- layer 3 (signal layer in board)
 			expect_field_count (line, 2);
-			netchanger.layer := et_pcb_stack.to_signal_layer (f (line, 2));
+			netchanger.layer := to_signal_layer (f (line, 2));
 			-- CS validate_signal_layer (netchanger.layer);
 			
 		else

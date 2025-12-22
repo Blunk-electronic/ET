@@ -41,7 +41,7 @@
 with ada.containers; 					use ada.containers;
 with ada.containers.doubly_linked_lists;
 with et_board_text;						use et_board_text;
-with et_pcb_stack;						use et_pcb_stack;
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
 
 
 

@@ -70,8 +70,8 @@ package body et_pcb is
 
 	
 	function signal_layer_to_mirror (
-		current_layer	: in et_pcb_stack.type_signal_layer;
-		bottom_layer	: in et_pcb_stack.type_signal_layer)
+		current_layer	: in type_signal_layer;
+		bottom_layer	: in type_signal_layer)
 		return type_mirror 
 	is
 		use et_text;

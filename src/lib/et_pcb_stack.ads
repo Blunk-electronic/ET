@@ -38,7 +38,6 @@
 --   to do:
 
 
-with ada.text_io;				use ada.text_io;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
@@ -48,54 +47,15 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 
 with ada.containers.vectors;
-with ada.containers.ordered_sets;
 
+with et_board_geometry;			use et_board_geometry;
+with et_pcb_signal_layers;		use et_pcb_signal_layers;
 
 with et_logging;				use et_logging;
-with et_board_geometry;			use et_board_geometry;
-
 
 
 package et_pcb_stack is
 	
-
-	
-	type type_signal_layer_category is (OUTER_TOP, INNER, OUTER_BOTTOM); 
-	-- CS does the order matter ? Use this instead:
-	--type type_signal_layer_category is (OUTER_TOP, OUTER_BOTTOM, INNER); 
-
-	--CS subtype type_signal_layer_category_outer is type_signal_layer_category
-		--range (OUTER_BOTTOM .. OUTER_BOTTOM);
-
-
-	function to_string (
-		category	: in type_signal_layer_category)
-		return string;
-
-	
-	function invert_category (cat : in type_signal_layer_category)
-		return type_signal_layer_category;
-	
-	
-	signal_layer_top : constant positive := 1; -- CS rename signal to conductor
-	signal_layer_bottom : constant positive := 100;
-	type type_signal_layer is range signal_layer_top .. signal_layer_bottom;
-
-	signal_layer_default : constant type_signal_layer := type_signal_layer'first;
-
-	function to_string (layer : in type_signal_layer) return string;
-	function to_signal_layer (layer : in string) return type_signal_layer;
-
-	package type_signal_layers is new ordered_sets (type_signal_layer);
-	-- CS rename to pac_signal_layers
-
-	layer_term_start : constant character := '[';
-	layer_term_end   : constant character := ']';	
-	layer_term_separator : constant character := ',';
-	layer_term_range : constant character := '-';
-	
-	-- Returns a string like "[1,3,5-9]"
-	function to_string (layers : in type_signal_layers.set) return string;
 
 
 	-- Returns true if the given two layer stacks
@@ -116,19 +76,8 @@ package et_pcb_stack is
 		return boolean;
 	
 		
-	-- Converts a string like [1,3,5-9] to a set 
-	-- of signal layers.
-	function to_layers (layers : in string) 
-		return type_signal_layers.set;
-
 	
-	-- Converts a given single signal layer to a set
-	-- that contains just this single layer:
-	function to_layers (
-		layer	: in type_signal_layer)
-		return type_signal_layers.set;
-
-	
+		
 	--use pac_geometry_brd;
 -- 	subtype type_prepreg_thickness is type_distance_positive range 0.05 .. 0.5; -- CS reasonable ?
 -- 	subtype type_core_thickness is type_distance_positive range 0.1 .. 5.0;  -- CS reasonable ?
@@ -199,19 +148,11 @@ package et_pcb_stack is
 	-- Returns false otherwise. 
 	-- If no layer check requested, returns true.		
 	function signal_layer_valid (
-		signal_layer 	: in et_pcb_stack.type_signal_layer;
+		signal_layer 	: in type_signal_layer;
 		check_layers	: in et_pcb_stack.type_layer_check)
 		return boolean;
 
 	
-	-- Mirrors the given layers based on the deepest layer used. The deepest layer is the bottom layer.
-	-- Example: signal_layers is a set: 1, 2, 4. The bottom layer id is 4 (an 4-layer board).
-	-- The result is: 4, 3, 1. 
-	-- The general computation is: 1 + deepest_layer - given_layer = mirrored_layer
-	procedure mirror ( -- CS rename
-		signal_layers	: in out type_signal_layers.set;
-		deepest_layer	: in type_signal_layer);
-
 	
 end et_pcb_stack;
 
