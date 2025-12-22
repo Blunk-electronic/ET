@@ -340,7 +340,7 @@ package body et_display.board is
 	
 	
 	function route_restrict_layer_enabled (
-		layers : in type_signal_layers.set)
+		layers : in pac_signal_layers.set)
 		return boolean 
 	is
 		result : boolean := false;
@@ -422,7 +422,7 @@ package body et_display.board is
 
 
 	
-	function via_restrict_layer_enabled (layers : in type_signal_layers.set)
+	function via_restrict_layer_enabled (layers : in pac_signal_layers.set)
 		return boolean is
 		result : boolean := false;
 	begin

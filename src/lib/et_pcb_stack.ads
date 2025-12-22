@@ -61,7 +61,7 @@ package et_pcb_stack is
 	-- Returns true if the given two layer stacks
 	-- are equally:
 	function layer_stacks_equally (
-		right, left : in type_signal_layers.set)
+		right, left : in pac_signal_layers.set)
 		return boolean;
 	
 	
@@ -70,7 +70,7 @@ package et_pcb_stack is
 	-- If exclusively is true, then the return is true
 	-- if the layer stack contains only the given signal layer:
 	function layer_stack_contains (
-		stack		: type_signal_layers.set;
+		stack		: pac_signal_layers.set;
 		layer		: type_signal_layer;
 		exclusively	: in boolean := false)
 		return boolean;

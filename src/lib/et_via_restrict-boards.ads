@@ -51,7 +51,7 @@ package et_via_restrict.boards is
 	type type_via_restrict_contour is new -- CS rename to type_via_restrict_zone
 		et_via_restrict.type_via_restrict_zone with
 	record
-		layers 	: type_signal_layers.set;
+		layers 	: pac_signal_layers.set;
 	end record;
 	
 	package pac_via_restrict_contours is new doubly_linked_lists (type_via_restrict_contour);
@@ -60,7 +60,7 @@ package et_via_restrict.boards is
 	type type_via_restrict_cutout is new
 		et_via_restrict.type_via_restrict_cutout with
 	record
-		layers 	: type_signal_layers.set;
+		layers 	: pac_signal_layers.set;
 	end record;
 		
 	package pac_via_restrict_cutouts is new doubly_linked_lists (type_via_restrict_cutout);

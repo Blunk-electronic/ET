@@ -49,10 +49,10 @@ package body et_pcb_stack is
 
 
 	function layer_stacks_equally (
-		right, left : in type_signal_layers.set)
+		right, left : in pac_signal_layers.set)
 		return boolean
 	is
-		use type_signal_layers;
+		use pac_signal_layers;
 	begin
 		if right = left then
 			return true;
@@ -65,7 +65,7 @@ package body et_pcb_stack is
 	
 
 	function layer_stack_contains (
-		stack		: type_signal_layers.set;
+		stack		: pac_signal_layers.set;
 		layer		: type_signal_layer;
 		exclusively	: in boolean := false)
 		return boolean

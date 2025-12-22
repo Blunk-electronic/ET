@@ -155,7 +155,7 @@ package et_board_ops is
 	-- according to the current layer stack of the given module.
 	procedure test_layers (
 		module_cursor	: in pac_generic_modules.cursor;
-		layers 			: in type_signal_layers.set);	
+		layers 			: in pac_signal_layers.set);	
 
 
 

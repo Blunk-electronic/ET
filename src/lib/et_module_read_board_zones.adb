@@ -91,7 +91,7 @@ package body et_module_read_board_zones is
 	-- CS rename to zone_isolation
 	-- applies to conductor zones only
 		
-	signal_layers : type_signal_layers.set;
+	signal_layers : pac_signal_layers.set;
 	-- CS rename to zone_signal_layers
 	
 	

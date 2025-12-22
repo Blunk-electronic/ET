@@ -81,14 +81,14 @@ package body et_board_read is
 	function to_layers (
 		line			: in type_fields_of_line; -- layers 1 3 17
 		check_layers	: in et_pcb_stack.type_layer_check)
-		return type_signal_layers.set 
+		return pac_signal_layers.set 
 	is
 		use et_pcb;
 		use et_string_processing;
 
-		use type_signal_layers;
-		layers 		: type_signal_layers.set; -- to be returned
-		cursor 		: type_signal_layers.cursor;
+		use pac_signal_layers;
+		layers 		: pac_signal_layers.set; -- to be returned
+		cursor 		: pac_signal_layers.cursor;
 		inserted	: boolean;
 		layer 		: type_signal_layer;
 		place 		: type_field_count_positive := 2; -- we start reading the layer numbers with field 2
@@ -97,7 +97,7 @@ package body et_board_read is
 		field_2_first	: constant positive := field_2'first;
 		field_2_last	: constant positive := field_2'last;
 
-		procedure validate_layer (c : in type_signal_layers.cursor) is begin
+		procedure validate_layer (c : in pac_signal_layers.cursor) is begin
 			if not signal_layer_valid (element (c), check_layers) then
 				signal_layer_invalid (line, element (c), check_layers);
 			end if;

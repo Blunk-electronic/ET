@@ -172,7 +172,7 @@ package body et_module_read is
 		route		: type_net_route;
 
 	
-		signal_layers : type_signal_layers.set;
+		signal_layers : pac_signal_layers.set;
 		conductor_layer, dielectric_layer : type_signal_layer := type_signal_layer'first;
 		conductor_thickness : et_pcb_stack.type_conductor_thickness := et_pcb_stack.conductor_thickness_outer_default;
 		dielectric_found : boolean := false;
@@ -928,7 +928,7 @@ package body et_module_read is
 					use pac_contours;				
 					use et_via_restrict.boards;
 					use et_pcb_stack;
-					use type_signal_layers;
+					use pac_signal_layers;
 
 					
 					procedure do_it (
@@ -961,7 +961,7 @@ package body et_module_read is
 					use pac_contours;
 					use et_route_restrict.boards;
 					use et_pcb_stack;
-					use type_signal_layers;
+					use pac_signal_layers;
 					
 					
 					procedure do_it (
@@ -1026,7 +1026,7 @@ package body et_module_read is
 					use pac_geometry_2;
 					use et_route_restrict.boards;
 					use et_pcb_stack;
-					use type_signal_layers;
+					use pac_signal_layers;
 
 					
 					procedure do_it (
@@ -1058,7 +1058,7 @@ package body et_module_read is
 					use pac_geometry_2;
 					use et_route_restrict.boards;
 					use et_pcb_stack;					
-					use type_signal_layers;
+					use pac_signal_layers;
 
 					
 					procedure do_it (
@@ -1090,7 +1090,7 @@ package body et_module_read is
 					use pac_geometry_2;
 					use et_route_restrict.boards;
 					use et_pcb_stack;
-					use type_signal_layers;
+					use pac_signal_layers;
 
 					
 					procedure do_it (
@@ -1125,7 +1125,7 @@ package body et_module_read is
 					use pac_route_restrict_contours;
 					
 					use et_pcb_stack;
-					use type_signal_layers;
+					use pac_signal_layers;
 
 					
 					procedure do_it (
@@ -1158,7 +1158,7 @@ package body et_module_read is
 					use et_via_restrict.boards;
 					use pac_via_restrict_contours;
 					use et_pcb_stack;
-					use type_signal_layers;
+					use pac_signal_layers;
 					
 					
 					procedure do_it (

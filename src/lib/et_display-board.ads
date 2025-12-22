@@ -232,7 +232,7 @@ package et_display.board is
 	
 	-- Returns true if at least one of the given route restrict layers is enabled.
 	function route_restrict_layer_enabled (
-		layers : in type_signal_layers.set)
+		layers : in pac_signal_layers.set)
 		return boolean;
 
 	
@@ -265,7 +265,7 @@ package et_display.board is
 	
 	-- Returns true if at least one of the given via restrict layers is enabled.
 	function via_restrict_layer_enabled (
-		layers : in type_signal_layers.set)
+		layers : in pac_signal_layers.set)
 		return boolean;
 
 	

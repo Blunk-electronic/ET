@@ -90,7 +90,7 @@ package et_board_read is
 	function to_layers (
 		line 			: in type_fields_of_line; -- layers 1 3 17
 		check_layers	: in et_pcb_stack.type_layer_check)
-		return type_signal_layers.set;	
+		return pac_signal_layers.set;	
 	
 
 

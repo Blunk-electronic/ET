@@ -815,11 +815,11 @@ package body et_board_ops is
 	
 	procedure test_layers (
 		module_cursor	: in pac_generic_modules.cursor;
-		layers 			: in type_signal_layers.set)
+		layers 			: in pac_signal_layers.set)
 	is
-		use type_signal_layers;
+		use pac_signal_layers;
 		
-		procedure query_layer (cursor : in type_signal_layers.cursor) is
+		procedure query_layer (cursor : in pac_signal_layers.cursor) is
 		begin
 			test_layer (module_cursor, element (cursor));
 		end;

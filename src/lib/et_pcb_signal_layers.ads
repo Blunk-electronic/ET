@@ -85,8 +85,10 @@ package et_pcb_signal_layers is
 	function to_string (layer : in type_signal_layer) return string;
 	function to_signal_layer (layer : in string) return type_signal_layer;
 
-	package type_signal_layers is new ordered_sets (type_signal_layer);
-	-- CS rename to pac_signal_layers
+	
+	package pac_signal_layers is new ordered_sets (type_signal_layer);
+	use pac_signal_layers;
+	
 
 	layer_term_start : constant character := '[';
 	layer_term_end   : constant character := ']';	
@@ -94,21 +96,21 @@ package et_pcb_signal_layers is
 	layer_term_range : constant character := '-';
 	
 	-- Returns a string like "[1,3,5-9]"
-	function to_string (layers : in type_signal_layers.set) return string;
+	function to_string (layers : in pac_signal_layers.set) return string;
 
 
 		
 	-- Converts a string like [1,3,5-9] to a set 
 	-- of signal layers.
 	function to_layers (layers : in string) 
-		return type_signal_layers.set;
+		return pac_signal_layers.set;
 
 	
 	-- Converts a given single signal layer to a set
 	-- that contains just this single layer:
 	function to_layers (
 		layer	: in type_signal_layer)
-		return type_signal_layers.set;
+		return pac_signal_layers.set;
 
 	
 	
@@ -116,8 +118,8 @@ package et_pcb_signal_layers is
 	-- Example: signal_layers is a set: 1, 2, 4. The bottom layer id is 4 (an 4-layer board).
 	-- The result is: 4, 3, 1. 
 	-- The general computation is: 1 + deepest_layer - given_layer = mirrored_layer
-	procedure mirror ( -- CS rename
-		signal_layers	: in out type_signal_layers.set;
+	procedure mirror_signal_layers (
+		signal_layers	: in out pac_signal_layers.set;
 		deepest_layer	: in type_signal_layer);
 
 	

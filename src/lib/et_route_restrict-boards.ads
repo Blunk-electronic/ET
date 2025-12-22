@@ -49,7 +49,7 @@ package et_route_restrict.boards is
 	type type_route_restrict_line is new 
 		et_route_restrict.type_route_restrict_line with
 	record
-		layers 	: type_signal_layers.set;
+		layers 	: pac_signal_layers.set;
 	end record;
 
 
@@ -63,7 +63,7 @@ package et_route_restrict.boards is
 	type type_route_restrict_arc is new
 		et_route_restrict.type_route_restrict_arc with 
 	record
-		layers 	: type_signal_layers.set;
+		layers 	: pac_signal_layers.set;
 	end record;
 	
 	package pac_route_restrict_arcs is new doubly_linked_lists (type_route_restrict_arc);
@@ -73,7 +73,7 @@ package et_route_restrict.boards is
 	type type_route_restrict_circle is new
 		et_route_restrict.type_route_restrict_circle with 
 	record
-		layers 	: type_signal_layers.set;
+		layers 	: pac_signal_layers.set;
 	end record;
 	
 	package pac_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
@@ -82,7 +82,7 @@ package et_route_restrict.boards is
 	type type_route_restrict_contour is new -- CS rename to type_route_restrict_zone
 		et_route_restrict.type_route_restrict_zone with
 	record
-		layers 	: type_signal_layers.set;
+		layers 	: pac_signal_layers.set;
 	end record;
 
 	package pac_route_restrict_contours is new doubly_linked_lists (type_route_restrict_contour);
@@ -91,7 +91,7 @@ package et_route_restrict.boards is
 	type type_route_restrict_cutout is new
 		et_route_restrict.type_route_restrict_cutout with
 	record
-		layers 	: type_signal_layers.set;
+		layers 	: pac_signal_layers.set;
 	end record;
 		
 	package pac_route_restrict_cutouts is new doubly_linked_lists (type_route_restrict_cutout);

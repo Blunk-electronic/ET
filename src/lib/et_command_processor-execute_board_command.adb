@@ -1001,7 +1001,7 @@ is
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
 
-			l : type_signal_layers.set;
+			l : pac_signal_layers.set;
 		begin
 			l := to_layers (get_field (5));
 			
@@ -1018,7 +1018,7 @@ is
 		line_tmp	: type_line;
 		arc_tmp		: type_arc;
 		circle_tmp	: type_circle;
-		layers_tmp	: type_signal_layers.set;
+		layers_tmp	: pac_signal_layers.set;
 		
 	begin
 		-- put_line ("draw_route_restrict");
@@ -1155,7 +1155,7 @@ is
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
 
-			l : type_signal_layers.set;
+			l : pac_signal_layers.set;
 		begin
 			l := to_layers (get_field (5));
 			

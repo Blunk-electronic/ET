@@ -87,11 +87,10 @@ package body et_pcb_signal_layers is
 
 	
 	
-	function to_string (layers : in type_signal_layers.set) return string is
+	function to_string (layers : in pac_signal_layers.set) return string is
 	-- Returns a string like '[1,3,5-9]'.
 	-- CS: Currently the range notation like 5-9 is not supported. The return is 5,6,7,8,9 instead.
-
-		use type_signal_layers;
+		
 
 		-- The layer numbers will be stored here:
 		package type_layer_string is new generic_bounded_length (100); -- CS increase if necessary.
@@ -99,10 +98,10 @@ package body et_pcb_signal_layers is
 		layer_string : type_layer_string.bounded_string; -- to be returned
 
 		-- set a cursor to the last layer in the given layer set:
-		last_layer : type_signal_layers.cursor := layers.last;
+		last_layer : pac_signal_layers.cursor := layers.last;
 		
 		
-		procedure query_layer (cursor : in type_signal_layers.cursor) is begin
+		procedure query_layer (cursor : in pac_signal_layers.cursor) is begin
 		-- Append the layer number to the return string.
 			layer_string := layer_string & to_bounded_string (to_string (element (cursor)));
 
@@ -137,10 +136,9 @@ package body et_pcb_signal_layers is
 	
 	
 	function to_layers (layers : in string) 
-		return type_signal_layers.set 
+		return pac_signal_layers.set 
 	is
-		use type_signal_layers;
-		layer_set : type_signal_layers.set; -- to be returned
+		layer_set : pac_signal_layers.set; -- to be returned
 		char : character;
 
 		package number_string is new generic_bounded_length (3);
@@ -256,9 +254,9 @@ package body et_pcb_signal_layers is
 
 	function to_layers (
 		layer	: in type_signal_layer)
-		return type_signal_layers.set
+		return pac_signal_layers.set
 	is
-		result : type_signal_layers.set;
+		result : pac_signal_layers.set;
 	begin
 		result.insert (layer);
 		return result;
@@ -267,24 +265,23 @@ package body et_pcb_signal_layers is
 
 	
 	
-	procedure mirror (
-		signal_layers	: in out type_signal_layers.set;
+	procedure mirror_signal_layers (
+		signal_layers	: in out pac_signal_layers.set;
 		deepest_layer	: in type_signal_layer) 
 	is
-		use type_signal_layers;
-		mir : type_signal_layers.set;
+		mir : pac_signal_layers.set;
 
-		procedure query_layer (l : in type_signal_layers.cursor) is begin
+		procedure query_layer (l : in pac_signal_layers.cursor) is begin
 			mir.insert (1 + deepest_layer - element (l));
 		end query_layer;
 		
-	begin -- mirror
+	begin
 		-- query layers one by one and insert the mirrored layer in mir:
 		signal_layers.iterate (query_layer'access);
 
 		-- overwrite given layers by mirrored layer set:
 		signal_layers := mir;
-	end mirror;
+	end mirror_signal_layers;
 
 	
 end et_pcb_signal_layers;

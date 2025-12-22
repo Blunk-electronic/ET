@@ -119,7 +119,7 @@ package et_board_write is
 	procedure write_fill_status (filled : in type_filled);
 	procedure write_pad_connection (connection : in type_pad_connection);
 	procedure write_pad_technology (techno : in type_pad_technology);	
-	procedure write_signal_layers (layers : in type_signal_layers.set);
+	procedure write_signal_layers (layers : in pac_signal_layers.set);
 	procedure write_circle_conductor (circle : in et_conductor_segment.type_conductor_circle);
 
 	-- Writes the properties of a circle in conductor as used in a freetrack:
