@@ -731,36 +731,6 @@ package body et_module_read is
 
 
 				
-				procedure insert_cutout_via_restrict is
-					use et_board_geometry;
-					use pac_contours;				
-					use et_via_restrict.boards;
-					use et_pcb_stack;
-					use pac_signal_layers;
-
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) is
-					begin
-						pac_via_restrict_cutouts.append (
-							container	=> module.board.via_restrict.cutouts,
-							new_item	=> (contour with
-											layers	=> signal_layers));
-					end do_it;
-
-					
-				begin
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next board contour
-					board_reset_contour;
-
-					clear (signal_layers);
-				end insert_cutout_via_restrict;
 
 				
 				
@@ -1873,7 +1843,7 @@ package body et_module_read is
 								insert_cutout_route_restrict;
 
 							when SEC_VIA_RESTRICT =>
-								insert_cutout_via_restrict;
+								insert_cutout_via_restrict (module_cursor, log_threshold);
 
 							when SEC_CONDUCTOR =>
 								insert_cutout_conductor;

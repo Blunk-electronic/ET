@@ -95,6 +95,12 @@ package et_module_read_board_zones is
 		line	: in type_fields_of_line;
 		check	: in type_layer_check);
 	
+
+
+	procedure insert_cutout_via_restrict (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+		
 	
 end et_module_read_board_zones;
 

@@ -55,6 +55,7 @@ with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_design_rules_board;			use et_design_rules_board;
 with et_board_geometry;				use et_board_geometry;
 with et_primitive_objects;			use et_primitive_objects;
+with et_via_restrict.boards;
 
 with et_general_rw;					use et_general_rw;
 
@@ -64,7 +65,9 @@ package body et_module_read_board_zones is
 
 	use pac_generic_modules;
 	use pac_geometry_2;
+	use pac_contours;
 
+	
 	
 	board_filled : type_filled := filled_default;
 	-- CS rename to zone_filled
@@ -94,8 +97,30 @@ package body et_module_read_board_zones is
 	signal_layers : pac_signal_layers.set;
 	-- CS rename to zone_signal_layers
 	
+	contour : type_contour;
+	
+
+
 	
 	
+	procedure board_reset_contour is -- CS rename
+	begin
+		fill_spacing		:= type_track_clearance'first;
+		board_filled		:= filled_default;
+		board_fill_style	:= fill_style_default;
+		--board_hatching		:= (others => <>);
+		board_easing 		:= (others => <>);
+		
+		contour_priority		:= type_priority'first;  -- board relevant only
+		polygon_isolation		:= type_track_clearance'first;
+		polygon_width_min		:= type_track_width'first;
+
+		signal_layer			:= type_signal_layer'first;  -- board relevant only
+
+		contour := (others => <>);
+	end;
+
+
 	
 	
 	
@@ -294,6 +319,46 @@ package body et_module_read_board_zones is
 			invalid_keyword (kw);
 		end if;
 	end read_cutout_restrict;
+
+
+
+
+
+	
+
+	procedure insert_cutout_via_restrict (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+		use et_via_restrict.boards;
+		use et_pcb_stack;
+		use pac_signal_layers;
+
+		
+		procedure do_it (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is begin
+			pac_via_restrict_cutouts.append (
+				container	=> module.board.via_restrict.cutouts,
+				new_item	=> (contour with
+								layers	=> signal_layers));
+		end do_it;
+
+		
+	begin
+		-- CS log messages
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> do_it'access);
+
+		-- clean up for next board contour
+		board_reset_contour;
+
+		clear (signal_layers);
+	end insert_cutout_via_restrict;
 
 	
 end et_module_read_board_zones;
