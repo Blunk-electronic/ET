@@ -51,6 +51,7 @@ with ada.containers.vectors;
 with et_board_geometry;			use et_board_geometry;
 with et_pcb_signal_layers;		use et_pcb_signal_layers;
 
+with et_string_processing; 		use et_string_processing;
 with et_logging;				use et_logging;
 
 
@@ -151,6 +152,27 @@ package et_pcb_stack is
 		signal_layer 	: in type_signal_layer;
 		check_layers	: in et_pcb_stack.type_layer_check)
 		return boolean;
+
+
+
+	-- Issues a warning that the given signal layer is deeper than the deepest
+	-- signal layer of the pcb stack.
+	procedure signal_layer_invalid (
+		line			: in type_fields_of_line;
+		signal_layer	: in type_signal_layer;
+		check_layers	: in type_layer_check);
+
+
+	
+	-- Converts a line like "layers 1 4 17" or "layers [1,3,4-9]" to 
+	-- a set of signal layers.
+	-- Issues warning if a layer number occurs more than once.
+	-- If layer check requested, issues warning if a layer id is greater than the 
+	-- deepest layer used (given in argument check_layer).
+	function to_layers (
+		line 			: in type_fields_of_line; -- layers 1 3 17
+		check_layers	: in type_layer_check)
+		return pac_signal_layers.set;	
 
 	
 	

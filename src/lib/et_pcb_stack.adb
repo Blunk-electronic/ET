@@ -41,7 +41,6 @@ with ada.strings;				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.exceptions;
 
-with et_string_processing;		use et_string_processing;
 
 
 package body et_pcb_stack is
@@ -125,6 +124,119 @@ package body et_pcb_stack is
 		return result;
 	end signal_layer_valid;	
 
+
+
+	
+
+
+	procedure signal_layer_invalid (
+		line			: in type_fields_of_line;
+		signal_layer	: in type_signal_layer;
+		check_layers	: in et_pcb_stack.type_layer_check) 
+	is begin
+		--log (WARNING, affected_line (line) & "Signal layer " & to_string (signal_layer) &
+			 --" is deeper than the deepest signal layer " &
+			 --to_string (check_layers.deepest_layer) & " !" &
+		--" Objects in this layer will be ignored !");
+		
+		-- CS raise semantic_error_1 with
+		raise constraint_error with
+			"ERROR: " & get_affected_line (line) 
+			& "Signal layer " & to_string (signal_layer) 
+			& " is deeper than the deepest signal layer " 
+			& to_string (check_layers.deepest_layer) & " !";
+	end signal_layer_invalid;
+
+
+
+
+
+	
+	
+	
+	function to_layers (
+		line			: in type_fields_of_line; -- layers 1 3 17
+		check_layers	: in et_pcb_stack.type_layer_check)
+		return pac_signal_layers.set 
+	is
+		
+		use pac_signal_layers;
+		layers 		: pac_signal_layers.set; -- to be returned
+		cursor 		: pac_signal_layers.cursor;
+		inserted	: boolean;
+		layer 		: type_signal_layer;
+		place 		: type_field_count_positive := 2; -- we start reading the layer numbers with field 2
+
+		
+		function f (
+			line		: in type_fields_of_line; 
+			position	: in type_field_count_positive) 
+			return string renames get_field;
+												 
+		field_2			: constant string := f (line, 2);
+		field_2_first	: constant positive := field_2'first;
+		field_2_last	: constant positive := field_2'last;
+
+		
+		procedure validate_layer (c : in pac_signal_layers.cursor) is begin
+			if not signal_layer_valid (element (c), check_layers) then
+				signal_layer_invalid (line, element (c), check_layers);
+			end if;
+		end validate_layer;
+	
+		
+	begin -- to_layers
+		
+		-- Test the first character of the 2nd field.
+		-- If it is the start mark of a layer term like [1, 3, 6-11]
+		-- then it must be converted to a set of layers.
+		-- Otherwise we assume the layer numbers are given in a
+		-- row of discrete layer ids like "1 4 10"
+		if field_2 (field_2_first) = layer_term_start then
+
+			layers := to_layers (field_2);
+
+			-- Iterate layers and validate each of them.
+			layers.iterate (validate_layer'access);
+			
+		else -- discrete layer ids like "1 4 10"
+			while place <= get_field_count (line) loop
+
+				-- get the layer number from current place
+				layer := to_signal_layer (f (line, place));
+
+				-- Issue warning if signal layer is invalid:
+				if not signal_layer_valid (layer, check_layers) then
+					signal_layer_invalid (line, layer, check_layers);
+				end if;
+
+				-- insert the layer number in the container "layers"
+				insert (
+					container	=> layers,
+					new_item	=> layer,
+					inserted	=> inserted,
+					position	=> cursor);
+
+				-- warn if layer already in container
+				if not inserted then
+					
+					--log (WARNING, affected_line (line) & "signal layer " & to_string (layer) 
+					--& " specified multiple times !");
+					
+					-- CS raise semantic_error_1 with
+					raise constraint_error with
+						"ERROR: " & get_affected_line (line) 
+						& "Signal layer " & to_string (layer) 
+						& " specified multiple times !";
+				end if;
+				
+				place := place + 1; -- advance to next place
+			end loop;
+		
+		end if;
+		
+		return layers;
+	end to_layers;
 
 	
 	
