@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                    MODULE READ / NET CLASSES                             --
+--                         MODULE READ / NETS                               --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
