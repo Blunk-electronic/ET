@@ -66,7 +66,8 @@ package body et_module_read_board_zones is
 	use pac_generic_modules;
 	use pac_geometry_2;
 	use pac_contours;
-
+	use pac_signal_layers;
+	
 	
 	
 	board_filled : type_filled := filled_default;
@@ -103,8 +104,7 @@ package body et_module_read_board_zones is
 
 	
 	
-	procedure board_reset_contour is -- CS rename
-	begin
+	procedure reset_scratch is begin
 		fill_spacing		:= type_track_clearance'first;
 		board_filled		:= filled_default;
 		board_fill_style	:= fill_style_default;
@@ -116,7 +116,8 @@ package body et_module_read_board_zones is
 		polygon_width_min		:= type_track_width'first;
 
 		signal_layer			:= type_signal_layer'first;  -- board relevant only
-
+		clear (signal_layers);
+		
 		contour := (others => <>);
 	end;
 
@@ -225,7 +226,6 @@ package body et_module_read_board_zones is
 	procedure read_fill_zone_conductor_non_electric (
 		line : in type_fields_of_line)
 	is
-		use et_pcb_stack;
 		use et_fill_zones.boards;
 		kw : constant string := f (line, 1);
 	begin
@@ -272,11 +272,11 @@ package body et_module_read_board_zones is
 
 	
 	
+	
 	procedure read_fill_zone_restrict (
 		line	: in type_fields_of_line;
 		check	: in type_layer_check)
 	is
-		use et_pcb_stack;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -331,8 +331,6 @@ package body et_module_read_board_zones is
 		log_threshold	: in type_log_level)
 	is
 		use et_via_restrict.boards;
-		use et_pcb_stack;
-		use pac_signal_layers;
 
 		
 		procedure do_it (
@@ -347,7 +345,11 @@ package body et_module_read_board_zones is
 
 		
 	begin
-		-- CS log messages
+		log (text => "module " & to_string (module_cursor)
+			 & " insert cutout via restrict",
+			 level => log_threshold);
+
+		log_indentation_up;
 		
 		update_element (
 			container	=> generic_modules,
@@ -355,9 +357,9 @@ package body et_module_read_board_zones is
 			process		=> do_it'access);
 
 		-- clean up for next board contour
-		board_reset_contour;
+		reset_scratch;
 
-		clear (signal_layers);
+		log_indentation_down;
 	end insert_cutout_via_restrict;
 
 	
