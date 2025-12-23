@@ -124,6 +124,7 @@ with et_module_read_tracks_route;		use et_module_read_tracks_route;
 with et_module_read_board_zones;		use et_module_read_board_zones;
 with et_module_read_board_zones_route;	use et_module_read_board_zones_route;
 with et_module_read_pcb_layer_stack;	use et_module_read_pcb_layer_stack;
+with et_module_read_freetracks;			use et_module_read_freetracks;
 
 with et_module_read_board_user_settings;	use et_module_read_board_user_settings;
 
@@ -602,99 +603,7 @@ package body et_module_read is
 				
 				
 				
-				
-				procedure insert_line_track is -- about freetracks
-					use et_conductor_segment.boards;
-					
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) 
-					is begin
-						pac_conductor_lines.append (
-							container	=> module.board.conductors_floating.lines,
-							new_item	=> (et_board_geometry.pac_geometry_2.type_line (board_line) with
-											width	=> board_line_width,
-											layer	=> signal_layer));
-					end;
-										
-				begin -- insert_line_track
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
 
-					-- clean up for next track line
-					board_reset_line;
-					board_reset_line_width;
-					board_reset_signal_layer;
-				end insert_line_track;
-
-				
-
-				
-				procedure insert_arc_track is -- about freetracks
-					use et_conductor_segment.boards;
-					
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) 
-					is begin
-						pac_conductor_arcs.append (
-							container	=> module.board.conductors_floating.arcs,
-							new_item	=> (et_board_geometry.pac_geometry_2.type_arc (board_arc) with
-											width	=> board_line_width,
-											layer	=> signal_layer));
-					end;
-
-					
-				begin -- insert_arc_track
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next track arc
-					board_reset_arc;
-					board_reset_line_width;
-					board_reset_signal_layer;
-				end insert_arc_track;
-
-
-
-				
-				procedure insert_circle_track is -- about freetracks
-					use et_conductor_segment.boards;
-					
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) is
-					begin
-						pac_conductor_circles.append (
-							container	=> module.board.conductors_floating.circles,
-							--new_item	=> (board_make_conductor_circle with signal_layer));
-							new_item	=> (et_board_geometry.pac_geometry_2.type_circle (board_circle) with 
-											width	=> board_line_width, 
-											layer	=> signal_layer));
-					end;
-										
-				begin -- insert_circle_track
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next track circle
-					board_reset_circle;
-					board_reset_line_width;
-					board_reset_signal_layer;
-					-- CS reset other properties
-				end insert_circle_track;
-
-
-							
 
 				
 				
@@ -1182,7 +1091,7 @@ package body et_module_read is
 								insert_line_route_restrict;
 
 							when SEC_CONDUCTOR =>
-								insert_line_track;
+								insert_freetrack_line (module_cursor, log_threshold);
 
 							when SEC_OUTLINE =>
 								insert_line_outline;
@@ -1214,8 +1123,7 @@ package body et_module_read is
 								insert_arc_route_restrict;
 
 							when SEC_CONDUCTOR =>
-								board_check_arc (log_threshold + 1);
-								insert_arc_track;
+								insert_freetrack_arc (module_cursor, log_threshold);
 
 							when SEC_OUTLINE =>
 								board_check_arc (log_threshold + 1);
@@ -1242,7 +1150,7 @@ package body et_module_read is
 								insert_circle_route_restrict;
 
 							when SEC_CONDUCTOR =>
-								insert_circle_track;
+								insert_freetrack_circle (module_cursor, log_threshold);
 
 							when SEC_OUTLINE =>
 								insert_circle_outline;
@@ -1346,12 +1254,10 @@ package body et_module_read is
 							when SEC_DRAWING_FRAMES =>
 								set_frame_schematic (module_cursor, log_threshold);
 
-
 							when SEC_DRAWING_GRID => null; -- nothing to do
 
 							when SEC_META =>
 								add_meta_schematic;
-
 
 							when others => invalid_section;
 						end case;

@@ -39,13 +39,26 @@
 
 with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
+
 with et_contour_to_polygon;
+with et_directions;
+
 
 package body et_conductor_segment is
 
 	
 	
 -- LINES	
+
+	procedure reset_line (
+		line : in out type_conductor_line)
+	is begin
+		set_A (line, origin);
+		set_B (line, origin);
+
+		line.width := type_track_width'first;
+	end;
+
 
 	
 	
@@ -265,8 +278,30 @@ package body et_conductor_segment is
 	end line_conductor_properties;
 
 
+
+
 	
--- ARCS
+	
+-- ARCS:
+
+	procedure reset_arc (
+		arc : in out type_conductor_arc)
+	is
+		use et_directions;
+	begin
+		set_A (arc, origin);
+		set_B (arc, origin);
+		set_center (arc, origin);
+		-- CS; It is probably no good idea to
+		-- use these defaults because the resulting
+		-- arc is invalid:
+		
+		set_direction (arc, CCW);
+
+		arc.width := type_track_width'first;
+	end;
+
+	
 
 	
 	function to_polygon (
@@ -452,6 +487,23 @@ package body et_conductor_segment is
 
 
 
+
+	
+
+-- CIRCLES:
+
+	procedure reset_circle (
+		circle : in out type_conductor_circle)
+	is begin
+		set_center (circle, origin);
+		set_radius (circle, 0.0);
+		circle.width := type_track_width'first;
+	end;
+
+	
+
+
+	
 	function to_polygon_outside (
 		circle 		: in type_conductor_circle;
 		tolerance	: in type_distance_positive)							

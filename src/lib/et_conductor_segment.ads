@@ -58,6 +58,7 @@ package et_conductor_segment is
 	use pac_geometry_2;
 
 	
+	
 -- LINES
 
 	-- The center of a conductor line segment.
@@ -67,7 +68,10 @@ package et_conductor_segment is
 	end record;
 
 
+	procedure reset_line (
+		line : in out type_conductor_line);
 
+	
 	-- CS procedure to set linewidth
 		
 
@@ -150,7 +154,8 @@ package et_conductor_segment is
 
 	
 
--- ARCS
+	
+-- ARCS:
 
 	-- The center of a conductor arc segment.
 	-- Drawn by the operator in the layout editor:
@@ -159,6 +164,9 @@ package et_conductor_segment is
 	end record;
 
 
+	procedure reset_arc (
+		arc : in out type_conductor_arc);
+	
 	-- CS function get_width
 	
 	
@@ -236,13 +244,17 @@ package et_conductor_segment is
 
 
 	
--- CIRCLES
+-- CIRCLES:
 
 	type type_conductor_circle is new type_circle with record
 		width	: type_track_width := type_track_width'first;
 	end record;
 
 
+	procedure reset_circle (
+		circle : in out type_conductor_circle);
+
+	
 	-- Converts the outer edge of a conductor circle to a polygon:	
 	function to_polygon_outside (
 		circle 		: in type_conductor_circle;
