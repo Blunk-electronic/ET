@@ -44,6 +44,16 @@ with et_object_status;			use et_object_status;
 
 package body et_assy_doc is
 
+
+	procedure reset_line (
+		line : in out type_doc_line)
+	is begin
+		null;
+		-- CS
+	end;
+
+
+	
 	function to_string (
 		line	: in type_doc_line)
 		return string
@@ -114,6 +124,8 @@ package body et_assy_doc is
 	end mirror_lines;
 
 
+	
+
 	procedure rotate_lines (
 		lines	: in out pac_doc_lines.list;
 		angle	: in type_rotation_model)
@@ -133,6 +145,9 @@ package body et_assy_doc is
 	end rotate_lines;
 
 
+
+
+	
 	procedure move_lines (
 		lines	: in out pac_doc_lines.list;
 		offset	: in type_vector_model)
@@ -153,7 +168,20 @@ package body et_assy_doc is
 
 
 
+	
 
+
+-- ARCS:
+
+
+	procedure reset_arc (
+		arc : in out type_doc_arc)
+	is begin
+		null;
+		-- CS
+	end;
+
+	
 	
 	procedure iterate (
 		arcs	: in pac_doc_arcs.list;
@@ -217,6 +245,8 @@ package body et_assy_doc is
 	end mirror_arcs;
 
 
+	
+
 	procedure rotate_arcs (
 		arcs	: in out pac_doc_arcs.list;
 		angle	: in type_rotation_model)
@@ -236,6 +266,8 @@ package body et_assy_doc is
 	end rotate_arcs;
 
 
+	
+
 	procedure move_arcs (
 		arcs	: in out pac_doc_arcs.list;
 		offset	: in type_vector_model)		
@@ -254,6 +286,19 @@ package body et_assy_doc is
 		arcs := result;
 	end move_arcs;
 
+
+
+	
+
+-- CIRCLES:
+
+	procedure reset_circle (
+		circle : in out type_doc_circle)
+	is begin
+		null;
+		-- CS
+	end;
+	
 
 
 	function is_proposed (
@@ -317,6 +362,7 @@ package body et_assy_doc is
 		circles := result;
 	end rotate_circles;			
 
+	
 
 	procedure move_circles (
 		circles	: in out pac_doc_circles.list;
@@ -336,6 +382,7 @@ package body et_assy_doc is
 		circles := result;
 	end move_circles;
 
+	
 
 
 
@@ -351,7 +398,10 @@ package body et_assy_doc is
 	end is_circular;
 
 
+
 	
+
+-- ZONES:
 
 	procedure iterate (
 		zones	: in pac_doc_zones.list;

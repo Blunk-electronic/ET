@@ -64,6 +64,10 @@ package et_assy_doc is
 		width	: type_linewidth;
 	end record;
 
+
+	procedure reset_line (
+		line : in out type_doc_line);
+	
 	
 	function to_string (
 		line	: in type_doc_line)
@@ -112,6 +116,8 @@ package et_assy_doc is
 		offset	: in type_vector_model);					
 
 
+		
+		
 	
 -- ARCS:
 	
@@ -119,6 +125,12 @@ package et_assy_doc is
 		width	: type_linewidth;
 	end record;
 
+	
+	procedure reset_arc (
+		arc : in out type_doc_arc);
+
+	
+	
 	package pac_doc_arcs is new doubly_linked_lists (type_doc_arc);
 	use pac_doc_arcs;
 
@@ -167,6 +179,12 @@ package et_assy_doc is
 	type type_doc_circle is new pac_geometry_2.type_circle with record
 		width	: type_linewidth;
 	end record;
+	
+	
+	procedure reset_circle (
+		circle : in out type_doc_circle);
+
+		
 	
 	package pac_doc_circles is new doubly_linked_lists (type_doc_circle);
 	use pac_doc_circles;

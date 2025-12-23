@@ -216,7 +216,24 @@ package et_pcb is
 
 
 
+	procedure add_line (
+		assy_doc	: in out type_assy_doc_both_sides;
+		line		: in type_doc_line;
+		face		: in type_face);
 
+		
+	procedure add_arc (
+		assy_doc	: in out type_assy_doc_both_sides;
+		arc			: in type_doc_arc;
+		face		: in type_face);
+
+		
+	procedure add_circle (
+		assy_doc	: in out type_assy_doc_both_sides;
+		circle		: in type_doc_circle;
+		face		: in type_face);
+
+		
 
 	-- In this world, if a package is flipped, then it is
 	-- mirrored along the Y-axis.

@@ -120,8 +120,8 @@ with et_module_read_board_zones_route;		use et_module_read_board_zones_route;
 with et_module_read_pcb_layer_stack;		use et_module_read_pcb_layer_stack;
 with et_module_read_freetracks;				use et_module_read_freetracks;
 with et_module_read_route_restrict;			use et_module_read_route_restrict;
-
 with et_module_read_board_user_settings;	use et_module_read_board_user_settings;
+with et_module_read_assy_doc;				use et_module_read_assy_doc;
 
 
 package body et_module_read is
@@ -250,9 +250,7 @@ package body et_module_read is
 											new_item	=> (type_line (board_line) with board_line_width));
 
 									when LAYER_CAT_ASSY =>
-										pac_doc_lines.append (
-											container	=> module.board.assy_doc.top.lines,
-											new_item	=> (type_line (board_line) with board_line_width));
+										insert_doc_line (module_cursor, TOP, log_threshold);
 
 									when LAYER_CAT_STENCIL =>
 										pac_stencil_lines.append (
@@ -266,6 +264,7 @@ package body et_module_read is
 
 									when others => null; -- CS raise exception ?								
 								end case;
+
 								
 							when BOTTOM => null;
 								case layer_cat is
@@ -275,9 +274,7 @@ package body et_module_read is
 											new_item	=> (type_line (board_line) with board_line_width));
 
 									when LAYER_CAT_ASSY =>
-										pac_doc_lines.append (
-											container	=> module.board.assy_doc.bottom.lines,
-											new_item	=> (type_line (board_line) with board_line_width));
+										insert_doc_line (module_cursor, BOTTOM, log_threshold);
 										
 									when LAYER_CAT_STENCIL =>
 										pac_stencil_lines.append (
@@ -342,9 +339,7 @@ package body et_module_read is
 											new_item	=> (type_arc (board_arc) with board_line_width));
 
 									when LAYER_CAT_ASSY =>
-										pac_doc_arcs.append (
-											container	=> module.board.assy_doc.top.arcs,
-											new_item	=> (type_arc (board_arc) with board_line_width));
+										insert_doc_arc (module_cursor, TOP, log_threshold);
 
 									when LAYER_CAT_STENCIL =>
 										pac_stencil_arcs.append (
@@ -368,9 +363,7 @@ package body et_module_read is
 											new_item	=> (type_arc (board_arc) with board_line_width));
 
 									when LAYER_CAT_ASSY =>
-										pac_doc_arcs.append (
-											container	=> module.board.assy_doc.bottom.arcs,
-											new_item	=> (type_arc (board_arc) with board_line_width));
+										insert_doc_arc (module_cursor, BOTTOM, log_threshold);
 										
 									when LAYER_CAT_STENCIL =>
 										pac_stencil_arcs.append (
@@ -437,9 +430,7 @@ package body et_module_read is
 											new_item	=> (type_circle (board_circle) with board_line_width));
 
 									when LAYER_CAT_ASSY =>
-										pac_doc_circles.append (
-											container	=> module.board.assy_doc.top.circles,
-											new_item	=> (type_circle (board_circle) with board_line_width));
+										insert_doc_circle (module_cursor, TOP, log_threshold);
 
 									when LAYER_CAT_STENCIL =>
 										pac_stencil_circles.append (
@@ -462,9 +453,7 @@ package body et_module_read is
 											new_item	=> (type_circle (board_circle) with board_line_width));
 
 									when LAYER_CAT_ASSY =>
-										pac_doc_circles.append (
-											container	=> module.board.assy_doc.bottom.circles,
-											new_item	=> (type_circle (board_circle) with board_line_width));
+										insert_doc_circle (module_cursor, BOTTOM, log_threshold);
 										
 									when LAYER_CAT_STENCIL =>
 										pac_stencil_circles.append (
@@ -1868,9 +1857,13 @@ package body et_module_read is
 								
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										read_doc_line (line);
+
+									when SEC_SILKSCREEN |
 										SEC_STENCIL | SEC_STOPMASK =>
 
+										
 										if not read_board_line (line) then
 											declare
 												kw : string := f (line, 1);
@@ -1938,9 +1931,12 @@ package body et_module_read is
 								
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOPMASK =>
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										read_doc_arc (line);
 
+									when SEC_SILKSCREEN |
+										SEC_STENCIL | SEC_STOPMASK =>
+										
 										if not read_board_arc (line) then
 										
 											declare
@@ -2010,7 +2006,10 @@ package body et_module_read is
 							
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										read_doc_circle (line);
+									
+									when SEC_SILKSCREEN |
 										SEC_STENCIL | SEC_STOPMASK =>
 
 										if not read_board_circle (line) then
