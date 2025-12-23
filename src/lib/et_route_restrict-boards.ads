@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                       ROUTE RESTRICT BOARDS                              --
+--                       ROUTE RESTRICT / BOARDS                            --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -46,6 +46,9 @@ package et_route_restrict.boards is
 	use pac_text_board;
 
 
+	
+-- LINES:
+
 	type type_route_restrict_line is new 
 		et_route_restrict.type_route_restrict_line with
 	record
@@ -55,20 +58,39 @@ package et_route_restrict.boards is
 
 	-- CS procedure to set linewidth and layer
 
+	procedure reset_line (
+		line : in out type_route_restrict_line);
 
 	
 	package pac_route_restrict_lines is new doubly_linked_lists (type_route_restrict_line);
 
 	
+	
+	
+	
+	
+	
+-- ARCS:
+
+
 	type type_route_restrict_arc is new
 		et_route_restrict.type_route_restrict_arc with 
 	record
 		layers 	: pac_signal_layers.set;
 	end record;
+
+	
+	procedure reset_arc (
+		arc : in out type_route_restrict_arc);
+	
 	
 	package pac_route_restrict_arcs is new doubly_linked_lists (type_route_restrict_arc);
 
 
+	
+	
+	
+-- CIRCLES:
 	
 	type type_route_restrict_circle is new
 		et_route_restrict.type_route_restrict_circle with 
@@ -76,9 +98,19 @@ package et_route_restrict.boards is
 		layers 	: pac_signal_layers.set;
 	end record;
 	
+	
+	procedure reset_circle (
+		circle : in out type_route_restrict_circle);
+	
+	
 	package pac_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
 
 	
+	
+
+	
+-- ZONE:
+
 	type type_route_restrict_contour is new -- CS rename to type_route_restrict_zone
 		et_route_restrict.type_route_restrict_zone with
 	record

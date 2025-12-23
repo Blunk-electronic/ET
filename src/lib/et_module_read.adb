@@ -107,24 +107,25 @@ with et_exceptions;						use et_exceptions;
 with et_module_read_device_electrical;		use et_module_read_device_electrical;
 with et_module_read_device_non_electrical;	use et_module_read_device_non_electrical;
 
-with et_module_read_meta;				use et_module_read_meta;
-with et_module_read_assembly_variant;	use et_module_read_assembly_variant;
+with et_module_read_meta;					use et_module_read_meta;
+with et_module_read_assembly_variant;		use et_module_read_assembly_variant;
 
-with et_module_read_design_rules;		use et_module_read_design_rules;
-with et_module_read_grid;				use et_module_read_grid;
-with et_module_read_net_classes;		use et_module_read_net_classes;
-with et_module_read_nets;				use et_module_read_nets;
-with et_module_read_frames;				use et_module_read_frames;
-with et_module_read_submodules;			use et_module_read_submodules;
-with et_module_read_netchangers;		use et_module_read_netchangers;
-with et_module_read_text_board;			use et_module_read_text_board;
-with et_module_read_text_schematic;		use et_module_read_text_schematic;
-with et_module_read_via;				use et_module_read_via;
-with et_module_read_tracks_route;		use et_module_read_tracks_route;
-with et_module_read_board_zones;		use et_module_read_board_zones;
-with et_module_read_board_zones_route;	use et_module_read_board_zones_route;
-with et_module_read_pcb_layer_stack;	use et_module_read_pcb_layer_stack;
-with et_module_read_freetracks;			use et_module_read_freetracks;
+with et_module_read_design_rules;			use et_module_read_design_rules;
+with et_module_read_grid;					use et_module_read_grid;
+with et_module_read_net_classes;			use et_module_read_net_classes;
+with et_module_read_nets;					use et_module_read_nets;
+with et_module_read_frames;					use et_module_read_frames;
+with et_module_read_submodules;				use et_module_read_submodules;
+with et_module_read_netchangers;			use et_module_read_netchangers;
+with et_module_read_text_board;				use et_module_read_text_board;
+with et_module_read_text_schematic;			use et_module_read_text_schematic;
+with et_module_read_via;					use et_module_read_via;
+with et_module_read_tracks_route;			use et_module_read_tracks_route;
+with et_module_read_board_zones;			use et_module_read_board_zones;
+with et_module_read_board_zones_route;		use et_module_read_board_zones_route;
+with et_module_read_pcb_layer_stack;		use et_module_read_pcb_layer_stack;
+with et_module_read_freetracks;				use et_module_read_freetracks;
+with et_module_read_route_restrict;			use et_module_read_route_restrict;
 
 with et_module_read_board_user_settings;	use et_module_read_board_user_settings;
 
@@ -504,105 +505,6 @@ package body et_module_read is
 					board_reset_circle;
 				end insert_circle;
 
-
-				
-				
-				procedure insert_line_route_restrict is
-					use et_board_geometry;
-					use pac_geometry_2;
-					use et_route_restrict.boards;
-					use et_pcb_stack;
-					use pac_signal_layers;
-
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) is
-					begin
-						pac_route_restrict_lines.append (
-							container	=> module.board.route_restrict.lines,
-							new_item	=> (type_line (board_line) with 
-											signal_layers));
-					end do_it;
-
-					
-				begin -- insert_line_route_restrict
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next board line
-					board_reset_line;
-					clear (signal_layers);
-				end insert_line_route_restrict;
-
-
-				
-				procedure insert_arc_route_restrict is
-					use et_board_geometry;
-					use pac_geometry_2;
-					use et_route_restrict.boards;
-					use et_pcb_stack;					
-					use pac_signal_layers;
-
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) is
-					begin
-						pac_route_restrict_arcs.append (
-							container	=> module.board.route_restrict.arcs,
-							new_item	=> (type_arc (board_arc) with
-											signal_layers));
-					end do_it;
-
-					
-				begin -- insert_arc_route_restrict
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next board line
-					board_reset_arc;
-
-					clear (signal_layers);
-				end insert_arc_route_restrict;
-
-				
-				procedure insert_circle_route_restrict is
-					use et_board_geometry;
-					use pac_geometry_2;
-					use et_route_restrict.boards;
-					use et_pcb_stack;
-					use pac_signal_layers;
-
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) is
-					begin
-						pac_route_restrict_circles.append (
-							container	=> module.board.route_restrict.circles,
-							new_item	=> (type_circle (board_circle) with 
-											signal_layers));
-					end do_it;
-										
-				begin -- insert_circle_route_restrict
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next board line
-					board_reset_circle;
-					clear (signal_layers);
-				end insert_circle_route_restrict;
-
-				
-				
-				
 
 
 				
@@ -1088,7 +990,7 @@ package body et_module_read is
 								build_non_conductor_line (et_pcb_sides.BOTTOM);
 
 							when SEC_ROUTE_RESTRICT =>
-								insert_line_route_restrict;
+								insert_restrict_line (module_cursor, log_threshold);
 
 							when SEC_CONDUCTOR =>
 								insert_freetrack_line (module_cursor, log_threshold);
@@ -1119,8 +1021,7 @@ package body et_module_read is
 								build_non_conductor_arc (et_pcb_sides.BOTTOM);
 
 							when SEC_ROUTE_RESTRICT =>
-								board_check_arc (log_threshold + 1);
-								insert_arc_route_restrict;
+								insert_restrict_arc (module_cursor, log_threshold);
 
 							when SEC_CONDUCTOR =>
 								insert_freetrack_arc (module_cursor, log_threshold);
@@ -1147,7 +1048,7 @@ package body et_module_read is
 								build_non_conductor_circle (et_pcb_sides.BOTTOM);
 
 							when SEC_ROUTE_RESTRICT =>
-								insert_circle_route_restrict;
+								insert_restrict_circle (module_cursor, log_threshold);
 
 							when SEC_CONDUCTOR =>
 								insert_freetrack_circle (module_cursor, log_threshold);
@@ -2001,23 +1902,14 @@ package body et_module_read is
 									when others => invalid_section;
 								end case;
 								
-							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>							
-								if not read_board_line (line) then
-									declare
-										kw : string := f (line, 1);
-										use et_pcb_stack;
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_layers then -- layers 1 14 3
+							when SEC_ROUTE_RESTRICT =>
+								et_module_read_route_restrict.read_restrict_line (
+									line, check_layers);
 
-											-- there must be at least two fields:
-											expect_field_count (line => line, count_expected => 2, warn => false);
-											signal_layers := to_layers (line, check_layers);
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-								end if;
+							when SEC_VIA_RESTRICT =>
+								null;
+								-- read_restrict_line (line, check_layers);
+							
 								
 							when SEC_CONDUCTOR =>
 								if not read_board_line (line) then
@@ -2082,27 +1974,16 @@ package body et_module_read is
 									when others => invalid_section;
 								end case;
 
-							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								if not read_board_arc (line) then
 								
-									declare
-										kw : string := f (line, 1);
-										use et_pcb_stack;
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_layers then -- layers 1 14 3
+							when SEC_ROUTE_RESTRICT =>
+								et_module_read_route_restrict.read_restrict_arc (
+									line, check_layers);
 
-											-- there must be at least two fields:
-											expect_field_count (line => line, count_expected => 2, warn => false);
+								
+							when SEC_VIA_RESTRICT =>
+								null;
+								-- read_restrict_arc (line, check_layers);
 
-											signal_layers := to_layers (line, check_layers);
-
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-
-								end if;
 								
 							when SEC_CONDUCTOR =>
 								if not read_board_arc (line) then
@@ -2180,32 +2061,15 @@ package body et_module_read is
 
 								end case;
 
-							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								if not read_board_circle (line) then
+							when SEC_ROUTE_RESTRICT =>
+								et_module_read_route_restrict.read_restrict_circle (
+									line, check_layers);
+								
+							when SEC_VIA_RESTRICT =>
+								null;
+								-- et_module_read_via_restrict.read_restrict_circle (
+									-- line, check_layers);
 
-									declare
-										use et_pcb_stack;
-										use et_board_geometry.pac_geometry_2;
-										kw : string := f (line, 1);
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_filled then -- filled yes/no
-											expect_field_count (line, 2);													
-											board_filled := to_filled (f (line, 2));
-
-										elsif kw = keyword_layers then -- layers 1 14 3
-
-											-- there must be at least two fields:
-											expect_field_count (line => line, count_expected => 2, warn => false);
-
-											signal_layers := to_layers (line, check_layers);
-											
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-
-								end if;
 								
 							when SEC_CONDUCTOR =>
 								if not read_board_circle (line) then

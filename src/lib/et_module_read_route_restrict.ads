@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                        ROUTE RESTRICT / BOARDS                           --
+--                    MODULE READ / ROUTE RESTRICT                          --
 --                                                                          --
---                              B o d y                                     --
+--                               S p e c                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -21,9 +21,10 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
+--                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab with in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,88 +36,66 @@
 --
 --   history of changes:
 --
---   to do:
+--
+-- DESCRIPTION:
+-- 1. This package is about lines, arcs and circles for route restrict.
 
-with et_directions;					use et_directions;
+--
+--
+-- ToDo:
+-- - clean up
+--
+--
+--
+
+with et_generic_module;			use et_generic_module;
+with et_pcb_stack;				use et_pcb_stack;
+with et_route;					use et_route;
+with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 
 
-package body et_route_restrict.boards is
 
-	use pac_signal_layers;
+package et_module_read_route_restrict is
 
 
-	procedure reset_line (
-		line : in out type_route_restrict_line)
-	is begin
-		set_A (line, origin);
-		set_B (line, origin);
-		clear (line.layers);
-	end;
+	procedure read_restrict_line (
+		line	: in type_fields_of_line;
+		check	: in type_layer_check);
+	
 
+	procedure read_restrict_arc (
+		line	: in type_fields_of_line;
+		check	: in type_layer_check);
 
 	
-	procedure reset_arc (
-		arc : in out type_route_restrict_arc)
-	is begin
-		set_A (arc, origin);
-		set_B (arc, origin);
-		set_center (arc, origin);
-		-- CS probably no good idea because this default
-		-- results in an invalid arc.
+	procedure read_restrict_circle (
+		line	: in type_fields_of_line;
+		check	: in type_layer_check);
+
+	
+	
+	procedure insert_restrict_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
 		
-		clear (arc.layers);
-		set_direction (arc,CCW);
-	end;
+	procedure insert_restrict_arc (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+		
+	procedure insert_restrict_circle (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+		
+end et_module_read_route_restrict;
+
+	
 
 
 	
-	procedure reset_circle (
-		circle : in out type_route_restrict_circle)
-	is begin
-		set_center (circle, origin);
-		set_radius (circle, 0.0);
-		clear (circle.layers);
-	end;
-
-
-	
-	procedure line_route_restrict_properties (
-		face			: in type_face;
-		cursor			: in pac_route_restrict_lines.cursor;
-		log_threshold 	: in type_log_level) 
-	is
-		use pac_route_restrict_lines;
-		line : type_route_restrict_line;
-	begin
-		line := element (cursor);
-		log (text => "route restrict line layers" & to_string (line.layers) & space
-			 & to_string (type_line (line)), level => log_threshold);
-	end line_route_restrict_properties;
-
-	
-	
-	
-	procedure arc_route_restrict_properties (
-		face			: in type_face;
-		cursor			: in pac_route_restrict_arcs.cursor;
-		log_threshold 	: in type_log_level)
-	is
-		use pac_route_restrict_arcs;
-		arc : type_route_restrict_arc;
-	begin
-		arc := element (cursor);
-		log (text => "route restrict arc layers" & to_string (arc.layers) & space 
-			 & to_string (arc), level => log_threshold);
-	end arc_route_restrict_properties;
-
-
-	--CS procedure circle_route_restrict_properties
-	
-
-	
-	
-end et_route_restrict.boards;
-
 -- Soli Deo Gloria
 
 -- For God so loved the world that he gave 
