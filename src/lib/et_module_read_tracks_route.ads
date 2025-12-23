@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                              ROUTE                                       --
+--                    MODULE READ / BOARD TRACKS ROUTE                      --
 --                                                                          --
---                             S p e c                                      --
+--                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -21,9 +21,10 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
+--                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab with in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,75 +36,53 @@
 --
 --   history of changes:
 --
---   to do:
+--
+-- DESCRIPTION:
+-- 1. This package is about tracks that are connected
+--    with nets. They are part of a so called "route".
+
+--
+--
+-- ToDo:
+-- - clean up
+--
+--
 --
 
-with et_pcb_signal_layers;				use et_pcb_signal_layers;
-with et_vias;							use et_vias;
-
-with et_fill_zones;						use et_fill_zones;
-with et_fill_zones.boards;				use et_fill_zones.boards;
-with et_route_restrict.boards;			use et_route_restrict.boards;
-with et_conductor_segment.boards;		use et_conductor_segment.boards;
-
-with et_board_geometry;					use et_board_geometry;
-
-with et_ratsnest;
+with et_generic_module;			use et_generic_module;
+with et_pcb_stack;				use et_pcb_stack;
+with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 
 
-package et_route is
 
-	use pac_polygons;	
+package et_module_read_tracks_route is
+
+
+	procedure read_track_line (
+		line : in type_fields_of_line);
 	
+
+	procedure read_track_arc (
+		line : in type_fields_of_line);
+
+
+	procedure insert_track_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
 		
-	-- A complete net may consist of these conductor objects.
-	-- Everything that is a conducting object is called a "route":
-	
-	type type_net_route is record
-		airwires	: et_ratsnest.type_airwires;
+	procedure insert_track_arc (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
 		
-		lines 		: pac_conductor_lines.list;
-		arcs		: pac_conductor_arcs.list;
-		-- CS: circles ?
-		vias		: pac_vias.list;
+end et_module_read_tracks_route;
 
-		-- fill zones:
-		zones		: boards.type_route;
-
-		-- user defined restrictions. currently not supported. CS
-		restrict	: et_route_restrict.boards.type_route_restrict;
-	end record;
-
+	
 
 
 	
-	procedure add_line (
-		route 	: in out type_net_route;
-		line	: in type_conductor_line);				   
-
-
-	procedure add_arc (
-		route 	: in out type_net_route;
-		arc		: in type_conductor_arc);
-
-
-	
-	
-	-- Iterates the track segments and vias of the
-	-- given route and converts them to polygons:
-	function get_polygons (
-		route 			: in type_net_route;
-		layer_category 	: in type_signal_layer_category;
-		layer			: in type_signal_layer;
-		bottom_layer	: in type_signal_layer)
-		return pac_polygon_list.list;
-	
-	
-	
-end et_route;
-
-
-
 -- Soli Deo Gloria
 
 -- For God so loved the world that he gave 

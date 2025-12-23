@@ -59,6 +59,10 @@ package et_conductor_segment.boards is
 
 
 	-- CS procedure to set linewidth and layer
+	
+	-- Resets A, B, width and layer to default:
+	procedure reset_line (
+		line : in out type_conductor_line);
 
 	
 	-- Returns the signal layer of the given line:
@@ -180,6 +184,12 @@ package et_conductor_segment.boards is
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 
+	
+	-- Resets A, B, center, width and layer to default:
+	procedure reset_arc (
+		arc : in out type_conductor_arc);
+
+	
 
 	-- Returns the signal layer of the given arc:
 	function get_layer (

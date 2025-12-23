@@ -44,6 +44,24 @@
 package body et_route is
 	
 
+	procedure add_line (
+		route 	: in out type_net_route;
+		line	: in type_conductor_line)
+	is begin
+		route.lines.append (line);
+	end;
+
+	
+
+	procedure add_arc (
+		route 	: in out type_net_route;
+		arc		: in type_conductor_arc)
+	is begin
+		route.arcs.append (arc);
+	end;
+
+
+	
 	function get_polygons (
 		route 			: in type_net_route;
 		layer_category 	: in type_signal_layer_category;

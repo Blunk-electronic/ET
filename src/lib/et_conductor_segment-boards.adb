@@ -38,11 +38,24 @@
 --   to do:
 
 with ada.strings;			use ada.strings;
+with et_directions;
 
 
 package body et_conductor_segment.boards is
 
 
+	procedure reset_line (
+		line : in out type_conductor_line)
+	is begin
+		set_A (line, origin);
+		set_B (line, origin);
+
+		line.width := type_track_width'first;
+		line.layer := type_signal_layer'first;
+	end;
+
+
+	
 
 	function get_layer (
 		line : in type_conductor_line)
@@ -263,6 +276,22 @@ package body et_conductor_segment.boards is
 
 
 -- ARCS:
+
+
+	procedure reset_arc (
+		arc : in out type_conductor_arc)
+	is
+		use et_directions;
+	begin
+		set_A (arc, origin);
+		set_B (arc, origin);
+		set_center (arc, origin);
+		set_direction (arc, CCW);
+
+		arc.width := type_track_width'first;
+		arc.layer := type_signal_layer'first;
+	end;
+
 
 
 	function get_layer (

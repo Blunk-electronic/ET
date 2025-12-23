@@ -120,6 +120,7 @@ with et_module_read_netchangers;		use et_module_read_netchangers;
 with et_module_read_text_board;			use et_module_read_text_board;
 with et_module_read_text_schematic;		use et_module_read_text_schematic;
 with et_module_read_via;				use et_module_read_via;
+with et_module_read_tracks_route;		use et_module_read_tracks_route;
 with et_module_read_board_zones;		use et_module_read_board_zones;
 with et_module_read_board_zones_route;	use et_module_read_board_zones_route;
 with et_module_read_pcb_layer_stack;	use et_module_read_pcb_layer_stack;
@@ -1162,23 +1163,14 @@ package body et_module_read is
 						
 					when SEC_LABEL =>
 						build_net_label;
+
 						
 					when SEC_LINE => -- CS clean up. separate procedures required
 						case stack.parent is
 							when SEC_CONTOURS => add_polygon_line (board_line);
 								
 							when SEC_ROUTE =>
-
-								-- insert line in route.lines
-								et_conductor_segment.boards.pac_conductor_lines.append (
-									container	=> route.lines,
-									new_item	=> (et_board_geometry.pac_geometry_2.type_line (board_line) with
-											width	=> board_line_width,
-											layer	=> signal_layer));
-									
-								board_reset_line;
-								board_reset_line_width;
-								board_reset_signal_layer;
+								insert_track_line (module_cursor, log_threshold);
 
 							when SEC_TOP =>
 								build_non_conductor_line (et_pcb_sides.TOP);
@@ -1209,18 +1201,7 @@ package body et_module_read is
 								add_polygon_arc (board_arc);
 
 							when SEC_ROUTE =>
-								board_check_arc (log_threshold + 1);
-								
-								-- insert arc in route.arcs
-								et_conductor_segment.boards.pac_conductor_arcs.append (
-									container	=> route.arcs,
-									new_item	=> (et_board_geometry.pac_geometry_2.type_arc (board_arc) with
-											width	=> board_line_width,
-											layer	=> signal_layer));
-									
-								board_reset_arc;
-								board_reset_line_width;
-								board_reset_signal_layer;
+								insert_track_arc (module_cursor, log_threshold);
 								
 							when SEC_TOP =>
 								build_non_conductor_arc (et_pcb_sides.TOP);
@@ -2086,26 +2067,8 @@ package body et_module_read is
 							when SEC_CONTOURS => read_board_line (line); -- of a cutout or fill zone
 								
 							when SEC_ROUTE =>
-								if not read_board_line (line) then
-									declare
-										kw : string := f (line, 1);
-										use et_pcb_stack;
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_layer then -- layer 2
-											expect_field_count (line, 2);
-											signal_layer := to_signal_layer (f (line, 2));
-											validate_signal_layer;
+								read_track_line (line);
 
-										elsif kw = keyword_width then -- width 0.5
-											expect_field_count (line, 2);
-											board_line_width := et_board_geometry.pac_geometry_2.to_distance (f (line, 2));
-											
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-								end if;
 								
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
@@ -2178,33 +2141,14 @@ package body et_module_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_ARC =>  -- CS clean up: separate procdures required
 						case stack.parent is
 							when SEC_CONTOURS => read_board_arc (line);
 							
 							when SEC_ROUTE =>
-								if not read_board_arc (line) then
-									declare
-										kw : string := f (line, 1);
-										use et_board_geometry.pac_geometry_2;
-										use et_pcb_stack;
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_layer then -- layer 2
-											expect_field_count (line, 2);
-											signal_layer := to_signal_layer (f (line, 2));
-											validate_signal_layer;
-											
-										elsif kw = keyword_width then -- width 0.5
-											expect_field_count (line, 2);
-											board_line_width := et_board_geometry.pac_geometry_2.to_distance (f (line, 2));
-											
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-								end if;
-									
+								read_track_arc (line);
+								
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
