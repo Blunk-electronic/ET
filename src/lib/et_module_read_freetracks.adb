@@ -60,8 +60,6 @@ with et_conductor_segment.boards;	use et_conductor_segment.boards;
 
 with et_general_rw;					use et_general_rw;
 
-with et_module_read_nets;
-
 
 
 package body et_module_read_freetracks is
@@ -207,7 +205,6 @@ package body et_module_read_freetracks is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		use et_module_read_nets;
 		use pac_conductor_lines;
 		
 
@@ -246,7 +243,6 @@ package body et_module_read_freetracks is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		use et_module_read_nets;
 		use pac_conductor_arcs;
 		
 
@@ -285,7 +281,6 @@ package body et_module_read_freetracks is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		use et_module_read_nets;
 		use pac_conductor_circles;
 		
 
