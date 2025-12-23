@@ -81,23 +81,17 @@ with et_board_ops;
 with et_board_ops.ratsnest;
 
 with et_board_layer_category;
-
 with et_submodules;
-
 with et_netlists;
 
-with et_conductor_segment.boards;
-with et_fill_zones;
-with et_fill_zones.boards;
-with et_thermal_relief;
-with et_route_restrict.boards;
-with et_via_restrict.boards;
+
 with et_stopmask;
 with et_stencil;
 with et_silkscreen;
 with et_assy_doc;
 with et_keepout;
 with et_pcb_contour;
+
 with et_directory_and_file_ops;
 with et_object_status;
 with et_string_processing;				use et_string_processing;
@@ -170,8 +164,6 @@ package body et_module_read is
 
 
 		
-		
-		route		: type_net_route;
 	
 		signal_layers : pac_signal_layers.set;
 		board_layer : et_pcb_stack.type_layer;
@@ -212,9 +204,6 @@ package body et_module_read is
 
 	
 		
-
-
-	
 				
 
 		

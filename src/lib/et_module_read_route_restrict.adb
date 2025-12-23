@@ -48,14 +48,9 @@ with ada.strings;					use ada.strings;
 
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
-with et_fill_zones;					use et_fill_zones;
-with et_fill_zones.boards;			use et_fill_zones.boards;
-with et_thermal_relief;				use et_thermal_relief;
 with et_pcb;						use et_pcb;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
-with et_design_rules_board;			use et_design_rules_board;
 with et_board_geometry;				use et_board_geometry;
-with et_primitive_objects;			use et_primitive_objects;
 with et_directions;					use et_directions;
 with et_route_restrict.boards;		use et_route_restrict.boards;
 with et_general_rw;					use et_general_rw;
@@ -66,9 +61,9 @@ package body et_module_read_route_restrict is
 
 	use pac_generic_modules;
 	use pac_geometry_2;
-	use pac_contours;
 	use pac_signal_layers;
 
+	
 	restrict_line : type_route_restrict_line;
 	restrict_arc : type_route_restrict_arc;
 	restrict_circle : type_route_restrict_circle;
