@@ -923,128 +923,6 @@ package body et_module_read is
 
 				
 				
-				procedure build_route_polygon is
-					use et_board_geometry.pac_geometry_2;
-					use et_board_geometry.pac_contours;
-					use et_fill_zones;
-					use et_fill_zones.boards;
-					use et_thermal_relief;
-					
-					
-					procedure solid_polygon is
-						use pac_route_solid;
-
-						procedure connection_thermal is
-							p : type_route_solid (connection => THERMAL);
-						begin
-							load_segments (p, get_segments (contour));
-							
-							p.easing := board_easing;
-							
-							p.linewidth	:= polygon_width_min;
-							p.isolation	:= polygon_isolation;
-							
-							p.properties.layer			:= signal_layer;
-							p.properties.priority_level	:= contour_priority;
-							p.relief_properties			:= relief_properties;
-
-							pac_route_solid.append (
-								container	=> route.zones.solid,
-								new_item	=> p);
-						end;
-
-						
-						procedure connection_solid is
-							p : type_route_solid (connection => SOLID);
-						begin
-							load_segments (p, get_segments (contour));
-							
-							p.easing := board_easing;
-							
-							p.linewidth	:= polygon_width_min;
-							p.isolation	:= polygon_isolation;
-							
-							p.properties.layer			:= signal_layer;
-							p.properties.priority_level	:= contour_priority;
-							p.technology				:= relief_properties.technology;
-
-							pac_route_solid.append (
-								container	=> route.zones.solid,
-								new_item	=> p);
-						end;
-
-						
-					begin -- solid_polygon
-						case pad_connection is
-							when THERMAL	=> connection_thermal;
-							when SOLID		=> connection_solid;
-						end case;
-					end solid_polygon;
-
-
-					
-					procedure hatched_polygon is
-						use pac_route_hatched;
-
-
-						procedure connection_thermal is
-							p : type_route_hatched (connection => THERMAL);
-						begin
-							load_segments (p, get_segments (contour));
-							
-							p.easing := board_easing;
-							
-							p.linewidth	:= polygon_width_min;
-							p.isolation	:= polygon_isolation;
-							
-							p.properties.layer			:= signal_layer;
-							p.properties.priority_level	:= contour_priority;
-							p.relief_properties			:= relief_properties;
-							
-							pac_route_hatched.append (
-								container	=> route.zones.hatched,
-								new_item	=> p);
-						end;
-
-						
-						procedure connection_solid is
-							p : type_route_hatched (connection => SOLID);
-						begin
-							load_segments (p, get_segments (contour));
-							
-							p.easing := board_easing;
-							
-							p.linewidth	:= polygon_width_min;
-							p.isolation	:= polygon_isolation;
-							
-							p.properties.layer			:= signal_layer;
-							p.properties.priority_level	:= contour_priority;
-							
-							p.technology := relief_properties.technology;
-							
-							pac_route_hatched.append (
-								container	=> route.zones.hatched,
-								new_item	=> p);
-						end;
-
-						
-					begin -- hatched_polygon
-						case pad_connection is
-							when THERMAL	=> connection_thermal;
-							when SOLID		=> connection_solid;
-						end case;
-					end hatched_polygon;
-
-					
-				begin -- build_route_polygon
-					case board_fill_style is
-						when SOLID		=> solid_polygon;
-						when HATCHED	=> hatched_polygon;
-					end case;
-
-					board_reset_contour; -- clean up for next polygon
-				end build_route_polygon;
-
 
 				-- This is now net specific restrict stuff !
 				-- CS 			
@@ -1121,9 +999,7 @@ package body et_module_read is
 
 
 				
-				
-
-
+		
 				
 				procedure build_net_label is
 				begin
@@ -1433,7 +1309,7 @@ package body et_module_read is
 					when SEC_ZONE =>
 						case stack.parent is
 							when SEC_ROUTE =>
-								build_route_polygon;
+								build_route_polygon (module_cursor, route, log_threshold);
 
 							when SEC_TOP =>
 								build_non_conductor_fill_zone (et_pcb_sides.TOP);

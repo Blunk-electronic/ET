@@ -65,7 +65,10 @@ package body et_module_read_board_zones_route is
 
 	use pac_generic_modules;
 	use pac_geometry_2;
+	use pac_contours;
+	use pac_signal_layers;
 
+	
 	
 	fill_spacing : type_track_clearance := type_track_clearance'first;
 	-- CS rename to zone_fill_spacing
@@ -96,6 +99,31 @@ package body et_module_read_board_zones_route is
 
 	pad_connection : type_pad_connection := type_pad_connection'first;	
 
+	contour : type_contour;
+
+	
+	
+
+	procedure reset_scratch is begin
+		fill_spacing		:= type_track_clearance'first;
+		board_fill_style	:= fill_style_default;
+		--board_hatching		:= (others => <>);
+		board_easing 		:= (others => <>);
+		relief_properties	:= (others => <>);
+		pad_connection 		:= type_pad_connection'first;	
+		
+		contour_priority		:= type_priority'first;  -- board relevant only
+		polygon_isolation		:= type_track_clearance'first;
+		polygon_width_min		:= type_track_width'first;
+
+		signal_layer			:= type_signal_layer'first;  -- board relevant only
+		clear (signal_layers);
+		
+		contour := (others => <>);
+	end;
+
+
+	
 
 
 	
@@ -189,7 +217,141 @@ package body et_module_read_board_zones_route is
 	end read_fill_zone_route;
 
 
+
+
 	
+
+
+
+	procedure build_route_polygon (
+		module_cursor	: in pac_generic_modules.cursor;
+		route			: in out type_net_route;							  
+		log_threshold	: in type_log_level)									  
+	is
+		use et_thermal_relief;
+		
+		
+		procedure solid_polygon is
+			use pac_route_solid;
+
+			procedure connection_thermal is
+				p : type_route_solid (connection => THERMAL);
+			begin
+				load_segments (p, get_segments (contour));
+				
+				p.easing := board_easing;
+				
+				p.linewidth	:= polygon_width_min;
+				p.isolation	:= polygon_isolation;
+				
+				p.properties.layer			:= signal_layer;
+				p.properties.priority_level	:= contour_priority;
+				p.relief_properties			:= relief_properties;
+
+				pac_route_solid.append (
+					container	=> route.zones.solid,
+					new_item	=> p);
+			end;
+
+			
+			procedure connection_solid is
+				p : type_route_solid (connection => SOLID);
+			begin
+				load_segments (p, get_segments (contour));
+				
+				p.easing := board_easing;
+				
+				p.linewidth	:= polygon_width_min;
+				p.isolation	:= polygon_isolation;
+				
+				p.properties.layer			:= signal_layer;
+				p.properties.priority_level	:= contour_priority;
+				p.technology				:= relief_properties.technology;
+
+				pac_route_solid.append (
+					container	=> route.zones.solid,
+					new_item	=> p);
+			end;
+
+			
+		begin -- solid_polygon
+			case pad_connection is
+				when THERMAL	=> connection_thermal;
+				when SOLID		=> connection_solid;
+			end case;
+		end solid_polygon;
+
+
+		
+		
+		procedure hatched_polygon is
+			use pac_route_hatched;
+
+
+			procedure connection_thermal is
+				p : type_route_hatched (connection => THERMAL);
+			begin
+				load_segments (p, get_segments (contour));
+				
+				p.easing := board_easing;
+				
+				p.linewidth	:= polygon_width_min;
+				p.isolation	:= polygon_isolation;
+				
+				p.properties.layer			:= signal_layer;
+				p.properties.priority_level	:= contour_priority;
+				p.relief_properties			:= relief_properties;
+				
+				pac_route_hatched.append (
+					container	=> route.zones.hatched,
+					new_item	=> p);
+			end;
+
+			
+			procedure connection_solid is
+				p : type_route_hatched (connection => SOLID);
+			begin
+				load_segments (p, get_segments (contour));
+				
+				p.easing := board_easing;
+				
+				p.linewidth	:= polygon_width_min;
+				p.isolation	:= polygon_isolation;
+				
+				p.properties.layer			:= signal_layer;
+				p.properties.priority_level	:= contour_priority;
+				
+				p.technology := relief_properties.technology;
+				
+				pac_route_hatched.append (
+					container	=> route.zones.hatched,
+					new_item	=> p);
+			end;
+
+			
+		begin -- hatched_polygon
+			case pad_connection is
+				when THERMAL	=> connection_thermal;
+				when SOLID		=> connection_solid;
+			end case;
+		end hatched_polygon;
+
+		
+	begin -- build_route_polygon
+		-- CS log messages
+		
+		case board_fill_style is
+			when SOLID		=> solid_polygon;
+			when HATCHED	=> hatched_polygon;
+		end case;
+
+		reset_scratch; -- clean up for next polygon
+	end build_route_polygon;
+
+
+	
+
+
 end et_module_read_board_zones_route;
 
 	

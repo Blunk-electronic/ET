@@ -51,6 +51,7 @@
 
 with et_generic_module;			use et_generic_module;
 with et_pcb_stack;				use et_pcb_stack;
+with et_route;					use et_route;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
@@ -66,6 +67,13 @@ package et_module_read_board_zones_route is
 	-- Reads parameters of a conductor fill zone connected with a net:
 	procedure read_fill_zone_route (
 		line : in type_fields_of_line);
+
+
+	
+	procedure build_route_polygon ( -- CS rename to insert_fill_zone ?
+		module_cursor	: in pac_generic_modules.cursor;
+		route			: in out type_net_route;
+		log_threshold	: in type_log_level);
 
 	
 	
