@@ -167,16 +167,10 @@ package body et_module_read is
 
 
 		
-
-		
 		
 		route		: type_net_route;
-
 	
 		signal_layers : pac_signal_layers.set;
-		conductor_layer, dielectric_layer : type_signal_layer := type_signal_layer'first;
-		conductor_thickness : et_pcb_stack.type_conductor_thickness := et_pcb_stack.conductor_thickness_outer_default;
-		dielectric_found : boolean := false;
 		board_layer : et_pcb_stack.type_layer;
 		board_layers : et_pcb_stack.package_layers.vector;
 
@@ -511,294 +505,6 @@ package body et_module_read is
 
 				
 				
-				procedure insert_polygon ( -- CS rename to insert_contour
-					layer_cat	: in type_layer_category;
-					face		: in et_pcb_sides.type_face) -- TOP, BOTTOM
-				is
-				-- The polygon has been a general thing until now. 
-				-- Depending on the layer and the side of the board (face) the polygon
-				-- is now assigned to the board where it belongs to.
-
-					use et_board_geometry;
-					use pac_geometry_2;
-					
-					use et_stopmask;
-					use et_stencil;
-					use et_silkscreen;
-					use et_assy_doc;
-					use et_keepout;
-					
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module)
-					is
-						use pac_contours;
-						use et_pcb_sides;
-						
-						procedure append_silk_polygon_top is begin
-							pac_silk_zones.append (
-								container	=> module.board.silkscreen.top.zones,
-								new_item	=> (contour with null record));
-						end;
-
-						
-						procedure append_silk_polygon_bottom is begin
-							pac_silk_zones.append (
-								container	=> module.board.silkscreen.bottom.zones,
-								new_item	=> (contour with null record));
-						end;
-
-						
-						procedure append_assy_doc_polygon_top is begin
-							pac_doc_zones.append (
-								container	=> module.board.assy_doc.top.zones,
-								new_item	=> (contour with null record));
-						end;
-
-						
-						procedure append_assy_doc_polygon_bottom is begin
-							pac_doc_zones.append (
-								container	=> module.board.assy_doc.bottom.zones,
-								new_item	=> (contour with null record));
-						end;
-
-						
-						procedure append_keepout_polygon_top is begin
-							pac_keepout_zones.append (
-								container	=> module.board.keepout.top.zones, 
-								new_item	=> (contour with null record));
-						end;
-
-						
-						procedure append_keepout_polygon_bottom is begin
-							pac_keepout_zones.append (
-								container	=> module.board.keepout.bottom.zones, 
-								new_item	=> (contour with null record));
-						end;
-
-						
-						procedure append_stencil_polygon_top is begin
-							pac_stencil_zones.append (
-								container	=> module.board.stencil.top.zones,
-								new_item	=> (contour with null record));
-						end;
-
-						
-						procedure append_stencil_polygon_bottom is begin
-							pac_stencil_zones.append (
-								container	=> module.board.stencil.bottom.zones,
-								new_item	=> (contour with null record));
-						end;
-
-						
-						procedure append_stop_polygon_top is begin
-							pac_stop_zones.append (
-								container	=> module.board.stopmask.top.zones,
-								new_item	=> (contour with null record));
-						end;
-
-						
-						procedure append_stop_polygon_bottom is begin
-							pac_stop_zones.append (
-								container	=> module.board.stopmask.bottom.zones,
-								new_item	=> (contour with null record));
-						end;
-
-						
-					begin -- do_it
-						case face is
-							when TOP =>
-								case layer_cat is
-									when LAYER_CAT_SILKSCREEN =>
-										append_silk_polygon_top;
-													
-									when LAYER_CAT_ASSY =>
-										append_assy_doc_polygon_top;
-
-									when LAYER_CAT_STENCIL =>
-										append_stencil_polygon_top;
-										
-									when LAYER_CAT_STOPMASK =>
-										append_stop_polygon_top;
-										
-									when LAYER_CAT_KEEPOUT =>
-										append_keepout_polygon_top;
-
-									when others => null; -- CS raise exception ?
-								end case;
-								
-							when BOTTOM =>
-								case layer_cat is
-									when LAYER_CAT_SILKSCREEN =>
-										append_silk_polygon_bottom;
-
-									when LAYER_CAT_ASSY =>
-										append_assy_doc_polygon_bottom;
-										
-									when LAYER_CAT_STENCIL =>
-										append_stencil_polygon_bottom;
-										
-									when LAYER_CAT_STOPMASK =>
-										append_stop_polygon_bottom;
-										
-									when LAYER_CAT_KEEPOUT =>
-										append_keepout_polygon_bottom;
-
-									when others => null; -- CS raise exception ?
-								end case;
-								
-						end case;
-					end do_it;
-
-					
-				begin
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next board polygon
-					board_reset_contour;
-				end insert_polygon;
-
-				
-				
-				procedure insert_cutout (
-					layer_cat	: in type_layer_category; -- CS no need anymore ?
-					face		: in et_pcb_sides.type_face) -- TOP, BOTTOM
-				is
-				-- The polygon has been a general thing until now. 
-				-- Depending on the layer category and the side of the board (face) the polygon
-				-- is threated as a cutout zone and assigned to the board where it belongs to.
-
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module)
-					is
-						use et_pcb_sides;
-						use et_board_geometry;
-						use pac_contours;
-						use et_stopmask;
-						use et_keepout;
-						
-						
-						procedure append_keepout_cutout_top is begin
-							pac_keepout_cutouts.append (
-								container	=> module.board.keepout.top.cutouts, 
-								new_item	=> (contour with null record));
-						end;
-
-						procedure append_keepout_cutout_bottom is begin
-							pac_keepout_cutouts.append (
-								container	=> module.board.keepout.bottom.cutouts, 
-								new_item	=> (contour with null record));
-						end;
-
-						
-					begin -- do_it
-						case face is
-							when TOP =>
-								case layer_cat is
-									when LAYER_CAT_KEEPOUT =>
-										append_keepout_cutout_top;
-
-									when others => null; -- CS raise exception ?
-								end case;
-								
-							when BOTTOM => null;
-								case layer_cat is
-									when LAYER_CAT_KEEPOUT =>
-										append_keepout_cutout_bottom;
-
-									when others => null; -- CS raise exception ?									
-								end case;							
-						end case;
-					end do_it;
-
-					
-				begin -- insert_cutout
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next board cutout
-					board_reset_contour;
-				end insert_cutout;
-
-
-
-				
-
-				
-				
-				procedure insert_cutout_route_restrict is
-					use et_board_geometry;
-					use pac_contours;
-					use et_route_restrict.boards;
-					use et_pcb_stack;
-					use pac_signal_layers;
-					
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) is
-					begin
-						pac_route_restrict_cutouts.append (
-							container	=> module.board.route_restrict.cutouts,
-							new_item	=> (contour with 
-											layers	=> signal_layers));
-					end do_it;
-										
-				begin
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next board contour
-					board_reset_contour;
-
-					clear (signal_layers);
-				end insert_cutout_route_restrict;
-
-
-
-				
-				-- This is about cutout zones to trim floating contours in 
-				-- signal layers. No connection to any net.
-				procedure insert_cutout_conductor is
-					use et_board_geometry;
-					use pac_contours;
-					use et_pcb;
-					use et_fill_zones.boards;
-					
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) is
-					begin
-						pac_cutouts.append (
-							container	=> module.board.conductors_floating.cutouts,
-							new_item	=> (contour with
-									layer => signal_layer));
-					end do_it;
-										
-				begin -- insert_cutout_conductor
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next floating board contour
-					board_reset_contour;
-				end insert_cutout_conductor;
-
-
-					
-				
 				procedure insert_line_route_restrict is
 					use et_board_geometry;
 					use pac_geometry_2;
@@ -894,124 +600,6 @@ package body et_module_read is
 
 				
 				
-				procedure insert_polygon_route_restrict is
-					use et_board_geometry;
-					use pac_geometry_2;				
-					use pac_contours;
-					
-					use et_route_restrict.boards;
-					use pac_route_restrict_contours;
-					
-					use et_pcb_stack;
-					use pac_signal_layers;
-
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) 
-					is begin
-						append (
-							container	=> module.board.route_restrict.contours,
-							new_item	=> (contour with signal_layers));
-					end do_it;
-										
-				begin
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next board polygon
-					board_reset_contour;
-
-					clear (signal_layers);
-				end insert_polygon_route_restrict;
-
-
-				
-				procedure insert_zone_via_restrict is
-					use et_board_geometry;
-					use pac_geometry_2;
-					use pac_contours;
-					use et_via_restrict.boards;
-					use pac_via_restrict_contours;
-					use et_pcb_stack;
-					use pac_signal_layers;
-					
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) 
-					is begin
-						append (
-							container	=> module.board.via_restrict.contours,
-							new_item	=> (contour with signal_layers));
-					end do_it;
-										
-				begin
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next board contour
-					board_reset_contour;
-
-					clear (signal_layers);
-				end insert_zone_via_restrict;
-
-
-				
-				-- This is about floating contours in signal layers. No connection to any net.
-				procedure insert_polygon_conductor is
-					use et_board_geometry;
-					use pac_contours;
-					use et_fill_zones;
-					use et_fill_zones.boards;
-					
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) 
-					is begin
-						case board_fill_style is
-							when SOLID =>
-								pac_floating_solid.append (
-									container	=> module.board.conductors_floating.zones.solid,
-									new_item	=> (contour with
-										fill_style 	=> SOLID,
-										easing		=> board_easing,
-										islands		=> no_islands,
-										properties	=> (signal_layer, contour_priority, others => <>),
-										isolation	=> polygon_isolation,
-										linewidth	=> polygon_width_min));
-
-							when HATCHED =>
-								pac_floating_hatched.append (
-									container	=> module.board.conductors_floating.zones.hatched,
-									new_item	=> (contour with
-										fill_style 	=> HATCHED,
-										easing		=> board_easing,
-										islands		=> no_islands,
-										properties	=> (signal_layer, contour_priority, others => <>),
-										isolation	=> polygon_isolation,
-										linewidth	=> polygon_width_min,
-										spacing		=> fill_spacing));
-						end case;
-					end do_it;
-
-					
-				begin -- insert_polygon_conductor
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next floating board polygon
-					board_reset_contour;
-				end insert_polygon_conductor;
-
-
 				
 				
 				procedure insert_line_track is -- about freetracks
@@ -1479,28 +1067,23 @@ package body et_module_read is
 					case stack.parent (degree => 2) is
 						when SEC_SILKSCREEN =>
 							insert_cutout (
-								layer_cat	=> LAYER_CAT_SILKSCREEN,
-								face		=> face);
+								module_cursor, LAYER_CAT_SILKSCREEN, face, log_threshold);
 
 						when SEC_ASSEMBLY_DOCUMENTATION =>
 							insert_cutout (
-								layer_cat	=> LAYER_CAT_ASSY,
-								face		=> face);
+								module_cursor, LAYER_CAT_ASSY, face, log_threshold);
 
 						when SEC_STENCIL =>
 							insert_cutout (
-								layer_cat	=> LAYER_CAT_STENCIL,
-								face		=> face);
+								module_cursor, LAYER_CAT_STENCIL, face, log_threshold);
 
 						when SEC_STOPMASK =>
 							insert_cutout (
-								layer_cat	=> LAYER_CAT_STOPMASK,
-								face		=> face);
+								module_cursor, LAYER_CAT_STOPMASK, face, log_threshold);
 
 						when SEC_KEEPOUT =>
 							insert_cutout (
-								layer_cat	=> LAYER_CAT_KEEPOUT,
-								face		=> face);
+								module_cursor, LAYER_CAT_KEEPOUT, face, log_threshold);
 							
 						when others => invalid_section;
 					end case;
@@ -1514,28 +1097,23 @@ package body et_module_read is
 					case stack.parent (degree => 2) is
 						when SEC_SILKSCREEN =>
 							insert_polygon (
-								layer_cat	=> LAYER_CAT_SILKSCREEN,
-								face		=> face);
+								module_cursor, LAYER_CAT_SILKSCREEN, face, log_threshold);
 
 						when SEC_ASSEMBLY_DOCUMENTATION =>
 							insert_polygon (
-								layer_cat	=> LAYER_CAT_ASSY,
-								face		=> face);
+								module_cursor, LAYER_CAT_ASSY, face, log_threshold);
 
 						when SEC_STENCIL =>
 							insert_polygon (
-								layer_cat	=> LAYER_CAT_STENCIL,
-								face		=> face);
+								module_cursor, LAYER_CAT_STENCIL, face, log_threshold);
 
 						when SEC_STOPMASK =>
 							insert_polygon (
-								layer_cat	=> LAYER_CAT_STOPMASK,
-								face		=> face);
+								module_cursor, LAYER_CAT_STOPMASK, face, log_threshold);
 
 						when SEC_KEEPOUT =>
 							insert_polygon (
-								layer_cat	=> LAYER_CAT_KEEPOUT,
-								face		=> face);
+								module_cursor, LAYER_CAT_KEEPOUT, face, log_threshold);
 							
 						when others => invalid_section;
 					end case;
@@ -1840,13 +1418,13 @@ package body et_module_read is
 								build_non_conductor_cutout (et_pcb_sides.BOTTOM);
 
 							when SEC_ROUTE_RESTRICT =>
-								insert_cutout_route_restrict;
+								insert_cutout_route_restrict (module_cursor, log_threshold);
 
 							when SEC_VIA_RESTRICT =>
 								insert_cutout_via_restrict (module_cursor, log_threshold);
 
 							when SEC_CONDUCTOR =>
-								insert_cutout_conductor;
+								insert_cutout_conductor (module_cursor, log_threshold);
 								
 							when others => invalid_section;
 						end case;
@@ -1864,13 +1442,13 @@ package body et_module_read is
 								build_non_conductor_fill_zone (et_pcb_sides.BOTTOM);
 
 							when SEC_ROUTE_RESTRICT =>
-								insert_polygon_route_restrict;
+								insert_polygon_route_restrict (module_cursor, log_threshold);
 
 							when SEC_VIA_RESTRICT =>
-								insert_zone_via_restrict;
+								insert_zone_via_restrict (module_cursor, log_threshold);
 
 							when SEC_CONDUCTOR =>
-								insert_polygon_conductor;
+								insert_polygon_conductor (module_cursor, log_threshold);
 								
 							when others => invalid_section;
 						end case;

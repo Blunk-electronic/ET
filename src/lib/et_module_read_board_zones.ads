@@ -50,10 +50,12 @@
 --
 --
 
-with et_generic_module;			use et_generic_module;
-with et_pcb_stack;				use et_pcb_stack;
-with et_string_processing;		use et_string_processing;
-with et_logging;				use et_logging;
+with et_generic_module;				use et_generic_module;
+with et_board_layer_category;		use et_board_layer_category;
+with et_pcb_stack;					use et_pcb_stack;
+with et_pcb_sides;					use et_pcb_sides;
+with et_string_processing;			use et_string_processing;
+with et_logging;					use et_logging;
 
 
 
@@ -90,17 +92,62 @@ package et_module_read_board_zones is
 		line	: in type_fields_of_line;
 		check	: in type_layer_check);
 
+
+	procedure insert_polygon_route_restrict ( -- CS rename to insert_zone_route_restrict
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+	
+
+	procedure insert_zone_via_restrict (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+
+	procedure insert_polygon_conductor ( -- CS rename to insert_zone_conductor
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
 		
+	procedure insert_polygon ( -- CS rename to insert_zone ?
+		module_cursor	: in pac_generic_modules.cursor;
+		layer_cat		: in type_layer_category;
+		face			: in type_face;
+		log_threshold	: in type_log_level);
+
+
+		
+
+-- CUTOUT:
+	
 	procedure read_cutout_restrict (
 		line	: in type_fields_of_line;
 		check	: in type_layer_check);
+
 	
-
-
 	procedure insert_cutout_via_restrict (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 		
+
+	procedure insert_cutout_route_restrict (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+	procedure insert_cutout (
+		module_cursor	: in pac_generic_modules.cursor;
+		layer_cat		: in type_layer_category;
+		face			: in type_face;
+		log_threshold	: in type_log_level);
+
+
+	-- This is about cutout zones to trim floating contours in 
+	-- signal layers. No connection to any net.
+	procedure insert_cutout_conductor (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+	
 	
 end et_module_read_board_zones;
 
