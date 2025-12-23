@@ -59,6 +59,8 @@ with et_primitive_objects;			use et_primitive_objects;
 
 with et_general_rw;					use et_general_rw;
 
+with et_module_read_nets;
+
 
 
 package body et_module_read_board_zones_route is
@@ -225,10 +227,10 @@ package body et_module_read_board_zones_route is
 
 	procedure build_route_polygon (
 		module_cursor	: in pac_generic_modules.cursor;
-		route			: in out type_net_route;							  
 		log_threshold	: in type_log_level)									  
 	is
 		use et_thermal_relief;
+		use et_module_read_nets;
 		
 		
 		procedure solid_polygon is

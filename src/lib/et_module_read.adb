@@ -1106,7 +1106,7 @@ package body et_module_read is
 					when SEC_ROUTE =>
 						case stack.parent is
 							when SEC_NET =>
-								assign_route (route);
+								assign_route;
 								
 							when others => invalid_section;
 						end case;
@@ -1276,7 +1276,7 @@ package body et_module_read is
 					when SEC_VIA =>
 						case stack.parent is
 							when SEC_ROUTE =>
-								build_via (route);
+								build_via;
 						
 							when others => invalid_section;
 						end case;
@@ -1309,7 +1309,7 @@ package body et_module_read is
 					when SEC_ZONE =>
 						case stack.parent is
 							when SEC_ROUTE =>
-								build_route_polygon (module_cursor, route, log_threshold);
+								build_route_polygon (module_cursor, log_threshold);
 
 							when SEC_TOP =>
 								build_non_conductor_fill_zone (et_pcb_sides.TOP);

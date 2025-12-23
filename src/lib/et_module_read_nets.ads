@@ -52,6 +52,9 @@ with et_logging;				use et_logging;
 package et_module_read_nets is
 
 
+	route : et_route.type_net_route; -- scratch, CS: rework required
+
+	
 
 -- NETS:
 
@@ -205,8 +208,7 @@ package et_module_read_nets is
 -- ROUTE:
 
 	-- Insert route in net:
-	procedure assign_route (
-		route : in out et_route.type_net_route);
+	procedure assign_route;
 		
 		
 		

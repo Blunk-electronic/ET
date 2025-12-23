@@ -43,7 +43,6 @@
 --
 
 with et_generic_module;			use et_generic_module;
-with et_route;					use et_route;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
@@ -58,8 +57,7 @@ package et_module_read_via is
 
 		
 		
-	procedure build_via (
-		route : in out type_net_route);
+	procedure build_via;
 
 	
 	

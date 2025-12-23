@@ -72,7 +72,6 @@ package et_module_read_board_zones_route is
 	
 	procedure build_route_polygon ( -- CS rename to insert_fill_zone ?
 		module_cursor	: in pac_generic_modules.cursor;
-		route			: in out type_net_route;
 		log_threshold	: in type_log_level);
 
 	

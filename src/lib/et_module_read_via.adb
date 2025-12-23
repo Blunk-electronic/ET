@@ -60,6 +60,8 @@ with et_drills;						use et_drills;
 
 with et_general_rw;					use et_general_rw;
 
+with et_module_read_nets;
+
 
 
 package body et_module_read_via is
@@ -84,7 +86,6 @@ package body et_module_read_via is
 		use et_board_geometry.pac_geometry_2;
 		use et_pcb;
 		use et_vias;
-		-- use et_terminals;
 		use et_pcb_stack;
 		use et_board_ops;
 		kw : constant string := f (line, 1);
@@ -140,9 +141,8 @@ package body et_module_read_via is
 			
 			
 			
-	procedure build_via (
-		route : in out type_net_route)
-	is
+	procedure build_via is
+		use et_module_read_nets;
 		use pac_vias;
 	begin
 		-- insert via in route.vias

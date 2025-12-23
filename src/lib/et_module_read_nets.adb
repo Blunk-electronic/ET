@@ -74,7 +74,6 @@ with et_netlists;
 with et_general_rw;					use et_general_rw;
 
 
-
 package body et_module_read_nets is
 
 	use pac_generic_modules;
@@ -87,8 +86,6 @@ package body et_module_read_nets is
 		
 	net_name	: pac_net_name.bounded_string; -- motor_on_off
 	net			: et_nets.type_net;
-
-
 
 
 
@@ -782,8 +779,7 @@ package body et_module_read_nets is
 	
 -- ROUTE:
 	
-	procedure assign_route (
-		route : in out et_route.type_net_route)
+	procedure assign_route
 	is
 		use et_route;
 	begin
