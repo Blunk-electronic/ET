@@ -63,6 +63,7 @@ with et_package_model;
 with et_package_bom_relevance;
 with et_package_description;
 with et_package_variant;
+with et_stencil.packages;			use et_stencil.packages;
 with et_keywords;					use et_keywords;
 
 
@@ -536,10 +537,10 @@ package body et_kicad.pcb is
 		package_arc			: et_kicad_packages.type_arc;
 		package_circle 		: et_kicad_packages.type_circle;
 
-		package_stop_mask		: et_stopmask.packages.type_stopmask_both_sides;
+		package_stop_mask	: et_stopmask.packages.type_stopmask_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
-		package_stencil			: et_stencil.type_stencil_both_sides;
+		package_stencil		: et_stencil.packages.type_stencil_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
 		package_silk_screen		: et_silkscreen.packages.type_silkscreen_both_sides;

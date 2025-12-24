@@ -278,13 +278,9 @@ package et_stencil is
 	end record;
 
 
-	type type_stencil_both_sides is record
-		top		: type_stencil;
-		bottom	: type_stencil;
-	end record;
 
-
-
+	
+	
 
 	-- Mirrors the given objects along the given axis:
 	procedure mirror_stencil_objects (

@@ -52,7 +52,7 @@ use et_board_text.pac_text_board;
 
 with et_stopmask;				use et_stopmask;
 with et_stopmask.packages;		use et_stopmask.packages;
-with et_stencil;				use et_stencil;
+with et_stencil.packages;		use et_stencil.packages;
 
 with et_silkscreen;				use et_silkscreen;
 with et_silkscreen.packages;	use et_silkscreen.packages;

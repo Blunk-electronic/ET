@@ -53,7 +53,7 @@ with et_conductor_text.packages;		use et_conductor_text.packages;
 with et_route_restrict.packages;		use et_route_restrict.packages;
 with et_via_restrict.packages;			use et_via_restrict.packages;
 with et_stopmask.packages;				use et_stopmask.packages;
-with et_stencil;						use et_stencil;
+with et_stencil.packages;				use et_stencil.packages;
 with et_silkscreen;						use et_silkscreen;
 with et_silkscreen.packages;			use et_silkscreen.packages;
 with et_assy_doc.packages;				use et_assy_doc.packages;

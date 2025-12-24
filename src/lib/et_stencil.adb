@@ -493,6 +493,22 @@ package body et_stencil is
 
 
 
+
+
+
+	
+
+
+
+
+	
+
+
+
+
+
+
+
 	
 	
 	procedure mirror_stencil_objects (

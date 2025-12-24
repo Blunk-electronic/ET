@@ -67,7 +67,7 @@ with et_conductor_text.boards;			use et_conductor_text.boards;
 with et_route_restrict.boards;			use et_route_restrict.boards;
 with et_via_restrict.boards;			use et_via_restrict.boards;
 with et_stopmask.board;					use et_stopmask.board;
-with et_stencil;						use et_stencil;
+with et_stencil.board;					use et_stencil.board;
 with et_silkscreen.board;				use et_silkscreen.board;
 with et_assy_doc.board;					use et_assy_doc.board;
 with et_keepout;						use et_keepout;

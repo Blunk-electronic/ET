@@ -82,6 +82,8 @@ with et_stopmask.board;
 with et_stopmask.packages;
 
 with et_stencil;
+with et_stencil.board;
+with et_stencil.packages;
 
 with et_route_restrict;
 with et_route_restrict.packages;
@@ -340,6 +342,7 @@ is
 				module		: in type_generic_module)
 			is 
 				use et_stencil;
+				use et_stencil.board;
 				use pac_stencil_lines;
 				use pac_stencil_arcs;
 				use pac_stencil_circles;
