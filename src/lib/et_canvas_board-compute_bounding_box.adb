@@ -76,6 +76,8 @@ with et_assy_doc;
 with et_assy_doc.board;
 
 with et_keepout;
+with et_keepout.packages;
+with et_keepout.board;
 
 with et_stopmask;
 with et_stopmask.board;
@@ -483,6 +485,7 @@ is
 				module		: in type_generic_module)
 			is 
 				use et_keepout;
+				use et_keepout.board;
 				use pac_keepout_zones;
 				use pac_keepout_cutouts;
 				

@@ -70,7 +70,7 @@ with et_stopmask.board;					use et_stopmask.board;
 with et_stencil.board;					use et_stencil.board;
 with et_silkscreen.board;				use et_silkscreen.board;
 with et_assy_doc.board;					use et_assy_doc.board;
-with et_keepout;						use et_keepout;
+with et_keepout.board;					use et_keepout.board;
 with et_pcb_contour;					use et_pcb_contour;
 with et_ratsnest;
 with et_commit;

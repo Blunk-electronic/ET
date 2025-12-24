@@ -61,6 +61,7 @@ with et_assy_doc;				use et_assy_doc;
 with et_assy_doc.packages;		use et_assy_doc.packages;
 
 with et_keepout;				use et_keepout;
+with et_keepout.packages;		use et_keepout.packages;
 
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;

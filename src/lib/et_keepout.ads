@@ -120,13 +120,6 @@ package et_keepout is
 		keepout	: in out type_keepout;
 		offset	: in type_vector_model);
 
-	
-
-	type type_keepout_both_sides is record
-		top 	: type_keepout;
-		bottom	: type_keepout;
-	end record;
-	
 
 	
 end et_keepout;

@@ -98,6 +98,8 @@ with et_assy_doc.board;				use et_assy_doc.board;
 with et_assy_doc.packages;
 
 with et_keepout;					use et_keepout;
+with et_keepout.board;				use et_keepout.board;
+
 with et_stopmask;					use et_stopmask;
 with et_stopmask.packages;
 with et_stopmask.board;				use et_stopmask.board;

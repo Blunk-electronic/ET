@@ -64,6 +64,7 @@ with et_package_bom_relevance;
 with et_package_description;
 with et_package_variant;
 with et_stencil.packages;			use et_stencil.packages;
+with et_keepout.packages;			use et_keepout.packages;
 with et_keywords;					use et_keywords;
 
 
@@ -545,7 +546,7 @@ package body et_kicad.pcb is
 		
 		package_silk_screen		: et_silkscreen.packages.type_silkscreen_both_sides;
 		package_assy_doc		: et_assy_doc.packages.type_assy_doc_both_sides;
-		package_keepout			: et_keepout.type_keepout_both_sides;
+		package_keepout			: et_keepout.packages.type_keepout_both_sides;
 		package_copper			: et_package_model.type_conductor_objects_both_sides;
 		
 		-- countours of a package as provided by the 3d model:
