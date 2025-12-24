@@ -3422,43 +3422,43 @@ package body et_kicad.pcb is
 				case board_arc.layer is
 					when TOP_SILK =>
 						board.silk_screen.top.arcs.append ((pac_geometry_2.type_arc (board_arc) with board_arc.width));
-						arc_silk_screen_properties (TOP, board.silk_screen.top.arcs.last, log_threshold + 1);
+						-- CS arc_silk_screen_properties (TOP, board.silk_screen.top.arcs.last, log_threshold + 1);
 
 					when BOT_SILK =>
 						board.silk_screen.bottom.arcs.append ((pac_geometry_2.type_arc (board_arc) with board_arc.width));
-						arc_silk_screen_properties (BOTTOM, board.silk_screen.bottom.arcs.last, log_threshold + 1);
+						-- CS arc_silk_screen_properties (BOTTOM, board.silk_screen.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
 						board.assy_doc.top.arcs.append ((pac_geometry_2.type_arc (board_arc) with board_arc.width));
-						arc_assy_doc_properties (TOP, board.assy_doc.top.arcs.last, log_threshold + 1);
+						-- CS arc_assy_doc_properties (TOP, board.assy_doc.top.arcs.last, log_threshold + 1);
 
 					when BOT_ASSY =>
 						board.assy_doc.bottom.arcs.append ((pac_geometry_2.type_arc (board_arc) with board_arc.width));
-						arc_assy_doc_properties (BOTTOM, board.assy_doc.bottom.arcs.last, log_threshold + 1);
+						-- CS arc_assy_doc_properties (BOTTOM, board.assy_doc.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
 						board.stencil.top.arcs.append ((pac_geometry_2.type_arc (board_arc) with board_arc.width));
-						arc_stencil_properties (TOP, board.stencil.top.arcs.last, log_threshold + 1);
+						-- CS arc_stencil_properties (TOP, board.stencil.top.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						board.stencil.bottom.arcs.append ((pac_geometry_2.type_arc (board_arc) with board_arc.width));
-						arc_stencil_properties (BOTTOM, board.stencil.bottom.arcs.last, log_threshold + 1);
+						-- CS arc_stencil_properties (BOTTOM, board.stencil.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
 						board.stop_mask.top.arcs.append ((pac_geometry_2.type_arc (board_arc) with board_arc.width));
-						arc_stop_mask_properties (TOP, board.stop_mask.top.arcs.last, log_threshold + 1);
+						-- CS arc_stop_mask_properties (TOP, board.stop_mask.top.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						board.stop_mask.bottom.arcs.append ((pac_geometry_2.type_arc (board_arc) with board_arc.width));
-						arc_stop_mask_properties (BOTTOM, board.stop_mask.bottom.arcs.last, log_threshold + 1);
+						-- CS arc_stop_mask_properties (BOTTOM, board.stop_mask.bottom.arcs.last, log_threshold + 1);
 
 						
 					when EDGE_CUTS =>
 						append (board.contour.outline.contour.segments, (ARC, pac_geometry_2.type_arc (board_arc)));
-						pcb_contour_segment_properties (board.contour.outline.contour.segments.last, log_threshold + 1);
+						-- CS pcb_contour_segment_properties (board.contour.outline.contour.segments.last, log_threshold + 1);
 						
 					when others => invalid_layer;
 				end case;
@@ -3489,26 +3489,26 @@ package body et_kicad.pcb is
 						board.silk_screen.top.circles.append ((pac_geometry_2.type_circle (board_circle) with
 							width => board_circle.width));
 						
-						circle_silk_screen_properties (TOP, board.silk_screen.top.circles.last, log_threshold + 1);
+						-- CS circle_silk_screen_properties (TOP, board.silk_screen.top.circles.last, log_threshold + 1);
 
 					when BOT_SILK =>
 						board.silk_screen.bottom.circles.append ((pac_geometry_2.type_circle (board_circle) with
 							width => board_circle.width));
 
-						circle_silk_screen_properties (BOTTOM, board.silk_screen.bottom.circles.last, log_threshold + 1);
+						-- CS circle_silk_screen_properties (BOTTOM, board.silk_screen.bottom.circles.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
 						board.assy_doc.top.circles.append ((pac_geometry_2.type_circle (board_circle) with
 							width => board_circle.width));
 
-						circle_assy_doc_properties (TOP, board.assy_doc.top.circles.last, log_threshold + 1);
+						-- CS circle_assy_doc_properties (TOP, board.assy_doc.top.circles.last, log_threshold + 1);
 
 					when BOT_ASSY =>
 						board.assy_doc.bottom.circles.append ((pac_geometry_2.type_circle (board_circle) with
 							width => board_circle.width));
 
-						circle_assy_doc_properties (BOTTOM, board.assy_doc.bottom.circles.last, log_threshold + 1);
+						-- CS circle_assy_doc_properties (BOTTOM, board.assy_doc.bottom.circles.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
@@ -3521,25 +3521,25 @@ package body et_kicad.pcb is
 						board.stencil.bottom.circles.append ((pac_geometry_2.type_circle (board_circle) with
 							width => board_circle.width));
 
-						circle_stencil_properties (BOTTOM, board.stencil.bottom.circles.last, log_threshold + 1);
+						-- CS circle_stencil_properties (BOTTOM, board.stencil.bottom.circles.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
 						board.stop_mask.top.circles.append ((pac_geometry_2.type_circle (board_circle) with
 							width => board_circle.width));
 
-						circle_stop_mask_properties (TOP, board.stop_mask.top.circles.last, log_threshold + 1);
+						-- CS circle_stop_mask_properties (TOP, board.stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						board.stop_mask.bottom.circles.append ((pac_geometry_2.type_circle (board_circle) with
 							width => board_circle.width));
 
-						circle_stop_mask_properties (BOTTOM, board.stop_mask.bottom.circles.last, log_threshold + 1);
+						-- CS circle_stop_mask_properties (BOTTOM, board.stop_mask.bottom.circles.last, log_threshold + 1);
 						
 						
 					when EDGE_CUTS =>
 						board.contour.outline.contour.circle := pac_geometry_2.type_circle (board_circle);
-						pcb_contour_circle_properties (board.contour.outline.contour.circle, log_threshold + 1);
+						-- CS pcb_contour_circle_properties (board.contour.outline.contour.circle, log_threshold + 1);
 						
 						
 					when others => invalid_layer;
@@ -3562,43 +3562,43 @@ package body et_kicad.pcb is
 
 					when TOP_SILK =>
 						board.silk_screen.top.lines.append ((pac_geometry_2.type_line (board_line) with board_line.width));
-						line_silk_screen_properties (TOP, board.silk_screen.top.lines.last, log_threshold + 1);
+						-- CS line_silk_screen_properties (TOP, board.silk_screen.top.lines.last, log_threshold + 1);
 
 					when BOT_SILK =>
 						board.silk_screen.bottom.lines.append ((pac_geometry_2.type_line (board_line) with board_line.width));
-						line_silk_screen_properties (BOTTOM, board.silk_screen.bottom.lines.last, log_threshold + 1);
+						-- CS line_silk_screen_properties (BOTTOM, board.silk_screen.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
 						board.assy_doc.top.lines.append ((pac_geometry_2.type_line (board_line) with board_line.width));
-						line_assy_doc_properties (TOP, board.assy_doc.top.lines.last, log_threshold + 1);
+						-- CS line_assy_doc_properties (TOP, board.assy_doc.top.lines.last, log_threshold + 1);
 
 					when BOT_ASSY =>
 						board.assy_doc.bottom.lines.append ((pac_geometry_2.type_line (board_line) with board_line.width));
-						line_assy_doc_properties (BOTTOM, board.assy_doc.bottom.lines.last, log_threshold + 1);
+						-- CS line_assy_doc_properties (BOTTOM, board.assy_doc.bottom.lines.last, log_threshold + 1);
 
 
 					when TOP_PASTE =>
 						board.stencil.top.lines.append ((pac_geometry_2.type_line (board_line) with board_line.width));
-						line_stencil_properties (TOP, board.stencil.top.lines.last, log_threshold + 1);
+						-- CS line_stencil_properties (TOP, board.stencil.top.lines.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						board.stencil.bottom.lines.append ((pac_geometry_2.type_line (board_line) with board_line.width));
-						line_stencil_properties (BOTTOM, board.stencil.bottom.lines.last, log_threshold + 1);
+						-- CS line_stencil_properties (BOTTOM, board.stencil.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
 						board.stop_mask.top.lines.append ((pac_geometry_2.type_line (board_line) with board_line.width));
-						line_stop_mask_properties (TOP, board.stop_mask.top.lines.last, log_threshold + 1);
+						-- CS line_stop_mask_properties (TOP, board.stop_mask.top.lines.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						board.stop_mask.bottom.lines.append ((pac_geometry_2.type_line (board_line) with board_line.width));
-						line_stop_mask_properties (BOTTOM, board.stop_mask.bottom.lines.last, log_threshold + 1);
+						-- CS line_stop_mask_properties (BOTTOM, board.stop_mask.bottom.lines.last, log_threshold + 1);
 
 						
 					when EDGE_CUTS =>
 						append (board.contour.outline.contour.segments, (LINE, pac_geometry_2.type_line (board_line)));
-						pcb_contour_segment_properties (board.contour.outline.contour.segments.last, log_threshold + 1);
+						-- CS pcb_contour_segment_properties (board.contour.outline.contour.segments.last, log_threshold + 1);
 
 						
 					when others => invalid_layer;
@@ -3617,34 +3617,34 @@ package body et_kicad.pcb is
 					when layer_top_silk_screen_id =>
 						board.silk_screen.top.texts.append ((type_text_fab (board_text) with 
 							content => board_text.content));
-						text_silk_screen_properties (TOP, board.silk_screen.top.texts.last, log_threshold + 1);
+						-- CS text_silk_screen_properties (TOP, board.silk_screen.top.texts.last, log_threshold + 1);
 						
 					when layer_bot_silk_screen_id =>
 						board.silk_screen.bottom.texts.append ((type_text_fab (board_text) with
 							content => board_text.content));
-						text_silk_screen_properties (BOTTOM, board.silk_screen.bottom.texts.last, log_threshold + 1);
+						-- CS text_silk_screen_properties (BOTTOM, board.silk_screen.bottom.texts.last, log_threshold + 1);
 
 						
 					when layer_top_assy_doc_id =>
 						board.assy_doc.top.texts.append ((type_text_fab (board_text) with
 							content => board_text.content));
-						text_assy_doc_properties (TOP, board.assy_doc.top.texts.last, log_threshold + 1);
+						-- CS text_assy_doc_properties (TOP, board.assy_doc.top.texts.last, log_threshold + 1);
 						
 					when layer_bot_assy_doc_id =>
 						board.assy_doc.bottom.texts.append ((type_text_fab (board_text) with
 							content => board_text.content));
-						text_assy_doc_properties (BOTTOM, board.assy_doc.bottom.texts.last, log_threshold + 1);
+						-- CS text_assy_doc_properties (BOTTOM, board.assy_doc.bottom.texts.last, log_threshold + 1);
 
 						
 					when layer_top_stop_mask_id =>
 						board.stop_mask.top.texts.append ((type_text_fab (board_text) with
 							content => board_text.content));
-						text_stop_mask_properties (TOP, board.stop_mask.top.texts.last, log_threshold + 1);
+						-- CS text_stop_mask_properties (TOP, board.stop_mask.top.texts.last, log_threshold + 1);
 						
 					when layer_bot_stop_mask_id =>
 						board.stop_mask.bottom.texts.append ((type_text_fab (board_text) with
 							content => board_text.content));
-						text_stop_mask_properties (BOTTOM, board.stop_mask.bottom.texts.last, log_threshold + 1);
+						-- CS text_stop_mask_properties (BOTTOM, board.stop_mask.bottom.texts.last, log_threshold + 1);
 
 					when others =>
 
@@ -3660,7 +3660,7 @@ package body et_kicad.pcb is
 									layer 	=> type_signal_layer ((board_text.layer) + 1),
 									others	=> <> -- CS vector text, conductor segments
 								));
-							text_conductor_properties (board.copper.texts.last, log_threshold + 1);
+							-- CS text_conductor_properties (board.copper.texts.last, log_threshold + 1);
 						else
 							-- CS currently there is no reason for texts in stencil, keepout, glue or other layers.
 							-- This would cause an error:
@@ -3696,47 +3696,47 @@ package body et_kicad.pcb is
 				case package_arc.layer is
 					when TOP_SILK =>
 						package_silk_screen.top.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
-						arc_silk_screen_properties (TOP, package_silk_screen.top.arcs.last, log_threshold + 1);
+						-- CS arc_silk_screen_properties (TOP, package_silk_screen.top.arcs.last, log_threshold + 1);
 						
 					when BOT_SILK =>
 						package_silk_screen.bottom.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
-						arc_silk_screen_properties (BOTTOM, package_silk_screen.bottom.arcs.last, log_threshold + 1);
+						-- CS arc_silk_screen_properties (BOTTOM, package_silk_screen.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
 						package_assy_doc.top.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
-						arc_assy_doc_properties (TOP, package_assy_doc.top.arcs.last, log_threshold + 1);
+						-- CS arc_assy_doc_properties (TOP, package_assy_doc.top.arcs.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
 						package_assy_doc.bottom.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
-						arc_assy_doc_properties (BOTTOM, package_assy_doc.bottom.arcs.last, log_threshold + 1);
+						-- CS arc_assy_doc_properties (BOTTOM, package_assy_doc.bottom.arcs.last, log_threshold + 1);
 						
 						
 					when TOP_COPPER => 
 						package_copper.top.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
-						arc_conductor_properties (TOP, package_copper.top.arcs.last, log_threshold + 1);
+						-- CS arc_conductor_properties (TOP, package_copper.top.arcs.last, log_threshold + 1);
 
 					when BOT_COPPER => 
 						package_copper.bottom.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
-						arc_conductor_properties (BOTTOM, package_copper.bottom.arcs.last, log_threshold + 1);
+						-- CS arc_conductor_properties (BOTTOM, package_copper.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
 						package_stop_mask.top.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
-						arc_stop_mask_properties (TOP, package_stop_mask.top.arcs.last, log_threshold + 1);
+						-- CS arc_stop_mask_properties (TOP, package_stop_mask.top.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						package_stop_mask.bottom.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
-						arc_stop_mask_properties (BOTTOM, package_stop_mask.bottom.arcs.last, log_threshold + 1);
+						-- CS arc_stop_mask_properties (BOTTOM, package_stop_mask.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
 						package_stencil.top.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
-						arc_stencil_properties (TOP, package_stencil.top.arcs.last, log_threshold + 1);
+						-- CS arc_stencil_properties (TOP, package_stencil.top.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						package_stencil.bottom.arcs.append ((pac_geometry_2.type_arc (package_arc) with package_arc.width));
-						arc_stencil_properties (BOTTOM, package_stencil.bottom.arcs.last, log_threshold + 1);
+						-- CS arc_stencil_properties (BOTTOM, package_stencil.bottom.arcs.last, log_threshold + 1);
 
 					when others => invalid_layer;
 				end case;
@@ -3769,26 +3769,26 @@ package body et_kicad.pcb is
 						package_silk_screen.top.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							width => package_circle.width)); 
 
-						circle_silk_screen_properties (TOP, package_silk_screen.top.circles.last, log_threshold + 1);
+						-- CS circle_silk_screen_properties (TOP, package_silk_screen.top.circles.last, log_threshold + 1);
 						
 					when BOT_SILK =>
 						package_silk_screen.bottom.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							width => package_circle.width)); 
 						
-						circle_silk_screen_properties (BOTTOM, package_silk_screen.bottom.circles.last, log_threshold + 1);
+						-- CS circle_silk_screen_properties (BOTTOM, package_silk_screen.bottom.circles.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
 						package_assy_doc.top.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							width => package_circle.width)); 
 
-						circle_assy_doc_properties (TOP, package_assy_doc.top.circles.last, log_threshold + 1);
+						-- CS circle_assy_doc_properties (TOP, package_assy_doc.top.circles.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
 						package_assy_doc.bottom.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							width => package_circle.width)); 
 						
-						circle_assy_doc_properties (BOTTOM, package_assy_doc.bottom.circles.last, log_threshold + 1);
+						-- CS circle_assy_doc_properties (BOTTOM, package_assy_doc.bottom.circles.last, log_threshold + 1);
 
 
 						
@@ -3796,39 +3796,39 @@ package body et_kicad.pcb is
 						package_copper.top.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							width => package_circle.width));
 
-						circle_conductor_properties (TOP, package_copper.top.circles.last, log_threshold + 1);
+						-- CS circle_conductor_properties (TOP, package_copper.top.circles.last, log_threshold + 1);
 
 					when BOT_COPPER => 
 						package_copper.bottom.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							width => package_circle.width));
 
-						circle_conductor_properties (BOTTOM, package_copper.bottom.circles.last, log_threshold + 1);
+						-- CS circle_conductor_properties (BOTTOM, package_copper.bottom.circles.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
 						package_stop_mask.top.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							width => package_circle.width)); 
 
-						circle_stop_mask_properties (TOP, package_stop_mask.top.circles.last, log_threshold + 1);
+						-- CS circle_stop_mask_properties (TOP, package_stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						package_stop_mask.bottom.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							width => package_circle.width)); 
 						
-						circle_stop_mask_properties (BOTTOM, package_stop_mask.bottom.circles.last, log_threshold + 1);
+						-- CS circle_stop_mask_properties (BOTTOM, package_stop_mask.bottom.circles.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
 						package_stencil.top.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							width => package_circle.width)); 
 						
-						circle_stencil_properties (TOP, package_stencil.top.circles.last, log_threshold + 1);
+						-- CS circle_stencil_properties (TOP, package_stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						package_stencil.bottom.circles.append ((pac_geometry_2.type_circle (package_circle) with
 							width => package_circle.width)); 
 						
-						circle_stencil_properties (BOTTOM, package_stencil.bottom.circles.last, log_threshold + 1);
+						-- CS circle_stencil_properties (BOTTOM, package_stencil.bottom.circles.last, log_threshold + 1);
 
 					when others => invalid_layer;
 				end case;
@@ -3851,65 +3851,65 @@ package body et_kicad.pcb is
 						package_silk_screen.top.lines.append ((
 							pac_geometry_2.type_line (package_line) with package_line.width));
 						
-						line_silk_screen_properties (TOP, package_silk_screen.top.lines.last, log_threshold + 1);
+						-- CS line_silk_screen_properties (TOP, package_silk_screen.top.lines.last, log_threshold + 1);
 
 					when BOT_SILK =>
 						package_silk_screen.bottom.lines.append ((
 							pac_geometry_2.type_line (package_line) with package_line.width));
 
-						line_silk_screen_properties (BOTTOM, package_silk_screen.bottom.lines.last, log_threshold + 1);
+						-- CS line_silk_screen_properties (BOTTOM, package_silk_screen.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
 						package_assy_doc.top.lines.append ((
 							pac_geometry_2.type_line (package_line) with package_line.width));
 
-						line_assy_doc_properties (TOP, package_assy_doc.top.lines.last, log_threshold + 1);
+						-- CS line_assy_doc_properties (TOP, package_assy_doc.top.lines.last, log_threshold + 1);
 
 					when BOT_ASSY =>
 						package_assy_doc.bottom.lines.append ((
 							pac_geometry_2.type_line (package_line) with package_line.width));
 
-						line_assy_doc_properties (BOTTOM, package_assy_doc.bottom.lines.last, log_threshold + 1);
+						-- CS line_assy_doc_properties (BOTTOM, package_assy_doc.bottom.lines.last, log_threshold + 1);
 						
 						
 					when TOP_COPPER => 
 						package_copper.top.lines.append ((
 							pac_geometry_2.type_line (package_line) with package_line.width));
 
-						line_conductor_properties (TOP, package_copper.top.lines.last, log_threshold + 1);
+						-- CS line_conductor_properties (TOP, package_copper.top.lines.last, log_threshold + 1);
 
 					when BOT_COPPER => 
 						package_copper.bottom.lines.append ((
 							pac_geometry_2.type_line (package_line) with package_line.width));
 
-						line_conductor_properties (BOTTOM, package_copper.bottom.lines.last, log_threshold + 1);
+						-- CS line_conductor_properties (BOTTOM, package_copper.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
 						package_stop_mask.top.lines.append ((
 							pac_geometry_2.type_line (package_line) with package_line.width));
 						
-						line_stop_mask_properties (TOP, package_stop_mask.top.lines.last, log_threshold + 1);
+						-- CS line_stop_mask_properties (TOP, package_stop_mask.top.lines.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						package_stop_mask.bottom.lines.append ((
 							pac_geometry_2.type_line (package_line) with package_line.width));
 
-						line_stop_mask_properties (BOTTOM, package_stop_mask.bottom.lines.last, log_threshold + 1);
+						-- CS line_stop_mask_properties (BOTTOM, package_stop_mask.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
 						package_stencil.top.lines.append ((
 							pac_geometry_2.type_line (package_line) with package_line.width));
 
-						line_stencil_properties (TOP, package_stencil.top.lines.last, log_threshold + 1);
+						-- CS line_stencil_properties (TOP, package_stencil.top.lines.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						package_stencil.bottom.lines.append ((
 							pac_geometry_2.type_line (package_line) with package_line.width));
 
-						line_stencil_properties (BOTTOM, package_stencil.bottom.lines.last, log_threshold + 1);
+						-- CS line_stencil_properties (BOTTOM, package_stencil.bottom.lines.last, log_threshold + 1);
 
 					when others => invalid_layer;
 				end case;
@@ -4977,7 +4977,7 @@ package body et_kicad.pcb is
 									);
 
 							route.lines.append (line); -- append the segment to the lines of the route
-							et_pcb.route_line_properties (route.lines.last, log_threshold + 3);
+							-- CS et_pcb.route_line_properties (route.lines.last, log_threshold + 3);
 
 						end if;
 						
@@ -5028,7 +5028,7 @@ package body et_kicad.pcb is
 									);
 
 							route.vias.append (via); -- append the via to the vias of the route
-							et_pcb.route_via_properties (route.vias.last, log_threshold + 3);
+							-- CS et_pcb.route_via_properties (route.vias.last, log_threshold + 3);
 
 						end if;
 					

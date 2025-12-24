@@ -55,7 +55,7 @@ with et_devices_electrical;
 with et_devices_electrical.packages;
 
 with et_nets;
--- with et_pcb;
+with et_conductors_floating_board;	use et_conductors_floating_board;
 with et_route;
 with et_devices_non_electrical;
 with et_package_model;				use et_package_model;

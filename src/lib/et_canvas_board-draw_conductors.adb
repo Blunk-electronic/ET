@@ -69,6 +69,7 @@ with et_alignment;
 with et_canvas_tool;
 with et_mirroring;
 with et_pcb_placeholders;			use et_pcb_placeholders;
+with et_conductors_floating_board;	use et_conductors_floating_board;
 
 
 separate (et_canvas_board)

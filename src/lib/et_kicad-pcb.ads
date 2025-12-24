@@ -64,6 +64,7 @@ with et_package_name;				use et_package_name;
 with et_package_model_name;			use et_package_model_name;
 with et_pcb;
 with et_pcb_sides;					use et_pcb_sides;
+with et_conductors_floating_board;	use et_conductors_floating_board;
 with et_board_geometry;				use et_board_geometry;
 with et_board_coordinates;			use et_board_coordinates;
 with et_kicad_general;				use et_kicad_general;
@@ -726,7 +727,7 @@ package et_kicad.pcb is
 		contour		: et_pcb.type_board_contour;
 
 		 -- non-electric. used for texts only
-		copper		: et_pcb.type_conductors_floating;
+		copper		: type_conductors_floating;
 
 		-- other non-electric graphic objects in signal layers are not allowed in kicad
 

@@ -37,18 +37,6 @@
 --
 
 with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.characters.latin_1;
-with ada.characters.handling;		use ada.characters.handling;
-
-with ada.strings;					use ada.strings;
-with ada.strings.fixed;				use ada.strings.fixed;
-with ada.strings.maps;				use ada.strings.maps;
-
-with ada.strings.unbounded;
-with ada.exceptions;
-
-with et_string_processing;				use et_string_processing;
 
 
 
@@ -104,93 +92,93 @@ package body et_pcb is
 
 -- PROPERTIES OF ELECTRIC OBJECTS IN SIGNAL LAYERS
 	
-	procedure route_line_properties (
-		cursor			: in pac_conductor_lines.cursor;
-		log_threshold 	: in type_log_level)
-	is
-		use pac_conductor_lines;
-		line : type_conductor_line;
-	begin
-		line := element (cursor);
-		log (text => "segment " & to_string (type_line (line)) &
-			 " width" & to_string (line.width) &
-			 " layer" & to_string (line.layer)
-			 -- CS locked
-			 , level => log_threshold);
-	end route_line_properties;
+	-- procedure route_line_properties (
+	-- 	cursor			: in pac_conductor_lines.cursor;
+	-- 	log_threshold 	: in type_log_level)
+	-- is
+	-- 	use pac_conductor_lines;
+	-- 	line : type_conductor_line;
+	-- begin
+	-- 	line := element (cursor);
+	-- 	log (text => "segment " & to_string (type_line (line)) &
+	-- 		 " width" & to_string (line.width) &
+	-- 		 " layer" & to_string (line.layer)
+	-- 		 -- CS locked
+	-- 		 , level => log_threshold);
+	-- end route_line_properties;
 
 
 
 	
 	
-	procedure route_via_properties (
-		cursor			: in pac_vias.cursor;
-		log_threshold 	: in type_log_level) 
-	is
-		use pac_vias;
+-- 	procedure route_via_properties (
+-- 		cursor			: in pac_vias.cursor;
+-- 		log_threshold 	: in type_log_level) 
+-- 	is
+-- 		use pac_vias;
+-- 		
+-- 		procedure do_it (via : type_via) 
+-- 		is begin
+-- 			case via.category is
+-- 				when THROUGH =>
+-- 					log (text => "via" 
+-- 						& " category " & to_string (via.category) & space
+-- 						& to_string (type_drill (via)) 
+-- 						& " restring outer" & to_string (via.restring_outer) -- outer layers
+-- 						& " restring inner" & to_string (via.restring_inner), -- inner layers
+-- 						level => log_threshold);
+-- 
+-- 				when others => null;
+-- 				-- CS log properties of other via categories
+-- 				
+-- 			end case;
+-- 						--& " layer_start" & to_string (via.layers.l_start) &
+-- 			 --" layer_end" & to_string (via.layers.l_end)
+-- 			 ---- CS locked
+-- 		end do_it;
+-- 	
+-- 	begin
+-- 		do_it (element (cursor));
+-- 	
+-- 	end route_via_properties;
+
 		
-		procedure do_it (via : type_via) 
-		is begin
-			case via.category is
-				when THROUGH =>
-					log (text => "via" 
-						& " category " & to_string (via.category) & space
-						& to_string (type_drill (via)) 
-						& " restring outer" & to_string (via.restring_outer) -- outer layers
-						& " restring inner" & to_string (via.restring_inner), -- inner layers
-						level => log_threshold);
-
-				when others => null;
-				-- CS log properties of other via categories
-				
-			end case;
-						--& " layer_start" & to_string (via.layers.l_start) &
-			 --" layer_end" & to_string (via.layers.l_end)
-			 ---- CS locked
-		end do_it;
-	
-	begin
-		do_it (element (cursor));
-	
-	end route_via_properties;
-
-		
 
 
 
-	procedure pcb_contour_segment_properties (
-		cursor			: in pac_segments.cursor;
-		log_threshold 	: in type_log_level)
-	is 
-		use pac_segments;
-	begin
-		case element (cursor).shape is
-			when LINE =>
-				log (text => "PCB contour (edge cuts / outline) line" & space
-					 & to_string (element (cursor).segment_line),
-					 level => log_threshold);
-
-			when ARC =>
-				log (text => "PCB contour (edge cuts / outline) arc" & space
-					 & to_string (element (cursor).segment_arc),
-					 level => log_threshold);
-				
-		end case;
-	end pcb_contour_segment_properties;
+-- 	procedure pcb_contour_segment_properties (
+-- 		cursor			: in pac_segments.cursor;
+-- 		log_threshold 	: in type_log_level)
+-- 	is 
+-- 		use pac_segments;
+-- 	begin
+-- 		case element (cursor).shape is
+-- 			when LINE =>
+-- 				log (text => "PCB contour (edge cuts / outline) line" & space
+-- 					 & to_string (element (cursor).segment_line),
+-- 					 level => log_threshold);
+-- 
+-- 			when ARC =>
+-- 				log (text => "PCB contour (edge cuts / outline) arc" & space
+-- 					 & to_string (element (cursor).segment_arc),
+-- 					 level => log_threshold);
+-- 				
+-- 		end case;
+-- 	end pcb_contour_segment_properties;
 
 
 
 
 	
 	
-	procedure pcb_contour_circle_properties (
-		circle			: in type_circle;
-		log_threshold 	: in type_log_level)
-	is begin
-		log (text => "PCB contour (edge cuts / outline) circle" & space 
-			 & to_string (circle),
-			 level => log_threshold);
-	end pcb_contour_circle_properties;
+	-- procedure pcb_contour_circle_properties (
+	-- 	circle			: in type_circle;
+	-- 	log_threshold 	: in type_log_level)
+	-- is begin
+	-- 	log (text => "PCB contour (edge cuts / outline) circle" & space 
+	-- 		 & to_string (circle),
+	-- 		 level => log_threshold);
+	-- end pcb_contour_circle_properties;
 	
 	
 end et_pcb;

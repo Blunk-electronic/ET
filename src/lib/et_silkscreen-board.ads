@@ -79,6 +79,8 @@ package et_silkscreen.board is
 		face		: in type_face);
 
 
+
+	-- CS procedure add_zone, add_text, add_placeholder
 	
 end et_silkscreen.board;
 

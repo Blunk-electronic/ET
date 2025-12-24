@@ -44,6 +44,7 @@ with et_board_ops.devices;			use et_board_ops.devices;
 with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
 
 with et_devices_electrical;
+with et_conductors_floating_board;	use et_conductors_floating_board;
 
 with et_vias;
 with et_route;

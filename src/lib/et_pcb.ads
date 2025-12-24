@@ -43,7 +43,7 @@ with ada.strings.bounded; 				use ada.strings.bounded;
 
 with ada.containers; 					use ada.containers;
 with ada.containers.doubly_linked_lists;
-with ada.containers.ordered_maps;
+
 
 with et_logging;						use et_logging;
 
@@ -62,7 +62,6 @@ with et_design_rules_board;				use et_design_rules_board;
 with et_fill_zones;						use et_fill_zones;
 with et_fill_zones.boards;				use et_fill_zones.boards;
 
-with et_conductor_segment.boards;		use et_conductor_segment.boards;
 with et_conductor_text.boards;			use et_conductor_text.boards;
 with et_route_restrict.boards;			use et_route_restrict.boards;
 with et_via_restrict.boards;			use et_via_restrict.boards;
@@ -72,19 +71,19 @@ with et_silkscreen.board;				use et_silkscreen.board;
 with et_assy_doc.board;					use et_assy_doc.board;
 with et_keepout.board;					use et_keepout.board;
 with et_pcb_contour;					use et_pcb_contour;
-with et_ratsnest;
+
 with et_commit;
 with et_object_status;					use et_object_status;
 with et_mirroring;						use et_mirroring;
-with et_pcb_placeholders;				use et_pcb_placeholders;
+
+with et_conductors_floating_board;		use et_conductors_floating_board;
 
 
 package et_pcb is
 	
 	use pac_geometry_2;
 	use pac_contours;
-	use pac_polygons;
-	use pac_text_board;
+
 
 
 	-- Maps from face to mirror status of a vectorized text.
@@ -131,30 +130,6 @@ package et_pcb is
 	
 
 
-	
-	-- Type for NON ELECTRIC !! conductor objects.
-	-- All these objects are not connected to any net,
-	-- means they are floating.
-	-- NON ELECTRIC conductor objects of a pcb may also 
-	-- include text placeholders:
-	type type_conductors_floating is record
-		lines 			: pac_conductor_lines.list;
-		arcs			: pac_conductor_arcs.list;
-		circles			: pac_conductor_circles.list;
-
-		-- floating fill zones:
-		zones			: type_floating;
-		-- Useful to catch the liquid solder during wave soldering ?
-
-		-- global cutout areas:
-		cutouts			: boards.pac_cutouts.list;
-		
-		texts			: et_conductor_text.boards.pac_conductor_texts.list;
-		placeholders	: pac_text_placeholders_conductors.list;
-	end record;
-
-
-
 
 		
 
@@ -172,28 +147,28 @@ package et_pcb is
 -- LOGGING PROPERTIES OF OBJECTS
 
 	
-	-- Logs the properties of the given line of a route
-	procedure route_line_properties (
-		cursor			: in pac_conductor_lines.cursor;
-		log_threshold 	: in type_log_level);
-
-	
-	-- Logs the properties of the given via of a route
-	procedure route_via_properties (
-		cursor			: in pac_vias.cursor;
-		log_threshold 	: in type_log_level);
-
-
-	-- Logs the properties of the given contour segment:
-	procedure pcb_contour_segment_properties (
-		cursor			: in pac_segments.cursor;
-		log_threshold 	: in type_log_level);
-
-	
-	-- Logs the properties of the given contour circle:
-	procedure pcb_contour_circle_properties (
-		circle			: in type_circle;
-		log_threshold 	: in type_log_level);
+-- 	-- Logs the properties of the given line of a route
+-- 	procedure route_line_properties (
+-- 		cursor			: in pac_conductor_lines.cursor;
+-- 		log_threshold 	: in type_log_level);
+-- 
+-- 	
+-- 	-- Logs the properties of the given via of a route
+-- 	procedure route_via_properties (
+-- 		cursor			: in pac_vias.cursor;
+-- 		log_threshold 	: in type_log_level);
+-- 
+-- 
+-- 	-- Logs the properties of the given contour segment:
+-- 	procedure pcb_contour_segment_properties (
+-- 		cursor			: in pac_segments.cursor;
+-- 		log_threshold 	: in type_log_level);
+-- 
+-- 	
+-- 	-- Logs the properties of the given contour circle:
+-- 	procedure pcb_contour_circle_properties (
+-- 		circle			: in type_circle;
+-- 		log_threshold 	: in type_log_level);
 
 
 	

@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                        SOLDER STOPMASK / BOARD                           --
+--                  FLOATING CONDUCTORS IN BOARD                            --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -38,58 +38,41 @@
 --   to do:
 --
 
-
-
-with et_pcb_sides;						use et_pcb_sides;
+with et_conductor_segment.boards;		use et_conductor_segment.boards;
+with et_conductor_text.boards;			use et_conductor_text.boards;
+with et_fill_zones.boards;				use et_fill_zones.boards;
 with et_pcb_placeholders;				use et_pcb_placeholders;
 
 
-package et_stopmask.board is
-	
+package et_conductors_floating_board is
 
 	
-	-- Stopmask in board may contain placeholders:
-	type type_stopmask_board is new et_stopmask.type_stopmask with 
-	record
-		-- for texts in conductor layers to be exposed
-		placeholders : pac_text_placeholders.list;
-	end record;
+	-- Type for NON ELECTRIC !! conductor objects.
+	-- All these objects are not connected to any net,
+	-- means they are floating.
+	-- NON ELECTRIC conductor objects of a pcb may also 
+	-- include text placeholders:
+	type type_conductors_floating is record
+		lines 			: pac_conductor_lines.list;
+		arcs			: pac_conductor_arcs.list;
+		circles			: pac_conductor_circles.list;
 
+		-- floating fill zones:
+		zones			: type_floating;
+		-- Useful to catch the liquid solder during wave soldering ?
 
-	type type_stop_mask_both_sides is record -- CS rename to type_stopmask_both_sides
-		top		: type_stopmask_board;
-		bottom	: type_stopmask_board;
-	end record;
-
-
-
-
-	procedure add_line (
-		stopmask	: in out type_stop_mask_both_sides;
-		line		: in type_stop_line;
-		face		: in type_face);
-	
-
-
-	procedure add_arc (
-		stopmask	: in out type_stop_mask_both_sides;
-		arc			: in type_stop_arc;
-		face		: in type_face);
-
-
-
-	procedure add_circle (
-		stopmask	: in out type_stop_mask_both_sides;
-		circle		: in type_stop_circle;
-		face		: in type_face);
-
+		-- global cutout areas:
+		cutouts			: pac_cutouts.list;
 		
+		texts			: pac_conductor_texts.list;
+		placeholders	: pac_text_placeholders_conductors.list;
+	end record;
 
-	-- CS procedure add_zone, add_text
+
+	-- CS procedures add_line, add_arc, add_circle, add_zone, add_text, add_placeholder
 
 	
-end et_stopmask.board;
-
+end et_conductors_floating_board;
 
 -- Soli Deo Gloria
 

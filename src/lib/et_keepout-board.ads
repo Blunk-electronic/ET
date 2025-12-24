@@ -52,6 +52,9 @@ package et_keepout.board is
 	end record;
 
 
+
+	-- CS procedure add_zone, add_cutout
+	
 	
 end et_keepout.board;
 

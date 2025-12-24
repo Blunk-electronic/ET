@@ -71,7 +71,9 @@ package et_stencil.board is
 		circle		: in type_stencil_circle;
 		face		: in type_face);
 
+	
 
+	-- CS procedure add_zone
 	
 end et_stencil.board;
 

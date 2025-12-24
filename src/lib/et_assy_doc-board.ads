@@ -80,6 +80,9 @@ package et_assy_doc.board is
 		face		: in type_face);
 
 
+
+	-- CS procedure add_zone, add_text, add_placeholder
+	
 	
 end et_assy_doc.board;
 
