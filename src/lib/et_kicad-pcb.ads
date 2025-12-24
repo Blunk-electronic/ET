@@ -99,6 +99,7 @@ with et_assy_doc.packages;
 with et_keepout;					use et_keepout;
 with et_stopmask;					use et_stopmask;
 with et_stopmask.packages;
+with et_stopmask.board;				use et_stopmask.board;
 
 with et_generic_module;
 
@@ -716,7 +717,7 @@ package et_kicad.pcb is
 		silk_screen	: et_pcb.type_silkscreen_both_sides;
 		assy_doc	: type_assy_doc_both_sides;
 		stencil		: type_stencil_both_sides;
-		stop_mask	: et_pcb.type_stop_mask_both_sides;
+		stop_mask	: type_stop_mask_both_sides;
 		keepout		: type_keepout_both_sides;		
 		contour		: et_pcb.type_board_contour;
 

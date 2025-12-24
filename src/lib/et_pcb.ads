@@ -66,7 +66,7 @@ with et_conductor_segment.boards;		use et_conductor_segment.boards;
 with et_conductor_text.boards;			use et_conductor_text.boards;
 with et_route_restrict.boards;			use et_route_restrict.boards;
 with et_via_restrict.boards;			use et_via_restrict.boards;
-with et_stopmask;						use et_stopmask;
+with et_stopmask.board;					use et_stopmask.board;
 with et_stencil;						use et_stencil;
 with et_silkscreen;						use et_silkscreen;
 with et_assy_doc.board;					use et_assy_doc.board;
@@ -158,21 +158,6 @@ package et_pcb is
 
 
 
-	
-	-- Stopmask in board may contain placeholders:
-	type type_stopmask_board is new et_stopmask.type_stopmask with 
-	record
-		-- for texts in conductor layers to be exposed
-		placeholders : pac_text_placeholders.list;
-	end record;
-
-
-	type type_stop_mask_both_sides is record
-		top		: type_stopmask_board;
-		bottom	: type_stopmask_board;
-	end record;
-
-	
 
 
 	

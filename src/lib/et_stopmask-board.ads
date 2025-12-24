@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                   ASSEMBLY DOCUMENTATION / BOARD                         --
+--                        SOLDER STOPMASK / BOARD                           --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -39,49 +39,54 @@
 --
 
 
+
 with et_pcb_sides;						use et_pcb_sides;
 with et_pcb_placeholders;				use et_pcb_placeholders;
 
 
-package et_assy_doc.board is
+package et_stopmask.board is
+	
 
-
-
-	type type_assy_doc_board is new type_assy_doc with record
-		-- Placeholders for revision, board name, misc ... :
+	
+	-- Stopmask in board may contain placeholders:
+	type type_stopmask_board is new et_stopmask.type_stopmask with 
+	record
+		-- for texts in conductor layers to be exposed
 		placeholders : pac_text_placeholders.list;
 	end record;
 
 
-	-- Because assembly documentation is about two 
-	-- sides of the board this composite is required:	
-	type type_assy_doc_both_sides is record
-		top 	: type_assy_doc_board;
-		bottom	: type_assy_doc_board;
+	type type_stop_mask_both_sides is record -- CS rename to type_stopmask_both_sides
+		top		: type_stopmask_board;
+		bottom	: type_stopmask_board;
 	end record;
 
 
 
+
 	procedure add_line (
-		assy_doc	: in out type_assy_doc_both_sides;
-		line		: in type_doc_line;
+		stopmask	: in out type_stop_mask_both_sides;
+		line		: in type_stop_line;
 		face		: in type_face);
-
-		
-	procedure add_arc (
-		assy_doc	: in out type_assy_doc_both_sides;
-		arc			: in type_doc_arc;
-		face		: in type_face);
-
-		
-	procedure add_circle (
-		assy_doc	: in out type_assy_doc_both_sides;
-		circle		: in type_doc_circle;
-		face		: in type_face);
-
-
 	
-end et_assy_doc.board;
+
+
+	procedure add_arc (
+		stopmask	: in out type_stop_mask_both_sides;
+		arc			: in type_stop_arc;
+		face		: in type_face);
+
+
+
+	procedure add_circle (
+		stopmask	: in out type_stop_mask_both_sides;
+		circle		: in type_stop_circle;
+		face		: in type_face);
+
+		
+	
+end et_stopmask.board;
+
 
 -- Soli Deo Gloria
 

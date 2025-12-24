@@ -73,6 +73,7 @@ with et_assy_doc;
 with et_assy_doc.board;
 with et_keepout;
 with et_stopmask;
+with et_stopmask.board;
 with et_stopmask.packages;
 with et_stencil;
 with et_route_restrict;
@@ -397,8 +398,8 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
 			is 
-				use et_pcb;
 				use et_stopmask;
+				use et_stopmask.board;
 				use pac_stop_lines;
 				use pac_stop_arcs;
 				use pac_stop_circles;

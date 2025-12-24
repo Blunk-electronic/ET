@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                   ASSEMBLY DOCUMENTATION / BOARD                         --
+--                        SOLDER STOPMASK / BOARD                           --
 --                                                                          --
---                               S p e c                                    --
+--                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,52 +36,65 @@
 --   history of changes:
 --
 --   to do:
---
 
 
-with et_pcb_sides;						use et_pcb_sides;
-with et_pcb_placeholders;				use et_pcb_placeholders;
-
-
-package et_assy_doc.board is
+with ada.text_io;					use ada.text_io;
 
 
 
-	type type_assy_doc_board is new type_assy_doc with record
-		-- Placeholders for revision, board name, misc ... :
-		placeholders : pac_text_placeholders.list;
-	end record;
-
-
-	-- Because assembly documentation is about two 
-	-- sides of the board this composite is required:	
-	type type_assy_doc_both_sides is record
-		top 	: type_assy_doc_board;
-		bottom	: type_assy_doc_board;
-	end record;
-
+package body et_stopmask.board is
 
 
 	procedure add_line (
-		assy_doc	: in out type_assy_doc_both_sides;
-		line		: in type_doc_line;
-		face		: in type_face);
+		stopmask	: in out type_stop_mask_both_sides;
+		line		: in type_stop_line;
+		face		: in type_face)
+	is begin
+		case face is
+			when TOP =>
+				stopmask.top.lines.append (line);
 
-		
+			when BOTTOM =>
+				stopmask.bottom.lines.append (line);
+		end case;
+	end;
+	
+
+
+
 	procedure add_arc (
-		assy_doc	: in out type_assy_doc_both_sides;
-		arc			: in type_doc_arc;
-		face		: in type_face);
+		stopmask	: in out type_stop_mask_both_sides;
+		arc			: in type_stop_arc;
+		face		: in type_face)
+	is begin
+		case face is
+			when TOP =>
+				stopmask.top.arcs.append (arc);
 
-		
+			when BOTTOM =>
+				stopmask.bottom.arcs.append (arc);
+		end case;
+	end;
+
+
+
 	procedure add_circle (
-		assy_doc	: in out type_assy_doc_both_sides;
-		circle		: in type_doc_circle;
-		face		: in type_face);
+		stopmask	: in out type_stop_mask_both_sides;
+		circle		: in type_stop_circle;
+		face		: in type_face)
+	is begin
+		case face is
+			when TOP =>
+				stopmask.top.circles.append (circle);
+
+			when BOTTOM =>
+				stopmask.bottom.circles.append (circle);
+		end case;
+	end;
 
 
 	
-end et_assy_doc.board;
+end et_stopmask.board;
 
 -- Soli Deo Gloria
 
