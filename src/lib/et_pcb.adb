@@ -85,54 +85,6 @@ package body et_pcb is
 
 
 
-	
-
-	procedure add_line (
-		assy_doc	: in out type_assy_doc_both_sides;
-		line		: in type_doc_line;
-		face		: in type_face)
-	is begin
-		case face is
-			when TOP =>
-				assy_doc.top.lines.append (line);
-
-			when BOTTOM =>
-				assy_doc.bottom.lines.append (line);
-		end case;
-	end;
-	
-
-
-
-	procedure add_arc (
-		assy_doc	: in out type_assy_doc_both_sides;
-		arc			: in type_doc_arc;
-		face		: in type_face)
-	is begin
-		case face is
-			when TOP =>
-				assy_doc.top.arcs.append (arc);
-
-			when BOTTOM =>
-				assy_doc.bottom.arcs.append (arc);
-		end case;
-	end;
-
-
-
-	procedure add_circle (
-		assy_doc	: in out type_assy_doc_both_sides;
-		circle		: in type_doc_circle;
-		face		: in type_face)
-	is begin
-		case face is
-			when TOP =>
-				assy_doc.top.circles.append (circle);
-
-			when BOTTOM =>
-				assy_doc.bottom.circles.append (circle);
-		end case;
-	end;
 
 	
 	
@@ -167,6 +119,9 @@ package body et_pcb is
 			 , level => log_threshold);
 	end route_line_properties;
 
+
+
+	
 	
 	procedure route_via_properties (
 		cursor			: in pac_vias.cursor;
@@ -223,6 +178,10 @@ package body et_pcb is
 		end case;
 	end pcb_contour_segment_properties;
 
+
+
+
+	
 	
 	procedure pcb_contour_circle_properties (
 		circle			: in type_circle;
@@ -232,9 +191,6 @@ package body et_pcb is
 			 & to_string (circle),
 			 level => log_threshold);
 	end pcb_contour_circle_properties;
-	
-
-
 	
 	
 end et_pcb;

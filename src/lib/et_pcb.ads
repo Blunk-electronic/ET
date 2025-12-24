@@ -69,7 +69,7 @@ with et_via_restrict.boards;			use et_via_restrict.boards;
 with et_stopmask;						use et_stopmask;
 with et_stencil;						use et_stencil;
 with et_silkscreen;						use et_silkscreen;
-with et_assy_doc;						use et_assy_doc;
+with et_assy_doc.board;					use et_assy_doc.board;
 with et_keepout;						use et_keepout;
 with et_pcb_contour;					use et_pcb_contour;
 with et_ratsnest;
@@ -196,42 +196,6 @@ package et_pcb is
 
 
 	
-
--- ASSEMBLY DOCUMENTATION
-
-	-- For assembly documentation objects that do NOT belong to any packages use this type:
-	-- Such objects are lines, arcs, circles, contours and 
-	-- placeholders for board revision, name, misc ... :
-	type type_assy_doc_board is new type_assy_doc with record
-		-- Placeholders for revision, board name, misc ... :
-		placeholders : pac_text_placeholders.list;
-	end record;
-
-
-	-- Because assembly documentation is about two sides of the board this composite is required:	
-	type type_assy_doc_both_sides is record
-		top 	: type_assy_doc_board;
-		bottom	: type_assy_doc_board;
-	end record;
-
-
-
-	procedure add_line (
-		assy_doc	: in out type_assy_doc_both_sides;
-		line		: in type_doc_line;
-		face		: in type_face);
-
-		
-	procedure add_arc (
-		assy_doc	: in out type_assy_doc_both_sides;
-		arc			: in type_doc_arc;
-		face		: in type_face);
-
-		
-	procedure add_circle (
-		assy_doc	: in out type_assy_doc_both_sides;
-		circle		: in type_doc_circle;
-		face		: in type_face);
 
 		
 

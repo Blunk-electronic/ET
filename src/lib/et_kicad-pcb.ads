@@ -87,16 +87,17 @@ with et_conductor_text.boards;
 with et_conductor_segment;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
 
-with et_stencil;				use et_stencil;
+with et_stencil;					use et_stencil;
 
-with et_silkscreen;				use et_silkscreen;
+with et_silkscreen;					use et_silkscreen;
 with et_silkscreen.packages;
 
-with et_assy_doc;				use et_assy_doc;
+with et_assy_doc;					use et_assy_doc;
+with et_assy_doc.board;				use et_assy_doc.board;
 with et_assy_doc.packages;
 
-with et_keepout;				use et_keepout;
-with et_stopmask;				use et_stopmask;
+with et_keepout;					use et_keepout;
+with et_stopmask;					use et_stopmask;
 with et_stopmask.packages;
 
 with et_generic_module;
@@ -713,7 +714,7 @@ package et_kicad.pcb is
 		packages	: type_packages_board.map;
 
 		silk_screen	: et_pcb.type_silkscreen_both_sides;
-		assy_doc	: et_pcb.type_assy_doc_both_sides;
+		assy_doc	: type_assy_doc_both_sides;
 		stencil		: type_stencil_both_sides;
 		stop_mask	: et_pcb.type_stop_mask_both_sides;
 		keepout		: type_keepout_both_sides;		

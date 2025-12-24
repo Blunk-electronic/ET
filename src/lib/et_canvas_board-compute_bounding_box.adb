@@ -70,6 +70,7 @@ with et_mirroring;					use et_mirroring;
 with et_text;
 with et_silkscreen;
 with et_assy_doc;
+with et_assy_doc.board;
 with et_keepout;
 with et_stopmask;
 with et_stopmask.packages;
@@ -254,8 +255,8 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
 			is 
-				use et_pcb;
 				use et_assy_doc;
+				use et_assy_doc.board;
 				use pac_doc_lines;
 				use pac_doc_arcs;
 				use pac_doc_circles;

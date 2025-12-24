@@ -52,6 +52,7 @@ with et_pcb;						use et_pcb;
 with et_board_geometry;				use et_board_geometry;
 with et_directions;					use et_directions;
 with et_assy_doc;					use et_assy_doc;
+with et_assy_doc.board;				use et_assy_doc.board;
 with et_general_rw;					use et_general_rw;
 
 
