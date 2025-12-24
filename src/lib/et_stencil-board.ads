@@ -40,7 +40,6 @@
 
 
 with et_pcb_sides;						use et_pcb_sides;
-with et_pcb_placeholders;				use et_pcb_placeholders;
 
 
 package et_stencil.board is
