@@ -68,20 +68,29 @@ with et_conductor_text.packages;
 with et_pcb_contour;
 with et_mirroring;					use et_mirroring;
 with et_text;
+
 with et_silkscreen;
+with et_silkscreen.board;
+
 with et_assy_doc;
 with et_assy_doc.board;
+
 with et_keepout;
+
 with et_stopmask;
 with et_stopmask.board;
 with et_stopmask.packages;
+
 with et_stencil;
+
 with et_route_restrict;
 with et_route_restrict.packages;
 with et_route_restrict.boards;
+
 with et_via_restrict;
 with et_via_restrict.packages;
 with et_via_restrict.boards;
+
 with et_fill_zones.boards;
 with et_vias;
 
@@ -180,8 +189,8 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
 			is 
-				use et_pcb;
 				use et_silkscreen;
+				use et_silkscreen.board;
 				use pac_silk_lines;
 				use pac_silk_arcs;
 				use pac_silk_circles;

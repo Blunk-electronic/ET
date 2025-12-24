@@ -68,7 +68,7 @@ with et_route_restrict.boards;			use et_route_restrict.boards;
 with et_via_restrict.boards;			use et_via_restrict.boards;
 with et_stopmask.board;					use et_stopmask.board;
 with et_stencil;						use et_stencil;
-with et_silkscreen;						use et_silkscreen;
+with et_silkscreen.board;				use et_silkscreen.board;
 with et_assy_doc.board;					use et_assy_doc.board;
 with et_keepout;						use et_keepout;
 with et_pcb_contour;					use et_pcb_contour;
@@ -155,32 +155,6 @@ package et_pcb is
 
 
 
-
-
-
-
-
-	
-	
-	
--- SILKSCREEN
-
-	-- For silkscreen objects that do NOT belong to any packages use this type.
-	-- Such objects are lines, arcs, circles, contours and 
-	-- placeholders for board revision, name, misc ... :
-	type type_silkscreen_board is new type_silkscreen with record
-		placeholders : pac_text_placeholders.list;
-	end record;
-		
-	-- Because silkscreen is about two sides of the board this 
-	-- composite is required:	
-	type type_silkscreen_both_sides is record
-		top 	: type_silkscreen_board;
-		bottom	: type_silkscreen_board;
-	end record;
-
-
-	
 
 		
 

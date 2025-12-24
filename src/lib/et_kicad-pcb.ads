@@ -91,6 +91,7 @@ with et_stencil;					use et_stencil;
 
 with et_silkscreen;					use et_silkscreen;
 with et_silkscreen.packages;
+with et_silkscreen.board;			use et_silkscreen.board;
 
 with et_assy_doc;					use et_assy_doc;
 with et_assy_doc.board;				use et_assy_doc.board;
@@ -106,6 +107,7 @@ with et_generic_module;
 with et_kicad.schematic;
 with et_kicad_libraries;		--use et_kicad_libraries;
 with et_kicad_packages;			use et_kicad_packages;
+
 
 package et_kicad.pcb is
 
@@ -714,10 +716,10 @@ package et_kicad.pcb is
 		net_classes	: type_net_classes.map;
 		packages	: type_packages_board.map;
 
-		silk_screen	: et_pcb.type_silkscreen_both_sides;
+		silk_screen	: type_silkscreen_both_sides; -- CS rename to silkscreen
 		assy_doc	: type_assy_doc_both_sides;
 		stencil		: type_stencil_both_sides;
-		stop_mask	: type_stop_mask_both_sides;
+		stop_mask	: type_stop_mask_both_sides; -- CS rename to stopmask
 		keepout		: type_keepout_both_sides;		
 		contour		: et_pcb.type_board_contour;
 
