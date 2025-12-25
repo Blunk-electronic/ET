@@ -57,6 +57,9 @@ package et_conductor_segment is
 	
 	use pac_geometry_2;
 
+	linewidth_default : constant type_track_width := 0.3;
+
+
 	
 	
 -- LINES

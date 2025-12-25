@@ -41,22 +41,19 @@ with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
 
 with et_contour_to_polygon;
-with et_directions;
 
 
 package body et_conductor_segment is
 
 	
 	
--- LINES	
+-- LINES:
 
-	procedure reset_line (
+	overriding procedure reset_line (
 		line : in out type_conductor_line)
 	is begin
-		set_A (line, origin);
-		set_B (line, origin);
-
-		line.width := type_track_width'first;
+		reset_line (type_line (line));
+		line.width := linewidth_default;
 	end;
 
 
@@ -208,6 +205,8 @@ package body et_conductor_segment is
 	end mirror_lines;
 
 
+
+	
 	procedure rotate_lines (
 		lines	: in out pac_conductor_lines.list;
 		angle	: in type_rotation_model)
@@ -227,6 +226,8 @@ package body et_conductor_segment is
 	end rotate_lines;
 
 
+
+	
 	procedure move_lines (
 		lines	: in out pac_conductor_lines.list;
 		offset	: in type_vector_model)
@@ -246,6 +247,9 @@ package body et_conductor_segment is
 	end move_lines;
 
 
+
+
+	
 	function to_polygons (
 		lines		: in pac_conductor_lines.list;
 		tolerance	: in type_distance_positive)
@@ -263,6 +267,8 @@ package body et_conductor_segment is
 	end to_polygons;
 
 	
+
+
 	
 	procedure line_conductor_properties (
 		face			: in type_face;
@@ -280,25 +286,18 @@ package body et_conductor_segment is
 
 
 
+
+
+
 	
 	
 -- ARCS:
 
-	procedure reset_arc (
+	overriding procedure reset_arc (
 		arc : in out type_conductor_arc)
-	is
-		use et_directions;
-	begin
-		set_A (arc, origin);
-		set_B (arc, origin);
-		set_center (arc, origin);
-		-- CS; It is probably no good idea to
-		-- use these defaults because the resulting
-		-- arc is invalid:
-		
-		set_direction (arc, CCW);
-
-		arc.width := type_track_width'first;
+	is begin
+		reset_arc (type_arc (arc));
+		arc.width := linewidth_default;
 	end;
 
 	
@@ -416,6 +415,8 @@ package body et_conductor_segment is
 	end mirror_arcs;
 
 
+	
+
 	procedure rotate_arcs (
 		arcs	: in out pac_conductor_arcs.list;
 		angle	: in type_rotation_model)
@@ -435,6 +436,8 @@ package body et_conductor_segment is
 	end rotate_arcs;
 
 
+
+	
 	procedure move_arcs (
 		arcs	: in out pac_conductor_arcs.list;
 		offset	: in type_vector_model)
@@ -454,6 +457,9 @@ package body et_conductor_segment is
 	end move_arcs;
 
 
+
+
+	
 	function to_polygons (
 		arcs		: in pac_conductor_arcs.list;
 		tolerance	: in type_distance_positive)
@@ -469,6 +475,8 @@ package body et_conductor_segment is
 		arcs.iterate (query_arc'access);
 		return result;
 	end to_polygons;
+
+
 
 
 	
@@ -492,12 +500,11 @@ package body et_conductor_segment is
 
 -- CIRCLES:
 
-	procedure reset_circle (
+	overriding procedure reset_circle (
 		circle : in out type_conductor_circle)
 	is begin
-		set_center (circle, origin);
-		set_radius (circle, 0.0);
-		circle.width := type_track_width'first;
+		reset_circle (type_circle (circle));
+		circle.width := linewidth_default;
 	end;
 
 	
@@ -529,6 +536,7 @@ package body et_conductor_segment is
 
 
 	
+	
 	function to_polygon_inside (
 		circle 		: in type_conductor_circle;
 		tolerance	: in type_distance_positive)							
@@ -555,6 +563,8 @@ package body et_conductor_segment is
 
 
 
+
+	
 	procedure iterate (
 		circles	: in pac_conductor_circles.list;
 		process	: not null access procedure (position : in pac_conductor_circles.cursor);
@@ -569,6 +579,9 @@ package body et_conductor_segment is
 	end iterate;
 
 
+
+
+	
 	
 	procedure mirror_circles (
 		circles	: in out pac_conductor_circles.list;
@@ -587,6 +600,8 @@ package body et_conductor_segment is
 		circles.iterate (query_circle'access);
 		circles := result;
 	end mirror_circles;
+
+
 
 
 	
@@ -609,6 +624,8 @@ package body et_conductor_segment is
 	end rotate_circles;
 
 
+
+	
 	procedure move_circles (
 		circles	: in out pac_conductor_circles.list;
 		offset	: in type_vector_model)
@@ -628,6 +645,8 @@ package body et_conductor_segment is
 	end move_circles;
 
 
+
+	
 	function to_polygons_outside (
 		circles		: in pac_conductor_circles.list;
 		tolerance	: in type_distance_positive)
@@ -645,6 +664,8 @@ package body et_conductor_segment is
 	end to_polygons_outside;
 
 
+
+	
 	function to_polygons_inside (
 		circles		: in pac_conductor_circles.list;
 		tolerance	: in type_distance_positive)
@@ -661,6 +682,8 @@ package body et_conductor_segment is
 		return result;
 	end to_polygons_inside;
 
+
+	
 	
 
 	procedure circle_conductor_properties (

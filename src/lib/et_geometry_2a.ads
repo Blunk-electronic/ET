@@ -782,6 +782,7 @@ package et_geometry_2a is
 
 	
 
+	-- Sets A and B to origin:
 	procedure reset_line (
 		line : in out type_line);
 
@@ -1311,6 +1312,8 @@ package et_geometry_2a is
 		return type_arc'class;
 	
 
+	-- Sets A, B and center to origin.
+	-- Sets direction to CCW:
 	procedure reset_arc (
 		arc		: in out type_arc);
 	
@@ -1579,6 +1582,8 @@ package et_geometry_2a is
 		return type_circle'class;
 
 
+	-- Resets the center to origin
+	-- and radius to zero:
 	procedure reset_circle (
 		c : in out type_circle);
 		

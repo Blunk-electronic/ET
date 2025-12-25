@@ -56,16 +56,18 @@ package et_assy_doc is
 	use pac_text_board;
 
 	subtype type_linewidth is type_distance_positive range 0.15 .. 10.0;
+	linewidth_default : constant type_linewidth := 0.2;
+	
 
 	
 -- LINES:
 	
 	type type_doc_line is new pac_geometry_2.type_line with record
-		width	: type_linewidth;
+		width	: type_linewidth := linewidth_default;
 	end record;
 
 
-	procedure reset_line (
+	overriding procedure reset_line (
 		line : in out type_doc_line);
 	
 	
@@ -122,11 +124,11 @@ package et_assy_doc is
 -- ARCS:
 	
 	type type_doc_arc is new pac_geometry_2.type_arc with record
-		width	: type_linewidth;
+		width	: type_linewidth := linewidth_default;
 	end record;
 
 	
-	procedure reset_arc (
+	overriding procedure reset_arc (
 		arc : in out type_doc_arc);
 
 	
@@ -177,11 +179,11 @@ package et_assy_doc is
 -- CIRCLES:
 
 	type type_doc_circle is new pac_geometry_2.type_circle with record
-		width	: type_linewidth;
+		width	: type_linewidth := linewidth_default;
 	end record;
 	
 	
-	procedure reset_circle (
+	overriding procedure reset_circle (
 		circle : in out type_doc_circle);
 
 		

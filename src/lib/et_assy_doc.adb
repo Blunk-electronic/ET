@@ -45,11 +45,13 @@ with et_object_status;			use et_object_status;
 package body et_assy_doc is
 
 
-	procedure reset_line (
+-- LINES:
+
+	overriding procedure reset_line (
 		line : in out type_doc_line)
 	is begin
-		null;
-		-- CS
+		reset_line (type_line (line));
+		line.width := linewidth_default;
 	end;
 
 
@@ -169,16 +171,17 @@ package body et_assy_doc is
 
 
 	
+	
 
 
 -- ARCS:
 
 
-	procedure reset_arc (
+	overriding procedure reset_arc (
 		arc : in out type_doc_arc)
 	is begin
-		null;
-		-- CS
+		reset_arc (type_arc (arc));
+		arc.width := linewidth_default;
 	end;
 
 	
@@ -289,14 +292,15 @@ package body et_assy_doc is
 
 
 	
+	
 
 -- CIRCLES:
 
-	procedure reset_circle (
+	overriding procedure reset_circle (
 		circle : in out type_doc_circle)
 	is begin
-		null;
-		-- CS
+		reset_circle (type_circle (circle));
+		circle.width := linewidth_default;
 	end;
 	
 

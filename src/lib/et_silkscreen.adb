@@ -42,6 +42,18 @@ with ada.strings;	 			use ada.strings;
 package body et_silkscreen is
 
 
+-- LINES:
+
+	overriding procedure reset_line (
+		line : in out type_silk_line)
+	is begin
+		reset_line (type_line (line));
+		line.width := linewidth_default;
+	end;
+
+
+	
+
 	procedure iterate (
 		lines	: in pac_silk_lines.list;
 		process	: not null access procedure (position : in pac_silk_lines.cursor);
@@ -142,7 +154,24 @@ package body et_silkscreen is
 	end move_lines;
 
 
+	
 
+
+
+
+-- ARCS:
+
+
+	overriding procedure reset_arc (
+		arc : in out type_silk_arc)
+	is begin
+		reset_arc (type_arc (arc));
+		arc.width := linewidth_default;
+	end;
+
+
+	
+	
 
 	procedure iterate (
 		arcs	: in pac_silk_arcs.list;
@@ -249,6 +278,19 @@ package body et_silkscreen is
 
 
 
+
+-- CIRCLES:
+
+	overriding procedure reset_circle (
+		circle : in out type_silk_circle)
+	is begin
+		reset_circle (type_circle (circle));
+		circle.width := linewidth_default;
+	end;
+
+	
+
+	
 	procedure iterate (
 		circles	: in pac_silk_circles.list;
 		process	: not null access procedure (position : in pac_silk_circles.cursor);

@@ -57,6 +57,9 @@ package et_silkscreen is
 
 
 	subtype type_linewidth is type_distance_positive range 0.15 .. 10.0;
+	linewidth_default : constant type_linewidth := 0.2;
+
+
 	
 
 -- LINES:
@@ -65,6 +68,11 @@ package et_silkscreen is
 		width	: type_linewidth;
 	end record;
 
+
+	overriding procedure reset_line (
+		line : in out type_silk_line);
+
+	
 	package pac_silk_lines is new doubly_linked_lists (type_silk_line);
 	use pac_silk_lines;
 
@@ -111,12 +119,19 @@ package et_silkscreen is
 
 	
 
+	
 -- ARCS:
 	
 	type type_silk_arc is new pac_geometry_2.type_arc with record
 		width	: type_linewidth;
 	end record;
 
+
+	overriding procedure reset_arc (
+		arc : in out type_silk_arc);
+
+	
+	
 	package pac_silk_arcs is new doubly_linked_lists (type_silk_arc);
 	use pac_silk_arcs;
 
@@ -157,6 +172,8 @@ package et_silkscreen is
 		arcs	: in out pac_silk_arcs.list;
 		offset	: in type_vector_model);					
 
+
+
 	
 
 -- CIRCLES:
@@ -164,6 +181,11 @@ package et_silkscreen is
 	type type_silk_circle is new pac_geometry_2.type_circle with record
 		width	: type_linewidth;
 	end record;
+
+	
+	overriding procedure reset_circle (
+		circle : in out type_silk_circle);
+
 	
 	package pac_silk_circles is new doubly_linked_lists (type_silk_circle);
 	use pac_silk_circles;
