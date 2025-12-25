@@ -48,6 +48,11 @@ with et_exceptions;				use et_exceptions;
 
 	
 package body et_geometry_2a.contours is
+
+
+
+-- SEGMENTS:
+
 	
 	function to_string (
 		segment	: in type_segment)
@@ -432,8 +437,21 @@ package body et_geometry_2a.contours is
 
 
 
+
+
 	
 
+-- CONTOUR:
+	
+	procedure reset_contour (
+		contour : in out type_contour)
+	is begin
+		contour := (others => <>);
+	end;
+
+
+	
+	
 	function is_selected (
 		contour : in type_contour)
 		return boolean

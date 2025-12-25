@@ -45,6 +45,10 @@ with ada.containers.indefinite_doubly_linked_lists;
 generic
 	
 package et_geometry_2a.contours is
+
+
+
+-- SEGMENTS:
 	
 	-- A contour is a list of lines, arcs or a single circle that form a path.
 	-- If a contour consist of just a single circle then no other 
@@ -197,13 +201,23 @@ package et_geometry_2a.contours is
 			when FALSE	=> segments : pac_segments.list;
 		end case;
 	end record;
+
+
+
+
 	
+
+-- CONTOUR:
 
 	type type_contour is tagged record
 		contour : type_segments;
 		status	: type_object_status;
 	end record;
 
+
+	procedure reset_contour (
+		contour : in out type_contour);
+	
 
 	-- CS status operations to query and set status
 	-- see similar operations for type_line in et_geometry_2a.
