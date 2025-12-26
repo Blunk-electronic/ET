@@ -78,8 +78,8 @@ with et_general_rw;					use et_general_rw;
 package body et_module_read_text_board is
 
 	use pac_generic_modules;
-	use pac_geometry_2;
-	use pac_text_board;
+	use pac_geometry_2;	
+	use pac_text_board_vectorized;
 
 
 

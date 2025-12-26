@@ -119,14 +119,15 @@ package et_canvas_board is
 	
 	-- Instantiate the general canvas package:
 	package pac_canvas is new et_canvas (
-		canvas_name		=> "board", -- CS provide domain name like scripting.type_domain
-		pac_geometry	=> et_board_geometry.pac_geometry_2,
-		pac_grid		=> et_board_geometry.pac_grid,
-		pac_path		=> et_board_geometry.pac_path_and_bend,
-		pac_polygons	=> et_board_geometry.pac_polygons,
-		pac_offsetting	=> et_board_geometry.pac_polygon_offsetting,
-		pac_contours	=> et_board_geometry.pac_contours,
-		pac_text		=> et_board_text.pac_text_board);
+		canvas_name			=> "board", -- CS provide domain name like scripting.type_domain
+		pac_geometry		=> et_board_geometry.pac_geometry_2,
+		pac_grid			=> et_board_geometry.pac_grid,
+		pac_path			=> et_board_geometry.pac_path_and_bend,
+		pac_polygons		=> et_board_geometry.pac_polygons,
+		pac_offsetting		=> et_board_geometry.pac_polygon_offsetting,
+		pac_contours		=> et_board_geometry.pac_contours,
+		pac_text			=> et_board_text.pac_text_board,
+		pac_text_vectorized	=> et_board_text.pac_text_board_vectorized);
 
 	
 	use pac_canvas;	

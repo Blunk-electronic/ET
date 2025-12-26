@@ -48,6 +48,7 @@ with ada.containers.doubly_linked_lists;
 with et_text_content;					use et_text_content;
 with et_rotation_docu;					use et_rotation_docu;
 with et_text;							use et_text;
+with et_text_vectorized;				use et_text_vectorized;
 with et_fonts;							use et_fonts;
 
 
@@ -70,17 +71,26 @@ package et_schematic_text is
 	-- Instantiation of the text package:
 	package pac_text_schematic is new et_text.generic_pac_text (
 		pac_geometry		=> pac_geometry_2,
-		pac_polygons		=> pac_polygons, -- never used, but mandatory for instantiation
+		size_min			=> text_size_min,
+		size_max			=> text_size_max,
+		size_default		=> text_size_default);
+
+	use pac_text_schematic; 
+
+
+	-- The vector-text package is never used, but mandatory for instantiation
+	package pac_text_schematic_vectorized is 
+		new et_text_vectorized.generic_pac_text_vectorized (
+		pac_geometry		=> pac_geometry_2,
+		pac_text			=> pac_text_schematic,
+		pac_polygons		=> pac_polygons,
 		pac_offsetting		=> pac_polygon_offsetting,
 		size_min			=> text_size_min,
 		size_max			=> text_size_max,
 		size_default		=> text_size_default,
 		line_width_min		=> text_line_width_min,
 		line_width_max		=> text_line_width_max,
-		line_width_default	=> text_line_width_default
-		);
-
-	use pac_text_schematic; 
+		line_width_default	=> text_line_width_default);
 	
 
 	-- These are basic properties a text has got:

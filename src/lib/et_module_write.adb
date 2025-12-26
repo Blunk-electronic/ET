@@ -1614,6 +1614,7 @@ package body et_module_write is
 			use et_pcb_stack;
 			use et_board_geometry.pac_geometry_2;
 
+			use pac_text_board_vectorized;
 			use pac_texts_fab_with_content;
 
 			use et_pcb_placeholders;		

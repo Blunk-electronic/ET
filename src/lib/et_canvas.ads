@@ -83,6 +83,7 @@ with et_geometry_1.et_polygons;
 with et_geometry_1.et_polygons.offsetting;
 with et_geometry_2a.contours;
 with et_text;
+with et_text_vectorized;
 with et_mirroring;				use et_mirroring;
 
 
@@ -99,14 +100,20 @@ generic
 	with package pac_contours is new pac_geometry.contours;
 	
 	with package pac_text is new et_text.generic_pac_text (
-		-- The used text package must have been instantiated with
-		-- these packages:
+		-- The  package must have been instantiated with these packages:
 		pac_geometry	=> pac_geometry,
+		others			=> <>);
+
+	with package pac_text_vectorized is new et_text_vectorized.generic_pac_text_vectorized (
+		-- The package must have been instantiated with these packages:
+		pac_geometry	=> pac_geometry,
+		pac_text		=> pac_text,
 		pac_polygons	=> pac_polygons,
 		pac_offsetting	=> pac_offsetting,
 		others			=> <>);
 
 
+	
 	
 package et_canvas is
 	use pac_geometry;

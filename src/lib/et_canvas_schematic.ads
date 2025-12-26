@@ -122,14 +122,15 @@ package et_canvas_schematic is
 	
 	-- Instantiate the canvas package:
 	package pac_canvas is new et_canvas (
-		canvas_name		=> "schematic", -- CS provide domain name like scripting.type_domain
-		pac_geometry	=> et_schematic_geometry.pac_geometry_2,
-		pac_grid		=> et_schematic_geometry.pac_grid,								
-		pac_path		=> et_schematic_geometry.pac_path_and_bend,
-		pac_offsetting	=> et_schematic_geometry.pac_polygon_offsetting,
-		pac_polygons	=> et_schematic_geometry.pac_polygons,
-		pac_contours	=> et_schematic_geometry.pac_contours,
-		pac_text		=> pac_text_schematic);
+		canvas_name			=> "schematic", -- CS provide domain name like scripting.type_domain
+		pac_geometry		=> et_schematic_geometry.pac_geometry_2,
+		pac_grid			=> et_schematic_geometry.pac_grid,								
+		pac_path			=> et_schematic_geometry.pac_path_and_bend,
+		pac_offsetting		=> et_schematic_geometry.pac_polygon_offsetting,
+		pac_polygons		=> et_schematic_geometry.pac_polygons,
+		pac_contours		=> et_schematic_geometry.pac_contours,
+		pac_text			=> et_schematic_text.pac_text_schematic,
+		pac_text_vectorized	=> et_schematic_text.pac_text_schematic_vectorized);
 		
 	
 	use pac_canvas;

@@ -50,6 +50,7 @@ package et_board_ops.stopmask is
 	
 	use et_board_text;
 	use pac_text_board;
+	use pac_text_board_vectorized;
 	
 
 -- LINES:

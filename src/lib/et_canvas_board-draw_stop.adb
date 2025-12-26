@@ -155,12 +155,9 @@ is
 	procedure query_placeholder (
 		c : in pac_text_placeholders.cursor)
 	is 
-		use pac_text;
+		use pac_text_vectorized;
 		use pac_draw_text;
-
-		use et_text;
 		content : pac_text_content.bounded_string;
-
 		t : type_text_fab_with_content;
 	begin
 		-- Build the final content to be drawn:

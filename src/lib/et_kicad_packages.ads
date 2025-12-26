@@ -49,6 +49,7 @@ with et_terminals;				use et_terminals;
 with et_text_content;			use et_text_content;
 with et_board_text;				use et_board_text;
 use et_board_text.pac_text_board;
+use et_board_text.pac_text_board_vectorized;
 
 with et_stopmask;				use et_stopmask;
 with et_stopmask.packages;		use et_stopmask.packages;

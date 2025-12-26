@@ -185,7 +185,6 @@ procedure draw_packages is
 			placeholder : in type_text_placeholder)
 			return pac_text_content.bounded_string
 		is 
-			use et_text;
 			result : pac_text_content.bounded_string;
 
 			use et_device_name;
@@ -209,8 +208,6 @@ procedure draw_packages is
 			use pac_text_placeholders;
 			ph : type_text_placeholder renames element (c);
 
-			use et_text;
-			
 			-- Build the content of the placeholder:
 			content : pac_text_content.bounded_string := placeholder_to_content (ph);
 
@@ -220,7 +217,7 @@ procedure draw_packages is
 			-- anchor mode of the candidate placeholder:
 			procedure build_text is
 				use pac_draw_text;
-				use pac_text;
+				use pac_text_vectorized;
 
 				-- A temporary text that will be drawn:
 				text : type_text_fab_with_content := (type_text_fab (ph) with others => <>);
@@ -1246,7 +1243,6 @@ procedure draw_packages is
 				procedure draw_name_tht (
 					pad_position : in type_position)  -- the center of the pad
 				is
-					use et_text;
 					use et_alignment;
 
 					-- Take a copy of the x/y position of the pad:
@@ -1294,7 +1290,6 @@ procedure draw_packages is
 				procedure draw_name_smt (
 					pad_position : in type_position)  -- the center of the pad
 				is
-					use et_text;
 					use et_alignment;
 
 					-- Take a copy of the x/y position of the pad:

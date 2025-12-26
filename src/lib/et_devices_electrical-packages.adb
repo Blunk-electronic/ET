@@ -917,7 +917,7 @@ package body et_devices_electrical.packages is
 			
 			procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder renames element (c);
-				use pac_text_board;
+				use pac_text_board_vectorized;
 				text : type_silk_text := (type_text_fab (ph) with others => <>);
 				use et_text;
 			begin
@@ -1021,7 +1021,7 @@ package body et_devices_electrical.packages is
 			
 			procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder renames element (c);
-				use pac_text_board;
+				use pac_text_board_vectorized;
 				text : type_doc_text := (type_text_fab (ph) with others => <>);
 				use et_text;
 			begin

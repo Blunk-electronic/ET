@@ -130,21 +130,17 @@ package et_kicad_libraries is
 	text_line_width_max : constant type_distance_positive := 5.0;
 	text_line_width_default : constant type_distance_positive := 0.3; 
 
+	
 	-- Instantiation of the text package:
 	package pac_text is new et_text.generic_pac_text (
 		pac_geometry		=> pac_geometry_2,
-		pac_polygons		=> pac_polygons, -- never used, but mandatory for instantiation
-		pac_offsetting		=> pac_polygon_offsetting,
 		size_min			=> text_size_min,
 		size_max			=> text_size_max,
-		size_default		=> text_size_default,
-		line_width_min		=> text_line_width_min,
-		line_width_max		=> text_line_width_max,
-		line_width_default	=> text_line_width_default
-		);
+		size_default		=> text_size_default);
 
 	use pac_text;
 
+	
 	-- These are basic properties a text has got:
 	type type_text_basic is new pac_text.type_text with record
 		-- CS: currently the style of text is ignored

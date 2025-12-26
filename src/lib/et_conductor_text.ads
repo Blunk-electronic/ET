@@ -62,6 +62,7 @@ package et_conductor_text is
 
 	
 	use pac_text_board;
+	use pac_text_board_vectorized;
 
 
 

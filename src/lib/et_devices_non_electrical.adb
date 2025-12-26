@@ -1441,7 +1441,7 @@ package body et_devices_non_electrical is
 
 			procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder renames element (c);
-				use pac_text_board;
+				use pac_text_board_vectorized;
 				text : type_silk_text := (type_text_fab (ph) with others => <>);
 			begin
 				text.content := to_placeholder_content (device_cursor, ph); -- map from meaning to content
@@ -1536,7 +1536,7 @@ package body et_devices_non_electrical is
 
 			procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder renames element (c);
-				use pac_text_board;
+				use pac_text_board_vectorized;
 				text : type_doc_text := (type_text_fab (ph) with others => <>);
 			begin
 				text.content := to_placeholder_content (device_cursor, ph); -- map from meaning to content

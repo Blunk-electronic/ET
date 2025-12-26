@@ -65,6 +65,7 @@ with et_package_sections;				use et_package_sections;
 
 package body et_package_write is
 
+	use pac_text_board_vectorized;
 	use pac_texts_fab_with_content;
 	
 	use pac_conductor_texts;

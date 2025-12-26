@@ -1421,7 +1421,7 @@ is
 	-- This procedure parses a command to place a text
 	-- and dispatches to subprogram according to the layer category:
 	procedure place_text is
-		use pac_text_board;
+		use pac_text_board_vectorized;
 		use et_board_ops.text;
 		use et_mirroring;
 		
@@ -1550,6 +1550,7 @@ is
 	-- and dispatches to subprogram according to the layer category:	
 	procedure place_text_placeholder is
 		use pac_text_board;
+		use pac_text_board_vectorized;
 		use et_pcb_placeholders;
 		use et_mirroring;
 		

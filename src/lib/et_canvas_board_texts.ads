@@ -53,6 +53,7 @@ with et_text;							use et_text;
 with et_alignment;						use et_alignment;
 with et_board_text;						use et_board_text;
 use et_board_text.pac_text_board;
+use et_board_text.pac_text_board_vectorized;
 
 with et_board_layer_category;			use et_board_layer_category;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;

@@ -63,7 +63,7 @@ package et_device_placeholders.packages is
 
 	use pac_geometry_2;
 	use pac_text_board;
-
+	use pac_text_board_vectorized;
 		
 		
 	

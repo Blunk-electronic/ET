@@ -5169,7 +5169,7 @@ package body et_kicad.pcb is
 	
 								pac_text_placeholders.append (
 									container	=> placeholders.silkscreen.top,
-									new_item	=> (pac_text_board.type_text_fab (element (cursor)) 
+									new_item	=> (pac_text_board_vectorized.type_text_fab (element (cursor)) 
 													with meaning => NAME, others => <>));
 	
 								-- log placeholder properties
@@ -5188,7 +5188,7 @@ package body et_kicad.pcb is
 
 								pac_text_placeholders.append (
 									container	=> placeholders.silkscreen.bottom,
-									new_item	=> (pac_text_board.type_text_fab (element (cursor)) 
+									new_item	=> (pac_text_board_vectorized.type_text_fab (element (cursor)) 
 													with meaning => NAME, others => <>));
 
 								-- log placeholder properties
@@ -5207,7 +5207,7 @@ package body et_kicad.pcb is
 
 								pac_text_placeholders.append (
 									container	=> placeholders.assy_doc.top,
-									new_item	=> (pac_text_board.type_text_fab (element (cursor)) 
+									new_item	=> (pac_text_board_vectorized.type_text_fab (element (cursor)) 
 													with meaning => VALUE, others => <>));
 
 								-- log placeholder properties
@@ -5226,7 +5226,7 @@ package body et_kicad.pcb is
 
 								pac_text_placeholders.append (
 									container	=> placeholders.assy_doc.bottom,
-									new_item	=> (pac_text_board.type_text_fab (element (cursor)) 
+									new_item	=> (pac_text_board_vectorized.type_text_fab (element (cursor)) 
 													with meaning => VALUE, others => <>));
 
 								-- log placeholder properties

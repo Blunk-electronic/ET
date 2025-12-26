@@ -40,6 +40,7 @@
 
 
 with et_text;
+with et_text_vectorized;		use et_text_vectorized;
 with et_board_geometry;			use et_board_geometry;
 
 
@@ -54,6 +55,14 @@ package et_board_text is
 	
 	package pac_text_board is new et_text.generic_pac_text (
 		pac_geometry		=> pac_geometry_2,
+		size_min			=> 0.01,
+		size_max			=> 100.0,
+		size_default		=> 1.0);
+
+
+	package pac_text_board_vectorized is new et_text_vectorized.generic_pac_text_vectorized (
+		pac_geometry		=> pac_geometry_2,
+		pac_text			=> pac_text_board,
 		pac_polygons		=> pac_polygons,											 
 		pac_offsetting		=> pac_polygon_offsetting,
 		size_min			=> 0.01,
@@ -63,7 +72,7 @@ package et_board_text is
 		line_width_max		=> linewidth_fab_max,
 		line_width_default	=> 0.005);
 
-
+	
 	-- CS fonts for non-vector text ?
 	
 end et_board_text;

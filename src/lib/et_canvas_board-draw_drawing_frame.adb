@@ -117,9 +117,7 @@ procedure draw_drawing_frame is
 		-- Get additional placeholders of the title block.
 		-- The 'rename' statement serves just as a shortcut.
 		aps : type_placeholders_pcb renames title_block.placeholders_additional;
-		
 
-		use et_text;
 		use et_alignment;
 		use pac_draw_text;
 

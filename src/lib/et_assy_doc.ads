@@ -53,7 +53,8 @@ package et_assy_doc is
 	use pac_geometry_2;
 	use pac_contours;
 	use pac_text_board;
-
+	use pac_text_board_vectorized;
+	
 	subtype type_linewidth is type_distance_positive range 0.15 .. 10.0;
 	linewidth_default : constant type_linewidth := 0.2;
 	

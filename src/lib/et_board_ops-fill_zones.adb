@@ -994,7 +994,7 @@ package body et_board_ops.fill_zones is
 				borders : pac_polygon_list.list;
 
 				use et_board_text;
-				use pac_text_board;
+				use pac_text_board_vectorized;
 				use pac_polygon_offsetting;
 			begin
 				if text.layer = layer then

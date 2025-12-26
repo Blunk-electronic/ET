@@ -93,10 +93,7 @@ procedure draw_conductors is
 	is 
 		use et_canvas_board_texts;
 		use pac_draw_text;
-
 		point : type_vector_model;
-
-		use et_text;
 	begin
 		-- put_line ("draw_text_being_placed");
 		
@@ -622,13 +619,10 @@ procedure draw_conductors is
 		placeholder : in type_text_placeholder_conductors) 
 	is 
 		use et_board_ops.text;
-		use pac_text;		
+		use pac_text_vectorized;		
 		use pac_draw_text;
 		use et_colors.board;
-
-		use et_text;
 		content : pac_text_content.bounded_string;
-
 		t : type_text_fab_with_content;
 	begin
 		-- Draw the placeholder if it is in the current layer:
@@ -755,7 +749,6 @@ procedure draw_conductors is
 		-- The text size is set automatically with the radius of the drill:
 		procedure draw_net_name is 
 			use et_colors.board;
-			use et_text;
 			use et_alignment;
 
 			use et_net_names;
@@ -789,7 +782,6 @@ procedure draw_conductors is
 		-- The text size is set automatically with the radius of the drill:
 		procedure draw_numbers (from, to : in string) is 
 			use et_colors.board;
-			use et_text;
 			use et_alignment;
 			position : type_vector_model := get_center (circle);
 			
@@ -820,7 +812,6 @@ procedure draw_conductors is
 		-- The text size is set automatically with the radius of the drill:
 		procedure draw_drill_size is 
 			use et_colors.board;
-			use et_text;
 			use et_alignment;
 			position : type_vector_model := get_center (circle);
 			offset : type_vector_model;

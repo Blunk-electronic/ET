@@ -354,11 +354,11 @@ package body et_canvas.text is
 
 	
 	procedure draw_vector_text (
-		text			: in pac_text.type_text_fab_with_content'class;
+		text			: in pac_text_vectorized.type_text_fab_with_content'class;
 		mirror			: in type_mirror := MIRROR_NO;
 		parent_position	: in pac_geometry.type_position := origin_zero_rotation)
 	is
-		use pac_text;
+		use pac_text_vectorized;
 		use pac_character_lines;
 
 		-- Drawing a vector-text is just a matter of
@@ -383,7 +383,7 @@ package body et_canvas.text is
 		end query_line;
 		
 
-		vectors	: pac_text.type_vector_text;
+		vectors	: type_vector_text;
 
 		pos_final : type_position := text.position;
 		
