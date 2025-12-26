@@ -38,7 +38,6 @@
 --   ToDo: 
 
 
-with et_text;
 with et_silkscreen;					use et_silkscreen;
 with et_pcb_placeholders;			use et_pcb_placeholders;
 

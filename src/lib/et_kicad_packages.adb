@@ -2232,7 +2232,6 @@ package body et_kicad_packages is
 
 			
 			procedure insert_fp_text is 
-				use et_text;
 				use et_alignment;
 			begin
 					

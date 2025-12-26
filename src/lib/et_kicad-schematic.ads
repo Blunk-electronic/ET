@@ -63,7 +63,6 @@ use et_schematic_geometry.pac_geometry_sch;
 use et_schematic_geometry.pac_geometry_2;
 
 with et_board_coordinates;
-with et_text;
 with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
 with et_device_appearance;		use et_device_appearance;

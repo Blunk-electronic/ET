@@ -52,7 +52,6 @@ with et_board_geometry;				use et_board_geometry;
 with et_board_coordinates;			use et_board_coordinates;
 
 with et_text_content;				use et_text_content;
-with et_text;
 
 with et_board_text;
 with et_board_layer_category;		use et_board_layer_category;
@@ -1422,7 +1421,6 @@ is
 	-- This procedure parses a command to place a text
 	-- and dispatches to subprogram according to the layer category:
 	procedure place_text is
-		use et_text;
 		use pac_text_board;
 		use et_board_ops.text;
 		use et_mirroring;

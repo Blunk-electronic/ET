@@ -45,7 +45,6 @@ with ada.containers.ordered_maps;
 with et_string_processing;
 with et_logging;				use et_logging;
 with et_schematic_coordinates;
-with et_text;
 with et_drawing_frame;				use et_drawing_frame;
 with et_drawing_frame.schematic;	use et_drawing_frame.schematic;
 with et_drawing_frame.board;		use et_drawing_frame.board;

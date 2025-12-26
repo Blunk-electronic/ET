@@ -80,7 +80,6 @@ with et_colors.board;				use et_colors.board;
 with et_design_rules_board;			use et_design_rules_board;
 
 with et_text_content;				use et_text_content;
-with et_text;
 with et_alignment;
 
 with et_conductor_segment;

@@ -50,9 +50,7 @@ package body et_symbol_text is
 	procedure write_text_properies (
 		text 			: in type_symbol_text;
 		log_threshold	: in type_log_level) 
-	is
-		use et_text;
-	begin
+	is begin
 		log_indentation_up;
 		
 		-- content

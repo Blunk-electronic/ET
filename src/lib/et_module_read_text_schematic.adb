@@ -53,7 +53,6 @@ with et_schematic_geometry;			use et_schematic_geometry;
 with et_schematic_coordinates;		use et_schematic_coordinates;
 
 with et_text_content;				use et_text_content;
-with et_text;						use et_text;
 with et_schematic_text;				use et_schematic_text;
 
 with et_alignment;					use et_alignment;

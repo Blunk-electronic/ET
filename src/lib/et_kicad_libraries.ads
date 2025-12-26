@@ -61,8 +61,10 @@ with et_kicad_packages;			use et_kicad_packages;
 
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
+
 with et_text;					use et_text;
 with et_text_content;			use et_text_content;
+
 with et_port_names;				use et_port_names;
 with et_symbol_shapes;			use et_symbol_shapes;
 with et_symbol_ports;			use et_symbol_ports;

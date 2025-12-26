@@ -69,7 +69,6 @@ with et_board_geometry;				use et_board_geometry;
 with et_board_coordinates;			use et_board_coordinates;
 with et_kicad_general;				use et_kicad_general;
 
-with et_text;
 with et_text_content;				use et_text_content;
 with et_board_text;					use et_board_text;
 

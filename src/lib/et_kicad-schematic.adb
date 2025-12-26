@@ -724,7 +724,6 @@ package body et_kicad.schematic is
 	function to_alignment_vertical (text : in string) return type_text_alignment_vertical is
 	-- Converts a vertical kicad text alignment to type_text_alignment_vertical.
 	-- The given text is something like CNN. We are interested in the first character only.
-		use et_text;
 		a : type_text_alignment_vertical;
 		s : string (1..1) := text(text'first..text'first);
 	begin

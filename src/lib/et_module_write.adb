@@ -52,7 +52,6 @@ with gnat.directory_operations;
 with et_directory_and_file_ops;
 
 with et_meta;						use et_meta;
-with et_text;						use et_text;
 with et_text_content;				use et_text_content;
 with et_general_rw;					use et_general_rw;
 with et_system_info;

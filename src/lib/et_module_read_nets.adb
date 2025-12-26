@@ -50,7 +50,6 @@ with et_module_names;				use et_module_names;
 with et_module_instance;
 with et_keywords;					use et_keywords;
 
-with et_text;
 with et_rotation_docu;				use et_rotation_docu;
 with et_schematic_text;
 

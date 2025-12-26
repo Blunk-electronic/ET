@@ -39,7 +39,6 @@
 with ada.text_io;					use ada.text_io;
 
 with et_text_content;				use et_text_content;
-with et_text;
 with et_alignment;
 with et_schematic_ops;
 with et_schematic_ops.sheets;
@@ -116,7 +115,6 @@ procedure draw_drawing_frame is
 		phs : type_placeholders_schematic renames
 			frames.frame.title_block_schematic.placeholders_additional;
 		
-		use et_text;
 		use et_alignment;
 		use pac_draw_text;
 

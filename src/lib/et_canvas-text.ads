@@ -38,7 +38,6 @@
 
 
 with et_text_content;			use et_text_content;
-with et_text;					use et_text;
 with et_alignment;				use et_alignment;
 with et_fonts;					use et_fonts;
 

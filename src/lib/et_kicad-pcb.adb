@@ -4240,7 +4240,6 @@ package body et_kicad.pcb is
 
 			
 			procedure insert_fp_text is 
-				use et_text;
 				use et_silkscreen;
 				use et_assy_doc.packages;
 			begin

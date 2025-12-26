@@ -57,7 +57,6 @@ with et_device_placeholders.packages;
 
 with et_board_coordinates;
 with et_text_content;					use et_text_content;
-with et_text;
 with et_device_prefix;					use et_device_prefix;
 with et_device_model;					use et_device_model;
 with et_device_appearance;				use et_device_appearance;

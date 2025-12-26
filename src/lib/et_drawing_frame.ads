@@ -43,7 +43,6 @@ with ada.containers.doubly_linked_lists;
 
 with et_axes;					use et_axes;
 with et_text_content;			use et_text_content;
-with et_text;					use et_text;
 with et_fonts;					use et_fonts;
 
 
@@ -52,6 +51,7 @@ package et_drawing_frame is
 
 
 -- PAPER SIZES
+	-- CS move to spearate package
 	
     type type_paper_size is (A3, A4); -- CS: others ?
     paper_size_default : constant type_paper_size := A4;

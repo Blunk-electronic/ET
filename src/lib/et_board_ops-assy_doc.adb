@@ -37,6 +37,8 @@
 --
 
 
+with et_text_content;
+
 
 package body et_board_ops.assy_doc is
 

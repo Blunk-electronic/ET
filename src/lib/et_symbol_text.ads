@@ -51,7 +51,6 @@ with et_schematic_geometry;				use et_schematic_geometry;
 
 with et_logging;						use et_logging;
 
-with et_text;
 with et_text_content;					use et_text_content;
 with et_fonts;							use et_fonts;
 

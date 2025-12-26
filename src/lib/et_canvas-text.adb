@@ -75,7 +75,6 @@ package body et_canvas.text is
 		return cairo.cairo_text_extents 
 	is
 		use cairo;
-		use et_text;
 		
 		result : aliased cairo_text_extents; -- to be returned
 
@@ -119,8 +118,6 @@ package body et_canvas.text is
 		size		: in pac_text.type_text_size)
 		return type_logical_pixels_vector
 	is
-		use et_text;
-		
 		sp : type_logical_pixels_vector; -- to be returned
 
 		-- The x_bearing is the horizontal distance between the origin
@@ -211,7 +208,6 @@ package body et_canvas.text is
 	is
 		use glib;
 		use cairo;
-		use et_text;
 		use pac_text;
 
 		-- The extents of the text on the canvas:

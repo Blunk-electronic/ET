@@ -78,7 +78,6 @@ with et_sheets;
 with et_netlists;
 with et_net_strands;
 
-with et_text;
 with et_text_content;				use et_text_content;
 with et_rotation_docu;				use et_rotation_docu;
 
@@ -2947,9 +2946,7 @@ package body et_kicad_to_native is
 					-- to native label rotation:
 					function to_rotation (rk : in type_rotation_relative) 
 						return type_rotation_documentation 
-					is 
-						use et_text;
-					begin
+					is begin
 						if rk = 180.0 then
 							return HORIZONTAL;
 						
@@ -3295,6 +3292,7 @@ package body et_kicad_to_native is
 				
 				log_indentation_down;
 			end copy_layout_stuff;
+
 
 			
 		begin -- copy_nets

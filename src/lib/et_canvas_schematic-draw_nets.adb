@@ -44,7 +44,6 @@
 
 with et_primitive_objects;			use et_primitive_objects;
 with et_text_content;				use et_text_content;
-with et_text;						use et_text;
 with et_alignment;
 with et_nets;						use et_nets;
 with et_net_junction;				use et_net_junction;

@@ -53,7 +53,6 @@ with et_assembly_variant_name;		use et_assembly_variant_name;
 with et_module_names;				use et_module_names;
 with et_meta;
 with et_commit;
-with et_text;
 with et_text_content;				use et_text_content;
 with et_drawing_frame;
 with et_drawing_frame.schematic;

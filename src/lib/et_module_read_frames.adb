@@ -54,7 +54,6 @@ with et_drawing_frame;				use et_drawing_frame;
 with et_drawing_frame.schematic;	use et_drawing_frame.schematic;
 with et_drawing_frame_rw;			use et_drawing_frame_rw;
 
-with et_text;
 with et_text_content;				use et_text_content;
 
 with et_schematic_coordinates;
@@ -129,7 +128,6 @@ package body et_module_read_frames is
 		line : in type_fields_of_line)
 	is
 		use et_schematic_coordinates;	
-		use et_text;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -156,7 +154,6 @@ package body et_module_read_frames is
 		
 		
 	procedure add_sheet_description is 
-		use et_text;
 		use et_schematic_coordinates;	
 		use pac_schematic_descriptions;
 		inserted : boolean;

@@ -40,7 +40,6 @@
 with ada.text_io;					use ada.text_io;
 
 with et_text_content;				use et_text_content;
-with et_text;						use et_text;
 with et_alignment;
 with et_nets;
 with et_net_names;					use et_net_names;

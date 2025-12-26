@@ -51,8 +51,6 @@ package body et_board_ops.text is
 	is
 		m : type_generic_module renames element (module_cursor);
 		
-		use et_text;
-
 		use et_meta;
 		meta : constant et_meta.type_board := m.meta.board;
 

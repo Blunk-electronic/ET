@@ -67,7 +67,6 @@ with et_package_write;
 with et_package_read;
 with et_conventions;
 
-with et_text;
 with et_rotation_docu;				use et_rotation_docu;
 with et_text_content;				use et_text_content;
 
@@ -121,7 +120,6 @@ package body et_device_read is
 		use et_unit_name;
 		use et_package_variant;
 		
-		use et_text;
 		file_handle : ada.text_io.file_type;
 
 		line : type_fields_of_line;

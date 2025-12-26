@@ -1443,7 +1443,6 @@ package body et_devices_non_electrical is
 				ph : type_text_placeholder renames element (c);
 				use pac_text_board;
 				text : type_silk_text := (type_text_fab (ph) with others => <>);
-				use et_text;
 			begin
 				text.content := to_placeholder_content (device_cursor, ph); -- map from meaning to content
 
@@ -1539,7 +1538,6 @@ package body et_devices_non_electrical is
 				ph : type_text_placeholder renames element (c);
 				use pac_text_board;
 				text : type_doc_text := (type_text_fab (ph) with others => <>);
-				use et_text;
 			begin
 				text.content := to_placeholder_content (device_cursor, ph); -- map from meaning to content
 

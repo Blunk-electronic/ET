@@ -40,7 +40,6 @@ with et_primitive_objects;				use et_primitive_objects;
 with et_colors;							use et_colors;
 
 with et_text_content;					use et_text_content;
-with et_text;
 with et_alignment;
 with et_symbol_shapes;
 with et_symbol_text;
@@ -342,7 +341,6 @@ procedure draw_units is
 			-- position taking into account the rotation of the unit in the schematic:
 			procedure draw_port_name is
 				use et_port_names;
-				use et_text;
 
 				-- The vertical alignment is untouched and is always CENTER.
 				-- The horizontal alignment depends on the total rotation
@@ -397,7 +395,6 @@ procedure draw_units is
 			-- This procedure draws the terminal name at its final
 			-- position taking into account the rotation of the unit in the schematic:
 			procedure draw_terminal_name is
-				use et_text;
 				-- The vertical alignment is untouched and is always BOTTOM.
 				-- The horizontal alignment depends on the total rotation
 				-- which is a sum of port rotation and unit rotation.
@@ -548,7 +545,6 @@ procedure draw_units is
 		-- This procedure draws text placeholders 
 		-- for device name, value and purpose:
 		procedure draw_placeholders is 
-			use et_text;
 			use pac_draw_text;
 
 

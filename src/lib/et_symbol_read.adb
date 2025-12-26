@@ -49,7 +49,6 @@ with et_directory_and_file_ops;
 with et_general_rw;					use et_general_rw;
 with et_axes;						use et_axes;
 
-with et_text;
 with et_text_content;				use et_text_content;
 
 with et_alignment;					use et_alignment;
@@ -78,8 +77,6 @@ package body et_symbol_read is
 		file_name 		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		log_threshold	: in type_log_level) 
 	is
-		use et_text;
-		
 		file_handle : ada.text_io.file_type;
 
 		line : type_fields_of_line;

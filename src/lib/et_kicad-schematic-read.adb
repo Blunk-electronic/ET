@@ -2063,8 +2063,6 @@ is
 		-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text_placeholder
 			text_position : type_vector_model;
 			size : et_kicad_libraries.pac_text.type_text_size;
-			use et_text;
-
 			status : type_object_status;
 		begin
 			-- test if the field content is longer than allowed:

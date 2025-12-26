@@ -52,7 +52,7 @@ with et_directory_and_file_ops;
 with et_primitive_objects;			use et_primitive_objects;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 
-with et_text;
+-- with et_text;
 with et_text_content;				use et_text_content;
 
 with et_string_processing;			use et_string_processing;
@@ -872,7 +872,6 @@ package body et_drawing_frame_rw is
 
 		
 		procedure read_text_properties is
-			use et_text; -- for keywords only
 			kw : constant string := f (line, 1);
 		begin
 			-- CS: In the following: set a corresponding parameter-found-flag
@@ -897,7 +896,6 @@ package body et_drawing_frame_rw is
 		
 		
 		procedure read_placeholder_properties is
-			use et_text; -- for keywords only
 			kw : constant string := f (line, 1);
 		begin
 			-- CS: In the following: set a corresponding parameter-found-flag
@@ -1497,7 +1495,6 @@ package body et_drawing_frame_rw is
 
 		
 		procedure read_text_properties is
-			use et_text; -- for keywords only
 			kw : constant string := f (line, 1);
 		begin
 			-- CS: In the following: set a corresponding parameter-found-flag
@@ -1521,7 +1518,6 @@ package body et_drawing_frame_rw is
 
 		
 		procedure read_cam_marker_properties is
-			use et_text; -- for keywords only
 			kw : constant string := f (line, 1);
 		begin
 			-- CS: In the following: set a corresponding parameter-found-flag
@@ -1545,7 +1541,6 @@ package body et_drawing_frame_rw is
 		
 		
 		procedure read_placeholder_properties is
-			use et_text; -- for keywords only
 			kw : constant string := f (line, 1);
 		begin
 			-- CS: In the following: set a corresponding parameter-found-flag

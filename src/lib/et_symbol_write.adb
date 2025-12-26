@@ -49,7 +49,6 @@ with et_directory_and_file_ops;
 with et_general_rw;					use et_general_rw;
 with et_axes;						use et_axes;
 
-with et_text;
 with et_text_content;				use et_text_content;
 with et_rotation_docu;				use et_rotation_docu;
 
@@ -75,7 +74,6 @@ package body et_symbol_write is
 
 	
 	procedure write_text_properties (t : in type_text_basic'class) is
-		use et_text;
 	begin
 		write (keyword => keyword_size, parameters => to_string (t.size));
 		write (keyword => keyword_rotation, parameters => to_string (t.rotation));
@@ -95,8 +93,6 @@ package body et_symbol_write is
 		symbol			: in type_symbol;
 		log_threshold	: in type_log_level)
 	is
-		use et_text;
-
 		use pac_symbol_lines;
 		use pac_symbol_arcs;
 		use pac_symbol_circles;

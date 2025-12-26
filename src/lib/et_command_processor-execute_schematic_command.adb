@@ -52,7 +52,6 @@ with et_board_ops.net_class;
 
 with et_rotation_docu;					use et_rotation_docu;
 with et_text_content;					use et_text_content;
-with et_text;
 
 with et_schematic_geometry;
 with et_schematic_coordinates;

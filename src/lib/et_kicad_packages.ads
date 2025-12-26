@@ -46,9 +46,9 @@ with ada.containers.indefinite_ordered_maps;
 with et_drills;
 with et_terminals;				use et_terminals;
 
+with et_text_content;			use et_text_content;
 with et_board_text;				use et_board_text;
 use et_board_text.pac_text_board;
-
 
 with et_stopmask;				use et_stopmask;
 with et_stopmask.packages;		use et_stopmask.packages;
@@ -79,8 +79,7 @@ use et_board_geometry.pac_contours;
 
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
-with et_text;					--use et_text;
-with et_text_content;			use et_text_content;
+
 
 
 package et_kicad_packages is
