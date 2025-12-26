@@ -988,7 +988,7 @@ package body et_kicad.pcb is
 			end_of_arg : integer; -- may become negative if no terminating character present
 
 			use type_argument;
-			use et_text.pac_text_content;
+			use pac_text_content;
 			use et_board_coordinates;
 			use pac_geometry_brd;
 			
@@ -3132,7 +3132,7 @@ package body et_kicad.pcb is
 
 			
 			procedure invalid_layer_user is begin
-				log (ERROR, "user text " & et_text.to_string (package_text.content) 
+				log (ERROR, "user text " & to_string (package_text.content) 
 					 & " must be in a silk screen or fabrication layer !", console => true);
 				raise constraint_error;
 			end invalid_layer_user;
@@ -4259,13 +4259,13 @@ package body et_kicad.pcb is
 								package_silk_screen.top.placeholders.append (
 									(type_text_fab (package_text) with meaning => NAME, others => <>));
 								
-								placeholder_properties (TOP, package_silk_screen.top.placeholders.last, log_threshold + 1);
+								-- CS placeholder_properties (TOP, package_silk_screen.top.placeholders.last, log_threshold + 1);
 								
 							when BOT_SILK =>
 								package_silk_screen.bottom.placeholders.append (
 									(type_text_fab (package_text) with meaning => NAME, others => <>));
 								
-								placeholder_properties (BOTTOM, package_silk_screen.bottom.placeholders.last, log_threshold + 1);
+								-- CS placeholder_properties (BOTTOM, package_silk_screen.bottom.placeholders.last, log_threshold + 1);
 
 							when others => -- should never happen
 								invalid_layer_reference; 
@@ -4283,13 +4283,13 @@ package body et_kicad.pcb is
 								package_assy_doc.top.placeholders.append (
 									(type_text_fab (package_text) with meaning => VALUE, others => <>));
 								
-								placeholder_properties (TOP, package_assy_doc.top.placeholders.last, log_threshold + 1);
+								-- CS placeholder_properties (TOP, package_assy_doc.top.placeholders.last, log_threshold + 1);
 								
 							when BOT_ASSY =>
 								package_assy_doc.bottom.placeholders.append (
 									(type_text_fab (package_text) with meaning => VALUE, others => <>));
 								
-								placeholder_properties (BOTTOM, package_assy_doc.bottom.placeholders.last, log_threshold + 1);
+								-- CS placeholder_properties (BOTTOM, package_assy_doc.bottom.placeholders.last, log_threshold + 1);
 								
 							when others => -- should never happen
 								invalid_layer_value;
@@ -4309,23 +4309,23 @@ package body et_kicad.pcb is
 							when TOP_SILK => 
 								package_silk_screen.top.texts.append ((type_text_fab (package_text) with
 									content => package_text.content));
-								text_silk_screen_properties (TOP, package_silk_screen.top.texts.last, log_threshold + 1);
+								-- CS text_silk_screen_properties (TOP, package_silk_screen.top.texts.last, log_threshold + 1);
 								
 							when BOT_SILK => 
 								package_silk_screen.bottom.texts.append ((type_text_fab (package_text) with
 									content => package_text.content));
-								text_silk_screen_properties (BOTTOM, package_silk_screen.bottom.texts.last, log_threshold + 1);
+								-- CS text_silk_screen_properties (BOTTOM, package_silk_screen.bottom.texts.last, log_threshold + 1);
 
 								
 							when TOP_ASSY => 
 								package_assy_doc.top.texts.append ((type_text_fab (package_text) with 
 									content => package_text.content));
-								text_assy_doc_properties (TOP, package_assy_doc.top.texts.last, log_threshold + 1);
+								-- CS text_assy_doc_properties (TOP, package_assy_doc.top.texts.last, log_threshold + 1);
 								
 							when BOT_ASSY => 
 								package_assy_doc.bottom.texts.append ((type_text_fab (package_text) with
 									content => package_text.content));
-								text_assy_doc_properties (BOTTOM, package_assy_doc.bottom.texts.last, log_threshold + 1);
+								-- CS text_assy_doc_properties (BOTTOM, package_assy_doc.bottom.texts.last, log_threshold + 1);
 								
 							when others -- should never happen. kicad does not allow texts in signal layers 
 								=> invalid_layer_user;

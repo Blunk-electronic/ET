@@ -2070,7 +2070,7 @@ package body et_board_ops.assy_doc is
 		log_threshold	: in type_log_level)
 		return pac_doc_texts.list
 	is
-		use et_text;
+		use et_text_content;
 		result : pac_doc_texts.list;
 
 		

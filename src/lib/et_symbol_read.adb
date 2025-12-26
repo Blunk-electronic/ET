@@ -48,7 +48,10 @@ with et_system_info;
 with et_directory_and_file_ops;
 with et_general_rw;					use et_general_rw;
 with et_axes;						use et_axes;
+
 with et_text;
+with et_text_content;				use et_text_content;
+
 with et_alignment;					use et_alignment;
 with et_logic;
 with et_power_sources;
@@ -105,7 +108,7 @@ package body et_symbol_read is
 		symbol_inserted		: boolean;
 		
 		symbol_text_position		: type_vector_model;
-		symbol_text_content			: et_text.pac_text_content.bounded_string;
+		symbol_text_content			: pac_text_content.bounded_string;
 		symbol_placeholder_meaning	: type_placeholder_meaning := placeholder_meaning_default;
 		
 		port					: type_port_base;
@@ -611,7 +614,7 @@ package body et_symbol_read is
 
 									elsif kw = keyword_content then -- content "dummy NAND gate"
 										expect_field_count (line, 2);
-										symbol_text_content := et_text.to_content (f (line, 2));
+										symbol_text_content := to_content (f (line, 2));
 
 									elsif kw = keyword_size then -- size 5
 										expect_field_count (line, 2);

@@ -94,9 +94,9 @@ package et_conductor_text.boards is
 
 	
 	-- Logs the properties of the given text.
-	procedure text_conductor_properties (
-		cursor			: in pac_conductor_texts.cursor;
-		log_threshold 	: in type_log_level);
+	-- procedure text_conductor_properties (
+	-- 	cursor			: in pac_conductor_texts.cursor;
+	-- 	log_threshold 	: in type_log_level);
 
 	
 end et_conductor_text.boards;

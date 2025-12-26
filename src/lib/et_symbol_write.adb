@@ -48,7 +48,11 @@ with et_system_info;
 with et_directory_and_file_ops;
 with et_general_rw;					use et_general_rw;
 with et_axes;						use et_axes;
+
 with et_text;
+with et_text_content;				use et_text_content;
+with et_rotation_docu;				use et_rotation_docu;
+
 with et_alignment;					use et_alignment;
 with et_logic;
 with et_power_sources;

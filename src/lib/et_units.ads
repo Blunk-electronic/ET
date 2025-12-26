@@ -54,6 +54,7 @@ with et_port_names;						use et_port_names;
 with et_symbol_ports;					use et_symbol_ports;
 with et_symbol_library;					use et_symbol_library;
 with et_symbol_model;					use et_symbol_model;
+with et_rotation_docu;					use et_rotation_docu;
 with et_text;							use et_text;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;

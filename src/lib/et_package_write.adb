@@ -43,7 +43,10 @@ with ada.exceptions;
 
 with et_directory_and_file_ops;
 with et_general_rw;						use et_general_rw;
+
 with et_text;							use et_text;
+with et_text_content;					use et_text_content;
+
 with et_alignment;						use et_alignment;
 with et_terminals;						use et_terminals;
 

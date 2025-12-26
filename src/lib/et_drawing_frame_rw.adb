@@ -51,7 +51,10 @@ with ada.exceptions;
 with et_directory_and_file_ops;
 with et_primitive_objects;			use et_primitive_objects;
 with et_coordinates_formatting;		use et_coordinates_formatting;
+
 with et_text;
+with et_text_content;				use et_text_content;
+
 with et_string_processing;			use et_string_processing;
 with et_time;						use et_time;
 with et_general_rw;					use et_general_rw;
@@ -153,7 +156,7 @@ package body et_drawing_frame_rw is
 
 			-- content
 			write (keyword => keyword_content, wrap => true,
-				   parameters => et_text.to_string (text.content)); -- content "motor driver"
+				   parameters => to_string (text.content)); -- content "motor driver"
 
 			section_mark (section_text, FOOTER);
 		end;
@@ -412,7 +415,7 @@ package body et_drawing_frame_rw is
 
 			-- content
 			write (keyword => keyword_content, wrap => true,
-				   parameters => et_text.to_string (text.content)); -- content "motor driver"
+				   parameters => to_string (text.content)); -- content "motor driver"
 
 			section_mark (section_text, FOOTER);
 		end;
@@ -427,7 +430,7 @@ package body et_drawing_frame_rw is
 
 			-- content
 			write (keyword => keyword_content, wrap => true,
-				   parameters => et_text.to_string (cm.content));
+				   parameters => to_string (cm.content));
 		end;
 
 		
@@ -1588,8 +1591,8 @@ package body et_drawing_frame_rw is
 		
 		-- The content of a cam marker may not be specified via the frame template.
 		-- In this case the default content must be assigned to the tb_cam_marker.
-		procedure set_content (content : in et_text.pac_text_content.bounded_string) is 
-			use et_text.pac_text_content;
+		procedure set_content (content : in pac_text_content.bounded_string) is 
+			use pac_text_content;
 		begin
 			if length (tb_cam_marker.content) = 0 then
 				tb_cam_marker.content := content;

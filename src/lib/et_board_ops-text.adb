@@ -47,7 +47,7 @@ package body et_board_ops.text is
 	function to_placeholder_content (
 		module_cursor	: in pac_generic_modules.cursor;
 		meaning 		: in type_text_meaning)
-		return et_text.pac_text_content.bounded_string 
+		return pac_text_content.bounded_string 
 	is
 		m : type_generic_module renames element (module_cursor);
 		

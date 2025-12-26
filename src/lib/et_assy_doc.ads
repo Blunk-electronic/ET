@@ -44,7 +44,6 @@ with ada.containers.doubly_linked_lists;
 with et_pcb_sides;				use et_pcb_sides;
 with et_board_geometry;			use et_board_geometry;
 with et_board_text;				use et_board_text;
-with et_text;
 with et_logging;				use et_logging;
 with et_mirroring;				use et_mirroring;
 
@@ -343,10 +342,10 @@ package et_assy_doc is
 		log_threshold 	: in type_log_level);
 
 	-- Logs the properties of the given text:
-	procedure text_assy_doc_properties (
-		face			: in type_face;
-		cursor			: in pac_doc_texts.cursor;
-		log_threshold 	: in type_log_level);
+	-- procedure text_assy_doc_properties (
+	-- 	face			: in type_face;
+	-- 	cursor			: in pac_doc_texts.cursor;
+	-- 	log_threshold 	: in type_log_level);
 	
 	
 end et_assy_doc;

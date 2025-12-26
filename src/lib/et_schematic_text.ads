@@ -45,6 +45,8 @@ with et_schematic_coordinates;			use et_schematic_coordinates;
 with ada.containers; 					use ada.containers;
 with ada.containers.doubly_linked_lists;
 
+with et_text_content;					use et_text_content;
+with et_rotation_docu;					use et_rotation_docu;
 with et_text;							use et_text;
 with et_fonts;							use et_fonts;
 
@@ -84,7 +86,7 @@ package et_schematic_text is
 	-- These are basic properties a text has got:
 	type type_text_basic is new type_text with record
 		-- CS font : type_font; ?
-        rotation	: et_text.type_rotation_documentation := et_text.type_rotation_documentation'first;
+        rotation : type_rotation_documentation := type_rotation_documentation'first;
 	end record;
 
 
@@ -102,7 +104,7 @@ package et_schematic_text is
 	-- A text/note in the schematic:
 	type type_text is new pac_text_schematic.type_text with record
 		position	: type_vector_model;
-		rotation	: type_rotation_documentation := et_text.HORIZONTAL;
+		rotation	: type_rotation_documentation := HORIZONTAL;
 		sheet		: type_sheet := type_sheet'first;
 		content		: pac_text_content.bounded_string;
 		--font		: et_text.type_font;

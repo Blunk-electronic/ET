@@ -79,6 +79,7 @@ with et_stopmask;						use et_stopmask;
 with et_silkscreen;						use et_silkscreen;
 with et_assy_doc;						use et_assy_doc;
 with et_text;
+with et_text_content;					use et_text_content;
 with et_logging;						use et_logging;
 
 
@@ -785,7 +786,7 @@ package et_devices_non_electrical is
 	function to_placeholder_content (
 		device_cursor	: in pac_devices_non_electrical.cursor; -- non-electrical device
 		placeholder		: in type_text_placeholder)
-		return et_text.pac_text_content.bounded_string;
+		return pac_text_content.bounded_string;
 
 	
 

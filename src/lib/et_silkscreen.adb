@@ -643,21 +643,23 @@ package body et_silkscreen is
 	end;
 
 
-	procedure text_silk_screen_properties (
-		face			: in type_face;
-		cursor			: in pac_silk_texts.cursor;
-		log_threshold 	: in type_log_level) 
-	is
-		use et_text.pac_text_content;
-		text : type_silk_text renames element (cursor);
-	begin
-		log (text => "silk screen text face" & to_string (face) & space
-			 & "content '" & to_string (text.content) & "'", level => log_threshold);
+	-- procedure text_silk_screen_properties (
+	-- 	face			: in type_face;
+	-- 	cursor			: in pac_silk_texts.cursor;
+	-- 	log_threshold 	: in type_log_level) 
+	-- is
+	-- 	use et_text.pac_text_content;
+	-- 	text : type_silk_text renames element (cursor);
+	-- begin
+	-- 	log (text => "silk screen text face" & to_string (face) & space
+	-- 		 & "content '" & to_string (text.content) & "'", level => log_threshold);
+ -- 
+	-- 	log_indentation_up;
+	-- 	-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
+	-- 	log_indentation_down;
+	-- end text_silk_screen_properties;
 
-		log_indentation_up;
-		-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
-		log_indentation_down;
-	end text_silk_screen_properties;
+
 	
 end et_silkscreen;
 

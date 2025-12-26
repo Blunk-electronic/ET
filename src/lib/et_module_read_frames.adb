@@ -53,7 +53,9 @@ with et_keywords;					use et_keywords;
 with et_drawing_frame;				use et_drawing_frame;
 with et_drawing_frame.schematic;	use et_drawing_frame.schematic;
 with et_drawing_frame_rw;			use et_drawing_frame_rw;
+
 with et_text;
+with et_text_content;				use et_text_content;
 
 with et_schematic_coordinates;
 with et_sheets;						use et_sheets;
@@ -74,7 +76,7 @@ package body et_module_read_frames is
 		schematic_sheet_category_default; -- product/develpment/routing
 	
 	sheet_description_number	: type_sheet := type_sheet'first; -- 1, 2. 3, ...
-	sheet_description_text		: et_text.pac_text_content.bounded_string;		-- "voltage regulator"
+	sheet_description_text		: pac_text_content.bounded_string;		-- "voltage regulator"
 
 	-- CS frame_count_schematic		: et_schematic_coordinates.type_submodule_sheet_number := et_schematic_coordinates.type_submodule_sheet_number'first; -- 10 frames
 	frame_template_schematic	: pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frs

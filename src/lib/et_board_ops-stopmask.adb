@@ -36,6 +36,8 @@
 --   history of changes:
 --
 
+with et_text_content;
+
 
 package body et_board_ops.stopmask is
 
@@ -1747,7 +1749,7 @@ package body et_board_ops.stopmask is
 		log_threshold	: in type_log_level)
 		return pac_stop_texts.list
 	is
-		use et_text;
+		use et_text_content;
 		use pac_stop_texts;
 		result : pac_stop_texts.list;
 

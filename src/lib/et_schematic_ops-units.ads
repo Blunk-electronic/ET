@@ -43,6 +43,7 @@ with et_unit_name;						use et_unit_name;
 with et_device_placeholders;			use et_device_placeholders;
 with et_object_status;					use et_object_status;
 with et_device_property_level;			use et_device_property_level;
+with et_rotation_docu;					use et_rotation_docu;
 
 
 package et_schematic_ops.units is
@@ -796,7 +797,7 @@ package et_schematic_ops.units is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		toggle			: in boolean := false;
-		rotation		: in et_text.type_rotation_documentation := et_text.HORIZONTAL;
+		rotation		: in type_rotation_documentation := HORIZONTAL;
 		meaning			: in type_placeholder_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level);
 

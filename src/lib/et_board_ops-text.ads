@@ -44,6 +44,8 @@ with et_silkscreen;
 with et_assy_doc;
 
 with et_text;
+with et_text_content;				use et_text_content;
+
 with et_pcb_placeholders;			use et_pcb_placeholders;
 
 
@@ -59,7 +61,7 @@ package et_board_ops.text is
 	function to_placeholder_content (
 		module_cursor	: in pac_generic_modules.cursor;
 		meaning 		: in type_text_meaning)										
-		return et_text.pac_text_content.bounded_string;
+		return pac_text_content.bounded_string;
 	
 	
 											

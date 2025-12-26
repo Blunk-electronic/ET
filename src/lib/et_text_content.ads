@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                        CONDUCTOR TEXT BOARDS                             --
+--                            TEXT CONTENT                                  --
 --                                                                          --
---                              B o d y                                     --
+--                               S p e c                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -35,109 +35,57 @@
 --
 --   history of changes:
 --
---   to do:
+
+with ada.strings.maps;			use ada.strings.maps;
+with ada.strings.bounded; 		use ada.strings.bounded;
+
+with et_logging;				use et_logging;
 
 
-
-
-package body et_conductor_text.boards is
-
-
-	function get_layer (
-		text : in type_conductor_text)
-		return type_signal_layer
-	is begin
-		return text.layer;
-	end get_layer;
-
-
-	
-	function to_string (
-		text	: in pac_conductor_texts.cursor)
-		return string
-	is 
-		t : type_conductor_text := element (text);
-	begin
-		return to_string (t) & " layer " & to_string (get_layer (t));
-	end to_string;
-
-
-
-	function is_selected (
-		text : in pac_conductor_texts.cursor)
-		return boolean
-	is 
-		t : type_conductor_text := element (text);
-	begin
-		if is_selected (t) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
-	
-
-
-	function is_proposed (
-		text : in pac_conductor_texts.cursor)
-		return boolean
-	is 
-		t : type_conductor_text := element (text);
-	begin
-		if is_proposed (t) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
-
-
-
-	function get_layer (
-		text : in pac_conductor_texts.cursor)
-		return type_signal_layer
-	is begin
-		return element (text).layer;
-	end get_layer;
-
-	
+package et_text_content is
 
 	
 	
-	procedure iterate (
-		texts	: in pac_conductor_texts.list;
-		process	: not null access procedure (position : in pac_conductor_texts.cursor);
-		proceed	: not null access boolean)
-	is
-		c : pac_conductor_texts.cursor := texts.first;
-	begin
-		while c /= pac_conductor_texts.no_element and proceed.all = TRUE loop
-			process (c);
-			next (c);
-		end loop;
-	end iterate;
-		
+	-- A text may have up to 200 characters which seems sufficient for now.
+	text_length_max : constant natural := 200;
+	package pac_text_content is new generic_bounded_length (text_length_max);
+
+	function to_string (text_content : in pac_text_content.bounded_string) return string;
+	function to_content (content : in string) return pac_text_content.bounded_string;
+
+	empty_text_content : constant pac_text_content.bounded_string :=
+		pac_text_content.to_bounded_string ("");
+	
+	function is_empty (content : in pac_text_content.bounded_string) return boolean;
+	
+	valid_characters : character_set := to_set 
+		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_-+/: "); 
 
 
+	-- Tests if the given text contains only valid characters as specified
+	-- by given character set. Returns false if invalid character found.
+	function characters_valid (
+		content		: in pac_text_content.bounded_string;
+		characters	: in character_set := valid_characters) 
+		-- CS log_threshold : in type_log_level)
+		return boolean;
+
+	replace_by_default : constant character := '_';
+
+	-- Replaces invalid characters in content by character given in replace_by:
+	procedure replace_invalid_characters (
+		content		: in out pac_text_content.bounded_string;
+		replace_by	: in character := replace_by_default;
+		characters	: in character_set := valid_characters);
+
 	
-	-- procedure text_conductor_properties (
-	-- 	cursor			: in pac_conductor_texts.cursor;
-	-- 	log_threshold 	: in type_log_level) 
-	-- is
-	-- 	text : type_conductor_text;
-	-- begin
-	-- 	text := element (cursor);
-	-- 	log (text => "conductor text signal layer" & to_string (text.layer) & " "
-	-- 		& "content '" & et_text.to_string (text.content) & "'", level => log_threshold
-	-- 		);
- -- 
-	-- 	log_indentation_up;
-	-- 	log (text => text_properties (type_text (text)), level => log_threshold + 1);
-	-- 	log_indentation_down;
-	-- end text_conductor_properties;
-	
-	
-end et_conductor_text.boards;
+	procedure check_text_content_length (content : in string);
+	-- Tests if the content is not longer than allowed.
+
+
+
+end et_text_content;
+
 
 -- Soli Deo Gloria
 

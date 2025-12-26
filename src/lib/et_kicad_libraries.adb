@@ -83,10 +83,10 @@ package body et_kicad_libraries is
 	
 	function content (text : in type_text_placeholder) return string is
 	-- Returns the content of the given text placeholder as string.
-		c : et_text.pac_text_content.bounded_string;
+		c : pac_text_content.bounded_string;
 	begin
 		c := text.content;
-		return et_text.to_string (c);
+		return to_string (c);
 	end content;
 
 
@@ -1826,13 +1826,13 @@ package body et_kicad_libraries is
 -- 					return a;
 -- 				end to_style;
 
-				function to_content (text_in : in string) return et_text.pac_text_content.bounded_string is
+				function to_content (text_in : in string) return pac_text_content.bounded_string is
 				-- Replaces tildss in given string by space and returns a pac_text_content.bounded_string.
 					t : string (1..text_in'length) := text_in; -- copy given text to t
 				begin
 					-- replace tildes in given text by spaces.
 					translate (t, tilde_to_space'access);
-					return et_text.pac_text_content.to_bounded_string (t);
+					return pac_text_content.to_bounded_string (t);
 				end to_content;
 
 				use et_schematic_geometry.pac_geometry_sch;
@@ -2061,7 +2061,6 @@ package body et_kicad_libraries is
 			-- Checks basic properties of text fields (allowed charactes, text size, aligment, ...)
 			-- NOTE: The contextual validation takes place in procedure check_text_fields.
 				use et_text;
-				use et_text.pac_text_content;
 				use et_schematic_geometry.pac_geometry_sch;
 				
 				-- instantiate a text field as speficied by given parameter meaning

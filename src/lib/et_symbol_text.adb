@@ -39,6 +39,7 @@
 with ada.text_io;				use ada.text_io;
 with ada.exceptions; 			use ada.exceptions;
 
+with et_text_content;			use et_text_content;
 with et_alignment;				use et_alignment;
 
 
@@ -56,7 +57,7 @@ package body et_symbol_text is
 		
 		-- content
 		if pac_text_content.length (text.content) > 0 then
-			log (text => "content '" & et_text.to_string (text.content) & "'",
+			log (text => "content '" & to_string (text.content) & "'",
 				level => log_threshold);
 		else
 			log (text => "no content", level => log_threshold);
@@ -93,10 +94,10 @@ package body et_symbol_text is
 	
 	function content (text : in type_symbol_text) return string is
 	-- Returns the content of the given text as string.
-		c : et_text.pac_text_content.bounded_string;
+		c : pac_text_content.bounded_string;
 	begin
 		c := text.content;
-		return et_text.to_string (c);
+		return to_string (c);
 	end;
 	
 	

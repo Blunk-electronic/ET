@@ -895,7 +895,7 @@ package body et_kicad_packages is
 			end_of_arg : integer; -- may become negative if no terminating character present
 
 			use type_argument;
-			use et_text.pac_text_content;
+			use pac_text_content;
 			use et_pcb_sides;
 			use et_board_coordinates;
 			use pac_geometry_brd;
@@ -2285,23 +2285,23 @@ package body et_kicad_packages is
 							when TOP_SILK => 
 								silk_screen.top.texts.append ((type_text_fab (text) with 
 									content => text.content, others => <>)); -- CS vectorize text
-								text_silk_screen_properties (TOP, silk_screen.top.texts.last, log_threshold + 1);
+								-- CS text_silk_screen_properties (TOP, silk_screen.top.texts.last, log_threshold + 1);
 								
 							when BOT_SILK => 
 								silk_screen.bottom.texts.append ((type_text_fab (text) with 
 									content => text.content, others => <>)); -- CS vectorize text
-								text_silk_screen_properties (BOTTOM, silk_screen.bottom.texts.last, log_threshold + 1);
+								-- CS text_silk_screen_properties (BOTTOM, silk_screen.bottom.texts.last, log_threshold + 1);
 
 								
 							when TOP_ASSY => 
 								assy_doc.top.texts.append ((type_text_fab (text) with 
 									content => text.content, others => <>)); -- CS vectorize text
-								text_assy_doc_properties (TOP, assy_doc.top.texts.last, log_threshold + 1);
+								-- CS text_assy_doc_properties (TOP, assy_doc.top.texts.last, log_threshold + 1);
 								
 							when BOT_ASSY => 
 								assy_doc.bottom.texts.append ((type_text_fab (text) with
 									content => text.content, others => <>)); -- CS vectorize text
-								text_assy_doc_properties (BOTTOM, assy_doc.bottom.texts.last, log_threshold + 1);
+								-- CS text_assy_doc_properties (BOTTOM, assy_doc.bottom.texts.last, log_threshold + 1);
 
 								
 							when others -- should never happen. kicad does not allow texts in signal layers 

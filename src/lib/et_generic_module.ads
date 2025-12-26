@@ -54,6 +54,7 @@ with et_module_names;				use et_module_names;
 with et_meta;
 with et_commit;
 with et_text;
+with et_text_content;				use et_text_content;
 with et_drawing_frame;
 with et_drawing_frame.schematic;
 with et_numbering;
@@ -79,7 +80,7 @@ package et_generic_module is
 
 		rules			: et_design_rules.type_design_rules; -- design rules, erc rules ...
 		
-		description		: et_text.pac_text_content.bounded_string; -- a short description of the module
+		description		: pac_text_content.bounded_string; -- a short description of the module
 
 		-- schematic frame template and descriptions of individual schematic frames:
 		frames			: et_drawing_frame.schematic.type_frames_schematic;

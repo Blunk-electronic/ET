@@ -42,6 +42,7 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_axes;					use et_axes;
+with et_text_content;			use et_text_content;
 with et_text;					use et_text;
 with et_fonts;					use et_fonts;
 

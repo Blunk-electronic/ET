@@ -46,6 +46,8 @@ with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
 with et_devices_electrical;
 with et_conductors_floating_board;	use et_conductors_floating_board;
 
+with et_text_content;
+
 with et_vias;
 with et_route;
 with et_ripup;
@@ -4032,7 +4034,7 @@ package body et_board_ops.conductors is
 		log_threshold	: in type_log_level)
 		return pac_conductor_texts.list
 	is
-		use et_text;
+		use et_text_content;
 		use pac_conductor_texts;
 		result : pac_conductor_texts.list;
 

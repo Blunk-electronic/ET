@@ -51,6 +51,8 @@ with et_keywords;					use et_keywords;
 
 with et_schematic_geometry;			use et_schematic_geometry;
 with et_schematic_coordinates;		use et_schematic_coordinates;
+
+with et_text_content;				use et_text_content;
 with et_text;						use et_text;
 with et_schematic_text;				use et_schematic_text;
 
@@ -90,7 +92,7 @@ package body et_module_read_text_schematic is
 
 		elsif kw = keyword_content then -- content "DUMMY TEXT IN CORE MODULE"
 			expect_field_count (line, 2); -- actual content in quotes !
-			schematic_text.content := et_text.to_content (f (line, 2));
+			schematic_text.content := to_content (f (line, 2));
 
 		elsif kw = keyword_size then -- size 1.4
 			expect_field_count (line, 2);

@@ -46,6 +46,7 @@
 
 
 with et_object_status;				use et_object_status;
+with et_text_content;				use et_text_content;
 
 
 separate (et_kicad.schematic)
@@ -1942,7 +1943,7 @@ is
 		-- get note text from a line like "hello\ntest". NOTE "\n" represents a line break
 		-- CS: store lines in a list of lines instead ?
 		-- CS: Currently we store the line as it is in tmp_note.text
-		note.content := et_text.to_content (to_string (line));
+		note.content := to_content (to_string (line));
 
 		write_note_properties (note, log_threshold);
 		
@@ -2157,7 +2158,7 @@ is
 					if element (timestamp_cursor) = current_schematic.timestamp then
 						
 						reference := alt_ref.reference;
-						field_reference.content := et_text.to_content (to_string (alt_ref.reference));
+						field_reference.content := to_content (to_string (alt_ref.reference));
 						suitable_reference_found := true;
 
 						log (text => "update due to hierachic structure: " &

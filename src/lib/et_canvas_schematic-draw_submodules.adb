@@ -37,14 +37,15 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
+with ada.text_io;					use ada.text_io;
 
-with et_text;					use et_text;
+with et_text_content;				use et_text_content;
+with et_text;						use et_text;
 with et_alignment;
 with et_nets;
-with et_net_names;				use et_net_names;
-with et_submodules;				use et_submodules;
-with et_module_instance;		use et_module_instance;
+with et_net_names;					use et_net_names;
+with et_submodules;					use et_submodules;
+with et_module_instance;			use et_module_instance;
 with et_display.schematic;
 
 with et_board_geometry;
@@ -159,7 +160,7 @@ procedure draw_submodules is
 			move_by (position, offset);
 			
 			draw_text (
-				content		=> et_text.to_content (text),
+				content		=> to_content (text),
 				size		=> position_board_font_size,
 				font		=> position_board_font,
 				anchor		=> position,

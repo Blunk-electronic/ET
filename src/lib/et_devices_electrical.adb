@@ -560,11 +560,10 @@ package body et_devices_electrical is
 	function to_placeholder_content (
 		device_cursor	: in pac_devices_electrical.cursor;
 		placeholder		: in et_device_placeholders.packages.type_text_placeholder)
-		return et_text.pac_text_content.bounded_string 
+		return pac_text_content.bounded_string 
 	is
 		device : type_device_electrical renames element (device_cursor);
 
-		use et_text;
 		result : pac_text_content.bounded_string;
 
 		use et_device_placeholders;

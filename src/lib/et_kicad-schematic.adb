@@ -59,6 +59,10 @@ with et_net_class;				use et_net_class;
 with et_net_classes;			use et_net_classes;
 with et_package_model_name;		use et_package_model_name;
 
+with et_text_content;
+with et_rotation_docu;
+
+
 
 package body et_kicad.schematic is
 
@@ -8275,7 +8279,8 @@ package body et_kicad.schematic is
 		log_threshold	: in type_log_level := 0) is
 	-- Writes the properties of the given note
 		use et_string_processing;
-		use et_text;
+		use et_text_content;
+		use et_rotation_docu;
 		use et_alignment;
 	begin
 		log (text => "text note" & to_string (

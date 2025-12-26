@@ -52,7 +52,7 @@ package body et_schematic_text is
 	procedure toggle_rotation (
 		text : in out type_text_basic)
 	is begin
-		et_text.toggle_rotation (text.rotation);
+		toggle_rotation (text.rotation);
 	end;
 
 	

@@ -43,7 +43,10 @@ with ada.exceptions;
 
 with et_directory_and_file_ops;
 with et_general_rw;						use et_general_rw;
+
 with et_text;							use et_text;
+with et_text_content;					use et_text_content;
+
 with et_alignment;						use et_alignment;
 with et_terminals;						use et_terminals;
 
@@ -167,7 +170,7 @@ package body et_package_read is
 				
 			elsif kw = keyword_content then -- content "keep clear"
 				expect_field_count (line, 2); -- actual content in quotes !
-				pac_text.content := et_text.to_content (f (line, 2));
+				pac_text.content := to_content (f (line, 2));
 				
 			else
 				invalid_keyword (kw);

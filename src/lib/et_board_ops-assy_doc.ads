@@ -39,6 +39,7 @@
 
 
 with et_text;
+with et_text_content;
 with et_assy_doc;					use et_assy_doc;
 with et_pcb_placeholders;			use et_pcb_placeholders;
 

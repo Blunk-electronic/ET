@@ -52,6 +52,7 @@ with et_schematic_geometry;				use et_schematic_geometry;
 with et_logging;						use et_logging;
 
 with et_text;
+with et_text_content;					use et_text_content;
 with et_fonts;							use et_fonts;
 
 
@@ -65,7 +66,7 @@ package et_symbol_text is
 	-- This is a real text with content (used for things like "counter" or "decoder"
 	type type_symbol_text is new type_text_basic with record
 		position	: type_vector_model;		
-        content		: et_text.pac_text_content.bounded_string;
+        content		: pac_text_content.bounded_string;
 	end record;
 
 	

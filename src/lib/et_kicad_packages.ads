@@ -80,6 +80,7 @@ use et_board_geometry.pac_contours;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_text;					--use et_text;
+with et_text_content;			use et_text_content;
 
 
 package et_kicad_packages is
@@ -264,7 +265,7 @@ package et_kicad_packages is
 	-- When inserting the text in the final package, it is decomposed again.
 	--type type_text_package is new et_packages.type_text with record
 	type type_text_package is new type_text_fab with record
-		content	: et_text.pac_text_content.bounded_string;
+		content	: pac_text_content.bounded_string;
 		layer	: type_layer_abbrevation;
 		meaning	: type_fp_text_meaning;
 	end record;

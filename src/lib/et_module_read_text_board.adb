@@ -52,6 +52,8 @@ with et_keywords;					use et_keywords;
 
 with et_board_geometry;				use et_board_geometry;
 with et_board_coordinates;			use et_board_coordinates;
+
+with et_text_content;				use et_text_content;
 with et_text;						use et_text;
 
 with et_conductor_text;
@@ -156,7 +158,7 @@ package body et_module_read_text_board is
 			
 		elsif kw = keyword_content then -- content "WATER KETTLE CONTROL"
 			expect_field_count (line, 2); -- actual content in quotes !
-			board_text.content := et_text.to_content (f (line, 2));
+			board_text.content := to_content (f (line, 2));
 			
 		else
 			invalid_keyword (kw);
@@ -205,7 +207,7 @@ package body et_module_read_text_board is
 			
 		elsif kw = keyword_content then -- content "TOP", "L2", "BOT"
 			expect_field_count (line, 2); -- actual content in quotes !
-			board_text_conductor.content := et_text.to_content (f (line, 2));
+			board_text_conductor.content := to_content (f (line, 2));
 
 		elsif kw = keyword_layer then -- layer 15
 			expect_field_count (line, 2);
@@ -301,7 +303,7 @@ package body et_module_read_text_board is
 			
 		elsif kw = keyword_content then -- content "WATER KETTLE CONTROL"
 			expect_field_count (line, 2); -- actual content in quotes !
-			board_text.content := et_text.to_content (f (line, 2));
+			board_text.content := to_content (f (line, 2));
 			
 		else
 			invalid_keyword (kw);

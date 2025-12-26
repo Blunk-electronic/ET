@@ -38,7 +38,7 @@
 
 with ada.containers;
 
-with et_display;					use et_display;
+with et_display;						use et_display;
 with et_display.schematic;
 with et_modes.schematic;
 with et_canvas_schematic_units;
@@ -49,7 +49,11 @@ with et_schematic_ops.grid;
 with et_schematic_ops.submodules;
 with et_board_ops.grid;
 with et_board_ops.net_class;
+
+with et_rotation_docu;					use et_rotation_docu;
+with et_text_content;					use et_text_content;
 with et_text;
+
 with et_schematic_geometry;
 with et_schematic_coordinates;
 with et_module_instance;				use et_module_instance;
@@ -1172,7 +1176,7 @@ is
 						module_cursor 	=> active_module,
 						device_name		=> to_device_name (get_field (5)), -- IC1
 						unit_name		=> to_unit_name (get_field (6)), -- A
-						rotation		=> et_text.to_rotation_documentation (get_field (7)), -- horizontal
+						rotation		=> to_rotation_documentation (get_field (7)), -- horizontal
 						meaning			=> meaning,
 						log_threshold	=> log_threshold + 1);
 

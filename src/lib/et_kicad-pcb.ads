@@ -68,8 +68,11 @@ with et_conductors_floating_board;	use et_conductors_floating_board;
 with et_board_geometry;				use et_board_geometry;
 with et_board_coordinates;			use et_board_coordinates;
 with et_kicad_general;				use et_kicad_general;
+
 with et_text;
+with et_text_content;				use et_text_content;
 with et_board_text;					use et_board_text;
+
 with et_vias;						use et_vias;
 with et_drills;						use et_drills;
 
@@ -499,7 +502,7 @@ package et_kicad.pcb is
 	-- copper, silk screen, assembly doc, ...
 	-- When inserting the text in the board, it is decomposed again.	
 	type type_text_board is new pac_text_board.type_text_fab with record
-		content	: et_text.pac_text_content.bounded_string;
+		content	: pac_text_content.bounded_string;
 		layer	: type_layer_id; -- 0 .. 49 (ALL layers)
 	end record;
 

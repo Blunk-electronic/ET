@@ -46,7 +46,6 @@ with et_board_geometry;			use et_board_geometry;
 with et_mirroring;				use et_mirroring;
 with et_board_text;				use et_board_text;
 with et_conductor_segment;
-with et_text;
 
 with et_logging;				use et_logging;
 
@@ -338,10 +337,10 @@ package et_stopmask is
 		log_threshold 	: in type_log_level);
 
 	-- Logs the properties of the given stop mask text
-	procedure text_stop_mask_properties (
-		face			: in type_face;
-		cursor			: in pac_stop_texts.cursor;
-		log_threshold 	: in type_log_level);
+	-- procedure text_stop_mask_properties (
+	-- 	face			: in type_face;
+	-- 	cursor			: in pac_stop_texts.cursor;
+	-- 	log_threshold 	: in type_log_level);
 
 	
 end et_stopmask;

@@ -48,6 +48,8 @@ with et_schematic_ops.groups;
 with et_board_ops;						use et_board_ops;
 with et_board_ops.ratsnest;				use et_board_ops.ratsnest;
 
+with et_rotation_docu;					use et_rotation_docu;
+
 
 package body et_schematic_ops.nets is
 

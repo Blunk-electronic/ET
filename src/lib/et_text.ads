@@ -55,66 +55,10 @@ with et_logical_pixels;			use et_logical_pixels;
 with et_mirroring;				use et_mirroring;
 with et_alignment;				use et_alignment;
 with et_object_status;			use et_object_status;
-
+with et_text_content;			use et_text_content;
+with et_rotation_docu;			use et_rotation_docu;
 
 package et_text is
-
-	
--- CONTENT
-	
-	-- CS: Move stuff to separate packages:
-
-	
-	-- A text may have up to 200 characters which seems sufficient for now.
-	text_length_max : constant natural := 200;
-	package pac_text_content is new generic_bounded_length (text_length_max);
-
-	function to_string (text_content : in pac_text_content.bounded_string) return string;
-	function to_content (content : in string) return pac_text_content.bounded_string;
-
-	empty_text_content : constant pac_text_content.bounded_string :=
-		pac_text_content.to_bounded_string ("");
-	
-	function is_empty (content : in pac_text_content.bounded_string) return boolean;
-	
-	valid_characters : character_set := to_set 
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_-+/: "); 
-
-
-	-- Tests if the given text contains only valid characters as specified
-	-- by given character set. Returns false if invalid character found.
-	function characters_valid (
-		content		: in pac_text_content.bounded_string;
-		characters	: in character_set := valid_characters) 
-		return boolean;
-
-	replace_by_default : constant character := '_';
-
-	-- Replaces invalid characters in content by character given in replace_by:
-	procedure replace_invalid_characters (
-		content		: in out pac_text_content.bounded_string;
-		replace_by	: in character := replace_by_default;
-		characters	: in character_set := valid_characters);
-
-	
-	procedure check_text_content_length (content : in string);
-	-- Tests if the content is not longer than allowed.
-
-
-	
-
-
-	type type_rotation_documentation is (HORIZONTAL, VERTICAL);
-	-- CS use prefix
-	
-	-- Converts a string to a type_rotation_documentation:
-	function to_rotation_documentation (
-		rotation : in string)
-		return type_rotation_documentation;
-	
-
-	-- Toggles between HORIZONTAL and VERTICAL:
-	procedure toggle_rotation (rotation : in out type_rotation_documentation);
 
 
 

@@ -56,6 +56,7 @@ with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;
 
 with et_board_coordinates;
+with et_text_content;					use et_text_content;
 with et_text;
 with et_device_prefix;					use et_device_prefix;
 with et_device_model;					use et_device_model;
@@ -402,7 +403,7 @@ package et_devices_electrical is
 	function to_placeholder_content (
 		device_cursor	: in pac_devices_electrical.cursor; -- electrical device
 		placeholder		: in et_device_placeholders.packages.type_text_placeholder)
-		return et_text.pac_text_content.bounded_string;
+		return pac_text_content.bounded_string;
 
 
 

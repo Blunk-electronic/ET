@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                        CONDUCTOR TEXT BOARDS                             --
+--                        DOCUMENTATION TEXT ROTATION                       --
 --                                                                          --
---                              B o d y                                     --
+--                               S p e c                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -35,109 +35,26 @@
 --
 --   history of changes:
 --
---   to do:
 
 
+package et_rotation_docu is
 
 
-package body et_conductor_text.boards is
-
-
-	function get_layer (
-		text : in type_conductor_text)
-		return type_signal_layer
-	is begin
-		return text.layer;
-	end get_layer;
-
-
+	type type_rotation_documentation is (HORIZONTAL, VERTICAL);
+	-- CS use prefix
 	
-	function to_string (
-		text	: in pac_conductor_texts.cursor)
-		return string
-	is 
-		t : type_conductor_text := element (text);
-	begin
-		return to_string (t) & " layer " & to_string (get_layer (t));
-	end to_string;
-
-
-
-	function is_selected (
-		text : in pac_conductor_texts.cursor)
-		return boolean
-	is 
-		t : type_conductor_text := element (text);
-	begin
-		if is_selected (t) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_selected;
+	-- Converts a string to a type_rotation_documentation:
+	function to_rotation_documentation (
+		rotation : in string)
+		return type_rotation_documentation;
 	
 
-
-	function is_proposed (
-		text : in pac_conductor_texts.cursor)
-		return boolean
-	is 
-		t : type_conductor_text := element (text);
-	begin
-		if is_proposed (t) then
-			return true;
-		else
-			return false;
-		end if;
-	end is_proposed;
+	-- Toggles between HORIZONTAL and VERTICAL:
+	procedure toggle_rotation (rotation : in out type_rotation_documentation);
 
 
+end et_rotation_docu;
 
-	function get_layer (
-		text : in pac_conductor_texts.cursor)
-		return type_signal_layer
-	is begin
-		return element (text).layer;
-	end get_layer;
-
-	
-
-	
-	
-	procedure iterate (
-		texts	: in pac_conductor_texts.list;
-		process	: not null access procedure (position : in pac_conductor_texts.cursor);
-		proceed	: not null access boolean)
-	is
-		c : pac_conductor_texts.cursor := texts.first;
-	begin
-		while c /= pac_conductor_texts.no_element and proceed.all = TRUE loop
-			process (c);
-			next (c);
-		end loop;
-	end iterate;
-		
-
-
-	
-	-- procedure text_conductor_properties (
-	-- 	cursor			: in pac_conductor_texts.cursor;
-	-- 	log_threshold 	: in type_log_level) 
-	-- is
-	-- 	text : type_conductor_text;
-	-- begin
-	-- 	text := element (cursor);
-	-- 	log (text => "conductor text signal layer" & to_string (text.layer) & " "
-	-- 		& "content '" & et_text.to_string (text.content) & "'", level => log_threshold
-	-- 		);
- -- 
-	-- 	log_indentation_up;
-	-- 	log (text => text_properties (type_text (text)), level => log_threshold + 1);
-	-- 	log_indentation_down;
-	-- end text_conductor_properties;
-	
-	
-end et_conductor_text.boards;
 
 -- Soli Deo Gloria
 

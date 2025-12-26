@@ -614,22 +614,22 @@ package body et_stopmask is
 
 	
 
-	procedure text_stop_mask_properties (
-		face			: in type_face;
-		cursor			: in pac_stop_texts.cursor;
-		log_threshold 	: in type_log_level) 
-	is
-		use et_text;
-		text : type_stop_text;
-	begin
-		text := element (cursor);
-		log (text => "stop mask text face" & to_string (face) & space
-			 & "content '" & to_string (text.content) & "'", level => log_threshold);
-
-		log_indentation_up;
-		-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
-		log_indentation_down;
-	end text_stop_mask_properties;
+	-- procedure text_stop_mask_properties (
+	-- 	face			: in type_face;
+	-- 	cursor			: in pac_stop_texts.cursor;
+	-- 	log_threshold 	: in type_log_level) 
+	-- is
+	-- 	use et_text;
+	-- 	text : type_stop_text;
+	-- begin
+	-- 	text := element (cursor);
+	-- 	log (text => "stop mask text face" & to_string (face) & space
+	-- 		 & "content '" & to_string (text.content) & "'", level => log_threshold);
+ -- 
+	-- 	log_indentation_up;
+	-- 	-- CS log (text => text_properties (type_text (text)), level => log_threshold + 1);
+	-- 	log_indentation_down;
+	-- end text_stop_mask_properties;
 
 	
 end et_stopmask;

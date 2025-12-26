@@ -1396,11 +1396,10 @@ package body et_devices_non_electrical is
 	function to_placeholder_content (
 		device_cursor	: in pac_devices_non_electrical.cursor;
 		placeholder		: in type_text_placeholder)
-		return et_text.pac_text_content.bounded_string 
+		return pac_text_content.bounded_string 
 	is
 		device : type_device_non_electrical renames element (device_cursor);
 
-		use et_text;
 		result : pac_text_content.bounded_string;
 	begin
 		case placeholder.meaning is

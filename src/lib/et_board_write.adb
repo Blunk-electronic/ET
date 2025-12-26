@@ -46,6 +46,8 @@ with ada.text_io;				use ada.text_io;
 with et_axes;						use et_axes;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_text;						use et_text;
+with et_text_content;				use et_text_content;
+with et_rotation_docu;				use et_rotation_docu;
 with et_alignment;					use et_alignment;
 with et_exceptions;					use et_exceptions;
 with et_keywords;					use et_keywords;

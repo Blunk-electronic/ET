@@ -77,7 +77,10 @@ with et_import;
 with et_sheets;
 with et_netlists;
 with et_net_strands;
+
 with et_text;
+with et_text_content;				use et_text_content;
+with et_rotation_docu;				use et_rotation_docu;
 
 with et_board_read;
 with et_board_write;
@@ -396,7 +399,7 @@ package body et_kicad_to_native is
 				use et_schematic_coordinates;				
 				use et_kicad_coordinates;
 			begin
-				log (text => "note '" & et_text.to_string (note.content) & "'", level => log_threshold + 3);
+				log (text => "note '" & to_string (note.content) & "'", level => log_threshold + 3);
 				log_indentation_up;
 				
 				log (text => before & to_string (position => note.position, scope => SHEET),
@@ -2943,7 +2946,7 @@ package body et_kicad_to_native is
 					-- Kicad label can be rotated by 180 or -90 degree. This function translates 
 					-- to native label rotation:
 					function to_rotation (rk : in type_rotation_relative) 
-						return et_text.type_rotation_documentation 
+						return type_rotation_documentation 
 					is 
 						use et_text;
 					begin

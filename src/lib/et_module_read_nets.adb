@@ -51,6 +51,7 @@ with et_module_instance;
 with et_keywords;					use et_keywords;
 
 with et_text;
+with et_rotation_docu;				use et_rotation_docu;
 with et_schematic_text;
 
 with et_schematic_geometry;			use et_schematic_geometry;
@@ -532,8 +533,8 @@ package body et_module_read_nets is
 	net_labels			: pac_net_labels.list;
 	net_label 			: type_net_label;
 	
-	net_label_rotation	: et_text.type_rotation_documentation := 
-		et_text.type_rotation_documentation'first;
+	net_label_rotation	: type_rotation_documentation := 
+		type_rotation_documentation'first;
 
 	-- The net label direction is relevant if it is a tag label:
 	net_label_direction : type_connector_direction := 
