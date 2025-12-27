@@ -124,6 +124,7 @@ with et_module_read_board_user_settings;	use et_module_read_board_user_settings;
 with et_module_read_assy_doc;				use et_module_read_assy_doc;
 with et_module_read_silkscreen;				use et_module_read_silkscreen;
 with et_module_read_stopmask;				use et_module_read_stopmask;
+with et_module_read_stencil;				use et_module_read_stencil;
 
 
 package body et_module_read is
@@ -253,9 +254,7 @@ package body et_module_read is
 										insert_doc_line (module_cursor, TOP, log_threshold);
 
 									when LAYER_CAT_STENCIL =>
-										pac_stencil_lines.append (
-											container	=> module.board.stencil.top.lines,
-											new_item	=> (type_line (board_line) with board_line_width));
+										insert_stencil_line (module_cursor, TOP, log_threshold);
 										
 									when LAYER_CAT_STOPMASK =>
 										insert_stop_line (module_cursor, TOP, log_threshold);
@@ -273,9 +272,7 @@ package body et_module_read is
 										insert_doc_line (module_cursor, BOTTOM, log_threshold);
 										
 									when LAYER_CAT_STENCIL =>
-										pac_stencil_lines.append (
-											container	=> module.board.stencil.bottom.lines,
-											new_item	=> (type_line (board_line) with board_line_width));
+										insert_stencil_line (module_cursor, BOTTOM, log_threshold);
 										
 									when LAYER_CAT_STOPMASK =>
 										insert_stop_line (module_cursor, BOTTOM, log_threshold);
@@ -334,9 +331,7 @@ package body et_module_read is
 										insert_doc_arc (module_cursor, TOP, log_threshold);
 
 									when LAYER_CAT_STENCIL =>
-										pac_stencil_arcs.append (
-											container	=> module.board.stencil.top.arcs,
-											new_item	=> (type_arc (board_arc) with board_line_width));
+										insert_stencil_arc (module_cursor, TOP, log_threshold);
 										
 									when LAYER_CAT_STOPMASK =>
 										insert_stop_arc (module_cursor, TOP, log_threshold);
@@ -354,9 +349,7 @@ package body et_module_read is
 										insert_doc_arc (module_cursor, BOTTOM, log_threshold);
 										
 									when LAYER_CAT_STENCIL =>
-										pac_stencil_arcs.append (
-											container	=> module.board.stencil.bottom.arcs,
-											new_item	=> (type_arc (board_arc) with board_line_width));
+										insert_stencil_arc (module_cursor, BOTTOM, log_threshold);
 										
 									when LAYER_CAT_STOPMASK =>
 										insert_stop_arc (module_cursor, BOTTOM, log_threshold);
@@ -417,9 +410,7 @@ package body et_module_read is
 										insert_doc_circle (module_cursor, TOP, log_threshold);
 
 									when LAYER_CAT_STENCIL =>
-										pac_stencil_circles.append (
-											container	=> module.board.stencil.top.circles,
-											new_item	=> (type_circle (board_circle) with board_line_width));
+										insert_stencil_circle (module_cursor, TOP, log_threshold);
 										
 									when LAYER_CAT_STOPMASK =>
 										insert_stop_circle (module_cursor, TOP, log_threshold);
@@ -437,9 +428,7 @@ package body et_module_read is
 										insert_doc_circle (module_cursor, BOTTOM, log_threshold);
 										
 									when LAYER_CAT_STENCIL =>
-										pac_stencil_circles.append (
-											container	=> module.board.stencil.bottom.circles,
-											new_item	=> (type_circle (board_circle) with board_line_width));
+										insert_stencil_circle (module_cursor, BOTTOM, log_threshold);
 										
 									when LAYER_CAT_STOPMASK =>
 										insert_stop_circle (module_cursor, BOTTOM, log_threshold);
@@ -1846,26 +1835,13 @@ package body et_module_read is
 										read_stop_line (line);
 										
 									when SEC_STENCIL =>
-										
-										if not read_board_line (line) then
-											declare
-												kw : string := f (line, 1);
-											begin
-												-- CS: In the following: set a corresponding parameter-found-flag
-												if kw = keyword_width then -- width 0.5
-													expect_field_count (line, 2);
-													board_line_width := et_board_geometry.pac_geometry_2.to_distance (f (line, 2));
-													
-												else
-													invalid_keyword (kw);
-												end if;
-											end;
-										end if;
+										read_stencil_line (line);
 										
 									when SEC_KEEPOUT => read_board_line (line);
 										
 									when others => invalid_section;
 								end case;
+								
 								
 							when SEC_ROUTE_RESTRICT =>
 								et_module_read_route_restrict.read_restrict_line (
@@ -1925,23 +1901,7 @@ package body et_module_read is
 										read_stop_arc (line);
 										
 									when SEC_STENCIL =>
-										
-										if not read_board_arc (line) then
-										
-											declare
-												kw : string := f (line, 1);
-											begin
-												-- CS: In the following: set a corresponding parameter-found-flag
-												if kw = keyword_width then -- width 0.5
-													expect_field_count (line, 2);
-													board_line_width := et_board_geometry.pac_geometry_2.to_distance (f (line, 2));
-													
-												else
-													invalid_keyword (kw);
-												end if;
-											end;
-
-										end if;
+										read_stencil_arc (line);
 										
 									when SEC_KEEPOUT => read_board_arc (line);
 										
@@ -2006,24 +1966,7 @@ package body et_module_read is
 										read_stop_circle (line);
 										
 									when SEC_STENCIL =>
-
-										if not read_board_circle (line) then
-										
-											declare -- CS separate procedure
-												use et_board_geometry;
-												use pac_geometry_2;
-												kw : string := f (line, 1);
-											begin
-												-- CS: In the following: set a corresponding parameter-found-flag
-												if kw = keyword_width then -- circumfence line width 0.5
-													expect_field_count (line, 2);
-													board_line_width := to_distance (f (line, 2));
-												else
-													invalid_keyword (kw);
-												end if;
-											end;
-
-										end if;
+										read_stencil_circle (line);
 										
 									when SEC_KEEPOUT =>
 										if not read_board_circle (line) then
