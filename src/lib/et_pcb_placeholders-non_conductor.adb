@@ -44,6 +44,17 @@ with et_board_coordinates;			use et_board_coordinates;
 package body et_pcb_placeholders.non_conductor is
 	
 
+	procedure reset_placeholder (
+		placeholder : in out type_placeholder_non_conductor)
+	is begin
+		reset_text (type_text_fab (placeholder));
+		placeholder.meaning := placeholder_meaning_default;
+		-- CS face ?
+	end;
+
+
+
+	
 	
 	function to_string (
 		placeholder : in type_placeholder_non_conductor)

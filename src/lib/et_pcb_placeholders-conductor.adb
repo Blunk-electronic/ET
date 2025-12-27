@@ -44,7 +44,17 @@ with et_board_coordinates;			use et_board_coordinates;
 package body et_pcb_placeholders.conductor is
 	
 
+	procedure reset_placeholder (
+		placeholder : in out type_placeholder_conductor)
+	is begin
+		reset_text (type_text_fab (placeholder));
+		placeholder.meaning := placeholder_meaning_default;
+		placeholder.layer := signal_layer_default;
+	end;
+	
 
+
+	
 
 	function to_string (
 		placeholder : in type_placeholder_conductor)

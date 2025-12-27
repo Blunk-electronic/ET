@@ -63,7 +63,12 @@ package et_pcb_placeholders.conductor is
 	end record;
 
 
-	-- CS procedure reset_placeholder
+	-- Resets size, alignment, status, position
+	-- linewidth, meaning and layer to default:
+	procedure reset_placeholder (
+		placeholder : in out type_placeholder_conductor);
+
+	
 	-- CS procedure set_meaning, set_layer
 	-- CS function get_layer
 	

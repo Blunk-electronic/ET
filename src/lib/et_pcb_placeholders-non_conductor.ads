@@ -66,7 +66,13 @@ package et_pcb_placeholders.non_conductor is
 
 
 
-	-- CS procedure reset_placeholder
+	-- Resets size, alignment, status, position
+	-- linewidth, meaning to default:
+	procedure reset_placeholder (
+		placeholder : in out type_placeholder_non_conductor);
+
+
+	
 	-- CS procedure set_meaning
 
 	
