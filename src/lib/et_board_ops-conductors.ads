@@ -680,7 +680,7 @@ package et_board_ops.conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
-		return pac_conductor_texts.list;
+		return pac_conductor_texts_board.list;
 
 
 	-- Moves a text:
@@ -694,7 +694,8 @@ package et_board_ops.conductors is
 
 	-- This type helps to identify a text by its cursor:
 	type type_object_text is record
-		cursor	: pac_conductor_texts.cursor := pac_conductor_texts.no_element;
+		cursor	: pac_conductor_texts_board.cursor := 
+			pac_conductor_texts_board.no_element;
 	end record;
 
 	

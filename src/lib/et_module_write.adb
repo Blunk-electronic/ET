@@ -1660,7 +1660,7 @@ package body et_module_write is
 			use pac_via_restrict_contours;
 
 			use et_conductor_text;
-			use pac_conductor_texts;
+			use pac_conductor_texts_board;
 
 			use et_fill_zones.boards;
 			use et_conductor_segment.boards;
@@ -1772,8 +1772,9 @@ package body et_module_write is
 
 			
 			-- texts in any signal layers
-			procedure write_text (cursor : in pac_conductor_texts.cursor) is 
-				text : et_conductor_text.boards.type_conductor_text_board renames element (cursor);
+			procedure write_text (cursor : in pac_conductor_texts_board.cursor) is 
+				text : et_conductor_text.boards.type_conductor_text_board 
+					renames element (cursor);
 			begin
 				text_begin;
 

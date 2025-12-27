@@ -54,56 +54,57 @@ package et_conductor_text.boards is
 		text : in out type_conductor_text_board);
 
 
+	-- CS procedure set_layer
 	
 	function get_layer (
 		text : in type_conductor_text_board)
 		return type_signal_layer;
 	
 		
-	package pac_conductor_texts is new doubly_linked_lists (
+	package pac_conductor_texts_board is new doubly_linked_lists (
 		type_conductor_text_board);
 	
-	use pac_conductor_texts;
+	use pac_conductor_texts_board;
 
 
 	-- Returns the given conductor text as string:
 	function to_string (
-		text : in pac_conductor_texts.cursor)
+		text : in pac_conductor_texts_board.cursor)
 		return string;
 
 
 	-- Returns true if the status flag "selected"
 	-- of a text is set:
 	function is_selected (
-		text : in pac_conductor_texts.cursor)
+		text : in pac_conductor_texts_board.cursor)
 		return boolean;
 
 
 	-- Returns true if the status flag "proposed"
 	-- of a text is set:
 	function is_proposed (
-		text : in pac_conductor_texts.cursor)
+		text : in pac_conductor_texts_board.cursor)
 		return boolean;
 
 
 	-- Returns the signal layer of the given text:
 	function get_layer (
-		text : in pac_conductor_texts.cursor)
+		text : in pac_conductor_texts_board.cursor)
 		return type_signal_layer;
 
 
 	
 	-- Iterates the texts. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
-		texts	: in pac_conductor_texts.list;
-		process	: not null access procedure (position : in pac_conductor_texts.cursor);
+		texts	: in pac_conductor_texts_board.list;
+		process	: not null access procedure (position : in pac_conductor_texts_board.cursor);
 		proceed	: not null access boolean);
 
 
 	
 	-- Logs the properties of the given text.
 	-- procedure text_conductor_properties (
-	-- 	cursor			: in pac_conductor_texts.cursor;
+	-- 	cursor			: in pac_conductor_texts_board.cursor;
 	-- 	log_threshold 	: in type_log_level);
 
 	

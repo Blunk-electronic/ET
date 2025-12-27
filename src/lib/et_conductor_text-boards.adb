@@ -63,7 +63,7 @@ package body et_conductor_text.boards is
 
 	
 	function to_string (
-		text	: in pac_conductor_texts.cursor)
+		text	: in pac_conductor_texts_board.cursor)
 		return string
 	is 
 		t : type_conductor_text_board := element (text);
@@ -74,7 +74,7 @@ package body et_conductor_text.boards is
 
 
 	function is_selected (
-		text : in pac_conductor_texts.cursor)
+		text : in pac_conductor_texts_board.cursor)
 		return boolean
 	is 
 		t : type_conductor_text_board := element (text);
@@ -89,7 +89,7 @@ package body et_conductor_text.boards is
 
 
 	function is_proposed (
-		text : in pac_conductor_texts.cursor)
+		text : in pac_conductor_texts_board.cursor)
 		return boolean
 	is 
 		t : type_conductor_text_board := element (text);
@@ -104,7 +104,7 @@ package body et_conductor_text.boards is
 
 
 	function get_layer (
-		text : in pac_conductor_texts.cursor)
+		text : in pac_conductor_texts_board.cursor)
 		return type_signal_layer
 	is begin
 		return element (text).layer;
@@ -115,13 +115,13 @@ package body et_conductor_text.boards is
 	
 	
 	procedure iterate (
-		texts	: in pac_conductor_texts.list;
-		process	: not null access procedure (position : in pac_conductor_texts.cursor);
+		texts	: in pac_conductor_texts_board.list;
+		process	: not null access procedure (position : in pac_conductor_texts_board.cursor);
 		proceed	: not null access boolean)
 	is
-		c : pac_conductor_texts.cursor := texts.first;
+		c : pac_conductor_texts_board.cursor := texts.first;
 	begin
-		while c /= pac_conductor_texts.no_element and proceed.all = TRUE loop
+		while c /= pac_conductor_texts_board.no_element and proceed.all = TRUE loop
 			process (c);
 			next (c);
 		end loop;
@@ -131,7 +131,7 @@ package body et_conductor_text.boards is
 
 	
 	-- procedure text_conductor_properties (
-	-- 	cursor			: in pac_conductor_texts.cursor;
+	-- 	cursor			: in pac_conductor_texts_board.cursor;
 	-- 	log_threshold 	: in type_log_level) 
 	-- is
 	-- 	text : type_conductor_text_board;

@@ -3967,7 +3967,7 @@ package body et_board_ops.conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			use pac_conductor_texts;
+			use pac_conductor_texts_board;
 			vectors : pac_character_lines.list;
 			use et_text;
 			mirror : type_mirror;
@@ -4033,18 +4033,18 @@ package body et_board_ops.conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
-		return pac_conductor_texts.list
+		return pac_conductor_texts_board.list
 	is
 		use et_text_content;
-		use pac_conductor_texts;
-		result : pac_conductor_texts.list;
+		use pac_conductor_texts_board;
+		result : pac_conductor_texts_board.list;
 
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			procedure query_text (c : in pac_conductor_texts.cursor) is
+			procedure query_text (c : in pac_conductor_texts_board.cursor) is
 				text : type_conductor_text_board renames element (c);
 			begin
 				if in_catch_zone (
@@ -4105,7 +4105,7 @@ package body et_board_ops.conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
-			text_cursor : pac_conductor_texts.cursor;
+			text_cursor : pac_conductor_texts_board.cursor;
 
 			procedure query_text (
 				text : in out type_conductor_text_board) 
@@ -4205,8 +4205,9 @@ package body et_board_ops.conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			use pac_conductor_texts;
-			c : pac_conductor_texts.cursor := module.board.conductors_floating.texts.first;
+			use pac_conductor_texts_board;
+			c : pac_conductor_texts_board.cursor := 
+				module.board.conductors_floating.texts.first;
 
 			
 			procedure query_text (
@@ -4229,7 +4230,7 @@ package body et_board_ops.conductors is
 			
 			
 		begin
-			while c /= pac_conductor_texts.no_element loop
+			while c /= pac_conductor_texts_board.no_element loop
 				module.board.conductors_floating.texts.update_element (c, query_text'access);
 				next (c);
 			end loop;
@@ -4312,7 +4313,7 @@ package body et_board_ops.conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
-			c : pac_conductor_texts.cursor := text.cursor;			
+			c : pac_conductor_texts_board.cursor := text.cursor;			
 		begin
 			module.board.conductors_floating.texts.delete (c);
 		end query_module;
@@ -4351,14 +4352,15 @@ package body et_board_ops.conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			use pac_conductor_texts;
+			use pac_conductor_texts_board;
 			
 			proceed : aliased boolean := true;
 
-			texts : pac_conductor_texts.list renames module.board.conductors_floating.texts;
+			texts : pac_conductor_texts_board.list renames 
+				module.board.conductors_floating.texts;
 
 			
-			procedure query_text (c : in pac_conductor_texts.cursor) is
+			procedure query_text (c : in pac_conductor_texts_board.cursor) is
 				use et_object_status;
 			begin
 				case flag is
@@ -4430,10 +4432,12 @@ package body et_board_ops.conductors is
 				reset_status (text);
 			end query_text;
 
-			use pac_conductor_texts;
-			c : pac_conductor_texts.cursor := module.board.conductors_floating.texts.first;
+			use pac_conductor_texts_board;
+			c : pac_conductor_texts_board.cursor := 
+				module.board.conductors_floating.texts.first;
+				
 		begin
-			while c /= pac_conductor_texts.no_element loop
+			while c /= pac_conductor_texts_board.no_element loop
 				module.board.conductors_floating.texts.update_element (
 					c, query_text'access);
 				next (c);
@@ -4457,6 +4461,8 @@ package body et_board_ops.conductors is
 
 
 
+	
+	
 
 
 	procedure add_placeholder (
@@ -4493,6 +4499,7 @@ package body et_board_ops.conductors is
 
 	
 
+	
 
 
 	procedure modify_status (
@@ -4845,7 +4852,7 @@ package body et_board_ops.conductors is
 
 		use pac_conductor_lines;
 		use pac_conductor_arcs;
-		use pac_conductor_texts;
+		use pac_conductor_texts_board;
 		use pac_placeholders_conductor;
 
 
@@ -4940,7 +4947,7 @@ package body et_board_ops.conductors is
 		procedure search_for_text is begin
 			result_text := get_first_text (module_cursor, flag, log_threshold + 1);
 			
-			if result_text.cursor /= pac_conductor_texts.no_element then
+			if result_text.cursor /= pac_conductor_texts_board.no_element then
 				-- A text has been found.
 				log (text => to_string (result_text.cursor),
 					level => log_threshold + 1);
@@ -5488,9 +5495,9 @@ package body et_board_ops.conductors is
 				
 
 				-- TEXTS:
-				use pac_conductor_texts;
+				use pac_conductor_texts_board;
 				
-				procedure query_text (c : in pac_conductor_texts.cursor) is begin
+				procedure query_text (c : in pac_conductor_texts_board.cursor) is begin
 					-- CS test the given flag !!
 					if is_proposed (c) then
 						result.append ((

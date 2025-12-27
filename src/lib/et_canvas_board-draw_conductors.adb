@@ -136,7 +136,7 @@ procedure draw_conductors is
 	use pac_route_hatched;
 	
 	use pac_placeholders_conductor;
-	use pac_conductor_texts;
+	use pac_conductor_texts_board;
 
 	-- CS must be overwritten according to select status:
 	brightness : type_brightness := NORMAL;
@@ -1328,7 +1328,7 @@ procedure draw_conductors is
 
 		
 		-- This procedue draws conducting objects which are not connected with
-		-- and nets like freetracks, texts, floating zones:
+		-- any nets like freetracks, texts, floating zones:
 		procedure draw_non_electrical_objects is
 			objects : type_conductors_floating renames module.board.conductors_floating;
 			
@@ -1339,7 +1339,7 @@ procedure draw_conductors is
 			zone_hatched_cursor	: pac_floating_hatched.cursor	:= objects.zones.hatched.first;
 			cutout_cursor		: pac_cutouts.cursor			:= objects.cutouts.first;
 			placeholder_cursor	: pac_placeholders_conductor.cursor	:= objects.placeholders.first;
-			text_cursor			: pac_conductor_texts.cursor	:= objects.texts.first;
+			text_cursor			: pac_conductor_texts_board.cursor	:= objects.texts.first;
 
 			
 			procedure query_line (line : in type_conductor_line) is begin

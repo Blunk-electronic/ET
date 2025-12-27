@@ -1936,8 +1936,8 @@ package body et_kicad_to_native is
 				polygons_hatched_cursor : pac_floating_hatched.cursor;
 
 				use et_conductor_text.boards;
-				use pac_conductor_texts;
-				texts_cursor : pac_conductor_texts.cursor;
+				use pac_conductor_texts_board;
+				texts_cursor : pac_conductor_texts_board.cursor;
 
 				use pac_placeholders_conductor;
 				placeholders_cursor : pac_placeholders_conductor.cursor;
@@ -2113,7 +2113,7 @@ package body et_kicad_to_native is
 
 				-- TEXTS
 				texts_cursor := module.board.conductors_floating.texts.first;
-				while texts_cursor /= pac_conductor_texts.no_element loop
+				while texts_cursor /= pac_conductor_texts_board.no_element loop
 					update_element (
 						container	=> module.board.conductors_floating.texts,
 						position	=> texts_cursor,

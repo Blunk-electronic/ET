@@ -986,10 +986,10 @@ package body et_board_ops.fill_zones is
 			module		: in type_generic_module)
 		is
 			use et_conductor_text.boards;
-			use pac_conductor_texts;
+			use pac_conductor_texts_board;
 
 			
-			procedure query_text (t : in pac_conductor_texts.cursor) is 
+			procedure query_text (t : in pac_conductor_texts_board.cursor) is 
 				text : type_conductor_text_board renames element (t);
 				borders : pac_polygon_list.list;
 
