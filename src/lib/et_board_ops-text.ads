@@ -48,6 +48,8 @@ with et_text_content;				use et_text_content;
 
 with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
 
+
+
 package et_board_ops.text is
 
 
@@ -59,7 +61,7 @@ package et_board_ops.text is
 	-- to its actutal content:
 	function to_placeholder_content (
 		module_cursor	: in pac_generic_modules.cursor;
-		meaning 		: in type_text_meaning)										
+		meaning 		: in type_placeholder_meaning_non_conductor)										
 		return pac_text_content.bounded_string;
 	
 	

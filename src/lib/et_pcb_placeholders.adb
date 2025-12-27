@@ -46,19 +46,19 @@ package body et_pcb_placeholders is
 
 
 	function to_string (
-		meaning : in type_text_meaning_conductor) 
+		meaning : in type_placeholder_meaning) 
 		return string 
 	is begin
-		return type_text_meaning_conductor'image (meaning);
+		return type_placeholder_meaning'image (meaning);
 	end to_string;
 
 
 	
 	function to_meaning (
 		meaning : in string) 
-		return type_text_meaning_conductor 
+		return type_placeholder_meaning 
 	is begin
-		return type_text_meaning_conductor'value (meaning);
+		return type_placeholder_meaning'value (meaning);
 	end to_meaning;
 	
 	

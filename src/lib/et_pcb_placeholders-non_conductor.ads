@@ -49,21 +49,18 @@ package et_pcb_placeholders.non_conductor is
 	use pac_text_board_vectorized;
 	
 
-
-
-
 	
+	-- Placeholders of this kind exist in non-conductor layers only.
+	-- For this reason we declare a subtype:
 	
--- PLACEHOLDERS FOR TEXTS IN NON-CONDUCTOR LAYERS:
-		
-	subtype type_text_meaning is type_text_meaning_conductor -- CS rename to type_placeholder_meaning ?
+	subtype type_placeholder_meaning_non_conductor is type_placeholder_meaning
 		range COMPANY .. REVISION;
 
 	
 	type type_text_placeholder is new
 		type_text_fab with 
 	record
-		meaning : type_text_meaning := type_text_meaning'first;
+		meaning : type_placeholder_meaning_non_conductor := placeholder_meaning_default;
 		-- CS face ?
 	end record;
 
@@ -80,7 +77,7 @@ package et_pcb_placeholders.non_conductor is
 
 	function get_meaning (
 		placeholder : in type_text_placeholder)
-		return type_text_meaning;
+		return type_placeholder_meaning_non_conductor;
 
 	
 	

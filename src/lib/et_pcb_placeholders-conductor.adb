@@ -62,7 +62,7 @@ package body et_pcb_placeholders.conductor is
 
 	function get_meaning (
 		placeholder : in type_text_placeholder_conductors)
-		return type_text_meaning_conductor
+		return type_placeholder_meaning
 	is begin
 		return placeholder.meaning;
 	end get_meaning;

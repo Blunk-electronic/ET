@@ -56,10 +56,10 @@ package et_pcb_placeholders.conductor is
 	type type_text_placeholder_conductors is new 
 		type_text_fab with 
 	record
-		meaning : type_text_meaning_conductor := type_text_meaning_conductor'first;
+		meaning : type_placeholder_meaning := placeholder_meaning_default;
 
 		-- the conductor layer the placeholder is placed in:
-		layer	: type_signal_layer := type_signal_layer'first; 
+		layer	: type_signal_layer := signal_layer_default; 
 	end record;
 
 
@@ -72,7 +72,7 @@ package et_pcb_placeholders.conductor is
 
 	function get_meaning (
 		placeholder : in type_text_placeholder_conductors)
-		return type_text_meaning_conductor;
+		return type_placeholder_meaning;
 
 
 	function get_layer (

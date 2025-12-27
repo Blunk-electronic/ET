@@ -40,9 +40,12 @@
 
 
 package et_pcb_placeholders is
+
 	
+	-- Placeholders of this kind exist in non-conductor
+	-- and conductor layers:
 	
-	type type_text_meaning_conductor is ( -- CS rename to type_placeholder_conductor_meaning
+	type type_placeholder_meaning is (
 		COMPANY,
 		CUSTOMER,
 		PARTCODE,
@@ -56,15 +59,17 @@ package et_pcb_placeholders is
 		);
 
 
+	placeholder_meaning_default : constant type_placeholder_meaning := COMPANY;
+
 	
 	function to_string (
-		meaning : in type_text_meaning_conductor) 
+		meaning : in type_placeholder_meaning) 
 		return string;
 
 	
 	function to_meaning (
 		meaning : in string) 
-		return type_text_meaning_conductor;
+		return type_placeholder_meaning;
 
 	
 	

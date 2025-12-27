@@ -45,10 +45,9 @@ with et_pcb_placeholders;				use et_pcb_placeholders;
 package body et_board_ops.text is
 
 	
-	-- Maps from the meaning of a text to its actutal content.
 	function to_placeholder_content (
 		module_cursor	: in pac_generic_modules.cursor;
-		meaning 		: in type_text_meaning)
+		meaning 		: in type_placeholder_meaning_non_conductor)
 		return pac_text_content.bounded_string 
 	is
 		m : type_generic_module renames element (module_cursor);

@@ -59,7 +59,7 @@ package body et_pcb_placeholders.non_conductor is
 
 	function get_meaning (
 		placeholder : in type_text_placeholder)
-		return type_text_meaning
+		return type_placeholder_meaning_non_conductor
 	is begin
 		return placeholder.meaning;
 	end get_meaning;
