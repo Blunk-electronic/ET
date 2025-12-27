@@ -1840,9 +1840,12 @@ package body et_module_read is
 										read_doc_line (line);
 
 									when SEC_SILKSCREEN =>
-										read_silk_line (line);										
+										read_silk_line (line);
 
-									when SEC_STENCIL | SEC_STOPMASK =>
+									when SEC_STOPMASK =>
+										read_stop_line (line);
+										
+									when SEC_STENCIL =>
 										
 										if not read_board_line (line) then
 											declare
@@ -1918,7 +1921,10 @@ package body et_module_read is
 									when SEC_SILKSCREEN =>
 										read_silk_arc (line);
 
-									when SEC_STENCIL | SEC_STOPMASK =>
+									when SEC_STOPMASK =>
+										read_stop_arc (line);
+										
+									when SEC_STENCIL =>
 										
 										if not read_board_arc (line) then
 										
@@ -1995,8 +2001,11 @@ package body et_module_read is
 
 									when SEC_SILKSCREEN =>
 										read_silk_circle (line);
+
+									when SEC_STOPMASK =>
+										read_stop_circle (line);
 										
-									when SEC_STENCIL | SEC_STOPMASK =>
+									when SEC_STENCIL =>
 
 										if not read_board_circle (line) then
 										
