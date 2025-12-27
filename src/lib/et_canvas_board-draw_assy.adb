@@ -61,7 +61,7 @@ is
 	use pac_doc_circles;
 	use pac_doc_zones;
 	use pac_doc_texts;
-	use pac_text_placeholders;
+	use pac_placeholders_non_conductor;
 
 	use et_canvas_board_preliminary_object;
 
@@ -143,7 +143,7 @@ is
 
 	
 	procedure query_placeholder (
-		c : in pac_text_placeholders.cursor) 
+		c : in pac_placeholders_non_conductor.cursor) 
 	is 
 		use pac_text_vectorized;
 		use pac_draw_text;

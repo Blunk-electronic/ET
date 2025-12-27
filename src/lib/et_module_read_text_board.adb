@@ -88,7 +88,7 @@ package body et_module_read_text_board is
 
 
 	board_text : type_text_fab_with_content;
-	board_text_placeholder : type_text_placeholder;
+	board_text_placeholder : type_placeholder_non_conductor;
 
 
 
@@ -343,23 +343,23 @@ package body et_module_read_text_board is
 				when TOP =>
 					case layer_cat is
 						when LAYER_CAT_SILKSCREEN =>
-							pac_text_placeholders.append (
+							pac_placeholders_non_conductor.append (
 								container	=> module.board.silkscreen.top.placeholders,
 								new_item	=> board_text_placeholder);
 
 						when LAYER_CAT_ASSY =>
-							pac_text_placeholders.append (
+							pac_placeholders_non_conductor.append (
 								container	=> module.board.assy_doc.top.placeholders,
 								new_item	=> board_text_placeholder);
 
 						when LAYER_CAT_STOPMASK =>
-							pac_text_placeholders.append (
+							pac_placeholders_non_conductor.append (
 								container	=> module.board.stopmask.top.placeholders,
 								new_item	=> board_text_placeholder);
 
 						-- CS
 						--when KEEPOUT =>
-						--	pac_text_placeholders.append (
+						--	pac_placeholders_non_conductor.append (
 						--		container	=> module.board.keepout.top.placeholders,
 						--		new_item	=> board_text_placeholder);
 
@@ -369,23 +369,23 @@ package body et_module_read_text_board is
 				when BOTTOM =>
 					case layer_cat is
 						when LAYER_CAT_SILKSCREEN =>
-							pac_text_placeholders.append (
+							pac_placeholders_non_conductor.append (
 								container	=> module.board.silkscreen.bottom.placeholders,
 								new_item	=> board_text_placeholder);
 
 						when LAYER_CAT_ASSY =>
-							pac_text_placeholders.append (
+							pac_placeholders_non_conductor.append (
 								container	=> module.board.assy_doc.bottom.placeholders,
 								new_item	=> board_text_placeholder);
 							
 						when LAYER_CAT_STOPMASK =>
-							pac_text_placeholders.append (
+							pac_placeholders_non_conductor.append (
 								container	=> module.board.stopmask.bottom.placeholders,
 								new_item	=> board_text_placeholder);
 
 						-- CS
 						--when KEEPOUT =>
-						--	pac_text_placeholders.append (
+						--	pac_placeholders_non_conductor.append (
 						--		container	=> module.board.keepout.bottom.placeholders,
 						--		new_item	=> board_text_placeholder);
 

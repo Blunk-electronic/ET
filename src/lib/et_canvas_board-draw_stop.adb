@@ -60,7 +60,7 @@ is
 	use pac_stop_arcs;
 	use pac_stop_circles;
 	use pac_stop_zones;
-	use pac_text_placeholders;
+	use pac_placeholders_non_conductor;
 	use pac_stop_texts;
 
 
@@ -153,7 +153,7 @@ is
 	
 	
 	procedure query_placeholder (
-		c : in pac_text_placeholders.cursor)
+		c : in pac_placeholders_non_conductor.cursor)
 	is 
 		use pac_text_vectorized;
 		use pac_draw_text;

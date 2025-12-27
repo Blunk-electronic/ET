@@ -49,7 +49,7 @@ package et_silkscreen.board is
 	-- Such objects are lines, arcs, circles, contours and 
 	-- placeholders for board revision, name, misc ... :
 	type type_silkscreen_board is new type_silkscreen with record
-		placeholders : pac_text_placeholders.list;
+		placeholders : pac_placeholders_non_conductor.list;
 	end record;
 		
 	-- Because silkscreen is about two sides of the board this 

@@ -2577,7 +2577,7 @@ package body et_board_ops.assy_doc is
 
 	procedure add_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
-		placeholder		: in type_text_placeholder;
+		placeholder		: in type_placeholder_non_conductor;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
@@ -2586,7 +2586,7 @@ package body et_board_ops.assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
-			use pac_text_placeholders;						
+			use pac_placeholders_non_conductor;						
 		begin
 			case face is
 				when TOP =>
@@ -2631,10 +2631,10 @@ package body et_board_ops.assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
-			use pac_text_placeholders;
+			use pac_placeholders_non_conductor;
 			
 			procedure query_placeholder (
-				ph : in out type_text_placeholder) 
+				ph : in out type_placeholder_non_conductor) 
 			is begin
 				modify_status (ph, operation);
 			end query_placeholder;
@@ -2684,11 +2684,11 @@ package body et_board_ops.assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			use pac_text_placeholders;
-			c : pac_text_placeholders.cursor;
+			use pac_placeholders_non_conductor;
+			c : pac_placeholders_non_conductor.cursor;
 
 			procedure query_placeholder (
-				ph : in out type_text_placeholder)
+				ph : in out type_placeholder_non_conductor)
 			is begin
 				if in_catch_zone (
 					zone	=> catch_zone,
@@ -2706,7 +2706,7 @@ package body et_board_ops.assy_doc is
 				when TOP =>
 					c := module.board.assy_doc.top.placeholders.first;
 					
-					while c /= pac_text_placeholders.no_element loop
+					while c /= pac_placeholders_non_conductor.no_element loop
 						module.board.assy_doc.top.placeholders.update_element (c, query_placeholder'access);
 						next (c);
 					end loop;
@@ -2715,7 +2715,7 @@ package body et_board_ops.assy_doc is
 				when BOTTOM =>
 					c := module.board.assy_doc.bottom.placeholders.first;
 					
-					while c /= pac_text_placeholders.no_element loop
+					while c /= pac_placeholders_non_conductor.no_element loop
 						module.board.assy_doc.bottom.placeholders.update_element (c, query_placeholder'access);
 						next (c);
 					end loop;
@@ -2753,10 +2753,10 @@ package body et_board_ops.assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
-			use pac_text_placeholders;
+			use pac_placeholders_non_conductor;
 			
 			procedure query_placeholder (
-				ph : in out type_text_placeholder) 
+				ph : in out type_placeholder_non_conductor) 
 			is begin
 				move_text_to (ph, destination);
 			end query_placeholder;
@@ -2806,7 +2806,7 @@ package body et_board_ops.assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
-			c : pac_text_placeholders.cursor := placeholder.cursor;			
+			c : pac_placeholders_non_conductor.cursor := placeholder.cursor;			
 		begin
 			case placeholder.face is
 				when TOP =>
@@ -2850,16 +2850,16 @@ package body et_board_ops.assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			use pac_text_placeholders;
+			use pac_placeholders_non_conductor;
 			
 			proceed : aliased boolean := true;
 
-			top_items 		: pac_text_placeholders.list renames module.board.assy_doc.top.placeholders;
-			bottom_items	: pac_text_placeholders.list renames module.board.assy_doc.bottom.placeholders;
+			top_items 		: pac_placeholders_non_conductor.list renames module.board.assy_doc.top.placeholders;
+			bottom_items	: pac_placeholders_non_conductor.list renames module.board.assy_doc.bottom.placeholders;
 
 			
 			procedure query_placeholder (
-				c : in pac_text_placeholders.cursor) 
+				c : in pac_placeholders_non_conductor.cursor) 
 			is begin
 				case flag is
 					when PROPOSED =>
@@ -2933,17 +2933,17 @@ package body et_board_ops.assy_doc is
 		is
 			
 			procedure query_placeholder (
-				ph : in out type_text_placeholder)
+				ph : in out type_placeholder_non_conductor)
 			is begin
 				reset_status (ph);
 			end query_placeholder;
 
-			use pac_text_placeholders;
-			c : pac_text_placeholders.cursor := 
+			use pac_placeholders_non_conductor;
+			c : pac_placeholders_non_conductor.cursor := 
 				module.board.assy_doc.top.placeholders.first;
 		begin
 			-- Iterate the placeholders at the top:
-			while c /= pac_text_placeholders.no_element loop
+			while c /= pac_placeholders_non_conductor.no_element loop
 				module.board.assy_doc.top.placeholders.update_element (
 					c, query_placeholder'access);
 				next (c);
@@ -2951,7 +2951,7 @@ package body et_board_ops.assy_doc is
 
 			-- Iterate the placeholders at the bottom:
 			c := module.board.assy_doc.bottom.placeholders.first;
-			while c /= pac_text_placeholders.no_element loop
+			while c /= pac_placeholders_non_conductor.no_element loop
 				module.board.assy_doc.bottom.placeholders.update_element (
 					c, query_placeholder'access);
 				next (c);
@@ -3012,7 +3012,7 @@ package body et_board_ops.assy_doc is
 		use pac_doc_lines;
 		use pac_doc_arcs;
 		use pac_doc_texts;
-		use pac_text_placeholders;
+		use pac_placeholders_non_conductor;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first object / " & to_string (flag),
@@ -3107,7 +3107,7 @@ package body et_board_ops.assy_doc is
 
 		result_placeholder := get_first_placeholder (module_cursor, flag, log_threshold + 1);
 		
-		if result_placeholder.cursor /= pac_text_placeholders.no_element then
+		if result_placeholder.cursor /= pac_placeholders_non_conductor.no_element then
 			-- A placeholder has been found.
 			log (text => to_string (result_placeholder.cursor)
 					& " face " & to_string (result_placeholder.face),
@@ -3180,8 +3180,8 @@ package body et_board_ops.assy_doc is
 			use pac_doc_texts;
 			text_cursor : pac_doc_texts.cursor;
 
-			use pac_text_placeholders;
-			placeholder_cursor : pac_text_placeholders.cursor;
+			use pac_placeholders_non_conductor;
+			placeholder_cursor : pac_placeholders_non_conductor.cursor;
 
 			
 			
@@ -3312,7 +3312,7 @@ package body et_board_ops.assy_doc is
 
 
 			
-			procedure query_placeholder (placeholder : in type_text_placeholder) is 
+			procedure query_placeholder (placeholder : in type_placeholder_non_conductor) is 
 
 				procedure collect is begin
 					result.append ((
@@ -3397,7 +3397,7 @@ package body et_board_ops.assy_doc is
 			log_indentation_up;
 			
 			placeholder_cursor := module.board.assy_doc.top.placeholders.first;
-			while placeholder_cursor /= pac_text_placeholders.no_element loop
+			while placeholder_cursor /= pac_placeholders_non_conductor.no_element loop
 				query_element (placeholder_cursor, query_placeholder'access);
 				next (placeholder_cursor);
 			end loop;
@@ -3465,7 +3465,7 @@ package body et_board_ops.assy_doc is
 			log_indentation_up;
 			
 			placeholder_cursor := module.board.assy_doc.bottom.placeholders.first;
-			while placeholder_cursor /= pac_text_placeholders.no_element loop
+			while placeholder_cursor /= pac_placeholders_non_conductor.no_element loop
 				query_element (placeholder_cursor, query_placeholder'access);
 				next (placeholder_cursor);
 			end loop;

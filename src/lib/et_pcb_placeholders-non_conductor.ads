@@ -57,7 +57,7 @@ package et_pcb_placeholders.non_conductor is
 		range COMPANY .. REVISION;
 
 	
-	type type_text_placeholder is new
+	type type_placeholder_non_conductor is new
 		type_text_fab with 
 	record
 		meaning : type_placeholder_meaning_non_conductor := placeholder_meaning_default;
@@ -67,53 +67,54 @@ package et_pcb_placeholders.non_conductor is
 
 
 	-- CS procedure reset_placeholder
+	-- CS procedure set_meaning
 
 	
 	
 	overriding function to_string (
-		placeholder : in type_text_placeholder)
+		placeholder : in type_placeholder_non_conductor)
 		return string;
 
 
 	function get_meaning (
-		placeholder : in type_text_placeholder)
+		placeholder : in type_placeholder_non_conductor)
 		return type_placeholder_meaning_non_conductor;
 
 	
 	
 	
-	package pac_text_placeholders is new 
-		doubly_linked_lists (type_text_placeholder);
+	package pac_placeholders_non_conductor is new
+		doubly_linked_lists (type_placeholder_non_conductor);
 
-	use pac_text_placeholders;
+	use pac_placeholders_non_conductor;
 
 
 	-- Iterates the placeholders. 
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
-		placeholders	: in pac_text_placeholders.list;
+		placeholders	: in pac_placeholders_non_conductor.list;
 		process			: not null access procedure (
-							position : in pac_text_placeholders.cursor);
+							position : in pac_placeholders_non_conductor.cursor);
 		proceed			: not null access boolean);
 
 
 	
 
 	function to_string (
-		placeholder : in pac_text_placeholders.cursor)
+		placeholder : in pac_placeholders_non_conductor.cursor)
 		return string;
 
 	
 	
 	
 	function is_selected (
-		placeholder : in pac_text_placeholders.cursor)					
+		placeholder : in pac_placeholders_non_conductor.cursor)					
 		return boolean;
 
 
 
 	function is_proposed (
-		placeholder : in pac_text_placeholders.cursor)					
+		placeholder : in pac_placeholders_non_conductor.cursor)					
 		return boolean;
 
 	

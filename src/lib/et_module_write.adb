@@ -1668,10 +1668,10 @@ package body et_module_write is
 		
 			
 			-- general stuff
-			procedure write_placeholder (cursor : in pac_text_placeholders.cursor) is
+			procedure write_placeholder (cursor : in pac_placeholders_non_conductor.cursor) is
 				use et_pcb_placeholders.non_conductor;
-				use pac_text_placeholders;
-				ph : type_text_placeholder renames element (cursor);
+				use pac_placeholders_non_conductor;
+				ph : type_placeholder_non_conductor renames element (cursor);
 			begin
 				placeholder_begin;
 
@@ -2009,7 +2009,7 @@ package body et_module_write is
 					text_end;
 				end write_text;
 
-				use pac_text_placeholders;
+				use pac_placeholders_non_conductor;
 			begin
 				section_mark (section_silkscreen, HEADER);
 
@@ -2055,7 +2055,7 @@ package body et_module_write is
 					text_end;
 				end write_text;
 
-				use pac_text_placeholders;
+				use pac_placeholders_non_conductor;
 			begin
 				section_mark (section_assembly_doc, HEADER);
 

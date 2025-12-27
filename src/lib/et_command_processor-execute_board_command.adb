@@ -1568,7 +1568,7 @@ is
 		
 		procedure place_in_assy_doc is
 			use et_board_ops.assy_doc;
-			ph : type_text_placeholder; -- non conductor layers
+			ph : type_placeholder_non_conductor; -- non conductor layers
 		begin
 			ph.meaning := to_meaning (get_field (12));
 			ph.position := type_position (to_position (pos_xy, rotation));
@@ -1587,7 +1587,7 @@ is
 
 		procedure place_in_silkscreen is
 			use et_board_ops.silkscreen;
-			ph : type_text_placeholder; -- non conductor layers
+			ph : type_placeholder_non_conductor; -- non conductor layers
 		begin
 			ph.meaning := to_meaning (get_field (12));
 			ph.position := type_position (to_position (pos_xy, rotation));
@@ -1606,7 +1606,7 @@ is
 
 		procedure place_in_stopmask is
 			use et_board_ops.stopmask;
-			ph : type_text_placeholder; -- non conductor layers
+			ph : type_placeholder_non_conductor; -- non conductor layers
 		begin
 			ph.meaning := to_meaning (get_field (12));
 			ph.position := type_position (to_position (pos_xy, rotation));

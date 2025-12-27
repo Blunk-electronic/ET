@@ -462,7 +462,7 @@ package et_board_ops.assy_doc is
 	-- in case its at the bottom of the board:
 	procedure add_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
-		placeholder		: in type_text_placeholder;
+		placeholder		: in type_placeholder_non_conductor;
 		face			: in type_face;
 		log_threshold	: in type_log_level);
 
@@ -474,7 +474,7 @@ package et_board_ops.assy_doc is
 	-- placeholder by its face:
 	type type_object_placeholder is record
 		face	: type_face := TOP;
-		cursor	: pac_text_placeholders.cursor := pac_text_placeholders.no_element;
+		cursor	: pac_placeholders_non_conductor.cursor := pac_placeholders_non_conductor.no_element;
 	end record;
 
 	

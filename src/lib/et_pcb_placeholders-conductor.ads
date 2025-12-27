@@ -64,6 +64,9 @@ package et_pcb_placeholders.conductor is
 
 
 	-- CS procedure reset_placeholder
+	-- CS procedure set_meaning, set_layer
+	-- CS function get_layer
+	
 
 	overriding function to_string (
 		placeholder : in type_placeholder_conductor)

@@ -52,7 +52,7 @@ package et_stopmask.board is
 	type type_stopmask_board is new et_stopmask.type_stopmask with 
 	record
 		-- for texts in conductor layers to be exposed
-		placeholders : pac_text_placeholders.list;
+		placeholders : pac_placeholders_non_conductor.list;
 	end record;
 
 

@@ -130,7 +130,7 @@ package body et_canvas_board_stopmask is
 	is 
 		praeamble : constant string := "selected: ";
 		use et_pcb_placeholders;
-		use pac_text_placeholders;
+		use pac_placeholders_non_conductor;
 	begin
 		set_status (praeamble & to_string (selected.cursor)
 			& status_next_object_clarification);

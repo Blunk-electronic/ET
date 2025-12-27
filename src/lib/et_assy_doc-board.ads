@@ -49,7 +49,7 @@ package et_assy_doc.board is
 
 	type type_assy_doc_board is new type_assy_doc with record
 		-- Placeholders for revision, board name, misc ... :
-		placeholders : pac_text_placeholders.list;
+		placeholders : pac_placeholders_non_conductor.list;
 	end record;
 
 
