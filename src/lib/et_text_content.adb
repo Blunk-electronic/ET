@@ -73,6 +73,15 @@ package body et_text_content is
 
 
 	
+	procedure clear_content (
+		content : in out pac_text_content.bounded_string)
+	is begin
+		content := empty_text_content;
+	end;
+
+	
+
+	
 	
 	function characters_valid (
 		content		: in pac_text_content.bounded_string;

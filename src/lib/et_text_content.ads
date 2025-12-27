@@ -57,6 +57,12 @@ package et_text_content is
 		pac_text_content.to_bounded_string ("");
 	
 	function is_empty (content : in pac_text_content.bounded_string) return boolean;
+
+
+	-- Clears the given content:
+	procedure clear_content (
+		content : in out pac_text_content.bounded_string);
+	
 	
 	valid_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_-+/: "); 
