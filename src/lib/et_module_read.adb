@@ -122,6 +122,7 @@ with et_module_read_freetracks;				use et_module_read_freetracks;
 with et_module_read_route_restrict;			use et_module_read_route_restrict;
 with et_module_read_board_user_settings;	use et_module_read_board_user_settings;
 with et_module_read_assy_doc;				use et_module_read_assy_doc;
+with et_module_read_silkscreen;				use et_module_read_silkscreen;
 
 
 package body et_module_read is
@@ -245,10 +246,8 @@ package body et_module_read is
 							when TOP =>
 								case layer_cat is
 									when LAYER_CAT_SILKSCREEN =>
-										pac_silk_lines.append (
-											container	=> module.board.silkscreen.top.lines,
-											new_item	=> (type_line (board_line) with board_line_width));
-
+										insert_silk_line (module_cursor, TOP, log_threshold);
+										
 									when LAYER_CAT_ASSY =>
 										insert_doc_line (module_cursor, TOP, log_threshold);
 
@@ -269,9 +268,7 @@ package body et_module_read is
 							when BOTTOM => null;
 								case layer_cat is
 									when LAYER_CAT_SILKSCREEN =>
-										pac_silk_lines.append (
-											container	=> module.board.silkscreen.bottom.lines,
-											new_item	=> (type_line (board_line) with board_line_width));
+										insert_silk_line (module_cursor, BOTTOM, log_threshold);
 
 									when LAYER_CAT_ASSY =>
 										insert_doc_line (module_cursor, BOTTOM, log_threshold);
@@ -1860,9 +1857,10 @@ package body et_module_read is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										read_doc_line (line);
 
-									when SEC_SILKSCREEN |
-										SEC_STENCIL | SEC_STOPMASK =>
+									when SEC_SILKSCREEN =>
+										read_silk_line (line);										
 
+									when SEC_STENCIL | SEC_STOPMASK =>
 										
 										if not read_board_line (line) then
 											declare
@@ -1922,6 +1920,7 @@ package body et_module_read is
 						end case;
 
 						
+						
 					when SEC_ARC =>  -- CS clean up: separate procdures required
 						case stack.parent is
 							when SEC_CONTOURS => read_board_arc (line);
@@ -1934,8 +1933,10 @@ package body et_module_read is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										read_doc_arc (line);
 
-									when SEC_SILKSCREEN |
-										SEC_STENCIL | SEC_STOPMASK =>
+									when SEC_SILKSCREEN =>
+										read_silk_arc (line);
+
+									when SEC_STENCIL | SEC_STOPMASK =>
 										
 										if not read_board_arc (line) then
 										
@@ -1999,6 +2000,7 @@ package body et_module_read is
 							when others => invalid_section;
 						end case;
 
+
 						
 					when SEC_CIRCLE => -- CS clean up: separate procdures required
 						case stack.parent is
@@ -2008,9 +2010,11 @@ package body et_module_read is
 								case stack.parent (degree => 2) is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										read_doc_circle (line);
-									
-									when SEC_SILKSCREEN |
-										SEC_STENCIL | SEC_STOPMASK =>
+
+									when SEC_SILKSCREEN =>
+										read_silk_circle (line);
+										
+									when SEC_STENCIL | SEC_STOPMASK =>
 
 										if not read_board_circle (line) then
 										
