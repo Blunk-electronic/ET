@@ -143,6 +143,7 @@ is
 	
 	
 	procedure query_placeholder (
+	-- CS move procedure to query_items (below) and care for mirroring.
 		c : in pac_placeholders_non_conductor.cursor) 
 	is 
 		use pac_text_vectorized;
@@ -173,6 +174,7 @@ is
 	
 	
 	procedure query_text (c : in pac_silk_texts.cursor) is 
+	-- CS move procedure to query_items (below) and care for mirroring.
 		use pac_draw_text;
 	begin
 		if is_selected (c) then
