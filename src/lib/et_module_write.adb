@@ -153,6 +153,8 @@ with et_assy_doc;
 with et_keepout;
 with et_pcb_contour;
 with et_pcb_placeholders;
+with et_pcb_placeholders.conductor;		
+with et_pcb_placeholders.non_conductor;
 
 with et_mirroring;					use et_mirroring;
 with et_unit_name;
@@ -1617,8 +1619,9 @@ package body et_module_write is
 			use pac_text_board_vectorized;
 			use pac_texts_fab_with_content;
 
-			use et_pcb_placeholders;		
-			use pac_text_placeholders;
+			use et_pcb_placeholders;
+			use et_pcb_placeholders.conductor;
+			use et_pcb_placeholders.non_conductor;		
 
 			use et_silkscreen;
 			use pac_silk_lines;
@@ -1665,8 +1668,9 @@ package body et_module_write is
 		
 			
 			-- general stuff
-			use pac_text_placeholders_conductors;
 			procedure write_placeholder (cursor : in pac_text_placeholders.cursor) is
+				use et_pcb_placeholders.non_conductor;
+				use pac_text_placeholders;
 				ph : type_text_placeholder renames element (cursor);
 			begin
 				placeholder_begin;
@@ -1787,7 +1791,9 @@ package body et_module_write is
 
 			
 			-- text placeholders in any signal layers
-			procedure write_placeholder (cursor : in pac_text_placeholders_conductors.cursor) is begin
+			procedure write_placeholder (cursor : in pac_text_placeholders_conductors.cursor) is 
+				use pac_text_placeholders_conductors;
+			begin
 				placeholder_begin;
 				write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
 				write_text_properties (element (cursor));
@@ -2003,6 +2009,7 @@ package body et_module_write is
 					text_end;
 				end write_text;
 
+				use pac_text_placeholders;
 			begin
 				section_mark (section_silkscreen, HEADER);
 
@@ -2047,7 +2054,8 @@ package body et_module_write is
 
 					text_end;
 				end write_text;
-				
+
+				use pac_text_placeholders;
 			begin
 				section_mark (section_assembly_doc, HEADER);
 
@@ -2185,7 +2193,9 @@ package body et_module_write is
 
 
 
-			procedure Write_conductors is begin
+			procedure Write_conductors is 
+				use pac_text_placeholders_conductors;
+			begin
 				section_mark (section_conductor, HEADER);
 
 				-- floating stuff:

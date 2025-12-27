@@ -47,6 +47,7 @@ with et_devices_electrical;
 with et_conductors_floating_board;	use et_conductors_floating_board;
 
 with et_text_content;
+with et_pcb_placeholders;			use et_pcb_placeholders;
 
 with et_vias;
 with et_route;

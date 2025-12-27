@@ -78,7 +78,11 @@ with et_route_restrict.boards;		use et_route_restrict.boards;
 with et_via_restrict.boards;		use et_via_restrict.boards;
 with et_ratsnest;					use et_ratsnest;
 with et_pcb_contour;
+
 with et_pcb_placeholders;
+with et_pcb_placeholders.conductor;		use et_pcb_placeholders.conductor;
+with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
+
 with et_board_ops;
 with et_board_ops.devices;
 with et_board_ops.silkscreen;

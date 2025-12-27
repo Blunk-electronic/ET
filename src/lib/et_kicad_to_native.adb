@@ -87,7 +87,8 @@ with et_board_write;
 with et_package_read;
 with et_package_write;
 
-with et_pcb_placeholders;
+with et_pcb_placeholders.conductor;	use et_pcb_placeholders.conductor;
+
 with et_device_write;
 with et_power_sources;
 with et_logic;

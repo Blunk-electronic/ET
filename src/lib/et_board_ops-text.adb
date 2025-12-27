@@ -38,6 +38,8 @@
 
 with et_assembly_variants;
 with et_conductor_text.boards;
+with et_pcb_placeholders;				use et_pcb_placeholders;
+
 
 
 package body et_board_ops.text is

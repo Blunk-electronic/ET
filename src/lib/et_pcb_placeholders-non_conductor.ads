@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                         SILKSCREEN / BOARD                               --
+--                PLACEHOLDERS / PCB / NON-CONDUCTOR LAYERS                 --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -36,53 +36,92 @@
 --   history of changes:
 --
 --   to do:
---
 
 
-with et_pcb_sides;						use et_pcb_sides;
-with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
+with ada.containers; 					use ada.containers;
+with ada.containers.doubly_linked_lists;
+with et_board_text;						use et_board_text;
 
 
-package et_silkscreen.board is
-
-
-	-- Such objects are lines, arcs, circles, contours and 
-	-- placeholders for board revision, name, misc ... :
-	type type_silkscreen_board is new type_silkscreen with record
-		placeholders : pac_text_placeholders.list;
-	end record;
-		
-	-- Because silkscreen is about two sides of the board this 
-	-- composite is required:	
-	type type_silkscreen_both_sides is record
-		top 	: type_silkscreen_board;
-		bottom	: type_silkscreen_board;
-	end record;
-
-
-
-	procedure add_line (
-		silkscreen	: in out type_silkscreen_both_sides;
-		line		: in type_silk_line;
-		face		: in type_face);
-
-		
-	procedure add_arc (
-		silkscreen	: in out type_silkscreen_both_sides;
-		arc			: in type_silk_arc;
-		face		: in type_face);
-
-		
-	procedure add_circle (
-		silkscreen	: in out type_silkscreen_both_sides;
-		circle		: in type_silk_circle;
-		face		: in type_face);
-
-
-
-	-- CS procedure add_zone, add_text, add_placeholder
+package et_pcb_placeholders.non_conductor is
 	
-end et_silkscreen.board;
+	use pac_text_board;
+	use pac_text_board_vectorized;
+	
+
+
+
+
+	
+	
+-- PLACEHOLDERS FOR TEXTS IN NON-CONDUCTOR LAYERS:
+		
+	subtype type_text_meaning is type_text_meaning_conductor -- CS rename to type_placeholder_meaning ?
+		range COMPANY .. REVISION;
+
+	
+	type type_text_placeholder is new
+		type_text_fab with 
+	record
+		meaning : type_text_meaning := type_text_meaning'first;
+		-- CS face ?
+	end record;
+
+
+
+	-- CS procedure reset_placeholder
+
+	
+	
+	overriding function to_string (
+		placeholder : in type_text_placeholder)
+		return string;
+
+
+	function get_meaning (
+		placeholder : in type_text_placeholder)
+		return type_text_meaning;
+
+	
+	
+	
+	package pac_text_placeholders is new 
+		doubly_linked_lists (type_text_placeholder);
+
+	use pac_text_placeholders;
+
+
+	-- Iterates the placeholders. 
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		placeholders	: in pac_text_placeholders.list;
+		process			: not null access procedure (
+							position : in pac_text_placeholders.cursor);
+		proceed			: not null access boolean);
+
+
+	
+
+	function to_string (
+		placeholder : in pac_text_placeholders.cursor)
+		return string;
+
+	
+	
+	
+	function is_selected (
+		placeholder : in pac_text_placeholders.cursor)					
+		return boolean;
+
+
+
+	function is_proposed (
+		placeholder : in pac_text_placeholders.cursor)					
+		return boolean;
+
+	
+	
+end et_pcb_placeholders.non_conductor;
 
 -- Soli Deo Gloria
 

@@ -37,6 +37,7 @@
 --
 
 with et_text_content;
+with et_pcb_placeholders;				use et_pcb_placeholders;
 
 
 package body et_board_ops.stopmask is

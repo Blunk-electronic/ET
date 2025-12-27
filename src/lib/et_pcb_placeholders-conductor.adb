@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                         SILKSCREEN / BOARD                               --
+--                   PLACEHOLDERS / PCB / CONDUCTOR LAYERS                  --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
@@ -36,53 +36,111 @@
 --   history of changes:
 --
 --   to do:
---
 
 
-with et_pcb_sides;						use et_pcb_sides;
-with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
+with et_board_coordinates;			use et_board_coordinates;
 
 
-package et_silkscreen.board is
-
-
-	-- Such objects are lines, arcs, circles, contours and 
-	-- placeholders for board revision, name, misc ... :
-	type type_silkscreen_board is new type_silkscreen with record
-		placeholders : pac_text_placeholders.list;
-	end record;
-		
-	-- Because silkscreen is about two sides of the board this 
-	-- composite is required:	
-	type type_silkscreen_both_sides is record
-		top 	: type_silkscreen_board;
-		bottom	: type_silkscreen_board;
-	end record;
-
-
-
-	procedure add_line (
-		silkscreen	: in out type_silkscreen_both_sides;
-		line		: in type_silk_line;
-		face		: in type_face);
-
-		
-	procedure add_arc (
-		silkscreen	: in out type_silkscreen_both_sides;
-		arc			: in type_silk_arc;
-		face		: in type_face);
-
-		
-	procedure add_circle (
-		silkscreen	: in out type_silkscreen_both_sides;
-		circle		: in type_silk_circle;
-		face		: in type_face);
-
-
-
-	-- CS procedure add_zone, add_text, add_placeholder
+package body et_pcb_placeholders.conductor is
 	
-end et_silkscreen.board;
+
+
+
+	function to_string (
+		placeholder : in type_text_placeholder_conductors)
+		return string
+	is 
+		tf : type_text_fab := type_text_fab (placeholder);
+	begin
+		return to_string (tf) 
+			& " layer " & to_string (get_layer (placeholder))
+			& " meaning " & to_string (get_meaning (placeholder));
+	end to_string;
+
+
+	
+
+	function get_meaning (
+		placeholder : in type_text_placeholder_conductors)
+		return type_text_meaning_conductor
+	is begin
+		return placeholder.meaning;
+	end get_meaning;
+
+	
+
+	function get_layer (
+		placeholder : in type_text_placeholder_conductors)
+		return type_signal_layer
+	is begin
+		return placeholder.layer;
+	end get_layer;
+
+
+	
+
+	function to_string (
+		placeholder : in pac_text_placeholders_conductors.cursor)					
+		return string
+	is begin
+		return to_string (element (placeholder));
+	end to_string;
+
+
+
+	procedure iterate (
+		placeholders	: in pac_text_placeholders_conductors.list;
+		process			: not null access procedure (
+							position : in pac_text_placeholders_conductors.cursor);
+		proceed			: not null access boolean)
+	is
+		c : pac_text_placeholders_conductors.cursor := placeholders.first;
+	begin
+		while c /= pac_text_placeholders_conductors.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
+	
+	
+	function get_layer (
+		placeholder : in pac_text_placeholders_conductors.cursor)					
+		return type_signal_layer
+	is begin
+		return element (placeholder).layer;
+	end get_layer;
+
+
+
+	function is_selected (
+		placeholder : in pac_text_placeholders_conductors.cursor)					
+		return boolean
+	is begin
+		if is_selected (element (placeholder)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+	
+
+
+	function is_proposed (
+		placeholder : in pac_text_placeholders_conductors.cursor)					
+		return boolean
+	is begin
+		if is_proposed (element (placeholder)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_proposed;
+
+	
+	
+end et_pcb_placeholders.conductor;
 
 -- Soli Deo Gloria
 

@@ -69,7 +69,8 @@ with et_ratsnest;
 with et_alignment;
 with et_canvas_tool;
 with et_mirroring;
-with et_pcb_placeholders;			use et_pcb_placeholders;
+
+with et_pcb_placeholders.conductor;	use et_pcb_placeholders.conductor;
 with et_conductors_floating_board;	use et_conductors_floating_board;
 
 

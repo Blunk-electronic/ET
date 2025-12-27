@@ -45,8 +45,7 @@ with et_colors;						use et_colors;
 with et_board_ops.text;				use et_board_ops.text;
 with et_text_content;				use et_text_content;
 
-with et_pcb_placeholders;			use et_pcb_placeholders;
-
+with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
 
 separate (et_canvas_board)
 

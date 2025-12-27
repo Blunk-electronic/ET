@@ -60,7 +60,11 @@ with et_conductor_text.boards;
 
 with et_board_text;					use et_board_text;
 with et_alignment;					use et_alignment;
-with et_pcb_placeholders;			use et_pcb_placeholders;
+
+with et_pcb_placeholders;				use et_pcb_placeholders;
+with et_pcb_placeholders.conductor;		use et_pcb_placeholders.conductor;
+with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
+
 with et_pcb;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_mirroring;
@@ -84,7 +88,7 @@ package body et_module_read_text_board is
 
 
 	board_text : type_text_fab_with_content;
-	board_text_placeholder : et_pcb_placeholders.type_text_placeholder;
+	board_text_placeholder : type_text_placeholder;
 
 
 
@@ -224,7 +228,7 @@ package body et_module_read_text_board is
 	
 	
 	-- This variable is used for text placeholders in conductor layers:
-	board_text_conductor_placeholder : et_pcb_placeholders.type_text_placeholder_conductors;
+	board_text_conductor_placeholder : type_text_placeholder_conductors;
 
 	
 	

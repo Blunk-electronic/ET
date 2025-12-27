@@ -54,7 +54,7 @@ with et_undo_redo;
 with et_commit;
 with et_object_status;						use et_object_status;
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
-with et_pcb_placeholders;
+with et_pcb_placeholders.non_conductor;		use et_pcb_placeholders.non_conductor;
 
 
 package body et_canvas_board_stopmask is

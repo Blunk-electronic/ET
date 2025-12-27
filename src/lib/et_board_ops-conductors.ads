@@ -40,7 +40,7 @@
 with et_conductor_segment.boards;		use et_conductor_segment.boards;
 with et_fill_zones.boards;				use et_fill_zones.boards;
 with et_conductor_text.boards;			use et_conductor_text.boards;
-with et_pcb_placeholders;				use et_pcb_placeholders;
+with et_pcb_placeholders.conductor;		use et_pcb_placeholders.conductor;
 with et_device_name;					use et_device_name;
 
 

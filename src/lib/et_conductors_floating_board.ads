@@ -41,7 +41,7 @@
 with et_conductor_segment.boards;		use et_conductor_segment.boards;
 with et_conductor_text.boards;			use et_conductor_text.boards;
 with et_fill_zones.boards;				use et_fill_zones.boards;
-with et_pcb_placeholders;				use et_pcb_placeholders;
+with et_pcb_placeholders.conductor;		use et_pcb_placeholders.conductor;
 
 
 package et_conductors_floating_board is

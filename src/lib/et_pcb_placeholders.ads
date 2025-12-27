@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                          PLACEHOLDERS ON THE PCB                         --
+--                          PLACEHOLDERS / PCB                              --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -38,21 +38,9 @@
 --   to do:
 
 
-with ada.containers; 					use ada.containers;
-with ada.containers.doubly_linked_lists;
-with et_board_text;						use et_board_text;
-with et_pcb_signal_layers;				use et_pcb_signal_layers;
-
-
 
 package et_pcb_placeholders is
 	
-	use pac_text_board;
-	use pac_text_board_vectorized;
-	
-
-	
--- PLACEHOLDERS FOR TEXTS IN CONDUCTOR LAYERS:
 	
 	type type_text_meaning_conductor is ( -- CS rename to type_placeholder_conductor_meaning
 		COMPANY,
@@ -77,131 +65,6 @@ package et_pcb_placeholders is
 	function to_meaning (
 		meaning : in string) 
 		return type_text_meaning_conductor;
-
-
-	
-	type type_text_placeholder_conductors is new 
-		type_text_fab with 
-	record
-		meaning : type_text_meaning_conductor := type_text_meaning_conductor'first;
-
-		-- the conductor layer the placeholder is placed in:
-		layer	: type_signal_layer := type_signal_layer'first; 
-	end record;
-
-
-	overriding function to_string (
-		placeholder : in type_text_placeholder_conductors)
-		return string;
-	
-
-	function get_meaning (
-		placeholder : in type_text_placeholder_conductors)
-		return type_text_meaning_conductor;
-
-
-	function get_layer (
-		placeholder : in type_text_placeholder_conductors)
-		return type_signal_layer;
-
-						   
-	-- There can be lots of placeholders of this kind. 
-	-- So they can be are stored in a list:
-	package pac_text_placeholders_conductors is new 
-		doubly_linked_lists (type_text_placeholder_conductors);
-
-	use pac_text_placeholders_conductors;
-
-
-	-- Iterates the placeholders. 
-	-- Aborts the process when the proceed-flag goes false:
-	procedure iterate (
-		placeholders	: in pac_text_placeholders_conductors.list;
-		process			: not null access procedure (
-							position : in pac_text_placeholders_conductors.cursor);
-		proceed			: not null access boolean);
-		
-	
-	function to_string (
-		placeholder : in pac_text_placeholders_conductors.cursor)					
-		return string;
-	
-
-	-- Returns the signal layer of the given placeholder:
-	function get_layer (
-		placeholder : in pac_text_placeholders_conductors.cursor)					
-		return type_signal_layer;
-	
-
-	function is_selected (
-		placeholder : in pac_text_placeholders_conductors.cursor)					
-		return boolean;
-
-
-	function is_proposed (
-		placeholder : in pac_text_placeholders_conductors.cursor)					
-		return boolean;
-
-	
-	
--- PLACEHOLDERS FOR TEXTS IN NON-CONDUCTOR LAYERS:
-		
-	subtype type_text_meaning is type_text_meaning_conductor -- CS rename to type_placeholder_meaning ?
-		range COMPANY .. REVISION;
-
-	
-	type type_text_placeholder is new
-		type_text_fab with 
-	record
-		meaning : type_text_meaning := type_text_meaning'first;
-	end record;
-
-
-	overriding function to_string (
-		placeholder : in type_text_placeholder)
-		return string;
-
-
-	function get_meaning (
-		placeholder : in type_text_placeholder)
-		return type_text_meaning;
-
-	
-	
-	
-	package pac_text_placeholders is new 
-		doubly_linked_lists (type_text_placeholder);
-
-	use pac_text_placeholders;
-
-
-	-- Iterates the placeholders. 
-	-- Aborts the process when the proceed-flag goes false:
-	procedure iterate (
-		placeholders	: in pac_text_placeholders.list;
-		process			: not null access procedure (
-							position : in pac_text_placeholders.cursor);
-		proceed			: not null access boolean);
-
-
-	
-
-	function to_string (
-		placeholder : in pac_text_placeholders.cursor)
-		return string;
-
-	
-	
-	
-	function is_selected (
-		placeholder : in pac_text_placeholders.cursor)					
-		return boolean;
-
-
-
-	function is_proposed (
-		placeholder : in pac_text_placeholders.cursor)					
-		return boolean;
 
 	
 	

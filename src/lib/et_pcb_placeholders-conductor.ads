@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                         SILKSCREEN / BOARD                               --
+--                   PLACEHOLDERS / PCB / CONDUCTOR LAYERS                  --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -36,53 +36,91 @@
 --   history of changes:
 --
 --   to do:
---
 
 
-with et_pcb_sides;						use et_pcb_sides;
-with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
-
-
-package et_silkscreen.board is
-
-
-	-- Such objects are lines, arcs, circles, contours and 
-	-- placeholders for board revision, name, misc ... :
-	type type_silkscreen_board is new type_silkscreen with record
-		placeholders : pac_text_placeholders.list;
-	end record;
-		
-	-- Because silkscreen is about two sides of the board this 
-	-- composite is required:	
-	type type_silkscreen_both_sides is record
-		top 	: type_silkscreen_board;
-		bottom	: type_silkscreen_board;
-	end record;
+with ada.containers; 					use ada.containers;
+with ada.containers.doubly_linked_lists;
+with et_board_text;						use et_board_text;
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
 
 
 
-	procedure add_line (
-		silkscreen	: in out type_silkscreen_both_sides;
-		line		: in type_silk_line;
-		face		: in type_face);
-
-		
-	procedure add_arc (
-		silkscreen	: in out type_silkscreen_both_sides;
-		arc			: in type_silk_arc;
-		face		: in type_face);
-
-		
-	procedure add_circle (
-		silkscreen	: in out type_silkscreen_both_sides;
-		circle		: in type_silk_circle;
-		face		: in type_face);
-
-
-
-	-- CS procedure add_zone, add_text, add_placeholder
+package et_pcb_placeholders.conductor is
 	
-end et_silkscreen.board;
+	use pac_text_board;
+	use pac_text_board_vectorized;
+	
+
+
+	
+	type type_text_placeholder_conductors is new 
+		type_text_fab with 
+	record
+		meaning : type_text_meaning_conductor := type_text_meaning_conductor'first;
+
+		-- the conductor layer the placeholder is placed in:
+		layer	: type_signal_layer := type_signal_layer'first; 
+	end record;
+
+
+	-- CS procedure reset_placeholder
+
+	overriding function to_string (
+		placeholder : in type_text_placeholder_conductors)
+		return string;
+	
+
+	function get_meaning (
+		placeholder : in type_text_placeholder_conductors)
+		return type_text_meaning_conductor;
+
+
+	function get_layer (
+		placeholder : in type_text_placeholder_conductors)
+		return type_signal_layer;
+
+						   
+	-- There can be lots of placeholders of this kind. 
+	-- So they can be are stored in a list:
+	package pac_text_placeholders_conductors is new 
+		doubly_linked_lists (type_text_placeholder_conductors);
+
+	use pac_text_placeholders_conductors;
+
+
+	-- Iterates the placeholders. 
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		placeholders	: in pac_text_placeholders_conductors.list;
+		process			: not null access procedure (
+							position : in pac_text_placeholders_conductors.cursor);
+		proceed			: not null access boolean);
+		
+	
+	function to_string (
+		placeholder : in pac_text_placeholders_conductors.cursor)					
+		return string;
+	
+
+	-- Returns the signal layer of the given placeholder:
+	function get_layer (
+		placeholder : in pac_text_placeholders_conductors.cursor)					
+		return type_signal_layer;
+	
+
+	function is_selected (
+		placeholder : in pac_text_placeholders_conductors.cursor)					
+		return boolean;
+
+
+	function is_proposed (
+		placeholder : in pac_text_placeholders_conductors.cursor)					
+		return boolean;
+
+
+	
+	
+end et_pcb_placeholders.conductor;
 
 -- Soli Deo Gloria
 

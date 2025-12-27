@@ -38,8 +38,8 @@
 --   ToDo: 
 
 
-with et_silkscreen;					use et_silkscreen;
-with et_pcb_placeholders;			use et_pcb_placeholders;
+with et_silkscreen;						use et_silkscreen;
+with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
 
 
 package et_board_ops.silkscreen is

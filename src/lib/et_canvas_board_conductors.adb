@@ -53,7 +53,7 @@ with et_keywords;							use et_keywords;
 with et_object_status;						use et_object_status;
 with et_nets;
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
-with et_pcb_placeholders;					use et_pcb_placeholders;
+with et_pcb_placeholders.conductor;			use et_pcb_placeholders.conductor;
 
 
 package body et_canvas_board_conductors is
