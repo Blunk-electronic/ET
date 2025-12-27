@@ -45,10 +45,17 @@ package et_conductor_text.boards is
 	type type_conductor_text 
 		is new et_conductor_text.type_conductor_text with
 	record
-		layer : type_signal_layer := type_signal_layer'first;
+		layer : type_signal_layer := signal_layer_default;
 	end record;
 
 
+	-- Resets size, alignment, status, position,
+	-- linewidth, content and vectors to default:
+	overriding procedure reset_text (
+		text : in out type_conductor_text);
+
+
+	
 	function get_layer (
 		text : in type_conductor_text)
 		return type_signal_layer;

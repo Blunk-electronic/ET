@@ -409,7 +409,7 @@ package body et_module_read_text_board is
 			process		=> do_it'access);
 
 		-- clean up for next board placeholder
-		board_text_placeholder := (others => <>);
+		reset_placeholder (board_text_placeholder);		
 		
 		log_indentation_down;
 	end insert_placeholder;
@@ -448,7 +448,7 @@ package body et_module_read_text_board is
 			process		=> do_it'access);
 
 		-- clean up for next placeholder in conductor layer
-		board_text_conductor_placeholder := (others => <>);
+		reset_placeholder (board_text_conductor_placeholder);
 		
 		log_indentation_down;
 	end insert_board_text_placeholder;
@@ -537,7 +537,7 @@ package body et_module_read_text_board is
 			process		=> do_it'access);
 			
 		-- clean up for next board text
-		board_text := (others => <>);
+		reset_text (board_text);
 		
 		log_indentation_down;
 	end build_non_conductor_text;
@@ -603,7 +603,7 @@ package body et_module_read_text_board is
 			process		=> do_it'access);
 
 		-- clean up for next text in conductor layer
-		board_text_conductor := (others => <>);
+		et_conductor_text.boards.reset_text (board_text_conductor);
 		
 		log_indentation_down;
 	end build_conductor_text;

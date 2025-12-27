@@ -59,7 +59,6 @@ with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_axes;						use et_axes;
 with et_module_instance;			use et_module_instance;
-with et_route;						use et_route;
 
 with et_device_sections;
 with et_device_read;
@@ -84,12 +83,6 @@ with et_board_layer_category;
 with et_submodules;
 with et_netlists;
 
-
-with et_stopmask;
-with et_stencil;
-with et_silkscreen;
-with et_assy_doc;
-with et_keepout;
 with et_pcb_contour;
 
 with et_directory_and_file_ops;

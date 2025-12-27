@@ -43,6 +43,16 @@
 package body et_conductor_text.boards is
 
 
+	overriding procedure reset_text (
+		text : in out type_conductor_text)
+	is begin
+		reset_text (et_conductor_text.type_conductor_text (text));
+		text.layer := signal_layer_default;
+	end;
+
+
+	
+
 	function get_layer (
 		text : in type_conductor_text)
 		return type_signal_layer

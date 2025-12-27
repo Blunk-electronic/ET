@@ -1652,8 +1652,12 @@ package et_text_vectorized is
 		
 
 			
-		type type_vector_text is private;
 			
+		type type_vector_text is private;
+
+		vector_text_default : constant type_vector_text;
+
+		
 		-- Renders the given text content to a vector text.
 		-- CS: IMPORTANT: Argument "content" MUST contain something ! If empty
 		-- constraint error will arise !
@@ -1736,6 +1740,9 @@ package et_text_vectorized is
 			-- The linewidth of the line segments:
 			width		: pac_geometry.type_distance_positive := 0.0; -- CS use lower limit ?
 		end record;
+
+
+		vector_text_default : constant type_vector_text := (others => <>);
 		
 	end generic_pac_text_vectorized;
 

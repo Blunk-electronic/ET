@@ -74,6 +74,12 @@ package et_conductor_text is
 	end record;
 
 
+	-- Resets size, alignment, status, position,
+	-- linewidth, content and vectors to default:
+	overriding procedure reset_text (
+		text : in out type_conductor_text);
+	
+	
 	
 	-- Mirrors a text along the given axis:
 	procedure mirror_text (

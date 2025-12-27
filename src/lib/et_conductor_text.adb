@@ -44,6 +44,18 @@ with et_mirroring;				use et_mirroring;
 
 package body et_conductor_text is
 
+
+	overriding procedure reset_text (
+		text : in out type_conductor_text)
+	is begin
+		reset_text (type_text_fab_with_content (text));
+		text.vectors := vector_text_default;
+	end;
+		
+
+
+
+	
 	procedure mirror_text (
 		text	: in out type_conductor_text;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
