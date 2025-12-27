@@ -123,6 +123,7 @@ with et_module_read_route_restrict;			use et_module_read_route_restrict;
 with et_module_read_board_user_settings;	use et_module_read_board_user_settings;
 with et_module_read_assy_doc;				use et_module_read_assy_doc;
 with et_module_read_silkscreen;				use et_module_read_silkscreen;
+with et_module_read_stopmask;				use et_module_read_stopmask;
 
 
 package body et_module_read is
@@ -257,9 +258,7 @@ package body et_module_read is
 											new_item	=> (type_line (board_line) with board_line_width));
 										
 									when LAYER_CAT_STOPMASK =>
-										pac_stop_lines.append (
-											container	=> module.board.stopmask.top.lines,
-											new_item	=> (type_line (board_line) with board_line_width));
+										insert_stop_line (module_cursor, TOP, log_threshold);
 
 									when others => null; -- CS raise exception ?								
 								end case;
@@ -279,10 +278,8 @@ package body et_module_read is
 											new_item	=> (type_line (board_line) with board_line_width));
 										
 									when LAYER_CAT_STOPMASK =>
-										pac_stop_lines.append (
-											container	=> module.board.stopmask.bottom.lines,
-											new_item	=> (type_line (board_line) with board_line_width));
-
+										insert_stop_line (module_cursor, BOTTOM, log_threshold);
+										
 									when others => null; -- CS raise exception ?
 								end case;
 								
@@ -331,10 +328,8 @@ package body et_module_read is
 							when TOP =>
 								case layer_cat is
 									when LAYER_CAT_SILKSCREEN =>
-										pac_silk_arcs.append (
-											container	=> module.board.silkscreen.top.arcs,
-											new_item	=> (type_arc (board_arc) with board_line_width));
-
+										insert_silk_arc (module_cursor, TOP, log_threshold);
+										
 									when LAYER_CAT_ASSY =>
 										insert_doc_arc (module_cursor, TOP, log_threshold);
 
@@ -344,9 +339,7 @@ package body et_module_read is
 											new_item	=> (type_arc (board_arc) with board_line_width));
 										
 									when LAYER_CAT_STOPMASK =>
-										pac_stop_arcs.append (
-											container	=> module.board.stopmask.top.arcs,
-											new_item	=> (type_arc (board_arc) with board_line_width));
+										insert_stop_arc (module_cursor, TOP, log_threshold);
 
 									when others => null;  -- CS raise exception ?
 								end case;
@@ -355,10 +348,8 @@ package body et_module_read is
 							when BOTTOM => null;
 								case layer_cat is
 									when LAYER_CAT_SILKSCREEN =>
-										pac_silk_arcs.append (
-											container	=> module.board.silkscreen.bottom.arcs,
-											new_item	=> (type_arc (board_arc) with board_line_width));
-
+										insert_silk_arc (module_cursor, BOTTOM, log_threshold);
+										
 									when LAYER_CAT_ASSY =>
 										insert_doc_arc (module_cursor, BOTTOM, log_threshold);
 										
@@ -368,9 +359,7 @@ package body et_module_read is
 											new_item	=> (type_arc (board_arc) with board_line_width));
 										
 									when LAYER_CAT_STOPMASK =>
-										pac_stop_arcs.append (
-											container	=> module.board.stopmask.bottom.arcs,
-											new_item	=> (type_arc (board_arc) with board_line_width));
+										insert_stop_arc (module_cursor, BOTTOM, log_threshold);
 
 									when others => null;  -- CS raise exception ?
 								end case;
@@ -422,9 +411,7 @@ package body et_module_read is
 							when TOP =>
 								case layer_cat is
 									when LAYER_CAT_SILKSCREEN =>
-										pac_silk_circles.append (
-											container	=> module.board.silkscreen.top.circles,
-											new_item	=> (type_circle (board_circle) with board_line_width));
+										insert_silk_circle (module_cursor, TOP, log_threshold);
 
 									when LAYER_CAT_ASSY =>
 										insert_doc_circle (module_cursor, TOP, log_threshold);
@@ -435,19 +422,16 @@ package body et_module_read is
 											new_item	=> (type_circle (board_circle) with board_line_width));
 										
 									when LAYER_CAT_STOPMASK =>
-										pac_stop_circles.append (
-											container	=> module.board.stopmask.top.circles,
-											new_item	=> (type_circle (board_circle) with board_line_width));
+										insert_stop_circle (module_cursor, TOP, log_threshold);
 
 									when others => null;  -- CS raise exception ?
 								end case;
+
 								
 							when BOTTOM =>
 								case layer_cat is
 									when LAYER_CAT_SILKSCREEN =>
-										pac_silk_circles.append (
-											container	=> module.board.silkscreen.bottom.circles,
-											new_item	=> (type_circle (board_circle) with board_line_width));
+										insert_silk_circle (module_cursor, BOTTOM, log_threshold);
 
 									when LAYER_CAT_ASSY =>
 										insert_doc_circle (module_cursor, BOTTOM, log_threshold);
@@ -458,10 +442,8 @@ package body et_module_read is
 											new_item	=> (type_circle (board_circle) with board_line_width));
 										
 									when LAYER_CAT_STOPMASK =>
-										pac_stop_circles.append (
-											container	=> module.board.stopmask.bottom.circles,
-											new_item	=> (type_circle (board_circle) with board_line_width));
-
+										insert_stop_circle (module_cursor, BOTTOM, log_threshold);
+										
 									when others => null;  -- CS raise exception ?
 								end case;
 								
