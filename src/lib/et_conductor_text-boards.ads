@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                        CONDUCTOR TEXT BOARDS                             --
+--                        CONDUCTOR TEXT / BOARD                            --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
@@ -42,9 +42,8 @@
 package et_conductor_text.boards is
 
 
-	type type_conductor_text 
-		is new et_conductor_text.type_conductor_text with
-	record
+	type type_conductor_text_board is new type_conductor_text 
+	with record
 		layer : type_signal_layer := signal_layer_default;
 	end record;
 
@@ -52,16 +51,18 @@ package et_conductor_text.boards is
 	-- Resets size, alignment, status, position,
 	-- linewidth, content and vectors to default:
 	overriding procedure reset_text (
-		text : in out type_conductor_text);
+		text : in out type_conductor_text_board);
 
 
 	
 	function get_layer (
-		text : in type_conductor_text)
+		text : in type_conductor_text_board)
 		return type_signal_layer;
 	
 		
-	package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
+	package pac_conductor_texts is new doubly_linked_lists (
+		type_conductor_text_board);
+	
 	use pac_conductor_texts;
 
 

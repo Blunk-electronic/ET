@@ -686,7 +686,7 @@ package et_board_ops.conductors is
 	-- Moves a text:
 	procedure move_text (
 		module_cursor	: in pac_generic_modules.cursor;
-		text			: in type_conductor_text;
+		text			: in type_conductor_text_board;
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model;
 		log_threshold	: in type_log_level);

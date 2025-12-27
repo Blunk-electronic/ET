@@ -990,7 +990,7 @@ package body et_board_ops.fill_zones is
 
 			
 			procedure query_text (t : in pac_conductor_texts.cursor) is 
-				text : type_conductor_text renames element (t);
+				text : type_conductor_text_board renames element (t);
 				borders : pac_polygon_list.list;
 
 				use et_board_text;

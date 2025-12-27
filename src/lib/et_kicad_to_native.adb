@@ -2012,7 +2012,9 @@ package body et_kicad_to_native is
 				end move_polygon;
 
 				
-				procedure move_text (text : in out et_conductor_text.boards.type_conductor_text) is
+				procedure move_text (
+					text : in out et_conductor_text.boards.type_conductor_text_board) 
+				is
 					use et_board_coordinates;
 					use et_board_geometry.pac_geometry_2;
 				begin

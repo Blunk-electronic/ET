@@ -654,7 +654,7 @@ procedure draw_conductors is
 
 
 	procedure draw_text (
-		text : in type_conductor_text)
+		text : in type_conductor_text_board)
 	is
 		use pac_draw_text;
 		use et_colors.board;
@@ -1370,7 +1370,7 @@ procedure draw_conductors is
 				draw_placeholder (placeholder);
 			end;
 
-			procedure query_text (text : in type_conductor_text) is begin
+			procedure query_text (text : in type_conductor_text_board) is begin
 				draw_text (text);
 			end;
 

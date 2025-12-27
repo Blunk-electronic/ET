@@ -3973,7 +3973,7 @@ package body et_board_ops.conductors is
 			mirror : type_mirror;
 
 			v_text : type_vector_text;
-			c_text : type_conductor_text;
+			c_text : type_conductor_text_board;
 			
 		begin
 			mirror := signal_layer_to_mirror (signal_layer, get_deepest_conductor_layer (module_cursor));
@@ -4045,7 +4045,7 @@ package body et_board_ops.conductors is
 			module		: in type_generic_module) 
 		is
 			procedure query_text (c : in pac_conductor_texts.cursor) is
-				text : type_conductor_text renames element (c);
+				text : type_conductor_text_board renames element (c);
 			begin
 				if in_catch_zone (
 					zone	=> catch_zone,
@@ -4091,7 +4091,7 @@ package body et_board_ops.conductors is
 
 	procedure move_text (
 		module_cursor	: in pac_generic_modules.cursor;
-		text			: in type_conductor_text;
+		text			: in type_conductor_text_board;
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model;
 		log_threshold	: in type_log_level)
@@ -4107,7 +4107,9 @@ package body et_board_ops.conductors is
 		is
 			text_cursor : pac_conductor_texts.cursor;
 
-			procedure query_text (text : in out type_conductor_text) is begin
+			procedure query_text (
+				text : in out type_conductor_text_board) 
+			is begin
 				move_text (text, offset); -- incl. vector text
 			end query_text;
 			
@@ -4157,7 +4159,9 @@ package body et_board_ops.conductors is
 			module		: in out type_generic_module)
 		is
 
-			procedure query_text (text : in out type_conductor_text) is begin
+			procedure query_text (
+				text : in out type_conductor_text_board) 
+			is begin
 				modify_status (text, operation);
 			end query_text;
 			
@@ -4204,8 +4208,9 @@ package body et_board_ops.conductors is
 			use pac_conductor_texts;
 			c : pac_conductor_texts.cursor := module.board.conductors_floating.texts.first;
 
+			
 			procedure query_text (
-				text	: in out type_conductor_text)
+				text	: in out type_conductor_text_board)
 			is begin
 				-- The candidate text must be in the given signal layer:
 				if get_layer (text) = layer then
@@ -4263,7 +4268,9 @@ package body et_board_ops.conductors is
 			module		: in out type_generic_module)
 		is
 
-			procedure query_text (text : in out type_conductor_text) is begin
+			procedure query_text (
+				text : in out type_conductor_text_board) 
+			is begin
 				move_text (text, destination);
 			end query_text;
 			
@@ -4292,6 +4299,8 @@ package body et_board_ops.conductors is
 
 	
 
+	
+	
 
 	procedure delete_text (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4416,7 +4425,7 @@ package body et_board_ops.conductors is
 		is
 			
 			procedure query_text (
-				text	: in out type_conductor_text)
+				text	: in out type_conductor_text_board)
 			is begin
 				reset_status (text);
 			end query_text;

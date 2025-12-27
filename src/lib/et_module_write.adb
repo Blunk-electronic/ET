@@ -1773,7 +1773,7 @@ package body et_module_write is
 			
 			-- texts in any signal layers
 			procedure write_text (cursor : in pac_conductor_texts.cursor) is 
-				text : et_conductor_text.boards.type_conductor_text renames element (cursor);
+				text : et_conductor_text.boards.type_conductor_text_board renames element (cursor);
 			begin
 				text_begin;
 

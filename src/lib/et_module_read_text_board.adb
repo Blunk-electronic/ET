@@ -176,7 +176,7 @@ package body et_module_read_text_board is
 	
 	-- This variable is used for vector texts in conductor layers
 	-- and restrict layers:
-	board_text_conductor : et_conductor_text.boards.type_conductor_text;
+	board_text_conductor : et_conductor_text.boards.type_conductor_text_board;
 
 	
 	

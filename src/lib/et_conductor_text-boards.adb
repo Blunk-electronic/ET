@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                        CONDUCTOR TEXT BOARDS                             --
+--                        CONDUCTOR TEXT / BOARD                            --
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
@@ -44,9 +44,9 @@ package body et_conductor_text.boards is
 
 
 	overriding procedure reset_text (
-		text : in out type_conductor_text)
+		text : in out type_conductor_text_board)
 	is begin
-		reset_text (et_conductor_text.type_conductor_text (text));
+		reset_text (type_conductor_text (text));
 		text.layer := signal_layer_default;
 	end;
 
@@ -54,7 +54,7 @@ package body et_conductor_text.boards is
 	
 
 	function get_layer (
-		text : in type_conductor_text)
+		text : in type_conductor_text_board)
 		return type_signal_layer
 	is begin
 		return text.layer;
@@ -66,7 +66,7 @@ package body et_conductor_text.boards is
 		text	: in pac_conductor_texts.cursor)
 		return string
 	is 
-		t : type_conductor_text := element (text);
+		t : type_conductor_text_board := element (text);
 	begin
 		return to_string (t) & " layer " & to_string (get_layer (t));
 	end to_string;
@@ -77,7 +77,7 @@ package body et_conductor_text.boards is
 		text : in pac_conductor_texts.cursor)
 		return boolean
 	is 
-		t : type_conductor_text := element (text);
+		t : type_conductor_text_board := element (text);
 	begin
 		if is_selected (t) then
 			return true;
@@ -92,7 +92,7 @@ package body et_conductor_text.boards is
 		text : in pac_conductor_texts.cursor)
 		return boolean
 	is 
-		t : type_conductor_text := element (text);
+		t : type_conductor_text_board := element (text);
 	begin
 		if is_proposed (t) then
 			return true;
@@ -134,7 +134,7 @@ package body et_conductor_text.boards is
 	-- 	cursor			: in pac_conductor_texts.cursor;
 	-- 	log_threshold 	: in type_log_level) 
 	-- is
-	-- 	text : type_conductor_text;
+	-- 	text : type_conductor_text_board;
 	-- begin
 	-- 	text := element (cursor);
 	-- 	log (text => "conductor text signal layer" & to_string (text.layer) & " "
