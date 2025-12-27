@@ -65,15 +65,19 @@ package et_device_placeholders.packages is
 	use pac_text_board;
 	use pac_text_board_vectorized;
 		
-		
+	
 	
 	type type_text_placeholder is new type_text_fab with record
-		meaning		: type_placeholder_meaning := NAME;
-		anchor_mode	: type_anchor_mode := RELATIVE;
+		meaning		: type_placeholder_meaning := placeholder_meaning_default;
+		anchor_mode	: type_anchor_mode := anchor_mode_default;
 	end record;
 
 	
-	
+	-- Resets size, alignment, status, position,
+	-- linewidth, meaning and anchor mode to default:
+	procedure reset_placeholder (
+		placeholder : in out type_text_placeholder);
+		
 	
 	procedure set_anchor_mode (
 		placeholder		: in out type_text_placeholder;

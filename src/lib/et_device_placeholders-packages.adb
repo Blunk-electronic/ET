@@ -49,6 +49,16 @@ package body et_device_placeholders.packages is
 
 
 
+	procedure reset_placeholder (
+		placeholder : in out type_text_placeholder)
+	is begin
+		reset_text (type_text_fab (placeholder));
+		placeholder.meaning := placeholder_meaning_default;
+		placeholder.anchor_mode := anchor_mode_default;
+	end;
+
+
+	
 
 	procedure set_anchor_mode (
 		placeholder		: in out type_text_placeholder;

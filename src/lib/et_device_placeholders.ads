@@ -93,6 +93,9 @@ package et_device_placeholders is
 		-- disconnected from the object:
 		ABSOLUTE);
 
+		
+	anchor_mode_default : constant type_anchor_mode := RELATIVE;
+	
 
 
 	function to_string (
