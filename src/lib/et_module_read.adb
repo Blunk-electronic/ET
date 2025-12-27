@@ -224,75 +224,22 @@ package body et_module_read is
 				procedure insert_line (
 					layer_cat	: in type_layer_category;
 					face		: in et_pcb_sides.type_face) -- TOP, BOTTOM
-				is
-				-- The board_line and its board_line_width have been general things until now.
-				-- Depending on the layer and the side of the board (face) the board_line
-				-- is now assigned to the board where it belongs to.
+				is begin
+					case layer_cat is
+						when LAYER_CAT_SILKSCREEN =>
+							insert_silk_line (module_cursor, face, log_threshold);
+							
+						when LAYER_CAT_ASSY =>
+							insert_doc_line (module_cursor, face, log_threshold);
 
-					use et_board_geometry;
-					use pac_geometry_2;
-					
-					use et_stopmask;
-					use et_stencil;
-					use et_silkscreen;
-					use et_assy_doc;
+						when LAYER_CAT_STENCIL =>
+							insert_stencil_line (module_cursor, face, log_threshold);
+							
+						when LAYER_CAT_STOPMASK =>
+							insert_stop_line (module_cursor, face, log_threshold);
 
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module)
-					is 					
-						use et_pcb_sides;
-					begin
-						case face is
-							when TOP =>
-								case layer_cat is
-									when LAYER_CAT_SILKSCREEN =>
-										insert_silk_line (module_cursor, TOP, log_threshold);
-										
-									when LAYER_CAT_ASSY =>
-										insert_doc_line (module_cursor, TOP, log_threshold);
-
-									when LAYER_CAT_STENCIL =>
-										insert_stencil_line (module_cursor, TOP, log_threshold);
-										
-									when LAYER_CAT_STOPMASK =>
-										insert_stop_line (module_cursor, TOP, log_threshold);
-
-									when others => null; -- CS raise exception ?								
-								end case;
-
-								
-							when BOTTOM => null;
-								case layer_cat is
-									when LAYER_CAT_SILKSCREEN =>
-										insert_silk_line (module_cursor, BOTTOM, log_threshold);
-
-									when LAYER_CAT_ASSY =>
-										insert_doc_line (module_cursor, BOTTOM, log_threshold);
-										
-									when LAYER_CAT_STENCIL =>
-										insert_stencil_line (module_cursor, BOTTOM, log_threshold);
-										
-									when LAYER_CAT_STOPMASK =>
-										insert_stop_line (module_cursor, BOTTOM, log_threshold);
-										
-									when others => null; -- CS raise exception ?
-								end case;
-								
-						end case;
-					end do_it;
-
-					
-				begin -- insert_line
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next board line
-					board_reset_line;
-					board_reset_line_width;
+						when others => null; -- CS raise exception ?								
+					end case;
 				end insert_line;
 
 
@@ -301,75 +248,22 @@ package body et_module_read is
 				procedure insert_arc (
 					layer_cat	: in type_layer_category;
 					face		: in et_pcb_sides.type_face) -- TOP, BOTTOM
-				is
-				-- The board_arc and its board_line_width have been general things until now. 
-				-- Depending on the layer and the side of the board (face) the board_arc
-				-- is now assigned to the board where it belongs to.
+				is begin
+					case layer_cat is
+						when LAYER_CAT_SILKSCREEN =>
+							insert_silk_arc (module_cursor, face, log_threshold);
+							
+						when LAYER_CAT_ASSY =>
+							insert_doc_arc (module_cursor, face, log_threshold);
 
-					use et_board_geometry;
-					use pac_geometry_2;
-					
-					use et_stopmask;
-					use et_stencil;
-					use et_silkscreen;
-					use et_assy_doc;
-					
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) 
-					is 
-						use et_pcb_sides;
-					begin
-						case face is
-							when TOP =>
-								case layer_cat is
-									when LAYER_CAT_SILKSCREEN =>
-										insert_silk_arc (module_cursor, TOP, log_threshold);
-										
-									when LAYER_CAT_ASSY =>
-										insert_doc_arc (module_cursor, TOP, log_threshold);
+						when LAYER_CAT_STENCIL =>
+							insert_stencil_arc (module_cursor, face, log_threshold);
+							
+						when LAYER_CAT_STOPMASK =>
+							insert_stop_arc (module_cursor, face, log_threshold);
 
-									when LAYER_CAT_STENCIL =>
-										insert_stencil_arc (module_cursor, TOP, log_threshold);
-										
-									when LAYER_CAT_STOPMASK =>
-										insert_stop_arc (module_cursor, TOP, log_threshold);
-
-									when others => null;  -- CS raise exception ?
-								end case;
-
-								
-							when BOTTOM => null;
-								case layer_cat is
-									when LAYER_CAT_SILKSCREEN =>
-										insert_silk_arc (module_cursor, BOTTOM, log_threshold);
-										
-									when LAYER_CAT_ASSY =>
-										insert_doc_arc (module_cursor, BOTTOM, log_threshold);
-										
-									when LAYER_CAT_STENCIL =>
-										insert_stencil_arc (module_cursor, BOTTOM, log_threshold);
-										
-									when LAYER_CAT_STOPMASK =>
-										insert_stop_arc (module_cursor, BOTTOM, log_threshold);
-
-									when others => null;  -- CS raise exception ?
-								end case;
-								
-						end case;
-					end do_it;
-
-					
-				begin -- insert_arc
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next board arc
-					board_reset_arc;
-					board_reset_line_width;
+						when others => null;  -- CS raise exception ?
+					end case;
 				end insert_arc;
 
 
@@ -379,76 +273,22 @@ package body et_module_read is
 				procedure insert_circle (
 					layer_cat	: in type_layer_category;
 					face		: in et_pcb_sides.type_face) -- TOP, BOTTOM
-				is
-				-- The board_circle has been a general thing until now. 
-				-- Depending on the layer and the side of the board (face) the board_circle
-				-- is now assigned to the board where it belongs to.
+				is begin
+					case layer_cat is
+						when LAYER_CAT_SILKSCREEN =>
+							insert_silk_circle (module_cursor, face, log_threshold);
 
-					use et_board_geometry;
-					use pac_geometry_2;
-					
-					use et_stopmask;
-					use et_stencil;
-					use et_silkscreen;
-					use et_assy_doc;
+						when LAYER_CAT_ASSY =>
+							insert_doc_circle (module_cursor, face, log_threshold);
 
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) 
-					is
-						use et_pcb_sides;
-						use et_board_coordinates;
-					begin
-						case face is
-							when TOP =>
-								case layer_cat is
-									when LAYER_CAT_SILKSCREEN =>
-										insert_silk_circle (module_cursor, TOP, log_threshold);
+						when LAYER_CAT_STENCIL =>
+							insert_stencil_circle (module_cursor, face, log_threshold);
+							
+						when LAYER_CAT_STOPMASK =>
+							insert_stop_circle (module_cursor, face, log_threshold);
 
-									when LAYER_CAT_ASSY =>
-										insert_doc_circle (module_cursor, TOP, log_threshold);
-
-									when LAYER_CAT_STENCIL =>
-										insert_stencil_circle (module_cursor, TOP, log_threshold);
-										
-									when LAYER_CAT_STOPMASK =>
-										insert_stop_circle (module_cursor, TOP, log_threshold);
-
-									when others => null;  -- CS raise exception ?
-								end case;
-
-								
-							when BOTTOM =>
-								case layer_cat is
-									when LAYER_CAT_SILKSCREEN =>
-										insert_silk_circle (module_cursor, BOTTOM, log_threshold);
-
-									when LAYER_CAT_ASSY =>
-										insert_doc_circle (module_cursor, BOTTOM, log_threshold);
-										
-									when LAYER_CAT_STENCIL =>
-										insert_stencil_circle (module_cursor, BOTTOM, log_threshold);
-										
-									when LAYER_CAT_STOPMASK =>
-										insert_stop_circle (module_cursor, BOTTOM, log_threshold);
-										
-									when others => null;  -- CS raise exception ?
-								end case;
-								
-						end case;
-					end do_it;
-
-					
-				begin -- insert_circle
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next board circle
-					board_reset_line_width;
-					board_reset_circle;
+						when others => null;  -- CS raise exception ?
+					end case;
 				end insert_circle;
 
 
