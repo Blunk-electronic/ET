@@ -51,8 +51,10 @@ package et_object_status is
 
 
 	type type_object_status is private;
+
+	object_status_default : constant type_object_status;
 	
-	
+												  
 
 	procedure set_proposed (
 		status	: in out type_object_status);
@@ -208,6 +210,9 @@ private
 		locked		: type_locked := false;
 	end record;
 
+
+	object_status_default : constant type_object_status := (others => <>);
+	
 
 	type type_status_operation is record
 		action	: type_action;

@@ -158,13 +158,12 @@ package body et_object_status is
 
 	function get_default_status 
 		return type_object_status
-	is 
-		s : type_object_status;
-	begin
-		return s;
+	is begin
+		return object_status_default;
 	end get_default_status;
 	
 
+	
 
 	function to_operation (
 		action	: in type_action;
@@ -246,7 +245,7 @@ package body et_object_status is
 	procedure reset_status (
 		status 		: in out type_object_status)
 	is begin
-		status := get_default_status;
+		status := object_status_default;
 	end reset_status;
 
 
