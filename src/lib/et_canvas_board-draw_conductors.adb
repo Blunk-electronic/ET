@@ -135,7 +135,7 @@ procedure draw_conductors is
 	use pac_route_solid;
 	use pac_route_hatched;
 	
-	use pac_text_placeholders_conductors;
+	use pac_placeholders_conductor;
 	use pac_conductor_texts;
 
 	-- CS must be overwritten according to select status:
@@ -617,7 +617,7 @@ procedure draw_conductors is
 -- 	TEXT PLACEHOLDERS AND TEXTS:
 	
 	procedure draw_placeholder (
-		placeholder : in type_text_placeholder_conductors) 
+		placeholder : in type_placeholder_conductor) 
 	is 
 		use et_board_ops.text;
 		use pac_text_vectorized;		
@@ -1338,7 +1338,7 @@ procedure draw_conductors is
 			zone_solid_cursor	: pac_floating_solid.cursor		:= objects.zones.solid.first;
 			zone_hatched_cursor	: pac_floating_hatched.cursor	:= objects.zones.hatched.first;
 			cutout_cursor		: pac_cutouts.cursor			:= objects.cutouts.first;
-			placeholder_cursor	: pac_text_placeholders_conductors.cursor	:= objects.placeholders.first;
+			placeholder_cursor	: pac_placeholders_conductor.cursor	:= objects.placeholders.first;
 			text_cursor			: pac_conductor_texts.cursor	:= objects.texts.first;
 
 			
@@ -1366,7 +1366,7 @@ procedure draw_conductors is
 				draw_cutout (cutout);
 			end;
 
-			procedure query_placeholder (placeholder : in type_text_placeholder_conductors) is begin
+			procedure query_placeholder (placeholder : in type_placeholder_conductor) is begin
 				draw_placeholder (placeholder);
 			end;
 

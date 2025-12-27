@@ -1624,7 +1624,7 @@ is
 		
 		
 		procedure place_in_conductor_layer is
-			ph : type_text_placeholder_conductors; -- conductor layers
+			ph : type_placeholder_conductor; -- conductor layers
 		begin
 			ph.layer := to_signal_layer (get_field (6));  -- 5 
 			ph.meaning := to_meaning (get_field (12));

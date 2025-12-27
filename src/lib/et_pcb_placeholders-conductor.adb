@@ -47,7 +47,7 @@ package body et_pcb_placeholders.conductor is
 
 
 	function to_string (
-		placeholder : in type_text_placeholder_conductors)
+		placeholder : in type_placeholder_conductor)
 		return string
 	is 
 		tf : type_text_fab := type_text_fab (placeholder);
@@ -61,7 +61,7 @@ package body et_pcb_placeholders.conductor is
 	
 
 	function get_meaning (
-		placeholder : in type_text_placeholder_conductors)
+		placeholder : in type_placeholder_conductor)
 		return type_placeholder_meaning
 	is begin
 		return placeholder.meaning;
@@ -70,7 +70,7 @@ package body et_pcb_placeholders.conductor is
 	
 
 	function get_layer (
-		placeholder : in type_text_placeholder_conductors)
+		placeholder : in type_placeholder_conductor)
 		return type_signal_layer
 	is begin
 		return placeholder.layer;
@@ -80,7 +80,7 @@ package body et_pcb_placeholders.conductor is
 	
 
 	function to_string (
-		placeholder : in pac_text_placeholders_conductors.cursor)					
+		placeholder : in pac_placeholders_conductor.cursor)					
 		return string
 	is begin
 		return to_string (element (placeholder));
@@ -89,14 +89,14 @@ package body et_pcb_placeholders.conductor is
 
 
 	procedure iterate (
-		placeholders	: in pac_text_placeholders_conductors.list;
+		placeholders	: in pac_placeholders_conductor.list;
 		process			: not null access procedure (
-							position : in pac_text_placeholders_conductors.cursor);
+							position : in pac_placeholders_conductor.cursor);
 		proceed			: not null access boolean)
 	is
-		c : pac_text_placeholders_conductors.cursor := placeholders.first;
+		c : pac_placeholders_conductor.cursor := placeholders.first;
 	begin
-		while c /= pac_text_placeholders_conductors.no_element and proceed.all = TRUE loop
+		while c /= pac_placeholders_conductor.no_element and proceed.all = TRUE loop
 			process (c);
 			next (c);
 		end loop;
@@ -106,7 +106,7 @@ package body et_pcb_placeholders.conductor is
 	
 	
 	function get_layer (
-		placeholder : in pac_text_placeholders_conductors.cursor)					
+		placeholder : in pac_placeholders_conductor.cursor)					
 		return type_signal_layer
 	is begin
 		return element (placeholder).layer;
@@ -115,7 +115,7 @@ package body et_pcb_placeholders.conductor is
 
 
 	function is_selected (
-		placeholder : in pac_text_placeholders_conductors.cursor)					
+		placeholder : in pac_placeholders_conductor.cursor)					
 		return boolean
 	is begin
 		if is_selected (element (placeholder)) then
@@ -128,7 +128,7 @@ package body et_pcb_placeholders.conductor is
 
 
 	function is_proposed (
-		placeholder : in pac_text_placeholders_conductors.cursor)					
+		placeholder : in pac_placeholders_conductor.cursor)					
 		return boolean
 	is begin
 		if is_proposed (element (placeholder)) then

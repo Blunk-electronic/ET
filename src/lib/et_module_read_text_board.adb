@@ -228,7 +228,7 @@ package body et_module_read_text_board is
 	
 	
 	-- This variable is used for text placeholders in conductor layers:
-	board_text_conductor_placeholder : type_text_placeholder_conductors;
+	board_text_conductor_placeholder : type_placeholder_conductor;
 
 	
 	
@@ -429,7 +429,7 @@ package body et_module_read_text_board is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is begin
-			pac_text_placeholders_conductors.append (
+			pac_placeholders_conductor.append (
 				container	=> module.board.conductors_floating.placeholders,
 				new_item	=> board_text_conductor_placeholder);
 		end do_it;

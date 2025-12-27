@@ -65,7 +65,7 @@ package et_conductors_floating_board is
 		cutouts			: pac_cutouts.list;
 		
 		texts			: pac_conductor_texts.list;
-		placeholders	: pac_text_placeholders_conductors.list;
+		placeholders	: pac_placeholders_conductor.list;
 	end record;
 
 

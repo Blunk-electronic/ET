@@ -4452,7 +4452,7 @@ package body et_board_ops.conductors is
 
 	procedure add_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
-		placeholder		: in type_text_placeholder_conductors;
+		placeholder		: in type_placeholder_conductor;
 		log_threshold	: in type_log_level)
 	is
 
@@ -4460,7 +4460,7 @@ package body et_board_ops.conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			use pac_text_placeholders_conductors;
+			use pac_placeholders_conductor;
 		begin
 			append (module.board.conductors_floating.placeholders, placeholder);
 		end query_module;
@@ -4499,7 +4499,7 @@ package body et_board_ops.conductors is
 		is
 
 			procedure query_placeholder (
-				ph : in out type_text_placeholder_conductors) 
+				ph : in out type_placeholder_conductor) 
 			is begin
 				modify_status (ph, operation);
 			end query_placeholder;
@@ -4544,11 +4544,11 @@ package body et_board_ops.conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			use pac_text_placeholders_conductors;
-			c : pac_text_placeholders_conductors.cursor := module.board.conductors_floating.placeholders.first;
+			use pac_placeholders_conductor;
+			c : pac_placeholders_conductor.cursor := module.board.conductors_floating.placeholders.first;
 
 			procedure query_placeholder (
-				ph : in out type_text_placeholder_conductors)
+				ph : in out type_placeholder_conductor)
 			is begin
 				if in_catch_zone (
 					zone	=> catch_zone,
@@ -4562,7 +4562,7 @@ package body et_board_ops.conductors is
 			
 			
 		begin
-			while c /= pac_text_placeholders_conductors.no_element loop
+			while c /= pac_placeholders_conductor.no_element loop
 				module.board.conductors_floating.placeholders.update_element (c, query_placeholder'access);
 				next (c);
 			end loop;
@@ -4602,7 +4602,7 @@ package body et_board_ops.conductors is
 		is
 
 			procedure query_placeholder (
-				ph : in out type_text_placeholder_conductors) 
+				ph : in out type_placeholder_conductor) 
 			is begin
 				move_text_to (ph, destination);
 			end query_placeholder;
@@ -4646,7 +4646,7 @@ package body et_board_ops.conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
-			c : pac_text_placeholders_conductors.cursor := placeholder.cursor;			
+			c : pac_placeholders_conductor.cursor := placeholder.cursor;			
 		begin
 			module.board.conductors_floating.placeholders.delete (c);
 		end query_module;
@@ -4685,16 +4685,16 @@ package body et_board_ops.conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			use pac_text_placeholders_conductors;
+			use pac_placeholders_conductor;
 			
 			proceed : aliased boolean := true;
 
-			phs : pac_text_placeholders_conductors.list 
+			phs : pac_placeholders_conductor.list 
 				renames module.board.conductors_floating.placeholders;
 
 			
 			procedure query_placeholder (
-				c : in pac_text_placeholders_conductors.cursor) 
+				c : in pac_placeholders_conductor.cursor) 
 			is
 				use et_object_status;
 			begin
@@ -4762,16 +4762,16 @@ package body et_board_ops.conductors is
 		is
 			
 			procedure query_placeholder (
-				ph : in out type_text_placeholder_conductors)
+				ph : in out type_placeholder_conductor)
 			is begin
 				reset_status (ph);
 			end query_placeholder;
 
-			use pac_text_placeholders_conductors;
-			c : pac_text_placeholders_conductors.cursor := 
+			use pac_placeholders_conductor;
+			c : pac_placeholders_conductor.cursor := 
 				module.board.conductors_floating.placeholders.first;
 		begin
-			while c /= pac_text_placeholders_conductors.no_element loop
+			while c /= pac_placeholders_conductor.no_element loop
 				module.board.conductors_floating.placeholders.update_element (
 					c, query_placeholder'access);
 				next (c);
@@ -4837,7 +4837,7 @@ package body et_board_ops.conductors is
 		use pac_conductor_lines;
 		use pac_conductor_arcs;
 		use pac_conductor_texts;
-		use pac_text_placeholders_conductors;
+		use pac_placeholders_conductor;
 
 
 		
@@ -4944,7 +4944,7 @@ package body et_board_ops.conductors is
 		procedure search_for_placeholder is begin			
 			result_placeholder := get_first_placeholder (module_cursor, flag, log_threshold + 1);
 			
-			if result_placeholder.cursor /= pac_text_placeholders_conductors.no_element then
+			if result_placeholder.cursor /= pac_placeholders_conductor.no_element then
 				-- A placeholder has been found.
 				log (text => to_string (result_placeholder.cursor),
 					level => log_threshold + 1);
@@ -5496,10 +5496,10 @@ package body et_board_ops.conductors is
 
 
 				-- TEXT PLACEHOLDERS:
-				use pac_text_placeholders_conductors;
+				use pac_placeholders_conductor;
 				
 				procedure query_placeholder (
-					c : in pac_text_placeholders_conductors.cursor) 
+					c : in pac_placeholders_conductor.cursor) 
 				is begin
 					-- CS test the given flag !!
 					if is_proposed (c) then

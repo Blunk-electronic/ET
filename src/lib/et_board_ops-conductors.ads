@@ -755,14 +755,14 @@ package et_board_ops.conductors is
 	-- in case its signal layer is the bottom of the board:
 	procedure add_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
-		placeholder		: in type_text_placeholder_conductors;
+		placeholder		: in type_placeholder_conductor;
 		log_threshold	: in type_log_level);
 	
 
 	-- This type helps to identify a text placeholder by its cursor:
 	type type_object_placeholder is record
-		cursor	: pac_text_placeholders_conductors.cursor := 
-			pac_text_placeholders_conductors.no_element;
+		cursor	: pac_placeholders_conductor.cursor := 
+			pac_placeholders_conductor.no_element;
 	end record;
 	
 

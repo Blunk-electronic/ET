@@ -1791,8 +1791,8 @@ package body et_module_write is
 
 			
 			-- text placeholders in any signal layers
-			procedure write_placeholder (cursor : in pac_text_placeholders_conductors.cursor) is 
-				use pac_text_placeholders_conductors;
+			procedure write_placeholder (cursor : in pac_placeholders_conductor.cursor) is 
+				use pac_placeholders_conductor;
 			begin
 				placeholder_begin;
 				write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
@@ -2194,7 +2194,7 @@ package body et_module_write is
 
 
 			procedure Write_conductors is 
-				use pac_text_placeholders_conductors;
+				use pac_placeholders_conductor;
 			begin
 				section_mark (section_conductor, HEADER);
 

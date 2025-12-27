@@ -1939,9 +1939,8 @@ package body et_kicad_to_native is
 				use pac_conductor_texts;
 				texts_cursor : pac_conductor_texts.cursor;
 
-				use et_pcb_placeholders;
-				use pac_text_placeholders_conductors;
-				placeholders_cursor : pac_text_placeholders_conductors.cursor;
+				use pac_placeholders_conductor;
+				placeholders_cursor : pac_placeholders_conductor.cursor;
 				
 				board_copper : constant string := "board copper ";
 
@@ -2030,7 +2029,7 @@ package body et_kicad_to_native is
 				end move_text;
 
 				
-				procedure move_placeholder (text : in out type_text_placeholder_conductors) is
+				procedure move_placeholder (text : in out type_placeholder_conductor) is
 					use et_board_coordinates;
 					use et_board_geometry.pac_geometry_2;
 				begin
@@ -2124,8 +2123,8 @@ package body et_kicad_to_native is
 				
 				-- TEXT PLACEHOLDERS
 				placeholders_cursor := module.board.conductors_floating.placeholders.first;
-				while placeholders_cursor /= pac_text_placeholders_conductors.no_element loop
-					pac_text_placeholders_conductors.update_element (
+				while placeholders_cursor /= pac_placeholders_conductor.no_element loop
+					pac_placeholders_conductor.update_element (
 						container	=> module.board.conductors_floating.placeholders,
 						position	=> placeholders_cursor,
 						process		=> move_placeholder'access);

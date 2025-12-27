@@ -53,7 +53,7 @@ package et_pcb_placeholders.conductor is
 
 
 	
-	type type_text_placeholder_conductors is new 
+	type type_placeholder_conductor is new 
 		type_text_fab with 
 	record
 		meaning : type_placeholder_meaning := placeholder_meaning_default;
@@ -66,55 +66,55 @@ package et_pcb_placeholders.conductor is
 	-- CS procedure reset_placeholder
 
 	overriding function to_string (
-		placeholder : in type_text_placeholder_conductors)
+		placeholder : in type_placeholder_conductor)
 		return string;
 	
 
 	function get_meaning (
-		placeholder : in type_text_placeholder_conductors)
+		placeholder : in type_placeholder_conductor)
 		return type_placeholder_meaning;
 
 
 	function get_layer (
-		placeholder : in type_text_placeholder_conductors)
+		placeholder : in type_placeholder_conductor)
 		return type_signal_layer;
 
 						   
 	-- There can be lots of placeholders of this kind. 
 	-- So they can be are stored in a list:
-	package pac_text_placeholders_conductors is new 
-		doubly_linked_lists (type_text_placeholder_conductors);
+	package pac_placeholders_conductor is new 
+		doubly_linked_lists (type_placeholder_conductor);
 
-	use pac_text_placeholders_conductors;
+	use pac_placeholders_conductor;
 
 
 	-- Iterates the placeholders. 
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
-		placeholders	: in pac_text_placeholders_conductors.list;
+		placeholders	: in pac_placeholders_conductor.list;
 		process			: not null access procedure (
-							position : in pac_text_placeholders_conductors.cursor);
+							position : in pac_placeholders_conductor.cursor);
 		proceed			: not null access boolean);
 		
 	
 	function to_string (
-		placeholder : in pac_text_placeholders_conductors.cursor)					
+		placeholder : in pac_placeholders_conductor.cursor)					
 		return string;
 	
 
 	-- Returns the signal layer of the given placeholder:
 	function get_layer (
-		placeholder : in pac_text_placeholders_conductors.cursor)					
+		placeholder : in pac_placeholders_conductor.cursor)					
 		return type_signal_layer;
 	
 
 	function is_selected (
-		placeholder : in pac_text_placeholders_conductors.cursor)					
+		placeholder : in pac_placeholders_conductor.cursor)					
 		return boolean;
 
 
 	function is_proposed (
-		placeholder : in pac_text_placeholders_conductors.cursor)					
+		placeholder : in pac_placeholders_conductor.cursor)					
 		return boolean;
 
 
