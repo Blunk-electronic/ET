@@ -54,8 +54,13 @@ with et_text;					use et_text;
 
 package et_text_vectorized is
 
-
+	-- Vectorized text is required for manufacturing.
+	-- Such text consist of lines with a certain width.
 	-- In vector text a single character consists of straight lines.
+	-- For example the letter "L" consists of 2 lines, the letter "M"
+	-- contains 4 lines.
+	
+	
 	-- CS: It seems sufficient to have at most 20 lines per character.
 	type type_segment_id is range 1 .. 20; 
 
@@ -104,15 +109,16 @@ package et_text_vectorized is
 
 		
 		
-		-- This basic text type is intended for all texts which are
-		-- somehow frabrication relevant. Such texts are so called
-		-- vector-texts. They consist of lines with a certain width.
 		type type_text_fab is new type_text with record
 			position	: pac_geometry.type_position; -- x/y/rotation
 			line_width	: type_text_line_width := type_text_line_width'first; -- CS rename to linewidth
 		end record;
 
 
+		-- Resets size, alignment, status, position
+		-- and linewidth to default:
+		overriding procedure reset_text (
+			text : in out type_text_fab);
 		
 		
 		-- Returns the x/y coordinates and the rotation of a text:
@@ -1620,6 +1626,10 @@ package et_text_vectorized is
 		end record;
 
 
+		overriding procedure reset_text (
+			text : in out type_text_fab_with_content);
+
+		
 		function is_empty (
 			text : in type_text_fab_with_content)
 			return boolean;

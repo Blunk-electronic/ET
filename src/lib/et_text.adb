@@ -102,6 +102,19 @@ package body et_text is
 
 
 
+		procedure reset_text (
+			text : in out type_text)
+		is begin
+			text.size := size_default;
+			text.alignment := text_alignment_default;
+			reset_status (text.status);
+		end;
+		
+
+
+		
+
+
 		function is_proposed (
 			text : in type_text)
 			return boolean

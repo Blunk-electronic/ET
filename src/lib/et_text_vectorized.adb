@@ -62,6 +62,16 @@ package body et_text_vectorized is
 		end validate_text_line_width;
 
 
+
+		overriding procedure reset_text (
+			text : in out type_text_fab)
+		is begin
+			reset_text (type_text (text));
+			reset_position (text.position);
+			text.line_width := line_width_default;
+		end;
+
+
 		
 		function get_position (text : in type_text_fab)
 			return pac_geometry.type_position
@@ -225,7 +235,17 @@ package body et_text_vectorized is
 		end "<";
 
 
+		
 
+		overriding procedure reset_text (
+			text : in out type_text_fab_with_content)
+		is begin
+			reset_text (type_text_fab (text));
+			clear_content (text.content);
+		end;
+
+		
+		
 
 		function is_empty (
 			text : in type_text_fab_with_content)

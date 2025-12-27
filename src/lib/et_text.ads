@@ -93,6 +93,15 @@ package et_text is
 		end record;
 
 
+		-- Resets size, alignment and status to default:
+		procedure reset_text (
+			text : in out type_text);
+		
+		-- CS procedures to set size and alignment
+		-- CS procedures to get size and alignment
+		
+		
+
 		function is_proposed (
 			text : in type_text)
 			return boolean;
