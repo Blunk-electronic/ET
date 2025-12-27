@@ -3739,10 +3739,21 @@ end;
 
 
 
+	
 
 
 -- POSITION:
 
+
+	procedure reset_position (
+		position : in out type_position)
+	is begin
+		position := origin_zero_rotation;
+	end;
+	
+
+
+	
 	function to_string (
 		position	: in type_position;
 		format		: in type_output_format := FORMAT_1)

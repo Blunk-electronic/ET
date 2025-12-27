@@ -1748,6 +1748,15 @@ package et_geometry_2a is
 	end record;
 
 
+	origin_zero_rotation : constant type_position;
+	-- CS rename to position_default ?
+
+
+	-- Resets the position to default place and rotation:
+	procedure reset_position (
+		position : in out type_position);
+	
+
 	-- This function returns the given object position
 	-- as string formatted as follows:
 	-- FORMAT_1 : x/y/rotation 4.5 / 5.6 / 90.0
@@ -1759,7 +1768,7 @@ package et_geometry_2a is
 		return string;
 
 
-	origin_zero_rotation : constant type_position;
+	
 
 	-- A position at the greatest distance in
 	-- x and y from the origin:
