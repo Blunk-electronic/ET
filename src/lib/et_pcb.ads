@@ -70,7 +70,7 @@ with et_stencil.board;					use et_stencil.board;
 with et_silkscreen.board;				use et_silkscreen.board;
 with et_assy_doc.board;					use et_assy_doc.board;
 with et_keepout.board;					use et_keepout.board;
-with et_pcb_contour;					use et_pcb_contour;
+with et_board_outline;					use et_board_outline;
 
 with et_commit;
 with et_object_status;					use et_object_status;

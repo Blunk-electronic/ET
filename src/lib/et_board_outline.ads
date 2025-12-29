@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                           PCB CONTOUR                                    --
+--                           BOARD OUTLINE                                  --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
@@ -35,8 +35,16 @@
 --
 --   history of changes:
 --
---   to do:
---   1. rename this package to et_pcb_outline
+--
+-- DESCRIPTION:
+-- 
+-- This package is about the outlines of the board (PCB).
+-- The term "outlines" refers to 
+-- 1. the outer contour
+-- 2. holes. Holes may have any shape.
+--
+--  to do:
+--
 
 
 with ada.containers; 				use ada.containers;
@@ -49,7 +57,7 @@ with et_contour_to_polygon;
 with et_logging;					use et_logging;
 
 
-package et_pcb_contour is -- CS rename to et_board_contour ?
+package et_board_outline is
 
 	use pac_geometry_brd;
 
@@ -143,7 +151,7 @@ package et_pcb_contour is -- CS rename to et_board_contour ?
 	
 
 	
-end et_pcb_contour;
+end et_board_outline;
 
 -- Soli Deo Gloria
 

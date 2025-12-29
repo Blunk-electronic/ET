@@ -65,7 +65,7 @@ with et_pcb_stack;
 with et_conductor_segment;
 with et_conductor_segment.boards;
 with et_conductor_text.packages;
-with et_pcb_contour;
+with et_board_outline;
 with et_mirroring;					use et_mirroring;
 with et_text;
 
@@ -731,7 +731,7 @@ is
 		-- This procedure parses the outer contour of the board
 		-- and the holes (which can be regarded as inner contour):
 		procedure process_board_outline is
-			use et_pcb_contour;
+			use et_board_outline;
 			use et_board_geometry.pac_contours; -- instance of generic package
 			use pac_segments;
 
@@ -1478,7 +1478,7 @@ is
 
 
 				procedure process_holes is
-					use et_pcb_contour;
+					use et_board_outline;
 					use pac_holes;
 
 					procedure query_hole (

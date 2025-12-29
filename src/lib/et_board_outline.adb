@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                           PCB CONTOUR                                    --
+--                           BOARD OUTLINE                                  --
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
@@ -40,7 +40,7 @@
 with ada.text_io;				use ada.text_io;
 
 
-package body et_pcb_contour is
+package body et_board_outline is
 
 
 
@@ -201,7 +201,7 @@ package body et_pcb_contour is
 
 
 	
-end et_pcb_contour;
+end et_board_outline;
 
 -- Soli Deo Gloria
 

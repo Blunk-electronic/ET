@@ -45,7 +45,7 @@ with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
 
 with et_conductor_segment;		use et_conductor_segment;
-with et_pcb_contour;			use et_pcb_contour;
+with et_board_outline;			use et_board_outline;
 with et_conventions;
 with et_pcb_sides;
 with et_axes;							use et_axes;

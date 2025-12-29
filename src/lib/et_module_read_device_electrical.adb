@@ -90,7 +90,7 @@ with et_device_placeholders;
 with et_device_placeholders.packages;
 with et_device_placeholders.symbols;
 
-with et_pcb_contour;
+with et_board_outline;
 with et_pcb_placeholders;
 with et_unit_name;
 with et_units;

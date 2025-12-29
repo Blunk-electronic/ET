@@ -83,7 +83,7 @@ with et_board_layer_category;
 with et_submodules;
 with et_netlists;
 
-with et_pcb_contour;
+with et_board_outline;
 
 with et_directory_and_file_ops;
 with et_object_status;

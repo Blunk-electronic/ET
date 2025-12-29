@@ -39,7 +39,7 @@
 --   1. rename this package to et_board_ops.outline
 
 
-with et_pcb_contour;				use et_pcb_contour;
+with et_board_outline;				use et_board_outline;
 
 
 package et_board_ops.board_contour is
