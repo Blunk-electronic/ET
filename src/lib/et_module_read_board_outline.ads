@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                    MODULE READ / BOARD CONTOUR                           --
+--                    MODULE READ / BOARD / OUTLINE                         --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -38,7 +38,9 @@
 --
 --
 -- DESCRIPTION:
--- 1. This package is about all kinds of contours in the board drawing.
+-- 1. This package is about the outline of the board.
+-- 2. This inlcudes holes of any shape
+-- 3. This includes the outer contour of the board.
 
 --
 --
@@ -48,52 +50,32 @@
 --
 --
 
-with et_board_geometry;				use et_board_geometry;
 with et_generic_module;				use et_generic_module;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 
 
 
-package et_module_read_board_contour is
+package et_module_read_board_outline is
 
 
-	use pac_geometry_2;
-	use pac_contours;
-	
+	procedure insert_outline_line;
 
-	contour_line	: type_line;
-	contour_arc		: type_arc;
-	contour_circle	: type_circle;
-	contour			: type_contour;
+	procedure insert_outline_arc;
+
+	procedure insert_outline_circle;
 
 
-	
-	procedure read_contour_line (
-		line : type_fields_of_line);
+	procedure set_outline (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+							  
 
-		
-	procedure read_contour_arc (
-		line : type_fields_of_line);
-
-	
-	procedure read_contour_circle (
-		line : type_fields_of_line);
-
-	
-
-	procedure insert_contour_line;
-
-	procedure insert_contour_arc;
-
-	procedure insert_contour_circle;
-
-
-	procedure check_contour (
-		log_threshold : in type_log_level);
-		
-	
-end et_module_read_board_contour;
+	procedure add_hole (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+							  
+end et_module_read_board_outline;
 
 	
 

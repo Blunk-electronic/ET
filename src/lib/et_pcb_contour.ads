@@ -77,6 +77,9 @@ package et_pcb_contour is -- CS rename to et_board_contour ?
 	use pac_holes;
 
 
+	-- CS procedure add_hole (holes : in pac_holes.list, hole);
+
+	
 	-- Iterates the holes.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (

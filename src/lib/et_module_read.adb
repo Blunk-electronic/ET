@@ -119,6 +119,7 @@ with et_module_read_silkscreen;				use et_module_read_silkscreen;
 with et_module_read_stopmask;				use et_module_read_stopmask;
 with et_module_read_stencil;				use et_module_read_stencil;
 with et_module_read_board_contour;			use et_module_read_board_contour;
+with et_module_read_board_outline;			use et_module_read_board_outline;
 
 
 package body et_module_read is
@@ -287,121 +288,7 @@ package body et_module_read is
 
 
 
-				
-				
-				procedure insert_line_outline is
-					use et_board_geometry;
-					use pac_geometry_2;
-					use pac_contours;
-					use pac_segments;
-					
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) 
-					is begin
-						append (
-							container	=> module.board.board_contour.outline.contour.segments,
-							new_item	=> (pac_contours.LINE, board_line));
-					end do_it;
-
-					
-				begin -- insert_line_outline
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next pcb contour line
-					board_reset_line;
-				end insert_line_outline;
-
-				
-				
-				
-				
-				
-				procedure insert_arc_outline is
-					use et_board_geometry;
-					use pac_geometry_2;
-					use pac_contours;
-					use pac_segments;
-
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) 
-					is begin
-						append (
-							container	=> module.board.board_contour.outline.contour.segments,
-							new_item	=> (pac_contours.ARC, board_arc));
-					end do_it;
-
-					
-				begin -- insert_arc_outline
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- clean up for next pcb contour arc
-					board_reset_arc;
-				end insert_arc_outline;
-
-
-
-				
-				procedure insert_circle_outline is
-					
-
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) 
-					is begin
-						module.board.board_contour.outline.contour := (
-							circular	=> true,
-							circle		=> board_circle);
-					end do_it;
-										
-				begin -- insert_circle_outline
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-
-					-- Clean up for next pcb contour circle.
-					-- NOTE: There should not be another circle for the outline,
-					-- because only a single circle is allowed.
-					board_reset_circle;
-				end insert_circle_outline;
-
-
-				
-				-- holes in PCB (or cutouts)
-				procedure append_hole is 
-					use et_pcb_contour;
-					use pac_holes;
-					
-					
-					procedure do_it (
-						module_name	: in pac_module_name.bounded_string;
-						module		: in out type_generic_module) 
-					is begin
-						append (
-							container 	=> module.board.board_contour.holes,
-							new_item	=> (et_board_read.contour with null record));
-					end do_it;
-
-				begin
-					update_element (
-						container	=> generic_modules,
-						position	=> module_cursor,
-						process		=> do_it'access);
-					
-					-- clean up for next hole
-					board_reset_contour;
-				end append_hole;
-
+			
 				
 
 				
@@ -775,11 +662,8 @@ package body et_module_read is
 							when SEC_CONDUCTOR =>
 								insert_freetrack_line (module_cursor, log_threshold);
 
-							when SEC_OUTLINE =>
-								insert_line_outline;
-
-							when SEC_HOLE =>
-								add_polygon_line (board_line);
+							when SEC_OUTLINE | SEC_HOLE =>
+								insert_outline_line;
 								
 							when others => invalid_section;
 						end case;
@@ -804,12 +688,8 @@ package body et_module_read is
 							when SEC_CONDUCTOR =>
 								insert_freetrack_arc (module_cursor, log_threshold);
 
-							when SEC_OUTLINE =>
-								board_check_arc (log_threshold + 1);
-								insert_arc_outline;
-
-							when SEC_HOLE =>
-								add_polygon_arc (board_arc);
+							when SEC_OUTLINE | SEC_HOLE =>
+								insert_outline_arc;
 								
 							when others => invalid_section;
 						end case;
@@ -831,11 +711,8 @@ package body et_module_read is
 							when SEC_CONDUCTOR =>
 								insert_freetrack_circle (module_cursor, log_threshold);
 
-							when SEC_OUTLINE =>
-								insert_circle_outline;
-
-							when SEC_HOLE =>
-								add_polygon_circle (board_circle);
+							when SEC_OUTLINE | SEC_HOLE =>
+								insert_outline_circle;
 								
 							when others => invalid_section;
 						end case;
@@ -1295,6 +1172,7 @@ package body et_module_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_VIAS | SEC_FILL_ZONES_CONDUCTOR =>
 						case stack.parent is
 							when SEC_USER_SETTINGS =>
@@ -1306,16 +1184,20 @@ package body et_module_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_OUTLINE =>
 						case stack.parent is
-							when SEC_PCB_CONTOURS_NON_PLATED => null;
+							when SEC_PCB_CONTOURS_NON_PLATED =>
+								set_outline (module_cursor, log_threshold);
+								
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_HOLE =>
 						case stack.parent is
 							when SEC_PCB_CONTOURS_NON_PLATED =>
-								append_hole;
+								add_hole (module_cursor, log_threshold);
 								
 							when others => invalid_section;
 						end case;
@@ -1715,12 +1597,12 @@ package body et_module_read is
 									end;
 								end if;
 
+								
 							when SEC_OUTLINE | SEC_HOLE =>
-								read_board_line (line);
+								read_contour_line (line);
 								
 							when others => invalid_section;
 						end case;
-
 						
 						
 					when SEC_ARC =>  -- CS clean up: separate procdures required
@@ -1783,12 +1665,12 @@ package body et_module_read is
 									end;
 								end if;
 
+								
 							when SEC_OUTLINE | SEC_HOLE =>
-								read_board_arc (line);
+								read_contour_arc (line);
 								
 							when others => invalid_section;
 						end case;
-
 
 						
 					when SEC_CIRCLE => -- CS clean up: separate procdures required
@@ -1862,7 +1744,7 @@ package body et_module_read is
 								end if;
 
 							when SEC_OUTLINE | SEC_HOLE =>
-								read_board_circle (line);
+								read_contour_circle (line);
 								
 							when others => invalid_section;
 						end case;

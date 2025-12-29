@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                    MODULE READ / BOARD CONTOUR                           --
+--                    MODULE READ / BOARD / OUTLINE                         --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -44,112 +44,27 @@
 
 with ada.text_io;					use ada.text_io;
 
+with et_module_names;				use et_module_names;
+-- with et_module_instance;			use et_module_instance;
+with et_board_geometry;				use et_board_geometry;
 with et_keywords;					use et_keywords;
-with et_directions;					use et_directions;
+
+with et_module_read_board_contour;	use et_module_read_board_contour;
+with et_pcb_contour;				use et_pcb_contour;
+					
 with et_general_rw;					use et_general_rw;
 
 
 
-package body et_module_read_board_contour is
+package body et_module_read_board_outline is
 	
-	
-	
-	procedure read_contour_line (
-		line : type_fields_of_line)
-	is
-		kw : constant string := f (line, 1);
-		vm : type_vector_model;
-	begin
-		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_start then -- start x 22.3 y 23.3
-			expect_field_count (line, 5);
+	use pac_generic_modules;
+	use pac_geometry_2;
+	use pac_contours;
+		
+		
 
-			-- extract the start position starting at field 2 of line
-			vm := to_vector_model (line, 2);
-			set_A (contour_line, vm);
-			
-		elsif kw = keyword_end then -- end x 22.3 y 23.3
-			expect_field_count (line, 5);
-
-			-- extract the end position starting at field 2 of line
-			vm := to_vector_model (line, 2);
-			set_B (contour_line, vm);
-			
-		else
-			invalid_keyword (kw);
-		end if;
-	end;
-
-
-
-
-	
-	procedure read_contour_arc (
-		line : type_fields_of_line) 
-	is
-		kw : constant string := f (line, 1);
-	begin
-		if kw = keyword_start then -- start x 22.3 y 23.3
-			expect_field_count (line, 5);
-
-			-- extract the start position starting at field 2 of line
-			set_A (contour_arc, to_vector_model (line, 2));
-
-		elsif kw = keyword_end then -- end x 22.3 y 23.3
-			expect_field_count (line, 5);
-
-			-- extract the end position starting at field 2 of line
-			set_B (contour_arc, to_vector_model (line, 2));
-			
-		elsif kw = keyword_center then -- center x 22.3 y 23.3
-			expect_field_count (line, 5);
-
-			-- extract the center position starting at field 2 of line
-			set_center (contour_arc, to_vector_model (line, 2));
-
-		elsif kw = keyword_direction then -- direction ccw
-			expect_field_count (line, 2);
-
-			set_direction (contour_arc, to_direction (f (line, 2)));
-			
-		else
-			invalid_keyword (kw);
-		end if;
-	end read_contour_arc;
-
-
-
-
-	
-	
-	procedure read_contour_circle (
-		line : type_fields_of_line)
-	is
-		kw : constant string := f (line, 1);
-	begin
-		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_center then -- center x 150 y 45
-			expect_field_count (line, 5);
-
-			-- extract the center position starting at field 2 of line
-			set_center (contour_circle, to_vector_model (line, 2));
-			
-		elsif kw = keyword_radius then -- radius 22
-			expect_field_count (line, 2);
-			
-			set_radius (contour_circle, to_radius (f (line, 2)));
-		else
-			invalid_keyword (kw);
-		end if;
-	end;
-
-	
-	
-	
-	
-	
-
-	procedure insert_contour_line is begin
+	procedure insert_outline_line is begin
 		append_segment (contour, (LINE, contour_line));
 		reset_line (contour_line);
 	end;
@@ -157,7 +72,7 @@ package body et_module_read_board_contour is
 	
 
 
-	procedure insert_contour_arc is begin
+	procedure insert_outline_arc is begin
 		-- CS board_check_arc (log_threshold + 1);
 		
 		append_segment (contour, (ARC, contour_arc));
@@ -167,7 +82,7 @@ package body et_module_read_board_contour is
 
 
 	
-	procedure insert_contour_circle is begin
+	procedure insert_outline_circle is begin
 		-- The global contour variable "mutates" so that the contours
 		-- consist of a single circle:
 		contour := (
@@ -177,6 +92,9 @@ package body et_module_read_board_contour is
 		-- From now on the contour consists of just a single circle.
 		-- Any attempt to append a line or an arc causes a discriminant error.
 		
+		-- NOTE: There should not be another circle for the outline,
+		-- because only a single circle is allowed.
+		
 		-- Assign the circle to the contour:
 		set_circle (contour, contour_circle);
 		reset_circle (contour_circle);
@@ -184,29 +102,79 @@ package body et_module_read_board_contour is
 
 
 	
+	
+	
+	
+	procedure set_outline (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+	
+		procedure do_it (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is begin
+			module.board.board_contour.outline := 
+				(contour with null record);
 
-	procedure check_contour (
-		log_threshold : in type_log_level)
-	is 
-		status : constant type_contour_status := is_closed (contour);
-	begin		
-		log (text => "check outline", level => log_threshold);
-		log_indentation_up;
+		end do_it;
+
+	
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " set outline",
+			level => log_threshold);
+					
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> do_it'access);
+
+		-- CS reset outline
+	end;
+	
 		
-		if status.closed then
-			null;
-		else
-			log (WARNING, "Contour not properly closed at: " 
-				& to_string (status.gaps));
-			-- CS: write implications and dangers !
-		end if;
+		
+		
+		
+		
 
-		log_indentation_down;		
+	procedure add_hole (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is 
+		use pac_holes;
+		
+		
+		procedure do_it (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is begin
+			append (
+				container 	=> module.board.board_contour.holes,
+				new_item	=> (contour with null record));
+				
+			-- CS procedure add_hole
+		end do_it;
+	
+	
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " add hole",
+			level => log_threshold);
+					
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> do_it'access);
+
+		-- CS reset hole
 	end;
 
 	
 	
-end et_module_read_board_contour;
+	
+end et_module_read_board_outline;
 
 	
 -- Soli Deo Gloria
