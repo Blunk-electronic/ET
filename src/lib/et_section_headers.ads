@@ -80,9 +80,13 @@ package et_section_headers is
 	section_net_classes				: constant string := "[NET_CLASSES";
 	
 	section_outline					: constant string := "[OUTLINE";
+	-- CS rename to OUTER_CONTOUR
 	
 	section_pac_3d_contours			: constant string := "[PACKAGE_3D_CONTOURS";
+
 	section_pcb_contours			: constant string := "[PCB_CONTOURS_NON_PLATED";
+	-- CS rename to OUTLINE
+	
 	--section_pcb_contours_plated	: constant string := "[PCB_CONTOURS_PLATED"; 
 	section_pad_contours_smt		: constant string := "[PAD_CONTOURS_SMT";
 	section_pad_contours_tht		: constant string := "[PAD_CONTOURS_THT";	

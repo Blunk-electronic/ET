@@ -770,10 +770,9 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in type_generic_module) 
 				is
-					use et_pcb;
 					use pac_holes;
 
-					contour : type_board_contour renames module.board.board_contour;
+					contour : type_board_outline renames module.board.board_contour;
 					
 					procedure query_hole (c : in pac_holes.cursor) is 
 						h : type_hole renames element (c);

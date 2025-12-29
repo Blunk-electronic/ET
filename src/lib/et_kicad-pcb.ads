@@ -63,6 +63,7 @@ with et_terminals;					use et_terminals;
 with et_package_name;				use et_package_name;
 with et_package_model_name;			use et_package_model_name;
 with et_pcb;
+with et_pcb_contour;				use et_pcb_contour;
 with et_pcb_sides;					use et_pcb_sides;
 with et_conductors_floating_board;	use et_conductors_floating_board;
 with et_board_geometry;				use et_board_geometry;
@@ -729,7 +730,7 @@ package et_kicad.pcb is
 		stencil		: type_stencil_both_sides;
 		stop_mask	: type_stop_mask_both_sides;
 		keepout		: type_keepout_both_sides;		
-		contour		: et_pcb.type_board_contour;
+		contour		: type_board_outline;
 
 		 -- non-electric. used for texts only
 		copper		: type_conductors_floating;

@@ -108,30 +108,7 @@ package et_pcb is
 
 	
 
-	
 
-	
--- CONTOUR / OUTLINE / HOLES / EDGE CUTS
-
-	-- The board contour consists of the outer edges
-	-- and holes:
-	type type_board_contour is record
-		outline	: type_outer_contour;
-		holes	: pac_holes.list;
-	end record;
-
-	-- CS
-	-- The DRC shall:
-	-- - detect gaps in outline
-	-- - detect texts inside board area and output an error
-
-	
-
-	
-
-
-
-		
 
 	-- In this world, if a package is flipped, then it is
 	-- mirrored along the Y-axis.
@@ -212,7 +189,7 @@ package et_pcb is
 		-- (lines, arcs, circles, text, text placeholders, zones):
 		conductors_floating	: type_conductors_floating;
 		
-		board_contour	: type_board_contour; -- outer and inner edges
+		board_contour	: type_board_outline; -- outer and inner edges
 
 		user_settings	: type_user_settings;
 	end record;

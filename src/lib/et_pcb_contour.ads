@@ -79,6 +79,9 @@ package et_pcb_contour is -- CS rename to et_board_contour ?
 
 	-- CS procedure add_hole (holes : in pac_holes.list, hole);
 
+
+
+	
 	
 	-- Iterates the holes.
 	-- Aborts the process when the proceed-flag goes false:
@@ -121,6 +124,23 @@ package et_pcb_contour is -- CS rename to et_board_contour ?
 		holes		: in out pac_polygon_list.list;
 		offset		: in type_distance_positive;
 		log_threshold	: in type_log_level);
+
+
+
+
+	-- The board contour consists of the outer contour
+	-- and holes:
+	type type_board_outline is record
+		outline	: type_outer_contour;
+		holes	: pac_holes.list;
+	end record;
+
+	-- CS
+	-- The DRC shall:
+	-- - detect gaps in outline
+	-- - detect texts inside board area and output an error
+
+	
 
 	
 end et_pcb_contour;
