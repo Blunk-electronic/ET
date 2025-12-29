@@ -50,6 +50,7 @@ with et_board_geometry;				use et_board_geometry;
 with et_keywords;					use et_keywords;
 
 with et_module_read_board_contour;	use et_module_read_board_contour;
+with et_board_holes;				use et_board_holes;
 with et_board_outline;				use et_board_outline;
 					
 with et_general_rw;					use et_general_rw;

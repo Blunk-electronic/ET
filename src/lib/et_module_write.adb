@@ -151,6 +151,7 @@ with et_stencil;
 with et_silkscreen;
 with et_assy_doc;
 with et_keepout;
+with et_board_holes;
 with et_board_outline;
 with et_pcb_placeholders;
 with et_pcb_placeholders.conductor;		
@@ -1963,6 +1964,7 @@ package body et_module_write is
 
 
 			procedure write_board_contours is 
+				use et_board_holes;
 				use et_board_outline;
 				use pac_holes;
 				

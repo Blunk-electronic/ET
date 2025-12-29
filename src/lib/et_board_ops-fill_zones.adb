@@ -42,6 +42,7 @@ with ada.tags;
 with et_mirroring;
 with et_schematic_ops.units;
 with et_schematic_ops.nets;
+with et_board_holes;
 with et_board_outline;
 with et_board_ops.board_contour;
 with et_board_ops.devices;
@@ -764,7 +765,7 @@ package body et_board_ops.fill_zones is
 			-- 2. Expands the polygons, tests whether the given zone is affected
 			--    and appends them to the result:
 			procedure query_device (d : in pac_devices_non_electrical.cursor) is
-				use et_board_outline;
+				use et_board_holes;
 				p : pac_polygon_list.list;
 
 				use pac_polygon_offsetting;
@@ -880,7 +881,7 @@ package body et_board_ops.fill_zones is
 			-- 2. Expands the polygons, tests whether the given zone is affected
 			--    and appends them to the result:
 			procedure query_device (d : in pac_devices_electrical.cursor) is
-				use et_board_outline;
+				use et_board_holes;
 				p : pac_polygon_list.list;
 				use pac_polygon_offsetting;
 			begin
@@ -1254,7 +1255,7 @@ package body et_board_ops.fill_zones is
 		-- and appends them to the result:
 		procedure process_holes is 
 			use et_board_ops.board_contour;
-			use et_board_outline;
+			use et_board_holes;
 			
 			holes : pac_holes.list;
 			polygons_tmp : pac_polygon_list.list;

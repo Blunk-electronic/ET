@@ -54,6 +54,7 @@ with et_route;						use et_route;
 
 with et_device_appearance;			use et_device_appearance;
 with et_device_prefix;
+with et_board_holes;				use et_board_holes;
 with et_board_outline;				use et_board_outline;
 with et_axes;						use et_axes;
 with et_generic_stacks;

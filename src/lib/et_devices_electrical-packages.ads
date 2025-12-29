@@ -61,7 +61,7 @@ with et_assy_doc.packages;
 with et_route_restrict.packages;
 with et_via_restrict.packages;
 
-with et_board_outline;					use et_board_outline;
+with et_board_holes;					use et_board_holes;
 
 with et_board_text;
 with et_keepout;						use et_keepout;

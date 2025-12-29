@@ -65,7 +65,10 @@ with et_pcb_stack;
 with et_conductor_segment;
 with et_conductor_segment.boards;
 with et_conductor_text.packages;
+
+with et_board_holes;
 with et_board_outline;
+
 with et_mirroring;					use et_mirroring;
 with et_text;
 
@@ -765,7 +768,9 @@ is
 
 			-- Inner contour:
 			procedure process_holes is
+				use et_board_holes;
 
+				
 				procedure query_holes (
 					module_name	: in pac_module_name.bounded_string;
 					module		: in type_generic_module) 
@@ -1478,7 +1483,7 @@ is
 
 
 				procedure process_holes is
-					use et_board_outline;
+					use et_board_holes;
 					use pac_holes;
 
 					procedure query_hole (

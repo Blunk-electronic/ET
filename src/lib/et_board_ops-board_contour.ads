@@ -39,6 +39,7 @@
 --   1. rename this package to et_board_ops.outline
 
 
+with et_board_holes;				use et_board_holes;
 with et_board_outline;				use et_board_outline;
 
 

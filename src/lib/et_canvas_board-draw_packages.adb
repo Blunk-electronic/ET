@@ -66,7 +66,9 @@ with et_devices_electrical;				use et_devices_electrical;
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
 with et_devices_non_electrical;			use et_devices_non_electrical;
 
+with et_board_holes;
 with et_board_outline;
+
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 
 with et_board_text;
@@ -713,7 +715,7 @@ procedure draw_packages is
 
 
 		procedure draw_holes is 
-			use et_board_outline;
+			use et_board_holes;
 			use pac_holes;
 
 			

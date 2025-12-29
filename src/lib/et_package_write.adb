@@ -58,7 +58,7 @@ with et_system_info;
 with et_package_description;			use et_package_description;
 with et_keywords;						use et_keywords;
 with et_section_headers;				use et_section_headers;
-with et_board_outline;
+with et_board_holes;
 with et_conductor_segment;
 with et_package_sections;				use et_package_sections;
 
@@ -431,7 +431,7 @@ package body et_package_write is
 
 		
 		procedure write_holes is
-			use et_board_outline;
+			use et_board_holes;
 			use pac_holes;
 			use pac_segments;
 

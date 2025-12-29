@@ -67,7 +67,7 @@ with et_device_purpose;					use et_device_purpose;
 with et_device_partcode;				use et_device_partcode;
 with et_device_property_level;			use et_device_property_level;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
-with et_board_outline;					use et_board_outline;
+with et_board_holes;					use et_board_holes;
 with et_commit;
 with et_object_status;					use et_object_status;
 with et_mirroring;						use et_mirroring;

@@ -39,6 +39,7 @@
 with ada.text_io;					use ada.text_io;
 
 with et_primitive_objects;			use et_primitive_objects;
+with et_board_holes;				use et_board_holes;
 with et_board_outline;				use et_board_outline;
 with et_colors.board;				use et_colors.board;
 
