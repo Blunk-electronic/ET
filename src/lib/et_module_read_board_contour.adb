@@ -115,6 +115,29 @@ package body et_module_read_board_contour is
 		set_circle (contour, contour_circle);
 		reset_circle (contour_circle);
 	end;
+
+
+	
+
+	procedure check_contour (
+		log_threshold : in type_log_level)
+	is 
+		status : constant type_contour_status := is_closed (contour);
+	begin		
+		log (text => "check outline", level => log_threshold);
+		log_indentation_up;
+		
+		if status.closed then
+			null;
+		else
+			log (WARNING, "Contour not properly closed at: " 
+				& to_string (status.gaps));
+			-- CS: write implications and dangers !
+		end if;
+
+		log_indentation_down;		
+	end;
+
 	
 	
 end et_module_read_board_contour;

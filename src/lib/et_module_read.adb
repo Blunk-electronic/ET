@@ -620,8 +620,8 @@ package body et_module_read is
 					
 					when SEC_CONTOURS =>
 						case stack.parent is
-							when SEC_ZONE => check_outline (et_board_read.contour, log_threshold + 1);
-							when SEC_CUTOUT_ZONE => check_outline (et_board_read.contour, log_threshold + 1);
+							when SEC_ZONE | SEC_CUTOUT_ZONE =>
+								check_contour (log_threshold);
 							
 							when others => invalid_section;
 						end case;

@@ -80,6 +80,10 @@ package et_module_read_board_contour is
 
 	procedure insert_contour_circle;
 
+
+	procedure check_contour (
+		log_threshold : in type_log_level);
+		
 	
 end et_module_read_board_contour;
 
