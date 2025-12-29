@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                   BOARD OPERATIONS / BOARD CONTOURS                      --
+--                   BOARD OPERATIONS / BOARD OUTLINE                       --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -36,14 +36,14 @@
 --   history of changes:
 --
 --   ToDo: 
---   1. rename this package to et_board_ops.outline
+--   
 
 
 with et_board_holes;				use et_board_holes;
 with et_board_outline;				use et_board_outline;
 
 
-package et_board_ops.board_contour is
+package et_board_ops.outline is
 
 	use et_board_text;
 	use pac_contours;
@@ -437,7 +437,7 @@ package et_board_ops.board_contour is
 	
 	
 	
-end et_board_ops.board_contour;
+end et_board_ops.outline;
 
 -- Soli Deo Gloria
 

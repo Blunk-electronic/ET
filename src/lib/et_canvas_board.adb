@@ -70,7 +70,7 @@ with et_board_ops.keepout;
 with et_board_ops.ratsnest;
 with et_board_ops.conductors;
 with et_board_ops.vias;
-with et_board_ops.board_contour;
+with et_board_ops.outline;
 with et_board_ops.groups;
 with et_pcb;
 

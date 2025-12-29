@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                   BOARD OPERATIONS / BOARD CONTOURS                      --
+--                   BOARD OPERATIONS / BOARD OUTLINE                       --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -37,7 +37,7 @@
 --
 
 
-package body et_board_ops.board_contour is
+package body et_board_ops.outline is
 
 
 	
@@ -1834,7 +1834,7 @@ package body et_board_ops.board_contour is
 	
 
 	
-end et_board_ops.board_contour;
+end et_board_ops.outline;
 	
 -- Soli Deo Gloria
 

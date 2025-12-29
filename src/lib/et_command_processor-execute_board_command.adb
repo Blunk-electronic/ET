@@ -92,7 +92,7 @@ with et_board_ops.stencil;
 with et_board_ops.keepout;
 with et_board_ops.route_restrict;
 with et_board_ops.via_restrict;
-with et_board_ops.board_contour;
+with et_board_ops.outline;
 with et_board_ops.ratsnest;
 with et_board_ops.text;
 with et_board_ops.grid;
@@ -598,7 +598,7 @@ is
 
 	
 	procedure draw_board_outline is
-		use et_board_ops.board_contour;
+		use et_board_ops.outline;
 		use et_board_outline;
 		
 		-- Extract from the given command the 
@@ -620,7 +620,7 @@ is
 	
 	
 	procedure draw_hole is
-		use et_board_ops.board_contour;
+		use et_board_ops.outline;
 		
 		-- Extract from the given command the 
 		-- arguments (everything after "hole"):
@@ -687,7 +687,7 @@ is
 	
 	
 	procedure delete_outline_segment is 
-		use et_board_ops.board_contour;
+		use et_board_ops.outline;
 		catch_zone : type_catch_zone;
 	begin
 		case cmd_field_count is
@@ -714,7 +714,7 @@ is
 	
 	
 	procedure delete_hole_segment is 
-		use et_board_ops.board_contour;
+		use et_board_ops.outline;
 		catch_zone : type_catch_zone;
 	begin
 		case cmd_field_count is

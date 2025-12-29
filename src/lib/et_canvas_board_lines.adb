@@ -68,7 +68,7 @@ with gtk.container;						use gtk.container;
 with et_generic_module;					use et_generic_module;
 
 with et_board_ops;						use et_board_ops;
-with et_board_ops.board_contour;
+with et_board_ops.outline;
 with et_board_ops.assy_doc;
 with et_board_ops.keepout;
 with et_board_ops.silkscreen;
@@ -590,7 +590,7 @@ package body et_canvas_board_lines is
 		-- This procedure adds the given line
 		-- to the outer board contour:
 		procedure add_to_outer_contour is
-			use et_board_ops.board_contour;
+			use et_board_ops.outline;
 		begin
 			-- Add the line to the temporary contour:
 			append_segment (c, to_segment (line));
@@ -608,7 +608,7 @@ package body et_canvas_board_lines is
 		-- This procedure adds the given line
 		-- to the holes of the board:
 		procedure add_to_holes is
-			use et_board_ops.board_contour;
+			use et_board_ops.outline;
 		begin
 			-- Add the line to the temporary contour:
 			append_segment (c, to_segment (line));

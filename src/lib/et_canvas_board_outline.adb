@@ -61,7 +61,7 @@ with gtk.container;						use gtk.container;
 with et_generic_module;					use et_generic_module;
 
 with et_board_ops;						use et_board_ops;
-with et_board_ops.board_contour;		use et_board_ops.board_contour;
+with et_board_ops.outline;				use et_board_ops.outline;
 with et_modes.board;
 
 with et_display;						use et_display;
