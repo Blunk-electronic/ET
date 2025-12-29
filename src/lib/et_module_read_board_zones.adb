@@ -159,9 +159,11 @@ package body et_module_read_board_zones is
 	procedure read_keepout_cutout (
 		line : in type_fields_of_line)
 	is
+		kw : string := f (line, 1);
 	begin
 		-- CS
-		null;
+		-- no parameters for this kind of zone allowed here
+		invalid_keyword (kw);
 	end read_keepout_cutout;
 	
 

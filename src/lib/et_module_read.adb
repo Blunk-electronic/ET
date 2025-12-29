@@ -1879,12 +1879,7 @@ package body et_module_read is
 										read_cutout_non_conductor (line);
 
 									when SEC_KEEPOUT =>
-										-- no parameters allowed here
-										declare
-											kw : string := f (line, 1);
-										begin
-											invalid_keyword (kw);
-										end;
+										read_keepout_cutout (line);
 										
 									when others => invalid_section;
 								end case;
