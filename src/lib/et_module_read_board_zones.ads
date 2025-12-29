@@ -62,7 +62,12 @@ with et_logging;					use et_logging;
 package et_module_read_board_zones is
 
 	
+	
 	procedure read_fill_zone_keepout (
+		line : in type_fields_of_line);
+	
+
+	procedure read_keepout_cutout (
 		line : in type_fields_of_line);
 	
 	

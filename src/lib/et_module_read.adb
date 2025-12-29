@@ -118,6 +118,7 @@ with et_module_read_assy_doc;				use et_module_read_assy_doc;
 with et_module_read_silkscreen;				use et_module_read_silkscreen;
 with et_module_read_stopmask;				use et_module_read_stopmask;
 with et_module_read_stencil;				use et_module_read_stencil;
+with et_module_read_board_contour;			use et_module_read_board_contour;
 
 
 package body et_module_read is
@@ -388,7 +389,7 @@ package body et_module_read is
 					is begin
 						append (
 							container 	=> module.board.board_contour.holes,
-							new_item	=> (contour with null record));
+							new_item	=> (et_board_read.contour with null record));
 					end do_it;
 
 				begin
@@ -619,8 +620,8 @@ package body et_module_read is
 					
 					when SEC_CONTOURS =>
 						case stack.parent is
-							when SEC_ZONE => check_outline (contour, log_threshold + 1);
-							when SEC_CUTOUT_ZONE => check_outline (contour, log_threshold + 1);
+							when SEC_ZONE => check_outline (et_board_read.contour, log_threshold + 1);
+							when SEC_CUTOUT_ZONE => check_outline (et_board_read.contour, log_threshold + 1);
 							
 							when others => invalid_section;
 						end case;
@@ -757,7 +758,7 @@ package body et_module_read is
 						
 					when SEC_LINE => -- CS clean up. separate procedures required
 						case stack.parent is
-							when SEC_CONTOURS => add_polygon_line (board_line);
+							when SEC_CONTOURS => insert_contour_line;
 								
 							when SEC_ROUTE =>
 								insert_track_line (module_cursor, log_threshold);
@@ -786,9 +787,7 @@ package body et_module_read is
 						
 					when SEC_ARC => -- CS clean up. separate procedures required
 						case stack.parent is
-							when SEC_CONTOURS => 
-								board_check_arc (log_threshold + 1);
-								add_polygon_arc (board_arc);
+							when SEC_CONTOURS => insert_contour_arc;
 
 							when SEC_ROUTE =>
 								insert_track_arc (module_cursor, log_threshold);
@@ -818,7 +817,7 @@ package body et_module_read is
 						
 					when SEC_CIRCLE => -- CS clean up. separate procedures required
 						case stack.parent is
-							when SEC_CONTOURS => add_polygon_circle (board_circle);
+							when SEC_CONTOURS => insert_contour_circle;
 							
 							when SEC_TOP =>
 								build_non_conductor_circle (et_pcb_sides.TOP);
@@ -1532,17 +1531,20 @@ package body et_module_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_SUBMODULES =>
 						case stack.parent is
 							when SEC_INIT => null; -- nothing to do								
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_DRAWING_FRAMES =>
 						case stack.parent is
 							when SEC_INIT => null; -- nothing to do								
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_META =>
 						case stack.parent is
@@ -1578,31 +1580,36 @@ package body et_module_read is
 							when SEC_INIT => read_rules (line);
 							when others => invalid_section;
 						end case;
-						
+			
+			
 					when SEC_NET_CLASS =>
 						case stack.parent is
 							when SEC_NET_CLASSES => read_net_class (line, log_threshold);
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_STRAND =>
 						case stack.parent is
 							when SEC_STRANDS => read_strand (line, log_threshold);
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_STRANDS =>
 						case stack.parent is
 							when SEC_NET => null; -- nothing to do
 							when others => invalid_section;
 						end case;
-					
+
+						
 					when SEC_ROUTE =>
 						case stack.parent is
 							when SEC_NET => null; -- nothing to do
 							when others => invalid_section;
 						end case;
-					
+
+						
 					when SEC_NET =>
 						case stack.parent is
 							when SEC_NETS => read_net (line, log_threshold);
@@ -1650,7 +1657,8 @@ package body et_module_read is
 						
 					when SEC_LINE => -- CS clean up: separate procdures required
 						case stack.parent is
-							when SEC_CONTOURS => read_board_line (line); -- of a cutout or fill zone
+							when SEC_CONTOURS => 
+								read_contour_line (line);
 								
 							when SEC_ROUTE =>
 								read_track_line (line);

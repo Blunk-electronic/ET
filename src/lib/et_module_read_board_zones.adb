@@ -64,6 +64,8 @@ with et_stopmask;
 with et_keepout;
 with et_stencil;
 
+with et_module_read_board_contour;	use et_module_read_board_contour;
+
 with et_general_rw;					use et_general_rw;
 
 
@@ -105,7 +107,7 @@ package body et_module_read_board_zones is
 	signal_layers : pac_signal_layers.set;
 	-- CS rename to zone_signal_layers
 	
-	contour : type_contour;
+
 	
 
 
@@ -126,10 +128,14 @@ package body et_module_read_board_zones is
 		clear (signal_layers);
 		
 		contour := (others => <>);
+		-- CS use procedure reset_contour
 	end;
 
 
 	
+
+	
+
 	
 	
 	procedure read_fill_zone_keepout (
@@ -149,6 +155,17 @@ package body et_module_read_board_zones is
 
 
 	
+
+	procedure read_keepout_cutout (
+		line : in type_fields_of_line)
+	is
+	begin
+		-- CS
+		null;
+	end read_keepout_cutout;
+	
+
+
 	
 	
 

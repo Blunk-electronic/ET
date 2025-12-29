@@ -57,6 +57,8 @@ with et_design_rules_board;			use et_design_rules_board;
 with et_board_geometry;				use et_board_geometry;
 with et_primitive_objects;			use et_primitive_objects;
 
+with et_module_read_board_contour;	use et_module_read_board_contour;
+
 with et_general_rw;					use et_general_rw;
 
 with et_module_read_nets;
@@ -101,7 +103,7 @@ package body et_module_read_board_zones_route is
 
 	pad_connection : type_pad_connection := type_pad_connection'first;	
 
-	contour : type_contour;
+	
 
 	
 	
@@ -120,14 +122,16 @@ package body et_module_read_board_zones_route is
 
 		signal_layer			:= type_signal_layer'first;  -- board relevant only
 		clear (signal_layers);
-		
+
 		contour := (others => <>);
+		-- CS use procedure reset_contour
 	end;
 
 
 	
 
 
+	
 	
 	procedure read_cutout_route (
 		line : in type_fields_of_line)
