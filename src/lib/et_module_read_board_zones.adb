@@ -774,6 +774,7 @@ package body et_module_read_board_zones is
 					new_item	=> (contour with null record));
 			end;
 
+			
 			procedure append_keepout_cutout_bottom is begin
 				pac_keepout_cutouts.append (
 					container	=> module.board.keepout.bottom.cutouts, 
@@ -782,6 +783,8 @@ package body et_module_read_board_zones is
 
 			
 		begin -- do_it
+			-- log (text => to_string (contour), level => log_threshold + 1);
+		
 			case face is
 				when TOP =>
 					case layer_cat is
@@ -807,11 +810,11 @@ package body et_module_read_board_zones is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " insert_cutout",
+			 & " insert_cutout "
+			 & " CAT: " & to_string (layer_cat)
+			 & " face: " & to_string (face),
 			 level => log_threshold);
 
-		-- CS log arguments
-		
 		log_indentation_up;
 		
 		update_element (

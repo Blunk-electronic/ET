@@ -83,11 +83,11 @@ is
 		-- CS use rename
 		use pac_draw_contours;
 	begin
-		set_color_background;
+		-- CS ? set_color_background; -- if zone (see above) is filled
 		
 		draw_contour (
 			contour	=> element (c),
-			filled	=> YES,
+			filled	=> NO, -- CS YES ?
 			width	=> zero);
 	end query_cutout;
 
