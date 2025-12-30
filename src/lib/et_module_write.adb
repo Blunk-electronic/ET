@@ -150,18 +150,17 @@ with et_stencil;
 with et_silkscreen;
 with et_assy_doc;
 with et_keepout;
-with et_board_holes;
-with et_board_outline;
 with et_pcb_placeholders;
 with et_pcb_placeholders.conductor;		
 with et_pcb_placeholders.non_conductor;
 
-with et_mirroring;					use et_mirroring;
+with et_mirroring;						use et_mirroring;
 with et_unit_name;
 with et_units;
-with et_alignment;					use et_alignment;
+with et_alignment;						use et_alignment;
 
-with et_module_write_meta;			use et_module_write_meta;
+with et_module_write_meta;				use et_module_write_meta;
+with et_module_write_board_outline;		use et_module_write_board_outline;
 
 
 
@@ -1870,34 +1869,6 @@ package body et_module_write is
 
 
 
-			procedure write_board_contours is 
-				use et_board_holes;
-				use et_board_outline;
-				use pac_holes;
-				
-				procedure write_hole (c : in pac_holes.cursor) is begin
-					section_mark (section_hole, HEADER);		
-					write_polygon_segments (element (c));		
-					section_mark (section_hole, FOOTER);		
-				end write_hole;
-				
-			begin
-				section_mark (section_pcb_contours, HEADER);
-
-				-- board outline (outer contours)
-				section_mark (section_outline, HEADER);
-				write_polygon_segments (element (module_cursor).board.board_contour.outline);
-				section_mark (section_outline, FOOTER);
-
-				-- holes (inner contours)
-				iterate (element (module_cursor).board.board_contour.holes, write_hole'access);
-				
-				section_mark (section_pcb_contours, FOOTER);
-			end write_board_contours;
-
-
-
-
 			procedure write_silkscreen is
 				use et_silkscreen;
 				use pac_silk_texts;
@@ -2140,8 +2111,8 @@ package body et_module_write is
 			write_via_restrict;
 			Write_conductors; -- NON-ELECTRIC !
 
-			-- BOARD CONTOUR
-			write_board_contours;
+			-- outer board contour and holes:
+			write_board_outline (module_cursor, log_threshold + 1);
 			
 			---BOARD END-----
 			section_mark (section_board, FOOTER);
