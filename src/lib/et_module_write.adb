@@ -151,7 +151,6 @@ with et_silkscreen;
 with et_assy_doc;
 with et_keepout;
 with et_pcb_placeholders;
-with et_pcb_placeholders.conductor;		
 with et_pcb_placeholders.non_conductor;
 
 with et_mirroring;						use et_mirroring;
@@ -1518,7 +1517,6 @@ package body et_module_write is
 		procedure query_board is
 			use et_devices_non_electrical;
 			
-			--use et_terminals;
 			use et_board_text;
 			use pac_text_board;
 			use et_board_geometry.pac_contours;
@@ -1530,7 +1528,6 @@ package body et_module_write is
 			use pac_texts_fab_with_content;
 
 			use et_pcb_placeholders;
-			use et_pcb_placeholders.conductor;
 			use et_pcb_placeholders.non_conductor;		
 
 			use et_silkscreen;
@@ -1568,9 +1565,6 @@ package body et_module_write is
 			
 			use et_via_restrict.boards;
 			use pac_via_restrict_contours;
-
-			use et_conductor_text;
-			use pac_conductor_texts_board;
 
 			use et_fill_zones.boards;
 			use et_conductor_segment.boards;
