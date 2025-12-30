@@ -1358,6 +1358,8 @@ package body et_board_ops.fill_zones is
 		reliefes			: out pac_reliefes.list;
 		log_threshold		: in type_log_level)
 	is
+		use pac_nets;
+		
 		debug : boolean := false;
 
 		-- The given zone will be converted to a polygon:
@@ -1408,8 +1410,7 @@ package body et_board_ops.fill_zones is
 			use pac_polygon_clipping;
 			use pac_polygon_cropping;
 			use pac_polygon_list;
-			use pac_nets;
-
+			
 			-- The zone may disintegrate into smaller fragments
 			-- after it has been clipped with the outer board contour.
 			-- The fragments are stored in this list:
@@ -1553,13 +1554,20 @@ package body et_board_ops.fill_zones is
 			& " layer: " & to_string (layer)
 			& " clearance: " & to_string (clearance),
 			level => log_threshold);
-			
-		log (text => "clearance to edge: " & to_string (clearance_to_edge)
-			& " parent net: " & get_net_name (parent_net)
-			& " terminal connection: " & to_string (terminal_connection)
-			& " relief properties: dummy", -- CS 
-			level => log_threshold);
 
+		
+		if has_element (parent_net) then
+			log (text => "clearance to edge: " & to_string (clearance_to_edge)
+				& " parent net: " & get_net_name (parent_net)
+				& " terminal connection: " & to_string (terminal_connection)
+				& " relief properties: dummy", -- CS 
+				level => log_threshold);
+		else
+			log (text => "clearance to edge: " & to_string (clearance_to_edge),
+				level => log_threshold);
+		end if;
+
+		
 		log_indentation_up;
 	
 		preprocess_outer_board_contour;
