@@ -2,9 +2,9 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         MODULE READ / TEXT IN BOARD                      --
+--                      MODULE WRITE / TEXT IN BOARD                        --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -38,77 +38,108 @@
 --
 -- ToDo:
 -- - clean up
--- - synchronize names of subprograms with those in et_module_write_text_board
 --
 --
+--
 
-with et_generic_module;			use et_generic_module;
-with et_board_layer_category;	use et_board_layer_category;
-with et_pcb_sides;				use et_pcb_sides;
+with ada.text_io;					use ada.text_io;
+with ada.characters;				use ada.characters;
+with ada.strings;					use ada.strings;
 
-with et_string_processing;		use et_string_processing;
-with et_logging;				use et_logging;
+with et_module_names;				use et_module_names;
+with et_module_instance;			use et_module_instance;
+with et_keywords;					use et_keywords;
+
+with et_board_geometry;				use et_board_geometry;
+with et_board_coordinates;			use et_board_coordinates;
+
+with et_text_content;				use et_text_content;
+
+with et_conductor_text;
+with et_conductor_text.boards;
+
+with et_board_text;					use et_board_text;
+with et_alignment;					use et_alignment;
+
+with et_pcb_placeholders;				use et_pcb_placeholders;
+with et_pcb_placeholders.conductor;		use et_pcb_placeholders.conductor;
+with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
+
+with et_pcb;
+with et_pcb_signal_layers;			use et_pcb_signal_layers;
+with et_mirroring;
+
+with et_stopmask;
+with et_silkscreen;
+with et_assy_doc;
+
+with et_board_ops;
+
+with et_general_rw;					use et_general_rw;
+with et_board_write;				use et_board_write;
 
 
+package body et_module_write_text_board is
 
-package et_module_read_text_board is
+	use pac_generic_modules;
+	use pac_geometry_2;	
+	-- use pac_text_board_vectorized;
+
 
 	
-	-- This procdure reads a property of a general 
-	-- placeholder in the board drawing (like project name, material code, ...):
-	procedure read_board_text_placeholder (
-		line : in type_fields_of_line);
-
-
-	procedure read_board_text_non_conductor (
-		line : in type_fields_of_line);
-
-	
-	
-	
-	procedure read_board_text_conductor (
-		line : in type_fields_of_line);
-		
-		
-	procedure read_board_text_conductor_placeholder (
-		line : in type_fields_of_line);
-	
-	
-	procedure read_board_text_contours (
-		line : in type_fields_of_line);
-
-	
-	
-	procedure insert_placeholder (
+	procedure write_texts_conductor (
 		module_cursor	: in pac_generic_modules.cursor;
-		layer_cat		: in type_layer_category;
-		face			: in type_face;  -- TOP, BOTTOM
-		log_threshold	: in type_log_level);
+		log_threshold	: in type_log_level)
+	is
+		use et_conductor_text.boards;
+		use pac_conductor_texts_board;
 		
-		
-	procedure insert_board_text_placeholder (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level);
 
-	
-	
-	procedure build_non_conductor_text (
-		module_cursor	: in pac_generic_modules.cursor;
-		layer_cat		: in type_layer_category;
-		face 			: in et_pcb_sides.type_face;  -- TOP, BOTTOM
-		log_threshold	: in type_log_level);
-		
-	
-	
-	procedure build_conductor_text (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level);
-		
-	
-end et_module_read_text_board;
+		procedure write_text (c : in pac_conductor_texts_board.cursor) is 
+			text : et_conductor_text.boards.type_conductor_text_board 
+				renames element (c);
+		begin
+			text_begin;
 
-	
+			write (keyword => keyword_content, wrap => true,
+				parameters => to_string (text.content));
 
+			write_text_properties (text);
+
+			write (keyword => keyword_layer, 
+				parameters => to_string (text.layer));
+
+			text_end;
+		end write_text;
+
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is 
+			texts : pac_conductor_texts_board.list 
+				renames module.board.conductors_floating.texts;
+		begin
+			iterate (texts, write_text'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " write texts in conductor layers",
+			 level => log_threshold);
+
+		log_indentation_up;
+		query_element (module_cursor, query_module'access);
+		log_indentation_down;
+	end write_texts_conductor;
+
+
+		
+				
+				
+end et_module_write_text_board;
 
 	
 -- Soli Deo Gloria

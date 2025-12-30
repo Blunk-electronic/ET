@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         MODULE READ / TEXT IN BOARD                      --
+--                      MODULE WRITE / TEXT IN BOARD                        --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -38,7 +38,7 @@
 --
 -- ToDo:
 -- - clean up
--- - synchronize names of subprograms with those in et_module_write_text_board
+--
 --
 --
 
@@ -51,61 +51,16 @@ with et_logging;				use et_logging;
 
 
 
-package et_module_read_text_board is
+package et_module_write_text_board is
 
 	
-	-- This procdure reads a property of a general 
-	-- placeholder in the board drawing (like project name, material code, ...):
-	procedure read_board_text_placeholder (
-		line : in type_fields_of_line);
-
-
-	procedure read_board_text_non_conductor (
-		line : in type_fields_of_line);
-
-	
-	
-	
-	procedure read_board_text_conductor (
-		line : in type_fields_of_line);
-		
-		
-	procedure read_board_text_conductor_placeholder (
-		line : in type_fields_of_line);
-	
-	
-	procedure read_board_text_contours (
-		line : in type_fields_of_line);
-
-	
-	
-	procedure insert_placeholder (
-		module_cursor	: in pac_generic_modules.cursor;
-		layer_cat		: in type_layer_category;
-		face			: in type_face;  -- TOP, BOTTOM
-		log_threshold	: in type_log_level);
-		
-		
-	procedure insert_board_text_placeholder (
+	procedure write_texts_conductor (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 	
 	
-	procedure build_non_conductor_text (
-		module_cursor	: in pac_generic_modules.cursor;
-		layer_cat		: in type_layer_category;
-		face 			: in et_pcb_sides.type_face;  -- TOP, BOTTOM
-		log_threshold	: in type_log_level);
-		
-	
-	
-	procedure build_conductor_text (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level);
-		
-	
-end et_module_read_text_board;
+end et_module_write_text_board;
 
 	
 
