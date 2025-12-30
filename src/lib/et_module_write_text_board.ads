@@ -59,6 +59,10 @@ package et_module_write_text_board is
 		log_threshold	: in type_log_level);
 
 	
+	procedure write_placeholders_conductor (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
 	
 end et_module_write_text_board;
 

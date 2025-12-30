@@ -137,7 +137,53 @@ package body et_module_write_text_board is
 
 
 		
-				
+
+
+
+	
+
+
+	procedure write_placeholders_conductor (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+		use pac_placeholders_conductor;
+		
+
+		procedure write_placeholder (
+			cursor : in pac_placeholders_conductor.cursor) is 
+		begin
+			placeholder_begin;
+			write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
+			write_text_properties (element (cursor));
+			write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
+			placeholder_end;
+		end write_placeholder;
+
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is 
+			texts : pac_placeholders_conductor.list 
+				renames module.board.conductors_floating.placeholders;
+		begin
+			iterate (texts, write_placeholder'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " write placeholders in conductor layers",
+			 level => log_threshold);
+
+		log_indentation_up;
+		query_element (module_cursor, query_module'access);
+		log_indentation_down;
+	end write_placeholders_conductor;
+
+	
 				
 end et_module_write_text_board;
 

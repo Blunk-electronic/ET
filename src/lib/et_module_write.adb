@@ -1577,7 +1577,6 @@ package body et_module_write is
 
 		
 			
-			-- general stuff
 			procedure write_placeholder (cursor : in pac_placeholders_non_conductor.cursor) is
 				use et_pcb_placeholders.non_conductor;
 				use pac_placeholders_non_conductor;
@@ -1597,17 +1596,6 @@ package body et_module_write is
 
 
 			
-			-- text placeholders in any signal layers
-			procedure write_placeholder (cursor : in pac_placeholders_conductor.cursor) is 
-				use pac_placeholders_conductor;
-			begin
-				placeholder_begin;
-				write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
-				write_text_properties (element (cursor));
-				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
-				placeholder_end;
-			end write_placeholder;
-
 
 			use pac_keepout_cutouts;
 			use pac_route_restrict_cutouts;
@@ -1971,19 +1959,17 @@ package body et_module_write is
 
 
 
-			procedure Write_conductors is 
-				use pac_placeholders_conductor;
-			begin
+			procedure write_conductors_floating is begin
 				section_mark (section_conductor, HEADER);
 
 				write_freetracks (module_cursor, log_threshold + 2);
 				write_zones_conductor (module_cursor, log_threshold + 2);
 				write_zones_conductor_cutout (module_cursor, log_threshold + 2);
 				write_texts_conductor (module_cursor, log_threshold + 2);
+				write_placeholders_conductor (module_cursor, log_threshold + 2);
 
-				iterate (element (module_cursor).board.conductors_floating.placeholders, write_placeholder'access);
 				section_mark (section_conductor, FOOTER);
-			end Write_conductors;
+			end;
 
 			
 		begin -- query_board
@@ -2004,7 +1990,8 @@ package body et_module_write is
 			write_keepout;
 			write_route_restrict;
 			write_via_restrict;
-			Write_conductors; -- NON-ELECTRIC !
+
+			write_conductors_floating; -- NON-ELECTRIC !
 
 			-- outer board contour and holes:
 			write_board_outline (module_cursor, log_threshold + 1);
