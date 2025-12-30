@@ -51,7 +51,6 @@ with ada.exceptions;
 with gnat.directory_operations;
 with et_directory_and_file_ops;
 
-with et_meta;						use et_meta;
 with et_text_content;				use et_text_content;
 with et_general_rw;					use et_general_rw;
 with et_system_info;
@@ -162,6 +161,9 @@ with et_unit_name;
 with et_units;
 with et_alignment;					use et_alignment;
 
+with et_module_write_meta;			use et_module_write_meta;
+
+
 
 package body et_module_write is
 
@@ -252,103 +254,8 @@ package body et_module_write is
 
 
 		
-		function rotation (pos : in et_board_geometry.pac_geometry_2.type_position'class)  -- CS make generic ?
-			return string
-		is
-			use et_board_geometry.pac_geometry_2;
-		begin
-			return to_string (get_rotation (pos));
-		end rotation;
-
 		
-		
-		function face (
-			point : et_board_coordinates.type_package_position) 
-			return string 
-		is
-			use et_pcb_sides;
-			use et_board_coordinates;
-		begin
-			return to_string (get_face (point));
-		end face;
 
-		
-		
-		procedure query_meta is
-			use et_meta;
-			meta : et_meta.type_meta := element (module_cursor).meta;
-
-			
-			procedure write_basic (basic : in type_basic'class) is begin
-				write (keyword => keyword_company, parameters => to_string (basic.company), wrap => true);
-				write (keyword => keyword_customer, parameters => to_string (basic.customer), wrap => true);
-				write (keyword => keyword_partcode, parameters => to_string (basic.partcode));
-				write (keyword => keyword_drawing_number, parameters => to_string (basic.drawing_number));
-				write (keyword => keyword_revision, parameters => to_string (basic.revision));
-				
-				write (keyword => keyword_drawn_by, parameters => to_string (basic.drawn_by), wrap => true);
-				write (keyword => keyword_drawn_date, parameters => to_string_YMD (basic.drawn_date));
-				
-				write (keyword => keyword_checked_by, parameters => to_string (basic.checked_by), wrap => true);
-				write (keyword => keyword_checked_date, parameters => to_string_YMD (basic.checked_date));
-
-				write (keyword => keyword_approved_by, parameters => to_string (basic.approved_by), wrap => true);
-				write (keyword => keyword_approved_date, parameters => to_string_YMD (basic.approved_date));
-			end write_basic;
-
-			
-			procedure write_schematic (sch : in type_schematic) is 
-				use pac_preferred_libraries_schematic;
-				
-				procedure query_lib (c : in pac_preferred_libraries_schematic.cursor) is begin
-					write (keyword => keyword_path, parameters => to_string (element (c)));
-				end query_lib;
-		
-			begin -- write_schematic
-				section_mark (section_preferred_libraries, HEADER);
-				sch.preferred_libs.iterate (query_lib'access);
-				section_mark (section_preferred_libraries, FOOTER);
-			end write_schematic;
-
-			
-			procedure write_board (brd : in type_board) is
-				use pac_preferred_libraries_board;
-				
-				procedure query_lib (c : in pac_preferred_libraries_board.cursor) is begin
-					write (keyword => keyword_path, parameters => to_string (element (c)));
-				end query_lib;
-
-			begin -- write_board
-				section_mark (section_preferred_libraries, HEADER);
-				brd.preferred_libs.iterate (query_lib'access);
-				section_mark (section_preferred_libraries, FOOTER);
-			end write_board;
-
-			
-		begin -- query_meta
-			log_indentation_up;
-			log (text => "meta data ...", level => log_threshold + 1);
-			
-			section_mark (section_meta, HEADER);
-
-			-- schematic related
-			section_mark (section_schematic, HEADER);
-			write_basic (meta.schematic);
-			write_schematic (meta.schematic);
-			
-			section_mark (section_schematic, FOOTER);
-
-			
-			-- board related
-			section_mark (section_board, HEADER);
-			write_basic (meta.board);
-			write_board (meta.board);
-			section_mark (section_board, FOOTER);
-			
-			section_mark (section_meta, FOOTER);
-
-			log_indentation_down;
-		end query_meta;
 
 
 
@@ -2248,7 +2155,7 @@ package body et_module_write is
 		write_header;
 
 		-- meta data
-		query_meta;
+		write_meta (module_cursor, log_threshold);
 		put_line (row_separator_single);
 
 		-- rules
