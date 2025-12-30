@@ -40,7 +40,6 @@
 
 
 with et_generic_module;			use et_generic_module;
-with et_module_names;			use et_module_names;
 with et_logging;				use et_logging;
 
 

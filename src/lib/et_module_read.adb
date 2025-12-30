@@ -39,53 +39,35 @@
 -- ToDo:
 -- - clean up
 -- - simplify code
--- - separate schematic and board stuff in et_module_write.board/schematic
+--
 --
 
 with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
 with ada.strings;					use ada.strings;
 with ada.directories;				use ada.directories;
-with ada.containers;
 
+with et_directory_and_file_ops;
+
+with et_module_names;				use et_module_names;
 with et_section_headers;			use et_section_headers;
 with et_keywords;					use et_keywords;
 with et_module_sections;			use et_module_sections;
 with et_pcb_sides;
-with et_board_geometry;
-with et_board_coordinates;
-
-with et_coordinates_formatting;		use et_coordinates_formatting;
-with et_primitive_objects;			use et_primitive_objects;
-with et_axes;						use et_axes;
-with et_module_instance;			use et_module_instance;
 
 with et_device_sections;
-with et_device_read;
-with et_pcb;
-with et_pcb_stack;
-with et_pcb_signal_layers;			use et_pcb_signal_layers;
-
-with et_board_read;					use et_board_read;
 with et_package_sections;
-
-with et_conventions;
 
 with et_time;
 
-with et_schematic_ops;
-with et_board_ops;
 with et_board_ops.ratsnest;
 
 with et_board_layer_category;
 with et_submodules;
 
-
-with et_directory_and_file_ops;
 with et_object_status;
-with et_string_processing;				use et_string_processing;
-with et_general_rw;						use et_general_rw;
-with et_exceptions;						use et_exceptions;
+with et_string_processing;					use et_string_processing;
+with et_general_rw;							use et_general_rw;
+with et_exceptions;							use et_exceptions;
 
 with et_module_read_device_electrical;		use et_module_read_device_electrical;
 with et_module_read_device_non_electrical;	use et_module_read_device_non_electrical;
@@ -283,9 +265,7 @@ package body et_module_read is
 				
 				procedure build_non_conductor_arc (
 					face : in et_pcb_sides.type_face)
-				is begin
-					board_check_arc (log_threshold + 1);
-					
+				is begin					
 					case stack.parent (degree => 2) is
 						when SEC_SILKSCREEN =>
 							insert_arc (
@@ -579,7 +559,7 @@ package body et_module_read is
 						build_net_label;
 
 						
-					when SEC_LINE => -- CS clean up. separate procedures required
+					when SEC_LINE =>
 						case stack.parent is
 							when SEC_CONTOURS => insert_contour_line;
 								
@@ -605,7 +585,7 @@ package body et_module_read is
 						end case;
 						
 						
-					when SEC_ARC => -- CS clean up. separate procedures required
+					when SEC_ARC =>
 						case stack.parent is
 							when SEC_CONTOURS => insert_contour_arc;
 
@@ -631,7 +611,7 @@ package body et_module_read is
 						end case;
 
 						
-					when SEC_CIRCLE => -- CS clean up. separate procedures required
+					when SEC_CIRCLE =>
 						case stack.parent is
 							when SEC_CONTOURS => insert_contour_circle;
 							
@@ -1201,7 +1181,6 @@ package body et_module_read is
 			end set;
 
 
-			use et_device_read;
 			use et_package_sections;
 			use et_device_sections;
 		
@@ -1970,7 +1949,6 @@ package body et_module_read is
 
 			use et_submodules;
 			use pac_submodules;
-			use ada.containers;
 
 			-- Here the copy of submodules lives:
 			submods : et_submodules.pac_submodules.map;
@@ -1997,7 +1975,7 @@ package body et_module_read is
 				position	=> module_cursor,
 				process		=> get_submodules'access);
 
-			if length (submods) > 0 then
+			if get_count (submods) > 0 then
 				log (text => "submodules/templates ...", level => log_threshold);
 				log_indentation_up;
 			
