@@ -667,6 +667,7 @@ procedure draw_conductors is
 				set_color_conductor (current_layer, BRIGHT);
 
 				draw_vector_text (text);
+				-- CS mirror if bottom layer
 
 				-- After drawing a selected (highlighted) text, the brightness
 				-- must be set back to normal:
