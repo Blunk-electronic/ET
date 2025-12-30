@@ -85,8 +85,11 @@ package et_submodules is
 		y : type_submodule_edge_length := 40.0; -- height of the box
 	end record;
 
+	
 	function to_submodule_size (size : in type_submodule_size) return string;
 
+
+	
 	function at_edge (
 	-- Returns true if the given point sits at the edge of a submodule box.
 	-- Issues a warning if the point sits at the lower edge of the box
@@ -95,22 +98,35 @@ package et_submodules is
 		point	: in type_vector_model;
 		size	: in type_submodule_size)
 		return boolean;
+
+
 	
 	type type_submodule_view_mode is (
 		ORIGIN,		-- device names and net names displayed as drawn in the generic submodule
 		INSTANCE	-- device names and net names displayed after renumbering and prefixing
 		);
 
+
+	
 	function to_string (view : in type_submodule_view_mode) return string;
+
+	
 	function to_view_mode (mode : in string) return type_submodule_view_mode;
 	
 	submodule_path_length_max : constant positive := 300;
 
+
+	
 	-- The full name of a submodule like $ET_TEMPLATES/motor_driver.mod
 	package pac_submodule_path is new generic_bounded_length (submodule_path_length_max);
+
+	
 	function to_submodule_path (path : in string) return pac_submodule_path.bounded_string;
+
+
 	function to_string (path : in pac_submodule_path.bounded_string) return string;
 
+	
 	function to_module_name (path : in pac_submodule_path.bounded_string) 
 		return pac_module_name.bounded_string;
 	-- Removes the file extension from given path and returns the module name.
@@ -123,8 +139,12 @@ package et_submodules is
 	
 	
 	function to_port_name (name : in string) return type_netchanger_port_name;
+
+
 	function to_string (name : in type_netchanger_port_name) return string;	
 
+
+	
 
 
 	use pac_geometry_sch;
@@ -189,6 +209,8 @@ package et_submodules is
 		direction	: type_netchanger_port_name := MASTER;
 	end record;
 
+
+	
 	use pac_net_name;
 	package pac_submodule_ports is new ordered_maps (
 		element_type	=> type_submodule_port,
@@ -202,6 +224,7 @@ package et_submodules is
 		offset	: in type_object_position); -- the offset (only x/y matters)
 
 	
+	
 	-- THIS IS THE GRAPHICAL REPRESENTATION OF A SUBMODULE ->
 	-- THE RECTANGULAR BOX AT THE SHEET WHERE THE SUBMODULE IS INSTANTIATED.
 	type type_submodule is record
@@ -213,6 +236,8 @@ package et_submodules is
 		ports				: pac_submodule_ports.map;
 	end record;
 
+
+	
 	-- GUI relevant only: The line width of the box:
 	submod_box_line_width : constant type_distance_positive := 0.2;
 	-- CS rename to submod_box_linewidth
@@ -256,12 +281,26 @@ package et_submodules is
 		key_type		=> pac_module_instance_name.bounded_string, -- MOT_DRV_3
 		element_type	=> type_submodule);
 
+
+	
+	function get_count (
+		submodules : in pac_submodules.map)
+		return natural;
+	
+
+
+	
 	netchanger_id_max : constant positive := 10000; -- CS  increase if necessary
 	type type_netchanger_id is range 1 .. netchanger_id_max;
 
+
+	
 	function to_netchanger_id (id : in string) return type_netchanger_id;
+
 	function to_string (id : in type_netchanger_id) return string;		
 
+
+	
 	function opposide_port (port : in type_netchanger_port_name) return type_netchanger_port_name;
 
 	type type_netchanger_port is record
@@ -270,9 +309,12 @@ package et_submodules is
 		rotation	: type_rotation_model;
 	end record;
 
+
+	
 	position_master_port_default : constant type_vector_model := (x =>  10.0, y => 0.0);
 	position_slave_port_default  : constant type_vector_model := (x => -10.0, y => 0.0);
 
+	
 	
 	type type_netchanger_symbol is record
 		master_port	: type_netchanger_port := (
@@ -295,6 +337,7 @@ package et_submodules is
 
 	end record;
 
+
 	
 	type type_netchanger is record
 		position_sch	: type_object_position; -- x,y,sheet,rotation
@@ -306,14 +349,20 @@ package et_submodules is
 	end record;
 
 	
+	
 	package pac_netchangers is new ordered_maps (
 		key_type		=> type_netchanger_id,
 		element_type	=> type_netchanger);
 
+
+	
 	type type_netchanger_ports is record
 		master	: type_vector_model := position_master_port_default;
 		slave	: type_vector_model := position_slave_port_default;
 	end record;
+
+
+
 	
 	function netchanger_ports (
 	-- Returns the absolute x/y positions of the given netchanger.

@@ -51,6 +51,9 @@ package body et_submodules is
 			to_string (size.y);
 	end;
 
+
+
+
 	
 	function at_edge (
 		point	: in type_vector_model; -- P
@@ -92,15 +95,22 @@ package body et_submodules is
 		return result;
 	end at_edge;
 
+
+	
 	
 	function to_submodule_path (path : in string) return pac_submodule_path.bounded_string is begin
 		return pac_submodule_path.to_bounded_string (path);
 	end;
 
+
+
 	
 	function to_string (path : in pac_submodule_path.bounded_string) return string is begin
 		return pac_submodule_path.to_string (path);
 	end;
+
+
+
 
 	
 	function to_module_name (path : in pac_submodule_path.bounded_string) 
@@ -113,6 +123,8 @@ package body et_submodules is
 		return name;
 	end to_module_name;
 
+
+
 	
 	function to_direction_abbrevation (direction : in type_netchanger_port_name) return string is begin
 		case direction is 
@@ -120,6 +132,8 @@ package body et_submodules is
 			when SLAVE => return port_direction_abbrevation_slave;
 		end case;
 	end to_direction_abbrevation;
+
+
 
 	
 	
@@ -146,38 +160,70 @@ package body et_submodules is
 		pac_submodule_ports.iterate (ports, query_port'access);
 	end move_ports;
 
+
+
 	
 	function to_string (view : in type_submodule_view_mode) return string is begin
 		return to_lower (type_submodule_view_mode'image (view));
 	end;
 
+
+
+	
 	function to_view_mode (mode : in string) return type_submodule_view_mode is begin
 		return type_submodule_view_mode'value (mode);
 	end;
 
+
+
+	function get_count (
+		submodules : in pac_submodules.map)
+		return natural
+	is begin
+		return natural (submodules.length);
+	end;
+
+
+
+	
+	
 	function to_netchanger_id (id : in string) return type_netchanger_id is begin
 		return type_netchanger_id'value (id);
 	end;
 
+
+
+	
 	function to_string (id : in type_netchanger_id) return string is begin
 		return trim (type_netchanger_id'image (id), left);
 	end;
 
+
+
+	
 	function opposide_port (port : in type_netchanger_port_name) return type_netchanger_port_name is begin
 		case port is
 			when MASTER => return SLAVE;
 			when SLAVE  => return MASTER;
 		end case;
 	end;
+
+
+
 	
 	function to_port_name (name : in string) return type_netchanger_port_name is begin
 		return type_netchanger_port_name'value (name);
 	end;
 
+
+
+	
 	function to_string (name : in type_netchanger_port_name) return string is begin
 		return trim (to_lower (type_netchanger_port_name'image (name)), left);
 	end;
 
+
+	
 	function netchanger_ports (
 	-- Returns the absolute x/y positions of the given netchanger.
 		netchanger_cursor	: in pac_netchangers.cursor)
@@ -196,6 +242,8 @@ package body et_submodules is
 				
 		return ports;
 	end netchanger_ports;
+
+
 	
 end et_submodules;
 
