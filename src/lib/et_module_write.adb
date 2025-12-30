@@ -162,6 +162,9 @@ with et_alignment;						use et_alignment;
 with et_module_write_meta;				use et_module_write_meta;
 with et_module_write_board_outline;		use et_module_write_board_outline;
 with et_module_write_freetracks;		use et_module_write_freetracks;
+with et_module_write_board_zones;		use et_module_write_board_zones;
+
+
 
 
 package body et_module_write is
@@ -1592,51 +1595,6 @@ package body et_module_write is
 			
 
 			
-			-- solid fill zones in conductor
-			use pac_floating_solid;
-			procedure write_polygon (cursor : in pac_floating_solid.cursor) is begin
-				fill_zone_begin;
-
-				write_easing (element (cursor).easing);
-
-				write_width (element (cursor).linewidth);
-				write_isolation (element (cursor).isolation);
-
-				write_priority (element (cursor).properties.priority_level);
-				write_signal_layer (element (cursor).properties.layer);
-
-				write_fill_style (element (cursor).fill_style);
-
-				contours_begin;
-				write_polygon_segments (type_contour (element (cursor)));
-				contours_end;
-				
-				fill_zone_end;
-			end;
-
-			
-			-- hatched fill zones in conductor
-			use pac_floating_hatched;
-			procedure write_polygon (cursor : in pac_floating_hatched.cursor) is begin
-				fill_zone_begin;
-
-				write_easing (element (cursor).easing);
-
-				write_width (element (cursor).linewidth);
-				write_isolation (element (cursor).isolation);
-
-				write_priority (element (cursor).properties.priority_level);
-				write_signal_layer (element (cursor).properties.layer);
-
-				write_fill_style (element (cursor).fill_style);
-				write_spacing (element (cursor).spacing);
-
-				contours_begin;
-				write_polygon_segments (type_contour (element (cursor)));
-				contours_end;
-				
-				fill_zone_end;
-			end;
 
 			
 			-- cutout zones in any signal layers
@@ -2052,11 +2010,8 @@ package body et_module_write is
 			begin
 				section_mark (section_conductor, HEADER);
 
-				-- freetracks:
 				write_freetracks (module_cursor, log_threshold + 2);
-				
-				iterate (element (module_cursor).board.conductors_floating.zones.solid, write_polygon'access);
-				iterate (element (module_cursor).board.conductors_floating.zones.hatched, write_polygon'access);
+				write_zones_conductor (module_cursor, log_threshold + 2);
 				
 				iterate (element (module_cursor).board.conductors_floating.cutouts, write_cutout'access);			
 				iterate (element (module_cursor).board.conductors_floating.texts, write_text'access);
