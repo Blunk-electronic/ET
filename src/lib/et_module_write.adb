@@ -161,7 +161,7 @@ with et_alignment;						use et_alignment;
 
 with et_module_write_meta;				use et_module_write_meta;
 with et_module_write_board_outline;		use et_module_write_board_outline;
-
+with et_module_write_freetracks;		use et_module_write_freetracks;
 
 
 package body et_module_write is
@@ -1590,31 +1590,6 @@ package body et_module_write is
 			end write_placeholder;
 
 			
-			-- CONDUCTOR (NON-ELECTRIC) in any signal layers
-			use pac_conductor_lines;
-			procedure write_line (cursor : in pac_conductor_lines.cursor) is begin
-				line_begin;
-				write_line (element (cursor));
-				write_width (element (cursor).width);
-				write_signal_layer (element (cursor).layer);
-				line_end;
-			end;
-
-			
-			use pac_conductor_arcs;
-			procedure write_arc (cursor : in pac_conductor_arcs.cursor) is begin
-				arc_begin;
-				write_arc (element (cursor));
-				write_width (element (cursor).width);
-				write_signal_layer (element (cursor).layer);
-				arc_end;
-			end;
-
-			
-			use pac_conductor_circles;
-			procedure write_circle (cursor : in pac_conductor_circles.cursor) is begin
-				write_circle_conductor (element (cursor));
-			end;
 
 			
 			-- solid fill zones in conductor
@@ -2077,10 +2052,9 @@ package body et_module_write is
 			begin
 				section_mark (section_conductor, HEADER);
 
-				-- floating stuff:
-				iterate (element (module_cursor).board.conductors_floating.lines, write_line'access);
-				iterate (element (module_cursor).board.conductors_floating.arcs, write_arc'access);
-				iterate (element (module_cursor).board.conductors_floating.circles, write_circle'access);
+				-- freetracks:
+				write_freetracks (module_cursor, log_threshold + 2);
+				
 				iterate (element (module_cursor).board.conductors_floating.zones.solid, write_polygon'access);
 				iterate (element (module_cursor).board.conductors_floating.zones.hatched, write_polygon'access);
 				
