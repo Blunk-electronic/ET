@@ -131,7 +131,7 @@ package body et_module_read_board_outline is
 			position	=> module_cursor,
 			process		=> do_it'access);
 
-		-- CS reset outline
+		reset_contour (contour);
 	end;
 	
 		
@@ -169,7 +169,7 @@ package body et_module_read_board_outline is
 			position	=> module_cursor,
 			process		=> do_it'access);
 
-		-- CS reset hole
+		reset_contour (contour);
 	end;
 
 	

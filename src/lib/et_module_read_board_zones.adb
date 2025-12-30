@@ -127,8 +127,7 @@ package body et_module_read_board_zones is
 		signal_layer			:= type_signal_layer'first;  -- board relevant only
 		clear (signal_layers);
 		
-		contour := (others => <>);
-		-- CS use procedure reset_contour
+		reset_contour (contour);
 	end;
 
 
