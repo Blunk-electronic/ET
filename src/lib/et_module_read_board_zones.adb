@@ -214,7 +214,6 @@ package body et_module_read_board_zones is
 		elsif kw = keyword_layer then -- layer 1
 			expect_field_count (line, 2);
 			signal_layer := to_signal_layer (f (line, 2));
-			-- CS validate_signal_layer;
 
 		else
 			invalid_keyword (kw);
@@ -279,7 +278,6 @@ package body et_module_read_board_zones is
 		elsif kw = keyword_layer then -- layer 1
 			expect_field_count (line, 2);
 			signal_layer := to_signal_layer (f (line, 2));
-			-- CS validate_signal_layer;
 			
 		elsif kw = keyword_priority then -- priority 2
 			expect_field_count (line, 2);
@@ -300,8 +298,7 @@ package body et_module_read_board_zones is
 	
 	
 	procedure read_fill_zone_restrict (
-		line	: in type_fields_of_line;
-		check	: in type_layer_check)
+		line	: in type_fields_of_line)
 	is
 		kw : constant string := f (line, 1);
 	begin
@@ -314,7 +311,7 @@ package body et_module_read_board_zones is
 
 			-- there must be at least two fields:
 			expect_field_count (line => line, count_expected => 2, warn => false);
-			signal_layers := to_layers (line, check);
+			-- CS signal_layers := to_layers (line, check);
 
 		else
 			invalid_keyword (kw);
@@ -350,6 +347,8 @@ package body et_module_read_board_zones is
 			 level => log_threshold);
 
 		log_indentation_up;
+		
+		-- CS check signal layers
 		
 		update_element (
 			container	=> generic_modules,
@@ -390,6 +389,8 @@ package body et_module_read_board_zones is
 			 & " insert_zone_via_restrict",
 			 level => log_threshold);
 
+		-- CS check signal layers
+			 
 		log_indentation_up;
 		
 		update_element (
@@ -453,6 +454,8 @@ package body et_module_read_board_zones is
 			 & " insert_polygon_conductor",
 			 level => log_threshold);
 
+		-- CS check signal layer
+			 
 		log_indentation_up;
 		
 		update_element (
@@ -641,8 +644,7 @@ package body et_module_read_board_zones is
 	
 	
 	procedure read_cutout_restrict (
-		line	: in type_fields_of_line;
-		check	: in type_layer_check)
+		line	: in type_fields_of_line)
 	is
 		kw : constant string := f (line, 1);
 	begin
@@ -651,7 +653,7 @@ package body et_module_read_board_zones is
 
 			-- there must be at least two fields:
 			expect_field_count (line => line, count_expected => 2, warn => false);
-			signal_layers := to_layers (line, check);
+			-- CS signal_layers := to_layers (line, check);
 
 		else
 			invalid_keyword (kw);
@@ -688,6 +690,8 @@ package body et_module_read_board_zones is
 			 level => log_threshold);
 
 		log_indentation_up;
+		
+		-- CS check signal layers
 		
 		update_element (
 			container	=> generic_modules,
@@ -732,6 +736,8 @@ package body et_module_read_board_zones is
 			 level => log_threshold);
 
 		log_indentation_up;
+		
+		-- CS check signal layers
 		
 		update_element (
 			container	=> generic_modules,
@@ -857,6 +863,7 @@ package body et_module_read_board_zones is
 			 level => log_threshold);
 
 		-- CS log arguments
+		-- CS check signal layer
 		
 		log_indentation_up;
 		

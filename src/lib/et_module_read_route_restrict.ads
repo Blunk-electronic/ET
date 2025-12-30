@@ -59,18 +59,15 @@ package et_module_read_route_restrict is
 
 
 	procedure read_restrict_line (
-		line	: in type_fields_of_line;
-		check	: in type_layer_check);
+		line	: in type_fields_of_line);
 	
 
 	procedure read_restrict_arc (
-		line	: in type_fields_of_line;
-		check	: in type_layer_check);
+		line	: in type_fields_of_line);
 
 	
 	procedure read_restrict_circle (
-		line	: in type_fields_of_line;
-		check	: in type_layer_check);
+		line	: in type_fields_of_line);
 
 	
 	

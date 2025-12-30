@@ -134,7 +134,6 @@ package body et_module_read_pcb_layer_stack is
 
 	procedure add_board_layer (
 		module_cursor	: in pac_generic_modules.cursor;
-		check_layers	: in out type_layer_check;						  
 		log_threshold	: in type_log_level)
 	is
 		use et_board_ops;
@@ -180,11 +179,6 @@ package body et_module_read_pcb_layer_stack is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
-
-		-- Now that the board layer stack is complete,
-		-- we assign the deepest layer to check_layers.
-		check_layers.deepest_layer := 
-			get_deepest_conductor_layer (module_cursor);
 
 		log_indentation_down;
 	end add_board_layer;

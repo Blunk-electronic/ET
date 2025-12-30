@@ -74,8 +74,7 @@ package body et_module_read_route_restrict is
 
 
 	procedure read_restrict_line (
-		line	: in type_fields_of_line;
-		check	: in type_layer_check)
+		line	: in type_fields_of_line)
 	is
 		kw : string := f (line, 1);
 		p : type_vector_model;
@@ -101,7 +100,7 @@ package body et_module_read_route_restrict is
 
 			-- there must be at least two fields:
 			expect_field_count (line => line, count_expected => 2, warn => false);
-			restrict_line.layers := to_layers (line, check);
+			-- CS restrict_line.layers := to_layers (line, check);
 			
 		else
 			invalid_keyword (kw);
@@ -116,8 +115,7 @@ package body et_module_read_route_restrict is
 	
 	
 	procedure read_restrict_arc (
-		line	: in type_fields_of_line;
-		check	: in type_layer_check)
+		line	: in type_fields_of_line)
 	is
 		kw : string := f (line, 1);
 		p : type_vector_model;
@@ -156,7 +154,7 @@ package body et_module_read_route_restrict is
 
 			-- there must be at least two fields:
 			expect_field_count (line => line, count_expected => 2, warn => false);
-			restrict_arc.layers := to_layers (line, check);
+			-- CS restrict_arc.layers := to_layers (line, check);
 
 			
 		else
@@ -172,8 +170,7 @@ package body et_module_read_route_restrict is
 	
 	
 	procedure read_restrict_circle (
-		line	: in type_fields_of_line;
-		check	: in type_layer_check)
+		line	: in type_fields_of_line)
 	is
 		kw : string := f (line, 1);
 	begin
@@ -194,7 +191,7 @@ package body et_module_read_route_restrict is
 
 			-- there must be at least two fields:
 			expect_field_count (line => line, count_expected => 2, warn => false);
-			restrict_circle.layers := to_layers (line, check);
+			-- CS restrict_circle.layers := to_layers (line, check);
 
 			
 		else

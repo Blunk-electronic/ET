@@ -66,7 +66,6 @@ package et_module_read_pcb_layer_stack is
 
 	procedure add_board_layer (
 		module_cursor	: in pac_generic_modules.cursor;
-		check_layers	: in out type_layer_check;						  
 		log_threshold	: in type_log_level);
 
 

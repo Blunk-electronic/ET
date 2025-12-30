@@ -103,8 +103,8 @@ package body et_module_read_tracks_route is
 		elsif kw = keyword_layer then -- layer 2
 			expect_field_count (line, 2);
 			track_line.layer := to_signal_layer (f (line, 2));
-			-- CS validate_signal_layer;
 
+			
 		elsif kw = keyword_width then -- width 0.5
 			expect_field_count (line, 2);
 			track_line.width := to_distance (f (line, 2));
@@ -151,7 +151,6 @@ package body et_module_read_tracks_route is
 		elsif kw = keyword_layer then -- layer 2
 			expect_field_count (line, 2);
 			track_arc.layer := to_signal_layer (f (line, 2));
-			-- CS validate_signal_layer;
 
 		elsif kw = keyword_width then -- width 0.5
 			expect_field_count (line, 2);
@@ -175,6 +174,7 @@ package body et_module_read_tracks_route is
 	begin
 		-- CS log messages
 		-- CS use update_element
+		-- CS check signal layer (use get_deepest_conductor_layer (module_cursor))
 		
 		add_line (route, track_line);
 			
@@ -195,6 +195,7 @@ package body et_module_read_tracks_route is
 	begin
 		-- CS log messages
 		-- CS use update_element
+		-- CS check signal layer (use get_deepest_conductor_layer (module_cursor))
 		
 		-- CS board_check_arc (log_threshold + 1);
 		-- if not is_valid (board_arc) then

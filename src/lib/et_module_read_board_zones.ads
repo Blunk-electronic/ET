@@ -94,8 +94,7 @@ package et_module_read_board_zones is
 	
 	
 	procedure read_fill_zone_restrict (
-		line	: in type_fields_of_line;
-		check	: in type_layer_check);
+		line	: in type_fields_of_line);
 
 
 	procedure insert_polygon_route_restrict ( -- CS rename to insert_zone_route_restrict
@@ -126,8 +125,7 @@ package et_module_read_board_zones is
 -- CUTOUT:
 	
 	procedure read_cutout_restrict (
-		line	: in type_fields_of_line;
-		check	: in type_layer_check);
+		line	: in type_fields_of_line);
 
 	
 	procedure insert_cutout_via_restrict (

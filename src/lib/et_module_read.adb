@@ -69,8 +69,6 @@ with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_board_read;					use et_board_read;
 with et_package_sections;
 
-with et_terminals;
-
 with et_conventions;
 
 with et_time;
@@ -81,9 +79,7 @@ with et_board_ops.ratsnest;
 
 with et_board_layer_category;
 with et_submodules;
-with et_netlists;
 
-with et_board_outline;
 
 with et_directory_and_file_ops;
 with et_object_status;
@@ -131,8 +127,6 @@ package body et_module_read is
 		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
 		log_threshold	: in type_log_level) 
 	is
-		use et_schematic_ops; -- CS place it where really needed
-		
 		
 		previous_input : ada.text_io.file_type renames current_input;
 		
@@ -161,46 +155,6 @@ package body et_module_read is
 			max 	=> max_section_depth);
 
 
-		
-	
-		signal_layers : pac_signal_layers.set;
-		board_layer : et_pcb_stack.type_layer;
-		board_layers : et_pcb_stack.package_layers.vector;
-
-		-- Whenver a signal layer id is to be read, it must be checked against the
-		-- deepest signal layer used. The variable check_layers controls this check.
-		-- As preparation we enable the check by setting the "check" to YES.
-		-- When section BOARD_LAYER_STACK closes, we also assign the deepest layer used.
-		check_layers : et_pcb_stack.type_layer_check (check => et_pcb_stack.YES);
-		-- CS: DO NOT DELETE !
-		
-		
-		-- Checks the global signal_layer variable against check_layers:
-		procedure validate_signal_layer is -- CS: DO NOT DELETE !
-			use et_pcb_stack;
-		begin
-			-- Issue warning if signal layer is invalid:
-			if not signal_layer_valid (signal_layer, check_layers) then
-				signal_layer_invalid (line, signal_layer, check_layers);
-			end if;
-		end validate_signal_layer;
-
-		
-
-		-- Checks a given signal layer against check_layers:
-		 -- CS: DO NOT DELETE !
-		procedure validate_signal_layer (l : in type_signal_layer) is
-			use et_pcb_stack;
-		begin
-			-- Issue warning if signal layer is invalid:
-			if not signal_layer_valid (l, check_layers) then
-				signal_layer_invalid (line, l, check_layers);
-			end if;
-		end validate_signal_layer;
-
-
-
-	
 		
 				
 
@@ -399,24 +353,6 @@ package body et_module_read is
 
 
 			
-
-				
-				
-
-				-- This is now net specific restrict stuff !
-				-- CS 			
-				--procedure build_route_cutout is
-					--use pac_contours;
-					--use et_fill_zones.boards;
-				--begin
-					--pac_cutouts.append (
-						--container	=> route.cutouts,
-						--new_item	=> (contour with
-										--layer	=> signal_layer));
-
-					--board_reset_contour; -- clean up for next cutout zone
-				--end build_route_cutout;
-
 				
 				procedure build_non_conductor_cutout (
 					face	: in et_pcb_sides.type_face) 
@@ -542,7 +478,7 @@ package body et_module_read is
 					when SEC_BOARD_LAYER_STACK =>
 						case stack.parent is
 							when SEC_INIT =>
-								add_board_layer (module_cursor, check_layers, log_threshold);
+								add_board_layer (module_cursor, log_threshold);
 
 							when others => invalid_section;
 						end case;
@@ -1567,9 +1503,9 @@ package body et_module_read is
 								
 								
 							when SEC_ROUTE_RESTRICT =>
-								et_module_read_route_restrict.read_restrict_line (
-									line, check_layers);
+								et_module_read_route_restrict.read_restrict_line (line);
 
+								
 							when SEC_VIA_RESTRICT =>
 								null;
 								-- read_restrict_line (line, check_layers);
@@ -1589,7 +1525,7 @@ package body et_module_read is
 										elsif kw = keyword_layer then -- layer 1
 											expect_field_count (line, 2);
 											signal_layer := to_signal_layer (f (line, 2));
-											validate_signal_layer;
+											-- validate_signal_layer;
 
 										else
 											invalid_keyword (kw);
@@ -1633,8 +1569,7 @@ package body et_module_read is
 
 								
 							when SEC_ROUTE_RESTRICT =>
-								et_module_read_route_restrict.read_restrict_arc (
-									line, check_layers);
+								et_module_read_route_restrict.read_restrict_arc (line);
 
 								
 							when SEC_VIA_RESTRICT =>
@@ -1657,7 +1592,7 @@ package body et_module_read is
 										elsif kw = keyword_layer then -- layer 1
 											expect_field_count (line, 2);
 											signal_layer := to_signal_layer (f (line, 2));
-											validate_signal_layer;
+											--validate_signal_layer;
 											
 										else
 											invalid_keyword (kw);
@@ -1711,8 +1646,7 @@ package body et_module_read is
 								end case;
 
 							when SEC_ROUTE_RESTRICT =>
-								et_module_read_route_restrict.read_restrict_circle (
-									line, check_layers);
+								et_module_read_route_restrict.read_restrict_circle (line);
 								
 							when SEC_VIA_RESTRICT =>
 								null;
@@ -1735,7 +1669,7 @@ package body et_module_read is
 										elsif kw = keyword_layer then -- layer 1
 											expect_field_count (line, 2);
 											signal_layer := to_signal_layer (f (line, 2));
-											validate_signal_layer;
+											--validate_signal_layer;
 
 										else
 											invalid_keyword (kw);
@@ -1767,7 +1701,7 @@ package body et_module_read is
 								end case;
 
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => 
-								read_cutout_restrict (line, check_layers);
+								read_cutout_restrict (line);
 								
 							when SEC_CONDUCTOR => 
 								read_cutout_conductor_non_electric (line);
@@ -1792,7 +1726,7 @@ package body et_module_read is
 								end case;
 
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								read_fill_zone_restrict (line, check_layers);
+								read_fill_zone_restrict (line);
 							
 							when SEC_CONDUCTOR => 
 								read_fill_zone_conductor_non_electric (line);

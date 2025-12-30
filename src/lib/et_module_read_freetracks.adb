@@ -53,7 +53,6 @@ with et_route;						use et_route;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_design_rules_board;			use et_design_rules_board;
 with et_board_geometry;				use et_board_geometry;
--- with et_primitive_objects;			use et_primitive_objects;
 with et_directions;					use et_directions;
 with et_board_text;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
@@ -100,7 +99,7 @@ package body et_module_read_freetracks is
 		elsif kw = keyword_layer then -- layer 2
 			expect_field_count (line, 2);
 			track_line.layer := to_signal_layer (f (line, 2));
-			-- CS validate_signal_layer;
+
 
 		elsif kw = keyword_width then -- width 0.5
 			expect_field_count (line, 2);
@@ -148,7 +147,7 @@ package body et_module_read_freetracks is
 		elsif kw = keyword_layer then -- layer 2
 			expect_field_count (line, 2);
 			track_arc.layer := to_signal_layer (f (line, 2));
-			-- CS validate_signal_layer;
+
 
 		elsif kw = keyword_width then -- width 0.5
 			expect_field_count (line, 2);
@@ -184,7 +183,7 @@ package body et_module_read_freetracks is
 		elsif kw = keyword_layer then -- layer 2
 			expect_field_count (line, 2);
 			track_circle.layer := to_signal_layer (f (line, 2));
-			-- CS validate_signal_layer;
+
 
 		elsif kw = keyword_width then -- width 0.5
 			expect_field_count (line, 2);
@@ -223,6 +222,7 @@ package body et_module_read_freetracks is
 		
 	begin
 		-- CS log messages
+		-- CS check signal layer (use get_deepest_conductor_layer (module_cursor))
 		
 		update_element (
 			container	=> generic_modules,
@@ -261,6 +261,7 @@ package body et_module_read_freetracks is
 		
 	begin
 		-- CS log messages
+		-- CS check signal layer (use get_deepest_conductor_layer (module_cursor))
 		
 		update_element (
 			container	=> generic_modules,
@@ -299,6 +300,7 @@ package body et_module_read_freetracks is
 		
 	begin
 		-- CS log messages
+		-- CS check signal layer (use get_deepest_conductor_layer (module_cursor))
 		
 		update_element (
 			container	=> generic_modules,

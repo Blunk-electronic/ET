@@ -150,7 +150,6 @@ package body et_module_read_board_zones_route is
 		elsif kw = keyword_layer then -- layer 2
 			expect_field_count (line, 2);
 			signal_layer := to_signal_layer (f (line, 2));
-			-- CS validate_signal_layer;
 
 		else
 			invalid_keyword (kw);
@@ -195,7 +194,6 @@ package body et_module_read_board_zones_route is
 		elsif kw = keyword_layer then -- layer 2
 			expect_field_count (line, 2);
 			signal_layer := to_signal_layer (f (line, 2));
-			-- CS validate_signal_layer;
 			
 		elsif kw = keyword_width then -- width 0.3
 			expect_field_count (line, 2);
@@ -335,7 +333,7 @@ package body et_module_read_board_zones_route is
 			end;
 
 			
-		begin -- hatched_polygon
+		begin
 			case pad_connection is
 				when THERMAL	=> connection_thermal;
 				when SOLID		=> connection_solid;
@@ -345,6 +343,7 @@ package body et_module_read_board_zones_route is
 		
 	begin -- build_route_polygon
 		-- CS log messages
+		-- CS check signal layer (use get_deepest_conductor_layer (module_cursor))
 		
 		case board_fill_style is
 			when SOLID		=> solid_polygon;
