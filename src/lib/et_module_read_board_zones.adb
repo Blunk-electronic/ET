@@ -311,7 +311,7 @@ package body et_module_read_board_zones is
 
 			-- there must be at least two fields:
 			expect_field_count (line => line, count_expected => 2, warn => false);
-			-- CS signal_layers := to_layers (line, check);
+			signal_layers := to_layers (line);
 
 		else
 			invalid_keyword (kw);
@@ -653,7 +653,7 @@ package body et_module_read_board_zones is
 
 			-- there must be at least two fields:
 			expect_field_count (line => line, count_expected => 2, warn => false);
-			-- CS signal_layers := to_layers (line, check);
+			signal_layers := to_layers (line);
 
 		else
 			invalid_keyword (kw);

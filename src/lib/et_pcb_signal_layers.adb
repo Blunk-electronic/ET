@@ -263,6 +263,84 @@ package body et_pcb_signal_layers is
 	end to_layers;
 
 
+
+
+
+	
+
+	function to_layers (
+		line : in type_fields_of_line)
+		return pac_signal_layers.set 
+	is
+		
+		use pac_signal_layers;
+		layers 		: pac_signal_layers.set; -- to be returned
+		cursor 		: pac_signal_layers.cursor;
+		inserted	: boolean;
+		layer 		: type_signal_layer;
+		
+		-- we start reading the layer numbers with field 2
+		place 		: type_field_count_positive := 2; 
+
+		
+		function f (
+			line		: in type_fields_of_line; 
+			position	: in type_field_count_positive) 
+			return string renames get_field;
+												 
+		field_2			: constant string := f (line, 2);
+		field_2_first	: constant positive := field_2'first;
+		field_2_last	: constant positive := field_2'last;
+		
+	
+	begin -- to_layers
+		
+		-- Test the first character of the 2nd field.
+		-- If it is the start mark of a layer term like [1, 3, 6-11]
+		-- then it must be converted to a set of layers.
+		-- Otherwise we assume the layer numbers are given in a
+		-- row of discrete layer ids like "1 4 10"
+		if field_2 (field_2_first) = layer_term_start then
+			layers := to_layers (field_2);
+			
+		else -- discrete layer ids like "1 4 10"
+			while place <= get_field_count (line) loop
+
+				-- get the layer number from current place
+				layer := to_signal_layer (f (line, place));
+
+				-- insert the layer number in the container "layers"
+				insert (
+					container	=> layers,
+					new_item	=> layer,
+					inserted	=> inserted,
+					position	=> cursor);
+
+				-- warn if layer already in container
+				if not inserted then
+					
+					--log (WARNING, affected_line (line) & "signal layer " & to_string (layer) 
+					--& " specified multiple times !");
+					
+					-- CS raise semantic_error_1 with
+					raise constraint_error with
+						"ERROR: " & get_affected_line (line) 
+						& "Signal layer " & to_string (layer) 
+						& " specified multiple times !";
+				end if;
+				
+				place := place + 1; -- advance to next place
+			end loop;
+		
+		end if;
+		
+		return layers;
+	end to_layers;
+
+
+	
+
+
 	
 	
 	procedure mirror_signal_layers (
@@ -283,6 +361,8 @@ package body et_pcb_signal_layers is
 		signal_layers := mir;
 	end mirror_signal_layers;
 
+
+	
 	
 end et_pcb_signal_layers;
 

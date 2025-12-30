@@ -36,7 +36,9 @@
 --   history of changes:
 --
 --   to do:
-
+-- 1. clean up
+-- 2. rename things
+-- 3. rework
 
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
@@ -55,7 +57,7 @@ with et_string_processing; 		use et_string_processing;
 with et_logging;				use et_logging;
 
 
-package et_pcb_stack is
+package et_pcb_stack is -- CS rename to et_pcb_layer_stack ?
 	
 
 
@@ -120,7 +122,7 @@ package et_pcb_stack is
 	
 	-- The final layer stack always has at least the top layer (index 1) 
 	-- and the bottom layer. The bottom layer does not have a dielectric.
-	type type_stack is record
+	type type_stack is record -- CS rename to type_layer_stack
 		layers	: package_layers.vector;
 		bottom	: type_conductor;
 	end record;
@@ -142,38 +144,26 @@ package et_pcb_stack is
 			when YES => deepest_layer : type_signal_layer := type_signal_layer'first;
 		end case;
 	end record;
-
+	-- CS: This approach (and the subprograms below) is probably
+	-- no good idea.
 	
 	-- If layer check required, this function returns true if the given layer id
 	-- is less or equal the deepest layer used (given by argument check_layers).
 	-- Returns false otherwise. 
 	-- If no layer check requested, returns true.		
-	function signal_layer_valid (
-		signal_layer 	: in type_signal_layer;
-		check_layers	: in et_pcb_stack.type_layer_check)
-		return boolean;
+	-- function signal_layer_valid (
+	-- 	signal_layer 	: in type_signal_layer;
+	-- 	check_layers	: in et_pcb_stack.type_layer_check)
+	-- 	return boolean;
 
 
 
 	-- Issues a warning that the given signal layer is deeper than the deepest
 	-- signal layer of the pcb stack.
-	procedure signal_layer_invalid (
-		line			: in type_fields_of_line;
-		signal_layer	: in type_signal_layer;
-		check_layers	: in type_layer_check);
-
-
-	
-	-- Converts a line like "layers 1 4 17" or "layers [1,3,4-9]" to 
-	-- a set of signal layers.
-	-- Issues warning if a layer number occurs more than once.
-	-- If layer check requested, issues warning if a layer id is greater than the 
-	-- deepest layer used (given in argument check_layer).
-	function to_layers (
-		line 			: in type_fields_of_line; -- layers 1 3 17
-		check_layers	: in type_layer_check)
-		return pac_signal_layers.set;	
-
+	-- procedure signal_layer_invalid (
+	-- 	line			: in type_fields_of_line;
+	-- 	signal_layer	: in type_signal_layer;
+	-- 	check_layers	: in type_layer_check);
 	
 	
 end et_pcb_stack;

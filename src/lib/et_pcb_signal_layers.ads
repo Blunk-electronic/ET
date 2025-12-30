@@ -50,8 +50,9 @@ with ada.containers; 			use ada.containers;
 with ada.containers.vectors;
 with ada.containers.ordered_sets;
 
-with et_logging;				use et_logging;
 with et_board_geometry;			use et_board_geometry;
+with et_string_processing; 		use et_string_processing;
+with et_logging;				use et_logging;
 
 
 
@@ -111,6 +112,17 @@ package et_pcb_signal_layers is
 	function to_layers (
 		layer	: in type_signal_layer)
 		return pac_signal_layers.set;
+
+
+
+	-- Converts a line like "layers 1 4 17" or "layers [1,3,4-9]" to 
+	-- a set of signal layers.
+	-- Issues warning if a layer number occurs more than once.
+	-- If layer check requested, issues warning if a layer id is greater than the 
+	-- deepest layer used (given in argument check_layer).
+	function to_layers (
+		line : in type_fields_of_line)
+		return pac_signal_layers.set;	
 
 	
 	

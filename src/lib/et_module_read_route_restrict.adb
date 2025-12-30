@@ -100,7 +100,7 @@ package body et_module_read_route_restrict is
 
 			-- there must be at least two fields:
 			expect_field_count (line => line, count_expected => 2, warn => false);
-			-- CS restrict_line.layers := to_layers (line, check);
+			restrict_line.layers := to_layers (line);
 			
 		else
 			invalid_keyword (kw);
@@ -154,7 +154,7 @@ package body et_module_read_route_restrict is
 
 			-- there must be at least two fields:
 			expect_field_count (line => line, count_expected => 2, warn => false);
-			-- CS restrict_arc.layers := to_layers (line, check);
+			restrict_arc.layers := to_layers (line);
 
 			
 		else
@@ -191,7 +191,7 @@ package body et_module_read_route_restrict is
 
 			-- there must be at least two fields:
 			expect_field_count (line => line, count_expected => 2, warn => false);
-			-- CS restrict_circle.layers := to_layers (line, check);
+			restrict_circle.layers := to_layers (line);
 
 			
 		else
