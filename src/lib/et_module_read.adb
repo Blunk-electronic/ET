@@ -1473,14 +1473,13 @@ package body et_module_read is
 						end case;
 
 						
-					when SEC_LINE => -- CS clean up: separate procdures required
+					when SEC_LINE =>
 						case stack.parent is
 							when SEC_CONTOURS => 
 								read_contour_line (line);
 								
 							when SEC_ROUTE =>
 								read_track_line (line);
-
 								
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
@@ -1496,43 +1495,14 @@ package body et_module_read is
 									when SEC_STENCIL =>
 										read_stencil_line (line);
 										
-									when SEC_KEEPOUT => read_board_line (line);
-										
 									when others => invalid_section;
-								end case;
-								
+								end case;								
 								
 							when SEC_ROUTE_RESTRICT =>
 								et_module_read_route_restrict.read_restrict_line (line);
-
-								
-							when SEC_VIA_RESTRICT =>
-								null;
-								-- read_restrict_line (line, check_layers);
-							
 								
 							when SEC_CONDUCTOR =>
-								if not read_board_line (line) then
-									declare
-										kw : string := f (line, 1);
-										use et_pcb_stack;
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_width then -- width 0.5
-											expect_field_count (line, 2);
-											board_line_width := et_board_geometry.pac_geometry_2.to_distance (f (line, 2));
-
-										elsif kw = keyword_layer then -- layer 1
-											expect_field_count (line, 2);
-											signal_layer := to_signal_layer (f (line, 2));
-											-- validate_signal_layer;
-
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-								end if;
-
+								read_freetrack_line (line);
 								
 							when SEC_OUTLINE | SEC_HOLE =>
 								read_contour_line (line);
@@ -1541,9 +1511,10 @@ package body et_module_read is
 						end case;
 						
 						
-					when SEC_ARC =>  -- CS clean up: separate procdures required
+					when SEC_ARC =>
 						case stack.parent is
-							when SEC_CONTOURS => read_board_arc (line);
+							when SEC_CONTOURS => 
+								read_contour_arc (line);
 							
 							when SEC_ROUTE =>
 								read_track_arc (line);
@@ -1562,44 +1533,14 @@ package body et_module_read is
 									when SEC_STENCIL =>
 										read_stencil_arc (line);
 										
-									when SEC_KEEPOUT => read_board_arc (line);
-										
 									when others => invalid_section;
 								end case;
-
 								
 							when SEC_ROUTE_RESTRICT =>
 								et_module_read_route_restrict.read_restrict_arc (line);
-
-								
-							when SEC_VIA_RESTRICT =>
-								null;
-								-- read_restrict_arc (line, check_layers);
-
-								
+									
 							when SEC_CONDUCTOR =>
-								if not read_board_arc (line) then
-									declare
-										kw : string := f (line, 1);
-										use et_board_geometry.pac_geometry_2;
-										use et_pcb_stack;
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_width then -- width 0.5
-											expect_field_count (line, 2);
-											board_line_width := et_board_geometry.pac_geometry_2.to_distance (f (line, 2));
-
-										elsif kw = keyword_layer then -- layer 1
-											expect_field_count (line, 2);
-											signal_layer := to_signal_layer (f (line, 2));
-											--validate_signal_layer;
-											
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-								end if;
-
+								read_freetrack_arc (line);
 								
 							when SEC_OUTLINE | SEC_HOLE =>
 								read_contour_arc (line);
@@ -1608,9 +1549,10 @@ package body et_module_read is
 						end case;
 
 						
-					when SEC_CIRCLE => -- CS clean up: separate procdures required
+					when SEC_CIRCLE =>
 						case stack.parent is
-							when SEC_CONTOURS => read_board_circle (line);
+							when SEC_CONTOURS =>
+								read_contour_circle (line);
 							
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
@@ -1626,56 +1568,14 @@ package body et_module_read is
 									when SEC_STENCIL =>
 										read_stencil_circle (line);
 										
-									when SEC_KEEPOUT =>
-										if not read_board_circle (line) then
-											declare
-												kw : string := f (line, 1);
-											begin
-												-- CS: In the following: set a corresponding parameter-found-flag
-												if kw = keyword_filled then -- filled yes/no
-													expect_field_count (line, 2);													
-													board_filled := to_filled (f (line, 2));
-												else
-													invalid_keyword (kw);
-												end if;
-											end;
-										end if;
-										
 									when others => invalid_section;
-
 								end case;
 
 							when SEC_ROUTE_RESTRICT =>
 								et_module_read_route_restrict.read_restrict_circle (line);
-								
-							when SEC_VIA_RESTRICT =>
-								null;
-								-- et_module_read_via_restrict.read_restrict_circle (
-									-- line, check_layers);
-
-								
+																
 							when SEC_CONDUCTOR =>
-								if not read_board_circle (line) then
-									declare -- CS separate procdure
-										use et_pcb_stack;
-										use et_board_geometry.pac_geometry_2;
-										kw : string := f (line, 1);
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_width then -- width 0.5
-											expect_field_count (line, 2);
-											board_line_width := to_distance (f (line, 2));
-											
-										elsif kw = keyword_layer then -- layer 1
-											expect_field_count (line, 2);
-											signal_layer := to_signal_layer (f (line, 2));
-											--validate_signal_layer;
-
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-								end if;
+								read_freetrack_circle (line);
 
 							when SEC_OUTLINE | SEC_HOLE =>
 								read_contour_circle (line);
