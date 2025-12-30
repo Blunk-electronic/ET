@@ -46,7 +46,7 @@
 --
 -- ToDo:
 -- - clean up
---
+-- - synchronize names of subprograms with those in et_module_write_board_zones
 --
 --
 

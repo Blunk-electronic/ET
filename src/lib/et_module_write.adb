@@ -1592,23 +1592,8 @@ package body et_module_write is
 				placeholder_end;
 			end write_placeholder;
 
-			
+		
 
-			
-
-			
-			-- cutout zones in any signal layers
-			use pac_cutouts;
-			procedure write_cutout (cursor : in pac_cutouts.cursor) is begin
-				cutout_zone_begin;
-				write_signal_layer (element (cursor).layer);
-				
-				contours_begin; -- CS correct ?
-				write_polygon_segments (type_contour (element (cursor)));
-				contours_end; -- CS correct ?
-				
-				cutout_zone_end;
-			end;
 
 			
 			-- texts in any signal layers
@@ -2012,8 +1997,8 @@ package body et_module_write is
 
 				write_freetracks (module_cursor, log_threshold + 2);
 				write_zones_conductor (module_cursor, log_threshold + 2);
-				
-				iterate (element (module_cursor).board.conductors_floating.cutouts, write_cutout'access);			
+				write_zones_conductor_cutout (module_cursor, log_threshold + 2);
+
 				iterate (element (module_cursor).board.conductors_floating.texts, write_text'access);
 				iterate (element (module_cursor).board.conductors_floating.placeholders, write_placeholder'access);
 				section_mark (section_conductor, FOOTER);

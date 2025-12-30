@@ -155,7 +155,52 @@ package body et_module_write_board_zones is
 	
 	
 	
+
 	
+
+	procedure write_zones_conductor_cutout (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+		use pac_cutouts;
+
+		
+		procedure write_cutout (cursor : in pac_cutouts.cursor) is begin
+			cutout_zone_begin;
+			write_signal_layer (element (cursor).layer);
+			
+			contours_begin; -- CS correct ?
+			write_polygon_segments (type_contour (element (cursor)));
+			contours_end; -- CS correct ?
+			
+			cutout_zone_end;
+		end;
+
+	
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is 
+			cutouts : pac_cutouts.list renames module.board.conductors_floating.cutouts;
+		begin
+			iterate (cutouts, write_cutout'access);
+		end query_module;
+
+		
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " write conductor cutout zones",
+			 level => log_threshold);
+
+		log_indentation_up;
+		query_element (module_cursor, query_module'access);
+		log_indentation_down;
+		
+	end write_zones_conductor_cutout;
+	
+
+
 	
 end et_module_write_board_zones;
 
