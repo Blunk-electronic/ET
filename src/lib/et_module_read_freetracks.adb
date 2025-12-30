@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                    MODULE READ / BOARD TRACKS ROUTE                      --
+--                    MODULE READ / BOARD FREETRACKS                        --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
