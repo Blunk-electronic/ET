@@ -71,6 +71,13 @@ package et_module_write_board_zones is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
+
+	procedure write_zones_non_conductor (
+		module_cursor	: in pac_generic_modules.cursor;
+		layer_cat		: in type_layer_category;
+		face			: in type_face;
+		log_threshold	: in type_log_level);
+
 	
 end et_module_write_board_zones;	
 

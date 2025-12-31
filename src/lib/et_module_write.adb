@@ -1744,21 +1744,16 @@ package body et_module_write is
 				
 				-- lines, arcs, circles:
 				write_silkscreen (module_cursor, TOP, log_threshold + 2);
-				
-				iterate (element (module_cursor).board.silkscreen.top.zones, write_polygon'access);
-				
+				write_zones_non_conductor (module_cursor, LAYER_CAT_SILKSCREEN, TOP, log_threshold + 2);
 				write_texts_non_conductor (module_cursor, LAYER_CAT_SILKSCREEN, TOP, log_threshold + 2);
 				write_placeholders_non_conductor (module_cursor, LAYER_CAT_SILKSCREEN, TOP, log_threshold + 2);
-
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
 
 				-- lines, arcs, circles:
 				write_silkscreen (module_cursor, BOTTOM, log_threshold + 2);
-
-				iterate (element (module_cursor).board.silkscreen.bottom.zones, write_polygon'access);
-
+				write_zones_non_conductor (module_cursor, LAYER_CAT_SILKSCREEN, BOTTOM, log_threshold + 2);
 				write_texts_non_conductor (module_cursor, LAYER_CAT_SILKSCREEN, BOTTOM, log_threshold + 2);
 				write_placeholders_non_conductor (module_cursor, LAYER_CAT_SILKSCREEN, BOTTOM, log_threshold + 2);
 
@@ -1780,9 +1775,7 @@ package body et_module_write is
 
 				-- lines, arcs, circles:
 				write_assy_doc (module_cursor, TOP, log_threshold + 2);
-
-				iterate (element (module_cursor).board.assy_doc.top.zones, write_polygon'access);
-
+				write_zones_non_conductor (module_cursor, LAYER_CAT_ASSY, TOP, log_threshold + 2);
 				write_texts_non_conductor (module_cursor, LAYER_CAT_ASSY, TOP, log_threshold + 2);
 				write_placeholders_non_conductor (module_cursor, LAYER_CAT_ASSY, TOP, log_threshold + 2);
 				section_mark (section_top, FOOTER);
@@ -1791,9 +1784,7 @@ package body et_module_write is
 
 				-- lines, arcs, circles:
 				write_assy_doc (module_cursor, BOTTOM, log_threshold + 2);
-
-				iterate (element (module_cursor).board.assy_doc.bottom.zones, write_polygon'access);
-
+				write_zones_non_conductor (module_cursor, LAYER_CAT_ASSY, BOTTOM, log_threshold + 2);
 				write_texts_non_conductor (module_cursor, LAYER_CAT_ASSY, BOTTOM, log_threshold + 2);
 				write_placeholders_non_conductor (module_cursor, LAYER_CAT_ASSY, BOTTOM, log_threshold + 2);
 				section_mark (section_bottom, FOOTER);
@@ -1806,6 +1797,7 @@ package body et_module_write is
 
 			procedure write_stencil is
 				use et_stencil;
+				use et_pcb_sides;
 			begin			
 				section_mark (section_stencil, HEADER);
 
@@ -1813,14 +1805,15 @@ package body et_module_write is
 				iterate (element (module_cursor).board.stencil.top.lines, write_line'access);
 				iterate (element (module_cursor).board.stencil.top.arcs, write_arc'access);
 				iterate (element (module_cursor).board.stencil.top.circles, write_circle'access);
-				iterate (element (module_cursor).board.stencil.top.zones, write_polygon'access);
+
+				write_zones_non_conductor (module_cursor, LAYER_CAT_STENCIL, TOP, log_threshold + 2);
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
 				iterate (element (module_cursor).board.stencil.bottom.lines, write_line'access);
 				iterate (element (module_cursor).board.stencil.bottom.arcs, write_arc'access);
 				iterate (element (module_cursor).board.stencil.bottom.circles, write_circle'access);
-				iterate (element (module_cursor).board.stencil.bottom.zones, write_polygon'access);
+				write_zones_non_conductor (module_cursor, LAYER_CAT_STENCIL, BOTTOM, log_threshold + 2);
 				section_mark (section_bottom, FOOTER);
 
 				section_mark (section_stencil, FOOTER);
@@ -1839,9 +1832,7 @@ package body et_module_write is
 
 				-- lines, arcs, circles:
 				write_stopmask (module_cursor, TOP, log_threshold + 2);
-
-				iterate (element (module_cursor).board.stopmask.top.zones, write_polygon'access);
-
+				write_zones_non_conductor (module_cursor, LAYER_CAT_STOPMASK, TOP, log_threshold + 2);
 				write_texts_non_conductor (module_cursor, LAYER_CAT_STOPMASK, TOP, log_threshold + 2);
 				write_placeholders_non_conductor (module_cursor, LAYER_CAT_STOPMASK, TOP, log_threshold + 2);
 				section_mark (section_top, FOOTER);
@@ -1849,10 +1840,8 @@ package body et_module_write is
 				section_mark (section_bottom, HEADER);
 
 				-- lines, arcs, circles:
-				write_stopmask (module_cursor, BOTTOM, log_threshold + 2);
-				
-				iterate (element (module_cursor).board.stopmask.bottom.zones, write_polygon'access);
-
+				write_stopmask (module_cursor, BOTTOM, log_threshold + 2);				
+				write_zones_non_conductor (module_cursor, LAYER_CAT_STOPMASK, BOTTOM, log_threshold + 2);
 				write_texts_non_conductor (module_cursor, LAYER_CAT_STOPMASK, BOTTOM, log_threshold + 2);
 				write_placeholders_non_conductor (module_cursor, LAYER_CAT_STOPMASK, BOTTOM, log_threshold + 2);
 				section_mark (section_bottom, FOOTER);
@@ -1865,16 +1854,17 @@ package body et_module_write is
 
 			procedure write_keepout is
 				use et_keepout;
+				use et_pcb_sides;
 			begin
 				section_mark (section_keepout, HEADER);
 
 				section_mark (section_top, HEADER);
-				iterate (element (module_cursor).board.keepout.top.zones, write_polygon'access);
+				write_zones_non_conductor (module_cursor, LAYER_CAT_KEEPOUT, TOP, log_threshold + 2);
 				iterate (element (module_cursor).board.keepout.top.cutouts, write_cutout'access);
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
-				iterate (element (module_cursor).board.keepout.bottom.zones, write_polygon'access);
+				write_zones_non_conductor (module_cursor, LAYER_CAT_KEEPOUT, BOTTOM, log_threshold + 2);
 				iterate (element (module_cursor).board.keepout.bottom.cutouts, write_cutout'access);
 				section_mark (section_bottom, FOOTER);
 

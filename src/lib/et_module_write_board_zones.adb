@@ -201,6 +201,148 @@ package body et_module_write_board_zones is
 	
 
 
+
+
+
+
+	
+
+	procedure write_zones_non_conductor (
+		module_cursor	: in pac_generic_modules.cursor;
+		layer_cat		: in type_layer_category;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is
+		use et_silkscreen;
+		use pac_silk_zones;
+
+		use et_assy_doc;
+		use pac_doc_zones;
+
+		use et_stopmask;
+		use pac_stop_zones;
+
+		use et_keepout;
+		use pac_keepout_zones;
+
+		use et_stencil;
+		use pac_stencil_zones;
+
+		
+		procedure write_polygon (cursor : in pac_silk_zones.cursor) is 
+		begin
+			fill_zone_begin;
+			contours_begin;		
+			write_polygon_segments (type_contour (element (cursor)));
+			contours_end;
+			fill_zone_end;
+		end write_polygon;
+
+
+		procedure write_polygon (cursor : in pac_doc_zones.cursor) is 
+		begin
+			fill_zone_begin;
+			contours_begin;		
+			write_polygon_segments (element (cursor));
+			contours_end;
+			fill_zone_end;
+		end write_polygon;
+
+
+		procedure write_polygon (cursor : in pac_keepout_zones.cursor) is 		
+		begin
+			fill_zone_begin;
+			contours_begin;
+			write_polygon_segments (element (cursor));
+			contours_end;
+			fill_zone_end;
+		end write_polygon;
+
+
+		procedure write_polygon (cursor : in pac_stop_zones.cursor) is 
+		begin
+			fill_zone_begin;
+			contours_begin;		
+			write_polygon_segments (element (cursor));
+			contours_end;
+			fill_zone_end;
+		end write_polygon;
+
+
+		procedure write_polygon (cursor : in pac_stencil_zones.cursor) is 
+		begin
+			fill_zone_begin;
+			contours_begin;
+			write_polygon_segments (element (cursor));
+			contours_end;
+			fill_zone_end;
+		end write_polygon;
+
+		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is 
+
+		begin
+			case face is
+				when TOP =>
+					case layer_cat is
+						when LAYER_CAT_SILKSCREEN =>
+							iterate (module.board.silkscreen.top.zones, write_polygon'access);
+										
+						when LAYER_CAT_ASSY =>
+							iterate (module.board.assy_doc.top.zones, write_polygon'access);
+
+						when LAYER_CAT_STENCIL =>
+							iterate (module.board.stencil.top.zones, write_polygon'access);
+							
+						when LAYER_CAT_STOPMASK =>
+							iterate (module.board.stopmask.top.zones, write_polygon'access);
+							
+						when LAYER_CAT_KEEPOUT =>
+							iterate (module.board.keepout.top.zones, write_polygon'access);
+
+						when others => null; -- CS raise exception ?
+					end case;
+					
+				when BOTTOM =>
+					case layer_cat is
+						when LAYER_CAT_SILKSCREEN =>
+							iterate (module.board.silkscreen.bottom.zones, write_polygon'access);
+
+						when LAYER_CAT_ASSY =>
+							iterate (module.board.assy_doc.bottom.zones, write_polygon'access);
+							
+						when LAYER_CAT_STENCIL =>
+							iterate (module.board.stencil.bottom.zones, write_polygon'access);
+							
+						when LAYER_CAT_STOPMASK =>
+							iterate (module.board.stopmask.bottom.zones, write_polygon'access);
+							
+						when LAYER_CAT_KEEPOUT =>
+							iterate (module.board.keepout.bottom.zones, write_polygon'access);
+
+						when others => null; -- CS raise exception ?
+					end case;
+					
+			end case;
+
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " write non-conductor zones",
+			 level => log_threshold);
+
+		log_indentation_up;
+		query_element (module_cursor, query_module'access);
+		log_indentation_down;
+	end write_zones_non_conductor;
+
+	
 	
 end et_module_write_board_zones;
 
