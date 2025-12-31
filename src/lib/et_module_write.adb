@@ -147,13 +147,6 @@ with et_thermal_relief;
 with et_conductor_text.boards;
 with et_route_restrict.boards;
 with et_via_restrict.boards;
-with et_stopmask;
-with et_stencil;
-with et_silkscreen;
-with et_assy_doc;
-with et_keepout;
-with et_pcb_placeholders;
-with et_pcb_placeholders.non_conductor;
 
 with et_mirroring;						use et_mirroring;
 with et_unit_name;
@@ -168,7 +161,7 @@ with et_module_write_text_board;		use et_module_write_text_board;
 with et_module_write_silkscreen;		use et_module_write_silkscreen;
 with et_module_write_assy_doc;			use et_module_write_assy_doc;
 with et_module_write_stopmask;			use et_module_write_stopmask;
-
+with et_module_write_stencil;			use et_module_write_stencil;
 
 
 package body et_module_write is
@@ -1522,45 +1515,11 @@ package body et_module_write is
 		procedure query_board is
 			use et_devices_non_electrical;
 			
-			use et_board_text;
-			use pac_text_board;
 			use et_board_geometry.pac_contours;
 			use et_pcb;
 			use et_pcb_stack;
 			use et_board_geometry.pac_geometry_2;
 
-			use pac_text_board_vectorized;
-			use pac_texts_fab_with_content;
-
-			use et_pcb_placeholders;
-			use et_pcb_placeholders.non_conductor;		
-
-			use et_silkscreen;
-			use pac_silk_lines;
-			use pac_silk_arcs;
-			use pac_silk_circles;
-			use pac_silk_zones;
-
-			use et_assy_doc;
-			use pac_doc_lines;
-			use pac_doc_arcs;
-			use pac_doc_circles;
-			use pac_doc_zones;
-
-			use et_stencil;
-			use pac_stencil_lines;
-			use pac_stencil_arcs;
-			use pac_stencil_circles;
-			use pac_stencil_zones;
-
-			use et_stopmask;
-			use pac_stop_lines;
-			use pac_stop_arcs;
-			use pac_stop_circles;
-			use pac_stop_zones;
-
-			use et_keepout;
-			use pac_keepout_zones;
 
 			use et_route_restrict.boards;
 			use pac_route_restrict_lines;
@@ -1575,7 +1534,6 @@ package body et_module_write is
 			use et_conductor_segment.boards;
 	
 
-			use pac_keepout_cutouts;
 			use pac_route_restrict_cutouts;
 			use pac_via_restrict_cutouts;
 			use pac_devices_non_electrical;
@@ -1735,7 +1693,6 @@ package body et_module_write is
 
 
 			procedure write_silkscreen is
-				use et_silkscreen;
 				use et_pcb_sides;
 			begin
 				section_mark (section_silkscreen, HEADER);
@@ -1766,7 +1723,6 @@ package body et_module_write is
 
 			
 			procedure write_assy_doc is
-				use et_assy_doc;
 				use et_pcb_sides;
 			begin
 				section_mark (section_assembly_doc, HEADER);
@@ -1796,23 +1752,17 @@ package body et_module_write is
 			
 
 			procedure write_stencil is
-				use et_stencil;
 				use et_pcb_sides;
 			begin			
 				section_mark (section_stencil, HEADER);
 
 				section_mark (section_top, HEADER);
-				iterate (element (module_cursor).board.stencil.top.lines, write_line'access);
-				iterate (element (module_cursor).board.stencil.top.arcs, write_arc'access);
-				iterate (element (module_cursor).board.stencil.top.circles, write_circle'access);
-
+				write_stencil (module_cursor, TOP, log_threshold + 2);
 				write_zones_non_conductor (module_cursor, LAYER_CAT_STENCIL, TOP, log_threshold + 2);
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
-				iterate (element (module_cursor).board.stencil.bottom.lines, write_line'access);
-				iterate (element (module_cursor).board.stencil.bottom.arcs, write_arc'access);
-				iterate (element (module_cursor).board.stencil.bottom.circles, write_circle'access);
+				write_stencil (module_cursor, BOTTOM, log_threshold + 2);
 				write_zones_non_conductor (module_cursor, LAYER_CAT_STENCIL, BOTTOM, log_threshold + 2);
 				section_mark (section_bottom, FOOTER);
 
@@ -1823,7 +1773,6 @@ package body et_module_write is
 			
 
 			procedure write_stop_mask is
-				use et_stopmask;				
 				use et_pcb_sides;
 			begin
 				section_mark (section_stopmask, HEADER);
@@ -1853,7 +1802,6 @@ package body et_module_write is
 
 
 			procedure write_keepout is
-				use et_keepout;
 				use et_pcb_sides;
 			begin
 				section_mark (section_keepout, HEADER);
