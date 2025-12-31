@@ -343,6 +343,93 @@ package body et_module_write_board_zones is
 	end write_zones_non_conductor;
 
 	
+
+
+
+
+
+	procedure write_zones_non_conductor_cutout (
+		module_cursor	: in pac_generic_modules.cursor;
+		layer_cat		: in type_layer_category;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is
+		use et_keepout;
+		use pac_keepout_cutouts;
+
+
+		procedure write_cutout (cursor : in pac_keepout_cutouts.cursor) is 
+		begin
+			cutout_zone_begin;		
+			contours_begin;
+			write_polygon_segments (element (cursor));
+			contours_end;
+			cutout_zone_end;
+		end;
+
+		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is begin
+			case face is
+				when TOP =>
+					case layer_cat is
+						when LAYER_CAT_SILKSCREEN =>
+							null; -- CS
+										
+						when LAYER_CAT_ASSY =>
+							null; -- CS
+
+						when LAYER_CAT_STENCIL =>
+							null; -- CS
+							
+						when LAYER_CAT_STOPMASK =>
+							null; -- CS
+							
+						when LAYER_CAT_KEEPOUT =>
+							iterate (module.board.keepout.top.cutouts, write_cutout'access);
+
+						when others => null; -- CS raise exception ?
+					end case;
+
+					
+				when BOTTOM =>
+					case layer_cat is
+						when LAYER_CAT_SILKSCREEN =>
+							null; -- CS
+										
+						when LAYER_CAT_ASSY =>
+							null; -- CS
+
+						when LAYER_CAT_STENCIL =>
+							null; -- CS
+							
+						when LAYER_CAT_STOPMASK =>
+							null; -- CS
+							
+						when LAYER_CAT_KEEPOUT =>
+							iterate (module.board.keepout.bottom.cutouts, write_cutout'access);
+
+						when others => null; -- CS raise exception ?
+					end case;					
+			end case;
+
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " write non-conductor zones",
+			 level => log_threshold);
+
+		log_indentation_up;
+		query_element (module_cursor, query_module'access);
+		log_indentation_down;
+		
+	end write_zones_non_conductor_cutout;
+
 	
 end et_module_write_board_zones;
 

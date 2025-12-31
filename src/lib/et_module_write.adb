@@ -1860,12 +1860,12 @@ package body et_module_write is
 
 				section_mark (section_top, HEADER);
 				write_zones_non_conductor (module_cursor, LAYER_CAT_KEEPOUT, TOP, log_threshold + 2);
-				iterate (element (module_cursor).board.keepout.top.cutouts, write_cutout'access);
+				write_zones_non_conductor_cutout (module_cursor, LAYER_CAT_KEEPOUT, TOP, log_threshold + 2);
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
 				write_zones_non_conductor (module_cursor, LAYER_CAT_KEEPOUT, BOTTOM, log_threshold + 2);
-				iterate (element (module_cursor).board.keepout.bottom.cutouts, write_cutout'access);
+				write_zones_non_conductor_cutout (module_cursor, LAYER_CAT_KEEPOUT, BOTTOM, log_threshold + 2);
 				section_mark (section_bottom, FOOTER);
 
 				section_mark (section_keepout, FOOTER);
