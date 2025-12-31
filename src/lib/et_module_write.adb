@@ -162,6 +162,7 @@ with et_module_write_silkscreen;		use et_module_write_silkscreen;
 with et_module_write_assy_doc;			use et_module_write_assy_doc;
 with et_module_write_stopmask;			use et_module_write_stopmask;
 with et_module_write_stencil;			use et_module_write_stencil;
+with et_module_write_route_restrict;	use et_module_write_route_restrict;
 
 
 package body et_module_write is
@@ -1823,9 +1824,9 @@ package body et_module_write is
 
 			procedure write_route_restrict is begin
 				section_mark (section_route_restrict, HEADER);
-				iterate (element (module_cursor).board.route_restrict.lines, write_line'access);
-				iterate (element (module_cursor).board.route_restrict.arcs, write_arc'access);
-				iterate (element (module_cursor).board.route_restrict.circles, write_circle'access);
+
+				-- lines, arcs, circles:
+				write_route_restrict (module_cursor, log_threshold + 2);
 				iterate (element (module_cursor).board.route_restrict.contours, write_contour'access);
 				iterate (element (module_cursor).board.route_restrict.cutouts, write_cutout'access);
 				section_mark (section_route_restrict, FOOTER);
