@@ -136,9 +136,129 @@ package body et_module_write_text_board is
 	end write_texts_conductor;
 
 
+	
 		
 
+	
 
+
+	procedure write_texts_non_conductor (
+		module_cursor	: in pac_generic_modules.cursor;
+		layer_cat		: in type_layer_category;
+		face 			: in type_face;
+		log_threshold	: in type_log_level)
+	is
+		use et_silkscreen;
+		use pac_silk_texts;
+		
+		use et_assy_doc;
+		use pac_doc_texts;
+		
+		use et_stopmask;
+		use pac_stop_texts;
+
+		
+		procedure write_text (cursor : in pac_silk_texts.cursor) is 
+			text : type_silk_text renames element (cursor);
+		begin
+			text_begin;
+
+			write (keyword => keyword_content, wrap => true,
+				parameters => to_string (element (cursor).content));
+
+			write_text_properties (text);
+
+			text_end;
+		end write_text;
+
+		
+		
+		procedure write_text (cursor : in pac_doc_texts.cursor) is 
+			text : type_doc_text renames element (cursor);
+		begin
+			text_begin;
+
+			write (keyword => keyword_content, wrap => true,
+				parameters => to_string (element (cursor).content));
+
+			write_text_properties (text);
+
+			text_end;
+		end write_text;
+				
+				
+		
+		procedure write_text (cursor : in pac_stop_texts.cursor) is 
+			text : type_stop_text renames element (cursor);
+		begin
+			text_begin;
+
+			write (keyword => keyword_content, wrap => true,
+				parameters => to_string (element (cursor).content));
+
+			write_text_properties (text);
+
+			text_end;
+		end write_text;
+
+		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is begin
+			case face is
+				when TOP =>
+					case layer_cat is
+						when LAYER_CAT_SILKSCREEN =>
+							iterate (module.board.silkscreen.top.texts,
+								write_text'access);
+
+						when LAYER_CAT_ASSY =>
+							iterate (module.board.assy_doc.top.texts,
+								write_text'access);
+
+						when LAYER_CAT_STOPMASK =>
+							iterate (module.board.stopmask.top.texts,
+								write_text'access);
+							
+						when others => invalid_section;
+					end case;
+
+					
+				when BOTTOM =>
+					case layer_cat is
+						when LAYER_CAT_SILKSCREEN =>
+							iterate (module.board.silkscreen.bottom.texts,
+								write_text'access);
+
+						when LAYER_CAT_ASSY =>
+							iterate (module.board.assy_doc.bottom.texts,
+								write_text'access);
+
+						when LAYER_CAT_STOPMASK =>
+							iterate (module.board.stopmask.bottom.texts,
+								write_text'access);
+							
+						when others => invalid_section;
+					end case;					
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " write texts in non-conductor layers",
+			 level => log_threshold);
+
+		log_indentation_up;
+		query_element (module_cursor, query_module'access);
+		log_indentation_down;
+	end write_texts_non_conductor;
+
+
+
+	
 
 	
 
@@ -184,7 +304,94 @@ package body et_module_write_text_board is
 	end write_placeholders_conductor;
 
 	
-				
+
+
+
+
+
+
+	
+	procedure write_placeholders_non_conductor (
+		module_cursor	: in pac_generic_modules.cursor;
+		layer_cat		: in type_layer_category;
+		face 			: in type_face;
+		log_threshold	: in type_log_level)
+	is
+
+		use et_pcb_placeholders.non_conductor;
+		use pac_placeholders_non_conductor;
+
+		
+		procedure write_placeholder (cursor : in pac_placeholders_non_conductor.cursor) is
+			ph : type_placeholder_non_conductor renames element (cursor);
+		begin
+			placeholder_begin;
+			write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
+			write_text_properties (ph);
+			placeholder_end;
+		end write_placeholder;
+
+		
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is begin
+			case face is
+				when TOP =>
+					case layer_cat is
+						when LAYER_CAT_SILKSCREEN =>
+							iterate (module.board.silkscreen.top.placeholders,
+								write_placeholder'access);
+
+						when LAYER_CAT_ASSY =>
+							iterate (module.board.assy_doc.top.placeholders,
+								write_placeholder'access);
+
+						when LAYER_CAT_STOPMASK =>
+							iterate (module.board.stopmask.top.placeholders,
+								write_placeholder'access);
+							
+						when others => invalid_section;
+					end case;
+
+					
+				when BOTTOM =>
+					case layer_cat is
+						when LAYER_CAT_SILKSCREEN =>
+							iterate (module.board.silkscreen.bottom.placeholders,
+								write_placeholder'access);
+
+						when LAYER_CAT_ASSY =>
+							iterate (module.board.assy_doc.bottom.placeholders,
+								write_placeholder'access);
+
+						when LAYER_CAT_STOPMASK =>
+							iterate (module.board.stopmask.bottom.placeholders,
+								write_placeholder'access);
+							
+						when others => invalid_section;
+					end case;					
+			end case;
+		end query_module;
+
+		
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " write placeholders in non-conductor layers",
+			 level => log_threshold);
+
+		log_indentation_up;
+		query_element (module_cursor, query_module'access);
+		log_indentation_down;
+	end write_placeholders_non_conductor;
+
+
+
+	
+
+	
 end et_module_write_text_board;
 
 	

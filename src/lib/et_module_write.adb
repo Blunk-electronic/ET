@@ -129,6 +129,8 @@ with et_board_ops.frame;
 with et_schematic_text;
 with et_board_text;
 
+with et_board_layer_category;			use et_board_layer_category;
+
 with et_device_placeholders;
 with et_device_placeholders.packages;
 with et_device_placeholders.symbols;
@@ -1568,28 +1570,7 @@ package body et_module_write is
 
 			use et_fill_zones.boards;
 			use et_conductor_segment.boards;
-
-		
-			
-			procedure write_placeholder (cursor : in pac_placeholders_non_conductor.cursor) is
-				use et_pcb_placeholders.non_conductor;
-				use pac_placeholders_non_conductor;
-				ph : type_placeholder_non_conductor renames element (cursor);
-			begin
-				placeholder_begin;
-
-				write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
-
-				write_text_properties (ph);
-
-				placeholder_end;
-			end write_placeholder;
-
-		
-			
-
-
-			
+	
 
 			use pac_keepout_cutouts;
 			use pac_route_restrict_cutouts;
@@ -1752,24 +1733,7 @@ package body et_module_write is
 
 			procedure write_silkscreen is
 				use et_silkscreen;
-				use pac_silk_texts;
-
-
-				-- CS move this procedure to et_pcb_rw
-				procedure write_text (cursor : in pac_silk_texts.cursor) is 
-					text : type_silk_text renames element (cursor);
-				begin
-					text_begin;
-
-					write (keyword => keyword_content, wrap => true,
-						parameters => to_string (element (cursor).content));
-
-					write_text_properties (text);
-
-					text_end;
-				end write_text;
-
-				use pac_placeholders_non_conductor;
+				use et_pcb_sides;
 			begin
 				section_mark (section_silkscreen, HEADER);
 
@@ -1778,8 +1742,10 @@ package body et_module_write is
 				iterate (element (module_cursor).board.silkscreen.top.arcs, write_arc'access);
 				iterate (element (module_cursor).board.silkscreen.top.circles, write_circle'access);
 				iterate (element (module_cursor).board.silkscreen.top.zones, write_polygon'access);
-				iterate (element (module_cursor).board.silkscreen.top.texts, write_text'access);
-				iterate (element (module_cursor).board.silkscreen.top.placeholders, write_placeholder'access);
+
+				write_texts_non_conductor (module_cursor, LAYER_CAT_SILKSCREEN, TOP, log_threshold + 2);
+				write_placeholders_non_conductor (module_cursor, LAYER_CAT_SILKSCREEN, TOP, log_threshold + 2);
+
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
@@ -1787,8 +1753,10 @@ package body et_module_write is
 				iterate (element (module_cursor).board.silkscreen.bottom.arcs, write_arc'access);
 				iterate (element (module_cursor).board.silkscreen.bottom.circles, write_circle'access);
 				iterate (element (module_cursor).board.silkscreen.bottom.zones, write_polygon'access);
-				iterate (element (module_cursor).board.silkscreen.bottom.texts, write_text'access);
-				iterate (element (module_cursor).board.silkscreen.bottom.placeholders, write_placeholder'access);
+
+				write_texts_non_conductor (module_cursor, LAYER_CAT_SILKSCREEN, BOTTOM, log_threshold + 2);
+				write_placeholders_non_conductor (module_cursor, LAYER_CAT_SILKSCREEN, BOTTOM, log_threshold + 2);
+
 				section_mark (section_bottom, FOOTER);
 				
 				section_mark (section_silkscreen, FOOTER);
@@ -1799,23 +1767,7 @@ package body et_module_write is
 			
 			procedure write_assy_doc is
 				use et_assy_doc;
-				use pac_doc_texts;
-
-
-				procedure write_text (cursor : in pac_doc_texts.cursor) is 
-					text : type_doc_text renames element (cursor);
-				begin
-					text_begin;
-
-					write (keyword => keyword_content, wrap => true,
-						parameters => to_string (element (cursor).content));
-
-					write_text_properties (text);
-
-					text_end;
-				end write_text;
-
-				use pac_placeholders_non_conductor;
+				use et_pcb_sides;
 			begin
 				section_mark (section_assembly_doc, HEADER);
 
@@ -1824,8 +1776,9 @@ package body et_module_write is
 				iterate (element (module_cursor).board.assy_doc.top.arcs, write_arc'access);
 				iterate (element (module_cursor).board.assy_doc.top.circles, write_circle'access);
 				iterate (element (module_cursor).board.assy_doc.top.zones, write_polygon'access);
-				iterate (element (module_cursor).board.assy_doc.top.texts, write_text'access);
-				iterate (element (module_cursor).board.assy_doc.top.placeholders, write_placeholder'access);
+
+				write_texts_non_conductor (module_cursor, LAYER_CAT_ASSY, TOP, log_threshold + 2);
+				write_placeholders_non_conductor (module_cursor, LAYER_CAT_ASSY, TOP, log_threshold + 2);
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
@@ -1833,8 +1786,9 @@ package body et_module_write is
 				iterate (element (module_cursor).board.assy_doc.bottom.arcs, write_arc'access);
 				iterate (element (module_cursor).board.assy_doc.bottom.circles, write_circle'access);
 				iterate (element (module_cursor).board.assy_doc.bottom.zones, write_polygon'access);
-				iterate (element (module_cursor).board.assy_doc.bottom.texts, write_text'access);
-				iterate (element (module_cursor).board.assy_doc.bottom.placeholders, write_placeholder'access);
+
+				write_texts_non_conductor (module_cursor, LAYER_CAT_ASSY, BOTTOM, log_threshold + 2);
+				write_placeholders_non_conductor (module_cursor, LAYER_CAT_ASSY, BOTTOM, log_threshold + 2);
 				section_mark (section_bottom, FOOTER);
 
 				section_mark (section_assembly_doc, FOOTER);
@@ -1869,24 +1823,8 @@ package body et_module_write is
 			
 
 			procedure write_stop_mask is
-				use et_stopmask;
-				use pac_stop_texts;
-
-				
-				procedure write_text (cursor : in pac_stop_texts.cursor) is 
-					text : type_stop_text renames element (cursor);
-				begin
-					text_begin;
-
-					write (keyword => keyword_content, wrap => true,
-						parameters => to_string (element (cursor).content));
-
-					write_text_properties (text);
-
-					text_end;
-				end write_text;
-
-
+				use et_stopmask;				
+				use et_pcb_sides;
 			begin
 				section_mark (section_stopmask, HEADER);
 
@@ -1895,7 +1833,9 @@ package body et_module_write is
 				iterate (element (module_cursor).board.stopmask.top.arcs, write_arc'access);
 				iterate (element (module_cursor).board.stopmask.top.circles, write_circle'access);
 				iterate (element (module_cursor).board.stopmask.top.zones, write_polygon'access);
-				iterate (element (module_cursor).board.stopmask.top.texts, write_text'access);			
+
+				write_texts_non_conductor (module_cursor, LAYER_CAT_STOPMASK, TOP, log_threshold + 2);
+				write_placeholders_non_conductor (module_cursor, LAYER_CAT_STOPMASK, TOP, log_threshold + 2);
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
@@ -1903,7 +1843,9 @@ package body et_module_write is
 				iterate (element (module_cursor).board.stopmask.bottom.arcs, write_arc'access);
 				iterate (element (module_cursor).board.stopmask.bottom.circles, write_circle'access);
 				iterate (element (module_cursor).board.stopmask.bottom.zones, write_polygon'access);
-				iterate (element (module_cursor).board.stopmask.bottom.texts, write_text'access);
+
+				write_texts_non_conductor (module_cursor, LAYER_CAT_STOPMASK, BOTTOM, log_threshold + 2);
+				write_placeholders_non_conductor (module_cursor, LAYER_CAT_STOPMASK, BOTTOM, log_threshold + 2);
 				section_mark (section_bottom, FOOTER);
 
 				section_mark (section_stopmask, FOOTER);
