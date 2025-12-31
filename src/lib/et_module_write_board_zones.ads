@@ -86,7 +86,26 @@ package et_module_write_board_zones is
 		log_threshold	: in type_log_level);
 
 
+	procedure write_zones_route_restrict (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
 
+
+	procedure write_zones_via_restrict (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+	procedure write_zones_route_restrict_cutout (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+	procedure write_zones_via_restrict_cutout (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+	
 end et_module_write_board_zones;	
 
 

@@ -144,9 +144,6 @@ with et_conductor_segment.boards;
 with et_fill_zones;
 with et_fill_zones.boards;
 with et_thermal_relief;
-with et_conductor_text.boards;
-with et_route_restrict.boards;
-with et_via_restrict.boards;
 
 with et_mirroring;						use et_mirroring;
 with et_unit_name;
@@ -174,7 +171,6 @@ package body et_module_write is
 		save_as_name	: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver_test, templates/clock_generator_test
 		log_threshold	: in type_log_level)
 	is
-		use et_conductor_text.boards;
 		use pac_generic_modules;
 
 		-- backup the previous output destination
@@ -1515,29 +1511,12 @@ package body et_module_write is
 		
 		procedure query_board is
 			use et_devices_non_electrical;
+			use pac_devices_non_electrical;
 			
 			use et_board_geometry.pac_contours;
 			use et_pcb;
 			use et_pcb_stack;
 			use et_board_geometry.pac_geometry_2;
-
-
-			use et_route_restrict.boards;
-			use pac_route_restrict_lines;
-			use pac_route_restrict_arcs;
-			use pac_route_restrict_circles;
-			use pac_route_restrict_contours;
-			
-			use et_via_restrict.boards;
-			use pac_via_restrict_contours;
-
-			use et_fill_zones.boards;
-			use et_conductor_segment.boards;
-	
-
-			use pac_route_restrict_cutouts;
-			use pac_via_restrict_cutouts;
-			use pac_devices_non_electrical;
 
 			
 			procedure query_devices_non_electric (c : in pac_devices_non_electrical.cursor) is
@@ -1827,8 +1806,9 @@ package body et_module_write is
 
 				-- lines, arcs, circles:
 				write_route_restrict (module_cursor, log_threshold + 2);
-				iterate (element (module_cursor).board.route_restrict.contours, write_contour'access);
-				iterate (element (module_cursor).board.route_restrict.cutouts, write_cutout'access);
+				write_zones_route_restrict (module_cursor, log_threshold + 2);
+				write_zones_route_restrict_cutout (module_cursor, log_threshold + 2);
+
 				section_mark (section_route_restrict, FOOTER);
 			end write_route_restrict;
 
@@ -1836,8 +1816,8 @@ package body et_module_write is
 
 			procedure write_via_restrict is begin
 				section_mark (section_via_restrict, HEADER);
-				iterate (element (module_cursor).board.via_restrict.contours, write_contour'access);
-				iterate (element (module_cursor).board.via_restrict.cutouts, write_cutout'access);
+				write_zones_via_restrict (module_cursor, log_threshold + 2);
+				write_zones_via_restrict_cutout (module_cursor, log_threshold + 2);
 				section_mark (section_via_restrict, FOOTER);
 			end write_via_restrict;
 
@@ -1872,6 +1852,7 @@ package body et_module_write is
 			write_stencil;
 			write_stop_mask;
 			write_keepout;
+			
 			write_route_restrict;
 			write_via_restrict;
 

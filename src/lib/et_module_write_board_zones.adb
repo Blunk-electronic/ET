@@ -415,7 +415,6 @@ package body et_module_write_board_zones is
 						when others => null; -- CS raise exception ?
 					end case;					
 			end case;
-
 		end query_module;
 
 		
@@ -430,6 +429,196 @@ package body et_module_write_board_zones is
 		
 	end write_zones_non_conductor_cutout;
 
+
+
+
+
+
+
+
+	
+
+	procedure write_zones_route_restrict (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+		use et_route_restrict.boards;
+		use pac_route_restrict_contours;
+		
+
+		procedure write_contour (cursor : in pac_route_restrict_contours.cursor) is 
+		begin
+			fill_zone_begin;
+			write_signal_layers (element (cursor).layers);
+
+			contours_begin;
+			write_polygon_segments (element (cursor));
+			contours_end;
+			
+			fill_zone_end;
+		end write_contour;
+
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is begin
+			iterate (module.board.route_restrict.contours, write_contour'access);
+		end query_module;
+
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " write route restrict zones",
+			 level => log_threshold);
+
+		log_indentation_up;
+		query_element (module_cursor, query_module'access);
+		log_indentation_down;
+		
+	end write_zones_route_restrict;
+
+	
+
+
+	
+
+
+	procedure write_zones_via_restrict (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+		use et_via_restrict.boards;
+		use pac_via_restrict_contours;
+		
+
+		procedure write_contour (cursor : in pac_via_restrict_contours.cursor) is 
+		begin
+			fill_zone_begin;
+			write_signal_layers (element (cursor).layers);
+
+			contours_begin;
+			write_polygon_segments (element (cursor));
+			contours_end;
+			
+			fill_zone_end;
+		end write_contour;
+
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is begin
+			iterate (module.board.via_restrict.contours, write_contour'access);
+		end query_module;
+
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " write via restrict zones",
+			 level => log_threshold);
+
+		log_indentation_up;
+		query_element (module_cursor, query_module'access);
+		log_indentation_down;
+		
+	end write_zones_via_restrict;
+	
+
+
+
+
+	
+
+	procedure write_zones_route_restrict_cutout (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is 
+		use et_route_restrict.boards;
+		use pac_route_restrict_cutouts;
+
+		
+		procedure write_cutout (cursor : in pac_route_restrict_cutouts.cursor) is 
+		begin
+			cutout_zone_begin;
+			write_signal_layers (element (cursor).layers);
+
+			contours_begin;
+			write_polygon_segments (element (cursor));
+			contours_end;
+			
+			cutout_zone_end;
+		end;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is begin
+			iterate (module.board.route_restrict.cutouts, write_cutout'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " write route restrict cutout zones",
+			 level => log_threshold);
+
+		log_indentation_up;
+		query_element (module_cursor, query_module'access);
+		log_indentation_down;
+	end write_zones_route_restrict_cutout;
+
+
+
+	
+
+	
+
+	procedure write_zones_via_restrict_cutout (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+		use et_via_restrict.boards;
+		use pac_via_restrict_cutouts;
+
+		
+		procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor) is 
+		begin
+			cutout_zone_begin;
+			write_signal_layers (element (cursor).layers);
+			
+			contours_begin;
+			write_polygon_segments (element (cursor));
+			contours_end;
+			
+			cutout_zone_end;
+		end;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is begin
+			iterate (module.board.via_restrict.cutouts, write_cutout'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " write via restrict cutout zones",
+			 level => log_threshold);
+
+		log_indentation_up;
+		query_element (module_cursor, query_module'access);
+		log_indentation_down;
+	end write_zones_via_restrict_cutout;
+
+	
 	
 end et_module_write_board_zones;
 
