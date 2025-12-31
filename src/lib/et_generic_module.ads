@@ -36,7 +36,8 @@
 --   history of changes:
 --
 --  ToDo: 
---  
+--  - clean up
+--  - decompose in smaller packages
 
 with ada.containers;
 with ada.containers.ordered_maps;
@@ -44,6 +45,7 @@ with ada.containers.ordered_maps;
 with et_schematic_geometry;
 with et_schematic_coordinates;
 with et_schematic_text;
+with et_board_geometry;
 with et_nets;
 with et_netlists;
 with et_submodules;
@@ -142,6 +144,15 @@ package et_generic_module is
 
 
 
+	function get_grid_schematic (
+		module : in type_generic_module)
+		return et_schematic_geometry.pac_grid.type_grid;
+
+
+	function get_grid_board (
+		module : in type_generic_module)
+		return et_board_geometry.pac_grid.type_grid;
+	
 	
 		
 	-- Generic modules and submodules (which contain schematic and layout stuff)

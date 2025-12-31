@@ -46,6 +46,24 @@ with et_exceptions;				use et_exceptions;
 package body et_generic_module is
 
 
+	function get_grid_schematic (
+		module : in type_generic_module)
+		return et_schematic_geometry.pac_grid.type_grid
+	is begin
+		return module.grid;
+	end;
+
+
+
+	function get_grid_board (
+		module : in type_generic_module)
+		return et_board_geometry.pac_grid.type_grid
+	is begin
+		return module.board.grid;
+	end;
+
+	
+
 	function to_string (
 		module_cursor	: in pac_generic_modules.cursor;
 		quote			: in boolean := true)				   
