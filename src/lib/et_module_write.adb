@@ -165,7 +165,7 @@ with et_module_write_board_outline;		use et_module_write_board_outline;
 with et_module_write_freetracks;		use et_module_write_freetracks;
 with et_module_write_board_zones;		use et_module_write_board_zones;
 with et_module_write_text_board;		use et_module_write_text_board;
-
+with et_module_write_silkscreen;		use et_module_write_silkscreen;
 
 
 package body et_module_write is
@@ -1738,20 +1738,22 @@ package body et_module_write is
 				section_mark (section_silkscreen, HEADER);
 
 				section_mark (section_top, HEADER);
-				iterate (element (module_cursor).board.silkscreen.top.lines, write_line'access);
-				iterate (element (module_cursor).board.silkscreen.top.arcs, write_arc'access);
-				iterate (element (module_cursor).board.silkscreen.top.circles, write_circle'access);
+				
+				-- lines, arcs, circles:
+				write_silkscreen (module_cursor, TOP, log_threshold + 2);
+				
 				iterate (element (module_cursor).board.silkscreen.top.zones, write_polygon'access);
-
+				
 				write_texts_non_conductor (module_cursor, LAYER_CAT_SILKSCREEN, TOP, log_threshold + 2);
 				write_placeholders_non_conductor (module_cursor, LAYER_CAT_SILKSCREEN, TOP, log_threshold + 2);
 
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
-				iterate (element (module_cursor).board.silkscreen.bottom.lines, write_line'access);
-				iterate (element (module_cursor).board.silkscreen.bottom.arcs, write_arc'access);
-				iterate (element (module_cursor).board.silkscreen.bottom.circles, write_circle'access);
+
+				-- lines, arcs, circles:
+				write_silkscreen (module_cursor, BOTTOM, log_threshold + 2);
+
 				iterate (element (module_cursor).board.silkscreen.bottom.zones, write_polygon'access);
 
 				write_texts_non_conductor (module_cursor, LAYER_CAT_SILKSCREEN, BOTTOM, log_threshold + 2);
