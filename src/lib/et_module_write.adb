@@ -167,6 +167,8 @@ with et_module_write_board_zones;		use et_module_write_board_zones;
 with et_module_write_text_board;		use et_module_write_text_board;
 with et_module_write_silkscreen;		use et_module_write_silkscreen;
 with et_module_write_assy_doc;			use et_module_write_assy_doc;
+with et_module_write_stopmask;			use et_module_write_stopmask;
+
 
 
 package body et_module_write is
@@ -1834,9 +1836,10 @@ package body et_module_write is
 				section_mark (section_stopmask, HEADER);
 
 				section_mark (section_top, HEADER);
-				iterate (element (module_cursor).board.stopmask.top.lines, write_line'access);
-				iterate (element (module_cursor).board.stopmask.top.arcs, write_arc'access);
-				iterate (element (module_cursor).board.stopmask.top.circles, write_circle'access);
+
+				-- lines, arcs, circles:
+				write_stopmask (module_cursor, TOP, log_threshold + 2);
+
 				iterate (element (module_cursor).board.stopmask.top.zones, write_polygon'access);
 
 				write_texts_non_conductor (module_cursor, LAYER_CAT_STOPMASK, TOP, log_threshold + 2);
@@ -1844,9 +1847,10 @@ package body et_module_write is
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
-				iterate (element (module_cursor).board.stopmask.bottom.lines, write_line'access);
-				iterate (element (module_cursor).board.stopmask.bottom.arcs, write_arc'access);
-				iterate (element (module_cursor).board.stopmask.bottom.circles, write_circle'access);
+
+				-- lines, arcs, circles:
+				write_stopmask (module_cursor, BOTTOM, log_threshold + 2);
+				
 				iterate (element (module_cursor).board.stopmask.bottom.zones, write_polygon'access);
 
 				write_texts_non_conductor (module_cursor, LAYER_CAT_STOPMASK, BOTTOM, log_threshold + 2);
