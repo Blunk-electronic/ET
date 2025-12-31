@@ -977,25 +977,25 @@ Stopmask
 
 	.. code-block::
 		
-		draw stop top line 1 70 55  60 66
+		draw stopmask top line 1 70 55  60 66
 		
 	|VNS| d l
 	
 	.. code-block::
 	
-		draw stop top arc 2 100 100  50 100  150 100 ccw
+		draw stopmask top arc 2 100 100  50 100  150 100 ccw
 
 	.. code-block::
 	
-		place text stop top 0.1 3 33 43 0 "STOP 1"
+		place text stopmask top 0.1 3 33 43 0 "STOP 1"
 
 	.. code-block::
 		
-		draw stop top circle 2 100 100  20
+		draw stopmask top circle 2 100 100  20
 		
 	.. code-block::
 		
-		draw stop top zone line 52 0 line 60 0 line 60 4 line 52 4
+		draw stopmask top zone line 52 0 line 60 0 line 60 4 line 52 4
 
 		
 		
@@ -1013,7 +1013,7 @@ Stopmask
 		
 	.. code-block::
 	
-		delete stop top 50 100 10
+		delete stopmask top 50 100 10
 		
 
 		
