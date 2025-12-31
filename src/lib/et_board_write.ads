@@ -172,29 +172,6 @@ package et_board_write is
 	procedure write_polygon (cursor : in pac_stencil_zones.cursor);
 	
 
--- ROUTE RESTRICT
-
-	use pac_route_restrict_lines;
-	use pac_route_restrict_arcs;
-	use pac_route_restrict_circles;
-	use pac_route_restrict_contours;
-	use pac_route_restrict_cutouts;
-	
-	procedure write_line (cursor : in pac_route_restrict_lines.cursor);
-	procedure write_arc (cursor : in pac_route_restrict_arcs.cursor);
-	procedure write_circle (cursor : in pac_route_restrict_circles.cursor);	
-	procedure write_contour (cursor : in pac_route_restrict_contours.cursor);
-	procedure write_cutout (cursor : in pac_route_restrict_cutouts.cursor);
-
-	
--- VIA RESTRICT
-
-	use pac_via_restrict_contours;
-	use pac_via_restrict_cutouts;
-
-	procedure write_contour (cursor : in pac_via_restrict_contours.cursor);
-	procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor);
-
 
 	
 end et_board_write;
