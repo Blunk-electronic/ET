@@ -38,8 +38,8 @@
 --
 -- ToDo:
 -- - clean up
---
---
+-- - move write via to separate package
+-- - move write fill zone to separate package
 --
 
 with ada.text_io;					use ada.text_io;
