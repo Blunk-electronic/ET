@@ -85,9 +85,6 @@ with et_device_model_names;
 with et_device_value;
 with et_device_partcode;
 with et_schematic_text;
-with et_drawing_frame_rw;
-with et_drawing_frame;
-with et_drawing_frame.schematic;
 with et_sheets;
 with et_pcb;
 with et_pcb_stack;
@@ -100,7 +97,6 @@ with et_time;						use et_time;
 with et_schematic_ops;
 
 with et_board_ops;
-with et_board_ops.frame;
 
 with et_schematic_text;
 with et_board_text;
@@ -112,6 +108,7 @@ with et_alignment;						use et_alignment;
 
 with et_module_write_meta;				use et_module_write_meta;
 with et_module_write_grid;				use et_module_write_grid;
+with et_module_write_frames;			use et_module_write_frames;
 with et_module_write_board_outline;		use et_module_write_board_outline;
 with et_module_write_freetracks;		use et_module_write_freetracks;
 with et_module_write_board_zones;		use et_module_write_board_zones;
@@ -507,106 +504,6 @@ package body et_module_write is
 		end query_netchangers;
 
 
-
-		
-		procedure query_frames is 
-			use et_drawing_frame_rw;
-			use et_drawing_frame;		
-			use et_drawing_frame.pac_template_name;
-
-
-			-- This procedure writes the stuff related to the
-			-- drawing frames of the schematic:
-			procedure schematic is
-				use et_drawing_frame.schematic;
-				
-			
-				procedure write_sheet_descriptions is
-					use pac_schematic_descriptions;
-
-					
-					procedure query_sheet (s : in pac_schematic_descriptions.cursor) is
-						use et_schematic_coordinates;	
-						use et_sheets;
-					begin
-						section_mark (section_sheet, HEADER);
-						write (
-							keyword		=> keyword_sheet_number,
-							parameters	=> to_string (key (s)));
-
-						write (
-							keyword		=> keyword_sheet_category,
-							parameters	=> to_string (element (s).category));
-
-						write (
-							keyword		=> keyword_sheet_description,
-							wrap		=> true,
-							parameters	=> to_string (element (s).content));
-						
-						section_mark (section_sheet, FOOTER);
-					end query_sheet;
-
-					
-				begin -- write_sheet_descriptions
-					section_mark (section_sheet_descriptions, HEADER);
-					iterate (element (module_cursor).frames.descriptions, query_sheet'access);
-					section_mark (section_sheet_descriptions, FOOTER);
-				end write_sheet_descriptions;
-
-				
-			begin
-				section_mark (section_schematic, HEADER);
-				
-				-- Write the schematic frame template like "template ../frames/dummy.frs":
-				write (
-					keyword 	=> keyword_template, 
-					parameters	=> et_drawing_frame.to_string (element (module_cursor).frames.template));
-				
-				write_sheet_descriptions;
-
-				section_mark (section_schematic, FOOTER);
-			end schematic;
-			
-
-
-			-- This procedure writes the stuff related to the
-			-- drawing frame of the board:
-			procedure board is
-				use et_board_geometry;
-				use pac_geometry_2;
-				
-				frame_pos : et_drawing_frame.type_position;
-
-				use et_board_ops.frame;
-			begin
-				section_mark (section_board, HEADER);
-				
-				-- Write the frame template like "template ../frames/dummy.frb":
-				write (
-					keyword		=> keyword_template, 
-					parameters	=> et_drawing_frame.to_string (element (module_cursor).board.frame.template));
-
-				
-				-- Write the frame position like "position x 40 y 60"
-				frame_pos := get_frame_position (module_cursor, log_threshold + 1); 
-				
-				write (
-					keyword		=> keyword_position,
-					parameters	=> to_string (frame_pos, FORMAT_2));
-
-				section_mark (section_board, FOOTER);
-			end board;
-
-			
-			
-		begin
-			section_mark (section_drawing_frames, HEADER);
-
-			schematic;
-			board;
-
-			section_mark (section_drawing_frames, FOOTER);
-		end query_frames;
 
 		
 
@@ -1025,7 +922,7 @@ package body et_module_write is
 		put_line (row_separator_single);
 		
 		-- frames
-		query_frames;
+		write_frames (module_cursor, log_threshold);
 		put_line (row_separator_single);
 		
 		-- notes
