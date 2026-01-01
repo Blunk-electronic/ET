@@ -38,14 +38,12 @@
 --
 -- ToDo:
 -- - clean up
--- - rename global variables
+--
 --
 --
 
 with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
 with ada.strings;					use ada.strings;
-with ada.directories;
 
 with et_module_names;				use et_module_names;
 with et_schematic_geometry;
@@ -65,40 +63,23 @@ with et_device_model;
 with et_device_appearance;
 with et_device_purpose;
 with et_device_model_names;
+
 with et_device_value;
-with et_device_library;				use et_device_library;
 with et_device_partcode;
 with et_device_sections;
+
 with et_package_variant;
-with et_symbol_read;
-with et_schematic_text;
-with et_device_read;
 with et_device_write;
 with et_symbol_write;
 with et_devices_electrical;			use et_devices_electrical;
-with et_pcb_stack;
-
-with et_package_name;
-with et_package_model_name;
-
-with et_conventions;
-
-with et_schematic_ops;
-with et_schematic_ops.units;
-with et_board_ops;
 
 with et_device_placeholders;
 with et_device_placeholders.packages;
 with et_device_placeholders.symbols;
 
-with et_board_outline;
-with et_pcb_placeholders;
 with et_unit_name;
 with et_units;
 with et_mirroring;						use et_mirroring;
-with et_alignment;						use et_alignment;
-with et_object_status;
--- with et_material;
 
 with et_general_rw;						use et_general_rw;
 with et_board_write;					use et_board_write;
@@ -241,7 +222,6 @@ package body et_module_write_devices_electrical is
 		procedure write (d : in pac_devices_electrical.cursor) is 
 			device : type_device_electrical renames element (d);
 			-- CS use "device" instead of "element (d)"
-			use et_pcb_sides;
 			use et_device_appearance;
 			use et_device_model_names;
 			use et_device_purpose;
@@ -250,6 +230,8 @@ package body et_module_write_devices_electrical is
 			use et_package_variant;
 			use pac_package_variant_name;
 		begin
+			log (text => get_device_name (d), level => log_threshold + 1);
+			
 			section_mark (section_device, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (d)));
 			write (keyword => keyword_appearance, parameters => to_string (element (d).appearance));
@@ -292,14 +274,16 @@ package body et_module_write_devices_electrical is
 			new_line;
 		end write;
 	
+
+		
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is begin
-			section_mark (section_devices_non_electric, HEADER);
+			section_mark (section_devices, HEADER);
 			iterate (module.devices, write'access);
-			section_mark (section_devices_non_electric, FOOTER);
+			section_mark (section_devices, FOOTER);
 		end query_module;
 
 		

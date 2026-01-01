@@ -47,7 +47,7 @@ with ada.text_io;					use ada.text_io;
 with et_keywords;					use et_keywords;
 with et_section_headers;			use et_section_headers;
 
-with et_pcb_sides;
+with et_pcb_sides;					use et_pcb_sides;
 with et_board_coordinates;			use et_board_coordinates;
 
 with et_coordinates_formatting;		use et_coordinates_formatting;
@@ -87,7 +87,6 @@ package body et_module_write_device_non_electrical is
 			-- CS use "device" instead of "element (c)"
 
 			use et_package_model_name;
-			use et_pcb_sides;
 
 			
 			procedure query_placeholders (
@@ -139,7 +138,9 @@ package body et_module_write_device_non_electrical is
 			end query_placeholders;
 
 			
-		begin -- query_devices_non_electric
+		begin
+			log (text => get_device_name (c), level => log_threshold + 1);
+			
 			section_mark (section_device, HEADER);
 
 			write (keyword => keyword_name, parameters => to_string (key (c))); -- name FD1
@@ -154,7 +155,7 @@ package body et_module_write_device_non_electrical is
 		end query_devices_non_electric;
 
 
-
+		
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;

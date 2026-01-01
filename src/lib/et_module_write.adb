@@ -72,27 +72,19 @@ with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_design_rules;				use et_design_rules;
 with et_design_rules_board;			use et_design_rules_board;
 
-with et_primitive_objects;			use et_primitive_objects;
 with et_net_names;
 with et_net_class;
 with et_net_class_name;
 with et_net_class_description;
 with et_net_classes;
-with et_symbol_model;
 with et_device_name;				use et_device_name;
 with et_device_model;
 with et_module_instance;
-with et_device_appearance;
 with et_device_purpose;
 with et_device_model_names;
 with et_device_value;
 with et_device_partcode;
-with et_device_sections;
-with et_package_variant;
-with et_symbol_write;
 with et_schematic_text;
-with et_devices_electrical;
-with et_device_write;
 with et_drawing_frame_rw;
 with et_drawing_frame;
 with et_drawing_frame.schematic;
@@ -102,10 +94,6 @@ with et_pcb_stack;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
 with et_board_write;				use et_board_write;
-
-with et_package_model_name;
-with et_package_name;
-with et_material;
 
 with et_time;						use et_time;
 
@@ -118,18 +106,8 @@ with et_schematic_text;
 with et_board_text;
 
 with et_board_layer_category;			use et_board_layer_category;
-
-with et_device_placeholders;
-with et_device_placeholders.packages;
-with et_device_placeholders.symbols;
-
 with et_submodules;
-
 with et_netlists;
-
-with et_mirroring;						use et_mirroring;
-with et_unit_name;
-with et_units;
 with et_alignment;						use et_alignment;
 
 with et_module_write_meta;				use et_module_write_meta;
