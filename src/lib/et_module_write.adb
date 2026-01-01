@@ -97,7 +97,6 @@ with et_drawing_frame_rw;
 with et_drawing_frame;
 with et_drawing_frame.schematic;
 with et_sheets;
-with et_devices_non_electrical;
 with et_pcb;
 with et_pcb_stack;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
@@ -128,12 +127,6 @@ with et_submodules;
 
 with et_netlists;
 
-with et_vias;
-with et_conductor_segment.boards;
-with et_fill_zones;
-with et_fill_zones.boards;
-with et_thermal_relief;
-
 with et_mirroring;						use et_mirroring;
 with et_unit_name;
 with et_units;
@@ -151,6 +144,9 @@ with et_module_write_stopmask;			use et_module_write_stopmask;
 with et_module_write_stencil;			use et_module_write_stencil;
 with et_module_write_route_restrict;	use et_module_write_route_restrict;
 with et_module_write_nets;				use et_module_write_nets;
+
+with et_module_write_device_non_electrical;	use et_module_write_device_non_electrical;
+
 
 
 package body et_module_write is
@@ -938,92 +934,13 @@ package body et_module_write is
 
 		
 		procedure query_board is
-			use et_devices_non_electrical;
-			use pac_devices_non_electrical;
-			
 			use et_board_geometry.pac_contours;
 			use et_pcb;
 			use et_pcb_stack;
 			use et_board_geometry.pac_geometry_2;
 
 			
-			procedure query_devices_non_electric (c : in pac_devices_non_electrical.cursor) is
-				device : type_device_non_electrical renames element (c);
-				-- CS use "device" instead of "element (c)"
-
-				use et_board_coordinates;
-				use et_pcb;
-				-- use et_package_names;
-				use et_package_model_name;
-				use et_pcb_sides;
-
-				
-				procedure query_placeholders (
-					device_name : in type_device_name;
-					device 		: in type_device_non_electrical) 
-				is
-					use et_device_placeholders;
-					use et_device_placeholders.packages;
-					use et_device_placeholders.packages.pac_text_placeholders;
-
-					face : type_face;
-					layer : type_placeholder_layer;
-
-					
-					procedure write_placeholder (
-						c : in et_device_placeholders.packages.pac_text_placeholders.cursor)
-					is 
-						ph : et_device_placeholders.packages.type_text_placeholder renames element (c);
-					begin
-						section_mark (section_placeholder, HEADER);
-						write (keyword => keyword_layer, parameters => to_string (layer));
-						write (keyword => keyword_meaning, parameters => to_string (element (c).meaning));
-						write (keyword => keyword_anchor, parameters => to_string (get_anchor_mode (ph)));
-						
-						write_text_properties_with_face (ph, face);
-
-						section_mark (section_placeholder, FOOTER);
-					end write_placeholder;
-
-					
-				begin -- query_placeholders
-					section_mark (section_placeholders, HEADER);
-
-					layer := SILKSCREEN;
-					face := TOP;
-					device.placeholders.silkscreen.top.iterate (write_placeholder'access);
-
-					face := BOTTOM;				
-					device.placeholders.silkscreen.bottom.iterate (write_placeholder'access);
-
-					layer := ASSY_DOC;
-					face := TOP;				
-					device.placeholders.assy_doc.top.iterate (write_placeholder'access);
-
-					face := BOTTOM;
-					device.placeholders.assy_doc.bottom.iterate (write_placeholder'access);
-					
-					section_mark (section_placeholders, FOOTER);				
-				end query_placeholders;
-
-				
-			begin -- query_devices_non_electric
-				section_mark (section_device, HEADER);
-
-				write (keyword => keyword_name, parameters => to_string (key (c))); -- name FD1
-				write (keyword => keyword_position, parameters =>
-					et_board_coordinates.to_string (get_position (device), FORMAT_2));
-				
-				write (keyword => keyword_model, parameters => to_string (element (c).package_model));
-
-				query_element (c, query_placeholders'access);
-				
-				section_mark (section_device, FOOTER);
-			end query_devices_non_electric;
-
-			
-
-			
+		
 			procedure query_user_settings is
 				use et_board_ops;
 				us : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
@@ -1270,10 +1187,7 @@ package body et_module_write is
 			-- USER SETTINGS
 			query_user_settings;
 		
-			-- NON-ELECTRIC DEVICES
-			section_mark (section_devices_non_electric, HEADER);
-			iterate (element (module_cursor).devices_non_electric, query_devices_non_electric'access);
-			section_mark (section_devices_non_electric, FOOTER);
+			write_devices_non_electrical (module_cursor, log_threshold + 1);
 
 			write_silkscreen;
 			write_assy_doc;
