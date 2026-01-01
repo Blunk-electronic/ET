@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                   MODULE WRITE / NON-ELECTRICAL DEVICE                   --
+--                    MODULE WRITE / ELECTRICAL DEVICES                     --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -37,25 +37,25 @@
 --
 --  ToDo: 
 -- - clean up
--- - rename package to et_module_write_devices_non_electrical
+--
 
 
 with et_generic_module;			use et_generic_module;
-with et_module_names;			use et_module_names;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
 
-
-package et_module_write_device_non_electrical is
+package et_module_write_devices_electrical is
 		
-	procedure write_devices_non_electrical (
+
+	procedure write_devices_electrical (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-
 	
-end et_module_write_device_non_electrical;
+	
+end et_module_write_devices_electrical;
+
 
 -- Soli Deo Gloria
 
