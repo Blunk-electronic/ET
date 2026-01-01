@@ -125,6 +125,14 @@ package body et_net_labels is
 		return label.rotation;
 	end;
 
+
+	function get_rotation (
+		label : in type_net_label)
+		return string
+	is begin
+		return to_string (label.rotation);
+	end;
+
 	
 
 	procedure set_rotation (
@@ -215,7 +223,23 @@ package body et_net_labels is
 	end;
 
 
+	function get_rotation (
+		label : in pac_net_labels.cursor)
+		return type_rotation_documentation
+	is begin
+		return get_rotation (element (label));
+	end;
+
+
+	function get_rotation (
+		label : in pac_net_labels.cursor)
+		return string
+	is begin
+		return get_rotation (element (label));
+	end;
+
 	
+		
 
 	function is_proposed (
 		label : in pac_net_labels.cursor)

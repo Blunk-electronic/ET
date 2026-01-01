@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                       MODULE READ / VIAS                                 --
+--                    MODULE WRITE / BOARD TRACKS ROUTE                     --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -36,6 +36,13 @@
 --
 --   history of changes:
 --
+--
+-- DESCRIPTION:
+-- 1. This package is about tracks that are connected
+--    with nets. They are part of a so called "route".
+
+--
+--
 -- ToDo:
 -- - clean up
 --
@@ -43,25 +50,24 @@
 --
 
 with et_generic_module;			use et_generic_module;
+with et_nets;					use et_nets;
+with et_net_names;				use et_net_names;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
 
 
-package et_module_read_via is
+package et_module_write_tracks_route is
 
-	
-	procedure read_via (
-		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_fields_of_line);
+
+
+	procedure query_route (
+		net_name	: in pac_net_name.bounded_string;
+		net			: in type_net);
+
 
 		
-		
-	procedure build_via;
-
-	
-	
-end et_module_read_via;
+end et_module_write_tracks_route;
 
 	
 

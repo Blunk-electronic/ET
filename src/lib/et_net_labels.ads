@@ -64,9 +64,10 @@ package et_net_labels is
 	
 	type type_net_label_base is tagged record
 		size		: type_text_size := text_size_default;
+		-- CS no need, remove
 		
 		width		: et_schematic_text.type_text_line_width := et_schematic_text.type_text_line_width'first;
-		-- CS probably no need ?
+		-- CS no need, remove
 		
 		status		: type_object_status;
 	end record;
@@ -128,6 +129,13 @@ package et_net_labels is
 		label : in type_net_label)
 		return type_rotation_documentation;
 
+
+	function get_rotation (
+		label : in type_net_label)
+		return string;
+
+
+	
 	
 	procedure set_rotation (
 		label		: in out type_net_label;
@@ -180,6 +188,16 @@ package et_net_labels is
 
 
 	function get_position (
+		label : in pac_net_labels.cursor)
+		return string;
+
+
+	function get_rotation (
+		label : in pac_net_labels.cursor)
+		return type_rotation_documentation;
+
+	
+	function get_rotation (
 		label : in pac_net_labels.cursor)
 		return string;
 

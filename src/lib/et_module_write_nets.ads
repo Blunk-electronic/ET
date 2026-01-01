@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                       MODULE READ / VIAS                                 --
+--                         MODULE WRITE / NETS                              --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -48,20 +48,16 @@ with et_logging;				use et_logging;
 
 
 
-package et_module_read_via is
+package et_module_write_nets is
 
-	
-	procedure read_via (
+
+	procedure write_nets (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_fields_of_line);
-
-		
-		
-	procedure build_via;
+		log_threshold	: in type_log_level);
 
 	
-	
-end et_module_read_via;
+		
+end et_module_write_nets;
 
 	
 

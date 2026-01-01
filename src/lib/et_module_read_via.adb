@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                      MODULE READ / TEXT IN SCHEMATIC                     --
+--                         MODULE READ / VIAS                               --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
