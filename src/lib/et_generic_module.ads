@@ -74,7 +74,7 @@ package et_generic_module is
 
 	
 	
-	type type_generic_module is record
+	type type_generic_module is record -- CS make private
 		commit_index	: et_commit.type_commit_index_zero_based := 0;
 		
 		meta			: et_meta.type_meta; -- for both schematic and layout
@@ -143,7 +143,19 @@ package et_generic_module is
 	end record;
 
 
+	-- Returns true if schematic design rules exist:
+	function design_rules_schematic_assigned (
+		module : in type_generic_module)
+		return boolean;
 
+		
+	-- Returns true if board design rules exist:
+	function design_rules_board_assigned (
+		module : in type_generic_module)
+		return boolean;
+
+		
+		
 	function get_grid_schematic (
 		module : in type_generic_module)
 		return et_schematic_geometry.pac_grid.type_grid;

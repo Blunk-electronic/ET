@@ -858,11 +858,9 @@ package body et_board_ops is
 
 	function layout_rules_assigned (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return boolean is
-
-		use et_design_rules_board.pac_file_name;
-	begin
-		if length (pac_generic_modules.element (module).rules.layout) > 0 then
+		return boolean 
+	is begin
+		if design_rules_board_assigned (element (module)) then
 			return true;
 		else
 			return false;

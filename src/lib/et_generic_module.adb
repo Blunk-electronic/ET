@@ -41,10 +41,33 @@
 
 with et_string_processing;		use et_string_processing;
 with et_exceptions;				use et_exceptions;
+with et_design_rules;			use et_design_rules;
+
+
 
 
 package body et_generic_module is
 
+
+	function design_rules_schematic_assigned (
+		module : in type_generic_module)
+		return boolean
+	is begin
+		return schematic_rules_assigned (module.rules);
+	end;
+
+		
+	function design_rules_board_assigned (
+		module : in type_generic_module)
+		return boolean
+	is begin
+		return board_rules_assigned (module.rules);
+	end;
+
+
+
+
+	
 
 	function get_grid_schematic (
 		module : in type_generic_module)

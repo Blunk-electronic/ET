@@ -4,7 +4,7 @@
 --                                                                          --
 --                             DESIGN RULES                                 --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
@@ -37,31 +37,41 @@
 --
 --   ToDo: 
 
-with et_design_rules_board;
-with et_design_rules_schematic;
 
 
-package et_design_rules is
+package body et_design_rules is
 	
-	-- For the design rules we simply refer to the file where the rules are
-	-- written like JLP_ML4_standard.dru.
-	type type_design_rules is record
-		layout		: et_design_rules_board.pac_file_name.bounded_string; -- JLP_ML4_standard.dru
-		-- CS rename selector from layout to board
-		-- CS schematic (ERC) rule file
-	end record;
 
-
-	-- Returns true if rules for the schematic are set:
 	function schematic_rules_assigned (
 		rules : in type_design_rules)
-		return boolean;
+		return boolean
+	is
+		use et_design_rules_schematic;
+	begin
+		-- CS
+		-- if not is_empty (rules.schematic) then
+			-- return true;
+		-- else
+			return false;
+		-- end if;
+	end;
+	
 	
 
-	-- Returns true if rules for the board are set:
+
 	function board_rules_assigned (
 		rules : in type_design_rules)
-		return boolean;
+		return boolean
+	is
+		use et_design_rules_board;
+	begin
+		if not is_empty (rules.layout) then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
 
 	
 end et_design_rules;
