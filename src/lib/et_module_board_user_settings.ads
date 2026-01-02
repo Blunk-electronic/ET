@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                           MODULE / BOARD                                 --
+--                     MODULE / BOARD USER SETTINGS                         --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -39,82 +39,32 @@
 --
 
 
-with ada.containers; 					use ada.containers;
-with ada.containers.doubly_linked_lists;
-
--- with et_logging;						use et_logging;
-
-with et_pcb_sides;						use et_pcb_sides;
-with et_board_geometry;					use et_board_geometry;
-
-with et_pcb_stack;						use et_pcb_stack;
-
-with et_drawing_frame;
-with et_drawing_frame.board;
-
-with et_conductor_text.boards;			use et_conductor_text.boards;
-with et_route_restrict.boards;			use et_route_restrict.boards;
-with et_via_restrict.boards;			use et_via_restrict.boards;
-with et_stopmask.board;					use et_stopmask.board;
-with et_stencil.board;					use et_stencil.board;
-with et_silkscreen.board;				use et_silkscreen.board;
-with et_assy_doc.board;					use et_assy_doc.board;
-with et_keepout.board;					use et_keepout.board;
-with et_board_outline;					use et_board_outline;
-
-with et_conductors_floating_board;		use et_conductors_floating_board;
-with et_module_board_user_settings;		use et_module_board_user_settings;
-
-with et_commit;
+-- with et_board_text;						use et_board_text;
+with et_drills;							use et_drills;
+with et_vias;							use et_vias;
+-- with et_pcb_signal_layers;				use et_pcb_signal_layers;
+with et_fill_zones.boards;				-- use et_fill_zones.boards;
 
 
-package et_module_board is
-
-
-	procedure dummy;
-	
-
+package et_module_board_user_settings is
 
 	
-	-- This is non-electical board stuff:
-	type type_board is tagged record
-		frame			: et_drawing_frame.board.type_frame_pcb; -- incl. template name
-		grid			: pac_grid.type_grid;  -- the drawing grid of the board
-		stack			: type_stack;	-- the layer stack
-		silkscreen		: type_silkscreen_both_sides;
-		assy_doc		: type_assy_doc_both_sides;
-		stencil			: type_stencil_both_sides;
-		stopmask		: type_stop_mask_both_sides;
-		keepout			: type_keepout_both_sides;
-		route_restrict	: type_route_restrict;
-		via_restrict	: type_via_restrict;
-
-		-- non-electric floating stuff:
-		-- (lines, arcs, circles, text, text placeholders, zones):
-		conductors_floating	: type_conductors_floating;
+	type type_user_settings is record
+		vias		: type_user_settings_vias;
+		-- CS auto set drill and track width ?
 		
-		board_contour	: type_board_outline; -- outer and inner edges
+		polygons_conductor	: et_fill_zones.boards.type_user_settings;
+		-- CS rename to zones_conductor
 
-		user_settings	: type_user_settings;
+		-- CS zones_non_conductor ?
+
+		-- CS linewidth, size of vector text
+		-- CS drill sizes
 	end record;
 
 
-	-- BOARD COMMITS (required for undo/redo operations via the GUI):
-	use et_commit;
 	
-	package pac_board_commit is new pac_commit (type_board);
-	use pac_board_commit;
-	
-	package pac_board_commits is new doubly_linked_lists (
-		element_type	=> pac_board_commit.type_commit);
-
-	type type_board_undo_redo_stack is record
-		dos		: pac_board_commits.list;
-		redos	: pac_board_commits.list;
-	end record;
-
-	
-end et_module_board;
+end et_module_board_user_settings;
 
 -- Soli Deo Gloria
 

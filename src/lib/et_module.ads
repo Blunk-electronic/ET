@@ -39,13 +39,13 @@
 --  - clean up
 --  - decompose in smaller packages
 
-with ada.containers;
-with ada.containers.ordered_maps;
 
 with et_schematic_geometry;
 with et_schematic_coordinates;
 with et_schematic_text;
+
 with et_board_geometry;
+
 with et_nets;
 with et_netlists;
 with et_submodules;

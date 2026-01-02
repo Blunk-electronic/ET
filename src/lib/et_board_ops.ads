@@ -62,6 +62,7 @@ with et_logging;					use et_logging;
 with et_generic_module;				use et_generic_module;
 with et_module;						use et_module;
 with et_module_board;				use et_module_board;
+with et_module_board_user_settings;	use et_module_board_user_settings;
 
 with et_text;
 

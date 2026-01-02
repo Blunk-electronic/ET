@@ -4,7 +4,7 @@
 --                                                                          --
 --                             MODULE WRITE                                 --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -87,6 +87,7 @@ with et_device_partcode;
 with et_schematic_text;
 with et_sheets;
 with et_module_board;
+with et_module_board_user_settings;
 with et_pcb_stack;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
@@ -120,6 +121,7 @@ with et_module_write_stencil;			use et_module_write_stencil;
 with et_module_write_route_restrict;	use et_module_write_route_restrict;
 with et_module_write_nets;				use et_module_write_nets;
 
+with et_module_write_board_user_settings;	use et_module_write_board_user_settings;
 with et_module_write_devices_electrical;	use et_module_write_devices_electrical;
 with et_module_write_device_non_electrical;	use et_module_write_device_non_electrical;
 
@@ -622,82 +624,6 @@ package body et_module_write is
 			use et_pcb_stack;
 			use et_board_geometry.pac_geometry_2;
 
-			
-		
-			procedure query_user_settings is
-				use et_board_ops;
-				us : constant type_user_settings := get_user_settings (module_cursor);
-
-				
-				procedure vias is begin
-					section_mark (section_vias, HEADER);
-
-					-- via drill
-					if us.vias.drill.active then
-						write ( -- drill 0.3
-							keyword		=> keyword_via_drill, 
-							parameters	=> to_string (us.vias.drill.size));
-					else
-						write ( -- drill dru
-							keyword		=> keyword_via_drill, 
-							parameters	=> keyword_dru);
-					end if;
-
-					-- inner restring
-					if us.vias.restring_inner.active then
-						write ( -- restring_inner 0.3
-							keyword		=> keyword_restring_inner, 
-							parameters	=> to_string (us.vias.restring_inner.width));
-					else
-						write ( -- restring_inner dru
-							keyword		=> keyword_restring_inner, 
-							parameters	=> keyword_dru);
-					end if;
-
-					-- outer restring
-					if us.vias.restring_outer.active then
-						write ( -- restring_outer 0.3
-							keyword		=> keyword_restring_outer, 
-							parameters	=> to_string (us.vias.restring_outer.width));
-					else
-						write ( -- restring_inner dru
-							keyword		=> keyword_restring_outer, 
-							parameters	=> keyword_dru);
-					end if;
-					
-					section_mark (section_vias, FOOTER);
-				end vias;
-
-				
-				procedure polygons is begin
-					section_mark (section_fill_zones_conductor, HEADER);
-
-					write_fill_style (us.polygons_conductor.fill_style);
-					write_fill_linewidth (us.polygons_conductor.linewidth);
-					write_priority (us.polygons_conductor.priority_level);
-					write_isolation (us.polygons_conductor.isolation);
-					
-					write_spacing (us.polygons_conductor.spacing);
-					
-					write_pad_connection (us.polygons_conductor.connection);
-					write_thermal (us.polygons_conductor.thermal);
-
-					write_easing (us.polygons_conductor.easing);
-					
-					section_mark (section_fill_zones_conductor, FOOTER);
-				end polygons;
-
-				
-			begin -- query_user_settings
-				section_mark (section_user_settings, HEADER);
-
-				vias;
-				polygons;
-					
-				section_mark (section_user_settings, FOOTER);
-			end query_user_settings;
-			
-
 
 
 			procedure write_silkscreen is
@@ -867,8 +793,7 @@ package body et_module_write is
 		begin -- query_board
 			section_mark (section_board, HEADER);
 
-			-- USER SETTINGS
-			query_user_settings;
+			write_board_user_settings (module_cursor, log_threshold + 1);
 		
 			write_devices_non_electrical (module_cursor, log_threshold + 1);
 

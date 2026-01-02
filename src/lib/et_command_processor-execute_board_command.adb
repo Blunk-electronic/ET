@@ -44,6 +44,7 @@ with et_display.board;
 
 with et_module;						use et_module;
 with et_module_board;				use et_module_board;
+with et_module_board_user_settings;
 
 with et_module_instance;			use et_module_instance;
 with et_pcb_sides;
@@ -74,7 +75,7 @@ with et_canvas_board_texts;
 with et_canvas_board_vias;
 with et_design_rules_board;			use et_design_rules_board;
 with et_fill_zones;
-with et_fill_zones.boards;			use et_fill_zones.boards;
+with et_fill_zones.boards;
 with et_thermal_relief;				use et_thermal_relief;
 with et_conductor_text;				use et_conductor_text;
 with et_route_restrict.boards;		use et_route_restrict.boards;
@@ -1846,6 +1847,8 @@ is
 	-- accordingly. User specific settings are taken into account.
 	-- CS: Take into account class settings (via drill size).
 	procedure place_via is
+		use et_module_board_user_settings;
+		
 		net_name		: pac_net_name.bounded_string;
 		drill			: type_drill;
 		restring_outer	: type_restring_width;
@@ -1929,7 +1932,7 @@ is
 		rules : constant type_design_rules_board := get_pcb_design_rules (module_cursor);
 
 		-- get the user specific settings of the board
-		settings : constant et_module_board.type_user_settings := 
+		settings : constant type_user_settings := 
 			get_user_settings (module_cursor);
 
 		
@@ -2118,7 +2121,9 @@ is
 		procedure set_priority (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is 
+			use et_fill_zones.boards;
+		begin
 			module.board.user_settings.polygons_conductor.priority_level := to_priority (get_field (6));
 		end set_priority;
 
@@ -2265,15 +2270,16 @@ is
 		shape : constant type_track_shape := type_track_shape'value (get_field (6));
 
 		-- get the user specific settings of the board
-		settings : constant et_module_board.type_user_settings := 
+		settings : constant et_module_board_user_settings.type_user_settings := 
 			get_user_settings (module_cursor);
 		
 
 		-- Extract from the given command the zone 
 		-- arguments (everything after "zone"):
 		procedure make_fill_zone is
-			use et_board_ops.fill_zones;
 			use et_fill_zones;
+			use et_fill_zones.boards;
+			use et_board_ops.fill_zones;
 			
 			arguments : constant type_fields_of_line := 
 				remove_field (get_fields (cmd), 1, 6);
@@ -2403,13 +2409,14 @@ is
 		shape : constant type_track_shape := type_track_shape'value (get_field (7));
 
 		-- get the user specific settings of the board
-		settings : constant et_module_board.type_user_settings := 
+		settings : constant et_module_board_user_settings.type_user_settings := 
 			get_user_settings (module_cursor);
 
 		
 		procedure make_fill_zone is
-			use et_board_ops.fill_zones;
 			use et_fill_zones;
+			use et_fill_zones.boards;
+			use et_board_ops.fill_zones;
 			
 			-- Extract from the given command the polygon arguments (everything after "zone"):
 			arguments : constant type_fields_of_line := 

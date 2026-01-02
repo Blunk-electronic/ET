@@ -56,6 +56,7 @@ with et_thermal_relief;
 
 with et_module;						use et_module;
 with et_module_board;				use et_module_board;
+with et_module_board_user_settings;	use et_module_board_user_settings;
 -- with et_pcb_stack;					use et_pcb_stack;
 -- with et_design_rules_board;			use et_design_rules_board;
 with et_board_geometry;				use et_board_geometry;
