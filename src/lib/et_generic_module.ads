@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,7 +37,7 @@
 --
 --  ToDo: 
 --  - clean up
---  - decompose in smaller packages
+--  - decompose in smaller packages (board and schematic related)
 
 with ada.containers;
 with ada.containers.ordered_maps;
@@ -59,7 +59,10 @@ with et_text_content;				use et_text_content;
 with et_drawing_frame;
 with et_drawing_frame.schematic;
 with et_numbering;
-with et_design_rules;
+
+with et_design_rules;				use et_design_rules;
+with et_design_rules_board;			use et_design_rules_board;
+
 with et_net_classes;				use et_net_classes;
 with et_devices_electrical;			use et_devices_electrical;
 with et_devices_non_electrical;		use et_devices_non_electrical;
@@ -244,6 +247,20 @@ package et_generic_module is
 		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost
 		return boolean;	
 
+
+		
+		
+	-- Returns true if a design rules file for the layout has been
+	-- assigned to the given module.
+	function layout_rules_assigned (
+		module	: in pac_generic_modules.cursor) -- the module like motor_driver
+		return boolean;
+
+	
+	-- Returns the PCB design rules of the given module:
+	function get_pcb_design_rules (
+		module	: in pac_generic_modules.cursor) -- the module like motor_driver
+		return type_design_rules_board; -- JLP_ML4_standard.dru
 
 	
 end et_generic_module;

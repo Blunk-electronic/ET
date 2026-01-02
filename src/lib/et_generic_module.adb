@@ -41,9 +41,6 @@
 
 with et_string_processing;		use et_string_processing;
 with et_exceptions;				use et_exceptions;
-with et_design_rules;			use et_design_rules;
-
-
 
 
 package body et_generic_module is
@@ -200,6 +197,33 @@ package body et_generic_module is
 					
 		return result;
 	end assembly_variant_exists;
+
+
+
+
+	
+
+	function layout_rules_assigned (
+		module	: in pac_generic_modules.cursor) -- the module like motor_driver
+		return boolean 
+	is begin
+		if design_rules_board_assigned (element (module)) then
+			return true;
+		else
+			return false;
+		end if;
+	end layout_rules_assigned;
+
+	
+
+	function get_pcb_design_rules (
+		module	: in pac_generic_modules.cursor) -- the module like motor_driver
+		return type_design_rules_board -- JLP_ML4_standard.dru
+	is begin
+		return get_rules (element (module).rules.layout); 
+	end get_pcb_design_rules;
+
+
 
 	
 end et_generic_module;

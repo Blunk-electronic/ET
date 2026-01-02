@@ -166,25 +166,6 @@ package et_board_ops is
 		module	: in pac_generic_modules.cursor)
 		return type_signal_layer;
 
-
-
-
-
-	
-
-
-	-- Returns true if a design rules file for the layout has been
-	-- assigned to the given module.
-	function layout_rules_assigned (
-		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return boolean;
-
-	
-	-- Returns the PCB design rules of the given module:
-	function get_pcb_design_rules (
-		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return type_design_rules_board; -- JLP_ML4_standard.dru
-
 	
 	function get_user_settings (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
