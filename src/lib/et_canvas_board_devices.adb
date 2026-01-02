@@ -54,7 +54,7 @@ with gtk.tree_model;
 with et_meta;
 
 with et_conventions;
-with et_generic_module;				use et_generic_module;
+with et_generic_modules;			use et_generic_modules;
 with et_canvas_board;				use et_canvas_board;
 with et_schematic_ops.units;
 with et_schematic_ops.groups;

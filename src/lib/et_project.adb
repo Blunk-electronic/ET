@@ -49,7 +49,7 @@ with et_system_info;
 with et_general_rw;
 
 with et_module_ops;
-with et_generic_module;				use et_generic_module;
+with et_generic_modules;			use et_generic_modules;
 with et_project.configuration;
 with et_rig_name;
 with et_rig;

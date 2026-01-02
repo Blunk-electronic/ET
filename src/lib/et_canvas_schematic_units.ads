@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -54,7 +54,7 @@ with et_schematic_geometry;			use et_schematic_geometry;
 with et_schematic_coordinates;		use et_schematic_coordinates;
 use et_schematic_geometry.pac_geometry_2;
 
-with et_generic_module;				use et_generic_module;
+with et_generic_modules;			use et_generic_modules;
 with et_symbol_model;				use et_symbol_model;
 with et_package_variant;			use et_package_variant;
 with et_device_model;				use et_device_model;

@@ -111,8 +111,6 @@ with et_stopmask;					use et_stopmask;
 with et_stopmask.packages;
 with et_stopmask.board;				use et_stopmask.board;
 
-with et_generic_module;
-
 with et_kicad.schematic;
 with et_kicad_libraries;		--use et_kicad_libraries;
 with et_kicad_packages;			use et_kicad_packages;

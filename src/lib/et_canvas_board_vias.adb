@@ -69,7 +69,7 @@ with gtk.container;					use gtk.container;
 with gtk.text_buffer;
 with gtk.text_iter;
 
-with et_generic_module;				use et_generic_module;
+with et_generic_modules;			use et_generic_modules;
 with et_schematic_ops.nets;
 with et_board_ops.vias;				use et_board_ops.vias;
 with et_canvas_board;

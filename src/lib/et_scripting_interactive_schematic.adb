@@ -51,7 +51,7 @@ with ada.containers;				use ada.containers;
 
 with et_schematic_geometry;			use et_schematic_geometry;
 with et_schematic_coordinates;		use et_schematic_coordinates;
-with et_generic_module;				use et_generic_module;
+with et_generic_modules;			use et_generic_modules;
 with et_command_processor;			use et_command_processor;
 with et_modes.schematic;			use et_modes.schematic;
 with et_schematic_ops;				use et_schematic_ops;

@@ -40,7 +40,7 @@
 -- - rename package to et_module_write_devices_non_electrical
 
 
-with et_generic_module;			use et_generic_module;
+with et_generic_modules;		use et_generic_modules;
 with et_module_names;			use et_module_names;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;

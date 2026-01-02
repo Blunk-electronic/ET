@@ -38,7 +38,7 @@
 -- DESCRIPTION:
 -- 
 
-with et_generic_module;						use et_generic_module;
+with et_generic_modules;					use et_generic_modules;
 with et_canvas_board;
 with et_conductor_text.boards;
 with et_conductor_segment.boards;			use et_conductor_segment.boards;

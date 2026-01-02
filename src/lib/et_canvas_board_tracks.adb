@@ -64,7 +64,7 @@ with gtk.gentry;						use gtk.gentry;
 with gtk.container;						use gtk.container;
 with gtk.button;						use gtk.button;
 
-with et_generic_module;					use et_generic_module;
+with et_generic_modules;				use et_generic_modules;
 
 with et_board_ops.conductors;			use et_board_ops.conductors;
 with et_modes.board;

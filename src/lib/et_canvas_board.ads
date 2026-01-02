@@ -73,7 +73,7 @@ with et_board_layer_category;			use et_board_layer_category;
 -- with et_conductor_segment;
 with et_project;
 with et_module;						use et_module;
-with et_generic_module;				use et_generic_module;
+with et_generic_modules;			use et_generic_modules;
 -- with et_frames;
 
 with et_canvas.drawing_frame;

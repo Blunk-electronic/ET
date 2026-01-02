@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           GENERIC MODULE                                 --
+--                           GENERIC MODULES                                --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -69,7 +69,7 @@ with et_design_rules_board;			use et_design_rules_board;
 with et_logging;					use et_logging;
 
 
-package et_generic_module is -- CS rename to et_generic_modules
+package et_generic_modules is
 
 	
 		
@@ -166,7 +166,7 @@ package et_generic_module is -- CS rename to et_generic_modules
 		return type_design_rules_board; -- JLP_ML4_standard.dru
 
 	
-end et_generic_module;
+end et_generic_modules;
 
 -- Soli Deo Gloria
 

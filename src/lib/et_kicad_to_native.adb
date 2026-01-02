@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -64,7 +64,7 @@ with et_module_ops;
 with et_module_write;
 with et_string_processing;			use et_string_processing;
 with et_project;
-with et_generic_module;				use et_generic_module;
+with et_generic_modules;
 with et_vias;
 with et_package_name;
 with et_package_library;
@@ -4122,6 +4122,7 @@ package body et_kicad_to_native is
 			-- and copy_libraries would update the scratch module inside the list.
 			declare 
 				current_working_directory : constant string := current_directory;
+				use et_generic_modules;
 				use pac_generic_modules;
 				module_list : pac_generic_modules.map; -- set up the list
 				use et_module_ops;

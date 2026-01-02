@@ -58,7 +58,7 @@ with gtk.tree_model;
 with gtk.gentry;						use gtk.gentry;
 with gtk.container;						use gtk.container;
 
-with et_generic_module;					use et_generic_module;
+with et_generic_modules;				use et_generic_modules;
 
 with et_board_ops;						use et_board_ops;
 with et_board_ops.outline;				use et_board_ops.outline;

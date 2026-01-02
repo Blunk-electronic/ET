@@ -50,7 +50,7 @@
 --
 --
 
-with et_generic_module;				use et_generic_module;
+with et_generic_modules;			use et_generic_modules;
 with et_board_layer_category;		use et_board_layer_category;
 with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_sides;					use et_pcb_sides;

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -45,7 +45,7 @@ with et_logging;				use et_logging;
 with et_module_ops;				use et_module_ops;
 with et_module_read;			use et_module_read;
 with et_module_write;			use et_module_write;
-with et_generic_module;			use et_generic_module;
+with et_generic_modules;		use et_generic_modules;
 with et_modes;					use et_modes;
 
 with et_cmd_sts;				use et_cmd_sts;

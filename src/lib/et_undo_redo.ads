@@ -40,7 +40,7 @@
 
 with ada.strings.bounded;       	use ada.strings.bounded;
 
-with et_generic_module;				use et_generic_module;
+with et_generic_modules;			use et_generic_modules;
 with et_modes.schematic;
 with et_modes.board;
 with et_commit;						use et_commit;

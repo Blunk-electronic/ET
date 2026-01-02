@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           GENERIC MODULE                                 --
+--                           GENERIC MODULES                                --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -43,7 +43,7 @@ with et_string_processing;		use et_string_processing;
 with et_exceptions;				use et_exceptions;
 
 
-package body et_generic_module is
+package body et_generic_modules is
 
 
 	function design_rules_schematic_assigned (
@@ -226,7 +226,7 @@ package body et_generic_module is
 
 
 	
-end et_generic_module;
+end et_generic_modules;
 
 -- Soli Deo Gloria
 
