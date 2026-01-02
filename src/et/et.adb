@@ -53,7 +53,7 @@ with et_system_info;
 with et_runmode;				use et_runmode;
 with et_modes;					use et_modes;
 with et_module_ops;
-with et_generic_module;			use et_generic_module;
+with et_generic_modules;		use et_generic_modules;
 with et_module_names;			use et_module_names;
 with et_script_names;			use et_script_names;
 with et_directory_and_file_ops;	use et_directory_and_file_ops;
