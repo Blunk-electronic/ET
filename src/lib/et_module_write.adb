@@ -87,7 +87,6 @@ with et_device_partcode;
 with et_schematic_text;
 with et_sheets;
 with et_module_board;
-with et_module_board_user_settings;
 with et_pcb_stack;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
