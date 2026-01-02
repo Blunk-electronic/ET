@@ -362,6 +362,22 @@ package body et_pcb_signal_layers is
 	end mirror_signal_layers;
 
 
+
+
+
+	function signal_layer_to_mirror (
+		current_layer	: in type_signal_layer;
+		bottom_layer	: in type_signal_layer)
+		return type_mirror 
+	is begin
+		if current_layer = bottom_layer then
+			return MIRROR_ALONG_Y_AXIS;
+		else
+			return MIRROR_NO;
+		end if;
+	end signal_layer_to_mirror;
+
+
 	
 	
 end et_pcb_signal_layers;

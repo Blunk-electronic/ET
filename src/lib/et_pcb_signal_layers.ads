@@ -52,6 +52,7 @@ with ada.containers.ordered_sets;
 
 with et_board_geometry;			use et_board_geometry;
 with et_string_processing; 		use et_string_processing;
+with et_mirroring;				use et_mirroring;
 with et_logging;				use et_logging;
 
 
@@ -133,6 +134,16 @@ package et_pcb_signal_layers is
 	procedure mirror_signal_layers (
 		signal_layers	: in out pac_signal_layers.set;
 		deepest_layer	: in type_signal_layer);
+
+
+
+	-- Maps from signal layer to mirror status of a vectorized text.
+	-- Use it for drawing non-device related texts and placeholders.
+	-- So this function returns either MIRROR_NO or MIRROR_ALONG_Y_AXIS:
+	function signal_layer_to_mirror (
+		current_layer	: in type_signal_layer;
+		bottom_layer	: in type_signal_layer)
+		return type_mirror;
 
 	
 end et_pcb_signal_layers;

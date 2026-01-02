@@ -85,68 +85,8 @@ package et_pcb is
 	use pac_contours;
 
 
-
-	-- Maps from face to mirror status of a vectorized text.
-	-- Use it for non-device related texts and placeholders.
-	-- NOTE: Mirroring along X axis is not allowed for vector texts.
-	-- So this function returns either MIRROR_NO or MIRROR_ALONG_Y_AXIS:
-	function face_to_mirror (
-		f : in type_face)
-		return type_mirror;
-
+	procedure dummy;
 	
-
-
-
-	-- Maps from signal layer to mirror status of a vectorized text.
-	-- Use it for drawing non-device related texts and placeholders.
-	-- So this function returns either MIRROR_NO or MIRROR_ALONG_Y_AXIS:
-	function signal_layer_to_mirror (
-		current_layer	: in type_signal_layer;
-		bottom_layer	: in type_signal_layer)
-		return type_mirror;
-
-	
-
-
-
-	-- In this world, if a package is flipped, then it is
-	-- mirrored along the Y-axis.
-	-- This function maps from flip status to mirror along y-axis.
-	-- If flipped is false, then the return is MIRRROR_NO.
-	-- If flipped is true, then the return is MIRROR_ALONG_Y_AXIS:
-	function to_mirror_along_y_axis (
-		flipped : in type_flipped)
-		return type_mirror;
-
-		
-	
--- LOGGING PROPERTIES OF OBJECTS
-
-	
--- 	-- Logs the properties of the given line of a route
--- 	procedure route_line_properties (
--- 		cursor			: in pac_conductor_lines.cursor;
--- 		log_threshold 	: in type_log_level);
--- 
--- 	
--- 	-- Logs the properties of the given via of a route
--- 	procedure route_via_properties (
--- 		cursor			: in pac_vias.cursor;
--- 		log_threshold 	: in type_log_level);
--- 
--- 
--- 	-- Logs the properties of the given contour segment:
--- 	procedure pcb_contour_segment_properties (
--- 		cursor			: in pac_segments.cursor;
--- 		log_threshold 	: in type_log_level);
--- 
--- 	
--- 	-- Logs the properties of the given contour circle:
--- 	procedure pcb_contour_circle_properties (
--- 		circle			: in type_circle;
--- 		log_threshold 	: in type_log_level);
-
 
 	
 	-- The board origin is positioned x/y away from the lower left
