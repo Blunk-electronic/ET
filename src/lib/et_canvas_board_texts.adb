@@ -76,7 +76,7 @@ with gtk.text_iter;
 --with gtk.menu_shell;
 
 with et_generic_module;					use et_generic_module;
-with et_pcb;
+with et_module_board;
 with et_canvas_board;
 use et_canvas_board.pac_canvas;
 

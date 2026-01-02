@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                                PCB                                       --
+--                           MODULE / BOARD                                 --
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -40,13 +40,13 @@ with ada.text_io;					use ada.text_io;
 
 
 
-package body et_pcb is
+package body et_module_board is
 
 
 	procedure dummy is begin null; end;
 
 	
-end et_pcb;
+end et_module_board;
 
 -- Soli Deo Gloria
 

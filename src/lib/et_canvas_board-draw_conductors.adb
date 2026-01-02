@@ -78,7 +78,7 @@ separate (et_canvas_board)
 
 procedure draw_conductors is
 
-	use et_pcb;
+	-- use et_pcb;
 	use et_canvas_board_preliminary_object;
 
 

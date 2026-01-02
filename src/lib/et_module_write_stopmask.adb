@@ -46,9 +46,10 @@ with ada.text_io;					use ada.text_io;
 with ada.characters;				use ada.characters;
 with ada.strings;					use ada.strings;
 
+with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
-with et_pcb;						use et_pcb;
+with et_module_board;				use et_module_board;
 with et_board_geometry;				use et_board_geometry;
 with et_directions;					use et_directions;
 with et_stopmask;					use et_stopmask;

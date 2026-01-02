@@ -859,9 +859,9 @@ package body et_board_ops is
 
 	function get_user_settings (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return et_pcb.type_user_settings
+		return type_user_settings
 	is
-		settings : et_pcb.type_user_settings; -- to be returned
+		settings : type_user_settings; -- to be returned
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;

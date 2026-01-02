@@ -62,7 +62,10 @@ with et_net_class_name;				use et_net_class_name;
 with et_terminals;					use et_terminals;
 with et_package_name;				use et_package_name;
 with et_package_model_name;			use et_package_model_name;
-with et_pcb;
+
+with et_module;
+with et_module_board;
+
 with et_board_outline;				use et_board_outline;
 with et_pcb_sides;					use et_pcb_sides;
 with et_conductors_floating_board;	use et_conductors_floating_board;
@@ -767,13 +770,13 @@ package et_kicad.pcb is
 -- 	-- NOTE: Packages of the board (incl. their deviations from the package_libraries) are ignored !
 
 	-- This is general board stuff:
-	type type_board_with_paper_size is new et_pcb.type_board with record
+	type type_board_with_paper_size is new et_module_board.type_board with record
 		paper_size	: et_drawing_frame.type_paper_size;
 	end record;
 
 	
 	type type_module is record
-		board_available	: et_generic_module.type_board_available := et_generic_module.false;
+		board_available	: et_module.type_board_available := et_module.false;
 
 		-- V4 uses search lists:
 		-- The search list of project library directories and names:

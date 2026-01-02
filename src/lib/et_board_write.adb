@@ -205,7 +205,7 @@ package body et_board_write is
 
 	
 	procedure write_thermal (thermal : in type_relief_properties) is
-		use et_pcb;
+		use et_module_board;
 	begin
 		write (keyword => keyword_pad_technology,   parameters => to_string (thermal.technology));
 		write (keyword => keyword_relief_width_min, parameters => to_string (thermal.width_min));
@@ -220,7 +220,7 @@ package body et_board_write is
 
 	
 	procedure write_priority (prio : in type_priority) is
-		use et_pcb;
+		use et_module_board;
 	begin
 		write (keyword => keyword_priority , parameters => to_string (prio));
 	end;
@@ -244,14 +244,14 @@ package body et_board_write is
 
 	
 	procedure write_pad_connection (connection : in type_pad_connection) is
-		use et_pcb;
+		use et_module_board;
 	begin
 		write (keyword => keyword_connection, parameters => to_string (connection));
 	end;
 
 	
 	procedure write_pad_technology (techno : in type_pad_technology) is
-		use et_pcb;
+		use et_module_board;
 	begin
 		write (keyword => keyword_pad_technology, parameters => to_string (techno));
 	end;	

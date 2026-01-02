@@ -59,6 +59,10 @@ with et_package_sections;
 
 with et_time;
 
+with et_module;							use et_module;
+with et_generic_module;					use et_generic_module;
+-- with et_module_board;				use et_module_board;
+
 with et_board_ops.ratsnest;
 
 with et_board_layer_category;

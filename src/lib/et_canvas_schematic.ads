@@ -70,8 +70,10 @@ with cairo;							use cairo;
 
 with et_logical_pixels;				use et_logical_pixels;
 
+with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with et_generic_module;				use et_generic_module;
+
 with et_script_names;				use et_script_names;
 with et_sheets;						use et_sheets;
 with et_schematic_geometry;			use et_schematic_geometry;

@@ -1857,7 +1857,6 @@ procedure draw_packages is
 		cursor_electrical : pac_devices_electrical.cursor := 
 			module.devices.first;
 
-		use et_pcb;
 		use pac_devices_non_electrical;
 		cursor_non_electrical : pac_devices_non_electrical.cursor := 
 			module.devices_non_electric.first;

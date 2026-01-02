@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                                PCB                                       --
+--                           MODULE / BOARD                                 --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -79,7 +79,7 @@ with et_mirroring;						use et_mirroring;
 with et_conductors_floating_board;		use et_conductors_floating_board;
 
 
-package et_pcb is
+package et_module_board is
 	
 	use pac_geometry_2;
 	use pac_contours;
@@ -108,8 +108,6 @@ package et_pcb is
 
 	
 
-	
--- BOARD / LAYOUT:
 
 	
 	-- This is non-electical board stuff:
@@ -150,7 +148,7 @@ package et_pcb is
 	end record;
 
 	
-end et_pcb;
+end et_module_board;
 
 -- Soli Deo Gloria
 

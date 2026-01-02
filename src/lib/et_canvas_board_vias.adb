@@ -87,7 +87,7 @@ with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 with et_object_status;				use et_object_status;
 with et_undo_redo;
 with et_commit;
-with et_pcb;
+with et_module_board;				use et_module_board;
 with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
@@ -370,7 +370,6 @@ package body et_canvas_board_vias is
 	
 
 	procedure init_preliminary_via is
-		use et_pcb;
 		use et_board_ops;
 
 		rules : constant type_design_rules_board := get_pcb_design_rules (active_module);

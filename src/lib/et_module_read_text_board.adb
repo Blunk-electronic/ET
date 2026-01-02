@@ -46,6 +46,7 @@ with ada.text_io;					use ada.text_io;
 with ada.characters;				use ada.characters;
 with ada.strings;					use ada.strings;
 
+with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with et_module_instance;			use et_module_instance;
 with et_keywords;					use et_keywords;
@@ -65,7 +66,6 @@ with et_pcb_placeholders;				use et_pcb_placeholders;
 with et_pcb_placeholders.conductor;		use et_pcb_placeholders.conductor;
 with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
 
-with et_pcb;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_mirroring;
 
@@ -335,7 +335,6 @@ package body et_module_read_text_board is
 		is
 			use et_pcb_sides;
 			use et_board_coordinates;
-			use et_pcb;
 			use et_board_text;
 			use et_pcb_placeholders;
 		begin
@@ -559,7 +558,6 @@ package body et_module_read_text_board is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			use et_pcb;
 			use et_conductor_text.boards;
 			use pac_conductor_texts_board;
 			use et_board_ops;

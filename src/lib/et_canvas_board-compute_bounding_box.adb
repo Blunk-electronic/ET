@@ -645,7 +645,6 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in type_generic_module)
 			is 
-				use et_pcb;
 				-- use et_conductor_text.packages;
 				-- use pac_conductor_texts;
 				-- use et_conductor_segment;

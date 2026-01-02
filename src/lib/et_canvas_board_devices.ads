@@ -56,7 +56,7 @@ with et_board_coordinates;			use et_board_coordinates;
 with et_board_geometry;				use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 
-with et_pcb;						use et_pcb;
+with et_module_board;				use et_module_board;
 with et_package_library;			use et_package_library;
 with et_device_model;				use et_device_model;
 with et_device_name;				use et_device_name;

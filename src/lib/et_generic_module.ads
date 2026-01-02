@@ -49,125 +49,28 @@ with et_board_geometry;
 with et_nets;
 with et_netlists;
 with et_submodules;
-with et_pcb;
+
+with et_module;						use et_module;
+
 with et_assembly_variants;			use et_assembly_variants;
 with et_assembly_variant_name;		use et_assembly_variant_name;
 with et_module_names;				use et_module_names;
 with et_meta;
 with et_commit;
-with et_text_content;				use et_text_content;
-with et_drawing_frame;
-with et_drawing_frame.schematic;
-with et_numbering;
+-- with et_drawing_frame;
+-- with et_drawing_frame.schematic;
 
 with et_design_rules;				use et_design_rules;
 with et_design_rules_board;			use et_design_rules_board;
 
-with et_net_classes;				use et_net_classes;
-with et_devices_electrical;			use et_devices_electrical;
-with et_devices_non_electrical;		use et_devices_non_electrical;
+-- with et_net_classes;				use et_net_classes;
+-- with et_devices_electrical;			use et_devices_electrical;
+-- with et_devices_non_electrical;		use et_devices_non_electrical;
 with et_logging;					use et_logging;
 
 
-package et_generic_module is
+package et_generic_module is -- CS rename to et_generic_modules
 
-
-	-- For designs which have only a schematic, this flag goes false.
-	type type_board_available is new boolean;
-
-	
-	
-	type type_generic_module is record -- CS make private
-		commit_index	: et_commit.type_commit_index_zero_based := 0;
-		
-		meta			: et_meta.type_meta; -- for both schematic and layout
-
-		rules			: et_design_rules.type_design_rules; -- design rules, erc rules ...
-		
-		description		: pac_text_content.bounded_string; -- a short description of the module
-
-		-- schematic frame template and descriptions of individual schematic frames:
-		frames			: et_drawing_frame.schematic.type_frames_schematic;
-		
-		grid			: et_schematic_geometry.pac_grid.type_grid; -- the drawing grid of the schematic
-
-		board_available	: type_board_available := FALSE;
-
-		-- ALL devices of the module independent of the assembly variant:
-		devices			: pac_devices_electrical.map;
-		device_commits	: type_devices_undo_redo_stack;
-		
-		net_classes		: pac_net_classes.map;		-- the net classes
-		submods			: et_submodules.pac_submodules.map;	-- instances of submodules (boxes)
-		netchangers		: et_submodules.pac_netchangers.map;-- netchangers
-		
-		texts       	: et_schematic_text.pac_texts.list; -- general notes in schematic, not related to drawing frames !
-
-		-- The nets of the module (incl. routing information for the board)
-		-- containing:
-		-- - strands
-		-- - net segments
-		-- - ports of devices, netchangers and submodules
-		-- On adding, moving or deleting units the structure in 
-		-- selector "net" must be updated:
-		nets 	    	: et_nets.pac_nets.map;
-		net_commits		: et_nets.type_nets_undo_redo_stack;
-		
-		-- The assembly variants of the module.
-		-- (means which device is mounted or not or which device can have a different
-		-- value, partcode or purpose):
-		variants		: pac_assembly_variants.map;
-
-		-- The active assembly variant:
-		active_variant	: pac_assembly_variant_name.bounded_string; -- "premium"
-		-- If active_variant is an empty string, then the default variant is active.
-
-		
-		-- Non-electrical stuff (board contours, silkscreen, documentation, ...):
-		board			: et_pcb.type_board;
-		board_commits	: et_pcb.type_board_undo_redo_stack;
-		
-		-- The tree of submodules is stored here. 
-		-- NOTE: This container is exclusively used if the module is a top module.
-		-- In submodules it is not used (should always be empty):
-		submod_tree		: et_numbering.pac_modules.tree;
-
-		-- The netlists containing nets of top module and submodule instances:
-		-- Provide information on primary nets and their subordinated secondary nets per 
-		-- assembly variant.
-		netlists		: et_netlists.pac_netlists.map; -- variant name and netlist
-
-		-- Devices which do not have a counterpart in the schematic:
-		devices_non_electric			: pac_devices_non_electrical.map; -- fiducials, mounting holes, ...
-		devices_non_electric_commits	: type_non_electrical_devices_undo_redo_stack;
-		
-		-- CS: images
-		-- CS: latest view: sheet number, displayed objects, zoom, cursor position, ...
-	end record;
-
-
-	-- Returns true if schematic design rules exist:
-	function design_rules_schematic_assigned (
-		module : in type_generic_module)
-		return boolean;
-
-		
-	-- Returns true if board design rules exist:
-	function design_rules_board_assigned (
-		module : in type_generic_module)
-		return boolean;
-
-		
-		
-	function get_grid_schematic (
-		module : in type_generic_module)
-		return et_schematic_geometry.pac_grid.type_grid;
-
-
-	function get_grid_board (
-		module : in type_generic_module)
-		return et_board_geometry.pac_grid.type_grid;
-	
 	
 		
 	-- Generic modules and submodules (which contain schematic and layout stuff)

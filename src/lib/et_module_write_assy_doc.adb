@@ -48,7 +48,8 @@ with ada.strings;					use ada.strings;
 
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
-with et_pcb;						use et_pcb;
+with et_module;						use et_module;
+with et_module_board;				use et_module_board;
 with et_board_geometry;				use et_board_geometry;
 with et_directions;					use et_directions;
 with et_assy_doc;					use et_assy_doc;

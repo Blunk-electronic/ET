@@ -47,6 +47,8 @@ with ada.characters;				use ada.characters;
 with ada.strings;					use ada.strings;
 with ada.directories;
 
+with et_module;						use et_module;
+
 with et_module_names;				use et_module_names;
 with et_schematic_geometry;
 with et_schematic_coordinates;

@@ -54,7 +54,7 @@ with et_net_labels;				use et_net_labels;
 with et_net_connectors;			use et_net_connectors;
 with et_terminals;
 with et_package_name;			use et_package_name;
-with et_pcb;
+with et_module_board;
 with et_kicad_general;			use et_kicad_general;
 with et_import;
 with et_schematic_geometry;		use et_schematic_geometry;

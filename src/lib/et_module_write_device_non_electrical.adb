@@ -47,6 +47,8 @@ with ada.text_io;					use ada.text_io;
 with et_keywords;					use et_keywords;
 with et_section_headers;			use et_section_headers;
 
+with et_module;						use et_module;
+
 with et_pcb_sides;					use et_pcb_sides;
 with et_board_coordinates;			use et_board_coordinates;
 

@@ -75,7 +75,8 @@ with et_schematic_ops.units;
 
 with et_device_placeholders.packages;
 
-with et_pcb;
+with et_module;							use et_module;
+
 with et_mirroring;						use et_mirroring;
 with et_alignment;						use et_alignment;
 with et_object_status;
@@ -157,8 +158,6 @@ package body et_module_read_device_non_electrical is
 			module		: in out type_generic_module) 
 		is
 			use et_board_coordinates;
-			use et_pcb;
-			
 			use et_pcb_sides;
 			use et_package_name;
 			use et_pcb_stack;

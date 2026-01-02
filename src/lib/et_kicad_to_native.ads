@@ -54,7 +54,7 @@ with et_schematic_geometry;
 with et_schematic_coordinates;
 
 with et_logging;					use et_logging;
-with et_pcb;
+with et_module_board;
 
 with et_board_geometry;
 with et_board_coordinates;

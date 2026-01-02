@@ -42,6 +42,9 @@
 with et_display;					use et_display;
 with et_display.board;
 
+with et_module;						use et_module;
+with et_module_board;				use et_module_board;
+
 with et_module_instance;			use et_module_instance;
 with et_pcb_sides;
 with et_primitive_objects;			use et_primitive_objects;
@@ -110,7 +113,6 @@ with et_package_model_name;
 with et_mirroring;
 with et_device_prefix;
 with et_vias;
-with et_pcb;
 with et_pcb_stack;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_keywords;					use et_keywords;
@@ -138,7 +140,6 @@ is
 	use et_board_text;
 	use et_drills;
 	use et_vias;
-	use et_pcb;
 
 	use et_pcb_sides;
 
@@ -1928,7 +1929,8 @@ is
 		rules : constant type_design_rules_board := get_pcb_design_rules (module_cursor);
 
 		-- get the user specific settings of the board
-		settings : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
+		settings : constant et_module_board.type_user_settings := 
+			get_user_settings (module_cursor);
 
 		
 	begin -- place_via
@@ -2263,7 +2265,8 @@ is
 		shape : constant type_track_shape := type_track_shape'value (get_field (6));
 
 		-- get the user specific settings of the board
-		settings : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
+		settings : constant et_module_board.type_user_settings := 
+			get_user_settings (module_cursor);
 		
 
 		-- Extract from the given command the zone 
@@ -2400,7 +2403,8 @@ is
 		shape : constant type_track_shape := type_track_shape'value (get_field (7));
 
 		-- get the user specific settings of the board
-		settings : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
+		settings : constant et_module_board.type_user_settings := 
+			get_user_settings (module_cursor);
 
 		
 		procedure make_fill_zone is

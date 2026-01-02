@@ -68,7 +68,11 @@ with et_net_ports;				use et_net_ports;
 with et_net_segment;			use et_net_segment;
 with et_net_labels;				use et_net_labels;
 with et_project;				use et_project;
+
 with et_generic_module;			use et_generic_module;
+with et_module;					use et_module;
+with et_module_board;			use et_module_board;
+
 with et_text;
 with et_submodules;
 with et_assembly_variants;		use et_assembly_variants;

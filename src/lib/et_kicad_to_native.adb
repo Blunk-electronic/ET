@@ -58,6 +58,7 @@ with et_schematic_text;
 
 with et_mirroring;					use et_mirroring;
 with et_axes;						use et_axes;
+with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with et_module_ops;
 with et_module_write;
@@ -1392,7 +1393,7 @@ package body et_kicad_to_native is
 				stencil : constant string := "board stencil ";
 				
 				procedure move_line (line : in out type_stencil_line) is
-					use et_pcb;
+					use et_module_board;
 					p_scratch : et_board_geometry.pac_geometry_2.type_vector_model;
 				begin
 					log (text => stencil & "line", level => log_threshold + log_threshold_add);
@@ -1418,7 +1419,7 @@ package body et_kicad_to_native is
 
 				
 				procedure move_arc (arc : in out type_stencil_arc) is
-					use et_pcb;
+					use et_module_board;
 				begin
 					log (text => stencil & "arc", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1572,7 +1573,7 @@ package body et_kicad_to_native is
 				stop : constant string := "board stop mask ";
 				
 				procedure move_line (line : in out type_stop_line) is
-					use et_pcb;
+					use et_module_board;
 					p_scratch : et_board_geometry.pac_geometry_2.type_vector_model;	
 				begin
 					log (text => stop & "line", level => log_threshold + log_threshold_add);
@@ -1598,7 +1599,7 @@ package body et_kicad_to_native is
 
 				
 				procedure move_arc (arc : in out type_stop_arc) is
-					use et_pcb;
+					use et_module_board;
 				begin
 					log (text => stop & "arc", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -2605,7 +2606,7 @@ package body et_kicad_to_native is
 		procedure copy_general_stuff is begin
 			module.board_available	:= element (module_cursor_kicad).board_available;
 			module.texts			:= to_texts (element (module_cursor_kicad).notes); 
-			module.board			:= et_pcb.type_board (element (module_cursor_kicad).board);
+			module.board			:= et_module_board.type_board (element (module_cursor_kicad).board);
 			module.net_classes		:= element (module_cursor_kicad).net_classes;
 		end copy_general_stuff;
 

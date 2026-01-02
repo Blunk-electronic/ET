@@ -43,7 +43,10 @@ with ada.containers;					use ada.containers;
 
 with et_domains;						use et_domains;
 with et_nets;
-with et_pcb;
+
+with et_module;							use et_module;
+with et_module_board;					use et_module_board;
+
 with et_modes.schematic;
 with et_modes.board;
 with et_time;							use et_time;
@@ -236,7 +239,6 @@ package body et_undo_redo is
 
 
 			procedure commit_non_electrical_devices is 
-				use et_pcb;
 			begin
 				log (text => "devices (non-electrical)", level => lth + 1);
 							
@@ -251,7 +253,6 @@ package body et_undo_redo is
 
 
 			procedure commit_board is 
-				use et_pcb;
 			begin
 				log (text => "board objects (non-electrical)", level => lth + 1);
 							
@@ -470,7 +471,6 @@ package body et_undo_redo is
 
 			
 			procedure undo_non_electrical_devices is 
-				use et_pcb;
 				use pac_non_electrical_device_commits;
 				dos		: pac_non_electrical_device_commits.list renames module.devices_non_electric_commits.dos;
 				redos	: pac_non_electrical_device_commits.list renames module.devices_non_electric_commits.redos;
@@ -513,7 +513,6 @@ package body et_undo_redo is
 
 			
 			procedure undo_board is
-				use et_pcb;
 				use pac_board_commits;
 				dos		: pac_board_commits.list renames module.board_commits.dos;
 				redos	: pac_board_commits.list renames module.board_commits.redos;
@@ -736,7 +735,6 @@ package body et_undo_redo is
 
 			
 			procedure redo_non_electrical_devices is
-				use et_pcb;
 				use pac_non_electrical_device_commits;
 				dos		: pac_non_electrical_device_commits.list renames module.devices_non_electric_commits.dos;
 				redos	: pac_non_electrical_device_commits.list renames module.devices_non_electric_commits.redos;
@@ -784,7 +782,6 @@ package body et_undo_redo is
 			
 
 			procedure redo_board is
-				use et_pcb;
 				use pac_board_commits;				
 				dos		: pac_board_commits.list renames module.board_commits.dos;
 				redos	: pac_board_commits.list renames module.board_commits.redos;

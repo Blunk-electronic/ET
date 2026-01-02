@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                       BOARD OPERATIONS / TEXT                            --
+--                               MODULE                                     --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,51 +35,56 @@
 --
 --   history of changes:
 --
-
-with et_assembly_variants;
-with et_conductor_text.boards;
-with et_pcb_placeholders;				use et_pcb_placeholders;
+--  ToDo: 
+--  
 
 
+-- with et_exceptions;				use et_exceptions;
 
-package body et_board_ops.text is
 
-	
-	function to_placeholder_content (
-		module_cursor	: in pac_generic_modules.cursor;
-		meaning 		: in type_placeholder_meaning_non_conductor)
-		return pac_text_content.bounded_string 
-	is
-		m : type_generic_module renames element (module_cursor);
+package body et_module is
+
+
+	function design_rules_schematic_assigned (
+		module : in type_generic_module)
+		return boolean
+	is begin
+		return schematic_rules_assigned (module.rules);
+	end;
+
 		
-		use et_meta;
-		meta : constant et_meta.type_board := m.meta.board;
+	function design_rules_board_assigned (
+		module : in type_generic_module)
+		return boolean
+	is begin
+		return board_rules_assigned (module.rules);
+	end;
 
-		use et_assembly_variants;
-		use pac_assembly_variant_name;
-		variant : constant pac_assembly_variant_name.bounded_string := m.active_variant;
 
-		result : pac_text_content.bounded_string;
-	begin
-		case meaning is
-			when COMPANY			=> result := to_content (to_string (meta.company));
-			when CUSTOMER			=> result := to_content (to_string (meta.customer));
-			when PARTCODE			=> result := to_content (to_string (meta.partcode));
-			when DRAWING_NUMBER		=> result := to_content (to_string (meta.drawing_number));
-			when ASSEMBLY_VARIANT	=> result := to_content (to_string (variant));
-			when PROJECT			=> result := to_content ("not assigned"); -- CS
-			when MODULE				=> result := to_content (to_string (key (module_cursor)));
-			when REVISION			=> result := to_content (to_string (meta.revision));
-		end case;
-		
-		return result;
-	end to_placeholder_content;
+
+
 	
 
-end et_board_ops.text;
+	function get_grid_schematic (
+		module : in type_generic_module)
+		return et_schematic_geometry.pac_grid.type_grid
+	is begin
+		return module.grid;
+	end;
+
+
+
+	function get_grid_board (
+		module : in type_generic_module)
+		return et_board_geometry.pac_grid.type_grid
+	is begin
+		return module.board.grid;
+	end;
+
 	
+end et_module;
+
 -- Soli Deo Gloria
-
 
 -- For God so loved the world that he gave 
 -- his one and only Son, that whoever believes in him 

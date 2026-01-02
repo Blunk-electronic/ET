@@ -58,12 +58,16 @@ with et_primitive_objects;			use et_primitive_objects;
 with et_axes;						use et_axes;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
+
 with et_generic_module;				use et_generic_module;
+with et_module;						use et_module;
+with et_module_board;				use et_module_board;
 
 with et_text;
 
 with et_terminals;					use et_terminals;
-with et_pcb;						use et_pcb;
+
+
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_sides;					use et_pcb_sides;
@@ -169,7 +173,7 @@ package et_board_ops is
 	
 	function get_user_settings (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return et_pcb.type_user_settings;
+		return type_user_settings;
 
 	
 end et_board_ops;

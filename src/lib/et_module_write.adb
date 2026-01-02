@@ -86,7 +86,7 @@ with et_device_value;
 with et_device_partcode;
 with et_schematic_text;
 with et_sheets;
-with et_pcb;
+with et_module_board;
 with et_pcb_stack;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
@@ -618,7 +618,7 @@ package body et_module_write is
 		
 		procedure query_board is
 			use et_board_geometry.pac_contours;
-			use et_pcb;
+			use et_module_board;
 			use et_pcb_stack;
 			use et_board_geometry.pac_geometry_2;
 
@@ -626,7 +626,7 @@ package body et_module_write is
 		
 			procedure query_user_settings is
 				use et_board_ops;
-				us : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
+				us : constant type_user_settings := get_user_settings (module_cursor);
 
 				
 				procedure vias is begin

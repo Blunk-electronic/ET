@@ -72,7 +72,7 @@ with et_board_ops.conductors;
 with et_board_ops.vias;
 with et_board_ops.outline;
 with et_board_ops.groups;
-with et_pcb;
+with et_module_board;
 
 with et_text;
 with et_canvas_board_lines;
