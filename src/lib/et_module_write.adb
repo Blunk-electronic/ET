@@ -97,7 +97,6 @@ with et_schematic_text;
 with et_board_text;
 
 with et_board_layer_category;			use et_board_layer_category;
-with et_submodules;
 with et_netlists;
 with et_alignment;						use et_alignment;
 
@@ -118,6 +117,7 @@ with et_module_write_route_restrict;	use et_module_write_route_restrict;
 with et_module_write_nets;				use et_module_write_nets;
 with et_module_write_net_classes;		use et_module_write_net_classes;
 with et_module_write_netchangers;		use et_module_write_netchangers;
+with et_module_write_submodules;		use et_module_write_submodules;
 
 with et_module_write_board_user_settings;	use et_module_write_board_user_settings;
 with et_module_write_devices_electrical;	use et_module_write_devices_electrical;
@@ -209,69 +209,6 @@ package body et_module_write is
 			set_output (previous_output);
 			close (module_file_handle);
 		end write_footer;
-
-
-
-
-		
-
-		
-		procedure query_submodules is		
-			use et_schematic_geometry.pac_geometry_2;
-			use et_submodules;
-			use pac_submodules;
-			use et_net_names;
-			use pac_net_name;
-
-			
-			procedure query_ports (port_cursor : in et_submodules.pac_submodule_ports.cursor) is
-				use et_submodules.pac_submodule_ports;
-			begin
-				section_mark (section_port, HEADER);
-				write (keyword => keyword_name, parameters => to_string (key (port_cursor))); -- name clk_out
-
-				write (keyword => keyword_position, 
-					parameters => to_string (element (port_cursor).position, FORMAT_2)); -- position x 0 y 10
-				
-				write (keyword => keyword_direction, parameters => to_string (element (port_cursor).direction)); -- direction master/slave
-				section_mark (section_port, FOOTER);
-			end;
-
-			
-			procedure write (submodule_cursor : in pac_submodules.cursor) is 
-				use et_schematic_coordinates;
-				use et_schematic_geometry.pac_geometry_2;
-				use et_module_instance;
-			begin
-				section_mark (section_submodule, HEADER);
-				write (keyword => keyword_name, parameters => to_string (key (submodule_cursor))); -- name stepper_driver_1
-				write (keyword => keyword_file, parameters => pac_submodule_path.to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
-
-				write (keyword => keyword_position, 
-					parameters => to_string (element (submodule_cursor).position, FORMAT_2));
-				
-				write (keyword => keyword_size, parameters => 
-					space & keyword_x & to_string (element (submodule_cursor).size.x) &
-					space & keyword_y & to_string (element (submodule_cursor).size.y)); -- size x 50 y 70
-				
-				write (keyword => keyword_position_in_board, parameters => -- position_in_board x 23 y 0.2 rotation 90.0
-					et_board_geometry.pac_geometry_2.to_string (element (submodule_cursor).position_in_board));
-
-				write (keyword => keyword_view_mode, parameters => to_string (element (submodule_cursor).view_mode));
-
-				section_mark (section_ports, HEADER);
-				et_submodules.pac_submodule_ports.iterate (element (submodule_cursor).ports, query_ports'access);
-				section_mark (section_ports, FOOTER);
-				
-				section_mark (section_submodule, FOOTER);				
-			end write;
-
-			
-		begin -- query_submodules
-			section_mark (section_submodules, HEADER);
-			iterate (element (module_cursor).submods, write'access);
-			section_mark (section_submodules, FOOTER);
-		end query_submodules;
 
 
 
@@ -561,7 +498,7 @@ package body et_module_write is
 		put_line (row_separator_single);
 		
 		-- submodules
-		query_submodules;
+		write_submodules (module_cursor, log_threshold);
 		put_line (row_separator_single);
 		
 		-- devices
