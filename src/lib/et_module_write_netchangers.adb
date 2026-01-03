@@ -57,7 +57,7 @@ with et_board_geometry;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
 with et_schematic_coordinates;
-with et_submodules;					use et_submodules;
+with et_netchangers;				use et_netchangers;
 with et_net_names;					use et_net_names;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 

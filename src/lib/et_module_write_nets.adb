@@ -60,6 +60,7 @@ with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_symbol_ports;
 
 with et_submodules;
+with et_netchangers;
 
 with et_net_names;					use et_net_names;
 with et_net_class_name;
@@ -287,6 +288,7 @@ package body et_module_write_nets is
 
 					
 					procedure query_netchanger_ports (segment : in type_net_segment) is
+						use et_netchangers;
 						use et_symbol_ports;
 
 						port_cursor : pac_netchanger_ports.cursor;
@@ -297,9 +299,9 @@ package body et_module_write_nets is
 							while has_element (port_cursor) loop
 								write (
 									keyword		=> to_string (AB_end) & space & keyword_netchanger, 
-									parameters	=> et_submodules.to_string (element (port_cursor).index)
+									parameters	=> to_string (element (port_cursor).index)
 										& space & keyword_port
-										& et_submodules.to_string (element (port_cursor).port));
+										& to_string (element (port_cursor).port));
 
 								next (port_cursor);
 							end loop;

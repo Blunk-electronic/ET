@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -39,33 +39,24 @@
 -- 1. Separate stuff related to schematic and board in a child package.
 --
 
-with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings;				use ada.strings;
-with ada.strings.fixed;			use ada.strings.fixed;
-with ada.strings.bounded;       use ada.strings.bounded;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.containers;            use ada.containers;
-with ada.containers.doubly_linked_lists;
+
+with ada.strings.bounded;			use ada.strings.bounded;
+
+with ada.containers;				use ada.containers;
 with ada.containers.ordered_maps;
-with ada.containers.ordered_sets;
 
 with et_logging;					use et_logging;
 with et_net_names;					use et_net_names;
 with et_text;
 with et_schematic_geometry;			use et_schematic_geometry;
 with et_schematic_coordinates;		use et_schematic_coordinates;
-with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_board_coordinates;
 with et_board_geometry;
-with et_symbol_ports;				use et_symbol_ports;
 with et_schematic_text;				use et_schematic_text;
 with et_module_names;				use et_module_names;
 with et_module_instance;			use et_module_instance;
 with et_fonts;						use et_fonts;
-with et_symbol_shapes;				use et_symbol_shapes;
-with et_directions;					use et_directions;
+with et_netchangers;				use et_netchangers;
 
 
 package et_submodules is
@@ -132,16 +123,6 @@ package et_submodules is
 	-- Removes the file extension from given path and returns the module name.
 
 
-
-
-	
-	type type_netchanger_port_name is (MASTER, SLAVE);
-	
-	
-	function to_port_name (name : in string) return type_netchanger_port_name;
-
-
-	function to_string (name : in type_netchanger_port_name) return string;	
 
 
 	
@@ -289,85 +270,7 @@ package et_submodules is
 	
 
 
-	
-	netchanger_id_max : constant positive := 10000; -- CS  increase if necessary
-	type type_netchanger_id is range 1 .. netchanger_id_max;
 
-
-	
-	function to_netchanger_id (id : in string) return type_netchanger_id;
-
-	function to_string (id : in type_netchanger_id) return string;		
-
-
-	
-	function opposide_port (port : in type_netchanger_port_name) return type_netchanger_port_name;
-
-	type type_netchanger_port is record
-		position	: type_vector_model;
-		length		: type_port_length; 
-		rotation	: type_rotation_model;
-	end record;
-
-
-	
-	position_master_port_default : constant type_vector_model := (x =>  10.0, y => 0.0);
-	position_slave_port_default  : constant type_vector_model := (x => -10.0, y => 0.0);
-
-	
-	
-	type type_netchanger_symbol is record
-		master_port	: type_netchanger_port := (
-						position	=> position_master_port_default,
-						length		=> 5.0,
-						rotation	=> zero_rotation);
-
-		slave_port	: type_netchanger_port := (
-						position	=> position_slave_port_default,
-						length		=> 5.0,
-						rotation	=> 180.0);
-
-		-- the arc that connects the ports
-		arc	: type_symbol_arc := (type_arc (to_arc (
-						center	=> (x =>  0.0, y => 0.0),
-						A		=> (x => -5.0, y => 0.0),
-						B		=> (x =>  5.0, y => 0.0),
-						direction	=> CW))
-						with port_line_width);
-
-	end record;
-
-
-	
-	type type_netchanger is record
-		position_sch	: type_object_position; -- x,y,sheet,rotation
-		--symbol			: type_netchanger_symbol; -- CS for visualisation only
-		
-		position_brd	: et_board_geometry.pac_geometry_2.type_vector_model; -- x,y
-		-- in board there is no rotation because the netchanger is just a point in x/y.
-		layer			: type_signal_layer := type_signal_layer'first;
-	end record;
-
-	
-	
-	package pac_netchangers is new ordered_maps (
-		key_type		=> type_netchanger_id,
-		element_type	=> type_netchanger);
-
-
-	
-	type type_netchanger_ports is record
-		master	: type_vector_model := position_master_port_default;
-		slave	: type_vector_model := position_slave_port_default;
-	end record;
-
-
-
-	
-	function netchanger_ports (
-	-- Returns the absolute x/y positions of the given netchanger.
-		netchanger_cursor	: in pac_netchangers.cursor)
-		return type_netchanger_ports;
 	
 	-- A module connector connects the parent module with the submodule.
 	-- The connector consists of an external port and and internal port.

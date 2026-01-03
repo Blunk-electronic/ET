@@ -74,6 +74,7 @@ with et_module;					use et_module;
 with et_module_board;			use et_module_board;
 
 with et_text;
+with et_netchangers;
 with et_submodules;
 with et_assembly_variants;		use et_assembly_variants;
 with et_assembly_variant_name;	use et_assembly_variant_name;

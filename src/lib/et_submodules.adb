@@ -38,6 +38,10 @@
 --   ToDo: 
 
 
+with ada.text_io;					use ada.text_io;
+with ada.characters;				use ada.characters;
+with ada.characters.handling;		use ada.characters.handling;
+
 with et_coordinates_formatting;		use et_coordinates_formatting;
 
 
@@ -161,6 +165,7 @@ package body et_submodules is
 	end move_ports;
 
 
+	
 
 	
 	function to_string (view : in type_submodule_view_mode) return string is begin
@@ -182,67 +187,7 @@ package body et_submodules is
 	is begin
 		return natural (submodules.length);
 	end;
-
-
-
 	
-	
-	function to_netchanger_id (id : in string) return type_netchanger_id is begin
-		return type_netchanger_id'value (id);
-	end;
-
-
-
-	
-	function to_string (id : in type_netchanger_id) return string is begin
-		return trim (type_netchanger_id'image (id), left);
-	end;
-
-
-
-	
-	function opposide_port (port : in type_netchanger_port_name) return type_netchanger_port_name is begin
-		case port is
-			when MASTER => return SLAVE;
-			when SLAVE  => return MASTER;
-		end case;
-	end;
-
-
-
-	
-	function to_port_name (name : in string) return type_netchanger_port_name is begin
-		return type_netchanger_port_name'value (name);
-	end;
-
-
-
-	
-	function to_string (name : in type_netchanger_port_name) return string is begin
-		return trim (to_lower (type_netchanger_port_name'image (name)), left);
-	end;
-
-
-	
-	function netchanger_ports (
-	-- Returns the absolute x/y positions of the given netchanger.
-		netchanger_cursor	: in pac_netchangers.cursor)
-		return type_netchanger_ports 
-	is
-		use pac_netchangers;
-		ports : type_netchanger_ports;
-	begin
-		-- rotate the ports according to rotation in schematic
-		rotate_by (ports.master, get_rotation (element (netchanger_cursor).position_sch));
-		rotate_by (ports.slave,  get_rotation (element (netchanger_cursor).position_sch));
-
-		-- move the ports according to position in schematic
-		move_by (ports.master, element (netchanger_cursor).position_sch.place);
-		move_by (ports.slave,  element (netchanger_cursor).position_sch.place);
-				
-		return ports;
-	end netchanger_ports;
-
 
 	
 end et_submodules;

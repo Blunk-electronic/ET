@@ -70,9 +70,9 @@ package body et_schematic_ops.submodules is
 
 	
 	procedure netchanger_not_found (
-		index : in et_submodules.type_netchanger_id) 
+		index : in type_netchanger_id) 
 	is begin
-		log (ERROR, "netchanger" & et_submodules.to_string (index) & " not found !", console => true);
+		log (ERROR, "netchanger" & to_string (index) & " not found !");
 		raise constraint_error;
 	end;
 
@@ -179,7 +179,7 @@ package body et_schematic_ops.submodules is
 	function netchanger_as_port_available (
 		module		: in pac_generic_modules.cursor;
 		net			: in et_nets.pac_nets.cursor;
-		direction	: in et_submodules.type_netchanger_port_name) -- master/slave 
+		direction	: in type_netchanger_port_name) -- master/slave 
 		return boolean 
 	is
 		
@@ -281,11 +281,12 @@ package body et_schematic_ops.submodules is
 	
 
 	
+	
 
 	function submodule_port_exists (
 		module			: in et_submodules.pac_submodules.cursor;
 		port			: in pac_net_name.bounded_string; -- clock_output
-		direction		: in et_submodules.type_netchanger_port_name) -- master/slave
+		direction		: in type_netchanger_port_name) -- master/slave
 		return boolean 
 	is
 		result : boolean := false; -- to be returned
@@ -359,6 +360,8 @@ package body et_schematic_ops.submodules is
 
 
 
+	
+
 	function submodule_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		submod_instance	: in pac_module_instance_name.bounded_string; -- MOT_DRV_3
@@ -423,6 +426,8 @@ package body et_schematic_ops.submodules is
 
 	
 
+
+	
 	
 	function get_submodule_port_position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -521,6 +526,7 @@ package body et_schematic_ops.submodules is
 
 
 	
+	
 
 	procedure port_not_provided (port_name : in pac_net_name.bounded_string) is begin
 		log (ERROR, "submodule does not provide a port named " &
@@ -529,6 +535,7 @@ package body et_schematic_ops.submodules is
 	end;
 
 
+	
 	
 
 	-- Inserts the given submodule port in the net segments.
@@ -678,7 +685,7 @@ package body et_schematic_ops.submodules is
 		port_name		: in pac_net_name.bounded_string; -- clk_out
 		position		: in type_vector_model; -- x/y along the edge of the box
 		
-		direction		: in et_submodules.type_netchanger_port_name; -- master/slave. 
+		direction		: in type_netchanger_port_name; -- master/slave. 
 		-- NOTE: has nothing to do with direction of energy flow. It is relevant when 
 		-- a netlist is exported. See specification et_submodules.type_submodule_port.
 		
@@ -693,6 +700,7 @@ package body et_schematic_ops.submodules is
 
 		-- Handling the absolute position of the port requires this variable:
 		port_position : type_object_position;
+
 		
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
@@ -701,6 +709,7 @@ package body et_schematic_ops.submodules is
 			use pac_submodules;
 			submod_cursor : pac_submodules.cursor;
 
+			
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
 				submodule	: in out et_submodules.type_submodule) 
@@ -749,6 +758,7 @@ package body et_schematic_ops.submodules is
 				end if;
 					
 			end query_ports;
+
 			
 		begin -- query_submodules
 			if contains (module.submods, instance) then
@@ -827,6 +837,7 @@ package body et_schematic_ops.submodules is
 
 
 
+	
 
 
 	-- Removes a port from the net segments.
@@ -957,6 +968,7 @@ package body et_schematic_ops.submodules is
 
 	
 	
+	
 
 	procedure submodule_port_not_found (name : in pac_net_name.bounded_string) is begin
 		log (ERROR, "port " &
@@ -966,6 +978,8 @@ package body et_schematic_ops.submodules is
 
 
 
+
+	
 
 	procedure delete_port (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -1059,6 +1073,8 @@ package body et_schematic_ops.submodules is
 
 	
 	
+
+
 	
 	procedure move_port (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -1236,6 +1252,8 @@ package body et_schematic_ops.submodules is
 
 
 
+	
+
 
 	procedure movable_test (
 	-- Tests whether the submodule port at the given point is movable. The criteria
@@ -1305,6 +1323,8 @@ package body et_schematic_ops.submodules is
 
 
 
+
+
 	
 	-- Drags the net segments according to the given netchanger ports.
 	-- Changes the position of start or end points of segments.
@@ -1314,8 +1334,8 @@ package body et_schematic_ops.submodules is
 	-- lands between start and end point.
 	procedure drag_net_segments (
 		module			: in pac_generic_modules.cursor;	-- the module
-		ports_before	: in et_submodules.type_netchanger_ports;	-- the old port positions
-		ports_after		: in et_submodules.type_netchanger_ports;	-- the new port positions
+		ports_before	: in type_netchanger_ports;	-- the old port positions
+		ports_after		: in type_netchanger_ports;	-- the new port positions
 		sheet			: in type_sheet;			-- the sheet to look at
 		log_threshold	: in type_log_level) 
 	is
@@ -1496,6 +1516,8 @@ package body et_schematic_ops.submodules is
 
 
 
+
+	
 	-- Drags the net segments according to the given submodule ports.
 	-- Changes the position of start or end points of segments.
 	-- Does NOT create new connections with segments if the port
@@ -1663,6 +1685,9 @@ package body et_schematic_ops.submodules is
 		
 		log_indentation_down;
 	end drag_net_segments;
+
+
+
 
 
 	
@@ -1857,6 +1882,8 @@ package body et_schematic_ops.submodules is
 	
 
 
+	
+
 	-- Inserts the given netchanger ports in the net segments.
 	-- If a port lands on either the start or end point of a segment, it will
 	-- be regarded as "connected" with the segment.
@@ -1866,12 +1893,13 @@ package body et_schematic_ops.submodules is
 	-- jet and probably not a good idea.
 	procedure insert_ports (
 		module			: in pac_generic_modules.cursor;		-- the module
-		index			: in et_submodules.type_netchanger_id;	-- the netchanger id
-		ports			: in et_submodules.type_netchanger_ports; -- the ports to be inserted
+		index			: in type_netchanger_id;	-- the netchanger id
+		ports			: in type_netchanger_ports; -- the ports to be inserted
 		sheet			: in type_sheet;	-- the sheet to look at
 		log_threshold	: in type_log_level) 
 	is
 		use et_submodules;
+
 		
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
@@ -2019,10 +2047,13 @@ package body et_schematic_ops.submodules is
 
 
 
+
+	
+
 	-- Returns the next available netchanger index in the module.
 	function next_netchanger_index (
 		module_cursor	: in pac_generic_modules.cursor)
-		return et_submodules.type_netchanger_id 
+		return type_netchanger_id 
 	is
 		use et_submodules;
 		next_idx : type_netchanger_id; -- to be returned
@@ -2071,24 +2102,29 @@ package body et_schematic_ops.submodules is
 	end next_netchanger_index;
 
 	
+	
 
+
+	
 
 	function exists_netchanger (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		index			: in et_submodules.type_netchanger_id) -- 1, 2, 3, ...
+		index			: in type_netchanger_id) -- 1, 2, 3, ...
 		return boolean 
 	is
 		result : boolean := false; -- to be returned, goes true once the target has been found		
 
+		
 		procedure query_netchangers (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) is
-			use et_submodules.pac_netchangers;
+			use pac_netchangers;
 		begin -- query_netchangers
 			if contains (module.netchangers, index) then
 				result := true;
 			end if;
 		end query_netchangers;
+
 		
 	begin -- exists_netchanger
 		query_element (
@@ -2101,10 +2137,13 @@ package body et_schematic_ops.submodules is
 
 
 
+	
+
+
 	function get_netchanger_port_position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
-		port			: in et_submodules.type_netchanger_port_name; -- SLAVE/MASTER
+		index			: in type_netchanger_id; -- 1,2,3,...
+		port			: in type_netchanger_port_name; -- SLAVE/MASTER
 		log_threshold	: in type_log_level)
 		return type_object_position
 	is
@@ -2113,6 +2152,7 @@ package body et_schematic_ops.submodules is
 		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being inquired
 
+		
 		procedure query_netchangers (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
@@ -2183,6 +2223,7 @@ package body et_schematic_ops.submodules is
 
 
 	
+
 	
 	
 	procedure add_netchanger (
@@ -2260,11 +2301,13 @@ package body et_schematic_ops.submodules is
 
 
 
+
+
 	
 	
 	procedure drag_netchanger (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
+		index			: in type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) 
@@ -2279,13 +2322,13 @@ package body et_schematic_ops.submodules is
 		-- The criteria for movement are: no device, no submodule ports there.
 		-- The ports allowed here are the ports-to-be-dragged itself.
 			location 			: in type_object_position; -- only sheet number matters
-			netchanger_ports	: in et_submodules.type_netchanger_ports) -- x/y of master and slave port
+			netchanger_ports	: in type_netchanger_ports) -- x/y of master and slave port
 		is			
 
 			
 			procedure test_point (
 				point		: in type_object_position; -- sheet/x/y -- the point to be probed
-				port_name	: in et_submodules.type_netchanger_port_name) -- master/slave
+				port_name	: in type_netchanger_port_name) -- master/slave
 			is 
 				use et_netlists;
 				ports : type_ports;
@@ -2335,6 +2378,7 @@ package body et_schematic_ops.submodules is
 					end if;
 				end if;
 			end test_point;
+
 			
 		begin -- movable_test
 			log (text => "movable test ...", level => log_threshold + 1);
@@ -2481,13 +2525,15 @@ package body et_schematic_ops.submodules is
 
 	end drag_netchanger;
 
+
+
 	
 
 
 	-- Deletes ports of the given netchanger in nets:
 	procedure delete_ports (
 		module			: in pac_generic_modules.cursor;			-- the module
-		index			: in et_submodules.type_netchanger_id;	-- the netchanger id
+		index			: in type_netchanger_id;	-- the netchanger id
 		sheet			: in type_sheet;		-- the sheet where the netchanger is
 		log_threshold	: in type_log_level) 
 	is
@@ -2627,12 +2673,14 @@ package body et_schematic_ops.submodules is
 	end delete_ports;
 
 
+
+
 	
 	
 
 	procedure move_netchanger (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
+		index			: in type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
 		point			: in type_vector_model; -- x/y
@@ -2766,13 +2814,14 @@ package body et_schematic_ops.submodules is
 
 
 
+	
 
 
 	-- Rotates the given netchanger. Disconnects it from
 	-- start or end points of net segments.
 	procedure rotate_netchanger (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
+		index			: in type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		rotation		: in et_schematic_geometry.type_rotation_model; -- 90
 		log_threshold	: in type_log_level) 
@@ -2901,7 +2950,7 @@ package body et_schematic_ops.submodules is
 
 	procedure delete_netchanger (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
+		index			: in type_netchanger_id; -- 1,2,3,...
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -4469,8 +4518,8 @@ package body et_schematic_ops.submodules is
 
 				exception when event: others =>
 					log (ERROR, "net " & to_string (net) &
-						" netchanger" & et_submodules.to_string (port.index) &
-						" port" & et_submodules.to_string (port.port) &
+						" netchanger" & to_string (port.index) &
+						" port" & to_string (port.port) &
 						" already used !",
 						console => true);
 					-- CS: show the net, sheet, xy where the port is in use already
@@ -4562,8 +4611,8 @@ package body et_schematic_ops.submodules is
 									use et_netlists;
 									
 									procedure query_port (port_cursor : in pac_netchanger_ports.cursor) is begin
-										log (text => "netchanger " & et_submodules.to_string (element (port_cursor).index) &
-											 " port " & et_submodules.to_string (element (port_cursor).port), level => log_threshold + 4);
+										log (text => "netchanger " & to_string (element (port_cursor).index) &
+											 " port " & to_string (element (port_cursor).port), level => log_threshold + 4);
 
 										if not exists_netchanger (
 											module_cursor	=> module_cursor,
@@ -4571,7 +4620,7 @@ package body et_schematic_ops.submodules is
 
 											error;
 											
-											log (ERROR, "netchanger" & et_submodules.to_string (element (port_cursor).index) &
+											log (ERROR, "netchanger" & to_string (element (port_cursor).index) &
 												 " does not exist !");
 										end if;
 

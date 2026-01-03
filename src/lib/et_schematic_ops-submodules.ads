@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -38,13 +38,14 @@
 --   ToDo: 
 
 
+with et_netchangers;				use et_netchangers;
 with et_submodules;
 
 
 package et_schematic_ops.submodules is
 
 	procedure netchanger_not_found (
-		index : in et_submodules.type_netchanger_id);
+		index : in type_netchanger_id);
 
 	
 	procedure submodule_not_found (
@@ -67,7 +68,7 @@ package et_schematic_ops.submodules is
 	function netchanger_as_port_available (
 		module		: in pac_generic_modules.cursor;
 		net			: in et_nets.pac_nets.cursor;
-		direction	: in et_submodules.type_netchanger_port_name) -- master/slave 		
+		direction	: in type_netchanger_port_name) -- master/slave 		
 		return boolean;
 
 
@@ -76,7 +77,7 @@ package et_schematic_ops.submodules is
 	function submodule_port_exists (
 		module			: in et_submodules.pac_submodules.cursor;
 		port			: in pac_net_name.bounded_string;
-		direction		: in et_submodules.type_netchanger_port_name) -- master/slave		
+		direction		: in type_netchanger_port_name) -- master/slave		
 		return boolean;
 
 
@@ -109,7 +110,7 @@ package et_schematic_ops.submodules is
 		port_name		: in pac_net_name.bounded_string; -- clk_out
 		position		: in type_vector_model; -- x/y along the edge of the box
 
-		direction		: in et_submodules.type_netchanger_port_name; -- master/slave. 
+		direction		: in type_netchanger_port_name; -- master/slave. 
 		-- NOTE: has nothing to do with direction of energy flow. It is relevant when 
 		-- a netlist is exported. See specification et_submodules.type_submodule_port.
 		
@@ -159,7 +160,7 @@ package et_schematic_ops.submodules is
 	-- Returns true if given netchanger exists in module indicated by module_cursor.
 	function exists_netchanger (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		index			: in et_submodules.type_netchanger_id) -- 1, 2, 3, ...
+		index			: in type_netchanger_id) -- 1, 2, 3, ...
 		return boolean;
 
 
@@ -167,8 +168,8 @@ package et_schematic_ops.submodules is
 	-- Returns the sheet/x/y position of the given netchanger port.
 	function get_netchanger_port_position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
-		port			: in et_submodules.type_netchanger_port_name; -- SLAVE/MASTER
+		index			: in type_netchanger_id; -- 1,2,3,...
+		port			: in type_netchanger_port_name; -- SLAVE/MASTER
 		log_threshold	: in type_log_level)
 		return type_object_position;
 
@@ -188,7 +189,7 @@ package et_schematic_ops.submodules is
 	-- to another is not possible.
 	procedure drag_netchanger (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
+		index			: in type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
@@ -200,7 +201,7 @@ package et_schematic_ops.submodules is
 	-- Connects netchanger ports with segment end or strart points AFTER the move.
 	procedure move_netchanger (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
+		index			: in type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
 		point			: in type_vector_model; -- x/y
@@ -212,7 +213,7 @@ package et_schematic_ops.submodules is
 	-- start or end points of net segments.
 	procedure rotate_netchanger (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
+		index			: in type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		rotation		: in et_schematic_geometry.type_rotation_model; -- 90
 		log_threshold	: in type_log_level);
@@ -222,7 +223,7 @@ package et_schematic_ops.submodules is
 	-- Deletes a netchanger.
 	procedure delete_netchanger (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
+		index			: in type_netchanger_id; -- 1,2,3,...
 		log_threshold	: in type_log_level);
 
 

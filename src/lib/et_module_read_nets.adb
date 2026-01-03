@@ -61,7 +61,7 @@ with et_sheets;						use et_sheets;
 
 with et_symbol_ports;
 
-with et_submodules;
+with et_netchangers;				use et_netchangers;
 
 with et_net_names;					use et_net_names;
 with et_net_class_name;
@@ -722,10 +722,10 @@ package body et_module_read_nets is
 		elsif kw = keyword_netchanger then -- A/B netchanger 1 port master/slave
 			expect_field_count (line, 5);
 			
-			net_netchanger_port.index := et_submodules.to_netchanger_id (f (line, 3)); -- 1
+			net_netchanger_port.index := to_netchanger_id (f (line, 3)); -- 1
 
 			if f (line, 4) = keyword_port then -- port
-				net_netchanger_port.port := et_submodules.to_port_name (f (line, 5)); -- MASTER, SLAVE
+				net_netchanger_port.port := to_port_name (f (line, 5)); -- MASTER, SLAVE
 
 				-- CS really required ?
 				-- Insert netchanger port in collection of netchanger ports. First make sure it is

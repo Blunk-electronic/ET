@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -49,7 +49,7 @@ with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_sets;
 
 with et_net_names;				use et_net_names;
-with et_submodules;				use et_submodules;
+with et_netchangers;			use et_netchangers;
 with et_assembly_variant_name;	use et_assembly_variant_name;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;

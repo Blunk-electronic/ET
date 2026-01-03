@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -55,6 +55,7 @@ with et_schematic_geometry;
 with et_board_geometry;
 
 with et_schematic_coordinates;
+with et_netchangers;				use et_netchangers;
 with et_submodules;					use et_submodules;
 with et_net_names;					use et_net_names;
 
@@ -181,7 +182,7 @@ package body et_module_read_submodules is
 		elsif kw = keyword_direction then -- direction master/slave
 			expect_field_count (line, 2);
 
-			submodule_port.direction := et_submodules.to_port_name (f (line, 2));
+			submodule_port.direction := to_port_name (f (line, 2));
 		else
 			invalid_keyword (kw);
 		end if;

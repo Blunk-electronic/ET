@@ -56,9 +56,8 @@ with et_board_geometry;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
 with et_schematic_coordinates;
-with et_submodules;					use et_submodules;
+with et_netchangers;				use et_netchangers;
 with et_net_names;					use et_net_names;
-
 
 with et_general_rw;					use et_general_rw;
 
@@ -69,8 +68,8 @@ package body et_module_read_netchangers is
 	use pac_generic_modules;
 
 
-	netchanger		: et_submodules.type_netchanger;
-	netchanger_id	: et_submodules.type_netchanger_id := et_submodules.type_netchanger_id'first;
+	netchanger		: type_netchanger;
+	netchanger_id	: type_netchanger_id := type_netchanger_id'first;
 
 	
 	procedure read_netchanger (
@@ -84,7 +83,7 @@ package body et_module_read_netchangers is
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_name then -- name 1, 2, 304, ...
 			expect_field_count (line, 2);
-			netchanger_id := et_submodules.to_netchanger_id (f (line, 2));
+			netchanger_id := to_netchanger_id (f (line, 2));
 			
 		elsif kw = keyword_position_in_schematic then -- position_in_schematic sheet 1 x 1.000 y 5.555
 			expect_field_count (line, 7);

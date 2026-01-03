@@ -57,6 +57,7 @@ with et_board_geometry;
 
 with et_schematic_coordinates;
 with et_coordinates_formatting;		use et_coordinates_formatting;
+with et_netchangers;				use et_netchangers;
 with et_submodules;					use et_submodules;
 with et_net_names;					use et_net_names;
 

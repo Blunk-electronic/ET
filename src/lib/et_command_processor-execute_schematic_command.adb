@@ -74,6 +74,7 @@ with et_net_class_name;
 with et_schematic_text;					use et_schematic_text;
 with et_schematic_ops.nets;
 with et_schematic_ops.units;
+with et_netchangers;
 with et_submodules;
 with et_assembly_variants;
 with et_assembly_variant_name;			use et_assembly_variant_name;
@@ -1306,21 +1307,20 @@ is
 
 	procedure move_netchanger is
 		use et_schematic_ops.submodules;
+		use et_netchangers;
 	begin
 		case cmd_field_count is
 			when 9 =>
-				move_netchanger
-					(
+				move_netchanger (
 					module_name 	=> module,
-					index			=> et_submodules.to_netchanger_id (get_field (5)), -- 1,2,3, ...
+					index			=> to_netchanger_id (get_field (5)), -- 1,2,3, ...
 					coordinates		=> to_coordinates (get_field (6)),  -- relative/absolute
 					sheet			=> to_sheet_relative (get_field (7)),
 					point			=> type_vector_model (set (
 										x => to_distance (get_field (8)),
 										y => to_distance (get_field (9)))),
 						
-					log_threshold	=> log_threshold + 1
-					);
+					log_threshold	=> log_threshold + 1);
 
 			when 10 .. type_field_count'last => too_long; 
 				
@@ -1332,15 +1332,15 @@ is
 
 	
 	procedure delete_netchanger is
+		use et_netchangers;
 		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
 			when 5 =>
-				delete_netchanger
-					(
+				delete_netchanger (
 					module_name		=> module,
-					index			=> et_submodules.to_netchanger_id (get_field (5)), -- 1,2,3,...
-					log_threshold		=> log_threshold + 1);
+					index			=> to_netchanger_id (get_field (5)), -- 1,2,3,...
+					log_threshold	=> log_threshold + 1);
 
 			when 6 .. type_field_count'last => too_long;
 				
@@ -1349,22 +1349,23 @@ is
 	end delete_netchanger;
 	
 
+
 	
 
 	procedure drag_netchanger is
+		use et_netchangers;
 		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
 			when 8 =>
 				drag_netchanger (
 					module_name 	=> module,
-					index			=> et_submodules.to_netchanger_id (get_field (5)), -- 1,2,3,...
+					index			=> to_netchanger_id (get_field (5)), -- 1,2,3,...
 					coordinates		=> to_coordinates (get_field (6)), -- relative/absolute
 					point			=> type_vector_model (set (
 										x => to_distance (get_field (7)),
 										y => to_distance (get_field (8)))),
-					log_threshold	=> log_threshold + 1
-					);
+					log_threshold	=> log_threshold + 1);
 
 			when 9 .. type_field_count'last => too_long;
 				
@@ -1377,17 +1378,17 @@ is
 	
 	
 	procedure rotate_netchanger is
+		use et_netchangers;
 		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
 			when 7 =>
 				rotate_netchanger (
 					module_name 	=> module,
-					index			=> et_submodules.to_netchanger_id (get_field (5)), -- 1,2,3,...
+					index			=> to_netchanger_id (get_field (5)), -- 1,2,3,...
 					coordinates		=> to_coordinates (get_field (6)), -- relative/absolute
 					rotation		=> to_rotation (get_field (7)), -- 90
-					log_threshold	=> log_threshold + 1
-					);
+					log_threshold	=> log_threshold + 1);
 
 			when 8 .. type_field_count'last => too_long;
 				
@@ -1406,6 +1407,7 @@ is
 
 	
 	procedure add_port_to_submodule is
+		use et_netchangers;
 		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
@@ -1419,7 +1421,7 @@ is
 								x => to_distance (get_field (7)),
 								y => to_distance (get_field (8))
 								)),
-					direction		=> et_submodules.to_port_name (get_field (9)),
+					direction		=> to_port_name (get_field (9)),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -1427,7 +1429,6 @@ is
 				
 			when others => command_incomplete;
 		end case;
-
 	end add_port_to_submodule;
 
 

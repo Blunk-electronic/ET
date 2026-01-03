@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -44,12 +44,13 @@ with et_devices_non_electrical;
 with et_device_appearance;
 with et_board_ops.ratsnest;				use et_board_ops.ratsnest;
 with et_net_strands;					use et_net_strands;
+with et_netchangers;
 
 
 package body et_schematic_ops is
 
 
-	use et_submodules.pac_netchangers;
+	use et_netchangers.pac_netchangers;
 	use et_submodules.pac_submodules;
 	use pac_strands;
 
@@ -285,7 +286,8 @@ package body et_schematic_ops is
 			module		: in type_generic_module) 
 		is
 			use pac_devices_electrical;
-			use et_submodules.pac_netchangers;			
+			use et_netchangers;
+			use pac_netchangers;			
 
 			
 			procedure query_devices (device_cursor : in pac_devices_electrical.cursor) is
@@ -364,6 +366,7 @@ package body et_schematic_ops is
 			end query_devices;
 
 
+
 			
 			procedure query_submodules (submodule_cursor : in et_submodules.pac_submodules.cursor) is
 				submodule_position : type_object_position;
@@ -416,20 +419,20 @@ package body et_schematic_ops is
 
 			
 
-			procedure query_netchangers (netchanger_cursor : in et_submodules.pac_netchangers.cursor) is
+			procedure query_netchangers (netchanger_cursor : in pac_netchangers.cursor) is
 				netchanger_position : type_object_position;
-				ports : et_submodules.type_netchanger_ports;
+				ports : type_netchanger_ports;
 				use et_netlists;
 			begin
 				netchanger_position := element (netchanger_cursor).position_sch;
 
 				-- Look at netchangers on the given sheet of place:
 				if get_sheet (netchanger_position) = get_sheet (place) then
-					log (text => "netchanger " & et_submodules.to_string (key (netchanger_cursor)), level => log_threshold + 1);
+					log (text => "netchanger " & to_string (key (netchanger_cursor)), level => log_threshold + 1);
 					log_indentation_up;	
 					
 					-- get the absolute port positions of the netchanger
-					ports := et_submodules.netchanger_ports (netchanger_cursor);
+					ports := netchanger_ports (netchanger_cursor);
 
 					-- If the port sits at x/y of place then we have a match.
 					-- The match can either be at the msster or slave port.
@@ -438,7 +441,7 @@ package body et_schematic_ops is
 					-- First test whether the master port sits here:
 					if ports.master = place.place then
 
-						log (text => "port " & et_submodules.to_string (et_submodules.MASTER) &
+						log (text => "port " & to_string (MASTER) &
 							" at" & to_string (ports.master),
 							level => log_threshold + 2);
 						
@@ -449,14 +452,14 @@ package body et_schematic_ops is
 							new_item	=> 
 								(
 								index	=> key (netchanger_cursor),
-								port	=> et_submodules.MASTER
-								)
+								port	=> MASTER)
 							);
 
+						
 					-- Second, test wheter slave port sits here:
 					elsif ports.slave = place.place then
 
-						log (text => "port " & et_submodules.to_string (et_submodules.SLAVE) &
+						log (text => "port " & to_string (SLAVE) &
 							" at" & to_string (ports.slave),
 							level => log_threshold + 2);
 						
@@ -467,8 +470,7 @@ package body et_schematic_ops is
 							new_item	=> 
 								(
 								index	=> key (netchanger_cursor),
-								port	=> et_submodules.SLAVE
-								)
+								port	=> SLAVE)
 							);
 					end if;
 

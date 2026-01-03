@@ -45,7 +45,9 @@ with et_generic_stacks;
 
 package body et_schematic_ops.netlists is
 
-	use et_submodules.pac_netchangers;
+	use et_netchangers;
+	use pac_netchangers;
+	
 	use et_submodules.pac_submodules;
 	
 	
@@ -59,6 +61,7 @@ package body et_schematic_ops.netlists is
 		ports_extended : pac_device_ports_extended.set; -- to be returned
 
 		use pac_device_ports;
+
 		
 		procedure query_ports (port_cursor : in pac_device_ports.cursor) is
 			port_sch		: type_device_port := element (port_cursor);
@@ -91,12 +94,14 @@ package body et_schematic_ops.netlists is
 						);
 			end if;
 		end query_ports;
+
 		
 	begin -- extend_ports
 		iterate (ports, query_ports'access);
 		return ports_extended;
 	end extend_ports;
 
+	
 	
 
 	-- Returns the direction (master/slave) of the given submodule port in module indicated by module_cursor.
@@ -105,17 +110,19 @@ package body et_schematic_ops.netlists is
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		submod_instance	: in pac_module_instance_name.bounded_string; -- OSC1
 		port_name		: in pac_net_name.bounded_string) -- clock_out
-		return et_submodules.type_netchanger_port_name 
+		return type_netchanger_port_name 
 	is
 		use et_submodules;
 		direction : type_netchanger_port_name; -- to be returned
 
+		
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
 			submod_cursor : pac_submodules.cursor;
 
+			
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
 				submod		: in et_submodules.type_submodule) 
@@ -127,6 +134,7 @@ package body et_schematic_ops.netlists is
 
 				direction := element (port_cursor).direction;
 			end query_ports;
+
 			
 		begin -- query_submodules
 			-- locate submodule in schematic
@@ -135,6 +143,7 @@ package body et_schematic_ops.netlists is
 			query_element (submod_cursor, query_ports'access);
 		end query_submodules;
 
+		
 	begin -- port_properties 
 		query_element (
 			position	=> module_cursor,
@@ -159,13 +168,12 @@ package body et_schematic_ops.netlists is
 
 		procedure query_ports (port_cursor : in pac_submodule_ports.cursor) is
 			port : type_submodule_port := element (port_cursor);
-			direction : et_submodules.type_netchanger_port_name; -- master/slave
+			direction : type_netchanger_port_name; -- master/slave
 		begin
  			-- get the direction of the current submodule port
 			direction := port_direction (module_cursor, port.module_name, port.port_name);
 
-			pac_submodule_ports_extended.insert 
-				(
+			pac_submodule_ports_extended.insert (
 				container	=> ports_extended,
 				new_item	=> 
 					(
