@@ -586,6 +586,7 @@ package body et_canvas_board is
 	procedure draw_drawing_frame is separate;
 	procedure draw_packages is separate;	
 	procedure draw_conductors is separate;
+	procedure draw_netchangers is separate;
 	procedure draw_route_restrict is separate;
 	procedure draw_via_restrict is separate;
 	
@@ -615,6 +616,7 @@ package body et_canvas_board is
 			draw_route_restrict;
 			draw_via_restrict;
 			draw_conductors;
+			draw_netchangers;
 		end draw_conductor_layers;
 		
 		

@@ -364,6 +364,8 @@ package body et_canvas_schematic is
 	procedure draw_units is separate;
 
 	procedure draw_nets is separate;
+
+	procedure draw_netchangers is separate;
 	
 	procedure draw_texts is separate;
 
@@ -420,6 +422,8 @@ package body et_canvas_schematic is
 		draw_zoom_area;
 
 		draw_units;
+		draw_netchangers;
+		
 		
 		if nets_enabled then
 			draw_nets;
