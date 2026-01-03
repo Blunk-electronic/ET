@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                             NETCHANGERS                                  --
+--                     NETCHANGER SYMBOL IN BOARD                           --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -40,107 +40,21 @@
 --
 
 
-
-with ada.containers;					use ada.containers;
-with ada.containers.ordered_maps;
-
--- with et_logging;						use et_logging;
-with et_schematic_geometry;				use et_schematic_geometry;
-with et_schematic_coordinates;			use et_schematic_coordinates;
-with et_pcb_signal_layers;				use et_pcb_signal_layers;
-with et_board_coordinates;
-with et_board_geometry;
-with et_symbol_ports;					use et_symbol_ports;
-with et_symbol_shapes;					use et_symbol_shapes;
-with et_directions;						use et_directions;
-with et_netchanger_symbol_schematic;	use et_netchanger_symbol_schematic;
+with et_board_geometry;				use et_board_geometry;
 
 
-package et_netchangers is
+package et_netchanger_symbol_board is
 
 	use pac_geometry_2;
-	-- use pac_text_schematic;
-
-	use pac_geometry_sch;
-
-	
--- ID:
-
-	netchanger_id_max : constant positive := 10000; -- CS  increase if necessary
-	type type_netchanger_id is range 1 .. netchanger_id_max;
 
 
-	
-	function to_netchanger_id (
-		id : in string) 
-		return type_netchanger_id;
-		
-
-		
-	function to_string (
-		id : in type_netchanger_id) 
-		return string;		
-
-
-		
-		
--- PORT NAMES:
-
-	type type_netchanger_port_name is (MASTER, SLAVE);
-	
-	function to_port_name (
-		name : in string) 
-		return type_netchanger_port_name;
-		
-
-	function to_string (
-		name : in type_netchanger_port_name)
-		return string;	
-
-
-	
-	function opposide_port (
-		port : in type_netchanger_port_name) 
-		return type_netchanger_port_name;
-		
-
-
-		
-	
-	
-	type type_netchanger is record
-		position_sch	: type_object_position; -- x,y,sheet,rotation
-		--symbol			: type_netchanger_symbol; -- CS for visualisation only
-		
-		position_brd	: et_board_geometry.pac_geometry_2.type_vector_model; -- x,y
-		-- in board there is no rotation because the netchanger is just a point in x/y.
-		layer			: type_signal_layer := type_signal_layer'first;
+			
+	type type_netchanger_symbol is record
+		line_1 : type_line; -- CS dummy
 	end record;
 
 	
-	
-	package pac_netchangers is new ordered_maps (
-		key_type		=> type_netchanger_id,
-		element_type	=> type_netchanger);
-
-
-	
-	type type_netchanger_ports is record
-		master	: type_vector_model := position_master_port_default;
-		slave	: type_vector_model := position_slave_port_default;
-	end record;
-
-
-
-	
-	-- Returns the absolute x/y positions of the given netchanger.
-	function netchanger_ports (
-		netchanger_cursor	: in pac_netchangers.cursor)
-		return type_netchanger_ports;
-	
-	
-	
-end et_netchangers;
+end et_netchanger_symbol_board;
 
 -- Soli Deo Gloria
 

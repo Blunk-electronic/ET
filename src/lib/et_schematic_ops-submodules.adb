@@ -54,6 +54,8 @@ with et_module_ops;
 with et_schematic_ops.units;		use et_schematic_ops.units;
 with et_schematic_ops.nets;
 with et_module_read;
+with et_netchanger_symbol_schematic;
+
 
 
 package body et_schematic_ops.submodules is
@@ -2161,6 +2163,7 @@ package body et_schematic_ops.submodules is
 			nc_position : type_object_position;
 			port_xy : type_vector_model;
 
+			use et_netchanger_symbol_schematic;
 			use pac_netchangers;
 		begin
 			if contains (module.netchangers, index) then
