@@ -120,6 +120,7 @@ with et_module_write_stopmask;			use et_module_write_stopmask;
 with et_module_write_stencil;			use et_module_write_stencil;
 with et_module_write_route_restrict;	use et_module_write_route_restrict;
 with et_module_write_nets;				use et_module_write_nets;
+with et_module_write_net_classes;		use et_module_write_net_classes;
 
 with et_module_write_board_user_settings;	use et_module_write_board_user_settings;
 with et_module_write_devices_electrical;	use et_module_write_devices_electrical;
@@ -212,47 +213,6 @@ package body et_module_write is
 			close (module_file_handle);
 		end write_footer;
 
-
-		
-		
-		procedure query_net_classes is
-			use et_net_class;
-			use et_net_class_name;
-			use et_net_classes;
-			use pac_net_classes;
-			use et_net_class_description;
-			use et_board_geometry.pac_geometry_2;
-
-			
-			procedure write (class_cursor : in pac_net_classes.cursor) is 
-				name : string renames get_net_class_name (class_cursor);
-				net_class : type_net_class renames element (class_cursor);
-			begin
-				log (text => "net class " & name, level => log_threshold + 1);
-				section_mark (section_net_class, HEADER);
-
-				write (keyword => keyword_name, parameters => name);
-				write (keyword => keyword_description, parameters => to_string (net_class.description), wrap => true);
-				write (keyword => keyword_clearance, parameters => to_string (net_class.clearance));
-				write (keyword => keyword_track_width_min, parameters => to_string (net_class.track_width_min));
-				write (keyword => keyword_via_drill_min, parameters => to_string (net_class.via_drill_min));
-				write (keyword => keyword_via_restring_min, parameters => to_string (net_class.via_restring_min));
-				write (keyword => keyword_micro_via_drill_min, parameters => to_string (net_class.micro_via_drill_min));
-				write (keyword => keyword_micro_via_restring_min, parameters => to_string (net_class.micro_via_restring_min));
-
-				section_mark (section_net_class, FOOTER);
-			end write;
-
-			
-		begin
-			log_indentation_up;
-			
-			section_mark (section_net_classes, HEADER);
-			iterate (element (module_cursor).net_classes, write'access);
-			section_mark (section_net_classes, FOOTER);
-
-			log_indentation_down;
-		end query_net_classes;
 
 
 
@@ -800,7 +760,7 @@ package body et_module_write is
 		put_line (row_separator_single);
 		
 		-- net classes
-		query_net_classes;
+		write_net_classes (module_cursor, log_threshold);
 		put_line (row_separator_single);
 
 		-- drawing grid

@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                      MODULE READ / NET CLASSES                           --
+--                      MODULE WRITE / NET CLASSES                          --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -48,26 +48,16 @@ with et_logging;				use et_logging;
 
 
 
-package et_module_read_net_classes is
+package et_module_write_net_classes is
 
 	
-	procedure reset_net_class;
 	
-	
-	-- Reads a line that describes a net class property:
-	procedure read_net_class (
-		line 			: in type_fields_of_line;
-		log_threshold	: in type_log_level);
-	
-
-
-	-- Assigns a net class to the module:
-	procedure assign_net_class (
+	procedure write_net_classes (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 	
-end et_module_read_net_classes;
+end et_module_write_net_classes;
 
 	
 
