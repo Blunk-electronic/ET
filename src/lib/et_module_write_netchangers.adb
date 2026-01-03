@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                      MODULE READ / NETCHANGERS                           --
+--                      MODULE WRITE / NETCHANGERS                          --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -50,6 +50,7 @@ with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with et_module_instance;			use et_module_instance;
 with et_keywords;					use et_keywords;
+with et_section_headers;			use et_section_headers;
 
 with et_schematic_geometry;
 with et_board_geometry;
@@ -58,119 +59,74 @@ with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_schematic_coordinates;
 with et_submodules;					use et_submodules;
 with et_net_names;					use et_net_names;
+with et_coordinates_formatting;		use et_coordinates_formatting;
 
 
 with et_general_rw;					use et_general_rw;
 
 
 
-package body et_module_read_netchangers is
+package body et_module_write_netchangers is
 
 	use pac_generic_modules;
 
 
-	netchanger		: et_submodules.type_netchanger;
-	netchanger_id	: et_submodules.type_netchanger_id := et_submodules.type_netchanger_id'first;
-
-	
-	procedure read_netchanger (
-		line : in type_fields_of_line)
-	is
-		use et_schematic_geometry;
-		use et_board_geometry.pac_geometry_2;
-		use et_schematic_coordinates;	
-		kw : constant string := f (line, 1);
-	begin
-		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_name then -- name 1, 2, 304, ...
-			expect_field_count (line, 2);
-			netchanger_id := et_submodules.to_netchanger_id (f (line, 2));
-			
-		elsif kw = keyword_position_in_schematic then -- position_in_schematic sheet 1 x 1.000 y 5.555
-			expect_field_count (line, 7);
-
-			-- extract position (in schematic) starting at field 2
-			netchanger.position_sch := to_position (line, 2);
-
-		elsif kw = keyword_rotation_in_schematic then -- rotation_in_schematic 180.0
-			expect_field_count (line, 2);
-			set_rotation (netchanger.position_sch, pac_geometry_2.to_rotation (f (line, 2)));
-
-		elsif kw = keyword_position_in_board then -- position_in_board x 55.000 y 7.555
-			expect_field_count (line, 5);
-
-			-- extract position (in board) starting at field 2
-			netchanger.position_brd := to_vector_model (line, 2);
-
-		elsif kw = keyword_layer then -- layer 3 (signal layer in board)
-			expect_field_count (line, 2);
-			netchanger.layer := to_signal_layer (f (line, 2));
-			-- CS validate_signal_layer (netchanger.layer);
-			
-		else
-			invalid_keyword (kw);
-		end if;
-	end read_netchanger;
-
-
-		
-	
-	
-	
-	
-	
-	procedure insert_netchanger (
+	procedure write_netchangers (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+
+		use pac_netchangers;
+
 		
-		
-		procedure insert_netchanger (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			inserted : boolean;
-			use pac_netchangers;
-			cursor : pac_netchangers.cursor;
+		procedure query_netchanger (cursor : pac_netchangers.cursor) is
+			use et_schematic_geometry;
+			use pac_geometry_2;
+			use et_schematic_coordinates;	
 		begin
-			log (text => "netchanger " & to_string (netchanger_id), level => log_threshold + 2);
+			section_mark (section_netchanger, HEADER);
+			write (keyword => keyword_name,	parameters => to_string (key (cursor))); -- 1, 2, 201, ...
+			write (keyword => keyword_position_in_schematic, 
+				parameters => to_string (element (cursor).position_sch, FORMAT_2)); -- position_in_schematic sheet 1 x 147.32 y 96.97
 
-			-- insert netchanger in container netchangers:
-			insert (
-				container	=> module.netchangers,
-				key			=> netchanger_id,
-				new_item	=> netchanger,
-				inserted	=> inserted,
-				position	=> cursor);
+			write (
+				keyword => keyword_rotation_in_schematic, 
+				parameters => to_string (get_rotation (element (cursor).position_sch))); -- rotation_in_schematic 90.0
 
-			-- A netchanger name must be unique:
-			if not inserted then
-				log (ERROR, "netchanger id" & to_string (netchanger_id) 
-					& " already used !", console => true);
-				raise constraint_error;
-			end if;
+			write (
+				keyword => keyword_position_in_board, 
+				parameters => et_board_geometry.pac_geometry_2.to_string (element (cursor).position_brd)); -- position_in_board x 1.32 y 6.97
 			
-			-- clean up for next netchanger
-			netchanger_id := type_netchanger_id'first;
-			netchanger := (others => <>);
-		end insert_netchanger;
+			write (keyword => keyword_layer, parameters => to_string (element (cursor).layer)); -- layer 2
+			section_mark (section_netchanger, FOOTER);
+		end query_netchanger;
+
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is begin
+			section_mark (section_netchangers, HEADER);
+			iterate (module.netchangers, query_netchanger'access);
+			section_mark (section_netchangers, FOOTER);
+		end query_module;
 
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " insert netchanger",
-			level => log_threshold);
+			& " write netchangers", level => log_threshold);
 			
-		log_indentation_up;
-		
-		generic_modules.update_element (module_cursor, insert_netchanger'access);
+		log_indentation_up;		
+		query_element (module_cursor, query_module'access);
 		log_indentation_down;
-	end insert_netchanger;
+
+	end write_netchangers;
+
 	
 	
 	
-	
-end et_module_read_netchangers;
+end et_module_write_netchangers;
 
 	
 -- Soli Deo Gloria

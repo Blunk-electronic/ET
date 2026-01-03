@@ -1271,7 +1271,9 @@ is
 
 -- OPERATIONS ON NETCHANGERS:
 	
-	
+
+	-- This procedure parses a command that places a netchanger.
+	-- Example: "schematic led_driver add netchanger 2 60 30 0
 	procedure add_netchanger is
 		use et_schematic_ops.submodules;
 	begin

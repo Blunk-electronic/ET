@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         MODULE READ / NETCHANGERS                        --
+--                        MODULE WRITE / NETCHANGERS                        --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -48,21 +48,16 @@ with et_logging;				use et_logging;
 
 
 
-package et_module_read_netchangers is
+package et_module_write_netchangers is
 
-
-	procedure read_netchanger (
-		line : in type_fields_of_line);
-		
-		
-		
 	
-	procedure insert_netchanger (
+
+	procedure write_netchangers (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 	
 	
-end et_module_read_netchangers;
+end et_module_write_netchangers;
 
 	
 

@@ -117,6 +117,7 @@ with et_module_write_stencil;			use et_module_write_stencil;
 with et_module_write_route_restrict;	use et_module_write_route_restrict;
 with et_module_write_nets;				use et_module_write_nets;
 with et_module_write_net_classes;		use et_module_write_net_classes;
+with et_module_write_netchangers;		use et_module_write_netchangers;
 
 with et_module_write_board_user_settings;	use et_module_write_board_user_settings;
 with et_module_write_devices_electrical;	use et_module_write_devices_electrical;
@@ -209,46 +210,6 @@ package body et_module_write is
 			close (module_file_handle);
 		end write_footer;
 
-
-
-
-
-
-		
-		-- writes the netchangers in the module file
-		procedure query_netchangers is
-			use et_schematic_geometry;
-			use et_schematic_coordinates;	
-			use et_submodules;
-			use pac_netchangers;
-
-			
-			procedure query_netchanger (cursor : pac_netchangers.cursor) is
-				use pac_geometry_2;
-			begin
-				section_mark (section_netchanger, HEADER);
-				write (keyword => keyword_name,	parameters => to_string (key (cursor))); -- 1, 2, 201, ...
-				write (keyword => keyword_position_in_schematic, 
-					parameters => to_string (element (cursor).position_sch, FORMAT_2)); -- position_in_schematic sheet 1 x 147.32 y 96.97
-
-				write (
-					keyword => keyword_rotation_in_schematic, 
-					parameters => to_string (get_rotation (element (cursor).position_sch))); -- rotation_in_schematic 90.0
-
-				write (
-					keyword => keyword_position_in_board, 
-					parameters => et_board_geometry.pac_geometry_2.to_string (element (cursor).position_brd)); -- position_in_board x 1.32 y 6.97
-				
-				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer)); -- layer 2
-				section_mark (section_netchanger, FOOTER);
-			end query_netchanger;
-
-			
-		begin
-			section_mark (section_netchangers, HEADER);
-			iterate (element (module_cursor).netchangers, query_netchanger'access);
-			section_mark (section_netchangers, FOOTER);
-		end query_netchangers;
 
 
 
@@ -612,7 +573,7 @@ package body et_module_write is
 		put_line (row_separator_single);
 		
 		-- netchangers
-		query_netchangers;
+		write_netchangers (module_cursor, log_threshold);
 		put_line (row_separator_single);
 		
 		-- board
