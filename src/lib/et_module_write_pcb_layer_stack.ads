@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                    MODULE READ / PCB LAYER STACK                         --
+--                    MODULE WRITE / PCB LAYER STACK                        --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -55,22 +55,16 @@ with et_logging;				use et_logging;
 
 
 
-package et_module_read_pcb_layer_stack is
+package et_module_write_pcb_layer_stack is
 
 
-	procedure read_layer (
-		line			: in type_fields_of_line;
-		log_threshold	: in type_log_level);
-
-
-
-	procedure add_board_layer (
+	procedure write_layer_stack (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 
 	
-end et_module_read_pcb_layer_stack;
+end et_module_write_pcb_layer_stack;
 
 	
 

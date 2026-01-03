@@ -110,6 +110,7 @@ with et_module_write_meta;				use et_module_write_meta;
 with et_module_write_grid;				use et_module_write_grid;
 with et_module_write_frames;			use et_module_write_frames;
 with et_module_write_design_rules;		use et_module_write_design_rules;
+with et_module_write_pcb_layer_stack;	use et_module_write_pcb_layer_stack;
 with et_module_write_board_outline;		use et_module_write_board_outline;
 with et_module_write_freetracks;		use et_module_write_freetracks;
 with et_module_write_board_zones;		use et_module_write_board_zones;
@@ -215,62 +216,6 @@ package body et_module_write is
 
 
 
-
-
-		
-		
-		procedure query_layer_stack is
-			use et_board_geometry.pac_geometry_2;
-			use et_pcb_stack;
-			use package_layers;
-
-			
-			procedure query_layers (cursor : in package_layers.cursor) is
-				layer : type_layer := element (cursor);
-			begin
-				-- write: "conductor   1 0.035"
-				write (keyword => keyword_conductor,
-					   parameters => 2 * space & to_string (to_index (cursor)) 
-					   & to_string (layer.conductor.thickness));
-
-				-- write "dielectric  1 0.200"
-				write (keyword => keyword_dielectric, 
-					   parameters => space & to_string (to_index (cursor)) 
-					   & to_string (layer.dielectric.thickness));
-
-			end;
-
-			bottom_layer : type_signal_layer;
-			bottom_layer_thickness : type_conductor_thickness;
-
-			
-		begin -- query_layer_stack
-			log_indentation_up;
-			
-			section_mark (section_board_layer_stack, HEADER);
-
-			-- iterate layers starting at top layer (1) until the deepest inner layer.
-			-- The bottom layer is not part of the layer list and will be written later.
-			iterate (element (module_cursor).board.stack.layers, query_layers'access);
-
-			-- The bottom layer number is the deepest inner layer plus one:
-			bottom_layer := last_index (element (module_cursor).board.stack.layers) + 1;
-
-			-- Get the bottom conductor thickness:
-			bottom_layer_thickness := element (module_cursor).board.stack.bottom.thickness;
-
-			-- Write the bottom layer in the file.
-			write (keyword => keyword_conductor,
-				parameters => space & to_string (bottom_layer) & to_string (bottom_layer_thickness) &
-				space & comment_mark & " bottom signal layer");
-			
-			section_mark (section_board_layer_stack, FOOTER);
-			
-			log_indentation_down;
-			
-		end query_layer_stack;
-
-	
 
 
 
@@ -768,7 +713,7 @@ package body et_module_write is
 		put_line (row_separator_single);
 
 		-- layer stack
-		query_layer_stack;
+		write_layer_stack (module_cursor, log_threshold);
 		put_line (row_separator_single);
 		
 		-- nets

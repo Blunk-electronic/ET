@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                    MODULE READ / PCB LAYER STACK                         --
+--                    MODULE WRITE / PCB LAYER STACK                        --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -43,150 +43,102 @@
 --
 
 with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
 with ada.strings;					use ada.strings;
 
 with et_board_ops;
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
+with et_section_headers;			use et_section_headers;
+
+-- with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_design_rules_board;			use et_design_rules_board;
 with et_board_geometry;				use et_board_geometry;
 
 with et_general_rw;					use et_general_rw;
+with et_board_write;				use et_board_write;
 
 
-
-package body et_module_read_pcb_layer_stack is
+package body et_module_write_pcb_layer_stack is
 
 	use pac_generic_modules;
 	use pac_geometry_2;
 
-
-
-	conductor_layer, dielectric_layer : type_signal_layer := 
-		type_signal_layer'first;
-	
-	conductor_thickness : type_conductor_thickness := 
-		conductor_thickness_outer_default;
-
-	
-	board_layer : type_layer;
-
-	board_layers : package_layers.vector;
-	
-	dielectric_found : boolean := false;
-
-
-
+	use package_layers;
 	
 
-	procedure read_layer (
-		line			: in type_fields_of_line;
-		log_threshold	: in type_log_level)					 
-	is
-		kw : constant string := f (line, 1);
-		use package_layers;
+	
+	procedure query_layers (cursor : in package_layers.cursor) is
+		layer : type_layer := element (cursor);
 	begin
-		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_conductor then -- conductor 1 0.035
-			expect_field_count (line, 3);
-			conductor_layer := to_signal_layer (f (line, 2));
-			conductor_thickness := to_distance (f (line, 3));
-			board_layer.conductor.thickness := conductor_thickness;
+		-- write: "conductor   1 0.035"
+		write (keyword => keyword_conductor,
+			parameters => "  "
+			& to_string (to_index (cursor)) 
+			& to_string (layer.conductor.thickness));
 
-			-- Layer numbers must be continuous from top to bottom.
-			-- After the dielectric of a layer the next conductor layer must
-			-- have the next number:
-			if dielectric_found then
-				if to_index (board_layers.last) /= conductor_layer - 1 then
-					log (ERROR, "expect conductor layer number" &
-						to_string (to_index (board_layers.last) + 1) & " !",
-						console => true);
-					raise constraint_error;
-				end if;
-			end if;
-			
-			dielectric_found := false;
+		-- write "dielectric  1 0.200"
+		write (keyword => keyword_dielectric, 
+			parameters => " "
+			& to_string (to_index (cursor)) 
+			& to_string (layer.dielectric.thickness));
 
-		elsif kw = keyword_dielectric then -- dielectric 1 1.5
-			expect_field_count (line, 3);
-			dielectric_layer := to_signal_layer (f (line, 2));
-			board_layer.dielectric.thickness := to_distance (f (line, 3));
-			dielectric_found := true;
-			
-			if dielectric_layer = conductor_layer then
-				append (board_layers, board_layer);
-			else
-				log (ERROR, "expect dielectric layer number" & to_string (conductor_layer) & " !", console => true);
-				raise constraint_error;
-			end if;
-		else
-			invalid_keyword (kw);
-		end if;
 	end;
 
 
-
-
+	
 
 	
 
-	procedure add_board_layer (
+	procedure write_layer_stack (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		use et_board_ops;
-		
 
-		procedure do_it (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is begin
-			log (text => "board layer stack", level => log_threshold + 1);
-
-			-- Copy the collected layers (except the bottom conductor layer) into the module:
-			module.board.stack.layers := board_layers;
-
-			-- If the last entry was "conductor n t" then we assume that this
-			-- was the bottom conductor layer (it does not have a dielectric layer underneath).
-			if not dielectric_found then
-				module.board.stack.bottom.thickness := conductor_thickness;
-			else
-				log (ERROR, "dielectric not allowed underneath the bottom conductor layer !", console => true);
-				raise constraint_error;
-			end if;
+			module		: in type_generic_module) 
+		is
+			bottom_layer : type_signal_layer;
+			bottom_layer_thickness : type_conductor_thickness;
+		begin
 			
-			-- reset layer values:
-			dielectric_found := false;
-			conductor_layer := type_signal_layer'first;
-			dielectric_layer := type_signal_layer'first;
-			conductor_thickness := et_pcb_stack.conductor_thickness_outer_default;
-			board_layer := (others => <>);
-			package_layers.clear (board_layers);
+			section_mark (section_board_layer_stack, HEADER);
 
-		end do_it;
+			-- iterate layers starting at top layer (1) until the deepest inner layer.
+			-- The bottom layer is not part of the layer list and will be written later.
+			iterate (module.board.stack.layers, query_layers'access);
+
+			-- The bottom layer number is the deepest inner layer plus one:
+			bottom_layer := last_index (module.board.stack.layers) + 1;
+
+			-- Get the bottom conductor thickness:
+			bottom_layer_thickness := module.board.stack.bottom.thickness;
+
+			-- Write the bottom layer in the file.
+			write (keyword => keyword_conductor,
+				parameters => space & to_string (bottom_layer) & to_string (bottom_layer_thickness) &
+				space & comment_mark & " bottom signal layer");
+			
+			section_mark (section_board_layer_stack, FOOTER);
+		end query_module;
 
 
+		
 	begin	
 		log (text => "module " & to_string (module_cursor)
-			 & " add signal layer",
+			 & " write layer stack",
 			 level => log_threshold);
 
 		log_indentation_up;
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> do_it'access);
-
+		query_element (module_cursor, query_module'access);
 		log_indentation_down;
-	end add_board_layer;
+	end write_layer_stack;
 
 
 	
-end et_module_read_pcb_layer_stack;
+end et_module_write_pcb_layer_stack;
 
 	
 -- Soli Deo Gloria
