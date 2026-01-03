@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -94,7 +94,7 @@ package body et_module_read_assembly_variant is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) is
 		begin
-			module.active_variant := active_assembly_variant;
+			module.assembly_variants.active := active_assembly_variant;
 		end;
 
 		
@@ -315,7 +315,7 @@ package body et_module_read_assembly_variant is
 
 			-- insert variant in container variants
 			insert (
-				container	=> module.variants,
+				container	=> module.assembly_variants.variants,
 				key			=> assembly_variant_name,
 				inserted	=> inserted,
 				position	=> cursor,
@@ -372,7 +372,9 @@ package body et_module_read_assembly_variant is
 		is
 			use et_assembly_variants.pac_assembly_variants;
 			
-			variant_cursor : pac_assembly_variants.cursor := module.variants.first;
+			variant_cursor : pac_assembly_variants.cursor := 
+				module.assembly_variants.variants.first;
+			
 			variant_name : pac_assembly_variant_name.bounded_string; -- low_cost
 
 			

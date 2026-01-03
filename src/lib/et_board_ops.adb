@@ -798,7 +798,7 @@ package body et_board_ops is
 		make_for_variant (default);
 
 		-- make p&p of other variants
-		iterate (element (module_cursor).variants, query_variant'access);
+		iterate (element (module_cursor).assembly_variants.variants, query_variant'access);
 		
 		log_indentation_down;
 

@@ -58,6 +58,16 @@ package body et_assembly_variants is
 		return space & to_lower (type_mounted'image (mounted));
 	end;
 
+
+
+	function get_count (
+		variants : in pac_assembly_variants.map)
+		return natural
+	is begin
+		return natural (length (variants));
+	end;
+
+	
 	
 	function is_mounted (
 		device	: in type_device_name; -- IC1
@@ -106,6 +116,28 @@ package body et_assembly_variants is
 -- 				raise;
 		
 	end is_mounted;
+
+
+	
+
+	function get_count (
+		variants : in type_module_assembly_variants)
+		return natural
+	is begin
+		return get_count (variants.variants);
+	end;
+
+
+
+	function variant_exists (
+		variants	: in type_module_assembly_variants;
+		variant		: in pac_assembly_variant_name.bounded_string)
+		return boolean
+	is begin
+		return contains (variants.variants, variant);
+	end;
+
+
 	
 end et_assembly_variants;
 	

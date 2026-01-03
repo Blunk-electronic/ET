@@ -57,7 +57,7 @@ package body et_board_ops.text is
 
 		use et_assembly_variants;
 		use pac_assembly_variant_name;
-		variant : constant pac_assembly_variant_name.bounded_string := m.active_variant;
+		variant : constant pac_assembly_variant_name.bounded_string := m.assembly_variants.active;
 
 		result : pac_text_content.bounded_string;
 	begin

@@ -53,6 +53,7 @@ with et_submodules;
 with et_module_board;				use et_module_board;
 
 with et_assembly_variants;			use et_assembly_variants;
+with et_assembly_variant_name;		use et_assembly_variant_name;
 
 with et_meta;
 with et_commit;
@@ -179,6 +180,26 @@ package et_module is
 		module : in type_generic_module)
 		return et_board_geometry.pac_grid.type_grid;
 	
+
+
+	-- Returns true if the given assembly variant exists:
+	function variant_exists (
+		module	: in type_generic_module;
+		variant	: in pac_assembly_variant_name.bounded_string)
+		return boolean;
+
+
+	function get_active_variant (
+		module	: in type_generic_module)
+		return pac_assembly_variant_name.bounded_string;
+
+
+	-- Returns the number of available assembly variants.
+	-- NOTE: The default variant is not counted !
+	function get_variant_count (
+		module	: in type_generic_module)
+		return natural;
+
 	
 end et_module;
 

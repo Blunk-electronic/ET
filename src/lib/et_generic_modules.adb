@@ -173,7 +173,6 @@ package body et_generic_modules is
 		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost
 		return boolean 
 	is
-		use pac_assembly_variants;
 
 		result : boolean := false; -- to be returned
 
@@ -181,11 +180,11 @@ package body et_generic_modules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is begin
-			result := contains (module.variants, variant);
+			result := variant_exists (module, variant);
 		end;
 		
 	begin
-		if pac_assembly_variant_name.length (variant) = 0 then
+		if is_default (variant) then
 			result := true;
 		else
 			

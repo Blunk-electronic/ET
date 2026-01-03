@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -3925,13 +3925,14 @@ package body et_schematic_ops.submodules is
 			
 		begin -- query_variants
 			-- the variant (low_cost) must exist in the parent module
-			cursor := et_assembly_variants.pac_assembly_variants.find (module.variants, variant_parent);
+			cursor := et_assembly_variants.pac_assembly_variants.find (
+				module.assembly_variants.variants, variant_parent);
 
 			if cursor /= et_assembly_variants.pac_assembly_variants.no_element then
 
 				-- Insert the submodule instance with the desired variant:
 				et_assembly_variants.pac_assembly_variants.update_element (
-					container	=> module.variants,
+					container	=> module.assembly_variants.variants,
 					position	=> cursor,
 					process		=> mount'access);
 
@@ -4022,13 +4023,14 @@ package body et_schematic_ops.submodules is
 			
 		begin -- query_variants
 			-- the variant (low_cost) must exist in the parent module
-			cursor := et_assembly_variants.pac_assembly_variants.find (module.variants, variant_parent);
+			cursor := et_assembly_variants.pac_assembly_variants.find (
+				module.assembly_variants.variants, variant_parent);
 
 			if cursor /= et_assembly_variants.pac_assembly_variants.no_element then
 
 				-- Remove the submodule instance
 				et_assembly_variants.pac_assembly_variants.update_element (
-					container	=> module.variants,
+					container	=> module.assembly_variants.variants,
 					position	=> cursor,
 					process		=> remove'access);
 
@@ -4129,7 +4131,7 @@ package body et_schematic_ops.submodules is
 			is
 				use et_assembly_variants;
 			begin
-				if pac_assembly_variants.contains (submodule.variants, variant) then
+				if variant_exists (submodule.assembly_variants, variant) then
 					variant_found := true;
 				end if;
 			end query_variants;
@@ -4201,7 +4203,7 @@ package body et_schematic_ops.submodules is
 
 			
 		begin -- query_variants
-			variant_cursor := find (module.variants, variant);
+			variant_cursor := find (module.assembly_variants.variants, variant);
 
 			query_element (
 				position	=> variant_cursor,
@@ -5261,7 +5263,8 @@ package body et_schematic_ops.submodules is
 		make_for_variant (default);
 
 		-- make netlists of other variants
-		et_assembly_variants.pac_assembly_variants.iterate (element (module_cursor).variants, query_variant'access);
+		et_assembly_variants.pac_assembly_variants.iterate (
+			element (module_cursor).assembly_variants.variants, query_variant'access);
 				
 		log_indentation_down;
 	end make_boms;

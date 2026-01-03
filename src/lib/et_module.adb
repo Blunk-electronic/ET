@@ -91,6 +91,34 @@ package body et_module is
 		return module.board.grid;
 	end;
 
+
+
+
+	function variant_exists (
+		module	: in type_generic_module;
+		variant	: in pac_assembly_variant_name.bounded_string)
+		return boolean
+	is begin
+		return variant_exists (module.assembly_variants, variant);
+	end;
+
+
+
+	function get_active_variant (
+		module	: in type_generic_module)
+		return pac_assembly_variant_name.bounded_string
+	is begin
+		return module.assembly_variants.active;
+	end;
+
+
+
+	function get_variant_count (
+		module	: in type_generic_module)
+		return natural
+	is begin
+		return get_count (module.assembly_variants);
+	end;
 	
 end et_module;
 

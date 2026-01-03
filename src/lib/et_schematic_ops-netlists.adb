@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -291,7 +291,7 @@ package body et_schematic_ops.netlists is
 					if is_default (variant) then
 						variant_cursor := et_assembly_variants.pac_assembly_variants.no_element;
 					else
-						variant_cursor := find (module.variants, variant);
+						variant_cursor := find (module.assembly_variants.variants, variant);
 						if variant_cursor = et_assembly_variants.pac_assembly_variants.no_element then
 							assembly_variant_not_found (variant);
 						end if;
@@ -665,7 +665,8 @@ package body et_schematic_ops.netlists is
 		make_for_variant (default);
 
 		-- make netlists of other variants
-		et_assembly_variants.pac_assembly_variants.iterate (element (module_cursor).variants, query_variant'access);
+		et_assembly_variants.pac_assembly_variants.iterate (
+			element (module_cursor).assembly_variants.variants, query_variant'access);
 		
 		log_indentation_down;
 	end make_netlists;

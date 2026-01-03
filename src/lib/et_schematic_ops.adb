@@ -148,7 +148,7 @@ package body et_schematic_ops is
 		module_cursor	: in pac_generic_modules.cursor)
 		return pac_assembly_variant_name.bounded_string
 	is begin
-		return element (module_cursor).active_variant;
+		return element (module_cursor).assembly_variants.active;
 	end get_active_assembly_variant;
 
 
@@ -171,7 +171,7 @@ package body et_schematic_ops is
 			module_name	: in pac_module_name.bounded_string;					   
 			module 		: in type_generic_module)
 		is begin
-			av := find (module.variants, variant);
+			av := find (module.assembly_variants.variants, variant);
 		end query_module;
 	
 	begin
@@ -526,7 +526,7 @@ package body et_schematic_ops is
 		begin
 			-- create the variant
 			et_assembly_variants.pac_assembly_variants.insert (
-				container	=> module.variants,
+				container	=> module.assembly_variants.variants,
 				key			=> variant_name,
 				position	=> cursor,
 				inserted	=> inserted);
@@ -577,12 +577,12 @@ package body et_schematic_ops is
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 		begin
 			-- before deleting, the variant must be located
-			cursor := find (module.variants, variant_name);
+			cursor := find (module.assembly_variants.variants, variant_name);
 
 			if cursor /= et_assembly_variants.pac_assembly_variants.no_element then
 				
 				delete (
-					container	=> module.variants,
+					container	=> module.assembly_variants.variants,
 					position	=> cursor);
 
 			else
@@ -638,12 +638,13 @@ package body et_schematic_ops is
 			
 		begin -- describe
 			-- before describing, the variant must be located
-			cursor := et_assembly_variants.pac_assembly_variants.find (module.variants, variant_name);
+			cursor := et_assembly_variants.pac_assembly_variants.find (
+				module.assembly_variants.variants, variant_name);
 
 			if cursor /= et_assembly_variants.pac_assembly_variants.no_element then
 
 				et_assembly_variants.pac_assembly_variants.update_element (
-					container	=> module.variants,
+					container	=> module.assembly_variants.variants,
 					position	=> cursor,
 					process		=> assign_description'access);
 

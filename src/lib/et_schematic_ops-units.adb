@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -217,7 +217,7 @@ package body et_schematic_ops.units is
 
 			
 		begin -- query_variants
-			variant_cursor := find (module.variants, variant);
+			variant_cursor := find (module.assembly_variants.variants, variant);
 
 			query_element (
 				position	=> variant_cursor,
@@ -269,7 +269,7 @@ package body et_schematic_ops.units is
 			end query_devices;
 				
 		begin -- query_variants
-			variant_cursor := find (module.variants, variant);
+			variant_cursor := find (module.assembly_variants.variants, variant);
 
 			query_element (
 				position	=> variant_cursor,
@@ -321,6 +321,7 @@ package body et_schematic_ops.units is
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
+			
 			procedure insert_device (
 				name		: in pac_assembly_variant_name.bounded_string;
 				variant		: in out et_assembly_variants.type_assembly_variant) is
@@ -353,13 +354,14 @@ package body et_schematic_ops.units is
 			
 			
 		begin -- mount
-			-- the variant must exists
-			cursor := et_assembly_variants.pac_assembly_variants.find (module.variants, variant_name);
+			-- the variant must exist
+			cursor := et_assembly_variants.pac_assembly_variants.find (
+				module.assembly_variants.variants, variant_name);
 
 			if cursor /= et_assembly_variants.pac_assembly_variants.no_element then
 
 				et_assembly_variants.pac_assembly_variants.update_element (
-					container	=> module.variants,
+					container	=> module.assembly_variants.variants,
 					position	=> cursor,
 					process		=> insert_device'access);
 
@@ -449,12 +451,13 @@ package body et_schematic_ops.units is
 			
 		begin -- unmount
 			-- the variant must exists
-			cursor := et_assembly_variants.pac_assembly_variants.find (module.variants, variant_name);
+			cursor := et_assembly_variants.pac_assembly_variants.find (
+				module.assembly_variants.variants, variant_name);
 
 			if cursor /= et_assembly_variants.pac_assembly_variants.no_element then
 
 				et_assembly_variants.pac_assembly_variants.update_element (
-					container	=> module.variants,
+					container	=> module.assembly_variants.variants,
 					position	=> cursor,
 					process		=> insert_device'access);
 
@@ -539,12 +542,13 @@ package body et_schematic_ops.units is
 			
 		begin -- remove
 			-- the variant must exist
-			cursor := et_assembly_variants.pac_assembly_variants.find (module.variants, variant_name);
+			cursor := et_assembly_variants.pac_assembly_variants.find (
+				module.assembly_variants.variants, variant_name);
 
 			if cursor /= et_assembly_variants.pac_assembly_variants.no_element then
 
 				et_assembly_variants.pac_assembly_variants.update_element (
-					container	=> module.variants,
+					container	=> module.assembly_variants.variants,
 					position	=> cursor,
 					process		=> delete_device'access);
 

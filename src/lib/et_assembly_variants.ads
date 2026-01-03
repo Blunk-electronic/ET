@@ -132,7 +132,11 @@ package et_assembly_variants is
 
 	use pac_assembly_variants;
 
-	
+
+	function get_count (
+		variants : in pac_assembly_variants.map)
+		return natural;
+
 	
 	-- Returns true if the given device is to be mounted according to given assembly variant.
 	-- If variant points to no element the default variant is assumed and the device regarded as mounted.
@@ -143,13 +147,27 @@ package et_assembly_variants is
 
 
 	-- The assembly variants of a module.
-	-- If activet is an empty string, then the default variant is active.
+	-- If active is an empty string, then the default variant is active.
 	type type_module_assembly_variants is record
 		variants	: pac_assembly_variants.map;
 		active		: pac_assembly_variant_name.bounded_string;
 	end record;
 
+
+	-- Returns the number of assembly variants.
+	-- NOTE: The default variant is not counted !
+	function get_count (
+		variants : in type_module_assembly_variants)
+		return natural;
 	
+
+	-- Returns true if the given variant exists among
+	-- the list of variants:
+	function variant_exists (
+		variants	: in type_module_assembly_variants;
+		variant		: in pac_assembly_variant_name.bounded_string)
+		return boolean;
+								   
 	
 end et_assembly_variants;
 

@@ -38,11 +38,14 @@
 --
 -- ToDo:
 -- - clean up
--- - rename global variables
+--
 --
 --
 
 with ada.text_io;					use ada.text_io;
+with ada.strings;					use ada.strings;
+with ada.characters;				use ada.characters;
+with ada.characters.latin_1;
 
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
@@ -71,145 +74,139 @@ package body et_module_write_assembly_variants is
 	use pac_generic_modules;
 
 
-
-		
-		-- writes the assembly variants in the module file
--- 	procedure query_assembly_variants is
--- 		use pac_assembly_variants;
--- 		use et_device_value;
--- 		use et_device_partcode;
--- 
--- 		
--- 		procedure query_devices (
--- 			variant_name	: in pac_assembly_variant_name.bounded_string;
--- 			variant			: in type_assembly_variant) 
--- 		is
--- 			use pac_device_variants;
--- 			device_cursor : pac_device_variants.cursor := variant.devices.first;
--- 
--- 			
--- 			function purpose return string is 
--- 				use et_device_purpose;
--- 			begin
--- 				if get_length (element (device_cursor).purpose) > 0 then
--- 					return space & keyword_purpose & space &
--- 						enclose_in_quotes (
--- 							text_in => to_string (element (device_cursor).purpose),
--- 							quote	=> latin_1.quotation);
--- 				else
--- 					return "";
--- 				end if;
--- 			end;
--- 
--- 			use et_device_model;
--- 
--- 			
--- 		begin -- query_devices
--- 			while device_cursor /= pac_device_variants.no_element loop
--- 				case element (device_cursor).mounted is
--- 					when NO =>
--- 						write (
--- 							keyword		=> keyword_device,
--- 							parameters	=> to_string (key (device_cursor)) & 
--- 											space & keyword_not_mounted);
--- 
--- 					when YES =>
--- 						write (
--- 							keyword		=> keyword_device,
--- 							parameters	=> to_string (key (device_cursor)) & 
--- 								space &
--- 								keyword_value & space &
--- 								to_string (element (device_cursor).value) &
--- 								space & keyword_partcode & space &
--- 								to_string (element (device_cursor).partcode) &
--- 								purpose);
--- 
--- 				end case;
--- 				
--- 				next (device_cursor);
--- 			end loop;
--- 		end query_devices;
--- 
--- 
--- 		
--- 		procedure query_submodules (
--- 			variant_name	: in pac_assembly_variant_name.bounded_string;
--- 			variant			: in type_assembly_variant) 
--- 		is
--- 			use et_module_instance;
--- 			use pac_submodule_variants;
--- 			submodule_cursor : pac_submodule_variants.cursor := variant.submodules.first;
--- 		begin
--- 			while submodule_cursor /= pac_submodule_variants.no_element loop
--- 				write (
--- 					keyword		=> keyword_submodule,
--- 					parameters	=> to_string (key (submodule_cursor)) &
--- 									space & keyword_variant & space &
--- 									to_variant (element (submodule_cursor).variant));
--- 				
--- 				next (submodule_cursor);
--- 			end loop;
--- 		end query_submodules;
--- 
--- 
--- 		
--- 		procedure write (variant_cursor : in pac_assembly_variants.cursor) is 
--- 		begin
--- 			section_mark (section_assembly_variant, HEADER);
--- 			write (keyword => keyword_name, parameters => to_variant (key (variant_cursor)));
--- 			write (keyword => keyword_description, wrap => true, parameters => to_string (element (variant_cursor).description));
--- 
--- 			-- write the device variants
--- 			query_element (
--- 				position	=> variant_cursor,
--- 				process		=> query_devices'access);
--- 
--- 			-- write the submodule variants
--- 			query_element (
--- 				position	=> variant_cursor,
--- 				process		=> query_submodules'access);
--- 			
--- 			section_mark (section_assembly_variant, FOOTER);
--- 			new_line;
--- 		end write;
--- 
--- 		
--- 	begin -- query_assembly_variants
--- 		section_mark (section_assembly_variants, HEADER);
--- 
--- 		-- Write assembly variants if variants exists for the module.
--- 		-- If no variants exist, then this section will be left empty.
--- 		if not is_empty (element (module_cursor).variants) then
--- 
--- 			-- iterate assembly variants
--- 			iterate (element (module_cursor).variants, write'access);
--- 
--- 			-- write the active assembly variant
--- 			write (
--- 				keyword		=> keyword_active,
--- 				parameters	=> to_variant (element (module_cursor).active_variant));
--- 
--- 		end if;
--- 		
--- 		section_mark (section_assembly_variants, FOOTER);
--- 	end query_assembly_variants;
--- 
-
-
-
-
 	procedure write_assembly_variants (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+		use pac_assembly_variants;
+
+		
+		
+		procedure query_devices (
+			variant_name	: in pac_assembly_variant_name.bounded_string;
+			variant			: in type_assembly_variant) 
+		is
+			use et_device_model;
+			use et_device_partcode;
+			use et_device_value;
+			use pac_device_variants;
+			device_cursor : pac_device_variants.cursor := variant.devices.first;
+
+			
+			function purpose return string is 
+				use et_device_purpose;
+			begin
+				if get_length (element (device_cursor).purpose) > 0 then
+					return space & keyword_purpose & space &
+						enclose_in_quotes (
+							text_in => to_string (element (device_cursor).purpose),
+							quote	=> latin_1.quotation);
+				else
+					return "";
+				end if;
+			end;
+
+			
+		begin -- query_devices
+			while device_cursor /= pac_device_variants.no_element loop
+				case element (device_cursor).mounted is
+					when NO =>
+						write (
+							keyword		=> keyword_device,
+							parameters	=> to_string (key (device_cursor)) & 
+											space & keyword_not_mounted);
+
+					when YES =>
+						write (
+							keyword		=> keyword_device,
+							parameters	=> to_string (key (device_cursor)) & 
+								space &
+								keyword_value & space &
+								to_string (element (device_cursor).value) &
+								space & keyword_partcode & space &
+								to_string (element (device_cursor).partcode) &
+								purpose);
+
+				end case;
+				
+				next (device_cursor);
+			end loop;
+		end query_devices;
+
+
+
+		
+		
+		procedure query_submodules (
+			variant_name	: in pac_assembly_variant_name.bounded_string;
+			variant			: in type_assembly_variant) 
+		is
+			use et_module_instance;
+			use pac_submodule_variants;
+			submodule_cursor : pac_submodule_variants.cursor := variant.submodules.first;
+		begin
+			while submodule_cursor /= pac_submodule_variants.no_element loop
+				write (
+					keyword		=> keyword_submodule,
+					parameters	=> to_string (key (submodule_cursor)) &
+									space & keyword_variant & space &
+									to_variant (element (submodule_cursor).variant));
+				
+				next (submodule_cursor);
+			end loop;
+		end query_submodules;
+
+
+
+
+		
+		
+		procedure write (variant_cursor : in pac_assembly_variants.cursor) is 
+		begin
+			section_mark (section_assembly_variant, HEADER);
+			write (keyword => keyword_name, parameters => to_variant (key (variant_cursor)));
+			write (keyword => keyword_description, wrap => true, parameters => to_string (element (variant_cursor).description));
+
+			-- write the device variants
+			query_element (
+				position	=> variant_cursor,
+				process		=> query_devices'access);
+
+			-- write the submodule variants
+			query_element (
+				position	=> variant_cursor,
+				process		=> query_submodules'access);
+			
+			section_mark (section_assembly_variant, FOOTER);
+			new_line;
+		end write;
+
+
 	
-	
+
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
-		is
-		begin
-			null;
+		is begin
+			section_mark (section_assembly_variants, HEADER);
+
+			-- Write assembly variants if such exist for the module.
+			-- If no variants exist, then this section will be left empty.
+			if get_variant_count (module) > 0 then
+
+				-- iterate assembly variants
+				iterate (module.assembly_variants.variants, write'access);
+
+				-- write the active assembly variant
+				write (
+					keyword		=> keyword_active,
+					parameters	=> to_variant (get_active_variant (module)));
+
+			end if;
+
+			
+			section_mark (section_assembly_variants, FOOTER);
 		end query_module;
 		
 
