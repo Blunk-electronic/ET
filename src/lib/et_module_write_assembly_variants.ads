@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                    MODULE READ / ASSEMBLY VARIANT                        --
+--                   MODULE WRITE / ASSEMBLY VARIANTS                       --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -48,37 +48,15 @@ with et_logging;				use et_logging;
 
 
 
-package et_module_read_assembly_variant is
+package et_module_write_assembly_variants is
 
 
-	-- Assigns to the module the active assembly variant.
-	procedure set_active_assembly_variant (
-		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_fields_of_line;
-		log_threshold	: in type_log_level);
-
-
-
-	procedure read_assembly_variant (
-		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_fields_of_line);
-	
-
-
-	procedure insert_assembly_variant (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level);
-
-
-
-	-- Tests whether the submodules provides the assembly variants as 
-	-- specified in module file section ASSEMBLY_VARIANTS.
-	procedure test_assembly_variants_of_submodules (
+	procedure write_assembly_variants (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 	
-end et_module_read_assembly_variant;
+end et_module_write_assembly_variants;
 
 	
 -- Soli Deo Gloria
