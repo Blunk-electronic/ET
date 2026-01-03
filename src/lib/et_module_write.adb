@@ -36,8 +36,8 @@
 -- ToDo:
 -- - clean up
 -- - simplify code
--- - use renames instead of element (c)
--- - separate schematic and board stuff in et_module_write.board/schematic
+--
+--
 --
 
 with ada.text_io;					use ada.text_io;
@@ -46,59 +46,21 @@ with ada.characters.latin_1;
 with ada.characters.handling;		use ada.characters.handling;
 with ada.strings;					use ada.strings;
 with ada.strings.fixed; 			use ada.strings.fixed;
+
 with ada.directories;				use ada.directories;
 with ada.exceptions;
 with gnat.directory_operations;
 with et_directory_and_file_ops;
 
-with et_text_content;				use et_text_content;
 with et_general_rw;					use et_general_rw;
 with et_system_info;
+with et_time;						use et_time;
 with et_string_processing;			use et_string_processing;
-with et_schematic_geometry;
-with et_schematic_coordinates;
 
 with et_section_headers;			use et_section_headers;
-with et_keywords;					use et_keywords;
-with et_module_sections;			use et_module_sections;
+
 with et_pcb_sides;
-with et_board_geometry;
-with et_board_coordinates;
-
-with et_coordinates_formatting;		use et_coordinates_formatting;
-
-with et_net_names;
-with et_net_class;
-with et_net_class_name;
-
-with et_device_name;				use et_device_name;
-with et_device_model;
-with et_module_instance;
-with et_device_purpose;
-with et_device_model_names;
-with et_device_value;
-with et_device_partcode;
-with et_schematic_text;
-with et_sheets;
-with et_module_board;
-
-with et_pcb_stack;
-with et_pcb_signal_layers;			use et_pcb_signal_layers;
-
-with et_board_write;				use et_board_write;
-
-with et_time;						use et_time;
-
-with et_schematic_ops;
-
-with et_board_ops;
-
-with et_schematic_text;
-with et_board_text;
-
 with et_board_layer_category;			use et_board_layer_category;
-with et_netlists;
-with et_alignment;						use et_alignment;
 
 with et_module_write_meta;				use et_module_write_meta;
 with et_module_write_grid;				use et_module_write_grid;
@@ -109,6 +71,7 @@ with et_module_write_board_outline;		use et_module_write_board_outline;
 with et_module_write_freetracks;		use et_module_write_freetracks;
 with et_module_write_board_zones;		use et_module_write_board_zones;
 with et_module_write_text_board;		use et_module_write_text_board;
+with et_module_write_text_schematic;	use et_module_write_text_schematic;
 with et_module_write_silkscreen;		use et_module_write_silkscreen;
 with et_module_write_assy_doc;			use et_module_write_assy_doc;
 with et_module_write_stopmask;			use et_module_write_stopmask;
@@ -194,6 +157,8 @@ package body et_module_write is
 		end write_header;		
 
 
+		
+
 		-- Writes a nice footer in the target file and closes it.
 		-- Directs subsequent outputs to the previous output (That
 		-- is the output which was set before write_module has been called.):
@@ -212,62 +177,9 @@ package body et_module_write is
 
 
 
-		
-		procedure query_texts is	
-			use et_schematic_text;
-			use pac_text_schematic;
-			use et_schematic_coordinates;
-			use et_schematic_geometry.pac_geometry_2;
-			use et_schematic_text;
-			use pac_texts;
-			
-			
-			procedure write (text_cursor : in pac_texts.cursor) is 
-				use et_sheets;
-			begin
-				section_mark (section_text, HEADER);
-				write
-					(
-					keyword		=> keyword_position,
-					parameters	=> keyword_sheet & to_string (element (text_cursor).sheet) 
-									& space & to_string (element (text_cursor).position, FORMAT_2)
-					); -- position sheet 1 x 30 y 180
-				
-				write (keyword => keyword_rotation, 
-						parameters => to_string (to_rotation (element (text_cursor).rotation)));
-				
-				write (keyword => keyword_content, wrap => true,
-						parameters => to_string (element (text_cursor).content));
-				
-				write (keyword => keyword_size, parameters => to_string (element (text_cursor).size));
-				write (keyword => keyword_alignment, parameters =>
-					keyword_horizontal & space & to_string (element (text_cursor).alignment.horizontal)
-					& space & keyword_vertical & space
-					& to_string (element (text_cursor).alignment.vertical));
-
-				-- CS font
-				
-				section_mark (section_text, FOOTER);
-			end write;
-
-			
-		begin
-			section_mark (section_texts, HEADER);
-			iterate (element (module_cursor).texts, write'access);
-			section_mark (section_texts, FOOTER);
-		end query_texts;
-
-		
-
 
 		
 		procedure query_board is
-			use et_board_geometry.pac_contours;
-			use et_module_board;
-			use et_pcb_stack;
-			use et_board_geometry.pac_geometry_2;
-
-
 
 			procedure write_silkscreen is
 				use et_pcb_sides;
@@ -295,7 +207,6 @@ package body et_module_write is
 				
 				section_mark (section_silkscreen, FOOTER);
 			end write_silkscreen;
-
 
 
 			
@@ -327,7 +238,6 @@ package body et_module_write is
 			
 
 			
-
 			procedure write_stencil is
 				use et_pcb_sides;
 			begin			
@@ -348,7 +258,6 @@ package body et_module_write is
 
 
 			
-
 			procedure write_stop_mask is
 				use et_pcb_sides;
 			begin
@@ -374,7 +283,6 @@ package body et_module_write is
 
 				section_mark (section_stopmask, FOOTER);
 			end write_stop_mask;
-
 
 
 
@@ -458,6 +366,7 @@ package body et_module_write is
 			section_mark (section_board, FOOTER);
 		end query_board;
 
+
 		
 	begin -- write_module
 
@@ -493,8 +402,8 @@ package body et_module_write is
 		write_frames (module_cursor, log_threshold);
 		put_line (row_separator_single);
 		
-		-- notes
-		query_texts;
+		-- scheamtic texts / notes
+		write_schematic_texts (module_cursor, log_threshold);
 		put_line (row_separator_single);
 		
 		-- submodules

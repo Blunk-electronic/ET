@@ -105,8 +105,9 @@ package et_module is
 		net_classes		: pac_net_classes.map;		-- the net classes
 		submods			: et_submodules.pac_submodules.map;	-- instances of submodules (boxes)
 		netchangers		: et_submodules.pac_netchangers.map;-- netchangers
-		
-		texts       	: et_schematic_text.pac_texts.list; -- general notes in schematic, not related to drawing frames !
+
+		-- general notes in schematic, not related to drawing frames !
+		texts       	: et_schematic_text.pac_texts.list; 
 
 		-- The nets of the module (incl. routing information for the board)
 		-- containing:

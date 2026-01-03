@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                       MODULE READ / TEXT IN SCHEMATIC                    --
+--                      MODULE WRITE / TEXT IN SCHEMATIC                    --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -48,20 +48,15 @@ with et_logging;				use et_logging;
 
 
 
-package et_module_read_text_schematic is
+package et_module_write_text_schematic is
+	
 
-	
-	procedure read_schematic_text (
-		line : in type_fields_of_line);
-		
-		
-	
-	procedure insert_schematic_text (
+	procedure write_schematic_texts (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 	
-end et_module_read_text_schematic;
+end et_module_write_text_schematic;
 
 	
 

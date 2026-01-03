@@ -38,6 +38,7 @@
 -- To Do:
 -- - command to set design rules
 -- - command to set assembly variants
+-- - command to add a text note
 
 
 with ada.containers;
