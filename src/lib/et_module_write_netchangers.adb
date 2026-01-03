@@ -78,7 +78,7 @@ package body et_module_write_netchangers is
 
 		use pac_netchangers;
 
-		
+
 		procedure query_netchanger (cursor : pac_netchangers.cursor) is
 			use et_schematic_geometry;
 			use pac_geometry_2;
@@ -95,7 +95,8 @@ package body et_module_write_netchangers is
 
 			write (
 				keyword => keyword_position_in_board, 
-				parameters => et_board_geometry.pac_geometry_2.to_string (element (cursor).position_brd)); -- position_in_board x 1.32 y 6.97
+				parameters => et_board_geometry.pac_geometry_2.to_string (
+					element (cursor).position_brd, FORMAT_2)); -- position_in_board x 1.32 y 6.97
 			
 			write (keyword => keyword_layer, parameters => to_string (element (cursor).layer)); -- layer 2
 			section_mark (section_netchanger, FOOTER);
