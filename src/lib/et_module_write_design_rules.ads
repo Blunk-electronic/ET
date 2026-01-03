@@ -2,9 +2,9 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               MODULE                                     --
+--                    MODULE WRITE / DESIGN RULES                           --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -21,9 +21,10 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
+--                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your editor to 4.
+--   For correct displaying set tab with in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,65 +36,31 @@
 --
 --   history of changes:
 --
---  ToDo: 
---  
+-- ToDo:
+-- - clean up
+--
+--
+--
 
-
--- with et_exceptions;				use et_exceptions;
-
-
-package body et_module is
-
-
-	function get_design_rules (
-		module : in type_generic_module)
-		return type_design_rules
-	is begin
-		return module.rules;
-	end;
+with et_generic_modules;		use et_generic_modules;
+with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 
 
 
-	
-	function design_rules_schematic_assigned (
-		module : in type_generic_module)
-		return boolean
-	is begin
-		return schematic_rules_assigned (module.rules);
-	end;
+package et_module_write_design_rules is
 
-		
-	function design_rules_board_assigned (
-		module : in type_generic_module)
-		return boolean
-	is begin
-		return board_rules_assigned (module.rules);
-	end;
 
+	procedure write_design_rules (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
 
 
 
 	
-
-	function get_grid_schematic (
-		module : in type_generic_module)
-		return et_schematic_geometry.pac_grid.type_grid
-	is begin
-		return module.grid;
-	end;
-
-
-
-	function get_grid_board (
-		module : in type_generic_module)
-		return et_board_geometry.pac_grid.type_grid
-	is begin
-		return module.board.grid;
-	end;
+end et_module_write_design_rules;
 
 	
-end et_module;
-
 -- Soli Deo Gloria
 
 -- For God so loved the world that he gave 

@@ -86,7 +86,7 @@ package et_module is
 		
 		meta			: et_meta.type_meta; -- for both schematic and layout
 
-		rules			: et_design_rules.type_design_rules; -- design rules, erc rules ...
+		rules			: type_design_rules; -- design rules, erc rules ...
 		
 		description		: pac_text_content.bounded_string; -- a short description of the module
 
@@ -151,6 +151,10 @@ package et_module is
 
 
 
+	-- Returns the design rules (both for schematic and board):
+	function get_design_rules (
+		module : in type_generic_module)
+		return type_design_rules;
 	
 
 	-- Returns true if schematic design rules exist:

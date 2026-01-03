@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               MODULE                                     --
+--                    MODULE WRITE / DESIGN RULES                           --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -21,9 +21,10 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
+--                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your editor to 4.
+--   For correct displaying set tab with in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,65 +36,78 @@
 --
 --   history of changes:
 --
---  ToDo: 
---  
+-- ToDo:
+-- - clean up
+--
+--
+--
+
+with ada.text_io;					use ada.text_io;
+with ada.strings;					use ada.strings;
+
+with et_module;						use et_module;
+with et_module_names;				use et_module_names;
+with et_keywords;					use et_keywords;
+with et_section_headers;			use et_section_headers;
+
+with et_design_rules;				use et_design_rules;
+with et_design_rules_board;			use et_design_rules_board;
+
+with et_general_rw;					use et_general_rw;
 
 
--- with et_exceptions;				use et_exceptions;
 
+package body et_module_write_design_rules is
 
-package body et_module is
-
-
-	function get_design_rules (
-		module : in type_generic_module)
-		return type_design_rules
-	is begin
-		return module.rules;
-	end;
-
+	use pac_generic_modules;
 
 
 	
-	function design_rules_schematic_assigned (
-		module : in type_generic_module)
-		return boolean
-	is begin
-		return schematic_rules_assigned (module.rules);
-	end;
 
+	procedure write_design_rules (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
 		
-	function design_rules_board_assigned (
-		module : in type_generic_module)
-		return boolean
-	is begin
-		return board_rules_assigned (module.rules);
-	end;
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is 
+			rules : type_design_rules := get_design_rules (module);
+		begin
+			section_mark (section_rules, HEADER);
 
+			-- Write the board design rules. If none assigned to the
+			-- module, write nothing:
+			if design_rules_board_assigned (module) then
+				write (keyword => keyword_layout, parameters => to_string (rules.layout));
+				-- CS keyword should be "board" instead of "layout"
+			end if;
+
+			-- CS schematic rules
+			
+			section_mark (section_rules, FOOTER);
+		end;
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " write design rules",
+			level => log_threshold);
+		
+		log_indentation_up;
+		
+		query_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+	end write_design_rules;
 
 
 
 	
-
-	function get_grid_schematic (
-		module : in type_generic_module)
-		return et_schematic_geometry.pac_grid.type_grid
-	is begin
-		return module.grid;
-	end;
-
-
-
-	function get_grid_board (
-		module : in type_generic_module)
-		return et_board_geometry.pac_grid.type_grid
-	is begin
-		return module.board.grid;
-	end;
+	
+end et_module_write_design_rules;
 
 	
-end et_module;
-
 -- Soli Deo Gloria
 
 -- For God so loved the world that he gave 

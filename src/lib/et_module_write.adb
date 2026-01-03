@@ -109,6 +109,7 @@ with et_alignment;						use et_alignment;
 with et_module_write_meta;				use et_module_write_meta;
 with et_module_write_grid;				use et_module_write_grid;
 with et_module_write_frames;			use et_module_write_frames;
+with et_module_write_design_rules;		use et_module_write_design_rules;
 with et_module_write_board_outline;		use et_module_write_board_outline;
 with et_module_write_freetracks;		use et_module_write_freetracks;
 with et_module_write_board_zones;		use et_module_write_board_zones;
@@ -210,37 +211,6 @@ package body et_module_write is
 			set_output (previous_output);
 			close (module_file_handle);
 		end write_footer;
-
-
-
-		
-		
-
-
-
-
-		
-		
-		procedure query_rules is
-			use et_board_ops;
-			rules : constant type_design_rules := element (module_cursor).rules;
-		begin
-			log_indentation_up;
-			log (text => "rules ...", level => log_threshold + 1);
-			
-			section_mark (section_rules, HEADER);
-
-			-- Write the layout design rules. If none assigned to the
-			-- module, write nothing:
-			if layout_rules_assigned (module_cursor) then
-				write (keyword => keyword_layout, parameters => to_string (rules.layout));
-			end if;
-																			
-			section_mark (section_rules, FOOTER);
-
-			log_indentation_down;
-		end query_rules;
-
 
 
 		
@@ -826,7 +796,7 @@ package body et_module_write is
 		put_line (row_separator_single);
 
 		-- rules
-		query_rules;
+		write_design_rules (module_cursor, log_threshold);
 		put_line (row_separator_single);
 		
 		-- net classes
