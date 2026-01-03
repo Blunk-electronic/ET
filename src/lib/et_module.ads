@@ -53,7 +53,6 @@ with et_submodules;
 with et_module_board;				use et_module_board;
 
 with et_assembly_variants;			use et_assembly_variants;
-with et_assembly_variant_name;		use et_assembly_variant_name;
 
 with et_meta;
 with et_commit;
@@ -100,6 +99,7 @@ package et_module is
 		-- ALL devices of the module independent of the assembly variant:
 		devices			: pac_devices_electrical.map;
 		device_commits	: type_devices_undo_redo_stack;
+		-- CS wrap both selectors into a record
 		
 		net_classes		: pac_net_classes.map;		-- the net classes
 		submods			: et_submodules.pac_submodules.map;	-- instances of submodules (boxes)
@@ -116,20 +116,19 @@ package et_module is
 		-- selector "net" must be updated:
 		nets 	    	: et_nets.pac_nets.map;
 		net_commits		: et_nets.type_nets_undo_redo_stack;
+		-- CS wrap both selectors into a record
 		
-		-- The assembly variants of the module.
-		-- (means which device is mounted or not or which device can have a different
-		-- value, partcode or purpose):
-		variants		: pac_assembly_variants.map;
-
-		-- The active assembly variant:
-		active_variant	: pac_assembly_variant_name.bounded_string; -- "premium"
-		-- If active_variant is an empty string, then the default variant is active.
+		-- The assembly variants of the module:
+		-- - devices that are mounted or not
+		-- - devices which can have a different value, partcode or purpose
+		-- - variants of submodules
+		assembly_variants : type_module_assembly_variants;
 
 		
 		-- Non-electrical stuff (board contours, silkscreen, documentation, ...):
 		board			: type_board;
 		board_commits	: type_board_undo_redo_stack;
+		-- CS wrap both selectors into a record
 		
 		-- The tree of submodules is stored here. 
 		-- NOTE: This container is exclusively used if the module is a top module.
@@ -144,6 +143,7 @@ package et_module is
 		-- Devices which do not have a counterpart in the schematic:
 		devices_non_electric			: pac_devices_non_electrical.map; -- fiducials, mounting holes, ...
 		devices_non_electric_commits	: type_non_electrical_devices_undo_redo_stack;
+		-- CS wrap both selectors into a record
 		
 		-- CS: images
 		-- CS: latest view: sheet number, displayed objects, zoom, cursor position, ...

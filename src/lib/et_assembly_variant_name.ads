@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,6 +36,8 @@
 --   history of changes:
 --
 
+-- To Do:
+-- - clean up
 
 with ada.strings.bounded;       	use ada.strings.bounded;
 
@@ -44,10 +46,12 @@ package et_assembly_variant_name is
 	
 	-- The name of an assembly variant is a text like "low_cost" or "with temperature sensor" or just a number like V345:
 	variant_name_length_max : constant positive := 100;
+
 	package pac_assembly_variant_name is new generic_bounded_length (variant_name_length_max);
 	use pac_assembly_variant_name;
 
 	default : constant pac_assembly_variant_name.bounded_string := pac_assembly_variant_name.to_bounded_string ("");
+	-- CS rename to default_assembly_variant
 	
 	function is_default (variant : in pac_assembly_variant_name.bounded_string) return boolean;
 	-- Returns true if the given variant name is empty.

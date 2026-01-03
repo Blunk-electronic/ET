@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                          ASSEMBLY VARIANTS                               --
+--                      MODULE / ASSEMBLY VARIANTS                          --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,7 +36,8 @@
 --   history of changes:
 --
 --   ToDo: 
-
+-- - rename package to et_module_assembly_variants
+--
 
 with ada.strings.unbounded;     use ada.strings.unbounded;
 
@@ -140,6 +141,15 @@ package et_assembly_variants is
 		variant	: in pac_assembly_variants.cursor)
 		return boolean;
 
+
+	-- The assembly variants of a module.
+	-- If activet is an empty string, then the default variant is active.
+	type type_module_assembly_variants is record
+		variants	: pac_assembly_variants.map;
+		active		: pac_assembly_variant_name.bounded_string;
+	end record;
+
+	
 	
 end et_assembly_variants;
 
