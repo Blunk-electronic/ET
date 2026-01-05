@@ -249,6 +249,11 @@ package et_package_model is
 
 
 
+	type type_package_model_access is access type_package_model;
+
+	
+	
+
 	-- Returns true if the given package is
 	-- a real package with a height, means if it is relevant 
 	-- for creating bill of materials (BOM):

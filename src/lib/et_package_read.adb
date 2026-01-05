@@ -65,6 +65,10 @@ with et_package_model;					use et_package_model;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 
 
+with et_package_read_assy_doc;			use et_package_read_assy_doc;
+with et_package_read_silkscreen;		use et_package_read_silkscreen;
+
+
 package body et_package_read is
 
 	use pac_text_board_vectorized;
@@ -98,7 +102,9 @@ package body et_package_read is
 
 		-- Once the appearance has been read, a new package will be created where this 
 		-- pointer is pointing at:
-		packge					: access type_package_model;
+		-- packge	: access type_package_model; -- CS rename to package_model
+		packge	: type_package_model_access; -- CS rename to package_model
+		
 		pac_appearance			: type_bom_relevant := bom_relevant_default;
 
 		-- The description and technology will be assigned once the complete
@@ -837,23 +843,12 @@ package body et_package_read is
 										board_reset_line_width;
 
 									when SEC_SILKSCREEN => 
-										pac_silk_lines.append (
-											container	=> packge.silkscreen.top.lines, 
-											new_item	=> (type_line (board_line) with board_line_width));
-
-										-- clean up for next line
-										board_reset_line;
-										board_reset_line_width;
+										insert_silk_line (packge, TOP, log_threshold);
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-										pac_doc_lines.append (
-											container	=> packge.assy_doc.top.lines, 
-											new_item	=> (type_line (board_line) with board_line_width));
+										insert_doc_line (packge, TOP, log_threshold);
 
-										-- clean up for next line
-										board_reset_line;
-										board_reset_line_width;
-
+										
 									when SEC_STENCIL =>
 										pac_stencil_lines.append (
 											container	=> packge.stencil.top.lines, 
@@ -903,22 +898,11 @@ package body et_package_read is
 										board_reset_line_width;
 
 									when SEC_SILKSCREEN => 
-										pac_silk_lines.append (
-											container	=> packge.silkscreen.bottom.lines, 
-											new_item	=> (type_line (board_line) with board_line_width));
+										insert_silk_line (packge, BOTTOM, log_threshold);
 
-										-- clean up for next line
-										board_reset_line;
-										board_reset_line_width;
-										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-										pac_doc_lines.append (
-											container	=> packge.assy_doc.bottom.lines, 
-											new_item	=> (type_line (board_line) with board_line_width));
+										insert_doc_line (packge, BOTTOM, log_threshold);
 
-										-- clean up for next line
-										board_reset_line;
-										board_reset_line_width;
 
 									when SEC_STENCIL =>
 										pac_stencil_lines.append (
@@ -966,7 +950,7 @@ package body et_package_read is
 
 						
 					when SEC_ARC =>
-						board_check_arc (log_threshold + 1);
+						-- board_check_arc (log_threshold + 1);
 						
 						case stack.parent is
 							when SEC_TOP => 
@@ -982,22 +966,10 @@ package body et_package_read is
 										board_reset_line_width;
 
 									when SEC_SILKSCREEN => 
-										pac_silk_arcs.append (
-											container	=> packge.silkscreen.top.arcs, 
-											new_item	=> (type_arc (board_arc) with board_line_width));
-
-										-- clean up for next arc
-										board_reset_arc;
-										board_reset_line_width;
+										insert_silk_arc (packge, TOP, log_threshold);
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-										pac_doc_arcs.append (
-											container	=> packge.assy_doc.top.arcs, 
-											new_item	=> (type_arc (board_arc) with board_line_width));
-
-										-- clean up for next arc
-										board_reset_arc;
-										board_reset_line_width;
+										insert_doc_arc (packge, TOP, log_threshold);
 
 									when SEC_STENCIL =>
 										pac_stencil_arcs.append (
@@ -1046,22 +1018,11 @@ package body et_package_read is
 										board_reset_line_width;
 
 									when SEC_SILKSCREEN => 
-										pac_silk_arcs.append (
-											container	=> packge.silkscreen.bottom.arcs, 
-											new_item	=> (type_arc (board_arc) with board_line_width));
+										insert_silk_arc (packge, BOTTOM, log_threshold);
 
-										-- clean up for next arc
-										board_reset_arc;
-										board_reset_line_width;
-										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-										pac_doc_arcs.append (
-											container	=> packge.assy_doc.bottom.arcs, 
-											new_item	=> (type_arc (board_arc) with board_line_width));
+										insert_doc_arc (packge, BOTTOM, log_threshold);
 
-										-- clean up for next arc
-										board_reset_arc;
-										board_reset_line_width;
 
 									when SEC_STENCIL =>
 										pac_stencil_arcs.append (
@@ -1117,18 +1078,11 @@ package body et_package_read is
 											new_item	=> (type_circle (board_circle) with board_line_width));
 										
 									when SEC_SILKSCREEN => 
-										pac_silk_circles.append (
-											container	=> packge.silkscreen.top.circles, 
-											new_item	=> (type_circle (board_circle) with board_line_width));
-															
-										board_reset_circle; -- clean up for next circle
+										insert_silk_circle (packge, TOP, log_threshold);
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-										pac_doc_circles.append (
-											container	=> packge.assy_doc.top.circles, 
-											new_item	=> (type_circle (board_circle) with board_line_width));
+										insert_doc_circle (packge, TOP, log_threshold);
 
-										board_reset_circle; -- clean up for next circle
 										
 									when SEC_STENCIL =>
 										pac_stencil_circles.append (
@@ -1168,19 +1122,12 @@ package body et_package_read is
 											new_item	=> (type_circle (board_circle) with board_line_width));
 
 									when SEC_SILKSCREEN => 
-										pac_silk_circles.append (
-											container	=> packge.silkscreen.bottom.circles, 
-											new_item	=> (type_circle (board_circle) with board_line_width));
+										insert_silk_circle (packge, BOTTOM, log_threshold);
 
-										board_reset_circle; -- clean up for next circle
-										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-										pac_doc_circles.append (
-											container	=> packge.assy_doc.bottom.circles, 
-											new_item	=> (type_circle (board_circle) with board_line_width));
+										insert_doc_circle (packge, BOTTOM, log_threshold);
 
-										board_reset_circle; -- clean up for next circle
-
+										
 									when SEC_STENCIL =>
 										pac_stencil_circles.append (
 											container	=> packge.stencil.bottom.circles, 
@@ -1602,7 +1549,13 @@ package body et_package_read is
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_CONDUCTOR | SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										read_doc_line (line);
+										
+									when SEC_SILKSCREEN =>
+										read_silk_line (line);
+										
+									when SEC_CONDUCTOR |
 										SEC_STENCIL | SEC_STOPMASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 
 										if not read_board_line (line) then
@@ -1634,12 +1587,19 @@ package body et_package_read is
 							when SEC_CONTOURS => read_board_line (line);								
 							when others => invalid_section;
 						end case;
-						
+				
+				
 					when SEC_ARC =>
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_CONDUCTOR | SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										read_doc_arc (line);
+
+									when SEC_SILKSCREEN =>
+										read_silk_arc (line);
+										
+									when SEC_CONDUCTOR |
 										SEC_STENCIL | SEC_STOPMASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 
 										if not read_board_arc (line) then
@@ -1671,12 +1631,18 @@ package body et_package_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_CIRCLE =>
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOPMASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										read_doc_circle (line);
+								
+									when SEC_SILKSCREEN =>
+										read_silk_circle (line);
+										
+									when SEC_STENCIL | SEC_STOPMASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 										
 										if not read_board_circle (line) then
 											declare
