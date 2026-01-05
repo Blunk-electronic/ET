@@ -69,7 +69,7 @@ with et_package_read_assy_doc;			use et_package_read_assy_doc;
 with et_package_read_silkscreen;		use et_package_read_silkscreen;
 with et_package_read_stencil;			use et_package_read_stencil;
 with et_package_read_stopmask;			use et_package_read_stopmask;
-
+with et_package_read_conductors;		use et_package_read_conductors;
 
 
 package body et_package_read is
@@ -836,14 +836,7 @@ package body et_package_read is
 							when SEC_TOP => 
 								case stack.parent (degree => 2) is
 									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
-
-										et_conductor_segment.pac_conductor_lines.append (
-											container	=> packge.conductors.top.lines, 
-											new_item	=> (type_line (board_line) with board_line_width));
-
-										-- clean up for next line
-										board_reset_line;
-										board_reset_line_width;
+										insert_conductor_line (packge, TOP, log_threshold);
 
 									when SEC_SILKSCREEN => 
 										insert_silk_line (packge, TOP, log_threshold);
@@ -877,14 +870,7 @@ package body et_package_read is
 							when SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
-
-										et_conductor_segment.pac_conductor_lines.append (
-											container	=> packge.conductors.bottom.lines, 
-											new_item	=> (type_line (board_line) with board_line_width));
-
-										-- clean up for next line
-										board_reset_line;
-										board_reset_line_width;
+										insert_conductor_line (packge, BOTTOM, log_threshold);
 
 									when SEC_SILKSCREEN => 
 										insert_silk_line (packge, BOTTOM, log_threshold);
@@ -932,14 +918,7 @@ package body et_package_read is
 							when SEC_TOP => 
 								case stack.parent (degree => 2) is
 									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
-
-										et_conductor_segment.pac_conductor_arcs.append (
-											container	=> packge.conductors.top.arcs, 
-											new_item	=> (type_arc (board_arc) with board_line_width));
-
-										-- clean up for next arc
-										board_reset_arc;
-										board_reset_line_width;
+										insert_conductor_arc (packge, TOP, log_threshold);
 
 									when SEC_SILKSCREEN => 
 										insert_silk_arc (packge, TOP, log_threshold);
@@ -971,14 +950,7 @@ package body et_package_read is
 							when SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
-
-										et_conductor_segment.pac_conductor_arcs.append (
-											container	=> packge.conductors.bottom.arcs, 
-											new_item	=> (type_arc (board_arc) with board_line_width));
-
-										-- clean up for next arc
-										board_reset_arc;
-										board_reset_line_width;
+										insert_conductor_arc (packge, BOTTOM, log_threshold);
 
 									when SEC_SILKSCREEN => 
 										insert_silk_arc (packge, BOTTOM, log_threshold);
@@ -1022,10 +994,7 @@ package body et_package_read is
 							when SEC_TOP => 
 								case stack.parent (degree => 2) is
 									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
-
-										et_conductor_segment.pac_conductor_circles.append (
-											container	=> packge.conductors.top.circles, 
-											new_item	=> (type_circle (board_circle) with board_line_width));
+										insert_conductor_circle (packge, TOP, log_threshold);
 										
 									when SEC_SILKSCREEN => 
 										insert_silk_circle (packge, TOP, log_threshold);
@@ -1057,10 +1026,7 @@ package body et_package_read is
 							when SEC_BOTTOM =>
 								case stack.parent (degree => 2) is
 									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
-
-										et_conductor_segment.pac_conductor_circles.append (
-											container	=> packge.conductors.bottom.circles, 
-											new_item	=> (type_circle (board_circle) with board_line_width));
+										insert_conductor_circle (packge, BOTTOM, log_threshold);
 
 									when SEC_SILKSCREEN => 
 										insert_silk_circle (packge, BOTTOM, log_threshold);
@@ -1449,6 +1415,7 @@ package body et_package_read is
 							end if;
 						end;
 
+						
 					when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOPMASK | SEC_STENCIL | 
 						SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 						SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT | SEC_PCB_CONTOURS_NON_PLATED | 
@@ -1459,11 +1426,13 @@ package body et_package_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_STOPMASK_CONTOURS_THT | SEC_STOPMASK_CONTOURS_SMT =>
 						case stack.parent is
 							when SEC_TERMINAL => null;
 							when others => invalid_section;
 						end case;
+						
 						
 					when SEC_TOP | SEC_BOTTOM =>
 						case stack.parent is
@@ -1475,6 +1444,7 @@ package body et_package_read is
 							when SEC_STOPMASK_CONTOURS_THT => null;								
 							when others => invalid_section;
 						end case;
+						
 						
 					when SEC_LINE =>
 						case stack.parent is
@@ -1492,8 +1462,10 @@ package body et_package_read is
 									when SEC_STOPMASK =>
 										read_stop_line (line);
 										
-									when SEC_CONDUCTOR |
-										SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+									when SEC_CONDUCTOR =>
+										read_conductor_line (line);
+										
+									when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 
 										if not read_board_line (line) then
 											declare
@@ -1542,8 +1514,10 @@ package body et_package_read is
 									when SEC_STOPMASK =>
 										read_stop_arc (line);
 										
-									when SEC_CONDUCTOR |
-										SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+									when SEC_CONDUCTOR =>
+										read_conductor_arc (line);
+									
+									when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 
 										if not read_board_arc (line) then
 											declare
@@ -1591,8 +1565,10 @@ package body et_package_read is
 									when SEC_STOPMASK =>
 										read_stop_circle (line);
 										
-									when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+									when SEC_CONDUCTOR =>
+										read_conductor_circle (line);
 										
+									when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 										if not read_board_circle (line) then
 											declare
 												kw : string := f (line, 1);
@@ -1617,21 +1593,6 @@ package body et_package_read is
 										end if;
 										
 										
-									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
-										if not read_board_circle (line) then
-											declare
-												kw : string := f (line, 1);
-											begin
-												-- CS: In the following: set a corresponding parameter-found-flag
-												if kw = keyword_width then -- width 0.5
-													expect_field_count (line, 2);
-													board_line_width := to_distance (f (line, 2));
-												else
-													invalid_keyword (kw);
-												end if;
-											end;
-										end if;
-										
 									when SEC_PAD_CONTOURS_THT => read_board_circle (line);
 									when SEC_STOPMASK_CONTOURS_THT => read_board_circle (line);									
 									when others => invalid_section;
@@ -1645,6 +1606,7 @@ package body et_package_read is
 							when SEC_CONTOURS => read_board_circle (line);
 							when others => invalid_section;
 						end case;
+						
 
 					when SEC_CUTOUT_ZONE =>
 						case stack.parent is
