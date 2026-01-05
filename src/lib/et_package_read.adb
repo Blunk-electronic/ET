@@ -67,6 +67,9 @@ with et_pcb_signal_layers;				use et_pcb_signal_layers;
 
 with et_package_read_assy_doc;			use et_package_read_assy_doc;
 with et_package_read_silkscreen;		use et_package_read_silkscreen;
+with et_package_read_stencil;			use et_package_read_stencil;
+
+
 
 
 package body et_package_read is
@@ -847,16 +850,9 @@ package body et_package_read is
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										insert_doc_line (packge, TOP, log_threshold);
-
 										
 									when SEC_STENCIL =>
-										pac_stencil_lines.append (
-											container	=> packge.stencil.top.lines, 
-											new_item	=> (type_line (board_line) with board_line_width));
-
-										-- clean up for next line
-										board_reset_line;
-										board_reset_line_width;
+										insert_stencil_line (packge, TOP, log_threshold);
 
 									when SEC_STOPMASK =>
 										pac_stop_lines.append (
@@ -903,15 +899,8 @@ package body et_package_read is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										insert_doc_line (packge, BOTTOM, log_threshold);
 
-
 									when SEC_STENCIL =>
-										pac_stencil_lines.append (
-											container	=> packge.stencil.bottom.lines, 
-											new_item	=> (type_line (board_line) with board_line_width));
-
-										-- clean up for next line
-										board_reset_line;
-										board_reset_line_width;
+										insert_stencil_line (packge, BOTTOM, log_threshold);
 										
 									when SEC_STOPMASK =>
 										pac_stop_lines.append (
@@ -972,13 +961,7 @@ package body et_package_read is
 										insert_doc_arc (packge, TOP, log_threshold);
 
 									when SEC_STENCIL =>
-										pac_stencil_arcs.append (
-											container	=> packge.stencil.top.arcs, 
-											new_item	=> (type_arc (board_arc) with board_line_width));
-
-										-- clean up for next arc
-										board_reset_arc;
-										board_reset_line_width;
+										insert_stencil_arc (packge, TOP, log_threshold);
 
 									when SEC_STOPMASK =>
 										pac_stop_arcs.append (
@@ -1023,15 +1006,8 @@ package body et_package_read is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										insert_doc_arc (packge, BOTTOM, log_threshold);
 
-
 									when SEC_STENCIL =>
-										pac_stencil_arcs.append (
-											container	=> packge.stencil.bottom.arcs, 
-											new_item	=> (type_arc (board_arc) with board_line_width));
-
-										-- clean up for next arc
-										board_reset_arc;
-										board_reset_line_width;
+										insert_stencil_arc (packge, BOTTOM, log_threshold);
 										
 									when SEC_STOPMASK =>
 										pac_stop_arcs.append (
@@ -1082,14 +1058,9 @@ package body et_package_read is
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										insert_doc_circle (packge, TOP, log_threshold);
-
 										
 									when SEC_STENCIL =>
-										pac_stencil_circles.append (
-											container	=> packge.stencil.top.circles, 
-											new_item	=> (type_circle (board_circle) with board_line_width));
-
-										board_reset_circle; -- clean up for next circle
+										insert_stencil_circle (packge, TOP, log_threshold);
 										
 									when SEC_STOPMASK =>
 										pac_stop_circles.append (
@@ -1126,14 +1097,9 @@ package body et_package_read is
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										insert_doc_circle (packge, BOTTOM, log_threshold);
-
 										
 									when SEC_STENCIL =>
-										pac_stencil_circles.append (
-											container	=> packge.stencil.bottom.circles, 
-											new_item	=> (type_circle (board_circle) with board_line_width));
-
-										board_reset_circle; -- clean up for next circle
+										insert_stencil_circle (packge, BOTTOM, log_threshold);
 
 									when SEC_STOPMASK =>
 										pac_stop_circles.append (
@@ -1554,9 +1520,12 @@ package body et_package_read is
 										
 									when SEC_SILKSCREEN =>
 										read_silk_line (line);
+
+									when SEC_STENCIL =>
+										read_stencil_line (line);
 										
 									when SEC_CONDUCTOR |
-										SEC_STENCIL | SEC_STOPMASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+										SEC_STOPMASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 
 										if not read_board_line (line) then
 											declare
@@ -1598,9 +1567,12 @@ package body et_package_read is
 
 									when SEC_SILKSCREEN =>
 										read_silk_arc (line);
+
+									when SEC_STENCIL =>
+										read_stencil_arc (line);
 										
 									when SEC_CONDUCTOR |
-										SEC_STENCIL | SEC_STOPMASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+										SEC_STOPMASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 
 										if not read_board_arc (line) then
 											declare
@@ -1642,7 +1614,10 @@ package body et_package_read is
 									when SEC_SILKSCREEN =>
 										read_silk_circle (line);
 										
-									when SEC_STENCIL | SEC_STOPMASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+									when SEC_STENCIL =>
+										read_stencil_circle (line);
+										
+									when SEC_STOPMASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 										
 										if not read_board_circle (line) then
 											declare
