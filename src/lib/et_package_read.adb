@@ -70,6 +70,8 @@ with et_package_read_silkscreen;		use et_package_read_silkscreen;
 with et_package_read_stencil;			use et_package_read_stencil;
 with et_package_read_stopmask;			use et_package_read_stopmask;
 with et_package_read_conductors;		use et_package_read_conductors;
+with et_package_read_route_restrict;	use et_package_read_route_restrict;
+
 
 
 package body et_package_read is
@@ -851,13 +853,7 @@ package body et_package_read is
 										insert_stop_line (packge, TOP, log_threshold);
 										
 									when SEC_ROUTE_RESTRICT =>
-										pac_route_restrict_lines.append (
-											container	=> packge.route_restrict.top.lines,
-											new_item	=> (type_line (board_line) with null record));
-
-										-- clean up for next line
-										board_reset_line;
-
+										insert_route_restrict_line (packge, TOP, log_threshold);
 										
 									when SEC_PAD_CONTOURS_THT => add_polygon_line (board_line);
 
@@ -883,16 +879,9 @@ package body et_package_read is
 										
 									when SEC_STOPMASK =>
 										insert_stop_line (packge, BOTTOM, log_threshold);
-					
 										
 									when SEC_ROUTE_RESTRICT =>
-										pac_route_restrict_lines.append (
-											container	=> packge.route_restrict.bottom.lines,
-											new_item	=> (type_line (board_line) with null record));
-
-										-- clean up for next line
-										board_reset_line;
-
+										insert_route_restrict_line (packge, BOTTOM, log_threshold);
 										
 									when SEC_PAD_CONTOURS_THT => add_polygon_line (board_line);
 
@@ -933,12 +922,7 @@ package body et_package_read is
 										insert_stop_arc (packge, TOP, log_threshold);
 																				
 									when SEC_ROUTE_RESTRICT =>										
-										pac_route_restrict_arcs.append (
-											container	=> packge.route_restrict.top.arcs,
-											new_item	=> (type_arc (board_arc) with null record));
-
-										-- clean up for next arc
-										board_reset_arc;
+										insert_route_restrict_arc (packge, TOP, log_threshold);
 
 										
 									when SEC_PAD_CONTOURS_THT => add_polygon_arc (board_arc);
@@ -963,16 +947,9 @@ package body et_package_read is
 										
 									when SEC_STOPMASK =>
 										insert_stop_arc (packge, BOTTOM, log_threshold);
-
 										
 									when SEC_ROUTE_RESTRICT =>										
-										pac_route_restrict_arcs.append (
-											container	=> packge.route_restrict.bottom.arcs,
-											new_item	=> (type_arc (board_arc) with null record));
-
-										-- clean up for next arc
-										board_reset_arc;
-
+										insert_route_restrict_arc (packge, BOTTOM, log_threshold);
 									
 									when SEC_PAD_CONTOURS_THT => add_polygon_arc (board_arc);
 									when SEC_STOPMASK_CONTOURS_THT => add_polygon_arc (board_arc);									
@@ -1007,14 +984,9 @@ package body et_package_read is
 										
 									when SEC_STOPMASK =>
 										insert_stop_circle (packge, TOP, log_threshold);
-
 										
 									when SEC_ROUTE_RESTRICT =>										
-										pac_route_restrict_circles.append (
-											container	=> packge.route_restrict.top.circles,
-											new_item	=> (type_circle (board_circle) with null record));
-
-										board_reset_circle; -- clean up for next circle
+										insert_route_restrict_circle (packge, TOP, log_threshold);
 
 								
 									when SEC_PAD_CONTOURS_THT => add_polygon_circle (board_circle);
@@ -1041,11 +1013,7 @@ package body et_package_read is
 										insert_stop_circle (packge, BOTTOM, log_threshold);
 										
 									when SEC_ROUTE_RESTRICT =>										
-										pac_route_restrict_circles.append (
-											container	=> packge.route_restrict.bottom.circles,
-											new_item	=> (type_circle (board_circle) with null record));
-
-										board_reset_circle; -- clean up for next circle
+										insert_route_restrict_circle (packge, BOTTOM, log_threshold);
 
 										
 									when SEC_PAD_CONTOURS_THT => add_polygon_circle (board_circle);
@@ -1465,8 +1433,11 @@ package body et_package_read is
 									when SEC_CONDUCTOR =>
 										read_conductor_line (line);
 										
-									when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-
+									when SEC_ROUTE_RESTRICT =>
+										read_route_restrict_line (line);
+										
+									when SEC_VIA_RESTRICT =>
+										
 										if not read_board_line (line) then
 											declare
 												kw : string := f (line, 1);
@@ -1517,7 +1488,11 @@ package body et_package_read is
 									when SEC_CONDUCTOR =>
 										read_conductor_arc (line);
 									
-									when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+									when SEC_ROUTE_RESTRICT =>
+										read_route_restrict_arc (line);
+
+									
+									when SEC_VIA_RESTRICT =>
 
 										if not read_board_arc (line) then
 											declare
@@ -1568,7 +1543,11 @@ package body et_package_read is
 									when SEC_CONDUCTOR =>
 										read_conductor_circle (line);
 										
-									when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+									when SEC_ROUTE_RESTRICT =>
+										read_route_restrict_circle (line);
+
+										
+									when SEC_VIA_RESTRICT =>
 										if not read_board_circle (line) then
 											declare
 												kw : string := f (line, 1);
