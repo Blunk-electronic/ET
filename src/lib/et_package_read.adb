@@ -65,6 +65,7 @@ with et_package_model;					use et_package_model;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 
 
+with et_package_read_hole;				use et_package_read_hole;
 with et_package_read_assy_doc;			use et_package_read_assy_doc;
 with et_package_read_silkscreen;		use et_package_read_silkscreen;
 with et_package_read_stencil;			use et_package_read_stencil;
@@ -74,7 +75,6 @@ with et_package_read_route_restrict;	use et_package_read_route_restrict;
 with et_package_read_contour;			use et_package_read_contour;
 with et_package_read_via_restrict;		use et_package_read_via_restrict;
 with et_package_read_terminal;			use et_package_read_terminal;
-
 
 
 package body et_package_read is
@@ -1020,8 +1020,7 @@ package body et_package_read is
 					when SEC_HOLE =>
 						case stack.parent is
 							when SEC_PCB_CONTOURS_NON_PLATED =>
-								null; -- CS
-								-- append_hole;
+								insert_hole (packge, log_threshold);
 							
 							when others => invalid_section;
 						end case;
@@ -1517,8 +1516,7 @@ package body et_package_read is
 
 
 					when SEC_PAD_CONTOURS_SMT | SEC_STENCIL_CONTOURS 
-						| SEC_PAD_CONTOURS_THT | SEC_MILLINGS =>
-								
+						| SEC_PAD_CONTOURS_THT | SEC_MILLINGS =>								
 						case stack.parent is
 							when SEC_TERMINAL => null;
 								
