@@ -65,10 +65,10 @@ package body et_board_read is
 	end;
 
 	
-	procedure add_polygon_line (l : in out type_line) is begin
-		append_segment (contour, (LINE, l));
-		board_reset_line;
-	end;	
+	-- procedure add_polygon_line (l : in out type_line) is begin
+	-- 	append_segment (contour, (LINE, l));
+	-- 	board_reset_line;
+	-- end;	
 
 
 	
@@ -78,10 +78,10 @@ package body et_board_read is
 	
 
 	
-	procedure add_polygon_arc (a : in out type_arc) is begin
-		append_segment (contour, (ARC, a));
-		board_reset_arc;
-	end;
+	-- procedure add_polygon_arc (a : in out type_arc) is begin
+	-- 	append_segment (contour, (ARC, a));
+	-- 	board_reset_arc;
+	-- end;
 
 	
 	procedure board_reset_circle is begin 
@@ -89,20 +89,20 @@ package body et_board_read is
 	end;
 
 	
-	procedure add_polygon_circle (c : in out type_circle) is begin
-		-- The global contour variable "mutates" so that the contours
-		-- consist of a single circle:
-		contour := (
-			contour	=> (circular => true, others => <>),
-			others	=> <>);
-
-		-- From now on the contour consists of just a single circle.
-		-- Any attempt to append a line or an arc causes a discriminant error.
-		
-		-- Assign the circle to the contour:
-		set_circle (contour, c);
-		board_reset_circle;
-	end;
+-- 	procedure add_polygon_circle (c : in out type_circle) is begin
+-- 		-- The global contour variable "mutates" so that the contours
+-- 		-- consist of a single circle:
+-- 		contour := (
+-- 			contour	=> (circular => true, others => <>),
+-- 			others	=> <>);
+-- 
+-- 		-- From now on the contour consists of just a single circle.
+-- 		-- Any attempt to append a line or an arc causes a discriminant error.
+-- 		
+-- 		-- Assign the circle to the contour:
+-- 		set_circle (contour, c);
+-- 		board_reset_circle;
+-- 	end;
 
 
 	
@@ -344,30 +344,30 @@ package body et_board_read is
 
 
 	
-	procedure board_reset_contour is
-		use et_pcb_stack;
-	begin
-		-- Some properties have no meaning in packages as remarked below.
-		
-		-- reset contour:
-		contour := (others => <>);
-		-- NOTE: A contour by default consists of lines and arcs.
-
-		fill_spacing		:= type_track_clearance'first;
-		board_filled		:= filled_default;
-		board_fill_style	:= fill_style_default;
-		--board_hatching		:= (others => <>);
-		board_easing 		:= (others => <>);
-		
-		pad_connection	:= type_pad_connection'first; -- board relevant only
-		contour_priority		:= type_priority'first;  -- board relevant only
-		polygon_isolation		:= type_track_clearance'first;
-		polygon_width_min		:= type_track_width'first;
-
-		signal_layer			:= type_signal_layer'first;  -- board relevant only
-
-		relief_properties		:= (others => <>); -- board relevant only
-	end;
+-- 	procedure board_reset_contour is
+-- 		use et_pcb_stack;
+-- 	begin
+-- 		-- Some properties have no meaning in packages as remarked below.
+-- 		
+-- 		-- reset contour:
+-- 		contour := (others => <>);
+-- 		-- NOTE: A contour by default consists of lines and arcs.
+-- 
+-- 		fill_spacing		:= type_track_clearance'first;
+-- 		board_filled		:= filled_default;
+-- 		board_fill_style	:= fill_style_default;
+-- 		--board_hatching		:= (others => <>);
+-- 		board_easing 		:= (others => <>);
+-- 		
+-- 		pad_connection	:= type_pad_connection'first; -- board relevant only
+-- 		contour_priority		:= type_priority'first;  -- board relevant only
+-- 		polygon_isolation		:= type_track_clearance'first;
+-- 		polygon_width_min		:= type_track_width'first;
+-- 
+-- 		signal_layer			:= type_signal_layer'first;  -- board relevant only
+-- 
+-- 		relief_properties		:= (others => <>); -- board relevant only
+-- 	end;
 	
 	
 end et_board_read;

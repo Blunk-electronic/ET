@@ -80,15 +80,15 @@ package et_board_read is
 	
 	board_line : type_line;
 	procedure board_reset_line;
-	procedure add_polygon_line (l : in out type_line);
+	-- procedure add_polygon_line (l : in out type_line);
 
 	board_arc : type_arc;
 	procedure board_reset_arc;
-	procedure add_polygon_arc (a : in out type_arc);
+	-- procedure add_polygon_arc (a : in out type_arc);
 
 	board_circle : type_circle;
 	procedure board_reset_circle;
-	procedure add_polygon_circle (c : in out type_circle);
+	-- procedure add_polygon_circle (c : in out type_circle);
 	
 	
 	-- Reads start and end point of the board_line. 
@@ -136,7 +136,7 @@ package et_board_read is
 
 
 	-- A temporarily storage place when reading a contour:
-	contour : type_contour;
+	-- contour : type_contour;
 	
 	
 	polygon_isolation : type_track_clearance := type_track_clearance'first;
@@ -165,7 +165,7 @@ package et_board_read is
 	-- This procdure is used by both package and board parsing procedures 
 	-- read_package and read_module_file.
 	-- Some properties have no meaning in connection with device packages.
-	procedure board_reset_contour;
+	-- procedure board_reset_contour;
 
 	
 end et_board_read;

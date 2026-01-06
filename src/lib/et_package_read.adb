@@ -73,6 +73,8 @@ with et_package_read_conductors;		use et_package_read_conductors;
 with et_package_read_route_restrict;	use et_package_read_route_restrict;
 with et_package_read_contour;			use et_package_read_contour;
 with et_package_read_via_restrict;		use et_package_read_via_restrict;
+with et_package_read_terminal;			use et_package_read_terminal;
+
 
 
 package body et_package_read is
@@ -124,36 +126,6 @@ package body et_package_read is
 		--content					: et_text.pac_text_content.bounded_string;
 		pac_text_placeholder	: type_text_placeholder;
 	
-		terminal_position		: type_position := origin_zero_rotation;
-
-		tht_stop_mask_status			: type_stop_mask_status := stop_mask_status_default;
-		tht_stop_mask_shape_top			: type_stop_mask_shape := stop_mask_shape_default;
-		tht_stop_mask_shape_bottom		: type_stop_mask_shape := stop_mask_shape_default;		
-		tht_stop_mask_contours_top		: type_stop_mask_contours;
-		tht_stop_mask_contours_bottom	: type_stop_mask_contours;		
-
-		tht_width_inner_layers	: type_track_width := type_track_width'first;
-		tht_hole				: type_terminal_tht_hole := terminal_tht_hole_default;
-		tht_drill_size			: type_drill_size_tht := type_drill_size_tht'first;
-		tht_millings			: type_contour;
-
-		terminal_name			: pac_terminal_name.bounded_string;
-		terminal_technology		: type_assembly_technology := assembly_technology_default;
-		tht_pad_shape			: type_pad_outline_tht;		
-		smt_pad_shape			: type_contour;
-
-		smt_pad_face			: type_face := face_default;
-
-		smt_stop_mask_status	: type_stop_mask_status := stop_mask_status_default;
-		smt_stop_mask_shape		: type_stop_mask_shape := stop_mask_shape_default;
-		smt_stop_mask_contours	: type_stop_mask_contours;		
-
-		-- NOTE: Solder paste is applied to SMT pads only.
-		smt_solder_paste_status	: type_solder_paste_status := solder_paste_status_default;
-		smt_stencil_shape		: type_stencil_modification := stencil_modification_default;
-		smt_stencil_contours	: type_stencil_contours;
-		--smt_stencil_shrink		: type_stencil_shrink := stencil_shrink_default;
-		smt_stencil_shrink		: type_distance_positive := stencil_shrink_default;
 
 		
 		procedure read_text is
@@ -223,237 +195,7 @@ package body et_package_read is
 				invalid_keyword (kw);
 			end if;
 		end read_placeholder;
-
-
 		
-		procedure read_terminal is
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_name then -- name 1,2,H7
-				expect_field_count (line, 2);
-				terminal_name := to_terminal_name (f (line,2));
-
-			elsif kw = keyword_assembly_technology then -- technology tht
-				expect_field_count (line, 2);
-				terminal_technology := to_assembly_technology (f (line,2));
-
-			elsif kw = keyword_position then -- position x 12.7 y 3.0 rotation 0.0
-				expect_field_count (line, 7);
-				terminal_position := to_position (line,2);
-
-			elsif kw = keyword_width_inner_layers then -- width_inner_layers 0.2
-				expect_field_count (line, 2);
-				tht_width_inner_layers := to_distance (f (line,2));
-
-			elsif kw = keyword_tht_hole then -- hole drilled/milled
-				expect_field_count (line, 2);
-				tht_hole := to_tht_hole (f (line,2));
-
-			elsif kw = keyword_drill_size then -- drill_size 0.8
-				expect_field_count (line, 2);
-				tht_drill_size := to_distance (f (line,2));
-				
-			elsif kw = keyword_face then -- face top/bottom
-				expect_field_count (line, 2);
-				smt_pad_face := to_face (f (line,2));
-
-			elsif kw = keyword_stop_mask_status then -- stop_mask_status open/closed
-				expect_field_count (line, 2);
-				smt_stop_mask_status := to_stop_mask_status (f (line,2));
-
-			elsif kw = keyword_stop_mask_shape then -- keyword_stop_mask_shape user_specific
-				expect_field_count (line, 2);
-				smt_stop_mask_shape := to_shape (f (line,2));
-				
-			elsif kw = keyword_stop_mask_shape_top then -- stop_mask_shape_top user_specific
-				expect_field_count (line, 2);
-				tht_stop_mask_shape_top := to_shape (f (line,2));
-
-			elsif kw = keyword_stop_mask_shape_bottom then -- keyword_stop_mask_shape_bottom user_specific
-				expect_field_count (line, 2);
-				tht_stop_mask_shape_bottom := to_shape (f (line,2));
-
-			elsif kw = keyword_solder_paste_status then -- solder_paste_status applied/none
-				expect_field_count (line, 2);
-				smt_solder_paste_status := to_solder_paste_status (f (line,2));
-
-			elsif kw = keyword_solder_paste_shape then -- solder_paste_shape as_pad/shrink_pad/user_specific
-				expect_field_count (line, 2);
-				smt_stencil_shape := to_modification (f (line,2));
-
-			elsif kw = keyword_solder_paste_shrink_factor then -- solder_paste_shrink_factor 0.5
-				expect_field_count (line, 2);
-				--smt_stencil_shrink := to_scale (f (line,2));
-				smt_stencil_shrink := to_distance (f (line,2));
-				
-			else
-				invalid_keyword (kw);
-			end if;
-
-		end read_terminal;
-
-		
-		procedure build_terminal is 
-		-- Assembles the elements of a terminal and appends the final terminal to the
-		-- list of terminals of the package.
-			cursor : pac_terminals.cursor;
-			inserted : boolean;
-
-			-- Builds the stop mask of the terminal if it is a SMT type:
-			function make_stop_mask_smt return type_stop_mask_smt is begin
-				case smt_stop_mask_shape is
-					when AS_PAD =>
-						return (
-							shape		=> AS_PAD);
-						
-					when EXPAND_PAD =>
-						return (
-							shape		=> EXPAND_PAD);
-					
-					when USER_SPECIFIC =>
-						return (
-							shape		=> USER_SPECIFIC,
-							contours	=> smt_stop_mask_contours);
-				end case;
-			end make_stop_mask_smt;
-
-
-			-- Builds the stop mask of the terminal if it is a THT type:
-			function make_stop_mask_tht return type_stop_mask_tht is begin
-				return r : type_stop_mask_tht do
-					case tht_stop_mask_shape_top is
-						when AS_PAD => 
-							r.top := (shape => AS_PAD);
-						
-						when EXPAND_PAD =>
-							r.top := (shape	=> EXPAND_PAD);
-							
-						when USER_SPECIFIC =>
-							r.top := (shape => USER_SPECIFIC, contours => tht_stop_mask_contours_top);
-					end case;
-
-					case tht_stop_mask_shape_bottom is
-						when AS_PAD => 
-							r.bottom := (shape => AS_PAD);
-							
-						when EXPAND_PAD =>
-							r.bottom := (shape => EXPAND_PAD);
-							
-						when USER_SPECIFIC =>
-							r.bottom := (shape => USER_SPECIFIC, contours => tht_stop_mask_contours_bottom);
-
-					end case;
-
-				end return;
-			end make_stop_mask_tht;
-
-			
-			-- Builds the stencil of the SMT pad (there is no stencil for THT pads):
-			function make_stencil return type_stencil_shape is begin
-				return r : type_stencil_shape do
-					case smt_stencil_shape is
-						when AS_PAD =>
-							r := (shape => AS_PAD);
-						when SHRINK_PAD =>
-							r := (shape => SHRINK_PAD, shrink_factor => smt_stencil_shrink);
-						when USER_SPECIFIC =>
-							r := (shape => USER_SPECIFIC, contours => smt_stencil_contours);
-					end case;
-				end return;
-			end make_stencil;
-
-			
-		begin -- build_terminal
-			case terminal_technology is
-				when THT => 
-					case tht_hole is
-						when DRILLED =>
-
-							pac_terminals.insert (
-								container	=> packge.terminals,
-								key			=> terminal_name, -- 1,4,16
-								position	=> cursor,
-								inserted	=> inserted,
-								new_item	=> (
-									technology			=> THT,
-									tht_hole			=> DRILLED,
-									drill_size			=> tht_drill_size,
-									position			=> terminal_position,
-									pad_shape_tht		=> tht_pad_shape,
-									stop_mask_status_tht	=> tht_stop_mask_status,
-									stop_mask_shape_tht		=> make_stop_mask_tht,
-									width_inner_layers		=> tht_width_inner_layers));
-
-						when MILLED =>
-							pac_terminals.insert (
-								container	=> packge.terminals,
-								key			=> terminal_name, -- 1,4,16
-								position	=> cursor,
-								inserted	=> inserted,
-								new_item	=> (
-									technology			=> THT,
-									tht_hole			=> MILLED,
-									millings			=> tht_millings,
-									position			=> terminal_position,
-									pad_shape_tht		=> tht_pad_shape,
-									stop_mask_status_tht	=> tht_stop_mask_status,
-									stop_mask_shape_tht		=> make_stop_mask_tht,
-									width_inner_layers		=> tht_width_inner_layers));
-					end case;
-
-					-- clean up for next terminal
-					tht_pad_shape			:= (others => <>);
-					tht_hole				:= terminal_tht_hole_default;
-					tht_width_inner_layers	:= type_track_width'first;
-					tht_drill_size			:= type_drill_size_tht'first;
-
-					tht_stop_mask_status			:= stop_mask_status_default;
-					tht_stop_mask_shape_top			:= stop_mask_shape_default;
-					tht_stop_mask_shape_bottom		:= stop_mask_shape_default;
-					delete_segments (tht_stop_mask_contours_top);
-					delete_segments (tht_stop_mask_contours_bottom);
-					
-				when SMT =>
-					pac_terminals.insert (
-						container	=> packge.terminals,
-						key			=> terminal_name, -- 1,4,16,H9
-						position	=> cursor,
-						inserted	=> inserted,
-						new_item	=> (
-							technology				=> SMT,
-							tht_hole				=> terminal_tht_hole_default, -- not relevant here, see spec
-							face					=> smt_pad_face,
-							position				=> terminal_position,
-							pad_shape_smt			=> smt_pad_shape,
-							stop_mask_status_smt	=> smt_stop_mask_status,
-							stop_mask_shape_smt		=> make_stop_mask_smt,
-							solder_paste_status		=> smt_solder_paste_status,
-							stencil_shape			=> make_stencil
-							));
-
-					-- clean up for next terminal
-					smt_stop_mask_shape		:= stop_mask_shape_default;
-					delete_segments (smt_stop_mask_contours);
-		 			delete_segments (smt_pad_shape);
-					smt_stop_mask_status	:= stop_mask_status_default;
-					smt_solder_paste_status	:= solder_paste_status_default;
-					smt_stencil_shape		:= stencil_modification_default;
-					delete_segments (smt_stencil_contours);
-					smt_stencil_shrink		:= stencil_shrink_default;
-			end case;
-
-			if not inserted then
-				log (ERROR, "terminal" & to_string (terminal_name) 
-					 & " already used !", console => true);
-				raise constraint_error;
-			end if;
-
-			-- clean up for next terminal
-			terminal_position	:= origin_zero_rotation;
-			
-		end build_terminal;
-
 
 
 		procedure build_text is begin
@@ -543,6 +285,8 @@ package body et_package_read is
 			end case;
 		end build_text;
 			
+		
+		
 		
 		procedure process_line is 
 
@@ -795,7 +539,8 @@ package body et_package_read is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
-							
+					
+					
 					when SEC_TOP =>
 						case stack.parent is
 							when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOPMASK | SEC_STENCIL | 
@@ -803,19 +548,14 @@ package body et_package_read is
 								SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => null;
 
 							when SEC_PAD_CONTOURS_THT => 
-								null; -- CS
-								-- check_outline (contour, log_threshold + 1);
-								-- tht_pad_shape.top := contour;
-								-- board_reset_contour;
+								assign_contour_conductor_tht (TOP);
 
 							when SEC_STOPMASK_CONTOURS_THT =>
-								null; -- CS
-								-- check_outline (contour, log_threshold + 1);
-								-- tht_stop_mask_contours_top := (contour with null record);
-								-- board_reset_contour;
+								assign_contour_stopmask_tht (TOP);
 								
 							when others => invalid_section;
 						end case;
+						
 						
 					when SEC_BOTTOM =>
 						case stack.parent is
@@ -823,20 +563,15 @@ package body et_package_read is
 								SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 								SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => null;
 
-							when SEC_PAD_CONTOURS_THT =>
-								null; -- CS
-								-- check_outline (contour, log_threshold + 1);
-								-- tht_pad_shape.bottom := contour;
-								-- board_reset_contour;
+							when SEC_PAD_CONTOURS_THT => 
+								assign_contour_conductor_tht (TOP);
 
 							when SEC_STOPMASK_CONTOURS_THT =>
-								null; -- CS
-								-- check_outline (contour, log_threshold + 1);
-								-- tht_stop_mask_contours_bottom := (contour with null record);
-								-- board_reset_contour;
+								assign_contour_stopmask_tht (TOP);
 								
 							when others => invalid_section;
 						end case;
+						
 						
 					when SEC_LINE =>
 						case stack.parent is
@@ -860,9 +595,8 @@ package body et_package_read is
 									when SEC_ROUTE_RESTRICT =>
 										insert_route_restrict_line (packge, TOP, log_threshold);
 										
-									when SEC_PAD_CONTOURS_THT => add_polygon_line (board_line);
-
-									when SEC_STOPMASK_CONTOURS_THT => add_polygon_line (board_line);
+									when SEC_PAD_CONTOURS_THT | SEC_STOPMASK_CONTOURS_THT => 
+										insert_contour_line;
 									
 									when others => invalid_section;
 								end case;
@@ -888,34 +622,15 @@ package body et_package_read is
 									when SEC_ROUTE_RESTRICT =>
 										insert_route_restrict_line (packge, BOTTOM, log_threshold);
 										
-									when SEC_PAD_CONTOURS_THT => add_polygon_line (board_line);
-
-									when SEC_STOPMASK_CONTOURS_THT => add_polygon_line (board_line);
+									when SEC_PAD_CONTOURS_THT | SEC_STOPMASK_CONTOURS_THT => 
+										insert_contour_line;
 									
 									when others => invalid_section;
 								end case;
-								
-							when SEC_HOLE => 
-								-- add_polygon_line (board_line);
-								null;
-								
-							when SEC_PAD_CONTOURS_SMT => 
-								-- add_polygon_line (board_line);
-								null;
-								
-							when SEC_STENCIL_CONTOURS => 
-								-- add_polygon_line (board_line);							
-								null;
-								
-							when SEC_STOPMASK_CONTOURS_SMT => 
-								-- add_polygon_line (board_line);							
-								null;
-								
-							when SEC_MILLINGS => 
-								-- add_polygon_line (board_line);
-								null;
 							
-							when SEC_CONTOURS => 
+							
+							when SEC_HOLE | SEC_PAD_CONTOURS_SMT | SEC_STENCIL_CONTOURS
+								| SEC_STOPMASK_CONTOURS_SMT | SEC_MILLINGS | SEC_CONTOURS => 
 								insert_contour_line;
 								
 							when others => invalid_section;
@@ -945,10 +660,10 @@ package body et_package_read is
 																				
 									when SEC_ROUTE_RESTRICT =>										
 										insert_route_restrict_arc (packge, TOP, log_threshold);
+									
+									when SEC_PAD_CONTOURS_THT | SEC_STOPMASK_CONTOURS_THT => 
+										insert_contour_arc;
 
-										
-									when SEC_PAD_CONTOURS_THT => add_polygon_arc (board_arc);
-									when SEC_STOPMASK_CONTOURS_THT => add_polygon_arc (board_arc);										
 									when others => invalid_section;
 								end case;
 
@@ -973,32 +688,15 @@ package body et_package_read is
 									when SEC_ROUTE_RESTRICT =>										
 										insert_route_restrict_arc (packge, BOTTOM, log_threshold);
 									
-									when SEC_PAD_CONTOURS_THT => add_polygon_arc (board_arc);
-									when SEC_STOPMASK_CONTOURS_THT => add_polygon_arc (board_arc);									
+									when SEC_PAD_CONTOURS_THT | SEC_STOPMASK_CONTOURS_THT => 
+										insert_contour_arc;
+									
 									when others => invalid_section;
 								end case;
 
-							when SEC_HOLE => 
-								--add_polygon_arc (board_arc);
-								null;
 								
-							when SEC_PAD_CONTOURS_SMT => 
-								-- add_polygon_arc (board_arc);
-								null;
-								
-							when SEC_STENCIL_CONTOURS => 
-								-- add_polygon_arc (board_arc);							
-								null;
-								
-							when SEC_STOPMASK_CONTOURS_SMT => 
-								-- add_polygon_arc (board_arc);							
-								null;
-								
-							when SEC_MILLINGS => 
-								--add_polygon_arc (board_arc);
-								null;
-							
-							when SEC_CONTOURS => 
+							when SEC_HOLE | SEC_PAD_CONTOURS_SMT | SEC_STENCIL_CONTOURS
+								| SEC_STOPMASK_CONTOURS_SMT | SEC_MILLINGS | SEC_CONTOURS => 
 								insert_contour_arc;
 								
 							when others => invalid_section;
@@ -1026,10 +724,10 @@ package body et_package_read is
 										
 									when SEC_ROUTE_RESTRICT =>										
 										insert_route_restrict_circle (packge, TOP, log_threshold);
-
-								
-									when SEC_PAD_CONTOURS_THT => add_polygon_circle (board_circle);
-									when SEC_STOPMASK_CONTOURS_THT => add_polygon_circle (board_circle);									
+									
+									when SEC_PAD_CONTOURS_THT | SEC_STOPMASK_CONTOURS_THT => 
+										insert_contour_circle;									
+									
 									when others => invalid_section;
 								end case;
 
@@ -1054,32 +752,15 @@ package body et_package_read is
 									when SEC_ROUTE_RESTRICT =>										
 										insert_route_restrict_circle (packge, BOTTOM, log_threshold);
 
-										
-									when SEC_PAD_CONTOURS_THT => add_polygon_circle (board_circle);
-									when SEC_STOPMASK_CONTOURS_THT => add_polygon_circle (board_circle);									
+									when SEC_PAD_CONTOURS_THT | SEC_STOPMASK_CONTOURS_THT => 
+										insert_contour_circle;									
+
 									when others => invalid_section;
 								end case;
 
-							when SEC_HOLE =>
-								add_polygon_circle (board_circle);
-								
-							when SEC_PAD_CONTOURS_SMT => 
-								-- add_polygon_circle (board_circle);
-								null;
-								
-							when SEC_STENCIL_CONTOURS => 
-								-- add_polygon_circle (board_circle);							
-								null;
-								
-							when SEC_STOPMASK_CONTOURS_SMT => 
-								-- add_polygon_circle (board_circle);							
-								null;
-								
-							when SEC_MILLINGS => 
-								-- add_polygon_circle (board_circle);
-								null;
-							
-							when SEC_CONTOURS => 
+						
+							when SEC_HOLE | SEC_PAD_CONTOURS_SMT | SEC_STENCIL_CONTOURS
+								| SEC_STOPMASK_CONTOURS_SMT | SEC_MILLINGS | SEC_CONTOURS => 
 								insert_contour_circle;
 								
 							when others => invalid_section;
@@ -1093,58 +774,71 @@ package body et_package_read is
 									when SEC_SILKSCREEN =>
 										null; -- CS
 										-- append_silk_polygon_top;
+										reset_contour (contour);
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										null; -- CS
 									-- append_assy_doc_polygon_top;
+										reset_contour (contour);
 										
 									when SEC_STENCIL =>
 										null; -- CS
 									-- append_stencil_polygon_top;
+										reset_contour (contour);
 										
 									when SEC_STOPMASK =>
 										null; -- CS
 									-- append_stop_polygon_top;
+										reset_contour (contour);
 										
 									when SEC_KEEPOUT =>
 										null; -- CS
 									-- append_keepout_polygon_top;
+										reset_contour (contour);
 
 									when SEC_ROUTE_RESTRICT =>
 										null; -- CS
-									-- append_route_restrict_zone_top;
+										-- append_route_restrict_zone_top;
+										reset_contour (contour);
 
 									when SEC_VIA_RESTRICT =>
 										insert_via_restrict_zone (packge, TOP, log_threshold);
 										
 									when others => invalid_section;
 								end case;
+								
 
 							when SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>
 										null; -- CS
 										-- append_silk_polygon_bottom;
+										reset_contour (contour);
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										null; -- CS
 									-- append_assy_doc_polygon_bottom;
+										reset_contour (contour);
 										
 									when SEC_STENCIL =>
 										null; -- CS
 									-- append_stencil_polygon_bottom;
+										reset_contour (contour);
 										
 									when SEC_STOPMASK =>
 										null; -- CS
 									-- append_stop_polygon_bottom;
+										reset_contour (contour);
 										
 									when SEC_KEEPOUT =>
 										null; -- CS
 									-- append_keepout_polygon_bottom;
+										reset_contour (contour);
 
 									when SEC_ROUTE_RESTRICT =>
 										null; -- CS
 										-- append_route_restrict_zone_bottom;
+										reset_contour (contour);
 
 									when SEC_VIA_RESTRICT =>
 										insert_via_restrict_zone (packge, BOTTOM, log_threshold);
@@ -1158,6 +852,7 @@ package body et_package_read is
 
 					when SEC_CUTOUT_ZONE =>
 						null; -- CS
+						reset_contour (contour);
 -- 						case stack.parent is
 -- 							when SEC_TOP => 
 -- 								case stack.parent (degree => 2) is
@@ -1213,6 +908,7 @@ package body et_package_read is
 					when SEC_TEXT =>
 						build_text;
 
+						
 					when SEC_PLACEHOLDER =>
 						case stack.parent is
 							when SEC_TOP =>
@@ -1265,7 +961,7 @@ package body et_package_read is
 							when SEC_TERMINALS => 
 								-- Now all elements of the terminal have been read
 								-- and can be assembled to the final terminal:
-								build_terminal;
+								build_terminal (packge, log_threshold);
 								
 							when others => invalid_section;
 						end case;
@@ -1273,11 +969,8 @@ package body et_package_read is
 						
 					when SEC_PAD_CONTOURS_SMT =>
 						case stack.parent is
-							when SEC_TERMINAL => 
-								null; -- CS
-								-- check_outline (contour, log_threshold + 1);
-								-- smt_pad_shape := contour;
-								-- board_reset_contour;
+							when SEC_TERMINAL =>
+								assign_contour_conductor_smt;
 								
 							when others => invalid_section;
 						end case;
@@ -1286,10 +979,7 @@ package body et_package_read is
 					when SEC_STENCIL_CONTOURS =>
 						case stack.parent is
 							when SEC_TERMINAL => 
-								null; -- CS
-								-- check_outline (contour, log_threshold + 1);
-								-- smt_stencil_contours := (contour with null record);
-								-- board_reset_contour;
+								assign_contour_stencil_smt;
 								
 							when others => invalid_section;
 						end case;
@@ -1305,10 +995,7 @@ package body et_package_read is
 					when SEC_STOPMASK_CONTOURS_SMT =>
 						case stack.parent is
 							when SEC_TERMINAL =>
-								null; -- CS
-								-- check_outline (contour, log_threshold + 1);
-								-- smt_stop_mask_contours := (contour with null record);
-								-- board_reset_contour;
+								assign_contour_stopmask_smt;
 								
 							when others => invalid_section;
 						end case;
@@ -1324,10 +1011,7 @@ package body et_package_read is
 					when SEC_MILLINGS =>
 						case stack.parent is
 							when SEC_TERMINAL =>
-								null; -- CS
-								-- check_outline (contour, log_threshold + 1);
-								-- tht_millings := contour;
-								-- board_reset_contour;
+								assign_plated_millings;
 								
 							when others => invalid_section;
 						end case;
@@ -1538,19 +1222,16 @@ package body et_package_read is
 											end;
 										end if;
 										
-									when SEC_PAD_CONTOURS_THT => read_board_line (line);
-									when SEC_STOPMASK_CONTOURS_THT => read_board_line (line);
+									when SEC_PAD_CONTOURS_THT | SEC_STOPMASK_CONTOURS_THT => 
+										read_contour_line (line);
+										
 									--when SEC_VIA_RESTRICT => read_board_line (line);
 									when others => invalid_section;
 								end case;
 
-							when SEC_HOLE => read_board_line (line);								
-							when SEC_PAD_CONTOURS_SMT => read_board_line (line);							
-							when SEC_STENCIL_CONTOURS => read_board_line (line);							
-							when SEC_STOPMASK_CONTOURS_SMT => read_board_line (line);							
-							when SEC_MILLINGS => read_board_line (line);
-							
-							when SEC_CONTOURS => 
+								
+							when SEC_HOLE | SEC_PAD_CONTOURS_SMT | SEC_STENCIL_CONTOURS 
+								| SEC_STOPMASK_CONTOURS_SMT | SEC_MILLINGS | SEC_CONTOURS => 
 								read_contour_line (line);
 								
 							when others => invalid_section;
@@ -1597,18 +1278,14 @@ package body et_package_read is
 											end;
 										end if;
 										
-									when SEC_PAD_CONTOURS_THT => read_board_arc (line);
-									when SEC_STOPMASK_CONTOURS_THT => read_board_arc (line);
+									when SEC_PAD_CONTOURS_THT | SEC_STOPMASK_CONTOURS_THT =>
+										read_contour_arc (line);
+									
 									when others => invalid_section;
 								end case;
 
-							when SEC_HOLE => read_board_arc (line);
-							when SEC_PAD_CONTOURS_SMT => read_board_arc (line);
-							when SEC_STENCIL_CONTOURS => read_board_arc (line);
-							when SEC_STOPMASK_CONTOURS_SMT => read_board_arc (line);
-							when SEC_MILLINGS => read_board_arc (line);
-							
-							when SEC_CONTOURS =>
+							when SEC_HOLE | SEC_PAD_CONTOURS_SMT | SEC_STENCIL_CONTOURS 
+								| SEC_STOPMASK_CONTOURS_SMT | SEC_MILLINGS | SEC_CONTOURS => 
 								read_contour_arc (line);
 								
 							when others => invalid_section;
@@ -1663,19 +1340,16 @@ package body et_package_read is
 										end if;
 										
 										
-									when SEC_PAD_CONTOURS_THT => read_board_circle (line);
-									when SEC_STOPMASK_CONTOURS_THT => read_board_circle (line);									
+									when SEC_PAD_CONTOURS_THT | SEC_STOPMASK_CONTOURS_THT =>
+										read_contour_circle (line);
+										
 									when others => invalid_section;
 								end case;
 
-							when SEC_HOLE => read_board_circle (line);
-							when SEC_PAD_CONTOURS_SMT => read_board_circle (line);
-							when SEC_STENCIL_CONTOURS => read_board_circle (line);
-							when SEC_STOPMASK_CONTOURS_SMT => read_board_circle (line);
-							when SEC_MILLINGS => read_board_circle (line);
-							
-							when SEC_CONTOURS => 
-								read_contour_circle (line);
+								
+							when SEC_HOLE | SEC_PAD_CONTOURS_SMT | SEC_STENCIL_CONTOURS
+								| SEC_STOPMASK_CONTOURS_SMT | SEC_MILLINGS | SEC_CONTOURS => 
+									read_contour_circle (line);
 								
 							when others => invalid_section;
 						end case;
@@ -1799,6 +1473,7 @@ package body et_package_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_TEXT =>
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM =>
@@ -1816,6 +1491,7 @@ package body et_package_read is
 								
 						end case;
 
+						
 					when SEC_PLACEHOLDER =>
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM =>
@@ -1830,20 +1506,22 @@ package body et_package_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_TERMINAL =>
 						case stack.parent is
-							when SEC_TERMINALS => read_terminal;
+							when SEC_TERMINALS => 
+								read_terminal (line);
+								
 							when others => invalid_section;
 						end case;
 
-						
+
 					when SEC_PAD_CONTOURS_SMT | SEC_STENCIL_CONTOURS 
 						| SEC_PAD_CONTOURS_THT | SEC_MILLINGS =>
-						
-						-- reset_contour (et_package_read_contour.contour);
-						
+								
 						case stack.parent is
 							when SEC_TERMINAL => null;
+								
 							when others => invalid_section;
 						end case;
 
@@ -1886,6 +1564,8 @@ package body et_package_read is
 		if pac_package_models.contains (package_library, file_name) then
 			log (text => "already read -> skipped", level => log_threshold + 1);
 		else
+			-- CS
+			reset_contour (contour); -- temporarily
 			
 			-- open package file
 			open (
