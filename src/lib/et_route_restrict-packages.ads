@@ -37,7 +37,8 @@
 --
 --   to do:
 
-with et_conductor_text.packages;
+-- with et_conductor_text.packages;
+with et_pcb_sides;				use et_pcb_sides;
 
 package et_route_restrict.packages is
 
@@ -83,10 +84,27 @@ package et_route_restrict.packages is
 		return pac_polygon_list.list;
 	
 	
-	type type_route_restrict is record
+	type type_route_restrict is record -- CS rename to type_route_restrict_both_sides ?
 		top		: type_one_side;
 		bottom	: type_one_side;
 	end record;
+
+
+	-- CS procedures add_circle, line, arc
+	
+	
+	procedure add_zone (
+		route_restrict	: in out type_route_restrict;
+		zone			: in type_route_restrict_zone;
+		face			: in type_face);
+
+
+	procedure add_cutout (
+		route_restrict	: in out type_route_restrict;
+		cutout			: in type_route_restrict_cutout;
+		face			: in type_face);
+
+
 	
 end et_route_restrict.packages;
 

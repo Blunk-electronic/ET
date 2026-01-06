@@ -41,7 +41,6 @@
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
--- with et_pcb_sides;				use et_pcb_sides;
 with et_board_geometry;			use et_board_geometry;
 with et_mirroring;				use et_mirroring;
 -- with et_contour_to_polygon;		use et_contour_to_polygon;

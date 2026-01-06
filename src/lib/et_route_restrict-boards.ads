@@ -129,6 +129,11 @@ package et_route_restrict.boards is
 	package pac_route_restrict_cutouts is new doubly_linked_lists (type_route_restrict_cutout);
 
 	
+	-- NOTE: 
+	-- In the board drawing there is no "both-sides" as with
+	-- silkscreen or assembly documentation. Here the signal
+	-- layers specify which conductor layers are affected.
+	
 	type type_route_restrict is record
 		lines 		: pac_route_restrict_lines.list;
 		arcs		: pac_route_restrict_arcs.list;
@@ -146,16 +151,16 @@ package et_route_restrict.boards is
 
 
 	-- Logs the properties of the given line of route restrict
-	procedure line_route_restrict_properties (
-		face			: in type_face;
-		cursor			: in pac_route_restrict_lines.cursor;
-		log_threshold 	: in type_log_level);
-
-	-- Logs the properties of the given arc of route restrict
-	procedure arc_route_restrict_properties (
-		face			: in type_face;
-		cursor			: in pac_route_restrict_arcs.cursor;
-		log_threshold 	: in type_log_level);
+	-- procedure line_route_restrict_properties (
+	-- 	face			: in type_face;
+	-- 	cursor			: in pac_route_restrict_lines.cursor;
+	-- 	log_threshold 	: in type_log_level);
+ -- 
+	-- -- Logs the properties of the given arc of route restrict
+	-- procedure arc_route_restrict_properties (
+	-- 	face			: in type_face;
+	-- 	cursor			: in pac_route_restrict_arcs.cursor;
+	-- 	log_threshold 	: in type_log_level);
 
 	-- CS procedure circle_route_restrict_properties
 

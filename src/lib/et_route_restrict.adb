@@ -315,33 +315,33 @@ package body et_route_restrict is
 
 	
 	
-	procedure line_route_restrict_properties (
-		face			: in type_face;
-		cursor			: in pac_route_restrict_lines.cursor;
-		log_threshold 	: in type_log_level) 
-	is
-		use pac_route_restrict_lines;
-		line : type_route_restrict_line;
-	begin
-		line := element (cursor);
-		log (text => "route restrict line face" & to_string (face) & space
-			 & to_string (type_line (line)), level => log_threshold);
-	end line_route_restrict_properties;
-
-	
-	
-	procedure arc_route_restrict_properties (
-		face			: in type_face;
-		cursor			: in pac_route_restrict_arcs.cursor;
-		log_threshold 	: in type_log_level)
-	is
-		use pac_route_restrict_arcs;
-		arc : type_route_restrict_arc;
-	begin
-		arc := element (cursor);
-		log (text => "route restrict arc face" & to_string (face) & space 
-			 & to_string (arc), level => log_threshold);
-	end arc_route_restrict_properties;
+-- 	procedure line_route_restrict_properties (
+-- 		face			: in type_face;
+-- 		cursor			: in pac_route_restrict_lines.cursor;
+-- 		log_threshold 	: in type_log_level) 
+-- 	is
+-- 		use pac_route_restrict_lines;
+-- 		line : type_route_restrict_line;
+-- 	begin
+-- 		line := element (cursor);
+-- 		log (text => "route restrict line face" & to_string (face) & space
+-- 			 & to_string (type_line (line)), level => log_threshold);
+-- 	end line_route_restrict_properties;
+-- 
+-- 	
+-- 	
+-- 	procedure arc_route_restrict_properties (
+-- 		face			: in type_face;
+-- 		cursor			: in pac_route_restrict_arcs.cursor;
+-- 		log_threshold 	: in type_log_level)
+-- 	is
+-- 		use pac_route_restrict_arcs;
+-- 		arc : type_route_restrict_arc;
+-- 	begin
+-- 		arc := element (cursor);
+-- 		log (text => "route restrict arc face" & to_string (face) & space 
+-- 			 & to_string (arc), level => log_threshold);
+-- 	end arc_route_restrict_properties;
 
 
 	-- CS procedure circle_route_restrict_properties

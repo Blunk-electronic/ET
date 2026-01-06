@@ -42,7 +42,6 @@ with ada.containers; 			use ada.containers;
 
 with ada.containers.doubly_linked_lists;
 
-with et_pcb_sides;				use et_pcb_sides;
 with et_board_geometry;			use et_board_geometry;
 with et_mirroring;				use et_mirroring;
 with et_board_text;				use et_board_text;
@@ -180,6 +179,7 @@ package et_route_restrict is
 	
 	type type_route_restrict_cutout is new type_contour with null record;
 	-- CS not sure whether this is really required.
+	-- CS rename to type_route_restrict_zone_cutout
 		
 	package pac_route_restrict_cutouts is new doubly_linked_lists (type_route_restrict_cutout);
 	-- CS not sure whether this is really required.
@@ -188,17 +188,17 @@ package et_route_restrict is
 
 
 
-	-- Logs the properties of the given line of route restrict
-	procedure line_route_restrict_properties (
-		face			: in type_face;
-		cursor			: in pac_route_restrict_lines.cursor;
-		log_threshold 	: in type_log_level);
-
-	-- Logs the properties of the given arc of route restrict
-	procedure arc_route_restrict_properties (
-		face			: in type_face;
-		cursor			: in pac_route_restrict_arcs.cursor;
-		log_threshold 	: in type_log_level);
+	-- -- Logs the properties of the given line of route restrict
+	-- procedure line_route_restrict_properties (
+	-- 	face			: in type_face;
+	-- 	cursor			: in pac_route_restrict_lines.cursor;
+	-- 	log_threshold 	: in type_log_level);
+ -- 
+	-- -- Logs the properties of the given arc of route restrict
+	-- procedure arc_route_restrict_properties (
+	-- 	face			: in type_face;
+	-- 	cursor			: in pac_route_restrict_arcs.cursor;
+	-- 	log_threshold 	: in type_log_level);
 
 	-- CS procedure circle_route_restrict_properties
 

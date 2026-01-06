@@ -94,6 +94,43 @@ package body et_route_restrict.packages is
 	
 
 
+
+	procedure add_zone (
+		route_restrict	: in out type_route_restrict;
+		zone			: in type_route_restrict_zone;
+		face			: in type_face)
+	is
+		use pac_route_restrict_zones;
+	begin
+		case face is
+			when TOP =>
+				append (route_restrict.top.zones, zone);
+
+			when BOTTOM =>
+				append (route_restrict.bottom.zones, zone);
+		end case;
+	end add_zone;
+
+
+	
+
+	procedure add_cutout (
+		route_restrict	: in out type_route_restrict;
+		cutout			: in type_route_restrict_cutout;
+		face			: in type_face)
+	is
+		use pac_route_restrict_cutouts;
+	begin
+		case face is
+			when TOP =>
+				append (route_restrict.top.cutouts, cutout);
+
+			when BOTTOM =>
+				append (route_restrict.bottom.cutouts, cutout);
+		end case;
+	end add_cutout;
+
+
 	
 end et_route_restrict.packages;
 
