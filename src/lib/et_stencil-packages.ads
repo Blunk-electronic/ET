@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -58,6 +58,11 @@ package et_stencil.packages is
 	-- 	stencil	: in out type_stencil_both_sides;
 	-- 	line	: in type_stencil_line;
 	-- 	face	: in type_face);
+
+	procedure add_zone (
+		stencil	: in out type_stencil_both_sides;
+		zone	: in type_stencil_zone;
+		face	: in type_face);
 
 	
 

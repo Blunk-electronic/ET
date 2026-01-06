@@ -47,9 +47,13 @@ with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_keywords;						use et_keywords;
 with et_package_model;					use et_package_model;
 with et_directions;						use et_directions;
+
 with et_stopmask;						use et_stopmask;
+with et_stopmask.packages;				use et_stopmask.packages;
 
 with et_general_rw;						use et_general_rw;
+with et_package_read_contour;			use et_package_read_contour;
+
 
 
 package body et_package_read_stopmask is
@@ -205,6 +209,7 @@ package body et_package_read_stopmask is
 			when BOTTOM => 
 				append (packge.stop_mask.bottom.lines, stop_line);
 		end case;
+		-- CS use procedure add_line
 				
 		-- clean up for next line
 		reset_line (stop_line);		
@@ -230,6 +235,7 @@ package body et_package_read_stopmask is
 			when BOTTOM => 
 				append (packge.stop_mask.bottom.arcs, stop_arc);
 		end case;
+		-- CS use procedure add_arc
 
 		-- clean up for next arc
 		reset_arc (stop_arc);		
@@ -254,12 +260,33 @@ package body et_package_read_stopmask is
 			when BOTTOM => 
 				append (packge.stop_mask.bottom.circles, stop_circle);
 		end case;
+		-- CS use procedure add_circle
 
 		-- clean up for next circle
 		reset_circle (stop_circle);		
 	end insert_stop_circle;
 
 
+
+
+
+	
+
+
+	procedure insert_stop_zone (
+		packge			: in type_package_model_access;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is 
+		use pac_contours;
+	begin
+		add_zone (packge.stop_mask, (contour with null record), face);
+
+		-- clean up for next zone
+		reset_contour (contour);
+	end insert_stop_zone;
+
+	
 	
 	
 end et_package_read_stopmask;

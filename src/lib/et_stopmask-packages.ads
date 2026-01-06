@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -60,6 +60,16 @@ package et_stopmask.packages is
 	procedure move_stopmask_objects (
 		stopmask	: in out type_stopmask;
 		offset		: in type_vector_model);
+
+
+
+	-- CS procedure add_line, add_arc, add_circle
+	
+
+	procedure add_zone (
+		stopmask	: in out type_stopmask_both_sides;
+		zone		: in type_stop_zone;
+		face		: in type_face);
 
 
 	

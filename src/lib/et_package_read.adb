@@ -776,14 +776,10 @@ package body et_package_read is
 										insert_doc_zone (packge, TOP, log_threshold);
 										
 									when SEC_STENCIL =>
-										null; -- CS
-									-- append_stencil_polygon_top;
-										reset_contour (contour);
+										insert_stencil_zone (packge, TOP, log_threshold);
 										
 									when SEC_STOPMASK =>
-										null; -- CS
-									-- append_stop_polygon_top;
-										reset_contour (contour);
+										insert_stop_zone (packge, TOP, log_threshold);
 										
 									when SEC_KEEPOUT =>
 										null; -- CS
@@ -811,14 +807,10 @@ package body et_package_read is
 										insert_doc_zone (packge, BOTTOM, log_threshold);
 										
 									when SEC_STENCIL =>
-										null; -- CS
-									-- append_stencil_polygon_bottom;
-										reset_contour (contour);
+										insert_stencil_zone (packge, BOTTOM, log_threshold);
 										
 									when SEC_STOPMASK =>
-										null; -- CS
-									-- append_stop_polygon_bottom;
-										reset_contour (contour);
+										insert_stop_zone (packge, BOTTOM, log_threshold);
 										
 									when SEC_KEEPOUT =>
 										null; -- CS

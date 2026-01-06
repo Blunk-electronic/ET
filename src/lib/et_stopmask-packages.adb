@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -75,6 +75,26 @@ package body et_stopmask.packages is
 		move_contours (stopmask.zones, offset);
 		move_texts (stopmask.texts, offset);
 	end move_stopmask_objects;
+
+
+
+
+	procedure add_zone (
+		stopmask	: in out type_stopmask_both_sides;
+		zone		: in type_stop_zone;
+		face		: in type_face)
+	is 
+		use pac_stop_zones;
+	begin
+		case face is
+			when TOP => 
+				append (stopmask.top.zones, zone);
+
+
+			when BOTTOM => 
+				append (stopmask.bottom.zones, zone);
+		end case;
+	end;
 
 	
 end et_stopmask.packages;

@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                              SYSTEM ET                                   --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                        PACKAGE READ / STOPMASK                           --
+--                     STENCIL / SOLDER PASTE MASK / PACKAGES               --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
@@ -35,60 +35,37 @@
 --
 --   history of changes:
 --
---
--- DESCRIPTION:
--- 
--- This is about lines, arcs and circles in the stopmask.
---
---   do do:
---
+--   to do:
 --
 
-with et_string_processing;				use et_string_processing;
-with et_package_model;					use et_package_model;
-with et_pcb_sides;						use et_pcb_sides;
-with et_logging;						use et_logging;
 
 
-package et_package_read_stopmask is
+package body et_stencil.packages is
 
 
-
-	procedure read_stop_line (
-		line : in type_fields_of_line);
-	
-	
-	procedure read_stop_arc (
-		line : in type_fields_of_line);
-
-
-	procedure read_stop_circle (
-		line : in type_fields_of_line);
-	
+	procedure add_zone (
+		stencil	: in out type_stencil_both_sides;
+		zone	: in type_stencil_zone;
+		face	: in type_face)
+	is 
+		use pac_stencil_zones;
+	begin
+		case face is
+			when TOP => 
+				append (stencil.top.zones, zone);
 
 
-	procedure insert_stop_line (
-		packge			: in type_package_model_access;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
-
-
-	procedure insert_stop_arc (
-		packge			: in type_package_model_access;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
-
-
-	procedure insert_stop_circle (
-		packge			: in type_package_model_access;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
-	
-
-	procedure insert_stop_zone (
-		packge			: in type_package_model_access;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
+			when BOTTOM => 
+				append (stencil.bottom.zones, zone);
+		end case;
+	end;
 
 	
-end et_package_read_stopmask;
+end et_stencil.packages;
+
+-- Soli Deo Gloria
+
+-- For God so loved the world that he gave 
+-- his one and only Son, that whoever believes in him 
+-- shall not perish but have eternal life.
+-- The Bible, John 3.16
