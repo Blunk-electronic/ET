@@ -47,9 +47,12 @@ with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_keywords;						use et_keywords;
 with et_package_model;					use et_package_model;
 with et_directions;						use et_directions;
+
 with et_route_restrict;					use et_route_restrict;
+with et_route_restrict.packages;		use et_route_restrict.packages;
 
 with et_general_rw;						use et_general_rw;
+with et_package_read_contour;			use et_package_read_contour;
 
 
 package body et_package_read_route_restrict is
@@ -247,6 +250,38 @@ package body et_package_read_route_restrict is
 		reset_circle (route_restrict_circle);		
 	end insert_route_restrict_circle;
 
+
+
+
+
+	procedure insert_route_restrict_zone (
+		packge			: in type_package_model_access;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is 
+		use pac_contours;
+	begin
+		add_zone (packge.route_restrict, (contour with null record), face);
+		
+		-- clean up for next contour
+		reset_contour (contour);
+	end;
+
+
+
+
+	procedure insert_route_restrict_zone_cutout (
+		packge			: in type_package_model_access;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is 
+		use pac_contours;
+	begin
+		add_cutout (packge.route_restrict, (contour with null record), face);
+		
+		-- clean up for next contour
+		reset_contour (contour);
+	end;
 
 	
 	

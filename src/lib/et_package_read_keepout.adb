@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                        PACKAGE READ / ROUTE RESTRICT                     --
+--                         PACKAGE READ / KEEPOUT                           --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,70 +35,58 @@
 --
 --   history of changes:
 --
---
--- DESCRIPTION:
--- 
--- This is about lines, arcs and circles in route restrict.
---
---
---
---   do do:
---
---
 
-with et_string_processing;				use et_string_processing;
+with ada.text_io;						use ada.text_io;
+with ada.strings; 						use ada.strings;
+
+with et_design_rules_board;				use et_design_rules_board;
+with et_board_geometry;					use et_board_geometry;
+
+with et_primitive_objects;				use et_primitive_objects;
+with et_coordinates_formatting;			use et_coordinates_formatting;
+with et_keywords;						use et_keywords;
 with et_package_model;					use et_package_model;
-with et_pcb_sides;						use et_pcb_sides;
-with et_logging;						use et_logging;
+with et_directions;						use et_directions;
+
+with et_keepout;						use et_keepout;
+with et_keepout.packages;				use et_keepout.packages;
+
+with et_general_rw;						use et_general_rw;
+with et_package_read_contour;			use et_package_read_contour;
 
 
-package et_package_read_route_restrict is
+package body et_package_read_keepout is
 
-
-
-	procedure read_route_restrict_line (
-		line : in type_fields_of_line);
-	
-	
-	procedure read_route_restrict_arc (
-		line : in type_fields_of_line);
-
-
-	procedure read_route_restrict_circle (
-		line : in type_fields_of_line);
-	
-
-
-	procedure insert_route_restrict_line (
-		packge			: in type_package_model_access;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
-
-
-	procedure insert_route_restrict_arc (
-		packge			: in type_package_model_access;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
-
-
-	procedure insert_route_restrict_circle (
-		packge			: in type_package_model_access;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
-	
-
-
-	procedure insert_route_restrict_zone (
-		packge			: in type_package_model_access;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
- 
-
-	procedure insert_route_restrict_zone_cutout (
-		packge			: in type_package_model_access;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
+	use pac_geometry_2;
+	use pac_contours;
 
 
 	
-end et_package_read_route_restrict;
+	procedure insert_keepout_zone (
+		packge			: in type_package_model_access;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is begin
+		add_zone (packge.keepout, (contour with null record), face);
+		
+		-- clean up for next contour
+		reset_contour (contour);
+	end;
+
+
+
+
+	procedure insert_keepout_zone_cutout (
+		packge			: in type_package_model_access;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is begin
+		add_cutout (packge.keepout, (contour with null record), face);
+		
+		-- clean up for next contour
+		reset_contour (contour);
+	end;
+
+	
+	
+end et_package_read_keepout;

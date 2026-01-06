@@ -70,6 +70,7 @@ with et_package_read_assy_doc;			use et_package_read_assy_doc;
 with et_package_read_silkscreen;		use et_package_read_silkscreen;
 with et_package_read_stencil;			use et_package_read_stencil;
 with et_package_read_stopmask;			use et_package_read_stopmask;
+with et_package_read_keepout;			use et_package_read_keepout;
 with et_package_read_conductors;		use et_package_read_conductors;
 with et_package_read_route_restrict;	use et_package_read_route_restrict;
 with et_package_read_contour;			use et_package_read_contour;
@@ -292,242 +293,8 @@ package body et_package_read is
 
 			procedure execute_section is
 			-- Once a section concludes, the temporarily variables are read, evaluated
-				-- and finally assembled to actual objects:
-
-				-- fill zones
--- 				procedure append_silk_polygon_top is begin
--- 					pac_silk_zones.append (
--- 						container	=> packge.silkscreen.top.zones, 
--- 						new_item	=> (contour with null record));
--- 					
--- 					board_reset_contour;
--- 				end;
--- 				
--- 				procedure append_silk_polygon_bottom is begin
--- 					pac_silk_zones.append (
--- 						container	=> packge.silkscreen.bottom.zones, 
--- 						new_item	=> (contour with null record));
--- 					
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_assy_doc_polygon_top is begin
--- 					pac_doc_zones.append (
--- 						container	=> packge.assy_doc.top.zones, 
--- 						new_item	=> (contour with null record));
--- 
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_assy_doc_polygon_bottom is begin
--- 					pac_doc_zones.append (
--- 						container	=> packge.assy_doc.bottom.zones, 
--- 						new_item	=> (contour with null record));
--- 					
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_keepout_polygon_top is begin
--- 					
--- 					pac_keepout_zones.append (
--- 						container	=> packge.keepout.top.zones, 
--- 						new_item	=> (contour with null record));
--- 						
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_keepout_polygon_bottom is begin
--- 
--- 					pac_keepout_zones.append (
--- 						container	=> packge.keepout.bottom.zones, 
--- 						new_item	=> (contour with null record));
--- 
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_stencil_polygon_top is begin
--- 
--- 					pac_stencil_zones.append (
--- 						container	=> packge.stencil.top.zones, 
--- 						new_item	=> (contour with null record));
--- 
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_stencil_polygon_bottom is begin
--- 					pac_stencil_zones.append (
--- 						container	=> packge.stencil.bottom.zones, 
--- 						new_item	=> (contour with null record));
--- 
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_stop_polygon_top is begin
--- 					pac_stop_zones.append (
--- 						container	=> packge.stop_mask.top.zones, 
--- 						new_item	=> (contour with null record));
--- 
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_stop_polygon_bottom is begin
--- 					pac_stop_zones.append (
--- 						container	=> packge.stop_mask.bottom.zones, 
--- 						new_item	=> (contour with null record));
--- 
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_route_restrict_zone_top is begin
--- 					pac_route_restrict_zones.append (
--- 						container	=> packge.route_restrict.top.zones, 
--- 						new_item	=> (contour with null record));
--- 
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_route_restrict_zone_bottom is begin
--- 					pac_route_restrict_zones.append (
--- 						container	=> packge.route_restrict.bottom.zones, 
--- 						new_item	=> (contour with null record));
--- 
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_via_restrict_zone_top is begin
--- 					pac_via_restrict_zones.append (
--- 						container	=> packge.via_restrict.top.zones, 
--- 						new_item	=> (contour with null record));
--- 
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_via_restrict_zone_bottom is begin
--- 					pac_via_restrict_zones.append (
--- 						container	=> packge.via_restrict.bottom.zones, 
--- 						new_item	=> (contour with null record));
--- 
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_keepout_cutout_top is begin
--- 					pac_keepout_cutouts.append (
--- 						container	=> packge.keepout.top.cutouts, 
--- 						new_item	=> (contour with null record));
--- 
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_keepout_cutout_bottom is begin
--- 					pac_keepout_cutouts.append (
--- 						container	=> packge.keepout.bottom.cutouts, 
--- 						new_item	=> (contour with null record));
--- 
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_stop_cutout_top is begin
--- 					-- CS
--- 					--pac_stop_cutouts.append (
--- 						--container	=> packge.stop_mask.top.cutouts, 
--- 						--new_item	=> contour);
--- 
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_stop_cutout_bottom is begin
--- 					-- CS
--- 					--pac_stop_cutouts.append (
--- 						--container	=> packge.stop_mask.bottom.cutouts, 
--- 						--new_item	=> contour);
--- 
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_route_restrict_cutout_top is begin
--- 					pac_route_restrict_cutouts.append (
--- 						container	=> packge.route_restrict.top.cutouts, 
--- 						new_item	=> (contour with null record));
--- 
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_route_restrict_cutout_bottom is begin
--- 					pac_route_restrict_cutouts.append (
--- 						container	=> packge.route_restrict.bottom.cutouts, 
--- 						new_item	=> (contour with null record));
--- 
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_via_restrict_cutout_top is begin
--- 					pac_via_restrict_cutouts.append (
--- 						container	=> packge.via_restrict.top.cutouts, 
--- 						new_item	=> (contour with null record));
--- 
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 
--- 				
--- 				procedure append_via_restrict_cutout_bottom is begin
--- 					pac_via_restrict_cutouts.append (
--- 						container	=> packge.via_restrict.bottom.cutouts, 
--- 						new_item	=> (contour with null record));
--- 
--- 					-- clean up for next polygon
--- 					board_reset_contour;
--- 				end;
--- 			
--- 				
--- 				-- holes in PCB (or cutouts)
--- 				procedure append_hole is begin
--- 					packge.holes.append ((contour with null record));
--- 
--- 					-- clean up for next hole
--- 					board_reset_contour;
--- 				end append_hole;
--- 
-				
-			begin -- execute_section
+			-- and finally assembled to actual objects:
+			begin
 				case stack.current is
 
 					when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOPMASK | SEC_STENCIL | 
@@ -782,14 +549,10 @@ package body et_package_read is
 										insert_stop_zone (packge, TOP, log_threshold);
 										
 									when SEC_KEEPOUT =>
-										null; -- CS
-									-- append_keepout_polygon_top;
-										reset_contour (contour);
+										insert_keepout_zone (packge, TOP, log_threshold);
 
 									when SEC_ROUTE_RESTRICT =>
-										null; -- CS
-										-- append_route_restrict_zone_top;
-										reset_contour (contour);
+										insert_route_restrict_zone (packge, TOP, log_threshold);
 
 									when SEC_VIA_RESTRICT =>
 										insert_via_restrict_zone (packge, TOP, log_threshold);
@@ -813,14 +576,10 @@ package body et_package_read is
 										insert_stop_zone (packge, BOTTOM, log_threshold);
 										
 									when SEC_KEEPOUT =>
-										null; -- CS
-									-- append_keepout_polygon_bottom;
-										reset_contour (contour);
+										insert_keepout_zone (packge, BOTTOM, log_threshold);
 
 									when SEC_ROUTE_RESTRICT =>
-										null; -- CS
-										-- append_route_restrict_zone_bottom;
-										reset_contour (contour);
+										insert_route_restrict_zone (packge, BOTTOM, log_threshold);
 
 									when SEC_VIA_RESTRICT =>
 										insert_via_restrict_zone (packge, BOTTOM, log_threshold);
@@ -833,45 +592,37 @@ package body et_package_read is
 						
 
 					when SEC_CUTOUT_ZONE =>
-						null; -- CS
-						reset_contour (contour);
--- 						case stack.parent is
--- 							when SEC_TOP => 
--- 								case stack.parent (degree => 2) is
--- 									when SEC_STOPMASK =>
--- 										append_stop_cutout_top;
--- 										
--- 									when SEC_KEEPOUT =>
--- 										append_keepout_cutout_top;
--- 
--- 									when SEC_ROUTE_RESTRICT =>
--- 										append_route_restrict_cutout_top;
--- 
--- 									when SEC_VIA_RESTRICT =>
--- 										append_via_restrict_cutout_top;
--- 
--- 									when others => invalid_section;
--- 								end case;
--- 
--- 							when SEC_BOTTOM => 
--- 								case stack.parent (degree => 2) is
--- 									when SEC_STOPMASK =>
--- 										append_stop_cutout_bottom;
--- 										
--- 									when SEC_KEEPOUT =>
--- 										append_keepout_cutout_bottom;
--- 
--- 									when SEC_ROUTE_RESTRICT =>
--- 										append_route_restrict_cutout_bottom;
--- 
--- 									when SEC_VIA_RESTRICT =>
--- 										append_via_restrict_cutout_bottom;
--- 										
--- 									when others => invalid_section;
--- 								end case;					
--- 								
--- 							when others => invalid_section;
--- 						end case;
+						case stack.parent is
+							when SEC_TOP => 
+								case stack.parent (degree => 2) is
+									when SEC_KEEPOUT =>
+										insert_keepout_zone_cutout (packge, TOP, log_threshold);
+
+									when SEC_ROUTE_RESTRICT =>
+										insert_route_restrict_zone_cutout (packge, TOP, log_threshold);
+
+									when SEC_VIA_RESTRICT =>
+										insert_via_restrict_zone_cutout (packge, TOP, log_threshold);
+
+									when others => invalid_section;
+								end case;
+
+							when SEC_BOTTOM => 
+								case stack.parent (degree => 2) is
+									when SEC_KEEPOUT =>
+										insert_keepout_zone_cutout (packge, BOTTOM, log_threshold);
+
+									when SEC_ROUTE_RESTRICT =>
+										insert_route_restrict_zone_cutout (packge, BOTTOM, log_threshold);
+
+									when SEC_VIA_RESTRICT =>
+										insert_via_restrict_zone_cutout (packge, BOTTOM, log_threshold);
+										
+									when others => invalid_section;
+								end case;					
+								
+							when others => invalid_section;
+						end case;
 						
 						
 					when SEC_CONTOURS =>

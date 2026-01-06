@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                              SYSTEM ET                                   --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                        PACKAGE READ / ROUTE RESTRICT                     --
+--                            KEEPOUT / PACKAGES                            --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
@@ -35,70 +35,58 @@
 --
 --   history of changes:
 --
---
--- DESCRIPTION:
--- 
--- This is about lines, arcs and circles in route restrict.
---
---
---
---   do do:
---
+--   to do:
 --
 
-with et_string_processing;				use et_string_processing;
-with et_package_model;					use et_package_model;
-with et_pcb_sides;						use et_pcb_sides;
-with et_logging;						use et_logging;
-
-
-package et_package_read_route_restrict is
 
 
 
-	procedure read_route_restrict_line (
-		line : in type_fields_of_line);
-	
-	
-	procedure read_route_restrict_arc (
-		line : in type_fields_of_line);
+package body et_keepout.packages is
 
 
-	procedure read_route_restrict_circle (
-		line : in type_fields_of_line);
-	
 
+	procedure add_zone (
+		keepout	: in out type_keepout_both_sides;
+		zone	: in type_keepout_zone;
+		face	: in type_face)
+	is
+		use pac_keepout_zones;
+	begin
+		case face is
+			when TOP =>
+				keepout.top.zones.append (zone);
 
-	procedure insert_route_restrict_line (
-		packge			: in type_package_model_access;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
-
-
-	procedure insert_route_restrict_arc (
-		packge			: in type_package_model_access;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
-
-
-	procedure insert_route_restrict_circle (
-		packge			: in type_package_model_access;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
-	
-
-
-	procedure insert_route_restrict_zone (
-		packge			: in type_package_model_access;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
- 
-
-	procedure insert_route_restrict_zone_cutout (
-		packge			: in type_package_model_access;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
+			when BOTTOM =>
+				keepout.bottom.zones.append (zone);
+		end case;
+	end;
 
 
 	
-end et_package_read_route_restrict;
+
+	procedure add_cutout (
+		keepout	: in out type_keepout_both_sides;
+		zone	: in type_keepout_cutout;
+		face	: in type_face)
+	is
+		use pac_keepout_cutouts;
+	begin
+		case face is
+			when TOP =>
+				keepout.top.cutouts.append (zone);
+
+			when BOTTOM =>
+				keepout.bottom.cutouts.append (zone);
+		end case;
+	end;
+
+	
+	
+end et_keepout.packages;
+
+-- Soli Deo Gloria
+
+-- For God so loved the world that he gave 
+-- his one and only Son, that whoever believes in him 
+-- shall not perish but have eternal life.
+-- The Bible, John 3.16
