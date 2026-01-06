@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -81,6 +81,27 @@ package body et_assy_doc.packages is
 		move_placeholders (assy_doc.placeholders, offset);
 	end move_assy_doc_objects;
 
+
+
+
+	procedure add_zone (
+		assy_doc	: in out type_assy_doc_both_sides;
+		zone		: in type_doc_zone;
+		face		: in type_face)
+	is 
+		use pac_doc_zones;
+	begin
+		case face is
+			when TOP => 
+				append (assy_doc.top.zones, zone);
+
+
+			when BOTTOM => 
+				append (assy_doc.bottom.zones, zone);
+		end case;
+	end;
+
+	
 	
 end et_assy_doc.packages;
 

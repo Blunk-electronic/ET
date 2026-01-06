@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -80,6 +80,28 @@ package body et_silkscreen.packages is
 		move_placeholders (silkscreen.placeholders, offset);
 	end move_silkscreen_objects;
 
+
+
+
+
+	procedure add_zone (
+		silkscreen	: in out type_silkscreen_both_sides;
+		zone		: in type_silk_zone;
+		face		: in type_face)
+	is 
+		use pac_silk_zones;
+	begin
+		case face is
+			when TOP => 
+				append (silkscreen.top.zones, zone);
+
+
+			when BOTTOM => 
+				append (silkscreen.bottom.zones, zone);
+		end case;
+	end;
+
+	
 	
 end et_silkscreen.packages;
 

@@ -47,14 +47,18 @@ with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_keywords;						use et_keywords;
 with et_package_model;					use et_package_model;
 with et_directions;						use et_directions;
+
 with et_silkscreen;						use et_silkscreen;
+with et_silkscreen.packages;			use et_silkscreen.packages;
 
 with et_general_rw;						use et_general_rw;
+with et_package_read_contour;			use et_package_read_contour;
 
 
 package body et_package_read_silkscreen is
 
-	use pac_geometry_2;
+	use pac_geometry_2;	
+	
 	
 	silk_line : type_silk_line;
 	silk_arc : type_silk_arc;
@@ -205,7 +209,8 @@ package body et_package_read_silkscreen is
 			when BOTTOM => 
 				append (packge.silkscreen.bottom.lines, silk_line);
 		end case;
-				
+		-- CS use procedure add_line
+			
 		-- clean up for next line
 		reset_line (silk_line);		
 	end insert_silk_line;
@@ -230,7 +235,8 @@ package body et_package_read_silkscreen is
 			when BOTTOM => 
 				append (packge.silkscreen.bottom.arcs, silk_arc);
 		end case;
-
+		-- CS use procedure add_arc
+		
 		-- clean up for next arc
 		reset_arc (silk_arc);		
 	end insert_silk_arc;
@@ -254,12 +260,33 @@ package body et_package_read_silkscreen is
 			when BOTTOM => 
 				append (packge.silkscreen.bottom.circles, silk_circle);
 		end case;
-
+		-- CS use procedure add_circle
+		
 		-- clean up for next circle
 		reset_circle (silk_circle);		
 	end insert_silk_circle;
 
 
+
+
 	
+	
+	
+	procedure insert_silk_zone (
+		packge			: in type_package_model_access;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is 
+		use pac_contours;
+	begin
+		add_zone (packge.silkscreen, (contour with null record), face);
+
+		-- clean up for next zone
+		reset_contour (contour);
+	end insert_silk_zone;
+
+	
+	
+
 	
 end et_package_read_silkscreen;

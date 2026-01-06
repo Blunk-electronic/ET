@@ -84,5 +84,11 @@ package et_package_read_silkscreen is
 		face			: in type_face;
 		log_threshold	: in type_log_level);
 	
+
+	procedure insert_silk_zone (
+		packge			: in type_package_model_access;
+		face			: in type_face;
+		log_threshold	: in type_log_level);
+
 	
 end et_package_read_silkscreen;

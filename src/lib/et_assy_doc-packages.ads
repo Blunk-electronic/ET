@@ -72,6 +72,16 @@ package et_assy_doc.packages is
 		offset		: in type_vector_model);
 
 
+
+	-- CS procedure add_line, add_arc, add_circle
+	
+
+	procedure add_zone (
+		assy_doc	: in out type_assy_doc_both_sides;
+		zone		: in type_doc_zone;
+		face		: in type_face);
+
+	
 end et_assy_doc.packages;
 
 -- Soli Deo Gloria

@@ -638,8 +638,6 @@ package body et_package_read is
 
 						
 					when SEC_ARC =>
-						-- board_check_arc (log_threshold + 1);
-						
 						case stack.parent is
 							when SEC_TOP => 
 								case stack.parent (degree => 2) is
@@ -772,14 +770,10 @@ package body et_package_read is
 							when SEC_TOP => 
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>
-										null; -- CS
-										-- append_silk_polygon_top;
-										reset_contour (contour);
+										insert_silk_zone (packge, TOP, log_threshold);
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-										null; -- CS
-									-- append_assy_doc_polygon_top;
-										reset_contour (contour);
+										insert_doc_zone (packge, TOP, log_threshold);
 										
 									when SEC_STENCIL =>
 										null; -- CS
@@ -811,14 +805,10 @@ package body et_package_read is
 							when SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>
-										null; -- CS
-										-- append_silk_polygon_bottom;
-										reset_contour (contour);
+										insert_silk_zone (packge, BOTTOM, log_threshold);
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-										null; -- CS
-									-- append_assy_doc_polygon_bottom;
-										reset_contour (contour);
+										insert_doc_zone (packge, BOTTOM, log_threshold);
 										
 									when SEC_STENCIL =>
 										null; -- CS
