@@ -189,7 +189,9 @@ package body et_package_read_route_restrict is
 			when BOTTOM => 
 				append (packge.route_restrict.bottom.lines, route_restrict_line);
 		end case;
-				
+		-- CS use procedure add_line
+		
+		
 		-- clean up for next line
 		reset_line (route_restrict_line);		
 	end insert_route_restrict_line;
@@ -214,7 +216,8 @@ package body et_package_read_route_restrict is
 			when BOTTOM => 
 				append (packge.route_restrict.bottom.arcs, route_restrict_arc);
 		end case;
-
+		-- CS use procedure add_arc
+		
 		-- clean up for next arc
 		reset_arc (route_restrict_arc);		
 	end insert_route_restrict_arc;
@@ -238,6 +241,7 @@ package body et_package_read_route_restrict is
 			when BOTTOM => 
 				append (packge.route_restrict.bottom.circles, route_restrict_circle);
 		end case;
+		-- CS use procedure add_circle
 
 		-- clean up for next circle
 		reset_circle (route_restrict_circle);		
