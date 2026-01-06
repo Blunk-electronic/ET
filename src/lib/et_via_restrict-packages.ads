@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                       VIA RESTRICT PACKAGES                              --
+--                       VIA RESTRICT / PACKAGES                            --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,7 +37,10 @@
 --
 --   to do:
 
-with et_conductor_text.packages;
+with et_pcb_sides;					use et_pcb_sides;
+-- with et_conductor_text.packages;
+
+
 
 package et_via_restrict.packages is
 	
@@ -77,12 +80,25 @@ package et_via_restrict.packages is
 		return pac_polygon_list.list;
 
 	
-	type type_via_restrict is record
+	type type_via_restrict is record -- CS rename to type_via_restrict_both_sides ?
 		top		: type_one_side;
 		bottom	: type_one_side;
 	end record;
 
 
+
+
+	procedure add_zone (
+		via_restrict	: in out type_via_restrict;
+		zone			: in type_via_restrict_zone;
+		face			: in type_face);
+
+
+	procedure add_cutout (
+		via_restrict	: in out type_via_restrict;
+		cutout			: in type_via_restrict_cutout;
+		face			: in type_face);
+	
 	
 end et_via_restrict.packages;
 

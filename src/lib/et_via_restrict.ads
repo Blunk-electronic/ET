@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -61,14 +61,19 @@ package et_via_restrict is
 	
 
 	type type_via_restrict_zone is new type_contour with null record;
+
 	
-	package pac_via_restrict_zones is new doubly_linked_lists (type_via_restrict_zone);
+	package pac_via_restrict_zones is new 
+		doubly_linked_lists (type_via_restrict_zone);
 
 
-	type type_via_restrict_cutout is new type_contour with null record;
+	type type_via_restrict_cutout is new -- CS rename to type_via_restrict_zone_cutout
+		type_contour with null record;
 	-- CS not sure whether this is really required.
+
 	
-	package pac_via_restrict_cutouts is new doubly_linked_lists (type_via_restrict_cutout);
+	package pac_via_restrict_cutouts is new 
+		doubly_linked_lists (type_via_restrict_cutout);
 	-- CS not sure whether this is really required.
 	
 

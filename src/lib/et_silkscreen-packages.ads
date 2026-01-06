@@ -72,6 +72,17 @@ package et_silkscreen.packages is
 		offset		: in type_vector_model);
 
 
+
+
+	
+	-- CS procedures add_line, arc, cirlce zone
+
+	-- procedure add_line (
+	-- 	stencil	: in out type_silkscreen_both_sides;
+	-- 	line	: in type_stencil_line;
+	-- 	face	: in type_face);
+
+	
 	
 end et_silkscreen.packages;
 

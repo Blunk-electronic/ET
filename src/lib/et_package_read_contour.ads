@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                       VIA RESTRICT BOARDS                                --
+--                        PACKAGE READ / CONTOUR                            --
 --                                                                          --
---                              S p e c                                     --
+--                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,60 +35,55 @@
 --
 --   history of changes:
 --
---   to do:
+--
+-- DESCRIPTION:
+-- 
+-- This is about contours in general.
+--
+--
+--
+--   do do:
+--
+--
 
-with et_pcb_signal_layers;			use et_pcb_signal_layers;
+with et_board_geometry;					use et_board_geometry;
+with et_string_processing;				use et_string_processing;
+-- with et_logging;						use et_logging;
 
 
-package et_via_restrict.boards is
+package et_package_read_contour is
 
 	use pac_geometry_2;
+	use pac_contours;
 
-	procedure dummy;
+
+	
+	contour_line	: type_line;
+	contour_arc		: type_arc;
+	contour_circle	: type_circle;
+	contour			: type_contour;
+	
+	
+	procedure read_contour_line (
+		line : in type_fields_of_line);
+
+
+	procedure read_contour_arc (
+		line : type_fields_of_line);
+
+	
+	procedure read_contour_circle (
+		line : type_fields_of_line);
+
 	
 
-	
-	type type_via_restrict_contour is new -- CS rename to type_via_restrict_zone
-		et_via_restrict.type_via_restrict_zone with
-	record
-		layers 	: pac_signal_layers.set;
-	end record;
-	
-	package pac_via_restrict_contours is new doubly_linked_lists (type_via_restrict_contour);
-	-- CS rename to pac_via_restrict_zones
+	procedure insert_contour_line;
 
-	type type_via_restrict_cutout is new
-		et_via_restrict.type_via_restrict_cutout with
-	record
-		layers 	: pac_signal_layers.set;
-	end record;
-		
-	package pac_via_restrict_cutouts is new doubly_linked_lists (type_via_restrict_cutout);
-	
+	procedure insert_contour_arc;
 
-	-- NOTE: 
-	-- In the board drawing there is no "both-sides" as with
-	-- silkscreen or assembly documentation. Here the signal
-	-- layers specify which conductor layers are affected.
-	
-	type type_via_restrict is record
-		contours	: pac_via_restrict_contours.list; -- CS rename contours to zone
-		cutouts		: pac_via_restrict_cutouts.list;
-
-		-- CS texts : 
-		-- This must not be derived from from conductor text because
-		-- it is not fabrication relevant.
-		-- It should contain notes of the designer exclusively.
-	end record;
+	procedure insert_contour_circle;
 
 
 	
 	
-end et_via_restrict.boards;
-
--- Soli Deo Gloria
-
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
--- shall not perish but have eternal life.
--- The Bible, John 3.16
+end et_package_read_contour;

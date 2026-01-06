@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                       VIA RESTRICT BOARDS                                --
+--                         PACKAGE READ / VIA RESTRICT                      --
 --                                                                          --
---                              S p e c                                     --
+--                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,60 +35,58 @@
 --
 --   history of changes:
 --
---   to do:
 
-with et_pcb_signal_layers;			use et_pcb_signal_layers;
+with ada.text_io;						use ada.text_io;
+with ada.strings; 						use ada.strings;
+
+with et_design_rules_board;				use et_design_rules_board;
+with et_board_geometry;					use et_board_geometry;
+
+with et_primitive_objects;				use et_primitive_objects;
+with et_coordinates_formatting;			use et_coordinates_formatting;
+with et_keywords;						use et_keywords;
+with et_package_model;					use et_package_model;
+with et_directions;						use et_directions;
+
+with et_package_read_contour;			use et_package_read_contour;
+with et_via_restrict;					use et_via_restrict;
+with et_via_restrict.packages;			use et_via_restrict.packages;
+
+with et_general_rw;						use et_general_rw;
 
 
-package et_via_restrict.boards is
+package body et_package_read_via_restrict is
 
 	use pac_geometry_2;
+	use pac_contours;
 
-	procedure dummy;
-	
 
 	
-	type type_via_restrict_contour is new -- CS rename to type_via_restrict_zone
-		et_via_restrict.type_via_restrict_zone with
-	record
-		layers 	: pac_signal_layers.set;
-	end record;
-	
-	package pac_via_restrict_contours is new doubly_linked_lists (type_via_restrict_contour);
-	-- CS rename to pac_via_restrict_zones
-
-	type type_via_restrict_cutout is new
-		et_via_restrict.type_via_restrict_cutout with
-	record
-		layers 	: pac_signal_layers.set;
-	end record;
+	procedure insert_via_restrict_zone (
+		packge			: in type_package_model_access;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is begin
+		add_zone (packge.via_restrict, (contour with null record), face);
 		
-	package pac_via_restrict_cutouts is new doubly_linked_lists (type_via_restrict_cutout);
+		-- clean up for next contour
+		reset_contour (contour);
+	end;
+
+
+
+
+	procedure insert_via_restrict_zone_cutout (
+		packge			: in type_package_model_access;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is begin
+		add_cutout (packge.via_restrict, (contour with null record), face);
+		
+		-- clean up for next contour
+		reset_contour (contour);
+	end;
+
 	
-
-	-- NOTE: 
-	-- In the board drawing there is no "both-sides" as with
-	-- silkscreen or assembly documentation. Here the signal
-	-- layers specify which conductor layers are affected.
 	
-	type type_via_restrict is record
-		contours	: pac_via_restrict_contours.list; -- CS rename contours to zone
-		cutouts		: pac_via_restrict_cutouts.list;
-
-		-- CS texts : 
-		-- This must not be derived from from conductor text because
-		-- it is not fabrication relevant.
-		-- It should contain notes of the designer exclusively.
-	end record;
-
-
-	
-	
-end et_via_restrict.boards;
-
--- Soli Deo Gloria
-
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
--- shall not perish but have eternal life.
--- The Bible, John 3.16
+end et_package_read_via_restrict;

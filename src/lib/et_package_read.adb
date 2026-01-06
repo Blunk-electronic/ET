@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -71,7 +71,8 @@ with et_package_read_stencil;			use et_package_read_stencil;
 with et_package_read_stopmask;			use et_package_read_stopmask;
 with et_package_read_conductors;		use et_package_read_conductors;
 with et_package_read_route_restrict;	use et_package_read_route_restrict;
-
+with et_package_read_contour;			use et_package_read_contour;
+with et_package_read_via_restrict;		use et_package_read_via_restrict;
 
 
 package body et_package_read is
@@ -550,237 +551,237 @@ package body et_package_read is
 				-- and finally assembled to actual objects:
 
 				-- fill zones
-				procedure append_silk_polygon_top is begin
-					pac_silk_zones.append (
-						container	=> packge.silkscreen.top.zones, 
-						new_item	=> (contour with null record));
-					
-					board_reset_contour;
-				end;
-				
-				procedure append_silk_polygon_bottom is begin
-					pac_silk_zones.append (
-						container	=> packge.silkscreen.bottom.zones, 
-						new_item	=> (contour with null record));
-					
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_assy_doc_polygon_top is begin
-					pac_doc_zones.append (
-						container	=> packge.assy_doc.top.zones, 
-						new_item	=> (contour with null record));
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_assy_doc_polygon_bottom is begin
-					pac_doc_zones.append (
-						container	=> packge.assy_doc.bottom.zones, 
-						new_item	=> (contour with null record));
-					
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_keepout_polygon_top is begin
-					
-					pac_keepout_zones.append (
-						container	=> packge.keepout.top.zones, 
-						new_item	=> (contour with null record));
-						
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_keepout_polygon_bottom is begin
-
-					pac_keepout_zones.append (
-						container	=> packge.keepout.bottom.zones, 
-						new_item	=> (contour with null record));
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_stencil_polygon_top is begin
-
-					pac_stencil_zones.append (
-						container	=> packge.stencil.top.zones, 
-						new_item	=> (contour with null record));
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_stencil_polygon_bottom is begin
-					pac_stencil_zones.append (
-						container	=> packge.stencil.bottom.zones, 
-						new_item	=> (contour with null record));
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_stop_polygon_top is begin
-					pac_stop_zones.append (
-						container	=> packge.stop_mask.top.zones, 
-						new_item	=> (contour with null record));
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_stop_polygon_bottom is begin
-					pac_stop_zones.append (
-						container	=> packge.stop_mask.bottom.zones, 
-						new_item	=> (contour with null record));
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_route_restrict_zone_top is begin
-					pac_route_restrict_zones.append (
-						container	=> packge.route_restrict.top.zones, 
-						new_item	=> (contour with null record));
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_route_restrict_zone_bottom is begin
-					pac_route_restrict_zones.append (
-						container	=> packge.route_restrict.bottom.zones, 
-						new_item	=> (contour with null record));
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_via_restrict_zone_top is begin
-					pac_via_restrict_zones.append (
-						container	=> packge.via_restrict.top.zones, 
-						new_item	=> (contour with null record));
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_via_restrict_zone_bottom is begin
-					pac_via_restrict_zones.append (
-						container	=> packge.via_restrict.bottom.zones, 
-						new_item	=> (contour with null record));
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_keepout_cutout_top is begin
-					pac_keepout_cutouts.append (
-						container	=> packge.keepout.top.cutouts, 
-						new_item	=> (contour with null record));
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_keepout_cutout_bottom is begin
-					pac_keepout_cutouts.append (
-						container	=> packge.keepout.bottom.cutouts, 
-						new_item	=> (contour with null record));
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_stop_cutout_top is begin
-					-- CS
-					--pac_stop_cutouts.append (
-						--container	=> packge.stop_mask.top.cutouts, 
-						--new_item	=> contour);
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_stop_cutout_bottom is begin
-					-- CS
-					--pac_stop_cutouts.append (
-						--container	=> packge.stop_mask.bottom.cutouts, 
-						--new_item	=> contour);
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_route_restrict_cutout_top is begin
-					pac_route_restrict_cutouts.append (
-						container	=> packge.route_restrict.top.cutouts, 
-						new_item	=> (contour with null record));
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_route_restrict_cutout_bottom is begin
-					pac_route_restrict_cutouts.append (
-						container	=> packge.route_restrict.bottom.cutouts, 
-						new_item	=> (contour with null record));
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_via_restrict_cutout_top is begin
-					pac_via_restrict_cutouts.append (
-						container	=> packge.via_restrict.top.cutouts, 
-						new_item	=> (contour with null record));
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-
-				
-				procedure append_via_restrict_cutout_bottom is begin
-					pac_via_restrict_cutouts.append (
-						container	=> packge.via_restrict.bottom.cutouts, 
-						new_item	=> (contour with null record));
-
-					-- clean up for next polygon
-					board_reset_contour;
-				end;
-			
-				
-				-- holes in PCB (or cutouts)
-				procedure append_hole is begin
-					packge.holes.append ((contour with null record));
-
-					-- clean up for next hole
-					board_reset_contour;
-				end append_hole;
-
+-- 				procedure append_silk_polygon_top is begin
+-- 					pac_silk_zones.append (
+-- 						container	=> packge.silkscreen.top.zones, 
+-- 						new_item	=> (contour with null record));
+-- 					
+-- 					board_reset_contour;
+-- 				end;
+-- 				
+-- 				procedure append_silk_polygon_bottom is begin
+-- 					pac_silk_zones.append (
+-- 						container	=> packge.silkscreen.bottom.zones, 
+-- 						new_item	=> (contour with null record));
+-- 					
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_assy_doc_polygon_top is begin
+-- 					pac_doc_zones.append (
+-- 						container	=> packge.assy_doc.top.zones, 
+-- 						new_item	=> (contour with null record));
+-- 
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_assy_doc_polygon_bottom is begin
+-- 					pac_doc_zones.append (
+-- 						container	=> packge.assy_doc.bottom.zones, 
+-- 						new_item	=> (contour with null record));
+-- 					
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_keepout_polygon_top is begin
+-- 					
+-- 					pac_keepout_zones.append (
+-- 						container	=> packge.keepout.top.zones, 
+-- 						new_item	=> (contour with null record));
+-- 						
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_keepout_polygon_bottom is begin
+-- 
+-- 					pac_keepout_zones.append (
+-- 						container	=> packge.keepout.bottom.zones, 
+-- 						new_item	=> (contour with null record));
+-- 
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_stencil_polygon_top is begin
+-- 
+-- 					pac_stencil_zones.append (
+-- 						container	=> packge.stencil.top.zones, 
+-- 						new_item	=> (contour with null record));
+-- 
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_stencil_polygon_bottom is begin
+-- 					pac_stencil_zones.append (
+-- 						container	=> packge.stencil.bottom.zones, 
+-- 						new_item	=> (contour with null record));
+-- 
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_stop_polygon_top is begin
+-- 					pac_stop_zones.append (
+-- 						container	=> packge.stop_mask.top.zones, 
+-- 						new_item	=> (contour with null record));
+-- 
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_stop_polygon_bottom is begin
+-- 					pac_stop_zones.append (
+-- 						container	=> packge.stop_mask.bottom.zones, 
+-- 						new_item	=> (contour with null record));
+-- 
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_route_restrict_zone_top is begin
+-- 					pac_route_restrict_zones.append (
+-- 						container	=> packge.route_restrict.top.zones, 
+-- 						new_item	=> (contour with null record));
+-- 
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_route_restrict_zone_bottom is begin
+-- 					pac_route_restrict_zones.append (
+-- 						container	=> packge.route_restrict.bottom.zones, 
+-- 						new_item	=> (contour with null record));
+-- 
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_via_restrict_zone_top is begin
+-- 					pac_via_restrict_zones.append (
+-- 						container	=> packge.via_restrict.top.zones, 
+-- 						new_item	=> (contour with null record));
+-- 
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_via_restrict_zone_bottom is begin
+-- 					pac_via_restrict_zones.append (
+-- 						container	=> packge.via_restrict.bottom.zones, 
+-- 						new_item	=> (contour with null record));
+-- 
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_keepout_cutout_top is begin
+-- 					pac_keepout_cutouts.append (
+-- 						container	=> packge.keepout.top.cutouts, 
+-- 						new_item	=> (contour with null record));
+-- 
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_keepout_cutout_bottom is begin
+-- 					pac_keepout_cutouts.append (
+-- 						container	=> packge.keepout.bottom.cutouts, 
+-- 						new_item	=> (contour with null record));
+-- 
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_stop_cutout_top is begin
+-- 					-- CS
+-- 					--pac_stop_cutouts.append (
+-- 						--container	=> packge.stop_mask.top.cutouts, 
+-- 						--new_item	=> contour);
+-- 
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_stop_cutout_bottom is begin
+-- 					-- CS
+-- 					--pac_stop_cutouts.append (
+-- 						--container	=> packge.stop_mask.bottom.cutouts, 
+-- 						--new_item	=> contour);
+-- 
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_route_restrict_cutout_top is begin
+-- 					pac_route_restrict_cutouts.append (
+-- 						container	=> packge.route_restrict.top.cutouts, 
+-- 						new_item	=> (contour with null record));
+-- 
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_route_restrict_cutout_bottom is begin
+-- 					pac_route_restrict_cutouts.append (
+-- 						container	=> packge.route_restrict.bottom.cutouts, 
+-- 						new_item	=> (contour with null record));
+-- 
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_via_restrict_cutout_top is begin
+-- 					pac_via_restrict_cutouts.append (
+-- 						container	=> packge.via_restrict.top.cutouts, 
+-- 						new_item	=> (contour with null record));
+-- 
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 
+-- 				
+-- 				procedure append_via_restrict_cutout_bottom is begin
+-- 					pac_via_restrict_cutouts.append (
+-- 						container	=> packge.via_restrict.bottom.cutouts, 
+-- 						new_item	=> (contour with null record));
+-- 
+-- 					-- clean up for next polygon
+-- 					board_reset_contour;
+-- 				end;
+-- 			
+-- 				
+-- 				-- holes in PCB (or cutouts)
+-- 				procedure append_hole is begin
+-- 					packge.holes.append ((contour with null record));
+-- 
+-- 					-- clean up for next hole
+-- 					board_reset_contour;
+-- 				end append_hole;
+-- 
 				
 			begin -- execute_section
 				case stack.current is
@@ -802,14 +803,16 @@ package body et_package_read is
 								SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => null;
 
 							when SEC_PAD_CONTOURS_THT => 
-								check_outline (contour, log_threshold + 1);
-								tht_pad_shape.top := contour;
-								board_reset_contour;
+								null; -- CS
+								-- check_outline (contour, log_threshold + 1);
+								-- tht_pad_shape.top := contour;
+								-- board_reset_contour;
 
 							when SEC_STOPMASK_CONTOURS_THT =>
-								check_outline (contour, log_threshold + 1);
-								tht_stop_mask_contours_top := (contour with null record);
-								board_reset_contour;
+								null; -- CS
+								-- check_outline (contour, log_threshold + 1);
+								-- tht_stop_mask_contours_top := (contour with null record);
+								-- board_reset_contour;
 								
 							when others => invalid_section;
 						end case;
@@ -821,14 +824,16 @@ package body et_package_read is
 								SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => null;
 
 							when SEC_PAD_CONTOURS_THT =>
-								check_outline (contour, log_threshold + 1);
-								tht_pad_shape.bottom := contour;
-								board_reset_contour;
+								null; -- CS
+								-- check_outline (contour, log_threshold + 1);
+								-- tht_pad_shape.bottom := contour;
+								-- board_reset_contour;
 
 							when SEC_STOPMASK_CONTOURS_THT =>
-								check_outline (contour, log_threshold + 1);
-								tht_stop_mask_contours_bottom := (contour with null record);
-								board_reset_contour;
+								null; -- CS
+								-- check_outline (contour, log_threshold + 1);
+								-- tht_stop_mask_contours_bottom := (contour with null record);
+								-- board_reset_contour;
 								
 							when others => invalid_section;
 						end case;
@@ -890,12 +895,29 @@ package body et_package_read is
 									when others => invalid_section;
 								end case;
 								
-							when SEC_HOLE => add_polygon_line (board_line);								
-							when SEC_PAD_CONTOURS_SMT => add_polygon_line (board_line);
-							when SEC_STENCIL_CONTOURS => add_polygon_line (board_line);							
-							when SEC_STOPMASK_CONTOURS_SMT => add_polygon_line (board_line);							
-							when SEC_MILLINGS => add_polygon_line (board_line);
-							when SEC_CONTOURS => add_polygon_line (board_line);								
+							when SEC_HOLE => 
+								-- add_polygon_line (board_line);
+								null;
+								
+							when SEC_PAD_CONTOURS_SMT => 
+								-- add_polygon_line (board_line);
+								null;
+								
+							when SEC_STENCIL_CONTOURS => 
+								-- add_polygon_line (board_line);							
+								null;
+								
+							when SEC_STOPMASK_CONTOURS_SMT => 
+								-- add_polygon_line (board_line);							
+								null;
+								
+							when SEC_MILLINGS => 
+								-- add_polygon_line (board_line);
+								null;
+							
+							when SEC_CONTOURS => 
+								insert_contour_line;
+								
 							when others => invalid_section;
 						end case;
 
@@ -956,12 +978,29 @@ package body et_package_read is
 									when others => invalid_section;
 								end case;
 
-							when SEC_HOLE => add_polygon_arc (board_arc);
-							when SEC_PAD_CONTOURS_SMT => add_polygon_arc (board_arc);
-							when SEC_STENCIL_CONTOURS => add_polygon_arc (board_arc);							
-							when SEC_STOPMASK_CONTOURS_SMT => add_polygon_arc (board_arc);							
-							when SEC_MILLINGS => add_polygon_arc (board_arc);
-							when SEC_CONTOURS => add_polygon_arc (board_arc);								
+							when SEC_HOLE => 
+								--add_polygon_arc (board_arc);
+								null;
+								
+							when SEC_PAD_CONTOURS_SMT => 
+								-- add_polygon_arc (board_arc);
+								null;
+								
+							when SEC_STENCIL_CONTOURS => 
+								-- add_polygon_arc (board_arc);							
+								null;
+								
+							when SEC_STOPMASK_CONTOURS_SMT => 
+								-- add_polygon_arc (board_arc);							
+								null;
+								
+							when SEC_MILLINGS => 
+								--add_polygon_arc (board_arc);
+								null;
+							
+							when SEC_CONTOURS => 
+								insert_contour_arc;
+								
 							when others => invalid_section;
 						end case;
 
@@ -1024,11 +1063,25 @@ package body et_package_read is
 							when SEC_HOLE =>
 								add_polygon_circle (board_circle);
 								
-							when SEC_PAD_CONTOURS_SMT => add_polygon_circle (board_circle);
-							when SEC_STENCIL_CONTOURS => add_polygon_circle (board_circle);							
-							when SEC_STOPMASK_CONTOURS_SMT => add_polygon_circle (board_circle);							
-							when SEC_MILLINGS => add_polygon_circle (board_circle);
-							when SEC_CONTOURS => add_polygon_circle (board_circle);								
+							when SEC_PAD_CONTOURS_SMT => 
+								-- add_polygon_circle (board_circle);
+								null;
+								
+							when SEC_STENCIL_CONTOURS => 
+								-- add_polygon_circle (board_circle);							
+								null;
+								
+							when SEC_STOPMASK_CONTOURS_SMT => 
+								-- add_polygon_circle (board_circle);							
+								null;
+								
+							when SEC_MILLINGS => 
+								-- add_polygon_circle (board_circle);
+								null;
+							
+							when SEC_CONTOURS => 
+								insert_contour_circle;
+								
 							when others => invalid_section;
 						end case;
 
@@ -1038,25 +1091,31 @@ package body et_package_read is
 							when SEC_TOP => 
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>
-										append_silk_polygon_top;
+										null; -- CS
+										-- append_silk_polygon_top;
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-										append_assy_doc_polygon_top;
+										null; -- CS
+									-- append_assy_doc_polygon_top;
 										
 									when SEC_STENCIL =>
-										append_stencil_polygon_top;
+										null; -- CS
+									-- append_stencil_polygon_top;
 										
 									when SEC_STOPMASK =>
-										append_stop_polygon_top;
+										null; -- CS
+									-- append_stop_polygon_top;
 										
 									when SEC_KEEPOUT =>
-										append_keepout_polygon_top;
+										null; -- CS
+									-- append_keepout_polygon_top;
 
 									when SEC_ROUTE_RESTRICT =>
-										append_route_restrict_zone_top;
+										null; -- CS
+									-- append_route_restrict_zone_top;
 
 									when SEC_VIA_RESTRICT =>
-										append_via_restrict_zone_top;
+										insert_via_restrict_zone (packge, TOP, log_threshold);
 										
 									when others => invalid_section;
 								end case;
@@ -1064,78 +1123,93 @@ package body et_package_read is
 							when SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>
-										append_silk_polygon_bottom;
+										null; -- CS
+										-- append_silk_polygon_bottom;
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-										append_assy_doc_polygon_bottom;
+										null; -- CS
+									-- append_assy_doc_polygon_bottom;
 										
 									when SEC_STENCIL =>
-										append_stencil_polygon_bottom;
+										null; -- CS
+									-- append_stencil_polygon_bottom;
 										
 									when SEC_STOPMASK =>
-										append_stop_polygon_bottom;
+										null; -- CS
+									-- append_stop_polygon_bottom;
 										
 									when SEC_KEEPOUT =>
-										append_keepout_polygon_bottom;
+										null; -- CS
+									-- append_keepout_polygon_bottom;
 
 									when SEC_ROUTE_RESTRICT =>
-										append_route_restrict_zone_bottom;
+										null; -- CS
+										-- append_route_restrict_zone_bottom;
 
 									when SEC_VIA_RESTRICT =>
-										append_via_restrict_zone_bottom;
+										insert_via_restrict_zone (packge, BOTTOM, log_threshold);
 										
 									when others => invalid_section;
 								end case;
 
-							when others => invalid_section;
-						end case;
-
-					when SEC_CUTOUT_ZONE =>
-						case stack.parent is
-							when SEC_TOP => 
-								case stack.parent (degree => 2) is
-									when SEC_STOPMASK =>
-										append_stop_cutout_top;
-										
-									when SEC_KEEPOUT =>
-										append_keepout_cutout_top;
-
-									when SEC_ROUTE_RESTRICT =>
-										append_route_restrict_cutout_top;
-
-									when SEC_VIA_RESTRICT =>
-										append_via_restrict_cutout_top;
-
-									when others => invalid_section;
-								end case;
-
-							when SEC_BOTTOM => 
-								case stack.parent (degree => 2) is
-									when SEC_STOPMASK =>
-										append_stop_cutout_bottom;
-										
-									when SEC_KEEPOUT =>
-										append_keepout_cutout_bottom;
-
-									when SEC_ROUTE_RESTRICT =>
-										append_route_restrict_cutout_bottom;
-
-									when SEC_VIA_RESTRICT =>
-										append_via_restrict_cutout_bottom;
-										
-									when others => invalid_section;
-								end case;					
-								
 							when others => invalid_section;
 						end case;
 						
+
+					when SEC_CUTOUT_ZONE =>
+						null; -- CS
+-- 						case stack.parent is
+-- 							when SEC_TOP => 
+-- 								case stack.parent (degree => 2) is
+-- 									when SEC_STOPMASK =>
+-- 										append_stop_cutout_top;
+-- 										
+-- 									when SEC_KEEPOUT =>
+-- 										append_keepout_cutout_top;
+-- 
+-- 									when SEC_ROUTE_RESTRICT =>
+-- 										append_route_restrict_cutout_top;
+-- 
+-- 									when SEC_VIA_RESTRICT =>
+-- 										append_via_restrict_cutout_top;
+-- 
+-- 									when others => invalid_section;
+-- 								end case;
+-- 
+-- 							when SEC_BOTTOM => 
+-- 								case stack.parent (degree => 2) is
+-- 									when SEC_STOPMASK =>
+-- 										append_stop_cutout_bottom;
+-- 										
+-- 									when SEC_KEEPOUT =>
+-- 										append_keepout_cutout_bottom;
+-- 
+-- 									when SEC_ROUTE_RESTRICT =>
+-- 										append_route_restrict_cutout_bottom;
+-- 
+-- 									when SEC_VIA_RESTRICT =>
+-- 										append_via_restrict_cutout_bottom;
+-- 										
+-- 									when others => invalid_section;
+-- 								end case;					
+-- 								
+-- 							when others => invalid_section;
+-- 						end case;
+						
+						
 					when SEC_CONTOURS =>
 						case stack.parent is
-							when SEC_ZONE => check_outline (contour, log_threshold + 1);
-							when SEC_CUTOUT_ZONE => check_outline (contour, log_threshold + 1);
+							when SEC_ZONE => 
+								null; -- CS
+								-- check_outline (contour, log_threshold + 1);
+								
+							when SEC_CUTOUT_ZONE => 
+								null; -- CS
+								-- check_outline (contour, log_threshold + 1);
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_TEXT =>
 						build_text;
 
@@ -1196,25 +1270,30 @@ package body et_package_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_PAD_CONTOURS_SMT =>
 						case stack.parent is
 							when SEC_TERMINAL => 
-								check_outline (contour, log_threshold + 1);
-								smt_pad_shape := contour;
-								board_reset_contour;
+								null; -- CS
+								-- check_outline (contour, log_threshold + 1);
+								-- smt_pad_shape := contour;
+								-- board_reset_contour;
 								
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_STENCIL_CONTOURS =>
 						case stack.parent is
 							when SEC_TERMINAL => 
-								check_outline (contour, log_threshold + 1);
-								smt_stencil_contours := (contour with null record);
-								board_reset_contour;
+								null; -- CS
+								-- check_outline (contour, log_threshold + 1);
+								-- smt_stencil_contours := (contour with null record);
+								-- board_reset_contour;
 								
 							when others => invalid_section;
 						end case;
+						
 						
 					when SEC_PAD_CONTOURS_THT =>
 						case stack.parent is
@@ -1222,36 +1301,43 @@ package body et_package_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_STOPMASK_CONTOURS_SMT =>
 						case stack.parent is
 							when SEC_TERMINAL =>
-								check_outline (contour, log_threshold + 1);
-								smt_stop_mask_contours := (contour with null record);
-								board_reset_contour;
+								null; -- CS
+								-- check_outline (contour, log_threshold + 1);
+								-- smt_stop_mask_contours := (contour with null record);
+								-- board_reset_contour;
 								
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_STOPMASK_CONTOURS_THT =>
 						case stack.parent is
 							when SEC_TERMINAL => null;
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_MILLINGS =>
 						case stack.parent is
 							when SEC_TERMINAL =>
-								check_outline (contour, log_threshold + 1);
-								tht_millings := contour;
-								board_reset_contour;
+								null; -- CS
+								-- check_outline (contour, log_threshold + 1);
+								-- tht_millings := contour;
+								-- board_reset_contour;
 								
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_HOLE =>
 						case stack.parent is
 							when SEC_PCB_CONTOURS_NON_PLATED =>
-								append_hole;
+								null; -- CS
+								-- append_hole;
 							
 							when others => invalid_section;
 						end case;
@@ -1259,7 +1345,6 @@ package body et_package_read is
 					when SEC_INIT => raise constraint_error;
 						
 				end case;
-
 			end execute_section;
 
 			
@@ -1464,7 +1549,10 @@ package body et_package_read is
 							when SEC_STENCIL_CONTOURS => read_board_line (line);							
 							when SEC_STOPMASK_CONTOURS_SMT => read_board_line (line);							
 							when SEC_MILLINGS => read_board_line (line);
-							when SEC_CONTOURS => read_board_line (line);								
+							
+							when SEC_CONTOURS => 
+								read_contour_line (line);
+								
 							when others => invalid_section;
 						end case;
 				
@@ -1519,7 +1607,10 @@ package body et_package_read is
 							when SEC_STENCIL_CONTOURS => read_board_arc (line);
 							when SEC_STOPMASK_CONTOURS_SMT => read_board_arc (line);
 							when SEC_MILLINGS => read_board_arc (line);
-							when SEC_CONTOURS => read_board_arc (line);								
+							
+							when SEC_CONTOURS =>
+								read_contour_arc (line);
+								
 							when others => invalid_section;
 						end case;
 
@@ -1582,7 +1673,10 @@ package body et_package_read is
 							when SEC_STENCIL_CONTOURS => read_board_circle (line);
 							when SEC_STOPMASK_CONTOURS_SMT => read_board_circle (line);
 							when SEC_MILLINGS => read_board_circle (line);
-							when SEC_CONTOURS => read_board_circle (line);
+							
+							when SEC_CONTOURS => 
+								read_contour_circle (line);
+								
 							when others => invalid_section;
 						end case;
 						
@@ -1641,6 +1735,7 @@ package body et_package_read is
 										
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_ZONE =>
 						case stack.parent is
@@ -1650,7 +1745,10 @@ package body et_package_read is
 										SEC_STENCIL | SEC_STOPMASK =>
 										null;
 
-									when SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+									when SEC_VIA_RESTRICT =>
+										null;
+										
+									when SEC_KEEPOUT | SEC_ROUTE_RESTRICT =>
 										null;
 										
 									when SEC_CONDUCTOR =>
@@ -1692,6 +1790,7 @@ package body et_package_read is
 								
 							when others => invalid_section;
 						end case;
+						
 						
 					when SEC_CONTOURS =>
 						case stack.parent is
@@ -1737,12 +1836,18 @@ package body et_package_read is
 							when others => invalid_section;
 						end case;
 
-					when SEC_PAD_CONTOURS_SMT | SEC_STENCIL_CONTOURS | SEC_PAD_CONTOURS_THT | SEC_MILLINGS =>
+						
+					when SEC_PAD_CONTOURS_SMT | SEC_STENCIL_CONTOURS 
+						| SEC_PAD_CONTOURS_THT | SEC_MILLINGS =>
+						
+						-- reset_contour (et_package_read_contour.contour);
+						
 						case stack.parent is
 							when SEC_TERMINAL => null;
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_HOLE =>
 						case stack.parent is
 							when SEC_PCB_CONTOURS_NON_PLATED => null;

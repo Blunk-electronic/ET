@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                       VIA RESTRICT PACKAGES                              --
+--                       VIA RESTRICT / PACKAGES                            --
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -87,6 +87,48 @@ package body et_via_restrict.packages is
 		return result;
 	end to_polygons;
 
+
+
+	
+
+	procedure add_zone (
+		via_restrict	: in out type_via_restrict;
+		zone			: in type_via_restrict_zone;
+		face			: in type_face)
+	is 
+		use pac_via_restrict_zones;
+	begin
+		case face is
+			when TOP =>
+				append (via_restrict.top.zones, zone);
+
+			when BOTTOM =>
+				append (via_restrict.bottom.zones, zone);
+		end case;
+	end add_zone;
+
+				
+
+
+	
+	
+	procedure add_cutout (
+		via_restrict	: in out type_via_restrict;
+		cutout			: in type_via_restrict_cutout;
+		face			: in type_face)
+	is
+		use pac_via_restrict_cutouts;
+	begin
+		case face is
+			when TOP =>
+				append (via_restrict.top.cutouts, cutout);
+
+			when BOTTOM =>
+				append (via_restrict.bottom.cutouts, cutout);
+		end case;
+	end add_cutout;
+
+	
 	
 end et_via_restrict.packages;
 

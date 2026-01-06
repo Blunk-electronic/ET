@@ -51,7 +51,14 @@ package et_stencil.packages is
 		bottom	: type_stencil;
 	end record;
 
-	
+
+	-- CS procedures add_line, arc, cirlce zone
+
+	-- procedure add_line (
+	-- 	stencil	: in out type_stencil_both_sides;
+	-- 	line	: in type_stencil_line;
+	-- 	face	: in type_face);
+
 	
 
 	

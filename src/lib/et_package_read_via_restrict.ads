@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                       VIA RESTRICT BOARDS                                --
+--                        PACKAGE READ / VIA RESTRICT                       --
 --                                                                          --
---                              S p e c                                     --
+--                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,60 +35,37 @@
 --
 --   history of changes:
 --
---   to do:
+--
+-- DESCRIPTION:
+-- 
+-- This is about zones and cutout areas in via restrict.
+--
+--
+--
+--   do do:
+--
+--
 
-with et_pcb_signal_layers;			use et_pcb_signal_layers;
+with et_string_processing;				use et_string_processing;
+with et_package_model;					use et_package_model;
+with et_pcb_sides;						use et_pcb_sides;
+with et_logging;						use et_logging;
 
 
-package et_via_restrict.boards is
+package et_package_read_via_restrict is
 
-	use pac_geometry_2;
 
-	procedure dummy;
-	
+	procedure insert_via_restrict_zone (
+		packge			: in type_package_model_access;
+		face			: in type_face;
+		log_threshold	: in type_log_level);
+ 
 
-	
-	type type_via_restrict_contour is new -- CS rename to type_via_restrict_zone
-		et_via_restrict.type_via_restrict_zone with
-	record
-		layers 	: pac_signal_layers.set;
-	end record;
-	
-	package pac_via_restrict_contours is new doubly_linked_lists (type_via_restrict_contour);
-	-- CS rename to pac_via_restrict_zones
-
-	type type_via_restrict_cutout is new
-		et_via_restrict.type_via_restrict_cutout with
-	record
-		layers 	: pac_signal_layers.set;
-	end record;
-		
-	package pac_via_restrict_cutouts is new doubly_linked_lists (type_via_restrict_cutout);
-	
-
-	-- NOTE: 
-	-- In the board drawing there is no "both-sides" as with
-	-- silkscreen or assembly documentation. Here the signal
-	-- layers specify which conductor layers are affected.
-	
-	type type_via_restrict is record
-		contours	: pac_via_restrict_contours.list; -- CS rename contours to zone
-		cutouts		: pac_via_restrict_cutouts.list;
-
-		-- CS texts : 
-		-- This must not be derived from from conductor text because
-		-- it is not fabrication relevant.
-		-- It should contain notes of the designer exclusively.
-	end record;
-
+	procedure insert_via_restrict_zone_cutout (
+		packge			: in type_package_model_access;
+		face			: in type_face;
+		log_threshold	: in type_log_level);
 
 	
 	
-end et_via_restrict.boards;
-
--- Soli Deo Gloria
-
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
--- shall not perish but have eternal life.
--- The Bible, John 3.16
+end et_package_read_via_restrict;
