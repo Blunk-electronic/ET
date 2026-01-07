@@ -136,19 +136,7 @@ package body et_package_read is
 				when SEC_TOP =>
 					case stack.parent (degree => 2) is
 						when SEC_CONDUCTOR =>
-							
-							append (
-								container	=> packge.conductors.top.texts,
-								new_item	=> (pac_text with vectorize_text (
-										content			=> pac_text.content,
-										size			=> pac_text.size,
-										rotation		=> pac_text.position.rotation,
-										position		=> pac_text.position.place,
-										line_width		=> pac_text.line_width,
-										alignment		=> pac_text.alignment,
-										make_border		=> true,
-										log_threshold	=> log_threshold + 3)));
-
+							insert_conductor_text (packge, TOP, log_threshold + 2);
 							
 						when SEC_SILKSCREEN =>
 							insert_silk_text (packge, TOP, log_threshold + 2);
@@ -162,27 +150,11 @@ package body et_package_read is
 						when others => invalid_section;
 					end case;
 
-					-- clean up for next text
-					pac_text := (others => <>);
-
 					
 				when SEC_BOTTOM =>
 					case stack.parent (degree => 2) is
 						when SEC_CONDUCTOR =>
-							
-							append (
-								container	=> packge.conductors.bottom.texts,
-								new_item	=> (pac_text with vectorize_text (
-										content			=> pac_text.content,
-										size			=> pac_text.size,
-										rotation		=> pac_text.position.rotation,
-										position		=> pac_text.position.place,
-										mirror			=> MIRROR_ALONG_Y_AXIS,
-										line_width		=> pac_text.line_width,
-										alignment		=> pac_text.alignment,
-										make_border		=> true,
-										log_threshold	=> log_threshold + 3)));
-
+							insert_conductor_text (packge, BOTTOM, log_threshold + 2);
 
 						when SEC_SILKSCREEN =>
 							insert_silk_text (packge, BOTTOM, log_threshold + 2);
@@ -195,10 +167,8 @@ package body et_package_read is
 							
 						when others => invalid_section;
 					end case;
-					
-					-- clean up for next text
-					pac_text := (others => <>);
 
+					
 				when others => invalid_section;
 			end case;
 		end build_text;

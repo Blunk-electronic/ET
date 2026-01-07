@@ -42,6 +42,7 @@ with ada.strings; 						use ada.strings;
 with et_design_rules_board;				use et_design_rules_board;
 with et_board_geometry;					use et_board_geometry;
 
+with et_mirroring;
 with et_primitive_objects;				use et_primitive_objects;
 with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_keywords;						use et_keywords;
@@ -50,6 +51,9 @@ with et_directions;						use et_directions;
 with et_conductor_segment;				use et_conductor_segment;
 with et_conductors_floating_package;	use et_conductors_floating_package;
 
+with et_board_text;
+with et_conductor_text;
+with et_package_read_text;
 with et_general_rw;						use et_general_rw;
 
 
@@ -264,6 +268,39 @@ package body et_package_read_conductors is
 	end insert_conductor_circle;
 
 
+
+
+
+	procedure insert_conductor_text (
+		packge			: in type_package_model_access;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is 
+		use et_mirroring;
+		use et_board_text;
+		use pac_text_board_vectorized;
+		use et_package_read_text;
+
+		vectors : type_vector_text;
+	begin
+		vectors := vectorize_text (
+			content			=> pac_text.content,
+			size			=> pac_text.size,
+			rotation		=> pac_text.position.rotation,
+			position		=> pac_text.position.place,
+			mirror			=> MIRROR_ALONG_Y_AXIS,
+			line_width		=> pac_text.line_width,
+			alignment		=> pac_text.alignment,
+			make_border		=> true,
+			log_threshold	=> log_threshold + 1);
+			
+		add_text (packge.conductors, (pac_text with vectors), face);
+		
+		-- clean up for next text
+		reset_text (pac_text);		
+	end;
+
+	
 	
 	
 end et_package_read_conductors;
