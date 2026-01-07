@@ -205,7 +205,8 @@ package body et_package_read_conductors is
 			when BOTTOM => 
 				append (packge.conductors.bottom.lines, conductor_line);
 		end case;
-				
+		-- CS use procedure add_line
+		
 		-- clean up for next line
 		reset_line (conductor_line);		
 	end insert_conductor_line;
@@ -230,7 +231,8 @@ package body et_package_read_conductors is
 			when BOTTOM => 
 				append (packge.conductors.bottom.arcs, conductor_arc);
 		end case;
-
+		-- CS use procedure add_arc
+		
 		-- clean up for next arc
 		reset_arc (conductor_arc);		
 	end insert_conductor_arc;
@@ -254,7 +256,8 @@ package body et_package_read_conductors is
 			when BOTTOM => 
 				append (packge.conductors.bottom.circles, conductor_circle);
 		end case;
-
+		-- CS use procedure add_circle
+		
 		-- clean up for next circle
 		reset_circle (conductor_circle);		
 	end insert_conductor_circle;
