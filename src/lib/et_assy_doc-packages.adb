@@ -102,6 +102,26 @@ package body et_assy_doc.packages is
 	end;
 
 	
+
+
+
+	procedure add_text (
+		assy_doc	: in out type_assy_doc_both_sides;
+		text		: in type_doc_text;
+		face		: in type_face)
+	is 
+		use pac_doc_texts;
+	begin
+		case face is
+			when TOP => 
+				append (assy_doc.top.texts, text);
+
+
+			when BOTTOM => 
+				append (assy_doc.bottom.texts, text);
+		end case;
+	end;
+	
 	
 end et_assy_doc.packages;
 

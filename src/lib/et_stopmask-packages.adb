@@ -96,6 +96,27 @@ package body et_stopmask.packages is
 		end case;
 	end;
 
+
+	
+
+	procedure add_text (
+		stopmask	: in out type_stopmask_both_sides;
+		text		: in type_stop_text;
+		face		: in type_face)
+	is 
+		use pac_stop_texts;
+	begin
+		case face is
+			when TOP => 
+				append (stopmask.top.texts, text);
+
+
+			when BOTTOM => 
+				append (stopmask.bottom.texts, text);
+		end case;
+	end;
+
+
 	
 end et_stopmask.packages;
 

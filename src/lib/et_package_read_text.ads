@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                      PACKAGE READ / SILKSCREEN                           --
+--                        PACKAGE READ / TEXT                               --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -38,63 +38,46 @@
 --
 -- DESCRIPTION:
 -- 
--- This is about lines, arcs and circles in the silkscreen.
+-- This is about lines, arcs and circles in the stopmask.
 --
 --   do do:
 --
 --
 
 with et_string_processing;				use et_string_processing;
+
+with et_board_text;						use et_board_text;
+with et_device_placeholders.packages;	use et_device_placeholders.packages;
+with et_conductor_text.packages;		use et_conductor_text.packages;
 with et_package_model;					use et_package_model;
-with et_pcb_sides;						use et_pcb_sides;
+-- with et_pcb_sides;						use et_pcb_sides;
 with et_logging;						use et_logging;
 
 
-package et_package_read_silkscreen is
+package et_package_read_text is
+
+	use pac_text_board_vectorized;
+	use pac_texts_fab_with_content;
+	
 
 
 
-	procedure read_silk_line (
+	--pac_text				: et_packages.type_text_with_content;
+	--pac_text				: pac_text_fab.type_text_fab;
+	pac_text				: type_text_fab_with_content; -- CS rename
+	--content					: et_text.pac_text_content.bounded_string;
+	pac_text_placeholder	: type_text_placeholder; -- CS rename
+
+
+
+
+	procedure read_text (
 		line : in type_fields_of_line);
 	
 	
-	procedure read_silk_arc (
+	procedure read_placeholder (
 		line : in type_fields_of_line);
 
-
-	procedure read_silk_circle (
-		line : in type_fields_of_line);
 	
-
-
-	procedure insert_silk_line (
-		packge			: in type_package_model_access;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
-
-
-	procedure insert_silk_arc (
-		packge			: in type_package_model_access;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
-
-
-	procedure insert_silk_circle (
-		packge			: in type_package_model_access;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
 	
-
-	procedure insert_silk_zone (
-		packge			: in type_package_model_access;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
-
-
-	procedure insert_silk_text (
-		packge			: in type_package_model_access;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
-
-	
-end et_package_read_silkscreen;
+end et_package_read_text;

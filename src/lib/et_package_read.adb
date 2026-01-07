@@ -76,6 +76,8 @@ with et_package_read_route_restrict;	use et_package_read_route_restrict;
 with et_package_read_contour;			use et_package_read_contour;
 with et_package_read_via_restrict;		use et_package_read_via_restrict;
 with et_package_read_terminal;			use et_package_read_terminal;
+with et_package_read_text;				use et_package_read_text;
+
 
 
 package body et_package_read is
@@ -121,82 +123,12 @@ package body et_package_read is
 		pac_description			: pac_package_description.bounded_string; 
 		pac_technology			: type_assembly_technology := assembly_technology_default;
 
-		--pac_text				: et_packages.type_text_with_content;
-		--pac_text				: pac_text_fab.type_text_fab;
-		pac_text				: type_text_fab_with_content;
-		--content					: et_text.pac_text_content.bounded_string;
-		pac_text_placeholder	: type_text_placeholder;
 	
 
 		
-		procedure read_text is
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
-				expect_field_count (line, 7);
-
-				-- extract position of note starting at field 2
-				pac_text.position := to_position (line, 2);
-
-			elsif kw = keyword_size then -- size 1.000
-				expect_field_count (line, 2);
-				pac_text.size := to_distance (f (line, 2));
-
-			elsif kw = keyword_linewidth then -- linewidth 0.1
-				expect_field_count (line, 2);
-				pac_text.line_width := to_distance (f (line, 2));
-
-			elsif kw = keyword_alignment then -- alignment horizontal center vertical center
-				expect_field_count (line, 5);
-
-				-- extract alignment starting at field 2
-				pac_text.alignment := to_alignment (line, 2);
-				
-			elsif kw = keyword_content then -- content "keep clear"
-				expect_field_count (line, 2); -- actual content in quotes !
-				pac_text.content := to_content (f (line, 2));
-				
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_text;
 
 		
-		
-		procedure read_placeholder is
-			kw : constant string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
-				expect_field_count (line, 7);
 
-				-- extract position of note starting at field 2
-				pac_text_placeholder.position := to_position (line, 2);
-
-			elsif kw = keyword_size then -- size 1.000
-				expect_field_count (line, 2);
-				pac_text_placeholder.size := to_distance (f (line, 2));
-
-			elsif kw = keyword_linewidth then -- linewidth 0.1
-				expect_field_count (line, 2);
-				pac_text_placeholder.line_width := to_distance (f (line, 2));
-
-			elsif kw = keyword_alignment then -- alignment horizontal center vertical center
-				expect_field_count (line, 5);
-
-				-- extract alignment starting at field 2
-				pac_text_placeholder.alignment := to_alignment (line, 2);
-				
-			elsif kw = keyword_meaning then -- meaning reference, value, purpose
-				expect_field_count (line, 2);
-				pac_text_placeholder.meaning := to_meaning (f (line, 2));
-				
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_placeholder;
-		
 
 
 		procedure build_text is begin
@@ -219,20 +151,13 @@ package body et_package_read is
 
 							
 						when SEC_SILKSCREEN =>
-							pac_silk_texts.append (
-								container	=> packge.silkscreen.top.texts,
-								new_item	=> (pac_text with null record));
+							insert_silk_text (packge, TOP, log_threshold + 2);
 
 						when SEC_ASSEMBLY_DOCUMENTATION =>
-							pac_doc_texts.append (
-								container	=> packge.assy_doc.top.texts,
-								new_item	=> (pac_text with null record));
+							insert_doc_text (packge, TOP, log_threshold + 2);
 							
 						when SEC_STOPMASK =>
-							pac_stop_texts.append (
-								container	=> packge.stop_mask.top.texts,
-								new_item	=> (pac_text with null record));
-
+							insert_stop_text (packge, TOP, log_threshold + 2);
 							
 						when others => invalid_section;
 					end case;
@@ -260,21 +185,13 @@ package body et_package_read is
 
 
 						when SEC_SILKSCREEN =>
-							pac_silk_texts.append (
-								container	=> packge.silkscreen.bottom.texts,
-								new_item	=> (pac_text with null record));
-
+							insert_silk_text (packge, BOTTOM, log_threshold + 2);
 
 						when SEC_ASSEMBLY_DOCUMENTATION =>
-							pac_doc_texts.append (
-								container	=> packge.assy_doc.bottom.texts,
-								new_item	=> (pac_text with null record));
+							insert_doc_text (packge, BOTTOM, log_threshold + 2);
 							
 						when SEC_STOPMASK =>
-							pac_stop_texts.append (
-								container	=> packge.stop_mask.bottom.texts,
-								new_item	=> (pac_text with null record));
-
+							insert_stop_text (packge, BOTTOM, log_threshold + 2);
 							
 						when others => invalid_section;
 					end case;
@@ -1214,7 +1131,7 @@ package body et_package_read is
 										SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STOPMASK =>
 
-										read_text;
+										read_text (line);
 										
 									when others => invalid_section;
 								end case;
@@ -1230,7 +1147,7 @@ package body et_package_read is
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION =>
 
-										read_placeholder;
+										read_placeholder (line);
 
 									when others => invalid_section;
 								end case;

@@ -102,6 +102,27 @@ package body et_silkscreen.packages is
 	end;
 
 	
+
+
+	
+
+	procedure add_text (
+		silkscreen	: in out type_silkscreen_both_sides;
+		text		: in type_silk_text;
+		face		: in type_face)
+	is 
+		use pac_silk_texts;
+	begin
+		case face is
+			when TOP => 
+				append (silkscreen.top.texts, text);
+
+
+			when BOTTOM => 
+				append (silkscreen.bottom.texts, text);
+		end case;
+	end;
+
 	
 end et_silkscreen.packages;
 

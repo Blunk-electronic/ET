@@ -41,6 +41,7 @@ with ada.strings; 						use ada.strings;
 
 with et_design_rules_board;				use et_design_rules_board;
 with et_board_geometry;					use et_board_geometry;
+with et_board_text;
 
 with et_primitive_objects;				use et_primitive_objects;
 with et_coordinates_formatting;			use et_coordinates_formatting;
@@ -53,6 +54,7 @@ with et_silkscreen.packages;			use et_silkscreen.packages;
 
 with et_general_rw;						use et_general_rw;
 with et_package_read_contour;			use et_package_read_contour;
+with et_package_read_text;				use et_package_read_text;
 
 
 package body et_package_read_silkscreen is
@@ -287,6 +289,21 @@ package body et_package_read_silkscreen is
 
 	
 	
+
+
+	procedure insert_silk_text (
+		packge			: in type_package_model_access;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is 
+		use et_board_text;
+		use pac_text_board_vectorized;
+	begin
+		add_text (packge.silkscreen, (pac_text with null record), face);
+
+		-- clean up for next text
+		reset_text (pac_text);
+	end insert_silk_text;
 
 	
 end et_package_read_silkscreen;

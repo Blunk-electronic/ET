@@ -41,6 +41,7 @@ with ada.strings; 						use ada.strings;
 
 with et_design_rules_board;				use et_design_rules_board;
 with et_board_geometry;					use et_board_geometry;
+with et_board_text;
 
 with et_primitive_objects;				use et_primitive_objects;
 with et_coordinates_formatting;			use et_coordinates_formatting;
@@ -53,6 +54,8 @@ with et_assy_doc.packages;				use et_assy_doc.packages;
 
 with et_general_rw;						use et_general_rw;
 with et_package_read_contour;			use et_package_read_contour;
+with et_package_read_text;				use et_package_read_text;
+
 
 
 package body et_package_read_assy_doc is
@@ -282,5 +285,25 @@ package body et_package_read_assy_doc is
 		reset_contour (contour);
 	end insert_doc_zone;
 	
+
+
+
+	
+
+	procedure insert_doc_text (
+		packge			: in type_package_model_access;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is 
+		use et_board_text;
+		use pac_text_board_vectorized;
+	begin
+		add_text (packge.assy_doc, (pac_text with null record), face);
+
+		-- clean up for next text
+		reset_text (pac_text);
+	end insert_doc_text;
+
+
 	
 end et_package_read_assy_doc;

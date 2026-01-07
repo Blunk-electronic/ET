@@ -81,6 +81,14 @@ package et_assy_doc.packages is
 		zone		: in type_doc_zone;
 		face		: in type_face);
 
+
+	
+	procedure add_text (
+		assy_doc	: in out type_assy_doc_both_sides;
+		text		: in type_doc_text;
+		face		: in type_face);
+
+
 	
 end et_assy_doc.packages;
 

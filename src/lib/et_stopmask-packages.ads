@@ -72,6 +72,12 @@ package et_stopmask.packages is
 		face		: in type_face);
 
 
+	procedure add_text (
+		stopmask	: in out type_stopmask_both_sides;
+		text		: in type_stop_text;
+		face		: in type_face);
+
+
 	
 end et_stopmask.packages;
 

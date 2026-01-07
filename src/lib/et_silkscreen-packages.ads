@@ -87,7 +87,14 @@ package et_silkscreen.packages is
 		silkscreen	: in out type_silkscreen_both_sides;
 		zone		: in type_silk_zone;
 		face		: in type_face);
-	
+
+		
+	procedure add_text (
+		silkscreen	: in out type_silkscreen_both_sides;
+		text		: in type_silk_text;
+		face		: in type_face);
+
+		
 end et_silkscreen.packages;
 
 -- Soli Deo Gloria
