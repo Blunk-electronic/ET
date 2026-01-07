@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                             TERMINALS                                    --
+--                         PACKAGE TERMINALS                                --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -131,16 +131,6 @@ package body et_terminals is
 	
 	function to_tht_hole (tht_hole : in string) return type_terminal_tht_hole is begin
 		return type_terminal_tht_hole'value (tht_hole);
-	end;
-
-	
-	function to_string (technology : in type_assembly_technology) return string is begin
-		return type_assembly_technology'image (technology);
-	end;
-
-	
-	function to_assembly_technology (technology : in string) return type_assembly_technology is begin
-		return type_assembly_technology'value (technology);
 	end;
 
 

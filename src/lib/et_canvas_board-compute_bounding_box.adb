@@ -60,6 +60,7 @@ with et_route;
 with et_devices_non_electrical;
 with et_package_model;				use et_package_model;
 with et_package_library;
+with et_assembly_technology;
 with et_terminals;
 with et_pcb_stack;
 with et_conductor_segment;
@@ -1508,6 +1509,7 @@ is
 				
 				procedure process_terminals is
 					use et_terminals;
+					use et_assembly_technology;
 					use pac_terminals;
 					
 					

@@ -66,6 +66,7 @@ with et_module_board_user_settings;	use et_module_board_user_settings;
 
 with et_text;
 
+with et_assembly_technology;		use et_assembly_technology;
 with et_terminals;					use et_terminals;
 
 

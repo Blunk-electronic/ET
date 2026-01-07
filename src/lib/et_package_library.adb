@@ -42,6 +42,7 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 
 with ada.exceptions;
 
+with et_assembly_technology;	use et_assembly_technology;
 
 
 package body et_package_library is

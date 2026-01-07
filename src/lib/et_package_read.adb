@@ -51,6 +51,7 @@ with et_directory_and_file_ops;
 with et_general_rw;						use et_general_rw;
 
 with et_alignment;						use et_alignment;
+with et_assembly_technology;			use et_assembly_technology;
 with et_terminals;						use et_terminals;
 
 with et_primitive_objects;				use et_primitive_objects;

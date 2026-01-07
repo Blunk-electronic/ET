@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                             TERMINALS                                    --
+--                         PACKAGE TERMINALS                                --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -50,6 +50,7 @@ with ada.containers.indefinite_doubly_linked_lists;
 
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
+with et_assembly_technology;	use et_assembly_technology;
 with et_pcb_sides;				use et_pcb_sides;
 with et_board_geometry;			use et_board_geometry;
 with et_pcb_stack;				use et_pcb_stack;
@@ -214,17 +215,6 @@ package et_terminals is
 	
 
 
-	
-	type type_assembly_technology is (
-		THT,	-- Through Hole Technology
-		SMT		-- Surface Mount Technology
-		);
-		-- CS: apply prefix like AT_
-
-	assembly_technology_default : constant type_assembly_technology := SMT;
-	function to_string (technology : in type_assembly_technology) return string;
-	function to_assembly_technology (technology : in string) return type_assembly_technology;
-	
 
 	
 	type type_terminal (

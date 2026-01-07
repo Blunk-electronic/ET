@@ -45,6 +45,7 @@ with et_board_coordinates;		use et_board_coordinates;
 with et_pcb_stack;				use et_pcb_stack;
 with et_board_text;				use et_board_text;
 with et_drills;					use et_drills;
+with et_assembly_technology;	use et_assembly_technology;
 with et_terminals;				use et_terminals;
 with et_text;
 with et_design_rules_board;				use et_design_rules_board;
