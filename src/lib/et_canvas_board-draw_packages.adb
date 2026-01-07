@@ -62,6 +62,7 @@ with et_package_library;			use et_package_library;
 with et_package_variant;
 with et_assembly_technology;		use et_assembly_technology;
 with et_terminals;
+with et_terminal_hole;				use et_terminal_hole;
 
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_electrical.packages;	use et_devices_electrical.packages;

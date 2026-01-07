@@ -53,6 +53,7 @@ with et_logging;				use et_logging;
 with et_assembly_technology;	use et_assembly_technology;
 with et_stencil_mask_status;	use et_stencil_mask_status;
 with et_stopmask_status;		use et_stopmask_status;
+with et_terminal_hole;			use et_terminal_hole;
 with et_pcb_sides;				use et_pcb_sides;
 with et_board_geometry;			use et_board_geometry;
 with et_pcb_stack;				use et_pcb_stack;
@@ -107,11 +108,6 @@ package et_terminals is
 
 
 	
-	-- A THT terminal may have a drilled or a milled hole (milled hole is also called "plated millings")
-	type type_terminal_tht_hole is (DRILLED, MILLED);
-	terminal_tht_hole_default : constant type_terminal_tht_hole := DRILLED;
-	function to_string (tht_hole : in type_terminal_tht_hole) return string;
-	function to_tht_hole (tht_hole : in string) return type_terminal_tht_hole;
 
 	
 	-- A pad outline is a polygon:

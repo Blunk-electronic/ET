@@ -50,6 +50,7 @@ with et_alignment;						use et_alignment;
 with et_stencil_mask_status;			use et_stencil_mask_status;
 with et_stopmask_status;				use et_stopmask_status;
 with et_assembly_technology;			use et_assembly_technology;
+with et_terminal_hole;					use et_terminal_hole;
 with et_terminals;						use et_terminals;
 
 with et_primitive_objects;				use et_primitive_objects;

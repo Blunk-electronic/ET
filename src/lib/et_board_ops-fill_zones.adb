@@ -48,7 +48,7 @@ with et_board_ops.outline;
 with et_board_ops.devices;
 with et_board_ops.net_class;
 with et_fill_zones.boards;
-
+with et_terminal_hole;				use et_terminal_hole;
 with et_net_class;
 with et_net_class_name;
 

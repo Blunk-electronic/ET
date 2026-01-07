@@ -57,6 +57,7 @@ with et_package_bom_relevance;
 with et_package_description;			use et_package_description;
 with et_stencil_mask_status;			use et_stencil_mask_status;
 with et_stopmask_status;				use et_stopmask_status;
+with et_terminal_hole;					use et_terminal_hole;
 
 
 package body et_kicad_packages is
