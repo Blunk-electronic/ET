@@ -556,51 +556,35 @@ package body et_package_read is
 
 						
 					when SEC_TEXT =>
-						build_text;
+						build_text; -- CS rename to insert_text
 
 						
 					when SEC_PLACEHOLDER =>
+						-- CS procedure insert_placeholder
 						case stack.parent is
 							when SEC_TOP =>
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>
-										
-										pac_text_placeholders.append (
-											container	=> packge.silkscreen.top.placeholders,
-											new_item	=> pac_text_placeholder);
+										insert_silk_placeholder (packge, TOP, log_threshold + 2);
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-										
-										pac_text_placeholders.append (
-											container	=> packge.assy_doc.top.placeholders,
-											new_item	=> pac_text_placeholder);
+										insert_doc_placeholder (packge, TOP, log_threshold + 2);
 										
 									when others => invalid_section;
 								end case;
-
-								-- clean up for next placeholder
-								pac_text_placeholder := (others => <>);
 
 								
 							when SEC_BOTTOM =>
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>
-										
-										pac_text_placeholders.append (
-											container	=> packge.silkscreen.bottom.placeholders,
-											new_item	=> pac_text_placeholder);
+										insert_silk_placeholder (packge, BOTTOM, log_threshold + 2);
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-										
-										pac_text_placeholders.append (
-											container	=> packge.assy_doc.bottom.placeholders,
-											new_item	=> pac_text_placeholder);
+										insert_doc_placeholder (packge, BOTTOM, log_threshold + 2);
 										
 									when others => invalid_section;
 								end case;
 
-								-- clean up for next placeholder
-								pac_text_placeholder := (others => <>);
 								
 							when others => invalid_section;
 						end case;

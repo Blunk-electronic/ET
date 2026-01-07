@@ -123,6 +123,29 @@ package body et_silkscreen.packages is
 		end case;
 	end;
 
+
+	
+
+
+	procedure add_placeholder (
+		silkscreen	: in out type_silkscreen_both_sides;
+		placeholder	: in type_text_placeholder;
+		face		: in type_face)
+	is
+		use pac_text_placeholders;
+	begin
+		case face is
+			when TOP => 
+				append (silkscreen.top.placeholders, placeholder);
+
+
+			when BOTTOM => 
+				append (silkscreen.bottom.placeholders, placeholder);
+		end case;
+	end;
+
+	
+	
 	
 end et_silkscreen.packages;
 

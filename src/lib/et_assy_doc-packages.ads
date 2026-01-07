@@ -89,6 +89,12 @@ package et_assy_doc.packages is
 		face		: in type_face);
 
 
+	procedure add_placeholder (
+		assy_doc	: in out type_assy_doc_both_sides;
+		placeholder	: in type_text_placeholder;
+		face		: in type_face);
+
+	
 	
 end et_assy_doc.packages;
 

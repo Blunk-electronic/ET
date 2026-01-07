@@ -52,6 +52,8 @@ with et_directions;						use et_directions;
 with et_assy_doc;						use et_assy_doc;
 with et_assy_doc.packages;				use et_assy_doc.packages;
 
+with et_device_placeholders.packages;
+
 with et_general_rw;						use et_general_rw;
 with et_package_read_contour;			use et_package_read_contour;
 with et_package_read_text;				use et_package_read_text;
@@ -304,6 +306,23 @@ package body et_package_read_assy_doc is
 		reset_text (pac_text);
 	end insert_doc_text;
 
+
+
+
+
+
+	procedure insert_doc_placeholder (
+		packge			: in type_package_model_access;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is 
+		use et_device_placeholders.packages;
+	begin
+		add_placeholder (packge.assy_doc, pac_text_placeholder, face);
+
+		-- clean up for next placeholder
+		reset_placeholder (pac_text_placeholder);
+	end insert_doc_placeholder;
 
 	
 end et_package_read_assy_doc;

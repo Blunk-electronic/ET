@@ -95,6 +95,13 @@ package et_silkscreen.packages is
 		face		: in type_face);
 
 		
+	procedure add_placeholder (
+		silkscreen	: in out type_silkscreen_both_sides;
+		placeholder	: in type_text_placeholder;
+		face		: in type_face);
+
+		
+		
 end et_silkscreen.packages;
 
 -- Soli Deo Gloria

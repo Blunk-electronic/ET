@@ -122,6 +122,27 @@ package body et_assy_doc.packages is
 		end case;
 	end;
 	
+
+
+	
+
+	procedure add_placeholder (
+		assy_doc	: in out type_assy_doc_both_sides;
+		placeholder	: in type_text_placeholder;
+		face		: in type_face)
+	is
+		use pac_text_placeholders;
+	begin
+		case face is
+			when TOP => 
+				append (assy_doc.top.placeholders, placeholder);
+
+
+			when BOTTOM => 
+				append (assy_doc.bottom.placeholders, placeholder);
+		end case;
+	end;
+
 	
 end et_assy_doc.packages;
 

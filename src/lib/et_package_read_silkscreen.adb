@@ -52,6 +52,8 @@ with et_directions;						use et_directions;
 with et_silkscreen;						use et_silkscreen;
 with et_silkscreen.packages;			use et_silkscreen.packages;
 
+with et_device_placeholders.packages;
+
 with et_general_rw;						use et_general_rw;
 with et_package_read_contour;			use et_package_read_contour;
 with et_package_read_text;				use et_package_read_text;
@@ -305,5 +307,24 @@ package body et_package_read_silkscreen is
 		reset_text (pac_text);
 	end insert_silk_text;
 
+
+	
+	
+	
+	procedure insert_silk_placeholder (
+		packge			: in type_package_model_access;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is 
+		use et_device_placeholders.packages;
+	begin
+		add_placeholder (packge.silkscreen, pac_text_placeholder, face);
+
+		-- clean up for next placeholder
+		reset_placeholder (pac_text_placeholder);
+	end insert_silk_placeholder;
+	
+	
+	
 	
 end et_package_read_silkscreen;
