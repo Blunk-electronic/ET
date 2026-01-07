@@ -55,6 +55,7 @@ with et_alignment;
 with et_conductors_floating_package;	use et_conductors_floating_package;
 with et_package_bom_relevance;
 with et_package_description;			use et_package_description;
+with et_stencil_mask_status;			use et_stencil_mask_status;
 
 
 package body et_kicad_packages is

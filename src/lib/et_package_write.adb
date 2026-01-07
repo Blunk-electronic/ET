@@ -47,6 +47,7 @@ with et_general_rw;						use et_general_rw;
 with et_text_content;					use et_text_content;
 
 with et_alignment;						use et_alignment;
+with et_stencil_mask_status;			use et_stencil_mask_status;
 with et_assembly_technology;			use et_assembly_technology;
 with et_terminals;						use et_terminals;
 

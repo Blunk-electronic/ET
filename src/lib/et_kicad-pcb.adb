@@ -62,6 +62,7 @@ with et_system_info;
 with et_alignment;					use et_alignment;
 with et_conductors_floating_package;	use et_conductors_floating_package;
 with et_assembly_technology;		use et_assembly_technology;
+with et_stencil_mask_status;		use et_stencil_mask_status;
 with et_package_bom_relevance;
 with et_package_description;
 with et_package_variant;

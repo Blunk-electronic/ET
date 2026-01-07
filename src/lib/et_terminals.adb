@@ -84,14 +84,6 @@ package body et_terminals is
 	end log_plated_millings;
 
 	
-	function to_string (solder_paste : in type_solder_paste_status) return string is begin
-		return to_lower (type_solder_paste_status'image (solder_paste));
-	end;
-
-	
-	function to_solder_paste_status (solder_paste : in string) return type_solder_paste_status is begin
-		return type_solder_paste_status'value (solder_paste);
-	end;
 
 	
 	function to_string (stop_mask : in type_stop_mask_status) return string is begin

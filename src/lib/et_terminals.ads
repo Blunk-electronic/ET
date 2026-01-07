@@ -51,6 +51,7 @@ with ada.containers.indefinite_doubly_linked_lists;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_assembly_technology;	use et_assembly_technology;
+with et_stencil_mask_status;	use et_stencil_mask_status;
 with et_pcb_sides;				use et_pcb_sides;
 with et_board_geometry;			use et_board_geometry;
 with et_pcb_stack;				use et_pcb_stack;
@@ -103,12 +104,6 @@ package et_terminals is
 
 
 	
-	-- The solder paste status is for compatibility with other CAE systems
-	-- to account for virtual devices like net-ties or netchangers.
-	type type_solder_paste_status is (NONE, APPLIED);
-	solder_paste_status_default : constant type_solder_paste_status := APPLIED;
-	function to_string (solder_paste : in type_solder_paste_status) return string;
-	function to_solder_paste_status (solder_paste : in string) return type_solder_paste_status;
 
 
 
