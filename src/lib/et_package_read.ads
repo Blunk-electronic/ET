@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -38,42 +38,16 @@
 
 --   do do:
 
-with et_design_rules_board;				use et_design_rules_board;
-with et_string_processing;				use et_string_processing;
-with et_device_placeholders;			use et_device_placeholders;
-with et_device_placeholders.packages;	use et_device_placeholders.packages;
-with et_package_bom_relevance;			use et_package_bom_relevance;
-with et_package_library;				use et_package_library;
+
+
 with et_package_model_name;				use et_package_model_name;
-with et_fill_zones;						use et_fill_zones;
-with et_route_restrict;					use et_route_restrict;
-with et_via_restrict;					use et_via_restrict;
-with et_board_geometry;					use et_board_geometry;
-with et_board_coordinates;				use et_board_coordinates;
-with et_board_text;						use et_board_text;
-with et_conductor_text;					use et_conductor_text;
-with et_stopmask;						use et_stopmask;
-with et_stencil;						use et_stencil;
-with et_silkscreen;						use et_silkscreen;
-with et_assy_doc;						use et_assy_doc;
-with et_keepout;						use et_keepout;
 with et_pcb_stack;						use et_pcb_stack;
-with et_pcb_sides;						use et_pcb_sides;
-with et_drills;							use et_drills;
-with et_package_name;					use et_package_name;
 with et_logging;						use et_logging;
 
 
 
 package et_package_read is
 
-	use pac_geometry_2;
-	use pac_contours;
-	use pac_text_board;
-
-
-
-	
 	
 	
 	-- Opens the package file and stores the package in container et_packages.packages.

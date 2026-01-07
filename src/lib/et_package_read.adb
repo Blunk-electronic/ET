@@ -46,6 +46,7 @@ with ada.text_io;				use ada.text_io;
 with ada.strings; 				use ada.strings;
 -- with ada.exceptions;
 
+with et_string_processing;				use et_string_processing;
 with et_directory_and_file_ops;
 with et_general_rw;						use et_general_rw;
 
@@ -59,7 +60,11 @@ with et_keywords;						use et_keywords;
 with et_section_headers;				use et_section_headers;
 with et_package_sections;				use et_package_sections;
 with et_package_model;					use et_package_model;
+with et_package_library;				use et_package_library;
+with et_package_bom_relevance;			use et_package_bom_relevance;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
+with et_pcb_sides;						use et_pcb_sides;
+-- with et_design_rules_board;				use et_design_rules_board;
 
 with et_package_read_hole;				use et_package_read_hole;
 with et_package_read_assy_doc;			use et_package_read_assy_doc;
@@ -1021,8 +1026,6 @@ package body et_package_read is
 		if pac_package_models.contains (package_library, file_name) then
 			log (text => "already read -> skipped", level => log_threshold + 1);
 		else
-			-- CS
-			reset_contour (contour); -- temporarily
 			
 			-- open package file
 			open (
