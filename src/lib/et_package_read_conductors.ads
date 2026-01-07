@@ -49,7 +49,12 @@
 with et_string_processing;				use et_string_processing;
 with et_package_model;					use et_package_model;
 with et_pcb_sides;						use et_pcb_sides;
+with et_primitive_objects;				use et_primitive_objects;
+with et_fill_zones;						use et_fill_zones;
+with et_design_rules_board;				use et_design_rules_board;
 with et_logging;						use et_logging;
+
+
 
 
 package et_package_read_conductors is
@@ -92,5 +97,23 @@ package et_package_read_conductors is
 		face			: in type_face;
 		log_threshold	: in type_log_level);
 
+
+
+
+	zone_fill_spacing : type_track_clearance := type_track_clearance'first; -- CS rename to board_conductor_fill_spacing
+	zone_fill_style : type_fill_style := fill_style_default;
+	zone_easing : type_easing;
+
+	zone_isolation : type_track_clearance := type_track_clearance'first;
+	zone_width_min : type_track_width := type_track_width'first;
+
+
+	
+	
+	procedure read_fill_zone (
+		line : in type_fields_of_line);
+
+
+	-- CS insert_conductor_zone
 	
 end et_package_read_conductors;

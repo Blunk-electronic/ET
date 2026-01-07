@@ -43,7 +43,6 @@ with et_design_rules_board;				use et_design_rules_board;
 with et_board_geometry;					use et_board_geometry;
 
 with et_mirroring;
-with et_primitive_objects;				use et_primitive_objects;
 with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_keywords;						use et_keywords;
 with et_package_model;					use et_package_model;
@@ -301,6 +300,44 @@ package body et_package_read_conductors is
 	end;
 
 	
+
+	
+
+	procedure read_fill_zone (
+		line : in type_fields_of_line)
+	is
+		kw : string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_fill_style then -- fill_style solid/hatched
+			expect_field_count (line, 2);													
+			zone_fill_style := to_fill_style (f (line, 2));
+
+		elsif kw = keyword_spacing then -- spacing 0.3
+			expect_field_count (line, 2);													
+			zone_fill_spacing := to_distance (f (line, 2));
+
+		elsif kw = keyword_isolation then -- isolation 0.5
+			expect_field_count (line, 2);
+			zone_isolation := to_distance (f (line, 2));
+
+		elsif kw = keyword_width then -- width 0.5
+			expect_field_count (line, 2);
+			zone_width_min := to_distance (f (line, 2));
+		
+		elsif kw = keyword_easing_style then -- corner_easing none/chamfer/fillet
+			expect_field_count (line, 2);													
+			zone_easing.style := to_easing_style (f (line, 2));
+
+		elsif kw = keyword_easing_radius then -- easing_radius 0.4
+			expect_field_count (line, 2);													
+			zone_easing.radius := to_distance (f (line, 2));
+			
+		else
+			invalid_keyword (kw);
+		end if;
+	end;
+
 	
 	
 end et_package_read_conductors;

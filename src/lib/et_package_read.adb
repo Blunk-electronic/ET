@@ -57,7 +57,6 @@ with et_time;							use et_time;
 with et_package_description;			use et_package_description;
 with et_keywords;						use et_keywords;
 with et_section_headers;				use et_section_headers;
-with et_board_read;						use et_board_read;
 with et_package_sections;				use et_package_sections;
 with et_package_model;					use et_package_model;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
@@ -800,27 +799,9 @@ package body et_package_read is
 									when SEC_ROUTE_RESTRICT =>
 										read_route_restrict_line (line);
 										
-									when SEC_VIA_RESTRICT =>
-										
-										if not read_board_line (line) then
-											declare
-												kw : string := f (line, 1);
-											begin
-												-- CS: In the following: set a corresponding parameter-found-flag
-												if kw = keyword_width then -- width 0.5
-													expect_field_count (line, 2);
-													board_line_width := to_distance (f (line, 2));
-													
-												else
-													invalid_keyword (kw);
-												end if;
-											end;
-										end if;
-										
 									when SEC_PAD_CONTOURS_THT | SEC_STOPMASK_CONTOURS_THT => 
 										read_contour_line (line);
 										
-									--when SEC_VIA_RESTRICT => read_board_line (line);
 									when others => invalid_section;
 								end case;
 
@@ -854,24 +835,6 @@ package body et_package_read is
 									
 									when SEC_ROUTE_RESTRICT =>
 										read_route_restrict_arc (line);
-
-									
-									when SEC_VIA_RESTRICT =>
-
-										if not read_board_arc (line) then
-											declare
-												kw : string := f (line, 1);
-											begin
-												-- CS: In the following: set a corresponding parameter-found-flag
-												if kw = keyword_width then -- width 0.5
-													expect_field_count (line, 2);
-													board_line_width := to_distance (f (line, 2));
-													
-												else
-													invalid_keyword (kw);
-												end if;
-											end;
-										end if;
 										
 									when SEC_PAD_CONTOURS_THT | SEC_STOPMASK_CONTOURS_THT =>
 										read_contour_arc (line);
@@ -908,32 +871,6 @@ package body et_package_read is
 										
 									when SEC_ROUTE_RESTRICT =>
 										read_route_restrict_circle (line);
-
-										
-									when SEC_VIA_RESTRICT =>
-										if not read_board_circle (line) then
-											declare
-												kw : string := f (line, 1);
-											begin
-												-- CS: In the following: set a corresponding parameter-found-flag
-												if kw = keyword_width then -- width 0.5
-													expect_field_count (line, 2);
-													board_line_width := to_distance (f (line, 2));
-
-												elsif kw = keyword_filled then -- filled yes/no
-													expect_field_count (line, 2);													
-													board_filled := to_filled (f (line, 2));
-
-												elsif kw = keyword_fill_style then -- fill_style solid/hatched
-													expect_field_count (line, 2);													
-													board_fill_style := to_fill_style (f (line, 2));
-													
-												else
-													invalid_keyword (kw);
-												end if;
-											end;
-										end if;
-										
 										
 									when SEC_PAD_CONTOURS_THT | SEC_STOPMASK_CONTOURS_THT =>
 										read_contour_circle (line);
@@ -954,50 +891,10 @@ package body et_package_read is
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOPMASK =>
-										declare
-											kw : string := f (line, 1);
-										begin
-											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_easing_style then -- corner_easing none/chamfer/fillet
-												expect_field_count (line, 2);													
-												board_easing.style := to_easing_style (f (line, 2));
-
-											elsif kw = keyword_easing_radius then -- easing_radius 0.4
-												expect_field_count (line, 2);													
-												board_easing.radius := to_distance (f (line, 2));
-												
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
-
 									when SEC_KEEPOUT |  SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-										-- no parameters allowed here
-										declare
-											kw : string := f (line, 1);
-										begin
-											invalid_keyword (kw);
-										end;
-										
-									when SEC_CONDUCTOR =>
-										declare
-											kw : string := f (line, 1);
-										begin
-											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_easing_style then -- corner_easing none/chamfer/fillet
-												expect_field_count (line, 2);													
-												board_easing.style := to_easing_style (f (line, 2));
-
-											elsif kw = keyword_easing_radius then -- easing_radius 0.4
-												expect_field_count (line, 2);													
-												board_easing.radius := to_distance (f (line, 2));
-												
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
+										null;
+										-- Such zones do not have any parameters.
+										-- All entries are ignored here.
 
 									when others => invalid_section;
 								end case;
@@ -1011,48 +908,14 @@ package body et_package_read is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOPMASK =>
+										SEC_STENCIL | SEC_STOPMASK |
+										SEC_VIA_RESTRICT | SEC_KEEPOUT | SEC_ROUTE_RESTRICT =>
 										null;
-
-									when SEC_VIA_RESTRICT =>
-										null;
-										
-									when SEC_KEEPOUT | SEC_ROUTE_RESTRICT =>
-										null;
+										-- Such zones do not have any parameters.
+										-- All entries are ignored here.
 										
 									when SEC_CONDUCTOR =>
-										declare
-											kw : string := f (line, 1);
-										begin
-											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_fill_style then -- fill_style solid/hatched
-												expect_field_count (line, 2);													
-												board_fill_style := to_fill_style (f (line, 2));
-
-											elsif kw = keyword_easing_style then -- corner_easing none/chamfer/fillet
-												expect_field_count (line, 2);													
-												board_easing.style := to_easing_style (f (line, 2));
-
-											elsif kw = keyword_easing_radius then -- easing_radius 0.4
-												expect_field_count (line, 2);													
-												board_easing.radius := to_distance (f (line, 2));
-												
-											elsif kw = keyword_spacing then -- spacing 0.3
-												expect_field_count (line, 2);													
-												fill_spacing := to_distance (f (line, 2));
-
-											elsif kw = keyword_isolation then -- isolation 0.5
-												expect_field_count (line, 2);
-												polygon_isolation := to_distance (f (line, 2));
-
-											elsif kw = keyword_width then -- width 0.5
-												expect_field_count (line, 2);
-												polygon_width_min := to_distance (f (line, 2));
-												
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
+										read_fill_zone (line);
 
 									when others => invalid_section;
 								end case;

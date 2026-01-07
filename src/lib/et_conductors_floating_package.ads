@@ -71,6 +71,7 @@ package et_conductors_floating_package is
 		lines 		: pac_conductor_lines.list;
 		arcs		: pac_conductor_arcs.list;
 		circles		: pac_conductor_circles.list;
+		-- CS zones ?
 		texts		: et_conductor_text.packages.pac_conductor_texts.list;
 	end record;
 
