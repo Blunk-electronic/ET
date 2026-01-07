@@ -71,6 +71,8 @@ package et_conductor_text is
 		is new type_text_fab_with_content with
 	record
 		vectors	: type_vector_text; -- CS rename to text ?
+		-- CS remove ? no longer required because the vectors
+		-- are computed while drawing.
 	end record;
 
 
