@@ -51,7 +51,6 @@ with et_via_restrict;					use et_via_restrict;
 with et_board_geometry;					use et_board_geometry;
 with et_board_coordinates;				use et_board_coordinates;
 with et_board_text;						use et_board_text;
--- with et_board_read;						use et_board_read;
 with et_conductor_text;					use et_conductor_text;
 with et_stopmask;						use et_stopmask;
 with et_stencil;						use et_stencil;

@@ -82,7 +82,6 @@ with et_net_strands;
 with et_text_content;				use et_text_content;
 with et_rotation_docu;				use et_rotation_docu;
 
-with et_board_read;
 with et_board_write;
 
 with et_package_read;
