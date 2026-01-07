@@ -35,35 +35,32 @@
 --
 --   history of changes:
 --
+--
+-- To Do:
+-- - clean up
+--
+--
 
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings; 				use ada.strings;
+
 with ada.text_io;				use ada.text_io;
-with ada.exceptions;
+with ada.strings; 				use ada.strings;
+-- with ada.exceptions;
 
 with et_directory_and_file_ops;
 with et_general_rw;						use et_general_rw;
-
-with et_text_content;					use et_text_content;
 
 with et_alignment;						use et_alignment;
 with et_terminals;						use et_terminals;
 
 with et_primitive_objects;				use et_primitive_objects;
-with et_conductor_text.packages;		use et_conductor_text.packages;
 with et_time;							use et_time;
-with et_mirroring;						use et_mirroring;
-with et_coordinates_formatting;			use et_coordinates_formatting;
-with et_system_info;
 with et_package_description;			use et_package_description;
 with et_keywords;						use et_keywords;
 with et_section_headers;				use et_section_headers;
 with et_board_read;						use et_board_read;
-with et_conductor_segment;
 with et_package_sections;				use et_package_sections;
 with et_package_model;					use et_package_model;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
-
 
 with et_package_read_hole;				use et_package_read_hole;
 with et_package_read_assy_doc;			use et_package_read_assy_doc;
@@ -82,12 +79,7 @@ with et_package_read_text;				use et_package_read_text;
 
 package body et_package_read is
 
-	use pac_text_board_vectorized;
-	use pac_texts_fab_with_content;
-	
-	use pac_conductor_texts;
 
-	
 	
 	
 	procedure read_package (
@@ -109,8 +101,8 @@ package body et_package_read is
 			max 	=> max_section_depth);
 
 
-	-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
-
+			
+			
 		-- Once the appearance has been read, a new package will be created where this 
 		-- pointer is pointing at:
 		-- packge	: access type_package_model; -- CS rename to package_model
