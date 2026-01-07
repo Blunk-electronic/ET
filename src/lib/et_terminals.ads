@@ -53,6 +53,7 @@ with et_logging;				use et_logging;
 with et_assembly_technology;	use et_assembly_technology;
 with et_stencil_mask_status;	use et_stencil_mask_status;
 with et_stopmask_status;		use et_stopmask_status;
+with et_terminal_stopmask;		use et_terminal_stopmask;
 with et_terminal_hole;			use et_terminal_hole;
 with et_pcb_sides;				use et_pcb_sides;
 with et_board_geometry;			use et_board_geometry;
@@ -119,18 +120,7 @@ package et_terminals is
 
 
 	
--- SOLDER STOP MASK
 	
-	type type_stop_mask_shape is (
-		AS_PAD,			-- mask assumes same shape as conductor pad underneath
-		EXPAND_PAD,		-- mask is sligtly greater thatn underlying conductor pad (definded by DRU)
-		USER_SPECIFIC);	-- mask has user specific contours
-
-	stop_mask_shape_default : constant type_stop_mask_shape := EXPAND_PAD;
-
-	function to_string (shape : in type_stop_mask_shape) return string;
-	function to_shape (shape : in string) return type_stop_mask_shape;
-
 	
 	type type_stop_mask_contours is new type_contour with null record;
 	-- CS other properties of stop mask contours ?

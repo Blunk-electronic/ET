@@ -98,6 +98,7 @@ with et_route_restrict.packages;
 with et_via_restrict;
 with et_via_restrict.packages;
 
+with et_terminal_stopmask;			use et_terminal_stopmask;
 with et_stopmask;
 with et_stopmask.packages;
 

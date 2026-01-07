@@ -83,19 +83,7 @@ package body et_terminals is
 -- 		iterate (millings.circles, circle'access);
 	end log_plated_millings;
 
-	
 
-	
-
-	
-	function to_string (shape : in type_stop_mask_shape) return string is begin
-		return to_lower (type_stop_mask_shape'image (shape));
-	end;
-
-	
-	function to_shape (shape : in string) return type_stop_mask_shape is begin
-		return type_stop_mask_shape'value (shape);
-	end;
 
 	
 	function to_string (shape : in type_stencil_modification) return string is begin
