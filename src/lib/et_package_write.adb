@@ -471,8 +471,8 @@ package body et_package_write is
 			procedure write_stop_mask_tht is 
 				
 				function user_specific_contours return boolean is begin
-					if element (terminal_cursor).stop_mask_shape_tht.top.shape = USER_SPECIFIC 
-					or element (terminal_cursor).stop_mask_shape_tht.bottom.shape = USER_SPECIFIC then
+					if element (terminal_cursor).stop_mask_shape_tht.top.expand_mode = USER_SPECIFIC 
+					or element (terminal_cursor).stop_mask_shape_tht.bottom.expand_mode = USER_SPECIFIC then
 						return true;
 					else
 						return false;
@@ -484,10 +484,10 @@ package body et_package_write is
 					   parameters => to_string (element (terminal_cursor).stop_mask_status_tht)); -- stop_mask_status open
 					   
 				write (keyword => keyword_stop_mask_shape_top, 
-						parameters => to_string (element (terminal_cursor).stop_mask_shape_tht.top.shape));
+						parameters => to_string (element (terminal_cursor).stop_mask_shape_tht.top.expand_mode));
 
 				write (keyword => keyword_stop_mask_shape_bottom, 
-						parameters => to_string (element (terminal_cursor).stop_mask_shape_tht.bottom.shape));
+						parameters => to_string (element (terminal_cursor).stop_mask_shape_tht.bottom.expand_mode));
 
 				-- If user specified contours in either top or bottom required, write the header
 				-- for stop mask contours:
@@ -496,25 +496,25 @@ package body et_package_write is
 				end if;
 
 				-- If user specified contours in top, write them:
-				case element (terminal_cursor).stop_mask_shape_tht.top.shape is
+				case element (terminal_cursor).stop_mask_shape_tht.top.expand_mode is
 					when AS_PAD | EXPAND_PAD => null;
 					when USER_SPECIFIC =>
 						section_mark (section_top, HEADER);
 						
 						write_polygon_segments (type_contour (
-							element (terminal_cursor).stop_mask_shape_tht.top.contours));
+							element (terminal_cursor).stop_mask_shape_tht.top.contour));
 
 						section_mark (section_top, FOOTER);
 				end case;
 
 				-- If user specified contours in bottom, write them:
-				case element (terminal_cursor).stop_mask_shape_tht.bottom.shape is
+				case element (terminal_cursor).stop_mask_shape_tht.bottom.expand_mode is
 					when AS_PAD | EXPAND_PAD => null;
 					when USER_SPECIFIC =>
 						section_mark (section_bottom, HEADER);
 						
 						write_polygon_segments (type_contour (
-							element (terminal_cursor).stop_mask_shape_tht.bottom.contours));
+							element (terminal_cursor).stop_mask_shape_tht.bottom.contour));
 
 						section_mark (section_bottom, FOOTER);
 				end case;
@@ -531,7 +531,7 @@ package body et_package_write is
 			procedure write_stop_mask_smt is 
 				
 				function user_specific_contours return boolean is begin
-					if element (terminal_cursor).stop_mask_shape_smt.shape = USER_SPECIFIC then
+					if element (terminal_cursor).stop_mask_shape_smt.expand_mode = USER_SPECIFIC then
 						return true;
 					else
 						return false;
@@ -543,7 +543,7 @@ package body et_package_write is
 					   parameters => to_string (element (terminal_cursor).stop_mask_status_smt)); -- stop_mask_status open
 				
 				write (keyword => keyword_stop_mask_shape, 
-						parameters => to_string (element (terminal_cursor).stop_mask_shape_smt.shape)); -- stop_mask_shape as_pad/expand_pad/user_specific
+						parameters => to_string (element (terminal_cursor).stop_mask_shape_smt.expand_mode)); -- stop_mask_shape as_pad/expand_pad/user_specific
 
 				-- If user specified contours required, write the header for stop mask contours:
 				if user_specific_contours then
@@ -551,12 +551,12 @@ package body et_package_write is
 				end if;
 
 				-- If user specified contours, write them:
-				case element (terminal_cursor).stop_mask_shape_smt.shape is
+				case element (terminal_cursor).stop_mask_shape_smt.expand_mode is
 					when AS_PAD | EXPAND_PAD => null;
 					when USER_SPECIFIC =>
 		
 						write_polygon_segments (type_contour (
-							element (terminal_cursor).stop_mask_shape_smt.contours));
+							element (terminal_cursor).stop_mask_shape_smt.contour));
 
 				end case;
 

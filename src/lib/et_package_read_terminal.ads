@@ -71,10 +71,10 @@ package et_package_read_terminal is
 	terminal_position		: type_position := origin_zero_rotation;
 
 	tht_stop_mask_status			: type_stop_mask_status := stop_mask_status_default;
-	tht_stop_mask_shape_top			: type_stopmask_exapnd_mode := stop_mask_shape_default;
-	tht_stop_mask_shape_bottom		: type_stopmask_exapnd_mode := stop_mask_shape_default;		
-	tht_stop_mask_contours_top		: type_stop_mask_contours;
-	tht_stop_mask_contours_bottom	: type_stop_mask_contours;		
+	tht_stop_mask_shape_top			: type_stopmask_expand_mode := stopmask_expand_mode_default;
+	tht_stop_mask_shape_bottom		: type_stopmask_expand_mode := stopmask_expand_mode_default;		
+	tht_stop_mask_contours_top		: type_stopmask_contour;
+	tht_stop_mask_contours_bottom	: type_stopmask_contour;		
 
 	tht_width_inner_layers	: type_track_width := type_track_width'first;
 	tht_hole				: type_terminal_tht_hole := terminal_tht_hole_default;
@@ -89,8 +89,8 @@ package et_package_read_terminal is
 	smt_pad_face			: type_face := face_default;
 
 	smt_stop_mask_status	: type_stop_mask_status := stop_mask_status_default;
-	smt_stop_mask_shape		: type_stopmask_exapnd_mode := stop_mask_shape_default;
-	smt_stop_mask_contours	: type_stop_mask_contours;		
+	smt_stop_mask_shape		: type_stopmask_expand_mode := stopmask_expand_mode_default;
+	smt_stop_mask_contours	: type_stopmask_contour;		
 
 	-- NOTE: Solder paste is applied to SMT pads only.
 	smt_solder_paste_status	: type_solder_paste_status := solder_paste_status_default;

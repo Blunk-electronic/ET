@@ -224,16 +224,16 @@ package body et_package_read_terminal is
 			case smt_stop_mask_shape is
 				when AS_PAD =>
 					return (
-						shape		=> AS_PAD);
+						expand_mode	=> AS_PAD);
 					
 				when EXPAND_PAD =>
 					return (
-						shape		=> EXPAND_PAD);
+						expand_mode	=> EXPAND_PAD);
 				
 				when USER_SPECIFIC =>
 					return (
-						shape		=> USER_SPECIFIC,
-						contours	=> smt_stop_mask_contours);
+						expand_mode	=> USER_SPECIFIC,
+						contour		=> smt_stop_mask_contours);
 			end case;
 		end make_stop_mask_smt;
 
@@ -243,27 +243,28 @@ package body et_package_read_terminal is
 			return r : type_stop_mask_tht do
 				case tht_stop_mask_shape_top is
 					when AS_PAD => 
-						r.top := (shape => AS_PAD);
+						r.top := (expand_mode => AS_PAD);
 					
 					when EXPAND_PAD =>
-						r.top := (shape	=> EXPAND_PAD);
+						r.top := (expand_mode => EXPAND_PAD);
 						
 					when USER_SPECIFIC =>
-						r.top := (shape => USER_SPECIFIC, contours => tht_stop_mask_contours_top);
+						r.top := (expand_mode => USER_SPECIFIC, 
+							contour => tht_stop_mask_contours_top);
 				end case;
 
 				case tht_stop_mask_shape_bottom is
 					when AS_PAD => 
-						r.bottom := (shape => AS_PAD);
+						r.bottom := (expand_mode => AS_PAD);
 						
 					when EXPAND_PAD =>
-						r.bottom := (shape => EXPAND_PAD);
+						r.bottom := (expand_mode => EXPAND_PAD);
 						
 					when USER_SPECIFIC =>
-						r.bottom := (shape => USER_SPECIFIC, contours => tht_stop_mask_contours_bottom);
+						r.bottom := (expand_mode => USER_SPECIFIC, 
+							contour => tht_stop_mask_contours_bottom);
 
 				end case;
-
 			end return;
 		end make_stop_mask_tht;
 
@@ -328,8 +329,8 @@ package body et_package_read_terminal is
 				tht_drill_size			:= type_drill_size_tht'first;
 
 				tht_stop_mask_status			:= stop_mask_status_default;
-				tht_stop_mask_shape_top			:= stop_mask_shape_default;
-				tht_stop_mask_shape_bottom		:= stop_mask_shape_default;
+				tht_stop_mask_shape_top			:= stopmask_expand_mode_default;
+				tht_stop_mask_shape_bottom		:= stopmask_expand_mode_default;
 				delete_segments (tht_stop_mask_contours_top);
 				delete_segments (tht_stop_mask_contours_bottom);
 				
@@ -352,7 +353,7 @@ package body et_package_read_terminal is
 						));
 
 				-- clean up for next terminal
-				smt_stop_mask_shape		:= stop_mask_shape_default;
+				smt_stop_mask_shape		:= stopmask_expand_mode_default;
 				delete_segments (smt_stop_mask_contours);
 				delete_segments (smt_pad_shape);
 				smt_stop_mask_status	:= stop_mask_status_default;

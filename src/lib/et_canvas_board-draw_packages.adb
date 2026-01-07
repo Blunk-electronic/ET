@@ -1136,7 +1136,7 @@ procedure draw_packages is
 						pad_position	: in type_position) -- the center of the pad incl. its rotation
 					is
 						
-						stopmask_contours : type_stop_mask_contours;
+						stopmask_contours : type_stopmask_contour;
 						-- CS initialize (see build_contour)
 
 
@@ -1149,7 +1149,7 @@ procedure draw_packages is
 
 							polygon_tmp : type_polygon;
 						begin
-							case stopmask.shape is
+							case stopmask.expand_mode is
 								when AS_PAD =>
 									-- Copy solder pad contours to stopmask without
 									-- any modifications:
@@ -1176,7 +1176,7 @@ procedure draw_packages is
 									
 								when USER_SPECIFIC =>										
 									-- Use the stopmask contours as given by the user:
-									stopmask_contours := stopmask.contours;
+									stopmask_contours := stopmask.contour;
 
 							end case;
 						end build_contour;
@@ -1425,7 +1425,7 @@ procedure draw_packages is
 					-- Draws the stopmask of the pad:
 					procedure draw_stopmask is 
 						
-						stopmask_contours : type_stop_mask_contours;
+						stopmask_contours : type_stopmask_contour;
 						-- CS initialize (see procedure build_contour)
 						
 						
@@ -1438,7 +1438,7 @@ procedure draw_packages is
 
 							polygon_tmp : type_polygon;
 						begin
-							case stopmask.shape is
+							case stopmask.expand_mode is
 								when AS_PAD =>
 									-- Copy pad contours to stopmask without
 									-- any modification:
@@ -1467,7 +1467,7 @@ procedure draw_packages is
 									
 								when USER_SPECIFIC =>
 									-- Set the stopmask contour as given by the user settings:
-									stopmask_contours := stopmask.contours;
+									stopmask_contours := stopmask.contour;
 							end case;
 						end build_contour;
 

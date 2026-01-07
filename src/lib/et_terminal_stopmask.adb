@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- to do:
--- - clean up
+--
 
 
 with ada.characters.handling;	use ada.characters.handling;
@@ -46,13 +46,20 @@ package body et_terminal_stopmask is
 
 
 
-	function to_string (shape : in type_stopmask_exapnd_mode) return string is begin
-		return to_lower (type_stopmask_exapnd_mode'image (shape));
+	function to_string (
+		shape : in type_stopmask_expand_mode) 
+		return string 
+	is begin
+		return to_lower (type_stopmask_expand_mode'image (shape));
 	end;
 
 	
-	function to_shape (shape : in string) return type_stopmask_exapnd_mode is begin
-		return type_stopmask_exapnd_mode'value (shape);
+	
+	function to_shape (
+		shape : in string) 
+		return type_stopmask_expand_mode 
+	is begin
+		return type_stopmask_expand_mode'value (shape);
 	end;
 
 	

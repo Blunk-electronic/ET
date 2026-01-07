@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- to do:
--- - clean up
+--
 
 
 with et_board_geometry;			use et_board_geometry;
@@ -44,41 +44,44 @@ with et_board_geometry;			use et_board_geometry;
 
 package et_terminal_stopmask is
 
-
 	use pac_contours;
-
 
 	
 
-	type type_stopmask_exapnd_mode is (
+	type type_stopmask_expand_mode is (
 		AS_PAD,			-- mask assumes same shape as conductor pad underneath
 		EXPAND_PAD,		-- mask is sligtly greater thatn underlying conductor pad (definded by DRU)
 		USER_SPECIFIC);	-- mask has user specific contours
 
-	stop_mask_shape_default : constant type_stopmask_exapnd_mode := EXPAND_PAD;
-	-- CS rename to stopmask_expand_mode_default
-
-	function to_string (shape : in type_stopmask_exapnd_mode) return string;
-
-	function to_shape (shape : in string) return type_stopmask_exapnd_mode;
+	stopmask_expand_mode_default : constant 
+		type_stopmask_expand_mode := EXPAND_PAD;
 
 
+	function to_string (
+		shape : in type_stopmask_expand_mode) 
+		return string;
+
+		
+	function to_shape (
+		shape : in string)
+		return type_stopmask_expand_mode;
 
 
 
 
-	type type_stop_mask_contours is new type_contour with null record;
-	-- CS rename to type_stopmask_contour
-	-- CS other properties of stop mask contours ?
 
-	-- Contours of stop mask are required only if the shape is user specific.
+
+	type type_stopmask_contour is new type_contour with null record;
+	-- CS other properties of stopmask contours ?
+
+	-- Contours of stopmask are required only if the shape is user specific.
 	-- Otherwise the shape is to be derived from the underlying conductor pad and
 	-- the DRU settings:
-	type type_stopmask_shape (shape : type_stopmask_exapnd_mode := stop_mask_shape_default) is record
-		-- CS rename shape to expand_mode
-		case shape is
-			when USER_SPECIFIC => contours : type_stop_mask_contours;
-			-- CS rename to contour
+	type type_stopmask_shape (
+		expand_mode : type_stopmask_expand_mode := stopmask_expand_mode_default)
+	is record
+		case expand_mode is
+			when USER_SPECIFIC => contour : type_stopmask_contour;
 			when others => null;
 		end case;
 	end record;
