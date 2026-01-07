@@ -1132,7 +1132,7 @@ procedure draw_packages is
 
 					procedure draw_stopmask (
 						pad_contours	: in type_contour; -- the outline of the solder pad
-						stopmask		: in et_terminals.type_stop_mask; -- the stopmask in the outer layer
+						stopmask		: in type_stopmask_shape; -- the stopmask in the outer layer
 						pad_position	: in type_position) -- the center of the pad incl. its rotation
 					is
 						

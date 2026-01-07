@@ -71,8 +71,8 @@ package et_package_read_terminal is
 	terminal_position		: type_position := origin_zero_rotation;
 
 	tht_stop_mask_status			: type_stop_mask_status := stop_mask_status_default;
-	tht_stop_mask_shape_top			: type_stop_mask_shape := stop_mask_shape_default;
-	tht_stop_mask_shape_bottom		: type_stop_mask_shape := stop_mask_shape_default;		
+	tht_stop_mask_shape_top			: type_stopmask_exapnd_mode := stop_mask_shape_default;
+	tht_stop_mask_shape_bottom		: type_stopmask_exapnd_mode := stop_mask_shape_default;		
 	tht_stop_mask_contours_top		: type_stop_mask_contours;
 	tht_stop_mask_contours_bottom	: type_stop_mask_contours;		
 
@@ -89,7 +89,7 @@ package et_package_read_terminal is
 	smt_pad_face			: type_face := face_default;
 
 	smt_stop_mask_status	: type_stop_mask_status := stop_mask_status_default;
-	smt_stop_mask_shape		: type_stop_mask_shape := stop_mask_shape_default;
+	smt_stop_mask_shape		: type_stopmask_exapnd_mode := stop_mask_shape_default;
 	smt_stop_mask_contours	: type_stop_mask_contours;		
 
 	-- NOTE: Solder paste is applied to SMT pads only.

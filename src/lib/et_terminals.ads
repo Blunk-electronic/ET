@@ -122,27 +122,16 @@ package et_terminals is
 	
 	
 	
-	type type_stop_mask_contours is new type_contour with null record;
-	-- CS other properties of stop mask contours ?
 
-	-- Contours of stop mask are required only if the shape is user specific.
-	-- Otherwise the shape is to be derived from the underlying conductor pad and
-	-- the DRU settings:
-	type type_stop_mask (shape : type_stop_mask_shape := stop_mask_shape_default) is record
-		case shape is
-			when USER_SPECIFIC => contours : type_stop_mask_contours;
-			when others => null;
-		end case;
-	end record;
 
 	-- A THT pad has stop mask on top and bottom side:
 	type type_stop_mask_tht is record
-		top		: type_stop_mask; -- The shape on the top side
-		bottom	: type_stop_mask; -- is not nessecarily the same as on the bottom side.
+		top		: type_stopmask_shape; -- The shape on the top side
+		bottom	: type_stopmask_shape; -- is not nessecarily the same as on the bottom side.
 	end record;
 
 	-- A SMT pad has stop mask on one side only:
-	subtype type_stop_mask_smt is type_stop_mask;
+	subtype type_stop_mask_smt is type_stopmask_shape;
 
 
 
