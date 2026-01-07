@@ -57,29 +57,6 @@ package body et_package_model is
 		end if;
 	end validate_pad_size;
 	
--- 	procedure validate_track_clearance (clearance : in et_pcb_coordinates.type_distance_model) is
--- 	-- Checks whether the given track clearance is in range of type_track_clearance.
--- 	begin
--- 		if clearance not in type_track_clearance then
--- 			log (ERROR, "track clearance invalid ! Allowed range is" 
--- 				 & to_string (type_track_clearance'first) & " .."
--- 				 & to_string (type_track_clearance'last),
--- 				 console => true);
--- 			raise constraint_error;
--- 		end if;
--- 	end validate_track_clearance;
--- 
--- 	procedure validate_track_width (track_width : in type_distance_positive) is
--- 	-- Checks whether the given width is in range of type_track_width.
--- 	begin
--- 		if track_width not in type_track_width then
--- 			log (ERROR, "track width invalid ! Allowed range is" 
--- 				 & to_string (type_track_width'first) & " .."
--- 				 & to_string (type_track_width'last),
--- 				 console => true);
--- 			raise constraint_error;
--- 		end if;
--- 	end validate_track_width;
 
 -- 	procedure validate_restring_width (restring_width : in et_pcb_coordinates.type_distance_model) is
 -- 	-- Checks whether the given restring width is in range of type_restring_width.	
@@ -93,65 +70,6 @@ package body et_package_model is
 -- 		end if;
 -- 	end validate_restring_width;
 
-
-	procedure mirror_conductor_objects (
-		conductors	: in out type_conductor_objects;
-		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS)
-	is begin
-		mirror_lines (conductors.lines, axis);
-		mirror_arcs (conductors.arcs, axis);
-		mirror_circles (conductors.circles, axis);
-		mirror_texts (conductors.texts);
-	end mirror_conductor_objects;
-
-
-	procedure rotate_conductor_objects (
-		conductors	: in out type_conductor_objects;
-		angle		: in type_rotation_model)
-	is begin
-		rotate_lines (conductors.lines, angle);
-		rotate_arcs (conductors.arcs, angle);
-		rotate_circles (conductors.circles, angle);
-		rotate_texts (conductors.texts, angle);
-	end rotate_conductor_objects;
-
-	
-
-	procedure move_conductor_objects (
-		conductors	: in out type_conductor_objects;
-		offset		: in type_vector_model)
-	is begin
-		move_lines (conductors.lines, offset);
-		move_arcs (conductors.arcs, offset);
-		move_circles (conductors.circles, offset);
-		move_texts (conductors.texts, offset);
-	end move_conductor_objects;
-
-	
-	function to_polygons (
-		conductors	: in type_conductor_objects;
-		tolerance	: in type_distance_positive)
-		return pac_polygon_list.list
-	is
-		result, scratch : pac_polygon_list.list;
-	begin
-		-- lines:
-		result := to_polygons (conductors.lines, tolerance);
-
-		-- arcs:
-		scratch := to_polygons (conductors.arcs, tolerance);
-		result.splice (before => pac_polygon_list.no_element, source => scratch);
-
-		-- circles (outer edges only ):
-		scratch := to_polygons_outside (conductors.circles, tolerance);
-		result.splice (before => pac_polygon_list.no_element, source => scratch);
-		
-		-- texts
-		scratch := to_polygons (conductors.texts);
-		result.splice (before => pac_polygon_list.no_element, source => scratch);
-		
-		return result;
-	end to_polygons;
 
 
 	

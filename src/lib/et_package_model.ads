@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -48,8 +48,6 @@ with et_drills;					use et_drills;
 with et_terminals;				use et_terminals;
 with et_text;
 with et_design_rules_board;				use et_design_rules_board;
-with et_conductor_segment;				use et_conductor_segment;
-with et_conductor_text.packages;		use et_conductor_text.packages;
 with et_route_restrict.packages;		use et_route_restrict.packages;
 with et_via_restrict.packages;			use et_via_restrict.packages;
 with et_stopmask.packages;				use et_stopmask.packages;
@@ -64,6 +62,7 @@ with et_package_bom_relevance;			use et_package_bom_relevance;
 with et_package_name;					use et_package_name;
 with et_package_description;			use et_package_description;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
+with et_conductors_floating_package;	use et_conductors_floating_package;
 
 with et_logging;						use et_logging;
 
@@ -71,11 +70,8 @@ with et_logging;						use et_logging;
 package et_package_model is
 	
 	use pac_geometry_brd;
-
 	use pac_geometry_2;
-	use pac_polygons;
 	use pac_contours;
-	use pac_text_board;
 
 	
 
@@ -121,58 +117,6 @@ package et_package_model is
 
 	
 
-
-
-		
--- NON ELECTRIC conductor objects
-
-	-- All objects of this category are floating. Means they
-	-- have no connection to a pad or a track (net):
-	type type_conductor_objects is record 
-		lines 		: pac_conductor_lines.list;
-		arcs		: pac_conductor_arcs.list;
-		circles		: pac_conductor_circles.list;
-		texts		: et_conductor_text.packages.pac_conductor_texts.list;
-	end record;
-	
-	-- Since NON ELECTRIC conductor objects of a package can be on both sides 
-	-- of the board we need this type. There is no reason for NON ELECTRIC 
-	-- conductor objects in inner layers. So we deal with top and bottom side only:
-	type type_conductor_objects_both_sides is record
-		top		: type_conductor_objects;
-		bottom	: type_conductor_objects;
-	end record;
-
-
-	-- Mirrors the given non-electric conductor objects 
-	-- along the given axis:
-	procedure mirror_conductor_objects (
-		conductors	: in out type_conductor_objects;
-		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS);
-
-	
-	-- Rotates the given non-electric conductor objects 
-	-- by the given angle about the origin:
-	procedure rotate_conductor_objects (
-		conductors	: in out type_conductor_objects;
-		angle		: in type_rotation_model);
-
-	-- Moves the given non-electric conductor objects 
-	-- by the given offset:
-	procedure move_conductor_objects (
-		conductors	: in out type_conductor_objects;
-		offset		: in type_vector_model);
-
-	
-	-- Converts the given non-electric conductor objects to polygons.
-	-- NOTE regarding circles: The inside of circles is ignored. Only the outer
-	--  edge of a conductor circle is converted to a polygon.
-	function to_polygons (
-		conductors	: in type_conductor_objects;
-		tolerance	: in type_distance_positive)
-		return pac_polygon_list.list;
-		
-
 	
 	---- Silkscreen objects include placeholders for device name,
 	---- value, purpose:
@@ -203,9 +147,6 @@ package et_package_model is
 	--end record;
 
 
-	
-
--- PACKAGE MODEL
 	
 	-- This is the base type of a package:
 	type type_package_base (appearance : type_bom_relevant) is abstract tagged record

@@ -62,6 +62,7 @@ with et_silkscreen.packages;			use et_silkscreen.packages;
 with et_assy_doc.packages;				use et_assy_doc.packages;
 with et_keepout;						use et_keepout;
 with et_board_holes;					use et_board_holes;
+with et_conductors_floating_package;	use et_conductors_floating_package;
 with et_package_model;					use et_package_model;
 with et_package_bom_relevance;			use et_package_bom_relevance;
 with et_package_name;					use et_package_name;

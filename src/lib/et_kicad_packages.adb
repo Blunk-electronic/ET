@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -52,7 +52,7 @@ with et_axes;							use et_axes;
 with et_directory_and_file_ops;
 with et_generic_stacks;
 with et_alignment;
-with et_package_model;
+with et_conductors_floating_package;	use et_conductors_floating_package;
 with et_package_bom_relevance;
 with et_package_description;			use et_package_description;
 
@@ -641,7 +641,7 @@ package body et_kicad_packages is
 
 		-- NON ELECTRIC !!! COPPER OBJECTS (lines, arcs, circles)
 		-- NOTE: Does not include texts as kicad does not allow texts in signal layers.
-		copper : et_package_model.type_conductor_objects_both_sides;
+		copper : type_conductor_objects_both_sides;
 
 		-- STOP MASK OBJECTS
 		stop_mask : type_stopmask_both_sides;
