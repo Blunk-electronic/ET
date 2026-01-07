@@ -50,6 +50,7 @@ with et_board_geometry;					use et_board_geometry;
 with et_string_processing;				use et_string_processing;
 with et_assembly_technology;			use et_assembly_technology;
 with et_stencil_mask_status;			use et_stencil_mask_status;
+with et_stopmask_status;				use et_stopmask_status;
 with et_terminals;						use et_terminals;
 with et_design_rules_board;				use et_design_rules_board;
 with et_drills;							use et_drills;

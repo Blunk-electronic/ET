@@ -52,6 +52,7 @@ with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_assembly_technology;	use et_assembly_technology;
 with et_stencil_mask_status;	use et_stencil_mask_status;
+with et_stopmask_status;		use et_stopmask_status;
 with et_pcb_sides;				use et_pcb_sides;
 with et_board_geometry;			use et_board_geometry;
 with et_pcb_stack;				use et_pcb_stack;
@@ -102,20 +103,7 @@ package et_terminals is
 	-- Find a way to make it a constant.
 
 
-
 	
-
-
-
-	
-
-	
-	-- The stop mask status is for compatibility with other CAE systems
-	-- to account for virtual devices like net-ties or netchangers.
-	type type_stop_mask_status is (CLOSED, OPEN);
-	stop_mask_status_default : constant type_stop_mask_status := OPEN;
-	function to_string (stop_mask : in type_stop_mask_status) return string;
-	function to_stop_mask_status (stop_mask : in string) return type_stop_mask_status;
 
 
 	
