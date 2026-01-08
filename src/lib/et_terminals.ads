@@ -56,6 +56,7 @@ with et_stopmask_status;		use et_stopmask_status;
 with et_terminal_stopmask;		use et_terminal_stopmask;
 with et_terminal_stencil;		use et_terminal_stencil;
 with et_terminal_hole;			use et_terminal_hole;
+with et_terminal_tht;			use et_terminal_tht;
 with et_pcb_sides;				use et_pcb_sides;
 with et_board_geometry;			use et_board_geometry;
 with et_pcb_stack;				use et_pcb_stack;
@@ -93,49 +94,10 @@ package et_terminals is
 	
 
 
-	
--- PLATED MILLINGS	
 
-	procedure log_plated_millings (
-		millings 		: in type_contour;
-		log_threshold	: in type_log_level);
+	-- A SMT pad has stopmask on one side only:
+	subtype type_stopmask_smt is type_stopmask_shape;
 
-	
-	plated_millings_default : type_contour;
-	-- CS this variable should never be changed.
-	-- Find a way to make it a constant.
-
-
-	
-
-
-	
-
-	
-	-- A pad outline is a polygon:
-	type type_pad_outline_tht is record
-		top		: type_contour; -- The shape on the top side
-		bottom	: type_contour; -- is not nessecarily the same as on the bottom side.
-	end record;
-
-
-
-	
-	
-	
-
-
-	-- A THT pad has stop mask on top and bottom side:
-	type type_stop_mask_tht is record
-		top		: type_stopmask_shape; -- The shape on the top side
-		bottom	: type_stopmask_shape; -- is not nessecarily the same as on the bottom side.
-	end record;
-
-	-- A SMT pad has stop mask on one side only:
-	subtype type_stop_mask_smt is type_stopmask_shape;
-
-
-	
 	
 
 
@@ -170,7 +132,7 @@ package et_terminals is
 				stop_mask_status_tht	: type_stop_mask_status := stop_mask_status_default;
 				-- CS: The stop mask status applies to both top and bottom of the pad.
 
-				stop_mask_shape_tht		: type_stop_mask_tht;
+				stop_mask_shape_tht		: type_stopmask_tht;
 				
 				-- This is the width of the conductor surrounding the 
 				-- hole in inner layers.
@@ -205,7 +167,7 @@ package et_terminals is
 				face					: type_face;
 				
 				stop_mask_status_smt	: type_stop_mask_status := stop_mask_status_default;
-				stop_mask_shape_smt 	: type_stop_mask_smt;
+				stop_mask_shape_smt 	: type_stopmask_smt;
 				
 				solder_paste_status		: type_solder_paste_status := solder_paste_status_default;
 				stencil_shape			: type_stencil_shape;

@@ -54,6 +54,7 @@ with et_stopmask_status;				use et_stopmask_status;
 with et_terminal_stopmask;				use et_terminal_stopmask;
 with et_terminal_stencil;				use et_terminal_stencil;
 with et_terminal_hole;					use et_terminal_hole;
+with et_terminal_tht;					use et_terminal_tht;
 with et_terminals;						use et_terminals;
 with et_design_rules_board;				use et_design_rules_board;
 with et_drills;							use et_drills;

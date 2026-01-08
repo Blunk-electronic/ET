@@ -220,7 +220,7 @@ package body et_package_read_terminal is
 		inserted : boolean;
 
 		-- Builds the stop mask of the terminal if it is a SMT type:
-		function make_stop_mask_smt return type_stop_mask_smt is begin
+		function make_stop_mask_smt return type_stopmask_smt is begin
 			case smt_stop_mask_shape is
 				when AS_PAD =>
 					return (
@@ -239,8 +239,8 @@ package body et_package_read_terminal is
 
 
 		-- Builds the stop mask of the terminal if it is a THT type:
-		function make_stop_mask_tht return type_stop_mask_tht is begin
-			return r : type_stop_mask_tht do
+		function make_stop_mask_tht return type_stopmask_tht is begin
+			return r : type_stopmask_tht do
 				case tht_stop_mask_shape_top is
 					when AS_PAD => 
 						r.top := (expand_mode => AS_PAD);

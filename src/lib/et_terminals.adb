@@ -55,37 +55,6 @@ package body et_terminals is
 
 
 	
-	procedure log_plated_millings (
-		millings 		: in type_contour;
-		log_threshold	: in type_log_level)
-		is
--- 		use type_pcb_contour_lines;
--- 		use type_pcb_contour_arcs;
--- 		use type_pcb_contour_circles;
--- 		
--- 		procedure line (cursor : in type_pcb_contour_lines.cursor) is begin
--- 			line_pcb_contour_properties (cursor, log_threshold);
--- 		end;
--- 
--- 		procedure arc (cursor : in type_pcb_contour_arcs.cursor) is begin
--- 			arc_pcb_contour_properties (cursor, log_threshold);
--- 		end;
--- 
--- 		procedure circle (cursor : in type_pcb_contour_circles.cursor) is begin
--- 			circle_pcb_contour_properties (cursor, log_threshold);
--- 		end;
-		
-	begin -- log_plated_millings
-		null;
--- CS
--- 		iterate (millings.lines, line'access);
--- 		iterate (millings.arcs, arc'access);
--- 		iterate (millings.circles, circle'access);
-	end log_plated_millings;
-
-
-
-	
 	
 
 

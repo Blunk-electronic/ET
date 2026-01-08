@@ -63,6 +63,7 @@ with et_package_variant;
 with et_assembly_technology;		use et_assembly_technology;
 with et_terminals;
 with et_terminal_hole;				use et_terminal_hole;
+with et_terminal_tht;				use et_terminal_tht;
 
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
@@ -1340,7 +1341,7 @@ procedure draw_packages is
 				-- the signal layer is enabled.
 				procedure draw_pad_smt (
 					pad_contours	: in type_contour; -- the outline of the solder pad (copper)
-					stopmask		: in type_stop_mask_smt; -- the stopmask of the pad
+					stopmask		: in type_stopmask_smt; -- the stopmask of the pad
 					stencil			: in type_stencil_shape; -- the solder cream mask of the pad
 
 					-- The position of the center of the pad (relative to the package position)
