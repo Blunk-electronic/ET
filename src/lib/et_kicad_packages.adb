@@ -59,6 +59,7 @@ with et_stencil_mask_status;			use et_stencil_mask_status;
 with et_stopmask_status;				use et_stopmask_status;
 with et_terminal_hole;					use et_terminal_hole;
 with et_terminal_name;					use et_terminal_name;
+with et_exceptions;						use et_exceptions;
 
 
 package body et_kicad_packages is
@@ -125,6 +126,18 @@ package body et_kicad_packages is
 		end if;
 	end to_pad_shape_smt;
 
+
+
+	procedure validate_pad_size (size : in type_distance_model) is begin
+		if size not in type_pad_size then
+			raise semantic_error_1 with
+				"ERROR: Pad size invalid ! Allowed range is" 
+				 & to_string (type_pad_size'first) & " .."
+				 & to_string (type_pad_size'last);
+		end if;
+	end validate_pad_size;
+
+	
 
 	
 	function to_pad_shape_circle (

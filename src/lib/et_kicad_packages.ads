@@ -52,6 +52,8 @@ with et_board_text;				use et_board_text;
 use et_board_text.pac_text_board;
 use et_board_text.pac_text_board_vectorized;
 
+with et_design_rules_board;		use et_design_rules_board;
+
 with et_stopmask;				use et_stopmask;
 with et_stopmask.packages;		use et_stopmask.packages;
 with et_stencil.packages;		use et_stencil.packages;
@@ -208,6 +210,16 @@ package et_kicad_packages is
 	
 	function to_string (shape : in type_pad_shape_smt) return string;	
 	function to_pad_shape_smt (shape : in string) return type_pad_shape_smt;
+
+
+
+	pad_size_min : constant type_track_width := 0.05;
+	pad_size_max : constant type_track_width := 10.0;
+	subtype type_pad_size is type_distance_positive range pad_size_min .. pad_size_max;
+	
+	-- Checks whether given pad size is in range of type_pad_size
+	procedure validate_pad_size (size : in type_distance_model);
+
 
 	
 	-- Converts the given position and dimensions of a circular pad

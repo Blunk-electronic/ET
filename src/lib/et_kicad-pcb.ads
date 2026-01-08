@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -368,8 +368,8 @@ package et_kicad.pcb is
 		module_text_size_y	: pac_text_board.type_text_size;
 		module_text_width	: pac_text_board_vectorized.type_text_line_width; -- line width
 		
-		pad_size_x			: et_terminals.type_pad_size;
-		pad_size_y			: et_terminals.type_pad_size;
+		pad_size_x			: type_pad_size;
+		pad_size_y			: type_pad_size;
 		pad_drill			: type_drill_size;
 		stop_mask_expansion	: type_stop_mask_expansion;
 		aux_axis_origin_x	: type_aux_axis_origin;

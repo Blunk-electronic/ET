@@ -46,20 +46,6 @@ with et_exceptions;				use et_exceptions;
 
 package body et_terminals is
 
-	procedure validate_pad_size (size : in type_distance_model) is begin
-		if size not in type_pad_size then
-			raise semantic_error_1 with
-				"ERROR: Pad size invalid ! Allowed range is" 
-				 & to_string (type_pad_size'first) & " .."
-				 & to_string (type_pad_size'last);
-		end if;
-	end validate_pad_size;
-
-
-	
-	
-
-
 
 	overriding function to_position (
 		line : in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0 face top"

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -44,18 +44,6 @@ with ada.exceptions;
 
 
 package body et_package_model is
-	
-
-	procedure validate_pad_size (size : in type_distance_model) is
-	begin
-		if size not in type_pad_size then
-			log (ERROR, "pad size invalid ! Allowed range is" 
-				 & to_string (type_pad_size'first) & " .."
-				 & to_string (type_pad_size'last),
-				 console => true);
-			raise constraint_error;
-		end if;
-	end validate_pad_size;
 	
 
 -- 	procedure validate_restring_width (restring_width : in et_pcb_coordinates.type_distance_model) is

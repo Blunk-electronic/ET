@@ -66,24 +66,6 @@ package et_terminals is
 	use pac_contours;
 
 
-	
-	pad_size_min : constant type_track_width := 0.05;
-	pad_size_max : constant type_track_width := 10.0;
-	subtype type_pad_size is type_distance_positive range pad_size_min .. pad_size_max;
-
-	-- Checks whether given pad size is in range of type_pad_size
-	procedure validate_pad_size (size : in type_distance_model);
-
-	
-
-	pad_drill_offset_min : constant type_distance_positive := zero;
-	pad_drill_offset_max : constant type_distance_positive := pad_size_max * 0.5;
-	
-	subtype type_pad_drill_offset is type_distance_positive 
-		range pad_drill_offset_min .. pad_drill_offset_max;
-	
-
-
 
 	-- A SMT pad has stopmask on one side only:
 	subtype type_stopmask_smt is type_stopmask_shape;
