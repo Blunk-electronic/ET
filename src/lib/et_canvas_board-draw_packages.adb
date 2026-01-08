@@ -98,6 +98,7 @@ with et_route_restrict.packages;
 with et_via_restrict;
 with et_via_restrict.packages;
 
+with et_terminal_stencil;			use et_terminal_stencil;
 with et_terminal_stopmask;			use et_terminal_stopmask;
 with et_stopmask;
 with et_stopmask.packages;
@@ -1550,7 +1551,7 @@ procedure draw_packages is
 
 							polygon_tmp : type_polygon;
 						begin
-							case stencil.shape is
+							case stencil.shrink_mode is
 								
 								when AS_PAD =>
 									-- Copy pad contours to stencil without
@@ -1584,7 +1585,7 @@ procedure draw_packages is
 									
 								when USER_SPECIFIC =>
 									-- Set the stencil contour as given by the user settings:
-									stencil_contours := stencil.contours;
+									stencil_contours := stencil.contour;
 									
 							end case;
 						end build_contour;

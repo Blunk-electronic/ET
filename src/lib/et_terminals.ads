@@ -54,6 +54,7 @@ with et_assembly_technology;	use et_assembly_technology;
 with et_stencil_mask_status;	use et_stencil_mask_status;
 with et_stopmask_status;		use et_stopmask_status;
 with et_terminal_stopmask;		use et_terminal_stopmask;
+with et_terminal_stencil;		use et_terminal_stencil;
 with et_terminal_hole;			use et_terminal_hole;
 with et_pcb_sides;				use et_pcb_sides;
 with et_board_geometry;			use et_board_geometry;
@@ -133,41 +134,6 @@ package et_terminals is
 	-- A SMT pad has stop mask on one side only:
 	subtype type_stop_mask_smt is type_stopmask_shape;
 
-
-
-	
-	
-	-- SOLDER CREAM / STENCIL
-
-	-- The contour of the stencil is at first taken from the pad geometry
-	-- and then modified:
-	type type_stencil_modification is (
-		AS_PAD,			-- opening in stencil has the same size as the conductor pad underneath
-		SHRINK_PAD,		-- opening sligtly smaller than conductor pad. defined by shrink_factor
-		USER_SPECIFIC);	-- opening has a user defined outline
-
-	--subtype type_stencil_shrink is type_polygon_scale range 0.2 .. 1.0;
-
-	--stencil_shrink_default : constant type_stencil_shrink := 0.7; -- CS adjust to a useful value
-	stencil_shrink_default : constant type_distance_positive := 0.7; -- CS adjust to a useful value
-	-- CS subtype for shrink value ?
-	
-	stencil_modification_default : constant type_stencil_modification := AS_PAD;
-
-	function to_string (shape : in type_stencil_modification) return string;
-	function to_modification (shape : in string) return type_stencil_modification;
-
-	type type_stencil_contours is new type_contour with null record;
-	-- CS other properties stencil contours ?
-	
-	type type_stencil_shape (shape : type_stencil_modification := stencil_modification_default) is record
-		case shape is
-			when USER_SPECIFIC 	=> contours : type_stencil_contours;
-			when SHRINK_PAD		=> shrink_factor : type_distance_positive := stencil_shrink_default;
-			when others			=> null;
-		end case;
-	end record;
-	
 
 	
 	

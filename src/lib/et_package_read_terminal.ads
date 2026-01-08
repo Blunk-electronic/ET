@@ -52,6 +52,7 @@ with et_assembly_technology;			use et_assembly_technology;
 with et_stencil_mask_status;			use et_stencil_mask_status;
 with et_stopmask_status;				use et_stopmask_status;
 with et_terminal_stopmask;				use et_terminal_stopmask;
+with et_terminal_stencil;				use et_terminal_stencil;
 with et_terminal_hole;					use et_terminal_hole;
 with et_terminals;						use et_terminals;
 with et_design_rules_board;				use et_design_rules_board;
@@ -94,10 +95,10 @@ package et_package_read_terminal is
 
 	-- NOTE: Solder paste is applied to SMT pads only.
 	smt_solder_paste_status	: type_solder_paste_status := solder_paste_status_default;
-	smt_stencil_shape		: type_stencil_modification := stencil_modification_default;
+	smt_stencil_shape		: type_stencil_shrink_mode := stencil_modification_default;
 	smt_stencil_contours	: type_stencil_contours;
-	--smt_stencil_shrink		: type_stencil_shrink := stencil_shrink_default;
-	smt_stencil_shrink		: type_distance_positive := stencil_shrink_default;
+	--smt_stencil_shrink		: type_stencil_shrink := stencil_shrink_mode_default;
+	smt_stencil_shrink		: type_distance_positive := stencil_shrink_mode_default;
 
 
 	

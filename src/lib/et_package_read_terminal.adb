@@ -274,11 +274,11 @@ package body et_package_read_terminal is
 			return r : type_stencil_shape do
 				case smt_stencil_shape is
 					when AS_PAD =>
-						r := (shape => AS_PAD);
+						r := (shrink_mode => AS_PAD);
 					when SHRINK_PAD =>
-						r := (shape => SHRINK_PAD, shrink_factor => smt_stencil_shrink);
+						r := (shrink_mode => SHRINK_PAD, shrink_factor => smt_stencil_shrink);
 					when USER_SPECIFIC =>
-						r := (shape => USER_SPECIFIC, contours => smt_stencil_contours);
+						r := (shrink_mode => USER_SPECIFIC, contour => smt_stencil_contours);
 				end case;
 			end return;
 		end make_stencil;
@@ -360,7 +360,7 @@ package body et_package_read_terminal is
 				smt_solder_paste_status	:= solder_paste_status_default;
 				smt_stencil_shape		:= stencil_modification_default;
 				delete_segments (smt_stencil_contours);
-				smt_stencil_shrink		:= stencil_shrink_default;
+				smt_stencil_shrink		:= stencil_shrink_mode_default;
 		end case;
 
 		if not inserted then

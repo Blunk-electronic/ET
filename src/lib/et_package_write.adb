@@ -47,9 +47,12 @@ with et_general_rw;						use et_general_rw;
 with et_text_content;					use et_text_content;
 
 with et_alignment;						use et_alignment;
-with et_stencil_mask_status;			use et_stencil_mask_status;
+
 with et_terminal_stopmask;				use et_terminal_stopmask;
+with et_terminal_stencil;				use et_terminal_stencil;
 with et_stopmask_status;				use et_stopmask_status;
+with et_stencil_mask_status;			use et_stencil_mask_status;
+
 with et_assembly_technology;			use et_assembly_technology;
 with et_terminal_hole;					use et_terminal_hole;
 with et_terminals;						use et_terminals;
@@ -580,7 +583,7 @@ package body et_package_write is
 			procedure write_stencil is
 				
 				function user_specific_contours return boolean is begin
-					if element (terminal_cursor).stencil_shape.shape = USER_SPECIFIC then
+					if element (terminal_cursor).stencil_shape.shrink_mode = USER_SPECIFIC then
 						return true;
 					else
 						return false;
@@ -593,7 +596,7 @@ package body et_package_write is
 					-- solder_paste_status applied
 				
 				write (keyword => keyword_solder_paste_shape,
-					   parameters => to_string (element (terminal_cursor).stencil_shape.shape)); 
+					   parameters => to_string (element (terminal_cursor).stencil_shape.shrink_mode)); 
 					-- solder_paste_shape as_pad/shrink_pad/user_specific
 
 				-- If user specified contours required, write the header for stencil contours:
@@ -601,7 +604,7 @@ package body et_package_write is
 					section_mark (section_stencil_contours, HEADER);
 				end if;
 				
-				case element (terminal_cursor).stencil_shape.shape is
+				case element (terminal_cursor).stencil_shape.shrink_mode is
 					when AS_PAD => null;
 					
 					when SHRINK_PAD	=>
@@ -613,7 +616,7 @@ package body et_package_write is
 					when USER_SPECIFIC =>
 
 						write_polygon_segments (type_contour (
-							element (terminal_cursor).stencil_shape.contours));
+							element (terminal_cursor).stencil_shape.contour));
 				end case;
 
 				-- If user specified contours required, write the footer for stencil contours:

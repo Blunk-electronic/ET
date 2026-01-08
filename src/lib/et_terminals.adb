@@ -86,15 +86,6 @@ package body et_terminals is
 
 
 	
-	function to_string (shape : in type_stencil_modification) return string is begin
-		return to_lower (type_stencil_modification'image (shape));
-	end;
-
-	
-	function to_modification (shape : in string) return type_stencil_modification is begin
-		return type_stencil_modification'value (shape);
-	end;	
-
 	
 
 
