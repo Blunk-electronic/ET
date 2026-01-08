@@ -656,8 +656,19 @@ procedure draw_conductors is
 	procedure draw_text (
 		text : in type_conductor_text_board)
 	is
+		use et_mirroring;
 		use pac_draw_text;
 		use et_colors.board;
+
+		procedure draw is begin
+			-- mirror if bottom layer
+			if get_layer (text) = bottom_layer then
+				draw_vector_text (text, MIRROR_ALONG_Y_AXIS);
+			else
+				draw_vector_text (text);
+			end if;
+		end;
+		
 	begin
 		-- Draw the text if it is in the current layer:
 		if get_layer (text) = current_layer then
@@ -666,15 +677,14 @@ procedure draw_conductors is
 				-- The selected text must be drawn highlighted:
 				set_color_conductor (current_layer, BRIGHT);
 
-				draw_vector_text (text);
-				-- CS mirror if bottom layer
+				draw;
 
 				-- After drawing a selected (highlighted) text, the brightness
 				-- must be set back to normal:
 				set_color_conductor (current_layer, NORMAL);
 
 			else -- not selected
-				draw_vector_text (text);
+				draw;
 			end if;
 			
 		end if;
