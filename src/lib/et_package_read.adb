@@ -67,6 +67,7 @@ with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_pcb_sides;						use et_pcb_sides;
 -- with et_design_rules_board;				use et_design_rules_board;
 
+with et_package_read_meta;				use et_package_read_meta;
 with et_package_read_hole;				use et_package_read_hole;
 with et_package_read_assy_doc;			use et_package_read_assy_doc;
 with et_package_read_silkscreen;		use et_package_read_silkscreen;
@@ -104,25 +105,6 @@ package body et_package_read is
 		package stack is new et_general_rw.stack_lifo (
 			item	=> type_package_section,
 			max 	=> max_section_depth);
-
-
-			
-			
-		-- Once the appearance has been read, a new package will be created where this 
-		-- pointer is pointing at:
-		-- packge	: access type_package_model; -- CS rename to package_model
-		packge	: type_package_model_access; -- CS rename to package_model
-		
-		pac_appearance			: type_bom_relevant := bom_relevant_default;
-
-		-- The description and technology will be assigned once the complete
-		-- model has been read. See main of this procedure.
-		pac_description			: pac_package_description.bounded_string; 
-		pac_technology			: type_assembly_technology := assembly_technology_default;
-
-	
-
-		
 
 		
 
@@ -717,40 +699,7 @@ package body et_package_read is
 				case stack.current is
 
 					when SEC_INIT =>
-						declare
-							kw : string := f (line, 1);
-						begin
-							-- CS: In the following: set a corresponding parameter-found-flag
-							if kw = keyword_bom_relevant then -- bom_relevant yes/no
-								expect_field_count (line, 2);
-								pac_appearance := to_bom_relevant (f (line,2));
-
-								-- Depending on the appearance we create a virtual or real package
-								-- where pointer packge is pointing at:
-								case pac_appearance is
-									when BOM_RELEVANT_YES =>
-										packge := new type_package_model' (
-													appearance	=> BOM_RELEVANT_YES,
-													others		=> <>);
-
-									when BOM_RELEVANT_NO =>
-										packge := new type_package_model' (
-													appearance	=> BOM_RELEVANT_NO,
-													others		=> <>);
-								end case;
-										
-							elsif kw = keyword_description then -- description "blabla"
-								expect_field_count (line, 2);
-								pac_description := to_package_description (f (line,2));
-
-							elsif kw = keyword_assembly_technology then -- technology SMT/THT
-								expect_field_count (line, 2);
-								pac_technology := to_assembly_technology (f (line,2));
-								
-							else
-								invalid_keyword (kw);
-							end if;
-						end;
+						read_meta (line, log_threshold);
 
 						
 					when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOPMASK | SEC_STENCIL | 
@@ -1063,9 +1012,8 @@ package body et_package_read is
 			set_input (previous_input);
 			close (file_handle);
 
-			-- Assign description and technology as they have been read earlier.
-			packge.description := pac_description;
-			packge.technology := pac_technology;
+			-- Assign description and technology:
+			assign_meta (packge, log_threshold);
 
 			-- Insert the package (accessed by pointer packge) in et_pcb.packages:
 			pac_package_models.insert (

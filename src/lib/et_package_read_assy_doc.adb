@@ -59,7 +59,6 @@ with et_package_read_contour;			use et_package_read_contour;
 with et_package_read_text;				use et_package_read_text;
 
 
-
 package body et_package_read_assy_doc is
 
 	use pac_geometry_2;
