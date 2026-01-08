@@ -561,7 +561,7 @@ package body et_kicad.pcb is
 		-- Temporarily we need lots of variables for terminal properties.
 		-- Later when the final terminals are assigned to the package, these variables
 		-- compose the final terminal.
-		terminal_name 			: et_terminals.pac_terminal_name.bounded_string;
+		terminal_name 			: pac_terminal_name.bounded_string;
 		terminal_technology		: type_assembly_technology;
 		terminal_pad_shape_tht 	: type_pad_shape_tht;
 		terminal_pad_shape_smt 	: type_pad_shape_smt;
@@ -3155,7 +3155,7 @@ package body et_kicad.pcb is
 			begin
 				if length (terminal_net_name) = 0 then
 					log (WARNING, to_string (package_reference) & latin_1.space
-						 & et_terminals.to_string (terminal_name) & " not connected with a net !");
+						 & to_string (terminal_name) & " not connected with a net !");
 				end if;
 			end warn_on_missing_net;
 
@@ -4236,7 +4236,7 @@ package body et_kicad.pcb is
 					init_terminal_net_name; -- in case the next terminal has no net connected
 
 				else -- terminal could not be inserted
-					log (ERROR, "duplicated terminal " & et_terminals.to_string (terminal_name) & " !", console => true);
+					log (ERROR, "duplicated terminal " & to_string (terminal_name) & " !", console => true);
 					raise constraint_error;
 				end if;
 					
@@ -4792,8 +4792,9 @@ package body et_kicad.pcb is
 			-- The information required is sotred in the terminals of a package.
 			-- Example: (pad 1 smd rect (at -2.925 -3.81) (size 2 0.6) (layers F.Cu F.Paste F.Mask) (net 1 /IN))
 				reference	: in type_device_name;	-- IC45
-				terminal	: in et_terminals.pac_terminal_name.bounded_string) -- G7
-				return pac_net_name.bounded_string is
+				terminal	: in pac_terminal_name.bounded_string) -- G7
+				return pac_net_name.bounded_string 
+			is
 				net : pac_net_name.bounded_string; -- to be returned
 
 				use type_packages_board;
@@ -4822,7 +4823,7 @@ package body et_kicad.pcb is
 						net := element (terminal_cursor).net_name;
 					else
 						log (ERROR, "component reference " & to_string (reference) &
-							" terminal " & et_terminals.to_string (terminal) &
+							" terminal " & to_string (terminal) &
 							 " not found in board !",
 							console => true);
 						raise constraint_error;
@@ -5282,7 +5283,7 @@ package body et_kicad.pcb is
 						package_cursor	: type_packages_board.cursor := board.packages.first;
 						package_name	: type_device_name;
 						terminal_found	: boolean := false;
-						terminal_name	: et_terminals.pac_terminal_name.bounded_string;
+						terminal_name	: pac_terminal_name.bounded_string;
 
 						procedure query_terminals (
 							package_name	: in type_device_name;

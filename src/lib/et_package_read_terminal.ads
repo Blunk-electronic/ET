@@ -56,6 +56,7 @@ with et_terminal_stencil;				use et_terminal_stencil;
 with et_terminal_hole;					use et_terminal_hole;
 with et_terminal_tht;					use et_terminal_tht;
 with et_terminals;						use et_terminals;
+with et_terminal_name;					use et_terminal_name;
 with et_design_rules_board;				use et_design_rules_board;
 with et_drills;							use et_drills;
 with et_pcb_sides;						use et_pcb_sides;

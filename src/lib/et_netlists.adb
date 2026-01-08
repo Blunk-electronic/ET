@@ -814,7 +814,6 @@ package body et_netlists is
 		
 		procedure write_nets is 
 			use pac_netlist;
-			use et_terminals;
 
 			
 			-- Writes the device port in the netlist file.

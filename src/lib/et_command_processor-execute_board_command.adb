@@ -111,6 +111,7 @@ with et_drawing_frame;
 with et_net_names;					use et_net_names;
 with et_device_name;
 with et_terminals;
+with et_terminal_name;				use et_terminal_name;
 with et_package_model_name;
 with et_mirroring;
 with et_device_prefix;

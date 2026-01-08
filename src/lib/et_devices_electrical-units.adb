@@ -1046,7 +1046,7 @@ package body et_devices_electrical.units is
 
 	function get_port (
 		device		: in pac_devices_electrical.cursor;
-		terminal	: in et_terminals.pac_terminal_name.bounded_string)
+		terminal	: in pac_terminal_name.bounded_string)
 		return type_get_port_result
 	is		
 		-- CS: 

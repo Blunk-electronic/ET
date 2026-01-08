@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -52,7 +52,7 @@ with et_nets;					use et_nets;
 with et_project_name;			use et_project_name;
 with et_net_labels;				use et_net_labels;
 with et_net_connectors;			use et_net_connectors;
-with et_terminals;
+with et_terminal_name;			use et_terminal_name;
 with et_package_name;			use et_package_name;
 with et_module_board;
 with et_kicad_general;			use et_kicad_general;
@@ -1063,7 +1063,7 @@ package et_kicad.schematic is
 	function connected_net ( -- CS rename to get_connected_net
 		module			: in type_submodule_name.bounded_string;	-- nucleo_core
 		reference		: in type_device_name;	-- IC45
-		terminal		: in et_terminals.pac_terminal_name.bounded_string; -- E14
+		terminal		: in pac_terminal_name.bounded_string; -- E14
 		log_threshold	: in type_log_level)		
 		return pac_net_name.bounded_string;
 

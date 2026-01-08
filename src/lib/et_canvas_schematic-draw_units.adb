@@ -63,7 +63,7 @@ with et_device_name;					use et_device_name;
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_electrical.units;		use et_devices_electrical.units;
 
-with et_terminals;
+with et_terminal_name;					use et_terminal_name;
 
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
@@ -401,7 +401,6 @@ procedure draw_units is
 				use et_alignment;
 				alignment : type_text_alignment := (horizontal => ALIGN_CENTER, vertical => ALIGN_BOTTOM);
 
-				use et_terminals;
 				properties : type_port_properties_access;
 
 				use pac_draw_text;

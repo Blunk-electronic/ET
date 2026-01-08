@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -7438,7 +7438,7 @@ package body et_kicad.schematic is
 	function connected_net (
 		module			: in type_submodule_name.bounded_string; -- nucleo_core
 		reference		: in type_device_name;	-- IC45
-		terminal		: in et_terminals.pac_terminal_name.bounded_string; -- E14
+		terminal		: in pac_terminal_name.bounded_string; -- E14
 		log_threshold	: in type_log_level)		
 		return pac_net_name.bounded_string 
 	is
@@ -7508,7 +7508,7 @@ package body et_kicad.schematic is
 							
 							log (text => "port name " & to_string (port.name), level => log_threshold + 4);
 						else
-							log (ERROR, "terminal " & et_terminals.to_string (terminal) & " not found !",
+							log (ERROR, "terminal " & to_string (terminal) & " not found !",
 								 console => true);
 							raise constraint_error;
 						end if;
@@ -7613,7 +7613,7 @@ package body et_kicad.schematic is
 		
 	begin -- connected_net
 		log (text => "locating in module " & to_string (module) & " net connected with " 
-			& to_string (reference) & " terminal " & et_terminals.to_string (terminal) & " ...", level => log_threshold);
+			& to_string (reference) & " terminal " & to_string (terminal) & " ...", level => log_threshold);
 		log_indentation_up;
 
 		module_cursor := find (modules, module); -- set the cursor to the module

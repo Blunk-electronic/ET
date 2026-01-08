@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -45,7 +45,7 @@ with ada.containers.ordered_maps;
 
 with et_package_name;			use et_package_name;
 with et_package_model_name;		use et_package_model_name;
-with et_terminals;				use et_terminals;
+with et_terminal_name;			use et_terminal_name;
 with et_port_names;				use et_port_names;
 with et_unit_name;				use et_unit_name;
 
@@ -98,8 +98,8 @@ package et_package_variant is
 	end record;
 	
 	package pac_terminal_port_map is new ordered_maps (
-		key_type 		=> et_terminals.pac_terminal_name.bounded_string, -- H7, 14
-		"<"				=> et_terminals.pac_terminal_name."<",
+		key_type 		=> pac_terminal_name.bounded_string, -- H7, 14
+		"<"				=> pac_terminal_name."<",
 		element_type 	=> type_port_in_terminal_port_map); -- unit A, OE1
 
 
@@ -170,7 +170,7 @@ package et_package_variant is
 
 
 	type type_terminal is record
-		name	: et_terminals.pac_terminal_name.bounded_string; -- H7
+		name	: pac_terminal_name.bounded_string; -- H7
 		unit	: pac_unit_name.bounded_string; -- IO-BANK1
 		port	: pac_port_name.bounded_string; -- GPIO3
 	end record;

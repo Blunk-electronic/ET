@@ -36,6 +36,8 @@
 --   history of changes:
 --
 
+with ada.text_io;				use ada.text_io;
+with ada.characters.handling;	use ada.characters.handling;
 with ada.strings;				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.exceptions;
@@ -103,13 +105,6 @@ package body et_terminals is
 
 
 	
-	function to_string (terminal : in pac_terminal_name.bounded_string) return string is begin
-		return pac_terminal_name.to_string (terminal);
-	end;
-
-	function to_terminal_name (terminal : in string) return pac_terminal_name.bounded_string is begin
-		return pac_terminal_name.to_bounded_string (terminal);
-	end;
 
 	
 	procedure terminal_properties (

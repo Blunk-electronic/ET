@@ -57,7 +57,7 @@ with et_symbol_model;			use et_symbol_model;
 with et_port_direction;			use et_port_direction;
 with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
-with et_terminals;
+with et_terminal_name;			use et_terminal_name;
 with et_device_name;			use et_device_name;
 with et_module_names;			use et_module_names;
 with et_module_instance;		use et_module_instance;
@@ -85,7 +85,7 @@ package et_netlists is
 		device			: type_device_name; -- IC4		
 		port			: pac_port_name.bounded_string; -- CLOCK, CE, VDD, GND
 		characteristics	: type_symbol_port (direction); -- direction, sensitivity, ...
-		terminal		: et_terminals.pac_terminal_name.bounded_string; -- H4, 1, 16
+		terminal		: pac_terminal_name.bounded_string; -- H4, 1, 16
 	end record;
 
 	

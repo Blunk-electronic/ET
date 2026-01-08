@@ -60,6 +60,7 @@ with et_mirroring;						use et_mirroring;
 with et_schematic_text;					use et_schematic_text;
 with et_conventions;
 with et_alignment;						use et_alignment;
+with et_terminal_name;					use et_terminal_name;
 with et_port_visibility;
 with et_unit_swap_level;
 with et_unit_add_level;
@@ -1193,7 +1194,7 @@ package body et_kicad_libraries is
 			terminal_cursor : pac_terminal_port_map.cursor; 
 
 			-- For temporarily storage of a terminal name:
-			terminal_name_in_map : et_terminals.pac_terminal_name.bounded_string;
+			terminal_name_in_map : pac_terminal_name.bounded_string;
 		begin
 			-- Loop in terminal_port_map. Test each terminal whether it occurs
 			-- in the package_terminals.
@@ -1204,7 +1205,7 @@ package body et_kicad_libraries is
 				if package_terminals.find (terminal_name_in_map) = et_terminals.pac_terminals.no_element then
 					log (ERROR, "package " & to_string (packge => package_name)
 						 & " does not have a terminal '" 
-						 & et_terminals.to_string (terminal_name_in_map) & "' !", console => true);
+						 & to_string (terminal_name_in_map) & "' !", console => true);
 					raise constraint_error;
 				end if;
 				
@@ -1338,7 +1339,7 @@ package body et_kicad_libraries is
 			tmp_port_name_visible		: et_port_visibility.type_port_name_visible;
 			tmp_terminal_name_visible	: et_port_visibility.type_terminal_name_visible;
 			tmp_port_name_offset		: et_schematic_geometry.type_distance_model; -- CS: rename to port_name_offset
-			tmp_terminal_name			: et_terminals.pac_terminal_name.bounded_string;
+			tmp_terminal_name			: pac_terminal_name.bounded_string;
 			
 			tmp_units_total		: type_units_total; -- see spec for range -- CS rename to units_total	
 			tmp_unit_id			: type_unit_id; -- assumes 0 if all units are affected, -- see spec	-- CS rename to unit_id
@@ -1995,7 +1996,7 @@ package body et_kicad_libraries is
 				port.name := pac_port_name.to_bounded_string (f (line,2)); -- GND, GPIO2
 				
 				-- compose terminal name. must be stored temporarily. will be inserted in default package variant
-				tmp_terminal_name := et_terminals.pac_terminal_name.to_bounded_string (f (line,3)); -- H5, 14
+				tmp_terminal_name := pac_terminal_name.to_bounded_string (f (line,3)); -- H5, 14
 
 				-- compose position
 				set (port.position, AXIS_X, mil_to_distance (mil => f (line,4)));

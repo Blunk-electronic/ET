@@ -37,14 +37,7 @@
 --
 --   to do:
 
-
-with ada.text_io;				use ada.text_io;
-with ada.characters.handling;	use ada.characters.handling;
-
-with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
-
-with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.indefinite_doubly_linked_lists;
 
@@ -57,14 +50,13 @@ with et_terminal_stopmask;		use et_terminal_stopmask;
 with et_terminal_stencil;		use et_terminal_stencil;
 with et_terminal_hole;			use et_terminal_hole;
 with et_terminal_tht;			use et_terminal_tht;
+with et_terminal_name;			use et_terminal_name;
 with et_pcb_sides;				use et_pcb_sides;
 with et_board_geometry;			use et_board_geometry;
 with et_pcb_stack;				use et_pcb_stack;
 with et_drills;					use et_drills;
-with et_text;
-with et_board_text;				use et_board_text;
 with et_design_rules_board;		use et_design_rules_board;
-with et_fonts;					use et_fonts;
+
 
 
 package et_terminals is
@@ -72,8 +64,6 @@ package et_terminals is
 	use pac_geometry_brd;
 	use pac_geometry_2;
 	use pac_contours;
-	use pac_polygons;
-	use pac_text_board;
 
 
 	
@@ -243,29 +233,6 @@ package et_terminals is
 		return type_contour;
 	
 	
-	-- A terminal is the physical point where electrical energy comes in or out of the device.
-	-- Other CAE systems refer to "pins" or "pads". In order to use only a single word
-	-- we further-on speak about "terminals".
-	-- The name of a terminal may have 10 characters which seems sufficient for now.
-	-- CS: character set, length check, charcter check
- 	terminal_name_length_max : constant natural := 10;
-	package pac_terminal_name is new generic_bounded_length (terminal_name_length_max);
-	use pac_terminal_name;
-
-	function to_string (terminal : in pac_terminal_name.bounded_string) return string;
-	function to_terminal_name (terminal : in string) return pac_terminal_name.bounded_string;
-
-
-	package pac_terminal_names is new doubly_linked_lists (pac_terminal_name.bounded_string);
-	
-
-	
-	-- GUI relevant only:
-	terminal_name_font : constant type_font :=
-		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);
-
-	terminal_name_size : constant pac_text_board.type_text_size := 0.5;
-	
 
 	
 	
@@ -278,6 +245,7 @@ package et_terminals is
 	
 	package pac_terminals is new indefinite_ordered_maps (
 		key_type		=> pac_terminal_name.bounded_string, -- H7, 14
+		"<"				=> pac_terminal_name."<",													 
 		element_type	=> type_terminal);
 
 	use pac_terminals;
@@ -325,8 +293,6 @@ package et_terminals is
 		--terminals	: in out pac_terminals.map;
 		--to_be_kept	: in pac_terminal_names.list); -- 1, 2, 9, 15
 
-
-	
 
 	
 end et_terminals;

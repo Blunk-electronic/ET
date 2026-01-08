@@ -102,6 +102,7 @@ with et_device_library;				use et_device_library;
 with et_keywords;					use et_keywords;
 with et_symbol_sections;			use et_symbol_sections;
 with et_device_sections;			use et_device_sections;
+with et_terminal_name;				use et_terminal_name;
 with et_terminals;					use et_terminals;
 
 

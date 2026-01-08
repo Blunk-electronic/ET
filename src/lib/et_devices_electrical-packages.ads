@@ -82,6 +82,7 @@ with et_package_name;					use et_package_name;
 with et_package_model_name;				use et_package_model_name;
 with et_package_variant;				use et_package_variant;
 with et_terminals;						use et_terminals;
+with et_terminal_name;					use et_terminal_name;
 with et_conductors_floating_package;	use et_conductors_floating_package;
 with et_package_model;					use et_package_model;
 with et_package_library;				use et_package_library;

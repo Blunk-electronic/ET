@@ -3459,7 +3459,7 @@ package body et_board_ops.devices is
 
 
 	procedure terminal_not_found (
-		terminal_name : in et_terminals.pac_terminal_name.bounded_string) 
+		terminal_name : in pac_terminal_name.bounded_string) 
 	is 
 		use et_terminals;
 	begin

@@ -81,6 +81,7 @@ with et_assembly_variant_name;	use et_assembly_variant_name;
 with et_numbering;
 with et_material;
 with et_netlists;
+with et_terminal_name;			use et_terminal_name;
 with et_terminals;
 with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
@@ -158,7 +159,7 @@ package et_schematic_ops is
 	function get_net (
 		module		: in pac_generic_modules.cursor;
 		device		: in pac_devices_electrical.cursor;
-		terminal	: in et_terminals.pac_terminal_name.bounded_string) -- H7, 1, 16
+		terminal	: in pac_terminal_name.bounded_string) -- H7, 1, 16
 		return pac_nets.cursor;
 
 	

@@ -59,6 +59,7 @@ with et_net_names;					use et_net_names;
 with et_net_class;					use et_net_class;
 with et_net_classes;				use et_net_classes;
 with et_net_class_name;				use et_net_class_name;
+with et_terminal_name;				use et_terminal_name;
 with et_terminals;					use et_terminals;
 with et_package_name;				use et_package_name;
 with et_package_model_name;			use et_package_model_name;
@@ -556,9 +557,9 @@ package et_kicad.pcb is
 
 	-- the list of terminals of a package:
 	package pac_terminals is new indefinite_ordered_maps (
-		key_type		=> et_terminals.pac_terminal_name.bounded_string,
+		key_type		=> pac_terminal_name.bounded_string,
 		element_type	=> type_terminal,
-		"<"				=> et_terminals.pac_terminal_name."<");
+		"<"				=> pac_terminal_name."<");
 
 
 

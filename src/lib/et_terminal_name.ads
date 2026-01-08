@@ -1,0 +1,92 @@
+------------------------------------------------------------------------------
+--                                                                          --
+--                             SYSTEM ET                                    --
+--                                                                          --
+--                           TERMINAL NAME                                  --
+--                                                                          --
+--                              S p e c                                     --
+--                                                                          --
+-- Copyright (C) 2017 - 2026                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
+--                                                                          --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
+--                                                                          --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
+------------------------------------------------------------------------------
+
+--   For correct displaying set tab width in your edtior to 4.
+
+--   The two letters "CS" indicate a "construction site" where things are not
+--   finished yet or intended for the future.
+
+--   Please send your questions and comments to:
+--
+--   info@blunk-electronic.de
+--   or visit <http://www.blunk-electronic.de> for more contact data
+--
+--   history of changes:
+--
+--   to do:
+
+
+with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.containers; 			use ada.containers;
+with ada.containers.doubly_linked_lists;
+with et_board_text;				use et_board_text;
+with et_fonts;					use et_fonts;
+
+package et_terminal_name is
+
+	
+	-- A terminal is the physical point where electrical energy comes in or out of the device.
+	-- Other CAE systems refer to "pins" or "pads". In order to use only a single word
+	-- we further-on speak about "terminals".
+	-- The name of a terminal may have 10 characters which seems sufficient for now.
+	-- CS: character set, length check, charcter check
+	terminal_name_length_max : constant natural := 10;
+	
+	package pac_terminal_name is new 
+		generic_bounded_length (terminal_name_length_max);
+		
+	use pac_terminal_name;
+
+	
+	function to_string (
+		terminal : in pac_terminal_name.bounded_string) 
+		return string;
+		
+		
+	function to_terminal_name (
+		terminal : in string) 
+		return pac_terminal_name.bounded_string;
+
+
+	package pac_terminal_names is new
+		doubly_linked_lists (pac_terminal_name.bounded_string);
+	
+
+	
+	-- GUI relevant only:
+	terminal_name_font : constant type_font :=
+		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);
+
+	terminal_name_size : constant pac_text_board.type_text_size := 0.5;
+	
+	
+end et_terminal_name;
+
+-- Soli Deo Gloria
+
+-- For God so loved the world that he gave 
+-- his one and only Son, that whoever believes in him 
+-- shall not perish but have eternal life.
+-- The Bible, John 3.16

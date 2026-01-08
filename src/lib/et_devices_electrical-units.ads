@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -53,6 +53,7 @@ with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_symbol_model;					use et_symbol_model;
+with et_terminal_name;					use et_terminal_name;
 with et_port_names;						use et_port_names;
 with et_device_model;					use et_device_model;
 with et_device_model_names;				use et_device_model_names;
@@ -409,7 +410,7 @@ package et_devices_electrical.units is
 	-- will be raised:
 	function get_port (
 		device		: in pac_devices_electrical.cursor;
-		terminal	: in et_terminals.pac_terminal_name.bounded_string) -- H7, 1, 14
+		terminal	: in pac_terminal_name.bounded_string) -- H7, 1, 14
 		return type_get_port_result;
 
 

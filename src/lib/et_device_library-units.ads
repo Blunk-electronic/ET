@@ -44,7 +44,7 @@
 --
 --
 
-
+with et_terminal_name;			use et_terminal_name;
 with et_port_direction;			use et_port_direction;
 with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
@@ -159,7 +159,7 @@ package et_device_library.units is
 	
 	-- Used for netlists and ratsnest:
 	type type_port_properties (direction : type_port_direction) is record
-		terminal	: et_terminals.pac_terminal_name.bounded_string; -- H4, 1, 16
+		terminal	: pac_terminal_name.bounded_string; -- H4, 1, 16
 		properties	: type_symbol_port (direction);
 	end record;
 
