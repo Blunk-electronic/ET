@@ -52,6 +52,8 @@ with et_package_sections;				use et_package_sections;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_text_content;					use et_text_content;
+with et_board_geometry;					use et_board_geometry;
+
 with et_silkscreen;						use et_silkscreen;
 with et_silkscreen.packages;			use et_silkscreen.packages;
 
@@ -61,6 +63,9 @@ with et_board_write;					use et_board_write;
 
 package body et_package_write_silkscreen is
 
+	use pac_geometry_2;
+	use pac_contours;
+	
 	use pac_silk_lines;
 	use pac_silk_arcs;
 	use pac_silk_circles;
@@ -76,6 +81,47 @@ package body et_package_write_silkscreen is
 		log_threshold	: in type_log_level) 
 	is
 
+		procedure write_line (cursor : in pac_silk_lines.cursor) is 
+			use pac_silk_lines;
+		begin
+			line_begin;
+			write_line (element (cursor));		
+			write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+			line_end;
+		end write_line;
+
+		
+		procedure write_arc (cursor : in pac_silk_arcs.cursor) is 
+			use pac_silk_arcs;
+		begin
+			arc_begin;
+			write_arc (element (cursor));
+			write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+			arc_end;
+		end write_arc;
+
+		
+		procedure write_circle (cursor : in pac_silk_circles.cursor) is 
+			use pac_silk_circles;
+		begin
+			circle_begin;
+			write_circle (element (cursor));
+			write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+			circle_end;
+		end write_circle;
+
+		
+		procedure write_polygon (cursor : in pac_silk_zones.cursor) is 
+			use pac_silk_zones;
+		begin
+			fill_zone_begin;
+			contours_begin;		
+			write_polygon_segments (type_contour (element (cursor)));
+			contours_end;
+			fill_zone_end;
+		end write_polygon;
+
+		
 		procedure write_text (cursor : in pac_silk_texts.cursor) is begin
 			text_begin;
 			write (keyword => keyword_content, wrap => true,

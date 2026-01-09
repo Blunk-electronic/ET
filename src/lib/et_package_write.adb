@@ -75,6 +75,8 @@ with et_package_write_meta;				use et_package_write_meta;
 with et_package_write_silkscreen;		use et_package_write_silkscreen;
 with et_package_write_assy_doc;			use et_package_write_assy_doc;
 with et_package_write_keepout;			use et_package_write_keepout;
+with et_package_write_stopmask;			use et_package_write_stopmask;
+with et_package_write_stencil;			use et_package_write_stencil;
 
 
 package body et_package_write is
@@ -168,62 +170,6 @@ package body et_package_write is
 
 		
 
-
-		
-		procedure write_stop_mask is 
-			use pac_stop_lines;
-			use pac_stop_arcs;
-			use pac_stop_circles;
-			use pac_stop_zones;
-		begin
-			section_mark (section_stopmask, HEADER);
-
-			-- top
-			section_mark (section_top, HEADER);
-			iterate (packge.stop_mask.top.lines, write_line'access);
-			iterate (packge.stop_mask.top.arcs, write_arc'access);
-			iterate (packge.stop_mask.top.circles, write_circle'access);
-			iterate (packge.stop_mask.top.zones, write_polygon'access);
-			section_mark (section_top, FOOTER);
-			
-			-- bottom
-			section_mark (section_bottom, HEADER);
-			iterate (packge.stop_mask.bottom.lines, write_line'access);
-			iterate (packge.stop_mask.bottom.arcs, write_arc'access);
-			iterate (packge.stop_mask.bottom.circles, write_circle'access);
-			iterate (packge.stop_mask.bottom.zones, write_polygon'access);			
-			section_mark (section_bottom, FOOTER);
-
-			section_mark (section_stopmask, FOOTER);			
-		end write_stop_mask;
-
-		
-		procedure write_stencil is 
-			use pac_stencil_lines;
-			use pac_stencil_arcs;
-			use pac_stencil_circles;
-			use pac_stencil_zones;
-		begin
-			section_mark (section_stencil, HEADER);
-
-			-- top
-			section_mark (section_top, HEADER);
-			iterate (packge.stencil.top.lines, write_line'access);
-			iterate (packge.stencil.top.arcs, write_arc'access);
-			iterate (packge.stencil.top.circles, write_circle'access);
-			iterate (packge.stencil.top.zones, write_polygon'access);
-			section_mark (section_top, FOOTER);
-			
-			-- bottom
-			section_mark (section_bottom, HEADER);
-			iterate (packge.stencil.bottom.lines, write_line'access);
-			iterate (packge.stencil.bottom.arcs, write_arc'access);
-			iterate (packge.stencil.bottom.circles, write_circle'access);
-			iterate (packge.stencil.bottom.zones, write_polygon'access);
-			section_mark (section_bottom, FOOTER);
-
-			section_mark (section_stencil, FOOTER);			
-		end write_stencil;
 
 		
 		procedure write_route_restrict is 
@@ -618,8 +564,9 @@ package body et_package_write is
 		write_assy_doc (packge, log_threshold + 1);
 		write_keepout (packge, log_threshold + 1);
 		write_conductor;
-		write_stop_mask;
-		write_stencil;
+		write_stopmask (packge, log_threshold + 1);
+		write_stencil (packge, log_threshold + 1);
+		
 		write_route_restrict;
 		write_via_restrict;
 		write_holes; -- pcb cutouts

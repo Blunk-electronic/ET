@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                  PACKAGE WRITE / ASSEMBLY DOCUMENTATION                  --
+--                        PACKAGE WRITE / STENCIL                           --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -49,47 +49,43 @@ with et_keywords;						use et_keywords;
 with et_section_headers;				use et_section_headers;
 with et_package_sections;				use et_package_sections;
 
-with et_device_placeholders;			use et_device_placeholders;
-with et_device_placeholders.packages;	use et_device_placeholders.packages;
-with et_text_content;					use et_text_content;
-with et_assy_doc;						use et_assy_doc;
-with et_assy_doc.packages;			use et_assy_doc.packages;
-
 with et_board_geometry;					use et_board_geometry;
+
+with et_stencil;						use et_stencil;
+with et_stencil.packages;				use et_stencil.packages;
+
 with et_general_rw;						use et_general_rw;
 with et_board_write;					use et_board_write;
 
 
-package body et_package_write_assy_doc is
+package body et_package_write_stencil is
 
 	use pac_geometry_2;
-	
-	use pac_doc_lines;
-	use pac_doc_arcs;
-	use pac_doc_circles;
-	use pac_doc_zones;
-	use pac_doc_texts;
-			
-	use pac_text_placeholders;		
+
+	use pac_stencil_lines;
+	use pac_stencil_arcs;
+	use pac_stencil_circles;
+	use pac_stencil_zones;
 
 	
 
-	procedure write_assy_doc (
+	procedure write_stencil (
 		packge			: in type_package_model;
 		log_threshold	: in type_log_level) 
 	is
 
-		procedure write_line (cursor : in pac_doc_lines.cursor) is 
-			use pac_doc_lines;
+		procedure write_line (cursor : in pac_stencil_lines.cursor) is 
+			use pac_stencil_lines;
 		begin
 			line_begin;
-			write_line (element (cursor));		
+			write_line (element (cursor));
 			write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 			line_end;
 		end write_line;
 
-		procedure write_arc (cursor : in pac_doc_arcs.cursor) is 
-			use pac_doc_arcs;
+		
+		procedure write_arc (cursor : in pac_stencil_arcs.cursor) is 
+			use pac_stencil_arcs;
 		begin
 			arc_begin;
 			write_arc (element (cursor));
@@ -98,8 +94,8 @@ package body et_package_write_assy_doc is
 		end write_arc;
 
 		
-		procedure write_circle (cursor : in pac_doc_circles.cursor) is
-			use pac_doc_circles;
+		procedure write_circle (cursor : in pac_stencil_circles.cursor) is 
+			use pac_stencil_circles;
 		begin
 			circle_begin;
 			write_circle (element (cursor));
@@ -108,63 +104,41 @@ package body et_package_write_assy_doc is
 		end write_circle;
 
 		
-		procedure write_polygon (cursor : in pac_doc_zones.cursor) is 
-			use pac_doc_zones;
+		procedure write_polygon (cursor : in pac_stencil_zones.cursor) is 
+			use pac_stencil_zones;
 		begin
 			fill_zone_begin;
-			contours_begin;		
+			contours_begin;
 			write_polygon_segments (element (cursor));
 			contours_end;
 			fill_zone_end;
 		end write_polygon;
-
 		
-		procedure write_placeholder (cursor : in pac_text_placeholders.cursor) is begin
-			placeholder_begin;
-			write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
-			write_text_properties (element (cursor));
-			placeholder_end;
-		end write_placeholder;
-
-
-		procedure write_text (cursor : in pac_doc_texts.cursor) is begin
-			text_begin;
-			write (keyword => keyword_content, wrap => true,
-				parameters => to_string (element (cursor).content));
-
-			write_text_properties (element (cursor));
-			text_end;
-		end write_text;
-
 		
 	begin
-		log (text => "write assembly documentation", level => log_threshold);
+		log (text => "write stencil", level => log_threshold);
 
-		
-		section_mark (section_assembly_doc, HEADER);
+		section_mark (section_stencil, HEADER);
 
 		-- top
 		section_mark (section_top, HEADER);
-		iterate (packge.assy_doc.top.lines, write_line'access);
-		iterate (packge.assy_doc.top.arcs, write_arc'access);
-		iterate (packge.assy_doc.top.circles, write_circle'access);
-		iterate (packge.assy_doc.top.zones, write_polygon'access);
-		iterate (packge.assy_doc.top.texts, write_text'access);
-		iterate (packge.assy_doc.top.placeholders, write_placeholder'access);
+		iterate (packge.stencil.top.lines, write_line'access);
+		iterate (packge.stencil.top.arcs, write_arc'access);
+		iterate (packge.stencil.top.circles, write_circle'access);
+		iterate (packge.stencil.top.zones, write_polygon'access);
 		section_mark (section_top, FOOTER);
 		
 		-- bottom
 		section_mark (section_bottom, HEADER);
-		iterate (packge.assy_doc.bottom.lines, write_line'access);
-		iterate (packge.assy_doc.bottom.arcs, write_arc'access);
-		iterate (packge.assy_doc.bottom.circles, write_circle'access);
-		iterate (packge.assy_doc.bottom.zones, write_polygon'access);
-		iterate (packge.assy_doc.bottom.texts, write_text'access);
-		iterate (packge.assy_doc.bottom.placeholders, write_placeholder'access);
+		iterate (packge.stencil.bottom.lines, write_line'access);
+		iterate (packge.stencil.bottom.arcs, write_arc'access);
+		iterate (packge.stencil.bottom.circles, write_circle'access);
+		iterate (packge.stencil.bottom.zones, write_polygon'access);
 		section_mark (section_bottom, FOOTER);
 
-		section_mark (section_assembly_doc, FOOTER);
-	end write_assy_doc;
+		section_mark (section_stencil, FOOTER);	
+		
+	end write_stencil;
 
 	
-end et_package_write_assy_doc;
+end et_package_write_stencil;

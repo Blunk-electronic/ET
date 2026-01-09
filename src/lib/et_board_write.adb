@@ -453,16 +453,6 @@ package body et_board_write is
 		circle_end;
 	end write_circle;
 
-	
-	procedure write_polygon (cursor : in pac_stop_zones.cursor) is 
-		use pac_stop_zones;
-	begin
-		fill_zone_begin;
-		contours_begin;		
-		write_polygon_segments (element (cursor));
-		contours_end;
-		fill_zone_end;
-	end write_polygon;
 
 	
 	
