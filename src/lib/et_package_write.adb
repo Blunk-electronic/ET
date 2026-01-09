@@ -72,7 +72,7 @@ with et_conductor_segment;
 with et_package_sections;				use et_package_sections;
 
 with et_package_write_meta;				use et_package_write_meta;
-
+with et_package_write_silkscreen;		use et_package_write_silkscreen;
 
 
 package body et_package_write is
@@ -165,48 +165,6 @@ package body et_package_write is
 		end write_placeholder;
 
 		
-		procedure write_silk_screen is 
-			use pac_silk_lines;
-			use pac_silk_arcs;
-			use pac_silk_circles;
-			use pac_silk_zones;
-			use pac_silk_texts;
-
-			-- CS move this procedure to et_pcb_rw
-			procedure write_text (cursor : in pac_silk_texts.cursor) is begin
-				text_begin;
-				write (keyword => keyword_content, wrap => true,
-					parameters => to_string (element (cursor).content));
-
-				write_text_properties (element (cursor));
-				text_end;
-			end write_text;
-
-		begin
-			section_mark (section_silkscreen, HEADER);
-
-			-- top
-			section_mark (section_top, HEADER);
-			iterate (packge.silkscreen.top.lines, write_line'access);
-			iterate (packge.silkscreen.top.arcs, write_arc'access);
-			iterate (packge.silkscreen.top.circles, write_circle'access);
-			iterate (packge.silkscreen.top.zones, write_polygon'access);
-			iterate (packge.silkscreen.top.texts, write_text'access);
-			iterate (packge.silkscreen.top.placeholders, write_placeholder'access);
-			section_mark (section_top, FOOTER);
-			
-			-- bottom
-			section_mark (section_bottom, HEADER);
-			iterate (packge.silkscreen.bottom.lines, write_line'access);
-			iterate (packge.silkscreen.bottom.arcs, write_arc'access);
-			iterate (packge.silkscreen.bottom.circles, write_circle'access);
-			iterate (packge.silkscreen.bottom.zones, write_polygon'access);
-			iterate (packge.silkscreen.bottom.texts, write_text'access);
-			iterate (packge.silkscreen.bottom.placeholders, write_placeholder'access);
-			section_mark (section_bottom, FOOTER);
-
-			section_mark (section_silkscreen, FOOTER);			
-		end write_silk_screen;
 
 		
 		procedure write_assembly_documentation is 
@@ -718,9 +676,8 @@ package body et_package_write is
 		reset_tab_depth;
 
 		write_meta (packge, log_threshold + 1);
+		write_silkscreen (packge, log_threshold + 1);
 		
-
-		write_silk_screen;
 		write_assembly_documentation;
 		write_keepout;
 		write_conductor;
