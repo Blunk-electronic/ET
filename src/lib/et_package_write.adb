@@ -74,7 +74,7 @@ with et_package_sections;				use et_package_sections;
 with et_package_write_meta;				use et_package_write_meta;
 with et_package_write_silkscreen;		use et_package_write_silkscreen;
 with et_package_write_assy_doc;			use et_package_write_assy_doc;
-
+with et_package_write_keepout;			use et_package_write_keepout;
 
 
 package body et_package_write is
@@ -168,29 +168,6 @@ package body et_package_write is
 
 		
 
-		
-
-		
-		procedure write_keepout is 
-			use pac_keepout_zones;
-			use pac_keepout_cutouts;
-		begin
-			section_mark (section_keepout, HEADER);
-
-			-- top
-			section_mark (section_top, HEADER);
-			iterate (packge.keepout.top.zones, write_polygon'access);
-			iterate (packge.keepout.top.cutouts, write_cutout'access);
-			section_mark (section_top, FOOTER);
-			
-			-- bottom
-			section_mark (section_bottom, HEADER);
-			iterate (packge.keepout.bottom.zones, write_polygon'access);			
-			iterate (packge.keepout.bottom.cutouts, write_cutout'access);
-			section_mark (section_bottom, FOOTER);
-
-			section_mark (section_keepout, FOOTER);			
-		end write_keepout;
 
 		
 		procedure write_stop_mask is 
@@ -637,10 +614,9 @@ package body et_package_write is
 		reset_tab_depth;
 
 		write_meta (packge, log_threshold + 1);
-		write_silkscreen (packge, log_threshold + 1);
-		
+		write_silkscreen (packge, log_threshold + 1);		
 		write_assy_doc (packge, log_threshold + 1);
-		write_keepout;
+		write_keepout (packge, log_threshold + 1);
 		write_conductor;
 		write_stop_mask;
 		write_stencil;

@@ -155,9 +155,6 @@ package et_board_write is
 	procedure write_circle (cursor : in pac_doc_circles.cursor);	
 	procedure write_polygon (cursor : in pac_doc_zones.cursor); -- CS rename to write_zone
 	
--- KEEPOUT
-	procedure write_polygon (cursor : in pac_keepout_zones.cursor);
-	procedure write_cutout (cursor : in pac_keepout_cutouts.cursor);
 
 -- STOPMASK
 	procedure write_line (cursor : in pac_stop_lines.cursor);

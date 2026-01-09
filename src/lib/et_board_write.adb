@@ -420,29 +420,7 @@ package body et_board_write is
 	end write_polygon;
 
 
-	
--- KEEPOUT
-	
-	procedure write_polygon (cursor : in pac_keepout_zones.cursor) is 
-		use pac_keepout_zones;
-	begin
-		fill_zone_begin;
-		contours_begin;
-		write_polygon_segments (element (cursor));
-		contours_end;
-		fill_zone_end;
-	end write_polygon;
 
-	
-	procedure write_cutout (cursor : in pac_keepout_cutouts.cursor) is 
-		use pac_keepout_cutouts;
-	begin
-		cutout_zone_begin;		
-		contours_begin;
-		write_polygon_segments (element (cursor));
-		contours_end;
-		cutout_zone_end;
-	end;
 
 	
 -- STOP MASK
