@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               GEOMETRY                                   --
+--                           GEOMETRY LEVEL 2                               --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -256,6 +256,8 @@ package body et_geometry_2a is
 		return string
 	is begin
 		return type_distance'image (distance);
+		-- CS suppress trailing zeroes
+		-- use package fixed point in/out ?
 	end to_string;
 
 
@@ -347,7 +349,9 @@ package body et_geometry_2a is
 
 	
 	
--- ROTATION / ANGLE
+	
+	
+-- ROTATION / ANGLE:
 
 	
 	function to_string (
@@ -360,6 +364,7 @@ package body et_geometry_2a is
 			return type_rotation'image (rotation);
 		end if;
 		-- CS suppress trailing zeros
+		-- use package fixed point in/out ?
 	end;
 
 

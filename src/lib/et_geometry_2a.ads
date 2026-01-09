@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                             GEOMETRY 2a                                  --
+--                           GEOMETRY LEVEL 2                               --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,6 +35,11 @@
 --
 --   history of changes:
 --
+--
+--  ToDo:
+--  - rename package to et_geometry_2
+--
+
 
 with ada.containers; 				use ada.containers;
 with ada.containers.doubly_linked_lists;

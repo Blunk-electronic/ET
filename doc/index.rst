@@ -19,6 +19,7 @@
    canvas_general.rst
    schematic.rst
    board.rst
+   packages.rst
    
 Index
 =====
