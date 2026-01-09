@@ -71,6 +71,9 @@ with et_board_holes;
 with et_conductor_segment;
 with et_package_sections;				use et_package_sections;
 
+with et_package_write_meta;				use et_package_write_meta;
+
+
 
 package body et_package_write is
 
@@ -89,6 +92,7 @@ package body et_package_write is
 	is
 		file_handle : ada.text_io.file_type;
 
+		
 		
 		procedure write_text (cursor : in pac_conductor_texts.cursor) is begin
 			text_begin;
@@ -713,11 +717,8 @@ package body et_package_write is
 
 		reset_tab_depth;
 
-		write (keyword => keyword_description, wrap => true, 
-			   parameters => to_string (packge.description));
-
-		write (keyword => keyword_bom_relevant, parameters => to_string (packge.appearance));
-		write (keyword => keyword_assembly_technology, parameters => to_string (packge.technology));
+		write_meta (packge, log_threshold + 1);
+		
 
 		write_silk_screen;
 		write_assembly_documentation;
