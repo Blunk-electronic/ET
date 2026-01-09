@@ -73,6 +73,8 @@ with et_package_sections;				use et_package_sections;
 
 with et_package_write_meta;				use et_package_write_meta;
 with et_package_write_silkscreen;		use et_package_write_silkscreen;
+with et_package_write_assy_doc;			use et_package_write_assy_doc;
+
 
 
 package body et_package_write is
@@ -167,48 +169,6 @@ package body et_package_write is
 		
 
 		
-		procedure write_assembly_documentation is 
-			use pac_doc_lines;
-			use pac_doc_arcs;
-			use pac_doc_circles;
-			use pac_doc_zones;
-			use pac_doc_texts;
-
-			-- CS move this procedure to et_pcb_rw
-			procedure write_text (cursor : in pac_doc_texts.cursor) is begin
-				text_begin;
-				write (keyword => keyword_content, wrap => true,
-					parameters => to_string (element (cursor).content));
-
-				write_text_properties (element (cursor));
-				text_end;
-			end write_text;
-
-		begin
-			section_mark (section_assembly_doc, HEADER);
-
-			-- top
-			section_mark (section_top, HEADER);
-			iterate (packge.assy_doc.top.lines, write_line'access);
-			iterate (packge.assy_doc.top.arcs, write_arc'access);
-			iterate (packge.assy_doc.top.circles, write_circle'access);
-			iterate (packge.assy_doc.top.zones, write_polygon'access);
-			iterate (packge.assy_doc.top.texts, write_text'access);
-			iterate (packge.assy_doc.top.placeholders, write_placeholder'access);
-			section_mark (section_top, FOOTER);
-			
-			-- bottom
-			section_mark (section_bottom, HEADER);
-			iterate (packge.assy_doc.bottom.lines, write_line'access);
-			iterate (packge.assy_doc.bottom.arcs, write_arc'access);
-			iterate (packge.assy_doc.bottom.circles, write_circle'access);
-			iterate (packge.assy_doc.bottom.zones, write_polygon'access);
-			iterate (packge.assy_doc.bottom.texts, write_text'access);
-			iterate (packge.assy_doc.bottom.placeholders, write_placeholder'access);
-			section_mark (section_bottom, FOOTER);
-
-			section_mark (section_assembly_doc, FOOTER);
-		end write_assembly_documentation;
 
 		
 		procedure write_keepout is 
@@ -659,7 +619,8 @@ package body et_package_write is
 		
 	begin -- save_package
 		log (text => to_string (file_name), level => log_threshold);
-
+		log_indentation_up;
+		
 		create (
 			file 	=> file_handle,
 			mode	=> out_file,
@@ -678,7 +639,7 @@ package body et_package_write is
 		write_meta (packge, log_threshold + 1);
 		write_silkscreen (packge, log_threshold + 1);
 		
-		write_assembly_documentation;
+		write_assy_doc (packge, log_threshold + 1);
 		write_keepout;
 		write_conductor;
 		write_stop_mask;
@@ -706,8 +667,13 @@ package body et_package_write is
 		set_output (standard_output);
 		close (file_handle);
 
+		log_indentation_down;
+		
+
 		exception when event: others =>
 			log (text => ada.exceptions.exception_message (event));
+			log_indentation_down;
+		
 			if is_open (file_handle) then
 				close (file_handle);
 			end if;
