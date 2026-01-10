@@ -177,10 +177,19 @@ package body et_module_write_tracks_route is
 				case zone.connection is
 					when THERMAL => 
 						write (keyword => keyword_connection, 
-							   parameters => to_string (zone.connection));
+							parameters => to_string (zone.connection));
 						
-						write_thermal (zone.relief_properties);
-		
+						write (keyword => keyword_pad_technology,
+							parameters => to_string (zone.relief_properties.technology));
+						
+						write (keyword => keyword_relief_width_min, 
+							parameters => to_string (zone.relief_properties.width_min));
+						
+						write (keyword => keyword_relief_gap_max,
+							parameters => to_string (zone.relief_properties.gap_max));	
+
+						
+						
 					when SOLID =>
 						write (keyword => keyword_pad_technology, parameters => to_string (zone.technology));
 						
@@ -244,9 +253,17 @@ package body et_module_write_tracks_route is
 				case zone.connection is
 					when THERMAL => 
 						write (keyword => keyword_connection, 
-							   parameters => to_string (zone.connection));
+							parameters => to_string (zone.connection));
 						
-						write_thermal (zone.relief_properties);
+						write (keyword => keyword_pad_technology,
+							parameters => to_string (zone.relief_properties.technology));
+						
+						write (keyword => keyword_relief_width_min, 
+							parameters => to_string (zone.relief_properties.width_min));
+						
+						write (keyword => keyword_relief_gap_max,
+							parameters => to_string (zone.relief_properties.gap_max));	
+
 		
 					when SOLID =>
 						write (keyword => keyword_pad_technology, parameters => to_string (zone.technology));

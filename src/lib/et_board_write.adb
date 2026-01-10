@@ -191,17 +191,7 @@ package body et_board_write is
 	--end;
 
 
-	
-	procedure write_thermal (thermal : in type_relief_properties) is
-		use et_module_board;
-	begin
-		write (keyword => keyword_pad_technology,   parameters => to_string (thermal.technology));
-		write (keyword => keyword_relief_width_min, parameters => to_string (thermal.width_min));
-		write (keyword => keyword_relief_gap_max,   parameters => to_string (thermal.gap_max));	
-	end;
-
-	
-	
+		
 	
 	procedure write_fill_style (fill_style : in type_fill_style) is
 	begin

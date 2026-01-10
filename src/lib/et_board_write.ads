@@ -107,8 +107,6 @@ package et_board_write is
 
 	--procedure write_hatching (hatching : in type_hatching);
 
-	procedure write_thermal (thermal : in type_relief_properties);
-
 	procedure write_fill_style (fill_style : in type_fill_style);
 	procedure write_fill_status (filled : in type_filled);
 

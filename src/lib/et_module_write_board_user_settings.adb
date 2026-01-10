@@ -148,8 +148,18 @@ package body et_module_write_board_user_settings is
 				write (keyword => keyword_connection, 
 					   parameters => to_string (us.polygons_conductor.connection));
 				
-				write_thermal (us.polygons_conductor.thermal);
 
+				
+				write (keyword => keyword_pad_technology,
+					parameters => to_string (us.polygons_conductor.thermal.technology));
+				
+				write (keyword => keyword_relief_width_min, 
+					parameters => to_string (us.polygons_conductor.thermal.width_min));
+				
+				write (keyword => keyword_relief_gap_max,
+					parameters => to_string (us.polygons_conductor.thermal.gap_max));	
+
+				
 				
 				write (keyword => keyword_easing_style,
 					parameters => to_string (us.polygons_conductor.easing.style));
