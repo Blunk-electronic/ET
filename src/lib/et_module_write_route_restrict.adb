@@ -76,28 +76,31 @@ package body et_module_write_route_restrict is
 
 		
 		procedure write_line (cursor : in pac_route_restrict_lines.cursor) is 
+			line : type_route_restrict_line renames element (cursor);
 		begin
 			line_begin;
 			write_line (element (cursor));		
-			write_signal_layers (element (cursor).layers);
+			write (keyword => keyword_layers, parameters => to_string (line.layers));
 			line_end;
 		end write_line;
 
 		
 		procedure write_arc (cursor : in pac_route_restrict_arcs.cursor) is 
+			arc : type_route_restrict_arc renames element (cursor);
 		begin
 			arc_begin;
 			write_arc (element (cursor));
-			write_signal_layers (element (cursor).layers);
+			write (keyword => keyword_layers, parameters => to_string (arc.layers));
 			arc_end;
 		end write_arc;
 
 		
 		procedure write_circle (cursor : in pac_route_restrict_circles.cursor) is 
+			circle : type_route_restrict_circle renames element (cursor);
 		begin
 			circle_begin;
 			write_circle (element (cursor));
-			write_signal_layers (element (cursor).layers);
+			write (keyword => keyword_layers, parameters => to_string (circle.layers));
 			circle_end;
 		end write_circle;
 

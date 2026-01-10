@@ -87,7 +87,7 @@ package body et_module_write_freetracks is
 			line_begin;
 			write_line (line);
 			write_width (line.width);
-			write_signal_layer (line.layer);
+			write (keyword => keyword_layer, parameters => to_string (line.layer));
 			line_end;
 		end;
 
@@ -100,7 +100,7 @@ package body et_module_write_freetracks is
 			arc_begin;
 			write_arc (arc);
 			write_width (arc.width);
-			write_signal_layer (arc.layer);
+			write (keyword => keyword_layer, parameters => to_string (arc.layer));
 			arc_end;
 		end;
 
@@ -113,7 +113,7 @@ package body et_module_write_freetracks is
 			circle_begin;
 			write_circle (circle);
 			write_width (circle.width);
-			write_signal_layer (circle.layer);
+			write (keyword => keyword_layer, parameters => to_string (circle.layer));
 			circle_end;			
 		end;
 

@@ -257,12 +257,6 @@ package body et_board_write is
 	end;	
 
 	
-	procedure write_signal_layers (layers : in pac_signal_layers.set) is
-	begin
-		write (keyword => keyword_layers, parameters => to_string (layers));
-	end;
-
-	
 
 	
 	procedure write_polygon_segments (

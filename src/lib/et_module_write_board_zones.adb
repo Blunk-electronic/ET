@@ -88,7 +88,9 @@ package body et_module_write_board_zones is
 		use pac_floating_hatched;
 
 		
-		procedure write_polygon (cursor : in pac_floating_solid.cursor) is begin
+		procedure write_polygon (cursor : in pac_floating_solid.cursor) is 
+			zone : type_floating_solid renames element (cursor);
+		begin
 			fill_zone_begin;
 
 			write_easing (element (cursor).easing);
@@ -97,7 +99,7 @@ package body et_module_write_board_zones is
 			write_isolation (element (cursor).isolation);
 
 			write_priority (element (cursor).properties.priority_level);
-			write_signal_layer (element (cursor).properties.layer);
+			write (keyword => keyword_layer, parameters => to_string (zone.properties.layer));
 
 			write_fill_style (element (cursor).fill_style);
 
@@ -109,7 +111,9 @@ package body et_module_write_board_zones is
 		end;
 
 		
-		procedure write_polygon (cursor : in pac_floating_hatched.cursor) is begin
+		procedure write_polygon (cursor : in pac_floating_hatched.cursor) is 
+			zone : type_floating_hatched renames element (cursor);
+		begin
 			fill_zone_begin;
 
 			write_easing (element (cursor).easing);
@@ -118,7 +122,7 @@ package body et_module_write_board_zones is
 			write_isolation (element (cursor).isolation);
 
 			write_priority (element (cursor).properties.priority_level);
-			write_signal_layer (element (cursor).properties.layer);
+			write (keyword => keyword_layer, parameters => to_string (zone.properties.layer));
 
 			write_fill_style (element (cursor).fill_style);
 			write_spacing (element (cursor).spacing);
@@ -166,9 +170,11 @@ package body et_module_write_board_zones is
 		use pac_cutouts;
 
 		
-		procedure write_cutout (cursor : in pac_cutouts.cursor) is begin
+		procedure write_cutout (cursor : in pac_cutouts.cursor) is 
+			zone : type_cutout renames element (cursor);
+		begin
 			cutout_zone_begin;
-			write_signal_layer (element (cursor).layer);
+			write (keyword => keyword_layer, parameters => to_string (zone.layer));
 			
 			contours_begin; -- CS correct ?
 			write_polygon_segments (type_contour (element (cursor)));
@@ -448,9 +454,10 @@ package body et_module_write_board_zones is
 		
 
 		procedure write_contour (cursor : in pac_route_restrict_contours.cursor) is 
+			zone : type_route_restrict_contour renames element (cursor);
 		begin
 			fill_zone_begin;
-			write_signal_layers (element (cursor).layers);
+			write (keyword => keyword_layers, parameters => to_string (zone.layers));
 
 			contours_begin;
 			write_polygon_segments (element (cursor));
@@ -496,9 +503,10 @@ package body et_module_write_board_zones is
 		
 
 		procedure write_contour (cursor : in pac_via_restrict_contours.cursor) is 
+			zone : type_via_restrict_contour renames element (cursor);
 		begin
 			fill_zone_begin;
-			write_signal_layers (element (cursor).layers);
+			write (keyword => keyword_layers, parameters => to_string (zone.layers));
 
 			contours_begin;
 			write_polygon_segments (element (cursor));
@@ -544,9 +552,10 @@ package body et_module_write_board_zones is
 
 		
 		procedure write_cutout (cursor : in pac_route_restrict_cutouts.cursor) is 
+			zone : type_route_restrict_cutout renames element (cursor);
 		begin
 			cutout_zone_begin;
-			write_signal_layers (element (cursor).layers);
+			write (keyword => keyword_layers, parameters => to_string (zone.layers));
 
 			contours_begin;
 			write_polygon_segments (element (cursor));
@@ -589,9 +598,10 @@ package body et_module_write_board_zones is
 
 		
 		procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor) is 
+			zone : type_via_restrict_cutout renames element (cursor);
 		begin
 			cutout_zone_begin;
-			write_signal_layers (element (cursor).layers);
+			write (keyword => keyword_layers, parameters => to_string (zone.layers));
 			
 			contours_begin;
 			write_polygon_segments (element (cursor));
