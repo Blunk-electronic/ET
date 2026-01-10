@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                    MODULE WRITE / BOARD TRACKS ROUTE                      --
+--                    MODULE WRITE / BOARD TRACKS ROUTE                     --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -110,7 +110,11 @@ package body et_module_write_freetracks is
 		is 
 			circle : type_conductor_circle renames element (c);
 		begin
-			write_circle_conductor (circle);
+			circle_begin;
+			write_circle (circle);
+			write_width (circle.width);
+			write_signal_layer (circle.layer);
+			circle_end;			
 		end;
 
 	

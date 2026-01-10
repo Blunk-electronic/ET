@@ -264,23 +264,6 @@ package body et_board_write is
 
 	
 
-	-- CS unify the follwing two procedures write_circle_conductor:
-	procedure write_circle_conductor (circle : in et_conductor_segment.type_conductor_circle) is begin
-		circle_begin;
-		write_circle (circle);
-		write (keyword => keyword_width, parameters => to_string (circle.width));
-		circle_end;
-	end write_circle_conductor;
-
-	
-	procedure write_circle_conductor (circle : in et_conductor_segment.boards.type_conductor_circle) is begin
-		circle_begin;
-		write_circle (circle);
-		write (keyword => keyword_width, parameters => to_string (circle.width));
-		write_signal_layer (circle.layer);
-		circle_end;
-	end write_circle_conductor;
-
 	
 	procedure write_polygon_segments (
 		polygon : in type_contour'class)

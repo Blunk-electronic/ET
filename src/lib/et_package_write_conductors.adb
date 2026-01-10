@@ -93,8 +93,13 @@ package body et_package_write_conductors is
 		end write_arc;
 
 		
-		procedure write_circle (cursor : in pac_conductor_circles.cursor) is begin
-			write_circle_conductor (element (cursor));
+		procedure write_circle (cursor : in pac_conductor_circles.cursor) is 
+			circle : type_conductor_circle renames element (cursor);
+		begin
+			circle_begin;
+			write_circle (circle);
+			write (keyword => keyword_width, parameters => to_string (circle.width));
+			circle_end;		
 		end write_circle;
 
 
