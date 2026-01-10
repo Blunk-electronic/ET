@@ -169,7 +169,7 @@ package body et_module_write_tracks_route is
 						write_thermal (zone.relief_properties);
 		
 					when SOLID =>
-						write_pad_technology (zone.technology);
+						write (keyword => keyword_pad_technology, parameters => to_string (zone.technology));
 						
 				end case;
 
@@ -221,7 +221,7 @@ package body et_module_write_tracks_route is
 						write_thermal (zone.relief_properties);
 		
 					when SOLID =>
-						write_pad_technology (zone.technology);
+						write (keyword => keyword_pad_technology, parameters => to_string (zone.technology));
 
 				end case;
 

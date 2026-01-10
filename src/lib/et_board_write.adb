@@ -245,14 +245,6 @@ package body et_board_write is
 	end;
 
 	
-	procedure write_pad_technology (techno : in type_pad_technology) is
-		use et_module_board;
-	begin
-		write (keyword => keyword_pad_technology, parameters => to_string (techno));
-	end;	
-
-	
-
 	
 	procedure write_polygon_segments (
 		polygon : in type_contour'class)

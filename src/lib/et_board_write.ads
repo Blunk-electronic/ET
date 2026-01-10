@@ -115,7 +115,6 @@ package et_board_write is
 	procedure write_fill_style (fill_style : in type_fill_style);
 	procedure write_fill_status (filled : in type_filled);
 	procedure write_pad_connection (connection : in type_pad_connection);
-	procedure write_pad_technology (techno : in type_pad_technology);	
 
 	
 	-- writes the segments of a polygon (lines, arcs or a single circle):
