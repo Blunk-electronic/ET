@@ -58,11 +58,7 @@ with et_thermal_relief;			use et_thermal_relief;
 --with et_conductor_segment;
 with et_conductor_segment.boards;	--use et_conductor_segment.boards;
 with et_conductor_text;			use et_conductor_text;
-with et_stopmask;				use et_stopmask;
-with et_stencil;				use et_stencil;
-with et_silkscreen;				use et_silkscreen;
-with et_assy_doc;				use et_assy_doc;
-with et_keepout;				use et_keepout;
+
 with et_package_sections;		use et_package_sections;
 
 with et_route_restrict.boards;	use et_route_restrict.boards;
@@ -141,33 +137,6 @@ package et_board_write is
 	procedure contours_begin;
 	procedure contours_end;
 
-	
-
--- SILK SCREEN
-	procedure write_line (cursor : in pac_silk_lines.cursor);
-	procedure write_arc (cursor : in pac_silk_arcs.cursor);
-	procedure write_circle (cursor : in pac_silk_circles.cursor);	
-	procedure write_polygon (cursor : in pac_silk_zones.cursor);
-
--- ASSEMBLY DOCUMENTATION
-	procedure write_line (cursor : in pac_doc_lines.cursor);
-	procedure write_arc (cursor : in pac_doc_arcs.cursor);
-	procedure write_circle (cursor : in pac_doc_circles.cursor);	
-	procedure write_polygon (cursor : in pac_doc_zones.cursor); -- CS rename to write_zone
-	
-
--- STOPMASK
-	procedure write_line (cursor : in pac_stop_lines.cursor);
-	procedure write_arc (cursor : in pac_stop_arcs.cursor);
-	procedure write_circle (cursor : in pac_stop_circles.cursor);
-
-
--- STENCIL (OR SOLDER PASTE MASK)
-	procedure write_line (cursor : in pac_stencil_lines.cursor);
-	procedure write_arc (cursor : in pac_stencil_arcs.cursor);
-	procedure write_circle (cursor : in pac_stencil_circles.cursor);	
-	procedure write_polygon (cursor : in pac_stencil_zones.cursor);
-	
 
 
 	
