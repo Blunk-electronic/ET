@@ -253,8 +253,10 @@ package et_fill_zones.boards is
 	type type_cutout is new type_contour with record
 		layer 	: type_signal_layer := type_signal_layer'first;
 	end record;
+	-- CS rename to type_fill_zone_cutout ?
 
 	package pac_cutouts is new doubly_linked_lists (type_cutout);
+	-- CS rename to pac_fill_zone_cutouts ?
 	
 	
 end et_fill_zones.boards;
