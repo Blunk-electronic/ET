@@ -226,11 +226,6 @@ package body et_board_write is
 	end;
 
 	
-	procedure write_signal_layer (layer : in type_signal_layer) is 
-	begin
-		write (keyword => keyword_layer, parameters => to_string (layer));
-	end;
-
 	
 	procedure write_fill_style (fill_style : in type_fill_style) is
 	begin

@@ -64,8 +64,6 @@ with et_fill_zones.boards;			use et_fill_zones.boards;
 with et_general_rw;					use et_general_rw;
 with et_board_write;				use et_board_write;
 
-
-
 with et_module_read_nets;
 
 
@@ -89,24 +87,165 @@ package body et_module_write_tracks_route is
 		use et_board_geometry.pac_geometry_2;
 		
 		use et_conductor_segment.boards;
-		use pac_conductor_lines;
-		line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
-
-		use pac_conductor_arcs;
-		arc_cursor : pac_conductor_arcs.cursor := net.route.arcs.first;
 
 		use et_fill_zones;
 		use et_fill_zones.boards;
-		use et_thermal_relief;
-		use pac_route_solid; 
-		use pac_route_hatched;
+		use et_thermal_relief;		
+
 		use boards.pac_cutouts;
 		
-		polygon_solid_cursor	: pac_route_solid.cursor := net.route.zones.solid.first;
-		polygon_hatched_cursor	: pac_route_hatched.cursor := net.route.zones.hatched.first;
-		--cutout_zone_cursor		: pac_cutouts.cursor := net.route.cutouts.first;
 
 
+		procedure write_lines is
+			use pac_conductor_lines;
+			line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
+		begin
+			while line_cursor /= pac_conductor_lines.no_element loop
+				section_mark (section_line, HEADER);
+				
+				write (keyword => keyword_start, parameters => to_string (get_A (line_cursor), FORMAT_2));
+				write (keyword => keyword_end  , parameters => to_string (get_B (line_cursor), FORMAT_2));
+				write (keyword => keyword_layer, parameters => to_string (element (line_cursor).layer));
+				write (keyword => keyword_width, parameters => to_string (element (line_cursor).width));
+				-- CS functions required get_A (line_cursor) return string
+				-- also for layer, width, center, ...
+
+				section_mark (section_line, FOOTER);
+				next (line_cursor);
+			end loop;
+		end write_lines;
+
+
+
+		
+
+
+		procedure write_arcs is
+			use pac_conductor_arcs;
+			arc_cursor : pac_conductor_arcs.cursor := net.route.arcs.first;
+		begin		
+			while arc_cursor /= pac_conductor_arcs.no_element loop
+				section_mark (section_arc, HEADER);
+
+				write (keyword => keyword_center, parameters => to_string (get_center (element (arc_cursor)), FORMAT_2));
+				write (keyword => keyword_start , parameters => to_string (get_A (arc_cursor), FORMAT_2));
+				write (keyword => keyword_end   , parameters => to_string (get_B (arc_cursor), FORMAT_2));
+				write (keyword => keyword_width , parameters => to_string (element (arc_cursor).width));
+				write (keyword => keyword_layer , parameters => to_string (element (arc_cursor).layer));
+				
+				section_mark (section_arc, FOOTER);
+				next (arc_cursor);
+			end loop;
+		end write_arcs;
+
+		
+
+
+
+
+		
+		procedure write_zones_solid is
+			use pac_route_solid; 
+			polygon_solid_cursor : pac_route_solid.cursor := net.route.zones.solid.first;
+
+			
+			procedure query_zone (zone : in type_route_solid) is
+			begin
+				fill_zone_begin;
+
+				write_easing (zone.easing);
+				
+				write_width (zone.linewidth);
+				write_isolation (zone.isolation);
+				
+				write_priority (zone.properties.priority_level);
+				write (keyword => keyword_layer, parameters => to_string (zone.properties.layer));
+
+				write_fill_style (SOLID);
+
+				case zone.connection is
+					when THERMAL => 
+						write_pad_connection (zone.connection);
+						write_thermal (zone.relief_properties);
+		
+					when SOLID =>
+						write_pad_technology (zone.technology);
+						
+				end case;
+
+				contours_begin;
+				write_polygon_segments (type_contour (zone));
+				contours_end;
+				
+				fill_zone_end;
+			end query_zone;
+
+			
+		begin
+			while polygon_solid_cursor /= pac_route_solid.no_element loop
+				query_element (polygon_solid_cursor, query_zone'access);				
+				next (polygon_solid_cursor);
+			end loop;
+		end write_zones_solid;
+
+
+
+
+
+		
+
+		procedure write_zones_hatched is
+			use pac_route_hatched;
+			polygon_hatched_cursor : pac_route_hatched.cursor := net.route.zones.hatched.first;
+
+			
+			procedure query_zone (zone : in type_route_hatched) is
+			begin
+				fill_zone_begin;
+
+				write_easing (zone.easing);
+
+				write_width (zone.linewidth);
+				write_isolation (zone.isolation);
+				
+				write_priority (zone.properties.priority_level);
+				write (keyword => keyword_layer, parameters => to_string (zone.properties.layer));
+
+				write_fill_style (HATCHED);
+				
+				write_spacing (zone.spacing);
+
+				case zone.connection is
+					when THERMAL => 
+						write_pad_connection (zone.connection);
+						write_thermal (zone.relief_properties);
+		
+					when SOLID =>
+						write_pad_technology (zone.technology);
+
+				end case;
+
+				contours_begin;
+				write_polygon_segments (type_contour (zone));
+				contours_end;
+				
+				fill_zone_end;
+			end query_zone;
+
+			
+		begin
+			while polygon_hatched_cursor /= pac_route_hatched.no_element loop
+				query_element (polygon_hatched_cursor, query_zone'access);
+				next (polygon_hatched_cursor);
+			end loop;
+		end write_zones_hatched;
+		
+
+
+
+
+		
+		
 		procedure write_vias is
 			use et_vias;
 			use pac_vias;
@@ -149,107 +288,20 @@ package body et_module_write_tracks_route is
 			net.route.vias.iterate (query_via'access);
 		end write_vias;
 
+
 		
-	begin -- query_route
+		
+	begin
 		section_mark (section_route, HEADER);
 
-		while line_cursor /= pac_conductor_lines.no_element loop
-			section_mark (section_line, HEADER);
-			
-			write (keyword => keyword_start, parameters => to_string (get_A (line_cursor), FORMAT_2));
-			write (keyword => keyword_end  , parameters => to_string (get_B (line_cursor), FORMAT_2));
-			write (keyword => keyword_layer, parameters => to_string (element (line_cursor).layer));
-			write (keyword => keyword_width, parameters => to_string (element (line_cursor).width));
-			-- CS functions required get_A (line_cursor) return string
-			-- also for layer, width, center, ...
-
-			section_mark (section_line, FOOTER);
-			next (line_cursor);
-		end loop;
-
-		while arc_cursor /= pac_conductor_arcs.no_element loop
-			section_mark (section_arc, HEADER);
-
-			write (keyword => keyword_center, parameters => to_string (get_center (element (arc_cursor)), FORMAT_2));
-			write (keyword => keyword_start , parameters => to_string (get_A (arc_cursor), FORMAT_2));
-			write (keyword => keyword_end   , parameters => to_string (get_B (arc_cursor), FORMAT_2));
-			write (keyword => keyword_width , parameters => to_string (element (arc_cursor).width));
-			write (keyword => keyword_layer , parameters => to_string (element (arc_cursor).layer));
-			
-			section_mark (section_arc, FOOTER);
-			next (arc_cursor);
-		end loop;
-
+		write_lines;
+		write_arcs;
 		write_vias;
 
-		
-		-- solid fill zones
-		while polygon_solid_cursor /= pac_route_solid.no_element loop
-			fill_zone_begin;
-
-			write_easing (element (polygon_solid_cursor).easing);
-			
-			write_width (element (polygon_solid_cursor).linewidth);
-			write_isolation (element (polygon_solid_cursor).isolation);
-			
-			write_priority (element (polygon_solid_cursor).properties.priority_level);
-			write_signal_layer (element (polygon_solid_cursor).properties.layer);
-
-			write_fill_style (SOLID);
-
-			case element (polygon_solid_cursor).connection is
-				when THERMAL => 
-					write_pad_connection (element (polygon_solid_cursor).connection);
-					write_thermal (element (polygon_solid_cursor).relief_properties);
-	
-				when SOLID =>
-					write_pad_technology (element (polygon_solid_cursor).technology);
-					
-			end case;
-
-			contours_begin;
-			write_polygon_segments (type_contour (element (polygon_solid_cursor)));
-			contours_end;
-			
-			fill_zone_end;
-			next (polygon_solid_cursor);
-		end loop;
+		write_zones_solid;
+		write_zones_hatched;
 
 		
-		-- hatched fill zones
-		while polygon_hatched_cursor /= pac_route_hatched.no_element loop
-			fill_zone_begin;
-
-			write_easing (element (polygon_hatched_cursor).easing);
-
-			write_width (element (polygon_hatched_cursor).linewidth);
-			write_isolation (element (polygon_hatched_cursor).isolation);
-			
-			write_priority (element (polygon_hatched_cursor).properties.priority_level);
-			write_signal_layer (element (polygon_hatched_cursor).properties.layer);
-
-			write_fill_style (HATCHED);
-			
-			write_spacing (element (polygon_hatched_cursor).spacing);
-
-			case element (polygon_hatched_cursor).connection is
-				when THERMAL => 
-					write_pad_connection (element (polygon_hatched_cursor).connection);
-					write_thermal (element (polygon_hatched_cursor).relief_properties);
-	
-				when SOLID =>
-					write_pad_technology (element (polygon_hatched_cursor).technology);
-
-			end case;
-
-			contours_begin;
-			write_polygon_segments (type_contour (element (polygon_hatched_cursor)));
-			contours_end;
-			
-			fill_zone_end;
-			next (polygon_hatched_cursor);
-		end loop;
-
 		
 		-- cutout zones -> now net specific restrict areas
 		-- CS

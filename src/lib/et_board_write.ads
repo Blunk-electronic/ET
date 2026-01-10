@@ -112,8 +112,6 @@ package et_board_write is
 	procedure write_isolation (iso : in type_track_clearance);
 	procedure write_priority (prio : in type_priority);
 
-	procedure write_signal_layer (layer : in type_signal_layer);
-
 	procedure write_fill_style (fill_style : in type_fill_style);
 	procedure write_fill_status (filled : in type_filled);
 	procedure write_pad_connection (connection : in type_pad_connection);
