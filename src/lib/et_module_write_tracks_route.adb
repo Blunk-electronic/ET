@@ -153,7 +153,14 @@ package body et_module_write_tracks_route is
 			begin
 				fill_zone_begin;
 
-				write_easing (zone.easing);
+
+				write (keyword => keyword_easing_style,
+					parameters => to_string (zone.easing.style));
+				
+				write (keyword => keyword_easing_radius, 
+					parameters => to_string (zone.easing.radius));
+
+				
 				
 				write_width (zone.linewidth);
 
@@ -209,7 +216,14 @@ package body et_module_write_tracks_route is
 			begin
 				fill_zone_begin;
 
-				write_easing (zone.easing);
+
+				write (keyword => keyword_easing_style,
+					parameters => to_string (zone.easing.style));
+				
+				write (keyword => keyword_easing_radius, 
+					parameters => to_string (zone.easing.radius));
+
+				
 
 				write_width (zone.linewidth);
 

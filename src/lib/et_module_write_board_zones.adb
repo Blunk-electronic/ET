@@ -93,7 +93,14 @@ package body et_module_write_board_zones is
 		begin
 			fill_zone_begin;
 
-			write_easing (element (cursor).easing);
+
+			write (keyword => keyword_easing_style,
+				parameters => to_string (zone.easing.style));
+			
+			write (keyword => keyword_easing_radius, 
+				parameters => to_string (zone.easing.radius));
+
+			
 
 			write_width (element (cursor).linewidth);
 
@@ -115,12 +122,20 @@ package body et_module_write_board_zones is
 		end;
 
 		
+		
 		procedure write_polygon (cursor : in pac_floating_hatched.cursor) is 
 			zone : type_floating_hatched renames element (cursor);
 		begin
 			fill_zone_begin;
 
-			write_easing (element (cursor).easing);
+
+			write (keyword => keyword_easing_style,
+				parameters => to_string (zone.easing.style));
+			
+			write (keyword => keyword_easing_radius, 
+				parameters => to_string (zone.easing.radius));
+
+			
 
 			write_width (element (cursor).linewidth);
 

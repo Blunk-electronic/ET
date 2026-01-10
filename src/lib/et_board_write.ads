@@ -107,7 +107,7 @@ package et_board_write is
 
 	procedure write_spacing (spacing : in type_track_clearance);
 	--procedure write_hatching (hatching : in type_hatching);
-	procedure write_easing (easing: in type_easing);
+
 	procedure write_thermal (thermal : in type_relief_properties);
 
 	procedure write_fill_style (fill_style : in type_fill_style);

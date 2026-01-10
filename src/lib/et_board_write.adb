@@ -196,12 +196,6 @@ package body et_board_write is
 		--write (keyword => keyword_hatching_border_width, parameters => to_string (hatching.border_width));
 	--end;
 
-	
-	procedure write_easing (easing: in type_easing) is
-	begin
-		write (keyword => keyword_easing_style, parameters => to_string (easing.style));
-		write (keyword => keyword_easing_radius, parameters => to_string (easing.radius));
-	end;
 
 	
 	procedure write_thermal (thermal : in type_relief_properties) is

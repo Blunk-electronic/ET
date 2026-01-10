@@ -128,6 +128,7 @@ package body et_module_write_board_user_settings is
 			
 			procedure polygons is 
 				use et_thermal_relief;
+				use et_fill_zones;
 				use et_fill_zones.boards;
 			begin
 				section_mark (section_fill_zones_conductor, HEADER);
@@ -148,7 +149,13 @@ package body et_module_write_board_user_settings is
 				
 				write_thermal (us.polygons_conductor.thermal);
 
-				write_easing (us.polygons_conductor.easing);
+				
+				write (keyword => keyword_easing_style,
+					parameters => to_string (us.polygons_conductor.easing.style));
+				
+				write (keyword => keyword_easing_radius, 
+					parameters => to_string (us.polygons_conductor.easing.radius));
+				
 				
 				section_mark (section_fill_zones_conductor, FOOTER);
 			end polygons;
