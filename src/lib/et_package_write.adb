@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -43,21 +43,12 @@ with ada.exceptions;
 
 with et_directory_and_file_ops;
 with et_general_rw;						use et_general_rw;
+with et_board_write;					use et_board_write;
 
-with et_terminal_stopmask;				use et_terminal_stopmask;
-with et_terminal_stencil;				use et_terminal_stencil;
-with et_stopmask_status;				use et_stopmask_status;
-with et_stencil_mask_status;			use et_stencil_mask_status;
-
-with et_assembly_technology;			use et_assembly_technology;
-with et_terminal_hole;					use et_terminal_hole;
-with et_terminal_name;					use et_terminal_name;
-with et_terminals;						use et_terminals;
-
+with et_design_rules_board;				use et_design_rules_board;
+with et_string_processing;				use et_string_processing;
 with et_time;							use et_time;
-with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_system_info;
-with et_package_description;			use et_package_description;
 with et_keywords;						use et_keywords;
 with et_section_headers;				use et_section_headers;
 with et_package_sections;				use et_package_sections;
@@ -72,11 +63,10 @@ with et_package_write_route_restrict;	use et_package_write_route_restrict;
 with et_package_write_via_restrict;		use et_package_write_via_restrict;
 with et_package_write_conductors;		use et_package_write_conductors;
 with et_package_write_holes;			use et_package_write_holes;
+with et_package_write_terminals;		use et_package_write_terminals;
 
 
 package body et_package_write is
-
-
 
 	
 
@@ -86,237 +76,8 @@ package body et_package_write is
 		log_threshold	: in type_log_level) 
 	is
 		file_handle : ada.text_io.file_type;
-
-
 		
-		procedure write_terminals is
-			use pac_terminals;
-			terminal_cursor : pac_terminals.cursor := packge.terminals.first;
-
-			procedure write_stop_mask_tht is 
-				
-				function user_specific_contours return boolean is begin
-					if element (terminal_cursor).stop_mask_shape_tht.top.expand_mode = USER_SPECIFIC 
-					or element (terminal_cursor).stop_mask_shape_tht.bottom.expand_mode = USER_SPECIFIC then
-						return true;
-					else
-						return false;
-					end if;
-				end user_specific_contours;
-				
-			begin -- write_stop_mask_tht
-				write (keyword => keyword_stop_mask_status, 
-					   parameters => to_string (element (terminal_cursor).stop_mask_status_tht)); -- stop_mask_status open
-					   
-				write (keyword => keyword_stop_mask_shape_top, 
-						parameters => to_string (element (terminal_cursor).stop_mask_shape_tht.top.expand_mode));
-
-				write (keyword => keyword_stop_mask_shape_bottom, 
-						parameters => to_string (element (terminal_cursor).stop_mask_shape_tht.bottom.expand_mode));
-
-				-- If user specified contours in either top or bottom required, write the header
-				-- for stop mask contours:
-				if user_specific_contours then
-					section_mark (section_stopmask_contours_tht, HEADER);
-				end if;
-
-				-- If user specified contours in top, write them:
-				case element (terminal_cursor).stop_mask_shape_tht.top.expand_mode is
-					when AS_PAD | EXPAND_PAD => null;
-					when USER_SPECIFIC =>
-						section_mark (section_top, HEADER);
-						
-						write_polygon_segments (type_contour (
-							element (terminal_cursor).stop_mask_shape_tht.top.contour));
-
-						section_mark (section_top, FOOTER);
-				end case;
-
-				-- If user specified contours in bottom, write them:
-				case element (terminal_cursor).stop_mask_shape_tht.bottom.expand_mode is
-					when AS_PAD | EXPAND_PAD => null;
-					when USER_SPECIFIC =>
-						section_mark (section_bottom, HEADER);
-						
-						write_polygon_segments (type_contour (
-							element (terminal_cursor).stop_mask_shape_tht.bottom.contour));
-
-						section_mark (section_bottom, FOOTER);
-				end case;
-				
-				-- If user specified contours in either top or bottom required, write the footer
-				-- for stop mask contours:
-				if user_specific_contours then
-					section_mark (section_stopmask_contours_tht, FOOTER);
-				end if;
-				
-			end write_stop_mask_tht;
-
-			
-			procedure write_stop_mask_smt is 
-				
-				function user_specific_contours return boolean is begin
-					if element (terminal_cursor).stop_mask_shape_smt.expand_mode = USER_SPECIFIC then
-						return true;
-					else
-						return false;
-					end if;
-				end user_specific_contours;
-				
-			begin -- write_stop_mask_smt
-				write (keyword => keyword_stop_mask_status, 
-					   parameters => to_string (element (terminal_cursor).stop_mask_status_smt)); -- stop_mask_status open
-				
-				write (keyword => keyword_stop_mask_shape, 
-						parameters => to_string (element (terminal_cursor).stop_mask_shape_smt.expand_mode)); -- stop_mask_shape as_pad/expand_pad/user_specific
-
-				-- If user specified contours required, write the header for stop mask contours:
-				if user_specific_contours then
-					section_mark (section_stopmask_contours_smt, HEADER);
-				end if;
-
-				-- If user specified contours, write them:
-				case element (terminal_cursor).stop_mask_shape_smt.expand_mode is
-					when AS_PAD | EXPAND_PAD => null;
-					when USER_SPECIFIC =>
-		
-						write_polygon_segments (type_contour (
-							element (terminal_cursor).stop_mask_shape_smt.contour));
-
-				end case;
-
-				-- If user specified contours required, write the footer for stop mask contours:
-				if user_specific_contours then
-					section_mark (section_stopmask_contours_smt, FOOTER);
-				end if;
-				
-			end write_stop_mask_smt;
-
-			
-			procedure write_plated_millings (
-				millings : in type_contour) 
-			is begin
-				section_mark (section_pad_millings, HEADER);
-				write_polygon_segments (type_contour (millings));
-				section_mark (section_pad_millings, FOOTER);
-			end write_plated_millings;
-
-			
-			procedure write_stencil is
-				
-				function user_specific_contours return boolean is begin
-					if element (terminal_cursor).stencil_shape.shrink_mode = USER_SPECIFIC then
-						return true;
-					else
-						return false;
-					end if;
-				end user_specific_contours;
-
-			begin
-				write (keyword => keyword_solder_paste_status,
-					   parameters => to_string (element (terminal_cursor).solder_paste_status)); 
-					-- solder_paste_status applied
-				
-				write (keyword => keyword_solder_paste_shape,
-					   parameters => to_string (element (terminal_cursor).stencil_shape.shrink_mode)); 
-					-- solder_paste_shape as_pad/shrink_pad/user_specific
-
-				-- If user specified contours required, write the header for stencil contours:
-				if user_specific_contours then
-					section_mark (section_stencil_contours, HEADER);
-				end if;
-				
-				case element (terminal_cursor).stencil_shape.shrink_mode is
-					when AS_PAD => null;
-					
-					when SHRINK_PAD	=>
-						write (
-							keyword		=> keyword_solder_paste_shrink_factor,
-							parameters	=> to_string (element (terminal_cursor).stencil_shape.shrink_factor));
-							-- solder_paste_shrink_factor 0.4
-
-					when USER_SPECIFIC =>
-
-						write_polygon_segments (type_contour (
-							element (terminal_cursor).stencil_shape.contour));
-				end case;
-
-				-- If user specified contours required, write the footer for stencil contours:
-				if user_specific_contours then
-					section_mark (section_stencil_contours, FOOTER);
-				end if;
-				
-			end write_stencil;
-
-			
-		begin -- write_terminals
-			section_mark (section_terminals, HEADER);
-			
-			while terminal_cursor /= pac_terminals.no_element loop
-				section_mark (section_terminal, HEADER);
-				write (keyword => keyword_name, parameters => space & to_string (key (terminal_cursor)));
-				write (keyword => keyword_assembly_technology, parameters => to_string (element (terminal_cursor).technology));
-				write (keyword => keyword_position, parameters => to_string (element (terminal_cursor).position));
-				
-				case element (terminal_cursor).technology is
-					when THT =>
-						-- pad contour top
-						section_mark (section_pad_contours_tht, HEADER);
-						
-						section_mark (section_top, HEADER);
-						write_polygon_segments (type_contour (element (terminal_cursor).pad_shape_tht.top));
-						section_mark (section_top, FOOTER);
-
-						-- pad contour bottom
-						section_mark (section_bottom, HEADER);
-						write_polygon_segments (type_contour (element (terminal_cursor).pad_shape_tht.bottom));
-						section_mark (section_bottom, FOOTER);
-						
-						section_mark (section_pad_contours_tht, FOOTER);
-
-						-- stop mask
-						write_stop_mask_tht;
-						
-						-- conductor width in inner layers
-						write (keyword => keyword_width_inner_layers, 
-							   parameters => to_string (element (terminal_cursor).width_inner_layers));
-						
-						-- A THT terminal can have a drilled or a milled hole:
-						write (keyword => keyword_tht_hole, parameters => to_string (element (terminal_cursor).tht_hole));
-
-						case element (terminal_cursor).tht_hole is
-							when DRILLED => 
-								write (keyword_drill_size, parameters => to_string (element (terminal_cursor).drill_size));
-								
-							when MILLED => 
-								write_plated_millings (element (terminal_cursor).millings);
-						end case;
-						
-					when SMT =>
-						-- pad contour
-						section_mark (section_pad_contours_smt, HEADER);
-						write_polygon_segments (type_contour (element (terminal_cursor).pad_shape_smt));
-						section_mark (section_pad_contours_smt, FOOTER);
-						
-						write (keyword => keyword_face, 
-							   parameters => to_string (element (terminal_cursor).face));
-
-						-- stop mask
-						write_stop_mask_smt;
-
-						-- solder paste / stencil
-						write_stencil;
-				end case;
-
-				section_mark (section_terminal, FOOTER);
-				next (terminal_cursor);
-			end loop;
-			
-			section_mark (section_terminals, FOOTER);
-		end write_terminals;
-
-		
-	begin -- save_package
+	begin
 		log (text => to_string (file_name), level => log_threshold);
 		log_indentation_up;
 		
@@ -335,6 +96,7 @@ package body et_package_write is
 
 		reset_tab_depth;
 
+		-- CS sort the follwing actions by their importance:
 		write_meta (packge, log_threshold + 1);
 		write_silkscreen (packge, log_threshold + 1);		
 		write_assy_doc (packge, log_threshold + 1);
@@ -348,7 +110,8 @@ package body et_package_write is
 		
 		write_holes (packge, log_threshold + 1);
 
-		write_terminals; -- incl. pad properties, drill sizes, millings, ...
+		write_terminals (packge, log_threshold + 1);
+		-- incl. pad properties, drill sizes, millings, ...
 
 
 		
