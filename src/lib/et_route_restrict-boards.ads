@@ -120,14 +120,15 @@ package et_route_restrict.boards is
 	package pac_route_restrict_contours is new doubly_linked_lists (type_route_restrict_contour);
 	-- CS rename to pac_route_restrict_zones
 	
-	type type_route_restrict_cutout is new
+	type type_route_restrict_cutout is new -- CS rename to type_route_restrict_zone_cutout
 		et_route_restrict.type_route_restrict_cutout with
 	record
 		layers 	: pac_signal_layers.set;
 	end record;
 		
 	package pac_route_restrict_cutouts is new doubly_linked_lists (type_route_restrict_cutout);
-
+	-- CS rename to pac_route_restrict_zone_cutouts
+	
 	
 	-- NOTE: 
 	-- In the board drawing there is no "both-sides" as with
