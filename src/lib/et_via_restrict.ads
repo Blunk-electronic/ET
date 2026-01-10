@@ -71,7 +71,7 @@ package et_via_restrict is
 	-- CS not sure whether this is really required.
 
 	
-	package pac_via_restrict_cutouts is new 
+	package pac_via_restrict_cutouts is new -- rename to pac_via_restrict_zone_cutouts
 		doubly_linked_lists (type_via_restrict_cutout);
 	-- CS not sure whether this is really required.
 	
