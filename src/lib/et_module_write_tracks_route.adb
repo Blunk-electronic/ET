@@ -156,7 +156,9 @@ package body et_module_write_tracks_route is
 				write_easing (zone.easing);
 				
 				write_width (zone.linewidth);
-				write_isolation (zone.isolation);
+
+				write (keyword => keyword_isolation, 
+				   parameters => to_string (zone.isolation));
 				
 				write (keyword => keyword_priority , 
 					   parameters => to_string (zone.properties.priority_level));
@@ -210,7 +212,9 @@ package body et_module_write_tracks_route is
 				write_easing (zone.easing);
 
 				write_width (zone.linewidth);
-				write_isolation (zone.isolation);
+
+				write (keyword => keyword_isolation, 
+				   parameters => to_string (zone.isolation));
 				
 				write (keyword => keyword_priority , 
 					   parameters => to_string (zone.properties.priority_level));

@@ -214,12 +214,6 @@ package body et_board_write is
 
 	
 	
-	procedure write_isolation (iso : in type_track_clearance) is begin
-		write (keyword => keyword_isolation, parameters => to_string (iso));
-	end;
-
-	
-	
 	
 	procedure write_fill_style (fill_style : in type_fill_style) is
 	begin

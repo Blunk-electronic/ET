@@ -96,7 +96,9 @@ package body et_module_write_board_zones is
 			write_easing (element (cursor).easing);
 
 			write_width (element (cursor).linewidth);
-			write_isolation (element (cursor).isolation);
+
+			write (keyword => keyword_isolation, 
+				   parameters => to_string (zone.isolation));
 
 			write (keyword => keyword_priority , 
 				   parameters => to_string (zone.properties.priority_level));
@@ -121,7 +123,9 @@ package body et_module_write_board_zones is
 			write_easing (element (cursor).easing);
 
 			write_width (element (cursor).linewidth);
-			write_isolation (element (cursor).isolation);
+
+			write (keyword => keyword_isolation, 
+				   parameters => to_string (zone.isolation));
 
 			write (keyword => keyword_priority , 
 				   parameters => to_string (zone.properties.priority_level));
