@@ -172,8 +172,10 @@ package body et_module_write_tracks_route is
 				
 				write (keyword => keyword_layer, parameters => to_string (zone.properties.layer));
 
-				write_fill_style (SOLID);
+				write (keyword => keyword_fill_style, 
+					parameters => to_string (et_primitive_objects.SOLID));
 
+					
 				case zone.connection is
 					when THERMAL => 
 						write (keyword => keyword_connection, 
@@ -245,7 +247,9 @@ package body et_module_write_tracks_route is
 				write (keyword => keyword_layer, 
 					parameters => to_string (zone.properties.layer));
 
-				write_fill_style (HATCHED);
+				write (keyword => keyword_fill_style, 
+					parameters => to_string (HATCHED));
+
 				
 				write (keyword => keyword_spacing, 
 					parameters => to_string (zone.spacing));

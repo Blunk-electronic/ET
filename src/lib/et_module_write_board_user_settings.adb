@@ -127,6 +127,7 @@ package body et_module_write_board_user_settings is
 			
 			
 			procedure polygons is 
+				use et_primitive_objects;
 				use et_thermal_relief;
 				use et_fill_zones;
 				use et_fill_zones.boards;
@@ -134,7 +135,9 @@ package body et_module_write_board_user_settings is
 			begin
 				section_mark (section_fill_zones_conductor, HEADER);
 
-				write_fill_style (us.polygons_conductor.fill_style);
+				write (keyword => keyword_fill_style, 
+					parameters => to_string (us.polygons_conductor.fill_style));
+				
 				write_fill_linewidth (us.polygons_conductor.linewidth);
 
 				write (keyword => keyword_priority , 

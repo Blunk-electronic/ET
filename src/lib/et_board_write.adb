@@ -184,12 +184,6 @@ package body et_board_write is
 
 		
 	
-	procedure write_fill_style (fill_style : in type_fill_style) is
-	begin
-		write (keyword => keyword_fill_style, parameters => to_string (fill_style));
-	end;
-
-
 	
 	
 	procedure write_polygon_segments (

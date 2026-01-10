@@ -105,14 +105,17 @@ package body et_module_write_board_zones is
 			write_width (element (cursor).linewidth);
 
 			write (keyword => keyword_isolation, 
-				   parameters => to_string (zone.isolation));
+				parameters => to_string (zone.isolation));
 
 			write (keyword => keyword_priority , 
-				   parameters => to_string (zone.properties.priority_level));
+				parameters => to_string (zone.properties.priority_level));
 			
-			write (keyword => keyword_layer, parameters => to_string (zone.properties.layer));
+			write (keyword => keyword_layer,
+				parameters => to_string (zone.properties.layer));
 
-			write_fill_style (element (cursor).fill_style);
+			write (keyword => keyword_fill_style, 
+				parameters => to_string (zone.fill_style));
+			
 
 			contours_begin;
 			write_polygon_segments (type_contour (element (cursor)));
@@ -147,8 +150,10 @@ package body et_module_write_board_zones is
 
 			write (keyword => keyword_layer, parameters => to_string (zone.properties.layer));
 
-			write_fill_style (element (cursor).fill_style);
-
+			write (keyword => keyword_fill_style, 
+				parameters => to_string (zone.fill_style));
+			
+			
 			write (keyword => keyword_spacing, 
 				   parameters => to_string (zone.spacing));
 
