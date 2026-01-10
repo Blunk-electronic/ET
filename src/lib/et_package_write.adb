@@ -59,7 +59,6 @@ with et_terminal_name;					use et_terminal_name;
 with et_terminals;						use et_terminals;
 
 with et_primitive_objects;				use et_primitive_objects;
-with et_conductor_text.packages;		use et_conductor_text.packages;
 with et_time;							use et_time;
 with et_mirroring;						use et_mirroring;
 with et_coordinates_formatting;			use et_coordinates_formatting;
@@ -79,15 +78,13 @@ with et_package_write_stopmask;			use et_package_write_stopmask;
 with et_package_write_stencil;			use et_package_write_stencil;
 with et_package_write_route_restrict;	use et_package_write_route_restrict;
 with et_package_write_via_restrict;		use et_package_write_via_restrict;
-
+with et_package_write_conductors;		use et_package_write_conductors;
 
 
 package body et_package_write is
 
 	use pac_text_board_vectorized;
 	use pac_texts_fab_with_content;
-	
-	use pac_conductor_texts;
 
 
 	
@@ -99,68 +96,8 @@ package body et_package_write is
 	is
 		file_handle : ada.text_io.file_type;
 
-		
-		
-		procedure write_text (cursor : in pac_conductor_texts.cursor) is begin
-			text_begin;
-			write (keyword => keyword_content, wrap => true,
-				parameters => to_string (element (cursor).content));
-			-- CS write_text_properties (element (cursor));
-			text_end;
-		end write_text;
-
-		
-		-- This is about conductor objects in either top or bottom.
-		-- These objects have no connection to any pad or signal.
-		procedure write_conductor is
-
-			use et_conductor_segment;
 			
-			use pac_conductor_lines;
-			procedure write_line (cursor : in pac_conductor_lines.cursor) is begin
-				line_begin;
-				write_line (element (cursor));
-				write_width (element (cursor).width);
-				line_end;
-			end write_line;
 
-			
-			use pac_conductor_arcs;
-			procedure write_arc (cursor : in pac_conductor_arcs.cursor) is begin
-				arc_begin;
-				write_arc (element (cursor));
-				write_width (element (cursor).width);
-				arc_end;
-			end write_arc;
-
-			
-			use pac_conductor_circles;
-			procedure write_circle (cursor : in pac_conductor_circles.cursor) is begin
-				write_circle_conductor (element (cursor));
-			end write_circle;
-	
-			
-		begin -- write_conductor
-			section_mark (section_conductor, HEADER);
-
-			-- top
-			section_mark (section_top, HEADER);			
-			iterate (packge.conductors.top.lines, write_line'access);
-			iterate (packge.conductors.top.arcs, write_arc'access);
-			iterate (packge.conductors.top.circles, write_circle'access);
-			iterate (packge.conductors.top.texts, write_text'access);
-			section_mark (section_top, FOOTER);
-
-			-- bottom
-			section_mark (section_bottom, HEADER);			
-			iterate (packge.conductors.bottom.lines, write_line'access);
-			iterate (packge.conductors.bottom.arcs, write_arc'access);
-			iterate (packge.conductors.bottom.circles, write_circle'access);
-			iterate (packge.conductors.bottom.texts, write_text'access);			
-			section_mark (section_bottom, FOOTER);
-
-			section_mark (section_conductor, FOOTER);
-		end write_conductor;
 
 		
 		use pac_text_placeholders;		
@@ -454,7 +391,7 @@ package body et_package_write is
 		write_silkscreen (packge, log_threshold + 1);		
 		write_assy_doc (packge, log_threshold + 1);
 		write_keepout (packge, log_threshold + 1);
-		write_conductor;
+		write_conductors (packge, log_threshold + 1);
 		write_stopmask (packge, log_threshold + 1);
 		write_stencil (packge, log_threshold + 1);
 		
