@@ -78,6 +78,8 @@ with et_package_write_keepout;			use et_package_write_keepout;
 with et_package_write_stopmask;			use et_package_write_stopmask;
 with et_package_write_stencil;			use et_package_write_stencil;
 with et_package_write_route_restrict;	use et_package_write_route_restrict;
+with et_package_write_via_restrict;		use et_package_write_via_restrict;
+
 
 
 package body et_package_write is
@@ -171,48 +173,6 @@ package body et_package_write is
 
 		
 
-
-		
-		
-		procedure write_via_restrict is 
-			use pac_via_restrict_zones;
-			use pac_via_restrict_cutouts;
-
-			procedure write_zone (cursor : in pac_via_restrict_zones.cursor) is 
-			begin
-				fill_zone_begin;
-				contours_begin;
-				write_polygon_segments (element (cursor));
-				contours_end;
-				fill_zone_end;
-			end write_zone;
-
-			procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor) is 
-			begin
-				cutout_zone_begin;
-				contours_begin;
-				write_polygon_segments (element (cursor));
-				contours_end;
-				cutout_zone_end;
-			end write_cutout;
-			
-		begin
-			section_mark (section_via_restrict, HEADER);
-
-			-- top
-			section_mark (section_top, HEADER);
-			iterate (packge.via_restrict.top.zones, write_zone'access);			
-			iterate (packge.via_restrict.top.cutouts, write_cutout'access);
-			section_mark (section_top, FOOTER);
-
-			-- bottom
-			section_mark (section_bottom, HEADER);
-			iterate (packge.via_restrict.bottom.zones, write_zone'access);			
-			iterate (packge.via_restrict.bottom.cutouts, write_cutout'access);
-			section_mark (section_bottom, FOOTER);
-			
-			section_mark (section_via_restrict, FOOTER);			
-		end write_via_restrict;
 
 		
 		procedure write_holes is
@@ -499,7 +459,8 @@ package body et_package_write is
 		write_stencil (packge, log_threshold + 1);
 		
 		write_route_restrict (packge, log_threshold + 1);
-		write_via_restrict;
+		write_via_restrict (packge, log_threshold + 1);
+		
 		write_holes; -- pcb cutouts
 		-- write_contour_plated; -- pcb contour -- CS currently no need
 		write_terminals; -- incl. pad properties, drill sizes, millings, ...

@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                            PACKAGE WRITE                                 --
+--                   PACKAGE WRITE / VIA RESTRICT                           --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,45 +36,20 @@
 --   history of changes:
 --
 
---   do do:
 
-with et_design_rules_board;				use et_design_rules_board;
-with et_string_processing;				use et_string_processing;
-with et_device_placeholders;			use et_device_placeholders;
-with et_device_placeholders.packages;	use et_device_placeholders.packages;
-with et_package_bom_relevance;			use et_package_bom_relevance;
-with et_package_model;					use et_package_model;
-with et_package_library;				use et_package_library;
-with et_fill_zones;						use et_fill_zones;
-with et_board_geometry;					use et_board_geometry;
-with et_board_coordinates;				use et_board_coordinates;
-with et_board_text;						use et_board_text;
-with et_board_write;					use et_board_write;
-with et_conductor_text;					use et_conductor_text;
-with et_pcb_stack;						use et_pcb_stack;
-with et_pcb_sides;						use et_pcb_sides;
-with et_drills;							use et_drills;
-with et_package_name;					use et_package_name;
-with et_package_model_name;				use et_package_model_name;
-with et_logging;						use et_logging;
+with et_package_model;			use et_package_model;
+with et_logging;				use et_logging;
 
 
 
-package et_package_write is
-
-	use pac_geometry_2;
-	use pac_contours;
-	use pac_text_board;
-
+package et_package_write_via_restrict is
 
 	
-	-- Saves the given package model in a file specified by file_name.							   
-	procedure write_package (
-		file_name 		: in pac_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
-		packge			: in type_package_model; -- the actual device model
+
+	procedure write_via_restrict (
+		packge			: in type_package_model;
 		log_threshold	: in type_log_level);
-
-
 	
+		
 	
-end et_package_write;
+end et_package_write_via_restrict;
