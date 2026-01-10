@@ -105,10 +105,8 @@ package et_board_write is
 	-- writes center and radius of a circle
 	procedure write_circle (circle : in type_circle'class);
 
-	--procedure write_hatching (hatching : in type_hatching);
-
 	procedure write_fill_style (fill_style : in type_fill_style);
-	procedure write_fill_status (filled : in type_filled);
+
 
 	
 	-- writes the segments of a polygon (lines, arcs or a single circle):

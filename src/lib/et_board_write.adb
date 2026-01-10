@@ -182,27 +182,12 @@ package body et_board_write is
 		write (keyword => keyword_radius, parameters => to_string (get_radius (circle)));
 	end write_circle;
 
-
-	--procedure write_hatching (hatching : in type_hatching) is
-	--begin
-		--write (keyword => keyword_hatching_line_width  , parameters => to_string (hatching.line_width));
-		--write (keyword => keyword_spacing, parameters => to_string (hatching.spacing));
-		--write (keyword => keyword_hatching_border_width, parameters => to_string (hatching.border_width));
-	--end;
-
-
 		
 	
 	procedure write_fill_style (fill_style : in type_fill_style) is
 	begin
 		write (keyword => keyword_fill_style, parameters => to_string (fill_style));
 	end;
-
-	
-	procedure write_fill_status (filled : in type_filled) is begin
-		write (keyword => keyword_filled, parameters => to_string (filled));
-	end;
-
 
 
 	

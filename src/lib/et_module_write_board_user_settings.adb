@@ -130,6 +130,7 @@ package body et_module_write_board_user_settings is
 				use et_thermal_relief;
 				use et_fill_zones;
 				use et_fill_zones.boards;
+				-- CS use renames for us.polygons_conductor
 			begin
 				section_mark (section_fill_zones_conductor, HEADER);
 
