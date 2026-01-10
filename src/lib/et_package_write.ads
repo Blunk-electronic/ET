@@ -40,8 +40,6 @@
 
 with et_design_rules_board;				use et_design_rules_board;
 with et_string_processing;				use et_string_processing;
-with et_device_placeholders;			use et_device_placeholders;
-with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_package_bom_relevance;			use et_package_bom_relevance;
 with et_package_model;					use et_package_model;
 with et_package_library;				use et_package_library;
