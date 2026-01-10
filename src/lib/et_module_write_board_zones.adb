@@ -148,7 +148,9 @@ package body et_module_write_board_zones is
 			write (keyword => keyword_layer, parameters => to_string (zone.properties.layer));
 
 			write_fill_style (element (cursor).fill_style);
-			write_spacing (element (cursor).spacing);
+
+			write (keyword => keyword_spacing, 
+				   parameters => to_string (zone.spacing));
 
 			contours_begin;
 			write_polygon_segments (type_contour (element (cursor)));

@@ -231,13 +231,15 @@ package body et_module_write_tracks_route is
 				   parameters => to_string (zone.isolation));
 				
 				write (keyword => keyword_priority , 
-					   parameters => to_string (zone.properties.priority_level));
+					parameters => to_string (zone.properties.priority_level));
 				
-				write (keyword => keyword_layer, parameters => to_string (zone.properties.layer));
+				write (keyword => keyword_layer, 
+					parameters => to_string (zone.properties.layer));
 
 				write_fill_style (HATCHED);
 				
-				write_spacing (zone.spacing);
+				write (keyword => keyword_spacing, 
+					parameters => to_string (zone.spacing));
 
 				case zone.connection is
 					when THERMAL => 

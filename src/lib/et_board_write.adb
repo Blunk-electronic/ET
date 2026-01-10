@@ -183,12 +183,6 @@ package body et_board_write is
 	end write_circle;
 
 
-	procedure write_spacing (spacing : in type_track_clearance) is
-	begin
-		write (keyword => keyword_spacing, parameters => to_string (spacing));
-	end;
-
-	
 	--procedure write_hatching (hatching : in type_hatching) is
 	--begin
 		--write (keyword => keyword_hatching_line_width  , parameters => to_string (hatching.line_width));

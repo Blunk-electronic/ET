@@ -142,7 +142,8 @@ package body et_module_write_board_user_settings is
 				write (keyword => keyword_isolation, 
 					   parameters => to_string (us.polygons_conductor.isolation));
 				
-				write_spacing (us.polygons_conductor.spacing);
+				write (keyword => keyword_spacing, 
+					parameters => to_string (us.polygons_conductor.spacing));
 				
 				write (keyword => keyword_connection, 
 					   parameters => to_string (us.polygons_conductor.connection));

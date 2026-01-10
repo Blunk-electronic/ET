@@ -105,7 +105,6 @@ package et_board_write is
 	-- writes center and radius of a circle
 	procedure write_circle (circle : in type_circle'class);
 
-	procedure write_spacing (spacing : in type_track_clearance);
 	--procedure write_hatching (hatching : in type_hatching);
 
 	procedure write_thermal (thermal : in type_relief_properties);
