@@ -422,6 +422,37 @@ Select the delete mode by pressing key m (single segment or all segments of the 
 
 
 
+
+#. Draw Freetrack Segments
+
+	This example draws a freetrack line in signal layer 1
+	with linewidth 0.25mm from x/y 10/10 to x/y 16/13:
+
+	.. code-block::
+
+		route freetrack 1 line 0.25 10 10 16 13
+
+
+	This example draws an arc freetrack in signal layer 1
+	with linewidth 0.25, center at 50/50, from 50/0 to 50/100, clockwise:
+
+	.. code-block::
+		
+		route freetrack 1 arc 0.25 50 50 50 0 50 100 cw
+
+
+	This example draws a freetrack circle in signal layer 1
+	with linewidth 0.25mm, center at 50/50, radius 4mm:
+
+	.. code-block::
+
+		route freetrack 1 circle 0.25 50 50 4
+
+
+
+
+
+
 #. Deleting Freetrack Segments
 
 	.. code-block::
