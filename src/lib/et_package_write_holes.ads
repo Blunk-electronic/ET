@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           PACKAGE SECTIONS                               --
+--                       PACKAGE WRITE / HOLES                              --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,64 +36,20 @@
 --   history of changes:
 --
 
---   do do:
+
+with et_package_model;			use et_package_model;
+with et_logging;				use et_logging;
 
 
-package et_package_sections is
 
-
-	-- Prefixes before enumeration types prevent clashes with gnat keywords
-	-- and package names:
-	section_prefix : constant string := ("SEC_");
+package et_package_write_holes is
 
 	
-	type type_package_section is (  -- CS: sort aphabetically
-		SEC_CONDUCTOR,
-		SEC_CONTOURS, -- of fill and cutout zones
-		SEC_CUTOUT_ZONE,
-		SEC_INIT,
-		SEC_TOP,
-		SEC_BOTTOM,
-		SEC_HOLE,
-		SEC_LINE,
-		SEC_ARC,
-		SEC_CIRCLE,
-		SEC_SILKSCREEN,
-		SEC_ASSEMBLY_DOCUMENTATION,
-		SEC_KEEPOUT,
-		SEC_STOPMASK,
-		SEC_STENCIL,
-		SEC_ROUTE_RESTRICT,
-		SEC_VIA_RESTRICT,
-		SEC_PCB_CONTOURS_NON_PLATED, -- CS rename to SEC_HOLES
-		-- CS SEC_HOLES_PLATED ?
-		SEC_TERMINALS,
-		SEC_TERMINAL,
-		SEC_PAD_CONTOURS_SMT,
-		SEC_PAD_CONTOURS_THT,
-		SEC_STENCIL_CONTOURS,
-		SEC_STOPMASK_CONTOURS_SMT,
-		SEC_STOPMASK_CONTOURS_THT,
-		SEC_MILLINGS,
-		SEC_TEXT,
-		SEC_PLACEHOLDER,
-		SEC_ZONE,
-		SEC_PACKAGE_3D_CONTOURS
-		);
 
-
+	procedure write_holes (
+		packge			: in type_package_model;
+		log_threshold	: in type_log_level);
 	
-	-- Converts a section like SEC_KEEPOUT to a string "keepout".
-	function to_string (
-		section : in type_package_section) 
-		return string;
+		
 	
-
-	
-	section_zone		: constant string := "[ZONE";
-	section_cutout_zone	: constant string := "[CUTOUT_ZONE";
-	section_contours	: constant string := "[CONTOURS";
-
-	
-	
-end et_package_sections;
+end et_package_write_holes;

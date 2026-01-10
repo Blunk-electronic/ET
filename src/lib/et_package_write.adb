@@ -79,6 +79,7 @@ with et_package_write_stencil;			use et_package_write_stencil;
 with et_package_write_route_restrict;	use et_package_write_route_restrict;
 with et_package_write_via_restrict;		use et_package_write_via_restrict;
 with et_package_write_conductors;		use et_package_write_conductors;
+with et_package_write_holes;			use et_package_write_holes;
 
 
 package body et_package_write is
@@ -96,28 +97,6 @@ package body et_package_write is
 	is
 		file_handle : ada.text_io.file_type;
 
-
-		
-		procedure write_holes is
-			use et_board_holes;
-			use pac_holes;
-			use pac_segments;
-
-			procedure query_hole (c : in pac_holes.cursor) is begin
-				section_mark (section_hole, HEADER);		
-				write_polygon_segments (element (c));		
-				section_mark (section_hole, FOOTER);		
-			end query_hole;
-
-		begin
-			if not is_empty (packge.holes) then
-				
-				section_mark (section_pcb_contours, HEADER);		
-				packge.holes.iterate (query_hole'access);				
-				section_mark (section_pcb_contours, FOOTER);
-				
-			end if;
-		end write_holes;
 
 
 		procedure write_package_contour is begin
@@ -384,8 +363,8 @@ package body et_package_write is
 		write_route_restrict (packge, log_threshold + 1);
 		write_via_restrict (packge, log_threshold + 1);
 		
-		write_holes; -- pcb cutouts
-		-- write_contour_plated; -- pcb contour -- CS currently no need
+		write_holes (packge, log_threshold + 1);
+
 		write_terminals; -- incl. pad properties, drill sizes, millings, ...
 
 		-- 3D stuff

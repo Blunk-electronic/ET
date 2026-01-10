@@ -159,6 +159,7 @@ package et_package_model is
 		route_restrict 	: type_route_restrict;
 		via_restrict 	: type_via_restrict;
 		holes			: pac_holes.list; -- PCB contour
+		-- CS plated holes ?
 		
 		-- NOTE: There is no reason to allow texts in contours here.
 		-- The text would most likely end up somewhere inside the board area. 
