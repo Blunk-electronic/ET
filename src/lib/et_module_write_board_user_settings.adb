@@ -125,14 +125,19 @@ package body et_module_write_board_user_settings is
 			end vias;
 
 			
+			
 			procedure polygons is 
 				use et_thermal_relief;
+				use et_fill_zones.boards;
 			begin
 				section_mark (section_fill_zones_conductor, HEADER);
 
 				write_fill_style (us.polygons_conductor.fill_style);
 				write_fill_linewidth (us.polygons_conductor.linewidth);
-				write_priority (us.polygons_conductor.priority_level);
+
+				write (keyword => keyword_priority , 
+					parameters => to_string (us.polygons_conductor.priority_level));
+				
 				write_isolation (us.polygons_conductor.isolation);
 				
 				write_spacing (us.polygons_conductor.spacing);

@@ -158,7 +158,9 @@ package body et_module_write_tracks_route is
 				write_width (zone.linewidth);
 				write_isolation (zone.isolation);
 				
-				write_priority (zone.properties.priority_level);
+				write (keyword => keyword_priority , 
+					   parameters => to_string (zone.properties.priority_level));
+				
 				write (keyword => keyword_layer, parameters => to_string (zone.properties.layer));
 
 				write_fill_style (SOLID);
@@ -210,7 +212,9 @@ package body et_module_write_tracks_route is
 				write_width (zone.linewidth);
 				write_isolation (zone.isolation);
 				
-				write_priority (zone.properties.priority_level);
+				write (keyword => keyword_priority , 
+					   parameters => to_string (zone.properties.priority_level));
+				
 				write (keyword => keyword_layer, parameters => to_string (zone.properties.layer));
 
 				write_fill_style (HATCHED);

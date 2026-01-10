@@ -98,7 +98,9 @@ package body et_module_write_board_zones is
 			write_width (element (cursor).linewidth);
 			write_isolation (element (cursor).isolation);
 
-			write_priority (element (cursor).properties.priority_level);
+			write (keyword => keyword_priority , 
+				   parameters => to_string (zone.properties.priority_level));
+			
 			write (keyword => keyword_layer, parameters => to_string (zone.properties.layer));
 
 			write_fill_style (element (cursor).fill_style);
@@ -121,7 +123,9 @@ package body et_module_write_board_zones is
 			write_width (element (cursor).linewidth);
 			write_isolation (element (cursor).isolation);
 
-			write_priority (element (cursor).properties.priority_level);
+			write (keyword => keyword_priority , 
+				   parameters => to_string (zone.properties.priority_level));
+
 			write (keyword => keyword_layer, parameters => to_string (zone.properties.layer));
 
 			write_fill_style (element (cursor).fill_style);

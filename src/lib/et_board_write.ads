@@ -110,7 +110,6 @@ package et_board_write is
 	procedure write_easing (easing: in type_easing);
 	procedure write_thermal (thermal : in type_relief_properties);
 	procedure write_isolation (iso : in type_track_clearance);
-	procedure write_priority (prio : in type_priority);
 
 	procedure write_fill_style (fill_style : in type_fill_style);
 	procedure write_fill_status (filled : in type_filled);

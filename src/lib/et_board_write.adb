@@ -219,12 +219,6 @@ package body et_board_write is
 	end;
 
 	
-	procedure write_priority (prio : in type_priority) is
-		use et_module_board;
-	begin
-		write (keyword => keyword_priority , parameters => to_string (prio));
-	end;
-
 	
 	
 	procedure write_fill_style (fill_style : in type_fill_style) is
