@@ -165,7 +165,9 @@ package body et_module_write_tracks_route is
 
 				case zone.connection is
 					when THERMAL => 
-						write_pad_connection (zone.connection);
+						write (keyword => keyword_connection, 
+							   parameters => to_string (zone.connection));
+						
 						write_thermal (zone.relief_properties);
 		
 					when SOLID =>
@@ -217,7 +219,9 @@ package body et_module_write_tracks_route is
 
 				case zone.connection is
 					when THERMAL => 
-						write_pad_connection (zone.connection);
+						write (keyword => keyword_connection, 
+							   parameters => to_string (zone.connection));
+						
 						write_thermal (zone.relief_properties);
 		
 					when SOLID =>

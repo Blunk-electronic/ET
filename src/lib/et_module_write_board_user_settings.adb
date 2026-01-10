@@ -125,7 +125,9 @@ package body et_module_write_board_user_settings is
 			end vias;
 
 			
-			procedure polygons is begin
+			procedure polygons is 
+				use et_thermal_relief;
+			begin
 				section_mark (section_fill_zones_conductor, HEADER);
 
 				write_fill_style (us.polygons_conductor.fill_style);
@@ -135,7 +137,9 @@ package body et_module_write_board_user_settings is
 				
 				write_spacing (us.polygons_conductor.spacing);
 				
-				write_pad_connection (us.polygons_conductor.connection);
+				write (keyword => keyword_connection, 
+					   parameters => to_string (us.polygons_conductor.connection));
+				
 				write_thermal (us.polygons_conductor.thermal);
 
 				write_easing (us.polygons_conductor.easing);

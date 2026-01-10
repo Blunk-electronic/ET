@@ -237,12 +237,7 @@ package body et_board_write is
 		write (keyword => keyword_filled, parameters => to_string (filled));
 	end;
 
-	
-	procedure write_pad_connection (connection : in type_pad_connection) is
-		use et_module_board;
-	begin
-		write (keyword => keyword_connection, parameters => to_string (connection));
-	end;
+
 
 	
 	
