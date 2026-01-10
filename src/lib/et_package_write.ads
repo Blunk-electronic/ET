@@ -46,7 +46,6 @@ with et_package_library;				use et_package_library;
 with et_fill_zones;						use et_fill_zones;
 with et_board_geometry;					use et_board_geometry;
 with et_board_coordinates;				use et_board_coordinates;
-with et_board_text;						use et_board_text;
 with et_board_write;					use et_board_write;
 with et_pcb_stack;						use et_pcb_stack;
 with et_pcb_sides;						use et_pcb_sides;
@@ -61,7 +60,6 @@ package et_package_write is
 
 	use pac_geometry_2;
 	use pac_contours;
-	use pac_text_board;
 
 
 	

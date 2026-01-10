@@ -44,10 +44,6 @@ with ada.exceptions;
 with et_directory_and_file_ops;
 with et_general_rw;						use et_general_rw;
 
-with et_text_content;					use et_text_content;
-
-with et_alignment;						use et_alignment;
-
 with et_terminal_stopmask;				use et_terminal_stopmask;
 with et_terminal_stencil;				use et_terminal_stencil;
 with et_stopmask_status;				use et_stopmask_status;
@@ -58,16 +54,12 @@ with et_terminal_hole;					use et_terminal_hole;
 with et_terminal_name;					use et_terminal_name;
 with et_terminals;						use et_terminals;
 
-with et_primitive_objects;				use et_primitive_objects;
 with et_time;							use et_time;
-with et_mirroring;						use et_mirroring;
 with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_system_info;
 with et_package_description;			use et_package_description;
 with et_keywords;						use et_keywords;
 with et_section_headers;				use et_section_headers;
-with et_board_holes;
-with et_conductor_segment;
 with et_package_sections;				use et_package_sections;
 
 with et_package_write_meta;				use et_package_write_meta;
@@ -84,8 +76,6 @@ with et_package_write_holes;			use et_package_write_holes;
 
 package body et_package_write is
 
-	use pac_text_board_vectorized;
-	use pac_texts_fab_with_content;
 
 
 	
@@ -97,13 +87,6 @@ package body et_package_write is
 	is
 		file_handle : ada.text_io.file_type;
 
-
-
-		procedure write_package_contour is begin
-			section_mark (section_pac_3d_contours, HEADER);
-			-- CS
-			section_mark (section_pac_3d_contours, FOOTER);
-		end write_package_contour;
 
 		
 		procedure write_terminals is
@@ -367,12 +350,8 @@ package body et_package_write is
 
 		write_terminals; -- incl. pad properties, drill sizes, millings, ...
 
-		-- 3D stuff
-		if packge.appearance = BOM_RELEVANT_YES then
-			null;
-			--write_package_contour;  -- CS uncomment when 3d support available
-		end if;
 
+		
 		-- write footer
 		new_line;
 		put_line (comment_mark & " " & row_separator_double);
