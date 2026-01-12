@@ -43,6 +43,7 @@
 --
 
 with ada.text_io;					use ada.text_io;
+with ada.strings;					use ada.strings;
 
 with et_keywords;					use et_keywords;
 with et_section_headers;			use et_section_headers;
@@ -50,8 +51,10 @@ with et_section_headers;			use et_section_headers;
 with et_module;						use et_module;
 
 with et_pcb_sides;					use et_pcb_sides;
+with et_board_geometry;				use et_board_geometry;
 with et_board_coordinates;			use et_board_coordinates;
 
+with et_alignment;					use et_alignment;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_device_name;				use et_device_name;
 
@@ -107,14 +110,41 @@ package body et_module_write_device_non_electrical is
 					c : in et_device_placeholders.packages.pac_text_placeholders.cursor)
 				is 
 					ph : et_device_placeholders.packages.type_text_placeholder renames element (c);
+					
+					use pac_geometry_2;
+					position : type_package_position;
 				begin
 					section_mark (section_placeholder, HEADER);
 					write (keyword => keyword_layer, parameters => to_string (layer));
 					write (keyword => keyword_meaning, parameters => to_string (element (c).meaning));
 					write (keyword => keyword_anchor, parameters => to_string (get_anchor_mode (ph)));
 					
-					write_text_properties_with_face (ph, face);
+					-----
+					-- CS rework:
 
+					-- Assemble the text position:
+					set_position (position, get_position (ph));
+					set_face (position, face);
+								
+					write (keyword => keyword_position, 
+						parameters => to_string (position, FORMAT_2)); 
+					-- position x 0.000 y 5.555 rotation 0.00 face top
+
+					write (keyword => keyword_size, 
+						parameters => to_string (ph.size)); -- size 1.000
+					
+					write (keyword => keyword_linewidth, 
+						parameters => to_string (ph.line_width));
+						
+					write (keyword => keyword_alignment, 
+						parameters =>
+							keyword_horizontal & space & to_string (ph.alignment.horizontal) & space &
+							keyword_vertical   & space & to_string (ph.alignment.vertical)
+						);
+
+					-- CS use et_alignment.to_string 
+					-----
+					
 					section_mark (section_placeholder, FOOTER);
 				end write_placeholder;
 

@@ -102,37 +102,6 @@ package body et_board_write is
 
 	
 	
-	procedure write_text_properties_with_face (
-		t		: in type_text_fab'class;
-		face	: in type_face) 
-	is 
-		position : type_package_position;
-	begin
-		-- CS rework !
-
-		-- Assemble the text position:
-		set_position (position, get_position (t));
-		set_face (position, face);
-					  
-		write (keyword => keyword_position, parameters => 
-			   to_string (position, FORMAT_2)); 
-		-- position x 0.000 y 5.555 rotation 0.00 face top
-
-		write (keyword => keyword_size, parameters => to_string (t.size)); -- size 1.000
-		
-		write (keyword => keyword_linewidth, parameters => to_string (t.line_width));
-		write (keyword => keyword_alignment, parameters =>
-				keyword_horizontal & space & to_string (t.alignment.horizontal) & space &
-				keyword_vertical   & space & to_string (t.alignment.vertical)
-			  );
-
-		-- CS use et_alignment.to_string 
-		
-		-- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
-	end write_text_properties_with_face;
-
-	
-
 
 	
 	procedure write_line (line : in type_line'class) is begin

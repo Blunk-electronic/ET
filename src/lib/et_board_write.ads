@@ -78,11 +78,6 @@ package et_board_write is
 		t : in 	type_text_fab'class);
 
 	
-	procedure write_text_properties_with_face (
-		t		: in type_text_fab'class;
-		face	: in type_face);
-
-	
 	
 	
 	-- writes start and end point of a line

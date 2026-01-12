@@ -81,6 +81,7 @@ with et_device_placeholders.symbols;
 with et_unit_name;
 with et_units;
 with et_mirroring;						use et_mirroring;
+with et_alignment;						use et_alignment;
 
 with et_general_rw;						use et_general_rw;
 with et_board_write;					use et_board_write;
@@ -185,13 +186,41 @@ package body et_module_write_devices_electrical is
 			procedure write_placeholder (c : in pac_text_placeholders.cursor) is 
 				ph : type_text_placeholder renames element (c);
 				use et_device_placeholders;
+
+				use et_board_geometry;
+				use pac_geometry_2;
+				position : type_package_position;
 			begin
 				section_mark (section_placeholder, HEADER);
 				write (keyword => keyword_layer, parameters => to_string (layer));
 				write (keyword => keyword_meaning, parameters => to_string (get_meaning (ph)));
 				write (keyword => keyword_anchor, parameters => get_anchor_mode (ph));
 
-				write_text_properties_with_face (ph, face);
+				-------
+				-- CS rework:
+				
+				-- Assemble the text position:
+				set_position (position, get_position (ph));
+				set_face (position, face);
+							
+				write (keyword => keyword_position, 
+					parameters => to_string (position, FORMAT_2)); 
+				-- position x 0.000 y 5.555 rotation 0.00 face top
+
+				write (keyword => keyword_size, 
+					parameters => to_string (ph.size)); -- size 1.000
+				
+				write (keyword => keyword_linewidth, 
+					parameters => to_string (ph.line_width));
+					
+				write (keyword => keyword_alignment, 
+					parameters =>
+						keyword_horizontal & space & to_string (ph.alignment.horizontal) & space &
+						keyword_vertical   & space & to_string (ph.alignment.vertical)
+					);
+
+				-- CS use et_alignment.to_string 
+				--------
 				
 				section_mark (section_placeholder, FOOTER);
 			end write_placeholder;
