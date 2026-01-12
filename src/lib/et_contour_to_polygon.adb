@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -76,7 +76,7 @@ package body et_contour_to_polygon is
 		use pac_geometry_brd;
 
 		-- Convert the given tolerance to a float type:
-		f_tol : constant type_float_positive := type_float (tolerance);
+		f_tol : constant type_float_positive := type_float_positive (tolerance);
 	begin
 		return to_edges (to_arc_fine (arc), f_tol, mode, debug);
 	end to_edges;

@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -76,7 +76,7 @@ package body et_fill_zones is
 		boundaries : constant type_boundaries := get_boundaries (island.shore);
 
 		height : constant type_float_positive := get_height (boundaries);
-		bottom : constant pac_geometry_brd.type_float := get_bottom (boundaries);
+		bottom : constant type_float_model := get_bottom (boundaries);
 
 		--effective_width : type_float_positive;
 
