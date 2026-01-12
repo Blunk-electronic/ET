@@ -86,13 +86,9 @@ package et_board_write is
 	procedure write_text (cursor : in pac_texts_fab_with_content.cursor);
 	--procedure write_text (cursor : in pac_conductor_texts_package.cursor);
 	
-	
+
 
 	
-	procedure write_width (width : in type_track_width);
-	
-	procedure write_fill_linewidth (width : in type_track_width);		
-
 	
 	-- writes start and end point of a line
 	procedure write_line (line : in type_line'class);

@@ -77,18 +77,28 @@ package body et_package_write_conductors is
 		log_threshold	: in type_log_level) 
 	is
 	
-		procedure write_line (cursor : in pac_conductor_lines.cursor) is begin
+		procedure write_line (cursor : in pac_conductor_lines.cursor) is 
+			line : type_conductor_line renames element (cursor);
+		begin
 			line_begin;
 			write_line (element (cursor));
-			write_width (element (cursor).width);
+			
+			write (keyword => keyword_width, 
+				parameters => to_string (line.width));
+			
 			line_end;
 		end write_line;
 
 		
-		procedure write_arc (cursor : in pac_conductor_arcs.cursor) is begin
+		procedure write_arc (cursor : in pac_conductor_arcs.cursor) is 
+			arc : type_conductor_arc renames element (cursor);
+		begin
 			arc_begin;
 			write_arc (element (cursor));
-			write_width (element (cursor).width);
+
+			write (keyword => keyword_width, 
+				parameters => to_string (arc.width));
+			
 			arc_end;
 		end write_arc;
 
@@ -98,7 +108,10 @@ package body et_package_write_conductors is
 		begin
 			circle_begin;
 			write_circle (circle);
-			write (keyword => keyword_width, parameters => to_string (circle.width));
+			
+			write (keyword => keyword_width, 
+				parameters => to_string (circle.width));
+			
 			circle_end;		
 		end write_circle;
 

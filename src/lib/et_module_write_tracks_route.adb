@@ -162,15 +162,17 @@ package body et_module_write_tracks_route is
 
 				
 				
-				write_width (zone.linewidth);
+				write (keyword => keyword_width,
+					parameters => to_string (zone.linewidth));
 
 				write (keyword => keyword_isolation, 
-				   parameters => to_string (zone.isolation));
+					parameters => to_string (zone.isolation));
 				
 				write (keyword => keyword_priority , 
-					   parameters => to_string (zone.properties.priority_level));
+					parameters => to_string (zone.properties.priority_level));
 				
-				write (keyword => keyword_layer, parameters => to_string (zone.properties.layer));
+				write (keyword => keyword_layer, 
+					parameters => to_string (zone.properties.layer));
 
 				write (keyword => keyword_fill_style, 
 					parameters => to_string (et_primitive_objects.SOLID));
@@ -236,7 +238,8 @@ package body et_module_write_tracks_route is
 
 				
 
-				write_width (zone.linewidth);
+				write (keyword => keyword_width,
+					parameters => to_string (zone.linewidth));
 
 				write (keyword => keyword_isolation, 
 				   parameters => to_string (zone.isolation));
@@ -254,6 +257,7 @@ package body et_module_write_tracks_route is
 				write (keyword => keyword_spacing, 
 					parameters => to_string (zone.spacing));
 
+					
 				case zone.connection is
 					when THERMAL => 
 						write (keyword => keyword_connection, 

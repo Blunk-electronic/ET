@@ -88,6 +88,7 @@ package body et_module_write_board_zones is
 		use pac_floating_hatched;
 
 		
+		-- CS rename to write_zone		
 		procedure write_polygon (cursor : in pac_floating_solid.cursor) is 
 			zone : type_floating_solid renames element (cursor);
 		begin
@@ -102,7 +103,8 @@ package body et_module_write_board_zones is
 
 			
 
-			write_width (element (cursor).linewidth);
+			write (keyword => keyword_width,
+				parameters => to_string (zone.linewidth));
 
 			write (keyword => keyword_isolation, 
 				parameters => to_string (zone.isolation));
@@ -125,7 +127,8 @@ package body et_module_write_board_zones is
 		end;
 
 		
-		
+
+		-- CS rename to write_zone
 		procedure write_polygon (cursor : in pac_floating_hatched.cursor) is 
 			zone : type_floating_hatched renames element (cursor);
 		begin
@@ -140,7 +143,8 @@ package body et_module_write_board_zones is
 
 			
 
-			write_width (element (cursor).linewidth);
+			write (keyword => keyword_width,
+				parameters => to_string (zone.linewidth));
 
 			write (keyword => keyword_isolation, 
 				   parameters => to_string (zone.isolation));

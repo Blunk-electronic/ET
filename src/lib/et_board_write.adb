@@ -153,14 +153,6 @@ package body et_board_write is
 		--text_end;
 	--end write_text;
 
-	
-	procedure write_width (width : in type_track_width) is begin
-		write (keyword => keyword_width, parameters => to_string (width));
-	end;
-
-	procedure write_fill_linewidth (width : in type_track_width) is begin
-		write (keyword => keyword_linewidth, parameters => to_string (width));
-	end;
 
 	
 	procedure write_line (line : in type_line'class) is begin

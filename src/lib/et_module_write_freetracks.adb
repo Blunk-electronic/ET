@@ -65,7 +65,7 @@ with et_board_write;				use et_board_write;
 package body et_module_write_freetracks is
 
 	use pac_generic_modules;
-	-- use pac_geometry_2;
+	use pac_geometry_2;
 	-- use pac_signal_layers;
 	
 	
@@ -86,7 +86,10 @@ package body et_module_write_freetracks is
 		begin
 			line_begin;
 			write_line (line);
-			write_width (line.width);
+			
+			write (keyword => keyword_width, 
+				parameters => to_string (line.width));
+			
 			write (keyword => keyword_layer, parameters => to_string (line.layer));
 			line_end;
 		end;
@@ -99,7 +102,10 @@ package body et_module_write_freetracks is
 		begin
 			arc_begin;
 			write_arc (arc);
-			write_width (arc.width);
+
+			write (keyword => keyword_width, 
+				parameters => to_string (arc.width));
+				
 			write (keyword => keyword_layer, parameters => to_string (arc.layer));
 			arc_end;
 		end;
@@ -112,7 +118,10 @@ package body et_module_write_freetracks is
 		begin
 			circle_begin;
 			write_circle (circle);
-			write_width (circle.width);
+
+			write (keyword => keyword_width, 
+				parameters => to_string (circle.width));
+			
 			write (keyword => keyword_layer, parameters => to_string (circle.layer));
 			circle_end;			
 		end;
