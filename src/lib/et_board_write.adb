@@ -42,76 +42,9 @@ with ada.text_io;				use ada.text_io;
 
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_keywords;					use et_keywords;
-with et_directions;					use et_directions;
 
 
 package body et_board_write is
-
-
-	
-	procedure write_line (line : in type_line'class) is begin
-		write (keyword => keyword_start, parameters => to_string (get_A (line), FORMAT_2));
-		write (keyword => keyword_end  , parameters => to_string (get_B (line), FORMAT_2));
-	end write_line;
-
-	
-	procedure write_arc (arc : in type_arc'class) is begin
-		write (keyword => keyword_center, parameters => to_string (get_center (arc), FORMAT_2));
-		write (keyword => keyword_start, parameters => to_string (get_A (arc), FORMAT_2));
-		write (keyword => keyword_end, parameters => to_string (get_B (arc), FORMAT_2));
-		write (keyword => keyword_direction, parameters => to_string (get_direction (arc)));
-	end write_arc;
-
-	
-	procedure write_circle (circle : in type_circle'class) is begin
-		write (keyword => keyword_center, parameters => to_string (get_center (circle), FORMAT_2));
-		write (keyword => keyword_radius, parameters => to_string (get_radius (circle)));
-	end write_circle;
-
-		
-	
-	
-	
-	procedure write_polygon_segments (
-		polygon : in type_contour'class)
-	is
-		use pac_segments;
-		
-		procedure query_segment (c : in pac_segments.cursor) is begin
-			case element (c).shape is
-				
-				when LINE =>
-					line_begin;
-					write_line (element (c).segment_line);
-					line_end;
-
-				when ARC =>
-					arc_begin;
-					write_arc (element (c).segment_arc);
-					arc_end;
-
-			end case;
-		end query_segment;		
-
-		contours : type_segments := get_segments (polygon);
-		
-	begin				
-		if contours.circular then
-
-			circle_begin;
-			write_circle (contours.circle);
-			circle_end;
-
-		else
-			contours.segments.iterate (query_segment'access);
-		end if;
-		
-	end write_polygon_segments;
-	
-
-
-	
-	
 
 	
 	

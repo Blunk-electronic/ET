@@ -63,7 +63,7 @@ package body et_module_write_stencil is
 
 	use pac_generic_modules;
 	use pac_geometry_2;
-
+	use pac_file_rw;
 		
 
 	procedure write_stencil (

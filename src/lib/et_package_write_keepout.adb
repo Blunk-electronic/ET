@@ -54,11 +54,15 @@ with et_keepout.packages;				use et_keepout.packages;
 
 with et_general_rw;						use et_general_rw;
 with et_board_write;					use et_board_write;
+with et_board_geometry;					use et_board_geometry;
+
 
 
 package body et_package_write_keepout is
 
-			
+
+	use pac_file_rw;
+	
 	use pac_keepout_zones;
 	use pac_keepout_cutouts;
 

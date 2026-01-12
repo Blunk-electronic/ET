@@ -74,6 +74,7 @@ package body et_module_write_board_zones is
 
 	use pac_generic_modules;
 	use pac_geometry_2;
+	use pac_file_rw;
 	use pac_contours;
 	use pac_signal_layers;
 	

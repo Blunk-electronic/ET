@@ -61,7 +61,8 @@ with et_board_write;					use et_board_write;
 package body et_package_write_stencil is
 
 	use pac_geometry_2;
-
+	use pac_file_rw;
+	
 	use pac_stencil_lines;
 	use pac_stencil_arcs;
 	use pac_stencil_circles;

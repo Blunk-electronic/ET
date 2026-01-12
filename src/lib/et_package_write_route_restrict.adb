@@ -61,7 +61,8 @@ with et_board_write;					use et_board_write;
 package body et_package_write_route_restrict is
 
 	use pac_geometry_2;
-
+	use pac_file_rw;
+	
 	use pac_route_restrict_lines;
 	use pac_route_restrict_arcs;
 	use pac_route_restrict_circles;

@@ -66,6 +66,7 @@ with et_alignment;						use et_alignment;
 package body et_package_write_assy_doc is
 
 	use pac_geometry_2;
+	use pac_file_rw;
 	
 	use pac_doc_lines;
 	use pac_doc_arcs;
@@ -111,13 +112,14 @@ package body et_package_write_assy_doc is
 		end write_circle;
 
 		
-		procedure write_polygon (cursor : in pac_doc_zones.cursor) is 
 		-- CS rename to write_zone
+		procedure write_polygon (cursor : in pac_doc_zones.cursor) is 
 			use pac_doc_zones;
+			zone : type_doc_zone renames element (cursor);
 		begin
 			fill_zone_begin;
 			contours_begin;		
-			write_polygon_segments (element (cursor));
+			write_polygon_segments (zone);
 			contours_end;
 			fill_zone_end;
 		end write_polygon;

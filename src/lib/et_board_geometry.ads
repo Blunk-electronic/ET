@@ -47,6 +47,9 @@ with et_geometry_2a;
 with et_geometry_2a.contours;
 with et_geometry_2a.grid;
 with et_geometry_2a.path;
+with et_geometry_2a.file_rw;
+
+with et_geometry_2_file_rw;
 
 
 package et_board_geometry is
@@ -130,6 +133,7 @@ package et_board_geometry is
 
 
 	
+	
 -- FAB RELEVANT
 
 	--fab_tolerance : constant type_distance_positive := 0.001;
@@ -151,8 +155,16 @@ package et_board_geometry is
 	package pac_contours is new pac_geometry_2.contours;
 	package pac_grid is new pac_geometry_2.grid;
 	package pac_path_and_bend is new pac_geometry_2.path;
-	
 
+
+
+	-- For operations that write lines, arcs, circles and contours
+	-- in a file:
+	package pac_file_rw is new et_geometry_2_file_rw (
+		pac_geometry 	=> pac_geometry_2,
+		pac_contours	=> pac_contours);
+
+	
 		
 end et_board_geometry;
 

@@ -67,6 +67,7 @@ with et_alignment;						use et_alignment;
 package body et_package_write_silkscreen is
 
 	use pac_geometry_2;
+	use pac_file_rw;
 	use pac_contours;
 	
 	use pac_silk_lines;
