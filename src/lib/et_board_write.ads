@@ -83,11 +83,6 @@ package et_board_write is
 		face	: in type_face);
 
 	
-	procedure write_text (cursor : in pac_texts_fab_with_content.cursor);
-	--procedure write_text (cursor : in pac_conductor_texts_package.cursor);
-	
-
-
 	
 	
 	-- writes start and end point of a line
