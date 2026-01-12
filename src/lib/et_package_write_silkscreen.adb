@@ -41,9 +41,9 @@
 
 
 
-with ada.text_io;				use ada.text_io;
+with ada.text_io;						use ada.text_io;
 -- with ada.characters.handling;	use ada.characters.handling;
--- with ada.strings; 				use ada.strings;
+with ada.strings; 						use ada.strings;
 
 with et_keywords;						use et_keywords;
 with et_section_headers;				use et_section_headers;
@@ -59,6 +59,9 @@ with et_silkscreen.packages;			use et_silkscreen.packages;
 
 with et_general_rw;						use et_general_rw;
 with et_board_write;					use et_board_write;
+
+with et_coordinates_formatting;			use et_coordinates_formatting;
+with et_alignment;						use et_alignment;
 
 
 package body et_package_write_silkscreen is
@@ -112,6 +115,7 @@ package body et_package_write_silkscreen is
 
 		
 		procedure write_polygon (cursor : in pac_silk_zones.cursor) is 
+		-- CS rename to write_zone
 			use pac_silk_zones;
 		begin
 			fill_zone_begin;
@@ -122,20 +126,66 @@ package body et_package_write_silkscreen is
 		end write_polygon;
 
 		
-		procedure write_text (cursor : in pac_silk_texts.cursor) is begin
+		procedure write_text (cursor : in pac_silk_texts.cursor) is 
+			t : type_silk_text renames element (cursor);
+		begin
 			text_begin;
+			
 			write (keyword => keyword_content, wrap => true,
 				parameters => to_string (element (cursor).content));
 
-			write_text_properties (element (cursor));
+			----
+			-- CS rework:
+			
+			write (keyword => keyword_position, 
+				parameters => to_string (get_position (t), FORMAT_2));
+				-- position x 0.000 y 5.555 rotation 0.00
+			
+			write (keyword => keyword_size, 
+				parameters => to_string (t.size)); -- size 1.000
+			
+			write (keyword => keyword_linewidth,
+				parameters => to_string (t.line_width));
+				
+			write (keyword => keyword_alignment, 
+				parameters =>
+					keyword_horizontal & space & to_string (t.alignment.horizontal) & space &
+					keyword_vertical   & space & to_string (t.alignment.vertical));
+
+			-- CS use et_alignment.to_string 
+			----
+			
 			text_end;
 		end write_text;
 
 
-		procedure write_placeholder (cursor : in pac_text_placeholders.cursor) is begin
+		procedure write_placeholder (cursor : in pac_text_placeholders.cursor) is 
+			ph : type_text_placeholder renames element (cursor);
+		begin
 			placeholder_begin;
 			write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
-			write_text_properties (element (cursor));
+
+			----
+			-- CS rework:
+			
+			write (keyword => keyword_position, 
+				parameters => to_string (get_position (ph), FORMAT_2));
+				-- position x 0.000 y 5.555 rotation 0.00
+			
+			write (keyword => keyword_size, 
+				parameters => to_string (ph.size)); -- size 1.000
+			
+			write (keyword => keyword_linewidth,
+				parameters => to_string (ph.line_width));
+				
+			write (keyword => keyword_alignment, 
+				parameters =>
+					keyword_horizontal & space & to_string (ph.alignment.horizontal) & space &
+					keyword_vertical   & space & to_string (ph.alignment.vertical));
+
+			-- CS use et_alignment.to_string 
+			----
+			
 			placeholder_end;
 		end write_placeholder;
 

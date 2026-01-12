@@ -40,43 +40,17 @@
 
 with et_primitive_objects;		use et_primitive_objects;
 with et_string_processing;		use et_string_processing;
-with et_logging;				use et_logging;
 with et_general_rw;				use et_general_rw;
-with et_pcb_sides;				use et_pcb_sides;
 with et_board_geometry;			use et_board_geometry;
 with et_board_coordinates;		use et_board_coordinates;
-with et_board_text;				use et_board_text;
-with et_drills;					use et_drills;
-with et_module_board;
-with et_board_outline;
-with et_pcb_stack;
-with et_pcb_signal_layers;		use et_pcb_signal_layers;
-with et_design_rules_board;		use et_design_rules_board;
-with et_fill_zones;				use et_fill_zones;
-with et_fill_zones.boards;		use et_fill_zones.boards;
-with et_thermal_relief;			use et_thermal_relief;
---with et_conductor_segment;
-with et_conductor_segment.boards;	--use et_conductor_segment.boards;
-with et_conductor_text;			use et_conductor_text;
-
 with et_package_sections;		use et_package_sections;
-
-with et_route_restrict.boards;	use et_route_restrict.boards;
-with et_via_restrict.boards;	use et_via_restrict.boards;
 
 
 package et_board_write is
 
 	use pac_geometry_2;
 	use pac_contours;
-	use pac_text_board;
-	use pac_text_board_vectorized;
 	
-
-
-	procedure write_text_properties (
-		t : in 	type_text_fab'class);
-
 	
 	
 	

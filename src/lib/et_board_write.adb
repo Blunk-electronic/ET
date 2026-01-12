@@ -36,72 +36,17 @@
 --   history of changes:
 --
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.text_io;				use ada.text_io;
 
-with et_axes;						use et_axes;
 with et_coordinates_formatting;		use et_coordinates_formatting;
-with et_text;						use et_text;
-with et_text_content;				use et_text_content;
-with et_rotation_docu;				use et_rotation_docu;
-with et_alignment;					use et_alignment;
-with et_exceptions;					use et_exceptions;
 with et_keywords;					use et_keywords;
 with et_directions;					use et_directions;
 
 
 package body et_board_write is
 
-	--procedure write_text_properties (t : in et_packages.type_text'class) is
-		--use et_packages;
-	--begin
----- 		write (keyword => keyword_position, parameters => position (text.position) & 
----- 			space & keyword_rotation & to_string (get_angle (text.position))
----- 			  ); -- position x 0.000 y 5.555 rotation 0.00
-
-		--write (keyword => keyword_position, parameters => position (t.position));
-			---- position x 0.000 y 5.555 rotation 0.00
-		
-		--write (keyword => keyword_size, parameters => to_string (t.size)); -- size 1.000
-		
-		--write (keyword => keyword_line_width, parameters => to_string (t.line_width));
-		--write (keyword => keyword_alignment, parameters =>
-			--keyword_horizontal & space & to_string (t.alignment.horizontal) & space &
-			--keyword_vertical   & space & to_string (t.alignment.vertical));
-		
-		---- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
-	--end write_text_properties;
-
-	
-	procedure write_text_properties (
-		t : in type_text_fab'class) 
-	is begin
-		-- CS rework !
-		
--- 		write (keyword => keyword_position, parameters => position (text.position) & 
--- 			space & keyword_rotation & to_string (get_angle (text.position))
--- 			  ); -- position x 0.000 y 5.555 rotation 0.00
-
-		write (keyword => keyword_position, parameters => 
-			to_string (get_position (t), FORMAT_2));
-			-- position x 0.000 y 5.555 rotation 0.00
-		
-		write (keyword => keyword_size, parameters => to_string (t.size)); -- size 1.000
-		
-		write (keyword => keyword_linewidth, parameters => to_string (t.line_width));
-		write (keyword => keyword_alignment, parameters =>
-			keyword_horizontal & space & to_string (t.alignment.horizontal) & space &
-			keyword_vertical   & space & to_string (t.alignment.vertical));
-
-		-- CS use et_alignment.to_string 
-	end write_text_properties;
-
-	
-	
 
 	
 	procedure write_line (line : in type_line'class) is begin

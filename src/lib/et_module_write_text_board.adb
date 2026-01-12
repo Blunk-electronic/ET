@@ -78,6 +78,7 @@ with et_board_ops;
 
 with et_general_rw;					use et_general_rw;
 with et_board_write;				use et_board_write;
+with et_coordinates_formatting;		use et_coordinates_formatting;
 
 
 package body et_module_write_text_board is
@@ -105,7 +106,22 @@ package body et_module_write_text_board is
 			write (keyword => keyword_content, wrap => true,
 				parameters => to_string (text.content));
 
-			write_text_properties (text);
+			write (keyword => keyword_position, parameters => 
+				to_string (get_position (text), FORMAT_2));
+				-- position x 0.000 y 5.555 rotation 0.00
+			
+			write (keyword => keyword_size, 
+				parameters => to_string (text.size)); -- size 1.000
+			
+			write (keyword => keyword_linewidth, 
+				parameters => to_string (text.line_width));
+				
+			write (keyword => keyword_alignment, 
+				parameters =>
+					keyword_horizontal & space & to_string (text.alignment.horizontal) & space &
+					keyword_vertical   & space & to_string (text.alignment.vertical));
+
+			-- CS use et_alignment.to_string 
 
 			write (keyword => keyword_layer, 
 				parameters => to_string (text.layer));
@@ -167,7 +183,22 @@ package body et_module_write_text_board is
 			write (keyword => keyword_content, wrap => true,
 				parameters => to_string (element (cursor).content));
 
-			write_text_properties (text);
+			write (keyword => keyword_position, parameters => 
+				to_string (get_position (text), FORMAT_2));
+				-- position x 0.000 y 5.555 rotation 0.00
+			
+			write (keyword => keyword_size, 
+				parameters => to_string (text.size)); -- size 1.000
+			
+			write (keyword => keyword_linewidth, 
+				parameters => to_string (text.line_width));
+				
+			write (keyword => keyword_alignment, 
+				parameters =>
+					keyword_horizontal & space & to_string (text.alignment.horizontal) & space &
+					keyword_vertical   & space & to_string (text.alignment.vertical));
+
+			-- CS use et_alignment.to_string 
 
 			text_end;
 		end write_text;
@@ -182,7 +213,22 @@ package body et_module_write_text_board is
 			write (keyword => keyword_content, wrap => true,
 				parameters => to_string (element (cursor).content));
 
-			write_text_properties (text);
+			write (keyword => keyword_position, parameters => 
+				to_string (get_position (text), FORMAT_2));
+				-- position x 0.000 y 5.555 rotation 0.00
+			
+			write (keyword => keyword_size, 
+				parameters => to_string (text.size)); -- size 1.000
+			
+			write (keyword => keyword_linewidth, 
+				parameters => to_string (text.line_width));
+				
+			write (keyword => keyword_alignment, 
+				parameters =>
+					keyword_horizontal & space & to_string (text.alignment.horizontal) & space &
+					keyword_vertical   & space & to_string (text.alignment.vertical));
+
+			-- CS use et_alignment.to_string 
 
 			text_end;
 		end write_text;
@@ -197,7 +243,22 @@ package body et_module_write_text_board is
 			write (keyword => keyword_content, wrap => true,
 				parameters => to_string (element (cursor).content));
 
-			write_text_properties (text);
+			write (keyword => keyword_position, parameters => 
+				to_string (get_position (text), FORMAT_2));
+				-- position x 0.000 y 5.555 rotation 0.00
+			
+			write (keyword => keyword_size, 
+				parameters => to_string (text.size)); -- size 1.000
+			
+			write (keyword => keyword_linewidth, 
+				parameters => to_string (text.line_width));
+				
+			write (keyword => keyword_alignment, 
+				parameters =>
+					keyword_horizontal & space & to_string (text.alignment.horizontal) & space &
+					keyword_vertical   & space & to_string (text.alignment.vertical));
+
+			-- CS use et_alignment.to_string 
 
 			text_end;
 		end write_text;
@@ -272,12 +333,35 @@ package body et_module_write_text_board is
 		
 
 		procedure write_placeholder (
-			cursor : in pac_placeholders_conductor.cursor) is 
+			cursor : in pac_placeholders_conductor.cursor) 
+		is 
+			ph : type_placeholder_conductor renames element (cursor);
 		begin
 			placeholder_begin;
-			write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
-			write_text_properties (element (cursor));
-			write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
+			write (keyword => keyword_meaning, 
+				parameters => to_string (ph.meaning));
+			
+			---
+			write (keyword => keyword_position, parameters => 
+				to_string (get_position (ph), FORMAT_2));
+				-- position x 0.000 y 5.555 rotation 0.00
+			
+			write (keyword => keyword_size, 
+				parameters => to_string (ph.size)); -- size 1.000
+			
+			write (keyword => keyword_linewidth, 
+				parameters => to_string (ph.line_width));
+				
+			write (keyword => keyword_alignment, 
+				parameters =>
+					keyword_horizontal & space & to_string (ph.alignment.horizontal) & space &
+					keyword_vertical   & space & to_string (ph.alignment.vertical));
+
+			-- CS use et_alignment.to_string 			
+			---
+			
+			write (keyword => keyword_layer, 
+				parameters => to_string (ph.layer));
 			placeholder_end;
 		end write_placeholder;
 
@@ -323,12 +407,35 @@ package body et_module_write_text_board is
 		use pac_placeholders_non_conductor;
 
 		
-		procedure write_placeholder (cursor : in pac_placeholders_non_conductor.cursor) is
+		procedure write_placeholder (
+			cursor : in pac_placeholders_non_conductor.cursor) 
+		is
 			ph : type_placeholder_non_conductor renames element (cursor);
 		begin
 			placeholder_begin;
-			write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
-			write_text_properties (ph);
+			
+			write (keyword => keyword_meaning, 
+				parameters => to_string (ph.meaning));
+			
+			---
+			write (keyword => keyword_position, parameters => 
+				to_string (get_position (ph), FORMAT_2));
+				-- position x 0.000 y 5.555 rotation 0.00
+			
+			write (keyword => keyword_size, 
+				parameters => to_string (ph.size)); -- size 1.000
+			
+			write (keyword => keyword_linewidth, 
+				parameters => to_string (ph.line_width));
+				
+			write (keyword => keyword_alignment, 
+				parameters =>
+					keyword_horizontal & space & to_string (ph.alignment.horizontal) & space &
+					keyword_vertical   & space & to_string (ph.alignment.vertical));
+
+			-- CS use et_alignment.to_string 			
+			---
+			
 			placeholder_end;
 		end write_placeholder;
 
