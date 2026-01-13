@@ -55,7 +55,7 @@ with et_via_restrict;					use et_via_restrict;
 with et_via_restrict.packages;			use et_via_restrict.packages;
 
 with et_general_rw;						use et_general_rw;
-with et_board_write;					use et_board_write;
+
 
 
 package body et_package_write_via_restrict is

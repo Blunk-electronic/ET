@@ -57,7 +57,6 @@ with et_assy_doc.packages;				use et_assy_doc.packages;
 
 with et_board_geometry;					use et_board_geometry;
 with et_general_rw;						use et_general_rw;
-with et_board_write;					use et_board_write;
 
 with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_alignment;						use et_alignment;

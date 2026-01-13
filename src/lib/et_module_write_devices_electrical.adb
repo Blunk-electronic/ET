@@ -84,7 +84,6 @@ with et_mirroring;						use et_mirroring;
 with et_alignment;						use et_alignment;
 
 with et_general_rw;						use et_general_rw;
-with et_board_write;					use et_board_write;
 
 
 

@@ -43,7 +43,6 @@ with ada.exceptions;
 
 with et_directory_and_file_ops;
 with et_general_rw;						use et_general_rw;
-with et_board_write;					use et_board_write;
 
 with et_design_rules_board;				use et_design_rules_board;
 with et_string_processing;				use et_string_processing;
