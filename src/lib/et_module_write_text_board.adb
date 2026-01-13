@@ -100,7 +100,7 @@ package body et_module_write_text_board is
 			text : et_conductor_text.boards.type_conductor_text_board 
 				renames element (c);
 		begin
-			text_begin;
+			section_mark (section_text, HEADER);
 
 			write (keyword => keyword_content, wrap => true,
 				parameters => to_string (text.content));
@@ -125,7 +125,7 @@ package body et_module_write_text_board is
 			write (keyword => keyword_layer, 
 				parameters => to_string (text.layer));
 
-			text_end;
+			section_mark (section_text, FOOTER);
 		end write_text;
 
 
@@ -177,7 +177,7 @@ package body et_module_write_text_board is
 		procedure write_text (cursor : in pac_silk_texts.cursor) is 
 			text : type_silk_text renames element (cursor);
 		begin
-			text_begin;
+			section_mark (section_text, HEADER);
 
 			write (keyword => keyword_content, wrap => true,
 				parameters => to_string (element (cursor).content));
@@ -199,7 +199,7 @@ package body et_module_write_text_board is
 
 			-- CS use et_alignment.to_string 
 
-			text_end;
+			section_mark (section_text, FOOTER);
 		end write_text;
 
 		
@@ -207,7 +207,7 @@ package body et_module_write_text_board is
 		procedure write_text (cursor : in pac_doc_texts.cursor) is 
 			text : type_doc_text renames element (cursor);
 		begin
-			text_begin;
+			section_mark (section_text, HEADER);
 
 			write (keyword => keyword_content, wrap => true,
 				parameters => to_string (element (cursor).content));
@@ -229,7 +229,7 @@ package body et_module_write_text_board is
 
 			-- CS use et_alignment.to_string 
 
-			text_end;
+			section_mark (section_text, FOOTER);
 		end write_text;
 				
 				
@@ -237,7 +237,7 @@ package body et_module_write_text_board is
 		procedure write_text (cursor : in pac_stop_texts.cursor) is 
 			text : type_stop_text renames element (cursor);
 		begin
-			text_begin;
+			section_mark (section_text, HEADER);
 
 			write (keyword => keyword_content, wrap => true,
 				parameters => to_string (element (cursor).content));
@@ -259,7 +259,7 @@ package body et_module_write_text_board is
 
 			-- CS use et_alignment.to_string 
 
-			text_end;
+			section_mark (section_text, FOOTER);
 		end write_text;
 
 		
@@ -336,7 +336,8 @@ package body et_module_write_text_board is
 		is 
 			ph : type_placeholder_conductor renames element (cursor);
 		begin
-			placeholder_begin;
+			section_mark (section_placeholder, HEADER);
+			
 			write (keyword => keyword_meaning, 
 				parameters => to_string (ph.meaning));
 			
@@ -361,7 +362,7 @@ package body et_module_write_text_board is
 			
 			write (keyword => keyword_layer, 
 				parameters => to_string (ph.layer));
-			placeholder_end;
+			section_mark (section_placeholder, FOOTER);
 		end write_placeholder;
 
 
@@ -411,7 +412,7 @@ package body et_module_write_text_board is
 		is
 			ph : type_placeholder_non_conductor renames element (cursor);
 		begin
-			placeholder_begin;
+			section_mark (section_placeholder, HEADER);
 			
 			write (keyword => keyword_meaning, 
 				parameters => to_string (ph.meaning));
@@ -435,7 +436,7 @@ package body et_module_write_text_board is
 			-- CS use et_alignment.to_string 			
 			---
 			
-			placeholder_end;
+			section_mark (section_placeholder, FOOTER);
 		end write_placeholder;
 
 		

@@ -125,11 +125,7 @@ package body et_general_rw is
 	end section_mark;
 
 
-	procedure text_begin is begin section_mark (section_text, HEADER); end;
-	procedure text_end   is begin section_mark (section_text, FOOTER); end;
-	procedure placeholder_begin is begin section_mark (section_placeholder, HEADER); end;
-	procedure placeholder_end   is begin section_mark (section_placeholder, FOOTER); end;
-	
+
 	procedure write (
 		keyword 	: in string;
 		parameters	: in string;

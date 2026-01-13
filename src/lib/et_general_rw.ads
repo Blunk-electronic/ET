@@ -106,10 +106,6 @@ package et_general_rw is
 	section_package			: constant string := "[PACKAGE";	
 
 	
-	procedure text_begin;
-	procedure text_end;
-	procedure placeholder_begin;
-	procedure placeholder_end;
 
 	-- Writes a line in the current output.
 	procedure write (

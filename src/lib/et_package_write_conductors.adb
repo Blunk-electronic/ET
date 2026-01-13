@@ -118,11 +118,11 @@ package body et_package_write_conductors is
 
 
 		procedure write_text (cursor : in pac_conductor_texts.cursor) is begin
-			text_begin;
+			section_mark (section_text, HEADER);
 			write (keyword => keyword_content, wrap => true,
 				parameters => to_string (element (cursor).content));
 			-- CS write_text_properties (element (cursor));
-			text_end;
+			section_mark (section_text, FOOTER);
 		end write_text;
 
 

@@ -129,7 +129,7 @@ package body et_package_write_silkscreen is
 		procedure write_text (cursor : in pac_silk_texts.cursor) is 
 			t : type_silk_text renames element (cursor);
 		begin
-			text_begin;
+			section_mark (section_text, HEADER);
 			
 			write (keyword => keyword_content, wrap => true,
 				parameters => to_string (element (cursor).content));
@@ -155,14 +155,14 @@ package body et_package_write_silkscreen is
 			-- CS use et_alignment.to_string 
 			----
 			
-			text_end;
+			section_mark (section_text, FOOTER);
 		end write_text;
 
 
 		procedure write_placeholder (cursor : in pac_text_placeholders.cursor) is 
 			ph : type_text_placeholder renames element (cursor);
 		begin
-			placeholder_begin;
+			section_mark (section_placeholder, HEADER);
 			write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
 
 			----
@@ -186,7 +186,7 @@ package body et_package_write_silkscreen is
 			-- CS use et_alignment.to_string 
 			----
 			
-			placeholder_end;
+			section_mark (section_placeholder, FOOTER);
 		end write_placeholder;
 
 
