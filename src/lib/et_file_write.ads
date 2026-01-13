@@ -2,9 +2,9 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                        PACKAGE WRITE / META                              --
+--                             FILE WRITE                                   --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab with in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,44 +35,39 @@
 --
 --   history of changes:
 --
+-- To Do:
+--
+--
 
-with ada.text_io;				use ada.text_io;
--- with ada.characters.handling;	use ada.characters.handling;
--- with ada.strings; 				use ada.strings;
-
-
-with et_assembly_technology;			use et_assembly_technology;
-with et_package_bom_relevance;			use et_package_bom_relevance;
-with et_package_description;			use et_package_description;
-with et_keywords;						use et_keywords;
-with et_section_headers;				use et_section_headers;
-with et_package_sections;				use et_package_sections;
-
-with et_general_rw;						use et_general_rw;
-with et_file_write;						use et_file_write;
+with ada.characters.latin_1;
+with et_string_processing;		use et_string_processing;
 
 
-package body et_package_write_meta is
+package et_file_write is
+
+
+	subtype type_tab_depth is natural range natural'first .. 9;
+	tab_depth : type_tab_depth := type_tab_depth'first;
+	
+	tab : constant character := ada.characters.latin_1.ht;
+
+	procedure tab_depth_up;
+	procedure tab_depth_down;
+	procedure reset_tab_depth;
+
+	type type_section_mark is (HEADER, FOOTER);	
+
+	
+	procedure section_mark (section : in string; mark : in type_section_mark);
 
 	
 
-	procedure write_meta (
-		packge			: in type_package_model;
-		log_threshold	: in type_log_level) 
-	is begin
-		log (text => "write meta data", level => log_threshold);
-		
-		write (keyword => keyword_description, wrap => true, 
-			   parameters => to_string (packge.description));
-
-		write (keyword => keyword_bom_relevant, 
-			   parameters => to_string (packge.appearance));
-		
-		write (keyword => keyword_assembly_technology, 
-			   parameters => to_string (packge.technology));
+	-- Writes a line in the current output.
+	procedure write (
+		keyword 	: in string;
+		parameters	: in string;
+		wrap		: in boolean := false;  -- when true, parameters will be enclosed in qotes (like "BEL Systems")
+		as_comment	: in boolean := false); -- when true, the whole line will be put as comment
 
 
-	end write_meta;
-			
-	
-end et_package_write_meta;
+end et_file_write;

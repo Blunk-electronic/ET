@@ -65,6 +65,7 @@ with et_fill_zones;					use et_fill_zones;
 with et_fill_zones.boards;			use et_fill_zones.boards;
 
 with et_general_rw;					use et_general_rw;
+with et_file_write;					use et_file_write;
 
 with et_module_read_nets;
 

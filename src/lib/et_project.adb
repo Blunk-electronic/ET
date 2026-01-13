@@ -47,6 +47,7 @@ with et_string_processing;			use et_string_processing;
 with et_export;
 with et_system_info;
 with et_general_rw;
+with et_file_write;					use et_file_write;
 
 with et_module_ops;
 with et_generic_modules;			use et_generic_modules;

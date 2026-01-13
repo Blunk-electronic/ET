@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                        PACKAGE WRITE / META                              --
+--                             FILE WRITE                                   --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab with in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -37,42 +37,91 @@
 --
 
 with ada.text_io;				use ada.text_io;
--- with ada.characters.handling;	use ada.characters.handling;
--- with ada.strings; 				use ada.strings;
+with ada.characters;			use ada.characters;
+
+with ada.characters.handling;	use ada.characters.handling;
+with ada.strings; 				use ada.strings;
+with ada.strings.fixed; 		use ada.strings.fixed;
+
+with ada.exceptions;
+
+with et_general_rw;				use et_general_rw;
 
 
-with et_assembly_technology;			use et_assembly_technology;
-with et_package_bom_relevance;			use et_package_bom_relevance;
-with et_package_description;			use et_package_description;
-with et_keywords;						use et_keywords;
-with et_section_headers;				use et_section_headers;
-with et_package_sections;				use et_package_sections;
 
-with et_general_rw;						use et_general_rw;
-with et_file_write;						use et_file_write;
+package body et_file_write is
+	
+
+	procedure tab_depth_up is begin
+		if tab_depth < type_tab_depth'last then
+			tab_depth := tab_depth + 1; 
+		end if;
+	end tab_depth_up;
 
 
-package body et_package_write_meta is
+	
+	procedure tab_depth_down is begin
+		if tab_depth > type_tab_depth'first then
+			tab_depth := tab_depth - 1;
+		end if;
+	end tab_depth_down;
+
+
+
+	
+	procedure reset_tab_depth is begin 
+		tab_depth := type_tab_depth'first; 
+	end;
+
+
+
+
+	
+	procedure section_mark (section : in string; mark : in type_section_mark) is begin
+	-- Make sure the current_output is set properly.
+		case mark is
+			when HEADER =>
+				--new_line;
+				put_line (tab_depth * tab & section & space & section_begin);
+				tab_depth_up;
+			when FOOTER =>
+				tab_depth_down;
+				put_line (tab_depth * tab & section & space & section_end);
+		end case;
+	end section_mark;
+
+
 
 	
 
-	procedure write_meta (
-		packge			: in type_package_model;
-		log_threshold	: in type_log_level) 
-	is begin
-		log (text => "write meta data", level => log_threshold);
+	procedure write (
+		keyword 	: in string;
+		parameters	: in string;
+		wrap		: in boolean := false;
+		as_comment	: in boolean := false)
+	is
+		parameters_wrapped : string (1..parameters'length + 2);
+
+		-- If as_comment is true, returns "-- ". If false, returns "" :
+		function comment return string is begin
+			if as_comment then return comment_mark_default & space;
+			else return "";
+			end if;
+		end comment;
 		
-		write (keyword => keyword_description, wrap => true, 
-			   parameters => to_string (packge.description));
+	begin -- write
+		if wrap then
+			parameters_wrapped := latin_1.quotation & parameters & latin_1.quotation;
+		end if;
+					
+		if wrap then
+			-- If wrapping required, a space is always between keyword and parameters
+			put_line (tab_depth * tab & comment & keyword & space & parameters_wrapped);
+		else
+			put_line (tab_depth * tab & comment & keyword & space & parameters);
+		end if;
+	end write;	
 
-		write (keyword => keyword_bom_relevant, 
-			   parameters => to_string (packge.appearance));
-		
-		write (keyword => keyword_assembly_technology, 
-			   parameters => to_string (packge.technology));
 
-
-	end write_meta;
-			
 	
-end et_package_write_meta;
+end et_file_write;

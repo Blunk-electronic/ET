@@ -45,6 +45,7 @@ with ada.strings.fixed;				use ada.strings.fixed;
 -- 
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_keywords;					use et_keywords;
+with et_file_write;					use et_file_write;
 with et_general_rw;					use et_general_rw;
 with et_directions;					use et_directions;
 

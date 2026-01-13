@@ -48,6 +48,8 @@ package et_general_rw is
 	section_begin	: constant string := "BEGIN]";	
 	section_end		: constant string := "END]";
 
+
+	
 	section_drawing_grid	: constant string := "[DRAWING_GRID";
 	keyword_name			: constant string := "name";
 	keyword_appearance		: constant string := "appearance";
@@ -62,18 +64,6 @@ package et_general_rw is
 	
 	procedure invalid_section;
 
-	subtype type_tab_depth is natural range natural'first .. 9;
-	tab_depth : type_tab_depth := type_tab_depth'first;
-	
-	tab : character renames tabulator;
-
-	procedure tab_depth_up;
-	procedure tab_depth_down;
-	procedure reset_tab_depth;
-
-	type type_section_mark is (HEADER, FOOTER);	
-
-	procedure section_mark (section : in string; mark : in type_section_mark);
 
 	section_line	: constant string := "[LINE";
 	section_arc		: constant string := "[ARC";
@@ -88,13 +78,6 @@ package et_general_rw is
 	section_package			: constant string := "[PACKAGE";	
 
 	
-
-	-- Writes a line in the current output.
-	procedure write (
-		keyword 	: in string;
-		parameters	: in string;
-		wrap		: in boolean := false;  -- when true, parameters will be enclosed in qotes (like "BEL Systems")
-		as_comment	: in boolean := false); -- when true, the whole line will be put as comment
 
 	-- Outputs a message telling that start and end point of are have differing 
 	-- distance to center.

@@ -64,7 +64,7 @@ with et_primitive_objects;
 -- with et_drills;						use et_drills;
 
 with et_general_rw;					use et_general_rw;
-
+with et_file_write;					use et_file_write;
 
 
 package body et_module_write_board_user_settings is

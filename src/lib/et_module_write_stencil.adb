@@ -56,7 +56,7 @@ with et_stencil;					use et_stencil;
 with et_stencil.board;				use et_stencil.board;
 
 with et_general_rw;					use et_general_rw;
-
+with et_file_write;					use et_file_write;
 
 
 package body et_module_write_stencil is

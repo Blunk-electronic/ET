@@ -53,6 +53,7 @@ with gnat.directory_operations;
 with et_directory_and_file_ops;
 
 with et_general_rw;					use et_general_rw;
+with et_file_write;					use et_file_write;
 with et_system_info;
 with et_time;						use et_time;
 with et_string_processing;			use et_string_processing;

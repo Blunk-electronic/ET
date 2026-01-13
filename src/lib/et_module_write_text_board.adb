@@ -77,6 +77,7 @@ with et_assy_doc;
 with et_board_ops;
 
 with et_general_rw;					use et_general_rw;
+with et_file_write;					use et_file_write;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 
 

@@ -54,7 +54,8 @@ package body et_general_rw is
 	function write_return_to_section return string is begin return "returning to section "; end;
 
 	function write_missing_begin_end return string is begin 
-		return "missing " & section_begin & " or " & section_end & " after section name !"; end;
+		return "missing section begin or section end after section name !"; 
+	end;
 
 	function write_section_stack_not_empty return string is begin
 		return "section stack not empty !"; end;
@@ -64,62 +65,6 @@ package body et_general_rw is
 		raise constraint_error;
 	end;
 	
-	procedure tab_depth_up is begin
-		if tab_depth < type_tab_depth'last then
-			tab_depth := tab_depth + 1; 
-		end if;
-	end tab_depth_up;
-	
-	procedure tab_depth_down is begin
-		if tab_depth > type_tab_depth'first then
-			tab_depth := tab_depth - 1;
-		end if;
-	end tab_depth_down;
-	
-	procedure reset_tab_depth is begin tab_depth := type_tab_depth'first; end reset_tab_depth;
-
-	procedure section_mark (section : in string; mark : in type_section_mark) is begin
-	-- Make sure the current_output is set properly.
-		case mark is
-			when HEADER =>
-				--new_line;
-				put_line (tab_depth * tab & section & space & section_begin);
-				tab_depth_up;
-			when FOOTER =>
-				tab_depth_down;
-				put_line (tab_depth * tab & section & space & section_end);
-		end case;
-	end section_mark;
-
-
-
-	procedure write (
-		keyword 	: in string;
-		parameters	: in string;
-		wrap		: in boolean := false;
-		as_comment	: in boolean := false)
-	is
-		parameters_wrapped : string (1..parameters'length + 2);
-
-		-- If as_comment is true, returns "-- ". If false, returns "" :
-		function comment return string is begin
-			if as_comment then return comment_mark_default & space;
-			else return "";
-			end if;
-		end comment;
-		
-	begin -- write
-		if wrap then
-			parameters_wrapped := latin_1.quotation & parameters & latin_1.quotation;
-		end if;
-					
-		if wrap then
-			-- If wrapping required, a space is always between keyword and parameters
-			put_line (tab_depth * tab & comment & keyword & space & parameters_wrapped);
-		else
-			put_line (tab_depth * tab & comment & keyword & space & parameters);
-		end if;
-	end write;	
 
 
 	procedure invalid_arc is begin

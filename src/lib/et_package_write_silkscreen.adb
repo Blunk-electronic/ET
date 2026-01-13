@@ -58,6 +58,7 @@ with et_silkscreen;						use et_silkscreen;
 with et_silkscreen.packages;			use et_silkscreen.packages;
 
 with et_general_rw;						use et_general_rw;
+with et_file_write;						use et_file_write;
 
 with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_alignment;						use et_alignment;
