@@ -57,7 +57,6 @@ with et_device_name;				use et_device_name;
 with et_device_purpose;
 with et_device_value;
 with et_device_partcode;
-with et_device_sections;
 with et_package_variant;
 
 with et_devices_electrical;

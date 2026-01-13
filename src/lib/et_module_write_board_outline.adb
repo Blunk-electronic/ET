@@ -53,7 +53,7 @@ with et_module_read_board_contour;	use et_module_read_board_contour;
 with et_board_holes;				use et_board_holes;
 with et_board_outline;				use et_board_outline;
 
-with et_section_headers;			use et_section_headers;
+with et_package_sections;			use et_package_sections;
 with et_file_write;					use et_file_write;
 
 

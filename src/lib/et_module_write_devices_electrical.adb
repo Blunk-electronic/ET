@@ -51,7 +51,6 @@ with et_schematic_geometry;
 with et_schematic_coordinates;
 
 with et_keywords;					use et_keywords;
-with et_section_headers;			use et_section_headers;
 
 with et_pcb_sides;
 with et_board_geometry;
@@ -67,7 +66,6 @@ with et_device_model_names;
 
 with et_device_value;
 with et_device_partcode;
-with et_device_sections;
 
 with et_package_variant;
 with et_device_write;
@@ -133,7 +131,6 @@ package body et_module_write_devices_electrical is
 			
 			use et_device_write;
 			use et_device_appearance;
-			use et_device_sections;
 			use et_unit_name.pac_unit_name;
 
 			

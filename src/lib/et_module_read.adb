@@ -49,13 +49,10 @@ with ada.directories;				use ada.directories;
 with et_directory_and_file_ops;
 
 with et_module_names;				use et_module_names;
-with et_section_headers;			use et_section_headers;
 with et_keywords;					use et_keywords;
-with et_module_sections;			use et_module_sections;
 with et_pcb_sides;
 
-with et_device_sections;
-with et_package_sections;
+with et_package_sections;				use et_package_sections;
 
 with et_time;
 
@@ -137,7 +134,7 @@ package body et_module_read is
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
 		max_section_depth : constant positive := 11;
 		package stack is new stack_lifo (
-			item	=> type_module_section,
+			item	=> type_package_section,
 			max 	=> max_section_depth);
 
 
@@ -1124,6 +1121,8 @@ package body et_module_read is
 
 						
 					when SEC_INIT => null; -- CS: should never happen
+					
+					when others => invalid_section;
 				end case;
 
 	-- CS:
@@ -1142,7 +1141,7 @@ package body et_module_read is
 			-- If it is a footer, the latest section name is popped from the stack.
 			function set (
 				section_keyword	: in string; -- [NETS
-				section			: in type_module_section) -- SEC_NETS
+				section			: in type_package_section) -- SEC_NETS
 				return boolean is 
 			begin -- set
 				if f (line, 1) = section_keyword then -- section name detected in field 1
@@ -1184,9 +1183,6 @@ package body et_module_read is
 				end if;
 			end set;
 
-
-			use et_package_sections;
-			use et_device_sections;
 		
 			
 		begin -- process_line
@@ -1875,6 +1871,8 @@ package body et_module_read is
 
 						
 					when SEC_INIT => null; -- CS: should never happen
+					
+					when others => invalid_section;
 				end case;
 
 

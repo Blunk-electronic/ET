@@ -49,7 +49,7 @@ with et_board_ops;
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
-with et_section_headers;			use et_section_headers;
+with et_package_sections;			use et_package_sections;
 
 -- with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;

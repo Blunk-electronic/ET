@@ -68,7 +68,6 @@ with et_symbol_ports;				use et_symbol_ports;
 with et_device_placeholders;		use et_device_placeholders;
 with et_time;						use et_time;
 with et_keywords;					use et_keywords;
-with et_symbol_sections;			use et_symbol_sections;
 
 
 package body et_symbol_write is

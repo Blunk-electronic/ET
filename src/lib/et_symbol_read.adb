@@ -66,8 +66,7 @@ with et_symbol_ports;				use et_symbol_ports;
 with et_device_placeholders;		use et_device_placeholders;
 with et_time;						use et_time;
 with et_keywords;					use et_keywords;
-with et_symbol_sections;			use et_symbol_sections;
-
+-- with et_symbol_sections;			use et_symbol_sections;
 
 package body et_symbol_read is
 
@@ -87,7 +86,7 @@ package body et_symbol_read is
 		max_section_depth : constant positive := 3; -- incl. section init
 
 		package stack is new stack_lifo (
-			item	=> type_symbol_section,
+			item	=> type_package_section,
 			max 	=> max_section_depth);
 
 		
@@ -384,6 +383,8 @@ package body et_symbol_read is
 						end case;
 						
 					when SEC_INIT => null; -- CS: should never happen
+
+					when others => invalid_section;
 				end case;
 
 			end execute_section;
@@ -395,7 +396,7 @@ package body et_symbol_read is
 			-- If it is a header, the section name is pushed onto the sections stack.
 			-- If it is a footer, the latest section name is popped from the stack.
 				section_keyword	: in string; -- [DRAW
-				section			: in type_symbol_section) -- SEC_DRAW
+				section			: in type_package_section) -- SEC_DRAW
 				return boolean is 
 			begin -- set
 				if f (line, 1) = section_keyword then -- section name detected in field 1
@@ -756,7 +757,8 @@ package body et_symbol_read is
 
 							when others => invalid_section;
 						end case;
-						
+
+					when others => invalid_section;
 				end case;
 			end if;
 

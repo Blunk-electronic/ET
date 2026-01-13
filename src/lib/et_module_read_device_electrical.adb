@@ -68,7 +68,6 @@ with et_device_model_names;
 with et_device_value;
 with et_device_library;				use et_device_library;
 with et_device_partcode;
-with et_device_sections;
 with et_package_variant;
 with et_symbol_read;
 with et_schematic_text;

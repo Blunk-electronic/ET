@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -100,8 +100,6 @@ with et_package_variant;
 with et_package_model_name;			use et_package_model_name;
 with et_device_library;				use et_device_library;
 with et_keywords;					use et_keywords;
-with et_symbol_sections;			use et_symbol_sections;
-with et_device_sections;			use et_device_sections;
 with et_terminal_name;				use et_terminal_name;
 with et_terminals;					use et_terminals;
 
@@ -130,7 +128,7 @@ package body et_device_read is
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
 		max_section_depth : constant positive := 6;
 		package stack is new stack_lifo (
-			item	=> type_device_section,
+			item	=> type_package_section,
 			max 	=> max_section_depth);
 
 		
@@ -722,6 +720,8 @@ package body et_device_read is
 						end case;
 						
 					when SEC_INIT => null; -- CS: should never happen
+
+					when others => invalid_section;
 				end case;
 
 			end execute_section;
@@ -733,7 +733,7 @@ package body et_device_read is
 			-- If it is a header, the section name is pushed onto the sections stack.
 			-- If it is a footer, the latest section name is popped from the stack.
 				section_keyword	: in string; -- [UNIT
-				section			: in type_device_section) -- SEC_UNIT
+				section			: in type_package_section) -- SEC_UNIT
 				return boolean is 
 			begin -- set
 				if f (line, 1) = section_keyword then -- section name detected in field 1
@@ -852,12 +852,14 @@ package body et_device_read is
 							end if;
 						end;
 
+						
 					when SEC_VARIANTS | SEC_UNITS_INTERNAL | SEC_UNITS_EXTERNAL => 
 						case stack.parent is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_VARIANT =>
 						case stack.parent is
 							when SEC_VARIANTS =>
@@ -891,6 +893,7 @@ package body et_device_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_TERMINAL_PORT_MAP =>
 						case stack.parent is
 							when SEC_VARIANT =>
@@ -902,6 +905,7 @@ package body et_device_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_UNIT =>
 						case stack.parent is
 							when SEC_UNITS_INTERNAL =>
@@ -992,6 +996,7 @@ package body et_device_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_SYMBOL =>
 						case stack.parent is
 							when SEC_UNIT =>
@@ -1003,11 +1008,13 @@ package body et_device_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_DRAW =>
 						case stack.parent is
 							when SEC_SYMBOL => null;  -- nothing to do
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_LINE =>
 						case stack.parent is
@@ -1040,6 +1047,7 @@ package body et_device_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_ARC =>
 						case stack.parent is
 							when SEC_DRAW =>
@@ -1081,6 +1089,7 @@ package body et_device_read is
 
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_CIRCLE =>
 						case stack.parent is
@@ -1114,6 +1123,7 @@ package body et_device_read is
 
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_TEXTS =>
 						case stack.parent is
@@ -1121,6 +1131,7 @@ package body et_device_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_TEXT =>
 						case stack.parent is
 							when SEC_TEXTS =>
@@ -1165,12 +1176,14 @@ package body et_device_read is
 
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_PLACEHOLDERS =>
 						case stack.parent is
 							when SEC_SYMBOL => null; -- nothing to do
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_PLACEHOLDER =>
 						case stack.parent is
@@ -1213,12 +1226,14 @@ package body et_device_read is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_PORTS =>
 						case stack.parent is 
 							when SEC_SYMBOL => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_PORT =>
 						case stack.parent is
 							when SEC_PORTS =>
@@ -1300,10 +1315,13 @@ package body et_device_read is
 
 							when others => invalid_section;
 						end case;
+
 						
+					when others => invalid_section;
 				end case;
 			end if;
 
+			
 			exception when event: others =>
 				log (text => "file " & to_string (file_name) & space 
 					 & get_affected_line (line) & to_string (line), console => true);

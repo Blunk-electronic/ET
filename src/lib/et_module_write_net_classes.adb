@@ -48,7 +48,7 @@ with ada.strings;					use ada.strings;
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
-with et_section_headers;			use et_section_headers;
+with et_package_sections;			use et_package_sections;
 
 with et_board_geometry;				use et_board_geometry;
 

@@ -57,7 +57,6 @@ with et_primitive_objects;				use et_primitive_objects;
 with et_time;							use et_time;
 with et_package_description;			use et_package_description;
 with et_keywords;						use et_keywords;
-with et_section_headers;				use et_section_headers;
 with et_package_sections;				use et_package_sections;
 with et_package_model;					use et_package_model;
 with et_package_library;				use et_package_library;
@@ -609,6 +608,7 @@ package body et_package_read is
 						
 					when SEC_INIT => raise constraint_error;
 						
+					when others => invalid_section;
 				end case;
 			end execute_section;
 
@@ -943,6 +943,7 @@ package body et_package_read is
 							when others => invalid_section;
 						end case;
 						
+					when others => invalid_section;
 				end case;
 			end if;
 
