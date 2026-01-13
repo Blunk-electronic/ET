@@ -124,12 +124,6 @@ package body et_general_rw is
 		end case;
 	end section_mark;
 
-	procedure line_begin is begin section_mark (section_line, HEADER); end;
-	procedure line_end   is begin section_mark (section_line, FOOTER); end;			
-	procedure arc_begin  is begin section_mark (section_arc , HEADER); end;
-	procedure arc_end    is begin section_mark (section_arc , FOOTER); end;
-	procedure circle_begin is begin section_mark (section_circle, HEADER); end;
-	procedure circle_end   is begin section_mark (section_circle, FOOTER); end;			
 
 	procedure text_begin is begin section_mark (section_text, HEADER); end;
 	procedure text_end   is begin section_mark (section_text, FOOTER); end;

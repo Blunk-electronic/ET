@@ -87,30 +87,30 @@ package body et_package_write_silkscreen is
 		procedure write_line (cursor : in pac_silk_lines.cursor) is 
 			use pac_silk_lines;
 		begin
-			line_begin;
+			section_mark (section_line, HEADER);
 			write_line (element (cursor));		
 			write (keyword => keyword_width, parameters => to_string (element (cursor).width));
-			line_end;
+			section_mark (section_line, FOOTER);
 		end write_line;
 
 		
 		procedure write_arc (cursor : in pac_silk_arcs.cursor) is 
 			use pac_silk_arcs;
 		begin
-			arc_begin;
+			section_mark (section_arc , HEADER);
 			write_arc (element (cursor));
 			write (keyword => keyword_width, parameters => to_string (element (cursor).width));
-			arc_end;
+			section_mark (section_arc , FOOTER);
 		end write_arc;
 
 		
 		procedure write_circle (cursor : in pac_silk_circles.cursor) is 
 			use pac_silk_circles;
 		begin
-			circle_begin;
+			section_mark (section_circle, HEADER);
 			write_circle (element (cursor));
 			write (keyword => keyword_width, parameters => to_string (element (cursor).width));
-			circle_end;
+			section_mark (section_circle, FOOTER);
 		end write_circle;
 
 		

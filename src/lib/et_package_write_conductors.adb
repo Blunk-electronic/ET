@@ -81,39 +81,39 @@ package body et_package_write_conductors is
 		procedure write_line (cursor : in pac_conductor_lines.cursor) is 
 			line : type_conductor_line renames element (cursor);
 		begin
-			line_begin;
+			section_mark (section_line, HEADER);
 			write_line (element (cursor));
 			
 			write (keyword => keyword_width, 
 				parameters => to_string (line.width));
 			
-			line_end;
+			section_mark (section_line, FOOTER);
 		end write_line;
 
 		
 		procedure write_arc (cursor : in pac_conductor_arcs.cursor) is 
 			arc : type_conductor_arc renames element (cursor);
 		begin
-			arc_begin;
+			section_mark (section_arc , HEADER);
 			write_arc (element (cursor));
 
 			write (keyword => keyword_width, 
 				parameters => to_string (arc.width));
 			
-			arc_end;
+			section_mark (section_arc , FOOTER);
 		end write_arc;
 
 		
 		procedure write_circle (cursor : in pac_conductor_circles.cursor) is 
 			circle : type_conductor_circle renames element (cursor);
 		begin
-			circle_begin;
+			section_mark (section_circle, HEADER);
 			write_circle (circle);
 			
 			write (keyword => keyword_width, 
 				parameters => to_string (circle.width));
 			
-			circle_end;		
+			section_mark (section_circle, FOOTER);		
 		end write_circle;
 
 

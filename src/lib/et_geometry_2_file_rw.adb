@@ -82,14 +82,14 @@ package body et_geometry_2_file_rw is
 			case element (c).shape is
 				
 				when LINE =>
-					line_begin;
+					section_mark (section_line, HEADER);
 					write_line (element (c).segment_line);
-					line_end;
+					section_mark (section_line, FOOTER);
 
 				when ARC =>
-					arc_begin;
+					section_mark (section_arc, HEADER);
 					write_arc (element (c).segment_arc);
-					arc_end;
+					section_mark (section_arc, FOOTER);
 
 			end case;
 		end query_segment;		
@@ -99,9 +99,9 @@ package body et_geometry_2_file_rw is
 	begin				
 		if contours.circular then
 
-			circle_begin;
+			section_mark (section_circle, HEADER);
 			write_circle (contours.circle);
-			circle_end;
+			section_mark (section_circle, FOOTER);
 
 		else
 			contours.segments.iterate (query_segment'access);

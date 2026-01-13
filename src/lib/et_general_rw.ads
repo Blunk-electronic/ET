@@ -96,13 +96,6 @@ package et_general_rw is
 	section_line	: constant string := "[LINE";
 	section_arc		: constant string := "[ARC";
 	section_circle	: constant string := "[CIRCLE";
-	
-	procedure line_begin;
-	procedure line_end;			
-	procedure arc_begin;
-	procedure arc_end;
-	procedure circle_begin;
-	procedure circle_end;			
 
 	section_text		: constant string := "[TEXT";
 	section_texts		: constant string := "[TEXTS";
