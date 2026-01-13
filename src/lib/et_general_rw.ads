@@ -45,20 +45,6 @@ with et_logging;				use et_logging;
 
 package et_general_rw is
 
-	comment_mark : constant string := ("--");
-									  
-	-- This function returns the string at position in given line:
-	-- It is frequently used when reading lines of files.
-	function f (
-		line		: in type_fields_of_line; 
-		position	: in type_field_count_positive) 
-		return string renames get_field;
-
-
-
-	
-	procedure invalid_keyword (word : in string);
-
 	section_begin	: constant string := "BEGIN]";	
 	section_end		: constant string := "END]";
 

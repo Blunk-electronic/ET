@@ -46,14 +46,6 @@ with ada.text_io;				use ada.text_io;
 with ada.exceptions;
 
 package body et_general_rw is
-
-
-	
-	procedure invalid_keyword (word : in string) is begin
-		log (ERROR, "invalid keyword '" & word & "' !", console => true);
-		-- raise constraint_error;
-	end;
-
 	
 
 -- SECTIONS AND INDENTATION
@@ -111,7 +103,7 @@ package body et_general_rw is
 
 		-- If as_comment is true, returns "-- ". If false, returns "" :
 		function comment return string is begin
-			if as_comment then return comment_mark & space;
+			if as_comment then return comment_mark_default & space;
 			else return "";
 			end if;
 		end comment;

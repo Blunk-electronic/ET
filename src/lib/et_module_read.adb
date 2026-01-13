@@ -1916,7 +1916,6 @@ package body et_module_read is
 				line := et_string_processing.read_line (
 					line 			=> get_line,
 					number			=> positive (ada.text_io.line (current_input)),
-					comment_mark 	=> comment_mark,
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
 					ifs 			=> space); -- fields are separated by space
 

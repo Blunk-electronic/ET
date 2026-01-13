@@ -483,7 +483,7 @@ package body et_string_processing is
 	function read_line ( 
 		line			: in string;
 		number			: in positive := positive'first;
-		comment_mark	: in string;
+		comment_mark	: in string := comment_mark_default;
 		test_whole_line	: in boolean := true;
 		ifs				: in character := latin_1.space;
 		delimiter_wrap	: in boolean := false;
@@ -730,6 +730,8 @@ package body et_string_processing is
 	end append_field;
 
 
+
+	
 	
 	function remove_field (
 		line	: in type_fields_of_line;
@@ -764,6 +766,17 @@ package body et_string_processing is
 	end set_field;
 
 
+
+
+
+	procedure invalid_keyword (word : in string) is begin
+		raise constraint_error with 
+			"invalid keyword '" & word & "' !";
+		-- raise constraint_error;
+	end;
+
+
+	
 	
 	
 	function get_field (
@@ -779,6 +792,8 @@ package body et_string_processing is
 			return element (line.fields, positive (position));
 		end if;
 	end get_field;
+
+
 
 
 	
@@ -802,6 +817,9 @@ package body et_string_processing is
 	end to_string;
 
 
+
+
+	
 	
 	function get_line_number (
 		line : in type_fields_of_line) 
@@ -811,6 +829,9 @@ package body et_string_processing is
 	end get_line_number;
 
 
+
+
+	
 	
 	function get_affected_line (
 		line : in type_fields_of_line ) 
@@ -818,6 +839,9 @@ package body et_string_processing is
 	is begin
 		return ("line" & positive'image (line.number) & ": ");
 	end get_affected_line;
+
+
+
 
 
 	
@@ -829,6 +853,9 @@ package body et_string_processing is
 	end get_field_count;
 
 	
+
+
+
 	
 	function lines_equally (left, right : in type_fields_of_line) return boolean is
 		use pac_list_of_strings;
@@ -863,16 +890,14 @@ package body et_string_processing is
 	is 
 		count_found : constant type_field_count := get_field_count (line);
 
-		-- CS
-		-- f1 : string := f (line, 1); -- CS: line must have at least one field otherwise exception occurs here
+		f1 : string := f (line, 1); -- CS: line must have at least one field otherwise exception occurs here
 	begin
 		if count_found = count_expected then null; -- fine, field count as expected
 		
 		elsif count_found < count_expected then -- less fields than expected
 			-- log (ERROR, "missing parameter for '" & f1 & "' !", console => true);
-			null;
-			-- CS
-			raise constraint_error;
+			raise constraint_error with
+				"missing parameter for '" & f1 & "' !";
 			
 		elsif count_found > count_expected then -- more fields than expeced
 			if warn then

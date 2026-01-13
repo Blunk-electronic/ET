@@ -88,9 +88,9 @@ package body et_package_write is
 		set_output (file_handle);
 		
 		-- write a nice header
-		put_line (comment_mark & " " & et_system_info.system_name & " package");
-		put_line (comment_mark & " " & get_date);
-		put_line (comment_mark & " " & row_separator_double);
+		put_line (comment_mark_default & " " & et_system_info.system_name & " package");
+		put_line (comment_mark_default & " " & get_date);
+		put_line (comment_mark_default & " " & row_separator_double);
 		new_line;
 
 		reset_tab_depth;
@@ -116,8 +116,8 @@ package body et_package_write is
 		
 		-- write footer
 		new_line;
-		put_line (comment_mark & " " & row_separator_double);
-		put_line (comment_mark & " package model file end");
+		put_line (comment_mark_default & " " & row_separator_double);
+		put_line (comment_mark_default & " package model file end");
 		new_line;
 		
 		reset_tab_depth;

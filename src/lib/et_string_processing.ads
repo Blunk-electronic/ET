@@ -70,7 +70,11 @@ package et_string_processing is
 	-- Removes the trailing directory separtor (if preset).
 	function strip_directory_separator (text : in string) return string;
 
+	
+	-- This is the default comment mark:
+	comment_mark_default : constant string := ("--");
 
+	
 	-- Converts a horizontal tabulator 
 	-- to a space charachter:
 	function ht_to_space (c : in character) return character;
@@ -207,7 +211,7 @@ package et_string_processing is
 		number			: in positive := positive'first;	
 
 		-- The comment mark like "--" or "#":
-		comment_mark	: in string;
+		comment_mark	: in string := comment_mark_default;
 
 		-- When false, cares for the comment mark at line begin only
 		-- further comment marks are ignored:
@@ -260,6 +264,8 @@ package et_string_processing is
 
 
 	
+	procedure invalid_keyword (word : in string);
+	
 	-- Returns the field at the given position. Raises constraint error if there is no 
 	-- field at given position.
 	function get_field (
@@ -267,6 +273,13 @@ package et_string_processing is
 		position	: in type_field_count_positive) 
 		return string;
 
+
+	-- This function returns the string at position in given line:
+	-- It is frequently used when reading lines of files.
+	function f (
+		line		: in type_fields_of_line; 
+		position	: in type_field_count_positive) 
+		return string renames get_field;
 
 
 	

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -257,14 +257,14 @@ package body et_project is
 			section_mark (section_module_connections, HEADER);
 
 			section_mark (section_connector, HEADER);			
-			write (keyword => comment_mark & " " & keyword_instance_A, parameters => example_instance_name);
-			write (keyword => comment_mark & " " & keyword_purpose_A, wrap => true, parameters => "power_in");
+			write (keyword => comment_mark_default & " " & keyword_instance_A, parameters => example_instance_name);
+			write (keyword => comment_mark_default & " " & keyword_purpose_A, wrap => true, parameters => "power_in");
 			new_line;
-			write (keyword => comment_mark & " " & keyword_instance_B, parameters => "power_supply");
-			write (keyword => comment_mark & " " & keyword_purpose_B, wrap => true, parameters => "power_out");
+			write (keyword => comment_mark_default & " " & keyword_instance_B, parameters => "power_supply");
+			write (keyword => comment_mark_default & " " & keyword_purpose_B, wrap => true, parameters => "power_out");
 			new_line;
-			write (keyword => comment_mark & " " & keyword_net_comparator, parameters => "on"); -- CS image of enum type
-			write (keyword => comment_mark & " " & keyword_net_comparator_warn_only, parameters => "on"); -- CS image of enum type
+			write (keyword => comment_mark_default & " " & keyword_net_comparator, parameters => "on"); -- CS image of enum type
+			write (keyword => comment_mark_default & " " & keyword_net_comparator_warn_only, parameters => "on"); -- CS image of enum type
 			section_mark (section_connector, FOOTER);			
 			
 			-- CS In the future, write other things here that characterize the board to board connection

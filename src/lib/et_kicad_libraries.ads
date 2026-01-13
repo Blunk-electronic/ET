@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -85,12 +85,6 @@ with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 
 package et_kicad_libraries is
-
-	function f (
-		line		: in type_fields_of_line; 
-		position	: in type_field_count_positive) 
-		return string renames get_field;
-
 
 	
 	-- SYM-LIB-TABLES AND FP-LIB-TABLES ------------------------------------------------------------------------------

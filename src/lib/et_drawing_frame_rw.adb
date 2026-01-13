@@ -295,11 +295,11 @@ package body et_drawing_frame_rw is
 		set_output (file_handle);
 
 		-- write a nice header
-		put_line (comment_mark & space & et_system_info.system_name 
+		put_line (comment_mark_default & space & et_system_info.system_name 
 				  & space & "drawing frame template");
 		
-		put_line (comment_mark & space & get_date);
-		put_line (comment_mark & space & row_separator_double);
+		put_line (comment_mark_default & space & get_date);
+		put_line (comment_mark_default & space & row_separator_double);
 		new_line;
 
 		
@@ -332,8 +332,8 @@ package body et_drawing_frame_rw is
 		
 		-- write footer
 		new_line;		
-		put_line (comment_mark & space & row_separator_double);
-		put_line (comment_mark & space & "drawing frame template file end");
+		put_line (comment_mark_default & space & row_separator_double);
+		put_line (comment_mark_default & space & "drawing frame template file end");
 		new_line;
 		
 		reset_tab_depth;		
@@ -606,11 +606,11 @@ package body et_drawing_frame_rw is
 		set_output (file_handle);
 
 		-- write a nice header
-		put_line (comment_mark & space & et_system_info.system_name 
+		put_line (comment_mark_default & space & et_system_info.system_name 
 				  & space & "drawing frame template");
 		
-		put_line (comment_mark & space & get_date);
-		put_line (comment_mark & space & row_separator_double);
+		put_line (comment_mark_default & space & get_date);
+		put_line (comment_mark_default & space & row_separator_double);
 		new_line;
 
 
@@ -642,8 +642,8 @@ package body et_drawing_frame_rw is
 		
 		-- write footer
 		new_line;		
-		put_line (comment_mark & space & row_separator_double);
-		put_line (comment_mark & space & "drawing frame template file end");
+		put_line (comment_mark_default & space & row_separator_double);
+		put_line (comment_mark_default & space & "drawing frame template file end");
 		new_line;
 		
 		reset_tab_depth;		
@@ -1325,7 +1325,6 @@ package body et_drawing_frame_rw is
 				line := read_line (
 					line 			=> get_line,
 					number			=> positive (ada.text_io.line (current_input)),
-					comment_mark 	=> comment_mark,
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
 					ifs 			=> space); -- fields are separated by space
 
@@ -2135,7 +2134,6 @@ package body et_drawing_frame_rw is
 				line := read_line (
 					line 			=> get_line,
 					number			=> positive (ada.text_io.line (current_input)),
-					comment_mark 	=> comment_mark,
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
 					ifs 			=> space); -- fields are separated by space
 

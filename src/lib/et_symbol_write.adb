@@ -286,17 +286,17 @@ package body et_symbol_write is
 		set_output (file_handle);
 		
 		-- write a nice header
-		put_line (comment_mark & " " & system_name & " symbol");
-		put_line (comment_mark & " " & get_date);
-		put_line (comment_mark & " " & row_separator_double);
+		put_line (comment_mark_default & " " & system_name & " symbol");
+		put_line (comment_mark_default & " " & get_date);
+		put_line (comment_mark_default & " " & row_separator_double);
 		new_line;
 
 		write_symbol (symbol, log_threshold + 1);
 
 		-- write footer
 		new_line;		
-		put_line (comment_mark & " " & row_separator_double);
-		put_line (comment_mark & " symbol file end");
+		put_line (comment_mark_default & " " & row_separator_double);
+		put_line (comment_mark_default & " symbol file end");
 		new_line;
 		
 		reset_tab_depth;		

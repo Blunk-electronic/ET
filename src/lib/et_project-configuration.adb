@@ -88,9 +88,9 @@ package body et_project.configuration is
 		use et_string_processing;
 	begin
 		-- write a nice header
-		put_line (comment_mark & " " & system_name & " project configuration file");
-		put_line (comment_mark & " " & get_date);
-		put_line (comment_mark & " " & row_separator_double);
+		put_line (comment_mark_default & " " & system_name & " project configuration file");
+		put_line (comment_mark_default & " " & get_date);
+		put_line (comment_mark_default & " " & row_separator_double);
 		new_line;
 	end;
 
@@ -101,9 +101,9 @@ package body et_project.configuration is
 	begin
 		-- write a nice footer
 		new_line;
-		put_line (comment_mark & " " & row_separator_double);
-		put_line (comment_mark & " " & get_date);
-		put_line (comment_mark & " project configuration file end");
+		put_line (comment_mark_default & " " & row_separator_double);
+		put_line (comment_mark_default & " " & get_date);
+		put_line (comment_mark_default & " project configuration file end");
 		new_line;
 	end;
 

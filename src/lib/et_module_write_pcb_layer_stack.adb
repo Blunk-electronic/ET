@@ -119,7 +119,7 @@ package body et_module_write_pcb_layer_stack is
 			-- Write the bottom layer in the file.
 			write (keyword => keyword_conductor,
 				parameters => space & to_string (bottom_layer) & to_string (bottom_layer_thickness) &
-				space & comment_mark & " bottom signal layer");
+				space & comment_mark_default & " bottom signal layer");
 			
 			section_mark (section_board_layer_stack, FOOTER);
 		end query_module;

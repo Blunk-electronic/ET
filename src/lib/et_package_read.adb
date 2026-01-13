@@ -994,7 +994,6 @@ package body et_package_read is
 				line := read_line (
 					line 			=> get_line,
 					number			=> positive (ada.text_io.line (current_input)),
-					comment_mark 	=> comment_mark,
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
 					ifs 			=> space); -- fields are separated by space
 
