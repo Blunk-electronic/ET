@@ -53,7 +53,7 @@ with et_conductors_floating_package;	use et_conductors_floating_package;
 with et_board_text;
 with et_conductor_text;
 with et_package_read_text;
-with et_general_rw;						use et_general_rw;
+
 
 
 package body et_package_read_conductors is

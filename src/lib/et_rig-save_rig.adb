@@ -38,7 +38,6 @@
 
 with ada.exceptions;				use ada.exceptions;
 
-with et_general_rw;					use et_general_rw;
 with et_file_write;					use et_file_write;
 
 with et_module_names;				use et_module_names;

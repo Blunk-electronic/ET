@@ -55,7 +55,6 @@ with et_conductor_segment;				use et_conductor_segment;
 with et_conductor_text.packages;		use et_conductor_text.packages;
 with et_text_content;					use et_text_content;
 
-with et_general_rw;						use et_general_rw;
 with et_file_write;						use et_file_write;
 
 

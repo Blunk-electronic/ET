@@ -39,6 +39,9 @@
 --   do do:
 -- 1. rename this package or merge with et_symbol_sections, et_device_sections
 --    and et_module_sections
+-- 2. clean up
+
+
 
 package et_package_sections is -- CS rename to et_file_sections
 
@@ -114,6 +117,19 @@ package et_package_sections is -- CS rename to et_file_sections
 	section_placeholders	: constant string := "[PLACEHOLDERS";	
 
 	section_package			: constant string := "[PACKAGE";	
+
+
+
+
+	
+	function write_top_level_reached return string;
+	function write_enter_section return string;
+	function write_return_to_section return string;
+	function write_missing_begin_end return string;
+	function write_section_stack_not_empty return string;
+	
+	procedure invalid_section;
+
 
 	
 

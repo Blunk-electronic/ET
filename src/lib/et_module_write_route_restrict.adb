@@ -55,7 +55,6 @@ with et_board_geometry;				use et_board_geometry;
 with et_directions;					use et_directions;
 with et_route_restrict.boards;		use et_route_restrict.boards;
 
-with et_general_rw;					use et_general_rw;
 with et_file_write;					use et_file_write;
 with et_package_sections;			use et_package_sections;
 

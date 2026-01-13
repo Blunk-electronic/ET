@@ -43,7 +43,6 @@ with ada.exceptions;
 
 with et_axes;							use et_axes;
 with et_keywords;						use et_keywords;
-with et_general_rw;
 
 
 package body et_board_coordinates is
@@ -87,8 +86,6 @@ package body et_board_coordinates is
 		from : in type_field_count_positive)
 		return type_package_position
 	is
-		use et_general_rw;
-		
 		position : type_package_position; -- to be returned
 		place : type_field_count_positive := from; -- the field being read from given line
 

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -40,7 +40,6 @@ with ada.text_io;						use ada.text_io;
 with ada.strings;						use ada.strings;
 
 with et_keywords;						use et_keywords;
-with et_general_rw;
 
 
 package body et_net_strands is
@@ -149,8 +148,6 @@ package body et_net_strands is
 		log_threshold	: in type_log_level)
 		return type_strand_position
 	is		
-		use et_general_rw;
-
 		position : type_strand_position; -- to be returned
 		place : type_field_count_positive := from; -- the field being read from given line
 

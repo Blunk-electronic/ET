@@ -42,6 +42,9 @@
 with ada.text_io;					use ada.text_io;
 with ada.characters.handling;		use ada.characters.handling;
 
+with et_logging;					use et_logging;
+
+
 
 package body et_package_sections is
 
@@ -57,6 +60,28 @@ package body et_package_sections is
 
 
 
+
+
+	function write_top_level_reached return string is begin return "top level reached"; end;
+	function write_enter_section return string is begin return "entering section "; end;
+	function write_return_to_section return string is begin return "returning to section "; end;
+
+	function write_missing_begin_end return string is begin 
+		return "missing section begin or section end after section name !"; 
+	end;
+
+	function write_section_stack_not_empty return string is begin
+		return "section stack not empty !"; end;
+	
+	procedure invalid_section is begin
+		log (ERROR, "invalid section name !", console => true);
+		raise constraint_error;
+	end;
+	
+
+
+
+	
 
 
 -- GENERICS

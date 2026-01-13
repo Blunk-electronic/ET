@@ -59,7 +59,6 @@ with et_schematic_text;				use et_schematic_text;
 
 with et_alignment;					use et_alignment;
 
-with et_general_rw;					use et_general_rw;
 with et_file_write;					use et_file_write;
 with et_package_sections;			use et_package_sections;
 

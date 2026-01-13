@@ -52,7 +52,6 @@ with et_package_read_contour;			use et_package_read_contour;
 with et_via_restrict;					use et_via_restrict;
 with et_via_restrict.packages;			use et_via_restrict.packages;
 
-with et_general_rw;						use et_general_rw;
 
 
 package body et_package_read_via_restrict is

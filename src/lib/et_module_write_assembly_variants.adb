@@ -65,7 +65,6 @@ with et_schematic_ops;
 with et_schematic_ops.units;		use et_schematic_ops.units;
 with et_schematic_ops.submodules;
 
-with et_general_rw;					use et_general_rw;
 with et_file_write;					use et_file_write;
 
 

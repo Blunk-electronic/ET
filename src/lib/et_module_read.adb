@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -70,7 +70,6 @@ with et_submodules;
 
 with et_object_status;
 with et_string_processing;					use et_string_processing;
-with et_general_rw;							use et_general_rw;
 with et_package_sections;					use et_package_sections;
 with et_exceptions;							use et_exceptions;
 

@@ -51,7 +51,6 @@ with et_directions;						use et_directions;
 with et_route_restrict;					use et_route_restrict;
 with et_route_restrict.packages;		use et_route_restrict.packages;
 
-with et_general_rw;						use et_general_rw;
 with et_package_read_contour;			use et_package_read_contour;
 
 

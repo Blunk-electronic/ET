@@ -68,7 +68,6 @@ with et_stopmask;
 with et_keepout;
 with et_stencil;
 
-with et_general_rw;					use et_general_rw;
 with et_file_write;					use et_file_write;
 
 

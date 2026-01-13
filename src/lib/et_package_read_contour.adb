@@ -44,7 +44,6 @@ with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_keywords;						use et_keywords;
 with et_directions;						use et_directions;
 
-with et_general_rw;						use et_general_rw;
 
 
 package body et_package_read_contour is

@@ -56,7 +56,6 @@ with et_drawing_frame.board;
 with et_text_content;				use et_text_content;
 with et_sheets;						use et_sheets;
 
-with et_general_rw;					use et_general_rw;
 with et_file_write;					use et_file_write;
 with et_drawing_frame_rw;			use et_drawing_frame_rw;
 

@@ -54,7 +54,6 @@ with et_board_holes;				use et_board_holes;
 with et_board_outline;				use et_board_outline;
 
 with et_section_headers;			use et_section_headers;
-with et_general_rw;					use et_general_rw;
 with et_file_write;					use et_file_write;
 
 

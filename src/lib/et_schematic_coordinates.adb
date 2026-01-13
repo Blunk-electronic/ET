@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -43,7 +43,7 @@ with ada.strings;						use ada.strings;
 
 with et_axes;							use et_axes;
 with et_keywords;						use et_keywords;
-with et_general_rw;
+
 
 
 package body et_schematic_coordinates is
@@ -204,7 +204,6 @@ package body et_schematic_coordinates is
 	is		
 		use pac_geometry_2;
 		use et_sheets;
-		use et_general_rw;
 		
 		position : type_object_position; -- to be returned
 		place : type_field_count_positive := from; -- the field being read from given line
@@ -252,7 +251,6 @@ package body et_schematic_coordinates is
 	is		
 		use pac_geometry_2;
 		use et_sheets;
-		use et_general_rw;
 		
 		position : type_object_position_relative; -- to be returned
 		place : type_field_count_positive := from; -- the field being read from given line

@@ -61,7 +61,6 @@ with et_netchangers;				use et_netchangers;
 with et_net_names;					use et_net_names;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 
-with et_general_rw;					use et_general_rw;
 with et_file_write;					use et_file_write;
 
 

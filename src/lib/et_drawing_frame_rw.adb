@@ -57,7 +57,6 @@ with et_text_content;				use et_text_content;
 
 with et_string_processing;			use et_string_processing;
 with et_time;						use et_time;
-with et_general_rw;					use et_general_rw;
 with et_file_write;					use et_file_write;
 with et_package_sections;			use et_package_sections;
 with et_system_info;

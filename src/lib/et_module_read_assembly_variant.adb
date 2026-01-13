@@ -62,8 +62,6 @@ with et_schematic_ops;
 with et_schematic_ops.units;		use et_schematic_ops.units;
 with et_schematic_ops.submodules;
 
-with et_general_rw;					use et_general_rw;
-
 
 
 package body et_module_read_assembly_variant is

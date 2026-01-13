@@ -60,7 +60,6 @@ with et_net_classes;				use et_net_classes;
 with et_drills;
 with et_design_rules_board;			use et_design_rules_board;
 
-with et_general_rw;					use et_general_rw;
 
 
 

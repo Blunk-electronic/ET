@@ -67,7 +67,6 @@ with et_package_model_name;
 
 with et_device_placeholders.packages;
 
-with et_general_rw;						use et_general_rw;
 with et_file_write;						use et_file_write;
 with et_package_sections;				use et_package_sections;
 

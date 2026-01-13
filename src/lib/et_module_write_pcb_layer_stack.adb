@@ -56,7 +56,6 @@ with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_design_rules_board;			use et_design_rules_board;
 with et_board_geometry;				use et_board_geometry;
 
-with et_general_rw;					use et_general_rw;
 with et_file_write;					use et_file_write;
 
 

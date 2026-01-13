@@ -57,7 +57,6 @@ with et_net_class_name;				use et_net_class_name;
 with et_net_class_description;		use et_net_class_description;
 with et_net_classes;				use et_net_classes;
 
-with et_general_rw;					use et_general_rw;
 with et_file_write;					use et_file_write;
 
 

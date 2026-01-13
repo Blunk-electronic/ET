@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -53,7 +53,6 @@ with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_board_geometry;				use et_board_geometry;
 with et_directions;					use et_directions;
 with et_route_restrict.boards;		use et_route_restrict.boards;
-with et_general_rw;					use et_general_rw;
 
 
 

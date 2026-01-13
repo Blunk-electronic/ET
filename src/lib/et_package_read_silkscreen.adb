@@ -54,7 +54,6 @@ with et_silkscreen.packages;			use et_silkscreen.packages;
 
 with et_device_placeholders.packages;
 
-with et_general_rw;						use et_general_rw;
 with et_package_read_contour;			use et_package_read_contour;
 with et_package_read_text;				use et_package_read_text;
 

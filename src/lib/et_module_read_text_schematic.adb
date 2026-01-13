@@ -58,8 +58,6 @@ with et_schematic_text;				use et_schematic_text;
 
 with et_alignment;					use et_alignment;
 
-with et_general_rw;					use et_general_rw;
-
 
 
 package body et_module_read_text_schematic is

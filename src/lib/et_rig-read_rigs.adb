@@ -38,7 +38,6 @@
 --
 
 
-with et_general_rw;					use et_general_rw;
 with et_package_sections;			use et_package_sections;
 with et_module_names;				use et_module_names;
 with et_project.configuration;

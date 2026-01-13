@@ -53,7 +53,6 @@ with et_section_headers;			use et_section_headers;
 with et_design_rules;				use et_design_rules;
 with et_design_rules_board;			use et_design_rules_board;
 
-with et_general_rw;					use et_general_rw;
 with et_file_write;					use et_file_write;
 
 

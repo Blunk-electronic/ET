@@ -52,8 +52,6 @@ with et_design_rules_board;				use et_design_rules_board;
 with et_keywords;						use et_keywords;
 with et_package_model;					use et_package_model;
 
-with et_general_rw;						use et_general_rw;
-
 
 
 package body et_package_read_meta is

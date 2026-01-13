@@ -51,7 +51,6 @@ with et_directions;						use et_directions;
 with et_keepout;						use et_keepout;
 with et_keepout.packages;				use et_keepout.packages;
 
-with et_general_rw;						use et_general_rw;
 with et_package_read_contour;			use et_package_read_contour;
 
 

@@ -60,8 +60,6 @@ with et_submodules;					use et_submodules;
 with et_net_names;					use et_net_names;
 
 
-with et_general_rw;					use et_general_rw;
-
 
 
 package body et_module_read_submodules is

@@ -51,7 +51,6 @@ with et_directions;						use et_directions;
 with et_stencil;						use et_stencil;
 with et_stencil.packages;				use et_stencil.packages;
 
-with et_general_rw;						use et_general_rw;
 with et_package_read_contour;			use et_package_read_contour;
 
 

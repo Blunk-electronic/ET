@@ -48,7 +48,6 @@ with et_keywords;						use et_keywords;
 with et_section_headers;				use et_section_headers;
 with et_package_sections;				use et_package_sections;
 
-with et_general_rw;						use et_general_rw;
 with et_file_write;						use et_file_write;
 
 

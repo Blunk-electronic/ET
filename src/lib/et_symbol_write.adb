@@ -47,7 +47,6 @@ with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_system_info;
 with et_directory_and_file_ops;
 with et_package_sections;			use et_package_sections;
-with et_general_rw;					use et_general_rw;
 with et_file_write;					use et_file_write;
 with et_axes;						use et_axes;
 

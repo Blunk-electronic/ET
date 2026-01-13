@@ -59,7 +59,6 @@ with et_schematic_coordinates;		use et_schematic_coordinates;
 
 with et_string_processing;
 with et_time;
-with et_general_rw;					use et_general_rw;
 with et_file_write;					use et_file_write;
 with et_symbol_read;				use et_symbol_read;
 with et_symbol_write;				use et_symbol_write;
