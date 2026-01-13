@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -34,6 +34,9 @@
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
 --   history of changes:
+--
+-- To Do:
+-- - clean up, rework, simplify code
 
 
 with ada.strings.fixed; 		use ada.strings.fixed;
@@ -221,7 +224,7 @@ package et_string_processing is
 		return type_fields_of_line;
 
 
-
+	
 
 	
 	
@@ -265,6 +268,8 @@ package et_string_processing is
 		return string;
 
 
+
+	
 	
 	function to_string (line : in type_fields_of_line) return string;
 
@@ -288,6 +293,15 @@ package et_string_processing is
 
 	
 	function lines_equally (left, right : in type_fields_of_line) return boolean;
+
+
+
+
+	procedure expect_field_count (
+		line			: in type_fields_of_line;	-- the list of fields of the line
+		count_expected	: in type_field_count;		-- the min. number of fields to expect
+		warn			: in boolean := true); 		-- warn if too many fields
+		-- CS output error flag ?
 
 	
 private

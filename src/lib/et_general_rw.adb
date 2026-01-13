@@ -49,31 +49,6 @@ package body et_general_rw is
 
 
 	
-	procedure expect_field_count (
-		line			: in type_fields_of_line;	-- the list of fields of the line
-		count_expected	: in type_field_count;		-- the min. number of fields to expect
-		warn			: in boolean := true) 		-- warn if too many fields
-	is 
-		count_found : constant type_field_count := get_field_count (line);
-
-		f1 : string := f (line, 1); -- CS: line must have at least one field otherwise exception occurs here
-	begin
-		if count_found = count_expected then null; -- fine, field count as expected
-		
-		elsif count_found < count_expected then -- less fields than expected
-			log (ERROR, "missing parameter for '" & f1 & "' !", console => true);
-			raise constraint_error;
-			
-		elsif count_found > count_expected then -- more fields than expeced
-			if warn then
-				log (WARNING, get_affected_line (line) & "excessive parameters after '" &
-					f (line, count_expected) & "' ignored !");
-			end if;
-		end if;
-		
-	end expect_field_count;
-
-	
 	procedure invalid_keyword (word : in string) is begin
 		log (ERROR, "invalid keyword '" & word & "' !", console => true);
 		-- raise constraint_error;

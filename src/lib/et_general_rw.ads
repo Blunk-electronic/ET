@@ -55,10 +55,6 @@ package et_general_rw is
 		return string renames get_field;
 
 
-	procedure expect_field_count (
-		line			: in type_fields_of_line;	-- the list of fields of the line
-		count_expected	: in type_field_count;		-- the min. number of fields to expect
-		warn			: in boolean := true); 		-- warn if too many fields
 
 	
 	procedure invalid_keyword (word : in string);

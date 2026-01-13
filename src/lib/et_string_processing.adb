@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -850,6 +850,39 @@ package body et_string_processing is
 		
 		return true;
 	end lines_equally;
+
+
+
+	
+
+
+	procedure expect_field_count (
+		line			: in type_fields_of_line;	-- the list of fields of the line
+		count_expected	: in type_field_count;		-- the min. number of fields to expect
+		warn			: in boolean := true) 		-- warn if too many fields
+	is 
+		count_found : constant type_field_count := get_field_count (line);
+
+		-- CS
+		-- f1 : string := f (line, 1); -- CS: line must have at least one field otherwise exception occurs here
+	begin
+		if count_found = count_expected then null; -- fine, field count as expected
+		
+		elsif count_found < count_expected then -- less fields than expected
+			-- log (ERROR, "missing parameter for '" & f1 & "' !", console => true);
+			null;
+			-- CS
+			raise constraint_error;
+			
+		elsif count_found > count_expected then -- more fields than expeced
+			if warn then
+				null; -- CS
+				-- log (WARNING, get_affected_line (line) & "excessive parameters after '" &
+					-- f (line, count_expected) & "' ignored !");
+			end if;
+		end if;
+		
+	end expect_field_count;
 
 	
 end et_string_processing;
