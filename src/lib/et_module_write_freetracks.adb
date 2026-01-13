@@ -60,6 +60,7 @@ with et_conductor_segment.boards;	use et_conductor_segment.boards;
 with et_conductors_floating_board;	use et_conductors_floating_board;
 with et_general_rw;					use et_general_rw;
 with et_file_write;					use et_file_write;
+with et_package_sections;			use et_package_sections;
 
 
 package body et_module_write_freetracks is

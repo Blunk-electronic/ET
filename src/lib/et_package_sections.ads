@@ -90,10 +90,30 @@ package et_package_sections is -- CS rename to et_file_sections
 		return string;
 	
 
+	-- CS use image of type_package_section to compose the
+	-- strings below:
 	
 	section_zone		: constant string := "[ZONE";
 	section_cutout_zone	: constant string := "[CUTOUT_ZONE";
 	section_contours	: constant string := "[CONTOURS";
+
+
+	section_begin	: constant string := "BEGIN]";	
+	section_end		: constant string := "END]";
+
+	section_drawing_grid	: constant string := "[DRAWING_GRID";
+	
+	section_line	: constant string := "[LINE";
+	section_arc		: constant string := "[ARC";
+	section_circle	: constant string := "[CIRCLE";
+
+	section_text		: constant string := "[TEXT";
+	section_texts		: constant string := "[TEXTS";
+	
+	section_placeholder		: constant string := "[PLACEHOLDER";
+	section_placeholders	: constant string := "[PLACEHOLDERS";	
+
+	section_package			: constant string := "[PACKAGE";	
 
 	
 

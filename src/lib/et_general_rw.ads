@@ -45,14 +45,7 @@ with et_logging;				use et_logging;
 
 package et_general_rw is
 
-	section_begin	: constant string := "BEGIN]";	
-	section_end		: constant string := "END]";
-
-
 	
-	section_drawing_grid	: constant string := "[DRAWING_GRID";
-	keyword_name			: constant string := "name";
-	keyword_appearance		: constant string := "appearance";
 	
 	
 -- SECTIONS AND INDENTATION
@@ -65,17 +58,6 @@ package et_general_rw is
 	procedure invalid_section;
 
 
-	section_line	: constant string := "[LINE";
-	section_arc		: constant string := "[ARC";
-	section_circle	: constant string := "[CIRCLE";
-
-	section_text		: constant string := "[TEXT";
-	section_texts		: constant string := "[TEXTS";
-	
-	section_placeholder		: constant string := "[PLACEHOLDER";
-	section_placeholders	: constant string := "[PLACEHOLDERS";	
-
-	section_package			: constant string := "[PACKAGE";	
 
 	
 

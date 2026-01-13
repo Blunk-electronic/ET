@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -46,6 +46,7 @@ package et_keywords is
 	keyword_add_level				: constant string := "add_level";
 	keyword_alignment				: constant string := "alignment";
 	keyword_anchor					: constant string := "anchor";
+	keyword_appearance				: constant string := "appearance";
 	keyword_assembly_technology		: constant string := "technology";
 	keyword_assembly_variant		: constant string := "assembly_variant";
 
@@ -114,6 +115,7 @@ package et_keywords is
 	keyword_mirrored				: constant string := "mirrored";
 	keyword_model					: constant string := "model";				
 
+	keyword_name					: constant string := "name";
 	keyword_netchanger				: constant string := "netchanger";		
 	keyword_not_mounted				: constant string := "not_mounted";
 	
