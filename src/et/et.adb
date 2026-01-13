@@ -75,8 +75,6 @@ with et_package_name;			use et_package_name;
 with et_package_model_name;		use et_package_model_name;
 with et_package_library;
 
-with et_board_write;
-
 with et_package_read;
 with et_package_write;
 
