@@ -71,6 +71,7 @@ with et_submodules;
 with et_object_status;
 with et_string_processing;					use et_string_processing;
 with et_general_rw;							use et_general_rw;
+with et_package_sections;					use et_package_sections;
 with et_exceptions;							use et_exceptions;
 
 with et_module_read_device_electrical;		use et_module_read_device_electrical;
@@ -136,7 +137,7 @@ package body et_module_read is
 		-- Here we track the sections. On entering a section, its name is
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
 		max_section_depth : constant positive := 11;
-		package stack is new et_general_rw.stack_lifo (
+		package stack is new stack_lifo (
 			item	=> type_module_section,
 			max 	=> max_section_depth);
 

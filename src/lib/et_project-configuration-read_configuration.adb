@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,6 +35,10 @@
 --
 --   history of changes:
 --
+
+with et_package_sections;				use et_package_sections;
+
+
 
 separate (et_project.configuration)
 	
@@ -63,7 +67,7 @@ is
 	-- Here we track the sections. On entering a section, its name is
 	-- pushed onto the stack. When leaving a section the latest section name is popped.
 	max_section_depth : constant positive := 2;
-	package stack is new et_general_rw.stack_lifo (
+	package stack is new stack_lifo (
 		item	=> type_section_name,
 		max 	=> max_section_depth);
 

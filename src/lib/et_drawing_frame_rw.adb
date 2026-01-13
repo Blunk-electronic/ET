@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -58,6 +58,7 @@ with et_text_content;				use et_text_content;
 with et_string_processing;			use et_string_processing;
 with et_time;						use et_time;
 with et_general_rw;					use et_general_rw;
+with et_package_sections;			use et_package_sections;
 with et_system_info;
 with et_keywords;					use et_keywords;
 
@@ -762,7 +763,7 @@ package body et_drawing_frame_rw is
 		max_section_depth : constant positive := 4; -- incl. section init
 
 		
-		package stack is new et_general_rw.stack_lifo (
+		package stack is new stack_lifo (
 			item	=> type_section,
 			max 	=> max_section_depth);
 
@@ -1385,7 +1386,7 @@ package body et_drawing_frame_rw is
 		max_section_depth : constant positive := 4; -- incl. section init
 
 		
-		package stack is new et_general_rw.stack_lifo (
+		package stack is new stack_lifo (
 			item	=> type_section,
 			max 	=> max_section_depth);
 

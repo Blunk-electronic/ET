@@ -119,20 +119,6 @@ package et_general_rw is
 	procedure invalid_arc;
 
 	
-	generic
-		max : positive;
-		type item is private;
-	package stack_lifo is
-		procedure push (x : in item);
-		procedure pop;
-		function pop return item;
-		function depth return natural;
-		procedure init;
-		function empty return boolean;
-		function current return item;
-		function parent (degree : in natural := 1) return item;
-		
-	end stack_lifo;
 
 	
 end et_general_rw;

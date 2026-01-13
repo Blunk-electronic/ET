@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -38,6 +38,8 @@
 --   ToDo: 
 
 with et_directory_and_file_ops;
+with et_package_sections;				use et_package_sections;
+
 
 
 separate (et_design_rules_board)
@@ -68,7 +70,7 @@ is
 	-- Here we track the sections. On entering a section, its name is
 	-- pushed onto the stack. When leaving a section the latest section name is popped.
 	max_section_depth : constant positive := 3;
-	package stack is new et_general_rw.stack_lifo (
+	package stack is new stack_lifo (
 		item	=> type_section_name,
 		max 	=> max_section_depth);
 

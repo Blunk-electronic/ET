@@ -47,6 +47,7 @@ with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_system_info;
 with et_directory_and_file_ops;
 with et_general_rw;					use et_general_rw;
+with et_package_sections;			use et_package_sections;
 with et_axes;						use et_axes;
 
 with et_text_content;				use et_text_content;
@@ -86,7 +87,7 @@ package body et_symbol_read is
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
 		max_section_depth : constant positive := 3; -- incl. section init
 
-		package stack is new et_general_rw.stack_lifo (
+		package stack is new stack_lifo (
 			item	=> type_symbol_section,
 			max 	=> max_section_depth);
 

@@ -40,7 +40,7 @@
 -- 1. rename this package or merge with et_symbol_sections, et_device_sections
 --    and et_module_sections
 
-package et_package_sections is
+package et_package_sections is -- CS rename to et_file_sections
 
 
 	-- Prefixes before enumeration types prevent clashes with gnat keywords
@@ -96,5 +96,22 @@ package et_package_sections is
 	section_contours	: constant string := "[CONTOURS";
 
 	
+
+
+	generic
+		max : positive;
+		type item is private;
+	package stack_lifo is -- CS rename to pac_sections_stack
+		procedure push (x : in item);
+		procedure pop;
+		function pop return item;
+		function depth return natural;
+		procedure init;
+		function empty return boolean;
+		function current return item;
+		function parent (degree : in natural := 1) return item;
+		
+	end stack_lifo;
+
 	
 end et_package_sections;

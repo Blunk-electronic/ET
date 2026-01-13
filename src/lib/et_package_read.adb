@@ -102,7 +102,7 @@ package body et_package_read is
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
 		max_section_depth : constant positive := 7; -- incl. section init
 
-		package stack is new et_general_rw.stack_lifo (
+		package stack is new stack_lifo (
 			item	=> type_package_section,
 			max 	=> max_section_depth);
 
