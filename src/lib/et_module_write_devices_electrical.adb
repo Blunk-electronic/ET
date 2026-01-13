@@ -82,7 +82,7 @@ with et_mirroring;						use et_mirroring;
 with et_alignment;						use et_alignment;
 
 with et_file_write;						use et_file_write;
-with et_package_sections;				use et_package_sections;
+with et_file_sections;					use et_file_sections;
 
 
 

@@ -36,8 +36,7 @@
 --   history of changes:
 --
 
-with et_package_sections;				use et_package_sections;
-
+with et_file_sections;					use et_file_sections;
 
 
 separate (et_project.configuration)

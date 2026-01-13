@@ -47,7 +47,7 @@ with ada.text_io;					use ada.text_io;
 with et_module_names;				use et_module_names;
 
 with et_keywords;					use et_keywords;
-with et_package_sections;			use et_package_sections;
+with et_file_sections;				use et_file_sections;
 
 with et_pcb_stack;					use et_pcb_stack;
 with et_route;						use et_route;

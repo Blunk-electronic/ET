@@ -38,7 +38,7 @@
 --   ToDo: 
 
 with et_directory_and_file_ops;
-with et_package_sections;				use et_package_sections;
+with et_file_sections;					use et_file_sections;
 
 
 

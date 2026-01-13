@@ -59,7 +59,7 @@ with et_schematic_text;				use et_schematic_text;
 with et_alignment;					use et_alignment;
 
 with et_file_write;					use et_file_write;
-with et_package_sections;			use et_package_sections;
+with et_file_sections;				use et_file_sections;
 
 
 package body et_module_write_text_schematic is

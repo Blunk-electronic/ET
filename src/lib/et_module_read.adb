@@ -52,7 +52,7 @@ with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
 with et_pcb_sides;
 
-with et_package_sections;				use et_package_sections;
+with et_file_sections;					use et_file_sections;
 
 with et_time;
 
@@ -67,7 +67,6 @@ with et_submodules;
 
 with et_object_status;
 with et_string_processing;					use et_string_processing;
-with et_package_sections;					use et_package_sections;
 with et_exceptions;							use et_exceptions;
 
 with et_module_read_device_electrical;		use et_module_read_device_electrical;

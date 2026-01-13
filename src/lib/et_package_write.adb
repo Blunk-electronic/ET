@@ -49,7 +49,7 @@ with et_string_processing;				use et_string_processing;
 with et_time;							use et_time;
 with et_system_info;
 with et_keywords;						use et_keywords;
-with et_package_sections;				use et_package_sections;
+with et_file_sections;					use et_file_sections;
 
 with et_package_write_meta;				use et_package_write_meta;
 with et_package_write_silkscreen;		use et_package_write_silkscreen;

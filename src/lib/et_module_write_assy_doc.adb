@@ -56,7 +56,7 @@ with et_assy_doc;					use et_assy_doc;
 with et_assy_doc.board;				use et_assy_doc.board;
 
 with et_file_write;					use et_file_write;
-with et_package_sections;			use et_package_sections;
+with et_file_sections;				use et_file_sections;
 
 
 package body et_module_write_assy_doc is

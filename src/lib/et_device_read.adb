@@ -60,7 +60,7 @@ with et_schematic_coordinates;		use et_schematic_coordinates;
 
 with et_string_processing;
 with et_time;
-with et_package_sections;			use et_package_sections;
+with et_file_sections;				use et_file_sections;
 with et_symbol_read;				use et_symbol_read;
 with et_symbol_write;				use et_symbol_write;
 with et_package_write;

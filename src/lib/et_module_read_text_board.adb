@@ -75,7 +75,7 @@ with et_assy_doc;
 
 with et_board_ops;
 
-with et_package_sections;			use et_package_sections;
+with et_file_sections;				use et_file_sections;
 
 
 

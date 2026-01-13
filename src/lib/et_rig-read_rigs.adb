@@ -38,7 +38,7 @@
 --
 
 
-with et_package_sections;			use et_package_sections;
+with et_file_sections;				use et_file_sections;
 with et_module_names;				use et_module_names;
 with et_project.configuration;
 with et_module_ops;

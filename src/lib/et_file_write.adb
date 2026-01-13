@@ -45,7 +45,7 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 
 with ada.exceptions;
 
-with et_package_sections;		use et_package_sections;
+with et_file_sections;			use et_file_sections;
 
 
 

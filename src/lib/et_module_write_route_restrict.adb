@@ -56,7 +56,7 @@ with et_directions;					use et_directions;
 with et_route_restrict.boards;		use et_route_restrict.boards;
 
 with et_file_write;					use et_file_write;
-with et_package_sections;			use et_package_sections;
+with et_file_sections;				use et_file_sections;
 
 
 package body et_module_write_route_restrict is

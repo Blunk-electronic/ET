@@ -45,7 +45,7 @@ with et_assembly_technology;			use et_assembly_technology;
 with et_package_bom_relevance;			use et_package_bom_relevance;
 with et_package_description;			use et_package_description;
 with et_keywords;						use et_keywords;
-with et_package_sections;				use et_package_sections;
+with et_file_sections;					use et_file_sections;
 
 with et_file_write;						use et_file_write;
 

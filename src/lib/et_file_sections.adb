@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           PACKAGE SECTIONS                               --
+--                            FILE SECTIONS                                 --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -46,7 +46,7 @@ with et_logging;					use et_logging;
 
 
 
-package body et_package_sections is
+package body et_file_sections is
 
 
 	function to_string (
@@ -138,4 +138,4 @@ package body et_package_sections is
 	end stack_lifo;
 	
 	
-end et_package_sections;
+end et_file_sections;

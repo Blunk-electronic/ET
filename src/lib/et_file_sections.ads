@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           PACKAGE SECTIONS                               --
+--                            FILE SECTIONS                                 --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -37,13 +37,11 @@
 --
 
 --   do do:
--- 1. rename this package or merge with et_symbol_sections, et_device_sections
---    and et_module_sections
--- 2. clean up
+-- - clean up
 
 
 
-package et_package_sections is -- CS rename to et_file_sections
+package et_file_sections is
 
 
 	-- Prefixes before enumeration types prevent clashes with gnat keywords
@@ -327,4 +325,4 @@ package et_package_sections is -- CS rename to et_file_sections
 	end stack_lifo;
 
 	
-end et_package_sections;
+end et_file_sections;

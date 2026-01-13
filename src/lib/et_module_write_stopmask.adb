@@ -56,7 +56,7 @@ with et_stopmask;					use et_stopmask;
 with et_stopmask.board;				use et_stopmask.board;
 
 with et_file_write;					use et_file_write;
-with et_package_sections;			use et_package_sections;
+with et_file_sections;				use et_file_sections;
 
 
 package body et_module_write_stopmask is

@@ -56,7 +56,7 @@ with et_silkscreen;					use et_silkscreen;
 with et_silkscreen.board;			use et_silkscreen.board;
 
 with et_file_write;					use et_file_write;
-with et_package_sections;			use et_package_sections;
+with et_file_sections;				use et_file_sections;
 
 
 package body et_module_write_silkscreen is
