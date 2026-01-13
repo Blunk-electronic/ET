@@ -162,7 +162,7 @@ package et_board_geometry is
 	package pac_file_rw is new et_geometry_2_file_rw (
 		pac_geometry 	=> pac_geometry_2,
 		pac_contours	=> pac_contours);
-
+	-- CS use it when saving symbols in a file
 	
 		
 end et_board_geometry;

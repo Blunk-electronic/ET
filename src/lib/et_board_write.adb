@@ -46,14 +46,14 @@ with et_keywords;					use et_keywords;
 
 package body et_board_write is
 
+	procedure dummy is begin null; end;
 	
-	
-	procedure fill_zone_begin is begin section_mark (section_zone, HEADER); end;
-	procedure fill_zone_end   is begin section_mark (section_zone, FOOTER); end;
-	procedure cutout_zone_begin is begin section_mark (section_cutout_zone, HEADER); end;
-	procedure cutout_zone_end   is begin section_mark (section_cutout_zone, FOOTER); end;
-	procedure contours_begin is begin section_mark (section_contours, HEADER); end;
-	procedure contours_end   is begin section_mark (section_contours, FOOTER); end;
+	-- procedure fill_zone_begin is begin section_mark (section_zone, HEADER); end;
+	-- procedure fill_zone_end   is begin section_mark (section_zone, FOOTER); end;
+	-- procedure cutout_zone_begin is begin section_mark (section_cutout_zone, HEADER); end;
+	-- procedure cutout_zone_end   is begin section_mark (section_cutout_zone, FOOTER); end;
+	-- procedure contours_begin is begin section_mark (section_contours, HEADER); end;
+	-- procedure contours_end   is begin section_mark (section_contours, FOOTER); end;
 
 	
 	

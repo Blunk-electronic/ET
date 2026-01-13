@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -47,6 +47,7 @@ with et_geometry_2a.grid;
 with et_geometry_2a.path;
 with et_geometry_2a.contours;
 
+with et_geometry_2_file_rw;
 
 -- with system.assertions;
 
@@ -127,6 +128,14 @@ package et_schematic_geometry is
 	package pac_polygon_offsetting is new pac_polygons.offsetting;
 
 
+	-- For operations that write liness and circles in a file:
+	package pac_file_rw is new et_geometry_2_file_rw (
+		pac_geometry 	=> pac_geometry_2,
+		pac_contours	=> pac_contours);
+	-- CS use it when saving the module in a file
+	-- CS use it when saving symbols in a file
+	
+	
 	-- In headless mode this accuracy should be used
 	-- when locating objects inside a particual zone:
 	accuracy_default : constant type_zone_radius := 2.0; 

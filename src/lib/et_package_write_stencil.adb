@@ -108,11 +108,11 @@ package body et_package_write_stencil is
 		procedure write_polygon (cursor : in pac_stencil_zones.cursor) is 
 			use pac_stencil_zones;
 		begin
-			fill_zone_begin;
-			contours_begin;
+			section_mark (section_zone, HEADER);
+			section_mark (section_contours, HEADER);
 			write_polygon_segments (element (cursor));
-			contours_end;
-			fill_zone_end;
+			section_mark (section_contours, FOOTER);
+			section_mark (section_zone, FOOTER);
 		end write_polygon;
 		
 		

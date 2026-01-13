@@ -75,21 +75,21 @@ package body et_package_write_via_restrict is
 	
 		procedure write_zone (cursor : in pac_via_restrict_zones.cursor) is 
 		begin
-			fill_zone_begin;
-			contours_begin;
+			section_mark (section_zone, HEADER);
+			section_mark (section_contours, HEADER);
 			write_polygon_segments (element (cursor));
-			contours_end;
-			fill_zone_end;
+			section_mark (section_contours, FOOTER);
+			section_mark (section_zone, FOOTER);
 		end write_zone;
 
 		
 		procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor) is 
 		begin
-			cutout_zone_begin;
-			contours_begin;
+			section_mark (section_cutout_zone, HEADER);
+			section_mark (section_contours, HEADER);
 			write_polygon_segments (element (cursor));
-			contours_end;
-			cutout_zone_end;
+			section_mark (section_contours, FOOTER);
+			section_mark (section_cutout_zone, FOOTER);
 		end write_cutout;
 
 		

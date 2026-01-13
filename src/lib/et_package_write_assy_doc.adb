@@ -117,11 +117,11 @@ package body et_package_write_assy_doc is
 			use pac_doc_zones;
 			zone : type_doc_zone renames element (cursor);
 		begin
-			fill_zone_begin;
-			contours_begin;		
+			section_mark (section_zone, HEADER);
+			section_mark (section_contours, HEADER);		
 			write_polygon_segments (zone);
-			contours_end;
-			fill_zone_end;
+			section_mark (section_contours, FOOTER);
+			section_mark (section_zone, FOOTER);
 		end write_polygon;
 
 		

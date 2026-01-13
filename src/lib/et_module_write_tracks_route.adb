@@ -45,8 +45,11 @@
 with ada.text_io;					use ada.text_io;
 
 with et_module_names;				use et_module_names;
+
 with et_keywords;					use et_keywords;
 with et_section_headers;			use et_section_headers;
+with et_package_sections;			use et_package_sections;
+
 with et_pcb_stack;					use et_pcb_stack;
 with et_route;						use et_route;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
@@ -151,7 +154,7 @@ package body et_module_write_tracks_route is
 			
 			procedure query_zone (zone : in type_route_solid) is
 			begin
-				fill_zone_begin;
+				section_mark (section_zone, HEADER);
 
 
 				write (keyword => keyword_easing_style,
@@ -199,11 +202,11 @@ package body et_module_write_tracks_route is
 						
 				end case;
 
-				contours_begin;
+				section_mark (section_contours, HEADER);
 				write_polygon_segments (type_contour (zone));
-				contours_end;
+				section_mark (section_contours, FOOTER);
 				
-				fill_zone_end;
+				section_mark (section_zone, FOOTER);
 			end query_zone;
 
 			
@@ -227,7 +230,7 @@ package body et_module_write_tracks_route is
 			
 			procedure query_zone (zone : in type_route_hatched) is
 			begin
-				fill_zone_begin;
+				section_mark (section_zone, HEADER);
 
 
 				write (keyword => keyword_easing_style,
@@ -278,11 +281,11 @@ package body et_module_write_tracks_route is
 
 				end case;
 
-				contours_begin;
+				section_mark (section_contours, HEADER);
 				write_polygon_segments (type_contour (zone));
-				contours_end;
+				section_mark (section_contours, FOOTER);
 				
-				fill_zone_end;
+				section_mark (section_zone, FOOTER);
 			end query_zone;
 
 			
@@ -362,9 +365,9 @@ package body et_module_write_tracks_route is
 			--cutout_zone_begin;
 			--write_signal_layer (element (cutout_zone_cursor).layer);
 
-			--contours_begin;
+			--section_mark (section_contours, HEADER);
 			--write_polygon_segments (type_contour (element (cutout_zone_cursor)));
-			--contours_end;
+			--section_mark (section_contours, FOOTER);
 			
 			--cutout_zone_end;
 			--next (cutout_zone_cursor);

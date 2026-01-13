@@ -119,11 +119,11 @@ package body et_package_write_silkscreen is
 		-- CS rename to write_zone
 			use pac_silk_zones;
 		begin
-			fill_zone_begin;
-			contours_begin;		
+			section_mark (section_zone, HEADER);
+			section_mark (section_contours, HEADER);		
 			write_polygon_segments (type_contour (element (cursor)));
-			contours_end;
-			fill_zone_end;
+			section_mark (section_contours, FOOTER);
+			section_mark (section_zone, FOOTER);
 		end write_polygon;
 
 		

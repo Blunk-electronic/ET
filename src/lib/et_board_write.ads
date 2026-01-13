@@ -45,14 +45,14 @@ with et_package_sections;		use et_package_sections;
 package et_board_write is
 
 
-	procedure fill_zone_begin;
-	procedure fill_zone_end;
-	procedure cutout_zone_begin;
-	procedure cutout_zone_end;
-	procedure contours_begin;
-	procedure contours_end;
+	-- procedure fill_zone_begin;
+	-- procedure fill_zone_end;
+	-- procedure cutout_zone_begin;
+	-- procedure cutout_zone_end;
+	-- procedure contours_begin;
+	-- procedure contours_end;
 
-
+	procedure dummy;
 
 	
 end et_board_write;

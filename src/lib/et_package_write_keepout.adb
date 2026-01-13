@@ -76,22 +76,22 @@ package body et_package_write_keepout is
 
 		procedure write_polygon (cursor : in pac_keepout_zones.cursor) is 
 		begin
-			fill_zone_begin;
-			contours_begin;
+			section_mark (section_zone, HEADER);
+			section_mark (section_contours, HEADER);
 			write_polygon_segments (element (cursor));
-			contours_end;
-			fill_zone_end;
+			section_mark (section_contours, FOOTER);
+			section_mark (section_zone, FOOTER);
 		end write_polygon;
 
 
 		procedure write_cutout (cursor : in pac_keepout_cutouts.cursor) is 
 			use pac_keepout_cutouts;
 		begin
-			cutout_zone_begin;		
-			contours_begin;
+			section_mark (section_cutout_zone, HEADER);
+			section_mark (section_contours, HEADER);
 			write_polygon_segments (element (cursor));
-			contours_end;
-			cutout_zone_end;
+			section_mark (section_contours, FOOTER);
+			section_mark (section_cutout_zone, FOOTER);
 		end;
 
 		

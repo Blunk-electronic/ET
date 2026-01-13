@@ -37,7 +37,8 @@
 --
 
 --   do do:
-
+-- 1. rename this package or merge with et_symbol_sections, et_device_sections
+--    and et_module_sections
 
 package et_package_sections is
 
