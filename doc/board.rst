@@ -1156,6 +1156,15 @@ Displaying Objects
 
 
 
+#. Display Vias
+
+	.. code-block::
+
+		display vias [on/off]
+
+
+
+
 
 #. Display Silkscreen
 
