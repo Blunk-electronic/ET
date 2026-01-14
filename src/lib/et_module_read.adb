@@ -133,7 +133,7 @@ package body et_module_read is
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
 		max_section_depth : constant positive := 11;
 		package stack is new stack_lifo (
-			item	=> type_package_section,
+			item	=> type_file_section,
 			max 	=> max_section_depth);
 
 
@@ -1140,7 +1140,7 @@ package body et_module_read is
 			-- If it is a footer, the latest section name is popped from the stack.
 			function set (
 				section_keyword	: in string; -- [NETS
-				section			: in type_package_section) -- SEC_NETS
+				section			: in type_file_section) -- SEC_NETS
 				return boolean is 
 			begin -- set
 				if f (line, 1) = section_keyword then -- section name detected in field 1

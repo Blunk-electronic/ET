@@ -49,8 +49,7 @@ package et_file_sections is
 	section_prefix : constant string := ("SEC_");
 
 	
-	type type_package_section is (  -- CS: sort aphabetically
-
+	type type_file_section is (
 		SEC_ARC,
 		SEC_ASSEMBLY_DOCUMENTATION,
 		SEC_ASSEMBLY_VARIANT,
@@ -160,11 +159,11 @@ package et_file_sections is
 	
 	-- Converts a section like SEC_KEEPOUT to a string "keepout".
 	function to_string (
-		section : in type_package_section) 
+		section : in type_file_section) 
 		return string;
 	
 
-	-- CS use image of type_package_section to compose the
+	-- CS use image of type_file_section to compose the
 	-- strings below:
 
 -------------------
@@ -312,6 +311,7 @@ package et_file_sections is
 	generic
 		max : positive;
 		type item is private;
+		
 	package stack_lifo is -- CS rename to pac_sections_stack
 		procedure push (x : in item);
 		procedure pop;

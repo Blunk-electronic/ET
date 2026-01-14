@@ -37,6 +37,7 @@
 --
 
 --   do do:
+-- - clean up
 
 
 with ada.text_io;					use ada.text_io;
@@ -50,10 +51,10 @@ package body et_file_sections is
 
 
 	function to_string (
-		section : in type_package_section) 
+		section : in type_file_section) 
 		return string 
 	is
-		s : string := type_package_section'image (section);
+		s : string := type_file_section'image (section);
 	begin
 		return s (section_prefix'length + 1 .. s'last);
 	end to_string;

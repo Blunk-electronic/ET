@@ -101,7 +101,7 @@ package body et_package_read is
 		max_section_depth : constant positive := 7; -- incl. section init
 
 		package stack is new stack_lifo (
-			item	=> type_package_section,
+			item	=> type_file_section,
 			max 	=> max_section_depth);
 
 		
@@ -619,7 +619,7 @@ package body et_package_read is
 			-- If it is a footer, the latest section name is popped from the stack.
 			function set (
 				section_keyword	: in string; -- [SILKSCREEN
-				section			: in type_package_section) -- SEC_ZONE
+				section			: in type_file_section) -- SEC_ZONE
 				return boolean is 
 			begin -- set
 				if f (line, 1) = section_keyword then -- section name detected in field 1

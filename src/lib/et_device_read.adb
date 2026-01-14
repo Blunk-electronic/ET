@@ -128,7 +128,7 @@ package body et_device_read is
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
 		max_section_depth : constant positive := 6;
 		package stack is new stack_lifo (
-			item	=> type_package_section,
+			item	=> type_file_section,
 			max 	=> max_section_depth);
 
 		
@@ -733,7 +733,7 @@ package body et_device_read is
 			-- If it is a header, the section name is pushed onto the sections stack.
 			-- If it is a footer, the latest section name is popped from the stack.
 				section_keyword	: in string; -- [UNIT
-				section			: in type_package_section) -- SEC_UNIT
+				section			: in type_file_section) -- SEC_UNIT
 				return boolean is 
 			begin -- set
 				if f (line, 1) = section_keyword then -- section name detected in field 1

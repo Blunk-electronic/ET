@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -86,7 +86,7 @@ package body et_symbol_read is
 		max_section_depth : constant positive := 3; -- incl. section init
 
 		package stack is new stack_lifo (
-			item	=> type_package_section,
+			item	=> type_file_section,
 			max 	=> max_section_depth);
 
 		
@@ -396,7 +396,7 @@ package body et_symbol_read is
 			-- If it is a header, the section name is pushed onto the sections stack.
 			-- If it is a footer, the latest section name is popped from the stack.
 				section_keyword	: in string; -- [DRAW
-				section			: in type_package_section) -- SEC_DRAW
+				section			: in type_file_section) -- SEC_DRAW
 				return boolean is 
 			begin -- set
 				if f (line, 1) = section_keyword then -- section name detected in field 1
