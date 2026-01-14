@@ -53,6 +53,7 @@ with et_display.board;					use et_display.board;
 with et_generic_modules;				use et_generic_modules;
 with et_modes.board;					use et_modes.board;
 
+with et_keywords;
 
 
 package body et_cp_board_display is
@@ -303,6 +304,144 @@ package body et_cp_board_display is
 		end case;
 	end display_conductor;
 
+
+
+
+
+	
+
+	procedure display_vias (
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+		
+		procedure display_vias (
+			status	: in string := "") 
+		is 
+			ls : type_layer_status;
+			--ly : type_signal_layer;
+		begin
+			-- Convert the given status to type_layer_status.
+			-- If no status given, assume status ON:
+			if status = "" then
+				ls := ON;
+			else
+				ls := to_layer_status (status);
+			end if;
+
+			-- Convert the given layer to type_signal_layer:
+			--ly := to_signal_layer (layer);
+			
+			--log (text => "display via layer " & to_string (ly) & space & to_string (ls),
+			log (text => "display via layer " & space & to_string (ls),
+					level => log_threshold + 1);
+
+			--layers.vias (ly) := ls;
+			layers.vias := ls;
+			
+			-- CS exception handler if status is invalid
+		end display_vias;
+
+		
+	begin
+		-- CS log message
+		
+		case cmd_field_count is
+			--when 5 => display_vias (get_field (5)); -- if status is omitted
+			--when 6 => display_vias (get_field (5), get_field (6));
+			--when 7 .. type_field_count'last => too_long;
+			when 4 => display_vias; -- if status is omitted
+			
+			when 5 => display_vias (get_field (cmd, 5));
+			
+			when 6 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+	end display_vias;
+
+		
+
+
+
+
+
+	
+
+	procedure display_restrict (
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		use et_pcb_signal_layers;
+		use et_keywords;
+		
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+
+
+		procedure display_restrict_layer (
+			objects	: in string; -- route/via
+			layer	: in string; -- 1, 2, 8, ...
+			status	: in string := "")
+		is 
+			ls : type_layer_status;
+			ly : type_signal_layer;
+		begin
+			-- Convert the given status to type_layer_status.
+			-- If no status given, assume status ON:
+			if status = "" then
+				ls := ON;
+			else
+				ls := to_layer_status (status);
+			end if;
+
+			-- Convert the given layer to type_signal_layer:
+			ly := to_signal_layer (layer);
+			
+			if objects = keyword_route then
+				log (text => "display route restrict layer " & to_string (ly) & space & to_string (ls),
+					level => log_threshold + 1);
+
+				layers.route_restrict (ly) := ls;
+				
+			elsif objects = keyword_via then
+				log (text => "display via restrict layer " & to_string (ly) & space & to_string (ls),
+					level => log_threshold + 1);
+
+				layers.via_restrict (ly) := ls;
+				
+			else
+				log (importance => ERROR, 
+						text => "Expect keyword " &
+						enclose_in_quotes (keyword_route) & " or " &
+						enclose_in_quotes (keyword_via) & "after noun " &
+						to_string (NOUN_RESTRICT) & " !",
+						console => true);
+				raise constraint_error;
+			end if;
+			
+			-- CS exception handler if status is invalid
+		end display_restrict_layer;
+		
+	begin
+		-- CS log message
+		
+		case cmd_field_count is
+			when 6 => display_restrict_layer (get_field (cmd, 5), get_field (cmd, 6)); -- if status is omitted
+			
+			when 7 => display_restrict_layer (get_field (cmd, 5), get_field (cmd, 6), get_field (cmd, 7));
+
+			when 8 .. type_field_count'last =>
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+	end display_restrict;
 
 	
 end et_cp_board_display;

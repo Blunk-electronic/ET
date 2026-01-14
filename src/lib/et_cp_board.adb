@@ -49,9 +49,6 @@ with et_module_names;					use et_module_names;
 with et_runmode;						use et_runmode;
 with et_script_processor;
 
-with et_display;					use et_display;
-with et_display.board;
-
 with et_module;						use et_module;
 with et_module_board;				use et_module_board;
 with et_module_board_user_settings;
@@ -279,7 +276,6 @@ package body et_cp_board is
 		use et_pcb_stack;
 		use et_canvas_board;
 		use et_canvas_board.pac_canvas;
-		use et_display.board;
 		use et_modes.board;
 
 		use et_device_name;
@@ -355,87 +351,8 @@ package body et_cp_board is
 		end;
 
 		
-		
-		
-		
-		-- Enables/disables a the via layer. 
-		-- If status is empty, the layer will be enabled.
-		procedure display_vias (
-			--layer	: in string;
-		status	: in string := "") 
-		is 
-			ls : type_layer_status;
-			--ly : type_signal_layer;
-		begin
-			-- Convert the given status to type_layer_status.
-			-- If no status given, assume status ON:
-			if status = "" then
-				ls := ON;
-			else
-				ls := to_layer_status (status);
-			end if;
-
-			-- Convert the given layer to type_signal_layer:
-			--ly := to_signal_layer (layer);
-			
-			--log (text => "display via layer " & to_string (ly) & space & to_string (ls),
-			log (text => "display via layer " & space & to_string (ls),
-					level => log_threshold + 1);
-
-			--layers.vias (ly) := ls;
-			layers.vias := ls;
-			
-			-- CS exception handler if status is invalid
-		end display_vias;
-		
-
-		
-		
-		-- Enables/disables a certain restrict layer. 
-		-- If status is empty, the layer will be enabled.
-		procedure display_restrict_layer ( -- GUI related
-			objects	: in string; -- route/via
-			layer	: in string; -- 1, 2, 8, ...
-			status	: in string := "")
-		is 
-			ls : type_layer_status;
-			ly : type_signal_layer;
-		begin
-			-- Convert the given status to type_layer_status.
-			-- If no status given, assume status ON:
-			if status = "" then
-				ls := ON;
-			else
-				ls := to_layer_status (status);
-			end if;
-
-			-- Convert the given layer to type_signal_layer:
-			ly := to_signal_layer (layer);
-			
-			if objects = keyword_route then
-				log (text => "display route restrict layer " & to_string (ly) & space & to_string (ls),
-					level => log_threshold + 1);
-
-				layers.route_restrict (ly) := ls;
 				
-			elsif objects = keyword_via then
-				log (text => "display via restrict layer " & to_string (ly) & space & to_string (ls),
-					level => log_threshold + 1);
 
-				layers.via_restrict (ly) := ls;
-				
-			else
-				log (importance => ERROR, 
-						text => "Expect keyword " &
-						enclose_in_quotes (keyword_route) & " or " &
-						enclose_in_quotes (keyword_via) & "after noun " &
-						to_string (NOUN_RESTRICT) & " !",
-						console => true);
-				raise constraint_error;
-			end if;
-			
-			-- CS exception handler if status is invalid
-		end display_restrict_layer;
 
 
 
@@ -3818,7 +3735,7 @@ package body et_cp_board is
 					end case;
 
 					
-				when VERB_DISPLAY => -- GUI related
+				when VERB_DISPLAY =>
 					case noun is
 						when NOUN_SILKSCREEN
 							| NOUN_ASSY | NOUN_KEEPOUT | NOUN_STOPMASK | NOUN_STENCIL | NOUN_ORIGINS =>
@@ -3832,26 +3749,12 @@ package body et_cp_board is
 
 						when NOUN_RATSNEST =>
 							display_ratsnest (cmd, log_threshold + 1);
-
 							
-						when NOUN_RESTRICT => -- like "board led_driver display restrict route/via 2 [on/off]"
-							case cmd_field_count is
-								when 6 => display_restrict_layer (get_field (5), get_field (6)); -- if status is omitted
-								when 7 => display_restrict_layer (get_field (5), get_field (6), get_field (7));
-								when 8 .. type_field_count'last => too_long;
-								when others => command_incomplete;
-							end case;
+						when NOUN_RESTRICT =>
+							display_restrict (cmd, log_threshold + 1);
 
-						when NOUN_VIAS => -- like "board led_driver display vias [on/off]"
-							case cmd_field_count is
-								--when 5 => display_vias (get_field (5)); -- if status is omitted
-								--when 6 => display_vias (get_field (5), get_field (6));
-								--when 7 .. type_field_count'last => too_long;
-								when 4 => display_vias; -- if status is omitted
-								when 5 => display_vias (get_field (5));
-								when 6 .. type_field_count'last => too_long;
-								when others => command_incomplete;
-							end case;
+						when NOUN_VIAS => 
+							display_vias (cmd, log_threshold + 1);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;

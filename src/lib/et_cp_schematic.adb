@@ -50,8 +50,6 @@ with et_module_names;					use et_module_names;
 with et_runmode;						use et_runmode;
 with et_script_processor;
 
--- with et_display;						use et_display;
--- with et_display.schematic;
 with et_modes.schematic;
 with et_canvas_schematic_units;
 with et_canvas_schematic_nets;
@@ -2631,7 +2629,7 @@ package body et_cp_schematic is
 					end case;
 
 					
-				when VERB_DISPLAY => -- GUI related
+				when VERB_DISPLAY =>
 					case noun is
 						when NOUN_PORTS		-- like "schematic led_driver display ports [on/off]"
 							| NOUN_NETS		-- like "schematic led_driver display nets [on/off]"

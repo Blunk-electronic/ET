@@ -80,6 +80,23 @@ package et_cp_board_display is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
+
+
+	-- Parses a command that enables or disables vias.
+	-- Example command: board demo display vias [on/off]
+	procedure display_vias (
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+	
+	-- Parses a command that enables or disables 
+	-- a route or via restrict layer.
+	-- Example command: board demo display restrict route/via 2 [on/off]
+	procedure display_restrict (
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
 	
 end et_cp_board_display;
 

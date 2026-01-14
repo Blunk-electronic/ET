@@ -100,6 +100,8 @@ package body et_cp_schematic_display is
 
 		
 	begin
+		-- CS log message
+		
 		case cmd_field_count is
 			when 4 => do_it (noun); -- if status is omitted
 			
