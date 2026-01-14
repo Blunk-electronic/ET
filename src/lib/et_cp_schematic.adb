@@ -44,6 +44,7 @@ with ada.text_io;						use ada.text_io;
 with ada.containers;
 with ada.characters.handling;			use ada.characters.handling;
 with ada.strings; 						use ada.strings;
+with ada.exceptions;					use ada.exceptions;
 
 with et_module_names;					use et_module_names;
 with et_runmode;						use et_runmode;
@@ -105,12 +106,22 @@ with et_canvas.cmd;
 with et_canvas_schematic;
 with et_canvas_board;
 
+with et_modes;							use et_modes;
+with et_module_ops;						use et_module_ops;
+with et_module_write;					use et_module_write;
+
 with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
 
 
 package body et_cp_schematic is
 	
 
+	device_missing	: constant string := "Device name missing !";
+	module_missing	: constant string := "Module name missing !";
+	net_missing		: constant string := "Net name missing !";
+
+	
+	
 	
 	procedure evaluate_command_exit_code (
 		cmd				: in type_single_cmd;
