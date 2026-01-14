@@ -35,27 +35,18 @@
 --
 --   history of changes:
 --
+-- To Do:
+-- - separate packages for read and file operations
+-- - separate between schematic and board frame
+-- - clean up
 
 
 with ada.text_io;				use ada.text_io;
-with ada.characters.handling;
 with ada.strings;				use ada.strings;
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.containers; 			use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.tags;
 with ada.exceptions;
 
 with et_directory_and_file_ops;
-with et_primitive_objects;			use et_primitive_objects;
-with et_coordinates_formatting;		use et_coordinates_formatting;
-
--- with et_text;
 with et_text_content;				use et_text_content;
-
-with et_string_processing;			use et_string_processing;
 with et_time;						use et_time;
 with et_file_write;					use et_file_write;
 with et_file_sections;				use et_file_sections;
@@ -176,6 +167,7 @@ package body et_drawing_frame_rw is
 		end write_texts;
 
 		
+		
 		procedure write_placeholders_common (ph : in type_placeholders_common) is begin
 			section_mark (section_project_name, HEADER);
 			write_placeholder (ph.project_name);
@@ -189,6 +181,7 @@ package body et_drawing_frame_rw is
 			write_placeholder (ph.active_assembly_variant);
 			section_mark (section_active_assembly_variant, FOOTER);			
 		end write_placeholders_common;
+
 
 		
 		procedure write_placeholders_basic (ph : in type_placeholders_basic) is begin
@@ -236,6 +229,7 @@ package body et_drawing_frame_rw is
 			write_placeholder (ph.approved_date);
 			section_mark (section_approved_date, FOOTER);			
 		end;
+
 
 		
 		procedure write_placeholders_schematic (ph : in type_placeholders_schematic) is begin
@@ -395,6 +389,7 @@ package body et_drawing_frame_rw is
 			section_mark (section_lines, FOOTER);
 		end;
 
+
 		
 		procedure write_placeholder (ph : in type_placeholder) is begin
 			-- position
@@ -403,6 +398,7 @@ package body et_drawing_frame_rw is
 			-- size
 			write (keyword => keyword_size, parameters => to_string (ph.size)); -- size 20
 		end;
+
 
 		
 		procedure write_text (text : in type_static_text) is begin
@@ -421,6 +417,7 @@ package body et_drawing_frame_rw is
 			section_mark (section_text, FOOTER);
 		end;
 
+
 		
 		procedure write_cam_marker (cm : in type_cam_marker) is begin
 			-- position
@@ -433,6 +430,7 @@ package body et_drawing_frame_rw is
 			write (keyword => keyword_content, wrap => true,
 				   parameters => to_string (cm.content));
 		end;
+
 
 		
 		procedure write_texts (texts : in pac_static_texts.list) is
@@ -447,6 +445,7 @@ package body et_drawing_frame_rw is
 		end write_texts;
 
 		
+		
 		procedure write_placeholders_common (ph : in type_placeholders_common) is begin
 			section_mark (section_project_name, HEADER);
 			write_placeholder (ph.project_name);
@@ -460,6 +459,7 @@ package body et_drawing_frame_rw is
 			write_placeholder (ph.active_assembly_variant);
 			section_mark (section_active_assembly_variant, FOOTER);			
 		end write_placeholders_common;
+
 
 		
 		procedure write_placeholders_basic (ph : in type_placeholders_basic) is begin
@@ -508,6 +508,7 @@ package body et_drawing_frame_rw is
 			section_mark (section_approved_date, FOOTER);			
 		end;
 
+
 		
 		procedure write_placeholders_pcb (ph : in type_placeholders_pcb) is begin
 			write_placeholders_basic (type_placeholders_basic (ph));
@@ -521,6 +522,7 @@ package body et_drawing_frame_rw is
 			section_mark (section_signal_layer, FOOTER);
 		end;
 
+		
 		
 		procedure write_cam_markers (cms : in type_cam_markers) is begin
 			section_mark (section_cam_markers, HEADER);
@@ -762,20 +764,8 @@ package body et_drawing_frame_rw is
 		max_section_depth : constant positive := 4; -- incl. section init
 		
 		package pac_sections_stack is new gen_pac_sections_stack (
-			item	=> type_section, -- CS use type_file_section ?
+			item	=> type_file_section,
 			max 	=> max_section_depth);
-
-
-		
-		use ada.characters.handling;
-
-		
-		function to_string (section : in type_section) return string is
-		-- Converts a section like SEC_PROJECT_NAME to a string "project_name".
-			len : positive := type_section'image (section)'length;
-		begin
-			return to_lower (type_section'image (section) (5..len));
-		end to_string;
 
 
 		
@@ -914,6 +904,7 @@ package body et_drawing_frame_rw is
 		end;
 
 		
+		
 		procedure reset_placeholder is begin tb_placeholder := (others => <>); end;
 
 		
@@ -951,7 +942,7 @@ package body et_drawing_frame_rw is
 				use pac_lines;
 				use pac_static_texts;
 				
-			begin -- execute_section
+			begin
 				case pac_sections_stack.current is
 
 					when SEC_TITLE_BLOCK => 
@@ -1131,7 +1122,7 @@ package body et_drawing_frame_rw is
 						
 					when SEC_INIT => null; -- CS: should never happen
 
-					when others => null; -- CS raise exception ?
+					when others => invalid_section;
 				end case;
 			end execute_section;
 
@@ -1143,7 +1134,7 @@ package body et_drawing_frame_rw is
 			-- If it is a footer, the latest section name is popped from the pac_sections_stack.
 			function set (
 				section_keyword	: in string;
-				section			: in type_section) -- SEC_PROJECT_NAME
+				section			: in type_file_section) -- SEC_PROJECT_NAME
 				return boolean is 
 			begin
 				if f (line, 1) = section_keyword then -- section name detected in field 1
@@ -1261,10 +1252,11 @@ package body et_drawing_frame_rw is
 							when others => invalid_section;
 						end case;
 
-					when others => null; -- CS
+					when others => invalid_section;
 				end case;
 			end if;
 
+			
 			exception when event: others =>
 				log (text => "file " & to_string (file_name) & space 
 					 & get_affected_line (line) & to_string (line), console => true);
@@ -1384,20 +1376,10 @@ package body et_drawing_frame_rw is
 		max_section_depth : constant positive := 4; -- incl. section init
 		
 		package pac_sections_stack is new gen_pac_sections_stack (
-			item	=> type_section,
+			item	=> type_file_section,
 			max 	=> max_section_depth);
 
 
-		
-		use ada.characters.handling;
-
-		
-		function to_string (section : in type_section) return string is
-		-- Converts a section like SEC_PROJECT_NAME to a string "project_name".
-			len : positive := type_section'image (section)'length;
-		begin
-			return to_lower (type_section'image (section) (5..len));
-		end to_string;
 
 
 		
@@ -1451,6 +1433,7 @@ package body et_drawing_frame_rw is
 		end;
 
 		
+		
 		-- TEMPORARILY VARIABLES AND CONTAINERS
 		tb_position 	: type_position;
 		tb_line 		: type_line;
@@ -1494,6 +1477,7 @@ package body et_drawing_frame_rw is
 
 
 		
+		
 		procedure read_text_properties is
 			kw : constant string := f (line, 1);
 		begin
@@ -1517,6 +1501,7 @@ package body et_drawing_frame_rw is
 
 
 		
+		
 		procedure read_cam_marker_properties is
 			kw : constant string := f (line, 1);
 		begin
@@ -1538,6 +1523,7 @@ package body et_drawing_frame_rw is
 			end if;
 		end;
 
+
 		
 		
 		procedure read_placeholder_properties is
@@ -1556,6 +1542,7 @@ package body et_drawing_frame_rw is
 				invalid_keyword (kw);
 			end if;
 		end;
+
 
 		
 		procedure reset_placeholder is begin tb_placeholder := (others => <>); end;
@@ -1583,6 +1570,7 @@ package body et_drawing_frame_rw is
 			tb_placeholders_common := (others => <>);
 		end;
 
+
 		
 		-- The content of a cam marker may not be specified via the frame template.
 		-- In this case the default content must be assigned to the tb_cam_marker.
@@ -1605,7 +1593,7 @@ package body et_drawing_frame_rw is
 				use pac_lines;
 				use pac_static_texts;
 				
-			begin -- execute_section
+			begin
 				case pac_sections_stack.current is
 
 					when SEC_TITLE_BLOCK => 
@@ -1916,7 +1904,7 @@ package body et_drawing_frame_rw is
 						
 					when SEC_INIT => null; -- CS: should never happen
 
-					when others => null; -- CS raise exception ?
+					when others => invalid_section;
 
 				end case;
 			end execute_section;
@@ -1929,7 +1917,7 @@ package body et_drawing_frame_rw is
 			-- If it is a footer, the latest section name is popped from the pac_sections_stack.
 			function set (
 				section_keyword	: in string;
-				section			: in type_section) -- SEC_PROJECT_NAME
+				section			: in type_file_section) -- SEC_PROJECT_NAME
 				return boolean is 
 			begin
 				if f (line, 1) = section_keyword then -- section name detected in field 1
@@ -2070,7 +2058,7 @@ package body et_drawing_frame_rw is
 							when others => invalid_section;
 						end case;
 
-					when others => null; -- CS raise exception ?
+					when others => invalid_section;
 				end case;
 			end if;
 

@@ -50,28 +50,41 @@ package et_file_sections is
 
 	
 	type type_file_section is (
+		SEC_ACTIVE_ASSEMBLY_VARIANT,
+		SEC_APPROVED_DATE,
+		SEC_APPROVED_BY,
 		SEC_ARC,
-		SEC_ASSEMBLY_DOCUMENTATION,
+		SEC_ASSEMBLY_DOCUMENTATION, -- CS remove
 		SEC_ASSEMBLY_VARIANT,
 		SEC_ASSEMBLY_VARIANTS,
+		SEC_ASSY_DOC,
 		
 		SEC_BOARD,
 		SEC_BOARD_LAYER_STACK,
 		SEC_BOTTOM,
 		
+		SEC_CAM_MARKERS,
+		SEC_CHECKED_BY,
+		SEC_CHECKED_DATE,
 		SEC_CIRCLE,
+		SEC_COMPANY,
 		SEC_CONDUCTOR,
 		SEC_CONNECTORS,
 		SEC_CONTOURS, -- of fill and cutout zones
+		SEC_CUSTOMER,
 		SEC_CUTOUT_ZONE,
-
+		
 		SEC_DEVICE,
 		SEC_DEVICES,
 		SEC_DEVICES_NON_ELECTRIC,
 		SEC_DRAW,
+		SEC_DRAWN_BY,
+		SEC_DRAWN_DATE,
 		SEC_DRAWING_FRAMES,
 		SEC_DRAWING_GRID,
-
+		SEC_DRAWING_NUMBER,
+		
+		SEC_FACE,
 		SEC_FILL_ZONES_CONDUCTOR,
 		--SEC_FILL_ZONES_NON_CONDUCTOR, -- CS
 
@@ -87,9 +100,11 @@ package et_file_sections is
 		SEC_LABEL,
 		SEC_LABELS,
 		SEC_LINE,
+		SEC_LINES,
 		
 		SEC_META,
 		SEC_MILLINGS,
+		SEC_MODULE_FILE_NAME,
 		
 		SEC_NET,
 		SEC_NETCHANGER,
@@ -104,14 +119,19 @@ package et_file_sections is
 		SEC_PACKAGE_3D_CONTOURS, -- CS not used
 		SEC_PAD_CONTOURS_SMT,
 		SEC_PAD_CONTOURS_THT,
+		SEC_PARTCODE,
 		SEC_PCB_CONTOURS_NON_PLATED, -- CS rename to SEC_HOLES
 		-- CS SEC_PCB_CONTOUR_PLATED
+		SEC_PCB_OUTLINE,
 		SEC_PLACEHOLDER,
 		SEC_PLACEHOLDERS,
+		SEC_PLATED_MILLINGS,
 		SEC_PORT,
 		SEC_PORTS,
 		SEC_PREFERRED_LIBRARIES,
+		SEC_PROJECT_NAME,
 		
+		SEC_REVISION,
 		SEC_ROUTE,
 		SEC_ROUTE_RESTRICT,
 		SEC_RULES,
@@ -120,13 +140,19 @@ package et_file_sections is
 		SEC_SEGMENT,
 		SEC_SEGMENTS,
 		SEC_SILKSCREEN,
+		SEC_SILK_SCREEN, -- CS remove
 		SEC_SHEET,
+		SEC_SHEET_CATEGORY,
+		SEC_SHEET_DESCRIPTION,
 		SEC_SHEET_DESCRIPTIONS,
+		SEC_SHEET_NUMBER,
+		SEC_SIGNAL_LAYER,
 		SEC_STENCIL,
 		SEC_STENCIL_CONTOURS,
 		SEC_STOPMASK,
 		SEC_STOPMASK_CONTOURS_SMT,
 		SEC_STOPMASK_CONTOURS_THT,
+		SEC_STOP_MASK, -- CS remove
 		SEC_STRAND,
 		SEC_STRANDS,
 		SEC_SUBMODULE,
@@ -138,6 +164,7 @@ package et_file_sections is
 		SEC_TERMINAL_PORT_MAP,
 		SEC_TEXT,
 		SEC_TEXTS,
+		SEC_TITLE_BLOCK,
 		SEC_TOP,
 		
 		SEC_UNIT,
@@ -154,8 +181,7 @@ package et_file_sections is
 		
 		SEC_ZONE
 		);
-
-
+	
 	
 	-- Converts a section like SEC_KEEPOUT to a string "keepout".
 	function to_string (
@@ -173,9 +199,13 @@ package et_file_sections is
 	section_end						: constant string := "END]";
 
 	------------------
-	
+
+	section_active_assembly_variant	: constant string := "[ACTIVE_ASSEMBLY_VARIANT";
 	section_arc						: constant string := "[ARC";
-	section_assembly_doc			: constant string := "[ASSEMBLY_DOCUMENTATION";
+	section_approved_by				: constant string := "[APPROVED_BY";
+	section_approved_date			: constant string := "[APPROVED_DATE";
+	section_assembly_doc			: constant string := "[ASSEMBLY_DOCUMENTATION"; -- CS remove
+	section_assy_doc				: constant string := "[ASSY_DOC";
 	section_assembly_variant		: constant string := "[VARIANT";	
 	section_assembly_variants		: constant string := "[ASSEMBLY_VARIANTS";
 
@@ -183,12 +213,17 @@ package et_file_sections is
 	section_board_layer_stack		: constant string := "[BOARD_LAYER_STACK";
 	section_bottom					: constant string := "[BOTTOM";
 
+	
+	section_cam_markers				: constant string := "[CAM_MARKERS";
+	section_checked_by				: constant string := "[CHECKED_BY";
+	section_checked_date			: constant string := "[CHECKED_DATE";
 	section_circle					: constant string := "[CIRCLE";
 	section_clearances				: constant string := "[CLEARANCES";
+	section_company					: constant string := "[COMPANY";
 	section_conductor				: constant string := "[CONDUCTOR";
 	section_connectors				: constant string := "[CONNECTORS";
-
 	section_contours				: constant string := "[CONTOURS";
+	section_customer				: constant string := "[CUSTOMER";
 	section_cutout_zone				: constant string := "[CUTOUT_ZONE";
 
 	
@@ -198,7 +233,11 @@ package et_file_sections is
 	section_draw					: constant string := "[DRAW";
 	section_drawing_frames			: constant string := "[DRAWING_FRAMES";
 	section_drawing_grid			: constant string := "[DRAWING_GRID";
-	
+	section_drawing_number			: constant string := "[DRAWING_NUMBER";
+	section_drawn_by				: constant string := "[DRAWN_BY";
+	section_drawn_date				: constant string := "[DRAWN_DATE";
+
+	section_face					: constant string := "[FACE";
 	section_fill_zones_conductor	: constant string := "[FILL_ZONES_CONDUCTOR";
 	
 	section_hole					: constant string := "[HOLE";
@@ -210,16 +249,20 @@ package et_file_sections is
 	section_label					: constant string := "[LABEL";
 	section_labels					: constant string := "[LABELS";
 	section_line					: constant string := "[LINE";
+	section_lines					: constant string := "[LINES";
 	
 	section_meta					: constant string := "[META";
 	section_pad_millings			: constant string := "[MILLINGS";
-
+	section_plated_millings			: constant string := "[PLATED_MILLINGS";
+	
 	section_net						: constant string := "[NET";
 	section_netchanger				: constant string := "[NETCHANGER";
 	section_netchangers				: constant string := "[NETCHANGERS";
 	section_nets					: constant string := "[NETS";
 	section_net_class				: constant string := "[NET_CLASS";
 	section_net_classes				: constant string := "[NET_CLASSES";
+
+	section_module_file_name		: constant string := "[MODULE_FILE_NAME";		
 	
 	section_outline					: constant string := "[OUTLINE";
 	-- CS rename to OUTER_CONTOUR
@@ -227,9 +270,10 @@ package et_file_sections is
 	
 	section_package					: constant string := "[PACKAGE";	
 	section_pac_3d_contours			: constant string := "[PACKAGE_3D_CONTOURS";
-
+	section_partcode				: constant string := "[PARTCODE";
 	section_pcb_contours			: constant string := "[PCB_CONTOURS_NON_PLATED";
 	-- CS rename to OUTLINE
+	section_pcb_outline				: constant string := "[PCB_OUTLINE";
 
 	section_placeholder				: constant string := "[PLACEHOLDER";
 	section_placeholders			: constant string := "[PLACEHOLDERS";	
@@ -240,8 +284,10 @@ package et_file_sections is
 	section_port					: constant string := "[PORT";
 	section_ports					: constant string := "[PORTS";
 	section_preferred_libraries		: constant string := "[PREFERRED_LIBRARIES";
+	section_project_name			: constant string := "[PROJECT_NAME";
 	
 	section_restring				: constant string := "[RESTRING";
+	section_revision				: constant string := "[REVISION";
 	section_route					: constant string := "[ROUTE";	
 	section_route_restrict			: constant string := "[ROUTE_RESTRICT";
 	section_rules					: constant string := "[RULES";
@@ -250,14 +296,20 @@ package et_file_sections is
 	section_segment					: constant string := "[SEGMENT";
 	section_segments				: constant string := "[SEGMENTS";
 	section_sheet					: constant string := "[SHEET";
+	section_sheet_category			: constant string := "[SHEET_CATEGORY";
+	section_sheet_description		: constant string := "[SHEET_DESCRIPTION";
 	section_sheet_descriptions		: constant string := "[SHEET_DESCRIPTIONS";
+	section_sheet_number			: constant string := "[SHEET_NUMBER";
+	section_signal_layer			: constant string := "[SIGNAL_LAYER";
 	section_silkscreen				: constant string := "[SILKSCREEN";
+	section_silk_screen				: constant string := "[SILK_SCREEN"; -- CS remove
 	section_sizes					: constant string := "[SIZES";
 	section_stencil					: constant string := "[STENCIL";
 	section_stencil_contours		: constant string := "[STENCIL_CONTOURS";
 	section_stopmask				: constant string := "[STOPMASK";
 	section_stopmask_contours_tht	: constant string := "[STOPMASK_CONTOURS_THT";
 	section_stopmask_contours_smt	: constant string := "[STOPMASK_CONTOURS_SMT";
+	section_stop_mask				: constant string := "[STOP_MASK"; -- CS remove
 	section_strand					: constant string := "[STRAND";
 	section_strands					: constant string := "[STRANDS";
 	section_submodule				: constant string := "[SUBMODULE";
@@ -269,7 +321,7 @@ package et_file_sections is
 	section_terminal_port_map		: constant string := "[TERMINAL_PORT_MAP";
 	section_text					: constant string := "[TEXT";
 	section_texts					: constant string := "[TEXTS";
-	
+	section_title_block				: constant string := "[TITLE_BLOCK";
 	section_top						: constant string := "[TOP";
 
 	section_unit					: constant string := "[UNIT";
