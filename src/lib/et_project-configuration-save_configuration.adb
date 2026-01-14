@@ -39,8 +39,8 @@
 --
 --
 
-with et_file_write;						use et_file_write;
 
+with et_file_write;					use et_file_write;
 
 
 separate (et_project.configuration)

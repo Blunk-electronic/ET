@@ -64,6 +64,7 @@ package et_keywords is
 	keyword_connection				: constant string := "connection";
 	keyword_connector				: constant string := "connector";
 	keyword_content 				: constant string := "content";
+	keyword_conventions 			: constant string := "conventions";
 
 	keyword_default					: constant string := "default";
 	keyword_delta					: constant string := "delta";

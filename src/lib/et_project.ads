@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,13 +35,13 @@
 --
 --   history of changes:
 --
---   ToDo: 
+-- To Do: 
+-- - clean up
+-- - separate packages ?
 
-with ada.text_io;				use ada.text_io;
-with ada.strings.maps;			use ada.strings.maps;
+
 with ada.strings.bounded;       use ada.strings.bounded;
 
-with et_net_names;				use et_net_names;
 with et_logging;				use et_logging;
 with et_module_names;			use et_module_names;
 with et_project_name;			use et_project_name;

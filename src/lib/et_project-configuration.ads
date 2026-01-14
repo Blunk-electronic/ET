@@ -6,23 +6,25 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2026                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 --                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your editor to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -34,7 +36,9 @@
 --
 --   history of changes:
 --
---   ToDo: 
+-- To Do:
+-- - separate package for conf. file name
+
 
 with et_conventions;
 
@@ -45,20 +49,9 @@ package et_project.configuration is
 	use pac_file_name;
 	
 	file_extension : constant string := "prj";
-	
-	keyword_conventions : constant string := "conventions";
-	
-	section_rules					: constant string := "[RULES";
-	section_environment_variables	: constant string := "[ENVIRONMENT_VARIABLES";
-	
-	type type_section_name is (
-		SEC_INIT,
-		SEC_RULES,
-		SEC_ENVIRONMENT_VARIABLES -- CS not used currently
-		-- CS SEC_LAST_OPENED
-		);
+		
 
-	function to_string (section : in type_section_name) return string;
+
 
 	type type_rules is record
 		conventions	: et_conventions.pac_file_name.bounded_string; -- conventions.txt
@@ -70,11 +63,16 @@ package et_project.configuration is
 		-- CS last_opened
 	end record;
 
+
+
+	
 	-- Here we store the configuration of the current project:
 	project : type_configuration;
+	
 
 	-- Returns true if a conventions file has been specified for the project:
 	function conventions_specified return boolean;
+
 	
 	-- Reads the project configuration file.
 	-- The current working directory is assumed to be the project directory:
@@ -82,9 +80,12 @@ package et_project.configuration is
 		project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
 		log_threshold 	: in type_log_level);
 
+	
 	procedure write_configuration_header;
 	procedure write_configuration_footer;
 
+
+	
 	-- Saves the project configuration in the project configuration file.
 	-- The current working directory is assumed to be the parent directory
 	-- of the current project. Call this procedure when saving a whole project.
@@ -92,6 +93,8 @@ package et_project.configuration is
 		project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
 -- 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold 	: in type_log_level);
+
+
 	
 end et_project.configuration;
 

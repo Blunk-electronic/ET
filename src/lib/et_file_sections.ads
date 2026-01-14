@@ -84,6 +84,8 @@ package et_file_sections is
 		SEC_DRAWING_FRAMES,
 		SEC_DRAWING_GRID,
 		SEC_DRAWING_NUMBER,
+
+		SEC_ENVIRONMENT_VARIABLES, -- CS not used currently
 		
 		SEC_FACE,
 		SEC_FILL_ZONES_CONDUCTOR,
@@ -100,6 +102,7 @@ package et_file_sections is
 		
 		SEC_LABEL,
 		SEC_LABELS,
+		-- CS SEC_LAST_OPENED
 		SEC_LINE,
 		SEC_LINES,
 		
@@ -240,6 +243,8 @@ package et_file_sections is
 	section_drawn_by				: constant string := "[DRAWN_BY";
 	section_drawn_date				: constant string := "[DRAWN_DATE";
 
+	section_environment_variables	: constant string := "[ENVIRONMENT_VARIABLES";
+	
 	section_face					: constant string := "[FACE";
 	section_fill_zones_conductor	: constant string := "[FILL_ZONES_CONDUCTOR";
 	

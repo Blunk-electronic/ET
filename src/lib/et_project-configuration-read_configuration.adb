@@ -36,7 +36,6 @@
 --   history of changes:
 --
 
-with et_file_sections;					use et_file_sections;
 
 
 separate (et_project.configuration)
@@ -64,10 +63,14 @@ is
 	
 	-- This is the section stack of the configuration file:
 	max_section_depth : constant positive := 2;
+	
 	package pac_sections_stack is new gen_pac_sections_stack (
-		item	=> type_section_name, -- CS use type_file_section ?
+		item	=> type_file_section,
 		max 	=> max_section_depth);
 
+
+
+	
 	-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 	conventions_file_name : et_conventions.pac_file_name.bounded_string;
 
@@ -139,7 +142,7 @@ is
 			-- If it is a header, the section name is pushed onto the sections pac_sections_stack.
 			-- If it is a footer, the latest section name is popped from the pac_sections_stack.
 				section_keyword	: in string;
-				section			: in type_section_name)
+				section			: in type_file_section)
 				return boolean 
 			is begin
 				if f (line, 1) = section_keyword then -- section name detected in field 1

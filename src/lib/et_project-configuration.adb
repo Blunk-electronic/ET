@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -36,7 +36,10 @@
 --
 --   history of changes:
 --
+-- To Do:
+--
 
+with ada.text_io;					use ada.text_io;
 with ada.characters;				use ada.characters;
 with ada.characters.handling;		use ada.characters.handling;
 with ada.strings; 					use ada.strings;
@@ -53,15 +56,12 @@ with et_conventions;
 with et_time;						use et_time;
 with et_system_info;
 
+with et_keywords;					use et_keywords;
+with et_file_sections;				use et_file_sections;
+
 
 
 package body et_project.configuration is
-
-	function to_string (section : in type_section_name) return string is
-		len : positive := type_section_name'image (section)'length;
-	begin
-		return to_lower (type_section_name'image (section) (5..len));
-	end to_string;
 
 	
 

@@ -36,8 +36,14 @@
 --
 --   history of changes:
 --
+-- To Do:
+-- - clean up
 
+
+with ada.text_io;					use ada.text_io;
 with ada.strings.fixed;
+with ada.strings.maps;				use ada.strings.maps;
+
 with ada.exceptions;
 with ada.directories;
 with gnat.directory_operations;
@@ -54,6 +60,7 @@ with et_project.configuration;
 with et_rig_name;
 with et_rig;
 with et_keywords;					use et_keywords;
+with et_file_sections;				use et_file_sections;
 with et_module_write;				use et_module_write;
 
 
@@ -311,6 +318,8 @@ package body et_project is
 	end create_project_directory;
 
 
+
+	
 	
 	procedure create_project_directory_bare (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
@@ -355,6 +364,8 @@ package body et_project is
 	end create_project_directory_bare;
 
 
+
+
 	
 	procedure validate_project (
 		project_name	: in pac_project_name.bounded_string;
@@ -372,6 +383,8 @@ package body et_project is
 			raise constraint_error;
 		end if;
 	end validate_project;
+
+
 
 
 	
@@ -412,6 +425,9 @@ package body et_project is
 
 
 
+
+	
+
 	function inside_project_directory (file_name : in string) return boolean is
 	-- Tests whether the given file name indicates whether the file is inside the project directory.
 	-- CS: This works on Linux only. Implementation should be OS independent !
@@ -434,6 +450,7 @@ package body et_project is
 			return true;
 		end if;
 	end inside_project_directory;
+
 
 
 	
