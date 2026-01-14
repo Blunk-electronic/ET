@@ -50,8 +50,8 @@ with et_module_names;					use et_module_names;
 with et_runmode;						use et_runmode;
 with et_script_processor;
 
-with et_display;						use et_display;
-with et_display.schematic;
+-- with et_display;						use et_display;
+-- with et_display.schematic;
 with et_modes.schematic;
 with et_canvas_schematic_units;
 with et_canvas_schematic_nets;
@@ -112,7 +112,7 @@ with et_module_write;					use et_module_write;
 with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
 
 with et_cp_schematic_canvas;			use et_cp_schematic_canvas;
-
+with et_cp_schematic_display;			use et_cp_schematic_display;
 
 
 package body et_cp_schematic is
@@ -245,7 +245,6 @@ package body et_cp_schematic is
 		use et_device_name;
 		use et_canvas_schematic;
 		use et_canvas_schematic.pac_canvas;
-		use et_display.schematic;
 		use et_modes.schematic;
 
 
@@ -322,68 +321,6 @@ package body et_cp_schematic is
 		procedure command_incomplete is begin
 			command_incomplete (cmd);
 		end;
-		
-
-
-
-
-		
-
-	-----------------------------------------------------------------------------------
-
-	-- LAYER OPERATIONS:
-
-
-		-- Enables a certain layer. If status is empty, the layer will be enabled.
-		procedure display is -- GUI related
-
-			
-			procedure do_it ( 
-				layer	: in type_noun;
-				status	: in string := "") is
-
-				ls : type_layer_status;
-			begin
-				-- Convert the given status to type_layer_status.
-				-- If no status given, assume status ON:
-				if status = "" then
-					ls := ON;
-				else
-					ls := to_layer_status (status);
-				end if;
-				
-				log (text => "display " & to_lower (to_string (layer)) 
-						& space & to_string (ls),
-						level => log_threshold + 1);
-				
-				case layer is
-					when NOUN_NAMES		=> layers.device_names := ls;
-					when NOUN_NETS		=> layers.nets := ls;
-					when NOUN_PORTS		=> layers.ports := ls;
-					when NOUN_PURPOSES	=> layers.device_purposes := ls;
-					when NOUN_TEXTS		=> layers.texts := ls;
-					when NOUN_VALUES	=> layers.device_values := ls;
-					
-					when others => 
-						log (importance => ERROR, text => "invalid layer !", console => true);
-				end case;
-
-				-- CS exception handler if status is invalid
-			end do_it;
-
-			
-		begin
-			case cmd_field_count is
-				when 4 => do_it (noun); -- if status is omitted
-				when 5 => do_it (noun, get_field (5));
-				when 6 .. type_field_count'last => too_long; 
-				when others => command_incomplete;
-			end case;
-		end display;
-
-
-
-
 		
 
 		
@@ -2700,7 +2637,7 @@ package body et_cp_schematic is
 							| NOUN_NETS		-- like "schematic led_driver display nets [on/off]"
 							| NOUN_NAMES | NOUN_VALUES | NOUN_PURPOSES
 							| NOUN_TEXTS
-							=> display;
+							=> display (cmd, log_threshold + 1);
 
 						when others => invalid_noun (to_string (noun));
 					end case;
