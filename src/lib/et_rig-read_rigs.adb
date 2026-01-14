@@ -74,6 +74,7 @@ is
 	conf_file_search : search_type; -- the state of the search
 	conf_file_filter : filter_type := (ordinary_file => true, others => false);
 
+
 	
 	procedure read_conf_file (conf_file_handle : in directory_entry_type) is
 		-- backup the previous input source
@@ -91,7 +92,7 @@ is
 		max_section_depth : constant positive := 3;
 		
 		package pac_sections_stack is new gen_pac_sections_stack (
-			item	=> type_section_name, -- CS use type_file_section
+			item	=> type_file_section,
 			max 	=> max_section_depth);
 
 		
@@ -272,7 +273,7 @@ is
 			-- If it is a header, the section name is pushed onto the sections pac_sections_stack.
 			-- If it is a footer, the latest section name is popped from the pac_sections_stack.
 				section_keyword	: in string; -- [MODULE_INSTANCES
-				section			: in type_section_name) -- SEC_MODULE_INSTANCES
+				section			: in type_file_section) -- SEC_MODULE_INSTANCES
 				return boolean 
 			is begin
 				if f (line, 1) = section_keyword then -- section name detected in field 1

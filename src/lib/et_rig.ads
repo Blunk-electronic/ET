@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,9 +35,9 @@
 --
 --   history of changes:
 --
+-- To Do:
+-- - clean up
 
-
-with ada.strings.bounded;   	    use ada.strings.bounded;
 
 with ada.containers;            	use ada.containers;
 with ada.containers.ordered_sets;
@@ -49,6 +49,7 @@ with et_device_purpose;				use et_device_purpose;
 with et_conventions;				--use et_conventions;
 with et_rig_name;					use et_rig_name;
 with et_generic_modules;			use et_generic_modules;
+
 
 package et_rig is
 	
@@ -108,39 +109,8 @@ package et_rig is
 	rigs : pac_rigs.map;
 
 
-	
--- KEYWORDS
-
-	keyword_instance_A				: constant string := "instance_A";
-	keyword_instance_B				: constant string := "instance_B";		
-	keyword_purpose_A				: constant string := "purpose_A";
-	keyword_purpose_B				: constant string := "purpose_B";	
-	keyword_net_comparator			: constant string := "net_comparator";
-	keyword_net_comparator_warn_only: constant string := "warn_only";
 
 	
--- SECTION NAMES
-	
-	section_module_instances	: constant string := "[MODULE_INSTANCES";
-	section_module_connections	: constant string := "[MODULE_CONNECTIONS";
-	section_connector			: constant string := "[CONNECTOR";
-	section_module				: constant string := "[MODULE";
-
-
-	
-
-	type type_section_name is (
-		SEC_INIT,
-		SEC_MODULE_INSTANCES,
-		SEC_MODULE,
-		SEC_MODULE_CONNECTIONS,
-		SEC_CONNECTOR
-		);
-
-	
-	function to_string (section : in type_section_name) return string;
-	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".
-
 
 	
 	procedure write_rig_configuration_header;

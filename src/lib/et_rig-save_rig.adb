@@ -42,6 +42,7 @@ with et_file_write;					use et_file_write;
 
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
+with et_file_sections;				use et_file_sections;
 
 
 separate (et_rig)

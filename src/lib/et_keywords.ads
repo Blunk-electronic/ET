@@ -104,6 +104,8 @@ package et_keywords is
 	keyword_horizontal				: constant string := "horizontal";
 
 	keyword_inner					: constant string := "inner";
+	keyword_instance_A				: constant string := "instance_A";
+	keyword_instance_B				: constant string := "instance_B";		
 	keyword_instance_name			: constant string := "instance_name";
 	keyword_isolation				: constant string := "isolation"; -- CS rename
 	
@@ -124,6 +126,8 @@ package et_keywords is
 
 	keyword_name					: constant string := "name";
 	keyword_netchanger				: constant string := "netchanger";		
+	keyword_net_comparator			: constant string := "net_comparator";
+	keyword_net_comparator_warn_only: constant string := "warn_only";
 	keyword_not_mounted				: constant string := "not_mounted";
 	
 	keyword_off						: constant string := "off";
@@ -143,7 +147,10 @@ package et_keywords is
 	keyword_position_in_schematic	: constant string := "position_in_schematic";	
 	keyword_prefix					: constant string := "prefix";
 	keyword_priority				: constant string := "priority";
+	keyword_purpose_A				: constant string := "purpose_A";
+	keyword_purpose_B				: constant string := "purpose_B";	
 
+	
 	keyword_radius					: constant string := "radius";	
 	keyword_restring_inner 			: constant string := "restring_inner";
 	keyword_restring_outer 			: constant string := "restring_outer";

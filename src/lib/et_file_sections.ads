@@ -70,6 +70,7 @@ package et_file_sections is
 		SEC_CLEARANCES,
 		SEC_COMPANY,
 		SEC_CONDUCTOR,
+		SEC_CONNECTOR,
 		SEC_CONNECTORS,
 		SEC_CONTOURS, -- of fill and cutout zones
 		SEC_CUSTOMER,
@@ -108,7 +109,10 @@ package et_file_sections is
 		
 		SEC_META,
 		SEC_MILLINGS,
+		SEC_MODULE,
+		SEC_MODULE_CONNECTIONS,
 		SEC_MODULE_FILE_NAME,
+		SEC_MODULE_INSTANCES,
 		
 		SEC_NET,
 		SEC_NETCHANGER,
@@ -227,6 +231,7 @@ package et_file_sections is
 	section_clearances				: constant string := "[CLEARANCES";
 	section_company					: constant string := "[COMPANY";
 	section_conductor				: constant string := "[CONDUCTOR";
+	section_connector				: constant string := "[CONNECTOR";
 	section_connectors				: constant string := "[CONNECTORS";
 	section_contours				: constant string := "[CONTOURS";
 	section_customer				: constant string := "[CUSTOMER";
@@ -259,8 +264,12 @@ package et_file_sections is
 	section_line					: constant string := "[LINE";
 	section_lines					: constant string := "[LINES";
 	
-	section_meta					: constant string := "[META";
+	section_meta					: constant string := "[META";	
 	section_pad_millings			: constant string := "[MILLINGS";
+	section_module					: constant string := "[MODULE";
+	section_module_connections		: constant string := "[MODULE_CONNECTIONS";
+	section_module_instances		: constant string := "[MODULE_INSTANCES";
+	
 	section_plated_millings			: constant string := "[PLATED_MILLINGS";
 	
 	section_net						: constant string := "[NET";

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -51,12 +51,6 @@ with et_time;					use et_time;
 package body et_rig is
 	
 
-	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".
-	function to_string (section : in type_section_name) return string is
-		len : positive := type_section_name'image (section)'length;
-	begin
-		return to_lower (type_section_name'image (section) (5..len));
-	end to_string;
 
 
 	
