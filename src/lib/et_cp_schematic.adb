@@ -101,7 +101,6 @@ with et_device_model_names;
 with et_device_value;					use et_device_value;
 with et_device_property_level;
 with et_package_variant;
-with et_canvas.cmd;
 
 with et_canvas_schematic;
 with et_canvas_board;
@@ -111,6 +110,9 @@ with et_module_ops;						use et_module_ops;
 with et_module_write;					use et_module_write;
 
 with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
+
+with et_cp_schematic_canvas;			use et_cp_schematic_canvas;
+
 
 
 package body et_cp_schematic is
@@ -246,8 +248,6 @@ package body et_cp_schematic is
 		use et_display.schematic;
 		use et_modes.schematic;
 
-		package pac_canvas_cmd is new et_canvas_schematic.pac_canvas.cmd;
-		use pac_canvas_cmd;
 
 		
 
@@ -324,80 +324,7 @@ package body et_cp_schematic is
 		end;
 		
 
-	-----------------------------------------------------------------------------------
-		
-		
-		-- This procedure parses a zoom related command.
-		-- If the runmode is non-graphical (like headless) then
-		-- nothing will be done here:
-		procedure zoom_all is
-		begin
-			-- log (text => "zoom all ...", level => log_threshold + 1);
 
-			-- Zoom commands can only be executed in a graphical runmode:
-			case runmode is
-				when MODE_MODULE =>
-
-					case noun is
-						when NOUN_ALL => -- zoom all
-							case cmd_field_count is
-								when 4 => 
-									log (text => "zoom all", level => log_threshold + 1);
-									zoom_to_fit_all;
-
-								when 5 .. type_field_count'last => too_long;
-
-								when others => command_incomplete;
-							end case;
-
-						when others => 
-							null;
-
-					end case;
-
-					
-				when others =>
-						skipped_in_this_runmode (log_threshold + 1);
-						
-			end case;				
-		end zoom_all;
-
-		
-
-
-		-- This procedure parses a command that set the 
-		-- grid spacing.
-		-- Example: "schematic demo set grid spacing 20 20"
-		procedure set_grid is 
-			use et_schematic_ops.grid;
-		begin
-			-- Set the grid on the canvas:
-			parse_canvas_command (cmd, VERB_SET, NOUN_GRID);
-
-			-- The global variable "grid" has now been set
-			-- as requested by the operator.
-			
-			-- Assign the grid in the database:
-			set_grid (
-				module_name 	=> module,
-				grid			=> pac_canvas.grid,
-				log_threshold	=> log_threshold + 1);
-
-		end set_grid;
-		
-
-
-		procedure set_scale is begin
-
-			parse_canvas_command (cmd, VERB_SET, NOUN_SCALE);
-			
-			-- The global scale variable "M" has now been set
-			-- as requested by the operator.
-			
-			-- CS: scale_objects (see demo program)
-
-			-- CS: Assign the scale in the database.
-		end set_scale;
 
 
 		
@@ -2835,8 +2762,7 @@ package body et_cp_schematic is
 				when VERB_MOVE =>
 					case noun is
 						when NOUN_CURSOR =>
-							parse_canvas_command (cmd, VERB_MOVE, NOUN_CURSOR);
-
+							move_cursor (cmd, log_threshold + 1);
 							
 						when NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE =>
 							move_unit_placeholder;
@@ -3051,22 +2977,19 @@ package body et_cp_schematic is
 							set_net_class;
 												
 						when NOUN_GRID =>
-							set_grid;
+							set_grid (cmd, log_threshold + 1);
 
 						when NOUN_CURSOR =>
-							parse_canvas_command (cmd, VERB_SET, NOUN_CURSOR);
-
+							set_cursor (cmd, log_threshold + 1);
+						
 						when NOUN_ZOOM =>
-							parse_canvas_command (cmd, VERB_SET, NOUN_ZOOM);
+							set_zoom (cmd, log_threshold + 1);
 							
 						when NOUN_SCALE =>
-							set_scale;
-
-
+							set_scale (cmd, log_threshold + 1);
 							
 						when NOUN_PARTCODE =>
 							set_device_partcode;
-
 							
 						when NOUN_PURPOSE =>
 							set_device_purpose;
@@ -3156,8 +3079,8 @@ package body et_cp_schematic is
 					end case;
 
 					
-				when VERB_ZOOM => -- GUI related
-					zoom_all;
+				when VERB_ZOOM =>
+					zoom_all (cmd, log_threshold + 1);
 
 
 				when others =>
