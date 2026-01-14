@@ -87,7 +87,7 @@ package body et_file_sections is
 
 -- GENERICS
 	
-	package body stack_lifo is
+	package body gen_pac_sections_stack is
 		s : array (1..max) of item;
 		top : natural range 0..max;
 
@@ -136,7 +136,7 @@ package body et_file_sections is
 			return s (top - degree);
 		end parent;
 		
-	end stack_lifo;
+	end gen_pac_sections_stack;
 	
 	
 end et_file_sections;

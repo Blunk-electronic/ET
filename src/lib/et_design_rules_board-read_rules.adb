@@ -66,12 +66,11 @@ is
 	-- The line read from the the dru file:
 	line : type_fields_of_line;
 
-	-- This is the section stack of the design rules. 
-	-- Here we track the sections. On entering a section, its name is
-	-- pushed onto the stack. When leaving a section the latest section name is popped.
+	
+	-- This is the section stack of the design rules:
 	max_section_depth : constant positive := 3;
-	package stack is new stack_lifo (
-		item	=> type_section_name,
+	package pac_sections_stack is new gen_pac_sections_stack (
+		item	=> type_section_name, -- CS use type_file_section ?
 		max 	=> max_section_depth);
 
 
@@ -80,6 +79,8 @@ is
 	restring	: type_restring;
 	stop_mask	: type_stop_mask;
 	rules		: type_design_rules_board;
+
+
 	
 	procedure read_clearances is
 		kw : constant string := f (line, 1);
@@ -109,6 +110,8 @@ is
 			invalid_keyword (kw);
 		end if;
 	end read_clearances;
+
+
 	
 	procedure read_sizes is
 		kw : constant string := f (line, 1);
@@ -129,6 +132,8 @@ is
 		end if;
 	end read_sizes;
 
+
+	
 	procedure read_restring is
 		kw : constant string := f (line, 1);
 	begin
@@ -153,6 +158,8 @@ is
 		end if;
 	end read_restring;
 
+
+	
 	procedure read_stop_mask is
 		kw : constant string := f (line, 1);
 	begin
@@ -167,34 +174,35 @@ is
 		end if;
 	end read_stop_mask;
 
+
 	
 	procedure process_line is
 
 		procedure execute_section is 
 		begin
 			
-			case stack.current is
+			case pac_sections_stack.current is
 
 				when SEC_CLEARANCES =>
-					case stack.parent is
+					case pac_sections_stack.parent is
 						when SEC_INIT	=> rules.clearances := clearances;							
 						when others		=> invalid_section;
 					end case;
 
 				when SEC_SIZES =>
-					case stack.parent is
+					case pac_sections_stack.parent is
 						when SEC_INIT	=> rules.sizes := sizes;							
 						when others		=> invalid_section;
 					end case;
 
 				when SEC_RESTRING =>
-					case stack.parent is
+					case pac_sections_stack.parent is
 						when SEC_SIZES	=> sizes.restring := restring;
 						when others		=> invalid_section;
 					end case;
 
 				when SEC_STOPMASK =>
-					case stack.parent is
+					case pac_sections_stack.parent is
 						when SEC_INIT	=> rules.stop_mask := stop_mask;
 						when others		=> invalid_section;
 					end case;
@@ -205,18 +213,21 @@ is
 			
 		end execute_section;
 
+		
+
+		
 		function set (
 		-- Tests if the current line is a section header or footer. Returns true in both cases.
 		-- Returns false if the current line is neither a section header or footer.
-		-- If it is a header, the section name is pushed onto the sections stack.
-		-- If it is a footer, the latest section name is popped from the stack.
+		-- If it is a header, the section name is pushed onto the sections pac_sections_stack.
+		-- If it is a footer, the latest section name is popped from the pac_sections_stack.
 			section_keyword	: in string; -- [CLEARANCES
 			section			: in type_section_name) -- SEC_CLEARANCES
-			return boolean is 
-		begin -- set
+			return boolean 
+		is begin
 			if f (line, 1) = section_keyword then -- section name detected in field 1
 				if f (line, 2) = section_begin then -- section header detected in field 2
-					stack.push (section);
+					pac_sections_stack.push (section);
 					log (text => write_enter_section & to_string (section), level => log_threshold + 5);
 					return true;
 
@@ -224,7 +235,7 @@ is
 
 					-- The section name in the footer must match the name
 					-- of the current section. Otherwise abort.
-					if section /= stack.current then
+					if section /= pac_sections_stack.current then
 						log_indentation_reset;
 						invalid_section;
 					end if;
@@ -233,11 +244,11 @@ is
 					-- variables is processed.
 					execute_section;
 					
-					stack.pop;
-					if stack.empty then
+					pac_sections_stack.pop;
+					if pac_sections_stack.empty then
 						log (text => write_top_level_reached, level => log_threshold + 5);
 					else
-						log (text => write_return_to_section & to_string (stack.current), level => log_threshold + 5);
+						log (text => write_return_to_section & to_string (pac_sections_stack.current), level => log_threshold + 5);
 					end if;
 					return true;
 
@@ -250,6 +261,7 @@ is
 				return false;
 			end if;
 		end set;
+
 		
 	begin -- process_line
 		if set (section_clearances, SEC_CLEARANCES) then null;
@@ -263,28 +275,28 @@ is
 
 			log (text => "dru line --> " & to_string (line), level => log_threshold + 4);
 	
-			case stack.current is
+			case pac_sections_stack.current is
 
 				when SEC_CLEARANCES =>
-					case stack.parent is
+					case pac_sections_stack.parent is
 						when SEC_INIT	=> read_clearances;
 						when others		=> invalid_section;
 					end case;
 
 				when SEC_SIZES =>
-					case stack.parent is
+					case pac_sections_stack.parent is
 						when SEC_INIT	=> read_sizes;
 						when others		=> invalid_section;
 					end case;
 
 				when SEC_RESTRING =>
-					case stack.parent is
+					case pac_sections_stack.parent is
 						when SEC_SIZES	=> read_restring;
 						when others		=> invalid_section;
 					end case;
 
 				when SEC_STOPMASK =>
-					case stack.parent is
+					case pac_sections_stack.parent is
 						when SEC_INIT	=> read_stop_mask;
 						when others		=> invalid_section;
 					end case;
@@ -301,6 +313,8 @@ is
 			raise;
 		
 	end process_line;
+
+
 	
 begin -- read_rules
 	log (text => "reading design rules ...", level => log_threshold);
@@ -320,9 +334,9 @@ begin -- read_rules
 			
 			set_input (file_handle);
 			
-			-- Init section stack.
-			stack.init;
-			stack.push (SEC_INIT);
+			-- Init section pac_sections_stack.
+			pac_sections_stack.init;
+			pac_sections_stack.push (SEC_INIT);
 			
 			-- read the file line by line
 			while not end_of_file loop
@@ -339,7 +353,7 @@ begin -- read_rules
 			end loop;
 
 			-- As a safety measure the top section must be reached finally.
-			if stack.depth > 1 then 
+			if pac_sections_stack.depth > 1 then 
 				log (text => message_warning & write_section_stack_not_empty);
 			end if;
 

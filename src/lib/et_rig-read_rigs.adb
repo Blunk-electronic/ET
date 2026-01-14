@@ -86,14 +86,15 @@ is
 		
 		line : type_fields_of_line;
 
-		-- This is the section stack of the configuration file. 
-		-- Here we track the sections. On entering a section, its name is
-		-- pushed onto the stack. When leaving a section the latest section name is popped.
+		
+		-- This is the section stack of the configuration file:
 		max_section_depth : constant positive := 3;
-		package stack is new stack_lifo (
-			item	=> type_section_name,
+		
+		package pac_sections_stack is new gen_pac_sections_stack (
+			item	=> type_section_name, -- CS use type_file_section
 			max 	=> max_section_depth);
 
+		
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		generic_name : pac_module_name.bounded_string; -- motor_driver
 		instance_name : pac_module_instance_name.bounded_string; -- DRV_1
@@ -115,6 +116,7 @@ is
 			instance_A := to_instance_name ("");
 			instance_B := instance_A;
 		end clear_connector;
+
 
 		
 		procedure process_line is
@@ -220,14 +222,14 @@ is
 
 				
 			begin -- execute_section
-				case stack.current is
+				case pac_sections_stack.current is
 
 					when SEC_INIT => null;
 
 					when SEC_MODULE_INSTANCES => null;
 					
 					when SEC_MODULE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_MODULE_INSTANCES =>	
 
 								-- create an instanciated module in the rig
@@ -244,7 +246,7 @@ is
 
 					
 					when SEC_CONNECTOR =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_MODULE_CONNECTIONS =>
 								
 								-- create a module connector in the rig
@@ -262,19 +264,20 @@ is
 						
 			end execute_section;
 
+
 			
 			function set (
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
 			-- Returns false if the current line is neither a section header or footer.
-			-- If it is a header, the section name is pushed onto the sections stack.
-			-- If it is a footer, the latest section name is popped from the stack.
+			-- If it is a header, the section name is pushed onto the sections pac_sections_stack.
+			-- If it is a footer, the latest section name is popped from the pac_sections_stack.
 				section_keyword	: in string; -- [MODULE_INSTANCES
 				section			: in type_section_name) -- SEC_MODULE_INSTANCES
-				return boolean is 
-			begin -- set
+				return boolean 
+			is begin
 				if f (line, 1) = section_keyword then -- section name detected in field 1
 					if f (line, 2) = section_begin then -- section header detected in field 2
-						stack.push (section);
+						pac_sections_stack.push (section);
 						log (text => write_enter_section & to_string (section), level => log_threshold + 7);
 						return true;
 						
@@ -282,7 +285,7 @@ is
 
 						-- The section name in the footer must match the name
 						-- of the current section. Otherwise abort.
-						if section /= stack.current then
+						if section /= pac_sections_stack.current then
 							log_indentation_reset;
 							invalid_section;
 						end if;
@@ -291,11 +294,11 @@ is
 						-- variables is processed.
 						execute_section;
 						
-						stack.pop;
-						if stack.empty then
+						pac_sections_stack.pop;
+						if pac_sections_stack.empty then
 							log (text => write_top_level_reached, level => log_threshold + 7);
 						else
-							log (text => write_return_to_section & to_string (stack.current), level => log_threshold + 7);
+							log (text => write_return_to_section & to_string (pac_sections_stack.current), level => log_threshold + 7);
 						end if;
 						return true;
 						
@@ -321,26 +324,26 @@ is
 
 				log (text => "line --> " & to_string (line), level => log_threshold + 7);
 				
-				case stack.current is
+				case pac_sections_stack.current is
 
 					when SEC_INIT => null;
 						
 					when SEC_MODULE_INSTANCES =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_MODULE_CONNECTIONS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_MODULE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_MODULE_INSTANCES =>							
 								declare
 									use et_module_ops;
@@ -390,7 +393,7 @@ is
 
 						
 					when SEC_CONNECTOR =>							
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_MODULE_CONNECTIONS =>
 								declare
 									kw : string := f (line, 1);
@@ -448,9 +451,9 @@ is
 
 		set_input (file_handle);
 
-		-- Init section stack.
-		stack.init;
-		stack.push (SEC_INIT);
+		-- Init section pac_sections_stack.
+		pac_sections_stack.init;
+		pac_sections_stack.push (SEC_INIT);
 
 		-- create an empty rig - named after the given configuration file but without extension
 		pac_rigs.insert (
@@ -475,7 +478,7 @@ is
 		end loop;
 
 		-- As a safety measure the top section must be reached:
-		if stack.depth > 1 then 
+		if pac_sections_stack.depth > 1 then 
 			log (WARNING, write_section_stack_not_empty);
 		end if;
 

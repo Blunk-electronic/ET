@@ -307,12 +307,19 @@ package et_file_sections is
 
 	
 
+	-- This is a LIFO-stack template.
+	-- It is instantiated in packages that
+	-- read symbols, packages, devices and modules.
+	-- Here we track the sections. On entering a section, 
+	-- the section name is pushed onto the stack. When 
+	-- leaving a section the latest section name is fetched
+	-- from the stack.
 
 	generic
 		max : positive;
 		type item is private;
 		
-	package stack_lifo is -- CS rename to pac_sections_stack
+	package gen_pac_sections_stack is
 		procedure push (x : in item);
 		procedure pop;
 		function pop return item;
@@ -322,7 +329,7 @@ package et_file_sections is
 		function current return item;
 		function parent (degree : in natural := 1) return item;
 		
-	end stack_lifo;
+	end gen_pac_sections_stack;
 
 	
 end et_file_sections;

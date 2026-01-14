@@ -125,19 +125,18 @@ package body et_module_read is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being read
 		module_inserted : boolean;
 
-		-- The line read from the the module file:
+		-- The line read from the module file:
 		line : et_string_processing.type_fields_of_line;
 
-		-- This is the section stack of the module. 
-		-- Here we track the sections. On entering a section, its name is
-		-- pushed onto the stack. When leaving a section the latest section name is popped.
+		
+		-- This is the section stack of the module:
 		max_section_depth : constant positive := 11;
-		package stack is new stack_lifo (
+		
+		package pac_sections_stack is new gen_pac_sections_stack (
 			item	=> type_file_section,
 			max 	=> max_section_depth);
 
-
-		
+	
 				
 
 		
@@ -231,7 +230,7 @@ package body et_module_read is
 				procedure build_non_conductor_line (
 					face : in et_pcb_sides.type_face)
 				is begin
-					case stack.parent (degree => 2) is
+					case pac_sections_stack.parent (degree => 2) is
 						when SEC_SILKSCREEN =>
 							insert_line (
 								layer_cat	=> LAYER_CAT_SILKSCREEN,
@@ -266,7 +265,7 @@ package body et_module_read is
 				procedure build_non_conductor_arc (
 					face : in et_pcb_sides.type_face)
 				is begin					
-					case stack.parent (degree => 2) is
+					case pac_sections_stack.parent (degree => 2) is
 						when SEC_SILKSCREEN =>
 							insert_arc (
 								layer_cat	=> LAYER_CAT_SILKSCREEN,
@@ -301,7 +300,7 @@ package body et_module_read is
 				procedure build_non_conductor_circle (
 					face : in et_pcb_sides.type_face)
 				is begin
-					case stack.parent (degree => 2) is
+					case pac_sections_stack.parent (degree => 2) is
 						when SEC_SILKSCREEN =>
 							insert_circle (
 								layer_cat	=> LAYER_CAT_SILKSCREEN,
@@ -337,7 +336,7 @@ package body et_module_read is
 				procedure build_non_conductor_cutout (
 					face	: in et_pcb_sides.type_face) 
 				is begin
-					case stack.parent (degree => 2) is
+					case pac_sections_stack.parent (degree => 2) is
 						when SEC_SILKSCREEN =>
 							insert_cutout (
 								module_cursor, LAYER_CAT_SILKSCREEN, face, log_threshold);
@@ -367,7 +366,7 @@ package body et_module_read is
 				procedure build_non_conductor_fill_zone (
 					face	: in et_pcb_sides.type_face)
 				is begin
-					case stack.parent (degree => 2) is
+					case pac_sections_stack.parent (degree => 2) is
 						when SEC_SILKSCREEN =>
 							insert_polygon (
 								module_cursor, LAYER_CAT_SILKSCREEN, face, log_threshold);
@@ -398,7 +397,7 @@ package body et_module_read is
 				
 				procedure build_net_label is
 				begin
-					case stack.parent is
+					case pac_sections_stack.parent is
 						when SEC_LABELS =>
 							insert_net_label;
 
@@ -410,10 +409,10 @@ package body et_module_read is
 				
 				
 			begin -- execute_section
-				case stack.current is
+				case pac_sections_stack.current is
 
 					when SEC_CONNECTORS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_SEGMENT =>
 								assign_net_connectors (log_threshold);
 
@@ -422,7 +421,7 @@ package body et_module_read is
 
 					
 					when SEC_CONTOURS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_ZONE | SEC_CUTOUT_ZONE =>
 								check_contour (log_threshold);
 							
@@ -431,7 +430,7 @@ package body et_module_read is
 
 
 					when SEC_JUNCTIONS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_SEGMENT =>
 								assign_net_junctions (log_threshold);
 
@@ -440,7 +439,7 @@ package body et_module_read is
 						
 						
 					when SEC_NET_CLASS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_NET_CLASSES =>
 								assign_net_class (module_cursor, log_threshold);
 								
@@ -449,14 +448,14 @@ package body et_module_read is
 
 						
 					when SEC_NET_CLASSES =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_BOARD_LAYER_STACK =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT =>
 								add_board_layer (module_cursor, log_threshold);
 
@@ -465,7 +464,7 @@ package body et_module_read is
 
 						
 					when SEC_DRAWING_GRID =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => 
 								set_drawing_grid (module_cursor, log_threshold);
 								
@@ -474,7 +473,7 @@ package body et_module_read is
 
 						
 					when SEC_NET =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_NETS =>
 								assign_net (module_cursor, log_threshold);
 						
@@ -483,14 +482,14 @@ package body et_module_read is
 
 						
 					when SEC_NETS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_STRANDS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_NET =>
 								insert_strands;
 
@@ -499,7 +498,7 @@ package body et_module_read is
 
 						
 					when SEC_ROUTE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_NET =>
 								assign_route;
 								
@@ -508,7 +507,7 @@ package body et_module_read is
 
 						
 					when SEC_STRAND =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_STRANDS =>
 								assign_net_strand (line, log_threshold);
 								
@@ -517,7 +516,7 @@ package body et_module_read is
 
 						
 					when SEC_SEGMENTS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_STRAND =>
 								insert_net_segments;
 								
@@ -526,7 +525,7 @@ package body et_module_read is
 
 						
 					when SEC_SEGMENT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_SEGMENTS =>
 								assign_net_segment (log_threshold);
 								
@@ -535,7 +534,7 @@ package body et_module_read is
 
 						
 					when SEC_LABELS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_SEGMENT =>
 								assign_net_labels (log_threshold);
 
@@ -544,7 +543,7 @@ package body et_module_read is
 
 						
 					when SEC_PORTS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_SEGMENT =>
 								assign_net_ports (log_threshold);
 
@@ -560,7 +559,7 @@ package body et_module_read is
 
 						
 					when SEC_LINE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_CONTOURS => insert_contour_line;
 								
 							when SEC_ROUTE =>
@@ -586,7 +585,7 @@ package body et_module_read is
 						
 						
 					when SEC_ARC =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_CONTOURS => insert_contour_arc;
 
 							when SEC_ROUTE =>
@@ -612,7 +611,7 @@ package body et_module_read is
 
 						
 					when SEC_CIRCLE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_CONTOURS => insert_contour_circle;
 							
 							when SEC_TOP =>
@@ -635,7 +634,7 @@ package body et_module_read is
 
 						
 					when SEC_VIA =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_ROUTE =>
 								build_via;
 						
@@ -644,7 +643,7 @@ package body et_module_read is
 
 						
 					when SEC_CUTOUT_ZONE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							--when SEC_ROUTE =>
 								--build_route_cutout;
 
@@ -668,7 +667,7 @@ package body et_module_read is
 
 						
 					when SEC_ZONE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_ROUTE =>
 								build_route_polygon (module_cursor, log_threshold);
 
@@ -692,7 +691,7 @@ package body et_module_read is
 
 						
 					when SEC_SUBMODULE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_SUBMODULES =>
 								insert_submodule (module_cursor, log_threshold);
 
@@ -701,9 +700,9 @@ package body et_module_read is
 
 						
 					when SEC_PORT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PORTS =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_SUBMODULE => 
 										insert_submodule_port (line);
 										
@@ -715,14 +714,14 @@ package body et_module_read is
 
 						
 					when SEC_SUBMODULES =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_SCHEMATIC =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_DRAWING_FRAMES =>
 								set_frame_schematic (module_cursor, log_threshold);
 
@@ -736,7 +735,7 @@ package body et_module_read is
 
 						
 					when SEC_BOARD =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null;
 
 							when SEC_DRAWING_FRAMES =>
@@ -752,7 +751,7 @@ package body et_module_read is
 
 						
 					when SEC_SHEET_DESCRIPTIONS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_SCHEMATIC => null; 
 								-- We assign the sheet_descriptions once parent 
 								-- section SCHEMATIC closes.
@@ -763,19 +762,19 @@ package body et_module_read is
 
 						
 					when SEC_SHEET =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_SHEET_DESCRIPTIONS => add_sheet_description;
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_TEXT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TEXTS =>
 								insert_schematic_text (module_cursor, log_threshold);
 
 							when SEC_TOP =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>								
 										build_non_conductor_text (
 											module_cursor	=> module_cursor,
@@ -802,7 +801,7 @@ package body et_module_read is
 
 						
 							when SEC_BOTTOM =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>								
 										build_non_conductor_text (
 											module_cursor	=> module_cursor,
@@ -836,23 +835,23 @@ package body et_module_read is
 
 						
 					when SEC_TEXTS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_DRAWING_FRAMES =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_PLACEHOLDER =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_DEVICE =>
 										et_module_read_device_non_electrical.insert_package_placeholder;
 										
@@ -867,7 +866,7 @@ package body et_module_read is
 
 								
 							when SEC_TOP =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>
 										insert_placeholder (
 											module_cursor	=> module_cursor,
@@ -894,7 +893,7 @@ package body et_module_read is
 
 								
 							when SEC_BOTTOM =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>
 										insert_placeholder (
 											module_cursor	=> module_cursor,
@@ -928,13 +927,13 @@ package body et_module_read is
 
 						
 					when SEC_PLACEHOLDERS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PACKAGE =>
 								et_module_read_device_electrical.insert_placeholders;
 								
 
 							when SEC_DEVICE =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_DEVICES_NON_ELECTRIC =>
 										et_module_read_device_non_electrical.insert_placeholders;
 
@@ -948,7 +947,7 @@ package body et_module_read is
 
 						
 					when SEC_PACKAGE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_DEVICE =>
 								set_package_position;
 
@@ -957,7 +956,7 @@ package body et_module_read is
 
 						
 					when SEC_UNIT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_UNITS =>
 								insert_unit (module_cursor, log_threshold);
 													
@@ -966,7 +965,7 @@ package body et_module_read is
 
 						
 					when SEC_UNITS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_DEVICE =>
 								insert_units;
 								
@@ -975,7 +974,7 @@ package body et_module_read is
 
 						
 					when SEC_DEVICE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_DEVICES =>
 								insert_device (module_cursor, log_threshold);
 
@@ -987,14 +986,14 @@ package body et_module_read is
 
 						
 					when SEC_DEVICES =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_ASSEMBLY_VARIANT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_ASSEMBLY_VARIANTS => 
 								insert_assembly_variant (module_cursor, log_threshold);
 								
@@ -1003,14 +1002,14 @@ package body et_module_read is
 
 						
 					when SEC_ASSEMBLY_VARIANTS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null; -- CS test if active variant exists
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_META =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => 
 								set_meta (module_cursor, log_threshold);
 								
@@ -1019,15 +1018,15 @@ package body et_module_read is
 
 						
 					when SEC_PREFERRED_LIBRARIES =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_SCHEMATIC =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_META	=> null; -- nothing to do
 									when others		=> invalid_section;
 								end case;
 
 							when SEC_BOARD =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_META	=> null; -- nothing to do
 									when others		=> invalid_section;
 								end case;
@@ -1037,7 +1036,7 @@ package body et_module_read is
 
 						
 					when SEC_RULES =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => 
 								set_rules (module_cursor, log_threshold);
 								
@@ -1046,14 +1045,14 @@ package body et_module_read is
 
 						
 					when SEC_NETCHANGERS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_NETCHANGER =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_NETCHANGERS =>
 								insert_netchanger (module_cursor, log_threshold);
 								
@@ -1064,14 +1063,14 @@ package body et_module_read is
 					when SEC_DEVICES_NON_ELECTRIC | SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 						SEC_STOPMASK | SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
 						SEC_CONDUCTOR | SEC_PCB_CONTOURS_NON_PLATED =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_BOARD => null;
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_TOP | SEC_BOTTOM =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 								SEC_STOPMASK | SEC_KEEPOUT => null;
 
@@ -1080,7 +1079,7 @@ package body et_module_read is
 
 						
 					when SEC_USER_SETTINGS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_BOARD => 
 								assign_user_settings_board (module_cursor, log_threshold);
 							-- CS when SEC_SCHEMATIC	=> null;
@@ -1090,9 +1089,9 @@ package body et_module_read is
 
 						
 					when SEC_VIAS | SEC_FILL_ZONES_CONDUCTOR =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_USER_SETTINGS =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_BOARD	=> null;
 									when others		=> invalid_section;
 								end case;
@@ -1102,7 +1101,7 @@ package body et_module_read is
 
 						
 					when SEC_OUTLINE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PCB_CONTOURS_NON_PLATED =>
 								set_outline (module_cursor, log_threshold);
 								
@@ -1111,7 +1110,7 @@ package body et_module_read is
 
 						
 					when SEC_HOLE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PCB_CONTOURS_NON_PLATED =>
 								add_hole (module_cursor, log_threshold);
 								
@@ -1136,8 +1135,8 @@ package body et_module_read is
 			
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
 			-- Returns false if the current line is neither a section header or footer.
-			-- If it is a header, the section name is pushed onto the sections stack.
-			-- If it is a footer, the latest section name is popped from the stack.
+			-- If it is a header, the section name is pushed onto the sections pac_sections_stack.
+			-- If it is a footer, the latest section name is popped from the pac_sections_stack.
 			function set (
 				section_keyword	: in string; -- [NETS
 				section			: in type_file_section) -- SEC_NETS
@@ -1145,7 +1144,7 @@ package body et_module_read is
 			begin -- set
 				if f (line, 1) = section_keyword then -- section name detected in field 1
 					if f (line, 2) = section_begin then -- section header detected in field 2
-						stack.push (section);
+						pac_sections_stack.push (section);
 						log (text => write_enter_section & to_string (section), level => log_threshold + 5);
 						return true;
 
@@ -1153,7 +1152,7 @@ package body et_module_read is
 
 						-- The section name in the footer must match the name
 						-- of the current section. Otherwise abort.
-						if section /= stack.current then
+						if section /= pac_sections_stack.current then
 							log_indentation_reset;
 							invalid_section;
 						end if;
@@ -1164,11 +1163,11 @@ package body et_module_read is
 						execute_section;
 						log_indentation_down;
 						
-						stack.pop;
-						if stack.empty then
+						pac_sections_stack.pop;
+						if pac_sections_stack.empty then
 							log (text => write_top_level_reached, level => log_threshold + 5);
 						else
-							log (text => write_return_to_section & to_string (stack.current), level => log_threshold + 5);
+							log (text => write_return_to_section & to_string (pac_sections_stack.current), level => log_threshold + 5);
 						end if;
 						return true;
 
@@ -1257,54 +1256,54 @@ package body et_module_read is
 				log_indentation_up;
 
 				
-				case stack.current is
+				case pac_sections_stack.current is
 
 					when SEC_CONNECTORS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_SEGMENT => read_net_connector (line, log_threshold);
 							when others => invalid_section;
 						end case;
 					
 					when SEC_CONTOURS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_ZONE => null;
 							when SEC_CUTOUT_ZONE => null;
 							when others => invalid_section;
 						end case;
 
 					when SEC_JUNCTIONS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_SEGMENT => read_net_junction (line, log_threshold);
 							when others => invalid_section;
 						end case;
 						
 					when SEC_NET_CLASSES =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
 					when SEC_DRAWING_GRID =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
 					when SEC_BOARD_LAYER_STACK =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => read_layer (line, log_threshold);
 							when others => invalid_section;
 						end case;
 						
 					when SEC_DEVICES =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_ASSEMBLY_VARIANTS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => 
 								set_active_assembly_variant (module_cursor, line, log_threshold);
 								
@@ -1313,7 +1312,7 @@ package body et_module_read is
 
 						
 					when SEC_ASSEMBLY_VARIANT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_ASSEMBLY_VARIANTS => 
 								read_assembly_variant (module_cursor, line);
 								
@@ -1322,37 +1321,37 @@ package body et_module_read is
 
 						
 					when SEC_TEXTS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null; -- nothing to do								
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_SUBMODULES =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null; -- nothing to do								
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_DRAWING_FRAMES =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null; -- nothing to do								
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_META =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_PREFERRED_LIBRARIES =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_SCHEMATIC =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_META => 
 										read_preferred_lib_schematic (line);
 										
@@ -1360,7 +1359,7 @@ package body et_module_read is
 								end case;
 
 							when SEC_BOARD =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_META =>
 										read_preferred_lib_board (line);
 										
@@ -1372,72 +1371,72 @@ package body et_module_read is
 
 						
 					when SEC_RULES =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => read_rules (line);
 							when others => invalid_section;
 						end case;
 			
 			
 					when SEC_NET_CLASS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_NET_CLASSES => read_net_class (line, log_threshold);
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_STRAND =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_STRANDS => read_strand (line, log_threshold);
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_STRANDS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_NET => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_ROUTE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_NET => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_NET =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_NETS => read_net (line, log_threshold);
 							when others => invalid_section;
 						end case;
 
 					when SEC_NETS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
 						
 					when SEC_SEGMENT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_SEGMENTS => read_net_segment (line, log_threshold);
 							when others => invalid_section;
 						end case;
 
 					when SEC_SEGMENTS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_STRAND => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 						
 					when SEC_LABELS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_SEGMENT => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 						
 					when SEC_PORTS =>
-						case stack.parent is 
+						case pac_sections_stack.parent is 
 							when SEC_SEGMENT => read_net_port (line, log_threshold);
 							when SEC_SUBMODULE => null; -- nothing to do
 							when others => invalid_section;
@@ -1445,14 +1444,14 @@ package body et_module_read is
 
 						
 					when SEC_LABEL =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_LABELS => read_label (line, log_threshold);
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_LINE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_CONTOURS => 
 								read_contour_line (line);
 								
@@ -1460,7 +1459,7 @@ package body et_module_read is
 								read_track_line (line);
 								
 							when SEC_TOP | SEC_BOTTOM => 
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										read_doc_line (line);
 
@@ -1490,7 +1489,7 @@ package body et_module_read is
 						
 						
 					when SEC_ARC =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_CONTOURS => 
 								read_contour_arc (line);
 							
@@ -1498,7 +1497,7 @@ package body et_module_read is
 								read_track_arc (line);
 								
 							when SEC_TOP | SEC_BOTTOM => 
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										read_doc_arc (line);
 
@@ -1528,12 +1527,12 @@ package body et_module_read is
 
 						
 					when SEC_CIRCLE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_CONTOURS =>
 								read_contour_circle (line);
 							
 							when SEC_TOP | SEC_BOTTOM => 
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										read_doc_circle (line);
 
@@ -1563,11 +1562,11 @@ package body et_module_read is
 
 						
 					when SEC_CUTOUT_ZONE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_ROUTE => read_cutout_route (line);
 							
 							when SEC_TOP | SEC_BOTTOM => 
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOPMASK => 
 										read_cutout_non_conductor (line);
@@ -1588,11 +1587,11 @@ package body et_module_read is
 
 						
 					when SEC_ZONE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_ROUTE => read_fill_zone_route (line);
 
 							when SEC_TOP | SEC_BOTTOM => 
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOPMASK => 
 											read_fill_zone_non_conductor (line);
@@ -1614,14 +1613,14 @@ package body et_module_read is
 
 						
 					when SEC_VIA =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_ROUTE	=> read_via (module_cursor, line);
 							when others		=> invalid_section;
 						end case;
 
 						
 					when SEC_SUBMODULE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_SUBMODULES => 
 								read_submodule (line);
 								
@@ -1630,9 +1629,9 @@ package body et_module_read is
 
 						
 					when SEC_PORT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PORTS =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_SUBMODULE => 
 										read_submodule_port (line);
 										
@@ -1644,7 +1643,7 @@ package body et_module_read is
 
 						
 					when SEC_SCHEMATIC =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_DRAWING_FRAMES => 
 								read_frame_template_schematic (line);
 							
@@ -1657,7 +1656,7 @@ package body et_module_read is
 
 						
 					when SEC_BOARD =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null; -- nothing to do
 							
 							when SEC_DRAWING_FRAMES => 
@@ -1672,14 +1671,14 @@ package body et_module_read is
 
 						
 					when SEC_SHEET_DESCRIPTIONS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_SCHEMATIC => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_SHEET =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_SHEET_DESCRIPTIONS => 
 								read_sheet_description (line);
 								
@@ -1688,7 +1687,7 @@ package body et_module_read is
 
 						
 					when SEC_TEXT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TEXTS => -- in schematic
 								read_schematic_text (line);
 
@@ -1696,7 +1695,7 @@ package body et_module_read is
 								read_board_text_contours (line);
 								
 							when SEC_TOP | SEC_BOTTOM => -- in board
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION 
 										| SEC_STOPMASK | SEC_KEEPOUT | SEC_STENCIL =>	
 											read_board_text_non_conductor (line);
@@ -1713,7 +1712,7 @@ package body et_module_read is
 
 						
 					when SEC_DEVICE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_DEVICES => read_device (line);
 							when SEC_DEVICES_NON_ELECTRIC => read_device_non_electric (line);
 							when others => invalid_section;
@@ -1721,7 +1720,7 @@ package body et_module_read is
 
 						
 					when SEC_PACKAGE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_DEVICE =>
 								et_module_read_device_electrical.read_package_position (line);
 								
@@ -1730,9 +1729,9 @@ package body et_module_read is
 
 						
 					when SEC_PLACEHOLDER =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_DEVICE => 
 										et_module_read_device_non_electrical.read_device_text_placeholder (line);
 									
@@ -1745,7 +1744,7 @@ package body et_module_read is
 
 								
 							when SEC_TOP | SEC_BOTTOM =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION 
 										| SEC_STOPMASK => -- CS SEC_KEEPOUT
 										read_board_text_placeholder (line);
@@ -1762,11 +1761,11 @@ package body et_module_read is
 
 						
 					when SEC_PLACEHOLDERS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PACKAGE => null;
 
 							when SEC_DEVICE =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_DEVICES_NON_ELECTRIC => null;
 
 									when others => invalid_section;
@@ -1778,28 +1777,28 @@ package body et_module_read is
 
 						
 					when SEC_UNIT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_UNITS => read_unit (line);
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_UNITS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_DEVICE => null;
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_NETCHANGERS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_NETCHANGER =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_NETCHANGERS =>
 								read_netchanger (line);
 								
@@ -1810,14 +1809,14 @@ package body et_module_read is
 					when SEC_DEVICES_NON_ELECTRIC | SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 						SEC_STOPMASK | SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
 						SEC_CONDUCTOR | SEC_PCB_CONTOURS_NON_PLATED =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_BOARD => null;
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_TOP | SEC_BOTTOM =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 								SEC_STOPMASK | SEC_KEEPOUT => null;
 
@@ -1826,7 +1825,7 @@ package body et_module_read is
 
 						
 					when SEC_USER_SETTINGS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_BOARD		=> null;
 							-- CS when SEC_SCHEMATIC	=> null;
 							
@@ -1835,9 +1834,9 @@ package body et_module_read is
 
 						
 					when SEC_VIAS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_USER_SETTINGS =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_BOARD =>
 										read_user_settings_vias (line);
 										
@@ -1849,9 +1848,9 @@ package body et_module_read is
 
 						
 					when SEC_FILL_ZONES_CONDUCTOR =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_USER_SETTINGS =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_BOARD =>
 										read_user_settings_fill_zones_conductor (line);
 										
@@ -1863,7 +1862,7 @@ package body et_module_read is
 
 						
 					when SEC_OUTLINE | SEC_HOLE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PCB_CONTOURS_NON_PLATED => null;
 							when others => invalid_section;
 						end case;
@@ -1902,9 +1901,9 @@ package body et_module_read is
 			
 			set_input (file_handle);
 			
-			-- Init section stack.
-			stack.init;
-			stack.push (SEC_INIT);
+			-- Init section pac_sections_stack.
+			pac_sections_stack.init;
+			pac_sections_stack.push (SEC_INIT);
 
 			
 			-- Read the file line by line:
@@ -1924,7 +1923,7 @@ package body et_module_read is
 
 			
 			-- As a safety measure the top section must be reached finally:
-			if stack.depth > 1 then 
+			if pac_sections_stack.depth > 1 then 
 				log (WARNING, write_section_stack_not_empty);
 			end if;
 

@@ -757,16 +757,16 @@ package body et_drawing_frame_rw is
 
 		line : type_fields_of_line;
 
-		-- This is the section stack of the frame.
-		-- Here we track the sections. On entering a section, its name is
-		-- pushed onto the stack. When leaving a section the latest section name is popped.
-		max_section_depth : constant positive := 4; -- incl. section init
-
 		
-		package stack is new stack_lifo (
-			item	=> type_section,
+		-- This is the section stack of the frame:
+		max_section_depth : constant positive := 4; -- incl. section init
+		
+		package pac_sections_stack is new gen_pac_sections_stack (
+			item	=> type_section, -- CS use type_file_section ?
 			max 	=> max_section_depth);
 
+
+		
 		use ada.characters.handling;
 
 		
@@ -952,10 +952,10 @@ package body et_drawing_frame_rw is
 				use pac_static_texts;
 				
 			begin -- execute_section
-				case stack.current is
+				case pac_sections_stack.current is
 
 					when SEC_TITLE_BLOCK => 
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => assemble_title_block;
 
 							when others => invalid_section;
@@ -963,14 +963,14 @@ package body et_drawing_frame_rw is
 
 						
 					when SEC_LINES | SEC_TEXTS | SEC_PLACEHOLDERS | SEC_CAM_MARKERS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TITLE_BLOCK => null;
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_LINE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_LINES =>
 								-- append the title block line to the collection of lines
 								append (tb_lines, tb_line);
@@ -983,7 +983,7 @@ package body et_drawing_frame_rw is
 
 						
 					when SEC_TEXT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TEXTS =>
 								-- append the title block text to the collection of texts
 								append (tb_texts, tb_text);
@@ -996,7 +996,7 @@ package body et_drawing_frame_rw is
 
 						
 					when SEC_PROJECT_NAME =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_common.project_name := tb_placeholder;
 								reset_placeholder;
@@ -1004,7 +1004,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_MODULE_FILE_NAME =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_common.module_file_name := tb_placeholder;
 								reset_placeholder;
@@ -1012,7 +1012,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_ACTIVE_ASSEMBLY_VARIANT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_common.active_assembly_variant := tb_placeholder;
 								reset_placeholder;
@@ -1020,7 +1020,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_COMPANY =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.company := tb_placeholder;
 								reset_placeholder;
@@ -1028,7 +1028,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_CUSTOMER =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.customer := tb_placeholder;
 								reset_placeholder;
@@ -1036,7 +1036,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_PARTCODE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.partcode := tb_placeholder;
 								reset_placeholder;
@@ -1044,7 +1044,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_DRAWING_NUMBER =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.drawing_number := tb_placeholder;
 								reset_placeholder;
@@ -1052,7 +1052,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_REVISION =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.revision := tb_placeholder;
 								reset_placeholder;
@@ -1060,7 +1060,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_DRAWN_BY =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.drawn_by := tb_placeholder;
 								reset_placeholder;
@@ -1068,7 +1068,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_DRAWN_DATE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.drawn_date := tb_placeholder;
 								reset_placeholder;
@@ -1076,7 +1076,7 @@ package body et_drawing_frame_rw is
 						end case;
 						
 					when SEC_CHECKED_BY =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.checked_by := tb_placeholder;
 								reset_placeholder;
@@ -1084,7 +1084,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_CHECKED_DATE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.checked_date := tb_placeholder;
 								reset_placeholder;
@@ -1092,7 +1092,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_APPROVED_BY =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.approved_by := tb_placeholder;
 								reset_placeholder;
@@ -1100,7 +1100,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_APPROVED_DATE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.approved_date := tb_placeholder;
 								reset_placeholder;
@@ -1108,21 +1108,21 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_SHEET_NUMBER =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_sheet_number := tb_placeholder;
 							when others => invalid_section;
 						end case;
 						
 					when SEC_SHEET_DESCRIPTION =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_sheet_description := tb_placeholder;
 							when others => invalid_section;
 						end case;
 
 					when SEC_SHEET_CATEGORY =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_sheet_category := tb_placeholder;
 							when others => invalid_section;
@@ -1139,8 +1139,8 @@ package body et_drawing_frame_rw is
 			
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
 			-- Returns false if the current line is neither a section header or footer.
-			-- If it is a header, the section name is pushed onto the sections stack.
-			-- If it is a footer, the latest section name is popped from the stack.
+			-- If it is a header, the section name is pushed onto the sections pac_sections_stack.
+			-- If it is a footer, the latest section name is popped from the pac_sections_stack.
 			function set (
 				section_keyword	: in string;
 				section			: in type_section) -- SEC_PROJECT_NAME
@@ -1148,7 +1148,7 @@ package body et_drawing_frame_rw is
 			begin
 				if f (line, 1) = section_keyword then -- section name detected in field 1
 					if f (line, 2) = section_begin then -- section header detected in field 2
-						stack.push (section);
+						pac_sections_stack.push (section);
 						log (text => write_enter_section & to_string (section), level => log_threshold + 3);
 						return true;
 
@@ -1156,7 +1156,7 @@ package body et_drawing_frame_rw is
 
 						-- The section name in the footer must match the name
 						-- of the current section. Otherwise abort.
-						if section /= stack.current then
+						if section /= pac_sections_stack.current then
 							log_indentation_reset;
 							invalid_section;
 						end if;
@@ -1165,11 +1165,11 @@ package body et_drawing_frame_rw is
 						-- variables is processed.
 						execute_section;
 						
-						stack.pop;
-						if stack.empty then
+						pac_sections_stack.pop;
+						if pac_sections_stack.empty then
 							log (text => write_top_level_reached, level => log_threshold + 3);
 						else
-							log (text => write_return_to_section & to_string (stack.current), level => log_threshold + 3);
+							log (text => write_return_to_section & to_string (pac_sections_stack.current), level => log_threshold + 3);
 						end if;
 						return true;
 
@@ -1216,31 +1216,31 @@ package body et_drawing_frame_rw is
 
 				log (text => "frame line --> " & to_string (line), level => log_threshold + 3);
 		
-				case stack.current is
+				case pac_sections_stack.current is
 
 					when SEC_INIT =>
 						read_general_stuff;
 
 					when SEC_TITLE_BLOCK => 
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => read_title_block_position;
 							when others => invalid_section;
 						end case;
 
 					when SEC_LINES | SEC_TEXTS | SEC_PLACEHOLDERS | SEC_CAM_MARKERS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TITLE_BLOCK => null;
 							when others => invalid_section;
 						end case;
 
 					when SEC_LINE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_LINES => read_line_properties;
 							when others => invalid_section;
 						end case;
 						
 					when SEC_TEXT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TEXTS => read_text_properties;
 							when others => invalid_section;
 						end case;
@@ -1249,13 +1249,13 @@ package body et_drawing_frame_rw is
 						SEC_COMPANY | SEC_CUSTOMER | SEC_PARTCODE | SEC_DRAWING_NUMBER | SEC_REVISION |
 						SEC_DRAWN_BY | SEC_DRAWN_DATE | SEC_CHECKED_BY | SEC_CHECKED_DATE | 
 						SEC_APPROVED_BY | SEC_APPROVED_DATE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS => read_placeholder_properties;
 							when others => invalid_section;
 						end case;
 
 					when SEC_SHEET_NUMBER | SEC_SHEET_DESCRIPTION | SEC_SHEET_CATEGORY => 
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS => 
 								read_placeholder_properties;
 							when others => invalid_section;
@@ -1316,9 +1316,9 @@ package body et_drawing_frame_rw is
 
 			set_input (file_handle);
 			
-			-- Init section stack.
-			stack.init;
-			stack.push (SEC_INIT);
+			-- Init section pac_sections_stack.
+			pac_sections_stack.init;
+			pac_sections_stack.push (SEC_INIT);
 
 			-- read the file line by line
 			while not end_of_file loop
@@ -1335,7 +1335,7 @@ package body et_drawing_frame_rw is
 			end loop;
 
 			-- As a safety measure the top section must be reached finally.
-			if stack.depth > 1 then 
+			if pac_sections_stack.depth > 1 then 
 				log (WARNING, write_section_stack_not_empty);
 			end if;
 
@@ -1379,16 +1379,16 @@ package body et_drawing_frame_rw is
 
 		line : type_fields_of_line;
 
-		-- This is the section stack of the frame.
-		-- Here we track the sections. On entering a section, its name is
-		-- pushed onto the stack. When leaving a section the latest section name is popped.
-		max_section_depth : constant positive := 4; -- incl. section init
-
 		
-		package stack is new stack_lifo (
+		-- This is the section stack of the frame:
+		max_section_depth : constant positive := 4; -- incl. section init
+		
+		package pac_sections_stack is new gen_pac_sections_stack (
 			item	=> type_section,
 			max 	=> max_section_depth);
 
+
+		
 		use ada.characters.handling;
 
 		
@@ -1606,23 +1606,23 @@ package body et_drawing_frame_rw is
 				use pac_static_texts;
 				
 			begin -- execute_section
-				case stack.current is
+				case pac_sections_stack.current is
 
 					when SEC_TITLE_BLOCK => 
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => assemble_title_block;
 
 							when others => invalid_section;
 						end case;
 
 					when SEC_LINES | SEC_TEXTS | SEC_PLACEHOLDERS | SEC_CAM_MARKERS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TITLE_BLOCK => null;
 							when others => invalid_section;
 						end case;
 
 					when SEC_LINE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_LINES =>
 								-- append the title block line to the collection of lines
 								append (tb_lines, tb_line);
@@ -1634,7 +1634,7 @@ package body et_drawing_frame_rw is
 						end case;
 						
 					when SEC_TEXT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TEXTS =>
 								-- append the title block text to the collection of texts
 								append (tb_texts, tb_text);
@@ -1646,7 +1646,7 @@ package body et_drawing_frame_rw is
 						end case;
 						
 					when SEC_PROJECT_NAME =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_common.project_name := tb_placeholder;
 								reset_placeholder;
@@ -1654,7 +1654,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_MODULE_FILE_NAME =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_common.module_file_name := tb_placeholder;
 								reset_placeholder;
@@ -1662,7 +1662,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_ACTIVE_ASSEMBLY_VARIANT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_common.active_assembly_variant := tb_placeholder;
 								reset_placeholder;
@@ -1670,7 +1670,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_COMPANY =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.company := tb_placeholder;
 								reset_placeholder;
@@ -1678,7 +1678,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_CUSTOMER =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.customer := tb_placeholder;
 								reset_placeholder;
@@ -1686,7 +1686,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_PARTCODE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.partcode := tb_placeholder;
 								reset_placeholder;
@@ -1694,7 +1694,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_DRAWING_NUMBER =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.drawing_number := tb_placeholder;
 								reset_placeholder;
@@ -1702,7 +1702,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_REVISION =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.revision := tb_placeholder;
 								reset_placeholder;
@@ -1710,7 +1710,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_DRAWN_BY =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.drawn_by := tb_placeholder;
 								reset_placeholder;
@@ -1718,7 +1718,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_DRAWN_DATE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.drawn_date := tb_placeholder;
 								reset_placeholder;
@@ -1726,7 +1726,7 @@ package body et_drawing_frame_rw is
 						end case;
 						
 					when SEC_CHECKED_BY =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.checked_by := tb_placeholder;
 								reset_placeholder;
@@ -1734,7 +1734,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_CHECKED_DATE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.checked_date := tb_placeholder;
 								reset_placeholder;
@@ -1742,7 +1742,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_APPROVED_BY =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.approved_by := tb_placeholder;
 								reset_placeholder;
@@ -1750,7 +1750,7 @@ package body et_drawing_frame_rw is
 						end case;
 
 					when SEC_APPROVED_DATE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								tb_placeholders_basic.approved_date := tb_placeholder;
 								reset_placeholder;
@@ -1759,7 +1759,7 @@ package body et_drawing_frame_rw is
 
 
 					when SEC_FACE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS => tb_face := tb_placeholder;
 							when SEC_CAM_MARKERS =>
 
@@ -1774,7 +1774,7 @@ package body et_drawing_frame_rw is
 
 						
 					when SEC_SIGNAL_LAYER =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS => tb_signal_layer := tb_placeholder;
 							when SEC_CAM_MARKERS =>
 
@@ -1789,7 +1789,7 @@ package body et_drawing_frame_rw is
 
 
 					when SEC_SILK_SCREEN =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_CAM_MARKERS => 
 
 								-- If no content provided, use default content of cam marker:
@@ -1803,7 +1803,7 @@ package body et_drawing_frame_rw is
 
 
 					when SEC_STENCIL =>								
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_CAM_MARKERS => 
 
 								-- If no content provided, use default content of cam marker:
@@ -1817,7 +1817,7 @@ package body et_drawing_frame_rw is
 
 
 					when SEC_STOP_MASK =>								
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_CAM_MARKERS => 
 
 								-- If no content provided, use default content of cam marker:
@@ -1831,7 +1831,7 @@ package body et_drawing_frame_rw is
 
 						
 					when SEC_ASSY_DOC =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_CAM_MARKERS => 
 
 								-- If no content provided, use default content of cam marker:
@@ -1845,7 +1845,7 @@ package body et_drawing_frame_rw is
 
 
 					when SEC_KEEPOUT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_CAM_MARKERS =>
 
 								-- If no content provided, use default content of cam marker:
@@ -1859,7 +1859,7 @@ package body et_drawing_frame_rw is
 
 
 					when SEC_PLATED_MILLINGS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_CAM_MARKERS => 
 
 								-- If no content provided, use default content of cam marker:
@@ -1873,7 +1873,7 @@ package body et_drawing_frame_rw is
 
 
 					when SEC_PCB_OUTLINE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_CAM_MARKERS =>
 
 								-- If no content provided, use default content of cam marker:
@@ -1887,7 +1887,7 @@ package body et_drawing_frame_rw is
 
 						
 					when SEC_ROUTE_RESTRICT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_CAM_MARKERS =>
 
 								-- If no content provided, use default content of cam marker:
@@ -1901,7 +1901,7 @@ package body et_drawing_frame_rw is
 
 
 					when SEC_VIA_RESTRICT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_CAM_MARKERS =>
 
 								-- If no content provided, use default content of cam marker:
@@ -1925,8 +1925,8 @@ package body et_drawing_frame_rw is
 			
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
 			-- Returns false if the current line is neither a section header or footer.
-			-- If it is a header, the section name is pushed onto the sections stack.
-			-- If it is a footer, the latest section name is popped from the stack.
+			-- If it is a header, the section name is pushed onto the sections pac_sections_stack.
+			-- If it is a footer, the latest section name is popped from the pac_sections_stack.
 			function set (
 				section_keyword	: in string;
 				section			: in type_section) -- SEC_PROJECT_NAME
@@ -1934,7 +1934,7 @@ package body et_drawing_frame_rw is
 			begin
 				if f (line, 1) = section_keyword then -- section name detected in field 1
 					if f (line, 2) = section_begin then -- section header detected in field 2
-						stack.push (section);
+						pac_sections_stack.push (section);
 						log (text => write_enter_section & to_string (section), level => log_threshold + 3);
 						return true;
 
@@ -1942,7 +1942,7 @@ package body et_drawing_frame_rw is
 
 						-- The section name in the footer must match the name
 						-- of the current section. Otherwise abort.
-						if section /= stack.current then
+						if section /= pac_sections_stack.current then
 							log_indentation_reset;
 							invalid_section;
 						end if;
@@ -1951,11 +1951,11 @@ package body et_drawing_frame_rw is
 						-- variables is processed.
 						execute_section;
 						
-						stack.pop;
-						if stack.empty then
+						pac_sections_stack.pop;
+						if pac_sections_stack.empty then
 							log (text => write_top_level_reached, level => log_threshold + 3);
 						else
-							log (text => write_return_to_section & to_string (stack.current), level => log_threshold + 3);
+							log (text => write_return_to_section & to_string (pac_sections_stack.current), level => log_threshold + 3);
 						end if;
 						return true;
 
@@ -2009,31 +2009,31 @@ package body et_drawing_frame_rw is
 
 				log (text => "frame line --> " & to_string (line), level => log_threshold + 3);
 		
-				case stack.current is
+				case pac_sections_stack.current is
 
 					when SEC_INIT =>
 						read_general_stuff;
 
 					when SEC_TITLE_BLOCK => 
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => read_title_block_position;
 							when others => invalid_section;
 						end case;
 
 					when SEC_LINES | SEC_TEXTS | SEC_PLACEHOLDERS | SEC_CAM_MARKERS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TITLE_BLOCK => null;
 							when others => invalid_section;
 						end case;
 
 					when SEC_LINE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_LINES => read_line_properties;
 							when others => invalid_section;
 						end case;
 						
 					when SEC_TEXT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TEXTS => read_text_properties;
 							when others => invalid_section;
 						end case;
@@ -2042,21 +2042,21 @@ package body et_drawing_frame_rw is
 						SEC_COMPANY | SEC_CUSTOMER | SEC_PARTCODE | SEC_DRAWING_NUMBER | SEC_REVISION |
 						SEC_DRAWN_BY | SEC_DRAWN_DATE | SEC_CHECKED_BY | SEC_CHECKED_DATE | 
 						SEC_APPROVED_BY | SEC_APPROVED_DATE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS => read_placeholder_properties;
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_FACE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS => read_placeholder_properties;
 							when SEC_CAM_MARKERS => read_cam_marker_properties;
 							when others => invalid_section;
 						end case;
 
 					when SEC_SIGNAL_LAYER =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS => read_placeholder_properties;
 							when SEC_CAM_MARKERS => read_cam_marker_properties;
 							when others => invalid_section;
@@ -2065,7 +2065,7 @@ package body et_drawing_frame_rw is
 					when SEC_SILK_SCREEN | SEC_ASSY_DOC | SEC_KEEPOUT | SEC_PLATED_MILLINGS |
 						SEC_PCB_OUTLINE | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
 						SEC_STENCIL | SEC_STOP_MASK =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_CAM_MARKERS => read_cam_marker_properties;
 							when others => invalid_section;
 						end case;
@@ -2125,9 +2125,9 @@ package body et_drawing_frame_rw is
 
 			set_input (file_handle);
 			
-			-- Init section stack.
-			stack.init;
-			stack.push (SEC_INIT);
+			-- Init section pac_sections_stack.
+			pac_sections_stack.init;
+			pac_sections_stack.push (SEC_INIT);
 
 			-- read the file line by line
 			while not end_of_file loop
@@ -2144,7 +2144,7 @@ package body et_drawing_frame_rw is
 			end loop;
 
 			-- As a safety measure the top section must be reached finally.
-			if stack.depth > 1 then 
+			if pac_sections_stack.depth > 1 then 
 				log (WARNING, write_section_stack_not_empty);
 			end if;
 

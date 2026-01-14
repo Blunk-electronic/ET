@@ -80,12 +80,11 @@ package body et_symbol_read is
 
 		line : type_fields_of_line;
 
-		-- This is the section stack of the symbol model. 
-		-- Here we track the sections. On entering a section, its name is
-		-- pushed onto the stack. When leaving a section the latest section name is popped.
+		
+		-- This is the section stack of the symbol model:
 		max_section_depth : constant positive := 3; -- incl. section init
 
-		package stack is new stack_lifo (
+		package pac_sections_stack is new gen_pac_sections_stack (
 			item	=> type_file_section,
 			max 	=> max_section_depth);
 
@@ -259,17 +258,17 @@ package body et_symbol_read is
 			procedure execute_section is
 			-- Once a section concludes, the temporarily variables are read, evaluated
 			-- and finally assembled to actual objects:
-			begin -- execute_section
-				case stack.current is
+			begin
+				case pac_sections_stack.current is
 
 					when SEC_DRAW | SEC_TEXTS | SEC_PLACEHOLDERS | SEC_PORTS => 
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
 
 					when SEC_LINE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_DRAW => 
 
 								-- append symbol_line to unit_symbol
@@ -284,7 +283,7 @@ package body et_symbol_read is
 						end case;
 
 					when SEC_ARC =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_DRAW =>
 
 								-- append symbol_arc to unit_symbol
@@ -299,7 +298,7 @@ package body et_symbol_read is
 						end case;
 						
 					when SEC_CIRCLE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_DRAW =>
 
 								-- append symbol_circle to unit_symbol
@@ -314,7 +313,7 @@ package body et_symbol_read is
 						end case;
 						
 					when SEC_TEXT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TEXTS =>
 
 								-- append symbol text to symbol
@@ -333,7 +332,7 @@ package body et_symbol_read is
 						end case;
 						
 					when SEC_PLACEHOLDER =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 
 								-- Assign symbol text placeholder to symbol.
@@ -377,7 +376,7 @@ package body et_symbol_read is
 						end case;
 
 					when SEC_PORT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PORTS => insert_port;
 							when others => invalid_section;
 						end case;
@@ -393,15 +392,15 @@ package body et_symbol_read is
 			function set (
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
 			-- Returns false if the current line is neither a section header or footer.
-			-- If it is a header, the section name is pushed onto the sections stack.
-			-- If it is a footer, the latest section name is popped from the stack.
+			-- If it is a header, the section name is pushed onto the sections pac_sections_stack.
+			-- If it is a footer, the latest section name is popped from the pac_sections_stack.
 				section_keyword	: in string; -- [DRAW
 				section			: in type_file_section) -- SEC_DRAW
-				return boolean is 
-			begin -- set
+				return boolean 
+			is begin
 				if f (line, 1) = section_keyword then -- section name detected in field 1
 					if f (line, 2) = section_begin then -- section header detected in field 2
-						stack.push (section);
+						pac_sections_stack.push (section);
 						log (text => write_enter_section & to_string (section), level => log_threshold + 3);
 						return true;
 
@@ -409,7 +408,7 @@ package body et_symbol_read is
 
 						-- The section name in the footer must match the name
 						-- of the current section. Otherwise abort.
-						if section /= stack.current then
+						if section /= pac_sections_stack.current then
 							log_indentation_reset;
 							invalid_section;
 						end if;
@@ -418,11 +417,11 @@ package body et_symbol_read is
 						-- variables is processed.
 						execute_section;
 						
-						stack.pop;
-						if stack.empty then
+						pac_sections_stack.pop;
+						if pac_sections_stack.empty then
 							log (text => write_top_level_reached, level => log_threshold + 3);
 						else
-							log (text => write_return_to_section & to_string (stack.current), level => log_threshold + 3);
+							log (text => write_return_to_section & to_string (pac_sections_stack.current), level => log_threshold + 3);
 						end if;
 						return true;
 
@@ -454,7 +453,7 @@ package body et_symbol_read is
 
 				log (text => "symbol line --> " & to_string (line), level => log_threshold + 3);
 		
-				case stack.current is
+				case pac_sections_stack.current is
 
 					when SEC_INIT =>
 						declare
@@ -486,13 +485,13 @@ package body et_symbol_read is
 						end;
 
 					when SEC_DRAW | SEC_TEXTS | SEC_PLACEHOLDERS | SEC_PORTS => 
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
 
 					when SEC_LINE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_DRAW =>
 								declare
 									kw : string := f (line, 1);
@@ -523,7 +522,7 @@ package body et_symbol_read is
 						end case;
 
 					when SEC_ARC =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_DRAW =>
 								declare
 									kw : string := f (line, 1);
@@ -565,7 +564,7 @@ package body et_symbol_read is
 						end case;
 						
 					when SEC_CIRCLE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_DRAW =>
 								declare
 									kw : string := f (line, 1);
@@ -598,7 +597,7 @@ package body et_symbol_read is
 						end case;
 						
 					when SEC_TEXT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TEXTS =>
 								declare
 									kw : string := f (line, 1);
@@ -639,7 +638,7 @@ package body et_symbol_read is
 						end case;
 						
 					when SEC_PLACEHOLDER =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PLACEHOLDERS =>
 								declare
 									kw : string := f (line, 1);
@@ -676,7 +675,7 @@ package body et_symbol_read is
 						end case;
 
 					when SEC_PORT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PORTS =>
 								declare
 									kw : string := f (line, 1);
@@ -791,9 +790,9 @@ package body et_symbol_read is
 
 			set_input (file_handle);
 			
-			-- Init section stack.
-			stack.init;
-			stack.push (SEC_INIT);
+			-- Init section pac_sections_stack.
+			pac_sections_stack.init;
+			pac_sections_stack.push (SEC_INIT);
 
 			-- read the file line by line
 			while not end_of_file loop
@@ -810,7 +809,7 @@ package body et_symbol_read is
 			end loop;
 
 			-- As a safety measure the top section must be reached finally.
-			if stack.depth > 1 then 
+			if pac_sections_stack.depth > 1 then 
 				log (WARNING, write_section_stack_not_empty);
 			end if;
 

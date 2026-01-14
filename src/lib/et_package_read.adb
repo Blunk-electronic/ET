@@ -95,12 +95,10 @@ package body et_package_read is
 
 		line : type_fields_of_line;
 
-		-- This is the section stack of the package model. 
-		-- Here we track the sections. On entering a section, its name is
-		-- pushed onto the stack. When leaving a section the latest section name is popped.
+		-- This is the section stack of the package model:
 		max_section_depth : constant positive := 7; -- incl. section init
 
-		package stack is new stack_lifo (
+		package pac_sections_stack is new gen_pac_sections_stack (
 			item	=> type_file_section,
 			max 	=> max_section_depth);
 
@@ -109,9 +107,9 @@ package body et_package_read is
 
 
 		procedure build_text is begin
-			case stack.parent is
+			case pac_sections_stack.parent is
 				when SEC_TOP =>
-					case stack.parent (degree => 2) is
+					case pac_sections_stack.parent (degree => 2) is
 						when SEC_CONDUCTOR =>
 							insert_conductor_text (packge, TOP, log_threshold + 2);
 							
@@ -129,7 +127,7 @@ package body et_package_read is
 
 					
 				when SEC_BOTTOM =>
-					case stack.parent (degree => 2) is
+					case pac_sections_stack.parent (degree => 2) is
 						when SEC_CONDUCTOR =>
 							insert_conductor_text (packge, BOTTOM, log_threshold + 2);
 
@@ -159,21 +157,21 @@ package body et_package_read is
 			-- Once a section concludes, the temporarily variables are read, evaluated
 			-- and finally assembled to actual objects:
 			begin
-				case stack.current is
+				case pac_sections_stack.current is
 
 					when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOPMASK | SEC_STENCIL | 
 						SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 						SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT | SEC_PCB_CONTOURS_NON_PLATED | 
 						SEC_TERMINALS | SEC_PACKAGE_3D_CONTOURS =>
 
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
 					
 					
 					when SEC_TOP =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOPMASK | SEC_STENCIL | 
 								SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 								SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => null;
@@ -189,7 +187,7 @@ package body et_package_read is
 						
 						
 					when SEC_BOTTOM =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOPMASK | SEC_STENCIL | 
 								SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 								SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => null;
@@ -205,9 +203,9 @@ package body et_package_read is
 						
 						
 					when SEC_LINE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TOP => 
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 										insert_conductor_line (packge, TOP, log_threshold);
 
@@ -234,7 +232,7 @@ package body et_package_read is
 
 								
 							when SEC_BOTTOM => 
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 										insert_conductor_line (packge, BOTTOM, log_threshold);
 
@@ -269,9 +267,9 @@ package body et_package_read is
 
 						
 					when SEC_ARC =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TOP => 
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 										insert_conductor_arc (packge, TOP, log_threshold);
 
@@ -298,7 +296,7 @@ package body et_package_read is
 
 								
 							when SEC_BOTTOM => 
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 										insert_conductor_arc (packge, BOTTOM, log_threshold);
 
@@ -333,9 +331,9 @@ package body et_package_read is
 
 						
 					when SEC_CIRCLE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TOP => 
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 										insert_conductor_circle (packge, TOP, log_threshold);
 										
@@ -362,7 +360,7 @@ package body et_package_read is
 
 								
 							when SEC_BOTTOM =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 										insert_conductor_circle (packge, BOTTOM, log_threshold);
 
@@ -397,9 +395,9 @@ package body et_package_read is
 
 						
 					when SEC_ZONE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TOP => 
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>
 										insert_silk_zone (packge, TOP, log_threshold);
 										
@@ -426,7 +424,7 @@ package body et_package_read is
 								
 
 							when SEC_BOTTOM => 
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>
 										insert_silk_zone (packge, BOTTOM, log_threshold);
 										
@@ -456,9 +454,9 @@ package body et_package_read is
 						
 
 					when SEC_CUTOUT_ZONE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TOP => 
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_KEEPOUT =>
 										insert_keepout_zone_cutout (packge, TOP, log_threshold);
 
@@ -472,7 +470,7 @@ package body et_package_read is
 								end case;
 
 							when SEC_BOTTOM => 
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_KEEPOUT =>
 										insert_keepout_zone_cutout (packge, BOTTOM, log_threshold);
 
@@ -490,7 +488,7 @@ package body et_package_read is
 						
 						
 					when SEC_CONTOURS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_ZONE => 
 								null; -- CS
 								-- check_outline (contour, log_threshold + 1);
@@ -508,9 +506,9 @@ package body et_package_read is
 						
 					when SEC_PLACEHOLDER =>
 						-- CS procedure insert_placeholder
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TOP =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>
 										insert_silk_placeholder (packge, TOP, log_threshold + 2);
 
@@ -522,7 +520,7 @@ package body et_package_read is
 
 								
 							when SEC_BOTTOM =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_SILKSCREEN =>
 										insert_silk_placeholder (packge, BOTTOM, log_threshold + 2);
 
@@ -538,7 +536,7 @@ package body et_package_read is
 
 						
 					when SEC_TERMINAL =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TERMINALS => 
 								-- Now all elements of the terminal have been read
 								-- and can be assembled to the final terminal:
@@ -549,7 +547,7 @@ package body et_package_read is
 
 						
 					when SEC_PAD_CONTOURS_SMT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TERMINAL =>
 								assign_contour_conductor_smt;
 								
@@ -558,7 +556,7 @@ package body et_package_read is
 
 						
 					when SEC_STENCIL_CONTOURS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TERMINAL => 
 								assign_contour_stencil_smt;
 								
@@ -567,14 +565,14 @@ package body et_package_read is
 						
 						
 					when SEC_PAD_CONTOURS_THT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TERMINAL => null;
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_STOPMASK_CONTOURS_SMT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TERMINAL =>
 								assign_contour_stopmask_smt;
 								
@@ -583,14 +581,14 @@ package body et_package_read is
 
 						
 					when SEC_STOPMASK_CONTOURS_THT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TERMINAL => null;
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_MILLINGS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TERMINAL =>
 								assign_plated_millings;
 								
@@ -599,7 +597,7 @@ package body et_package_read is
 
 						
 					when SEC_HOLE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PCB_CONTOURS_NON_PLATED =>
 								insert_hole (packge, log_threshold);
 							
@@ -615,16 +613,16 @@ package body et_package_read is
 			
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
 			-- Returns false if the current line is neither a section header or footer.
-			-- If it is a header, the section name is pushed onto the sections stack.
-			-- If it is a footer, the latest section name is popped from the stack.
+			-- If it is a header, the section name is pushed onto the sections pac_sections_stack.
+			-- If it is a footer, the latest section name is popped from the pac_sections_stack.
 			function set (
 				section_keyword	: in string; -- [SILKSCREEN
 				section			: in type_file_section) -- SEC_ZONE
-				return boolean is 
-			begin -- set
+				return boolean 
+			is begin
 				if f (line, 1) = section_keyword then -- section name detected in field 1
 					if f (line, 2) = section_begin then -- section header detected in field 2
-						stack.push (section);
+						pac_sections_stack.push (section);
 						log (text => write_enter_section & to_string (section), level => log_threshold + 3);
 						return true;
 
@@ -632,7 +630,7 @@ package body et_package_read is
 
 						-- The section name in the footer must match the name
 						-- of the current section. Otherwise abort.
-						if section /= stack.current then
+						if section /= pac_sections_stack.current then
 							log_indentation_reset;
 							invalid_section;
 						end if;
@@ -641,11 +639,11 @@ package body et_package_read is
 						-- variables is processed.
 						execute_section;
 						
-						stack.pop;
-						if stack.empty then
+						pac_sections_stack.pop;
+						if pac_sections_stack.empty then
 							log (text => write_top_level_reached, level => log_threshold + 3);
 						else
-							log (text => write_return_to_section & to_string (stack.current), level => log_threshold + 3);
+							log (text => write_return_to_section & to_string (pac_sections_stack.current), level => log_threshold + 3);
 						end if;
 						return true;
 
@@ -695,7 +693,7 @@ package body et_package_read is
 
 				log (text => "package line --> " & to_string (line), level => log_threshold + 3);
 		
-				case stack.current is
+				case pac_sections_stack.current is
 
 					when SEC_INIT =>
 						read_meta (line, log_threshold);
@@ -706,21 +704,21 @@ package body et_package_read is
 						SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT | SEC_PCB_CONTOURS_NON_PLATED | 
 						SEC_TERMINALS | SEC_PACKAGE_3D_CONTOURS =>
 
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
 
 						
 					when SEC_STOPMASK_CONTOURS_THT | SEC_STOPMASK_CONTOURS_SMT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TERMINAL => null;
 							when others => invalid_section;
 						end case;
 						
 						
 					when SEC_TOP | SEC_BOTTOM =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOPMASK | SEC_STENCIL | 
 								SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 								SEC_PAD_CONTOURS_THT | 
@@ -732,9 +730,9 @@ package body et_package_read is
 						
 						
 					when SEC_LINE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										read_doc_line (line);
 										
@@ -769,9 +767,9 @@ package body et_package_read is
 				
 				
 					when SEC_ARC =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										read_doc_arc (line);
 
@@ -805,9 +803,9 @@ package body et_package_read is
 
 						
 					when SEC_CIRCLE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										read_doc_circle (line);
 								
@@ -842,9 +840,9 @@ package body et_package_read is
 						
 
 					when SEC_CUTOUT_ZONE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_KEEPOUT |  SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 										null;
 										-- Such zones do not have any parameters.
@@ -858,9 +856,9 @@ package body et_package_read is
 
 						
 					when SEC_ZONE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOPMASK |
 										SEC_VIA_RESTRICT | SEC_KEEPOUT | SEC_ROUTE_RESTRICT =>
@@ -879,7 +877,7 @@ package body et_package_read is
 						
 						
 					when SEC_CONTOURS =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_ZONE => null;
 							when SEC_CUTOUT_ZONE => null;
 							when others => invalid_section;
@@ -887,9 +885,9 @@ package body et_package_read is
 
 						
 					when SEC_TEXT =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TOP | SEC_BOTTOM =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_CONDUCTOR |
 										SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STOPMASK =>
@@ -905,9 +903,9 @@ package body et_package_read is
 
 						
 					when SEC_PLACEHOLDER =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TOP | SEC_BOTTOM =>
-								case stack.parent (degree => 2) is
+								case pac_sections_stack.parent (degree => 2) is
 									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION =>
 
 										read_placeholder (line);
@@ -920,7 +918,7 @@ package body et_package_read is
 
 						
 					when SEC_TERMINAL =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TERMINALS => 
 								read_terminal (line);
 								
@@ -930,7 +928,7 @@ package body et_package_read is
 
 					when SEC_PAD_CONTOURS_SMT | SEC_STENCIL_CONTOURS 
 						| SEC_PAD_CONTOURS_THT | SEC_MILLINGS =>								
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_TERMINAL => null;
 								
 							when others => invalid_section;
@@ -938,7 +936,7 @@ package body et_package_read is
 
 						
 					when SEC_HOLE =>
-						case stack.parent is
+						case pac_sections_stack.parent is
 							when SEC_PCB_CONTOURS_NON_PLATED => null;
 							when others => invalid_section;
 						end case;
@@ -985,9 +983,9 @@ package body et_package_read is
 
 			set_input (file_handle);
 			
-			-- Init section stack.
-			stack.init;
-			stack.push (SEC_INIT);
+			-- Init section pac_sections_stack.
+			pac_sections_stack.init;
+			pac_sections_stack.push (SEC_INIT);
 
 			-- read the file line by line
 			while not end_of_file loop
@@ -1004,7 +1002,7 @@ package body et_package_read is
 			end loop;
 
 			-- As a safety measure the top section must be reached finally.
-			if stack.depth > 1 then 
+			if pac_sections_stack.depth > 1 then 
 				log (WARNING, write_section_stack_not_empty);
 			end if;
 
