@@ -6,11 +6,11 @@
 Board Layout Editor
 *******************
 
-+++++++++++++++++++
-Board Outer Contour
-+++++++++++++++++++
++++++++++++++++++++++++++++
+Board Outline (Outer Edges)
++++++++++++++++++++++++++++
 
-#. Drawing the Outer Board Contour
+#. Drawing the Board Outline:
 
 	
 	Draw the outline of a EURO card with dimensions 160x100 mm:
@@ -38,9 +38,11 @@ Board Outer Contour
 	|VNS| del o
 
 
-++++++++++++++++++
-Holes in the Board
-++++++++++++++++++
+
+
+++++++++++++++++++++++++++++++++
+Holes in the Board (Inner Edges)
+++++++++++++++++++++++++++++++++
 
 #. Drawing Holes
 

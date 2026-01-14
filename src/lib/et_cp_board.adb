@@ -139,7 +139,7 @@ with et_exceptions;					use et_exceptions;
 
 with et_cp_board_canvas;			use et_cp_board_canvas;
 with et_cp_board_display;			use et_cp_board_display;
-
+with et_cp_board_outline;			use et_cp_board_outline;
 
 -- to do:
 
@@ -352,50 +352,6 @@ package body et_cp_board is
 
 		
 				
-
-
-
-
-		
-		procedure draw_board_outline is
-			use et_board_ops.outline;
-			use et_board_outline;
-			
-			-- Extract from the given command the 
-			-- arguments (everything after "outline"):
-			-- Example command: 
-			-- "board demo draw outline line 0 0 line 50 0 line 50 50 line 0 50"
-			arguments : constant type_fields_of_line := 
-				remove_field (get_fields (cmd), 1, 4);
-
-			-- Build a basic contour from the arguments:
-			c : constant type_contour := type_contour (to_contour (arguments));
-		begin
-			-- Convert the contour to a pcb outer edge type
-			-- and assign it to the module:
-			set_outline (module_cursor, (c with null record), log_threshold + 1);
-		end draw_board_outline;
-
-
-		
-		
-		procedure draw_hole is
-			use et_board_ops.outline;
-			
-			-- Extract from the given command the 
-			-- arguments (everything after "hole"):
-			-- example command: board demo draw hole line 2 9 line 2 1 line 8 9
-			arguments : constant type_fields_of_line := 
-				remove_field (get_fields (cmd), 1, 4);
-
-			-- Build a basic contour from the arguments:
-			c : constant type_contour := type_contour (to_contour (arguments));
-		begin
-			-- Convert the contour to an inner pcb edge type and add it to
-			-- the already existing holes:
-			set_hole (module_cursor, (c with null record), log_threshold + 1);
-		end draw_hole;
-
 
 
 
@@ -3763,10 +3719,10 @@ package body et_cp_board is
 				when VERB_DRAW =>
 					case noun is
 						when NOUN_HOLE =>
-							draw_hole;
+							draw_board_hole (cmd, log_threshold + 1);
 							
 						when NOUN_OUTLINE =>
-							draw_board_outline;
+							draw_board_outline (cmd, log_threshold + 1);
 
 						when NOUN_SILKSCREEN =>
 							draw_silkscreen;
