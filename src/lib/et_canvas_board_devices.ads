@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -115,7 +115,7 @@ package et_canvas_board_devices is
 		device_pre	: type_device_name := (others => <>);
 
 		-- The rotation of the device:
-		rotation	: type_rotation := 0.0;
+		rotation	: type_rotation_model := 0.0;
 		
 		-- Indicates that the information above is valid
 		-- and a device has been selected by the operator:

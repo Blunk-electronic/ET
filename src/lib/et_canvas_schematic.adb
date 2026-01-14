@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -57,7 +57,7 @@ with et_domains;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_directions;					use et_directions;
 with et_axes;						use et_axes;
-with et_command_processor;
+with et_cp_schematic;
 with et_modes;						--use et_modes;
 with et_modes.board;
 with et_modes.schematic;	
@@ -1031,7 +1031,7 @@ package body et_canvas_schematic is
 	is
 		use ada.directories;
 		use et_project_name;
-		use et_command_processor;
+		use et_cp_schematic;
 		use et_modes;
 		use et_project;
 		use et_domains;
@@ -1124,7 +1124,7 @@ package body et_canvas_schematic is
 	procedure execute_command (self : access gtk_entry_record'class) is 
 		use ada.directories;	
 		use et_project_name;
-		use et_command_processor;
+		use et_cp_schematic;
 		use et_modes;
 		use et_project;
 		use et_domains;

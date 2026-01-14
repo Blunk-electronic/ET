@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -50,7 +50,7 @@ with et_string_processing;			use et_string_processing;
 with et_exceptions;					use et_exceptions;
 
 with et_cmd_sts;					use et_cmd_sts;
-with et_command_processor;			use et_command_processor;
+with et_cp;							use et_cp;
 
 
 package body et_script_processor is

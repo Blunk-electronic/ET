@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,32 +37,27 @@
 --
 
 with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.characters.handling;		use ada.characters.handling;
-with ada.strings; 					use ada.strings;
-with ada.strings.fixed; 			use ada.strings.fixed;
+-- with ada.exceptions;
 
-with ada.exceptions;
-with ada.directories;
-with gnat.directory_operations;
-
-with et_exceptions;					use et_exceptions;
-
-with et_runmode;					use et_runmode;
 with et_domains;
-with et_project;
 
 with et_module_names;				use et_module_names;
-with et_keywords;					use et_keywords;
-with et_directions;					use et_directions;
+with et_generic_modules;			use et_generic_modules;
+with et_modes.project;				use et_modes.project;
 
 with et_script_processor;
 
+with et_cp_schematic;				use et_cp_schematic;
+with et_cp_board;					use et_cp_board;
+with et_cp_project;					use et_cp_project;
+
+with et_module_read;				use et_module_read;
+with et_module_write;				use et_module_write;
+
+with et_string_processing;		use et_string_processing;
 
 
-
-
-package body et_command_processor is
+package body et_cp is
 
 -- CS move this stuff to a separate package:
 
@@ -98,136 +93,6 @@ package body et_command_processor is
 
 
 	
-	procedure parse_execute_script (
-		cmd				: in out type_single_cmd;
-		log_threshold	: in type_log_level)
-	is 
-		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);
-
-	
-		-- This procedure is to be called when the command is complete.
-		-- It lauches the given script and sets the exit code of
-		-- the command according to the outcome of the script execution:
-		procedure command_complete is
-			use et_script_processor;
-			exit_code : type_exit_code_script;
-		begin
-			exit_code := execute_nested_script (
-				file			=> get_field (cmd, 5),
-				log_threshold	=> log_threshold + 1);
-
-			case exit_code is
-				when SUCCESSFUL =>
-					set_exit_code (cmd, 0);
-
-				when others =>
-					set_exit_code (cmd, 3);
-			end case;
-		end command_complete;
-
-		
-	begin
-		case get_origin (cmd) is
-			when ORIGIN_CONSOLE =>
-				
-				case cmd_field_count is
-					when 4 => 
-						-- Command is incomplete like "execute script"
-						command_incomplete (cmd);
-						
-					when 5 =>
-						-- Command is complete like "execute script demo.scr"
-						command_complete;
-								
-					when 6 .. type_field_count'last =>
-						command_too_long (cmd, cmd_field_count - 1);
-
-
-					when others => null;
-						-- CS should never happen
-						raise constraint_error;
-						
-				end case;
-
-				
-			when ORIGIN_SCRIPT =>
-				case cmd_field_count is
-					when 5 => 
-						-- Command is complete like "execute script demo.scr"
-						command_complete;
-						
-					when 6 .. type_field_count'last =>
-						command_too_long (cmd, cmd_field_count - 1);
-
-					when others =>
-						command_incomplete (cmd);
-						
-				end case;
-		end case;
-	end parse_execute_script;
-
-	
-
-
-	
-	procedure evaluate_command_exit_code (
-		cmd				: in type_single_cmd;
-		log_threshold	: in type_log_level)
-	is 
-		code : constant type_exit_code_command := get_exit_code (cmd);
-	begin
-		case code is
-			when 0 => null; -- no errors
-
-			when 1 => -- command incomplete
-				log (ERROR, "Command incomplete. Exit code" & to_string (code), 
-					level => log_threshold);
-
-			when 2 => -- command too long
-				log (ERROR, "Command too long. Exit code" & to_string (code), 
-					level => log_threshold);
-
-			when others =>
-				log (ERROR, "Other error. Exit code" & to_string (code), 
-					level => log_threshold);
-		end case;
-	end evaluate_command_exit_code;
-	
-											
-
-	
-	
-	
-	procedure execute_schematic_command (
-		module_cursor	: in pac_generic_modules.cursor;
-		cmd				: in out type_single_cmd;
-		log_threshold	: in type_log_level)
-	is separate;
-
-
-
-	
-	
-	procedure execute_board_command (
-		module_cursor	: in pac_generic_modules.cursor;
-		cmd				: in out type_single_cmd;
-		log_threshold	: in type_log_level)
-	is separate;
-
-
-
-
-	procedure execute_project_command (
-		cmd				: in out type_single_cmd;
-		verb			: in type_verb_project;
-		noun 			: in type_noun_project;
-		log_threshold	: in type_log_level)
-	is separate;
-
-	
-
-	
 	
 	procedure execute_script_command (
 		script_name		: in pac_script_name.bounded_string;
@@ -247,7 +112,7 @@ package body et_command_processor is
 
 		
 		use et_domains;
-		use et_project;
+
 		
 		domain	: type_domain; -- DOM_SCHEMATIC
 		module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -373,7 +238,7 @@ package body et_command_processor is
 
 
 	
-end et_command_processor;
+end et_cp;
 	
 -- Soli Deo Gloria
 

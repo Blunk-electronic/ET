@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                          COMMAND PROCESSOR                               --
+--                       COMMAND PROCESSOR / BOARD                          --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -37,32 +37,58 @@
 --
 --   ToDo: 
 
+with ada.exceptions;			use ada.exceptions;
 
+with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
+
+with et_module_ops;				use et_module_ops;
+with et_module_read;			use et_module_read;
+with et_module_write;			use et_module_write;
+with et_generic_modules;		use et_generic_modules;
+with et_modes;					use et_modes;
+
 with et_cmd_sts;				use et_cmd_sts;
 with et_script_names;			use et_script_names;
+with et_modes.project;			use et_modes.project;
 
 
-package et_cp is
+
+package et_cp_board is
+
+
+
+-- CS move this stuff to a separate package
+	device_missing	: constant string := "Device name missing !";
+	module_missing	: constant string := "Module name missing !";
+	net_missing		: constant string := "Net name missing !";
+
+
+
+
+
+
+
+	-- Evaluates the exit code of the given 
+	-- command and writes helpful messages in the log file:
+	procedure evaluate_command_exit_code (
+		cmd				: in type_single_cmd;
+		log_threshold	: in type_log_level);
+
 
 	
-	-- Executes a command like 
-	-- "schematic motor_driver draw net motor_on 1 150 100 150 130".
-	-- Dispatches further to the execution of either schematic, 
-	-- board or project commands.
-	-- When called, the current working directory must be the
-	-- project like my_projects/blood_sample_analyzer.
-	procedure execute_script_command (
-		-- The script file that contains the command. for debug messages only:
-		script_name		: in pac_script_name.bounded_string; 
-		-- The text fields like "schematic motor_driver draw net motor_on 1 150 100 150 130":
+	
+	-- Executes a board command.
+	-- Is called by procedure execute_script_command whenever a
+	-- board related command is to be executed:
+	procedure execute_board_command (
+		module_cursor	: in pac_generic_modules.cursor;
 		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
-
 	
-end et_cp;
+end et_cp_board;
 
 -- Soli Deo Gloria
 

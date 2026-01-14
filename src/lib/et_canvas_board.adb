@@ -51,7 +51,7 @@ with ada.calendar.formatting;		use ada.calendar.formatting;
 with et_system_info;
 with et_domains;
 with et_directions;					use et_directions;
-with et_command_processor;
+with et_cp_board;
 with et_modes;
 with et_modes.board;				
 with et_modes.schematic;
@@ -1181,7 +1181,7 @@ package body et_canvas_board is
 	is
 		use ada.directories;
 		use et_project_name;
-		use et_command_processor;
+		use et_cp_board;
 		use et_modes;
 		use et_domains;
 		use et_project;
@@ -1274,7 +1274,7 @@ package body et_canvas_board is
 		use ada.directories;
 		use et_project_name;
 		use et_string_processing;
-		use et_command_processor;
+		use et_cp_board;
 		use et_modes;
 		use et_domains;
 		use et_project;
