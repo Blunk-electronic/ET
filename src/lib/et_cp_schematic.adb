@@ -2912,7 +2912,7 @@ package body et_cp_schematic is
 							set_net_class;
 												
 						when NOUN_GRID =>
-							set_grid (cmd, log_threshold + 1);
+							set_grid (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_CURSOR =>
 							set_cursor (cmd, log_threshold + 1);

@@ -3718,10 +3718,10 @@ package body et_cp_board is
 				when VERB_DRAW =>
 					case noun is
 						when NOUN_HOLE =>
-							draw_board_hole (cmd, log_threshold + 1);
+							draw_board_hole (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_OUTLINE =>
-							draw_board_outline (cmd, log_threshold + 1);
+							draw_board_outline (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_SILKSCREEN =>
 							draw_silkscreen;
@@ -3907,7 +3907,7 @@ package body et_cp_board is
 				when VERB_SET =>
 					case noun is
 						when NOUN_GRID =>
-							set_grid (cmd, log_threshold + 1);
+							set_grid (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_CURSOR =>
 							set_cursor (cmd, log_threshold + 1);

@@ -127,6 +127,7 @@ package body et_cp_board_canvas is
 	
 
 	procedure set_grid (
+		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
@@ -143,7 +144,7 @@ package body et_cp_board_canvas is
 		
 		-- Assign the grid in the database:
 		set_grid (
-			module_name 	=> pac_generic_modules.key (active_module),
+			module_name 	=> pac_generic_modules.key (module),
 			grid			=> pac_canvas.grid,
 			log_threshold	=> log_threshold + 1);
 

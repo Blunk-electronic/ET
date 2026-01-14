@@ -37,6 +37,7 @@
 --
 --   ToDo: 
 
+with et_generic_modules;		use et_generic_modules;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_cmd_sts;				use et_cmd_sts;
@@ -66,6 +67,7 @@ package et_cp_schematic_canvas is
 	-- grid spacing.
 	-- Example: "schematic demo set grid spacing 20 20"
 	procedure set_grid (
+		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 

@@ -68,6 +68,7 @@ package body et_cp_board_outline is
 	
 	
 	procedure draw_board_outline (
+		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
@@ -90,7 +91,7 @@ package body et_cp_board_outline is
 		-- Convert the contour to a pcb outer edge type
 		-- and assign it to the module:
 		set_outline (
-			active_module,
+			module,
 			(c with null record),
 			log_threshold + 1);
 		
@@ -104,6 +105,7 @@ package body et_cp_board_outline is
 
 
 	procedure draw_board_hole (
+		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
@@ -123,7 +125,7 @@ package body et_cp_board_outline is
 		
 		-- Convert the contour to an inner pcb edge type and add it to
 		-- the already existing holes:
-		set_hole (active_module, (c with null record), log_threshold + 1);
+		set_hole (module, (c with null record), log_threshold + 1);
 	end draw_board_hole;
 
 
