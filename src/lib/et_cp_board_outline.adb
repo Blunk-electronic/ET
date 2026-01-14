@@ -62,7 +62,7 @@ with et_keywords;
 
 package body et_cp_board_outline is
 
-
+	use pac_geometry_2;
 	use pac_contours;
 
 	
@@ -129,7 +129,79 @@ package body et_cp_board_outline is
 	end draw_board_hole;
 
 
+
+
+
+	
+	procedure delete_outline_segment (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+		catch_zone : type_catch_zone;
+	begin
+		-- CS log message
 		
+		case cmd_field_count is
+			when 7 =>
+				-- delete a segment of the outer board contour:
+
+				catch_zone := set_catch_zone (
+					center	=> to_vector_model (get_field (cmd, 5), get_field (cmd, 6)),
+					radius	=> to_zone_radius (get_field (cmd, 7)));
+					
+				delete_outer_segment (
+					module_cursor 	=> module,
+					catch_zone		=> catch_zone,
+					log_threshold	=> log_threshold + 1);
+
+			when 8 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+	end delete_outline_segment;
+
+	
+
+
+	
+
+	procedure delete_hole_segment (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is 
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+		
+		catch_zone : type_catch_zone;
+	begin
+		-- CS log message
+		
+		case cmd_field_count is
+			when 7 =>
+				-- delete a segment of a hole
+
+				catch_zone := set_catch_zone (
+					center	=> to_vector_model (get_field (cmd, 5), get_field (cmd, 6)),
+					radius	=> to_zone_radius (get_field (cmd, 7)));
+
+				delete_hole_segment (
+					module_cursor 	=> module,
+					catch_zone		=> catch_zone,					
+					log_threshold	=> log_threshold + 1);
+
+			when 8 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+	end delete_hole_segment;
+
 	
 end et_cp_board_outline;
 	

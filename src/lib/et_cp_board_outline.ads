@@ -63,8 +63,21 @@ package et_cp_board_outline is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+
+	procedure delete_outline_segment (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+
+	procedure delete_hole_segment (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+		
 end et_cp_board_outline;
 
 -- Soli Deo Gloria

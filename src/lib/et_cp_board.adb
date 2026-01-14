@@ -103,7 +103,6 @@ with et_board_ops.stencil;
 with et_board_ops.keepout;
 with et_board_ops.route_restrict;
 with et_board_ops.via_restrict;
-with et_board_ops.outline;
 with et_board_ops.ratsnest;
 with et_board_ops.text;
 with et_board_ops.grid;
@@ -398,58 +397,6 @@ package body et_cp_board is
 		end draw_keepout;
 
 
-		
-		
-		
-		procedure delete_outline_segment is 
-			use et_board_ops.outline;
-			catch_zone : type_catch_zone;
-		begin
-			case cmd_field_count is
-				when 7 =>
-					-- delete a segment of the outer board contour:
-
-					catch_zone := set_catch_zone (
-						center	=> to_vector_model (get_field (5), get_field (6)),
-						radius	=> to_zone_radius (get_field (7)));
-						
-					delete_outer_segment (
-						module_cursor 	=> module_cursor,
-						catch_zone		=> catch_zone,
-						log_threshold	=> log_threshold + 1);
-
-				when 8 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end delete_outline_segment;
-
-
-
-		
-		
-		procedure delete_hole_segment is 
-			use et_board_ops.outline;
-			catch_zone : type_catch_zone;
-		begin
-			case cmd_field_count is
-				when 7 =>
-					-- delete a segment of a hole
-
-					catch_zone := set_catch_zone (
-						center	=> to_vector_model (get_field (5), get_field (6)),
-						radius	=> to_zone_radius (get_field (7)));
-
-					delete_hole_segment (
-						module_cursor 	=> module_cursor,
-						catch_zone		=> catch_zone,					
-						log_threshold	=> log_threshold + 1);
-
-				when 8 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end delete_hole_segment;
 
 		
 
@@ -3650,10 +3597,10 @@ package body et_cp_board is
 							delete_signal_layer;						
 
 						when NOUN_HOLE =>
-							delete_hole_segment;
+							delete_hole_segment (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_OUTLINE =>
-							delete_outline_segment;
+							delete_outline_segment (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_SILKSCREEN =>
 							delete_silkscreen_object;
