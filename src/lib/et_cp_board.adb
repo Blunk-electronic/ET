@@ -141,6 +141,7 @@ with et_canvas_board_preliminary_object;
 with et_exceptions;					use et_exceptions;
 
 with et_cp_board_canvas;			use et_cp_board_canvas;
+with et_cp_board_display;			use et_cp_board_display;
 
 
 -- to do:
@@ -355,220 +356,11 @@ package body et_cp_board is
 
 		
 		
-
-	
-
-		-- This procedure parses a command to display
-		-- the board outline.
-		-- Example command: board led_driver display outline [on/off]
-		procedure display_outline is
-			
-			-- Enables/disables the outline layer. If status is empty,
-			-- the layer will be enabled.
-			procedure display ( -- GUI related
-				status	: in string := "") 
-			is 
-				ls : type_layer_status;
-			begin
-				-- Convert the given status to type_layer_status.
-				-- If no status given, assume status ON:
-				if status = "" then
-					ls := ON;
-				else
-					ls := to_layer_status (status);
-				end if;
-
-				log (text => "display outline layer" & space & to_string (ls),
-						level => log_threshold + 1);
-
-				layers.outline := ls;
-				
-				-- CS exception handler if status is invalid
-			end display;
-
-			
-		begin
-			case cmd_field_count is
-				when 4 => display; -- if status is omitted
-				when 5 => display (get_field (5));
-				when 6 .. type_field_count'last => too_long;
-				when others => command_incomplete;
-			end case;
-		end display_outline;
-
-		
-		
-
-
-		-- This procedure parses a command to display
-		-- the ratsnest (unrouted, airwires).
-		-- Example command: board led_driver display ratsnest [on/off]
-		procedure display_ratsnest is
-
-			-- Enables/disables the ratsnest layer. If status is empty,
-			-- the layer will be enabled.
-			procedure display ( -- GUI related
-				status	: in string := "") 
-			is 
-				ls : type_layer_status;
-			begin
-				-- Convert the given status to type_layer_status.
-				-- If no status given, assume status ON:
-				if status = "" then
-					ls := ON;
-				else
-					ls := to_layer_status (status);
-				end if;
-
-				log (text => "display ratsnest layer" & space & to_string (ls),
-						level => log_threshold + 1);
-
-				layers.ratsnest := ls;
-				
-				-- CS exception handler if status is invalid
-			end display;
-			
-			
-		begin
-			case cmd_field_count is
-				when 4 => display; -- if status is omitted
-				when 5 => display (get_field (5));
-				when 6 .. type_field_count'last => too_long;
-				when others => command_incomplete;
-			end case;
-		end display_ratsnest;
-
-
-
-		
-		
-
-		-- This procedure parses a command to display
-		-- a non-conductor layer (silkscreen, stopmask, assembly doc, ...).
-		-- Example command: board led_driver display silkscreen top [on/off]
-		procedure display_non_conductor_layer is
-
-			-- Enables/disables a certain non-conductor layer. If status is empty,
-			-- the layer will be enabled.
-			procedure display ( -- GUI related
-				layer	: in type_noun;
-				face	: in string; -- top/bottom
-				status	: in string := "") 
-			is
-				ls : type_layer_status;
-				fc : type_face;
-			begin
-				-- Convert the given status to type_layer_status.
-				-- If no status given, assume status ON:
-				if status = "" then
-					ls := ON;
-				else
-					ls := to_layer_status (status);
-				end if;
-
-				-- Convert the given face to type_face:
-				fc := to_face (face);
-				
-				log (text => "display " & to_lower (to_string (layer)) 
-						& space & to_string (ls),
-						level => log_threshold + 1);
-
-				-- CS: use commands like enable_silkscreen (top) ? (see et_display.board)
-
-				case fc is
-					when TOP =>
-						case layer is
-							when NOUN_SILKSCREEN 	=> layers.silkscreen.top		:= ls;
-							when NOUN_ASSY			=> layers.assy_doc.top			:= ls;
-							when NOUN_KEEPOUT		=> layers.keepout.top			:= ls;
-							when NOUN_STENCIL		=> layers.stencil.top			:= ls;
-							when NOUN_STOPMASK		=> layers.stop_mask.top			:= ls;
-							when NOUN_ORIGINS		=> layers.device_origins.top	:= ls;
-							
-							when others => 
-								log (importance => ERROR, text => "invalid layer !", console => true);
-						end case;
-
-					when BOTTOM =>
-						case layer is
-							when NOUN_SILKSCREEN 	=> layers.silkscreen.bottom		:= ls;
-							when NOUN_ASSY			=> layers.assy_doc.bottom		:= ls;
-							when NOUN_KEEPOUT		=> layers.keepout.bottom		:= ls;
-							when NOUN_STENCIL		=> layers.stencil.bottom		:= ls;
-							when NOUN_STOPMASK		=> layers.stop_mask.bottom		:= ls;
-							when NOUN_ORIGINS		=> layers.device_origins.bottom	:= ls;
-							
-							when others => 
-								log (importance => ERROR, text => "invalid layer !", console => true);
-						end case;
-				end case;
-				
-				-- CS exception handler if status is invalid
-			end display;
-
-			
-		begin
-			case cmd_field_count is
-				when 5 => display (noun, get_field (5)); -- if status is omitted
-				when 6 => display (noun, get_field (5), get_field (6));
-				when 7 .. type_field_count'last => too_long;
-				when others => command_incomplete;
-			end case;
-		end display_non_conductor_layer;
-		
-
-		
-
-
-		-- This procedure parses a command to display
-		-- a conductor layer.
-		-- Example command: board led_driver display conductors 2 [on/off]
-		procedure display_conductor_layer is
-		
-			-- Enables/disables a certain conductor layer. 
-			-- If status is empty, the layer will be enabled.
-			procedure display ( -- GUI related
-				layer	: in string;
-				status	: in string := "")
-			is 
-				ls : type_layer_status;
-				ly : type_signal_layer;
-			begin			
-				-- Convert the given status to type_layer_status.
-				-- If no status given, assume status ON:
-				if status = "" then
-					ls := ON;
-				else
-					ls := to_layer_status (status);
-				end if;
-
-				-- Convert the given layer to type_signal_layer:
-				ly := to_signal_layer (layer);
-				
-				log (text => "display conductor layer " & to_string (ly) & space & to_string (ls),
-						level => log_threshold + 1);
-
-				layers.conductors (ly) := ls;
-				
-				-- CS exception handler if status is invalid
-			end display;
-
-			
-		begin
-			case cmd_field_count is
-				when 5 => display (get_field (5)); -- if status is omitted
-				when 6 => display (get_field (5), get_field (6));
-				when 7 .. type_field_count'last => too_long;
-				when others => command_incomplete;
-			end case;
-		end display_conductor_layer;
-
-		
 		
 		
 		-- Enables/disables a the via layer. 
 		-- If status is empty, the layer will be enabled.
-		procedure display_vias ( -- GUI related
+		procedure display_vias (
 			--layer	: in string;
 		status	: in string := "") 
 		is 
@@ -4030,17 +3822,16 @@ package body et_cp_board is
 					case noun is
 						when NOUN_SILKSCREEN
 							| NOUN_ASSY | NOUN_KEEPOUT | NOUN_STOPMASK | NOUN_STENCIL | NOUN_ORIGINS =>
-							display_non_conductor_layer;
-
+							display_non_conductor (cmd, log_threshold + 1);
 							
 						when NOUN_CONDUCTORS =>
-							display_conductor_layer;
+							display_conductor (cmd, log_threshold + 1);
 
 						when NOUN_OUTLINE =>
-							display_outline;
+							display_outline (cmd, log_threshold + 1);
 
 						when NOUN_RATSNEST =>
-							display_ratsnest;
+							display_ratsnest (cmd, log_threshold + 1);
 
 							
 						when NOUN_RESTRICT => -- like "board led_driver display restrict route/via 2 [on/off]"
