@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,6 +36,9 @@
 --   history of changes:
 --
 --   ToDo: 
+-- - separate package for dru file name
+-- - clean up
+
 
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
@@ -201,29 +204,6 @@ package et_design_rules_board is
 		file_name		: in pac_file_name.bounded_string;
 		log_threshold 	: in type_log_level);
 
-	
-	keyword_between_conductors			: constant string := "between_conductors";
-	keyword_between_conductors_same_net	: constant string := "between_conductors_of_same_net";
-	keyword_conductor_to_board_edge		: constant string := "conductor_to_board_edge";
-	keyword_edge_to_edge				: constant string := "edge_to_edge";
-
-	keyword_tracks	: constant string := "tracks";
-	keyword_drills	: constant string := "drills";
-
-	keyword_expansion_min	: constant string := "expansion_min";
-	
-	
-	type type_section_name is (
-		SEC_INIT,
-		SEC_CLEARANCES,
-		SEC_SIZES,
-		SEC_STOPMASK,
-		SEC_RESTRING
-		);
-
-	
-	-- Converts a section like SEC_CLEARANCES to a string "clearances".
-	function to_string (section : in type_section_name) return string;
 
 
 	-- Returns the design rule data set specified in given rules file.

@@ -85,11 +85,6 @@ package body et_design_rules_board is
 
 
 	
-	function to_string (section : in type_section_name) return string is
-		len : positive := type_section_name'image (section)'length;
-	begin
-		return to_lower (type_section_name'image (section) (5..len));
-	end to_string;
 
 
 	
@@ -118,6 +113,7 @@ package body et_design_rules_board is
 
 
 	
+	
 	procedure validate_restring_width (
 		restring_width : in type_distance_model) 
 	is begin
@@ -131,6 +127,7 @@ package body et_design_rules_board is
 
 
 	
+	
 	procedure validate_track_width (
 		track_width : in type_distance_model) 
 	is begin
@@ -143,11 +140,13 @@ package body et_design_rules_board is
 	end validate_track_width;
 
 
+
 	
 	procedure read_rules (
 		file_name		: in pac_file_name.bounded_string;
 		log_threshold 	: in type_log_level)
 	is separate;
+
 
 	
 	function get_rules (rules : in pac_file_name.bounded_string) -- JLP_ML4_standard.dru

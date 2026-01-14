@@ -50,6 +50,8 @@ package et_keywords is
 	keyword_assembly_technology		: constant string := "technology";
 	keyword_assembly_variant		: constant string := "assembly_variant";
 
+	keyword_between_conductors			: constant string := "between_conductors";
+	keyword_between_conductors_same_net	: constant string := "between_conductors_of_same_net";
 	keyword_border_width			: constant string := "border_width";
 	keyword_bottom					: constant string := "bottom";
 
@@ -58,6 +60,7 @@ package et_keywords is
 	keyword_clearance				: constant string := "clearance";
 	keyword_columns					: constant string := "columns";	
 	keyword_conductor				: constant string := "conductor";
+	keyword_conductor_to_board_edge	: constant string := "conductor_to_board_edge";
 	keyword_connection				: constant string := "connection";
 	keyword_connector				: constant string := "connector";
 	keyword_content 				: constant string := "content";
@@ -72,14 +75,17 @@ package et_keywords is
 	keyword_direction 				: constant string := "direction";
 	keyword_domain					: constant string := "domain";
 	keyword_dots					: constant string := "dots";
+	keyword_drills					: constant string := "drills";
 	keyword_drill_size				: constant string := "drill_size";
 	keyword_dru						: constant string := "dru";
 
 	keyword_easing					: constant string := "easing";
 	keyword_easing_radius 			: constant string := "easing_radius";	
 	keyword_easing_style  			: constant string := "easing_style";
+	keyword_edge_to_edge			: constant string := "edge_to_edge";
 	keyword_end						: constant string := "end";
-
+	keyword_expansion_min			: constant string := "expansion_min";
+	
 	keyword_face					: constant string := "face";	
 	keyword_file					: constant string := "file";
 	keyword_fill					: constant string := "fill";
@@ -170,6 +176,7 @@ package et_keywords is
 	keyword_template				: constant string := "template";
 	keyword_tht_hole				: constant string := "hole";	
 	keyword_to						: constant string := "to";
+	keyword_tracks					: constant string := "tracks";
 	keyword_track_width_min			: constant string := "track_width_min";
 
 	keyword_unit					: constant string := "unit";

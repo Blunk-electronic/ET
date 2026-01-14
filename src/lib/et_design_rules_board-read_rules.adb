@@ -69,11 +69,13 @@ is
 	
 	-- This is the section stack of the design rules:
 	max_section_depth : constant positive := 3;
+	
 	package pac_sections_stack is new gen_pac_sections_stack (
-		item	=> type_section_name, -- CS use type_file_section ?
+		item	=> type_file_section,
 		max 	=> max_section_depth);
 
 
+	
 	clearances 	: type_clearances;
 	sizes		: type_sizes;
 	restring	: type_restring;
@@ -209,6 +211,7 @@ is
 				
 				when SEC_INIT => null; -- CS: should never happen
 
+				when others => invalid_section;
 			end case;
 			
 		end execute_section;
@@ -222,7 +225,7 @@ is
 		-- If it is a header, the section name is pushed onto the sections pac_sections_stack.
 		-- If it is a footer, the latest section name is popped from the pac_sections_stack.
 			section_keyword	: in string; -- [CLEARANCES
-			section			: in type_section_name) -- SEC_CLEARANCES
+			section			: in type_file_section) -- SEC_CLEARANCES
 			return boolean 
 		is begin
 			if f (line, 1) = section_keyword then -- section name detected in field 1
@@ -303,6 +306,7 @@ is
 					
 				when SEC_INIT => null; -- CS: should never happen
 
+				when others => invalid_section;
 			end case;
 			
 		end if;
