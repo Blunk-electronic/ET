@@ -143,7 +143,7 @@ with et_cp_board_stencil;			use et_cp_board_stencil;
 with et_cp_board_text;				use et_cp_board_text;
 with et_cp_board_signal_layer;		use et_cp_board_signal_layer;
 with et_cp_board_via;				use et_cp_board_via;
-
+with et_cp_board_device;			use et_cp_board_device;
 
 -- to do:
 
@@ -1088,261 +1088,6 @@ package body et_cp_board is
 
 
 		
-
-	-- DEVICES:	
-
-
-		-- This procedure parses a command that shows (highlights)
-		-- a device:
-		-- Via the argument L1 .. L3 the amount of information to be output can
-		-- be controlled. For values greate L1 a properties window is opened that
-		-- fits all the information in.
-		-- example: "demo led_driver show device L1 IC12"
-		-- CS: For level L3 write in a file given via command argument.
-		procedure show_device is
-			use et_schematic_ops.units;
-			use et_board_ops.devices;
-			use et_devices_electrical;
-			use et_device_property_level;
-			
-			-- The degree of how much information is to be inqured:
-			properties_level : type_properties_level;
-
-
-			procedure runmode_module is 
-			-- CS: Clean up. Move stuff in separate procedures.
-				
-				use et_unit_name;
-				device_name : type_device_name;
-				error : boolean := false;
-			begin
-				case cmd_field_count is
-					when 6 => 
-						-- show device L1 R1
-						properties_level := to_properties_level (get_field (5), error); -- L1
-						
-						if not error then						
-							-- Get the device name:
-							device_name := to_device_name (get_field (6)); -- R1, IC1, FD1
-
-							-- Search among the electrical devices first.
-							-- Highlight the device and all its units if it
-							-- exists.
-							-- If it does not exist, then search among the non-electrical
-							-- devices:
-
-							-- We do not want to generate warnings in case the device
-							-- does not exist. For this reason log_warning is false.
-							-- Instead we generate a warning if the device is not among
-							-- the electrical nor the non-electrical devices.
-
-							-- CS:
-							-- Center on the device and leave the
-							-- zoom factor as it is. If the runmode is
-							-- headless, then nothing happens here:
-							-- zoom_to (get_place (unit_query.position), S);
-
-							
-							show_device (
-								module_cursor	=> active_module, 
-								device_name		=> device_name,
-								all_units		=> true,
-								unit_name		=> unit_name_default,
-								error			=> error,
-								log_warning		=> false, 
-								log_threshold	=> log_threshold + 1);
-
-							if not error then
-								-- Show some basic information in the staus bar:
-								set_status (et_schematic_ops.units.get_device_properties (
-									module_cursor	=> active_module, 
-									device_name		=> device_name, 
-									level			=> DEVICE_PROPERTIES_LEVEL_1,
-									error			=> error,
-									log_threshold	=> log_threshold + 1));
-
-								-- For property levels greater 1 we open
-								-- the properties window in order to conveniently
-								-- show a lot of information:
-								case properties_level is
-									when DEVICE_PROPERTIES_LEVEL_1 => null;
-
-									when others =>
-										
-										pac_device_ops.show_properties_window (
-											device	=> device_name,
-											text	=> et_schematic_ops.units.get_device_properties (
-												module_cursor	=> active_module, 
-												device_name		=> device_name, 
-												linebreaks		=> true,
-												level			=> properties_level,
-												error			=> error,
-												log_threshold	=> log_threshold + 2));
-								end case;
-
-								
-							end if;
-							
-							-- If the device could not be located among the
-							-- electrical devices, then search
-							-- among non-electrical devices:
-							if error then
-
-								-- CS:
-								-- Center on the device and leave the
-								-- zoom factor as it is. If the runmode is
-								-- headless, then nothing happens here:
-								-- zoom_to (get_place (unit_query.position), S);
-								
-								show_non_electrical_device (
-									module_cursor	=> active_module, 
-									device_name		=> device_name,
-									error			=> error,
-									log_warning		=> false, 
-									log_threshold	=> log_threshold + 1);
-
-								-- Write some basic information in the status bar:
-								if not error then
-									set_status (et_board_ops.devices.get_device_properties (
-										module_cursor	=> active_module,
-										device_name		=> device_name, 
-										level			=> DEVICE_PROPERTIES_LEVEL_1,
-										error			=> error,
-										log_threshold	=> log_threshold + 1));
-
-
-									-- For property levels greater 1 we open
-									-- the properties window in order to conveniently
-									-- show a lot of information:
-									case properties_level is
-										when DEVICE_PROPERTIES_LEVEL_1 => null;
-
-										when others =>
-											
-											pac_device_ops.show_properties_window (
-												device	=> device_name,
-												text	=> et_board_ops.devices.get_device_properties (
-													module_cursor	=> active_module, 
-													device_name		=> device_name, 
-													linebreaks		=> true,
-													level			=> properties_level,
-													error			=> error,
-													log_threshold	=> log_threshold + 2));
-									end case;
-
-								end if;
-								
-								if error then
-									log (WARNING, "Device " 
-										& to_string (device_name) & " not found !");
-								end if;
-							end if;
-
-					end if;
-					
-					when 7 .. type_field_count'last => too_long;
-					when others => command_incomplete;
-				end case;
-			end runmode_module;
-
-			
-		begin
-			-- Show operations are only useful and possible in graphical
-			-- runmode:
-			case runmode is
-				when MODE_MODULE =>
-					runmode_module;
-
-				when others =>
-					skipped_in_this_runmode (log_threshold + 1);
-						
-			end case;
-		end show_device;
-
-
-
-		
-
-		
-		-- This procedure parses a command to add
-		-- a non-electric device.
-		-- Example 1: add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac FD 5 10
-		-- Example 2: add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac FD 5 10 45
-		-- Example 3: add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac FD 5 10 45 bottom	
-		procedure add_non_electrical_device is
-
-			procedure do_it is
-				use et_board_ops.devices;
-				use et_device_prefix;
-				use et_package_model_name;
-				
-				model : constant pac_package_model_file.bounded_string := 
-					to_package_model_name (get_field (5));
-				
-				prefix : constant pac_device_prefix.bounded_string := 
-					to_prefix (get_field (6));
-
-				xy : constant type_vector_model := type_vector_model (set (
-						x => to_distance (dd => get_field (7)),
-						y => to_distance (dd => get_field (8))));
-
-			begin
-				case cmd_field_count is
-					when 8 =>
-						add_non_electrical_device (
-							module_cursor	=> active_module,
-							package_model	=> model,
-							position		=> to_package_position
-								(
-								point	=> xy
-								),
-							prefix			=> prefix,
-							log_threshold	=> log_threshold + 1);
-
-						
-					when 9 =>
-						add_non_electrical_device (
-							module_cursor	=> active_module,
-							package_model	=> model,
-							position		=> to_package_position
-								(
-								point		=> xy,
-								rotation	=> to_rotation (get_field (9))
-								),
-							prefix			=> prefix,
-							log_threshold	=> log_threshold + 1);
-
-						
-					when 10 =>
-						add_non_electrical_device (
-							module_cursor	=> active_module,
-							package_model	=> model,
-							position		=> to_package_position
-								(
-								point		=> xy,
-								rotation	=> to_rotation (get_field (9)),
-								face		=> to_face (get_field (10))
-								),
-							prefix			=> prefix,
-							log_threshold	=> log_threshold + 1);
-						
-					when others => raise constraint_error; -- CS should never happen
-				end case;
-			end do_it;
-
-			
-		begin
-			case cmd_field_count is
-				when 8..10 => do_it;
-				-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5
-				-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0
-				-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0 top
-
-				when 11 .. type_field_count'last => too_long;
-				
-				when others => command_incomplete;
-			end case;
-		end add_non_electrical_device;
 		
 
 
@@ -1943,7 +1688,7 @@ package body et_cp_board is
 				when VERB_ADD =>
 					case noun is
 						when NOUN_DEVICE =>
-							add_non_electrical_device;
+							add_non_electrical_device (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_LAYER =>
 							add_signal_layer (module_cursor, cmd, log_threshold + 1);
@@ -2271,7 +2016,7 @@ package body et_cp_board is
 							show_module;
 
 						when NOUN_DEVICE =>
-							show_device;
+							show_device (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_NET =>
 							show_net;
