@@ -57,7 +57,17 @@ package et_cp_board_assy_doc is
 		log_threshold	: in type_log_level);
 
 
-		
+
+	-- Parses a command that deletes an object in assy doc.
+	-- Example:
+	-- board led_driver delete assy top 40 50 1
+	procedure delete_assy_doc (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+	
 end et_cp_board_assy_doc;
 
 -- Soli Deo Gloria
