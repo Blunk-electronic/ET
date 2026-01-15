@@ -58,6 +58,16 @@ package et_cp_board_stencil is
 
 
 
+
+	-- This procedure parses a command to 
+	-- delete an object in a stencil layer.
+	-- Example:
+	-- board led_driver delete stencil top 40 50 1
+	procedure delete_stencil (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
 	
 end et_cp_board_stencil;
 
