@@ -138,6 +138,9 @@ with et_cp_board_canvas;			use et_cp_board_canvas;
 with et_cp_board_display;			use et_cp_board_display;
 with et_cp_board_outline;			use et_cp_board_outline;
 with et_cp_board_keepout;			use et_cp_board_keepout;
+with et_cp_board_silkscreen;		use et_cp_board_silkscreen;
+
+
 
 -- to do:
 
@@ -348,132 +351,6 @@ package body et_cp_board is
 			command_incomplete (cmd);
 		end;
 
-
-		
-
-
-		-- This procedure parses a command that draws
-		-- a line, arc, circle or a zone in silkscreen:
-		procedure draw_silkscreen is
-			use et_board_ops.silkscreen;
-
-			-- Extract from the given command the zone arguments (everything after "zone"):
-			-- example command: board demo draw silkscreen top zone line 0 0 line 50 0 line 50 50 line 0 50
-			procedure build_zone is
-				arguments : constant type_fields_of_line := 
-					remove_field (get_fields (cmd), 1, 6);
-				
-				-- Build the basic contour from zone:
-				c : constant type_contour := type_contour (to_contour (arguments));
-
-				face : type_face;
-			begin
-				face := to_face (get_field (5));
-				
-				add_zone (
-					module_cursor	=> module_cursor,
-					zone			=> (c with null record),
-					face			=> face,
-					log_threshold	=> log_threshold + 1);
-
-			end build_zone;
-
-			
-			shape : type_shape;
-
-			
-			-- Draws a line, arc or circle:
-			procedure draw_shape is 
-				arc_tmp		: type_arc;
-				circle_tmp	: type_circle;
-				line_tmp	: type_line;
-				width_tmp	: type_distance_positive;
-			begin
-				case shape is
-					when LINE =>
-						case cmd_field_count is
-							when 11 =>
-								width_tmp := to_distance (get_field (7));
-								
-								line_tmp := type_line (to_line (
-									A => to_vector_model (get_field (8), get_field (9)),
-									B => to_vector_model (get_field (10), get_field (11))));
-								
-								add_line (
-									module_name 	=> module,
-									face			=> to_face (get_field (5)),
-									line			=> (line_tmp with width_tmp),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 12 .. type_field_count'last =>
-								too_long;
-								
-							when others =>
-								command_incomplete;
-						end case;
-
-						
-					when ARC =>
-						case cmd_field_count is
-							when 14 =>
-								width_tmp := to_distance (get_field (7));
-								
-								arc_tmp := type_arc (to_arc (
-									center		=> to_vector_model (get_field (8), get_field (9)),
-									A			=> to_vector_model (get_field (10), get_field (11)),
-									B			=> to_vector_model (get_field (12), get_field (13)),
-									direction	=> to_direction (get_field (14))));
-								
-								add_arc (
-									module_name 	=> module,
-									face			=> to_face (get_field (5)),
-									arc				=> (arc_tmp with width_tmp),
-									log_threshold	=> log_threshold + 1);
-
-							when 15 .. type_field_count'last =>
-								too_long;
-								
-							when others =>
-								command_incomplete;
-						end case;
-
-						
-					when CIRCLE =>
-						case cmd_field_count is						
-							when 10 =>
-								width_tmp := to_distance (get_field (7));
-								
-								circle_tmp := type_circle (to_circle (
-									center		=> to_vector_model (get_field (8), get_field (9)),
-									radius		=> to_radius (get_field (10))));
-														
-								add_circle (
-									module_name 	=> module,
-									face			=> to_face (get_field (5)),
-									circle			=> (circle_tmp with width_tmp),
-									log_threshold	=> log_threshold + 1);
-								
-							when 11 .. type_field_count'last =>
-								too_long;
-								
-							when others =>
-								command_incomplete;
-						end case;
-								
-					when others => null;
-				end case;
-			end draw_shape;
-			
-
-		begin
-			if get_field (6) = keyword_zone then
-				build_zone;
-			else
-				shape := to_shape (get_field (6));
-				draw_shape;
-			end if;		
-		end draw_silkscreen;
 
 
 
@@ -3622,7 +3499,7 @@ package body et_cp_board is
 							draw_board_outline (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_SILKSCREEN =>
-							draw_silkscreen;
+							draw_silkscreen (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_ASSY =>
 							draw_assy_doc;
