@@ -44,17 +44,7 @@ with ada.text_io;						use ada.text_io;
 with ada.characters.handling;			use ada.characters.handling;
 with ada.strings; 						use ada.strings;
 
-with et_pcb_sides;						use et_pcb_sides;
-with et_pcb_signal_layers;
-
-with et_display;						use et_display;
-with et_display.board;					use et_display.board;
-
-with et_generic_modules;				use et_generic_modules;
-with et_modes.board;					use et_modes.board;
-
 with et_board_geometry;					use et_board_geometry;
-with et_board_outline; 					use et_board_outline;
 with et_board_ops.outline;				use et_board_ops.outline;
 with et_keywords;
 
