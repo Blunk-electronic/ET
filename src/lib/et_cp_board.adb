@@ -69,10 +69,8 @@ with et_text_content;				use et_text_content;
 with et_board_layer_category;		use et_board_layer_category;
 with et_board_ops.conductors;
 with et_board_ops.fill_zones;
-with et_board_ops.vias;
 with et_board_ops.frame;
 with et_sheets;
-with et_drills;
 with et_modes.board;
 with et_device_property_level;
 with et_devices_electrical;
@@ -118,7 +116,6 @@ with et_terminal_name;				use et_terminal_name;
 with et_package_model_name;
 with et_mirroring;
 with et_device_prefix;
-with et_vias;
 with et_pcb_stack;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_keywords;					use et_keywords;
@@ -145,7 +142,7 @@ with et_cp_board_stopmask;			use et_cp_board_stopmask;
 with et_cp_board_stencil;			use et_cp_board_stencil;
 with et_cp_board_text;				use et_cp_board_text;
 with et_cp_board_signal_layer;		use et_cp_board_signal_layer;
-
+with et_cp_board_via;				use et_cp_board_via;
 
 
 -- to do:
@@ -270,9 +267,6 @@ package body et_cp_board is
 	is
 		use et_board_ops;
 		use et_board_ops.conductors;
-		use et_board_ops.vias;
-		use et_drills;
-		use et_vias;
 
 		use et_pcb_sides;
 
@@ -360,331 +354,10 @@ package body et_cp_board is
 		
 		
 		
-		-- Parses a command like "board demo set via restring inner/outer 0.2"
-		-- or "board demo set via restring inner 0.2" and sets the value
-		-- for user specific via drill or restring.
-		-- If the field for the value contains the keyword "dru" instead of 0.2
-		-- then the user specific value is deactivated so that the value
-		-- is taken from the DRU settings.
-		procedure set_via_properties is
-			kw_drill	: constant string := "drill";
-			kw_restring	: constant string := "restring";
-			kw_inner	: constant string := "inner";
-			kw_outer	: constant string := "outer";
-			kw_dru		: constant string := "dru";
-
-			procedure expect_keywords is begin
-				raise syntax_error_1 with 
-					"ERROR: Expect keyword "
-					& enclose_in_quotes (kw_drill) & " or "
-					& enclose_in_quotes (kw_restring) 
-					& " after " & enclose_in_quotes (to_lower (to_string (noun))) & " !";
-			end expect_keywords;
-
-			
-			use pac_generic_modules;
-
-			
-			procedure deactivate_drill (
-				module_name	: in pac_module_name.bounded_string;
-				module		: in out type_generic_module)
-			is begin
-				module.board.user_settings.vias.drill.active := false;
-			end deactivate_drill;
-
-			
-			procedure activate_drill (
-				module_name	: in pac_module_name.bounded_string;
-				module		: in out type_generic_module)
-			is begin
-				module.board.user_settings.vias.drill.active := true;
-				module.board.user_settings.vias.drill.size := to_distance (get_field (6));
-			end activate_drill;
-
-			
-			procedure deactivate_inner_restring (
-				module_name	: in pac_module_name.bounded_string;
-				module		: in out type_generic_module)
-			is begin
-				module.board.user_settings.vias.restring_inner.active := false;
-			end deactivate_inner_restring;
-
-			
-			procedure activate_inner_restring (
-				module_name	: in pac_module_name.bounded_string;
-				module		: in out type_generic_module)
-			is begin
-				module.board.user_settings.vias.restring_inner.active := true;
-				module.board.user_settings.vias.restring_inner.width := to_distance (get_field (7));
-			end activate_inner_restring;
-
-			
-			procedure deactivate_outer_restring (
-				module_name	: in pac_module_name.bounded_string;
-				module		: in out type_generic_module)
-			is begin
-				module.board.user_settings.vias.restring_outer.active := false;
-			end deactivate_outer_restring;
-
-			
-			procedure activate_outer_restring (
-				module_name	: in pac_module_name.bounded_string;
-				module		: in out type_generic_module)
-			is begin
-				module.board.user_settings.vias.restring_outer.active := true;
-				module.board.user_settings.vias.restring_outer.width := to_distance (get_field (7));
-			end activate_outer_restring;
-
-			
-		begin -- set_via_properties
-			case cmd_field_count is
-				when 6 => 
-					-- board demo set via drill 0.3/dru
-					if get_field (5) = kw_drill then
-						if get_field (6) = kw_dru then
-							update_element (generic_modules, module_cursor, deactivate_drill'access);
-						else
-							update_element (generic_modules, module_cursor, activate_drill'access);
-
-							-- CS validate against dru settings
-						end if;
-					else
-						expect_keywords;
-					end if;
-
-				when 7 => 
-					-- board demo set via restring inner/outer 0.2
-					if get_field (5) = kw_restring then
-
-						-- board demo set via restring inner 0.2
-						-- board demo set via restring inner dru
-						if get_field (6) = kw_inner then
-							if get_field (7) = kw_dru then
-								update_element (generic_modules, module_cursor, deactivate_inner_restring'access);
-							else
-								update_element (generic_modules, module_cursor, activate_inner_restring'access);
-								
-								-- CS validate against dru settings	
-							end if;
-
-						-- board demo set via restring outer 0.2
-						-- board demo set via restring outer dru
-						elsif get_field (6) = kw_outer then
-							if get_field (7) = kw_dru then
-								update_element (generic_modules, module_cursor, deactivate_outer_restring'access);
-							else
-								update_element (generic_modules, module_cursor, activate_outer_restring'access);
-
-								-- CS validate against dru settings
-							end if;
-							
-						else
-							raise syntax_error_1 with
-								"ERROR: Expect keywords " 
-								& enclose_in_quotes (kw_inner) & " or "
-								& enclose_in_quotes (kw_outer) 
-								& " after keyword " & enclose_in_quotes (kw_restring) & " !";
-						
-						end if;
-					else
-						expect_keywords;
-					end if;
-					
-				when 8 .. type_field_count'last => too_long;
-
-				when others => command_incomplete;
-			end case;
-
-		end set_via_properties;
 
 		
 
 		
-		-- This procedure builds the final via and calls et_board_ops.place_via
-		-- accordingly. User specific settings are taken into account.
-		-- CS: Take into account class settings (via drill size).
-		procedure place_via is
-			use et_module_board_user_settings;
-			
-			net_name		: pac_net_name.bounded_string;
-			drill			: type_drill;
-			restring_outer	: type_restring_width;
-			restring_top	: type_restring_width;
-			restring_bottom	: type_restring_width;
-			restring_inner	: type_restring_width;
-			buried_layers	: type_buried_layers;
-			lower_layer		: type_via_layer;
-			upper_layer		: type_via_layer;
-
-			
-			procedure set_net_name is begin
-				-- CS check net name: characters, length, existence of net
-				net_name := to_net_name (get_field (5));
-			end set_net_name;
-
-			
-			procedure set_position is begin
-				drill.position := to_vector_model (get_field (6), get_field (7));
-
-				-- CS check position: must be inside board area
-			end set_position;
-
-			
-			keyword_buried	: constant string := "buried";
-			keyword_blind	: constant string := "blind";
-			keyword_top		: constant string := "top";
-			keyword_bottom	: constant string := "bottom";
-
-			
-			procedure through is
-				via : type_via (THROUGH);
-			begin
-				via := (drill with
-					category		=> THROUGH,
-					restring_inner	=> restring_inner,
-					restring_outer	=> restring_outer);
-						
-				et_board_ops.vias.place_via (module_cursor, net_name, via, log_threshold + 1);
-			end through;
-
-			
-			procedure blind_top is
-				via : type_via (BLIND_DRILLED_FROM_TOP);
-			begin
-				via := (drill with
-					category		=> BLIND_DRILLED_FROM_TOP,
-					restring_inner	=> restring_inner,
-					restring_top	=> restring_top,
-					lower			=> lower_layer);
-						
-				et_board_ops.vias.place_via (module_cursor, net_name, via, log_threshold + 1);
-			end blind_top;
-
-			
-			procedure blind_bottom is
-				via : type_via (BLIND_DRILLED_FROM_BOTTOM);
-			begin
-				via := (drill with
-					category		=> BLIND_DRILLED_FROM_BOTTOM,
-					restring_inner	=> restring_inner,
-					restring_bottom	=> restring_bottom,
-					upper			=> upper_layer);
-						
-				et_board_ops.vias.place_via (module_cursor, net_name, via, log_threshold + 1);
-			end blind_bottom;
-
-			
-			procedure buried is
-				via : type_via (BURIED);
-			begin
-				via := (drill with
-					category		=> BURIED,
-					restring_inner	=> restring_inner,
-					layers			=> buried_layers);
-						
-				et_board_ops.vias.place_via (module_cursor, net_name, via, log_threshold + 1);
-			end buried;
-
-			
-			rules : constant type_design_rules_board := get_pcb_design_rules (module_cursor);
-
-			-- get the user specific settings of the board
-			settings : constant type_user_settings := 
-				get_user_settings (module_cursor);
-
-			
-		begin -- place_via
-			-- Set the drill size and restring according to a user specific values:
-			-- If user has not specified defaults, use values given in DRU data set:
-
-			-- set drill size:
-			if settings.vias.drill.active then
-				drill.diameter	:= settings.vias.drill.size;
-			else
-				drill.diameter	:= rules.sizes.drills;
-			end if;
-
-			-- CS: take minimum drill diameter as defined in net class into account
-			-- Requres a command like "set via drill class"
-
-			
-			-- set outer restring:
-			if settings.vias.restring_outer.active then
-				restring_outer	:= settings.vias.restring_outer.width;
-			else
-				restring_outer	:= auto_set_restring (OUTER, drill.diameter);
-			end if;
-			
-			restring_top	:= restring_outer; -- for blind via drilled from top
-			restring_bottom	:= restring_outer; -- for blind via drilled from bottom
-
-			
-			-- set inner restring:
-			if settings.vias.restring_inner.active then
-				restring_inner	:= settings.vias.restring_inner.width;
-			else
-				restring_inner	:= auto_set_restring (INNER, drill.diameter, rules.sizes.restring.delta_size);
-			end if;
-
-			
-			case cmd_field_count is
-				when 7 => 
-					-- example: board demo place via RESET_N 10 14
-					set_net_name;
-					set_position;
-					through;
-
-					
-				when 10 =>				
-					if get_field (8) = keyword_buried then
-						-- example: board demo place via RESET_N 10 14 buried 2 15					
-						set_net_name;
-						set_position;
-						buried_layers := to_buried_layers (
-									upper	=> get_field (9), 
-									lower	=> get_field (10),
-									bottom	=> get_deepest_conductor_layer (module_cursor));
-						buried;
-
-						
-					elsif get_field (8) = keyword_blind then
-						-- example: board demo place via RESET_N 10 14 blind top 5
-						-- example: board demo place via RESET_N 10 14 blind bottom 2
-						set_net_name;
-						set_position;
-
-						if get_field (9) = keyword_top then
-							lower_layer := to_signal_layer (get_field (10));
-							blind_top;
-							
-						elsif get_field (9) = keyword_bottom then
-							upper_layer := to_signal_layer (get_field (10));
-							blind_bottom;
-							
-						else
-							raise syntax_error_1 with 
-								"ERROR: Expect keywords " 
-								& enclose_in_quotes (keyword_top)
-								& " or " 
-								& enclose_in_quotes (keyword_bottom)
-								& " after keyword " 
-								& enclose_in_quotes (keyword_blind)
-								& " !";							
-						end if;
-							
-					else
-						raise syntax_error_1 with 
-							"ERROR: Expect keywords " & enclose_in_quotes (keyword_blind)
-							& " or " & enclose_in_quotes (keyword_buried)
-							& " after y position !";
-					end if;
-					
-				when 11 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-
-		end place_via;
 
 
 
@@ -2530,7 +2203,7 @@ package body et_cp_board is
 				when VERB_PLACE =>
 					case noun is
 						when NOUN_VIA => 
-							place_via;
+							place_via (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_TEXT =>
 							place_text (module_cursor, cmd, log_threshold + 1);
@@ -2613,7 +2286,7 @@ package body et_cp_board is
 						-- CS NOUN_VALUE, NOUN_PARTCODE, NOUN_PURPOSE ?
 							
 						when NOUN_VIA =>
-							set_via_properties;
+							set_via_properties (module_cursor, cmd, log_threshold + 1);
 
 						when others => invalid_noun (to_string (noun));
 					end case;
