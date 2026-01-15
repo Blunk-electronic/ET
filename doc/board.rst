@@ -22,6 +22,8 @@ Board Outline (Outer Edges)
 
 	|VNS| d l
 
+
+
 	
 		
 #. Move Outline Segment
@@ -29,6 +31,8 @@ Board Outline (Outer Edges)
 	To move a segment of the board contour:
 
 	|VNS| m o
+
+
 	
 
 #. Delete Outline Segment
@@ -37,6 +41,9 @@ Board Outline (Outer Edges)
 
 	|VNS| del o
 
+	.. code-block::
+	
+		board demo delete outline 32 0 1
 
 
 
@@ -63,13 +70,16 @@ Holes in the Board (Inner Edges)
 		board demo draw hole circle 32 5 6
 	
 
+
 	
 #. Move Hole Segment
 
 	To move a segment of a hole:
 
 	|VNS| m o
+
 	
+
 
 #. Delete Hole Segment
 
@@ -79,7 +89,7 @@ Holes in the Board (Inner Edges)
 
 	.. code-block::
 	
-		board demo delete hole 32 5
+		board demo delete hole 32 5 2
 	
 	
 +++++++++++++
@@ -1090,6 +1100,8 @@ Stencil
 		delete stencil top 50 100 10
 
 
+
+
 		
 +++++++
 Keepout
@@ -1115,6 +1127,9 @@ of devices is allowed.
 #. Deleting Objects
 
 	|VNS| del k
+
+
+
 
 		
 		
