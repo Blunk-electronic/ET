@@ -352,33 +352,6 @@ package body et_cp_board is
 
 		
 		
-		
-		
-
-		
-
-		
-
-
-
-		-- This procedure parses a command
-		-- to move a via.
-		-- CS: Currently this procedure does not many things.	
-		procedure move_via is
-		begin
-			null;
-		end move_via;
-			
-		
-
-		-- This procedure parses a command
-		-- to delete a via.
-		-- CS: Currently this procedure does not many things.	
-		procedure delete_via is
-		begin
-			null;
-		end delete_via;
-
 
 
 		
@@ -2027,7 +2000,7 @@ package body et_cp_board is
 							delete_stopmask (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_VIA =>
-							delete_via;
+							delete_via (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_ROUTE_RESTRICT =>
 							delete_route_restrict (module_cursor, cmd, log_threshold + 1);
@@ -2194,7 +2167,7 @@ package body et_cp_board is
 							end case;
 
 						when NOUN_VIA =>
-							move_via;
+							move_via (module_cursor, cmd, log_threshold + 1);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;

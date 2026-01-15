@@ -430,7 +430,34 @@ package body et_cp_board_via is
 
 
 
-		
+
+
+	procedure move_via (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is begin
+		null;
+		-- CS
+	end move_via;
+
+	
+
+
+
+	procedure delete_via (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is begin
+		null;
+		-- CS
+	end delete_via;
+
+
+	
+
+	
 	
 end et_cp_board_via;
 	
