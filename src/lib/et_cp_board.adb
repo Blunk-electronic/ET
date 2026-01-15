@@ -65,7 +65,7 @@ with et_directions;					use et_directions;
 
 with et_text_content;				use et_text_content;
 
-with et_board_text;
+-- with et_board_text;
 with et_board_layer_category;		use et_board_layer_category;
 with et_board_ops.conductors;
 with et_board_ops.fill_zones;
@@ -271,7 +271,6 @@ package body et_cp_board is
 		use et_board_ops;
 		use et_board_ops.conductors;
 		use et_board_ops.vias;
-		use et_board_text;
 		use et_drills;
 		use et_vias;
 
@@ -358,157 +357,6 @@ package body et_cp_board is
 		end;
 
 		
-
-
-		
-		-- This procedure parses a command to place text placeholder
-		-- and dispatches to subprogram according to the layer category:	
-		procedure place_text_placeholder is
-			use pac_text_board;
-			use pac_text_board_vectorized;
-			use et_pcb_placeholders;
-			use et_mirroring;
-			
-			pos_xy			: type_vector_model;
-			rotation		: type_rotation_model;
-			size			: type_distance;
-			linewidth		: type_distance;
-			layer_category	: type_layer_category;
-			face			: type_face;
-
-			
-			procedure place_in_assy_doc is
-				use et_board_ops.assy_doc;
-				ph : type_placeholder_non_conductor; -- non conductor layers
-			begin
-				ph.meaning := to_meaning (get_field (12));
-				ph.position := type_position (to_position (pos_xy, rotation));
-				ph.line_width := linewidth;
-				ph.size := size;
-				
-				add_placeholder (
-					module_cursor 	=> module_cursor,
-					placeholder		=> ph,
-					face			=> face,
-					log_threshold	=> log_threshold + 1);
-
-			end place_in_assy_doc;
-
-
-
-			procedure place_in_silkscreen is
-				use et_board_ops.silkscreen;
-				ph : type_placeholder_non_conductor; -- non conductor layers
-			begin
-				ph.meaning := to_meaning (get_field (12));
-				ph.position := type_position (to_position (pos_xy, rotation));
-				ph.line_width := linewidth;
-				ph.size := size;
-
-				add_placeholder (
-					module_cursor 	=> module_cursor,
-					placeholder		=> ph,
-					face			=> face,
-					log_threshold	=> log_threshold + 1);
-
-			end place_in_silkscreen;
-
-
-
-			procedure place_in_stopmask is
-				use et_board_ops.stopmask;
-				ph : type_placeholder_non_conductor; -- non conductor layers
-			begin
-				ph.meaning := to_meaning (get_field (12));
-				ph.position := type_position (to_position (pos_xy, rotation));
-				ph.line_width := linewidth;
-				ph.size := size;
-
-				add_placeholder (
-					module_cursor 	=> module_cursor,
-					placeholder		=> ph,
-					face			=> face,
-					log_threshold	=> log_threshold + 1);
-
-			end place_in_stopmask;
-
-			
-			
-			procedure place_in_conductor_layer is
-				ph : type_placeholder_conductor; -- conductor layers
-			begin
-				ph.layer := to_signal_layer (get_field (6));  -- 5 
-				ph.meaning := to_meaning (get_field (12));
-				ph.position := type_position (to_position (pos_xy, rotation));
-				ph.line_width := linewidth;
-				ph.size := size;
-				
-				-- This procedure automatically cares for mirroring:
-				add_placeholder (
-					module_cursor 	=> module_cursor,
-					placeholder		=> ph,
-					log_threshold	=> log_threshold + 1);
-
-			end place_in_conductor_layer;
-
-
-			
-		begin
-			-- board demo place placeholder silkscreen top 0.15 1 140 100 0 module
-			-- board demo place placeholder conductor  5   0.15 1 140 100 0 module
-
-			-- CS: argument for alignment
-
-			case cmd_field_count is
-				when 12 =>
-					layer_category := to_layer_category (get_field (5));
-
-					-- Get the linewidth of the placeholder:
-					linewidth := to_distance (get_field (7)); -- 0.15
-					validate_text_line_width (linewidth);
-
-					-- Get the size of the placeholder:
-					size := to_distance (get_field (8)); -- 1
-					validate_text_size (size);
-					
-					-- Get the position of the placeholder:
-					pos_xy := to_vector_model (get_field (9), get_field (10));
-					rotation := to_rotation (get_field (11)); -- 0
-					
-					
-					case layer_category is
-						when LAYER_CAT_ASSY =>
-
-							face := to_face (get_field (6)); -- top/bottom
-							place_in_assy_doc;
-
-
-						when LAYER_CAT_SILKSCREEN =>
-
-							face := to_face (get_field (6)); -- top/bottom
-							place_in_silkscreen;
-
-
-						when LAYER_CAT_STOPMASK =>
-
-							face := to_face (get_field (6)); -- top/bottom
-							place_in_stopmask;
-
-						
-						when LAYER_CAT_CONDUCTOR =>
-							place_in_conductor_layer;
-
-
-						when others => null; -- CS message invalid layer category ?
-					end case;
-						
-				when 13 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end place_text_placeholder;
-
-
 		
 		
 		
@@ -2942,9 +2790,15 @@ package body et_cp_board is
 					
 				when VERB_PLACE =>
 					case noun is
-						when NOUN_VIA			=> place_via;
-						when NOUN_TEXT			=> place_text (module_cursor, cmd, log_threshold + 1);
-						when NOUN_PLACEHOLDER	=> place_text_placeholder;					
+						when NOUN_VIA => 
+							place_via;
+							
+						when NOUN_TEXT =>
+							place_text (module_cursor, cmd, log_threshold + 1);
+							
+						when NOUN_PLACEHOLDER
+							=> place_text_placeholder (module_cursor, cmd, log_threshold + 1);
+							
 						when others	=> invalid_noun (to_string (noun));
 					end case;
 					

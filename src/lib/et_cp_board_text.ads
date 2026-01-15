@@ -55,6 +55,13 @@ package et_cp_board_text is
 		log_threshold	: in type_log_level);
 
 
+
+	procedure place_text_placeholder (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
 	
 end et_cp_board_text;
 
