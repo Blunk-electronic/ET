@@ -57,7 +57,16 @@ package et_cp_board_silkscreen is
 		log_threshold	: in type_log_level);
 
 
-		
+	-- Parses a command that deletes an object in silkscreen.
+	-- Example:
+	-- board led_driver delete silkscreen top 40 50 1
+	procedure delete_silkscreen (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+	
 end et_cp_board_silkscreen;
 
 -- Soli Deo Gloria
