@@ -283,7 +283,96 @@ package body et_cp_board_restrict is
 
 
 
+
+	
+
+
+	procedure delete_route_restrict (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		use et_board_ops.route_restrict;
+
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+
+		procedure do_it is
+			catch_zone : type_catch_zone;
+		begin
+			catch_zone := set_catch_zone (
+				center	=> to_vector_model (get_field (cmd, 5), get_field (cmd, 6)),
+				radius	=> to_zone_radius (get_field (cmd, 7)));
+											
+			delete_route_restrict (
+				module_name 	=> key (module),
+				catch_zone		=> catch_zone,
+				log_threshold	=> log_threshold + 1);
+
+		end do_it;
+
 		
+	begin
+		-- CS log message
+		
+		case cmd_field_count is
+			when 7 => do_it;
+			
+			when 8 .. type_field_count'last =>
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+	end delete_route_restrict;
+	
+
+
+
+
+
+
+
+	procedure delete_via_restrict (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		use et_board_ops.via_restrict;
+
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+
+		procedure do_it is
+			catch_zone : type_catch_zone;
+		begin
+			catch_zone := set_catch_zone (
+				center	=> to_vector_model (get_field (cmd, 5), get_field (cmd, 6)),
+				radius	=> to_zone_radius (get_field (cmd, 7)));
+
+			-- CS
+			-- delete_via_restrict (
+			-- 	module_name 	=> key (module),
+			-- 	catch_zone		=> catch_zone,
+			-- 	log_threshold	=> log_threshold + 1);
+
+		end do_it;
+		
+	begin
+		-- CS log message
+		
+		case cmd_field_count is
+			when 7 => do_it;
+			
+			when 8 .. type_field_count'last =>
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+	end delete_via_restrict;
+
+	
 	
 end et_cp_board_restrict;
 	

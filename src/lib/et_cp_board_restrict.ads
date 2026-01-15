@@ -61,11 +61,34 @@ package et_cp_board_restrict is
 
 	-- Parses a command that draws a zone in via restrict.
 	-- Examples:
-	-- board demo draw via restrict 1 zone line 0 0 line 50 0 line 50 50 line 0 50
+	-- board demo draw via_restrict 1 zone line 0 0 line 50 0 line 50 50 line 0 50
 	procedure draw_via_restrict (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
+
+
+	
+	-- This procedure parses a command to 
+	-- delete an object in a route restrict layer.
+	-- Example:
+	-- board led_driver delete route_restrict 40 50 1
+	procedure delete_route_restrict (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+
+	-- This procedure parses a command to 
+	-- delete a segment of a via restrict zone in a via restrict layer.
+	-- Example:
+	-- board led_driver delete via_restrict 40 50 1
+	procedure delete_via_restrict (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
 
 	
 end et_cp_board_restrict;

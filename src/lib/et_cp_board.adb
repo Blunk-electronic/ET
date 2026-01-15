@@ -2065,69 +2065,6 @@ package body et_cp_board is
 
 
 
-		-- This procedure parses a command to 
-		-- delete an object in a route restrict layer:
-		procedure delete_route_restrict_object is
-
-			procedure do_it is
-				use et_board_ops.route_restrict;
-				catch_zone : type_catch_zone;
-			begin
-				catch_zone := set_catch_zone (
-					center	=> to_vector_model (get_field (5), get_field (6)),
-					radius	=> to_zone_radius (get_field (7)));
-												
-				delete_route_restrict (
-					module_name 	=> module,
-					catch_zone		=> catch_zone,
-					log_threshold	=> log_threshold + 1);
-
-			end do_it;
-			
-		begin
-			-- board led_driver delete route_restrict 40 50 1
-			case cmd_field_count is
-				when 7 => do_it;
-				when 8 .. type_field_count'last => too_long;								
-				when others => command_incomplete;
-			end case;
-		end delete_route_restrict_object;
-		
-
-		
-
-
-		-- This procedure parses a command to 
-		-- delete an object in a via restrict layer:
-		procedure delete_via_restrict_object is
-
-			procedure do_it is
-				use et_board_ops.via_restrict;
-			begin
-				-- CS delete segment of zone contour 
-				null;
-	-- 			delete_via_restrict (
-	-- 				module_name 	=> module,
-	-- 				point			=> type_vector_model (set (
-	-- 						x => to_distance (dd => get_field (5)),
-	-- 						y => to_distance (dd => get_field (6)))),
-	-- 				accuracy		=> to_accuracy (get_field (7)),
-	-- 				
-	-- 				log_threshold	=> log_threshold + 1);
-			end do_it;
-			
-		begin
-			-- board led_driver delete via_restrict 40 50 1
-			case cmd_field_count is
-				when 7 => do_it;
-				when 8 .. type_field_count'last => too_long;				
-				when others => command_incomplete;
-			end case;
-		end delete_via_restrict_object;
-
-
-		
-
 		
 		-- This procedure parses a command to 
 		-- delete an freetrack segment in a conductor layer:
@@ -2481,10 +2418,10 @@ package body et_cp_board is
 							delete_via;
 							
 						when NOUN_ROUTE_RESTRICT =>
-							delete_route_restrict_object;						
+							delete_route_restrict (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_VIA_RESTRICT =>
-							delete_via_restrict_object;
+							delete_via_restrict (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_FREETRACK =>
 							delete_freetrack_segment;
