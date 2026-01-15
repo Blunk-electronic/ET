@@ -143,7 +143,8 @@ package body et_cp_board_outline is
 
 		catch_zone : type_catch_zone;
 	begin
-		-- CS log message
+		log (text => "delete outline segment", level => log_threshold);
+		log_indentation_up;
 		
 		case cmd_field_count is
 			when 7 =>
@@ -163,6 +164,8 @@ package body et_cp_board_outline is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+		log_indentation_down;
 	end delete_outline_segment;
 
 	
@@ -180,7 +183,8 @@ package body et_cp_board_outline is
 		
 		catch_zone : type_catch_zone;
 	begin
-		-- CS log message
+		log (text => "delete hole segment", level => log_threshold);
+		log_indentation_up;
 		
 		case cmd_field_count is
 			when 7 =>
@@ -200,6 +204,8 @@ package body et_cp_board_outline is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+		log_indentation_down;
 	end delete_hole_segment;
 
 	

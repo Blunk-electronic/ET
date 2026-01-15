@@ -64,7 +64,9 @@ package et_cp_board_outline is
 		log_threshold	: in type_log_level);
 
 
-
+	-- Parses a command that deletes a segment of the
+	-- outline.
+	-- Example: board demo delete outline 0 20
 	procedure delete_outline_segment (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
@@ -72,6 +74,8 @@ package et_cp_board_outline is
 
 
 
+	-- Parses a command that deletes a segment of a hole.
+	-- Example: board demo delete hole 0 20
 	procedure delete_hole_segment (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
