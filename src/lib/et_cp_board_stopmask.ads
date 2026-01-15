@@ -58,6 +58,12 @@ package et_cp_board_stopmask is
 
 
 
+	-- This procedure parses a command to 
+	-- delete an object in stopmask:
+	procedure delete_stopmask (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
 
 
 	

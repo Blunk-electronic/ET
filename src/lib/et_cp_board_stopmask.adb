@@ -196,6 +196,48 @@ package body et_cp_board_stopmask is
 
 
 
+
+
+
+
+
+	procedure delete_stopmask (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+		
+		procedure do_it is
+			catch_zone : type_catch_zone;
+		begin
+			catch_zone := set_catch_zone (
+				center	=> to_vector_model (get_field (cmd, 6), get_field (cmd, 7)),
+				radius	=> to_zone_radius (get_field (cmd, 8)));
+				
+			delete_object (
+				module_name 	=> key (module),
+				face			=> to_face (get_field (cmd, 5)),
+				catch_zone		=> catch_zone,				
+				log_threshold	=> log_threshold + 1);
+
+		end do_it;
+		
+	begin
+		-- board led_driver delete stop top 40 50 1
+		case cmd_field_count is
+			when 8 => do_it;
+			
+			when 9 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+	end delete_stopmask;
+
+
 	
 end et_cp_board_stopmask;
 	

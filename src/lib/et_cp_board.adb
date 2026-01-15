@@ -2062,39 +2062,6 @@ package body et_cp_board is
 
 
 		
-		
-
-
-
-		-- This procedure parses a command to 
-		-- delete an object in a stopmask layer:
-		procedure delete_stopmask_object is
-
-			procedure do_it is
-				use et_board_ops.stopmask;
-				catch_zone : type_catch_zone;
-			begin
-				catch_zone := set_catch_zone (
-					center	=> to_vector_model (get_field (6), get_field (7)),
-					radius	=> to_zone_radius (get_field (8)));
-					
-				delete_object (
-					module_name 	=> module,
-					face			=> to_face (get_field (5)),
-					catch_zone		=> catch_zone,				
-					log_threshold	=> log_threshold + 1);
-
-			end do_it;
-			
-		begin
-			-- board led_driver delete stop top 40 50 1
-			case cmd_field_count is
-				when 8 => do_it;
-				when 9 .. type_field_count'last => too_long;				
-				when others => command_incomplete;
-			end case;
-		end delete_stopmask_object;
-		
 
 
 
@@ -2508,7 +2475,7 @@ package body et_cp_board is
 							delete_stencil (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_STOPMASK =>
-							delete_stopmask_object;
+							delete_stopmask (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_VIA =>
 							delete_via;
