@@ -143,6 +143,10 @@ with et_cp_board_assy_doc;			use et_cp_board_assy_doc;
 with et_cp_board_restrict;			use et_cp_board_restrict;
 with et_cp_board_stopmask;			use et_cp_board_stopmask;
 with et_cp_board_stencil;			use et_cp_board_stencil;
+with et_cp_board_text;				use et_cp_board_text;
+
+
+
 
 -- to do:
 
@@ -354,137 +358,6 @@ package body et_cp_board is
 		end;
 
 		
-
-
-
-		
-		
-
-		-- This procedure parses a command to place a text
-		-- and dispatches to subprogram according to the layer category:
-		procedure place_text is
-			use pac_text_board_vectorized;
-			use et_board_ops.text;
-			use et_mirroring;
-			
-			text			: type_text_fab_with_content;
-			pos_xy			: type_vector_model;
-			rotation		: type_rotation_model;
-			content			: pac_text_content.bounded_string;
-			layer_category	: type_layer_category;
-			
-			face			: type_face;
-
-			procedure place_in_assy_doc is
-				use et_board_ops.assy_doc;
-			begin
-				add_text (
-					module_cursor 	=> module_cursor,
-					face			=> face,
-					text			=> text,
-					log_threshold	=> log_threshold + 1);
-			end place_in_assy_doc;
-
-
-			procedure place_in_silkscreen is
-				use et_board_ops.silkscreen;
-			begin
-				add_text (
-					module_cursor 	=> module_cursor,
-					face			=> face,
-					text			=> text,
-					log_threshold	=> log_threshold + 1);
-			end place_in_silkscreen;
-
-
-			procedure place_in_stopmask is
-				use et_board_ops.stopmask;
-			begin
-				add_text (
-					module_cursor 	=> module_cursor,
-					face			=> face,
-					text			=> text,
-					log_threshold	=> log_threshold + 1);
-			end place_in_stopmask;
-
-
-			procedure place_in_conductor_layer is
-				use et_board_ops.conductors;
-				signal_layer	: type_signal_layer;
-			begin
-				signal_layer := to_signal_layer (get_field (6));  -- 5 
-								
-				-- This procedure automatically cares for mirroring:
-				add_text (
-					module_cursor 	=> module_cursor,
-					signal_layer	=> signal_layer,
-					text			=> text,
-					log_threshold	=> log_threshold + 1);
-			end place_in_conductor_layer;
-			
-			
-		begin
-			-- board demo place text silkscreen top 0.15 1 140 100 0 "SILKSCREEN"
-			-- board demo place text conductor  5   0.15 1 140 100 0 "L1"
-
-			-- CS: argument for alignment
-
-			
-			case cmd_field_count is
-				when 12 =>
-					layer_category := to_layer_category (get_field (5));
-					text.line_width := to_distance (get_field (7)); -- 0.15
-					text.size := to_distance (get_field (8)); -- 1
-					
-					pos_xy := to_vector_model (get_field (9), get_field (10));
-
-					rotation := to_rotation (get_field (11)); -- 0
-					text.position := type_position (to_position (pos_xy, rotation));
-					
-					text.content := to_content (get_field (12));
-					-- CS check length
-
-					
-					if characters_valid (content) then
-
-						case layer_category is
-							when LAYER_CAT_ASSY =>
-								face := to_face (get_field (6)); -- top/bottom
-								place_in_assy_doc;
-
-								
-							when LAYER_CAT_SILKSCREEN =>
-								face := to_face (get_field (6)); -- top/bottom
-								place_in_silkscreen;
-
-								
-							when LAYER_CAT_STOPMASK =>						
-								face := to_face (get_field (6)); -- top/bottom
-								place_in_stopmask;
-
-								
-							
-							when LAYER_CAT_CONDUCTOR =>
-								place_in_conductor_layer;
-								
-
-							when others => null; -- CS message invalid layer category ?
-						end case;
-
-					else
-						raise syntax_error_1 with
-							"ERROR: Invalid character in text !";
-						-- CS show invalid character and its position
-					end if;
-						
-				when 13 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end place_text;
-
-
-
 
 
 		
@@ -3070,7 +2943,7 @@ package body et_cp_board is
 				when VERB_PLACE =>
 					case noun is
 						when NOUN_VIA			=> place_via;
-						when NOUN_TEXT			=> place_text;
+						when NOUN_TEXT			=> place_text (module_cursor, cmd, log_threshold + 1);
 						when NOUN_PLACEHOLDER	=> place_text_placeholder;					
 						when others	=> invalid_noun (to_string (noun));
 					end case;
