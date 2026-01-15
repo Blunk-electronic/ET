@@ -144,7 +144,7 @@ with et_cp_board_restrict;			use et_cp_board_restrict;
 with et_cp_board_stopmask;			use et_cp_board_stopmask;
 with et_cp_board_stencil;			use et_cp_board_stencil;
 with et_cp_board_text;				use et_cp_board_text;
-
+with et_cp_board_signal_layer;		use et_cp_board_signal_layer;
 
 
 
@@ -1438,68 +1438,7 @@ package body et_cp_board is
 			end case;
 		end route_net;
 
-
-
-		
-		-- This procedure parses a command to
-		-- add a new signal layer:
-		procedure add_signal_layer is
-
-			procedure do_it is
-				use et_pcb_stack;
-				layer : type_layer;
-			begin
-				layer.conductor.thickness := to_distance (get_field (5));
-				layer.dielectric.thickness := to_distance (get_field (6));
-				
-				add_layer (
-					module_name 	=> module,
-					layer			=> layer,
-					log_threshold	=> log_threshold + 1);
-			end do_it;
-			
-
-		begin
-			case cmd_field_count is
-				when 6 =>
-					do_it;
-					-- example: board tree_1 add layer 0.035 0.2
-
-				when 7 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;		
-		end add_signal_layer;
-
-		
-
-
-		-- This procedure parses a command to
-		-- delete a signal layer:
-		procedure delete_signal_layer is
-
-			procedure do_it is begin
-			
-				delete_layer (
-					module_name 	=> module,
-					layer			=> to_signal_layer (get_field (5)),									
-					log_threshold	=> log_threshold + 1);
-
-			end do_it;
-
-		begin
-			case cmd_field_count is
-				when 5 =>
-					do_it;
-					-- example: board tree_1 delete layer 2
-
-				when 6 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end delete_signal_layer;
-
-		
+	
 
 
 		
@@ -2361,7 +2300,7 @@ package body et_cp_board is
 							add_non_electrical_device;
 
 						when NOUN_LAYER =>
-							add_signal_layer;
+							add_signal_layer (module_cursor, cmd, log_threshold + 1);
 
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -2391,7 +2330,7 @@ package body et_cp_board is
 							delete_device;						
 
 						when NOUN_LAYER =>
-							delete_signal_layer;						
+							delete_signal_layer (module_cursor, cmd, log_threshold + 1);					
 
 						when NOUN_HOLE =>
 							delete_hole_segment (module_cursor, cmd, log_threshold + 1);
