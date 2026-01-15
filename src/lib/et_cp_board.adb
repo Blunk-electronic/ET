@@ -2063,20 +2063,6 @@ package body et_cp_board is
 
 		
 
-	
-		
-		
-
-		-- This procedure parses a command to 
-		-- delete an object in a keepout layer:
-		procedure delete_keepout_object is
-		begin
-			-- board led_driver delete keepout top 40 50 1
-			null; -- CS
-		end delete_keepout_object;
-
-
-
 		
 		-- This procedure parses a command to 
 		-- delete an object in a stencil layer:
@@ -2546,7 +2532,7 @@ package body et_cp_board is
 							delete_assy_doc (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_KEEPOUT =>
-							delete_keepout_object;
+							delete_keepout (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_STENCIL =>
 							delete_stencil_object;

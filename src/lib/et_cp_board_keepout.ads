@@ -64,6 +64,17 @@ package et_cp_board_keepout is
 		log_threshold	: in type_log_level);
 
 
+
+	-- This procedure parses a command to 
+	-- delete an object in keepout:
+	-- Example:
+	-- board led_driver delete keepout top 40 50 1
+	procedure delete_keepout (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+	
 		
 end et_cp_board_keepout;
 

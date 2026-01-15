@@ -159,6 +159,28 @@ package body et_cp_board_keepout is
 	end draw_keepout_zone_cutout;
 
 	
+
+
+
+
+
+
+	procedure delete_keepout (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+	begin
+		-- CS log message
+
+		-- CS
+		null;
+	end delete_keepout;
+
+	
+		
 	
 end et_cp_board_keepout;
 	
