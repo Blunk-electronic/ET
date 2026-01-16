@@ -52,7 +52,22 @@ package et_cp_board_module is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-	
+
+		
+	-- This procedure extracts from the command the
+	-- name of the generic module and optionally the
+	-- sheet number.
+	-- It sets the given module and sheet as active
+	-- and updates the editor window according
+	-- to the activated module:
+	procedure show_module (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+		
+		
+		
 end et_cp_board_module;
 
 -- Soli Deo Gloria
