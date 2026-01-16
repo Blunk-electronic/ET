@@ -55,7 +55,6 @@ with et_schematic_coordinates;
 with et_board_geometry;				use et_board_geometry;
 with et_board_coordinates;			use et_board_coordinates;
 
-with et_board_ops.frame;
 with et_sheets;
 with et_modes.board;
 with et_canvas_board_devices;
@@ -65,7 +64,6 @@ with et_design_rules_board;			use et_design_rules_board;
 
 with et_board_ops;
 
-with et_drawing_frame;
 with et_net_names;					use et_net_names;
 with et_device_name;
 
@@ -96,6 +94,9 @@ with et_cp_board_signal_layer;		use et_cp_board_signal_layer;
 with et_cp_board_via;				use et_cp_board_via;
 with et_cp_board_device;			use et_cp_board_device;
 with et_cp_board_conductors;		use et_cp_board_conductors;
+with et_cp_board_frame;				use et_cp_board_frame;
+
+
 -- to do:
 
 
@@ -294,38 +295,6 @@ package body et_cp_board is
 
 
 
-
-		
-		
-		procedure move_drawing_frame is 
-			use et_board_ops.frame;
-			use pac_drawing_frame;
-
-			p : et_drawing_frame.type_position;
-			c : type_coordinates;
-		begin
-			case cmd_field_count is
-				when 7 => -- board led_driver move frame absolute -20 -50
-					c := to_coordinates (get_field (5));   -- relative/absolute
-					
-					p.x := et_drawing_frame.to_distance (get_field (6));
-					p.y := et_drawing_frame.to_distance (get_field (7));
-
-					move_drawing_frame (
-						module_cursor 	=> module_cursor,
-						coordinates		=> c,
-						point			=> p,
-						log_threshold	=> log_threshold + 1
-						);
-
-					
-				when 8 .. type_field_count'last =>
-					too_long;
-					
-				when others =>
-					command_incomplete;
-			end case;
-		end move_drawing_frame;
 
 
 		
@@ -638,7 +607,7 @@ package body et_cp_board is
 				when VERB_MOVE =>
 					case noun is
 						when NOUN_FRAME =>
-							move_drawing_frame;
+							move_drawing_frame (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_CURSOR =>
 							move_cursor (cmd, log_threshold + 1);
