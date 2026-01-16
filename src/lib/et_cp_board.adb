@@ -49,8 +49,6 @@ with et_module_names;					use et_module_names;
 with et_runmode;						use et_runmode;
 with et_script_processor;
 
-with et_module_instance;			use et_module_instance;
-
 with et_board_geometry;				use et_board_geometry;
 with et_board_coordinates;			use et_board_coordinates;
 
@@ -94,6 +92,7 @@ with et_cp_board_conductors;		use et_cp_board_conductors;
 with et_cp_board_frame;				use et_cp_board_frame;
 with et_cp_board_module;			use et_cp_board_module;
 with et_cp_board_material_pnp;		use et_cp_board_material_pnp;
+with et_cp_board_submodule;			use et_cp_board_submodule;
 
 
 -- to do:
@@ -506,24 +505,7 @@ package body et_cp_board is
 							move_device_placeholder (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_SUBMODULE =>
-							case cmd_field_count is
-								when 8 =>
-									move_submodule (
-										module_name 	=> module,
-										instance		=> to_instance_name (get_field (5)), -- OSC1
-										coordinates		=> to_coordinates (get_field (6)),  -- relative/absolute
-										point			=> type_vector_model (set (
-															x => to_distance (dd => get_field (7)),
-															y => to_distance (dd => get_field (8)))),
-										log_threshold	=> log_threshold + 1
-										);
-
-								when 9 .. type_field_count'last =>
-									too_long;
-									
-								when others =>
-									command_incomplete;
-							end case;
+							move_submodule (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_VIA =>
 							move_via (module_cursor, cmd, log_threshold + 1);
