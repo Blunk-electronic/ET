@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                  COMMAND PROCESSOR / BOARD / ROUTE                       --
+--                  COMMAND PROCESSOR / BOARD / CONDUCTORS                  --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -75,7 +75,7 @@ with et_ratsnest;
 with et_board_ops.ratsnest;
 
 
-package body et_cp_board_route is
+package body et_cp_board_conductors is
 
 	use pac_geometry_2;
 	use pac_contours;
@@ -1090,7 +1090,7 @@ package body et_cp_board_route is
 
 	
 		
-end et_cp_board_route;
+end et_cp_board_conductors;
 	
 -- Soli Deo Gloria
 

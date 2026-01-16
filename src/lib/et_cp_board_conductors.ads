@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                  COMMAND PROCESSOR / BOARD / ROUTE                       --
+--                  COMMAND PROCESSOR / BOARD / CONDUCTORS                  --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -50,7 +50,7 @@ with et_cmd_sts;				use et_cmd_sts;
 
 
 
-package et_cp_board_route is
+package et_cp_board_conductors is
 
 
 	-- Parses a command like "board demo set zone fill solid/hatched"
@@ -127,7 +127,7 @@ package et_cp_board_route is
 		log_threshold	: in type_log_level);
 
 
-end et_cp_board_route;
+end et_cp_board_conductors;
 
 -- Soli Deo Gloria
 
