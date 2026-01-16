@@ -72,6 +72,101 @@ package et_cp_board_device is
 		log_threshold	: in type_log_level);
 
 
+
+
+	-- This procedure parses a command to delete
+	-- a non-electrical device:
+	-- Example: "board led_driver delete device FD1"
+	procedure delete_device (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+
+	-- This procedure parses a command to copy
+	-- a non-electrical device:
+	-- Example: "board led_driver copy device FD1 230 100"
+	procedure copy_device (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+
+
+	procedure move_device (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+
+	-- This procedure parses a command that rotates a device.
+	-- Example: board led_driver rotate device IC20
+	-- Example: board led_driver rotate device IC20 absolute 45
+	-- Example: board led_driver rotate device IC20 relative 10
+	procedure rotate_device (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+
+
+	-- This procedure parses a command to rename a non-electrical device:
+	-- Example: board led_driver rename device FD1 FD2
+	procedure rename_device (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+
+
+
+	-- This procedure parses a command that flips a device.
+	-- Example: board led_driver flip device IC20
+	-- Example: board led_driver flip device IC20 bottom/top
+	procedure flip_device (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+	
+
+
+	-- This procedure parses a command that moves a placeholder
+	-- for name, value or purpose of a device.
+	-- Example: "board led_driver move value R1 silkscreen top 2 absolute 100 115"
+	-- Example: "board led_driver move value IC1 assy_doc bottom 2 relative -5 0"
+	procedure move_device_placeholder (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+
+	-- This procedure parses a command that rotates a placeholder
+	-- for name, value or purpose of a device.
+	-- Example: "board led_driver rotate value R1 silkscreen top 2 absolute 45"
+	-- Example: "board led_driver rotate value IC1 assy_doc bottom 2 relative -10"
+	procedure rotate_device_placeholder (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+
+
+	-- This procedure parses a command that restores
+	-- the placeholders of a device.
+	-- Example: "board led_driver restore placeholders R1"
+	procedure restore_device_placeholders (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
 	
 end et_cp_board_device;
 

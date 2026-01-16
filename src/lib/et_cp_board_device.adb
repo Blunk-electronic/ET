@@ -64,6 +64,10 @@ with et_device_prefix;					use et_device_prefix;
 with et_package_model_name;				use et_package_model_name;
 with et_pcb_sides;						use et_pcb_sides;
 
+with et_device_placeholders;
+with et_device_placeholders.packages;
+
+
 
 package body et_cp_board_device is
 
@@ -328,6 +332,412 @@ package body et_cp_board_device is
 			when others => command_incomplete (cmd);
 		end case;
 	end add_non_electrical_device;
+
+
+
+
+
+
+
+
+
+	procedure delete_device (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+		
+		procedure do_it is 
+			use et_board_ops.devices;
+		begin
+			delete_non_electrical_device (
+				module_cursor	=> active_module,
+				device_name		=> to_device_name (get_field (cmd, 5)),
+				log_threshold	=> log_threshold + 1);
+		end do_it;
+		
+
+	begin
+		-- CS log message
+		
+		case cmd_field_count is
+			when 5 => do_it;				
+			
+			when 6 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1);
+			
+			when others => 
+				command_incomplete (cmd);
+		end case;		
+	end delete_device;
+
+		
+
+
+	
+
+
+	
+
+
+
+	procedure copy_device (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+	
+	begin
+		-- CS log message
+		
+		case cmd_field_count is
+			when 7 =>
+
+				et_board_ops.devices.copy_non_electrical_device (
+					module_cursor 	=> module,
+					device_name		=> to_device_name (get_field (cmd, 5)),
+					destination		=> to_vector_model (get_field (cmd, 6), get_field (cmd, 7)), -- x/y
+					log_threshold	=> log_threshold + 1);
+
+			when 8 .. type_field_count'last => 
+					command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+	end copy_device;
+
+
+
+
+
+
+	
+
+
+	procedure move_device (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+	begin
+		-- CS log message
+		
+		case cmd_field_count is
+			when 8 =>
+				et_board_ops.devices.move_device (
+					module_cursor 	=> module,
+					device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
+					coordinates		=> to_coordinates (get_field (cmd, 6)),  -- relative/absolute
+					point			=> type_vector_model (set (
+										x => to_distance (dd => get_field (cmd, 7)),
+										y => to_distance (dd => get_field (cmd, 8)))),
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 9 .. type_field_count'last =>
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others =>
+				command_incomplete (cmd);
+		end case;
+	end move_device;
+
+	
+
+
+
+
+	
+
+
+	procedure rotate_device (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+	begin
+		case cmd_field_count is
+			when 5 =>
+				et_board_ops.devices.rotate_device (
+					module_cursor 	=> module,
+					device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
+					coordinates		=> RELATIVE,
+					log_threshold	=> log_threshold + 1);
+
+			when 7 =>
+				et_board_ops.devices.rotate_device (
+					module_cursor 	=> module,
+					device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
+					coordinates		=> to_coordinates (get_field (cmd, 6)),  -- relative/absolute
+					rotation		=> to_rotation (get_field (cmd, 7)),
+					log_threshold	=> log_threshold + 1);
+
+			when 8 .. type_field_count'last =>
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others =>
+				command_incomplete (cmd);
+		end case;
+	end rotate_device;
+
+
+
+
+
+	
+
+
+
+	procedure rename_device (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+
+		
+		procedure do_it is
+		begin
+			rename_non_electrical_device (
+				module_cursor		=> active_module,
+				device_name_before	=> to_device_name (get_field (cmd, 5)),
+				device_name_after	=> to_device_name (get_field (cmd, 6)),
+				log_threshold		=> log_threshold + 1);
+
+		end do_it;
+
+		
+	begin
+		-- CS log message
+		
+		case cmd_field_count is
+			when 6 => do_it; 
+
+			when 7 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1);
+			
+			when others => command_incomplete (cmd);
+		end case;
+	end rename_device;
+
+
+
+
+
+
+
+	
+
+
+
+	procedure flip_device (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is 
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+	begin
+		-- CS log message
+
+		case cmd_field_count is
+			when 5 =>
+				et_board_ops.devices.flip_device (
+					module_cursor 	=> active_module,
+					device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
+					toggle			=> true,
+					log_threshold	=> log_threshold + 1);
+
+			when 6 =>
+				et_board_ops.devices.flip_device (
+					module_cursor 	=> active_module,
+					device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
+					face			=> to_face  (get_field (cmd, 6)),  -- top/bottom
+					log_threshold	=> log_threshold + 1);
+
+			when 7 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+	end flip_device;
+
+
+
+
+
+
+
+	
+
+
+	procedure move_device_placeholder (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+
+		use et_device_placeholders;
+		use et_device_placeholders.packages;
+
+		meaning : type_placeholder_meaning;
+
+
+		
+		procedure do_it is 
+		begin
+			case cmd_field_count is
+				when 11 =>
+					move_placeholder (
+						module_cursor 	=> module,
+						device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
+						meaning			=> meaning,
+						layer			=> to_placeholder_layer (get_field (cmd, 6)), -- assy
+						face			=> to_face (get_field (cmd, 7)), -- top
+						index			=> to_placeholder_index (get_field (cmd, 8)), -- 2
+						coordinates		=> to_coordinates (get_field (cmd, 9)),  -- relative/absolute
+						point			=> to_vector_model (get_field (cmd, 10), get_field (cmd, 11)),
+						log_threshold	=> log_threshold + 1);
+
+				when 12 .. type_field_count'last => 
+					command_too_long (cmd, cmd_field_count - 1); 
+					
+				when others => command_incomplete (cmd);
+			end case;
+		end do_it;
+
+		
+	begin
+		-- CS log message
+		
+		case noun is
+			when NOUN_NAME =>
+				meaning := NAME;
+				
+			when NOUN_VALUE =>
+				meaning := VALUE;
+								
+			when NOUN_PURPOSE =>
+				meaning := PURPOSE;
+
+			-- CS partcode ?
+
+			when others => null; -- CS should never happen
+		end case;
+
+		do_it;		
+	end move_device_placeholder;
+
+
+
+	
+
+
+
+
+
+
+	procedure rotate_device_placeholder (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+
+		use et_device_placeholders;
+		use et_device_placeholders.packages;
+
+		meaning : type_placeholder_meaning;
+
+		
+		procedure do_it is 
+		begin
+			case cmd_field_count is
+				when 10 =>
+					rotate_placeholder (
+						module_cursor 	=> active_module,
+						device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
+						meaning			=> meaning,
+						layer			=> to_placeholder_layer (get_field (cmd, 6)), -- assy
+						face			=> to_face (get_field (cmd, 7)), -- top
+						index			=> to_placeholder_index (get_field (cmd, 8)), -- 2
+						coordinates		=> to_coordinates (get_field (cmd, 9)),  -- relative/absolute
+						rotation		=> to_rotation (get_field (cmd, 10)), -- 45
+						log_threshold	=> log_threshold + 1);
+
+				when 11 .. type_field_count'last => 
+					command_too_long (cmd, cmd_field_count - 1); 
+					
+				when others => command_incomplete (cmd);
+			end case;
+		end do_it;
+
+		
+	begin
+		-- CS log message
+		
+		case noun is
+			when NOUN_NAME =>
+				meaning := NAME;
+				
+			when NOUN_VALUE =>
+				meaning := VALUE;
+								
+			when NOUN_PURPOSE =>
+				meaning := PURPOSE;
+
+			-- CS partcode ?
+
+			when others => null; -- CS should never happen
+		end case;
+
+		do_it;		
+	end rotate_device_placeholder;
+
+
+
+
+
+
+
+
+
+
+	procedure restore_device_placeholders (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+
+	begin
+		case cmd_field_count is
+			when 5 =>
+				reset_placeholder_positions (
+					module_cursor 	=> active_module,
+					device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
+					log_threshold	=> log_threshold + 1);
+
+			when 6 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1); 
+				
+			when others => command_incomplete (cmd);
+		end case;		
+	end restore_device_placeholders;
 
 	
 	

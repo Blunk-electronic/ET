@@ -1083,311 +1083,8 @@ package body et_cp_board is
 					
 			end case;
 		end route_net;
-
 	
 
-
-		
-		
-
-
-
-		
-		-- This procedure parses a command to delete
-		-- a non-electrical device:
-		-- Example: "board led_driver delete device FD1"
-		procedure delete_device is
-			
-			procedure do_it is 
-				use et_board_ops.devices;
-			begin
-				delete_non_electrical_device (
-					module_cursor	=> active_module,
-					device_name		=> to_device_name (get_field (5)),
-					log_threshold	=> log_threshold + 1);
-			end do_it;
-			
-
-		begin
-			case cmd_field_count is
-				when 5 => do_it;				
-				
-				when 6 .. type_field_count'last => too_long;
-				
-				when others => command_incomplete;
-			end case;		
-		end delete_device;
-
-
-
-
-		-- This procedure parses a command to copy
-		-- a non-electrical device:
-		-- Example: "board led_driver copy device FD1 230 100"
-		procedure copy_device is begin
-			case cmd_field_count is
-				when 7 =>
-
-					et_board_ops.devices.copy_non_electrical_device (
-						module_cursor 	=> active_module,
-						device_name		=> to_device_name (get_field (5)),
-						destination		=> to_vector_model (get_field (6), get_field (7)), -- x/y
-						log_threshold	=> log_threshold + 1);
-
-				when 8 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end copy_device;
-
-
-		
-		
-
-		procedure move_device is begin
-			case cmd_field_count is
-				when 8 =>
-					et_board_ops.devices.move_device (
-						module_cursor 	=> active_module,
-						device_name		=> to_device_name (get_field (5)), -- IC1
-						coordinates		=> to_coordinates (get_field (6)),  -- relative/absolute
-						point			=> type_vector_model (set (
-											x => to_distance (dd => get_field (7)),
-											y => to_distance (dd => get_field (8)))),
-						log_threshold	=> log_threshold + 1
-						);
-
-				when 9 .. type_field_count'last =>
-					too_long;
-					
-				when others =>
-					command_incomplete;
-			end case;
-		end move_device;
-
-
-
-		
-
-		-- This procedure parses a command that rotates a device.
-		-- Example: board led_driver rotate device IC20
-		-- Example: board led_driver rotate device IC20 absolute 45
-		-- Example: board led_driver rotate device IC20 relative 10
-		procedure rotate_device is begin
-			case cmd_field_count is
-				when 5 =>
-					et_board_ops.devices.rotate_device (
-						module_cursor 	=> active_module,
-						device_name		=> to_device_name (get_field (5)), -- IC1
-						coordinates		=> RELATIVE,
-						log_threshold	=> log_threshold + 1);
-
-				when 7 =>
-					et_board_ops.devices.rotate_device (
-						module_cursor 	=> active_module,
-						device_name		=> to_device_name (get_field (5)), -- IC1
-						coordinates		=> to_coordinates (get_field (6)),  -- relative/absolute
-						rotation		=> to_rotation (get_field (7)),
-						log_threshold	=> log_threshold + 1);
-
-				when 8 .. type_field_count'last =>
-					too_long;
-					
-				when others =>
-					command_incomplete;
-			end case;
-		end rotate_device;
-
-
-
-		
-		
-		-- This procedure parses a command to rename a non-electrical device:
-		-- Example: board led_driver rename device FD1 FD2
-		procedure rename_device is
-			
-			procedure do_it is 
-				use et_board_ops.devices;
-			begin
-				rename_non_electrical_device (
-					module_cursor		=> active_module,
-					device_name_before	=> to_device_name (get_field (5)),
-					device_name_after	=> to_device_name (get_field (6)),
-					log_threshold		=> log_threshold + 1);
-
-			end do_it;
-
-			
-		begin
-			case cmd_field_count is
-				when 6 => do_it; 
-
-				when 7 .. type_field_count'last => too_long;
-				
-				when others => command_incomplete;
-			end case;
-		end rename_device;
-
-
-		
-
-
-		-- This procedure parses a command that flips a device.
-		-- Example: board led_driver flip device IC20
-		-- Example: board led_driver flip device IC20 bottom/top
-		procedure flip_device is begin
-			case cmd_field_count is
-				when 5 =>
-					et_board_ops.devices.flip_device (
-						module_cursor 	=> active_module,
-						device_name		=> to_device_name (get_field (5)), -- IC1
-						toggle			=> true,
-						log_threshold	=> log_threshold + 1);
-
-				when 6 =>
-					et_board_ops.devices.flip_device (
-						module_cursor 	=> active_module,
-						device_name		=> to_device_name (get_field (5)), -- IC1
-						face			=> to_face  (get_field (6)),  -- top/bottom
-						log_threshold	=> log_threshold + 1);
-
-				when 7 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end flip_device;
-
-		
-
-
-		-- This procedure parses a command that moves a placeholder
-		-- for name, value or purpose of a device.
-		-- Example: "board led_driver move value R1 silkscreen top 2 absolute 100 115"
-		-- Example: "board led_driver move value IC1 assy_doc bottom 2 relative -5 0"
-		procedure move_device_placeholder is
-			meaning : type_placeholder_meaning;
-			
-			procedure do_it is 
-				use et_board_ops.devices;
-				use et_device_placeholders.packages;
-			begin
-				case cmd_field_count is
-					when 11 =>
-						move_placeholder (
-							module_cursor 	=> active_module,
-							device_name		=> to_device_name (get_field (5)), -- IC1
-							meaning			=> meaning,
-							layer			=> to_placeholder_layer (get_field (6)), -- assy
-							face			=> to_face (get_field (7)), -- top
-							index			=> to_placeholder_index (get_field (8)), -- 2
-							coordinates		=> to_coordinates (get_field (9)),  -- relative/absolute
-							point			=> to_vector_model (get_field (10), get_field (11)),
-							log_threshold	=> log_threshold + 1);
-
-					when 12 .. type_field_count'last => too_long; 
-						
-					when others => command_incomplete;
-				end case;
-			end do_it;
-
-			
-		begin
-			case noun is
-				when NOUN_NAME =>
-					meaning := NAME;
-					
-				when NOUN_VALUE =>
-					meaning := VALUE;
-									
-				when NOUN_PURPOSE =>
-					meaning := PURPOSE;
-
-				-- CS partcode ?
-
-				when others => null; -- CS should never happen
-			end case;
-
-			do_it;		
-		end move_device_placeholder;
-
-
-
-
-
-
-
-		-- This procedure parses a command that rotates a placeholder
-		-- for name, value or purpose of a device.
-		-- Example: "board led_driver rotate value R1 silkscreen top 2 absolute 45"
-		-- Example: "board led_driver rotate value IC1 assy_doc bottom 2 relative -10"
-		procedure rotate_device_placeholder is
-			meaning : type_placeholder_meaning;
-			
-			procedure do_it is 
-				use et_board_ops.devices;
-				use et_device_placeholders.packages;
-			begin
-				case cmd_field_count is
-					when 10 =>
-						rotate_placeholder (
-							module_cursor 	=> active_module,
-							device_name		=> to_device_name (get_field (5)), -- IC1
-							meaning			=> meaning,
-							layer			=> to_placeholder_layer (get_field (6)), -- assy
-							face			=> to_face (get_field (7)), -- top
-							index			=> to_placeholder_index (get_field (8)), -- 2
-							coordinates		=> to_coordinates (get_field (9)),  -- relative/absolute
-							rotation		=> to_rotation (get_field (10)), -- 45
-							log_threshold	=> log_threshold + 1);
-
-					when 11 .. type_field_count'last => too_long; 
-						
-					when others => command_incomplete;
-				end case;
-			end do_it;
-
-			
-		begin
-			case noun is
-				when NOUN_NAME =>
-					meaning := NAME;
-					
-				when NOUN_VALUE =>
-					meaning := VALUE;
-									
-				when NOUN_PURPOSE =>
-					meaning := PURPOSE;
-
-				-- CS partcode ?
-
-				when others => null; -- CS should never happen
-			end case;
-
-			do_it;		
-		end rotate_device_placeholder;
-
-		
-		
-		
-
-		-- This procedure parses a command that restores
-		-- the placeholders of a device.
-		-- Example: "board led_driver restore placeholders R1"
-		procedure restore_device_placeholders is 
-			use et_board_ops.devices;
-		begin
-			case cmd_field_count is
-				when 5 =>
-					reset_placeholder_positions (
-						module_cursor 	=> active_module,
-						device_name		=> to_device_name (get_field (5)), -- IC1
-						log_threshold	=> log_threshold + 1);
-
-				when 6 .. type_field_count'last => too_long; 
-					
-				when others => command_incomplete;
-			end case;		
-		end restore_device_placeholders;
 
 
 
@@ -1709,7 +1406,7 @@ package body et_cp_board is
 				when VERB_COPY =>
 					case noun is
 						when NOUN_DEVICE =>
-							copy_device;
+							copy_device (module_cursor, cmd, log_threshold + 1);
 
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -1718,10 +1415,10 @@ package body et_cp_board is
 				when VERB_DELETE =>
 					case noun is
 						when NOUN_DEVICE =>
-							delete_device;						
+							delete_device (module_cursor, cmd, log_threshold + 1);				
 
 						when NOUN_LAYER =>
-							delete_signal_layer (module_cursor, cmd, log_threshold + 1);					
+							delete_signal_layer (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_HOLE =>
 							delete_hole_segment (module_cursor, cmd, log_threshold + 1);
@@ -1850,7 +1547,7 @@ package body et_cp_board is
 				when VERB_FLIP =>
 					case noun is
 						when NOUN_DEVICE =>
-							flip_device;
+							flip_device (module_cursor, cmd, log_threshold + 1);
 
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -1886,10 +1583,10 @@ package body et_cp_board is
 							move_cursor (cmd, log_threshold + 1);
 							
 						when NOUN_DEVICE =>
-							move_device;
+							move_device (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE =>
-							move_device_placeholder;
+							move_device_placeholder (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_SUBMODULE =>
 							case cmd_field_count is
@@ -1936,7 +1633,7 @@ package body et_cp_board is
 				when VERB_RENAME =>
 					case noun is
 						when NOUN_DEVICE =>
-							rename_device;
+							rename_device (module_cursor, cmd, log_threshold + 1);
 
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -1945,7 +1642,7 @@ package body et_cp_board is
 				when VERB_RESTORE =>
 					case noun is
 						when NOUN_PLACEHOLDERs =>
-							restore_device_placeholders;
+							restore_device_placeholders (module_cursor, cmd, log_threshold + 1);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -1966,10 +1663,10 @@ package body et_cp_board is
 				when VERB_ROTATE =>
 					case noun is
 						when NOUN_DEVICE =>
-							rotate_device;
+							rotate_device (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE =>
-							rotate_device_placeholder;
+							rotate_device_placeholder (module_cursor, cmd, log_threshold + 1);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
