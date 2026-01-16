@@ -223,20 +223,12 @@ package body et_cp_board is
 		use et_modes.board;
 
 
-		-- This function is a shortcut to get a single field
-		-- from the given command:
-		function get_field (place : in type_field_count) 
-			return string 
-		is begin
-			return get_field (cmd, place);
-		end;
-
 		
 		-- This procedure sets the verb and the noun:
 		procedure set_verb_and_noun is begin
 			-- Set the verb.
 			-- Read it from field 3:
-			verb := to_verb (get_field (3));
+			verb := to_verb (get_field (cmd, 3));
 
 			
 			-- There are some very short commands which do not require a noun.
@@ -245,7 +237,7 @@ package body et_cp_board is
 				when VERB_EXIT | VERB_QUIT => null; -- no noun
 				
 				-- Set the noun. Read it from field 4:		
-				when others => noun := to_noun (get_field (4));
+				when others => noun := to_noun (get_field (cmd, 4));
 			end case;
 		end set_verb_and_noun;
 
@@ -270,27 +262,10 @@ package body et_cp_board is
 		end update_verb_noun_display;
 
 		
-		
-		module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 
 
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
-
-
-		-- This procedure is a shortcut. 
-		-- Call it in case the given command is too long:
-		procedure too_long is begin
-			command_too_long (cmd, cmd_field_count - 1);
-		end;
-
-
-		-- This procedure is a shortcut. 
-		-- Call it in case the given command is incomplete:
-		procedure command_incomplete is begin
-			command_incomplete (cmd);
-		end;
-
 
 
 
@@ -718,7 +693,7 @@ package body et_cp_board is
 									when 5 => -- place via RESET_N
 										-- Preset the net name so that it is visible
 										-- in the via properties bar:
-										object_net_name := to_net_name (get_field (5));
+										object_net_name := to_net_name (get_field (cmd, 5));
 
 										show_via_properties;
 										set_finalization_pending (cmd);
@@ -747,12 +722,7 @@ package body et_cp_board is
 		
 		log (text => "command origin: " & get_origin (cmd), level => log_threshold);
 
-		
-		module := to_module_name (get_field (2)); -- motor_driver (without extension *.mod)
-		-- CS: Becomes obsolete once all board ops use the
-		-- given module_cursor.
-
-
+	
 		set_verb_and_noun;
 		
 
