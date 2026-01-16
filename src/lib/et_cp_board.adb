@@ -93,6 +93,7 @@ with et_cp_board_device;			use et_cp_board_device;
 with et_cp_board_conductors;		use et_cp_board_conductors;
 with et_cp_board_frame;				use et_cp_board_frame;
 with et_cp_board_module;			use et_cp_board_module;
+with et_cp_board_material_pnp;		use et_cp_board_material_pnp;
 
 
 -- to do:
@@ -484,19 +485,7 @@ package body et_cp_board is
 				when VERB_MAKE =>
 					case noun is
 						when NOUN_PNP =>
-							case cmd_field_count is
-								when 4 =>
-									make_pick_and_place 
-										(
-										module_name 	=> module,
-										log_threshold	=> log_threshold + 1);
-
-								when 5 .. type_field_count'last =>
-									too_long;
-									
-								when others =>
-									command_incomplete;
-							end case;
+							export_pick_and_place  (module_cursor, cmd, log_threshold + 1);
 
 						when others => invalid_noun (to_string (noun));
 					end case;
