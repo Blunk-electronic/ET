@@ -74,7 +74,6 @@ with et_canvas_board;
 
 with et_modes;						use et_modes;
 with et_module_ops;					use et_module_ops;
-with et_module_write;				use et_module_write;
 
 with et_canvas_board_preliminary_object;
 
@@ -95,6 +94,7 @@ with et_cp_board_via;				use et_cp_board_via;
 with et_cp_board_device;			use et_cp_board_device;
 with et_cp_board_conductors;		use et_cp_board_conductors;
 with et_cp_board_frame;				use et_cp_board_frame;
+with et_cp_board_module;			use et_cp_board_module;
 
 
 -- to do:
@@ -299,33 +299,6 @@ package body et_cp_board is
 
 		
 
-		-- Actions to save a module:
-		procedure save_module is 
-		begin
-			-- Since we are already in the project directory,
-			-- we can call the save_module procedures right away.
-			
-			case cmd_field_count is
-				when 4 =>
-					-- Save the module with its own name:
-					write_module (
-						module_cursor	=> active_module,
-						log_threshold	=> log_threshold + 1);
-
-				when 5 =>
-					-- Save the module with a different name:
-					write_module (
-						module_cursor	=> active_module,
-						save_as_name	=> to_module_name (get_field (5)), -- led_driver_test
-						log_threshold	=> log_threshold + 1);
-					
-				when 6 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;			
-
-		end save_module;
-		
 
 
 		-- This procedure extracts from the command the
@@ -705,7 +678,7 @@ package body et_cp_board is
 				when VERB_SAVE =>
 					case noun is
 						when NOUN_MODULE =>
-							save_module;
+							save_module (module_cursor, cmd, log_threshold + 1);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
