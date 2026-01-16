@@ -49,75 +49,26 @@ with et_module_names;					use et_module_names;
 with et_runmode;						use et_runmode;
 with et_script_processor;
 
-with et_module;						use et_module;
-with et_module_board;				use et_module_board;
-with et_module_board_user_settings;
-
 with et_module_instance;			use et_module_instance;
-with et_pcb_sides;
-with et_primitive_objects;			use et_primitive_objects;
-with et_axes;						use et_axes;
 
 with et_schematic_coordinates;
 with et_board_geometry;				use et_board_geometry;
 with et_board_coordinates;			use et_board_coordinates;
-with et_directions;					use et_directions;
 
-with et_text_content;				use et_text_content;
-
--- with et_board_text;
-with et_board_layer_category;		use et_board_layer_category;
-with et_board_ops.conductors;
-with et_board_ops.fill_zones;
 with et_board_ops.frame;
 with et_sheets;
 with et_modes.board;
-with et_device_property_level;
-with et_devices_electrical;
-with et_device_placeholders;		use et_device_placeholders;
-with et_device_placeholders.packages;
 with et_canvas_board_devices;
 with et_canvas_board_texts;
 with et_canvas_board_vias;
 with et_design_rules_board;			use et_design_rules_board;
-with et_fill_zones;
-with et_fill_zones.boards;
-with et_thermal_relief;				use et_thermal_relief;
-with et_conductor_text;				use et_conductor_text;
-with et_route_restrict.boards;		use et_route_restrict.boards;
-with et_via_restrict.boards;		use et_via_restrict.boards;
-with et_ratsnest;					use et_ratsnest;
-
-with et_pcb_placeholders;
-with et_pcb_placeholders.conductor;		use et_pcb_placeholders.conductor;
-with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
 
 with et_board_ops;
-with et_board_ops.devices;
-with et_board_ops.silkscreen;
-with et_board_ops.assy_doc;
-with et_board_ops.stopmask;
-with et_board_ops.stencil;
-with et_board_ops.route_restrict;
-with et_board_ops.via_restrict;
-with et_board_ops.ratsnest;
-with et_board_ops.text;
-with et_board_ops.grid;
-
-with et_unit_name;
-with et_schematic_ops.units;
-
 
 with et_drawing_frame;
 with et_net_names;					use et_net_names;
 with et_device_name;
-with et_terminals;
-with et_terminal_name;				use et_terminal_name;
-with et_package_model_name;
-with et_mirroring;
-with et_device_prefix;
-with et_pcb_stack;
-with et_pcb_signal_layers;			use et_pcb_signal_layers;
+
 with et_keywords;					use et_keywords;
 
 with et_canvas_schematic;
@@ -266,20 +217,11 @@ package body et_cp_board is
 		log_threshold	: in type_log_level)
 	is
 		use et_board_ops;
-		use et_board_ops.conductors;
-
-		use et_pcb_sides;
-
 		use pac_geometry_2;
-		use pac_contours;
 
-		use et_pcb_stack;
 		use et_canvas_board;
 		use et_canvas_board.pac_canvas;
 		use et_modes.board;
-
-		use et_device_name;
-		
 
 
 		-- This function is a shortcut to get a single field
@@ -350,270 +292,7 @@ package body et_cp_board is
 			command_incomplete (cmd);
 		end;
 
-			
 
-
-		
-
-		
-		
-		type type_track_shape is (LINE, ARC, ZONE);
-		-- CS circular tracks are currently not supported
-
-		
-		
-		procedure route_freetrack is
-			shape : constant type_track_shape := type_track_shape'value (get_field (6));
-
-			-- get the user specific settings of the board
-			settings : constant et_module_board_user_settings.type_user_settings := 
-				get_user_settings (module_cursor);
-			
-
-			-- Extract from the given command the zone 
-			-- arguments (everything after "zone"):
-			procedure make_fill_zone is
-				use et_fill_zones;
-				use et_fill_zones.boards;
-				use et_board_ops.fill_zones;
-				
-				arguments : constant type_fields_of_line := 
-					remove_field (get_fields (cmd), 1, 6);
-				
-				ps : type_floating_solid;
-				ph : type_floating_hatched;
-
-				-- Build a basic polygon from the arguments:
-				p : constant type_contour := type_contour (to_contour (arguments));
-			begin
-				case settings.polygons_conductor.fill_style is
-					when SOLID =>
-				
-						ps := (p with 
-							fill_style	=> SOLID,
-							linewidth	=> settings.polygons_conductor.linewidth,
-							isolation	=> settings.polygons_conductor.isolation,
-							properties	=> (
-								layer 			=> to_signal_layer (get_field (5)),
-								priority_level	=> settings.polygons_conductor.priority_level,
-								others			=> <>),
-
-							islands		=> no_islands,
-							easing		=> settings.polygons_conductor.easing);
-
-						add_zone (module_cursor, ps, log_threshold + 1);
-
-						
-					when HATCHED =>
-
-						ph := (p with 
-							fill_style	=> HATCHED,
-							spacing		=> settings.polygons_conductor.spacing,
-							linewidth	=> settings.polygons_conductor.linewidth,
-							isolation	=> settings.polygons_conductor.isolation,
-							properties	=> (
-								layer 			=> to_signal_layer (get_field (5)),
-								priority_level	=> settings.polygons_conductor.priority_level,
-								others			=> <>),
-
-							islands		=> no_islands,
-							easing		=> settings.polygons_conductor.easing);
-
-						add_zone (module_cursor, ph, log_threshold + 1);
-						
-				end case;
-			end make_fill_zone;
-
-
-			line_tmp	: type_line;
-			arc_tmp		: type_arc;
-			width_tmp	: type_distance_positive;
-			layer_tmp	: type_signal_layer;
-
-			
-		begin -- route_freetrack
-			case shape is
-				when LINE =>
-					case cmd_field_count is
-						when 11 =>
-							-- draw a freetrack
-							layer_tmp := to_signal_layer (get_field (5));
-							width_tmp := to_distance (get_field (7));
-
-							line_tmp := type_line (to_line (
-								A => to_vector_model (get_field (8), get_field (9)),
-								B => to_vector_model (get_field (10), get_field (11))));
-															
-							add_line (
-								module_name 	=> module,
-								net_name		=> to_net_name (""),
-								line			=> (line_tmp with width_tmp, layer_tmp),							
-								log_threshold	=> log_threshold + 1);
-
-						when 12 .. type_field_count'last =>
-							too_long;
-							
-						when others =>
-							command_incomplete;
-					end case;
-
-					
-				when ARC =>
-					case cmd_field_count is
-						when 14 =>
-							layer_tmp := to_signal_layer (get_field (5));
-							width_tmp := to_distance (get_field (7));
-
-							arc_tmp := type_arc (to_arc (
-								center		=> to_vector_model (get_field (8), get_field (9)),
-								A			=> to_vector_model (get_field (10), get_field (11)),
-								B			=> to_vector_model (get_field (12), get_field (13)),
-								direction	=> to_direction (get_field (14))));
-															
-							-- draw a freetrack
-							add_arc (
-								module_name 	=> module,
-								arc				=> (arc_tmp with width_tmp, layer_tmp),
-								net_name		=> to_net_name (""),
-								log_threshold	=> log_threshold + 1);
-							
-						when 15 .. type_field_count'last =>
-							too_long;
-							
-						when others =>
-							command_incomplete;
-					end case;
-
-					
-				when ZONE =>
-					case cmd_field_count is
-						when 5 .. type_field_count'last =>
-							make_fill_zone;
-
-						when others =>
-							command_incomplete;
-					end case;
-			end case;
-		end route_freetrack;
-
-		
-
-		
-
-
-
-		
-		-- This procedure parses a command to 
-		-- delete an freetrack segment in a conductor layer:
-		procedure delete_freetrack_segment is
-		
-			procedure do_it is 
-				catch_zone : type_catch_zone;
-			begin
-				catch_zone := set_catch_zone (
-					center	=> to_vector_model (get_field (6), get_field (7)),
-					radius	=> to_zone_radius (get_field (8)));
-					
-				delete_track (
-					module_name 	=> module,
-					net_name		=> to_net_name (""),
-					layer			=> to_signal_layer (get_field (5)),
-					catch_zone		=> catch_zone,
-					log_threshold	=> log_threshold + 1);
-
-			end do_it;
-			
-		begin
-			case cmd_field_count is
-				when 8 => do_it;
-				when 9 .. type_field_count'last => too_long;
-				when others => command_incomplete;
-			end case;
-		end delete_freetrack_segment;
-
-		
-
-		
-		
-
-
-		
-
-		procedure fill_zones is 
-			use et_board_ops.fill_zones;
-			nets : pac_net_names.list;
-		begin
-			case cmd_field_count is
-				when 4 => -- fill all zones
-					
-					-- command: board demo fill zone
-					fill_zones (module_cursor, log_threshold + 1);
-
-					
-				when others => 
-					-- like: board demo fill zone GND P3V3 AGND
-
-					-- collect the optional net names in list "nets":
-					for place in 5 .. cmd_field_count loop
-						nets.append (to_net_name (get_field (place)));
-					end loop;
-
-					fill_zones (module_cursor, log_threshold + 1, nets);
-			end case;
-					
-			if runmode /= MODE_HEADLESS then
-				set_status ("conductor zones filled");
-			end if;
-		end fill_zones;
-		
-
-
-		
-		procedure clear_fill_zone is
-			use et_board_ops.fill_zones;
-			nets : pac_net_names.list;
-		begin
-			case cmd_field_count is
-				when 4 => -- clear all zones
-					
-					-- command: board demo clear zone
-					clear_zones (module_cursor, log_threshold + 1);
-
-					
-				when others => 
-					-- like: board demo clear zone GND P3V3 AGND
-
-					-- collect the optional net names in list "nets":
-					for place in 5 .. cmd_field_count loop
-						nets.append (to_net_name (get_field (place)));
-					end loop;
-
-					clear_zones (module_cursor, log_threshold + 1, nets);
-			end case;
-						
-			if runmode /= MODE_HEADLESS then
-				set_status ("conductor zones cleared");
-			end if;
-		end clear_fill_zone;
-
-
-		
-
-		procedure update_ratsnest is
-			use et_board_ops.ratsnest;
-		begin
-			-- board demo update ratsnest
-			case cmd_field_count is
-					
-				when 4 => 
-					update_ratsnest (module_cursor, log_threshold + 1);
-					set_status (status_ratsnest_updated);
-				
-				when 5 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end update_ratsnest;
 
 
 		
@@ -779,7 +458,7 @@ package body et_cp_board is
 				when VERB_CLEAR =>
 					case noun is
 						when NOUN_ZONE =>
-							clear_fill_zone;
+							clear_zones (module_cursor, cmd, log_threshold + 1);
 
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -833,7 +512,7 @@ package body et_cp_board is
 							delete_via_restrict (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_FREETRACK =>
-							delete_freetrack_segment;
+							delete_freetrack_segment (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_TRACK =>
 							delete_net_segment (module_cursor, cmd, log_threshold + 1);
@@ -919,7 +598,7 @@ package body et_cp_board is
 				when VERB_FILL =>
 					case noun is
 						when NOUN_ZONE =>
-							fill_zones;
+							et_cp_board_route.fill_zones (module_cursor, cmd, log_threshold + 1);
 							
 						when others => 
 							invalid_noun (to_string (noun));
@@ -1033,7 +712,7 @@ package body et_cp_board is
 				when VERB_ROUTE =>
 					case noun is
 						when NOUN_FREETRACK =>
-							route_freetrack;
+							route_freetrack (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_NET =>
 							route_net (module_cursor, cmd, log_threshold + 1);
@@ -1107,8 +786,8 @@ package body et_cp_board is
 
 				when VERB_UPDATE =>
 					case noun is
-						when NOUN_RATSNEST => -- board demo update ratsnest
-							update_ratsnest;
+						when NOUN_RATSNEST =>
+							update_ratsnest (module_cursor, cmd, log_threshold + 1);
 
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -1150,7 +829,7 @@ package body et_cp_board is
 			use et_canvas_board_texts;
 			use et_canvas_board_vias;
 			use et_canvas_board_preliminary_object;
-			
+			use et_device_name;
 			device_name : type_device_name;
 
 			

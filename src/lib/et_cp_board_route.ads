@@ -38,8 +38,9 @@
 --   ToDo: 
 --
 -- DESCRIPTION:
--- This package is about conductor objects that are connected
--- with a net. Such objects are part of a route.
+-- This package is about conductor objects.
+-- Such objects are either connected with a net (as part of a route)
+-- or not connected at all (floating).
 
 
 with et_generic_modules;		use et_generic_modules;
@@ -84,7 +85,48 @@ package et_cp_board_route is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
+
+
+
+	procedure route_freetrack (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+	-- This procedure parses a command to 
+	-- delete an freetrack segment in a conductor layer:
+	procedure delete_freetrack_segment (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+
+
+	procedure fill_zones (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+
+
+	procedure clear_zones (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
 	
+
+	-- Parses a command that updtaes the ratsnest.
+	-- Example: board demo update ratsnest
+	procedure update_ratsnest (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
 end et_cp_board_route;
 
 -- Soli Deo Gloria

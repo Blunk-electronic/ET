@@ -44,6 +44,7 @@ with ada.text_io;						use ada.text_io;
 with ada.characters.handling;			use ada.characters.handling;
 with ada.strings; 						use ada.strings;
 
+with et_runmode;						use et_runmode;
 with et_primitive_objects;				use et_primitive_objects;
 with et_exceptions;						use et_exceptions;
 with et_modes.board;					use et_modes.board;
@@ -62,11 +63,16 @@ with et_board_ops;
 with et_board_ops.fill_zones;
 with et_board_ops.conductors;
 with et_pcb_signal_layers;
-with et_net_names;
+with et_net_names;						use et_net_names;
 with et_device_name;
 with et_terminal_name;
 with et_axes;
 with et_directions;
+
+with et_canvas_board;
+
+with et_ratsnest;
+with et_board_ops.ratsnest;
 
 
 package body et_cp_board_route is
@@ -755,8 +761,335 @@ package body et_cp_board_route is
 	end delete_net_segment;
 
 
+
+
+
+
 	
 	
+	procedure route_freetrack (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+		use et_board_ops;
+		use et_board_ops.conductors;
+		use et_pcb_signal_layers;
+		use et_net_names;
+		use et_directions;
+		
+		shape : constant type_track_shape := type_track_shape'value (get_field (cmd, 6));
+
+		-- get the user specific settings of the board
+		settings : constant et_module_board_user_settings.type_user_settings := 
+			get_user_settings (module);
+		
+
+		-- Extract from the given command the zone 
+		-- arguments (everything after "zone"):
+		procedure make_fill_zone is
+			use et_fill_zones;
+			use et_fill_zones.boards;
+			use et_board_ops.fill_zones;
+			
+			arguments : constant type_fields_of_line := 
+				remove_field (get_fields (cmd), 1, 6);
+			
+			ps : type_floating_solid;
+			ph : type_floating_hatched;
+
+			-- Build a basic polygon from the arguments:
+			p : constant type_contour := type_contour (to_contour (arguments));
+		begin
+			case settings.polygons_conductor.fill_style is
+				when SOLID =>
+			
+					ps := (p with 
+						fill_style	=> SOLID,
+						linewidth	=> settings.polygons_conductor.linewidth,
+						isolation	=> settings.polygons_conductor.isolation,
+						properties	=> (
+							layer 			=> to_signal_layer (get_field (cmd, 5)),
+							priority_level	=> settings.polygons_conductor.priority_level,
+							others			=> <>),
+
+						islands		=> no_islands,
+						easing		=> settings.polygons_conductor.easing);
+
+					add_zone (module, ps, log_threshold + 1);
+
+					
+				when HATCHED =>
+
+					ph := (p with 
+						fill_style	=> HATCHED,
+						spacing		=> settings.polygons_conductor.spacing,
+						linewidth	=> settings.polygons_conductor.linewidth,
+						isolation	=> settings.polygons_conductor.isolation,
+						properties	=> (
+							layer 			=> to_signal_layer (get_field (cmd, 5)),
+							priority_level	=> settings.polygons_conductor.priority_level,
+							others			=> <>),
+
+						islands		=> no_islands,
+						easing		=> settings.polygons_conductor.easing);
+
+					add_zone (module, ph, log_threshold + 1);
+					
+			end case;
+		end make_fill_zone;
+
+
+		line_tmp	: type_line;
+		arc_tmp		: type_arc;
+		width_tmp	: type_distance_positive;
+		layer_tmp	: type_signal_layer;
+
+		
+	begin -- route_freetrack
+		-- CS log message
+		
+		case shape is
+			when LINE =>
+				case cmd_field_count is
+					when 11 =>
+						-- draw a freetrack
+						layer_tmp := to_signal_layer (get_field (cmd, 5));
+						width_tmp := to_distance (get_field (cmd, 7));
+
+						line_tmp := type_line (to_line (
+							A => to_vector_model (get_field (cmd, 8), get_field (cmd, 9)),
+							B => to_vector_model (get_field (cmd, 10), get_field (cmd, 11))));
+														
+						add_line (
+							module_name 	=> key (module),
+							net_name		=> to_net_name (""),
+							line			=> (line_tmp with width_tmp, layer_tmp),							
+							log_threshold	=> log_threshold + 1);
+
+					when 12 .. type_field_count'last =>
+						command_too_long (cmd, cmd_field_count - 1);
+						
+					when others =>
+						command_incomplete (cmd);
+				end case;
+
+				
+			when ARC =>
+				case cmd_field_count is
+					when 14 =>
+						layer_tmp := to_signal_layer (get_field (cmd, 5));
+						width_tmp := to_distance (get_field (cmd, 7));
+
+						arc_tmp := type_arc (to_arc (
+							center		=> to_vector_model (get_field (cmd, 8), get_field (cmd, 9)),
+							A			=> to_vector_model (get_field (cmd, 10), get_field (cmd, 11)),
+							B			=> to_vector_model (get_field (cmd, 12), get_field (cmd, 13)),
+							direction	=> to_direction (get_field (cmd, 14))));
+														
+						-- draw a freetrack
+						add_arc (
+							module_name 	=> key (module),
+							arc				=> (arc_tmp with width_tmp, layer_tmp),
+							net_name		=> to_net_name (""),
+							log_threshold	=> log_threshold + 1);
+						
+					when 15 .. type_field_count'last =>
+						command_too_long (cmd, cmd_field_count - 1);
+						
+					when others =>
+						command_incomplete (cmd);
+				end case;
+
+				
+			when ZONE =>
+				case cmd_field_count is
+					when 5 .. type_field_count'last =>
+						make_fill_zone;
+
+					when others =>
+						command_incomplete (cmd);
+				end case;
+		end case;
+	end route_freetrack;
+
+
+	
+
+
+
+
+	procedure delete_freetrack_segment (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+		
+		procedure do_it is 
+			use et_net_names;
+			use et_pcb_signal_layers;
+			use et_board_ops.conductors;
+			catch_zone : type_catch_zone;
+		begin
+			catch_zone := set_catch_zone (
+				center	=> to_vector_model (get_field (cmd, 6), get_field (cmd, 7)),
+				radius	=> to_zone_radius (get_field (cmd, 8)));
+				
+			delete_track (
+				module_name 	=> key (module),
+				net_name		=> to_net_name (""),
+				layer			=> to_signal_layer (get_field (cmd, 5)),
+				catch_zone		=> catch_zone,
+				log_threshold	=> log_threshold + 1);
+
+		end do_it;
+
+		
+	begin
+		-- CS log message
+		
+		case cmd_field_count is
+			when 8 => do_it;
+			
+			when 9 .. type_field_count'last =>
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+	end delete_freetrack_segment;
+
+
+
+
+
+
+
+
+	procedure fill_zones (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+		use et_canvas_board.pac_canvas;
+		use et_board_ops.fill_zones;
+		nets : pac_net_names.list;
+
+	begin
+		-- CS log message
+		
+		case cmd_field_count is
+			when 4 => -- fill all zones
+				
+				-- command: board demo fill zone
+				fill_zones (module, log_threshold + 1);
+
+				
+			when others => 
+				-- like: board demo fill zone GND P3V3 AGND
+
+				-- collect the optional net names in list "nets":
+				for place in 5 .. cmd_field_count loop
+					nets.append (to_net_name (get_field (cmd, place)));
+				end loop;
+
+				fill_zones (module, log_threshold + 1, nets);
+		end case;
+				
+		if runmode /= MODE_HEADLESS then
+			set_status ("conductor zones filled");
+		end if;
+	end fill_zones;
+		
+
+
+
+
+
+
+
+
+	procedure clear_zones (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+		use et_canvas_board.pac_canvas;
+		use et_board_ops.fill_zones;
+		nets : pac_net_names.list;
+	begin
+		-- CS log message
+		
+		case cmd_field_count is
+			when 4 => -- clear all zones
+				
+				-- command: board demo clear zone
+				clear_zones (module, log_threshold + 1);
+
+				
+			when others => 
+				-- like: board demo clear zone GND P3V3 AGND
+
+				-- collect the optional net names in list "nets":
+				for place in 5 .. cmd_field_count loop
+					nets.append (to_net_name (get_field (cmd, place)));
+				end loop;
+
+				clear_zones (module, log_threshold + 1, nets);
+		end case;
+					
+		if runmode /= MODE_HEADLESS then
+			set_status ("conductor zone(s) cleared");
+		end if;
+	end clear_zones;
+
+
+
+
+
+	
+
+	procedure update_ratsnest (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+		use et_canvas_board.pac_canvas;
+		use et_ratsnest;
+		use et_board_ops.ratsnest;
+	begin
+		-- CS log message
+		
+		
+		case cmd_field_count is
+				
+			when 4 => 
+				update_ratsnest (module, log_threshold + 1);
+				set_status (status_ratsnest_updated);
+			
+			when 5 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+	end update_ratsnest;
+
+	
+		
 end et_cp_board_route;
 	
 -- Soli Deo Gloria
