@@ -67,9 +67,6 @@ package et_thermal_relief is
 	use pac_polygons;
 	
 	use pac_geometry_2;
-	
-
-	keyword_relief : constant string := "relief";
 
 	
 	thermal_width_min : constant type_track_width := type_track_width'first;

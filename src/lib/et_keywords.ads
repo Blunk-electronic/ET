@@ -152,6 +152,7 @@ package et_keywords is
 
 	
 	keyword_radius					: constant string := "radius";	
+	keyword_relief					: constant string := "relief";
 	keyword_restring_inner 			: constant string := "restring_inner";
 	keyword_restring_outer 			: constant string := "restring_outer";
 	keyword_revision				: constant string := "revision";
