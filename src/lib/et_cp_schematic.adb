@@ -48,7 +48,6 @@ with ada.exceptions;					use ada.exceptions;
 
 with et_module_names;					use et_module_names;
 with et_runmode;						use et_runmode;
-with et_script_processor;
 
 with et_modes.schematic;
 with et_canvas_schematic_units;
@@ -83,7 +82,6 @@ with et_netchangers;
 with et_submodules;
 with et_assembly_variants;
 with et_assembly_variant_name;			use et_assembly_variant_name;
--- with et_pick_and_place;
 with et_netlists;
 with et_device_name;
 
@@ -113,14 +111,14 @@ with et_cp_schematic_canvas;			use et_cp_schematic_canvas;
 with et_cp_schematic_display;			use et_cp_schematic_display;
 
 
+
+with et_cp_schematic_script;			use et_cp_schematic_script;
+
+
+
 package body et_cp_schematic is
 	
 
-	device_missing	: constant string := "Device name missing !";
-	module_missing	: constant string := "Module name missing !";
-	net_missing		: constant string := "Net name missing !";
-
-	
 	
 	
 	procedure evaluate_command_exit_code (
@@ -146,77 +144,6 @@ package body et_cp_schematic is
 		end case;
 	end evaluate_command_exit_code;
 	
-											
-
-
-	procedure parse_execute_script (
-		cmd				: in out type_single_cmd;
-		log_threshold	: in type_log_level)
-	is 
-		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);
-
-	
-		-- This procedure is to be called when the command is complete.
-		-- It lauches the given script and sets the exit code of
-		-- the command according to the outcome of the script execution:
-		procedure command_complete is
-			use et_script_processor;
-			exit_code : type_exit_code_script;
-		begin
-			exit_code := execute_nested_script (
-				file			=> get_field (cmd, 5),
-				log_threshold	=> log_threshold + 1);
-
-			case exit_code is
-				when SUCCESSFUL =>
-					set_exit_code (cmd, 0);
-
-				when others =>
-					set_exit_code (cmd, 3);
-			end case;
-		end command_complete;
-
-		
-	begin
-		case get_origin (cmd) is
-			when ORIGIN_CONSOLE =>
-				
-				case cmd_field_count is
-					when 4 => 
-						-- Command is incomplete like "execute script"
-						command_incomplete (cmd);
-						
-					when 5 =>
-						-- Command is complete like "execute script demo.scr"
-						command_complete;
-								
-					when 6 .. type_field_count'last =>
-						command_too_long (cmd, cmd_field_count - 1);
-
-
-					when others => null;
-						-- CS should never happen
-						raise constraint_error;
-						
-				end case;
-
-				
-			when ORIGIN_SCRIPT =>
-				case cmd_field_count is
-					when 5 => 
-						-- Command is complete like "execute script demo.scr"
-						command_complete;
-						
-					when 6 .. type_field_count'last =>
-						command_too_long (cmd, cmd_field_count - 1);
-
-					when others =>
-						command_incomplete (cmd);
-						
-				end case;
-		end case;
-	end parse_execute_script;
 
 
 
@@ -298,6 +225,7 @@ package body et_cp_schematic is
 
 		
 		module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+
 
 		-- In order to tell the command processor that an operation is meant to 
 		-- apply to the current sheet, we use the UNIX-bash-like period character:
@@ -2673,7 +2601,7 @@ package body et_cp_schematic is
 				when VERB_EXECUTE =>
 					case noun is
 						when NOUN_SCRIPT =>
-							parse_execute_script (cmd, log_threshold);
+							execute_script (cmd, log_threshold);
 								
 						when others => invalid_noun (to_string (noun));
 					end case;
