@@ -109,7 +109,7 @@ with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary
 with et_cp_schematic_canvas;			use et_cp_schematic_canvas;
 with et_cp_schematic_display;			use et_cp_schematic_display;
 with et_cp_schematic_assembly_variant;	use et_cp_schematic_assembly_variant;
-
+with et_cp_schematic_submodule;			use et_cp_schematic_submodule;
 with et_cp_schematic_script;			use et_cp_schematic_script;
 
 
@@ -1243,376 +1243,8 @@ package body et_cp_schematic is
 
 	-----------------------------------------------------------------------------------	
 
-	-- SUBMODULE OPERATIONS:
+	
 
-		
-		procedure add_port_to_submodule is
-			use et_netchangers;
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 9 =>
-					add_port (
-						module_name 	=> module,
-						instance		=> to_instance_name (get_field (5)),
-						port_name		=> to_net_name (get_field (6)),
-						position		=> type_vector_model (set 
-									(
-									x => to_distance (get_field (7)),
-									y => to_distance (get_field (8))
-									)),
-						direction		=> to_port_name (get_field (9)),
-						log_threshold	=> log_threshold + 1
-						);
-
-				when 10 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end add_port_to_submodule;
-
-
-
-		
-		
-		procedure drag_port_of_submodule is
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 9 =>
-					drag_port (
-						module_name 	=> module,
-						instance		=> to_instance_name (get_field (5)),
-						port_name		=> to_net_name (get_field (6)),
-						coordinates		=> to_coordinates (get_field (7)),  -- relative/absolute
-						point			=> type_vector_model (set (
-									x => to_distance (get_field (8)),
-									y => to_distance (get_field (9)))),
-						log_threshold	=> log_threshold + 1
-						);
-
-				when 10 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end drag_port_of_submodule;
-		
-
-
-		
-		
-		procedure delete_port_of_submodule is
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 6 =>
-					delete_port
-						(
-						module_name 	=> module,
-						instance		=> to_instance_name (get_field (5)),
-						port_name		=> to_net_name (get_field (6)),
-						log_threshold	=> log_threshold + 1
-						);
-
-				when 7 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end delete_port_of_submodule;
-		
-
-
-
-		
-		procedure move_port_of_submodule is 
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 9 =>
-					move_port (
-						module_name 	=> module,
-						instance		=> to_instance_name (get_field (5)),
-						port_name		=> to_net_name (get_field (6)),
-						coordinates		=> to_coordinates (get_field (7)),  -- relative/absolute
-						point			=> type_vector_model (set (
-									x => to_distance (get_field (8)),
-									y => to_distance (get_field (9)))),
-						log_threshold	=> log_threshold + 1
-						);
-
-				when 10 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end move_port_of_submodule;
-		
-		
-
-
-		
-		procedure add_submodule is
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 11 =>
-					add_submodule (
-						module_name 	=> module, -- parent module (where the submodule is to be inserted)
-						file			=> et_submodules.to_submodule_path (get_field (5)),
-						instance		=> to_instance_name (get_field (6)), -- submodule instance name
-						position		=> to_position 
-							(
-							sheet => to_sheet (get_field (7)),
-							point => type_vector_model (set 
-										(
-										x => to_distance (get_field (8)),
-										y => to_distance (get_field (9))
-										))
-							),
-						size => (
-							x => to_distance (get_field (10)),
-							y => to_distance (get_field (11))
-							),
-						log_threshold	=> log_threshold + 1
-						);
-
-				when 12 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end add_submodule;
-
-
-
-
-		
-		procedure move_submodule is
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 9 =>
-					move_submodule (
-						module_name 	=> module,
-						instance		=> to_instance_name (get_field (5)),
-						coordinates		=> to_coordinates (get_field (6)),  -- relative/absolute
-						sheet			=> to_sheet_relative (get_field (7)),
-						point			=> type_vector_model (set (
-									x => to_distance (get_field (8)),
-									y => to_distance (get_field (9)))),
-						log_threshold	=> log_threshold + 1
-						);
-
-				when 10 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end move_submodule;
-			
-
-
-		
-		
-		procedure drag_submodule is
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 8 =>
-					drag_submodule (
-						module_name 	=> module,
-						instance		=> to_instance_name (get_field (5)),
-						coordinates		=> to_coordinates (get_field (6)),  -- relative/absolute
-						point			=> type_vector_model (set (
-									x => to_distance (get_field (7)),
-									y => to_distance (get_field (8)))),
-						log_threshold	=> log_threshold + 1
-						);
-
-				when 9 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end drag_submodule;
-		
-
-
-
-
-		
-		procedure copy_submodule is
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 9 =>
-					copy_submodule (
-						module_name 	=> module, -- parent module (where the submodule is to be copied)
-						instance_origin	=> to_instance_name (get_field (5)), -- submodule instance name
-						instance_new	=> to_instance_name (get_field (6)), -- submodule instance name
-						destination		=> to_position 
-							(
-							sheet => to_sheet (get_field (7)),
-							point => type_vector_model (set
-										(
-										x => to_distance (get_field (8)),
-										y => to_distance (get_field (9))
-										))
-							),
-						log_threshold	=> log_threshold + 1
-						);
-
-				when 10 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end copy_submodule;
-		
-
-
-
-		
-		procedure delete_submodule is
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 5 =>
-					delete_submodule (
-						module_name 	=> module, -- parent module (where the submodule is to be deleted)
-						instance		=> to_instance_name (get_field (5)), -- submodule instance name
-						log_threshold	=> log_threshold + 1
-						);
-
-				when 6 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end delete_submodule;
-
-
-		
-		
-
-		procedure rename_submodule is
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 6 =>
-					rename_submodule
-						(
-						module_name		=> module,
-						instance_old	=> to_instance_name (get_field (5)), -- OSC1
-						instance_new	=> to_instance_name (get_field (6)), -- OSC2
-						log_threshold	=> log_threshold + 1);
-
-				when 7 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end rename_submodule;
-
-
-
-		
-
-		procedure mount_submodule is
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 7 =>
-					mount_submodule
-						(
-						module_name		=> module,
-						variant_parent	=> to_variant (get_field (5)), -- low_cost
-						instance		=> to_instance_name (get_field (6)), -- OSC1
-						variant_submod	=> to_variant (get_field (7)), -- fixed_frequency
-						log_threshold	=> log_threshold + 1);
-
-				when 8 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-
-			end case;
-		end mount_submodule;
-		
-		
-
-		
-
-		procedure remove_submodule is
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 6 =>
-					remove_submodule
-						(
-						module_name		=> module,
-						variant_parent	=> to_variant (get_field (5)),
-						instance		=> to_instance_name (get_field (6)), -- OSC1
-						log_threshold	=> log_threshold + 1);
-
-				when 7 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end remove_submodule;
-
-
-		
-
-		
-		procedure set_submodule_file is
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 6 =>
-					set_submodule_file (
-						module_name 	=> module,
-						instance		=> to_instance_name (get_field (5)),
-						file			=> et_submodules.to_submodule_path (get_field (6)),
-						log_threshold	=> log_threshold + 1
-						);
-
-				when 7 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end set_submodule_file;
-
-
-
-		
-		
-		procedure build_submodules_tree is
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 4 =>
-					build_submodules_tree (
-						module_name 	=> module,
-						log_threshold	=> log_threshold + 1
-						);
-
-				when 5 .. type_field_count'last => too_long; 
-					
-				when others => command_incomplete;
-			end case;
-		end build_submodules_tree;
-		
-
-
-		
-
-		procedure check_integrity is
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 4 =>
-					check_integrity (
-						module_name 	=> module,
-						log_threshold	=> log_threshold + 1);
-
-				when 5 .. type_field_count'last => too_long; 
-					
-				when others => command_incomplete;
-			end case;
-		end check_integrity;
 
 
 
@@ -2383,10 +2015,10 @@ package body et_cp_schematic is
 							add_netchanger;
 							
 						when NOUN_PORT =>
-							add_port_to_submodule;
+							add_port_to_submodule (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_SUBMODULE =>
-							add_submodule;
+							add_submodule (module_cursor, cmd, log_threshold + 1);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -2395,7 +2027,7 @@ package body et_cp_schematic is
 				when VERB_BUILD =>
 					case noun is
 						when NOUN_SUBMODULES_TREE =>
-							build_submodules_tree;
+							build_submodules_tree (module_cursor, cmd, log_threshold + 1);
 
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -2404,7 +2036,7 @@ package body et_cp_schematic is
 				when VERB_CHECK =>
 					case noun is
 						when NOUN_INTEGRITY =>
-							check_integrity;
+							check_submodules_integrity (module_cursor, cmd, log_threshold + 1);
 								
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -2416,7 +2048,7 @@ package body et_cp_schematic is
 							copy_device;
 							
 						when NOUN_SUBMODULE =>
-							copy_submodule;
+							copy_submodule (module_cursor, cmd, log_threshold + 1);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -2455,7 +2087,7 @@ package body et_cp_schematic is
 							delete_netchanger;
 							
 						when NOUN_PORT =>
-							delete_port_of_submodule;
+							delete_port_of_submodule (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_SEGMENT =>
 							delete_net_segment;
@@ -2464,7 +2096,7 @@ package body et_cp_schematic is
 							delete_net_strand;
 
 						when NOUN_SUBMODULE =>
-							delete_submodule;
+							delete_submodule (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_TEXT =>
 							NULL; -- CS
@@ -2509,13 +2141,13 @@ package body et_cp_schematic is
 							drag_netchanger;
 
 						when NOUN_PORT =>
-							drag_port_of_submodule;
+							drag_port_of_submodule (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_SEGMENT =>
 							drag_net_segment;
 							
 						when NOUN_SUBMODULE =>
-							drag_submodule;
+							drag_submodule (module_cursor, cmd, log_threshold + 1);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -2563,7 +2195,7 @@ package body et_cp_schematic is
 
 							
 						when NOUN_PORT =>
-							move_port_of_submodule;
+							move_port_of_submodule (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_NETCHANGER =>
 							move_netchanger;
@@ -2577,7 +2209,7 @@ package body et_cp_schematic is
 
 							
 						when NOUN_SUBMODULE =>
-							move_submodule;
+							move_submodule (module_cursor, cmd, log_threshold + 1);
 
 							
 						when NOUN_UNIT =>
@@ -2659,7 +2291,7 @@ package body et_cp_schematic is
 
 							
 						when NOUN_SUBMODULE =>
-							mount_submodule;
+							mount_submodule (module_cursor, cmd, log_threshold + 1);
 												
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -2696,7 +2328,7 @@ package body et_cp_schematic is
 
 							
 						when NOUN_SUBMODULE =>
-							remove_submodule;
+							remove_submodule (module_cursor, cmd, log_threshold + 1);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -2708,7 +2340,7 @@ package body et_cp_schematic is
 							rename_device;
 							
 						when NOUN_SUBMODULE =>
-							rename_submodule;
+							rename_submodule (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_NET =>
 							rename_net;
@@ -2806,7 +2438,7 @@ package body et_cp_schematic is
 
 							
 						when NOUN_SUBMODULE_FILE =>
-							set_submodule_file;
+							set_submodule_file (module_cursor, cmd, log_threshold + 1);
 							
 
 						when NOUN_VALUE =>
