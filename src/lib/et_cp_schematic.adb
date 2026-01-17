@@ -80,7 +80,6 @@ with et_schematic_ops.nets;
 with et_schematic_ops.units;
 with et_netchangers;
 with et_submodules;
-with et_assembly_variants;
 with et_assembly_variant_name;			use et_assembly_variant_name;
 with et_netlists;
 with et_device_name;
@@ -109,8 +108,7 @@ with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary
 
 with et_cp_schematic_canvas;			use et_cp_schematic_canvas;
 with et_cp_schematic_display;			use et_cp_schematic_display;
-
-
+with et_cp_schematic_assembly_variant;	use et_cp_schematic_assembly_variant;
 
 with et_cp_schematic_script;			use et_cp_schematic_script;
 
@@ -251,70 +249,6 @@ package body et_cp_schematic is
 
 		
 
-	-----------------------------------------------------------------------------------	
-
-	-- OPERATIONS ON ASSEMBLY VARIANTS:
-
-		
-		procedure create_assembly_variant is
-			use et_assembly_variants;
-		begin
-			case cmd_field_count is
-				when 5 =>
-					create_assembly_variant
-						(
-						module_name		=> module,
-						variant_name	=> to_variant (get_field (5)),
-						log_threshold	=> log_threshold + 1);
-					
-				when 6 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end create_assembly_variant;
-		
-
-
-		procedure delete_assembly_variant is
-			use et_assembly_variants;
-		begin
-			case cmd_field_count is
-				when 5 =>
-					delete_assembly_variant
-						(
-						module_name		=> module,
-						variant_name	=> to_variant (get_field (5)),
-						log_threshold	=> log_threshold + 1);
-					
-				when 6 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-
-		end delete_assembly_variant;
-
-
-
-		procedure describe_assembly_variant is
-			use et_assembly_variants;
-		begin
-			case cmd_field_count is
-				when 6 =>
-					describe_assembly_variant
-						(
-						module_name		=> module,
-						variant_name	=> to_variant (get_field (5)), -- low_cost
-						description		=> et_assembly_variants.to_unbounded_string (get_field (6)), -- "the cheap version"
-						log_threshold	=> log_threshold + 1);
-					
-				when 7 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end describe_assembly_variant;
-
-
-		
 
 		
 	-----------------------------------------------------------------------------------
@@ -1579,7 +1513,6 @@ package body et_cp_schematic is
 
 		procedure mount_submodule is
 			use et_schematic_ops.submodules;
-			use et_assembly_variants;
 		begin
 			case cmd_field_count is
 				when 7 =>
@@ -1604,7 +1537,6 @@ package body et_cp_schematic is
 
 		procedure remove_submodule is
 			use et_schematic_ops.submodules;
-			use et_assembly_variants;
 		begin
 			case cmd_field_count is
 				when 6 =>
@@ -2430,7 +2362,6 @@ package body et_cp_schematic is
 		-- further subroutines:
 		procedure parse is 
 			use et_device_placeholders;
-			use et_assembly_variants;
 		begin
 			log (text => "parse", level => log_threshold + 1);
 			log_indentation_up;
@@ -2494,7 +2425,7 @@ package body et_cp_schematic is
 				when VERB_CREATE =>
 					case noun is
 						when NOUN_VARIANT => 
-							create_assembly_variant;
+							create_assembly_variant (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_MODULE =>
 							create_module;
@@ -2542,7 +2473,7 @@ package body et_cp_schematic is
 							delete_unit;
 							
 						when NOUN_VARIANT => 
-							delete_assembly_variant;
+							delete_assembly_variant (module_cursor, cmd, log_threshold + 1);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -2551,7 +2482,7 @@ package body et_cp_schematic is
 				when VERB_DESCRIBE =>
 					case noun is
 						when NOUN_VARIANT => 
-							describe_assembly_variant;
+							describe_assembly_variant (module_cursor, cmd, log_threshold + 1);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
