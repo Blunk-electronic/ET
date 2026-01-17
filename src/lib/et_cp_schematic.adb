@@ -3051,13 +3051,6 @@ package body et_cp_schematic is
 		
 		log (text => "command origin: " & get_origin (cmd), level => log_threshold + 1);
 
-
-		
-		module := to_module_name (get_field (2)); -- motor_driver (without extension *.mod)
-		-- CS: Becomes obsolete once all board ops use the
-		-- given module_cursor.
-		
-
 		set_verb_and_noun;
 		
 
@@ -3068,8 +3061,6 @@ package body et_cp_schematic is
 		
 		-- Parse the command:	
 		parse;
-		
-
 
 
 		evaluate_command_exit_code (cmd, log_threshold);
