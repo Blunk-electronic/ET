@@ -660,10 +660,19 @@ procedure draw_conductors is
 		use pac_draw_text;
 		use et_colors.board;
 
-		procedure draw is begin
+		procedure draw is 
+			-- CS: experimental. swap parent pos, and text pos.:
+			t : type_conductor_text_board := text;
+			parent_pos : type_position; -- type_vector_model;
+		begin
 			-- mirror if bottom layer
 			if get_layer (text) = bottom_layer then
-				draw_vector_text (text, MIRROR_ALONG_Y_AXIS);
+				set_place (parent_pos, get_place (t));
+				
+				set_place (t, pac_geometry_2.origin);
+				
+				-- draw_vector_text (text, MIRROR_ALONG_Y_AXIS);
+				draw_vector_text (t, MIRROR_ALONG_Y_AXIS, parent_pos);
 			else
 				draw_vector_text (text);
 			end if;
