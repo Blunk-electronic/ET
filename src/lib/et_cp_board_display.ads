@@ -36,6 +36,7 @@
 --   history of changes:
 --
 --   ToDo: 
+-- - propose arguments if command incomplete
 
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;

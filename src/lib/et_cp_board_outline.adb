@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- To Do:
---
+-- - propose arguments if command incomplete
 --
 --
 

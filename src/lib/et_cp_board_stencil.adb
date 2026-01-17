@@ -37,7 +37,7 @@
 --
 -- To Do:
 -- - rework
---
+-- - propose arguments if command incomplete
 --
 
 with ada.text_io;						use ada.text_io;
