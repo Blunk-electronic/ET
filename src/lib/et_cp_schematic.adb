@@ -111,7 +111,7 @@ with et_cp_schematic_display;			use et_cp_schematic_display;
 with et_cp_schematic_assembly_variant;	use et_cp_schematic_assembly_variant;
 with et_cp_schematic_submodule;			use et_cp_schematic_submodule;
 with et_cp_schematic_script;			use et_cp_schematic_script;
-
+with et_cp_schematic_device;			use et_cp_schematic_device;
 
 
 package body et_cp_schematic is
@@ -253,260 +253,8 @@ package body et_cp_schematic is
 		
 	-----------------------------------------------------------------------------------
 		
-	-- DEVICE OPERATIONS:
-		
-		-- This procedure parses a command that adds an electrical
-		-- device to the module.
-		-- example: "schematic demo add device $HOME/git/BEL/ET_component_library/devices/active/logic/7400_ext.dev 1 100 140 0 D"
-		procedure add_device is
-			use et_device_model_names;
-			use et_package_variant;
-		begin
-			case cmd_field_count is
-				when 9 =>
-					-- If a virtual device is added, then no variant is required.
-					add_electrical_device (
-						module_cursor 	=> active_module,
-						device_model	=> to_file_name (get_field (5)),
-						destination		=> to_position 
-							(
-							sheet => to_sheet (get_field (6)),
-							point => type_vector_model (set 
-										(
-										x => to_distance (get_field (7)),
-										y => to_distance (get_field (8))
-										)),
-							rotation => to_rotation (get_field (9))
-							),
-						variant			=> to_variant_name (""),
-						log_threshold	=> log_threshold + 1);
-
-					
-				when 10 =>
-					-- A real device requires specification of a package variant.
-					add_electrical_device (
-						module_cursor 	=> active_module,
-						device_model	=> to_file_name (get_field (5)),
-						destination		=> to_position 
-							(
-							sheet => to_sheet (get_field (6)),
-							point => type_vector_model (set 
-										(
-										x => to_distance (get_field (7)),
-										y => to_distance (get_field (8))
-										)),
-							rotation		=> to_rotation (get_field (9))
-							),
-						variant			=> to_variant_name (get_field (10)),
-						log_threshold	=> log_threshold + 1);
-
-				when 11 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-
-		end add_device;
-
-
-		
 		
 
-		-- This procedure parses a command that renames a device like
-		-- "schematic led_driver rename device IC1 IC2"
-		procedure rename_device is 
-		begin
-			case cmd_field_count is
-				when 6 =>
-					rename_electrical_device (
-						module_cursor 		=> active_module,
-						device_name_before	=> to_device_name (get_field (5)), -- IC1
-						device_name_after	=> to_device_name (get_field (6)), -- IC23
-						log_threshold		=> log_threshold + 1);
-
-				when 7 .. type_field_count'last => too_long; 
-					
-				when others => command_incomplete;
-			end case; 
-		end rename_device;
-
-
-
-
-		
-		-- This procedure parses a command that deletes a 
-		-- whole device (with all units) like
-		-- "schematic led_driver delete unit IC1":
-		procedure delete_device is 
-			device_name : type_device_name;
-		begin
-			device_name := to_device_name (get_field (5));
-			
-			case cmd_field_count is
-				when 5 =>
-					delete_electrical_device (
-						module_cursor 	=> active_module,
-						device_name		=> device_name,
-						log_threshold	=> log_threshold + 1);
-
-				when 6 .. type_field_count'last => too_long; 
-					
-				when others => command_incomplete;
-			end case;
-		end delete_device;
-
-
-		
-
-
-		-- This procedure parses a command that copies a 
-		-- device like
-		-- "schematic led_driver copy device IC1 2 210 100 0":	
-		procedure copy_device is
-		begin
-			case cmd_field_count is
-				when 9 =>
-					copy_device (
-						module_cursor 	=> active_module,
-						device_name		=> to_device_name (get_field (5)),
-						destination		=> to_position 
-							(
-							sheet => to_sheet (get_field (6)),
-							point => type_vector_model (set
-										(
-										x => to_distance (get_field (7)),
-										y => to_distance (get_field (8))
-										)),
-							rotation		=> to_rotation (get_field (9))
-							),
-						log_threshold	=> log_threshold + 1
-						);
-
-				when 10 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end copy_device;
-
-		
-
-		
-		
-		
-		-- This procedure parses a command that sets the value of a device like
-		-- "schematic led_driver set value R1 100R"
-		procedure set_device_value is begin
-			case cmd_field_count is
-				when 6 =>
-					declare
-						value : pac_device_value.bounded_string; -- 470R
-					begin
-						-- validate value
-						value := to_value_with_check (get_field (6));
-
-						-- set the value
-						set_value (
-							module_cursor 	=> active_module,
-							device_name		=> to_device_name (get_field (5)), -- R1
-							value			=> value, -- 470R
-							log_threshold	=> log_threshold + 1);
-					end;
-
-				when 7 .. type_field_count'last => too_long; 
-					
-				when others => command_incomplete;
-			end case;
-		end set_device_value;
-
-
-
-		
-		-- This procedure parses a command that sets the purpose of a device like
-		-- "schematic led_driver set purpose R1 Temperature"
-		procedure set_device_purpose is begin
-			case cmd_field_count is
-				when 6 =>
-					declare
-						purpose : pac_device_purpose.bounded_string; -- brightness_control
-					begin
-						purpose := to_purpose (get_field (6));
-						
-						-- set the purpose
-						set_purpose (
-							module_cursor 	=> active_module,
-							device_name		=> to_device_name (get_field (5)), -- R1
-							purpose			=> purpose, -- brightness_control
-							log_threshold	=> log_threshold + 1);
-					end;
-
-				when 7 .. type_field_count'last => too_long; 
-					
-				when others => command_incomplete;
-			end case;
-		end set_device_purpose;
-
-
-
-
-		-- This procedure parses a command that sets the partcode of a device like
-		-- "schematic led_driver set partcode R1 R_PAC_S_0805_VAL_100R"
-		procedure set_device_partcode is begin
-			case cmd_field_count is
-				when 6 =>
-					declare
-						partcode : pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-					begin
-						partcode := to_partcode (get_field (6));
-
-						-- set the purpose
-						set_partcode (
-							module_cursor 	=> active_module,
-							device_name		=> to_device_name (get_field (5)), -- R1
-							partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
-							log_threshold	=> log_threshold + 1);
-					end;
-
-				when 7 .. type_field_count'last => too_long; 
-					
-				when others => command_incomplete;
-			end case;
-		end set_device_partcode;
-
-		
-		
-		-- This procedure parses a command that sets the package
-		-- variant of a device.
-		-- Example: "schematic led_driver set variant R1 S_0805"
-		procedure set_device_package_variant is 
-			use et_package_variant;
-			variant : pac_package_variant_name.bounded_string; -- N, D
-		begin			
-			case cmd_field_count is
-				when 6 =>
-
-					-- validate variant
-					check_variant_name_length (get_field (6));
-					variant := to_variant_name (get_field (6));
-					check_variant_name_characters (variant);
-					
-					-- set the variant
-					set_package_variant (
-						module_cursor	=> active_module,
-						device_name		=> to_device_name (get_field (5)), -- IC1
-						variant			=> variant, -- N, D
-						log_threshold	=> log_threshold + 1);
-
-				when 7 .. type_field_count'last => too_long; 
-					
-				when others => command_incomplete;
-			end case;
-		end set_device_package_variant;
-		
-
-		
-
-
-
-		
 
 
 		-- This procedure parses a command that shows a device or a unit thereof.
@@ -2009,7 +1757,7 @@ package body et_cp_schematic is
 				when VERB_ADD =>
 					case noun is
 						when NOUN_DEVICE =>
-							add_device;
+							add_device (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_NETCHANGER =>
 							add_netchanger;
@@ -2045,7 +1793,7 @@ package body et_cp_schematic is
 				when VERB_COPY =>
 					case noun is
 						when NOUN_DEVICE =>
-							copy_device;
+							copy_device (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_SUBMODULE =>
 							copy_submodule (module_cursor, cmd, log_threshold + 1);
@@ -2069,7 +1817,7 @@ package body et_cp_schematic is
 				when VERB_DELETE =>
 					case noun is
 						when NOUN_DEVICE =>
-							delete_device;
+							delete_device (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_NET_CONNECTOR =>
 							delete_net_connector;
@@ -2337,7 +2085,7 @@ package body et_cp_schematic is
 				when VERB_RENAME =>
 					case noun is
 						when NOUN_DEVICE =>
-							rename_device;
+							rename_device (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_SUBMODULE =>
 							rename_submodule (module_cursor, cmd, log_threshold + 1);
@@ -2415,10 +2163,10 @@ package body et_cp_schematic is
 							set_scale (cmd, log_threshold + 1);
 							
 						when NOUN_PARTCODE =>
-							set_device_partcode;
+							set_device_partcode (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_PURPOSE =>
-							set_device_purpose;
+							set_device_purpose (module_cursor, cmd, log_threshold + 1);
 
 							
 						when NOUN_SCOPE =>
@@ -2442,11 +2190,11 @@ package body et_cp_schematic is
 							
 
 						when NOUN_VALUE =>
-							set_device_value;
+							set_device_value (module_cursor, cmd, log_threshold + 1);
 					
 							
 						when NOUN_VARIANT =>
-							set_device_package_variant;
+							set_device_package_variant (module_cursor, cmd, log_threshold + 1);
 
 							
 						when NOUN_TEXT_SIZE =>
