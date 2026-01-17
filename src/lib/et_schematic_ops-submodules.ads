@@ -382,7 +382,8 @@ package et_schematic_ops.submodules is
 	procedure check_integrity (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
-
+	-- CS: reduce this procedure to submodule related checks.
+	-- CS: rename to check_submodules_integrity ?
 
 
 	-- Dumps submodule names, instances and device name offsets:
@@ -403,7 +404,8 @@ package et_schematic_ops.submodules is
 	procedure make_boms (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
-
+	-- CS: probably misplaced. should be in a separate package for
+	-- CAM related stuff
 
 
 	-- Calculates the device index ranges of the given top module and all its submodules.
