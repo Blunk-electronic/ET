@@ -46,7 +46,6 @@ with ada.characters.handling;		use ada.characters.handling;
 with ada.exceptions;				use ada.exceptions;
 
 with et_runmode;					use et_runmode;
-with et_script_processor;
 
 with et_modes;						use et_modes;
 with et_modes.board;				use et_modes.board;
@@ -73,85 +72,12 @@ with et_cp_board_module;			use et_cp_board_module;
 with et_cp_board_material_pnp;		use et_cp_board_material_pnp;
 with et_cp_board_submodule;			use et_cp_board_submodule;
 -- CS with et_cp_board_netchanger;		use et_cp_board_netchanger;
+with et_cp_board_script;			use et_cp_board_script;
 
 
 package body et_cp_board is
 
 
-	
-
-	procedure parse_execute_script (
-		cmd				: in out type_single_cmd;
-		log_threshold	: in type_log_level)
-	is 
-		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);
-
-	
-		-- This procedure is to be called when the command is complete.
-		-- It lauches the given script and sets the exit code of
-		-- the command according to the outcome of the script execution:
-		procedure command_complete is
-			use et_script_processor;
-			exit_code : type_exit_code_script;
-		begin
-			exit_code := execute_nested_script (
-				file			=> get_field (cmd, 5),
-				log_threshold	=> log_threshold + 1);
-
-			case exit_code is
-				when SUCCESSFUL =>
-					set_exit_code (cmd, 0);
-
-				when others =>
-					set_exit_code (cmd, 3);
-			end case;
-		end command_complete;
-
-		
-	begin
-		case get_origin (cmd) is
-			when ORIGIN_CONSOLE =>
-				
-				case cmd_field_count is
-					when 4 => 
-						-- Command is incomplete like "execute script"
-						command_incomplete (cmd);
-						
-					when 5 =>
-						-- Command is complete like "execute script demo.scr"
-						command_complete;
-								
-					when 6 .. type_field_count'last =>
-						command_too_long (cmd, cmd_field_count - 1);
-
-
-					when others => null;
-						-- CS should never happen
-						raise constraint_error;
-						
-				end case;
-
-				
-			when ORIGIN_SCRIPT =>
-				case cmd_field_count is
-					when 5 => 
-						-- Command is complete like "execute script demo.scr"
-						command_complete;
-						
-					when 6 .. type_field_count'last =>
-						command_too_long (cmd, cmd_field_count - 1);
-
-					when others =>
-						command_incomplete (cmd);
-						
-				end case;
-		end case;
-	end parse_execute_script;
-
-
-
-	
 	
 
 	procedure evaluate_command_exit_code (
@@ -232,12 +158,6 @@ package body et_cp_board is
 
 		
 
-
-		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);
-
-
-
 		
 		
 		-- Parses the given command and dispatches to
@@ -252,6 +172,7 @@ package body et_cp_board is
 			if runmode /= MODE_HEADLESS then
 				status_clear;
 			end if;
+
 			
 			case verb is
 				when VERB_ADD =>
@@ -394,7 +315,7 @@ package body et_cp_board is
 				when VERB_EXECUTE =>
 					case noun is
 						when NOUN_SCRIPT =>
-							parse_execute_script (cmd, log_threshold);
+							execute_script (cmd, log_threshold);
 								
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -404,6 +325,7 @@ package body et_cp_board is
 					null;
 					-- CS terminate_main; 
 					-- CS does not work via script (gtk error ...)
+					-- CS ask to save the module ?
 
 					
 				when VERB_FILL =>
@@ -551,7 +473,7 @@ package body et_cp_board is
 					end case;
 
 					
-				when VERB_SHOW => -- GUI related
+				when VERB_SHOW =>
 					case noun is
 						when NOUN_MODULE =>
 							show_module (module_cursor, cmd, log_threshold + 1);
@@ -585,12 +507,6 @@ package body et_cp_board is
 			end case;
 
 			
-			-- Update GUI if we are in graphical mode:
-			if runmode /= MODE_HEADLESS then
-				null;
-			end if;
-
-
 			log_indentation_down;
 
 			
@@ -604,12 +520,14 @@ package body et_cp_board is
 
 	
 	begin
-		log (text => "execute board command: " & enclose_in_quotes (get_all_fields (cmd)),
+		log (text => "execute board command: " 
+			& enclose_in_quotes (get_all_fields (cmd)),
 			level => log_threshold);
 
 		log_indentation_up;
 		
-		log (text => "command origin: " & get_origin (cmd), level => log_threshold);
+		log (text => "command origin: " & get_origin (cmd), 
+			 level => log_threshold);
 
 	
 		set_verb_and_noun;
