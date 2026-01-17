@@ -38,42 +38,21 @@
 --   ToDo:
 --   - command to define a global cutout area
 --   - command to set design rules
-
+--   - command to move netchanger, to change the signal layer of a netchanger
 
 with ada.text_io;					use ada.text_io;
 with ada.strings; 					use ada.strings;
 with ada.characters.handling;		use ada.characters.handling;
 with ada.exceptions;				use ada.exceptions;
 
-with et_module_names;					use et_module_names;
-with et_runmode;						use et_runmode;
+with et_runmode;					use et_runmode;
 with et_script_processor;
 
-with et_board_geometry;				use et_board_geometry;
-with et_board_coordinates;			use et_board_coordinates;
-
-with et_modes.board;
-with et_canvas_board_devices;
-with et_canvas_board_texts;
-with et_canvas_board_vias;
-with et_design_rules_board;			use et_design_rules_board;
-
-with et_board_ops;
-
-with et_net_names;					use et_net_names;
-with et_device_name;
-
-with et_keywords;					use et_keywords;
+with et_modes;						use et_modes;
+with et_modes.board;				use et_modes.board;
 
 with et_canvas_schematic;
 with et_canvas_board;
-
-with et_modes;						use et_modes;
-with et_module_ops;					use et_module_ops;
-
-with et_canvas_board_preliminary_object;
-
-with et_exceptions;					use et_exceptions;
 
 with et_cp_board_canvas;			use et_cp_board_canvas;
 with et_cp_board_display;			use et_cp_board_display;
@@ -93,17 +72,10 @@ with et_cp_board_frame;				use et_cp_board_frame;
 with et_cp_board_module;			use et_cp_board_module;
 with et_cp_board_material_pnp;		use et_cp_board_material_pnp;
 with et_cp_board_submodule;			use et_cp_board_submodule;
-
-
--- to do:
+-- CS with et_cp_board_netchanger;		use et_cp_board_netchanger;
 
 
 package body et_cp_board is
-
-
-	device_missing	: constant string := "Device name missing !";
-	module_missing	: constant string := "Module name missing !";
-	net_missing		: constant string := "Net name missing !";
 
 
 	
@@ -215,12 +187,9 @@ package body et_cp_board is
 		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
-		use et_board_ops;
-		use pac_geometry_2;
-
 		use et_canvas_board;
 		use et_canvas_board.pac_canvas;
-		use et_modes.board;
+
 
 
 		
@@ -633,87 +602,7 @@ package body et_cp_board is
 		end parse;
 
 
-		
-		
-
-		-- This procedure proposes missing arguments:
-		procedure propose_arguments is
-			use et_canvas_board_devices;
-			use et_canvas_board_texts;
-			use et_canvas_board_vias;
-			use et_canvas_board_preliminary_object;
-			use et_device_name;
-			device_name : type_device_name;
-
-			
-			procedure module_name_missing is begin
-				set_status (incomplete & module_missing);
-			end module_name_missing;
-
-			
-			procedure device_name_missing is begin
-				set_status (incomplete & device_missing);
-				-- No menu required and not reasonable.
-				-- It might become very long if there were hundreds of devices.
-			end device_name_missing;
-
-			
-			procedure device_not_found is begin
-				set_status ("ERROR: Device " & to_string (device_name) & " not found !");
-			end device_not_found;
-
-			
-			procedure net_name_missing is begin
-				set_status (incomplete & net_missing);
-			end net_name_missing;
-
-			
-		begin -- propose_arguments
-
-			-- Missing arguments are to be proposed only if
-			-- the command origin is the console.
-			-- Otherwise nothing happens here.
-			if not is_complete (cmd) and get_origin (cmd) = ORIGIN_CONSOLE then
-			
-				log_command_incomplete (cmd_field_count, log_threshold);
-
-				case verb is
-					when VERB_PLACE =>
-						case noun is
-							when NOUN_TEXT =>
-								show_text_properties;
-								set_finalization_pending (cmd);
-
-							when NOUN_VIA =>
-								case cmd_field_count is
-									when 4 => -- place via
-										show_via_properties;
-										set_finalization_pending (cmd);
-
-									when 5 => -- place via RESET_N
-										-- Preset the net name so that it is visible
-										-- in the via properties bar:
-										object_net_name := to_net_name (get_field (cmd, 5));
-
-										show_via_properties;
-										set_finalization_pending (cmd);
-
-									when others => null;
-								end case;
-								
-							when others => null; -- CS
-						end case;
-
-					when others => null; -- CS
-				end case;
-				
-			end if;
-		end propose_arguments;
-
-		
-
-
-		
+	
 	begin
 		log (text => "execute board command: " & enclose_in_quotes (get_all_fields (cmd)),
 			level => log_threshold);
@@ -734,11 +623,6 @@ package body et_cp_board is
 		-- parse the command:
 		parse;
 
-
-		-- If the command is incomplete and if it was entered
-		-- via the console, then further arguments are proposed.
-		-- Otherwise nothing happens here:
-		propose_arguments;
 
 
 		evaluate_command_exit_code (cmd, log_threshold);
