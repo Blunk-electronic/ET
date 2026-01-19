@@ -20,6 +20,7 @@
    schematic.rst
    board.rst
    assembly_variants.rst
+..    CS cam.rst
    packages.rst
    
 Index
