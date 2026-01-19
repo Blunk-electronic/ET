@@ -55,6 +55,7 @@ with et_device_value;					use et_device_value;
 with et_device_purpose;					use et_device_purpose;
 with et_device_partcode;				use et_device_partcode;
 
+with et_schematic_ops;					use et_schematic_ops;
 with et_schematic_ops.units;			use et_schematic_ops.units;
 -- with et_schematic_ops.submodules;		use et_schematic_ops.submodules;
 
@@ -417,6 +418,42 @@ package body et_cp_schematic_device is
 
 
 
+
+
+
+
+
+	
+
+	procedure renumber_devices (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+
+		use et_device_name;
+	begin
+		-- CS log message
+
+		case cmd_field_count is
+			when 5 =>
+				renumber_devices (
+					module_name 	=> key (module),
+					step_width		=> to_index (get_field (cmd, 5)), -- 100
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 6 .. type_field_count'last =>
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+
+	end renumber_devices;
+
+	
 	
 end et_cp_schematic_device;
 

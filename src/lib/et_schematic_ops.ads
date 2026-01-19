@@ -225,6 +225,7 @@ package et_schematic_ops is
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		step_width		: in type_name_index;
 		log_threshold	: in type_log_level);
+	-- CS move to separate package
 
 
 	

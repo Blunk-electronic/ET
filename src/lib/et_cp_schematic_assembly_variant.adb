@@ -293,7 +293,6 @@ package body et_cp_schematic_assembly_variant is
 			when others => command_incomplete (cmd);
 		end case;
 	end remove_device;
-
 	
 	
 end et_cp_schematic_assembly_variant;

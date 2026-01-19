@@ -1422,19 +1422,7 @@ package body et_cp_schematic is
 				when VERB_RENUMBER =>
 					case noun is
 						when NOUN_DEVICES =>
-							case cmd_field_count is
-								when 5 =>
-									renumber_devices
-										(
-										module_name 	=> module,
-										step_width		=> to_index (get_field (5)), -- 100
-										log_threshold	=> log_threshold + 1
-										);
-
-								when 6 .. type_field_count'last => too_long;
-									
-								when others => command_incomplete;
-							end case;
+							renumber_devices (module_cursor, cmd, log_threshold + 1);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;

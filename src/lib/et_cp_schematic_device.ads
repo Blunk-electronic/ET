@@ -120,7 +120,17 @@ package et_cp_schematic_device is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 		
-		
+
+
+	-- Renumbers devices according to the sheet number.
+	procedure renumber_devices (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+	
+	
 end et_cp_schematic_device;
 
 -- Soli Deo Gloria
