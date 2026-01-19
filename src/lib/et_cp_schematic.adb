@@ -50,13 +50,10 @@ with et_module_names;					use et_module_names;
 with et_runmode;						use et_runmode;
 
 with et_modes.schematic;
-with et_schematic_ops.submodules;
 
 with et_schematic_geometry;
 with et_schematic_coordinates;
 with et_sheets;							use et_sheets;
-
-with et_netchangers;
 
 with et_canvas_schematic;
 with et_canvas_board;
@@ -73,7 +70,7 @@ with et_cp_schematic_script;			use et_cp_schematic_script;
 with et_cp_schematic_device;			use et_cp_schematic_device;
 with et_cp_schematic_unit;				use et_cp_schematic_unit;
 with et_cp_schematic_nets;				use et_cp_schematic_nets;
-
+with et_cp_schematic_netchanger;		use et_cp_schematic_netchanger;
 
 
 package body et_cp_schematic is
@@ -196,142 +193,8 @@ package body et_cp_schematic is
 		end;
 		
 		
-
-
-		
-
-
-
-		
-	-----------------------------------------------------------------------------------	
-
-	-- OPERATIONS ON NETCHANGERS:
-		
-
-		-- This procedure parses a command that places a netchanger.
-		-- Example: "schematic led_driver add netchanger 2 60 30 0
-		procedure add_netchanger is
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 8 =>
-					add_netchanger (
-						module_name 	=> module,
-						place			=> to_position 
-							(
-							sheet => to_sheet (get_field (5)),
-							point => type_vector_model (set 
-										(
-										x => to_distance (get_field (6)),
-										y => to_distance (get_field (7))
-										)),
-							rotation		=> to_rotation (get_field (8))
-							),
-						log_threshold	=> log_threshold + 1
-						);
-
-				when 9 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end add_netchanger;
-		
-
-		
-
-		procedure move_netchanger is
-			use et_schematic_ops.submodules;
-			use et_netchangers;
-		begin
-			case cmd_field_count is
-				when 9 =>
-					move_netchanger (
-						module_name 	=> module,
-						index			=> to_netchanger_id (get_field (5)), -- 1,2,3, ...
-						coordinates		=> to_coordinates (get_field (6)),  -- relative/absolute
-						sheet			=> to_sheet_relative (get_field (7)),
-						point			=> type_vector_model (set (
-											x => to_distance (get_field (8)),
-											y => to_distance (get_field (9)))),
-							
-						log_threshold	=> log_threshold + 1);
-
-				when 10 .. type_field_count'last => too_long; 
-					
-				when others => command_incomplete;
-			end case;
-		end move_netchanger;
-			
-		
-
-		
-		procedure delete_netchanger is
-			use et_netchangers;
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 5 =>
-					delete_netchanger (
-						module_name		=> module,
-						index			=> to_netchanger_id (get_field (5)), -- 1,2,3,...
-						log_threshold	=> log_threshold + 1);
-
-				when 6 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end delete_netchanger;
-		
-
-
-		
-
-		procedure drag_netchanger is
-			use et_netchangers;
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 8 =>
-					drag_netchanger (
-						module_name 	=> module,
-						index			=> to_netchanger_id (get_field (5)), -- 1,2,3,...
-						coordinates		=> to_coordinates (get_field (6)), -- relative/absolute
-						point			=> type_vector_model (set (
-											x => to_distance (get_field (7)),
-											y => to_distance (get_field (8)))),
-						log_threshold	=> log_threshold + 1);
-
-				when 9 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end drag_netchanger;
-
-
-
-		
-		
-		procedure rotate_netchanger is
-			use et_netchangers;
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 7 =>
-					rotate_netchanger (
-						module_name 	=> module,
-						index			=> to_netchanger_id (get_field (5)), -- 1,2,3,...
-						coordinates		=> to_coordinates (get_field (6)), -- relative/absolute
-						rotation		=> to_rotation (get_field (7)), -- 90
-						log_threshold	=> log_threshold + 1);
-
-				when 8 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end rotate_netchanger;
-		
-
 	
+
 
 
 		
@@ -621,7 +484,7 @@ package body et_cp_schematic is
 							add_device (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_NETCHANGER =>
-							add_netchanger;
+							add_netchanger (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_PORT =>
 							add_port_to_submodule (module_cursor, cmd, log_threshold + 1);
@@ -693,7 +556,7 @@ package body et_cp_schematic is
 							delete_net (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_NETCHANGER =>
-							delete_netchanger;
+							delete_netchanger (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_PORT =>
 							delete_port_of_submodule (module_cursor, cmd, log_threshold + 1);
@@ -747,7 +610,7 @@ package body et_cp_schematic is
 							drag_unit (module_cursor, cmd, log_threshold + 1);
 									
 						when NOUN_NETCHANGER =>
-							drag_netchanger;
+							drag_netchanger (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_PORT =>
 							drag_port_of_submodule (module_cursor, cmd, log_threshold + 1);
@@ -806,7 +669,7 @@ package body et_cp_schematic is
 							move_port_of_submodule (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_NETCHANGER =>
-							move_netchanger;
+							move_netchanger (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_NET_LABEL =>
 							move_net_label (module_cursor, cmd, log_threshold + 1);
@@ -905,7 +768,7 @@ package body et_cp_schematic is
 							rotate_unit_placeholder (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_NETCHANGER =>
-							rotate_netchanger;
+							rotate_netchanger (module_cursor, cmd, log_threshold + 1);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -1003,8 +866,7 @@ package body et_cp_schematic is
 					zoom_all (cmd, log_threshold + 1);
 
 
-				when others =>
-					null;
+				when others => null;
 					
 			end case;
 
