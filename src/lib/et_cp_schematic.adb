@@ -71,12 +71,10 @@ with et_nets;							use et_nets;
 with et_net_names;						use et_net_names;
 with et_net_class;						--use et_net_class;
 with et_net_class_name;
-with et_schematic_text;					use et_schematic_text;
+
 with et_schematic_ops.nets;
-with et_schematic_ops.units;
 with et_netchangers;
 with et_submodules;
-with et_netlists;
 with et_device_name;
 
 with et_device_library;					use et_device_library;
@@ -97,6 +95,8 @@ with et_cp_schematic_submodule;			use et_cp_schematic_submodule;
 with et_cp_schematic_script;			use et_cp_schematic_script;
 with et_cp_schematic_device;			use et_cp_schematic_device;
 with et_cp_schematic_unit;				use et_cp_schematic_unit;
+with et_cp_schematic_nets;				use et_cp_schematic_nets;
+
 
 
 package body et_cp_schematic is
@@ -139,18 +139,12 @@ package body et_cp_schematic is
 	is
 		use pac_net_name;
 		
-		-- use et_project;
-		use et_schematic_ops;
 		use et_schematic_ops.nets;
-		use et_schematic_ops.units;
-		use et_schematic_ops.netlists;
 
 		use et_schematic_coordinates;
 		use et_schematic_geometry;
 		use pac_geometry_2;
 
-		use pac_text_schematic;
-		use et_device_name;
 		use et_canvas_schematic;
 		use et_canvas_schematic.pac_canvas;
 		use et_modes.schematic;
@@ -1317,17 +1311,7 @@ package body et_cp_schematic is
 				when VERB_MAKE =>
 					case noun is
 						when NOUN_NETLISTS => 
-							case cmd_field_count is
-								when 4 =>
-									make_netlists 
-										(
-										module_name 	=> module,
-										log_threshold	=> log_threshold + 1);
-
-								when 5 .. type_field_count'last => too_long;
-									
-								when others => command_incomplete;
-							end case;
+							export_netlist (module_cursor, cmd, log_threshold + 1);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -1442,35 +1426,18 @@ package body et_cp_schematic is
 							
 						when NOUN_PURPOSE =>
 							set_device_purpose (module_cursor, cmd, log_threshold + 1);
-
 							
 						when NOUN_SCOPE =>
-							case cmd_field_count is
-								when 6 =>
-									set_scope (
-										module_cursor 	=> active_module,
-										net_name		=> to_net_name (get_field (5)),
-										scope			=> et_netlists.to_net_scope (get_field (6)),
-										log_threshold	=> log_threshold + 1
-										);
-
-								when 7 .. type_field_count'last => too_long;
-									
-								when others => command_incomplete;
-							end case;
-
+							set_net_scope (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_SUBMODULE_FILE =>
-							set_submodule_file (module_cursor, cmd, log_threshold + 1);
-							
+							set_submodule_file (module_cursor, cmd, log_threshold + 1);							
 
 						when NOUN_VALUE =>
-							set_device_value (module_cursor, cmd, log_threshold + 1);
-					
+							set_device_value (module_cursor, cmd, log_threshold + 1);					
 							
 						when NOUN_VARIANT =>
 							set_device_package_variant (module_cursor, cmd, log_threshold + 1);
-
 							
 						when NOUN_TEXT_SIZE =>
 							NULL; -- CS
