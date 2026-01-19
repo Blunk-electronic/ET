@@ -19,6 +19,7 @@
    canvas_general.rst
    schematic.rst
    board.rst
+   assembly_variants.rst
    packages.rst
    
 Index
