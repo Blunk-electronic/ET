@@ -76,18 +76,10 @@ with et_schematic_ops.nets;
 with et_schematic_ops.units;
 with et_netchangers;
 with et_submodules;
-with et_assembly_variant_name;			use et_assembly_variant_name;
 with et_netlists;
 with et_device_name;
 
-with et_devices_electrical;
-with et_devices_electrical.units;
-
 with et_device_library;					use et_device_library;
-
-with et_device_purpose;					use et_device_purpose;
-with et_device_partcode;				use et_device_partcode;
-with et_device_value;					use et_device_value;
 
 with et_canvas_schematic;
 with et_canvas_board;
@@ -1379,50 +1371,7 @@ package body et_cp_schematic is
 				when VERB_MOUNT =>
 					case noun is
 						when NOUN_DEVICE => 
-							declare
-								value : pac_device_value.bounded_string; -- 470R
-								partcode : pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-								purpose : pac_device_purpose.bounded_string; -- brightness_control
-							begin
-								-- validate value
-								value := to_value_with_check (get_field (7));
-
-								-- validate partcode
-								partcode := to_partcode (get_field (8));
-								
-								case cmd_field_count is
-									when 8 =>
-										-- set value and partcode
-										mount_device
-											(
-											module_name		=> module,
-											variant_name	=> to_variant (get_field (5)), -- low_cost
-											device			=> to_device_name (get_field (6)), -- R1
-											value			=> value, -- 220R
-											partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
-											log_threshold	=> log_threshold + 1);
-
-									when 9 =>
-										-- optionally the purpose can be set also
-										purpose := to_purpose (get_field (9)); -- brightness_control
-													
-										mount_device
-											(
-											module_name		=> module,
-											variant_name	=> to_variant (get_field (5)), -- low_cost
-											device			=> to_device_name (get_field (6)), -- R1
-											value			=> value, -- 220R
-											partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
-											purpose			=> purpose, -- brightness_control
-											log_threshold	=> log_threshold + 1);
-										
-									when 10 .. type_field_count'last => too_long;
-										
-									when others => command_incomplete;
-								end case;
-
-							end; -- declare
-
+							mount_device (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_SUBMODULE =>
 							mount_submodule (module_cursor, cmd, log_threshold + 1);
@@ -1446,20 +1395,7 @@ package body et_cp_schematic is
 				when VERB_REMOVE =>
 					case noun is
 						when NOUN_DEVICE => 
-							case cmd_field_count is
-								when 6 =>
-									remove_device -- from assembly variant
-										(
-										module_name		=> module,
-										variant_name	=> to_variant (get_field (5)), -- low_cost
-										device			=> to_device_name (get_field (6)), -- R1
-										log_threshold	=> log_threshold + 1);
-
-								when 7 .. type_field_count'last => too_long;
-									
-								when others => command_incomplete;
-							end case;
-
+							remove_device (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_SUBMODULE =>
 							remove_submodule (module_cursor, cmd, log_threshold + 1);
@@ -1612,19 +1548,7 @@ package body et_cp_schematic is
 				when VERB_UNMOUNT =>
 					case noun is
 						when NOUN_DEVICE => 
-							case cmd_field_count is
-								when 6 =>
-									unmount_device
-										(
-										module_name		=> module,
-										variant_name	=> to_variant (get_field (5)), -- low_cost
-										device			=> to_device_name (get_field (6)), -- R1
-										log_threshold	=> log_threshold + 1);
-
-								when 7 .. type_field_count'last => too_long;
-									
-								when others => command_incomplete;
-							end case;
+							unmount_device (module_cursor, cmd, log_threshold + 1);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,9 @@
 --
 --   history of changes:
 --
---   ToDo: 
+-- To Do: 
+-- - move stuff related to assembly variants to separate package
+--
 
 with et_device_library.units;			use et_device_library.units;
 with et_units;							use et_units;

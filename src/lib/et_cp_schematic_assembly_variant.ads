@@ -66,7 +66,31 @@ package et_cp_schematic_assembly_variant is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
+
+
+	-- Sets the value, partcode and (optionally the purpose) 
+	-- of a device in a given assembly variant:
+	procedure mount_device (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+
+	procedure unmount_device (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+
+	procedure remove_device (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+	
 end et_cp_schematic_assembly_variant;
 
 -- Soli Deo Gloria
