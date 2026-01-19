@@ -112,6 +112,7 @@ with et_cp_schematic_assembly_variant;	use et_cp_schematic_assembly_variant;
 with et_cp_schematic_submodule;			use et_cp_schematic_submodule;
 with et_cp_schematic_script;			use et_cp_schematic_script;
 with et_cp_schematic_device;			use et_cp_schematic_device;
+with et_cp_schematic_unit;				use et_cp_schematic_unit;
 
 
 package body et_cp_schematic is
@@ -225,9 +226,6 @@ package body et_cp_schematic is
 		module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 
 
-		-- In order to tell the command processor that an operation is meant to 
-		-- apply to the current sheet, we use the UNIX-bash-like period character:
-		here : constant string := ".";
 
 
 		-- Contains the number of fields given by the caller of this procedure:
@@ -246,505 +244,6 @@ package body et_cp_schematic is
 			command_incomplete (cmd);
 		end;
 		
-
-		
-
-
-		
-	-----------------------------------------------------------------------------------
-		
-		
-
-
-
-		-- This procedure parses a command that shows a device or a unit thereof.
-		-- "Showing" means the highlight the targeted object and writing
-		-- some basic information in the staturs bar. 
-		-- Via the argument L1 .. L3 the amount of information to be output can
-		-- be controlled. For values greate L1 a properties window is opened that
-		-- fits all the information in.
-		-- Examples:
-		-- "schematic led_driver show device L1 R1"
-		-- "schematic led_driver show device L2 IC1 IO-BANK2"
-		-- "schematic led_driver show device L3 IC1 ."
-		-- CS: For level L3 write in a file given via command argument.
-		procedure show_device is
-			use et_devices_electrical;
-			use et_devices_electrical.units;
-			use et_units;
-			use et_device_property_level;
-			
-			-- The degree of how much information is to be inqured:
-			properties_level : type_properties_level;
-
-			
-			-- Selects the device so that a certain unit or all its units become
-			-- highlighted in the canvas.
-			-- Sets the sheet where the unit is.
-			-- Pans the canvas so that the unit is in the center of the view.
-			-- 1. If mode is SEARCH_MODE_FIRST_UNIT then the sheet where the first unit is
-			--    will be shown in the center of the canvas. All units of the
-			--    device will be selected and highlighted.
-			--    The given unit name will be ignored.
-			--    Example: "schematic led_driver show device R1"
-			--
-			-- 2. If mode is SEARCH_MODE_BY_UNIT_NAME then the sheet where the given unit is
-			--    will be shown in the center of the canvas. Only that unit
-			--    of the device will be selected and highlighted.
-			--    Example: "schematic led_driver show device IC1 IO-BANK2"
-			--
-			-- 3. If mode is SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET then the first unit
-			--    on the current sheet will be shown in the center of the canvas.
-			--    All units of the device will be selected and highlighted.
-			--    Example: "schematic led_driver show device IC1 ."
-			--
-			procedure do_it (
-				device	: in type_device_name; -- IC45
-				unit	: in pac_unit_name.bounded_string := to_unit_name (""); -- A, B, ..
-				mode	: in type_device_search_mode := SEARCH_MODE_FIRST_UNIT)
-			is
-				
-				-- This small function performs a unit query:
-				function locate_unit (unit : in pac_unit_name.bounded_string) 
-					return type_unit_query
-				is begin
-					return get_unit_position (
-						module_cursor	=> active_module,
-						device_name		=> device,
-						unit_name		=> unit);				
-				end;
-
-				
-				procedure device_not_found is begin
-					log (WARNING, " Device " & to_string (device) & " not found !");
-					-- CS output in status bar
-				end;
-
-				
-				procedure unit_not_found is 
-					use pac_unit_name;
-				begin
-					log (WARNING, " Device " & to_string (device) 
-						& " unit " & to_string (unit) & " not found !");
-					-- CS output in status bar
-				end;
-
-				
-
-				-- If no unit was specified by the caller, then this
-				-- procedure searches for the first unit of the given device:
-				procedure show_first_unit is
-					unit_query : constant type_unit_query := locate_unit (to_unit_name (""));
-					error : boolean := false;
-				begin
-					if unit_query.exists then
-						-- Set the active sheet where the unit is:
-						active_sheet := get_sheet (unit_query.position);
-						update_sheet_number_display;
-						
-						-- Center on the first unit and leave the
-						-- zoom factor as it is. If the runmode is
-						-- headless, then nothing happens here:
-						zoom_to (get_place (unit_query.position), S);
-
-						-- Highlight all units:
-						show_device (
-							module_cursor	=> active_module, 
-							device_name		=> device, 
-							all_units		=> true,
-							unit_name		=> unit_name_default,
-							error			=> error,
-							log_threshold	=> log_threshold + 2);
-						
-						-- Show some basic information in the staus bar:
-						set_status (get_device_properties (
-							module_cursor	=> active_module, 
-							device_name		=> device, 
-							level			=> DEVICE_PROPERTIES_LEVEL_1,
-							error			=> error,
-							log_threshold	=> log_threshold + 2));
-
-						-- For property levels greater 1 we open
-						-- the properties window in order to conveniently
-						-- show a lot of information:
-						case properties_level is
-							when DEVICE_PROPERTIES_LEVEL_1 => null;
-
-							when others =>
-								
-								pac_device_ops.show_properties_window (
-									device	=> device,
-									text	=> get_device_properties (
-										module_cursor	=> active_module, 
-										device_name		=> device, 
-										linebreaks		=> true,
-										level			=> properties_level,
-										error			=> error,
-										log_threshold	=> log_threshold + 2));
-						end case;
-						
-					else
-						device_not_found;
-					end if;
-				end show_first_unit;
-
-
-				
-				-- If a unit was specified by the caller, then this
-				-- procedure searches for the given unit of the given device:
-				procedure show_by_unit_name is
-					unit_query : constant type_unit_query := locate_unit (unit);
-					error : boolean := false;
-				begin
-					if unit_query.exists then
-						-- Set the active sheet where the unit is:
-						active_sheet := get_sheet (unit_query.position);
-						update_sheet_number_display;
-						
-						-- Center on the first unit and leave the
-						-- zoom factor as it is. If the runmode is
-						-- headless, then nothing happens here:
-						zoom_to (get_place (unit_query.position), S);
-
-						-- Highlight the given unit only:
-						show_device (
-							module_cursor	=> active_module, 
-							device_name		=> device, 
-							all_units		=> false, 
-							unit_name		=> unit,
-							error			=> error,
-							log_threshold	=> log_threshold + 2);
-						
-						-- Show some basic information in the staus bar:
-						set_status (get_device_properties (
-							module_cursor	=> active_module, 
-							device_name		=> device, 
-							level			=> DEVICE_PROPERTIES_LEVEL_1,
-							all_units		=> false,
-							unit_name		=> unit,
-							error			=> error,
-							log_threshold	=> log_threshold + 2));
-
-						-- For property levels greater 1 we open
-						-- the properties window in order to conveniently
-						-- show a lot of information:
-						case properties_level is
-							when DEVICE_PROPERTIES_LEVEL_1 => null;
-
-							when others =>
-								
-								pac_device_ops.show_properties_window (
-									device	=> device,
-									text	=> get_device_properties (
-										module_cursor	=> active_module, 
-										device_name		=> device, 
-										linebreaks		=> true,
-										level			=> properties_level,
-										all_units		=> false,
-										unit_name		=> unit,
-										error			=> error,
-										log_threshold	=> log_threshold + 2));
-
-						end case;
-
-						
-					else
-						unit_not_found;
-					end if;
-				end show_by_unit_name;
-
-
-
-				-- If instead of a unit a "." was specified by the caller
-				-- then the first unit on the active sheet is searched for:
-				procedure show_first_unit_on_active_sheet is
-					unit_query : constant type_unit_query := locate_unit (to_unit_name (""));
-					error : boolean := false;
-				begin
-					if unit_query.exists then
-						if get_sheet (unit_query.position) = active_sheet then
-							
-							-- Center on the first unit and leave the
-							-- zoom factor as it is. If the runmode is
-							-- headless, then nothing happens here:
-							zoom_to (get_place (unit_query.position), S);
-
-							-- Highlight all units:
-							show_device (
-								module_cursor	=> active_module, 
-								device_name		=> device, 
-								all_units		=> true, 
-								unit_name		=> unit_name_default,
-								error			=> error,
-								log_threshold	=> log_threshold + 2);
-
-							-- Show some basic information in the staus bar:
-							set_status (get_device_properties (
-								module_cursor	=> active_module, 
-								device_name		=> device, 
-								level			=> DEVICE_PROPERTIES_LEVEL_1,
-								error			=> error,
-								log_threshold	=> log_threshold + 2));
-
-							-- For property levels greater 1 we open
-							-- the properties window in order to conveniently
-							-- show a lot of information:
-							case properties_level is
-								when DEVICE_PROPERTIES_LEVEL_1 => null;
-
-								when others =>
-									
-									pac_device_ops.show_properties_window (
-										device	=> device,
-										text	=> get_device_properties (
-											module_cursor	=> active_module, 
-											device_name		=> device, 
-											linebreaks		=> true,
-											level			=> properties_level,
-											error			=> error,
-											log_threshold	=> log_threshold + 2));	   
-
-							end case;
-							
-							
-						else
-							log (WARNING, " Device " & to_string (device) & " is not on this sheet !");
-							-- CS output in status bar
-						end if;
-
-					else
-						device_not_found;
-					end if;
-				end show_first_unit_on_active_sheet;
-				
-				
-			begin
-				case mode is
-					when SEARCH_MODE_FIRST_UNIT =>
-						show_first_unit;					
-						
-					when SEARCH_MODE_BY_UNIT_NAME =>
-						show_by_unit_name;
-						
-					when SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET =>
-						show_first_unit_on_active_sheet;
-									
-				end case;
-			end do_it;
-
-
-			
-			procedure runmode_module is 
-				error : boolean := false;
-			begin
-				case cmd_field_count is
-					when 6 => 
-						-- show device L1 R1
-						properties_level := to_properties_level (get_field (5), error); -- L1
-						
-						if not error then						
-							do_it (
-								device	=> to_device_name (get_field (6)), -- R1, IC1
-								mode	=> SEARCH_MODE_FIRST_UNIT);
-						end if;
-					
-					when 7 =>
-						properties_level := to_properties_level (get_field (5), error); -- L1
-						
-						if not error then
-							-- The 7th field may be a period, which means
-							-- the unit is to be shown on the current active sheet.
-							-- Otherwise the field provides an explicit
-							-- unit name:
-							if get_field (7) = here then
-								do_it ( -- show device L1 IC1 .
-									device	=> to_device_name (get_field (6)), -- IC1
-									mode	=> SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET);
-							else
-								do_it ( -- show device L1 IC1 A
-									device	=> to_device_name (get_field (6)), -- IC1
-									unit	=> to_unit_name (get_field (7)), -- A
-									mode	=> SEARCH_MODE_BY_UNIT_NAME);
-							end if;
-						end if;
-						
-					when 8 .. type_field_count'last => too_long;
-					when others => command_incomplete;
-				end case;
-			end runmode_module;
-
-			
-		begin
-			-- Show operations are only useful and possible in graphical
-			-- runmode:
-			case runmode is
-				when MODE_MODULE =>
-					runmode_module;
-
-				when others =>
-					skipped_in_this_runmode (log_threshold + 1);
-						
-			end case;				
-		end show_device;
-
-			
-		
-
-
-		
-
-
-	-----------------------------------------------------------------------------------
-
-	-- UNIT OPERATIONS:
-
-		-- This procedure parses a command that deletes a unit
-		-- of a device like "schematic led_driver delete unit IC1 C":
-		procedure delete_unit is 
-			device_name : type_device_name;
-			unit_name	: pac_unit_name.bounded_string;
-		begin
-			device_name := to_device_name (get_field (5));
-			unit_name	:= to_unit_name (get_field (6));
-			
-			case cmd_field_count is
-				when 6 =>
-					delete_unit (
-						module_cursor 	=> active_module,
-						device_name		=> device_name,
-						unit_name		=> unit_name,
-						log_threshold	=> log_threshold + 1);
-
-				when 7 .. type_field_count'last => too_long; 
-					
-				when others => command_incomplete;
-			end case;
-		end delete_unit;
-		
-
-
-
-		-- This procedure parses a command that drags a unit
-		-- of a device like "schematic led_driver drag unit IC1 C absolute 100 130":
-		procedure drag_unit is begin
-			case cmd_field_count is
-				when 9 =>
-					drag_unit (
-						module_cursor 	=> active_module,
-						device_name		=> to_device_name (get_field (5)),
-						unit_name		=> to_unit_name (get_field (6)),
-						coordinates		=> to_coordinates (get_field (7)), -- relative/absolute
-						destination		=> type_vector_model (set (
-											x => to_distance (get_field (8)),
-											y => to_distance (get_field (9)))),
-						log_threshold	=> log_threshold + 1);
-
-				when 10 .. type_field_count'last => too_long; 
-					
-				when others => command_incomplete;
-			end case;
-		end drag_unit;
-		
-
-
-
-		-- Parses a command that moves a unit either relatively or
-		-- absolutely:
-		-- example 1: schematic led_driver move unit IC1 A relative -1 2 4
-		-- example 2: schematic led_driver move unit IC1 C absolute 2 210 100
-		procedure move_unit is 
-			device_name : type_device_name;
-			unit_name	: pac_unit_name.bounded_string;
-			coordinates : type_coordinates;
-			sheet		: type_sheet_relative;		
-			destination	: type_vector_model;
-		begin
-			device_name := to_device_name (get_field (5)); -- IC1
-			unit_name	:= to_unit_name (get_field (6)); -- A
-			coordinates := to_coordinates (get_field (7)); -- relative/absolute
-			sheet		:= to_sheet_relative (get_field (8)); -- -1, 2
-
-			destination	:= set (x => to_distance (get_field (9)), -- 2, 210
-								y => to_distance (get_field (10))); -- 4, 100
-
-			case cmd_field_count is
-				when 10 =>
-					move_unit (
-						module_cursor 	=> active_module,
-						device_name		=> device_name,
-						unit_name		=> unit_name,
-						coordinates		=> coordinates,
-						sheet			=> sheet,
-						destination		=> destination,						
-						log_threshold	=> log_threshold + 1);
-
-				when 11 .. type_field_count'last => too_long; 
-					
-				when others => command_incomplete;
-			end case;
-		end move_unit;
-		
-
-		
-		
-		-- Parses a command that rotates a unit either relatively or
-		-- absolutely:
-		-- example 1: schematic led_driver rotate unit IC1 A relative -90
-		-- example 2: schematic led_driver rotate unit IC1 B absolute 90
-		procedure rotate_unit is begin
-			case cmd_field_count is
-				when 8 =>
-					rotate_unit (
-						module_cursor 	=> active_module,
-						device_name		=> to_device_name (get_field (5)), -- IC1
-						unit_name		=> to_unit_name (get_field (6)), -- A
-						coordinates		=> to_coordinates (get_field (7)),  -- relative/absolute
-						rotation		=> to_rotation (get_field (8)), -- 90
-						log_threshold	=> log_threshold + 1);
-
-				when 9 .. type_field_count'last => too_long; 
-					
-				when others => command_incomplete;
-			end case;
-		end rotate_unit;
-			
-		
-
-		
-
-		-- Parses a command that fetches a unit from a device
-		-- and places it in the schematic:
-		-- example: 
-		-- "schematic demo fetch unit IC1 C 1 70 100 -90"
-		procedure fetch_unit is
-			device_name : type_device_name;
-			unit_name	: pac_unit_name.bounded_string;
-			sheet		: type_sheet;
-			place		: type_vector_model;
-			rotation	: type_rotation;
-		begin
-			device_name := to_device_name (get_field (5)); -- IC1
-			unit_name	:= to_unit_name (get_field (6)); -- C
-			sheet		:= to_sheet (get_field (7)); -- 1
-			place		:= set (x => to_distance (get_field (8)), -- 70
-								y => to_distance (get_field (9))); -- 100
-		
-			rotation	:= to_rotation (get_field (10)); -- -90
-
-			case cmd_field_count is
-				when 10 =>
-					fetch_unit (
-						module_cursor	=> active_module,
-						device_name		=> device_name,
-						unit_name		=> unit_name,
-						destination		=> to_position (place, sheet, rotation),
-						log_threshold	=> log_threshold + 1);
-
-				when 11 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end fetch_unit;
 		
 
 
@@ -1850,7 +1349,7 @@ package body et_cp_schematic is
 							NULL; -- CS
 							
 						when NOUN_UNIT =>
-							delete_unit;
+							delete_unit (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_VARIANT => 
 							delete_assembly_variant (module_cursor, cmd, log_threshold + 1);
@@ -1883,7 +1382,7 @@ package body et_cp_schematic is
 				when VERB_DRAG =>
 					case noun is
 						when NOUN_UNIT =>
-							drag_unit;
+							drag_unit (module_cursor, cmd, log_threshold + 1);
 									
 						when NOUN_NETCHANGER =>
 							drag_netchanger;
@@ -1927,7 +1426,7 @@ package body et_cp_schematic is
 				when VERB_FETCH =>
 					case noun is
 						when NOUN_UNIT =>
-							fetch_unit;
+							fetch_unit (module_cursor, cmd, log_threshold + 1);
 
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -1961,7 +1460,7 @@ package body et_cp_schematic is
 
 							
 						when NOUN_UNIT =>
-							move_unit;
+							move_unit (module_cursor, cmd, log_threshold + 1);
 									
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -2124,7 +1623,7 @@ package body et_cp_schematic is
 							NULL; -- CS
 
 						when NOUN_UNIT =>
-							rotate_unit;
+							rotate_unit (module_cursor, cmd, log_threshold + 1);
 									
 						when NOUN_NAME | NOUN_VALUE | NOUN_PURPOSE | NOUN_PARTCODE =>
 							rotate_unit_placeholder;
@@ -2207,7 +1706,7 @@ package body et_cp_schematic is
 				when VERB_SHOW => -- GUI related
 					case noun is
 						when NOUN_DEVICE =>
-							show_device;
+							show_device (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_MODULE =>
 							show_module;
