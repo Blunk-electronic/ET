@@ -48,13 +48,9 @@ with et_sheets;							use et_sheets;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
 
-with et_submodules;
 with et_netchangers;					use et_netchangers;
-with et_schematic_ops;					use et_schematic_ops;
 with et_schematic_ops.submodules;		use et_schematic_ops.submodules;
 
-with et_net_names;						use et_net_names;
-with et_module_instance;				use et_module_instance;
 
 
 

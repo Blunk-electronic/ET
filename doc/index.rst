@@ -21,6 +21,7 @@
    board.rst
    assembly_variants.rst
 ..    CS cam.rst
+.. CS submodules.rst
    packages.rst
    
 Index
