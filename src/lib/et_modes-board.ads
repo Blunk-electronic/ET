@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -53,7 +53,7 @@ package et_modes.board is
 		VERB_EXIT,
 		VERB_FILL,
 		VERB_FLIP,
-		VERB_MAKE,
+		VERB_MAKE, -- CS alternatively VERB_EXPORT ?
 		VERB_MOVE,
 		VERB_PLACE,
 		VERB_QUIT,
@@ -84,6 +84,7 @@ package et_modes.board is
 		NOUN_ALL,
 		NOUN_ASSY, -- assembly documentation
 		NOUN_ARC,
+		NOUN_BOM,
 		NOUN_FRAME,
 		NOUN_CENTER,
 		NOUN_CONDUCTORS,

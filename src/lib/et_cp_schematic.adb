@@ -365,37 +365,6 @@ package body et_cp_schematic is
 		
 
 
-
-
-
-	-----------------------------------------------------------------------------------	
-
-	
-
-
-
-
-		
-
-		procedure make_boms is
-			use et_schematic_ops.submodules;
-		begin
-			case cmd_field_count is
-				when 4 =>
-					make_boms -- a BOM for each variant
-						(
-						module_name 	=> module,
-						log_threshold	=> log_threshold + 1);
-
-				when 5 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end make_boms;
-			
-
-
-
 		
 		
 	-----------------------------------------------------------------------------------
@@ -1347,10 +1316,6 @@ package body et_cp_schematic is
 					
 				when VERB_MAKE =>
 					case noun is
-						when NOUN_BOM => 
-							make_boms;
-
-
 						when NOUN_NETLISTS => 
 							case cmd_field_count is
 								when 4 =>

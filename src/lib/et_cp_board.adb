@@ -71,6 +71,7 @@ with et_cp_board_frame;				use et_cp_board_frame;
 with et_cp_board_module;			use et_cp_board_module;
 with et_cp_board_material_pnp;		use et_cp_board_material_pnp;
 with et_cp_board_submodule;			use et_cp_board_submodule;
+with et_cp_board_material_bom;		use et_cp_board_material_bom;
 -- CS with et_cp_board_netchanger;		use et_cp_board_netchanger;
 with et_cp_board_script;			use et_cp_board_script;
 
@@ -349,8 +350,11 @@ package body et_cp_board is
 					
 				when VERB_MAKE =>
 					case noun is
+						when NOUN_BOM => 
+							export_bom (module_cursor, cmd, log_threshold + 1);
+						
 						when NOUN_PNP =>
-							export_pick_and_place  (module_cursor, cmd, log_threshold + 1);
+							export_pick_and_place (module_cursor, cmd, log_threshold + 1);
 
 						when others => invalid_noun (to_string (noun));
 					end case;
