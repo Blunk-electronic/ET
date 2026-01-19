@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                              SYSTEM ET                                   --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                           MODULE OPERATIONS                              --
+--              COMMAND PROCESSOR / SCHEMATIC / MODULE                      --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                --
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.                                          --
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -35,50 +35,56 @@
 --
 --   history of changes:
 --
---  ToDo: 
---  
-
+--   ToDo: 
 
 with et_generic_modules;		use et_generic_modules;
-with et_module_names;			use et_module_names;
+with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
+with et_cmd_sts;				use et_cmd_sts;
 
 
-package et_module_ops is
-		
 
-	-- Creates an empty generic module in container modules.
-	-- Does not create the actual module file if the module
-	-- name is "untitled". If the module name is something other
-	-- than "untitled" then the module file will also be created.
+package et_cp_schematic_module is
+
+
+	-- Creates a new module and sets it active:
 	procedure create_module (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
-	
-	-- Deletes a generic module (from container generic_modules) and
-	-- the module file (*.mod) itself.
+
+	-- This procedure extracts from the command the
+	-- name of the generic module and optionally the
+	-- sheet number.
+	-- It sets the given module and sheet as active
+	-- and updates the editor window according
+	-- to the activated module:
+	procedure show_module (
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Examples:
+	-- 1. schematic demo delete module
+	-- 2. schematic demo delete module pwr_supply
 	procedure delete_module (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
-		
 
 
-
-	
-	-- Saves a generic module (from container generic_modules) in a file inside 
-	-- the current project directory.
-	-- The module must be inside the current project. If it is outside
-	-- the project, a warning will be issued and it will NOT be saved.
-	-- If the module is outside the project directory then it will not be touched.
-	-- If the module does not exist, a warning will be issued.
+	-- Examples:
+	-- 1. schematic demo save module
+	-- 2. schematic demo save module pwr_supply
 	procedure save_module (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
+
 	
-	
-end et_module_ops;
+end et_cp_schematic_module;
 
 -- Soli Deo Gloria
 

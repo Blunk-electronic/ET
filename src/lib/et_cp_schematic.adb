@@ -41,26 +41,14 @@
 -- - command to add a text note
 
 with ada.text_io;						use ada.text_io;
-with ada.containers;
 with ada.characters.handling;			use ada.characters.handling;
 with ada.strings; 						use ada.strings;
 with ada.exceptions;					use ada.exceptions;
 
-with et_module_names;					use et_module_names;
 with et_runmode;						use et_runmode;
-
-with et_modes.schematic;
-
-with et_schematic_geometry;
-with et_schematic_coordinates;
-with et_sheets;							use et_sheets;
-
-with et_canvas_schematic;
-with et_canvas_board;
-
 with et_modes;							use et_modes;
-with et_module_ops;						use et_module_ops;
-with et_module_write;					use et_module_write;
+with et_modes.schematic;
+with et_canvas_schematic;
 
 with et_cp_schematic_canvas;			use et_cp_schematic_canvas;
 with et_cp_schematic_display;			use et_cp_schematic_display;
@@ -72,6 +60,8 @@ with et_cp_schematic_unit;				use et_cp_schematic_unit;
 with et_cp_schematic_nets;				use et_cp_schematic_nets;
 with et_cp_schematic_netchanger;		use et_cp_schematic_netchanger;
 with et_cp_schematic_sheet;				use et_cp_schematic_sheet;
+with et_cp_schematic_module;			use et_cp_schematic_module;
+
 
 
 package body et_cp_schematic is
@@ -112,31 +102,17 @@ package body et_cp_schematic is
 		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
-		use et_schematic_coordinates;
-		use et_schematic_geometry;
-		use pac_geometry_2;
-
 		use et_canvas_schematic;
 		use et_canvas_schematic.pac_canvas;
 		use et_modes.schematic;
 
-
-		
-
-		-- This function is a shortcut to get a single field
-		-- from the given command:
-		function get_field (place : in type_field_count) 
-			return string 
-		is begin
-			return get_field (cmd, place);
-		end;
-
+	
 		
 		-- This procedure sets the verb and the noun:
 		procedure set_verb_and_noun is begin
 			-- Set the verb.
 			-- Read it from field 3:
-			verb := to_verb (get_field (3));
+			verb := to_verb (get_field (cmd, 3));
 
 			
 			-- There are some very short commands which do not require a noun.
@@ -145,12 +121,13 @@ package body et_cp_schematic is
 				when VERB_EXIT | VERB_QUIT => null; -- no noun
 				
 				-- Set the noun. Read it from field 4:		
-				when others => noun := to_noun (get_field (4));
+				when others => noun := to_noun (get_field (cmd, 4));
 			end case;
 		end set_verb_and_noun;
 
 
 
+		
 		
 		-- Updates the verb-noun display depending on the 
 		-- origin of the command and the runmode:
@@ -170,262 +147,6 @@ package body et_cp_schematic is
 			end case;
 		end update_verb_noun_display;
 		
-
-		
-		module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-
-
-
-
-		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);
-
-
-		-- This procedure is a shortcut. Call it in case the given command is too long:
-		procedure too_long is begin
-			command_too_long (cmd, cmd_field_count - 1);
-		end;
-
-
-		-- This procedure is a shortcut. 
-		-- Call it in case the given command is incomplete:
-		procedure command_incomplete is begin
-			command_incomplete (cmd);
-		end;
-		
-		
-	
-
-
-		
-
-	-----------------------------------------------------------------------------------	
-
-	-- MODULE OPERATIONS:
-		
-		
-		procedure create_module is
-			
-			procedure do_it (
-				module_name : in pac_module_name.bounded_string) 
-			is
-				use pac_generic_modules;
-			begin
-				create_module (
-					module_name		=> module_name, -- led_driver_test
-					log_threshold	=> log_threshold + 1);
-
-				-- Show the module in schematic and board editor:
-				
-				active_module := locate_module (module_name);
-				active_sheet := 1;
-
-				-- Update module name in the schematic window title bar:
-				-- CS set_title_bar (active_module);
-				
-				-- CS update_sheet_number_display;
-				
-				-- Update the board window title bar:
-				-- CS et_canvas_board.set_title_bar (active_module);
-			end do_it;
-
-			
-		begin
-			case cmd_field_count is
-				when 5 => do_it (to_module_name (get_field (5)));
-				when 6 .. type_field_count'last => too_long;
-				when others => command_incomplete;
-			end case;
-		end create_module;
-
-
-
-		
-		
-		-- This procedure extracts from the command the
-		-- name of the generic module and optionally the
-		-- sheet number.
-		-- It sets the given module and sheet as active
-		-- and updates the editor window according
-		-- to the activated module:
-		procedure show_module is  -- GUI related
-
-			module : pac_module_name.bounded_string;
-
-			sheet : type_sheet := 1;
-
-			
-			-- Sets the active module and first sheet.
-			procedure module_and_first_sheet is begin
-				module := to_module_name (get_field (5));
-				set_module (module);
-				active_sheet := sheet;
-				
-				update_schematic_editor;
-				et_canvas_board.update_board_editor;
-			end module_and_first_sheet;
-
-
-
-			-- Sets the active module and sheet.
-			procedure module_and_random_sheet is begin
-				module := to_module_name (get_field (5));
-				set_module (module);
-
-				log (text => "sheet " & to_string (sheet), 
-					level => log_threshold + 1);
-				
-				sheet := to_sheet (get_field (6));
-				active_sheet := sheet;
-
-				update_schematic_editor;
-				et_canvas_board.update_board_editor;
-			end module_and_random_sheet;
-			
-			
-		begin
-			log (text => "show module (via schematic editor) " 
-				& enclose_in_quotes (to_string (module)),
-				level => log_threshold + 1);
-
-			case cmd_field_count is
-				when 5 => module_and_first_sheet; -- show module LED-driver
-				when 6 => module_and_random_sheet; -- show module LED-driver 2
-				when 7 .. type_field_count'last => too_long;
-				when others => command_incomplete;
-			end case;
-			
-		end show_module;
-
-		
-
-
-		
-
-		procedure delete_module is
-
-			use ada.containers;
-			use pac_generic_modules;
-
-			
-			-- Delete the current active module:
-			procedure delete_active is begin
-				delete_module (
-					module_name		=> key (module_cursor),
-					log_threshold	=> log_threshold + 1);
-
-				-- As long as there are other modules, open the 
-				-- first of the generic modules.
-				-- If no modules available any more, close the schematic
-				-- and board editor:
-
-				-- CS Set the previous module active instead ?
-				if length (generic_modules) > 0 then
-					
-					active_module := generic_modules.first;
-					active_sheet := 1;
-
-					log (text => "set module " 
-						& enclose_in_quotes (get_active_module), 
-						level => log_threshold + 1);
-
-					-- Update module name in the schematic window title bar:
-					set_title_bar (active_module);
-					
-					update_sheet_number_display;
-					
-					-- Update the board window title bar:
-					et_canvas_board.set_title_bar (active_module);
-				else
-					-- CS
-					null;
-					-- terminate_main;
-				end if;
-			end delete_active;
-
-
-			
-			procedure delete_explicit (
-				module_name : in pac_module_name.bounded_string) 
-			is begin
-				delete_module (
-					module_name		=> module_name, -- led_driver_test
-					log_threshold	=> log_threshold + 1);
-
-				-- As long as there are other modules, open the 
-				-- first of the generic modules.
-				-- If no modules available any more, close the schematic
-				-- and board editor:
-				
-				-- CS Set the previous module active instead ?
-				if length (generic_modules) > 0 then
-				
-					active_module := generic_modules.first;
-					active_sheet := 1;
-
-					log (text => "set module " 
-						& enclose_in_quotes (get_active_module), 
-						level => log_threshold + 1);
-
-					-- Update module name in the schematic window title bar:
-					set_title_bar (active_module);
-					
-					update_sheet_number_display;
-					
-					-- Update the board window title bar:
-					et_canvas_board.set_title_bar (active_module);
-				else
-					-- CS
-					null;
-					-- terminate_main;
-				end if;
-			end delete_explicit;
-
-			
-		begin
-			case cmd_field_count is
-				when 4 => delete_active;								
-				when 5 => delete_explicit (to_module_name (get_field (5)));
-				when 6 .. type_field_count'last => too_long;								
-				when others => command_incomplete;
-			end case;
-		end delete_module;
-
-
-
-		
-		
-		-- Actions to save a module:
-		procedure save_module is 
-		begin
-			-- Since we are already in the project directory,
-			-- we can call the save_module procedures right away.
-			
-			case cmd_field_count is
-				when 4 =>
-					-- Save the module with its own name:
-					write_module (
-						module_cursor	=> active_module,
-						log_threshold	=> log_threshold + 1);
-
-				when 5 =>
-					-- Save the module with a different name:
-					write_module (
-						module_cursor	=> active_module,
-						save_as_name	=> to_module_name (get_field (5)), -- led_driver_test
-						log_threshold	=> log_threshold + 1);
-					
-				when 6 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;			
-
-		end save_module;
-
-		
-		
-
-	-----------------------------------------------------------------------------------
 
 
 		
@@ -500,7 +221,7 @@ package body et_cp_schematic is
 							create_assembly_variant (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_MODULE =>
-							create_module;
+							create_module (cmd, log_threshold + 1);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -518,7 +239,7 @@ package body et_cp_schematic is
 							delete_net_label (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_MODULE =>
-							delete_module;
+							delete_module (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_NET =>
 							delete_net (module_cursor, cmd, log_threshold + 1);
@@ -799,14 +520,13 @@ package body et_cp_schematic is
 							show_device (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_MODULE =>
-							show_module;
+							show_module (cmd, log_threshold + 1);
 							
 						when NOUN_NET =>
 							show_net (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_SHEET =>
-							show_sheet (cmd, log_threshold + 1);
-						
+							show_sheet (cmd, log_threshold + 1);						
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
