@@ -50,7 +50,6 @@ with et_module_names;					use et_module_names;
 with et_runmode;						use et_runmode;
 
 with et_modes.schematic;
-with et_canvas_schematic_units;
 with et_canvas_schematic_nets;
 with et_scripting_interactive_schematic;
 with et_schematic_ops.netlists;
@@ -59,14 +58,11 @@ with et_schematic_ops.submodules;
 with et_board_ops.grid;
 with et_board_ops.net_class;
 
-with et_rotation_docu;					use et_rotation_docu;
 with et_text_content;					use et_text_content;
 
 with et_schematic_geometry;
 with et_schematic_coordinates;
 with et_module_instance;				use et_module_instance;
-with et_unit_name;						use et_unit_name;
-with et_units;
 with et_sheets;							use et_sheets;
 with et_net_labels;						use et_net_labels;
 with et_net_connectors;					use et_net_connectors;
@@ -88,14 +84,10 @@ with et_devices_electrical;
 with et_devices_electrical.units;
 
 with et_device_library;					use et_device_library;
-with et_device_placeholders;			use et_device_placeholders;
 
 with et_device_purpose;					use et_device_purpose;
 with et_device_partcode;				use et_device_partcode;
-with et_device_model_names;
 with et_device_value;					use et_device_value;
-with et_device_property_level;
-with et_package_variant;
 
 with et_canvas_schematic;
 with et_canvas_board;
@@ -248,110 +240,6 @@ package body et_cp_schematic is
 
 
 		
-		
-		
-	-----------------------------------------------------------------------------------
-
-	-- UNIT PLACEHOLDERS:	
-
-		-- This procedure parses a command that rotates a placeholder
-		-- for name, value or purpose of a unit.
-		-- Example: "schematic led_driver rotate value R1 1 vertical"
-		-- Example: "schematic led_driver rotate value IC1 A horizontal"
-		procedure rotate_unit_placeholder is
-			meaning : type_placeholder_meaning;
-
-			procedure do_it is begin
-				case cmd_field_count is
-					when 7 =>
-						rotate_placeholder (
-							module_cursor 	=> active_module,
-							device_name		=> to_device_name (get_field (5)), -- IC1
-							unit_name		=> to_unit_name (get_field (6)), -- A
-							rotation		=> to_rotation_documentation (get_field (7)), -- horizontal
-							meaning			=> meaning,
-							log_threshold	=> log_threshold + 1);
-
-					when 8 .. type_field_count'last => too_long; 
-						
-					when others => command_incomplete;
-				end case;
-			end do_it;
-			
-			
-		begin
-			case noun is
-				when NOUN_NAME =>
-					meaning := NAME;
-					
-				when NOUN_VALUE =>
-					meaning := VALUE;
-									
-				when NOUN_PURPOSE =>
-					meaning := PURPOSE;
-
-				-- CS partcode ?
-
-				when others => null; -- CS should never happen
-			end case;
-
-			do_it;		
-		end rotate_unit_placeholder;
-		
-
-
-
-		
-		
-		-- This procedure parses a command that moves a placeholder
-		-- for name, value or purpose of a unit.
-		-- Example: "schematic led_driver move value R1 1 absolute 100 115"
-		-- Example: "schematic led_driver move value IC1 A relative -5 0"
-		procedure move_unit_placeholder is
-			meaning : type_placeholder_meaning;
-
-			procedure do_it is begin
-				case cmd_field_count is
-					when 9 =>
-						move_placeholder (
-							module_cursor 	=> active_module,
-							device_name		=> to_device_name (get_field (5)), -- IC1
-							unit_name		=> to_unit_name (get_field (6)), -- A
-							coordinates		=> to_coordinates (get_field (7)),  -- relative/absolute
-							point			=> to_vector_model (get_field (8), get_field (9)),
-							meaning			=> meaning,
-							log_threshold	=> log_threshold + 1);
-
-					when 10 .. type_field_count'last => too_long; 
-						
-					when others => command_incomplete;
-				end case;
-			end do_it;
-
-			
-		begin
-			case noun is
-				when NOUN_NAME =>
-					meaning := NAME;
-					
-				when NOUN_VALUE =>
-					meaning := VALUE;
-									
-				when NOUN_PURPOSE =>
-					meaning := PURPOSE;
-
-				-- CS partcode ?
-
-				when others => null; -- CS should never happen
-			end case;
-
-			do_it;		
-		end move_unit_placeholder;
-
-
-
-		
-
 
 
 
@@ -1240,7 +1128,6 @@ package body et_cp_schematic is
 		-- Parses the given command and dispatches to
 		-- further subroutines:
 		procedure parse is 
-			use et_device_placeholders;
 		begin
 			log (text => "parse", level => log_threshold + 1);
 			log_indentation_up;
@@ -1438,7 +1325,7 @@ package body et_cp_schematic is
 							move_cursor (cmd, log_threshold + 1);
 							
 						when NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE =>
-							move_unit_placeholder;
+							move_unit_placeholder (module_cursor, cmd, log_threshold + 1);
 
 							
 						when NOUN_PORT =>
@@ -1626,7 +1513,7 @@ package body et_cp_schematic is
 							rotate_unit (module_cursor, cmd, log_threshold + 1);
 									
 						when NOUN_NAME | NOUN_VALUE | NOUN_PURPOSE | NOUN_PARTCODE =>
-							rotate_unit_placeholder;
+							rotate_unit_placeholder (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_NETCHANGER =>
 							rotate_netchanger;

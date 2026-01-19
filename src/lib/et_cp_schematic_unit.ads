@@ -124,6 +124,32 @@ package et_cp_schematic_unit is
 
 		
 		
+		
+		
+-- PLACEHOLDERS:
+
+	-- This procedure parses a command that rotates a placeholder
+	-- for name, value or purpose of a unit.
+	-- Example: "schematic led_driver rotate value R1 1 vertical"
+	-- Example: "schematic led_driver rotate value IC1 A horizontal"
+	procedure rotate_unit_placeholder (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+	
+	-- This procedure parses a command that moves a placeholder
+	-- for name, value or purpose of a unit.
+	-- Example: "schematic led_driver move value R1 1 absolute 100 115"
+	-- Example: "schematic led_driver move value IC1 A relative -5 0"
+	procedure move_unit_placeholder (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+	
+		
 end et_cp_schematic_unit;
 
 -- Soli Deo Gloria

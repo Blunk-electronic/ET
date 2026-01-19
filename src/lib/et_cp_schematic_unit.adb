@@ -45,6 +45,7 @@ with ada.characters.handling;			use ada.characters.handling;
 with ada.strings; 						use ada.strings;
 
 with et_runmode;						use et_runmode;
+with et_modes.schematic;
 with et_sheets;							use et_sheets;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
@@ -58,6 +59,8 @@ with et_unit_name;						use et_unit_name;
 with et_device_property_level;
 with et_canvas_schematic;
 
+with et_device_placeholders;
+with et_rotation_docu;
 
 
 package body et_cp_schematic_unit is
@@ -612,8 +615,130 @@ package body et_cp_schematic_unit is
 	end fetch_unit;
 		
 
-	
-	
+
+		
+		
+		
+		
+		
+		
+-- PLACEHOLDERS:
+
+	procedure rotate_unit_placeholder (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+
+		use et_modes.schematic;
+		use et_rotation_docu;
+		use et_device_placeholders;
+		meaning : type_placeholder_meaning;
+
+		
+		procedure do_it is begin
+			case cmd_field_count is
+				when 7 =>
+					rotate_placeholder (
+						module_cursor 	=> module,
+						device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
+						unit_name		=> to_unit_name (get_field (cmd, 6)), -- A
+						rotation		=> to_rotation_documentation (get_field (cmd, 7)), -- horizontal
+						meaning			=> meaning,
+						log_threshold	=> log_threshold + 1);
+
+				when 8 .. type_field_count'last => 
+					command_too_long (cmd, cmd_field_count - 1);
+					
+				when others => command_incomplete (cmd);
+			end case;
+		end do_it;
+		
+		
+	begin
+		-- CS log message
+		
+		case noun is
+			when NOUN_NAME =>
+				meaning := NAME;
+				
+			when NOUN_VALUE =>
+				meaning := VALUE;
+								
+			when NOUN_PURPOSE =>
+				meaning := PURPOSE;
+
+			-- CS partcode ?
+
+			when others => null; -- CS should never happen
+		end case;
+
+		do_it;		
+	end rotate_unit_placeholder;
+
+
+		
+		
+		
+		
+		
+		
+		
+	procedure move_unit_placeholder (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+
+		use et_modes.schematic;
+		use et_device_placeholders;
+		meaning : type_placeholder_meaning;
+
+		
+		procedure do_it is begin
+			case cmd_field_count is
+				when 9 =>
+					move_placeholder (
+						module_cursor 	=> module,
+						device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
+						unit_name		=> to_unit_name (get_field (cmd, 6)), -- A
+						coordinates		=> to_coordinates (get_field (cmd, 7)),  -- relative/absolute
+						point			=> to_vector_model (get_field (cmd, 8), get_field (cmd, 9)),
+						meaning			=> meaning,
+						log_threshold	=> log_threshold + 1);
+
+				when 10 .. type_field_count'last => 
+					command_too_long (cmd, cmd_field_count - 1);
+					
+				when others => command_incomplete (cmd);
+			end case;
+		end do_it;
+
+		
+	begin
+		case noun is
+			when NOUN_NAME =>
+				meaning := NAME;
+				
+			when NOUN_VALUE =>
+				meaning := VALUE;
+								
+			when NOUN_PURPOSE =>
+				meaning := PURPOSE;
+
+			-- CS partcode ?
+
+			when others => null; -- CS should never happen
+		end case;
+
+		do_it;		
+	end move_unit_placeholder;
+
+		
 end et_cp_schematic_unit;
 
 
