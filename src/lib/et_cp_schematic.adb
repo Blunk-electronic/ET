@@ -71,6 +71,7 @@ with et_cp_schematic_device;			use et_cp_schematic_device;
 with et_cp_schematic_unit;				use et_cp_schematic_unit;
 with et_cp_schematic_nets;				use et_cp_schematic_nets;
 with et_cp_schematic_netchanger;		use et_cp_schematic_netchanger;
+with et_cp_schematic_sheet;				use et_cp_schematic_sheet;
 
 
 package body et_cp_schematic is
@@ -194,39 +195,6 @@ package body et_cp_schematic is
 		
 		
 	
-
-
-
-		
-		
-		-- This procedure extracts from the command the
-		-- sheet number and sets it active.
-		-- It updates the sheet number display accordingly:
-		procedure show_sheet is -- GUI related
-			sheet : type_sheet;
-
-			procedure show is
-			begin
-				sheet := to_sheet (get_field (5));
-
-				-- CS test whether sheet exists
-				
-				active_sheet := sheet;
-				update_sheet_number_display;
-			end show;
-				
-		begin
-			log (text => "set sheet" & to_string (sheet), level => log_threshold + 1); 
-			
-			case cmd_field_count is
-				when 5 => show;
-				when 6 .. type_field_count'last => too_long;
-				when others => command_incomplete;
-			end case;
-			
-		end show_sheet;
-
-
 
 
 		
@@ -837,7 +805,7 @@ package body et_cp_schematic is
 							show_net (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_SHEET =>
-							show_sheet;
+							show_sheet (cmd, log_threshold + 1);
 						
 							
 						when others => invalid_noun (to_string (noun));
