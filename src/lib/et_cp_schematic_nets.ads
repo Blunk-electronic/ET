@@ -63,6 +63,114 @@ package et_cp_schematic_nets is
 		log_threshold	: in type_log_level);
 
 	
+
+	-- This procedure parses a command that highlights a net.
+	-- Example: "schematic demo show net RESET_N"
+	procedure show_net (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+
+	
+	-- This procedure parses a command that places a net connector.
+	-- Example: "schematic demo place net_connector 1 60 80 input"
+	procedure place_net_connector (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+	-- This procedure parses a command that deletes a net connector:
+	procedure delete_net_connector (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+
+	
+
+	-- This procedure parses a command that places a net connector.
+	-- Example: "schematic demo place net_label 1 70 80"
+	procedure place_net_label (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+	-- This procedure parses a command that deletes a net label:
+	procedure delete_net_label (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+	
+
+	-- This procedure parses a command that moves a net label:
+	procedure move_net_label (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+	
+	
+
+	-- This procedure parses a command that set the 
+	-- class of a net.
+	-- Example: "schematic demo set class GND pwr"
+	procedure set_net_class (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+	
+
+	-- Parses a command like:
+	-- "schematic demo draw net RESET_N 1 90 100  100 100"
+	-- The command can be shorter than the above example, because
+	-- the operator is not required to type everything:
+	procedure draw_net (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+	
+	procedure delete_net (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+	procedure rename_net (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+	
+	
+	procedure delete_net_segment (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+	
+	procedure drag_net_segment (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+
+	
+	
+	procedure delete_net_strand (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
 	
 end et_cp_schematic_nets;
 

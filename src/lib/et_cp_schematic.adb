@@ -50,34 +50,13 @@ with et_module_names;					use et_module_names;
 with et_runmode;						use et_runmode;
 
 with et_modes.schematic;
-with et_canvas_schematic_nets;
-with et_scripting_interactive_schematic;
-with et_schematic_ops.netlists;
-with et_schematic_ops.grid;
 with et_schematic_ops.submodules;
-with et_board_ops.grid;
-with et_board_ops.net_class;
-
-with et_text_content;					use et_text_content;
 
 with et_schematic_geometry;
 with et_schematic_coordinates;
-with et_module_instance;				use et_module_instance;
 with et_sheets;							use et_sheets;
-with et_net_labels;						use et_net_labels;
-with et_net_connectors;					use et_net_connectors;
-with et_net_strands;					use et_net_strands;
-with et_nets;							use et_nets;
-with et_net_names;						use et_net_names;
-with et_net_class;						--use et_net_class;
-with et_net_class_name;
 
-with et_schematic_ops.nets;
 with et_netchangers;
-with et_submodules;
-with et_device_name;
-
-with et_device_library;					use et_device_library;
 
 with et_canvas_schematic;
 with et_canvas_board;
@@ -85,8 +64,6 @@ with et_canvas_board;
 with et_modes;							use et_modes;
 with et_module_ops;						use et_module_ops;
 with et_module_write;					use et_module_write;
-
-with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
 
 with et_cp_schematic_canvas;			use et_cp_schematic_canvas;
 with et_cp_schematic_display;			use et_cp_schematic_display;
@@ -137,10 +114,6 @@ package body et_cp_schematic is
 		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
-		use pac_net_name;
-		
-		use et_schematic_ops.nets;
-
 		use et_schematic_coordinates;
 		use et_schematic_geometry;
 		use pac_geometry_2;
@@ -358,460 +331,7 @@ package body et_cp_schematic is
 		end rotate_netchanger;
 		
 
-
-		
-		
-	-----------------------------------------------------------------------------------
-		
-	-- OPERATIONS WITH NETS:	
-		
-
-
-		-- This procedure parses a command that highlights a net.
-		-- Example: "schematic demo show net RESET_N"
-		procedure show_net is
-			net_name : pac_net_name.bounded_string; -- RESET_N
-		begin
-			case cmd_field_count is
-				when 5 => 
-					net_name := to_net_name (get_field (5)); -- RESET_N
-					show_net (active_module, net_name, log_threshold + 1);
-				
-				when 6 .. type_field_count'last => too_long;
-				
-				when others => command_incomplete;
-			end case;
-		end show_net;
-
-
-
-
-		-- This procedure parses a command that places a net connector.
-		-- Example: "schematic demo place net_connector 1 60 80 input"
-		procedure place_net_connector is begin
-			case cmd_field_count is
-				when 8 =>
-
-					place_net_connector (
-						module_cursor	=> active_module,
-						position		=> to_position (
-												point => type_vector_model (set (
-													x => to_distance (get_field (6)),
-													y => to_distance (get_field (7)))),
-												sheet => to_sheet (get_field (5))), -- sheet number
-		
-						-- A connector requires specification of signal direction:
-						direction		=> to_direction (get_field (8)), -- INPUT, OUTPUT, PASSIVE, ...
-						log_threshold	=> log_threshold + 1);
-
-					
-				when 9 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end place_net_connector;
-
-
-		
-		
-		-- This procedure parses a command that places a net connector.
-		-- Example: "schematic demo place net_label 1 70 80"
-		procedure place_net_label is begin
-			case cmd_field_count is
-				when 7 =>
-					
-					place_net_label (
-						module_cursor	=> active_module,
-						position		=> to_position (
-												point => type_vector_model (set (
-													x => to_distance (get_field (6)),
-													y => to_distance (get_field (7)))),
-												sheet => to_sheet (get_field (5))), -- sheet number
-		
-						log_threshold	=> log_threshold + 1);
-
-					
-				when 8 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end place_net_label;
-
-
-		
-		-- This procedure parses a command that set the 
-		-- class of a net.
-		-- Example: "schematic demo set class GND pwr"
-		procedure set_net_class is 
-			use et_board_ops.net_class;
-			use et_net_class_name;
-		begin
-			case cmd_field_count is
-				when 6 =>
-					set_net_class (
-						module_cursor	=> active_module,
-						net_name		=> to_net_name (get_field (5)),
-						net_class		=> to_net_class_name (get_field (6)),
-						log_threshold	=> log_threshold + 1);
-					
-				when 7 .. type_field_count'last => too_long;
-				when others => command_incomplete;
-			end case;
-		end set_net_class;
-		
-		
-		
-
-		-- Parses a command like:
-		-- "schematic demo draw net RESET_N 1 90 100  100 100"
-		-- The command can be shorter than the above example, because
-		-- the operator is not required to type everything:
-		procedure draw_net is
-			use et_canvas_schematic_nets;
-			
-			procedure no_name_given is begin
-				-- If this is the first net right after system start,
-				-- then an anonymous net will be used.
-				-- Otherwise the net name used last will be applied
-				-- as it is stored in object_net_name.
-				if is_empty (object_net_name) then -- after system start
-					object_net_name := get_lowest_available_anonymous_net (module_cursor);
-					log (text => "apply anonymous name: " & to_string (object_net_name),
-						level => log_threshold + 2);
-				else
-					log (text => "apply name used last: " & to_string (object_net_name),
-						level => log_threshold + 2);
-				end if;
-
-				set_status (status_draw_net & " of net " & to_string (object_net_name));
-			end;
-
-			
-			procedure explicit_name_given is
-				name_s : constant string := get_field (5); -- RESET_N
-				name_b : pac_net_name.bounded_string;
-			begin
-				-- Validate the given net name:
-				check_net_name_length (name_s);
-				name_b := to_net_name (name_s);
-				check_net_name_characters (name_b);
-
-				-- Assign the net name:
-				object_net_name := name_b;
-
-				set_status (status_draw_net & " of net " & to_string (object_net_name));
-			end explicit_name_given;
-
-
-			
-			procedure segment_given is
-				name_s : constant string := get_field (5); -- RESET_N
-				name_b : pac_net_name.bounded_string;
-
-				A : type_object_position; -- start point of segment
-				B : type_vector_model; -- end point of segment
-			begin
-				-- Validate the given net name:
-				check_net_name_length (name_s);
-				name_b := to_net_name (name_s);
-				check_net_name_characters (name_b);
-
-				-- Assign the net name:
-				object_net_name := name_b;
-
-				-- Assign the start and end of the segment:
-				A := to_position (
-					point => to_vector_model (get_field (7), get_field (8)), -- x/y
-					sheet => to_sheet (get_field (6))); -- sheet number
-
-				B := to_vector_model (get_field (9), get_field (10)); -- x/y
-
-				-- Insert the net segment in the database:
-				insert_net_segment (
-					module_cursor	=> active_module,
-					net_name		=> object_net_name,
-					A				=> A,					
-					B 				=> B,					
-					log_threshold	=> log_threshold + 1);
-			end segment_given;
-			
-			
-		begin		
-			log_indentation_up;
-
-			case get_origin (cmd) is
-				when ORIGIN_CONSOLE =>
-
-					-- The command may contain more or less arguments
-					-- and can still be valid.
-					-- However a minimum of arguments must be ensured
-					-- and a maximum must not be exceeded:
-					case cmd_field_count is
-						when 4 => -- like "draw net"
-							log (text => "no name given", level => log_threshold + 1);
-							log_indentation_up;
-							no_name_given;
-							log_indentation_down;
-							
-						when 5 => -- like "draw net RESET_N"
-							explicit_name_given;
-						
-						when 10 => -- like "draw net RESET_N 1 90 100  100 100"
-							segment_given;
-
-						when 11 .. type_field_count'last => 
-							too_long; 
-						
-						when others =>
-							command_incomplete;
-					end case;
-
-					
-					
-				when ORIGIN_SCRIPT =>
-
-					-- The command MUST contain a certain number of
-					-- arguments:
-					case cmd_field_count is
-						when 10 => -- like "draw net RESET_N 1 90 100  100 100"
-							segment_given;
-
-						when 11 .. type_field_count'last => 
-							too_long; 
-							
-						when others => 
-							command_incomplete;
-							
-					end case;
-
-			end case;
-			
-			log_indentation_down;
-
-			-- CS exception handler
-			-- CS set_exit_code (cmd, 3);
-		end draw_net;
-
-
-
-
-		-- This procedure parses a command that deletes a net connector:
-		procedure delete_net_connector is begin
-			null; -- CS
-		end; 
-		
-
-		
-		
-		-- This procedure parses a command that deletes a net label:
-		procedure delete_net_label is begin
-			case cmd_field_count is
-				when 7 =>
-					delete_net_label
-						(
-						module_cursor	=> active_module,
-
-						position		=> to_position (
-											point => type_vector_model (set (
-												x => to_distance (get_field (6)),
-												y => to_distance (get_field (7)))),
-											sheet => to_sheet (get_field (5))), -- sheet number
-						
-						log_threshold	=> log_threshold + 1);
-					
-				when 8 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end delete_net_label;
-
-
-		
-
-		-- This procedure parses a command that moves a net label:
-		procedure move_net_label is begin
-			null;
-			-- CS
-		end move_net_label;
-
-		
-
-
-		
-		procedure delete_net is
-		begin
-			case cmd_field_count is
-				-- example 1: "delete net RESET_N"
-				-- example 2: "delete net RESET_N 2"
-
-				when 5 =>
-					delete_net (
-						module_cursor		=> active_module,
-						net_name			=> to_net_name (get_field (5)), -- RESET_N
-						sheet				=> 1, -- no meaning
-						all_sheets			=> TRUE,
-						log_threshold		=> log_threshold + 1);
-
-				when 6 =>
-					delete_net (
-						module_cursor		=> active_module,
-						net_name			=> to_net_name (get_field (5)), -- RESET
-						sheet				=> to_sheet (get_field (6)),
-						log_threshold		=> log_threshold + 1);
-				
-				when 7 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end delete_net;
-
-
-
-
-		
-		
-		procedure delete_net_segment is
-			catch_zone : type_catch_zone;
-		begin
-			case cmd_field_count is
-				-- example: "delete segment 1 97 99 2"
-				when 8 =>
-					catch_zone := set_catch_zone (
-						center	=> to_vector_model (get_field (6), get_field (7)),
-						radius	=> to_zone_radius (get_field (8)));
-					
-					delete_segment (
-						module_cursor	=> active_module,
-						sheet			=> to_sheet (get_field (5)),
-						catch_zone		=> catch_zone,
-						log_threshold	=> log_threshold + 1);
-
-				when 9 .. type_field_count'last => too_long; 
-					
-				when others => command_incomplete;
-			end case;
-		end delete_net_segment;
-
-
-
-
-
-		
-		procedure delete_net_strand is
-			catch_zone : type_catch_zone;
-		begin
-			case cmd_field_count is
-				-- example: "delete strand 1 97 99 2"
-				when 8 =>
-					catch_zone := set_catch_zone (
-						center	=> to_vector_model (get_field (6), get_field (7)),
-						radius	=> to_zone_radius (get_field (8)));
-					
-					delete_strand (
-						module_cursor	=> active_module,
-						sheet			=> to_sheet (get_field (5)),
-						catch_zone		=> catch_zone,
-						log_threshold	=> log_threshold + 1);
-
-				when 9 .. type_field_count'last => too_long; 
-					
-				when others => command_incomplete;
-			end case;
-		end delete_net_strand;
-
-
-		
-
-
-		
-
-		procedure drag_net_segment is
-			catch_zone : type_catch_zone;
-		begin
-			-- example: "drag segment 1 80 100 2 relative 10 0"
-			case cmd_field_count is
-				when 11 =>
-
-					catch_zone := set_catch_zone (
-						center	=> to_vector_model (get_field (6), get_field (7)),
-						radius	=> to_zone_radius (get_field (8)));
-					
-					drag_segment (
-						module_cursor	=> active_module,
-						sheet			=> to_sheet (get_field (5)),
-						catch_zone		=> catch_zone,					
-						coordinates		=> to_coordinates (get_field (9)), -- relative/absolute					
-						destination		=> to_vector_model (get_field (10), get_field (11)),
-						log_threshold	=> log_threshold + 1);
-						
-
-				when 13 .. type_field_count'last => too_long; 
-					
-				when others => command_incomplete;
-			end case;
-		end drag_net_segment;
-		
-
-
-
-		
-
-		procedure rename_net is 
-			catch_zone : type_catch_zone;
-		begin
-			case cmd_field_count is
-
-				-- If the command has only 6 fields, then
-				-- all strands on all sheets are renamed.
-				-- example: rename net RESET_N RST_N
-				when 6 =>
-					-- Rename the net everywhere:
-					rename_net (
-						module_cursor		=> active_module,
-						net_name_before		=> to_net_name (get_field (5)), -- RESET
-						net_name_after		=> to_net_name (get_field (6)), -- RESET_N
-						all_sheets			=> true,
-						log_threshold		=> log_threshold + 1);
-
-					
-				-- If the command has 7 fields, then
-				-- the renaming takes place on the strands of the given sheet only.	
-				-- Sheet is set by the 7th argument.
-				-- and are further-on ignored by the called procedure.
-				-- example: rename net RESET_N RST_N 2
-				when 7 =>
-					-- Rename the net on the given sheet:
-					rename_net (
-						module_cursor		=> active_module,
-						net_name_before		=> to_net_name (get_field (5)), -- RESET
-						net_name_after		=> to_net_name (get_field (6)), -- RESET_N
-						sheet				=> to_sheet (get_field (7)), -- 2
-						log_threshold		=> log_threshold + 1);
-
-					
-				-- If the command has 10 fields, the net scope is STRAND.
-				-- Place is set according to arguments 7..9.
-				-- example: rename net RESET_N RST_N 2 50 90 5
-				when 10 =>
-					-- Rename a strand on a given sheet:
-
-					catch_zone := set_catch_zone (
-						center	=> to_vector_model (get_field (8), get_field (9)),
-						radius	=> to_zone_radius (get_field (10))); -- 50 90 5
-
-					rename_strand (
-						module_cursor		=> active_module,
-						net_name_before		=> to_net_name (get_field (5)), -- RESET
-						net_name_after		=> to_net_name (get_field (6)), -- RESET_N
-						sheet				=> to_sheet (get_field (7)), -- 2
-						catch_zone			=> catch_zone,
-						log_threshold		=> log_threshold + 1);
-					
-				when 11 .. type_field_count'last => too_long;
-					
-				when others => command_incomplete;
-			end case;
-		end rename_net;
+	
 
 
 		
@@ -1161,16 +681,16 @@ package body et_cp_schematic is
 							delete_device (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_NET_CONNECTOR =>
-							delete_net_connector;
+							delete_net_connector (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_NET_LABEL =>
-							delete_net_label;
+							delete_net_label (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_MODULE =>
 							delete_module;
 							
 						when NOUN_NET =>
-							delete_net;
+							delete_net (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_NETCHANGER =>
 							delete_netchanger;
@@ -1179,10 +699,10 @@ package body et_cp_schematic is
 							delete_port_of_submodule (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_SEGMENT =>
-							delete_net_segment;
+							delete_net_segment (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_STRAND =>
-							delete_net_strand;
+							delete_net_strand (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_SUBMODULE =>
 							delete_submodule (module_cursor, cmd, log_threshold + 1);
@@ -1233,7 +753,7 @@ package body et_cp_schematic is
 							drag_port_of_submodule (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_SEGMENT =>
-							drag_net_segment;
+							drag_net_segment (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_SUBMODULE =>
 							drag_submodule (module_cursor, cmd, log_threshold + 1);
@@ -1244,7 +764,7 @@ package body et_cp_schematic is
 					
 				when VERB_DRAW =>
 					case noun is
-						when NOUN_NET => draw_net;
+						when NOUN_NET => draw_net (module_cursor, cmd, log_threshold + 1);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -1281,7 +801,6 @@ package body et_cp_schematic is
 							
 						when NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE =>
 							move_unit_placeholder (module_cursor, cmd, log_threshold + 1);
-
 							
 						when NOUN_PORT =>
 							move_port_of_submodule (module_cursor, cmd, log_threshold + 1);
@@ -1289,17 +808,14 @@ package body et_cp_schematic is
 						when NOUN_NETCHANGER =>
 							move_netchanger;
 
-
 						when NOUN_NET_LABEL =>
-							move_net_label;
+							move_net_label (module_cursor, cmd, log_threshold + 1);
 									
 						when NOUN_TEXT =>
 							NULL; -- CS
-
 							
 						when NOUN_SUBMODULE =>
 							move_submodule (module_cursor, cmd, log_threshold + 1);
-
 							
 						when NOUN_UNIT =>
 							move_unit (module_cursor, cmd, log_threshold + 1);
@@ -1332,10 +848,10 @@ package body et_cp_schematic is
 				when VERB_PLACE =>
 					case noun is
 						when NOUN_NET_CONNECTOR =>
-							place_net_connector;
+							place_net_connector (module_cursor, cmd, log_threshold + 1);
 
 						when NOUN_NET_LABEL =>
-							place_net_label;
+							place_net_label (module_cursor, cmd, log_threshold + 1);
 
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -1362,7 +878,7 @@ package body et_cp_schematic is
 							rename_submodule (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_NET =>
-							rename_net;
+							rename_net (module_cursor, cmd, log_threshold + 1);
 					
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -1407,7 +923,7 @@ package body et_cp_schematic is
 				when VERB_SET =>
 					case noun is
 						when NOUN_CLASS =>
-							set_net_class;
+							set_net_class (module_cursor, cmd, log_threshold + 1);
 												
 						when NOUN_GRID =>
 							set_grid (module_cursor, cmd, log_threshold + 1);
@@ -1455,7 +971,7 @@ package body et_cp_schematic is
 							show_module;
 							
 						when NOUN_NET =>
-							show_net;
+							show_net (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_SHEET =>
 							show_sheet;
