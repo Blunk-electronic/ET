@@ -63,6 +63,7 @@ with et_schematic_ops.units;			use et_schematic_ops.units;
 -- with et_assembly_variants;				use et_assembly_variants;
 
 -- with et_module_instance;				use et_module_instance;
+with et_schematic_ops_device;			use et_schematic_ops_device;
 
 
 

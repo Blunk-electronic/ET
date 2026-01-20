@@ -57,7 +57,7 @@ with et_device_placeholders.symbols;		use et_device_placeholders.symbols;
 with et_device_library.packages;
 
 with et_schematic_ops_assembly_variant;		use et_schematic_ops_assembly_variant;
-
+with et_schematic_ops_device;				use et_schematic_ops_device;
 
 
 package body et_schematic_ops.units is

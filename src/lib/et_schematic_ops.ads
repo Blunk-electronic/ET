@@ -76,8 +76,6 @@ with et_module_board;			use et_module_board;
 with et_text;
 with et_netchangers;
 with et_submodules;
--- with et_assembly_variants;		use et_assembly_variants;
--- with et_assembly_variant_name;	use et_assembly_variant_name;
 with et_numbering;
 with et_material;
 with et_netlists;
@@ -163,27 +161,6 @@ package et_schematic_ops is
 	procedure dragging_not_possible (
 		port 		: in string;
 		position	: in type_object_position);
-
-	
-
-	
-	
-	function sort_by_coordinates_2 (
-		module_cursor 	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level)
-		return et_numbering.pac_devices.map;
-
-	
-	
-
-	
-	-- Renumbers devices according to the sheet number.
-	procedure renumber_devices (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		step_width		: in type_name_index;
-		log_threshold	: in type_log_level);
-	-- CS move to separate package
-
 
 	
 end et_schematic_ops;
