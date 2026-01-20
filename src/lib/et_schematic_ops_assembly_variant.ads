@@ -37,71 +37,25 @@
 --
 --   ToDo: 
 
-with ada.text_io;				use ada.text_io;
-with ada.characters.latin_1;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded;       use ada.strings.bounded;
-
-with ada.containers;            use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
 
 with ada.exceptions;			use ada.exceptions;
 
-with et_meta;
-with et_net_names;				use et_net_names;
 with et_module_names;			use et_module_names;
-with et_module_instance;		use et_module_instance;
-with et_sheets;					use et_sheets;
-with et_schematic_geometry;		use et_schematic_geometry;
-with et_schematic_coordinates;	use et_schematic_coordinates;
-use et_schematic_geometry.pac_geometry_2;
 
-with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
-with et_nets;					use et_nets;
-with et_net_junction;			use et_net_junction;
-with et_net_ports;				use et_net_ports;
-with et_net_segment;			use et_net_segment;
-with et_net_labels;				use et_net_labels;
-with et_project;				use et_project;
 
 with et_generic_modules;		use et_generic_modules;
-with et_module;					use et_module;
-with et_module_board;			use et_module_board;
 
-with et_text;
-with et_netchangers;
-with et_submodules;
 with et_assembly_variants;		use et_assembly_variants;
 with et_assembly_variant_name;	use et_assembly_variant_name;
-with et_numbering;
 with et_material;
-with et_netlists;
-with et_terminal_name;			use et_terminal_name;
-with et_terminals;
-with et_port_names;				use et_port_names;
-with et_symbol_ports;			use et_symbol_ports;
-with et_device_library;			use et_device_library;
-with et_package_variant;		use et_package_variant;
+
 with et_device_purpose;			use et_device_purpose;
-with et_device_model_names;		use et_device_model_names;
 with et_device_value;			use et_device_value;
-with et_device_prefix;			use et_device_prefix;
 with et_device_name;			use et_device_name;
 with et_device_partcode;		use et_device_partcode;
-with et_conventions;
-
-with et_schematic_text;			use et_schematic_text;
-
-with et_devices_electrical;			use et_devices_electrical;
-with et_devices_electrical.units;	use et_devices_electrical.units;
 
 with et_logging;				use et_logging;
-with et_exceptions;				use et_exceptions;
 
 
 package et_schematic_ops_assembly_variant is
@@ -160,7 +114,72 @@ package et_schematic_ops_assembly_variant is
 		log_threshold	: in type_log_level);
 
 	
+
+
+
+	-- Returns true if the given module and assembly variant 
+	-- provides the given device.
+	-- Assumptions: 
+	-- - The module being searched in must be in the rig already.
+	-- - The assembly variant must exist in the module.
+	-- - The device must exist in the module.
+	function device_exists (
+		module	: in pac_generic_modules.cursor; -- the module like motor_driver
+		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
+		device	: in type_device_name)
+		return boolean;
+
+
+
+
+	-- Returns a cursor to the alternative device in the given module
+	-- and given assembly variant.
+	-- Assumptions: 
+	-- - The module being searched in must be in the rig already.
+	-- - The assembly variant must exist in the module.
+	-- - The device must exist in the module.
+	-- - The device must have an entry in the given assembly variant,
+	--   otherwise the return is no_element.
+	function get_alternative_device (
+		module	: in pac_generic_modules.cursor; -- the module like motor_driver
+		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
+		device	: in type_device_name)
+		return pac_device_variants.cursor;
+
+
+
+
+	-- Sets the value, partcode and (optionally the purpose) of a device in 
+	-- An already existing device will be overwritten without warning.
+	procedure mount_device (
+		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		device			: in type_device_name; -- R1
+		value			: in pac_device_value.bounded_string; -- 220R
+		partcode		: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
+		purpose			: in pac_device_purpose.bounded_string := pac_device_purpose.to_bounded_string (""); -- set temperature
+		log_threshold	: in type_log_level);
+
 	
+	-- Sets the given device as not mounted in the given assembly variant.
+	-- Sets the gvien device as not mounted in 
+	-- the given assembly variant. An already existing device will be overwritten
+	-- without warning.
+	procedure unmount_device (
+		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		device			: in type_device_name; -- R1
+		log_threshold	: in type_log_level);
+
+	
+	-- Removes the given device from the given assembly variant.
+	procedure remove_device (
+		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		device			: in type_device_name; -- R1
+		log_threshold	: in type_log_level);
+
+
 	
 end et_schematic_ops_assembly_variant;
 

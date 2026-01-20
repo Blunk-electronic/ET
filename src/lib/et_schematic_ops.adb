@@ -45,6 +45,7 @@ with et_device_appearance;
 with et_board_ops.ratsnest;				use et_board_ops.ratsnest;
 with et_net_strands;					use et_net_strands;
 with et_netchangers;
+with et_assembly_variants;
 
 
 package body et_schematic_ops is

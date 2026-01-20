@@ -54,6 +54,8 @@ with et_device_name;
 with et_conductor_segment.boards;
 with et_generic_stacks;
 
+with et_schematic_ops_assembly_variant;		use et_schematic_ops_assembly_variant;
+
 
 
 package body et_board_ops is
