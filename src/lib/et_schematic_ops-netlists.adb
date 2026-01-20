@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+with et_net_names;						use et_net_names;
 with et_device_library.units;			use et_device_library.units;
 with et_schematic_ops.submodules;
 with et_schematic_ops.units;
@@ -46,6 +47,7 @@ with et_assembly_variants;				use et_assembly_variants;
 with et_assembly_variant_name;			use et_assembly_variant_name;
 with et_schematic_ops_assembly_variant;	use et_schematic_ops_assembly_variant;
 
+with et_submodules;
 
 
 package body et_schematic_ops.netlists is
@@ -54,6 +56,8 @@ package body et_schematic_ops.netlists is
 	use pac_netchangers;
 	
 	use et_submodules.pac_submodules;
+
+	
 	
 	
 	

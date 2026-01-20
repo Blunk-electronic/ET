@@ -625,7 +625,8 @@ package body et_board_ops.vias is
 					process		=> locate_net'access);
 				
 			else
-				net_not_found (net_name);
+				log (ERROR, "Net " & to_string (net_name) & " not found !");
+				raise constraint_error;
 			end if;
 		end locate_module;
 

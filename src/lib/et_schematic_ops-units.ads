@@ -39,6 +39,7 @@
 --
 --
 
+with et_generic_modules;				use et_generic_modules;
 with et_device_library.units;			use et_device_library.units;
 with et_units;							use et_units;
 with et_unit_name;						use et_unit_name;
@@ -49,6 +50,7 @@ with et_rotation_docu;					use et_rotation_docu;
 
 package et_schematic_ops.units is
 
+	use pac_generic_modules;
 	
 	
 	-- Locates the given unit of the given device in the 

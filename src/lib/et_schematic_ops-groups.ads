@@ -37,11 +37,15 @@
 --
 --   ToDo: 
 
+
+with et_generic_modules;			use et_generic_modules;
 with et_object_status;				use et_object_status;
 
 
 package et_schematic_ops.groups is
 
+	use pac_generic_modules;
+	
 
 	-- This procedure resets nets, devices and units:
 	procedure reset_objects (

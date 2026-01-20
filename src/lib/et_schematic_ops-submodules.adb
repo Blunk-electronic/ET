@@ -52,6 +52,7 @@ with et_net_strands;				use et_net_strands;
 with et_net_ports;
 with et_module_ops;
 with et_schematic_ops.units;		use et_schematic_ops.units;
+with et_net_names;					use et_net_names;
 with et_schematic_ops.nets;
 with et_module_read;
 with et_netchanger_symbol_schematic;
@@ -62,6 +63,36 @@ with et_schematic_ops_assembly_variant;		use et_schematic_ops_assembly_variant;
 package body et_schematic_ops.submodules is
 
 
+	
+
+	procedure dragging_not_possible (
+		port 		: in string;
+		position	: in type_object_position) is
+	begin
+		log (ERROR, "port " & enclose_in_quotes (port) &
+			 " is directly connected with other ports at" &
+			to_string (position => position) &
+			 ". Dragging not possible !",
+			 console => true);
+		raise constraint_error;
+	end;
+
+
+
+
+	procedure relative_rotation_invalid is begin
+		log (ERROR, "Relative rotation must be in range" & 
+			to_string (rotation_relative_min) &
+			" .." & 
+			to_string (rotation_relative_max),
+			console => true
+			);
+		raise constraint_error;
+	end;
+
+	
+
+	
 	procedure submodule_not_found (
 		name : in pac_module_instance_name.bounded_string) 
 	is begin
@@ -86,8 +117,9 @@ package body et_schematic_ops.submodules is
 	is 
 		use et_string_processing;
 	begin
-		log (ERROR, "port " & enclose_in_quotes (to_string (name)) &
-			" must be at the edge of the submodule !", console => true);
+		log (ERROR, "port " 
+			 & enclose_in_quotes (net_name_to_string (name))
+			 & " must be at the edge of the submodule !", console => true);
 		raise constraint_error;
 	end;
 
@@ -310,7 +342,7 @@ package body et_schematic_ops.submodules is
 			net_cursor : pac_nets.cursor;
 
 			-- The port being inquired is a net inside the submodule.
-			net : constant string := to_string (port);
+			net : constant string := net_name_to_string (port);
 			use pac_nets;
 		begin
 			-- locate the net in the submodule
@@ -481,8 +513,8 @@ package body et_schematic_ops.submodules is
 						);
 
 				else
-					log (ERROR, "port " & to_string (port_name) & " not found !",
-						 console => true);
+					log (ERROR, "port " 
+						& net_name_to_string (port_name) & " not found !");
 				end if;
 			end query_ports;
 
@@ -514,7 +546,8 @@ package body et_schematic_ops.submodules is
 	begin
 		log (text => "module " & to_string (module_name) &
 			 " locating submodule " & to_string (submod_name) & 
-			 " port " & to_string (port_name) & " ...", level => log_threshold);
+			 " port " & net_name_to_string (port_name) 
+			 & " ...", level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);

@@ -37,20 +37,37 @@
 --
 --   ToDo: 
 
-with et_net_strands;				use et_net_strands;
-with et_net_labels;					use et_net_labels;
-with et_net_connectors;				use et_net_connectors;
-with et_object_status;				use et_object_status;
+with et_generic_modules;				use et_generic_modules;
+with et_net_names;						use et_net_names;
+with et_net_strands;					use et_net_strands;
+with et_net_labels;						use et_net_labels;
+with et_net_connectors;					use et_net_connectors;
+with et_object_status;					use et_object_status;
 
 
 package et_schematic_ops.nets is
 
+	use pac_generic_modules;
+	use pac_net_name;
+
+	
 	
 	-- This function returns the total number
 	-- of nets of the given module:
 	function get_net_count (
 		module		: in pac_generic_modules.cursor)
 		return type_net_count;
+
+
+
+	-- Returns lists of device, netchanger and 
+	-- submodule ports at the given place:
+	function get_ports ( 
+		module_cursor	: in pac_generic_modules.cursor;
+		place			: in type_object_position;
+		log_threshold	: in type_log_level)		
+		return type_ports;	
+	
 
 	
 
@@ -574,6 +591,18 @@ package et_schematic_ops.nets is
 		return pac_net_name.bounded_string;
 	
 
+
+	-- Returns a cursor to the net that is connected with the given device and terminal.
+	-- If there is no net connected, then the return is no_element.
+	-- Assumes the default assembly variant:
+	function get_net (
+		module		: in pac_generic_modules.cursor;
+		device		: in pac_devices_electrical.cursor;
+		terminal	: in pac_terminal_name.bounded_string) -- H7, 1, 16
+		return pac_nets.cursor;
+
+	
+	
 	
 	-- Returns the names of all nets of the given module
 	-- sorted alphabetically:

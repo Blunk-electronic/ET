@@ -38,14 +38,21 @@
 --   ToDo: 
 
 
-with et_netchangers;				use et_netchangers;
+with et_generic_modules;				use et_generic_modules;
+with et_netchangers;					use et_netchangers;
 with et_submodules;
-with et_assembly_variants;		use et_assembly_variants;
-with et_assembly_variant_name;	use et_assembly_variant_name;
+with et_assembly_variants;				use et_assembly_variants;
+with et_assembly_variant_name;			use et_assembly_variant_name;
+with et_net_names;						use et_net_names;
 
 
 package et_schematic_ops.submodules is
 
+	use pac_generic_modules;
+	use pac_net_name;
+	
+
+	
 	procedure netchanger_not_found (
 		index : in type_netchanger_id);
 

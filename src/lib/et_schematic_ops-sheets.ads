@@ -37,14 +37,15 @@
 --
 --   ToDo: 
 
-
+with et_generic_modules;				use et_generic_modules;
 with et_drawing_frame;					use et_drawing_frame;
 with et_drawing_frame.schematic;		use et_drawing_frame.schematic;
 
 
 package et_schematic_ops.sheets is
 
-
+	use pac_generic_modules;
+	
 
 	-- Returns the description of a sheet of a generic module:
 	function get_sheet_description (

@@ -37,7 +37,7 @@
 --
 --   ToDo: 
 
-
+with et_net_names;							use et_net_names;
 with et_board_ops.devices;
 with et_board_ops.ratsnest;					use et_board_ops.ratsnest;
 with et_schematic_ops.nets;
@@ -66,7 +66,40 @@ package body et_schematic_ops.units is
 	use pac_unit_name;
 	use pac_text_schematic;
 	
+	use pac_net_name;
 
+	
+
+	procedure dragging_not_possible (
+		port 		: in string;
+		position	: in type_object_position) is
+	begin
+		log (ERROR, "port " & enclose_in_quotes (port) &
+			 " is directly connected with other ports at" &
+			to_string (position => position) &
+			 ". Dragging not possible !",
+			 console => true);
+		raise constraint_error;
+	end;
+
+
+
+
+
+	procedure relative_rotation_invalid is begin
+		log (ERROR, "Relative rotation must be in range" & 
+			to_string (rotation_relative_min) &
+			" .." & 
+			to_string (rotation_relative_max),
+			console => true
+			);
+		raise constraint_error;
+	end;
+
+
+	
+	
+	
 	
 	
 	function locate_unit (

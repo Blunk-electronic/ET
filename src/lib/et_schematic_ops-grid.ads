@@ -38,6 +38,9 @@
 --   ToDo: 
 
 
+with et_generic_modules;				use et_generic_modules;
+
+
 package et_schematic_ops.grid is
 
 	use pac_generic_modules;

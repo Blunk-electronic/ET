@@ -36,9 +36,12 @@
 --   history of changes:
 --
 
+with et_generic_modules;				use et_generic_modules;
+
 
 package et_schematic_ops.netlists is
 
+	use pac_generic_modules;
 
 	
 	-- Adds further properties to the given device ports.

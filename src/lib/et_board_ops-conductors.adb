@@ -178,7 +178,8 @@ package body et_board_ops.conductors is
 					process		=> add'access);
 				
 			else
-				net_not_found (net_name);
+				log (ERROR, "Net " & to_string (net_name) & " not found !");
+				raise constraint_error;
 			end if;
 
 		end do_it;
@@ -1603,7 +1604,8 @@ package body et_board_ops.conductors is
 					process		=> query_net'access);
 
 			else
-				net_not_found (net_name);
+				log (ERROR, "Net " & to_string (net_name) & " not found !");
+				raise constraint_error;
 			end if;
 		end query_module;
 
@@ -1719,7 +1721,8 @@ package body et_board_ops.conductors is
 					process		=> add'access);
 				
 			else
-				net_not_found (net_name);
+				log (ERROR, "Net " & to_string (net_name) & " not found !");
+				raise constraint_error;
 			end if;
 		end add_named_track;
 
@@ -2369,7 +2372,8 @@ package body et_board_ops.conductors is
 					process		=> query_net'access);
 
 			else
-				net_not_found (net_name);
+				log (ERROR, "Net " & to_string (net_name) & " not found !");
+				raise constraint_error;
 			end if;
 		end query_module;
 
@@ -2556,7 +2560,8 @@ package body et_board_ops.conductors is
 					process		=> ripup'access);
 
 			else
-				net_not_found (net_name);
+				log (ERROR, "Net " & to_string (net_name) & " not found !");
+				raise constraint_error;
 			end if;
 
 		end ripup_named_track;
@@ -2638,7 +2643,8 @@ package body et_board_ops.conductors is
 					process		=> query_net'access);
 
 			else
-				net_not_found (net_name);
+				log (ERROR, "Net " & to_string (net_name) & " not found !");
+				raise constraint_error;
 			end if;
 		end query_module;
 

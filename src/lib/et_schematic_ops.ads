@@ -51,7 +51,6 @@ with ada.containers.ordered_sets;
 
 with ada.exceptions;			use ada.exceptions;
 
-with et_net_names;				use et_net_names;
 with et_module_names;			use et_module_names;
 with et_module_instance;		use et_module_instance;
 with et_sheets;					use et_sheets;
@@ -68,13 +67,11 @@ with et_net_segment;			use et_net_segment;
 with et_net_labels;				use et_net_labels;
 with et_project;				use et_project;
 
-with et_generic_modules;		use et_generic_modules;
 with et_module;					use et_module;
 with et_module_board;			use et_module_board;
 
 with et_text;
 with et_netchangers;
-with et_submodules;
 with et_numbering;
 with et_material;
 with et_netlists;
@@ -103,51 +100,10 @@ with et_exceptions;				use et_exceptions;
 
 package et_schematic_ops is
 
-	use pac_generic_modules;
-
-	use pac_net_name;
-
-	-- CS rework procedures so that a module cursor
-	-- is used instead the module_name.
-	
-
-
 	
 	procedure device_not_found (name : in type_device_name);
 	procedure device_already_exists (name : in type_device_name);
-	procedure relative_rotation_invalid;
-	procedure net_not_found (name : in pac_net_name.bounded_string);
 
-
-
-
-	
-	-- Returns a cursor to the net that is connected with the given device and terminal.
-	-- If there is no net connected, then the return is no_element.
-	-- Assumes the default assembly variant:
-	function get_net (
-		module		: in pac_generic_modules.cursor;
-		device		: in pac_devices_electrical.cursor;
-		terminal	: in pac_terminal_name.bounded_string) -- H7, 1, 16
-		return pac_nets.cursor;
-
-	
-
-	
-	-- Returns lists of device, netchanger and 
-	-- submodule ports at the given place:
-	function get_ports ( 
-		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_object_position;
-		log_threshold	: in type_log_level)		
-		return type_ports;	
-	
-
-	
-
-	procedure dragging_not_possible (
-		port 		: in string;
-		position	: in type_object_position);
 
 	
 end et_schematic_ops;
