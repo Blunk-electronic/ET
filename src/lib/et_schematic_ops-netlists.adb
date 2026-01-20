@@ -39,6 +39,7 @@
 with et_device_library.units;			use et_device_library.units;
 with et_schematic_ops.submodules;
 with et_schematic_ops.units;
+with et_schematic_ops_device;			use et_schematic_ops_device;
 with et_generic_stacks;
 
 with et_assembly_variants;				use et_assembly_variants;

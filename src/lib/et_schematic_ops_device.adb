@@ -40,6 +40,8 @@
 --
 
 with ada.text_io;				use ada.text_io;
+with ada.strings;				use ada.strings;
+with ada.strings.unbounded;
 
 with et_string_processing;		use et_string_processing;
 with et_module;					use et_module;
@@ -47,20 +49,28 @@ with et_module;					use et_module;
 with et_sheets;					use et_sheets;
 with et_schematic_coordinates;	use et_schematic_coordinates;
 with et_schematic_ops.units;	use et_schematic_ops.units;
+with et_schematic_ops.groups;
 with et_exceptions;				use et_exceptions;
 
 with et_unit_name;				use et_unit_name;
 with et_units;					use et_units;
 
-with et_device_category;		use et_device_category;
-with et_devices_electrical;		use et_devices_electrical;
+with et_device_category;				use et_device_category;
+with et_devices_electrical;				use et_devices_electrical;
+with et_devices_electrical.packages;	use et_devices_electrical.packages;
+with et_device_library.packages;
+with et_devices_electrical.units;	use et_devices_electrical.units;
+with et_devices_non_electrical;		use et_devices_non_electrical;
 
-with et_conventions;			use et_conventions;
+with et_board_ops.devices;			use et_board_ops.devices;
+with et_conventions;				use et_conventions;
 
 
 package body et_schematic_ops_device is
 
 
+	use pac_devices_electrical;
+	
 	
 -- 	
 -- 	procedure device_not_found (name : in type_device_name) is begin
@@ -168,6 +178,834 @@ package body et_schematic_ops_device is
 		
 		return devices;
 	end sort_by_coordinates_2;
+
+
+
+
+
+
+
+	function electrical_device_exists (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name)
+		return boolean 
+	is
+		device_found : boolean := false; -- to be returned
+		
+		procedure query_devices (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is begin
+			if contains (module.devices, device) then
+				device_found := true;
+			end if;
+		end query_devices;
+		
+	begin
+		pac_generic_modules.query_element (
+			position	=> module,
+			process		=> query_devices'access);
+
+		return device_found;
+	end electrical_device_exists;
+
+
+
+	
+
+	
+	function get_electrical_device (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name) -- R2
+		return pac_devices_electrical.cursor 
+	is
+		result : pac_devices_electrical.cursor;
+		
+		procedure query_devices (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is begin
+			result := find (module.devices, device);
+		end;
+
+	begin
+		pac_generic_modules.query_element (
+			position	=> module,
+			process		=> query_devices'access);
+
+		return result;
+	end get_electrical_device;
+
+
+
+
+	
+	
+	function get_device_model (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name) -- R2
+		return pac_device_models.cursor
+	is
+		cursor_sch : pac_devices_electrical.cursor;
+	begin
+		-- Locate the device in the module:
+		cursor_sch := get_electrical_device (module, device);
+
+		-- If the device exists in the module, then
+		-- locate the device model in the library.
+		-- Otherwise return no_element:
+		if has_element (cursor_sch) then
+			return get_device_model (cursor_sch);
+		else
+			return pac_device_models.no_element;
+		end if;
+	end get_device_model;
+
+
+
+
+
+
+
+	
+	function get_device_model (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name) -- R2
+		return pac_device_model_file.bounded_string
+	is 
+		cursor : pac_devices_electrical.cursor;
+	begin
+		cursor := get_electrical_device (module, device);
+		return get_device_model_file (cursor);
+	end get_device_model;
+
+
+
+
+	
+
+-- ASSEMBLY VARIANT:
+
+	
+
+
+
+	
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+-- SHOW DEVICE:
+
+	procedure show_device (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name;
+		all_units		: in boolean;
+		unit_name		: in pac_unit_name.bounded_string := unit_name_default;
+		error			: out boolean;
+		log_warning		: in boolean := true;
+		log_threshold	: in type_log_level)
+	is
+		device_cursor_sch : pac_devices_electrical.cursor;
+		
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_electrical) 
+			is begin
+				-- Independend on the search mode, set the whole device as selected.
+				-- This is relevant for highlighting the package in the board editor. 
+				-- If the device is virtual, then this has no meaning because virtual
+				-- devices do not appear in the board drawing:
+				set_selected (device);
+
+				-- Now select the units:
+				if all_units then
+					-- Set all units as selected:
+
+					select_unit (
+						device		=> device, 
+						all_units	=> true, 
+						unit_name	=> unit_name_default); -- don't care
+
+				else
+					-- Set the given unit as selected:
+					select_unit (
+						device		=> device, 
+						all_units	=> false, 
+						unit_name	=> unit_name);
+
+				end if;
+			end query_device;
+		
+			
+		begin
+			module.devices.update_element (device_cursor_sch, query_device'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " show electrical device " & to_string (device_name),
+			level => log_threshold);
+
+		error := false;
+		
+		log_indentation_up;
+		
+		-- Deselect all objects of previous show operations
+		-- so that nothing is highlighted anymore:
+		et_schematic_ops.groups.reset_objects (module_cursor, log_threshold + 1);
+		
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
+			
+		if has_element (device_cursor_sch) then -- device exists in schematic			
+			generic_modules.update_element (module_cursor, query_module'access);
+		else
+			if log_warning then
+				log (WARNING, " Device " & to_string (device_name) & " not found !");
+			end if;
+			
+			error := true;
+		end if;
+
+		log_indentation_down;
+	end show_device;
+
+	
+	
+
+
+	
+	function get_device_properties (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name;
+		level			: in type_properties_level;
+		all_units		: in boolean := true;
+		unit_name		: in pac_unit_name.bounded_string := unit_name_default;
+		linebreaks		: in boolean := false;
+		error			: out boolean;
+		log_threshold	: in type_log_level)
+		return string
+	is
+		device_cursor_sch : pac_devices_electrical.cursor;
+
+		use ada.strings.unbounded;
+		result : unbounded_string := to_unbounded_string ("");
+
+
+		use pac_units;
+		use pac_unit_name;
+		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+
+
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in type_device_electrical) 
+			is 
+				unit_cursor : pac_units.cursor;
+			begin
+				-- Get the cursor to the targeted unit:
+				unit_cursor := locate_unit (device, unit_name);
+
+				-- If the targeted unit exists then get its properties.
+				-- Otherwise set the error-flag and return an empty string:
+				if has_element (unit_cursor) then
+					-- Get the properties of the targeted device
+					-- and the targeted unit:
+					result := to_unbounded_string (get_properties (
+						device_cursor	=> device_cursor_sch,
+						level			=> level,
+						linebreaks		=> linebreaks,
+						all_units		=> false,
+						unit_cursor		=> unit_cursor));
+
+				else
+					log (WARNING, " Unit " & to_string (unit_name) & " not found !");
+					error := true;
+				end if;
+			end query_device;
+		
+			
+		begin
+			query_element (device_cursor_sch, query_device'access);
+		end query_module;
+
+		
+	begin
+		error := false;
+		
+		log (text => "module " & to_string (module_cursor) 
+			 & " get properties of electrical device " & to_string (device_name)
+			 & " linebreaks " & boolean'image (linebreaks)
+			 & " inquiry level " & to_string (level),
+			level => log_threshold);
+
+		
+		if all_units then
+			log (text => "whole device -> all units",
+				 level => log_threshold);
+
+		else
+			log (text => "unit " & to_string (unit_name),
+				 level => log_threshold);
+		end if;
+
+
+				
+		log_indentation_up;
+		
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this function, set the error flag and return
+		-- an empty string:
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
+			
+		if has_element (device_cursor_sch) then -- device exists in schematic
+
+			-- If all units of the device are enquired for,
+			-- then the cursor to the device is sufficient
+			-- to query properties:
+			if all_units then
+				result := to_unbounded_string (get_properties (
+					device_cursor	=> device_cursor_sch,
+					linebreaks		=> linebreaks,											  
+					level			=> level));
+			else
+				-- If a dedicated unit is enquired for, then
+				-- the cursor to that unit must be set:
+				query_element (module_cursor, query_module'access);
+			end if;
+				
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+			error := true;			
+		end if;
+
+		log_indentation_down;
+
+		return to_string (result);
+	end get_device_properties;
+
+	
+
+	
+
+	
+-- VALUE, PURPOSE, PARTCODE:
+	
+
+	procedure set_value (
+		module_cursor		: in pac_generic_modules.cursor;
+		device_name			: in type_device_name; -- R2
+		value				: in pac_device_value.bounded_string; -- 470R
+		log_threshold		: in type_log_level) 
+	is		
+		device_cursor_sch : pac_devices_electrical.cursor;
+		
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+
+			procedure set_value (
+				device_name	: in type_device_name;
+				device		: in out type_device_electrical) 
+			is begin
+				-- CS log value old and value new
+				device.value := value;
+			end;
+
+			
+		begin
+			-- Only real devices have a value. 
+			-- For virtual devices is issue a warning:
+			if is_real (device_cursor_sch) then
+
+				-- Check value regarding the device category:
+				if et_conventions.value_valid (value, get_prefix (device_name)) then 
+				
+					update_element (
+						container	=> module.devices,
+						position	=> device_cursor_sch,
+						process		=> set_value'access);
+
+				else
+					log (WARNING, "Value " & enclose_in_quotes (to_string (value)) 
+						 & " invalid for this kind of device !");
+					-- CS: ERROR instead ?, exception ?
+					-- CS more details ?
+						
+				end if;
+
+			else -- virtual device
+		
+				log (WARNING, " Device " & to_string (device_name) 
+					& " is virtual and has no value !");
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " set " & to_string (device_name) 
+			 & " value to " & to_string (value),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
+			
+		if has_element (device_cursor_sch) then -- device exists in schematic
+			
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> query_module'access);
+
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+		end if;
+
+		log_indentation_down;
+	end set_value;
+
+
+
+	
+	
+
+	procedure set_purpose (
+		module_cursor		: in pac_generic_modules.cursor;
+		device_name			: in type_device_name; -- R2
+		purpose				: in pac_device_purpose.bounded_string; -- brightness_control
+		log_threshold		: in type_log_level) 
+	is
+		device_cursor_sch : pac_devices_electrical.cursor;
+		
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			procedure set_purpose (
+				device_name	: in type_device_name;
+				device		: in out type_device_electrical) 
+			is begin
+				device.purpose := purpose;
+				-- CS log purpose before and after
+			end;
+
+			
+		begin
+			-- Only real devices have a purpose. 
+			-- Issue a warning if targeted device is virtual.
+			if is_real (device_cursor_sch) then
+
+				update_element (
+					container	=> module.devices,
+					position	=> device_cursor_sch,
+					process		=> set_purpose'access);
+
+			else
+				log (WARNING, "device " & to_string (device_name) 
+					& " is virtual and has no practical purpose !");
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " set " & to_string (device_name) & " purpose to " 
+			 & enclose_in_quotes (to_string (purpose)),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
+			
+		if has_element (device_cursor_sch) then -- device exists in schematic
+			
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> query_module'access);
+
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+		end if;
+
+		log_indentation_down;		
+	end set_purpose;
+
+
+
+
+	
+	
+	
+	procedure set_partcode (
+		module_cursor		: in pac_generic_modules.cursor;
+		device_name			: in type_device_name; -- R2
+		partcode			: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		log_threshold		: in type_log_level) 
+	is
+		device_cursor_sch : pac_devices_electrical.cursor;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			procedure set_partcode (
+				device_name	: in type_device_name;
+				device		: in out type_device_electrical) 
+			is begin
+				device.partcode := partcode;
+				-- CS log old and new partcode
+			end;
+			
+			
+		begin
+			-- Only real devices have a purpose. 
+			-- Issue warning if targeted device is virtual.
+			if is_real (device_cursor_sch) then
+
+				update_element (
+					container	=> module.devices,
+					position	=> device_cursor_sch,
+					process		=> set_partcode'access);
+
+			else
+				log (WARNING, "Device " & to_string (device_name) 
+					& " is virtual and has no partcode !");
+			end if;
+		end query_module;
+
+		
+	begin -- set_partcode
+		log (text => "module " & to_string (module_cursor) 
+			 & " set " & to_string (device_name) 
+			 & " partcode to " & enclose_in_quotes (to_string (partcode)),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
+			
+		if has_element (device_cursor_sch) then -- device exists in schematic
+			
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> query_module'access);
+
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+		end if;
+
+		log_indentation_down;
+	end set_partcode;
+
+
+
+	
+
+
+
+-- PACKAGE VARIANT:
+
+
+	function get_available_package_variants (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name) -- R2
+		return pac_package_variants.map
+	is
+		use et_device_library.packages;
+		cursor_lib : pac_device_models.cursor;	
+	begin
+		cursor_lib := get_device_model (module, device);
+		return get_available_variants (cursor_lib);
+	end get_available_package_variants;
+
+
+
+	
+	
+	function get_package_variant (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name) -- R2
+		return pac_package_variant_name.bounded_string -- D, N
+	is
+		cursor_sch : pac_devices_electrical.cursor;
+	begin
+		cursor_sch := get_electrical_device (module, device);
+		
+		return get_package_variant (cursor_sch);
+	end get_package_variant;
+
+
+
+
+	
+	
+	procedure set_package_variant (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- R2
+		variant			: in pac_package_variant_name.bounded_string; -- N, D
+		log_threshold	: in type_log_level)
+	is
+		use pac_generic_modules;
+		device_cursor_sch : pac_devices_electrical.cursor;
+
+		use pac_package_variant_name;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_electrical)
+			is 
+				use et_device_library.packages;
+				cursor_lib : pac_device_models.cursor;
+			begin
+				-- The device must be real:
+				if is_real (device) then
+					cursor_lib := get_device_model (device);
+
+					-- If the requested package variant is available
+					-- then assign it here. Otherwise issue a warning:
+					if is_variant_available (cursor_lib, variant) then
+						device.variant := variant;
+					else
+						log (WARNING, "Package variant " & to_string (variant) 
+							& " is not defined in device model !"); 
+							-- CS output file name ?
+					end if;
+				else
+					log (WARNING, "The requested device is virtual and has no package !");
+				end if;
+			end query_device;
+
+				
+		begin
+			update_element (
+				container	=> module.devices,
+				position	=> device_cursor_sch,
+				process		=> query_device'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " set package variant of " & to_string (device_name)
+			& " to " & to_string (variant),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
+			
+		if has_element (device_cursor_sch) then -- device exists in schematic
+			
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> query_module'access);
+
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+		end if;
+
+		log_indentation_down;		
+	end set_package_variant;
+
+
+
+
+
+
+	function get_electrical_devices_by_prefix (
+		module_cursor	: in pac_generic_modules.cursor;
+		prefix			: in pac_device_prefix.bounded_string; -- C
+		log_threshold	: in type_log_level)
+		return pac_devices_electrical.map
+	is
+		result : pac_devices_electrical.map;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+
+			procedure query_device (c : in pac_devices_electrical.cursor) is
+				use pac_device_prefix;
+				device	: type_device_electrical renames element (c);
+				name 	: constant type_device_name := key (c); -- IC45
+			begin
+				-- Select only those devices which have the given prefix
+				-- and add them to the result:
+				if get_prefix (name) = prefix then
+					log (text => to_string (name), level => log_threshold + 1);
+					result.insert (name, device);
+				end if;
+			end query_device;
+			
+		begin
+			-- Iterate the electrical devices:
+			module.devices.iterate (query_device'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " get electrical devices with prefix " & to_string (prefix),
+			level => log_threshold);
+
+		log_indentation_up;		
+		query_element (module_cursor, query_module'access);
+
+		log (text => "device count " & get_count (result), level => log_threshold);
+		log_indentation_down;
+
+		return result;
+	end get_electrical_devices_by_prefix;
+
+
+
+
+
+
+	
+	function get_next_available_device_name (
+		module_cursor	: in pac_generic_modules.cursor;
+		prefix			: in pac_device_prefix.bounded_string;
+		log_threshold	: in type_log_level)
+		return type_device_name
+	is
+		next_name : type_device_name; -- to be returned
+
+
+		procedure search_2 is
+			use et_board_ops.devices;
+			
+			devices_electrical : pac_devices_electrical.map;
+			devices_non_electrical : pac_devices_non_electrical.map;
+
+			names_electrical : pac_device_names.set;
+			names_non_electrical : pac_device_names.set;
+			names_all : pac_device_names.set;
+			
+		begin
+			-- Get all non-electrical devices having the given prefix:
+			devices_electrical := get_electrical_devices_by_prefix (
+				module_cursor, prefix, log_threshold + 1);
+
+			names_electrical := get_device_names (devices_electrical);
+			
+			devices_non_electrical := get_non_electrical_devices_by_prefix (
+				module_cursor, prefix, log_threshold + 1);
+
+			names_non_electrical := get_device_names (devices_non_electrical);
+
+			names_all := merge_device_names (names_electrical, names_non_electrical);
+
+			next_name := get_first_available_name (names_all, prefix, log_threshold + 1);
+
+			log (text => "proposed device name: " & to_string (next_name),
+				level => log_threshold + 2);
+
+		end search_2;
+			
+	
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " search next available device name with prefix " 
+			 & to_string (prefix),
+			level => log_threshold);
+
+		log_indentation_up;
+		search_2;
+		log_indentation_down;
+		
+		return next_name;
+	end get_next_available_device_name;
+
+
+
+		
+
+
+
+	
+	procedure add_electrical_device (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_model	: in pac_device_model_file.bounded_string;
+		variant			: in pac_package_variant_name.bounded_string;
+		destination		: in type_object_position;
+		log_threshold	: in type_log_level) is separate;
+
+
+	
+	
+
+	procedure copy_device (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- IC45
+		destination		: in type_object_position; -- sheet/x/y/rotation
+		log_threshold	: in type_log_level) is separate;
+
+
 
 
 

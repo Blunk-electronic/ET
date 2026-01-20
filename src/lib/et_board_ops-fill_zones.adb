@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -40,7 +40,7 @@ with ada.text_io;					use ada.text_io;
 with ada.tags;
 
 with et_mirroring;
-with et_schematic_ops.units;
+with et_schematic_ops_device;		use et_schematic_ops_device;
 with et_schematic_ops.nets;
 with et_board_holes;
 with et_board_outline;
@@ -264,7 +264,6 @@ package body et_board_ops.fill_zones is
 			-- Get the cursor to the device in the schematic:
 			use et_devices_electrical;
 			use et_devices_electrical.packages;
-			use et_schematic_ops.units;
 			
 			device_cursor : constant pac_devices_electrical.cursor := 
 				get_electrical_device (module_cursor, port.device_name);

@@ -55,7 +55,7 @@ with et_board_coordinates;				use et_board_coordinates;
 with et_design_rules_board;
 with et_device_name;					use et_device_name;
 with et_unit_name;						use et_unit_name;
-with et_schematic_ops.units;			use et_schematic_ops.units;
+with et_schematic_ops_device;			use et_schematic_ops_device;
 with et_board_ops.devices;				use et_board_ops.devices;
 with et_devices_electrical;				use et_devices_electrical;
 with et_device_property_level;			use et_device_property_level;
@@ -135,7 +135,7 @@ package body et_cp_board_device is
 
 						if not error then
 							-- Show some basic information in the staus bar:
-							set_status (et_schematic_ops.units.get_device_properties (
+							set_status (et_schematic_ops_device.get_device_properties (
 								module_cursor	=> module, 
 								device_name		=> device_name, 
 								level			=> DEVICE_PROPERTIES_LEVEL_1,
@@ -152,7 +152,7 @@ package body et_cp_board_device is
 									
 									pac_device_ops.show_properties_window (
 										device	=> device_name,
-										text	=> et_schematic_ops.units.get_device_properties (
+										text	=> et_schematic_ops_device.get_device_properties (
 											module_cursor	=> module, 
 											device_name		=> device_name, 
 											linebreaks		=> true,

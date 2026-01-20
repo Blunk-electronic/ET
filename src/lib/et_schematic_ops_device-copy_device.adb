@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---              SCHEMATIC OPERATIONS / COPYING DEVICES                      --
+--              SCHEMATIC OPERATIONS / DEVICE / COPY DEVICE                 --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -44,15 +44,20 @@
 --		  to the new unit.
 
 
+with et_symbol_ports;					use et_symbol_ports;
 with et_symbol_model;
 with et_symbol_name;
 with et_symbol_library;
 with et_device_model;					use et_device_model;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 with et_device_appearance;				use et_device_appearance;
+with et_device_library.packages;		use et_device_library.packages;
+with et_device_library.units;			use et_device_library.units;
+with et_board_ops.ratsnest;				use et_board_ops.ratsnest;
 
 
-separate (et_schematic_ops.units)
+separate (et_schematic_ops_device)
+
 
 procedure copy_device (
 	module_cursor	: in pac_generic_modules.cursor;
@@ -75,7 +80,8 @@ is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in out type_generic_module) 
 	is
-
+		use pac_unit_name;
+		
 		-- CS:
 		-- There is a lot of code almost the same as with
 		-- copying and fetching devices and units. 
@@ -204,7 +210,8 @@ is
 			
 		begin
 			log (text => "add internal unit " 
-				 & to_string (get_name_internal (first_available_unit)),
+				 & to_string (get_name_internal (
+					first_available_unit)),
 				 level => log_threshold + 2);
 			
 			log_indentation_up;

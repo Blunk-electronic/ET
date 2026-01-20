@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,7 +37,7 @@
 --
 
 with et_mirroring;
-with et_schematic_ops.units;		use et_schematic_ops.units;
+with et_schematic_ops_device;		use et_schematic_ops_device;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
 with et_schematic_ops;				use et_schematic_ops;
 with et_board_ops.devices;			use et_board_ops.devices;

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -56,7 +56,7 @@ with et_meta;
 with et_conventions;
 with et_generic_modules;			use et_generic_modules;
 with et_canvas_board;				use et_canvas_board;
-with et_schematic_ops.units;
+with et_schematic_ops_device;		use et_schematic_ops_device;
 with et_schematic_ops.groups;
 with et_board_ops;
 with et_board_ops.devices;			use et_board_ops.devices;
@@ -549,7 +549,7 @@ package body et_canvas_board_devices is
 			 level => log_threshold + 1);
 		
 		-- Assign the prospective device name:
-		device_add.device_pre := et_schematic_ops.units.get_next_available_device_name (
+		device_add.device_pre := get_next_available_device_name (
 			active_module, prefix, log_threshold + 1);
 		
 		-- Once the operator has started selecting a package variant, the
@@ -806,7 +806,7 @@ package body et_canvas_board_devices is
 
 		-- In case further devices are to be added,
 		-- assign the prospective next device name:
-		device_add.device_pre := et_schematic_ops.units.get_next_available_device_name (
+		device_add.device_pre := get_next_available_device_name (
 			active_module, get_prefix (device_add.device_pre), log_threshold + 1);
 		
 		log_indentation_down;
@@ -898,7 +898,7 @@ package body et_canvas_board_devices is
 
 					device_add.value := get_value (object.non_electrical_device.cursor);
 					
-					device_add.device_pre := et_schematic_ops.units.get_next_available_device_name (
+					device_add.device_pre := get_next_available_device_name (
 						active_module, get_prefix (object.non_electrical_device.cursor), log_threshold + 1);
 
 					device_add.rotation := get_rotation (object.non_electrical_device.cursor);

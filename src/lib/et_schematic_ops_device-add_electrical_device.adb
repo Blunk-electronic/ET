@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---              SCHEMATIC OPERATIONS / ADD ELECTRICAL DEVICE                --
+--          SCHEMATIC OPERATIONS / DEVICE  / ADD ELECTRICAL DEVICE           --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -41,15 +41,18 @@
 --     other.
 --
 
+with et_symbol_ports;
 with et_symbol_library;
 with et_device_read;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 with et_device_model;					use et_device_model;
 with et_device_appearance;				use et_device_appearance;
 with et_device_library.packages;		use et_device_library.packages;
+with et_device_library.units;			use et_device_library.units;
+with et_board_ops.ratsnest;				use et_board_ops.ratsnest;
 
 
-separate (et_schematic_ops.units)
+separate (et_schematic_ops_device)
 
 procedure add_electrical_device (
 	module_cursor	: in pac_generic_modules.cursor;
@@ -72,6 +75,8 @@ is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in out type_generic_module) 
 	is
+		use et_symbol_ports;
+		use pac_unit_name;
 		use pac_devices_electrical;
 		device_cursor_sch : pac_devices_electrical.cursor;
 
