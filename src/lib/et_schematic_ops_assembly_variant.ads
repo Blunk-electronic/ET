@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                         SCHEMATIC OPERATIONS                             --
+--                   SCHEMATIC OPERATIONS / ASSEMBLY VARIANT                --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -104,89 +104,65 @@ with et_logging;				use et_logging;
 with et_exceptions;				use et_exceptions;
 
 
-package et_schematic_ops is
+package et_schematic_ops_assembly_variant is
 
 	use pac_generic_modules;
 
-	use pac_net_name;
 
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
 	
 
-	-- Fetches the basic meta information of the schematic:
-	function get_basic_meta_information (
-		module : in pac_generic_modules.cursor)
-		return et_meta.type_basic;
-
-
-	
-	-- Returns the list of preferred schematic libraries:
-	function get_preferred_libraries (
-		module : in pac_generic_modules.cursor)
-		return et_meta.pac_preferred_libraries_schematic.list;
-
 	
 	
 	procedure device_not_found (name : in type_device_name);
 	procedure device_already_exists (name : in type_device_name);
-	procedure relative_rotation_invalid;
-	procedure net_not_found (name : in pac_net_name.bounded_string);
+	procedure assembly_variant_not_found (variant : in pac_assembly_variant_name.bounded_string);
 
 
 
 
-	
-	-- Returns a cursor to the net that is connected with the given device and terminal.
-	-- If there is no net connected, then the return is no_element.
-	-- Assumes the default assembly variant:
-	function get_net (
-		module		: in pac_generic_modules.cursor;
-		device		: in pac_devices_electrical.cursor;
-		terminal	: in pac_terminal_name.bounded_string) -- H7, 1, 16
-		return pac_nets.cursor;
+
+	-- Returns the name of the active assembly variant of the given module:
+	function get_active_assembly_variant (
+		module_cursor	: in pac_generic_modules.cursor)
+		return pac_assembly_variant_name.bounded_string;
 
 	
+	-- Returns a cursor to the active assembly variant of the given module:	
+	function get_active_assembly_variant (
+		module_cursor	: in pac_generic_modules.cursor)
+		return et_assembly_variants.pac_assembly_variants.cursor;
 
-	
-	-- Returns lists of device, netchanger and 
-	-- submodule ports at the given place:
-	function get_ports ( 
-		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_object_position;
-		log_threshold	: in type_log_level)		
-		return type_ports;	
-	
-
-	
-
-	procedure dragging_not_possible (
-		port 		: in string;
-		position	: in type_object_position);
 
 	
 
 	
-	
-	function sort_by_coordinates_2 (
-		module_cursor 	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level)
-		return et_numbering.pac_devices.map;
-
-	
-	
-
-	
-	-- Renumbers devices according to the sheet number.
-	procedure renumber_devices (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		step_width		: in type_name_index;
+	-- Creates a new assembly variant.
+	procedure create_assembly_variant (
+		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level);
-	-- CS move to separate package
-
 
 	
-end et_schematic_ops;
+	-- Deletes an assembly variant.
+	procedure delete_assembly_variant (
+		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		log_threshold	: in type_log_level);
+
+	
+	-- Describes an assembly variant. Overwrites the previous description.
+	procedure describe_assembly_variant (
+		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		description		: in et_assembly_variants.type_description; -- "this is the low budget variant"
+		log_threshold	: in type_log_level);
+
+	
+	
+	
+end et_schematic_ops_assembly_variant;
 
 -- Soli Deo Gloria
 

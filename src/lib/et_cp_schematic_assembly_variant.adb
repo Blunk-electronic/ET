@@ -55,6 +55,8 @@ with et_device_purpose;
 with et_device_partcode;
 with et_device_value;
 
+with et_schematic_ops_assembly_variant;		use et_schematic_ops_assembly_variant;
+
 
 
 

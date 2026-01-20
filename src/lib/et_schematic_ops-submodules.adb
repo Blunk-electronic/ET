@@ -56,6 +56,7 @@ with et_schematic_ops.nets;
 with et_module_read;
 with et_netchanger_symbol_schematic;
 
+with et_schematic_ops_assembly_variant;		use et_schematic_ops_assembly_variant;
 
 
 package body et_schematic_ops.submodules is

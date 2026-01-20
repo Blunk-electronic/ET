@@ -41,6 +41,8 @@ with et_schematic_ops.submodules;
 with et_schematic_ops.units;
 with et_generic_stacks;
 
+with et_schematic_ops_assembly_variant;		use et_schematic_ops_assembly_variant;
+
 
 
 package body et_schematic_ops.netlists is
