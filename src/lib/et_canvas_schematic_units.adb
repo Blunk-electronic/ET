@@ -73,6 +73,7 @@ with et_board_ops.ratsnest;
 with et_board_ops.groups;
 with et_schematic_ops.groups;
 with et_schematic_ops_device;		use et_schematic_ops_device;
+with et_schematic_ops_meta;			use et_schematic_ops_meta;
 
 with et_material;
 with et_meta;

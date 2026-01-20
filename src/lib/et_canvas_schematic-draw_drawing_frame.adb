@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -40,6 +40,7 @@ with ada.text_io;					use ada.text_io;
 
 with et_text_content;				use et_text_content;
 with et_alignment;
+with et_schematic_ops_meta;			use et_schematic_ops_meta;
 with et_schematic_ops;
 with et_schematic_ops.sheets;
 with et_drawing_frame;
@@ -222,7 +223,7 @@ begin
 	-- Draw meta information like company name, revision, persons
 	-- who have drawn, checked and approved the drawing ... :
 	draw_basic_meta_information (
-		meta					=> et_schematic_ops.get_basic_meta_information (active_module),
+		meta					=> get_basic_meta_information (active_module),
 		placeholders			=> type_placeholders_basic (title_block.placeholders_additional),
 		title_block_position	=> tb_position);
 	

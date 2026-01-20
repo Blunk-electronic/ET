@@ -51,7 +51,6 @@ with ada.containers.ordered_sets;
 
 with ada.exceptions;			use ada.exceptions;
 
-with et_meta;
 with et_net_names;				use et_net_names;
 with et_module_names;			use et_module_names;
 with et_module_instance;		use et_module_instance;
@@ -112,19 +111,7 @@ package et_schematic_ops is
 	-- is used instead the module_name.
 	
 
-	-- Fetches the basic meta information of the schematic:
-	function get_basic_meta_information (
-		module : in pac_generic_modules.cursor)
-		return et_meta.type_basic;
 
-
-	
-	-- Returns the list of preferred schematic libraries:
-	function get_preferred_libraries (
-		module : in pac_generic_modules.cursor)
-		return et_meta.pac_preferred_libraries_schematic.list;
-
-	
 	
 	procedure device_not_found (name : in type_device_name);
 	procedure device_already_exists (name : in type_device_name);
