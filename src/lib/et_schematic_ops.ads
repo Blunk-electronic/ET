@@ -37,73 +37,10 @@
 --
 --   ToDo: 
 
-with ada.text_io;				use ada.text_io;
-with ada.characters.latin_1;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded;       use ada.strings.bounded;
-
-with ada.containers;            use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
-
-with ada.exceptions;			use ada.exceptions;
-
-with et_module_names;			use et_module_names;
-with et_module_instance;		use et_module_instance;
-with et_sheets;					use et_sheets;
-with et_schematic_geometry;		use et_schematic_geometry;
-with et_schematic_coordinates;	use et_schematic_coordinates;
-use et_schematic_geometry.pac_geometry_2;
-
-with et_string_processing;		use et_string_processing;
-with et_logging;				use et_logging;
-with et_nets;					use et_nets;
-with et_net_junction;			use et_net_junction;
-with et_net_ports;				use et_net_ports;
-with et_net_segment;			use et_net_segment;
-with et_net_labels;				use et_net_labels;
-with et_project;				use et_project;
-
-with et_module;					use et_module;
-with et_module_board;			use et_module_board;
-
-with et_text;
-with et_netchangers;
-with et_numbering;
-with et_material;
-with et_netlists;
-with et_terminal_name;			use et_terminal_name;
-with et_terminals;
-with et_port_names;				use et_port_names;
-with et_symbol_ports;			use et_symbol_ports;
-with et_device_library;			use et_device_library;
-with et_package_variant;		use et_package_variant;
-with et_device_purpose;			use et_device_purpose;
-with et_device_model_names;		use et_device_model_names;
-with et_device_value;			use et_device_value;
-with et_device_prefix;			use et_device_prefix;
-with et_device_name;			use et_device_name;
-with et_device_partcode;		use et_device_partcode;
-with et_conventions;
-
-with et_schematic_text;			use et_schematic_text;
-
-with et_devices_electrical;			use et_devices_electrical;
-with et_devices_electrical.units;	use et_devices_electrical.units;
-
-with et_logging;				use et_logging;
-with et_exceptions;				use et_exceptions;
-
 
 package et_schematic_ops is
 
-	
-	procedure device_not_found (name : in type_device_name);
-	procedure device_already_exists (name : in type_device_name);
-
+	t : natural;
 
 	
 end et_schematic_ops;

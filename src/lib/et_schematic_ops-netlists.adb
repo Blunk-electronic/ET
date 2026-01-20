@@ -36,8 +36,16 @@
 --   history of changes:
 --
 
+with ada.exceptions;					use ada.exceptions;
+
+with et_module;							use et_module;
+with et_module_instance;				use et_module_instance;
 with et_net_names;						use et_net_names;
+with et_nets;							use et_nets;
+
 with et_device_library.units;			use et_device_library.units;
+with et_device_name;					use et_device_name;
+with et_numbering;
 with et_schematic_ops.submodules;
 with et_schematic_ops.units;
 with et_schematic_ops_device;			use et_schematic_ops_device;
@@ -48,6 +56,11 @@ with et_assembly_variant_name;			use et_assembly_variant_name;
 with et_schematic_ops_assembly_variant;	use et_schematic_ops_assembly_variant;
 
 with et_submodules;
+with et_netchangers;
+
+with et_string_processing;				use et_string_processing;
+
+
 
 
 package body et_schematic_ops.netlists is

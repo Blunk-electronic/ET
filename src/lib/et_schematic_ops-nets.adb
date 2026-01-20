@@ -38,7 +38,9 @@
 
 with ada.strings;						use ada.strings;
 with ada.strings.unbounded;				use ada.strings.unbounded;
+with ada.exceptions;					use ada.exceptions;
 
+with et_text;
 with et_axes;
 with et_assembly_variants;
 with et_schematic_ops.units;			use et_schematic_ops.units;
@@ -49,12 +51,18 @@ with et_symbol_model;
 with et_units;
 with et_unit_name;
 
+with et_module_instance;				use et_module_instance;
+with et_module_names;					use et_module_names;
 with et_submodules;
 
 with et_board_ops;						use et_board_ops;
 with et_board_ops.ratsnest;				use et_board_ops.ratsnest;
 
+with et_netchangers;
+
 with et_rotation_docu;					use et_rotation_docu;
+with et_exceptions;						use et_exceptions;
+with et_string_processing;				use et_string_processing;
 
 
 package body et_schematic_ops.nets is

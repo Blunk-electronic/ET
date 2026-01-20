@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,9 +37,12 @@
 --
 --   ToDo: 
 
+with et_module;							use et_module;
 with et_generic_modules;				use et_generic_modules;
 with et_drawing_frame;					use et_drawing_frame;
 with et_drawing_frame.schematic;		use et_drawing_frame.schematic;
+with et_schematic_text;					use et_schematic_text;
+with et_sheets;							use et_sheets;
 
 
 package et_schematic_ops.sheets is

@@ -39,13 +39,38 @@
 --
 --
 
+with ada.containers;           			use ada.containers;
+with ada.containers.indefinite_doubly_linked_lists;
+
+with et_schematic_coordinates;			use et_schematic_coordinates;
+with et_schematic_geometry;				use et_schematic_geometry;
+use et_schematic_geometry.pac_geometry_2;
+
+with et_module;							use et_module;
 with et_generic_modules;				use et_generic_modules;
+with et_device_library;					use et_device_library;
 with et_device_library.units;			use et_device_library.units;
+with et_sheets;							use et_sheets;
 with et_units;							use et_units;
 with et_unit_name;						use et_unit_name;
 with et_device_placeholders;			use et_device_placeholders;
 with et_object_status;					use et_object_status;
 with et_rotation_docu;					use et_rotation_docu;
+with et_schematic_text;					use et_schematic_text;
+with et_devices_electrical;				use et_devices_electrical;
+with et_devices_electrical.units;		use et_devices_electrical.units;
+with et_device_partcode;				use et_device_partcode;
+with et_device_purpose;					use et_device_purpose;
+with et_device_value;					use et_device_value;
+with et_device_name;					use et_device_name;
+with et_device_model_names;				use et_device_model_names;
+with et_package_variant;				use et_package_variant;
+with et_symbol_ports;					use et_symbol_ports;
+with et_port_names;						use et_port_names;
+with et_terminal_name;					use et_terminal_name;
+
+with et_logging;						use et_logging;
+
 
 
 package et_schematic_ops.units is

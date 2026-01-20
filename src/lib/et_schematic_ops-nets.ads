@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,12 +37,35 @@
 --
 --   ToDo: 
 
+with ada.containers;         			use ada.containers;
+with ada.containers.indefinite_doubly_linked_lists;
+
+with et_schematic_coordinates;			use et_schematic_coordinates;
+with et_schematic_geometry;				use et_schematic_geometry;
+use et_schematic_geometry.pac_geometry_2;
+
+with et_module;							use et_module;
 with et_generic_modules;				use et_generic_modules;
+with et_nets;							use et_nets;
 with et_net_names;						use et_net_names;
 with et_net_strands;					use et_net_strands;
 with et_net_labels;						use et_net_labels;
 with et_net_connectors;					use et_net_connectors;
+with et_net_segment;					use et_net_segment;
+with et_net_ports;						use et_net_ports;
 with et_object_status;					use et_object_status;
+with et_device_name;					use et_device_name;
+with et_devices_electrical;				use et_devices_electrical;
+with et_devices_electrical.units;		use et_devices_electrical.units;
+with et_schematic_text;					use et_schematic_text;
+with et_package_variant;				use et_package_variant;
+with et_symbol_ports;					use et_symbol_ports;
+with et_port_names;						use et_port_names;
+with et_terminal_name;					use et_terminal_name;
+with et_netlists;
+with et_sheets;							use et_sheets;
+with et_logging;						use et_logging;
+
 
 
 package et_schematic_ops.nets is

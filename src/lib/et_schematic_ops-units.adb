@@ -37,12 +37,22 @@
 --
 --   ToDo: 
 
+with et_string_processing;					use et_string_processing;
+
+with et_module_names;						use et_module_names;
+
 with et_net_names;							use et_net_names;
 with et_board_ops.devices;
 with et_board_ops.ratsnest;					use et_board_ops.ratsnest;
 with et_schematic_ops.nets;
 with et_schematic_ops.groups;
+
+with et_netlists;
+with et_net_segment;						use et_net_segment;
 with et_net_strands;						use et_net_strands;
+with et_net_ports;							use et_net_ports;
+with et_nets;								use et_nets;
+
 with et_port_direction;
 with et_symbol_model;
 with et_device_model;						use et_device_model;
@@ -52,6 +62,7 @@ with et_devices_electrical.packages;		use et_devices_electrical.packages;
 
 with et_device_placeholders.symbols;		use et_device_placeholders.symbols;
 
+with et_numbering;
 with et_device_library.packages;
 
 with et_schematic_ops_assembly_variant;		use et_schematic_ops_assembly_variant;

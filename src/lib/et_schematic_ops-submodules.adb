@@ -37,8 +37,14 @@
 --
 --   ToDo: 
 
+with ada.containers;				use ada.containers;
+with ada.containers.doubly_linked_lists;
+with ada.containers.ordered_maps;
+
 with ada.directories;
+with ada.exceptions;				use ada.exceptions;
 with et_directory_and_file_ops;
+with et_string_processing;			use et_string_processing;
 
 with et_mirroring;					use et_mirroring;
 with et_board_geometry;
@@ -46,18 +52,24 @@ with et_board_coordinates;
 with et_generic_stacks;
 with et_symbol_model;
 with et_device_appearance;
+with et_numbering;
 with et_package_name;
 with et_package_model_name;
-with et_net_strands;				use et_net_strands;
+with et_net_segment;					use et_net_segment;
+with et_net_ports;						use et_net_ports;
+with et_net_strands;					use et_net_strands;
 with et_net_ports;
 with et_module_ops;
-with et_schematic_ops.units;		use et_schematic_ops.units;
-with et_net_names;					use et_net_names;
+with et_schematic_ops.units;			use et_schematic_ops.units;
+with et_net_names;						use et_net_names;
 with et_schematic_ops.nets;
 with et_module_read;
 with et_netchanger_symbol_schematic;
-
-with et_schematic_ops_assembly_variant;		use et_schematic_ops_assembly_variant;
+with et_conventions;
+with et_schematic_ops_assembly_variant;	use et_schematic_ops_assembly_variant;
+with et_port_names;						use et_port_names;
+with et_material;
+with et_module;							use et_module;
 
 
 package body et_schematic_ops.submodules is
@@ -1304,6 +1316,8 @@ package body et_schematic_ops.submodules is
 		ports : type_ports;
 		port : type_submodule_port;
 
+		use ada.containers;
+		
 		use pac_submodule_ports;
 		use pac_device_ports;
 
@@ -2367,6 +2381,7 @@ package body et_schematic_ops.submodules is
 				point		: in type_object_position; -- sheet/x/y -- the point to be probed
 				port_name	: in type_netchanger_port_name) -- master/slave
 			is 
+				use ada.containers;
 				use et_netlists;
 				ports : type_ports;
 				port : type_port_netchanger;

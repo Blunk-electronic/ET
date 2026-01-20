@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,7 +36,14 @@
 --   history of changes:
 --
 
+with et_module_names;					use et_module_names;
 with et_generic_modules;				use et_generic_modules;
+with et_devices_electrical;				use et_devices_electrical;
+with et_netlists;
+with et_net_ports;						use et_net_ports;
+
+with et_logging;						use et_logging;
+
 
 
 package et_schematic_ops.netlists is

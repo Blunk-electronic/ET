@@ -37,13 +37,30 @@
 --
 --   ToDo: 
 
+with et_schematic_coordinates;			use et_schematic_coordinates;
+with et_schematic_geometry;				use et_schematic_geometry;
+use et_schematic_geometry.pac_geometry_2;
 
+with et_module_names;					use et_module_names;
+with et_module_instance;				use et_module_instance;
 with et_generic_modules;				use et_generic_modules;
 with et_netchangers;					use et_netchangers;
 with et_submodules;
 with et_assembly_variants;				use et_assembly_variants;
 with et_assembly_variant_name;			use et_assembly_variant_name;
+
+with et_nets;							use et_nets;
 with et_net_names;						use et_net_names;
+with et_netlists;
+
+with et_sheets;							use et_sheets;
+with et_schematic_text;					use et_schematic_text;
+with et_device_name;					use et_device_name;
+with et_devices_electrical;				use et_devices_electrical;
+with et_device_partcode;				use et_device_partcode;
+
+with et_logging;						use et_logging;
+
 
 
 package et_schematic_ops.submodules is
