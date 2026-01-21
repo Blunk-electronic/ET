@@ -51,7 +51,7 @@ with et_module;						use et_module;
 with et_keywords;					use et_keywords;
 
 
-package body et_board_ops.vias is
+package body et_board_ops_vias is
 
 	use pac_nets;
 	use pac_net_name;
@@ -858,10 +858,9 @@ package body et_board_ops.vias is
 
 	
 	
-end et_board_ops.vias;
+end et_board_ops_vias;
 	
 -- Soli Deo Gloria
-
 
 -- For God so loved the world that he gave 
 -- his one and only Son, that whoever believes in him 

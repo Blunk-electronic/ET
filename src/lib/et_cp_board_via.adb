@@ -53,7 +53,7 @@ with et_pcb_stack;						use et_pcb_stack;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_board_geometry;					use et_board_geometry;
 with et_board_ops;						use et_board_ops;
-with et_board_ops.vias;
+with et_board_ops_vias;
 with et_board_ops_signal_layers;		use et_board_ops_signal_layers;
 with et_module_board_user_settings;		use et_module_board_user_settings;
 with et_board_ops_user_settings;		use et_board_ops_user_settings;
@@ -236,7 +236,7 @@ package body et_cp_board_via is
 		use et_drills;
 		use et_vias;
 		use et_design_rules_board;
-		use et_board_ops.vias;
+		use et_board_ops_vias;
 		
 		
 		-- Contains the number of fields given by the caller of this procedure:
@@ -282,7 +282,7 @@ package body et_cp_board_via is
 				restring_inner	=> restring_inner,
 				restring_outer	=> restring_outer);
 					
-			et_board_ops.vias.place_via (module, net_name, via, log_threshold + 1);
+			et_board_ops_vias.place_via (module, net_name, via, log_threshold + 1);
 		end through;
 
 		
@@ -295,7 +295,7 @@ package body et_cp_board_via is
 				restring_top	=> restring_top,
 				lower			=> lower_layer);
 					
-			et_board_ops.vias.place_via (module, net_name, via, log_threshold + 1);
+			et_board_ops_vias.place_via (module, net_name, via, log_threshold + 1);
 		end blind_top;
 
 		
@@ -308,7 +308,7 @@ package body et_cp_board_via is
 				restring_bottom	=> restring_bottom,
 				upper			=> upper_layer);
 					
-			et_board_ops.vias.place_via (module, net_name, via, log_threshold + 1);
+			et_board_ops_vias.place_via (module, net_name, via, log_threshold + 1);
 		end blind_bottom;
 
 		
@@ -320,7 +320,7 @@ package body et_cp_board_via is
 				restring_inner	=> restring_inner,
 				layers			=> buried_layers);
 					
-			et_board_ops.vias.place_via (module, net_name, via, log_threshold + 1);
+			et_board_ops_vias.place_via (module, net_name, via, log_threshold + 1);
 		end buried;
 
 		

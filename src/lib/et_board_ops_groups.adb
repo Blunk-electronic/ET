@@ -46,7 +46,7 @@ with et_board_ops_stencil;
 with et_board_ops_keepout;
 with et_board_ops_outline;
 with et_board_ops_conductors;
-with et_board_ops.vias;
+with et_board_ops_vias;
 
 with et_ripup;
 with et_board_ops_ratsnest;
@@ -88,7 +88,7 @@ package body et_board_ops_groups is
 		et_board_ops_keepout.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops_outline.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops_conductors.reset_proposed_objects (active_module, log_threshold + 1);
-		et_board_ops.vias.reset_proposed_vias (active_module, log_threshold + 1);
+		et_board_ops_vias.reset_proposed_vias (active_module, log_threshold + 1);
 
 		et_board_ops_ratsnest.reset_proposed_airwires (active_module, log_threshold + 1);
 		et_ripup.reset_ripup_mode;

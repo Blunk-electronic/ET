@@ -54,7 +54,7 @@ with et_object_status;					use et_object_status;
 with et_logging;						use et_logging;
 
 
-package et_board_ops.vias is
+package et_board_ops_vias is
 
 	use pac_generic_modules;
 
@@ -206,7 +206,7 @@ package et_board_ops.vias is
 		log_threshold	: in type_log_level);
 
 	
-end et_board_ops.vias;
+end et_board_ops_vias;
 
 -- Soli Deo Gloria
 

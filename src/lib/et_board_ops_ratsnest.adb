@@ -41,7 +41,7 @@ with ada.exceptions;					use ada.exceptions;
 
 with et_conductor_segment.boards;
 with et_board_ops_devices;				use et_board_ops_devices;
-with et_board_ops.vias;					use et_board_ops.vias;
+with et_board_ops_vias;					use et_board_ops_vias;
 
 
 package body et_board_ops_ratsnest is

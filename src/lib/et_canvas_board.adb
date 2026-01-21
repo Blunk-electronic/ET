@@ -62,12 +62,6 @@ with et_canvas_tool;
 with et_display.board;
 with et_colors.board;
 with et_board_ops_grid;
-with et_board_ops_assy_doc;
--- with et_board_ops.silkscreen;
--- with et_board_ops.stopmask;
--- with et_board_ops.stencil;
--- with et_board_ops_ratsnest;
-with et_board_ops.vias;
 with et_board_ops_groups;
 with et_module_board;
 

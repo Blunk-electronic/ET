@@ -71,7 +71,7 @@ with gtk.text_iter;
 
 with et_generic_modules;			use et_generic_modules;
 with et_schematic_ops.nets;
-with et_board_ops.vias;				use et_board_ops.vias;
+with et_board_ops_vias;				use et_board_ops_vias;
 with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 with et_canvas_board;
 with et_canvas_board_tracks;
@@ -378,7 +378,6 @@ package body et_canvas_board_vias is
 
 	procedure init_preliminary_via is
 		use et_module_board_user_settings;
-		use et_board_ops;
 
 		rules : constant type_design_rules_board := get_pcb_design_rules (active_module);
 
@@ -568,8 +567,6 @@ package body et_canvas_board_vias is
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
-
-			use et_board_ops;
 		begin
 			gtk_new_vbox (box_destination_blind, homogeneous => false);
 			pack_start (box_v4, box_destination_blind, padding => box_properties_spacing);
@@ -631,8 +628,6 @@ package body et_canvas_board_vias is
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
-
-			use et_board_ops;
 		begin
 			gtk_new_vbox (box_buried_upper, homogeneous => false);
 			pack_start (box_v4, box_buried_upper, padding => box_properties_spacing);
@@ -693,8 +688,6 @@ package body et_canvas_board_vias is
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
-
-			use et_board_ops;
 		begin
 			gtk_new_vbox (box_buried_lower, homogeneous => false);
 			pack_start (box_v4, box_buried_lower, padding => box_properties_spacing);
