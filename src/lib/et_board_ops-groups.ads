@@ -40,6 +40,7 @@
 
 with et_generic_modules;				use et_generic_modules;
 with et_object_status;					use et_object_status;
+with et_logging;						use et_logging;
 
 
 package et_board_ops.groups is

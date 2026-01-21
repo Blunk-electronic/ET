@@ -44,6 +44,7 @@ with et_net_names;					use et_net_names;
 with et_nets;						use et_nets;
 with et_net_class;					use et_net_class;
 with et_net_class_name;				use et_net_class_name;
+with et_logging;					use et_logging;
 
 
 package et_board_ops.net_class is

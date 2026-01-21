@@ -40,7 +40,7 @@ with et_assembly_variants;
 with et_assembly_variant_name;			use et_assembly_variant_name;
 with et_conductor_text.boards;
 with et_pcb_placeholders;				use et_pcb_placeholders;
-
+with et_module;							use et_module;
 with et_meta;
 
 

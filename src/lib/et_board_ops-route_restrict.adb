@@ -38,6 +38,7 @@
 
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
+with et_module;						use et_module;
 
 
 package body et_board_ops.route_restrict is

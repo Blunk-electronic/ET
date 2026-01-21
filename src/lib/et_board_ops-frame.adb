@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,6 +35,8 @@
 --
 --   history of changes:
 --
+
+with et_module;							use et_module;
 
 
 package body et_board_ops.frame is

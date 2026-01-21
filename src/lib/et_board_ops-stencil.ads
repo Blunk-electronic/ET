@@ -37,6 +37,9 @@
 --
 --   ToDo: 
 
+with ada.containers;					use ada.containers;
+with ada.containers.indefinite_doubly_linked_lists;
+
 with et_board_geometry;					use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 
@@ -44,6 +47,9 @@ with et_module_names;					use et_module_names;
 with et_generic_modules;				use et_generic_modules;
 with et_board_text;						use et_board_text;
 with et_stencil;						use et_stencil;
+with et_pcb_sides;						use et_pcb_sides;
+with et_object_status;					use et_object_status;
+with et_logging;						use et_logging;
 
 
 package et_board_ops.stencil is

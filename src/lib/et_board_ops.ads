@@ -36,31 +36,6 @@
 --   history of changes:
 --
 --   ToDo: 
--- 	  - rework procedures so that a module cursor
---		is used instead the module_name.
---    - move stuff related to signal layers to separate child package
-
-
-with ada.text_io;				use ada.text_io;
-with ada.strings;				use ada.strings;
-with ada.exceptions;			use ada.exceptions;
-
-with ada.containers;			use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-
-with et_module;						use et_module;
-with et_module_board;				use et_module_board;
-with et_module_board_user_settings;	use et_module_board_user_settings;
-
-with et_text;
-
-with et_pcb_sides;					use et_pcb_sides;
-with et_board_layer_category;		use et_board_layer_category;
-
-with et_object_status;				use et_object_status;
-with et_logging;					use et_logging;
-with et_exceptions;					use et_exceptions;
 
 
 package et_board_ops is

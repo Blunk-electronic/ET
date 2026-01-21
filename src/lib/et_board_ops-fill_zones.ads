@@ -59,6 +59,7 @@ with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_design_rules_board;				use et_design_rules_board;
 
 with et_terminals;						use et_terminals;
+with et_logging;						use et_logging;
 
 
 package et_board_ops.fill_zones is

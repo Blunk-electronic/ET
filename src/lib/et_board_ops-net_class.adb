@@ -40,7 +40,7 @@
 with et_string_processing;			use et_string_processing;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
 with et_net_classes;				use et_net_classes;
-
+with et_module;						use et_module;
 
 
 package body et_board_ops.net_class is

@@ -36,6 +36,9 @@
 --   history of changes:
 --
 
+with ada.text_io;					use ada.text_io;
+with ada.strings;					use ada.strings;
+
 with et_string_processing;			use et_string_processing;
 
 with et_schematic_ops;				use et_schematic_ops;
@@ -43,6 +46,7 @@ with et_schematic_ops.nets;			use et_schematic_ops.nets;
 
 with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
+with et_module;						use et_module;
 with et_keywords;					use et_keywords;
 
 

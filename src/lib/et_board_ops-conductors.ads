@@ -37,6 +37,10 @@
 --
 --   ToDo: 
 
+with ada.containers;					use ada.containers;
+with ada.containers.doubly_linked_lists;
+with ada.containers.indefinite_doubly_linked_lists;
+
 with et_board_geometry;					use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 
@@ -57,7 +61,9 @@ with et_net_names;						use et_net_names;
 with et_nets;							use et_nets;
 
 with et_terminal_name;					use et_terminal_name;
-
+with et_pcb_sides;						use et_pcb_sides;
+with et_object_status;					use et_object_status;
+with et_logging;						use et_logging;
 
 
 package et_board_ops.conductors is

@@ -43,6 +43,8 @@ use et_board_geometry.pac_geometry_2;
 with et_module_names;				use et_module_names;
 with et_generic_modules;			use et_generic_modules;
 
+with et_logging;					use et_logging;
+
 
 package et_board_ops.grid is
 

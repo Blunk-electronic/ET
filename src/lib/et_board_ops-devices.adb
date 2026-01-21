@@ -62,9 +62,10 @@ with et_submodules;
 with et_package_read;
 with et_package_write;
 
+with et_module;							use et_module;
 with et_board_ops.groups;
-with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
-with et_mirroring;					use et_mirroring;
+with et_board_ops.ratsnest;				use et_board_ops.ratsnest;
+with et_mirroring;						use et_mirroring;
 
 
 package body et_board_ops.devices is

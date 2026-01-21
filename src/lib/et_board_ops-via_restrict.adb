@@ -39,6 +39,7 @@
 
 with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
+with et_module;						use et_module;
 
 
 package body et_board_ops.via_restrict is

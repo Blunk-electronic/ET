@@ -36,6 +36,8 @@
 --   history of changes:
 --
 
+with et_text;
+
 with et_string_processing;			use et_string_processing;
 with et_mirroring;
 with et_schematic_ops_device;		use et_schematic_ops_device;
@@ -54,7 +56,7 @@ with et_pcb_placeholders;			use et_pcb_placeholders;
 with et_vias;
 with et_route;
 with et_ripup;
-
+with et_module;						use et_module;
 with et_terminals;					use et_terminals;
 with et_assembly_technology;		use et_assembly_technology;
 

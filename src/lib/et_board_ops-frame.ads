@@ -45,6 +45,8 @@ with et_generic_modules;				use et_generic_modules;
 with et_drawing_frame;					use et_drawing_frame;
 with et_drawing_frame.board;			use et_drawing_frame.board;
 
+with et_logging;						use et_logging;
+
 
 package et_board_ops.frame is
 

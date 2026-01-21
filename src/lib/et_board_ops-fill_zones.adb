@@ -38,6 +38,7 @@
 
 with ada.text_io;					use ada.text_io;
 with ada.tags;
+with ada.exceptions;				use ada.exceptions;
 
 with et_string_processing;			use et_string_processing;
 with et_mirroring;
@@ -64,11 +65,13 @@ with et_conductor_segment.boards;
 with et_contour_to_polygon;
 with et_vias;
 with et_route;
-
+with et_pcb_sides;					use et_pcb_sides;
 with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 
 with et_terminal_name;				use et_terminal_name;
 with et_assembly_technology;		use et_assembly_technology;
+with et_module;						use et_module;
+with et_exceptions;					use et_exceptions;
 
 
 package body et_board_ops.fill_zones is
