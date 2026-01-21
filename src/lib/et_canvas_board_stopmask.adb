@@ -45,7 +45,7 @@ with et_canvas_board;
 with et_pcb_sides;						use et_pcb_sides;
 
 with et_stopmask;						use et_stopmask;
-with et_board_ops.stopmask;				use et_board_ops.stopmask;
+with et_board_ops_stopmask;				use et_board_ops_stopmask;
 
 with et_logging;						use et_logging;
 with et_modes.board;

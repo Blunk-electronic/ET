@@ -84,7 +84,7 @@ with et_board_ops;						use et_board_ops;
 with et_board_ops_signal_layers;		use et_board_ops_signal_layers;
 with et_board_ops_assy_doc;
 with et_board_ops_silkscreen;
-with et_board_ops.stopmask;
+with et_board_ops_stopmask;
 with et_board_ops_conductors;
 with et_board_ops.text;
 with et_modes.board;
@@ -802,7 +802,7 @@ package body et_canvas_board_texts is
 
 			when LAYER_CAT_STOPMASK =>
 				
-				et_board_ops.stopmask.add_text (
+				et_board_ops_stopmask.add_text (
 					module_cursor 	=> active_module,
 					face			=> object_face,
 					text			=> preliminary_text.text,

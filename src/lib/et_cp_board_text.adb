@@ -58,7 +58,7 @@ with et_board_geometry;					use et_board_geometry;
 
 with et_board_ops_assy_doc;
 with et_board_ops_silkscreen;
-with et_board_ops.stopmask;
+with et_board_ops_stopmask;
 with et_board_ops_conductors;
 
 with et_text_content;					use et_text_content;
@@ -120,7 +120,7 @@ package body et_cp_board_text is
 
 
 		procedure place_in_stopmask is
-			use et_board_ops.stopmask;
+			use et_board_ops_stopmask;
 		begin
 			add_text (
 				module_cursor 	=> module,
@@ -279,7 +279,7 @@ package body et_cp_board_text is
 
 
 		procedure place_in_stopmask is
-			use et_board_ops.stopmask;
+			use et_board_ops_stopmask;
 			ph : type_placeholder_non_conductor; -- non conductor layers
 		begin
 			ph.meaning := to_meaning (get_field (cmd, 12));

@@ -42,7 +42,7 @@ with et_pcb_placeholders;				use et_pcb_placeholders;
 with et_module;							use et_module;
 
 
-package body et_board_ops.stopmask is
+package body et_board_ops_stopmask is
 
 	use pac_stop_lines;
 	use pac_stop_arcs;
@@ -3503,7 +3503,7 @@ package body et_board_ops.stopmask is
 
 	
 	
-end et_board_ops.stopmask;
+end et_board_ops_stopmask;
 	
 -- Soli Deo Gloria
 

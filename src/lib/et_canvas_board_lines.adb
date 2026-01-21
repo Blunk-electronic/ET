@@ -73,7 +73,7 @@ with et_board_ops_outline;
 with et_board_ops_assy_doc;
 with et_board_ops_keepout;
 with et_board_ops_silkscreen;
-with et_board_ops.stopmask;
+with et_board_ops_stopmask;
 with et_board_ops_stencil;
 with et_board_ops_conductors;
 with et_board_ops_route_restrict;
@@ -697,7 +697,7 @@ package body et_canvas_board_lines is
 		-- the lines (which hava a certain width) or to a zone
 		-- in the stopmask:
 		procedure add_to_stopmask is
-			use et_board_ops.stopmask;
+			use et_board_ops_stopmask;
 		begin
 			-- If the linewidth (given by the operator via the GUI)
 			-- is non-zero, then the given line is to be added as

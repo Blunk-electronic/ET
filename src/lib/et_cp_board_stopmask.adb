@@ -51,7 +51,7 @@ with et_pcb_sides;						use et_pcb_sides;
 with et_keywords;						use et_keywords;
 
 with et_board_geometry;					use et_board_geometry;
-with et_board_ops.stopmask;				use et_board_ops.stopmask;
+with et_board_ops_stopmask;				use et_board_ops_stopmask;
 with et_keywords;
 
 
