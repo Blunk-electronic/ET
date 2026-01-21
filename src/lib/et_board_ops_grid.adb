@@ -41,7 +41,7 @@ with et_module;						use et_module;
 with et_string_processing;			use et_string_processing;
 
 
-package body et_board_ops.grid is
+package body et_board_ops_grid is
 
 	
 	procedure set_grid (
@@ -141,7 +141,7 @@ package body et_board_ops.grid is
 	end get_grid;
 
 
-end et_board_ops.grid;
+end et_board_ops_grid;
 	
 -- Soli Deo Gloria
 

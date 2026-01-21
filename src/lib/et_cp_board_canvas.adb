@@ -45,7 +45,7 @@ with ada.text_io;						use ada.text_io;
 with et_generic_modules;				use et_generic_modules;
 with et_runmode;						use et_runmode;
 with et_modes.board;					use et_modes.board;
-with et_board_ops.grid;
+with et_board_ops_grid;
 
 with et_canvas.cmd;
 with et_canvas_board;					use et_canvas_board;
@@ -131,7 +131,7 @@ package body et_cp_board_canvas is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
-		use et_board_ops.grid;
+		use et_board_ops_grid;
 	begin
 		log (text => "set grid", level => log_threshold);
 		log_indentation_up;

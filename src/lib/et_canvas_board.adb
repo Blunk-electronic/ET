@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -61,7 +61,7 @@ with et_canvas_schematic;
 with et_canvas_tool;
 with et_display.board;
 with et_colors.board;
-with et_board_ops.grid;
+with et_board_ops_grid;
 with et_board_ops_assy_doc;
 with et_board_ops.silkscreen;
 with et_board_ops.stopmask;
@@ -1139,7 +1139,7 @@ package body et_canvas_board is
 -- MODULE SELECT:
 
 	procedure update_board_editor is 
-		use et_board_ops.grid;
+		use et_board_ops_grid;
 	begin
 		-- Show the module name in the title bar of 
 		-- the board editor:

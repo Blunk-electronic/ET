@@ -48,7 +48,7 @@ with et_canvas_board;
 with et_board_geometry;
 
 with et_schematic_ops.grid;
-with et_board_ops.grid;
+with et_board_ops_grid;
 
 with et_module_names;				use et_module_names;
 
@@ -263,7 +263,7 @@ package body et_gui_2 is
 		update_scale_display;
 
 		-- Set the grid as specified in the database:
-		pac_canvas.grid := et_board_ops.grid.get_grid (module, log_threshold + 1);
+		pac_canvas.grid := et_board_ops_grid.get_grid (module, log_threshold + 1);
 		update_grid_display;
 
 		-- CS ? canvas.update_mode_display;

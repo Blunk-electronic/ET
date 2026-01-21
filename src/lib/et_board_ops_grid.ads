@@ -46,7 +46,7 @@ with et_generic_modules;			use et_generic_modules;
 with et_logging;					use et_logging;
 
 
-package et_board_ops.grid is
+package et_board_ops_grid is
 
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
@@ -78,7 +78,7 @@ package et_board_ops.grid is
 		return pac_grid.type_grid;
 
 											
-end et_board_ops.grid;
+end et_board_ops_grid;
 
 -- Soli Deo Gloria
 
