@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                       BOARD OPERATIONS / TEXT                            --
+--               BOARD OPERATIONS / MATERIAL / PICK AND PLACE               --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,53 +35,45 @@
 --
 --   history of changes:
 --
-
-with et_assembly_variants;
-with et_assembly_variant_name;			use et_assembly_variant_name;
-with et_conductor_text.boards;
-with et_pcb_placeholders;				use et_pcb_placeholders;
-
-with et_meta;
+--   ToDo: 
+-- 	  - rework procedures so that a module cursor
+--		is used instead the module_name.
+--
 
 
-package body et_board_ops.text is
+
+with et_module_names;				use et_module_names;
+with et_generic_modules;			use et_generic_modules;
+
+with et_board_coordinates;			use et_board_coordinates;
+with et_board_geometry;				use et_board_geometry;
+use et_board_geometry.pac_geometry_2;
+
+with et_assembly_variant_name;		use et_assembly_variant_name;
+
+with et_logging;					use et_logging;
+
+
+
+package et_board_ops_material_pnp is
+
+	use pac_generic_modules;
+
 
 	
-	function to_placeholder_content (
-		module_cursor	: in pac_generic_modules.cursor;
-		meaning 		: in type_placeholder_meaning_non_conductor)
-		return pac_text_content.bounded_string 
-	is
-		m : type_generic_module renames element (module_cursor);
+	-- Exports a pick & place file from the given top module and assembly variant.
+	-- CS: The rotation of submodules is currently ignored. The rotation defaults to zero degree.
+	--     See comment in procedure query_submodules.
+	procedure make_pick_and_place (
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		log_threshold	: in type_log_level);
+
 		
-		use et_meta;
-		meta : constant et_meta.type_board := m.meta.board;
 
-		use et_assembly_variants;
-		use pac_assembly_variant_name;
-		variant : constant pac_assembly_variant_name.bounded_string := m.assembly_variants.active;
-
-		result : pac_text_content.bounded_string;
-	begin
-		case meaning is
-			when COMPANY			=> result := to_content (to_string (meta.company));
-			when CUSTOMER			=> result := to_content (to_string (meta.customer));
-			when PARTCODE			=> result := to_content (to_string (meta.partcode));
-			when DRAWING_NUMBER		=> result := to_content (to_string (meta.drawing_number));
-			when ASSEMBLY_VARIANT	=> result := to_content (to_string (variant));
-			when PROJECT			=> result := to_content ("not assigned"); -- CS
-			when MODULE				=> result := to_content (to_string (key (module_cursor)));
-			when REVISION			=> result := to_content (to_string (meta.revision));
-		end case;
-		
-		return result;
-	end to_placeholder_content;
 	
+end et_board_ops_material_pnp;
 
-end et_board_ops.text;
-	
 -- Soli Deo Gloria
-
 
 -- For God so loved the world that he gave 
 -- his one and only Son, that whoever believes in him 

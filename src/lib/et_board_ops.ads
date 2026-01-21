@@ -80,7 +80,6 @@ use et_board_geometry.pac_geometry_2;
 
 with et_board_text;					use et_board_text;
 
-with et_assembly_variant_name;		use et_assembly_variant_name;
 with et_pick_and_place;
 with et_design_rules_board;			use et_design_rules_board;
 
@@ -127,23 +126,6 @@ package et_board_ops is
 		log_threshold	: in type_log_level);
 
 	
-	-- Moves a submodule instance within the parent module layout in x/y direction.
-	-- Leaves rotation and face (top/bottom) as it is.
-	procedure move_submodule (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
-		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in type_vector_model; -- x/y
-		log_threshold	: in type_log_level);
-
-	
-	-- Exports a pick & place file from the given top module and assembly variant.
-	-- CS: The rotation of submodules is currently ignored. The rotation defaults to zero degree.
-	--     See comment in procedure query_submodules.
-	procedure make_pick_and_place (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		log_threshold	: in type_log_level);
-
 	
 	
 	-- Tests the given set of signal layers whether each of them is available

@@ -46,7 +46,7 @@ with ada.strings; 						use ada.strings;
 
 with et_board_geometry;					use et_board_geometry;
 with et_module_instance;				use et_module_instance;
-with et_board_ops;						use et_board_ops;
+with et_board_ops_submodule;			use et_board_ops_submodule;
 
 
 
