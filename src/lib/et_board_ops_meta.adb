@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                       BOARD OPERATIONS / TEXT                            --
+--                        BOARD OPERATIONS / META                           --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -35,49 +35,33 @@
 --
 --   history of changes:
 --
-
-with et_assembly_variants;
-with et_conductor_text.boards;
-with et_pcb_placeholders;				use et_pcb_placeholders;
-
-with et_meta;
+-- To Do:
+-- - clean up, rework
 
 
-package body et_board_ops.text is
+package body et_board_ops_meta is
 
-	
-	function to_placeholder_content (
-		module_cursor	: in pac_generic_modules.cursor;
-		meaning 		: in type_placeholder_meaning_non_conductor)
-		return pac_text_content.bounded_string 
-	is
-		m : type_generic_module renames element (module_cursor);
-		
-		use et_meta;
-		meta : constant et_meta.type_board := m.meta.board;
 
-		use et_assembly_variants;
-		use pac_assembly_variant_name;
-		variant : constant pac_assembly_variant_name.bounded_string := m.assembly_variants.active;
-
-		result : pac_text_content.bounded_string;
-	begin
-		case meaning is
-			when COMPANY			=> result := to_content (to_string (meta.company));
-			when CUSTOMER			=> result := to_content (to_string (meta.customer));
-			when PARTCODE			=> result := to_content (to_string (meta.partcode));
-			when DRAWING_NUMBER		=> result := to_content (to_string (meta.drawing_number));
-			when ASSEMBLY_VARIANT	=> result := to_content (to_string (variant));
-			when PROJECT			=> result := to_content ("not assigned"); -- CS
-			when MODULE				=> result := to_content (to_string (key (module_cursor)));
-			when REVISION			=> result := to_content (to_string (meta.revision));
-		end case;
-		
-		return result;
-	end to_placeholder_content;
+	function get_basic_meta_information (
+		module : in pac_generic_modules.cursor)
+		return type_basic
+	is begin
+		return type_basic (element (module).meta.board);
+	end get_basic_meta_information;
 	
 
-end et_board_ops.text;
+	
+	function get_preferred_libraries (
+		module : in pac_generic_modules.cursor)
+		return pac_preferred_libraries_board.list
+	is begin
+		return element (module).meta.board.preferred_libs;
+	end get_preferred_libraries;
+
+	
+	
+
+end et_board_ops_meta;
 	
 -- Soli Deo Gloria
 

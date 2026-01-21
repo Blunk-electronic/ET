@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                       BOARD OPERATIONS / TEXT                            --
+--                       BOARD OPERATIONS / META                            --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,52 +35,40 @@
 --
 --   history of changes:
 --
-
-with et_assembly_variants;
-with et_conductor_text.boards;
-with et_pcb_placeholders;				use et_pcb_placeholders;
-
-with et_meta;
+--   ToDo: 
 
 
-package body et_board_ops.text is
+with et_meta;					use et_meta;
+with et_generic_modules;		use et_generic_modules;
+with et_logging;				use et_logging;
+
+
+
+package et_board_ops_meta is
+
+	use pac_generic_modules;
+
 
 	
-	function to_placeholder_content (
-		module_cursor	: in pac_generic_modules.cursor;
-		meaning 		: in type_placeholder_meaning_non_conductor)
-		return pac_text_content.bounded_string 
-	is
-		m : type_generic_module renames element (module_cursor);
-		
-		use et_meta;
-		meta : constant et_meta.type_board := m.meta.board;
+	-- This function fetches the basic meta 
+	-- information of the board:
+	function get_basic_meta_information (
+		module : in pac_generic_modules.cursor)
+		return et_meta.type_basic;
 
-		use et_assembly_variants;
-		use pac_assembly_variant_name;
-		variant : constant pac_assembly_variant_name.bounded_string := m.assembly_variants.active;
 
-		result : pac_text_content.bounded_string;
-	begin
-		case meaning is
-			when COMPANY			=> result := to_content (to_string (meta.company));
-			when CUSTOMER			=> result := to_content (to_string (meta.customer));
-			when PARTCODE			=> result := to_content (to_string (meta.partcode));
-			when DRAWING_NUMBER		=> result := to_content (to_string (meta.drawing_number));
-			when ASSEMBLY_VARIANT	=> result := to_content (to_string (variant));
-			when PROJECT			=> result := to_content ("not assigned"); -- CS
-			when MODULE				=> result := to_content (to_string (key (module_cursor)));
-			when REVISION			=> result := to_content (to_string (meta.revision));
-		end case;
-		
-		return result;
-	end to_placeholder_content;
 	
+	-- Returns the list of preferred board 
+	-- libraries (non-electrical packages):
+	function get_preferred_libraries (
+		module : in pac_generic_modules.cursor)
+		return et_meta.pac_preferred_libraries_board.list;
 
-end et_board_ops.text;
+
 	
+end et_board_ops_meta;
+
 -- Soli Deo Gloria
-
 
 -- For God so loved the world that he gave 
 -- his one and only Son, that whoever believes in him 

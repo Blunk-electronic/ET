@@ -49,7 +49,6 @@ with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
-with et_meta;
 with et_nets;						use et_nets;
 with et_net_names;					use et_net_names;
 with et_module_names;				use et_module_names;
@@ -96,19 +95,6 @@ package et_board_ops is
 	use pac_generic_modules;
 
 
-	-- This function fetches the basic meta 
-	-- information of the board:
-	function get_basic_meta_information (
-		module : in pac_generic_modules.cursor)
-		return et_meta.type_basic;
-
-
-	
-	-- Returns the list of preferred board 
-	-- libraries (non-electrical packages):
-	function get_preferred_libraries (
-		module : in pac_generic_modules.cursor)
-		return et_meta.pac_preferred_libraries_board.list;
 
 	
 	

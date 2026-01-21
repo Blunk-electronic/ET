@@ -66,24 +66,6 @@ package body et_board_ops is
 	use pac_nets;
 
 
-	function get_basic_meta_information (
-		module : in pac_generic_modules.cursor)
-		return et_meta.type_basic
-	is 
-		use et_meta;
-	begin
-		return type_basic (element (module).meta.board);
-	end get_basic_meta_information;
-	
-
-	
-	function get_preferred_libraries (
-		module : in pac_generic_modules.cursor)
-		return et_meta.pac_preferred_libraries_board.list
-	is begin
-		return element (module).meta.board.preferred_libs;
-	end get_preferred_libraries;
-
 
 	
 	
