@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -61,7 +61,7 @@ with gtk.container;						use gtk.container;
 with et_generic_modules;				use et_generic_modules;
 
 with et_board_ops;						use et_board_ops;
-with et_board_ops.outline;				use et_board_ops.outline;
+with et_board_ops_outline;				use et_board_ops_outline;
 with et_modes.board;
 
 with et_display;						use et_display;

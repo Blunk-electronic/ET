@@ -46,7 +46,7 @@ with et_schematic_ops_device;		use et_schematic_ops_device;
 with et_schematic_ops.nets;
 with et_board_holes;
 with et_board_outline;
-with et_board_ops.outline;
+with et_board_ops_outline;
 with et_board_ops_devices;
 with et_board_ops_net_class;
 with et_fill_zones.boards;
@@ -1262,7 +1262,7 @@ package body et_board_ops_fill_zones is
 		-- This procedure converts holes to polygons
 		-- and appends them to the result:
 		procedure process_holes is 
-			use et_board_ops.outline;
+			use et_board_ops_outline;
 			use et_board_holes;
 			
 			holes : pac_holes.list;
@@ -2062,7 +2062,7 @@ package body et_board_ops_fill_zones is
 		-- a polygon, offsets it by clearance_conductor_to_edge
 		-- and stores it in board_outer_contour:		
 		procedure process_outer_board_contour is
-			use et_board_ops.outline;
+			use et_board_ops_outline;
 			use et_contour_to_polygon;
 			use pac_polygon_offsetting;		
 		begin

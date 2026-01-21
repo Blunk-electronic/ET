@@ -45,7 +45,7 @@ with ada.characters.handling;			use ada.characters.handling;
 with ada.strings; 						use ada.strings;
 
 with et_board_geometry;					use et_board_geometry;
-with et_board_ops.outline;				use et_board_ops.outline;
+with et_board_ops_outline;				use et_board_ops_outline;
 with et_keywords;
 
 

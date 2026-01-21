@@ -54,7 +54,7 @@ with et_object_status;					use et_object_status;
 with et_logging;						use et_logging;
 
 
-package et_board_ops.outline is
+package et_board_ops_outline is
 
 	use pac_generic_modules;
 	use pac_contours;
@@ -448,7 +448,7 @@ package et_board_ops.outline is
 	
 	
 	
-end et_board_ops.outline;
+end et_board_ops_outline;
 
 -- Soli Deo Gloria
 

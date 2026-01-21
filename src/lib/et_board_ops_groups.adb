@@ -44,7 +44,7 @@ with et_board_ops.silkscreen;
 with et_board_ops.stopmask;
 with et_board_ops.stencil;
 with et_board_ops_keepout;
-with et_board_ops.outline;
+with et_board_ops_outline;
 with et_board_ops_conductors;
 with et_board_ops.vias;
 
@@ -86,7 +86,7 @@ package body et_board_ops_groups is
 		et_board_ops.stopmask.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops.stencil.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops_keepout.reset_proposed_objects (active_module, log_threshold + 1);
-		et_board_ops.outline.reset_proposed_objects (active_module, log_threshold + 1);
+		et_board_ops_outline.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops_conductors.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops.vias.reset_proposed_vias (active_module, log_threshold + 1);
 

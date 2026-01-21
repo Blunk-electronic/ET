@@ -69,7 +69,7 @@ with et_generic_modules;				use et_generic_modules;
 
 with et_board_ops;						use et_board_ops;
 with et_board_ops_signal_layers;		use et_board_ops_signal_layers;
-with et_board_ops.outline;
+with et_board_ops_outline;
 with et_board_ops_assy_doc;
 with et_board_ops_keepout;
 with et_board_ops.silkscreen;
@@ -591,7 +591,7 @@ package body et_canvas_board_lines is
 		-- This procedure adds the given line
 		-- to the outer board contour:
 		procedure add_to_outer_contour is
-			use et_board_ops.outline;
+			use et_board_ops_outline;
 		begin
 			-- Add the line to the temporary contour:
 			append_segment (c, to_segment (line));
@@ -609,7 +609,7 @@ package body et_canvas_board_lines is
 		-- This procedure adds the given line
 		-- to the holes of the board:
 		procedure add_to_holes is
-			use et_board_ops.outline;
+			use et_board_ops_outline;
 		begin
 			-- Add the line to the temporary contour:
 			append_segment (c, to_segment (line));

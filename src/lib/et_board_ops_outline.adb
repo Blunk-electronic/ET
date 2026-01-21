@@ -39,7 +39,7 @@
 with et_module;						use et_module;
 
 
-package body et_board_ops.outline is
+package body et_board_ops_outline is
 
 
 	
@@ -1836,7 +1836,7 @@ package body et_board_ops.outline is
 	
 
 	
-end et_board_ops.outline;
+end et_board_ops_outline;
 	
 -- Soli Deo Gloria
 
