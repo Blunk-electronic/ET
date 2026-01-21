@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+with et_string_processing;			use et_string_processing;
 
 with et_schematic_ops;				use et_schematic_ops;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;

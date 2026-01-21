@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -38,12 +38,21 @@
 --   ToDo: 
 
 
-with et_vias;						use et_vias;
-with et_net_names;					use et_net_names;
+with et_board_geometry;					use et_board_geometry;
+use et_board_geometry.pac_geometry_2;
+
+with et_module_names;					use et_module_names;
+with et_generic_modules;				use et_generic_modules;
+with et_vias;							use et_vias;
+with et_net_names;						use et_net_names;
+with et_nets;							use et_nets;
 
 
 package et_board_ops.vias is
 
+	use pac_generic_modules;
+
+	
 	
 	-- Returns the positions (x/y) of all vias of the given net.
 	-- The list of returned points uses fixed point coordinates

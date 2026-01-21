@@ -37,7 +37,11 @@
 --
 --   ToDo: 
 
+with et_board_geometry;					use et_board_geometry;
+use et_board_geometry.pac_geometry_2;
 
+with et_module_names;					use et_module_names;
+with et_generic_modules;				use et_generic_modules;
 with et_board_text;						use et_board_text;
 with et_assy_doc;						use et_assy_doc;
 with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
@@ -48,7 +52,8 @@ package et_board_ops.assy_doc is
 
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
-	
+
+	use pac_generic_modules;
 	use pac_text_board;
 	use pac_text_board_vectorized;
 

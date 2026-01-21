@@ -49,43 +49,21 @@ with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
-with et_nets;						use et_nets;
-with et_net_names;					use et_net_names;
-with et_module_names;				use et_module_names;
-with et_module_instance;			use et_module_instance;
-with et_primitive_objects;			use et_primitive_objects;
-with et_axes;						use et_axes;
-with et_string_processing;			use et_string_processing;
-with et_logging;					use et_logging;
-
-with et_generic_modules;			use et_generic_modules;
 with et_module;						use et_module;
 with et_module_board;				use et_module_board;
 with et_module_board_user_settings;	use et_module_board_user_settings;
 
 with et_text;
 
-with et_assembly_technology;		use et_assembly_technology;
-with et_terminal_name;				use et_terminal_name;
-with et_terminals;					use et_terminals;
-
 with et_pcb_sides;					use et_pcb_sides;
 with et_board_layer_category;		use et_board_layer_category;
-with et_board_coordinates;			use et_board_coordinates;
-with et_board_geometry;				use et_board_geometry;
-use et_board_geometry.pac_geometry_2;
 
-with et_design_rules_board;			use et_design_rules_board;
-
-with et_exceptions;					use et_exceptions;
 with et_object_status;				use et_object_status;
 with et_logging;					use et_logging;
 with et_exceptions;					use et_exceptions;
 
 
 package et_board_ops is
-
-	use pac_generic_modules;
 
 
 	procedure dummy;

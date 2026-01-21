@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,13 +37,19 @@
 --
 --   ToDo: 
 
+with et_board_geometry;					use et_board_geometry;
+use et_board_geometry.pac_geometry_2;
 
-with et_route_restrict.boards;				use et_route_restrict.boards;
+with et_module_names;					use et_module_names;
+with et_generic_modules;				use et_generic_modules;
+with et_route_restrict.boards;			use et_route_restrict.boards;
 
 
 package et_board_ops.route_restrict is
 
 
+	use pac_generic_modules;
+	
 
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,14 +36,21 @@
 --   history of changes:
 --
 --   ToDo: 
+--
 
-
+with et_module_names;				use et_module_names;
+with et_generic_modules;			use et_generic_modules;
+with et_net_names;					use et_net_names;
+with et_nets;						use et_nets;
 with et_net_class;					use et_net_class;
 with et_net_class_name;				use et_net_class_name;
 
 
 package et_board_ops.net_class is
 
+	use pac_generic_modules;
+
+	
 
 	-- Returns the settings of the required net class
 	-- of the given module.

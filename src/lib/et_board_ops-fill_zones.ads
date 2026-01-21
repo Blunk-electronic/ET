@@ -44,15 +44,26 @@
 --   ToDo: 
 --
 
+with et_board_geometry;				use et_board_geometry;
+use et_board_geometry.pac_geometry_2;
+
+with et_module_names;					use et_module_names;
+with et_generic_modules;				use et_generic_modules;
+with et_net_names;						use et_net_names;
+with et_nets;							use et_nets;
 
 with et_devices_electrical;				use et_devices_electrical;
 with et_thermal_relief;					use et_thermal_relief;
 with et_fill_zones;						use et_fill_zones;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
+with et_design_rules_board;				use et_design_rules_board;
+
+with et_terminals;						use et_terminals;
 
 
 package et_board_ops.fill_zones is
 
+	use pac_generic_modules;
 	use pac_geometry_brd;
 	use pac_polygons;
 

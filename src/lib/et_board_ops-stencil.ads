@@ -37,6 +37,11 @@
 --
 --   ToDo: 
 
+with et_board_geometry;					use et_board_geometry;
+use et_board_geometry.pac_geometry_2;
+
+with et_module_names;					use et_module_names;
+with et_generic_modules;				use et_generic_modules;
 with et_board_text;						use et_board_text;
 with et_stencil;						use et_stencil;
 
@@ -46,6 +51,8 @@ package et_board_ops.stencil is
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
 
+	use pac_generic_modules;
+	
 	
 
 -- LINES:

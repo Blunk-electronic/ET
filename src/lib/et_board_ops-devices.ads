@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,6 +37,13 @@
 --
 --   ToDo: 
 
+with et_board_coordinates;				use et_board_coordinates;
+with et_board_geometry;					use et_board_geometry;
+use et_board_geometry.pac_geometry_2;
+
+with et_module_instance;				use et_module_instance;
+with et_module_names;					use et_module_names;
+with et_generic_modules;				use et_generic_modules;
 with et_package_model_name;				use et_package_model_name;
 with et_package_name;					use et_package_name;
 with et_package_library;				use et_package_library;
@@ -48,10 +55,19 @@ with et_device_property_level;			use et_device_property_level;
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_non_electrical;			use et_devices_non_electrical;
 
+with et_nets;							use et_nets;
+
+with et_terminals;						use et_terminals;
+with et_terminal_name;					use et_terminal_name;
+with et_assembly_technology;			use et_assembly_technology;
+
 
 package et_board_ops.devices is
 
 
+	use pac_generic_modules;
+	
+	
 
 -- ELECTRICAL DEVICES:
 	

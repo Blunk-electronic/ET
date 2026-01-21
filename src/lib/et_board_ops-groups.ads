@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,11 +37,15 @@
 --
 --   ToDo: 
 
-with et_object_status;				use et_object_status;
+
+with et_generic_modules;				use et_generic_modules;
+with et_object_status;					use et_object_status;
 
 
 package et_board_ops.groups is
 
+	use pac_generic_modules;
+	
 
 	-- This procedure resets everything that
 	-- exists only in the board domain:

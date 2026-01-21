@@ -37,7 +37,13 @@
 --
 --   ToDo: 
 
+with et_board_geometry;					use et_board_geometry;
+use et_board_geometry.pac_geometry_2;
 
+with et_primitive_objects;				use et_primitive_objects;
+with et_module_names;					use et_module_names;
+with et_generic_modules;				use et_generic_modules;
+with et_axes;							use et_axes;
 with et_board_text;						use et_board_text;
 with et_conductor_segment.boards;		use et_conductor_segment.boards;
 with et_fill_zones.boards;				use et_fill_zones.boards;
@@ -45,6 +51,13 @@ with et_conductor_text.boards;			use et_conductor_text.boards;
 with et_pcb_placeholders.conductor;		use et_pcb_placeholders.conductor;
 with et_device_name;					use et_device_name;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
+with et_design_rules_board;				use et_design_rules_board;
+
+with et_net_names;						use et_net_names;
+with et_nets;							use et_nets;
+
+with et_terminal_name;					use et_terminal_name;
+
 
 
 package et_board_ops.conductors is
@@ -52,6 +65,7 @@ package et_board_ops.conductors is
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
 
+	use pac_generic_modules;
 	use pac_text_board;
 	use pac_text_board_vectorized;
 	use pac_net_name;

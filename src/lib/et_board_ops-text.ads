@@ -37,6 +37,8 @@
 --
 --   ToDo: 
 
+with et_module_names;					use et_module_names;
+with et_generic_modules;				use et_generic_modules;
 with et_board_layer_category;			use et_board_layer_category;
 
 with et_stopmask;
@@ -53,6 +55,7 @@ with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
 
 package et_board_ops.text is
 
+	use pac_generic_modules;
 	use pac_text_board;
 
 	

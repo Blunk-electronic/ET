@@ -38,6 +38,8 @@
 
 with ada.strings.unbounded;
 
+with et_string_processing;				use et_string_processing;
+
 with et_board_text;						use et_board_text;
 
 with et_conventions;

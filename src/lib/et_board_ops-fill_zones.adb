@@ -39,6 +39,7 @@
 with ada.text_io;					use ada.text_io;
 with ada.tags;
 
+with et_string_processing;			use et_string_processing;
 with et_mirroring;
 with et_schematic_ops_device;		use et_schematic_ops_device;
 with et_schematic_ops.nets;
@@ -66,6 +67,8 @@ with et_route;
 
 with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 
+with et_terminal_name;				use et_terminal_name;
+with et_assembly_technology;		use et_assembly_technology;
 
 
 package body et_board_ops.fill_zones is

@@ -38,10 +38,18 @@
 --   ToDo: 
 
 
-with et_keepout;				use et_keepout;
+with et_board_geometry;					use et_board_geometry;
+use et_board_geometry.pac_geometry_2;
+
+with et_module_names;					use et_module_names;
+with et_generic_modules;				use et_generic_modules;
+with et_keepout;						use et_keepout;
 
 
 package et_board_ops.keepout is
+
+
+	use pac_generic_modules;
 
 	
 
