@@ -46,7 +46,7 @@ with ada.strings; 						use ada.strings;
 
 with et_board_geometry;					use et_board_geometry;
 with et_drawing_frame;					use et_drawing_frame;
-with et_board_ops.frame;				use et_board_ops.frame;
+with et_board_ops_frame;				use et_board_ops_frame;
 with et_canvas_board;					use et_canvas_board;
 
 

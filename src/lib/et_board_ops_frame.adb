@@ -4,7 +4,7 @@
 --                                                                          --
 --                      BOARD OPERATIONS FRAME                              --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your editor to 4.
+--   For correct displaying set tab with in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,56 +35,132 @@
 --
 --   history of changes:
 --
---   ToDo: 
 
-with et_board_geometry;					use et_board_geometry;
-use et_board_geometry.pac_geometry_2;
-
-with et_module_names;					use et_module_names;
-with et_generic_modules;				use et_generic_modules;
-with et_drawing_frame;					use et_drawing_frame;
-with et_drawing_frame.board;			use et_drawing_frame.board;
-
-with et_logging;						use et_logging;
+with et_module;							use et_module;
 
 
-package et_board_ops.frame is
-
-	use pac_generic_modules;
+package body et_board_ops_frame is
 
 	
-	
-	-- Moves the lower-left corner (which is the origin)
-	-- of the drawing frame to the given point:
 	procedure move_drawing_frame (
 		module_cursor	: in pac_generic_modules.cursor;
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in et_drawing_frame.type_position; -- x/y
-		log_threshold	: in type_log_level);
+		log_threshold	: in type_log_level) 
+	is
+		
+		procedure set_origin (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is 
+			p1 : et_drawing_frame.type_position;
+		begin
+			case coordinates is
+				when ABSOLUTE =>
+					set_position (module.board.frame.frame, point);
+
+				when RELATIVE =>
+					p1 := get_position (module.board.frame.frame);
+					-- CS
+					-- move_by (module.board.frame.position, to_distance_relative (point));
+			end case;
+		end set_origin;
+
+		
+		use et_drawing_frame;
+		
+	begin
+		case coordinates is
+			when ABSOLUTE =>
+				log (text => "module " & to_string (key (module_cursor)) &
+					 " moving drawing frame origin to " & to_string (point),
+					 level => log_threshold);
+
+			when RELATIVE =>
+				log (text => "module " & to_string (key (module_cursor)) &
+					 " moving drawing frame origin by " & to_string (point), 
+					 level => log_threshold);
+		end case;
+
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> set_origin'access);
+
+	end move_drawing_frame;
 
 
-	-- Returns the position of the lower-left corner
-	-- of the drawing frame:
+
+
+
 	function get_frame_position (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)								
-		return et_drawing_frame.type_position;
-	
+		return et_drawing_frame.type_position
+	is
+		result : et_drawing_frame.type_position;
 
-	-- Sets the position of the lower-left corner
-	-- of the drawing frame:
+		
+		procedure get_origin (
+			module_name	: in pac_module_name.bounded_string;
+			module 		: in type_generic_module) 
+		is begin
+			result := get_position (module.board.frame.frame);
+		end get_origin;
+
+		
+	begin
+		log (text => "module " & to_string (key (module_cursor)) &
+			" query drawing frame position",
+		level => log_threshold);
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> get_origin'access);
+		
+		return result;
+	end get_frame_position;
+
+		
+
+
+
 	procedure set_frame_position (
 		module_cursor	: in pac_generic_modules.cursor;
 		position		: in et_drawing_frame.type_position;
-		log_threshold	: in type_log_level);
+		log_threshold	: in type_log_level)
+	is
+		use et_drawing_frame;
+
+		
+		procedure set_origin (
+			module_name	: in pac_module_name.bounded_string;
+			module 		: in out type_generic_module) 
+		is begin
+			set_position (module.board.frame.frame, position);
+		end set_origin;
+
+		
+	begin
+		log (text => "module " & to_string (key (module_cursor)) &
+			 " set drawing frame position"
+			 & to_string (position),
+		level => log_threshold);
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> set_origin'access);
+		
+	end set_frame_position;
 
 
-	-- CS subprograms to get and set the title block position ?
-	-- currently this is defined in the frame template file *.frb
 	
-end et_board_ops.frame;
-
+end et_board_ops_frame;
+	
 -- Soli Deo Gloria
+
 
 -- For God so loved the world that he gave 
 -- his one and only Son, that whoever believes in him 
