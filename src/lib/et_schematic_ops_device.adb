@@ -62,7 +62,7 @@ with et_device_library.packages;
 with et_devices_electrical.units;	use et_devices_electrical.units;
 with et_devices_non_electrical;		use et_devices_non_electrical;
 
-with et_board_ops.devices;			use et_board_ops.devices;
+with et_board_ops_devices;			use et_board_ops_devices;
 with et_conventions;				use et_conventions;
 
 
@@ -937,8 +937,6 @@ package body et_schematic_ops_device is
 
 
 		procedure search_2 is
-			use et_board_ops.devices;
-			
 			devices_electrical : pac_devices_electrical.map;
 			devices_non_electrical : pac_devices_non_electrical.map;
 

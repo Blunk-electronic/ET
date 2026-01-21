@@ -38,7 +38,7 @@
 --   ToDo: 
 
 
-with et_board_ops.devices;
+with et_board_ops_devices;
 with et_board_ops_assy_doc;
 with et_board_ops.silkscreen;
 with et_board_ops.stopmask;
@@ -61,7 +61,7 @@ package body et_board_ops.groups is
 	is
 
 		procedure reset_devices is 
-			use et_board_ops.devices;
+			use et_board_ops_devices;
 		begin
 			log (text => "devices (electrical and non-electrical)", level => log_threshold + 1);
 			log_indentation_up;

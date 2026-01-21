@@ -40,7 +40,7 @@
 with ada.exceptions;					use ada.exceptions;
 
 with et_conductor_segment.boards;
-with et_board_ops.devices;				use et_board_ops.devices;
+with et_board_ops_devices;				use et_board_ops_devices;
 with et_board_ops.vias;					use et_board_ops.vias;
 
 

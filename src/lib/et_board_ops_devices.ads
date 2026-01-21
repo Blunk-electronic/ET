@@ -69,7 +69,7 @@ with et_object_status;					use et_object_status;
 with et_logging;						use et_logging;
 
 
-package et_board_ops.devices is
+package et_board_ops_devices is
 
 
 	use pac_generic_modules;
@@ -714,7 +714,7 @@ package et_board_ops.devices is
 
 
 	
-end et_board_ops.devices;
+end et_board_ops_devices;
 
 -- Soli Deo Gloria
 

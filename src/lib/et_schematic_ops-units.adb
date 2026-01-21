@@ -42,7 +42,6 @@ with et_string_processing;					use et_string_processing;
 with et_module_names;						use et_module_names;
 
 with et_net_names;							use et_net_names;
-with et_board_ops.devices;
 with et_board_ops.ratsnest;					use et_board_ops.ratsnest;
 with et_schematic_ops.nets;
 with et_schematic_ops.groups;

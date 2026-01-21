@@ -68,7 +68,7 @@ with et_board_ops.ratsnest;				use et_board_ops.ratsnest;
 with et_mirroring;						use et_mirroring;
 
 
-package body et_board_ops.devices is
+package body et_board_ops_devices is
 
 	use pac_devices_electrical;
 	use pac_devices_non_electrical;
@@ -3732,7 +3732,7 @@ package body et_board_ops.devices is
 	
 	
 	
-end et_board_ops.devices;
+end et_board_ops_devices;
 	
 -- Soli Deo Gloria
 

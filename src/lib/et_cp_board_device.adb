@@ -56,7 +56,7 @@ with et_design_rules_board;
 with et_device_name;					use et_device_name;
 with et_unit_name;						use et_unit_name;
 with et_schematic_ops_device;			use et_schematic_ops_device;
-with et_board_ops.devices;				use et_board_ops.devices;
+with et_board_ops_devices;				use et_board_ops_devices;
 with et_devices_electrical;				use et_devices_electrical;
 with et_device_property_level;			use et_device_property_level;
 with et_canvas_board;
@@ -184,7 +184,7 @@ package body et_cp_board_device is
 
 							-- Write some basic information in the status bar:
 							if not error then
-								set_status (et_board_ops.devices.get_device_properties (
+								set_status (et_board_ops_devices.get_device_properties (
 									module_cursor	=> module,
 									device_name		=> device_name, 
 									level			=> DEVICE_PROPERTIES_LEVEL_1,
@@ -202,7 +202,7 @@ package body et_cp_board_device is
 										
 										pac_device_ops.show_properties_window (
 											device	=> device_name,
-											text	=> et_board_ops.devices.get_device_properties (
+											text	=> et_board_ops_devices.get_device_properties (
 												module_cursor	=> module, 
 												device_name		=> device_name, 
 												linebreaks		=> true,
@@ -351,7 +351,7 @@ package body et_cp_board_device is
 
 		
 		procedure do_it is 
-			use et_board_ops.devices;
+			use et_board_ops_devices;
 		begin
 			delete_non_electrical_device (
 				module_cursor	=> active_module,
@@ -398,7 +398,7 @@ package body et_cp_board_device is
 		case cmd_field_count is
 			when 7 =>
 
-				et_board_ops.devices.copy_non_electrical_device (
+				et_board_ops_devices.copy_non_electrical_device (
 					module_cursor 	=> module,
 					device_name		=> to_device_name (get_field (cmd, 5)),
 					destination		=> to_vector_model (get_field (cmd, 6), get_field (cmd, 7)), -- x/y
@@ -431,7 +431,7 @@ package body et_cp_board_device is
 		
 		case cmd_field_count is
 			when 8 =>
-				et_board_ops.devices.move_device (
+				et_board_ops_devices.move_device (
 					module_cursor 	=> module,
 					device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
 					coordinates		=> to_coordinates (get_field (cmd, 6)),  -- relative/absolute
@@ -467,14 +467,14 @@ package body et_cp_board_device is
 	begin
 		case cmd_field_count is
 			when 5 =>
-				et_board_ops.devices.rotate_device (
+				et_board_ops_devices.rotate_device (
 					module_cursor 	=> module,
 					device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
 					coordinates		=> RELATIVE,
 					log_threshold	=> log_threshold + 1);
 
 			when 7 =>
-				et_board_ops.devices.rotate_device (
+				et_board_ops_devices.rotate_device (
 					module_cursor 	=> module,
 					device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
 					coordinates		=> to_coordinates (get_field (cmd, 6)),  -- relative/absolute
@@ -552,14 +552,14 @@ package body et_cp_board_device is
 
 		case cmd_field_count is
 			when 5 =>
-				et_board_ops.devices.flip_device (
+				et_board_ops_devices.flip_device (
 					module_cursor 	=> active_module,
 					device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
 					toggle			=> true,
 					log_threshold	=> log_threshold + 1);
 
 			when 6 =>
-				et_board_ops.devices.flip_device (
+				et_board_ops_devices.flip_device (
 					module_cursor 	=> active_module,
 					device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
 					face			=> to_face  (get_field (cmd, 6)),  -- top/bottom

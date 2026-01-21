@@ -47,7 +47,7 @@ with et_schematic_ops.nets;
 with et_board_holes;
 with et_board_outline;
 with et_board_ops.outline;
-with et_board_ops.devices;
+with et_board_ops_devices;
 with et_board_ops.net_class;
 with et_fill_zones.boards;
 with et_terminal_hole;				use et_terminal_hole;
@@ -92,7 +92,7 @@ package body et_board_ops.fill_zones is
 		exists : boolean := false;
 		result : type_polygon; -- to be returned
 
-		use et_board_ops.devices;
+		use et_board_ops_devices;
 		use et_mirroring;
 		use pac_contours;
 		use pac_terminals;
@@ -641,7 +641,7 @@ package body et_board_ops.fill_zones is
 			procedure query_device (
 				device_cursor : in pac_devices_electrical.cursor)
 			is
-				use et_board_ops.devices;
+				use et_board_ops_devices;
 				terminals : pac_terminals.map;
 				
 				

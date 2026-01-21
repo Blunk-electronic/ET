@@ -60,7 +60,7 @@ with et_schematic_ops_device;		use et_schematic_ops_device;
 with et_schematic_ops.groups;
 with et_board_ops;
 with et_board_ops_meta;				use et_board_ops_meta;
-with et_board_ops.devices;			use et_board_ops.devices;
+with et_board_ops_devices;			use et_board_ops_devices;
 with et_board_ops.groups;
 
 with et_device_prefix;
