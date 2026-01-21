@@ -63,7 +63,7 @@ with et_package_read;
 with et_package_write;
 
 with et_module;							use et_module;
-with et_board_ops.groups;
+with et_board_ops_groups;
 with et_board_ops.ratsnest;				use et_board_ops.ratsnest;
 with et_mirroring;						use et_mirroring;
 
@@ -723,7 +723,7 @@ package body et_board_ops_devices is
 		-- Deselect all objects of previous show operations
 		-- so that nothing is highlighted anymore:
 		et_schematic_ops.groups.reset_objects (module_cursor, log_threshold + 1);
-		et_board_ops.groups.reset_objects (module_cursor, log_threshold + 1);
+		et_board_ops_groups.reset_objects (module_cursor, log_threshold + 1);
 		
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.

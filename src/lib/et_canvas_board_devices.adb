@@ -61,7 +61,7 @@ with et_schematic_ops.groups;
 with et_board_ops;
 with et_board_ops_meta;				use et_board_ops_meta;
 with et_board_ops_devices;			use et_board_ops_devices;
-with et_board_ops.groups;
+with et_board_ops_groups;
 
 with et_device_prefix;
 with et_device_property_level;
@@ -298,7 +298,7 @@ package body et_canvas_board_devices is
 			et_schematic_ops.groups.reset_objects (
 				active_module, log_threshold + 1);
 
-			et_board_ops.groups.reset_objects (
+			et_board_ops_groups.reset_objects (
 				active_module, log_threshold + 1);
 
 			

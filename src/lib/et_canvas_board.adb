@@ -71,7 +71,7 @@ with et_board_ops.ratsnest;
 -- with et_board_ops_conductors;
 with et_board_ops.vias;
 with et_board_ops.outline;
-with et_board_ops.groups;
+with et_board_ops_groups;
 with et_module_board;
 
 with et_text;
@@ -808,7 +808,7 @@ package body et_canvas_board is
 
 			status_clear;
 
-			et_board_ops.groups.reset_objects (active_module, log_threshold + 1);
+			et_board_ops_groups.reset_objects (active_module, log_threshold + 1);
 
 			device_add.valid := false;
 			

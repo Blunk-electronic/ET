@@ -70,7 +70,7 @@ with et_device_property_level;
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
 with et_devices_electrical.units;		use et_devices_electrical.units;
 with et_board_ops.ratsnest;
-with et_board_ops.groups;
+with et_board_ops_groups;
 with et_schematic_ops.groups;
 with et_schematic_ops_device;		use et_schematic_ops_device;
 with et_schematic_ops_meta;			use et_schematic_ops_meta;
@@ -263,7 +263,7 @@ package body et_canvas_schematic_units is
 			et_schematic_ops.groups.reset_objects (
 				active_module, log_threshold + 1);
 
-			et_board_ops.groups.reset_objects (
+			et_board_ops_groups.reset_objects (
 				active_module, log_threshold + 1);
 
 
