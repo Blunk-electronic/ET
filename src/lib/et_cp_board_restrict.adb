@@ -52,7 +52,7 @@ with et_keywords;						use et_keywords;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_board_geometry;					use et_board_geometry;
 with et_board_ops_route_restrict;
-with et_board_ops.via_restrict;
+with et_board_ops_via_restrict;
 with et_keywords;
 
 
@@ -242,7 +242,7 @@ package body et_cp_board_restrict is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
-		use et_board_ops.via_restrict;
+		use et_board_ops_via_restrict;
 
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
@@ -338,7 +338,7 @@ package body et_cp_board_restrict is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
-		use et_board_ops.via_restrict;
+		use et_board_ops_via_restrict;
 
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);

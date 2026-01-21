@@ -47,7 +47,7 @@ with et_via_restrict.boards;			use et_via_restrict.boards;
 with et_logging;						use et_logging;
 
 
-package et_board_ops.via_restrict is
+package et_board_ops_via_restrict is
 
 
 	use pac_generic_modules;
@@ -90,7 +90,7 @@ package et_board_ops.via_restrict is
 
 	
 	
-end et_board_ops.via_restrict;
+end et_board_ops_via_restrict;
 
 -- Soli Deo Gloria
 

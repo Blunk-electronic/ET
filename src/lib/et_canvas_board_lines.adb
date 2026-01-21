@@ -77,7 +77,7 @@ with et_board_ops.stopmask;
 with et_board_ops.stencil;
 with et_board_ops_conductors;
 with et_board_ops_route_restrict;
-with et_board_ops.via_restrict;
+with et_board_ops_via_restrict;
 with et_modes.board;
 
 with et_display;						use et_display;
@@ -781,7 +781,7 @@ package body et_canvas_board_lines is
 		-- the lines (which hava a certain width) or to a zone
 		-- in a via restrict layer:
 		procedure add_to_via_restrict is
-			use et_board_ops.via_restrict;
+			use et_board_ops_via_restrict;
 		begin
 			-- Add the line to the temporary contour:
 			append_segment (c, to_segment (line));
