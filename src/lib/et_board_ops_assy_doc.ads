@@ -55,7 +55,7 @@ with et_object_status;					use et_object_status;
 with et_logging;						use et_logging;
 
 
-package et_board_ops.assy_doc is
+package et_board_ops_assy_doc is
 
 
 	-- CS rework procedures so that a module cursor
@@ -664,7 +664,7 @@ package et_board_ops.assy_doc is
 
 
 										 
-end et_board_ops.assy_doc;
+end et_board_ops_assy_doc;
 
 -- Soli Deo Gloria
 

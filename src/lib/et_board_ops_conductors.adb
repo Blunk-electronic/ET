@@ -62,7 +62,7 @@ with et_assembly_technology;		use et_assembly_technology;
 
 
 
-package body et_board_ops.conductors is
+package body et_board_ops_conductors is
 
 	use pac_nets;
 
@@ -5966,7 +5966,7 @@ package body et_board_ops.conductors is
 
 	
 
-end et_board_ops.conductors;
+end et_board_ops_conductors;
 	
 -- Soli Deo Gloria
 

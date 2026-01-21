@@ -66,7 +66,7 @@ with et_object_status;					use et_object_status;
 with et_logging;						use et_logging;
 
 
-package et_board_ops.conductors is
+package et_board_ops_conductors is
 
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
@@ -982,7 +982,7 @@ package et_board_ops.conductors is
 		log_threshold	: in type_log_level);
 
 	
-end et_board_ops.conductors;
+end et_board_ops_conductors;
 
 -- Soli Deo Gloria
 

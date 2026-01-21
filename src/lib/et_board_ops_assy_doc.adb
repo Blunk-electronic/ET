@@ -43,7 +43,7 @@ with et_pcb_placeholders;				use et_pcb_placeholders;
 with et_module;							use et_module;
 
 
-package body et_board_ops.assy_doc is
+package body et_board_ops_assy_doc is
 
 	use pac_doc_lines;
 	use pac_doc_arcs;
@@ -3813,7 +3813,7 @@ package body et_board_ops.assy_doc is
 
 
 	
-end et_board_ops.assy_doc;
+end et_board_ops_assy_doc;
 	
 -- Soli Deo Gloria
 

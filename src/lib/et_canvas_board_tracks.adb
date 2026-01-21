@@ -66,7 +66,7 @@ with gtk.button;						use gtk.button;
 
 with et_generic_modules;				use et_generic_modules;
 
-with et_board_ops.conductors;			use et_board_ops.conductors;
+with et_board_ops_conductors;			use et_board_ops_conductors;
 with et_board_ops_signal_layers;		use et_board_ops_signal_layers;
 with et_modes.board;
 
@@ -691,7 +691,6 @@ package body et_canvas_board_tracks is
 		
 		
 		procedure add_to_net is
-			use et_board_ops.conductors;
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;

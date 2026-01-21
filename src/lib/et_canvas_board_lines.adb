@@ -70,12 +70,12 @@ with et_generic_modules;				use et_generic_modules;
 with et_board_ops;						use et_board_ops;
 with et_board_ops_signal_layers;		use et_board_ops_signal_layers;
 with et_board_ops.outline;
-with et_board_ops.assy_doc;
+with et_board_ops_assy_doc;
 with et_board_ops.keepout;
 with et_board_ops.silkscreen;
 with et_board_ops.stopmask;
 with et_board_ops.stencil;
-with et_board_ops.conductors;
+with et_board_ops_conductors;
 with et_board_ops.route_restrict;
 with et_board_ops.via_restrict;
 with et_modes.board;
@@ -629,7 +629,7 @@ package body et_canvas_board_lines is
 		-- the lines (which hava a certain width) or to a zone
 		-- in the assembly documentation:
 		procedure add_to_assy_doc is
-			use et_board_ops.assy_doc;
+			use et_board_ops_assy_doc;
 		begin
 			-- If the linewidth (given by the operator via the GUI)
 			-- is non-zero, then the given line is to be added as
@@ -816,7 +816,7 @@ package body et_canvas_board_lines is
 		-- This procedure adds the given line to 
 		-- a conductor layer:
 		procedure add_to_conductors is
-			use et_board_ops.conductors;
+			use et_board_ops_conductors;
 		begin
 			-- Because we do not pass a net name, this is going
 			-- to be a freetrack:

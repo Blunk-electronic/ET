@@ -45,7 +45,7 @@ with et_canvas_board;
 with et_pcb_sides;						use et_pcb_sides;
 
 with et_assy_doc;						use et_assy_doc;
-with et_board_ops.assy_doc;				use et_board_ops.assy_doc;
+with et_board_ops_assy_doc;				use et_board_ops_assy_doc;
 
 with et_logging;						use et_logging;
 with et_modes.board;

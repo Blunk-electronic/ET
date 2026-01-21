@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -39,13 +39,13 @@
 
 
 with et_board_ops.devices;
-with et_board_ops.assy_doc;
+with et_board_ops_assy_doc;
 with et_board_ops.silkscreen;
 with et_board_ops.stopmask;
 with et_board_ops.stencil;
 with et_board_ops.keepout;
 with et_board_ops.outline;
-with et_board_ops.conductors;
+with et_board_ops_conductors;
 with et_board_ops.vias;
 
 with et_ripup;
@@ -81,13 +81,13 @@ package body et_board_ops.groups is
 
 		-- CS reset board placeholders, texts, ... ?
 
-		et_board_ops.assy_doc.reset_status_objects (active_module, log_threshold + 1);
+		et_board_ops_assy_doc.reset_status_objects (active_module, log_threshold + 1);
 		et_board_ops.silkscreen.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops.stopmask.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops.stencil.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops.keepout.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops.outline.reset_proposed_objects (active_module, log_threshold + 1);
-		et_board_ops.conductors.reset_proposed_objects (active_module, log_threshold + 1);
+		et_board_ops_conductors.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops.vias.reset_proposed_vias (active_module, log_threshold + 1);
 
 		et_board_ops.ratsnest.reset_proposed_airwires (active_module, log_threshold + 1);

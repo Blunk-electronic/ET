@@ -56,10 +56,10 @@ with et_pcb_signal_layers;
 
 with et_board_geometry;					use et_board_geometry;
 
-with et_board_ops.assy_doc;
+with et_board_ops_assy_doc;
 with et_board_ops.silkscreen;
 with et_board_ops.stopmask;
-with et_board_ops.conductors;
+with et_board_ops_conductors;
 
 with et_text_content;					use et_text_content;
 with et_board_text;						use et_board_text;
@@ -98,7 +98,7 @@ package body et_cp_board_text is
 		face			: type_face;
 
 		procedure place_in_assy_doc is
-			use et_board_ops.assy_doc;
+			use et_board_ops_assy_doc;
 		begin
 			add_text (
 				module_cursor 	=> module,
@@ -131,7 +131,7 @@ package body et_cp_board_text is
 
 
 		procedure place_in_conductor_layer is
-			use et_board_ops.conductors;
+			use et_board_ops_conductors;
 			use et_pcb_signal_layers;
 			signal_layer	: type_signal_layer;
 		begin
@@ -241,7 +241,7 @@ package body et_cp_board_text is
 
 		
 		procedure place_in_assy_doc is
-			use et_board_ops.assy_doc;
+			use et_board_ops_assy_doc;
 			ph : type_placeholder_non_conductor; -- non conductor layers
 		begin
 			ph.meaning := to_meaning (get_field (cmd, 12));
@@ -298,7 +298,7 @@ package body et_cp_board_text is
 		
 		
 		procedure place_in_conductor_layer is
-			use et_board_ops.conductors;
+			use et_board_ops_conductors;
 			use et_pcb_signal_layers;
 			ph : type_placeholder_conductor; -- conductor layers
 		begin

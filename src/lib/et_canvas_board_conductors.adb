@@ -43,7 +43,7 @@ with et_canvas_board;
 with et_conductor_text.boards;
 with et_conductor_segment.boards;			use et_conductor_segment.boards;
 with et_board_ops;
-with et_board_ops.conductors;				use et_board_ops.conductors;
+with et_board_ops_conductors;				use et_board_ops_conductors;
 with et_board_ops_signal_layers;			use et_board_ops_signal_layers;
 with et_logging;							use et_logging;
 with et_modes.board;

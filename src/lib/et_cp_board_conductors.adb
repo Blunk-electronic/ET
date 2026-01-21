@@ -64,7 +64,7 @@ with et_ratsnest;
 with et_board_ops.ratsnest;
 with et_board_ops_user_settings;		use et_board_ops_user_settings;
 with et_board_ops.fill_zones;
-with et_board_ops.conductors;
+with et_board_ops_conductors;
 
 with et_pcb_signal_layers;
 with et_net_names;						use et_net_names;
@@ -305,7 +305,7 @@ package body et_cp_board_conductors is
 		use et_terminals;
 		use et_terminal_name;
 		use et_board_ops;
-		use et_board_ops.conductors;
+		use et_board_ops_conductors;
 		use et_net_names;
 		use et_device_name;
 		use et_axes;
@@ -733,7 +733,7 @@ package body et_cp_board_conductors is
 		procedure do_it is 
 			use et_net_names;
 			use et_pcb_signal_layers;
-			use et_board_ops.conductors;
+			use et_board_ops_conductors;
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
@@ -779,7 +779,7 @@ package body et_cp_board_conductors is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		use et_board_ops;
-		use et_board_ops.conductors;
+		use et_board_ops_conductors;
 		use et_pcb_signal_layers;
 		use et_net_names;
 		use et_directions;
@@ -937,7 +937,7 @@ package body et_cp_board_conductors is
 		procedure do_it is 
 			use et_net_names;
 			use et_pcb_signal_layers;
-			use et_board_ops.conductors;
+			use et_board_ops_conductors;
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (

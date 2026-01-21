@@ -82,10 +82,10 @@ use et_canvas_board.pac_canvas;
 
 with et_board_ops;						use et_board_ops;
 with et_board_ops_signal_layers;		use et_board_ops_signal_layers;
-with et_board_ops.assy_doc;
+with et_board_ops_assy_doc;
 with et_board_ops.silkscreen;
 with et_board_ops.stopmask;
-with et_board_ops.conductors;
+with et_board_ops_conductors;
 with et_board_ops.text;
 with et_modes.board;
 
@@ -783,7 +783,7 @@ package body et_canvas_board_texts is
 		case object_layer_category is
 			when LAYER_CAT_ASSY =>
 
-				et_board_ops.assy_doc.add_text (
+				et_board_ops_assy_doc.add_text (
 					module_cursor 	=> active_module,
 					face			=> object_face,
 					text			=> preliminary_text.text,
@@ -811,7 +811,7 @@ package body et_canvas_board_texts is
 				
 			when LAYER_CAT_CONDUCTOR =>
 			
-				et_board_ops.conductors.add_text (
+				et_board_ops_conductors.add_text (
 					module_cursor 	=> active_module,
 					signal_layer	=> object_signal_layer,
 					text			=> preliminary_text.text,
