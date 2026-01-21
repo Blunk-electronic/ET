@@ -45,7 +45,7 @@ with et_canvas_board;
 with et_pcb_sides;						use et_pcb_sides;
 
 with et_keepout;						use et_keepout;
-with et_board_ops.keepout;				use et_board_ops.keepout;
+with et_board_ops_keepout;				use et_board_ops_keepout;
 
 with et_logging;						use et_logging;
 with et_modes.board;

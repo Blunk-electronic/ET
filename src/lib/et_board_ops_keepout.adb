@@ -41,7 +41,7 @@
 with et_module;						use et_module;
 
 
-package body et_board_ops.keepout is
+package body et_board_ops_keepout is
 
 
 	procedure add_zone (
@@ -1015,7 +1015,7 @@ package body et_board_ops.keepout is
 	
 	
 	
-end et_board_ops.keepout;
+end et_board_ops_keepout;
 
 -- Soli Deo Gloria
 

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -71,7 +71,7 @@ with et_board_ops;						use et_board_ops;
 with et_board_ops_signal_layers;		use et_board_ops_signal_layers;
 with et_board_ops.outline;
 with et_board_ops_assy_doc;
-with et_board_ops.keepout;
+with et_board_ops_keepout;
 with et_board_ops.silkscreen;
 with et_board_ops.stopmask;
 with et_board_ops.stencil;
@@ -798,7 +798,7 @@ package body et_canvas_board_lines is
 		-- This procedure adds the given line
 		-- to the keepout layer:
 		procedure add_to_keepout is
-			use et_board_ops.keepout;
+			use et_board_ops_keepout;
 		begin
 			-- Add the line to the temporary contour:
 			append_segment (c, to_segment (line));

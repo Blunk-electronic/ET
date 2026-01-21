@@ -49,7 +49,7 @@ with et_pcb_sides;						use et_pcb_sides;
 with et_keywords;						use et_keywords;
 
 with et_board_geometry;					use et_board_geometry;
-with et_board_ops.keepout;				use et_board_ops.keepout;
+with et_board_ops_keepout;				use et_board_ops_keepout;
 with et_keywords;
 
 
