@@ -52,7 +52,7 @@ with et_object_status;					use et_object_status;
 with et_logging;						use et_logging;
 
 
-package et_board_ops.stencil is
+package et_board_ops_stencil is
 
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
@@ -446,7 +446,7 @@ package et_board_ops.stencil is
 	
 	
 											
-end et_board_ops.stencil;
+end et_board_ops_stencil;
 
 -- Soli Deo Gloria
 

@@ -39,7 +39,7 @@
 with et_module;							use et_module;
 
 
-package body et_board_ops.stencil is
+package body et_board_ops_stencil is
 
 	use pac_stencil_lines;
 	use pac_stencil_arcs;
@@ -2340,7 +2340,7 @@ package body et_board_ops.stencil is
 	end delete_object;
 	
 	
-end et_board_ops.stencil;
+end et_board_ops_stencil;
 	
 -- Soli Deo Gloria
 
