@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---             COMMAND PROCESSOR / BOARD / SIGNAL LAYER                     --
+--                    BOARD OPERATIONS / SIGNAL LAYERS                      --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -36,41 +36,81 @@
 --   history of changes:
 --
 --   ToDo: 
--- - propose arguments if command incomplete
+--
 --
 --
 
+
+with et_module_names;				use et_module_names;
 with et_generic_modules;			use et_generic_modules;
-with et_string_processing;			use et_string_processing;
+with et_module;						use et_module;
+
+with et_pcb_signal_layers;			use et_pcb_signal_layers;
+with et_pcb_stack;					use et_pcb_stack;
+
+with et_board_coordinates;			use et_board_coordinates;
+with et_board_geometry;				use et_board_geometry;
+use et_board_geometry.pac_geometry_2;
+
 with et_logging;					use et_logging;
-with et_cmd_sts;					use et_cmd_sts;
-with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 
 
 
-package et_cp_board_signal_layer is
+package et_board_ops_signal_layers is
 
-	-- This procedure parses a command to
-	-- add a new signal layer.
-	-- Example:
-	-- board demo add layer 0.035 0.2
-	procedure add_signal_layer (
-		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+	use pac_generic_modules;
+
+
+
+	
+	
+	-- Adds a signal layer to the board.
+	-- Renumbers the signal layers.							
+	procedure add_layer (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		layer			: in et_pcb_stack.type_layer; -- incl. conductor and dieelectic thickness
 		log_threshold	: in type_log_level);
 
 	
-	-- This procedure parses a command to
-	-- delete a signal layer.
-	-- Example: 
-	-- board demo delete layer 2
-	procedure delete_signal_layer (
-		module			: in pac_generic_modules.cursor;
-		cmd 			: in out type_single_cmd;
+	-- Returns the total number of signal layers used by the given module.
+	function get_layer_count (
+		module_cursor	: in pac_generic_modules.cursor) 
+		return type_signal_layer;
+
+	
+	-- Tests whether the given layer is allowed according to current layer stack
+	-- of the given board.
+	procedure test_layer (
+		module_cursor	: in pac_generic_modules.cursor;
+		layer			: in type_signal_layer);
+
+	
+	-- Deletes a signal layer in the board.
+	-- Renumbers the signal layers.							   
+	procedure delete_layer (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		layer			: in type_signal_layer;
 		log_threshold	: in type_log_level);
 
 	
-end et_cp_board_signal_layer;
+	
+	
+	-- Tests the given set of signal layers whether each of them is available
+	-- according to the current layer stack of the given module.
+	procedure test_layers (
+		module_cursor	: in pac_generic_modules.cursor;
+		layers 			: in pac_signal_layers.set);	
+
+
+
+	-- Returns the index of the deepest conductor layer of the given module:
+	function get_deepest_conductor_layer (
+		module	: in pac_generic_modules.cursor)
+		return type_signal_layer;
+
+
+	
+end et_board_ops_signal_layers;
 
 -- Soli Deo Gloria
 

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -38,6 +38,7 @@
 --   ToDo: 
 
 
+with et_board_text;						use et_board_text;
 with et_silkscreen;						use et_silkscreen;
 with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
 
@@ -47,7 +48,6 @@ package et_board_ops.silkscreen is
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
 	
-	use et_board_text;
 	use pac_text_board;
 	use pac_text_board_vectorized;
 

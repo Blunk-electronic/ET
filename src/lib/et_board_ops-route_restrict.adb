@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,6 +35,9 @@
 --
 --   history of changes:
 --
+
+with et_pcb_signal_layers;			use et_pcb_signal_layers;
+with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 
 
 package body et_board_ops.route_restrict is

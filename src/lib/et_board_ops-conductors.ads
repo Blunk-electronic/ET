@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,12 +37,14 @@
 --
 --   ToDo: 
 
+
+with et_board_text;						use et_board_text;
 with et_conductor_segment.boards;		use et_conductor_segment.boards;
 with et_fill_zones.boards;				use et_fill_zones.boards;
 with et_conductor_text.boards;			use et_conductor_text.boards;
 with et_pcb_placeholders.conductor;		use et_pcb_placeholders.conductor;
 with et_device_name;					use et_device_name;
-
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
 
 
 package et_board_ops.conductors is
@@ -50,7 +52,6 @@ package et_board_ops.conductors is
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
 
-	use et_board_text;
 	use pac_text_board;
 	use pac_text_board_vectorized;
 	use pac_net_name;

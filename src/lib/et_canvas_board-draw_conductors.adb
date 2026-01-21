@@ -73,6 +73,9 @@ with et_mirroring;
 with et_pcb_placeholders.conductor;	use et_pcb_placeholders.conductor;
 with et_conductors_floating_board;	use et_conductors_floating_board;
 
+with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
+
+
 
 separate (et_canvas_board)
 
@@ -155,7 +158,7 @@ procedure draw_conductors is
 
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer	: constant type_signal_layer := 
-		et_board_ops.get_deepest_conductor_layer (active_module);
+		get_deepest_conductor_layer (active_module);
 
 	
 	function is_double_layer_board return boolean is begin

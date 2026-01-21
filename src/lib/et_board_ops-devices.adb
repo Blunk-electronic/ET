@@ -38,6 +38,8 @@
 
 with ada.strings.unbounded;
 
+with et_board_text;						use et_board_text;
+
 with et_conventions;
 with et_assembly_variants;
 with et_netlists;

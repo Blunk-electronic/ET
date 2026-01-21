@@ -67,6 +67,7 @@ with gtk.button;						use gtk.button;
 with et_generic_modules;				use et_generic_modules;
 
 with et_board_ops.conductors;			use et_board_ops.conductors;
+with et_board_ops_signal_layers;		use et_board_ops_signal_layers;
 with et_modes.board;
 
 with et_nets;
@@ -86,6 +87,8 @@ with et_object_status;
 
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 with et_ripup;
+
+
 
 
 package body et_canvas_board_tracks is

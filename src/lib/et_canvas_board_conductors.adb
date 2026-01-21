@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -44,6 +44,7 @@ with et_conductor_text.boards;
 with et_conductor_segment.boards;			use et_conductor_segment.boards;
 with et_board_ops;
 with et_board_ops.conductors;				use et_board_ops.conductors;
+with et_board_ops_signal_layers;			use et_board_ops_signal_layers;
 with et_logging;							use et_logging;
 with et_modes.board;
 with et_display.board;

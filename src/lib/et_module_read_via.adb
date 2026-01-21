@@ -60,6 +60,8 @@ with et_drills;						use et_drills;
 
 with et_module_read_nets;
 
+with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
+
 
 
 package body et_module_read_via is
@@ -84,7 +86,6 @@ package body et_module_read_via is
 		use et_board_geometry.pac_geometry_2;
 		use et_vias;
 		use et_pcb_stack;
-		use et_board_ops;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag

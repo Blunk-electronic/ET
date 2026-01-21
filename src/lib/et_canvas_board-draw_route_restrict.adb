@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -43,6 +43,8 @@ with et_display.board;				use et_display.board;
 with et_colors;						use et_colors;
 with et_route_restrict.boards;		use et_route_restrict.boards;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
+
+with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 
 
 separate (et_canvas_board)
@@ -162,7 +164,7 @@ procedure draw_route_restrict is
 
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer	: constant type_signal_layer := 
-		et_board_ops.get_deepest_conductor_layer (active_module);
+		get_deepest_conductor_layer (active_module);
 	
 
 	

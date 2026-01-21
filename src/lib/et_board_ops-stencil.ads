@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,15 +37,15 @@
 --
 --   ToDo: 
 
+with et_board_text;						use et_board_text;
+with et_stencil;						use et_stencil;
 
-with et_stencil;				use et_stencil;
 
 package et_board_ops.stencil is
 
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
 
-	use et_board_text;
 	
 
 -- LINES:

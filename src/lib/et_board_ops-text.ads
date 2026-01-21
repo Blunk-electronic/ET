@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,14 +37,15 @@
 --
 --   ToDo: 
 
-with et_board_layer_category;		use et_board_layer_category;
+with et_board_layer_category;			use et_board_layer_category;
 
 with et_stopmask;
 with et_silkscreen;
 with et_assy_doc;
 
+with et_board_text;						use et_board_text;
 with et_text;
-with et_text_content;				use et_text_content;
+with et_text_content;					use et_text_content;
 
 with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
 
@@ -52,8 +53,6 @@ with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
 
 package et_board_ops.text is
 
-
-	use et_board_text;
 	use pac_text_board;
 
 	

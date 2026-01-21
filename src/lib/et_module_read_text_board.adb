@@ -73,7 +73,7 @@ with et_stopmask;
 with et_silkscreen;
 with et_assy_doc;
 
-with et_board_ops;
+with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 
 with et_file_sections;				use et_file_sections;
 
@@ -560,7 +560,6 @@ package body et_module_read_text_board is
 		is
 			use et_conductor_text.boards;
 			use pac_conductor_texts_board;
-			use et_board_ops;
 			use et_mirroring;
 			
 			mirror : type_mirror;

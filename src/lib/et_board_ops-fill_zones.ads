@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -48,6 +48,7 @@
 with et_devices_electrical;				use et_devices_electrical;
 with et_thermal_relief;					use et_thermal_relief;
 with et_fill_zones;						use et_fill_zones;
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
 
 
 package et_board_ops.fill_zones is

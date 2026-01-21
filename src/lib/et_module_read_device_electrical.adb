@@ -85,7 +85,7 @@ with et_conventions;
 
 with et_schematic_ops;
 with et_schematic_ops.units;
-with et_board_ops;
+with et_board_ops_signal_layers;		use et_board_ops_signal_layers;
 
 with et_device_placeholders;
 with et_device_placeholders.packages;
@@ -286,7 +286,6 @@ package body et_module_read_device_electrical is
 			end get_package_name;
 
 
-			use et_board_ops;
 			use et_device_read;
 			use et_device_appearance;
 			use et_device_purpose;

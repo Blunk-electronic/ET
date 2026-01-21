@@ -57,11 +57,14 @@ with et_net_ports;
 with et_devices_electrical.packages;
 with et_devices_non_electrical;
 
+with et_board_text;
 with et_conductor_text.boards;
 with et_conductor_segment.boards;
 with et_contour_to_polygon;
 with et_vias;
 with et_route;
+
+with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 
 
 

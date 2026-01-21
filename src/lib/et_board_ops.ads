@@ -69,18 +69,12 @@ with et_assembly_technology;		use et_assembly_technology;
 with et_terminal_name;				use et_terminal_name;
 with et_terminals;					use et_terminals;
 
-
-with et_pcb_signal_layers;			use et_pcb_signal_layers;
-with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_sides;					use et_pcb_sides;
 with et_board_layer_category;		use et_board_layer_category;
 with et_board_coordinates;			use et_board_coordinates;
 with et_board_geometry;				use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 
-with et_board_text;					use et_board_text;
-
-with et_pick_and_place;
 with et_design_rules_board;			use et_design_rules_board;
 
 with et_exceptions;					use et_exceptions;
@@ -93,53 +87,6 @@ package et_board_ops is
 
 	use pac_generic_modules;
 
-
-
-	
-	
-	-- Adds a signal layer to the board.
-	-- Renumbers the signal layers.							
-	procedure add_layer (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		layer			: in et_pcb_stack.type_layer; -- incl. conductor and dieelectic thickness
-		log_threshold	: in type_log_level);
-
-	
-	-- Returns the total number of signal layers used by the given module.
-	function get_layer_count (
-		module_cursor	: in pac_generic_modules.cursor) 
-		return type_signal_layer;
-
-	
-	-- Tests whether the given layer is allowed according to current layer stack
-	-- of the given board.
-	procedure test_layer (
-		module_cursor	: in pac_generic_modules.cursor;
-		layer			: in type_signal_layer);
-
-	
-	-- Deletes a signal layer in the board.
-	-- Renumbers the signal layers.							   
-	procedure delete_layer (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		layer			: in type_signal_layer;
-		log_threshold	: in type_log_level);
-
-	
-	
-	
-	-- Tests the given set of signal layers whether each of them is available
-	-- according to the current layer stack of the given module.
-	procedure test_layers (
-		module_cursor	: in pac_generic_modules.cursor;
-		layers 			: in pac_signal_layers.set);	
-
-
-
-	-- Returns the index of the deepest conductor layer of the given module:
-	function get_deepest_conductor_layer (
-		module	: in pac_generic_modules.cursor)
-		return type_signal_layer;
 
 	
 	function get_user_settings (

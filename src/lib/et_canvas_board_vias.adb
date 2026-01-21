@@ -72,6 +72,7 @@ with gtk.text_iter;
 with et_generic_modules;			use et_generic_modules;
 with et_schematic_ops.nets;
 with et_board_ops.vias;				use et_board_ops.vias;
+with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 with et_canvas_board;
 with et_canvas_board_tracks;
 

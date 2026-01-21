@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -38,14 +38,13 @@
 --   ToDo: 
 --   
 
-
-with et_board_holes;				use et_board_holes;
-with et_board_outline;				use et_board_outline;
+with et_board_text;						use et_board_text;
+with et_board_holes;					use et_board_holes;
+with et_board_outline;					use et_board_outline;
 
 
 package et_board_ops.outline is
 
-	use et_board_text;
 	use pac_contours;
 	
 
