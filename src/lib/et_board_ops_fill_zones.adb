@@ -74,7 +74,7 @@ with et_module;						use et_module;
 with et_exceptions;					use et_exceptions;
 
 
-package body et_board_ops.fill_zones is
+package body et_board_ops_fill_zones is
 
 
 	
@@ -2609,7 +2609,7 @@ package body et_board_ops.fill_zones is
 	end clear_zones;
 
 	
-end et_board_ops.fill_zones;
+end et_board_ops_fill_zones;
 	
 -- Soli Deo Gloria
 

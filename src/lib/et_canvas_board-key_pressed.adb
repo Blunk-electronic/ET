@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -39,7 +39,7 @@
 with et_canvas_tool;					use et_canvas_tool;
 
 with et_board_ops_conductors;			use et_board_ops_conductors;
-with et_board_ops.fill_zones;
+with et_board_ops_fill_zones;
 with et_board_ops.ratsnest;
 with et_board_verb_noun_keys;			use et_board_verb_noun_keys;
 
@@ -123,7 +123,7 @@ is
 	
 
 	procedure clear is 
-		use et_board_ops.fill_zones;
+		use et_board_ops_fill_zones;
 	begin
 		case key is
 			when key_noun_zone =>
@@ -358,7 +358,7 @@ is
 	
 	
 	procedure fill is 
-		use et_board_ops.fill_zones;
+		use et_board_ops_fill_zones;
 	begin
 		case key is
 			when key_noun_zone =>

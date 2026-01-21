@@ -62,7 +62,7 @@ with et_terminals;						use et_terminals;
 with et_logging;						use et_logging;
 
 
-package et_board_ops.fill_zones is
+package et_board_ops_fill_zones is
 
 	use pac_generic_modules;
 	use pac_geometry_brd;
@@ -424,7 +424,7 @@ package et_board_ops.fill_zones is
 		nets 			: in pac_net_names.list := no_net_names); -- GND, GNDA, P3V3, ...
 
 	
-end et_board_ops.fill_zones;
+end et_board_ops_fill_zones;
 
 -- Soli Deo Gloria
 

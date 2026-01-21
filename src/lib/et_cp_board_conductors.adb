@@ -63,7 +63,7 @@ with et_keywords;						use et_keywords;
 with et_ratsnest;
 with et_board_ops.ratsnest;
 with et_board_ops_user_settings;		use et_board_ops_user_settings;
-with et_board_ops.fill_zones;
+with et_board_ops_fill_zones;
 with et_board_ops_conductors;
 
 with et_pcb_signal_layers;
@@ -321,7 +321,7 @@ package body et_cp_board_conductors is
 
 		
 		procedure make_fill_zone is
-			use et_board_ops.fill_zones;
+			use et_board_ops_fill_zones;
 			
 			-- Extract from the given command the polygon arguments (everything after "zone"):
 			arguments : constant type_fields_of_line := 
@@ -796,7 +796,7 @@ package body et_cp_board_conductors is
 		procedure make_fill_zone is
 			use et_fill_zones;
 			use et_fill_zones.boards;
-			use et_board_ops.fill_zones;
+			use et_board_ops_fill_zones;
 			
 			arguments : constant type_fields_of_line := 
 				remove_field (get_fields (cmd), 1, 6);
@@ -983,7 +983,7 @@ package body et_cp_board_conductors is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		use et_canvas_board.pac_canvas;
-		use et_board_ops.fill_zones;
+		use et_board_ops_fill_zones;
 		nets : pac_net_names.list;
 
 	begin
@@ -1029,7 +1029,7 @@ package body et_cp_board_conductors is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
 		use et_canvas_board.pac_canvas;
-		use et_board_ops.fill_zones;
+		use et_board_ops_fill_zones;
 		nets : pac_net_names.list;
 	begin
 		-- CS log message
