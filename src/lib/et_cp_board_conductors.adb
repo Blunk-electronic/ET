@@ -59,9 +59,13 @@ with et_keywords;						use et_keywords;
 with et_module_board_user_settings;
 with et_board_geometry;					use et_board_geometry;
 with et_keywords;						use et_keywords;
-with et_board_ops;
+
+with et_ratsnest;
+with et_board_ops.ratsnest;
+with et_board_ops_user_settings;		use et_board_ops_user_settings;
 with et_board_ops.fill_zones;
 with et_board_ops.conductors;
+
 with et_pcb_signal_layers;
 with et_net_names;						use et_net_names;
 with et_device_name;
@@ -71,8 +75,7 @@ with et_directions;
 
 with et_canvas_board;
 
-with et_ratsnest;
-with et_board_ops.ratsnest;
+
 
 
 package body et_cp_board_conductors is

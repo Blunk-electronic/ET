@@ -88,10 +88,8 @@ package et_board_ops is
 	use pac_generic_modules;
 
 
-	
-	function get_user_settings (
-		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return type_user_settings;
+	procedure dummy;
+
 
 	
 end et_board_ops;

@@ -56,6 +56,7 @@ with et_board_ops;						use et_board_ops;
 with et_board_ops.vias;
 with et_board_ops_signal_layers;		use et_board_ops_signal_layers;
 with et_module_board_user_settings;		use et_module_board_user_settings;
+with et_board_ops_user_settings;		use et_board_ops_user_settings;
 with et_net_names;
 with et_drills;
 with et_design_rules_board;

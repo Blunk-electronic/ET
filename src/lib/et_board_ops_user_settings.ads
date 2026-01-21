@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                           BOARD OPERATIONS                               --
+--                     BOARD OPERATIONS / USER SETTING                      --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,20 +35,37 @@
 --
 --   history of changes:
 --
+-- To Do: 
+--
+--
+--
 
 
-package body et_board_ops is
+
+with et_generic_modules;			use et_generic_modules;
+with et_module_board_user_settings;	use et_module_board_user_settings;
+
+-- with et_board_coordinates;			use et_board_coordinates;
+-- with et_board_geometry;				use et_board_geometry;
+-- use et_board_geometry.pac_geometry_2;
+
+with et_logging;					use et_logging;
 
 
+package et_board_ops_user_settings is
 
-	procedure dummy is begin null; end;
+	use pac_generic_modules;
+
 
 	
+	function get_user_settings (
+		module	: in pac_generic_modules.cursor) -- the module like motor_driver
+		return type_user_settings;
 
-end et_board_ops;
 	
+end et_board_ops_user_settings;
+
 -- Soli Deo Gloria
-
 
 -- For God so loved the world that he gave 
 -- his one and only Son, that whoever believes in him 

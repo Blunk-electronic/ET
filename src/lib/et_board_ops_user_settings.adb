@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                           BOARD OPERATIONS                               --
+--                     BOARD OPERATIONS / USER SETTING                      --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,17 +35,46 @@
 --
 --   history of changes:
 --
+-- To Do: 
+--
+--
+--
 
 
-package body et_board_ops is
+with ada.text_io;					use ada.text_io;
+-- with ada.strings;					use ada.strings;
+-- with ada.exceptions;				use ada.exceptions;
+
+with et_module;						use et_module;
+with et_module_names;				use et_module_names;
+-- with et_string_processing;			use et_string_processing;
+
+
+package body et_board_ops_user_settings is
 
 
 
-	procedure dummy is begin null; end;
+	function get_user_settings (
+		module	: in pac_generic_modules.cursor) -- the module like motor_driver
+		return type_user_settings
+	is
+		settings : type_user_settings; -- to be returned
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is begin
+			settings := module.board.user_settings;
+		end;
+	begin
+		pac_generic_modules.query_element (module, query_module'access);
+		
+		return settings;
+	end get_user_settings;
 
 	
 
-end et_board_ops;
+end et_board_ops_user_settings;
 	
 -- Soli Deo Gloria
 
