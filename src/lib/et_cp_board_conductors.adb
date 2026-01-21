@@ -61,7 +61,7 @@ with et_board_geometry;					use et_board_geometry;
 with et_keywords;						use et_keywords;
 
 with et_ratsnest;
-with et_board_ops.ratsnest;
+with et_board_ops_ratsnest;
 with et_board_ops_user_settings;		use et_board_ops_user_settings;
 with et_board_ops_fill_zones;
 with et_board_ops_conductors;
@@ -304,7 +304,6 @@ package body et_cp_board_conductors is
 		use et_pcb_signal_layers;
 		use et_terminals;
 		use et_terminal_name;
-		use et_board_ops;
 		use et_board_ops_conductors;
 		use et_net_names;
 		use et_device_name;
@@ -778,7 +777,6 @@ package body et_cp_board_conductors is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		use et_board_ops;
 		use et_board_ops_conductors;
 		use et_pcb_signal_layers;
 		use et_net_names;
@@ -1073,7 +1071,7 @@ package body et_cp_board_conductors is
 
 		use et_canvas_board.pac_canvas;
 		use et_ratsnest;
-		use et_board_ops.ratsnest;
+		use et_board_ops_ratsnest;
 	begin
 		-- CS log message
 		

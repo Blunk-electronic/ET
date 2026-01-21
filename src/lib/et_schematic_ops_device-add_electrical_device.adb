@@ -49,7 +49,7 @@ with et_device_model;					use et_device_model;
 with et_device_appearance;				use et_device_appearance;
 with et_device_library.packages;		use et_device_library.packages;
 with et_device_library.units;			use et_device_library.units;
-with et_board_ops.ratsnest;				use et_board_ops.ratsnest;
+with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
 
 
 separate (et_schematic_ops_device)

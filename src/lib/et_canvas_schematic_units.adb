@@ -69,7 +69,7 @@ with et_device_value;					use et_device_value;
 with et_device_property_level;
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
 with et_devices_electrical.units;		use et_devices_electrical.units;
-with et_board_ops.ratsnest;
+-- with et_board_ops_ratsnest;
 with et_board_ops_groups;
 with et_schematic_ops.groups;
 with et_schematic_ops_device;		use et_schematic_ops_device;

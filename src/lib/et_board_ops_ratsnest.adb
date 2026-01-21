@@ -44,7 +44,7 @@ with et_board_ops_devices;				use et_board_ops_devices;
 with et_board_ops.vias;					use et_board_ops.vias;
 
 
-package body et_board_ops.ratsnest is
+package body et_board_ops_ratsnest is
 
 	
 	use pac_nets;
@@ -620,7 +620,7 @@ package body et_board_ops.ratsnest is
 	
 	
 											
-end et_board_ops.ratsnest;
+end et_board_ops_ratsnest;
 
 -- Soli Deo Gloria
 

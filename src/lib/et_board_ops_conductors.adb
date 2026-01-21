@@ -44,7 +44,7 @@ with et_schematic_ops_device;		use et_schematic_ops_device;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
 with et_schematic_ops;				use et_schematic_ops;
 with et_board_ops_devices;			use et_board_ops_devices;
-with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
+with et_board_ops_ratsnest;			use et_board_ops_ratsnest;
 with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 
 with et_devices_electrical;

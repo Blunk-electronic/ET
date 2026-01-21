@@ -49,7 +49,6 @@ with et_module_names;				use et_module_names;
 with et_modes.schematic;			use et_modes.schematic;
 with et_netlists;
 with et_net_class;
-with et_board_ops.ratsnest;
 with et_schematic_ops.groups;
 
 with et_undo_redo;

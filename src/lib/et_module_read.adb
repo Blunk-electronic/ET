@@ -60,7 +60,7 @@ with et_module;							use et_module;
 with et_generic_modules;				use et_generic_modules;
 -- with et_module_board;				use et_module_board;
 
-with et_board_ops.ratsnest;
+with et_board_ops_ratsnest;
 
 with et_board_layer_category;
 with et_submodules;
@@ -1932,7 +1932,7 @@ package body et_module_read is
 			close (file_handle);
 
 			-- Compute the ratsnest (airwires):
-			et_board_ops.ratsnest.update_ratsnest (module_cursor, log_threshold + 2);
+			et_board_ops_ratsnest.update_ratsnest (module_cursor, log_threshold + 2);
 		end read_module_file;
 
 

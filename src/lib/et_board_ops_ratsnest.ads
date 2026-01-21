@@ -56,7 +56,7 @@ with et_object_status;				use et_object_status;
 with et_logging;					use et_logging;
 
 
-package et_board_ops.ratsnest is
+package et_board_ops_ratsnest is
 
 	use pac_generic_modules;
 	use pac_net_name;
@@ -154,7 +154,7 @@ package et_board_ops.ratsnest is
 		log_threshold	: in type_log_level);
 	
 											
-end et_board_ops.ratsnest;
+end et_board_ops_ratsnest;
 
 -- Soli Deo Gloria
 

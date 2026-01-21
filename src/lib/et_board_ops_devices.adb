@@ -64,7 +64,7 @@ with et_package_write;
 
 with et_module;							use et_module;
 with et_board_ops_groups;
-with et_board_ops.ratsnest;				use et_board_ops.ratsnest;
+with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
 with et_mirroring;						use et_mirroring;
 
 

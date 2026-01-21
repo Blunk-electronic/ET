@@ -40,7 +40,7 @@ with et_canvas_tool;					use et_canvas_tool;
 
 with et_board_ops_conductors;			use et_board_ops_conductors;
 with et_board_ops_fill_zones;
-with et_board_ops.ratsnest;
+with et_board_ops_ratsnest;
 with et_board_verb_noun_keys;			use et_board_verb_noun_keys;
 
 with et_ratsnest;
@@ -872,7 +872,7 @@ is
 	
 	
 	procedure update is 
-		use et_board_ops.ratsnest;
+		use et_board_ops_ratsnest;
 		use et_ratsnest;
 	begin
 		case key is

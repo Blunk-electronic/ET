@@ -357,8 +357,6 @@ package body et_canvas_board_tracks is
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
-
-			use et_board_ops;
 		begin
 			gtk_new_vbox (box_signal_layer, homogeneous => false);
 			pack_start (box_v4, box_signal_layer, padding => box_properties_spacing);
@@ -491,13 +489,13 @@ package body et_canvas_board_tracks is
 		
 		procedure do_it is
 			use et_object_status;
-			use et_board_ops.ratsnest.pac_objects;
+			use et_board_ops_ratsnest.pac_objects;
 			
 			-- Gather all proposed airwire objects:
-			proposed_objects : constant et_board_ops.ratsnest.pac_objects.list := 
+			proposed_objects : constant et_board_ops_ratsnest.pac_objects.list := 
 				get_objects (active_module, PROPOSED, log_threshold + 1);
 
-			proposed_object : et_board_ops.ratsnest.pac_objects.cursor;
+			proposed_object : et_board_ops_ratsnest.pac_objects.cursor;
 
 			-- We start with the first airwire that is currently selected:
 			selected_object : type_object_airwire := 
@@ -531,7 +529,7 @@ package body et_canvas_board_tracks is
 
 			-- If end of list reached, then proceed at 
 			-- the begin of the list:
-			if proposed_object = et_board_ops.ratsnest.pac_objects.no_element then
+			if proposed_object = et_board_ops_ratsnest.pac_objects.no_element then
 				proposed_object := proposed_objects.first;
 			end if;
 			

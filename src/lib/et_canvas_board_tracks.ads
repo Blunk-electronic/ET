@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -53,7 +53,7 @@ with et_conductor_segment.boards;		use et_conductor_segment.boards;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_net_names;						use et_net_names;
 
-with et_board_ops.ratsnest;				use et_board_ops.ratsnest;
+with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
 with et_ratsnest;						use et_ratsnest;
 
 
