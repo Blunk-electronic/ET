@@ -76,7 +76,7 @@ with et_board_ops.silkscreen;
 with et_board_ops.stopmask;
 with et_board_ops.stencil;
 with et_board_ops_conductors;
-with et_board_ops.route_restrict;
+with et_board_ops_route_restrict;
 with et_board_ops.via_restrict;
 with et_modes.board;
 
@@ -763,7 +763,7 @@ package body et_canvas_board_lines is
 		-- This procedure adds the given line to 
 		-- the route restrict layers:
 		procedure add_to_route_restrict is
-			use et_board_ops.route_restrict;
+			use et_board_ops_route_restrict;
 		begin
 			draw_route_restrict_line (
 				module_name	=> pac_generic_modules.key (active_module),

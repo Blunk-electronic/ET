@@ -47,7 +47,7 @@ with et_route_restrict.boards;			use et_route_restrict.boards;
 with et_logging;						use et_logging;
 
 
-package et_board_ops.route_restrict is
+package et_board_ops_route_restrict is
 
 
 	use pac_generic_modules;
@@ -94,7 +94,7 @@ package et_board_ops.route_restrict is
 
 
 	
-end et_board_ops.route_restrict;
+end et_board_ops_route_restrict;
 
 -- Soli Deo Gloria
 

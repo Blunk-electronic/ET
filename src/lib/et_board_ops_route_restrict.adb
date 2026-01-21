@@ -41,7 +41,7 @@ with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 with et_module;						use et_module;
 
 
-package body et_board_ops.route_restrict is
+package body et_board_ops_route_restrict is
 
 	
 	
@@ -268,7 +268,7 @@ package body et_board_ops.route_restrict is
 
 
 	
-end et_board_ops.route_restrict;
+end et_board_ops_route_restrict;
 	
 -- Soli Deo Gloria
 
