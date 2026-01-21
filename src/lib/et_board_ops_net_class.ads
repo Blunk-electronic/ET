@@ -47,7 +47,7 @@ with et_net_class_name;				use et_net_class_name;
 with et_logging;					use et_logging;
 
 
-package et_board_ops.net_class is
+package et_board_ops_net_class is
 
 	use pac_generic_modules;
 
@@ -93,7 +93,7 @@ package et_board_ops.net_class is
 
 
 	
-end et_board_ops.net_class;
+end et_board_ops_net_class;
 
 -- Soli Deo Gloria
 

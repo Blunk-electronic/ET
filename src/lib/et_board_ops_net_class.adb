@@ -43,7 +43,7 @@ with et_net_classes;				use et_net_classes;
 with et_module;						use et_module;
 
 
-package body et_board_ops.net_class is
+package body et_board_ops_net_class is
 
 
 
@@ -241,7 +241,7 @@ package body et_board_ops.net_class is
 	
 	
 
-end et_board_ops.net_class;
+end et_board_ops_net_class;
 	
 -- Soli Deo Gloria
 

@@ -67,7 +67,7 @@ with et_schematic_ops.nets;				use et_schematic_ops.nets;
 -- with et_assembly_variants;				use et_assembly_variants;
 with et_canvas_schematic;
 -- with et_module_instance;				use et_module_instance;
-with et_board_ops.net_class;
+with et_board_ops_net_class;
 with et_canvas_schematic_nets;
 with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
 
@@ -336,7 +336,7 @@ package body et_cp_schematic_nets is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
-		use et_board_ops.net_class;
+		use et_board_ops_net_class;
 		use et_net_class_name;
 		
 		-- Contains the number of fields given by the caller of this procedure:

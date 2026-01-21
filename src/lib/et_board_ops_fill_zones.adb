@@ -48,7 +48,7 @@ with et_board_holes;
 with et_board_outline;
 with et_board_ops.outline;
 with et_board_ops_devices;
-with et_board_ops.net_class;
+with et_board_ops_net_class;
 with et_fill_zones.boards;
 with et_terminal_hole;				use et_terminal_hole;
 with et_net_class;
@@ -1781,7 +1781,7 @@ package body et_board_ops_fill_zones is
 			-- This procedure queries the net indicated by
 			-- cursor "net_cursor":
 			procedure query_net is 
-				use et_board_ops.net_class;
+				use et_board_ops_net_class;
 				use et_net_class_name;
 
 				
