@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -83,7 +83,7 @@ use et_canvas_board.pac_canvas;
 with et_board_ops;						use et_board_ops;
 with et_board_ops_signal_layers;		use et_board_ops_signal_layers;
 with et_board_ops_assy_doc;
-with et_board_ops.silkscreen;
+with et_board_ops_silkscreen;
 with et_board_ops.stopmask;
 with et_board_ops_conductors;
 with et_board_ops.text;
@@ -793,7 +793,7 @@ package body et_canvas_board_texts is
 
 			when LAYER_CAT_SILKSCREEN =>
 
-				et_board_ops.silkscreen.add_text (
+				et_board_ops_silkscreen.add_text (
 					module_cursor 	=> active_module,
 					face			=> object_face,
 					text			=> preliminary_text.text,

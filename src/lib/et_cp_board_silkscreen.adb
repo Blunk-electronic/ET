@@ -51,7 +51,7 @@ with et_pcb_sides;						use et_pcb_sides;
 with et_keywords;						use et_keywords;
 
 with et_board_geometry;					use et_board_geometry;
-with et_board_ops.silkscreen;			use et_board_ops.silkscreen;
+with et_board_ops_silkscreen;			use et_board_ops_silkscreen;
 with et_keywords;
 
 

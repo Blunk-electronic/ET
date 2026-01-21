@@ -42,7 +42,7 @@ with et_pcb_placeholders;				use et_pcb_placeholders;
 with et_module;							use et_module;
 
 
-package body et_board_ops.silkscreen is
+package body et_board_ops_silkscreen is
 	
 	use pac_silk_lines;
 	use pac_silk_arcs;
@@ -3532,7 +3532,7 @@ package body et_board_ops.silkscreen is
 
 	
 	
-end et_board_ops.silkscreen;
+end et_board_ops_silkscreen;
 	
 -- Soli Deo Gloria
 

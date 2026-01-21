@@ -63,7 +63,7 @@ with et_display.board;
 with et_colors.board;
 with et_board_ops_grid;
 with et_board_ops_assy_doc;
-with et_board_ops.silkscreen;
+-- with et_board_ops.silkscreen;
 with et_board_ops.stopmask;
 with et_board_ops.stencil;
 -- with et_board_ops_ratsnest;

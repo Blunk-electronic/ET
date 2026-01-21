@@ -56,7 +56,7 @@ with et_logging;						use et_logging;
 with et_logging;						use et_logging;
 
 
-package et_board_ops.silkscreen is
+package et_board_ops_silkscreen is
 	
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
@@ -635,7 +635,7 @@ package et_board_ops.silkscreen is
 
 
 	
-end et_board_ops.silkscreen;
+end et_board_ops_silkscreen;
 
 -- Soli Deo Gloria
 

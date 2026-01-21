@@ -72,7 +72,7 @@ with et_board_ops_signal_layers;		use et_board_ops_signal_layers;
 with et_board_ops_outline;
 with et_board_ops_assy_doc;
 with et_board_ops_keepout;
-with et_board_ops.silkscreen;
+with et_board_ops_silkscreen;
 with et_board_ops.stopmask;
 with et_board_ops.stencil;
 with et_board_ops_conductors;
@@ -663,7 +663,7 @@ package body et_canvas_board_lines is
 		-- the lines (which hava a certain width) or to a zone
 		-- in the silkscreen:
 		procedure add_to_silkscreen is
-			use et_board_ops.silkscreen;
+			use et_board_ops_silkscreen;
 		begin
 			-- If the linewidth (given by the operator via the GUI)
 			-- is non-zero, then the given line is to be added as

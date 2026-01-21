@@ -57,7 +57,7 @@ with et_pcb_signal_layers;
 with et_board_geometry;					use et_board_geometry;
 
 with et_board_ops_assy_doc;
-with et_board_ops.silkscreen;
+with et_board_ops_silkscreen;
 with et_board_ops.stopmask;
 with et_board_ops_conductors;
 
@@ -109,7 +109,7 @@ package body et_cp_board_text is
 
 
 		procedure place_in_silkscreen is
-			use et_board_ops.silkscreen;
+			use et_board_ops_silkscreen;
 		begin
 			add_text (
 				module_cursor 	=> module,
@@ -260,7 +260,7 @@ package body et_cp_board_text is
 
 
 		procedure place_in_silkscreen is
-			use et_board_ops.silkscreen;
+			use et_board_ops_silkscreen;
 			ph : type_placeholder_non_conductor; -- non conductor layers
 		begin
 			ph.meaning := to_meaning (get_field (cmd, 12));

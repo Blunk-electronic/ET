@@ -45,7 +45,7 @@ with et_canvas_board;
 with et_pcb_sides;						use et_pcb_sides;
 
 with et_silkscreen;						use et_silkscreen;
-with et_board_ops.silkscreen;			use et_board_ops.silkscreen;
+with et_board_ops_silkscreen;			use et_board_ops_silkscreen;
 
 with et_logging;						use et_logging;
 with et_modes.board;
