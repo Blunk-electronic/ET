@@ -63,7 +63,7 @@ with et_board_ops_conductors;
 
 with et_text_content;					use et_text_content;
 with et_board_text;						use et_board_text;
-with et_board_ops.text;					use et_board_ops.text;
+with et_board_ops_text;					use et_board_ops_text;
 
 with et_pcb_placeholders;
 with et_pcb_placeholders.conductor;

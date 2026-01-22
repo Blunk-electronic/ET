@@ -53,7 +53,7 @@ with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
 
 
 
-package et_board_ops.text is
+package et_board_ops_text is
 
 	use pac_generic_modules;
 	use pac_text_board;
@@ -68,7 +68,7 @@ package et_board_ops.text is
 	
 	
 											
-end et_board_ops.text;
+end et_board_ops_text;
 
 -- Soli Deo Gloria
 

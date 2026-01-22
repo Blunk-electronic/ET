@@ -58,7 +58,7 @@ with et_display.board;				use et_display.board;
 with et_colors;						use et_colors;
 
 with et_text_content;				use et_text_content;
-with et_board_ops.text;
+with et_board_ops_text;
 
 with et_modes.board;				use et_modes.board;
 
@@ -622,7 +622,7 @@ procedure draw_conductors is
 	procedure draw_placeholder (
 		placeholder : in type_placeholder_conductor) 
 	is 
-		use et_board_ops.text;
+		use et_board_ops_text;
 		use pac_text_vectorized;		
 		use pac_draw_text;
 		use et_colors.board;

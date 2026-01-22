@@ -44,7 +44,7 @@ with et_module;							use et_module;
 with et_meta;
 
 
-package body et_board_ops.text is
+package body et_board_ops_text is
 
 	
 	function to_placeholder_content (
@@ -78,7 +78,7 @@ package body et_board_ops.text is
 	end to_placeholder_content;
 	
 
-end et_board_ops.text;
+end et_board_ops_text;
 	
 -- Soli Deo Gloria
 

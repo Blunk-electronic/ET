@@ -86,7 +86,6 @@ with et_board_ops_assy_doc;
 with et_board_ops_silkscreen;
 with et_board_ops_stopmask;
 with et_board_ops_conductors;
-with et_board_ops.text;
 with et_modes.board;
 
 with et_display;						use et_display;
