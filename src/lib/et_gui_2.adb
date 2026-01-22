@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -47,7 +47,7 @@ with et_schematic_coordinates;
 with et_canvas_board;
 with et_board_geometry;
 
-with et_schematic_ops.grid;
+with et_schematic_ops_grid;
 with et_board_ops_grid;
 
 with et_module_names;				use et_module_names;
@@ -172,7 +172,7 @@ package body et_gui_2 is
 		update_scale_display;
 
 		-- Set the grid as specified in the database:
-		pac_canvas.grid := et_schematic_ops.grid.get_grid (module, log_threshold + 1);
+		pac_canvas.grid := et_schematic_ops_grid.get_grid (module, log_threshold + 1);
 		update_grid_display;
 		
 		-- CS ? canvas.update_mode_display;

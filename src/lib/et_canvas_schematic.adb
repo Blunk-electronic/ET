@@ -73,7 +73,7 @@ with et_canvas_schematic_units;
 
 with et_undo_redo;
 
-with et_schematic_ops.grid;
+with et_schematic_ops_grid;
 with et_schematic_ops.units;
 with et_schematic_ops.nets;
 with et_schematic_ops.groups;
@@ -916,7 +916,7 @@ package body et_canvas_schematic is
 
 	
 	procedure update_schematic_editor is 
-		use et_schematic_ops.grid;
+		use et_schematic_ops_grid;
 	begin
 
 		-- Show the module name in the title bar of 

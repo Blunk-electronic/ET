@@ -49,7 +49,7 @@ with et_logging;						use et_logging;
 
 
 
-package et_schematic_ops.grid is
+package et_schematic_ops_grid is
 
 	use pac_generic_modules;
 
@@ -77,7 +77,7 @@ package et_schematic_ops.grid is
 		return pac_grid.type_grid;
 
 	
-end et_schematic_ops.grid;
+end et_schematic_ops_grid;
 
 -- Soli Deo Gloria
 

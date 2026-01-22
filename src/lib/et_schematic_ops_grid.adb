@@ -41,7 +41,7 @@ with et_string_processing;				use et_string_processing;
 
 
 
-package body et_schematic_ops.grid is
+package body et_schematic_ops_grid is
 
 	
 	procedure set_grid (
@@ -146,7 +146,7 @@ package body et_schematic_ops.grid is
 
 	
 	
-end et_schematic_ops.grid;
+end et_schematic_ops_grid;
 	
 -- Soli Deo Gloria
 
