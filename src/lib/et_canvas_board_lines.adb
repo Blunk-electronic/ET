@@ -67,7 +67,6 @@ with gtk.container;						use gtk.container;
 
 with et_generic_modules;				use et_generic_modules;
 
-with et_board_ops;						use et_board_ops;
 with et_board_ops_signal_layers;		use et_board_ops_signal_layers;
 with et_board_ops_outline;
 with et_board_ops_assy_doc;

@@ -55,7 +55,6 @@ with et_module_instance;				use et_module_instance;
 with et_module_names;					use et_module_names;
 with et_submodules;
 
-with et_board_ops;						use et_board_ops;
 with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
 
 with et_netchangers;

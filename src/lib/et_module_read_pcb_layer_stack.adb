@@ -46,7 +46,6 @@ with ada.text_io;					use ada.text_io;
 with ada.characters;				use ada.characters;
 with ada.strings;					use ada.strings;
 
-with et_board_ops;
 with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
@@ -136,8 +135,6 @@ package body et_module_read_pcb_layer_stack is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
-		use et_board_ops;
-		
 
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;

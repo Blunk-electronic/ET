@@ -58,7 +58,7 @@ with et_generic_modules;			use et_generic_modules;
 with et_canvas_board;				use et_canvas_board;
 with et_schematic_ops_device;		use et_schematic_ops_device;
 with et_schematic_ops.groups;
-with et_board_ops;
+
 with et_board_ops_meta;				use et_board_ops_meta;
 with et_board_ops_devices;			use et_board_ops_devices;
 with et_board_ops_groups;
@@ -430,7 +430,6 @@ package body et_canvas_board_devices is
 		top_lib_dir : pac_preferred_library_board.bounded_string;
 
 		use et_directory_and_file_ops;
-		use et_board_ops;
 	begin
 		all_lib_dirs := get_preferred_libraries (active_module);
 		top_lib_dir := element (all_lib_dirs.first);

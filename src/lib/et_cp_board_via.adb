@@ -52,7 +52,6 @@ with et_module_names;					use et_module_names;
 with et_pcb_stack;						use et_pcb_stack;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_board_geometry;					use et_board_geometry;
-with et_board_ops;						use et_board_ops;
 with et_board_ops_vias;
 with et_board_ops_signal_layers;		use et_board_ops_signal_layers;
 with et_module_board_user_settings;		use et_module_board_user_settings;

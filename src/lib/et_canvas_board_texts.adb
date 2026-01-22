@@ -80,7 +80,6 @@ with et_module_board;
 with et_canvas_board;
 use et_canvas_board.pac_canvas;
 
-with et_board_ops;						use et_board_ops;
 with et_board_ops_signal_layers;		use et_board_ops_signal_layers;
 with et_board_ops_assy_doc;
 with et_board_ops_silkscreen;

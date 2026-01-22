@@ -42,9 +42,10 @@ with et_generic_modules;					use et_generic_modules;
 with et_canvas_board;
 with et_conductor_text.boards;
 with et_conductor_segment.boards;			use et_conductor_segment.boards;
-with et_board_ops;
+
 with et_board_ops_conductors;				use et_board_ops_conductors;
 with et_board_ops_signal_layers;			use et_board_ops_signal_layers;
+
 with et_logging;							use et_logging;
 with et_modes.board;
 with et_display.board;
@@ -339,7 +340,6 @@ package body et_canvas_board_conductors is
 	procedure find_objects (
 	   point : in type_vector_model)
 	is 
-		use et_board_ops;
 		use et_modes.board;
 		use et_display.board;
 
