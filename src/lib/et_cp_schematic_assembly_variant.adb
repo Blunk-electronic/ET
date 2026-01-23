@@ -44,8 +44,6 @@ with ada.text_io;						use ada.text_io;
 with ada.characters.handling;			use ada.characters.handling;
 with ada.strings; 						use ada.strings;
 
-with et_schematic_ops;					use et_schematic_ops;
-with et_schematic_ops_units;
 
 with et_assembly_variant_name;			use et_assembly_variant_name;
 with et_assembly_variants;				use et_assembly_variants;
@@ -55,6 +53,7 @@ with et_device_purpose;
 with et_device_partcode;
 with et_device_value;
 
+with et_schematic_ops_units;
 with et_schematic_ops_assembly_variant;		use et_schematic_ops_assembly_variant;
 
 

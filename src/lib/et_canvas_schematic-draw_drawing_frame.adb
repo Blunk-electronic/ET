@@ -40,9 +40,10 @@ with ada.text_io;					use ada.text_io;
 
 with et_text_content;				use et_text_content;
 with et_alignment;
+
 with et_schematic_ops_meta;			use et_schematic_ops_meta;
-with et_schematic_ops;
 with et_schematic_ops_sheets;
+
 with et_drawing_frame;
 with et_drawing_frame.schematic;
 

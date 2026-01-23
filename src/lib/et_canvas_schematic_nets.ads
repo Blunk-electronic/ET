@@ -65,7 +65,6 @@ with et_net_labels;					use et_net_labels;
 with et_nets;						use et_nets;
 with et_net_segment;				use et_net_segment;
 with et_net_strands;				use et_net_strands;
-with et_schematic_ops;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 

@@ -83,7 +83,6 @@ with et_package_model_name;
 
 with et_conventions;
 
-with et_schematic_ops;
 with et_board_ops_signal_layers;		use et_board_ops_signal_layers;
 
 with et_device_placeholders;

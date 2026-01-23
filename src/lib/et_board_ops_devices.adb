@@ -52,7 +52,6 @@ with et_device_library.units;			use et_device_library.units;
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
 
 with et_schematic_ops_device;			use et_schematic_ops_device;
-with et_schematic_ops;					use et_schematic_ops;
 with et_schematic_ops_units;			use et_schematic_ops_units;
 with et_schematic_ops_groups;
 

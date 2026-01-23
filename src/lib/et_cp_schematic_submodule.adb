@@ -50,14 +50,14 @@ with et_schematic_geometry;				use et_schematic_geometry;
 
 with et_submodules;
 with et_netchangers;					use et_netchangers;
-with et_schematic_ops;					use et_schematic_ops;
-with et_schematic_ops_submodules;		use et_schematic_ops_submodules;
 
 with et_assembly_variant_name;			use et_assembly_variant_name;
 with et_assembly_variants;				use et_assembly_variants;
 
 with et_net_names;						use et_net_names;
 with et_module_instance;				use et_module_instance;
+
+with et_schematic_ops_submodules;		use et_schematic_ops_submodules;
 
 
 

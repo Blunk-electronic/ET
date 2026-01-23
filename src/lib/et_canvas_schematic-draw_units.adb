@@ -68,8 +68,8 @@ with et_terminal_name;					use et_terminal_name;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
-with et_schematic_ops;
 with et_schematic_ops_units;
+
 with et_display.schematic;				use et_display.schematic;
 
 with et_canvas_schematic_preliminary_object; 	use et_canvas_schematic_preliminary_object;

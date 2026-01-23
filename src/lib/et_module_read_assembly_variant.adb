@@ -58,7 +58,6 @@ with et_device_partcode;
 with et_assembly_variants;			use et_assembly_variants;
 with et_assembly_variant_name;		use et_assembly_variant_name;
 
-with et_schematic_ops;
 with et_schematic_ops_device;		use et_schematic_ops_device;
 with et_schematic_ops_submodules;
 
