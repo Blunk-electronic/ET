@@ -264,7 +264,7 @@ package body et_module_read_meta is
 
 			lib := to_preferred_library_schematic (f (line, 2));
 			
-			if not exists (lib) then
+			if not library_path_exists (lib) then
 				log (WARNING, "Preferred library path for devices " 
 					& enclose_in_quotes (to_string (lib))
 					& " does not exist !");
@@ -293,7 +293,7 @@ package body et_module_read_meta is
 			expect_field_count (line, 2);
 			lib := to_preferred_library_board (f (line, 2));
 
-			if not exists (lib) then
+			if not library_path_exists (lib) then
 				log (WARNING, "Preferred library path for non-electrical packages " 
 					& enclose_in_quotes (to_string (lib))
 					& " does not exist !");

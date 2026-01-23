@@ -62,13 +62,18 @@ package et_meta_device_libraries is
 	-- A preferred directory that contains devices (*.dev)
 	-- like "$HOME/git/BEL/ET_component_library/devices":
 	prf_lib_sch_length_max : constant positive := 100;
-	package pac_preferred_library_schematic is new generic_bounded_length (prf_lib_sch_length_max);
+	
+	package pac_preferred_library_schematic is new 
+		generic_bounded_length (prf_lib_sch_length_max);
+	
 	use pac_preferred_library_schematic;
-	-- CS rename to pac_preferred_library_devices
+
 
 	-- Returns true if the given path exists:
-	function exists (lib : in pac_preferred_library_schematic.bounded_string)
+	function library_path_exists (
+		lib : in pac_preferred_library_schematic.bounded_string)
 		return boolean;
+		
 	
 	function to_preferred_library_schematic (lib : in string)
 		return pac_preferred_library_schematic.bounded_string;
@@ -90,8 +95,10 @@ package et_meta_device_libraries is
 	
 	
 	-- Returns true if the given path exists:
-	function exists (lib : in pac_preferred_library_board.bounded_string)
+	function library_path_exists (
+		lib : in pac_preferred_library_board.bounded_string)
 		return boolean;
+		
 	
 	function to_preferred_library_board (lib : in string)
 		return pac_preferred_library_board.bounded_string;

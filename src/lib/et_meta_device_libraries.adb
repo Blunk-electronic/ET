@@ -49,7 +49,8 @@ package body et_meta_device_libraries is
 
 	
 
-	function exists (lib : in pac_preferred_library_schematic.bounded_string)
+	function library_path_exists (
+		lib : in pac_preferred_library_schematic.bounded_string)
 		return boolean 
 	is
 		use ada.directories;
@@ -60,7 +61,7 @@ package body et_meta_device_libraries is
 		else
 			return false;
 		end if;
-	end exists;
+	end;
 	
 
 
@@ -84,7 +85,8 @@ package body et_meta_device_libraries is
 
 
 	
-	function exists (lib : in pac_preferred_library_board.bounded_string)
+	function library_path_exists (
+		lib : in pac_preferred_library_board.bounded_string)
 		return boolean 
 	is
 		use ada.directories;
@@ -95,7 +97,7 @@ package body et_meta_device_libraries is
 		else
 			return false;
 		end if;
-	end exists;
+	end;
 
 
 
