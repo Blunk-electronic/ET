@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                    SCHEMATIC OPERATIONS ON SHEETS                        --
+--                   SCHEMATIC OPERATIONS ON SHEETS                         --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,56 +35,36 @@
 --
 --   history of changes:
 --
+--   ToDo: 
+
+with et_module;							use et_module;
+with et_generic_modules;				use et_generic_modules;
+with et_drawing_frame;					use et_drawing_frame;
+with et_drawing_frame.schematic;		use et_drawing_frame.schematic;
+with et_schematic_text;					use et_schematic_text;
+with et_sheets;							use et_sheets;
 
 
-with et_module_names;					use et_module_names;
+package et_schematic_ops_sheets is
 
-
-
-package body et_schematic_ops.sheets is
-
-
-	use pac_text_schematic;
-
+	use pac_generic_modules;
 	
-	
+
+	-- Returns the description of a sheet of a generic module:
 	function get_sheet_description (
 		module	: in pac_generic_modules.cursor;
 		sheet	: in type_sheet)
-		return type_schematic_description 
-	is
-
-		use pac_schematic_descriptions;
-		cursor : pac_schematic_descriptions.cursor;
-
-
-		
-		procedure query_descriptions (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is begin
-			cursor := find (module.frames.descriptions, sheet);
-		end query_descriptions;
-
-		
-	begin
-		query_element (
-			position	=> module,
-			process		=> query_descriptions'access);
-		
-		if cursor /= pac_schematic_descriptions.no_element then
-			return element (cursor);
-		else
-		-- If the sheet has no description, then return the defaults.
-			return (others => <>);
-		end if;
-	end get_sheet_description;
-
+		return type_schematic_description;
 	
-end et_schematic_ops.sheets;
+
+
+	-- CS subprograms to get and set the title block position ?
+	-- currently this is defined in the frame template file *.frs
 	
+
+end et_schematic_ops_sheets;
+
 -- Soli Deo Gloria
-
 
 -- For God so loved the world that he gave 
 -- his one and only Son, that whoever believes in him 

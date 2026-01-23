@@ -42,7 +42,7 @@ with et_text_content;				use et_text_content;
 with et_alignment;
 with et_schematic_ops_meta;			use et_schematic_ops_meta;
 with et_schematic_ops;
-with et_schematic_ops.sheets;
+with et_schematic_ops_sheets;
 with et_drawing_frame;
 with et_drawing_frame.schematic;
 
@@ -126,7 +126,7 @@ procedure draw_drawing_frame is
 		
 		procedure draw_sheet_description is
 			use et_project;
-			use et_schematic_ops.sheets;
+			use et_schematic_ops_sheets;
 
 			-- Get the description of the current active sheet:
 			des : constant type_schematic_description := 
