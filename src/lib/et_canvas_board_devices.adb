@@ -424,19 +424,25 @@ package body et_canvas_board_devices is
 
 
 	function get_top_most_important_library return string is
-		use pac_library_paths_board;
-		
 		all_lib_dirs : pac_library_paths_board.list;
 		top_lib_dir : pac_library_path_board.bounded_string;
 
 		use et_directory_and_file_ops;
 	begin
 		all_lib_dirs := get_preferred_libraries (active_module);
-		-- CS: what to do when empty ?
-		
-		top_lib_dir := element (all_lib_dirs.first);
-		
-		return expand (to_string (top_lib_dir));
+		-- If there are library paths the select the 
+		-- first of them.
+		-- If no paths are defined, then return
+		-- an empty string:
+
+		if is_empty (all_lib_dirs) then
+			return "";
+		else
+			top_lib_dir := get_first (all_lib_dirs);
+
+			--return expand ("$HOME/git/BEL/ET_component_library/devices");			
+			return expand (to_string (top_lib_dir));
+		end if;		
 	end get_top_most_important_library;
 
 

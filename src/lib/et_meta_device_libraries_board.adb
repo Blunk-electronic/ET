@@ -103,7 +103,7 @@ package body et_meta_device_libraries_board is
 		paths : in pac_library_paths_board.list)
 		return boolean
 	is begin
-		return is_empty (paths);
+		return pac_library_paths_board.is_empty (paths);
 	end;
 
 	

@@ -99,7 +99,7 @@ package body et_meta_device_libraries_schematic is
 		paths : in pac_library_paths_schematic.list)
 		return boolean
 	is begin
-		return is_empty (paths);
+		return pac_library_paths_schematic.is_empty (paths);
 	end;
 
 
