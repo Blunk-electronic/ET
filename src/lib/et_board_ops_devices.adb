@@ -54,7 +54,7 @@ with et_devices_electrical.packages;	use et_devices_electrical.packages;
 with et_schematic_ops_device;			use et_schematic_ops_device;
 with et_schematic_ops;					use et_schematic_ops;
 with et_schematic_ops_units;			use et_schematic_ops_units;
-with et_schematic_ops.groups;
+with et_schematic_ops_groups;
 
 with et_net_ports;
 with et_net_segment;
@@ -722,7 +722,7 @@ package body et_board_ops_devices is
 		
 		-- Deselect all objects of previous show operations
 		-- so that nothing is highlighted anymore:
-		et_schematic_ops.groups.reset_objects (module_cursor, log_threshold + 1);
+		et_schematic_ops_groups.reset_objects (module_cursor, log_threshold + 1);
 		et_board_ops_groups.reset_objects (module_cursor, log_threshold + 1);
 		
 		-- Locate the targeted device in the given module.

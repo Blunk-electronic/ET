@@ -71,7 +71,7 @@ with et_devices_electrical.packages;	use et_devices_electrical.packages;
 with et_devices_electrical.units;		use et_devices_electrical.units;
 -- with et_board_ops_ratsnest;
 with et_board_ops_groups;
-with et_schematic_ops.groups;
+with et_schematic_ops_groups;
 with et_schematic_ops_units;		use et_schematic_ops_units;
 with et_schematic_ops_device;		use et_schematic_ops_device;
 with et_schematic_ops_meta;			use et_schematic_ops_meta;
@@ -261,7 +261,7 @@ package body et_canvas_schematic_units is
 			-- Before locating any objects, previous
 			-- proposed or selected objects should be reset
 			-- in both schematic and board editor:
-			et_schematic_ops.groups.reset_objects (
+			et_schematic_ops_groups.reset_objects (
 				active_module, log_threshold + 1);
 
 			et_board_ops_groups.reset_objects (
@@ -1609,7 +1609,7 @@ package body et_canvas_schematic_units is
 				-- Since the drag operation affects both
 				-- units and connected net segments, a reset
 				-- is required for units and net segments:
-				et_schematic_ops.groups.reset_objects (active_module, log_threshold + 1);
+				et_schematic_ops_groups.reset_objects (active_module, log_threshold + 1);
 				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);

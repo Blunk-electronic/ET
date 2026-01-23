@@ -49,7 +49,7 @@ with et_module_names;				use et_module_names;
 with et_modes.schematic;			use et_modes.schematic;
 with et_netlists;
 with et_net_class;
-with et_schematic_ops.groups;
+with et_schematic_ops_groups;
 with et_schematic_ops_nets;			use et_schematic_ops_nets;
 
 with et_undo_redo;
@@ -693,7 +693,7 @@ package body et_canvas_schematic_nets is
 
 		-- Before locating any objects, previous
 		-- proposed or selected objects should be reset:		
-		et_schematic_ops.groups.reset_objects (active_module, log_threshold + 1);
+		et_schematic_ops_groups.reset_objects (active_module, log_threshold + 1);
 
 		
 		-- Propose objects according to current verb and noun:

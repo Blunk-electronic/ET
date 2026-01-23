@@ -49,7 +49,7 @@ with et_module;					use et_module;
 with et_sheets;					use et_sheets;
 with et_schematic_coordinates;	use et_schematic_coordinates;
 with et_schematic_ops_units;	use et_schematic_ops_units;
-with et_schematic_ops.groups;
+with et_schematic_ops_groups;
 with et_exceptions;				use et_exceptions;
 
 with et_unit_name;				use et_unit_name;
@@ -376,7 +376,7 @@ package body et_schematic_ops_device is
 		
 		-- Deselect all objects of previous show operations
 		-- so that nothing is highlighted anymore:
-		et_schematic_ops.groups.reset_objects (module_cursor, log_threshold + 1);
+		et_schematic_ops_groups.reset_objects (module_cursor, log_threshold + 1);
 		
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.

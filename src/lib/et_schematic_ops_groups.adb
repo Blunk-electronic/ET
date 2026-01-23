@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -43,7 +43,7 @@ with et_schematic_ops_units;
 
 
 
-package body et_schematic_ops.groups is
+package body et_schematic_ops_groups is
 
 	
 	procedure reset_objects (
@@ -87,7 +87,7 @@ package body et_schematic_ops.groups is
 	end reset_objects;
 	
 	
-end et_schematic_ops.groups;
+end et_schematic_ops_groups;
 
 -- Soli Deo Gloria
 

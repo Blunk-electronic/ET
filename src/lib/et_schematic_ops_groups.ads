@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -45,7 +45,7 @@ with et_logging;						use et_logging;
 
 
 
-package et_schematic_ops.groups is
+package et_schematic_ops_groups is
 
 	use pac_generic_modules;
 	
@@ -57,7 +57,7 @@ package et_schematic_ops.groups is
 
 	
 	
-end et_schematic_ops.groups;
+end et_schematic_ops_groups;
 
 -- Soli Deo Gloria
 

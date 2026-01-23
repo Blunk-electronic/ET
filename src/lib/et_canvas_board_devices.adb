@@ -57,7 +57,7 @@ with et_conventions;
 with et_generic_modules;			use et_generic_modules;
 with et_canvas_board;				use et_canvas_board;
 with et_schematic_ops_device;		use et_schematic_ops_device;
-with et_schematic_ops.groups;
+with et_schematic_ops_groups;
 
 with et_board_ops_meta;				use et_board_ops_meta;
 with et_board_ops_devices;			use et_board_ops_devices;
@@ -295,7 +295,7 @@ package body et_canvas_board_devices is
 			-- Before locating any objects, previous
 			-- proposed or selected objects should be reset
 			-- in both schematic and board editor:
-			et_schematic_ops.groups.reset_objects (
+			et_schematic_ops_groups.reset_objects (
 				active_module, log_threshold + 1);
 
 			et_board_ops_groups.reset_objects (

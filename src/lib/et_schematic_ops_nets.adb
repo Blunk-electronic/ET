@@ -44,7 +44,7 @@ with et_text;
 with et_axes;
 with et_assembly_variants;
 with et_schematic_ops_units;			use et_schematic_ops_units;
-with et_schematic_ops.groups;
+with et_schematic_ops_groups;
 
 with et_symbol_model;
 with et_units;
@@ -3833,7 +3833,7 @@ package body et_schematic_ops_nets is
 
 		-- Deselect all objects of previous show operations
 		-- so that nothing is highlighted anymore:
-		et_schematic_ops.groups.reset_objects (module_cursor, log_threshold + 1);
+		et_schematic_ops_groups.reset_objects (module_cursor, log_threshold + 1);
 		
 		-- Locate the targeted net in the given module.
 		-- If the net exists, then proceed with further actions.

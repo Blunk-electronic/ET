@@ -44,7 +44,7 @@ with et_module_names;						use et_module_names;
 with et_net_names;							use et_net_names;
 with et_board_ops_ratsnest;					use et_board_ops_ratsnest;
 with et_schematic_ops_nets;
-with et_schematic_ops.groups;
+-- with et_schematic_ops_groups;
 
 with et_netlists;
 with et_net_segment;						use et_net_segment;
