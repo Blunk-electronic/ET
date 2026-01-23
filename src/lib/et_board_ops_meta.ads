@@ -55,7 +55,7 @@ package et_board_ops_meta is
 	-- information of the board:
 	function get_basic_meta_information (
 		module : in pac_generic_modules.cursor)
-		return et_meta.type_basic;
+		return type_meta_basic;
 
 
 	

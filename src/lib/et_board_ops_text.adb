@@ -55,7 +55,7 @@ package body et_board_ops_text is
 		m : type_generic_module renames element (module_cursor);
 		
 		use et_meta;
-		meta : constant et_meta.type_board := m.meta.board;
+		meta : constant type_meta_board := m.meta.board;
 
 		use et_assembly_variants;
 		use pac_assembly_variant_name;

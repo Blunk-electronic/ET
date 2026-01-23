@@ -55,7 +55,7 @@ package et_schematic_ops_meta is
 	-- Fetches the basic meta information of the schematic:
 	function get_basic_meta_information (
 		module : in pac_generic_modules.cursor)
-		return type_basic;
+		return type_meta_basic;
 
 
 	

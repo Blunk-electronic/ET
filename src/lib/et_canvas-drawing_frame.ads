@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -40,7 +40,7 @@
 
 with et_drawing_frame;			use et_drawing_frame;
 with et_canvas.text;
-with et_meta;
+with et_meta;					use et_meta;
 
 
 generic
@@ -96,7 +96,7 @@ package et_canvas.drawing_frame is
 	-- This procedure draws meta information.
 	-- See package et_meta for details:
 	procedure draw_basic_meta_information (
-		meta					: in et_meta.type_basic;
+		meta					: in type_meta_basic;
 		placeholders			: in type_placeholders_basic;
 		title_block_position	: in pac_geometry.type_position);
 

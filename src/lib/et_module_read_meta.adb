@@ -61,12 +61,12 @@ package body et_module_read_meta is
 
 	
 
-	meta_basic		: et_meta.type_basic;
+	meta_basic		: type_meta_basic;
 	
-	meta_schematic	: et_meta.type_schematic;
+	meta_schematic	: type_meta_schematic;
 	prf_libs_sch	: pac_preferred_libraries_schematic.list;
 
-	meta_board		: et_meta.type_board;
+	meta_board		: type_meta_board;
 	prf_libs_brd	: pac_preferred_libraries_board.list;
 
 
@@ -124,7 +124,7 @@ package body et_module_read_meta is
 			use pac_preferred_libraries_schematic;
 		begin
 			-- CS check whether date drawn <= date checked <= date_approved
-			--  use type_basic for the test of schematic and board data.
+			--  use type_meta_basic for the test of schematic and board data.
 			
 			module.meta.schematic := meta_schematic;
 			module.meta.board := meta_board;

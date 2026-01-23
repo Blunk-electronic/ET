@@ -69,7 +69,7 @@ package body et_module_write_meta is
 		meta : et_meta.type_meta := element (module_cursor).meta;
 
 		
-		procedure write_basic (basic : in type_basic'class) is begin
+		procedure write_basic (basic : in type_meta_basic'class) is begin
 			write (keyword => keyword_company, parameters => to_string (basic.company), wrap => true);
 			write (keyword => keyword_customer, parameters => to_string (basic.customer), wrap => true);
 			write (keyword => keyword_partcode, parameters => to_string (basic.partcode));
@@ -88,7 +88,7 @@ package body et_module_write_meta is
 
 
 		
-		procedure write_schematic (sch : in type_schematic) is 
+		procedure write_schematic (sch : in type_meta_schematic) is 
 			use pac_preferred_libraries_schematic;
 			
 			procedure query_lib (c : in pac_preferred_libraries_schematic.cursor) is begin
@@ -103,7 +103,7 @@ package body et_module_write_meta is
 
 
 		
-		procedure write_board (brd : in type_board) is
+		procedure write_board (brd : in type_meta_board) is
 			use pac_preferred_libraries_board;
 			
 			procedure query_lib (c : in pac_preferred_libraries_board.cursor) is begin

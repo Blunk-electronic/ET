@@ -46,6 +46,7 @@ with et_alignment;
 with et_text_content;				use et_text_content;
 
 
+
 package body et_canvas.drawing_frame is
 
 
@@ -483,11 +484,10 @@ package body et_canvas.drawing_frame is
 	
 
 	procedure draw_basic_meta_information (
-		meta					: in et_meta.type_basic;
+		meta					: in type_meta_basic;
 		placeholders			: in type_placeholders_basic;									  
 		title_block_position	: in pac_geometry.type_position)
 	is
-		use et_meta;
 		use et_time;
 		use et_text;
 		use et_alignment;

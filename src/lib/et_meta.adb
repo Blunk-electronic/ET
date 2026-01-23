@@ -97,6 +97,64 @@ package body et_meta is
 		return pac_person.to_string (person);
 	end;
 
+
+
+
+	
+
+
+	procedure set_device_libraries (
+		meta : in out type_meta_schematic;
+		libs : in pac_preferred_libraries_schematic.list)
+	is begin
+		meta.preferred_libs := libs;
+	end;
+
+
+	procedure add_device_library (
+		meta : in out type_meta_schematic;
+		lib  : in pac_preferred_library_schematic.bounded_string)
+	is begin
+		meta.preferred_libs.append (lib);
+	end;
+
+
+	function get_device_libraries (
+		meta : in type_meta_schematic)
+		return pac_preferred_libraries_schematic.list
+	is begin
+		return meta.preferred_libs;
+	end;
+
+	
+
+
+	
+	
+	procedure set_device_libraries (
+		meta : in out type_meta_board;
+		libs : in pac_preferred_libraries_board.list)
+	is begin
+		meta.preferred_libs := libs;
+	end;
+
+
+	procedure add_device_library (
+		meta : in out type_meta_board;
+		lib  : in pac_preferred_library_board.bounded_string)
+	is begin
+		meta.preferred_libs.append (lib);
+	end;
+
+
+	function get_device_libraries (
+		meta : in type_meta_board)
+		return pac_preferred_libraries_board.list
+	is begin
+		return meta.preferred_libs;
+	end;
+
+
 	
 end et_meta;
 

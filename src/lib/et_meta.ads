@@ -121,7 +121,7 @@ package et_meta is
 
 	
 	
-	type type_basic is tagged record
+	type type_meta_basic is tagged record
 		company			: pac_company.bounded_string := company_default;
 		customer		: pac_customer.bounded_string := customer_default;
 		partcode		: pac_partcode.bounded_string := partcode_default;
@@ -135,20 +135,61 @@ package et_meta is
 		approved_date	: time := date_first; -- default 1901-01-01
 	end record;
 
+	-- CS accessor subprograms to set and get company, customer, ...
 	
-	type type_schematic is new type_basic with record
+	
+
+	
+
+	
+	type type_meta_schematic is new type_meta_basic with record
 		preferred_libs	: pac_preferred_libraries_schematic.list;
 	end record;
 
+
+	procedure set_device_libraries (
+		meta : in out type_meta_schematic;
+		libs : in pac_preferred_libraries_schematic.list);
+		
+
+	procedure add_device_library (
+		meta : in out type_meta_schematic;
+		lib  : in pac_preferred_library_schematic.bounded_string);
 	
-	type type_board is new type_basic with record
+
+	function get_device_libraries (
+		meta : in type_meta_schematic)
+		return pac_preferred_libraries_schematic.list;
+
+		
+	
+
+	
+	type type_meta_board is new type_meta_basic with record
 		preferred_libs	: pac_preferred_libraries_board.list;
 	end record;
 
+	procedure set_device_libraries (
+		meta : in out type_meta_board;
+		libs : in pac_preferred_libraries_board.list);
+
+		
+	procedure add_device_library (
+		meta : in out type_meta_board;
+		lib  : in pac_preferred_library_board.bounded_string);
+
+	
+	function get_device_libraries (
+		meta : in type_meta_board)
+		return pac_preferred_libraries_board.list;
+
+		
+		
+	
 	
 	type type_meta is record
-		schematic	: type_schematic;
-		board		: type_board;
+		schematic	: type_meta_schematic;
+		board		: type_meta_board;
 	end record;
 
 

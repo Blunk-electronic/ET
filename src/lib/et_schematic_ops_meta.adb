@@ -50,9 +50,9 @@ package body et_schematic_ops_meta is
 
 	function get_basic_meta_information (
 		module : in pac_generic_modules.cursor)
-		return type_basic
+		return type_meta_basic
 	is begin
-		return type_basic (element (module).meta.schematic);
+		return type_meta_basic (element (module).meta.schematic);
 	end get_basic_meta_information;
 	
 
