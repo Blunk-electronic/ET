@@ -56,6 +56,7 @@ package body et_board_ops_meta is
 		return pac_preferred_libraries_board.list
 	is begin
 		return element (module).meta.board.preferred_libs;
+		-- CS what if no libs defined ?
 	end get_preferred_libraries;
 
 	

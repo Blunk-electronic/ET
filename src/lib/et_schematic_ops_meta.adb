@@ -62,6 +62,7 @@ package body et_schematic_ops_meta is
 		return pac_preferred_libraries_schematic.list
 	is begin
 		return element (module).meta.schematic.preferred_libs;
+		-- CS what if no libs defined ?
 	end get_preferred_libraries;
 
 	

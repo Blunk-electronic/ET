@@ -45,6 +45,25 @@
 package body et_module is
 
 
+-- 	function get_preferred_device_libraries_schematic (
+-- 		module : in type_generic_module)
+-- 		return pac_preferred_libraries_schematic.list
+-- 	is begin
+-- 		return module.meta.schematic.preferred_libs;
+-- 	end;
+-- 		
+-- 
+-- 	function get_preferred_device_libraries_board (
+-- 		module : in type_generic_module)
+-- 		return pac_preferred_libraries_board.list
+-- 	is begin
+-- 		return module.meta.board.preferred_libs;
+-- 	end;
+
+
+
+
+	
 	function get_design_rules (
 		module : in type_generic_module)
 		return type_design_rules

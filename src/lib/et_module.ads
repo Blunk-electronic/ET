@@ -46,6 +46,8 @@ with et_schematic_text;
 
 with et_board_geometry;
 
+-- with et_meta;						use et_meta;
+
 with et_nets;
 with et_netlists;
 with et_submodules;
@@ -153,6 +155,17 @@ package et_module is
 	end record;
 
 
+
+-- 	function get_preferred_device_libraries_schematic (
+-- 		module : in type_generic_module)
+-- 		return pac_preferred_libraries_schematic.list;
+-- 		
+-- 
+-- 	function get_preferred_device_libraries_board (
+-- 		module : in type_generic_module)
+-- 		return pac_preferred_libraries_board.list;
+
+		
 
 	-- Returns the design rules (both for schematic and board):
 	function get_design_rules (

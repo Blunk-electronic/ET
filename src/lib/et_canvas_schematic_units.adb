@@ -1701,6 +1701,8 @@ package body et_canvas_schematic_units is
 		use et_directory_and_file_ops;
 	begin
 		all_lib_dirs := get_preferred_libraries (active_module);
+		-- CS: what to do when empty ?
+		
 		top_lib_dir := element (all_lib_dirs.first);
 		
 		--return expand ("$HOME/git/BEL/ET_component_library/devices");
