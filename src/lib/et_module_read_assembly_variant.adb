@@ -60,7 +60,7 @@ with et_assembly_variant_name;		use et_assembly_variant_name;
 
 with et_schematic_ops;
 with et_schematic_ops_device;		use et_schematic_ops_device;
-with et_schematic_ops.submodules;
+with et_schematic_ops_submodules;
 
 
 
@@ -132,7 +132,7 @@ package body et_module_read_assembly_variant is
 		submod_cursor	: pac_submodule_variants.cursor;
 		inserted		: boolean;
 
-		use et_schematic_ops.submodules;
+		use et_schematic_ops_submodules;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_name then -- name low_cost
@@ -384,7 +384,7 @@ package body et_module_read_assembly_variant is
 				submod_cursor	: pac_submodule_variants.cursor := variant.submodules.first;
 				submod_name		: pac_module_instance_name.bounded_string; -- CLK_GENERATOR
 				submod_variant	: pac_assembly_variant_name.bounded_string; -- fixed_frequency
-				use et_schematic_ops.submodules;
+				use et_schematic_ops_submodules;
 			begin
 				if submod_cursor = pac_submodule_variants.no_element then
 					log (text => "no submodule variants specified", level => log_threshold + 1);

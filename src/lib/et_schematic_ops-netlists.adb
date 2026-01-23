@@ -46,7 +46,7 @@ with et_nets;							use et_nets;
 with et_device_library.units;			use et_device_library.units;
 with et_device_name;					use et_device_name;
 with et_numbering;
-with et_schematic_ops.submodules;
+with et_schematic_ops_submodules;
 with et_schematic_ops.units;
 with et_schematic_ops_device;			use et_schematic_ops_device;
 with et_generic_stacks;
@@ -460,7 +460,7 @@ package body et_schematic_ops.netlists is
 				end insert_submodule;
 
 
-				use et_schematic_ops.submodules;
+				use et_schematic_ops_submodules;
 				
 			begin -- query_submodules
 				log_indentation_up;
@@ -687,7 +687,7 @@ package body et_schematic_ops.netlists is
 		-- Build the submodule tree of the module according to the current design structure in
 		-- type_module.submod_tree.
 		-- All further operations rely on this tree:
-		et_schematic_ops.submodules.build_submodules_tree (
+		et_schematic_ops_submodules.build_submodules_tree (
 			module_name 	=> key (module_cursor),
 			log_threshold	=> log_threshold + 1);
 

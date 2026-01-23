@@ -43,7 +43,7 @@ with ada.exceptions;				use ada.exceptions;
 
 with et_module;						use et_module;
 with et_submodules;					use et_submodules;
-with et_schematic_ops.submodules;	use et_schematic_ops.submodules;
+with et_schematic_ops_submodules;	use et_schematic_ops_submodules;
 
 
 

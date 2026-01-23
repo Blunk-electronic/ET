@@ -63,7 +63,7 @@ with et_logging;						use et_logging;
 
 
 
-package et_schematic_ops.submodules is
+package et_schematic_ops_submodules is
 
 	use pac_generic_modules;
 	use pac_net_name;
@@ -443,7 +443,7 @@ package et_schematic_ops.submodules is
 
 	
 	
-end et_schematic_ops.submodules;
+end et_schematic_ops_submodules;
 
 -- Soli Deo Gloria
 

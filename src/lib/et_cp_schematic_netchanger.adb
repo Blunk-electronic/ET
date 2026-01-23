@@ -49,7 +49,7 @@ with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
 
 with et_netchangers;					use et_netchangers;
-with et_schematic_ops.submodules;		use et_schematic_ops.submodules;
+with et_schematic_ops_submodules;		use et_schematic_ops_submodules;
 
 
 

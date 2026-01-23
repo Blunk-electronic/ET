@@ -47,7 +47,7 @@ with ada.strings; 						use ada.strings;
 -- with et_module_names;					use et_module_names;
 -- with et_board_ops;						use et_board_ops;
 
-with et_schematic_ops.submodules;
+with et_schematic_ops_submodules;
 
 
 
@@ -65,7 +65,7 @@ package body et_cp_board_material_bom is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 		
-		use et_schematic_ops.submodules;
+		use et_schematic_ops_submodules;
 	begin
 		-- CS log message
 	

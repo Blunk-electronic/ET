@@ -72,7 +72,7 @@ with et_material;
 with et_module;							use et_module;
 
 
-package body et_schematic_ops.submodules is
+package body et_schematic_ops_submodules is
 
 
 	
@@ -5686,7 +5686,7 @@ package body et_schematic_ops.submodules is
 
 	
 	
-end et_schematic_ops.submodules;
+end et_schematic_ops_submodules;
 
 -- Soli Deo Gloria
 

@@ -62,7 +62,7 @@ with et_module;								use et_module;
 with et_module_instance;					use et_module_instance;
 
 with et_submodules;
-with et_schematic_ops.submodules;
+with et_schematic_ops_submodules;
 with et_board_ops_submodule;				use et_board_ops_submodule;
 
 
@@ -350,7 +350,7 @@ package body et_board_ops_material_pnp is
 				use et_assembly_variants.pac_submodule_variants;
 				alt_submod : et_assembly_variants.pac_submodule_variants.cursor;
 
-				use et_schematic_ops.submodules;
+				use et_schematic_ops_submodules;
 			begin
 				log_indentation_up;
 
@@ -522,7 +522,7 @@ package body et_board_ops_material_pnp is
 
 		-- Build the submodule tree of the module according to the current design structure.
 		-- All further operations rely on this tree:
-		et_schematic_ops.submodules.build_submodules_tree (
+		et_schematic_ops_submodules.build_submodules_tree (
 			module_name 	=> module_name,
 			log_threshold	=> log_threshold + 1);
 
