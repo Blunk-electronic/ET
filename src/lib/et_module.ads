@@ -46,8 +46,6 @@ with et_schematic_text;
 
 with et_board_geometry;
 
--- with et_meta;						use et_meta;
-
 with et_nets;
 with et_netlists;
 with et_submodules;
@@ -58,7 +56,9 @@ with et_module_board;				use et_module_board;
 with et_assembly_variants;			use et_assembly_variants;
 with et_assembly_variant_name;		use et_assembly_variant_name;
 
-with et_meta;
+with et_meta;						use et_meta;
+with et_meta_device_libraries;		use et_meta_device_libraries;
+
 with et_commit;
 with et_text_content;				use et_text_content;
 with et_drawing_frame;
@@ -156,14 +156,14 @@ package et_module is
 
 
 
--- 	function get_preferred_device_libraries_schematic (
--- 		module : in type_generic_module)
--- 		return pac_preferred_libraries_schematic.list;
--- 		
--- 
--- 	function get_preferred_device_libraries_board (
--- 		module : in type_generic_module)
--- 		return pac_preferred_libraries_board.list;
+	function get_preferred_device_libraries_schematic (
+		module : in type_generic_module)
+		return pac_preferred_libraries_schematic.list;
+		
+
+	function get_preferred_device_libraries_board (
+		module : in type_generic_module)
+		return pac_preferred_libraries_board.list;
 
 		
 

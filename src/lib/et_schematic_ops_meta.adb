@@ -37,10 +37,9 @@
 --
 
 
-with ada.text_io;				use ada.text_io;
--- with ada.characters.latin_1;
--- with ada.strings.maps;			use ada.strings.maps;
--- with ada.strings.bounded;       use ada.strings.bounded;
+with ada.text_io;					use ada.text_io;
+
+with et_module;						use et_module;
 
 
 
@@ -60,9 +59,10 @@ package body et_schematic_ops_meta is
 	function get_preferred_libraries (
 		module : in pac_generic_modules.cursor)
 		return pac_preferred_libraries_schematic.list
-	is begin
-		return element (module).meta.schematic.preferred_libs;
-		-- CS what if no libs defined ?
+	is 
+		m : type_generic_module renames element (module);
+	begin
+		return get_preferred_device_libraries_schematic (m);
 	end get_preferred_libraries;
 
 	

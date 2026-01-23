@@ -36,7 +36,11 @@
 --   history of changes:
 --
 -- To Do:
--- - clean up, rework
+--
+
+with ada.text_io;					use ada.text_io;
+
+with et_module;						use et_module;
 
 
 package body et_board_ops_meta is
@@ -54,9 +58,10 @@ package body et_board_ops_meta is
 	function get_preferred_libraries (
 		module : in pac_generic_modules.cursor)
 		return pac_preferred_libraries_board.list
-	is begin
-		return element (module).meta.board.preferred_libs;
-		-- CS what if no libs defined ?
+	is
+		m : type_generic_module renames element (module);
+	begin
+		return get_preferred_device_libraries_board (m);
 	end get_preferred_libraries;
 
 	

@@ -205,6 +205,7 @@ package et_meta is
 	keyword_checked_date	: constant string := "checked_date";	
 	keyword_approved_by		: constant string := "approved_by";
 	keyword_approved_date	: constant string := "approved_date";	
+	-- CS move to et_keywords
 	
 end et_meta;
 
