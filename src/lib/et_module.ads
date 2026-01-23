@@ -160,12 +160,12 @@ package et_module is
 
 	function get_preferred_device_libraries_schematic (
 		module : in type_generic_module)
-		return pac_preferred_libraries_schematic.list;
+		return pac_library_paths_schematic.list;
 		
 
 	function get_preferred_device_libraries_board (
 		module : in type_generic_module)
-		return pac_preferred_libraries_board.list;
+		return pac_library_paths_board.list;
 
 		
 

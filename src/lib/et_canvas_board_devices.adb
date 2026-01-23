@@ -424,10 +424,10 @@ package body et_canvas_board_devices is
 
 
 	function get_top_most_important_library return string is
-		use pac_preferred_libraries_board;
+		use pac_library_paths_board;
 		
-		all_lib_dirs : pac_preferred_libraries_board.list;
-		top_lib_dir : pac_preferred_library_board.bounded_string;
+		all_lib_dirs : pac_library_paths_board.list;
+		top_lib_dir : pac_library_path_board.bounded_string;
 
 		use et_directory_and_file_ops;
 	begin

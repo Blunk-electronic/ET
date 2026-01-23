@@ -50,7 +50,7 @@ package body et_meta_device_libraries_board is
 
 	
 	function library_path_exists (
-		lib : in pac_preferred_library_board.bounded_string)
+		lib : in pac_library_path_board.bounded_string)
 		return boolean 
 	is
 		use ada.directories;
@@ -66,22 +66,47 @@ package body et_meta_device_libraries_board is
 
 
 	
-	function to_preferred_library_board (lib : in string)
-		return pac_preferred_library_board.bounded_string
+	function to_library_path (
+		lib : in string)
+		return pac_library_path_board.bounded_string
 	is begin
 		return to_bounded_string (lib);
-	end to_preferred_library_board;
+	end;
 
 
 
 	
 
-	function to_string (lib : in pac_preferred_library_board.bounded_string)
+	function to_string (
+		lib : in pac_library_path_board.bounded_string)
 		return string
 	is begin
-		return pac_preferred_library_board.to_string (lib);
-	end to_string;
+		return pac_library_path_board.to_string (lib);
+	end;
 
+
+
+
+
+	function get_first (
+		paths : in pac_library_paths_board.list)
+		return pac_library_path_board.bounded_string
+	is begin
+		return paths.first_element;
+	end;
+
+
+	
+
+
+	function is_empty (
+		paths : in pac_library_paths_board.list)
+		return boolean
+	is begin
+		return is_empty (paths);
+	end;
+
+	
 	
 end et_meta_device_libraries_board;
 

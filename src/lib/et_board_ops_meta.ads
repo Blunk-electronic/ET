@@ -64,7 +64,7 @@ package et_board_ops_meta is
 	-- libraries (non-electrical packages):
 	function get_preferred_libraries (
 		module : in pac_generic_modules.cursor)
-		return pac_preferred_libraries_board.list;
+		return pac_library_paths_board.list;
 
 
 	

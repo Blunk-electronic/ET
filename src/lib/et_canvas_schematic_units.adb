@@ -1696,10 +1696,10 @@ package body et_canvas_schematic_units is
 -- ADD UNIT/DEVICE:
 
 	function get_top_most_important_library return string is
-		use pac_preferred_libraries_schematic;
+		use pac_library_paths_schematic;
 		
-		all_lib_dirs : pac_preferred_libraries_schematic.list;
-		top_lib_dir : pac_preferred_library_schematic.bounded_string;
+		all_lib_dirs : pac_library_paths_schematic.list;
+		top_lib_dir : pac_library_path_schematic.bounded_string;
 
 		use et_directory_and_file_ops;
 	begin

@@ -91,9 +91,9 @@ package body et_module_write_meta is
 
 		
 		procedure write_schematic (sch : in type_meta_schematic) is 
-			use pac_preferred_libraries_schematic;
+			use pac_library_paths_schematic;
 			
-			procedure query_lib (c : in pac_preferred_libraries_schematic.cursor) is begin
+			procedure query_lib (c : in pac_library_paths_schematic.cursor) is begin
 				write (keyword => keyword_path, parameters => to_string (element (c)));
 			end query_lib;
 	
@@ -106,9 +106,9 @@ package body et_module_write_meta is
 
 		
 		procedure write_board (brd : in type_meta_board) is
-			use pac_preferred_libraries_board;
+			use pac_library_paths_board;
 			
-			procedure query_lib (c : in pac_preferred_libraries_board.cursor) is begin
+			procedure query_lib (c : in pac_library_paths_board.cursor) is begin
 				write (keyword => keyword_path, parameters => to_string (element (c)));
 			end query_lib;
 

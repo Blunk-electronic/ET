@@ -64,7 +64,7 @@ package et_schematic_ops_meta is
 	-- Returns the list of preferred schematic libraries:
 	function get_preferred_libraries (
 		module : in pac_generic_modules.cursor)
-		return pac_preferred_libraries_schematic.list;
+		return pac_library_paths_schematic.list;
 
 	
 

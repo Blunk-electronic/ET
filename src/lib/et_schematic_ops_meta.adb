@@ -58,7 +58,7 @@ package body et_schematic_ops_meta is
 	
 	function get_preferred_libraries (
 		module : in pac_generic_modules.cursor)
-		return pac_preferred_libraries_schematic.list
+		return pac_library_paths_schematic.list
 	is 
 		m : type_generic_module renames element (module);
 	begin

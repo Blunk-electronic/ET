@@ -57,7 +57,7 @@ package body et_board_ops_meta is
 	
 	function get_preferred_libraries (
 		module : in pac_generic_modules.cursor)
-		return pac_preferred_libraries_board.list
+		return pac_library_paths_board.list
 	is
 		m : type_generic_module renames element (module);
 	begin

@@ -47,7 +47,7 @@ package body et_module is
 
 	function get_preferred_device_libraries_schematic (
 		module : in type_generic_module)
-		return pac_preferred_libraries_schematic.list
+		return pac_library_paths_schematic.list
 	is begin
 		return get_device_libraries (module.meta.schematic);
 	end;
@@ -55,7 +55,7 @@ package body et_module is
 
 	function get_preferred_device_libraries_board (
 		module : in type_generic_module)
-		return pac_preferred_libraries_board.list
+		return pac_library_paths_board.list
 	is begin
 		return get_device_libraries (module.meta.board);
 	end;

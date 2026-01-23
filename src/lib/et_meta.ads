@@ -145,45 +145,45 @@ package et_meta is
 
 	
 	type type_meta_schematic is new type_meta_basic with record
-		preferred_libs	: pac_preferred_libraries_schematic.list;
+		preferred_libs	: pac_library_paths_schematic.list;
 	end record;
 
 
 	procedure set_device_libraries (
 		meta : in out type_meta_schematic;
-		libs : in pac_preferred_libraries_schematic.list);
+		libs : in pac_library_paths_schematic.list);
 		
 
 	procedure add_device_library (
 		meta : in out type_meta_schematic;
-		lib  : in pac_preferred_library_schematic.bounded_string);
+		lib  : in pac_library_path_schematic.bounded_string);
 	
 
 	function get_device_libraries (
 		meta : in type_meta_schematic)
-		return pac_preferred_libraries_schematic.list;
+		return pac_library_paths_schematic.list;
 
 		
 	
 
 	
 	type type_meta_board is new type_meta_basic with record
-		preferred_libs	: pac_preferred_libraries_board.list;
+		preferred_libs	: pac_library_paths_board.list;
 	end record;
 
 	procedure set_device_libraries (
 		meta : in out type_meta_board;
-		libs : in pac_preferred_libraries_board.list);
+		libs : in pac_library_paths_board.list);
 
 		
 	procedure add_device_library (
 		meta : in out type_meta_board;
-		lib  : in pac_preferred_library_board.bounded_string);
+		lib  : in pac_library_path_board.bounded_string);
 
 	
 	function get_device_libraries (
 		meta : in type_meta_board)
-		return pac_preferred_libraries_board.list;
+		return pac_library_paths_board.list;
 
 		
 		

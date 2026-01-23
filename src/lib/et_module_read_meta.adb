@@ -66,10 +66,10 @@ package body et_module_read_meta is
 	meta_basic		: type_meta_basic;
 	
 	meta_schematic	: type_meta_schematic;
-	prf_libs_sch	: pac_preferred_libraries_schematic.list;
+	prf_libs_sch	: pac_library_paths_schematic.list;
 
 	meta_board		: type_meta_board;
-	prf_libs_brd	: pac_preferred_libraries_board.list;
+	prf_libs_brd	: pac_library_paths_board.list;
 
 
 
@@ -123,7 +123,7 @@ package body et_module_read_meta is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			use pac_preferred_libraries_schematic;
+			use pac_library_paths_schematic;
 		begin
 			-- CS check whether date drawn <= date checked <= date_approved
 			--  use type_meta_basic for the test of schematic and board data.
@@ -259,12 +259,12 @@ package body et_module_read_meta is
 	is
 		kw : constant string := f (line, 1);
 		use et_meta;
-		lib : pac_preferred_library_schematic.bounded_string;
+		lib : pac_library_path_schematic.bounded_string;
 	begin
 		if kw = keyword_path then
 			expect_field_count (line, 2);
 
-			lib := to_preferred_library_schematic (f (line, 2));
+			lib := to_library_path (f (line, 2));
 			
 			if not library_path_exists (lib) then
 				log (WARNING, "Preferred library path for devices " 
@@ -289,11 +289,11 @@ package body et_module_read_meta is
 	is
 		kw : constant string := f (line, 1);
 		use et_meta;
-		lib : pac_preferred_library_board.bounded_string;
+		lib : pac_library_path_board.bounded_string;
 	begin
 		if kw = keyword_path then
 			expect_field_count (line, 2);
-			lib := to_preferred_library_board (f (line, 2));
+			lib := to_library_path (f (line, 2));
 
 			if not library_path_exists (lib) then
 				log (WARNING, "Preferred library path for non-electrical packages " 

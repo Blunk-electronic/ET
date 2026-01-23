@@ -51,42 +51,53 @@ package et_meta_device_libraries_schematic is
 
 	-- NOTE: System ET does not follow the classical approach of
 	-- search paths for libraries. A library here is just a directory where
-	-- device models (*.dev) or non-electrical packages (*.pac) live.
-	-- Device models and non-electrical packages can be everywhere.
-	-- In graphical mode, when adding a device in the schematic or a non-electrical package in
-	-- the board/layout there is a window where the operator selects
-	-- a model. This window just proposes the paths of preferred libraries.
+	-- device models (*.dev) live.
+	-- Device models can be everywhere.
+	-- In graphical mode, when adding a device in the schematic
+	-- the operator selects a model. A menu just proposes the 
+	-- paths of preferred libraries.
 	-- The operator is not restricted to those library paths and is
 	-- free to store models wherever it suits her/him.
 	
 	-- A preferred directory that contains devices (*.dev)
 	-- like "$HOME/git/BEL/ET_component_library/devices":
-	prf_lib_sch_length_max : constant positive := 100;
+	library_path_length_max : constant positive := 100;
 	
-	package pac_preferred_library_schematic is new 
-		generic_bounded_length (prf_lib_sch_length_max);
+	package pac_library_path_schematic is new 
+		generic_bounded_length (library_path_length_max);
 	
-	use pac_preferred_library_schematic;
+	use pac_library_path_schematic;
 
 
 	-- Returns true if the given path exists:
 	function library_path_exists (
-		lib : in pac_preferred_library_schematic.bounded_string)
+		lib : in pac_library_path_schematic.bounded_string)
 		return boolean;
 		
 	
-	function to_preferred_library_schematic (lib : in string)
-		return pac_preferred_library_schematic.bounded_string;
+	function to_library_path (
+		lib : in string)
+		return pac_library_path_schematic.bounded_string;
 
-	function to_string (lib : in pac_preferred_library_schematic.bounded_string)
-		return string;
 	
-	package pac_preferred_libraries_schematic is new 
-		doubly_linked_lists (pac_preferred_library_schematic.bounded_string);
-	-- CS rename to pac_preferred_libraries_devices ?
+	function to_string (
+		lib : in pac_library_path_schematic.bounded_string)
+		return string;
+
+	
+	package pac_library_paths_schematic is new 
+		doubly_linked_lists (pac_library_path_schematic.bounded_string);
+	
+	
+	function get_first (
+		paths : in pac_library_paths_schematic.list)
+		return pac_library_path_schematic.bounded_string;
 		
 
-
+	function is_empty (
+		paths : in pac_library_paths_schematic.list)
+		return boolean;
+		
 	
 end et_meta_device_libraries_schematic;
 
