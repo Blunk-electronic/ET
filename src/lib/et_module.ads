@@ -57,7 +57,9 @@ with et_assembly_variants;			use et_assembly_variants;
 with et_assembly_variant_name;		use et_assembly_variant_name;
 
 with et_meta;						use et_meta;
-with et_meta_device_libraries;		use et_meta_device_libraries;
+
+with et_meta_device_libraries_schematic;	use et_meta_device_libraries_schematic;
+with et_meta_device_libraries_board;		use et_meta_device_libraries_board;
 
 with et_commit;
 with et_text_content;				use et_text_content;

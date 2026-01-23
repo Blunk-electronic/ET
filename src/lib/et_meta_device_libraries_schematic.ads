@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                    SCHEMATIC OPERATIONS / META                           --
+--                  META / DEVICE LIBRARIES / SCHEMATIC                     --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                --
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -38,38 +38,57 @@
 --   ToDo: 
 
 
+with ada.strings.bounded;       use ada.strings.bounded;
 
-with et_meta_device_libraries_schematic;	use et_meta_device_libraries_schematic;
-
-with et_meta;					use et_meta;
-with et_generic_modules;		use et_generic_modules;
-with et_logging;				use et_logging;
+with ada.containers;            use ada.containers;
+with ada.containers.doubly_linked_lists;
 
 
+package et_meta_device_libraries_schematic is
 
-package et_schematic_ops_meta is
 
-	use pac_generic_modules;
+	-- PATHS FOR PREFERRED LIBRARIES:
+
+	-- NOTE: System ET does not follow the classical approach of
+	-- search paths for libraries. A library here is just a directory where
+	-- device models (*.dev) or non-electrical packages (*.pac) live.
+	-- Device models and non-electrical packages can be everywhere.
+	-- In graphical mode, when adding a device in the schematic or a non-electrical package in
+	-- the board/layout there is a window where the operator selects
+	-- a model. This window just proposes the paths of preferred libraries.
+	-- The operator is not restricted to those library paths and is
+	-- free to store models wherever it suits her/him.
+	
+	-- A preferred directory that contains devices (*.dev)
+	-- like "$HOME/git/BEL/ET_component_library/devices":
+	prf_lib_sch_length_max : constant positive := 100;
+	
+	package pac_preferred_library_schematic is new 
+		generic_bounded_length (prf_lib_sch_length_max);
+	
+	use pac_preferred_library_schematic;
+
+
+	-- Returns true if the given path exists:
+	function library_path_exists (
+		lib : in pac_preferred_library_schematic.bounded_string)
+		return boolean;
+		
+	
+	function to_preferred_library_schematic (lib : in string)
+		return pac_preferred_library_schematic.bounded_string;
+
+	function to_string (lib : in pac_preferred_library_schematic.bounded_string)
+		return string;
+	
+	package pac_preferred_libraries_schematic is new 
+		doubly_linked_lists (pac_preferred_library_schematic.bounded_string);
+	-- CS rename to pac_preferred_libraries_devices ?
+		
 
 
 	
-
-	-- Fetches the basic meta information of the schematic:
-	function get_basic_meta_information (
-		module : in pac_generic_modules.cursor)
-		return type_meta_basic;
-
-
-	
-	-- Returns the list of preferred schematic libraries:
-	function get_preferred_libraries (
-		module : in pac_generic_modules.cursor)
-		return pac_preferred_libraries_schematic.list;
-
-	
-
-	
-end et_schematic_ops_meta;
+end et_meta_device_libraries_schematic;
 
 -- Soli Deo Gloria
 

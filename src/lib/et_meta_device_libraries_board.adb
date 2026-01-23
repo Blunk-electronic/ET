@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                       META / PREFERRED DEVICE LIBRARIES                  --
+--                  META / DEVICE LIBRARIES / BOARD                         --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -45,43 +45,7 @@ with et_string_processing;		use et_string_processing;
 with et_directory_and_file_ops;
 
 
-package body et_meta_device_libraries is
-
-	
-
-	function library_path_exists (
-		lib : in pac_preferred_library_schematic.bounded_string)
-		return boolean 
-	is
-		use ada.directories;
-		use et_directory_and_file_ops;
-	begin
-		if exists (expand (to_string (lib))) then
-			return true;
-		else
-			return false;
-		end if;
-	end;
-	
-
-
-	
-	function to_preferred_library_schematic (lib : in string)
-		return pac_preferred_library_schematic.bounded_string
-	is begin
-		return to_bounded_string (lib);
-	end to_preferred_library_schematic;
-
-
-
-	
-	function to_string (lib : in pac_preferred_library_schematic.bounded_string)
-		return string
-	is begin
-		return pac_preferred_library_schematic.to_string (lib);
-	end to_string;
-
-
+package body et_meta_device_libraries_board is
 
 
 	
@@ -119,7 +83,7 @@ package body et_meta_device_libraries is
 	end to_string;
 
 	
-end et_meta_device_libraries;
+end et_meta_device_libraries_board;
 
 -- Soli Deo Gloria
 

@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                       META / PREFERRED DEVICE LIBRARIES                  --
+--                  META / DEVICE LIBRARIES / BOARD                         --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -44,7 +44,7 @@ with ada.containers;            use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 
-package et_meta_device_libraries is
+package et_meta_device_libraries_board is
 
 
 	-- PATHS FOR PREFERRED LIBRARIES:
@@ -59,32 +59,6 @@ package et_meta_device_libraries is
 	-- The operator is not restricted to those library paths and is
 	-- free to store models wherever it suits her/him.
 	
-	-- A preferred directory that contains devices (*.dev)
-	-- like "$HOME/git/BEL/ET_component_library/devices":
-	prf_lib_sch_length_max : constant positive := 100;
-	
-	package pac_preferred_library_schematic is new 
-		generic_bounded_length (prf_lib_sch_length_max);
-	
-	use pac_preferred_library_schematic;
-
-
-	-- Returns true if the given path exists:
-	function library_path_exists (
-		lib : in pac_preferred_library_schematic.bounded_string)
-		return boolean;
-		
-	
-	function to_preferred_library_schematic (lib : in string)
-		return pac_preferred_library_schematic.bounded_string;
-
-	function to_string (lib : in pac_preferred_library_schematic.bounded_string)
-		return string;
-	
-	package pac_preferred_libraries_schematic is new 
-		doubly_linked_lists (pac_preferred_library_schematic.bounded_string);
-	-- CS rename to pac_preferred_libraries_devices ?
-		
 
 	-- A preferred directory that contains non-electrical packages (*.pac)
 	-- like "$HOME/git/BEL/ET_component_library/packages":
@@ -113,7 +87,7 @@ package et_meta_device_libraries is
 
 
 	
-end et_meta_device_libraries;
+end et_meta_device_libraries_board;
 
 -- Soli Deo Gloria
 

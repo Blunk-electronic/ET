@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                    SCHEMATIC OPERATIONS / META                           --
+--                  META / DEVICE LIBRARIES / SCHEMATIC                     --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                --
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -38,38 +38,53 @@
 --   ToDo: 
 
 
+with ada.text_io;				use ada.text_io;
+with ada.directories;
 
-with et_meta_device_libraries_schematic;	use et_meta_device_libraries_schematic;
-
-with et_meta;					use et_meta;
-with et_generic_modules;		use et_generic_modules;
-with et_logging;				use et_logging;
-
+with et_string_processing;		use et_string_processing;
+with et_directory_and_file_ops;
 
 
-package et_schematic_ops_meta is
-
-	use pac_generic_modules;
-
+package body et_meta_device_libraries_schematic is
 
 	
 
-	-- Fetches the basic meta information of the schematic:
-	function get_basic_meta_information (
-		module : in pac_generic_modules.cursor)
-		return type_meta_basic;
+	function library_path_exists (
+		lib : in pac_preferred_library_schematic.bounded_string)
+		return boolean 
+	is
+		use ada.directories;
+		use et_directory_and_file_ops;
+	begin
+		if exists (expand (to_string (lib))) then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+	
 
 
 	
-	-- Returns the list of preferred schematic libraries:
-	function get_preferred_libraries (
-		module : in pac_generic_modules.cursor)
-		return pac_preferred_libraries_schematic.list;
+	function to_preferred_library_schematic (lib : in string)
+		return pac_preferred_library_schematic.bounded_string
+	is begin
+		return to_bounded_string (lib);
+	end to_preferred_library_schematic;
+
+
 
 	
+	function to_string (lib : in pac_preferred_library_schematic.bounded_string)
+		return string
+	is begin
+		return pac_preferred_library_schematic.to_string (lib);
+	end to_string;
+
+
 
 	
-end et_schematic_ops_meta;
+end et_meta_device_libraries_schematic;
 
 -- Soli Deo Gloria
 

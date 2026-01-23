@@ -48,7 +48,9 @@ with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
 
-with et_meta_device_libraries;		use et_meta_device_libraries;
+with et_meta_device_libraries_schematic;	use et_meta_device_libraries_schematic;
+with et_meta_device_libraries_board;		use et_meta_device_libraries_board;
+
 with et_meta;						use et_meta;
 
 with et_time;						use et_time;
