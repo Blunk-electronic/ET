@@ -70,7 +70,7 @@ with gtk.text_buffer;
 with gtk.text_iter;
 
 with et_generic_modules;			use et_generic_modules;
-with et_schematic_ops.nets;
+with et_schematic_ops_nets;
 with et_board_ops_vias;				use et_board_ops_vias;
 with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 with et_canvas_board;
@@ -459,7 +459,7 @@ package body et_canvas_board_vias is
 		-- NET NAME
 		procedure make_combo_net is
 			use et_canvas_board_tracks;
-			use et_schematic_ops.nets;
+			use et_schematic_ops_nets;
 			use pac_net_name;
 			
 			store : gtk_list_store;			
@@ -806,7 +806,7 @@ package body et_canvas_board_vias is
 	begin
 
 		-- Show the properties bar if there are nets in the module:
-		if et_schematic_ops.nets.get_net_count (active_module) > 0 then
+		if et_schematic_ops_nets.get_net_count (active_module) > 0 then
 			
 			-- Output adivse in status bar:
 			set_status (status_place_via);

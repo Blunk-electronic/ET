@@ -43,7 +43,7 @@ with et_module_names;						use et_module_names;
 
 with et_net_names;							use et_net_names;
 with et_board_ops_ratsnest;					use et_board_ops_ratsnest;
-with et_schematic_ops.nets;
+with et_schematic_ops_nets;
 with et_schematic_ops.groups;
 
 with et_netlists;
@@ -1667,7 +1667,7 @@ package body et_schematic_ops.units is
 			use pac_submodule_ports;
 			use pac_device_ports;
 			use et_netlists.pac_netchanger_ports;
-			use et_schematic_ops.nets;
+			use et_schematic_ops_nets;
 		begin
 			-- assemble the point to be probed
 			point := to_position (
@@ -1834,7 +1834,7 @@ package body et_schematic_ops.units is
 			use pac_submodule_ports;
 			use pac_device_ports;
 			use et_netlists.pac_netchanger_ports;
-			use et_schematic_ops.nets;
+			use et_schematic_ops_nets;
 		begin
 			-- assemble the point to be probed
 			point := to_position (
@@ -2214,7 +2214,7 @@ package body et_schematic_ops.units is
 			log (WARNING, " Device " & to_string (device_name) & " not found !");
 		end if;
 
-		et_schematic_ops.nets.update_strand_positions (module_cursor, log_threshold + 2);		
+		et_schematic_ops_nets.update_strand_positions (module_cursor, log_threshold + 2);		
 		update_ratsnest (module_cursor, log_threshold + 1);
 		
 		log_indentation_down;		
@@ -4009,7 +4009,7 @@ package body et_schematic_ops.units is
 						position := to_position (place, sheet);
 
 						-- Set the connected net segments as "moving":
-						et_schematic_ops.nets.set_segments_moving (module_cursor, position, log_threshold + 3);
+						et_schematic_ops_nets.set_segments_moving (module_cursor, position, log_threshold + 3);
 					end query_position;
 
 					

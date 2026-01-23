@@ -38,6 +38,7 @@
 
 with et_device_placeholders;			use et_device_placeholders;
 with et_schematic_verb_noun_keys;		use et_schematic_verb_noun_keys;
+with et_schematic_ops_nets;
 
 
 separate (et_canvas_schematic)
@@ -81,12 +82,12 @@ is
 				
 			when key_noun_net_all_sheets =>
 				noun := NOUN_NET;
-				et_schematic_ops.nets.modify_net_on_all_sheets := true;
+				et_schematic_ops_nets.modify_net_on_all_sheets := true;
 				set_status (et_canvas_schematic_nets.status_delete);
 
 			when key_noun_net =>
 				noun := NOUN_NET;					
-				et_schematic_ops.nets.modify_net_on_all_sheets := false;
+				et_schematic_ops_nets.modify_net_on_all_sheets := false;
 				set_status (et_canvas_schematic_nets.status_delete);
 				
 			when key_noun_strand =>
@@ -695,7 +696,7 @@ is
 	
 	
 	procedure rename is 
-		use et_schematic_ops.nets;
+		use et_schematic_ops_nets;
 	begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
@@ -709,12 +710,12 @@ is
 				
 			when key_noun_net => -- rename all strands on current sheet
 				noun := NOUN_NET;
-				et_schematic_ops.nets.modify_net_on_all_sheets := false;
+				et_schematic_ops_nets.modify_net_on_all_sheets := false;
 				set_status (et_canvas_schematic_nets.status_rename_net_sheet);
 				
 			when key_noun_net_all_sheets => -- rename everywhere: all strands on all sheets
 				noun := NOUN_NET;
-				et_schematic_ops.nets.modify_net_on_all_sheets := true;
+				et_schematic_ops_nets.modify_net_on_all_sheets := true;
 				set_status (et_canvas_schematic_nets.status_rename_net_everywhere);
 
 				

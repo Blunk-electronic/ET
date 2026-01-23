@@ -63,7 +63,7 @@ with et_exceptions;						use et_exceptions;
 with et_string_processing;				use et_string_processing;
 
 
-package body et_schematic_ops.nets is
+package body et_schematic_ops_nets is
 
 	use pac_text_schematic;
 	use pac_net_labels;
@@ -7871,7 +7871,7 @@ package body et_schematic_ops.nets is
 
 
 	
-end et_schematic_ops.nets;
+end et_schematic_ops_nets;
 	
 -- Soli Deo Gloria
 

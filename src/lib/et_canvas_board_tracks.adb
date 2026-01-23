@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -72,7 +72,7 @@ with et_modes.board;
 
 with et_nets;
 with et_net_names;
-with et_schematic_ops.nets;
+with et_schematic_ops_nets;
 
 with et_display;						use et_display;
 with et_display.board;					use et_display.board;
@@ -228,7 +228,7 @@ package body et_canvas_board_tracks is
 		iter : gtk_tree_iter;			
 
 		use et_nets;
-		use et_schematic_ops.nets;
+		use et_schematic_ops_nets;
 		use pac_net_name;
 		use pac_net_names;
 
@@ -302,7 +302,7 @@ package body et_canvas_board_tracks is
 			store : gtk_list_store; -- will contain net names
 			render : gtk_cell_renderer_text;
 
-			use et_schematic_ops.nets;
+			use et_schematic_ops_nets;
 			use pac_net_name;
 
 		begin

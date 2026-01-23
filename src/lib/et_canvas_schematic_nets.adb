@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -50,6 +50,7 @@ with et_modes.schematic;			use et_modes.schematic;
 with et_netlists;
 with et_net_class;
 with et_schematic_ops.groups;
+with et_schematic_ops_nets;			use et_schematic_ops_nets;
 
 with et_undo_redo;
 with et_commit;
@@ -303,7 +304,7 @@ package body et_canvas_schematic_nets is
 		-- This results in connecting two strands with each other. Their
 		-- net names must be equal.
 		-- The verification that the net names match is done by
-		-- et_schematic_ops.nets.insert_segment.
+		-- et_schematic_ops_nets.insert_segment.
 		-- if not is_empty (net_name_end) and not is_empty (net_name_start) then
 		-- 	extend_net (net_name_start);
 		-- end if;

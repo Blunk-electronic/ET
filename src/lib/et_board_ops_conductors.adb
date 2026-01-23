@@ -41,7 +41,7 @@ with et_text;
 with et_string_processing;			use et_string_processing;
 with et_mirroring;
 with et_schematic_ops_device;		use et_schematic_ops_device;
-with et_schematic_ops.nets;			use et_schematic_ops.nets;
+with et_schematic_ops_nets;			use et_schematic_ops_nets;
 with et_schematic_ops;				use et_schematic_ops;
 with et_board_ops_devices;			use et_board_ops_devices;
 with et_board_ops_ratsnest;			use et_board_ops_ratsnest;

@@ -60,7 +60,7 @@ with et_net_connectors;					use et_net_connectors;
 with et_netlists;
 with et_schematic_ops.netlists;
 with et_net_names;						use et_net_names;
-with et_schematic_ops.nets;				use et_schematic_ops.nets;
+with et_schematic_ops_nets;				use et_schematic_ops_nets;
 -- with et_schematic_ops.submodules;		use et_schematic_ops.submodules;
 
 -- with et_assembly_variant_name;			use et_assembly_variant_name;

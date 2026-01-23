@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -54,7 +54,7 @@ with et_net_connectors;				use et_net_connectors;
 with et_net_names;					use et_net_names;
 
 
-with et_schematic_ops.nets;
+-- with et_schematic_ops_nets;
 
 
 separate (et_canvas_schematic)
@@ -143,7 +143,7 @@ procedure draw_nets is
 -- 							-- procedure finalize_place_label is allowed to do the final
 -- 							-- placement of the label:
 -- 							declare
--- 								use et_schematic_ops.nets;
+-- 								use et_schematic_ops_nets;
 -- 								s : constant type_stub := query_stub (
 -- 										module_cursor	=> active_module,
 -- 										net_name		=> selected_net,

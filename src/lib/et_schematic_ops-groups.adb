@@ -38,7 +38,7 @@
 --   ToDo: 
 
 
-with et_schematic_ops.nets;
+with et_schematic_ops_nets;
 with et_schematic_ops.units;
 
 
@@ -52,7 +52,7 @@ package body et_schematic_ops.groups is
 	is
 
 		procedure reset_nets is 
-			use et_schematic_ops.nets;
+			use et_schematic_ops_nets;
 		begin
 			log (text => "nets", level => log_threshold + 1);
 			log_indentation_up;

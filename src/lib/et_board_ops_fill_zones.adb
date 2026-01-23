@@ -43,7 +43,7 @@ with ada.exceptions;				use ada.exceptions;
 with et_string_processing;			use et_string_processing;
 with et_mirroring;
 with et_schematic_ops_device;		use et_schematic_ops_device;
-with et_schematic_ops.nets;
+with et_schematic_ops_nets;
 with et_board_holes;
 with et_board_outline;
 with et_board_ops_outline;
@@ -1818,7 +1818,7 @@ package body et_board_ops_fill_zones is
 
 			
 			procedure query_given_net (gn : pac_net_names.cursor) is 
-				use et_schematic_ops.nets;
+				use et_schematic_ops_nets;
 				use pac_net_name;
 				name : pac_net_name.bounded_string renames element (gn);
 			begin
@@ -2230,7 +2230,7 @@ package body et_board_ops_fill_zones is
 
 		
 		procedure locate_targeted_net is 
-			use et_schematic_ops.nets;
+			use et_schematic_ops_nets;
 		begin
 			net_cursor := locate_net (module_cursor, net_name);
 

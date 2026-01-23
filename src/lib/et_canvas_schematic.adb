@@ -75,7 +75,6 @@ with et_undo_redo;
 
 with et_schematic_ops_grid;
 with et_schematic_ops.units;
-with et_schematic_ops.nets;
 with et_schematic_ops.groups;
 
 with et_system_info;

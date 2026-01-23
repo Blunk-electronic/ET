@@ -43,7 +43,7 @@ with ada.strings;					use ada.strings;
 with et_string_processing;			use et_string_processing;
 
 with et_schematic_ops;				use et_schematic_ops;
-with et_schematic_ops.nets;			use et_schematic_ops.nets;
+with et_schematic_ops_nets;			use et_schematic_ops_nets;
 
 with et_board_ops_ratsnest;			use et_board_ops_ratsnest;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;

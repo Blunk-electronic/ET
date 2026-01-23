@@ -68,7 +68,7 @@ with et_logging;						use et_logging;
 
 
 
-package et_schematic_ops.nets is
+package et_schematic_ops_nets is
 
 	use pac_generic_modules;
 	use pac_net_name;
@@ -1114,7 +1114,7 @@ package et_schematic_ops.nets is
 
 	
 	
-end et_schematic_ops.nets;
+end et_schematic_ops_nets;
 
 -- Soli Deo Gloria
 
