@@ -715,74 +715,8 @@ Sheets
 
 	|VNS| |NI|
 
-	
-	
-	
-+++++++
-Modules
-+++++++
-
-
-#. Show (or open) a module
-
-	.. code-block::
-
-		show module LED-driver [sheet]
-
-	|VNS| |NI|
-
-	|SC| Previous/Next module: F11/F12
-	
-	
-#. Create a module
-
-	.. code-block::
-
-		create module MOTOR-driver
-
-	.. code-block::
-
-		create module templates/clock-generator
-
-	.. note:: If the module already exists, nothing happens. The existing module
-			will NOT be touched..
-			
-	.. note:: The module to be created must be in the current project
-			directory or in a subdirectory thereof. Creating a module across several 
-			directory levels like ../other_project/MOTOR-driver is not possible.
-				
-		
-
-		
-#. Save a Module
-
-	Save with its own name:
-	
-	.. code-block::
-
-		save module
-
-	|VNS| |NI| Use the common shortcut CTRL-S instead.
 
 	
-	Save as:
-	
-	.. code-block::
-
-		save module LED-driver_test
-
-	|VNS| |NI|
-
-	
-	
-#. Delete a module
-
-	.. code-block::
-
-		delete module [LED-driver]
-
-	|VNS| |NI| (and dangerous ...)
-
 
 
 		

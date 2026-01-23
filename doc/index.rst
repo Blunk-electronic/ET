@@ -17,6 +17,7 @@
    features.rst 
    project.rst
    canvas_general.rst
+   module_operations.rst
    schematic.rst
    board.rst
    assembly_variants.rst
