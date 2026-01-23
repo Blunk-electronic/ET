@@ -38,6 +38,7 @@
 --   ToDo: 
 
 
+with et_meta_device_libraries;	use et_meta_device_libraries;
 with et_meta;					use et_meta;
 with et_generic_modules;		use et_generic_modules;
 with et_logging;				use et_logging;
@@ -62,7 +63,7 @@ package et_board_ops_meta is
 	-- libraries (non-electrical packages):
 	function get_preferred_libraries (
 		module : in pac_generic_modules.cursor)
-		return et_meta.pac_preferred_libraries_board.list;
+		return pac_preferred_libraries_board.list;
 
 
 	

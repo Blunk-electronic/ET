@@ -48,7 +48,9 @@ with et_module;						use et_module;
 with et_module_names;				use et_module_names;
 with et_keywords;					use et_keywords;
 
+with et_meta_device_libraries;		use et_meta_device_libraries;
 with et_meta;						use et_meta;
+
 with et_time;						use et_time;
 
 
@@ -62,10 +64,10 @@ package body et_module_read_meta is
 	meta_basic		: et_meta.type_basic;
 	
 	meta_schematic	: et_meta.type_schematic;
-	prf_libs_sch	: et_meta.pac_preferred_libraries_schematic.list;
+	prf_libs_sch	: pac_preferred_libraries_schematic.list;
 
 	meta_board		: et_meta.type_board;
-	prf_libs_brd	: et_meta.pac_preferred_libraries_board.list;
+	prf_libs_brd	: pac_preferred_libraries_board.list;
 
 
 
@@ -119,7 +121,7 @@ package body et_module_read_meta is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			use et_meta.pac_preferred_libraries_schematic;
+			use pac_preferred_libraries_schematic;
 		begin
 			-- CS check whether date drawn <= date checked <= date_approved
 			--  use type_basic for the test of schematic and board data.

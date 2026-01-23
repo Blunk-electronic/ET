@@ -51,7 +51,7 @@ with gtk.cell_renderer_text;
 with gtk.list_store;
 with gtk.tree_model;
 
-with et_meta;
+with et_meta_device_libraries;
 
 with et_conventions;
 with et_generic_modules;			use et_generic_modules;
@@ -424,8 +424,9 @@ package body et_canvas_board_devices is
 
 
 	function get_top_most_important_library return string is
-		use et_meta;
-		use et_meta.pac_preferred_libraries_board;
+		use et_meta_device_libraries;
+		use pac_preferred_libraries_board;
+		
 		all_lib_dirs : pac_preferred_libraries_board.list;
 		top_lib_dir : pac_preferred_library_board.bounded_string;
 

@@ -77,7 +77,9 @@ with et_schematic_ops_device;		use et_schematic_ops_device;
 with et_schematic_ops_meta;			use et_schematic_ops_meta;
 
 with et_material;
-with et_meta;
+
+with et_meta_device_libraries;
+
 with et_module_names;				use et_module_names;
 with et_modes.schematic;			use et_modes.schematic;
 
@@ -1693,8 +1695,9 @@ package body et_canvas_schematic_units is
 -- ADD UNIT/DEVICE:
 
 	function get_top_most_important_library return string is
-		use et_meta;
-		use et_meta.pac_preferred_libraries_schematic;
+		use et_meta_device_libraries;
+		use pac_preferred_libraries_schematic;
+		
 		all_lib_dirs : pac_preferred_libraries_schematic.list;
 		top_lib_dir : pac_preferred_library_schematic.bounded_string;
 

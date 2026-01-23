@@ -96,62 +96,6 @@ package body et_meta is
 	function to_string (person : in pac_person.bounded_string) return string is begin
 		return pac_person.to_string (person);
 	end;
-	
-
-	function exists (lib : in pac_preferred_library_schematic.bounded_string)
-		return boolean 
-	is
-		use ada.directories;
-		use et_directory_and_file_ops;
-	begin
-		if exists (expand (to_string (lib))) then
-			return true;
-		else
-			return false;
-		end if;
-	end exists;
-	
-	
-	function to_preferred_library_schematic (lib : in string)
-		return pac_preferred_library_schematic.bounded_string
-	is begin
-		return to_bounded_string (lib);
-	end to_preferred_library_schematic;
-
-	
-	function to_string (lib : in pac_preferred_library_schematic.bounded_string)
-		return string
-	is begin
-		return pac_preferred_library_schematic.to_string (lib);
-	end to_string;
-
-	
-	function exists (lib : in pac_preferred_library_board.bounded_string)
-		return boolean 
-	is
-		use ada.directories;
-		use et_directory_and_file_ops;
-	begin
-		if exists (expand (to_string (lib))) then
-			return true;
-		else
-			return false;
-		end if;
-	end exists;
-
-	
-	function to_preferred_library_board (lib : in string)
-		return pac_preferred_library_board.bounded_string
-	is begin
-		return to_bounded_string (lib);
-	end to_preferred_library_board;
-
-
-	function to_string (lib : in pac_preferred_library_board.bounded_string)
-		return string
-	is begin
-		return pac_preferred_library_board.to_string (lib);
-	end to_string;
 
 	
 end et_meta;

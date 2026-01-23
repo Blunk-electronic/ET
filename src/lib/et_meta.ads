@@ -50,6 +50,7 @@ with ada.containers.ordered_sets;
 
 with ada.calendar;				use ada.calendar;
 
+with et_meta_device_libraries;	use et_meta_device_libraries;
 with et_schematic_coordinates;	use et_schematic_coordinates;
 with et_string_processing;
 with et_time;					use et_time;
@@ -115,63 +116,8 @@ package et_meta is
 	person_default : constant pac_person.bounded_string := pac_person.to_bounded_string (not_assigned);
 	
 
-	-- PATHS FOR PREFERRED LIBRARIES:
 
-	-- CS: separate package !!!
-	
-	-- NOTE: System ET does not follow the classical approach of
-	-- search paths for libraries. A library here is just a directory where
-	-- device models (*.dev) or non-electrical packages (*.pac) live.
-	-- Device models and non-electrical packages can be everywhere.
-	-- In graphical mode, when adding a device in the schematic or a non-electrical package in
-	-- the board/layout there is a window where the operator selects
-	-- a model. This window just proposes the paths of preferred libraries.
-	-- The operator is not restricted to those library paths and is
-	-- free to store models wherever it suits her/him.
-	
-	-- A preferred directory that contains devices (*.dev)
-	-- like "$HOME/git/BEL/ET_component_library/devices":
-	prf_lib_sch_length_max : constant positive := 100;
-	package pac_preferred_library_schematic is new generic_bounded_length (prf_lib_sch_length_max);
-	use pac_preferred_library_schematic;
-	-- CS rename to pac_preferred_library_devices
 
-	-- Returns true if the given path exists:
-	function exists (lib : in pac_preferred_library_schematic.bounded_string)
-		return boolean;
-	
-	function to_preferred_library_schematic (lib : in string)
-		return pac_preferred_library_schematic.bounded_string;
-
-	function to_string (lib : in pac_preferred_library_schematic.bounded_string)
-		return string;
-	
-	package pac_preferred_libraries_schematic is new 
-		doubly_linked_lists (pac_preferred_library_schematic.bounded_string);
-	-- CS rename to pac_preferred_libraries_devices ?
-		
-
-	-- A preferred directory that contains non-electrical packages (*.pac)
-	-- like "$HOME/git/BEL/ET_component_library/packages":
-	prf_lib_brd_length_max : constant positive := 100;
-	package pac_preferred_library_board is new generic_bounded_length (prf_lib_brd_length_max);
-	use pac_preferred_library_board;
-	-- CS rename to pac_preferred_library_package
-	
-	
-	-- Returns true if the given path exists:
-	function exists (lib : in pac_preferred_library_board.bounded_string)
-		return boolean;
-	
-	function to_preferred_library_board (lib : in string)
-		return pac_preferred_library_board.bounded_string;
-
-	function to_string (lib : in pac_preferred_library_board.bounded_string)
-		return string;
-	
-	package pac_preferred_libraries_board is new 
-		doubly_linked_lists (pac_preferred_library_board.bounded_string);
-	-- CS rename to pac_preferred_libraries_packages
 
 	
 	
@@ -189,9 +135,11 @@ package et_meta is
 		approved_date	: time := date_first; -- default 1901-01-01
 	end record;
 
+	
 	type type_schematic is new type_basic with record
 		preferred_libs	: pac_preferred_libraries_schematic.list;
 	end record;
+
 	
 	type type_board is new type_basic with record
 		preferred_libs	: pac_preferred_libraries_board.list;
