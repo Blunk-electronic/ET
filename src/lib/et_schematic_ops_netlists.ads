@@ -46,7 +46,7 @@ with et_logging;						use et_logging;
 
 
 
-package et_schematic_ops.netlists is
+package et_schematic_ops_netlists is
 
 	use pac_generic_modules;
 
@@ -79,7 +79,7 @@ package et_schematic_ops.netlists is
 		log_threshold	: in type_log_level);
 
 	
-end et_schematic_ops.netlists;
+end et_schematic_ops_netlists;
 	
 -- Soli Deo Gloria
 

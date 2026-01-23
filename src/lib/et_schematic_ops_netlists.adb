@@ -63,7 +63,7 @@ with et_string_processing;				use et_string_processing;
 
 
 
-package body et_schematic_ops.netlists is
+package body et_schematic_ops_netlists is
 
 	use et_netchangers;
 	use pac_netchangers;
@@ -720,7 +720,7 @@ package body et_schematic_ops.netlists is
 	end;
 	
 	
-end et_schematic_ops.netlists;
+end et_schematic_ops_netlists;
 	
 -- Soli Deo Gloria
 
