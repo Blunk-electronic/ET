@@ -45,7 +45,7 @@ with ada.characters.handling;			use ada.characters.handling;
 with ada.strings; 						use ada.strings;
 
 with et_schematic_ops;					use et_schematic_ops;
-with et_schematic_ops.units;
+with et_schematic_ops_units;
 
 with et_assembly_variant_name;			use et_assembly_variant_name;
 with et_assembly_variants;				use et_assembly_variants;
@@ -173,7 +173,7 @@ package body et_cp_schematic_assembly_variant is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
-		use et_schematic_ops.units;
+		use et_schematic_ops_units;
 		
 		use et_device_name;
 		use et_device_purpose;
@@ -241,7 +241,7 @@ package body et_cp_schematic_assembly_variant is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
 		use et_device_name;
-		use et_schematic_ops.units;
+		use et_schematic_ops_units;
 	begin
 		-- CS log message
 		
@@ -277,7 +277,7 @@ package body et_cp_schematic_assembly_variant is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
 		use et_device_name;
-		use et_schematic_ops.units;
+		use et_schematic_ops_units;
 	begin
 		-- CS log message
 

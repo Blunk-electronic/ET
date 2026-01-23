@@ -47,7 +47,7 @@ with et_device_library.units;			use et_device_library.units;
 with et_device_name;					use et_device_name;
 with et_numbering;
 with et_schematic_ops_submodules;
-with et_schematic_ops.units;
+with et_schematic_ops_units;
 with et_schematic_ops_device;			use et_schematic_ops_device;
 with et_generic_stacks;
 
@@ -90,7 +90,7 @@ package body et_schematic_ops_netlists is
 			more_properties	: type_port_properties_access;
 			device_cursor	: pac_devices_electrical.cursor;
 
-			use et_schematic_ops.units;
+			use et_schematic_ops_units;
 		begin
 			device_cursor := get_electrical_device (module_cursor, element (port_cursor).device_name);
 

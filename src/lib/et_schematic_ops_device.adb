@@ -48,7 +48,7 @@ with et_module;					use et_module;
 
 with et_sheets;					use et_sheets;
 with et_schematic_coordinates;	use et_schematic_coordinates;
-with et_schematic_ops.units;	use et_schematic_ops.units;
+with et_schematic_ops_units;	use et_schematic_ops_units;
 with et_schematic_ops.groups;
 with et_exceptions;				use et_exceptions;
 

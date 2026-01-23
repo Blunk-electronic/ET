@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -42,7 +42,7 @@ with et_device_appearance;				use et_device_appearance;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 
-separate (et_schematic_ops.units)
+separate (et_schematic_ops_units)
 
 procedure fetch_unit (
 	module_cursor 	: in pac_generic_modules.cursor;

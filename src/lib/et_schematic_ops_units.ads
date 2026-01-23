@@ -73,7 +73,7 @@ with et_logging;						use et_logging;
 
 
 
-package et_schematic_ops.units is
+package et_schematic_ops_units is
 
 	use pac_generic_modules;
 	
@@ -790,7 +790,7 @@ package et_schematic_ops.units is
 		log_threshold	: in type_log_level);
 
 	
-end et_schematic_ops.units;
+end et_schematic_ops_units;
 
 -- Soli Deo Gloria
 

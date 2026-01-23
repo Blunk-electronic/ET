@@ -60,7 +60,7 @@ with et_net_ports;						use et_net_ports;
 with et_net_strands;					use et_net_strands;
 with et_net_ports;
 with et_module_ops;
-with et_schematic_ops.units;			use et_schematic_ops.units;
+with et_schematic_ops_units;			use et_schematic_ops_units;
 with et_net_names;						use et_net_names;
 with et_schematic_ops_nets;
 with et_module_read;

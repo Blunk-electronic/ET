@@ -56,7 +56,7 @@ with et_device_purpose;					use et_device_purpose;
 with et_device_partcode;				use et_device_partcode;
 
 with et_schematic_ops;					use et_schematic_ops;
-with et_schematic_ops.units;			use et_schematic_ops.units;
+with et_schematic_ops_units;			use et_schematic_ops_units;
 -- with et_schematic_ops.submodules;		use et_schematic_ops.submodules;
 
 -- with et_assembly_variant_name;			use et_assembly_variant_name;

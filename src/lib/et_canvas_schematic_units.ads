@@ -66,8 +66,6 @@ with et_net_segment;				use et_net_segment;
 with et_unit_name;					use et_unit_name;
 with et_units;						use et_units;
 with et_devices_electrical;			use et_devices_electrical;
-with et_schematic_ops;				use et_schematic_ops;
-with et_schematic_ops.units;		use et_schematic_ops.units;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 

@@ -43,7 +43,7 @@ with ada.exceptions;					use ada.exceptions;
 with et_text;
 with et_axes;
 with et_assembly_variants;
-with et_schematic_ops.units;			use et_schematic_ops.units;
+with et_schematic_ops_units;			use et_schematic_ops_units;
 with et_schematic_ops.groups;
 
 with et_symbol_model;

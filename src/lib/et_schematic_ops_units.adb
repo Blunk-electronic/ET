@@ -68,7 +68,7 @@ with et_schematic_ops_assembly_variant;		use et_schematic_ops_assembly_variant;
 with et_schematic_ops_device;				use et_schematic_ops_device;
 
 
-package body et_schematic_ops.units is
+package body et_schematic_ops_units is
 
 	use pac_devices_electrical;
 	use pac_units;
@@ -4426,7 +4426,7 @@ package body et_schematic_ops.units is
 
 	
 	
-end et_schematic_ops.units;
+end et_schematic_ops_units;
 
 -- Soli Deo Gloria
 

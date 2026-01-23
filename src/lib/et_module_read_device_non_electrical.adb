@@ -70,8 +70,6 @@ with et_package_model_name;
 
 with et_conventions;
 
-with et_schematic_ops.units;
-
 with et_device_placeholders.packages;
 
 with et_module;							use et_module;

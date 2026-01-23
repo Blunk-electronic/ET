@@ -72,6 +72,7 @@ with et_devices_electrical.units;		use et_devices_electrical.units;
 -- with et_board_ops_ratsnest;
 with et_board_ops_groups;
 with et_schematic_ops.groups;
+with et_schematic_ops_units;		use et_schematic_ops_units;
 with et_schematic_ops_device;		use et_schematic_ops_device;
 with et_schematic_ops_meta;			use et_schematic_ops_meta;
 

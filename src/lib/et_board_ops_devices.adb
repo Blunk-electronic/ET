@@ -53,7 +53,7 @@ with et_devices_electrical.packages;	use et_devices_electrical.packages;
 
 with et_schematic_ops_device;			use et_schematic_ops_device;
 with et_schematic_ops;					use et_schematic_ops;
-with et_schematic_ops.units;			use et_schematic_ops.units;
+with et_schematic_ops_units;			use et_schematic_ops_units;
 with et_schematic_ops.groups;
 
 with et_net_ports;
@@ -2815,7 +2815,7 @@ package body et_board_ops_devices is
 		log_indentation_up;
 
 		-- Reset electrical devices, units and packages:
-		et_schematic_ops.units.reset_status_units (
+		reset_status_units (
 			module_cursor, log_threshold + 1);
 
 		-- Reset non-electrical devices:

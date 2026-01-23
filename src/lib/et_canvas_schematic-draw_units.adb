@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -69,7 +69,7 @@ with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_schematic_ops;
-with et_schematic_ops.units;
+with et_schematic_ops_units;
 with et_display.schematic;				use et_display.schematic;
 
 with et_canvas_schematic_preliminary_object; 	use et_canvas_schematic_preliminary_object;
@@ -404,7 +404,7 @@ procedure draw_units is
 				properties : type_port_properties_access;
 
 				use pac_draw_text;
-				use et_schematic_ops.units;
+				use et_schematic_ops_units;
 			begin
 				-- Rotate the position of the terminal name by the unit rotation:
 				rotate_by (pos_terminal_name, unit_rotation);

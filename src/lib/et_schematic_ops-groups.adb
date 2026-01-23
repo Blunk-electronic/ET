@@ -39,7 +39,7 @@
 
 
 with et_schematic_ops_nets;
-with et_schematic_ops.units;
+with et_schematic_ops_units;
 
 
 
@@ -62,7 +62,7 @@ package body et_schematic_ops.groups is
 
 		
 		procedure reset_devices is 
-			use et_schematic_ops.units;
+			use et_schematic_ops_units;
 		begin
 			log (text => "electrical devices and units", level => log_threshold + 1);
 			log_indentation_up;
