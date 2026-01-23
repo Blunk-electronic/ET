@@ -74,6 +74,7 @@ with et_cp_board_submodule;			use et_cp_board_submodule;
 with et_cp_board_material_bom;		use et_cp_board_material_bom;
 -- CS with et_cp_board_netchanger;		use et_cp_board_netchanger;
 with et_cp_board_script;			use et_cp_board_script;
+with et_cp_board_libraries;			use et_cp_board_libraries;
 
 
 package body et_cp_board is
@@ -184,6 +185,9 @@ package body et_cp_board is
 						when NOUN_LAYER =>
 							add_signal_layer (module_cursor, cmd, log_threshold + 1);
 
+						when NOUN_LIBRARY =>
+							add_library_path (module_cursor, cmd, log_threshold + 1);
+							
 						when others => invalid_noun (to_string (noun));
 					end case;
 

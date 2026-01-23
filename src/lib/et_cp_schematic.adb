@@ -61,7 +61,7 @@ with et_cp_schematic_nets;				use et_cp_schematic_nets;
 with et_cp_schematic_netchanger;		use et_cp_schematic_netchanger;
 with et_cp_schematic_sheet;				use et_cp_schematic_sheet;
 with et_cp_schematic_module;			use et_cp_schematic_module;
-
+with et_cp_schematic_libraries;			use et_cp_schematic_libraries;
 
 
 package body et_cp_schematic is
@@ -169,6 +169,9 @@ package body et_cp_schematic is
 			case verb is
 				when VERB_ADD =>
 					case noun is
+						when NOUN_LIBRARY =>
+							add_library_path (module_cursor, cmd, log_threshold + 1);
+
 						when NOUN_DEVICE =>
 							add_device (module_cursor, cmd, log_threshold + 1);
 							

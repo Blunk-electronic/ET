@@ -84,47 +84,65 @@ package et_modes.board is
 		NOUN_ALL,
 		NOUN_ASSY, -- assembly documentation
 		NOUN_ARC,
+
 		NOUN_BOM,
-		NOUN_FRAME,
+
 		NOUN_CENTER,
 		NOUN_CONDUCTORS,
 		NOUN_CURSOR,
+
 		NOUN_DEVICE,
+
+		NOUN_FRAME,
 		NOUN_FREETRACK,
+
 		NOUN_GRID,
+
 		NOUN_HOLE,
+
 		NOUN_KEEPOUT,
+
 		NOUN_LAYER, 	-- signal layer with dielectic
 		NOUN_LEVEL,
+		NOUN_LIBRARY,
 		NOUN_LINE,
-		NOUN_NAME,
+
 		NOUN_MODULE,
+
+		NOUN_NAME,
 		NOUN_NET,
+
 		NOUN_ORIGINS, -- the center of a package
 		NOUN_OUTLINE,
+
 		NOUN_PARTCODE,
 		NOUN_PLACEHOLDER,
 		NOUN_PLACEHOLDERS,
 		NOUN_PNP, -- pick & place
 		NOUN_PURPOSE,
+
 		NOUN_RATSNEST,
 		NOUN_RESTRICT,
 		NOUN_ROUTE_RESTRICT,
+
 		NOUN_SCALE,
 		NOUN_SCRIPT,
 		NOUN_SILKSCREEN,
 		NOUN_STENCIL, -- solder mask or solder paste
 		NOUN_STOPMASK, -- solder stopmask
 		NOUN_SUBMODULE,
+
 		NOUN_TEXT,
 		NOUN_TEXT_SIZE,
 		NOUN_TEXT_LINE_WIDTH,
 		NOUN_TRACK,
+
 		NOUN_VALUE,
 		NOUN_VIA,
 		NOUN_VIAS,
 		NOUN_VIA_DRILL,
 		NOUN_VIA_RESTRICT,
+
 		NOUN_ZONE,
 		NOUN_ZOOM
 		);

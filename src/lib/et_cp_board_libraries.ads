@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                       SCHEMATIC OPERATING MODES                          --
+--          COMMAND PROCESSOR / BOARD / DEVICE LIBRARY PATHS                --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                --
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.                                          --
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -37,133 +37,31 @@
 --
 --   ToDo: 
 
-package et_modes.schematic is
+with et_generic_modules;		use et_generic_modules;
+with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
+with et_cmd_sts;				use et_cmd_sts;
 
-	type type_verb is (
-		VERB_NONE, -- means no verb entered
-						  
-		VERB_ADD,
-		VERB_BUILD,
-		VERB_CHECK,
-		VERB_COPY,
-		VERB_CREATE,
-		VERB_DELETE,
-		VERB_DESCRIBE,
-		VERB_DISPLAY,
-		VERB_DRAG,
-		VERB_DRAW,
-		VERB_EXECUTE,
-		VERB_EXIT,
-		VERB_FETCH,
-		VERB_MAKE,
-		VERB_MOVE,
-		VERB_MOUNT,
-		VERB_PLACE,
-		VERB_QUIT,
-		VERB_REMOVE,
-		VERB_RENAME,
-		VERB_RENUMBER,
-		VERB_ROTATE,
-		VERB_SAVE,
-		VERB_SET,
-		VERB_SHOW,
-		VERB_UNMOUNT,
-		VERB_WRITE,
-		VERB_ZOOM		
-		);
 
-	verb_default : constant type_verb := VERB_NONE;
+
+package et_cp_board_libraries is
+
+	use pac_generic_modules;
+
+
 	
-	verb : type_verb := verb_default;
-	
-	function to_string (verb : in type_verb) return string;
-	function to_verb (verb : in string) return type_verb;
+	-- This procedure parses a command that adds a
+	-- device library path to the schematic editor.
+	-- Example:
+	-- "schematic set library $HOME/ET_devices"
+	procedure add_library_path (
+   		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
 
 
-	type type_noun is (
-		NOUN_NONE, -- means no noun entered
-						
-		NOUN_ALL,
 		
-		NOUN_CENTER,
-		NOUN_CURSOR,
-		NOUN_CLASS,
-		
-		NOUN_DEVICE,
-		NOUN_DEVICES,
-		--DEVICE_PARTCODE,
-		--DEVICE_PURPOSE,
-		--DEVICE_VALUE,
-
-		NOUN_GRID,
-		
-		NOUN_INTEGRITY,
-		
-		NOUN_NET_LABEL,
-		NOUN_NET_CONNECTOR,
-		
-		NOUN_LEVEL,
-		NOUN_LIBRARY,
-		
-		NOUN_MODULE,
-
-		NOUN_NAME,
-		NOUN_NAMES,
-		NOUN_NET,
-		NOUN_NETS,
-		NOUN_NETCHANGER,
-		NOUN_NETLISTS,
-
-		NOUN_PLACEHOLDER,
-		NOUN_PARTCODE,
-		NOUN_PORT, -- of a submodule instance
-		NOUN_PORTS,
-		NOUN_PURPOSE,
-		NOUN_PURPOSES,		
-
-		NOUN_SCALE,
-		NOUN_SCOPE,
-		NOUN_SCRIPT,
-		NOUN_SEGMENT, -- net segment
-		NOUN_SHEET,
-		NOUN_STRAND,
-		NOUN_SUBMODULE,
-		NOUN_SUBMODULE_FILE,		
-		NOUN_SUBMODULES_TREE,
-
-		NOUN_TEXT,
-		NOUN_TEXTS,
-		NOUN_TEXT_SIZE,
-
-		NOUN_UNIT,
--- 		UNIT_NAME,
--- 		UNIT_PARTCODE,
--- 		UNIT_PURPOSE,
-		-- 		UNIT_VALUE
-
-		NOUN_VARIANT,
-		NOUN_VALUE,
-		NOUN_VALUES,
-
-		NOUN_ZOOM
-		);
-
-	noun_default : constant type_noun := NOUN_NONE;
-	
-	noun : type_noun := noun_default;
-	
-	function to_string (noun : in type_noun) return string;
-	function to_noun (noun : in string) return type_noun;
-
-
-	-- Resets verb and noun to default values:
-	procedure reset_verb_and_noun;
-	
-
-	expect_entry : type_expect_entry := expect_entry_default;
-	
-	
-end et_modes.schematic;
+end et_cp_board_libraries;
 
 -- Soli Deo Gloria
 
