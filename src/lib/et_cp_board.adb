@@ -401,7 +401,16 @@ package body et_cp_board is
 							
 						when others	=> invalid_noun (to_string (noun));
 					end case;
-					
+
+
+				when VERB_REMOVE =>
+					case noun is
+						when NOUN_LIBRARY =>
+							remove_library_path (module_cursor, cmd, log_threshold + 1);
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+
 
 				when VERB_RENAME =>
 					case noun is

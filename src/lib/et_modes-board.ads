@@ -43,28 +43,40 @@ package et_modes.board is
 		VERB_NONE, -- means no verb entered
 
 		VERB_ADD,
+		
 		VERB_CLEAR,
 		VERB_COPY,
+		
 		VERB_DELETE,
 		VERB_DISPLAY,
 		--DRAG,
 		VERB_DRAW,	
+		
 		VERB_EXECUTE,
 		VERB_EXIT,
+		
 		VERB_FILL,
 		VERB_FLIP,
+		
 		VERB_MAKE, -- CS alternatively VERB_EXPORT ?
 		VERB_MOVE,
+		
 		VERB_PLACE,
+		
 		VERB_QUIT,
+		
 		VERB_RENAME,
+		VERB_REMOVE,
 		VERB_RESTORE,
-		VERB_ROTATE,
+		VERB_ROTATE,		
 		VERB_ROUTE,
-		VERB_SAVE,
+		
+		VERB_SAVE,		
 		VERB_SET,
 		VERB_SHOW,
+		
 		VERB_UPDATE,
+		
 		VERB_ZOOM
 		--WRITE
 		);

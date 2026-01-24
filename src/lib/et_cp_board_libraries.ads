@@ -51,15 +51,26 @@ package et_cp_board_libraries is
 
 	
 	-- This procedure parses a command that adds a
-	-- device library path to the schematic editor.
+	-- component library path to the board editor.
 	-- Example:
-	-- "schematic demo set library $HOME/ET_devices"
+	-- "board demo add library $HOME/ET_devices"
 	procedure add_library_path (
    		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
+
+	-- This procedure parses a command that removes a
+	-- component library path from the board editor.
+	-- Example:
+	-- "board demo remove library $HOME/ET_devices"
+	procedure remove_library_path (
+   		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+	
 		
 end et_cp_board_libraries;
 

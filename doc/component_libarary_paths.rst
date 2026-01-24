@@ -20,8 +20,13 @@ Schematic Editor
 
 		add library $HOME/git/BEL/ET_component_library/devices/
 
-	|VNS| |NI|
 
+
+#. Remove a Path
+
+	.. code-block::
+
+		remove library $HOME/git/BEL/ET_component_library/devices/
 
 
 
@@ -41,4 +46,12 @@ Board Editor
 
 	|VNS| |NI|
 
+
+
+
+#. Remove a Path
+
+	.. code-block::
+
+		remove library $HOME/git/BEL/ET_component_library/devices/
 

@@ -159,6 +159,11 @@ package et_meta is
 		lib  : in pac_library_path_schematic.bounded_string);
 	
 
+	procedure remove_device_library (
+		meta : in out type_meta_schematic;
+		lib  : in pac_library_path_schematic.bounded_string);
+
+	
 	function get_device_libraries (
 		meta : in type_meta_schematic)
 		return pac_library_paths_schematic.list;
@@ -180,7 +185,12 @@ package et_meta is
 		meta : in out type_meta_board;
 		lib  : in pac_library_path_board.bounded_string);
 
-	
+		
+	procedure remove_device_library (
+		meta : in out type_meta_board;
+		lib  : in pac_library_path_board.bounded_string);
+
+		
 	function get_device_libraries (
 		meta : in type_meta_board)
 		return pac_library_paths_board.list;

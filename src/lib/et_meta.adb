@@ -119,6 +119,15 @@ package body et_meta is
 	end;
 
 
+	procedure remove_device_library (
+		meta : in out type_meta_schematic;
+		lib  : in pac_library_path_schematic.bounded_string)
+	is begin
+		null;
+		-- CS
+	end;
+
+	
 	function get_device_libraries (
 		meta : in type_meta_schematic)
 		return pac_library_paths_schematic.list
@@ -147,6 +156,17 @@ package body et_meta is
 	end;
 
 
+	procedure remove_device_library (
+		meta : in out type_meta_board;
+		lib  : in pac_library_path_board.bounded_string)
+	is begin
+		null;
+		-- CS
+	end;
+
+
+
+	
 	function get_device_libraries (
 		meta : in type_meta_board)
 		return pac_library_paths_board.list

@@ -43,32 +43,44 @@ package et_modes.schematic is
 		VERB_NONE, -- means no verb entered
 						  
 		VERB_ADD,
+		
 		VERB_BUILD,
+		
 		VERB_CHECK,
 		VERB_COPY,
 		VERB_CREATE,
+		
 		VERB_DELETE,
 		VERB_DESCRIBE,
 		VERB_DISPLAY,
 		VERB_DRAG,
 		VERB_DRAW,
+		
 		VERB_EXECUTE,
 		VERB_EXIT,
 		VERB_FETCH,
+		
 		VERB_MAKE,
 		VERB_MOVE,
 		VERB_MOUNT,
+		
 		VERB_PLACE,
+		
 		VERB_QUIT,
+		
 		VERB_REMOVE,
 		VERB_RENAME,
 		VERB_RENUMBER,
 		VERB_ROTATE,
+		
 		VERB_SAVE,
 		VERB_SET,
 		VERB_SHOW,
+		
 		VERB_UNMOUNT,
+		
 		VERB_WRITE,
+		
 		VERB_ZOOM		
 		);
 

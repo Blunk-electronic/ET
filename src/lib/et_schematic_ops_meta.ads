@@ -75,6 +75,13 @@ package et_schematic_ops_meta is
 		log_threshold	: in type_log_level);
 		
 	
+	-- Removes a library path from the schematic editor:
+	procedure remove_library_path (
+		module_cursor	: in pac_generic_modules.cursor;
+		path			: in pac_library_path_schematic.bounded_string;
+		log_threshold	: in type_log_level);
+
+	
 end et_schematic_ops_meta;
 
 -- Soli Deo Gloria

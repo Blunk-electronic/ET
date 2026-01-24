@@ -414,6 +414,9 @@ package body et_cp_schematic is
 					
 				when VERB_REMOVE =>
 					case noun is
+						when NOUN_LIBRARY =>
+							remove_library_path (module_cursor, cmd, log_threshold + 1);
+							
 						when NOUN_DEVICE => 
 							remove_device (module_cursor, cmd, log_threshold + 1);
 							

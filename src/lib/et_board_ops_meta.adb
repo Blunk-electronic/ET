@@ -99,6 +99,39 @@ package body et_board_ops_meta is
 
 
 	
+
+
+
+	
+
+	procedure remove_library_path (
+		module_cursor	: in pac_generic_modules.cursor;
+		path			: in pac_library_path_board.bounded_string;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is begin
+			remove_device_library (module.meta.board, path);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " remove library path from board: "
+			 & to_string (path),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		-- CS test whether the given path exists
+		
+		generic_modules.update_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+	end remove_library_path;
 	
 
 end et_board_ops_meta;
