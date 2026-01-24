@@ -262,7 +262,8 @@ package et_canvas_schematic is
 	--   is being shown.
 	-- - status bar
 	procedure reset;
-
+	-- CS add parameter to enforce a full reset
+	
 	
 
 -- SAVE MODULE:

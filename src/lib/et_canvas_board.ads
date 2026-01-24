@@ -287,7 +287,7 @@ package et_canvas_board is
 	-- Here the commands to abort any pending 
 	-- operations related to the canvas should be placed:
 	procedure reset;
-
+	-- CS add parameter to enforce a full reset
 
 	
 

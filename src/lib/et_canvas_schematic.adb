@@ -952,6 +952,8 @@ package body et_canvas_schematic is
 		-- module_ct := pac_generic_modules.length (generic_modules);
 		-- put_line ("module count" & count_type'image (module_ct));
 
+		-- CS force a full reset (call procedure reset)
+		
 		case sel is
 			when NEXT =>
 				-- Advance to next module:
@@ -993,6 +995,8 @@ package body et_canvas_schematic is
 		use et_module_read;
 		cursor : pac_generic_modules.cursor := find (generic_modules, module);
 	begin
+		-- CS force a full reset (call procedure reset)
+		
 		-- If module already loaded in collection of generic modules, set the active_module:
 		if cursor /= pac_generic_modules.no_element then 
 			active_module := cursor;
