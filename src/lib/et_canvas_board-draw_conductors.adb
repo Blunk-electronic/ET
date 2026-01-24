@@ -626,8 +626,29 @@ procedure draw_conductors is
 		use pac_text_vectorized;		
 		use pac_draw_text;
 		use et_colors.board;
+
 		content : pac_text_content.bounded_string;
-		t : type_text_fab_with_content;
+		text : type_text_fab_with_content;
+
+
+		procedure draw is 
+			use et_mirroring;
+		begin
+			-- mirror if bottom layer
+			if get_layer (placeholder) = bottom_layer then
+
+				draw_vector_text (
+					text			=> text,
+					mirror			=> MIRROR_ALONG_Y_AXIS,
+					place_absolute	=> true);
+				
+			else
+				draw_vector_text (text);
+			end if;
+			
+		end draw;
+
+		
 	begin
 		-- Draw the placeholder if it is in the current layer:
 		if get_layer (placeholder) = current_layer then
@@ -637,16 +658,18 @@ procedure draw_conductors is
 			-- put_line ("content " & to_string (content));
 
 			-- Build the text to be drawn:
-			t := (type_text_fab (placeholder) with content);
+			text := (type_text_fab (placeholder) with content);
 
 			-- Draw the placeholder highlighted if it is selected:
 			if is_selected (placeholder) then
 				set_color_conductor (current_layer, BRIGHT);				
-				draw_vector_text (t);
+
+				draw;
+				
 				set_color_conductor (current_layer, NORMAL);
 			else
 				-- not selected
-				draw_vector_text (t);
+				draw;
 			end if;
 			
 		end if;
@@ -661,12 +684,12 @@ procedure draw_conductors is
 	procedure draw_text (
 		text : in type_conductor_text_board)
 	is
-		use et_mirroring;
 		use pac_draw_text;
 		use et_colors.board;
 
 		
 		procedure draw is 
+			use et_mirroring;
 			t : type_conductor_text_board := text;
 		begin
 			-- mirror if bottom layer
