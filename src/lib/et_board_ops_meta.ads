@@ -67,6 +67,14 @@ package et_board_ops_meta is
 		return pac_library_paths_board.list;
 
 
+
+	-- Adds a library path to the board editor:
+	procedure add_library_path (
+		module_cursor	: in pac_generic_modules.cursor;
+		path			: in pac_library_path_board.bounded_string;
+		log_threshold	: in type_log_level);
+
+	
 	
 end et_board_ops_meta;
 

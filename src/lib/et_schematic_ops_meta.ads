@@ -66,8 +66,14 @@ package et_schematic_ops_meta is
 		module : in pac_generic_modules.cursor)
 		return pac_library_paths_schematic.list;
 
-	
 
+		
+	-- Adds a library path to the schematic editor:
+	procedure add_library_path (
+		module_cursor	: in pac_generic_modules.cursor;
+		path			: in pac_library_path_schematic.bounded_string;
+		log_threshold	: in type_log_level);
+		
 	
 end et_schematic_ops_meta;
 

@@ -41,6 +41,7 @@
 with ada.text_io;					use ada.text_io;
 
 with et_module;						use et_module;
+with et_module_names;				use et_module_names;
 
 
 package body et_board_ops_meta is
@@ -63,6 +64,39 @@ package body et_board_ops_meta is
 	begin
 		return get_preferred_device_libraries_board (m);
 	end get_preferred_libraries;
+
+	
+
+
+	procedure add_library_path (
+		module_cursor	: in pac_generic_modules.cursor;
+		path			: in pac_library_path_board.bounded_string;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is begin
+			add_device_library (module.meta.board, path);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " add library path to board: "
+			 & to_string (path),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		-- CS test whether the given path exists
+		
+		generic_modules.update_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+	end add_library_path;
+
 
 	
 	

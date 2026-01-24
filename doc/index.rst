@@ -18,6 +18,7 @@
    project.rst
    canvas_general.rst
    module_operations.rst
+   component_library_paths.rst
    schematic.rst
    board.rst
    assembly_variants.rst

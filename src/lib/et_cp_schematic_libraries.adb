@@ -41,6 +41,9 @@ with ada.text_io;						use ada.text_io;
 with ada.characters.handling;			use ada.characters.handling;
 with ada.strings; 						use ada.strings;
 
+with et_meta_device_libraries_schematic;	use et_meta_device_libraries_schematic;
+with et_schematic_ops_meta;					use et_schematic_ops_meta;
+
 
 package body et_cp_schematic_libraries is
 
@@ -53,16 +56,20 @@ package body et_cp_schematic_libraries is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
+		path : pac_library_path_schematic.bounded_string;
+		
 	begin
-		log (text => "add device library path", level => log_threshold);
+		log (text => "add device library path (schematic)", level => log_threshold);
 		log_indentation_up;
 
-		-- "schematic set library $HOME/ET_devices"
+		
+		-- "schematic demo set library $HOME/ET_devices"
 		case cmd_field_count is
-			when 4 => 
-				null; -- CS
-
-			when 5 .. type_field_count'last => 
+			when 5 =>
+				path := to_library_path (get_field (cmd, 5));
+				add_library_path (module, path, log_threshold + 1);
+				
+			when 6 .. type_field_count'last => 
 				command_too_long (cmd, cmd_field_count - 1);
 
 			when others =>
