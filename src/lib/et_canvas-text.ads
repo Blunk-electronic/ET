@@ -137,12 +137,21 @@ package et_canvas.text is
 	-- 3. If the text is being moved (status flag of the text), 
 	--    then its position will be overridden by the tool position.
 	-- 4. In case there is no parent object then the pos argument
-	--    can be omitted which results in a default of (0;0) and 0 degree:
+	--    can be omitted which results in a default of (0;0) and 0 degree.
+	-- 5. If the flag place_absolute is true, then the position of
+	--    the text is assumed as absolute. A given parent_position is
+	--    ignored. This option is relevant for texts that do not
+	--    belong to a parent object and are to be mirrored (like
+	--    conductor or silkscreen texts on the bottom side of the board):
 	procedure draw_vector_text (
-		text			: in pac_text_vectorized.type_text_fab_with_content'class;
+		text			: in pac_text_vectorized.type_text_fab_with_content'class;								   
 		mirror			: in type_mirror := MIRROR_NO;
-		parent_position	: in pac_geometry.type_position := origin_zero_rotation); -- includes x,y, rotatio
+		
+		parent_position	: in pac_geometry.type_position := origin_zero_rotation;
+		-- includes x,y, rotatio
 	
+		place_absolute	: in boolean := false);
+		
 end et_canvas.text;
 
 
