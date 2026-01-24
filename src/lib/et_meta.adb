@@ -125,6 +125,7 @@ package body et_meta is
 	is begin
 		null;
 		-- CS
+		-- test whether lib exists, then remove it
 	end;
 
 	
@@ -162,6 +163,7 @@ package body et_meta is
 	is begin
 		null;
 		-- CS
+		-- test whether lib exists, then remove it
 	end;
 
 
