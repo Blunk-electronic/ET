@@ -2251,7 +2251,12 @@ package body et_canvas is
 
 			-- Set the color of the grid:
 			set_source_rgb (context, 0.5, 0.5, 0.5); -- gray
+			-- CS: should be set in connection with the
+			-- background color. If background is black, then the
+			-- cursor should be white and vis versa.
 
+
+			
 			case grid.style is
 				when DOTS =>
 					draw_dots;
@@ -2408,6 +2413,10 @@ package body et_canvas is
 		
 	begin
 		set_source_rgb (context, 0.5, 0.5, 0.5); -- gray
+		-- set_source_rgb (context, 1.0, 1.0, 1.0); -- white
+		-- CS: should be set in connection with the
+		-- background color. If background is black, then the
+		-- cursor should be white and vis versa.
 
 		-- Compute the start and stop positions:
 		h1 := cp.x - l;
@@ -4167,6 +4176,12 @@ package body et_canvas is
 		cp : type_logical_pixels_vector := real_to_canvas (origin, S);
 	begin
 		set_source_rgb (context, 0.5, 0.5, 0.5); -- gray
+
+		-- CS: should be set in connection with the
+		-- background color. If background is black, then the
+		-- cursor should be white and vis versa.
+
+		
 		set_line_width (context, to_gdouble (origin_drawing_linewidth));
 
 		-- Draw the horizontal line from left to right:

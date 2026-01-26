@@ -425,8 +425,6 @@ package body et_canvas_schematic is
 
 		
 		draw_drawing_frame;	
-		draw_cursor;
-		draw_zoom_area;
 
 		draw_units;
 		draw_netchangers;
@@ -445,6 +443,9 @@ package body et_canvas_schematic is
 		-- CS if submodules_enables ?
 		draw_submodules;
 	
+
+		draw_cursor;
+		draw_zoom_area;
 		
 		return event_handled;
 	end cb_draw;

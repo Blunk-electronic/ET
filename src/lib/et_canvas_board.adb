@@ -734,10 +734,11 @@ package body et_canvas_board is
 		
 		draw_drawing_origin;
 		draw_drawing_frame;		
+		
+		draw_board;
+
 		draw_cursor;
 		draw_zoom_area;
-	
-		draw_board;
 		
 		return event_handled;
 	end cb_draw;

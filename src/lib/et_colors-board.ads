@@ -145,7 +145,7 @@ package et_colors.board is
 
 	
 
-	procedure set_color_cursor (context : in cairo_context);
+	-- procedure set_color_cursor (context : in cairo_context);
 
 	
 	procedure set_color_background (
