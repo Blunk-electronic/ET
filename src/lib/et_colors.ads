@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -56,6 +56,10 @@ package et_colors is
 		return string;
 	
 
+	
+	
+	
+-- BASIC COLORS:
 
 	white		: constant type_color := (1.0, 1.0, 1.0);
 	black		: constant type_color := (0.0, 0.0, 0.0);
@@ -69,19 +73,47 @@ package et_colors is
 	pink		: constant type_color := (1.0, 0.4, 0.4);	
 	mangenta	: constant type_color := (1.0, 0.0, 1.0);
 	turquise	: constant type_color := (0.0, 1.0, 1.0);
+	-- CS: others ?
 
-	type type_opacity is new color_range; -- 0.0 -> max. opacity, 1.0 -> no transparency
-	default_opacity : constant type_opacity := 0.5;
+	
+	
+	
+-- OPACITY:
+	
+	type type_opacity is new color_range; 
+	-- 0.0 -> max. opacity, 1.0 -> no transparency
+
+	-- default_opacity : constant type_opacity := 0.5;
+	
+	-- CS: experimental:
+	default_opacity : constant type_opacity := 0.7;
+
+	
 	no_opacity : constant type_opacity := 1.0;
 
 
 	
+	
+	
+	
+-- DIM FACTOR AND BRIGHTNESS:
+	
 	type type_dim_factor is new color_range; -- 0.0 -> dark, 1.0 -> bright
 
-	dim_factor_default	: constant type_dim_factor := 0.6;
-	dim_factor_dark		: constant type_dim_factor := 0.25;
-	dim_factor_bright	: constant type_dim_factor := 0.8;
 
+	dim_factor_dark		: constant type_dim_factor := 0.25;
+
+	
+	-- dim_factor_default	: constant type_dim_factor := 0.6;
+	-- CS: experimental:
+	dim_factor_default	: constant type_dim_factor := 0.7;
+	
+	
+	-- dim_factor_bright	: constant type_dim_factor := 0.8; 
+	-- CS: experimental:
+	dim_factor_bright	: constant type_dim_factor := 1.0;
+
+	
 	
 	-- Changes the brightness of a given color to the value
 	-- given by brightness:
@@ -91,10 +123,12 @@ package et_colors is
 		return type_color;
 
 	
+	
 	type type_brightness is (DARK, NORMAL, BRIGHT);
 	brightness_default : constant type_brightness := NORMAL;
 
 
+	
 	-- Modifies the given color by the given brightness:
 	function dim (
 		color		: in type_color;

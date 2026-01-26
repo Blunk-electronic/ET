@@ -389,6 +389,15 @@ package body et_canvas_schematic is
 		-- Update the global context:
 		context := context_in;
 
+
+		set_operator (context, cairo_operator_over); -- default anyway
+
+		-- These operators are not useful:
+		-- set_operator (context, cairo_operator_add); -- might be usefule
+		-- set_operator (context, cairo_operator_xor); -- nogo
+		-- set_operator (context, cairo_operator_saturate); -- nogo
+		-- set_operator (context, cairo_operator_dest_over); -- nogo
+		-- See www.cairographics.org/operators
 		
 		-- Update the global visible_area:
 		visible_area := get_visible_area (canvas);

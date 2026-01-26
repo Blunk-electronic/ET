@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -73,7 +73,10 @@ package body et_colors.schematic is
 			when BRIGHT	=>	c := dim (color, dim_factor_bright);
 		end case;
 
-		set_source_rgb (context, c.red, c.green, c.blue);
+		-- set_source_rgb (context, c.red, c.green, c.blue);
+
+		-- CS: experimental:
+		set_source_rgba (context, c.red, c.green, c.blue, color_range (opacity));
 	end set_color;
 
 

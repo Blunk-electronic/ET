@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -107,10 +107,14 @@ package et_colors.board is
 	route_restrict		: type_color := pink;
 	via_restrict		: type_color := pink;
 
+	
+	
 	-- The colors of signal layers:
-	type type_conductors is array (type_signal_layer'first .. type_signal_layer'last) 
+	type type_conductors is -- CS rename to type_signal_layer_colors ?
+		array (type_signal_layer'first .. type_signal_layer'last) 
 		of type_color;
 
+		
 	-- These are the default colors for conductor layers 1 .. 4. CS: needs refinement
 	conductors : type_conductors := (
 		1		=> red,
@@ -182,25 +186,43 @@ package et_colors.board is
 		opacity		: in type_opacity := default_opacity);
 
 
+
+
+-- DRAWING FRAME:
 	
 	procedure set_color_frame (
 		brightness	: in type_brightness := brightness_default);
 
 	
+	
+	
+-- CURSOR:
+
+
 	procedure set_color_origin (
 		brightness	: in type_brightness := brightness_default);
 
+
+		
+		
+-- RATSNEST:
 
 	procedure set_color_ratsnest (
 		brightness	: in type_brightness := brightness_default);
 
 	
+	
 	-- CS add argument for brightness
 	-- to the follwing subprograms ?
 	
+	
+-- BOARD OUTLINE:
+
 	procedure set_color_outline (
 		brightness	: in type_brightness := brightness_default);
-	
+
+		
+		
 
 -- VIAS
 
@@ -220,6 +242,8 @@ package et_colors.board is
 	procedure set_color_via_drill_size (
 		opacity : in type_opacity := default_opacity);
 
+	
+	
 	
 	
 	procedure set_color_silkscreen (

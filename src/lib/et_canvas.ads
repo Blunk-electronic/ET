@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -328,7 +328,7 @@ package et_canvas is
 	-- So there is a procedure set_translation_for_zoom that takes a canvas 
 	-- point and another that takes a real model point.
 	-- Later, when the actual drawing takes place (see function 
-	-- cb_draw_objects) the drawing will be dragged back by the 
+	-- cb_draw) the drawing will be dragged back by the 
 	-- translate-offset so that the operator gets the impression of a 
 	-- zoom-in or zoom-out effect.
 	-- Without applying a translate-offset the drawing would be appearing as 
@@ -467,7 +467,7 @@ package et_canvas is
 	
 
 	-- This visible area is a global variable.
-	-- It is updated by procedure cb_draw_objects.
+	-- It is updated by procedure cb_draw.
 	-- Some subprograms rely on it, for example those which
 	-- move the cursor. For this reason the visible area is
 	-- stored in a global variable.
@@ -687,7 +687,7 @@ package et_canvas is
 
 
 	-- This is the global drawing context.
-	-- It is updated by the function cb_draw_objects:
+	-- It is updated by the function cb_draw:
 	context : cairo.cairo_context;
 
 

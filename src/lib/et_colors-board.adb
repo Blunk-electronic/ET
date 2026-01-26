@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -106,6 +106,7 @@ package body et_colors.board is
 			p := pattern_create_linear (zero, zero, gl, zero);
 		end make_gradient_90;
 
+		
 		procedure make_gradient_135 is begin
 			gl := m_45_135 / gdouble (S);
 			
@@ -215,7 +216,11 @@ package body et_colors.board is
 		end case;
 
 		-- Apply the modified color:
-		set_source_rgb (context, c.red, c.green, c.blue);
+		-- set_source_rgb (context, c.red, c.green, c.blue);
+		-- set_source_rgba (context, c.red, c.green, c.blue, 0.7);
+
+		-- CS: experimental:
+		set_source_rgba (context, c.red, c.green, c.blue, color_range (opacity));
 
 		-- Update the global foreground color:
 		current_foreground_color := color;

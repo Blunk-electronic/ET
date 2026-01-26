@@ -703,10 +703,18 @@ package body et_canvas_board is
 	begin
 		-- new_line;
 		-- put_line ("cb_draw (board) " & image (clock));
-
+		
 		-- Update the global context:
 		context := context_in;
 
+		set_operator (context, cairo_operator_over); -- default anyway
+
+		-- These operators are not useful:
+		-- set_operator (context, cairo_operator_add); -- might be usefule
+		-- set_operator (context, cairo_operator_xor); -- nogo
+		-- set_operator (context, cairo_operator_saturate); -- nogo
+		-- set_operator (context, cairo_operator_dest_over); -- nogo
+		-- See www.cairographics.org/operators
 		
 		-- Update the global visible_area:
 		visible_area := get_visible_area (canvas);
@@ -715,8 +723,10 @@ package body et_canvas_board is
 		-- Set the background color:
 		set_source_rgb (context, 0.0, 0.0, 0.0); -- black
 		-- set_source_rgb (context, 1.0, 1.0, 1.0); -- white
+
 		paint (context);
 
+		
 		-- The ends of all kinds of lines are round:
 		set_line_cap (context, cairo_line_cap_round);
 
