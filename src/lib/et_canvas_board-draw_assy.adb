@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -38,6 +38,7 @@
 
 with ada.text_io;					use ada.text_io;
 
+with et_mirroring;					use et_mirroring;
 with et_primitive_objects;			use et_primitive_objects;
 with et_assy_doc;					use et_assy_doc;
 with et_colors;						use et_colors;
@@ -142,56 +143,99 @@ is
 
 
 	
-	procedure query_placeholder (
-	-- CS move procedure to query_items (below) and care for mirroring.
-		c : in pac_placeholders_non_conductor.cursor) 
-	is 
-		use pac_text_vectorized;
-		use pac_draw_text;
-		content : pac_text_content.bounded_string;
-		t : type_text_fab_with_content;
-	begin
-		-- Build the final content to be drawn:
-		content := to_placeholder_content (active_module, element (c).meaning);
-		-- put_line ("content " & to_string (content));
-
-		-- Build the text to be drawn:
-		t := (type_text_fab (element (c)) with content);
-
-		-- Draw the placeholder highlighted if it is selected:
-		if is_selected (c) then
-			set_highlight_brightness;
-			draw_vector_text (t);
-			set_default_brightness;
-		else
-			-- not selected
-			draw_vector_text (t);
-		end if;
-	end query_placeholder;
 
 
 
 	
-	procedure query_text (c : in pac_doc_texts.cursor) is 
-	-- CS move procedure to query_items (below) and care for mirroring.
-		use pac_draw_text;
-	begin
-		if is_selected (c) then
-			set_highlight_brightness;
-			draw_vector_text (element (c));
-			set_default_brightness;
-		else
-			draw_vector_text (element (c));
-		end if;
-	end query_text;
-
-
 
 	
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module) 
-	is begin
+	is 
+
+		
+		procedure query_text (c : in pac_doc_texts.cursor) is 
+			text : type_doc_text renames element (c);
+
+			
+			procedure draw is 
+				use et_mirroring;
+				use pac_draw_text;
+			begin
+				if face = BOTTOM then
+					draw_vector_text (
+						text			=> text,
+						mirror			=> MIRROR_ALONG_Y_AXIS,
+						place_absolute	=> true);
+
+				else
+					draw_vector_text (text);
+				end if;
+			end draw;
+
+			
+		begin
+			if is_selected (text) then
+				set_highlight_brightness;
+				draw;
+				set_default_brightness;
+			else
+				draw;
+			end if;
+		end query_text;
+
+
+		
+		
+		procedure query_placeholder (
+			c : in pac_placeholders_non_conductor.cursor) 
+		is
+			placeholder : type_placeholder_non_conductor renames element (c);
+			
+			use pac_text_vectorized;
+			content : pac_text_content.bounded_string;
+			text : type_text_fab_with_content;
+
+
+			procedure draw is
+				use pac_draw_text;
+				use et_mirroring;
+			begin
+				if face = BOTTOM then
+					draw_vector_text (
+						text			=> text,
+						mirror			=> MIRROR_ALONG_Y_AXIS,
+						place_absolute	=> true);
+
+				else
+					draw_vector_text (text);
+				end if;
+			end draw;
+
+			
+		begin
+			-- Build the final content to be drawn:
+			content := to_placeholder_content (
+				active_module, placeholder.meaning);
+			-- put_line ("content " & to_string (content));
+
+			-- Build the text to be drawn:
+			text := (type_text_fab (placeholder) with content);
+
+			-- Draw the placeholder highlighted if it is selected:
+			if is_selected (placeholder) then
+				set_highlight_brightness;
+				draw;
+				set_default_brightness;
+			else
+				-- not selected
+				draw;
+			end if;
+		end query_placeholder;
+
+
+	begin
 		-- All assy_doc segments will be drawn with the same color:
 		set_color_assy_doc (face, NORMAL);
 
@@ -211,7 +255,6 @@ is
 				iterate (module.board.assy_doc.bottom.zones, query_zone'access);
 				iterate (module.board.assy_doc.bottom.placeholders, query_placeholder'access);
 				iterate (module.board.assy_doc.bottom.texts, query_text'access);
-
 		end case;
 	end query_items;
 
