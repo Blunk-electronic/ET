@@ -46,7 +46,7 @@ package et_colors is
 		return string;
 
 
-	type type_color is record
+	type type_color is record -- CS make private ?
 		red, green, blue : color_range := 0.0;
 	end record;
 

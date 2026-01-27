@@ -217,6 +217,8 @@ package body et_canvas.cmd is
 						
 						set_color_background (color);
 					end if;
+					
+					-- CS grid, cursor, drawing origin
 				end set;
 
 				
