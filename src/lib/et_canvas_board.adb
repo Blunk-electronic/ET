@@ -88,6 +88,14 @@ with et_undo_redo;
 with et_project_name;
 with et_ripup;
 
+with et_board_ops_signal_layers;
+with et_pcb_signal_layers;
+with et_terminal_name;
+with et_terminals;
+with et_colors;
+with et_mirroring;
+
+
 
 package body et_canvas_board is
 
@@ -571,11 +579,48 @@ package body et_canvas_board is
 
 
 
+
+
 	
+	procedure draw_drawing_frame is separate;
+
+
+	
+	use et_pcb_signal_layers;
+	bottom_layer : type_signal_layer;
+
+	
+	-- Translates face (TOP/BOTTOM) to conductor layer 1/bottom_layer.
+	function face_to_layer (f : in type_face) return type_signal_layer is begin
+		case f is
+			when TOP => return type_signal_layer'first;
+			when BOTTOM => return bottom_layer;
+		end case;
+	end face_to_layer;
+
 	
 
-	procedure draw_drawing_frame is separate;
-	procedure draw_packages is separate;	
+	
+
+
+	
+	-- This procedure draws a single terminal.
+	-- Due to the complexity of the code, this procedure
+	-- is separate. It is called by procedure draw_packages:
+	procedure draw_terminal (
+		name				: in et_terminal_name.pac_terminal_name.bounded_string;
+		terminal			: in et_terminals.type_terminal;
+		brightness			: in et_colors.type_brightness;
+		package_position	: in type_package_position;
+		mirror				: in et_mirroring.type_mirror;
+		flip				: in boolean)
+		is separate;
+
+		
+	procedure draw_packages is separate;
+
+
+	
 	procedure draw_conductors is separate;
 	procedure draw_netchangers is separate;
 	procedure draw_route_restrict is separate;
@@ -598,11 +643,12 @@ package body et_canvas_board is
 	procedure draw_stencil (
 		face	: in type_face) is separate;
 	
+
 	
 	procedure draw_board is 
 		use et_display.board;
-		
 
+		
 		procedure draw_conductor_layers is begin
 			draw_route_restrict;
 			draw_via_restrict;
@@ -674,6 +720,10 @@ package body et_canvas_board is
 		
 
 	begin
+		-- The deepest conductor layer towards bottom is defined by the layer stack:
+		bottom_layer := 
+			et_board_ops_signal_layers.get_deepest_conductor_layer (active_module);
+		
 		draw_conductor_layers;
 		draw_packages;
 		draw_silkscreen;
@@ -686,6 +736,10 @@ package body et_canvas_board is
 		-- CS draw_submodules			
 	end draw_board;
 	
+
+
+
+
 
 	
 
