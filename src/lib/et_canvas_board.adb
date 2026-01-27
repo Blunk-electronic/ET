@@ -80,7 +80,7 @@ with et_canvas_board_tracks;
 with et_canvas_board_conductors;
 
 with et_canvas_board_preliminary_object;
-with et_cmd_sts;						use et_cmd_sts;
+with et_cmd_sts;
 with et_script_processor;
 
 with et_undo_redo;
@@ -582,16 +582,51 @@ package body et_canvas_board is
 
 
 	
-	procedure draw_drawing_frame is separate;
+
 
 
 	
 	use et_pcb_signal_layers;
+
+	-- The top conductor layer 1 is always there:
+	top_layer : constant type_signal_layer := type_signal_layer'first;
+	
+	-- The deepest conductor layer towards bottom 
+	-- is defined by the layer stack.
+	-- The bottom layer will be set when the board is redrawn:
 	bottom_layer : type_signal_layer;
+
+
+	function is_double_layer_board 
+		return boolean
+	is begin
+		if bottom_layer = 2 then
+			return true;
+		else 
+			return false;
+		end if;
+	end is_double_layer_board;
+
+	
+	
+	function is_inner_layer (
+		layer : in type_signal_layer) 
+		return boolean 
+	is begin
+		if layer > top_layer and layer < bottom_layer then
+			return true;
+		else
+			return false;
+		end if;
+	end is_inner_layer;	
+	
 
 	
 	-- Translates face (TOP/BOTTOM) to conductor layer 1/bottom_layer.
-	function face_to_layer (f : in type_face) return type_signal_layer is begin
+	function face_to_layer (
+		f : in type_face) 
+		return type_signal_layer
+	is begin
 		case f is
 			when TOP => return type_signal_layer'first;
 			when BOTTOM => return bottom_layer;
@@ -643,7 +678,8 @@ package body et_canvas_board is
 	procedure draw_stencil (
 		face	: in type_face) is separate;
 	
-
+	procedure draw_drawing_frame is separate;
+	
 	
 	procedure draw_board is 
 		use et_display.board;
@@ -720,7 +756,7 @@ package body et_canvas_board is
 		
 
 	begin
-		-- The deepest conductor layer towards bottom is defined by the layer stack:
+		-- Set the bottom layer:
 		bottom_layer := 
 			et_board_ops_signal_layers.get_deepest_conductor_layer (active_module);
 		
@@ -1242,6 +1278,7 @@ package body et_canvas_board is
 		use et_modes;
 		use et_domains;
 		use et_project;
+		use et_cmd_sts;
 
 		-- We assemble a command that executes a script
 		-- like "board motor_driver execute script my_script.scr:
@@ -1335,6 +1372,7 @@ package body et_canvas_board is
 		use et_modes;
 		use et_domains;
 		use et_project;
+		use et_cmd_sts;
 		
 		-- The operator enters a command like "rename device R1 R2".
 		-- The operator is not required to type domain and module name.

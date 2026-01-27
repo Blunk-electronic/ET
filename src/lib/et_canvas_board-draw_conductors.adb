@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -152,31 +152,8 @@ procedure draw_conductors is
 
 	-- The conductor layers are drawn in the order bottom-to-top so that
 	-- the upper layers always obscure the layers underneath.
+	-- CS: correct ?
 
-	-- The top conductor layer 1 is always there:
-	top_layer		: constant type_signal_layer := type_signal_layer'first;
-
-	-- The deepest conductor layer towards bottom is defined by the layer stack:
-	bottom_layer	: constant type_signal_layer := 
-		get_deepest_conductor_layer (active_module);
-
-	
-	function is_double_layer_board return boolean is begin
-		if bottom_layer = 2 then
-			return true;
-		else 
-			return false;
-		end if;
-	end is_double_layer_board;
-
-	
-	function is_inner_layer (layer : in type_signal_layer) return boolean is begin
-		if layer > top_layer and layer < bottom_layer then
-			return true;
-		else
-			return false;
-		end if;
-	end is_inner_layer;		
 
 	
 	-- The layer being drawn:
@@ -740,7 +717,7 @@ procedure draw_conductors is
 	-- Draws a given via. If force_highlight is true,
 	-- then the via will be drawn highlighted no matter whether it
 	-- is selected or not:
-	procedure draw_via (
+	procedure draw_via ( -- CS: move to separate package (like draw_terminal ?)
 		via 			: in type_via;
 		force_highlight	: in boolean := false)
 	is 
