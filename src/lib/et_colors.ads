@@ -56,7 +56,9 @@ package et_colors is
 		return string;
 	
 
-	
+		
+	-- CS function that takes separate values for R, G, B
+	-- and returns a type_color.
 	
 	
 -- BASIC COLORS:
@@ -75,6 +77,14 @@ package et_colors is
 	turquise	: constant type_color := (0.0, 1.0, 1.0);
 	-- CS: others ?
 
+	
+	
+	-- This function takes a string like "white" or "black"
+	-- (see table above) and return the associated color type:
+	function to_color (
+		color : in string)
+		return type_color;
+	
 	
 	
 	

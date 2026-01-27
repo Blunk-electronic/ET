@@ -98,6 +98,7 @@ package et_modes.schematic is
 		NOUN_ALL,
 		
 		NOUN_CENTER,
+		NOUN_COLOR,
 		NOUN_CURSOR,
 		NOUN_CLASS,
 		

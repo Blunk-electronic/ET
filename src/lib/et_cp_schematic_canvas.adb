@@ -208,6 +208,23 @@ package body et_cp_schematic_canvas is
 	end set_cursor;
 
 
+
+
+
+	procedure set_color (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "set color", level => log_threshold);
+		log_indentation_up;
+
+		parse_canvas_command (cmd, VERB_SET, NOUN_COLOR);
+		redraw_schematic;
+		
+		log_indentation_down;
+	end set_color;
+
 	
 		
 end et_cp_schematic_canvas;

@@ -89,6 +89,14 @@ package et_cp_board_canvas is
 	procedure set_cursor (
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
+		
+		
+	-- Parses a command that sets the color.
+	-- Example: "board demo set color background black"
+	procedure set_color (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
 
 	
 end et_cp_board_canvas;

@@ -16,7 +16,8 @@
    preface.rst
    features.rst 
    project.rst
-   canvas_general.rst
+   canvas_navigation.rst
+   canvas_colors.rst
    module_operations.rst
    component_library_paths.rst
    schematic.rst

@@ -36,9 +36,9 @@
 --   history of changes:
 --
 
+with ada.text_io;					use ada.text_io;
 with ada.characters.handling;		use ada.characters.handling;
 
-with ada.text_io;					use ada.text_io;
 with et_string_processing;			use et_string_processing;
 with et_runmode;					use et_runmode;
 with et_modes;						use et_modes;
@@ -199,6 +199,42 @@ package body et_canvas.cmd is
 			end set_zoom;
 
 
+
+
+
+			-- Parses a command that sets the color
+			-- of a certain item or layer.
+			-- Example: "set color background black"
+			procedure set_color is 
+
+
+				procedure set is
+					color : type_color;
+				begin
+					if to_lower (get_field (5)) = keyword_background then
+						color := to_color (get_field (6));
+						log (text => to_string (color), level => log_threshold + 1);
+						
+						set_color_background (color);
+					end if;
+				end set;
+
+				
+			begin
+				case cmd_field_count is
+					when 6 =>  -- set color background black
+						set;
+
+					when 7 .. type_field_count'last => too_long;
+
+					when others => command_incomplete;
+				end case;
+			end set_color;
+
+
+
+
+			
 			
 			
 			-- Parses a command that sets the cursor
@@ -301,7 +337,10 @@ package body et_canvas.cmd is
 			case noun is
 				when NOUN_GRID =>
 					set_grid;					
-				
+
+				when NOUN_COLOR =>
+					set_color;					
+					
 				when NOUN_ZOOM => 
 					set_zoom;
 									
@@ -363,8 +402,9 @@ package body et_canvas.cmd is
 		
 		
 	begin
-		log (text => "parse canvas command ...", level => log_threshold + 1);
-
+		log (text => "parse canvas command", level => log_threshold + 1);
+		log_indentation_up;
+		
 		-- Canvas commands can only be executed 
 		-- in a graphical runmode:
 		case runmode is
@@ -388,8 +428,11 @@ package body et_canvas.cmd is
 		-- 	propose_arguments;
 		-- end if;
 
+		log_indentation_down;
+				
 			
 			when others =>
+				log_indentation_down;
 				skipped_in_this_runmode (log_threshold + 1);
 					
 		end case;				

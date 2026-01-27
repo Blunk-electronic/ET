@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,7 +37,7 @@
 -- DESCRIPTION
 -- -----------
 -- Canvas commands are of general nature. They affect things
--- like grid, zoom, cursor.
+-- like grid, zoom, cursor, color.
 -- These commands are independend of the domain like schematic, 
 -- baord, symbol or package editor.
 --
@@ -61,8 +61,12 @@ package et_canvas.cmd is
 
 	type type_canvas_noun is (
 		NOUN_CURSOR,
+		NOUN_COLOR,
+		
 		NOUN_GRID,
+		
 		NOUN_SCALE,
+		
 		NOUN_ZOOM
 		);
 
@@ -81,6 +85,7 @@ package et_canvas.cmd is
 		cmd		: in out type_single_cmd;
 		verb	: in type_canvas_verb;
 		noun	: in type_canvas_noun);
+		-- CS log threshold ?
 
 
 

@@ -6,7 +6,7 @@
 --                                                                          --
 --                             B o d y                                      --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,7 +37,9 @@
 --
 --   ToDo: 
 
-with ada.text_io;				use ada.text_io;
+with ada.text_io;					use ada.text_io;
+with ada.characters.handling;		use ada.characters.handling;
+
 
 package body et_colors is
 
@@ -60,6 +62,33 @@ package body et_colors is
 	end;
 
 
+
+
+	function to_color (
+		color : in string)
+		return type_color
+	is 
+		c : constant string := to_lower (color);
+
+		-- The result:
+		r : type_color := black;
+	begin
+		if c = "white" then
+			r := white;
+			
+		elsif c = "black" then
+			r := black;
+			
+		-- elsif
+			-- CS: Complete for all cases or find
+			-- a more elegant way to convert from c to r.
+
+		end if;
+			
+		return r;
+	end;
+
+	
 	
 	
 	function dim (

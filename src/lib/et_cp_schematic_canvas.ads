@@ -91,6 +91,14 @@ package et_cp_schematic_canvas is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
+
+	-- Parses a command that sets the color.
+	-- Example: "schematic demo set color background black"
+	procedure set_color (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
 	
 end et_cp_schematic_canvas;
 

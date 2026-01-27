@@ -482,7 +482,10 @@ package body et_cp_schematic is
 					case noun is
 						when NOUN_CLASS =>
 							set_net_class (module_cursor, cmd, log_threshold + 1);
-												
+
+						when NOUN_COLOR =>
+							set_color (module_cursor, cmd, log_threshold + 1);
+							
 						when NOUN_GRID =>
 							set_grid (module_cursor, cmd, log_threshold + 1);
 

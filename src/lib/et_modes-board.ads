@@ -100,6 +100,7 @@ package et_modes.board is
 		NOUN_BOM,
 
 		NOUN_CENTER,
+		NOUN_COLOR,
 		NOUN_CONDUCTORS,
 		NOUN_CURSOR,
 

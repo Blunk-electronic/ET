@@ -85,6 +85,7 @@ with et_geometry_2a.contours;
 with et_text;
 with et_text_vectorized;
 with et_mirroring;				use et_mirroring;
+with et_colors;					use et_colors;
 
 
 
@@ -741,6 +742,12 @@ package et_canvas is
 	procedure focus_canvas;
 	
 
+
+	
+
+	
+		
+	
 	
 -- COORDINATES-DISPLAY:
 
@@ -1518,6 +1525,27 @@ package et_canvas is
 	function to_string (
 		key : in gdk_key_type)
 		return string;
+	
+	
+	
+	
+	
+	
+-- CANVAS COLORS:
+
+	color_background : type_color := black;
+	
+
+	procedure set_color_background (
+		color : in type_color);
+		
+	-- CS: likewise for cursor, grid and drawing origin
+	
+
+	
+	
+	
+	
 	
 	
 private

@@ -467,6 +467,9 @@ package body et_cp_board is
 					case noun is
 						when NOUN_GRID =>
 							set_grid (module_cursor, cmd, log_threshold + 1);
+
+						when NOUN_COLOR =>
+							set_color (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_CURSOR =>
 							set_cursor (cmd, log_threshold + 1);

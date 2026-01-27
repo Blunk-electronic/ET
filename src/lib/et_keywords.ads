@@ -50,6 +50,7 @@ package et_keywords is
 	keyword_assembly_technology		: constant string := "technology";
 	keyword_assembly_variant		: constant string := "assembly_variant";
 
+	keyword_background				: constant string := "background";
 	keyword_between_conductors			: constant string := "between_conductors";
 	keyword_between_conductors_same_net	: constant string := "between_conductors_of_same_net";
 	keyword_border_width			: constant string := "border_width";

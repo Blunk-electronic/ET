@@ -4496,6 +4496,28 @@ package body et_canvas is
 	end to_string;
 
 
+
+
+
+
+
+	
+
+-- CANVAS COLORS:
+
+
+	procedure set_color_background (
+		color : in type_color)
+	is begin
+		color_background := color;
+	end;
+
+
+
+
+
+
+
 	
 	
 

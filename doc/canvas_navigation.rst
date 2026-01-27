@@ -1,10 +1,10 @@
-.. _canvas_general:
+.. _canvas_navigation:
 
 .. include:: placeholders.rst
 
-********************************
-General Navigating on the Canvas
-********************************
+************************
+Navigating on the Canvas
+************************
 
 
 ++++
