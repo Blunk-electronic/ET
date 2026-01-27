@@ -1536,6 +1536,8 @@ package et_canvas is
 	color_background : type_color := black;
 	
 
+	-- This procedure sets the variable color_background.
+	-- The effect can only be seen after redrawing the canvas:
 	procedure set_color_background (
 		color : in type_color);
 		

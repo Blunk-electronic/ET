@@ -381,7 +381,6 @@ package body et_canvas_schematic is
 		use et_display.schematic;
 		
 		event_handled : boolean := true;
-	
 	begin
 		-- new_line;
 		-- put_line ("cb_draw (schematic) " & image (clock));
@@ -403,11 +402,17 @@ package body et_canvas_schematic is
 		visible_area := get_visible_area (canvas);
 		-- put_line (" visible " & to_string (visible_area));
 
+
+
+		
 		-- Set the background color:
-		set_source_rgb (context, 0.0, 0.0, 0.0); -- black
-		-- set_source_rgb (context, 1.0, 1.0, 1.0); -- white
+		set_source_rgb (context, 
+			color_background.red, color_background.green, color_background.blue);
+
 		paint (context);
 
+
+		
 		-- The ends of all kinds of lines are round:
 		set_line_cap (context, cairo_line_cap_round);
 
