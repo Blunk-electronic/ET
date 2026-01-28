@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -80,7 +80,7 @@ package body et_devices_electrical is
 		device : type_device_electrical)
 		return pac_device_model_file.bounded_string
 	is begin
-		return device.model;
+		return device.model_name;
 	end get_device_model_file;
 
 
@@ -116,7 +116,7 @@ package body et_devices_electrical is
 		device_cursor_lib : pac_device_models.cursor;
 	begin
 		-- Locate the device model in the device library
-		device_cursor_lib := get_device_model (device.model);
+		device_cursor_lib := get_device_model (device.model_name);
 		
 		return get_package_model (device_cursor_lib, device.variant);
 	end get_package_model_name;
@@ -497,13 +497,14 @@ package body et_devices_electrical is
 		device_variant		: pac_package_variant_name.bounded_string; -- N, D
 	begin
 		-- CS: The device is located twice here. Consumes too much time.
+		-- CS: use renames ?
 		-- The issue may dissolve once devices are stored in a hashed map:
 		
 		-- load package variant of given device
 		device_variant := pac_devices_electrical.element (device).variant;
 		
 		-- load the name of the generic device model
-		device_model := pac_devices_electrical.element (device).model;
+		device_model := pac_devices_electrical.element (device).model_name;
 		
 		-- locate the device model in the device library
 		device_cursor_lib := get_device_model (device_model);

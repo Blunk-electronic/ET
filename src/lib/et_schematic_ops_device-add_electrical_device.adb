@@ -102,7 +102,8 @@ is
 			-- Compose the virtual device:
 			device := (
 				appearance 	=> APPEARANCE_VIRTUAL,
-				model		=> get_device_model_file (device_cursor_lib),
+				model_name	=> get_device_model_file (device_cursor_lib),
+				-- CS model_cursor => device_cursor_lib
 				units		=> pac_units.empty_map); -- no units yet
 
 			-- Insert the device in the schematic:
@@ -139,7 +140,8 @@ is
 				
 				device := (
 					appearance 	=> APPEARANCE_PCB,
-					model 		=> get_device_model_file (device_cursor_lib),
+					model_name 	=> get_device_model_file (device_cursor_lib),
+					-- CS model_cursor => device_cursor_lib
 					units		=> pac_units.empty_map, -- no units yet
 					value		=> get_default_value (device_cursor_lib), -- if predefined in dev. model
 					variant		=> selected_variant,

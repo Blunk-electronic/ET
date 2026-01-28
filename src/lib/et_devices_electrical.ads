@@ -89,7 +89,7 @@ package et_devices_electrical is
 
 		-- The link to the device model like 
 		-- "../libraries/devices/transistor/pnp.dev":
-		model	: pac_device_model_file.bounded_string;
+		model_name : pac_device_model_file.bounded_string;
 		-- CS rename to model_name
 		
 		-- model_cursor : pac_device_models.cursor;
@@ -156,7 +156,7 @@ package et_devices_electrical is
 	function get_device_model_file (
 		device : type_device_electrical)
 		return pac_device_model_file.bounded_string; -- *.dev
-
+	-- CS rename to get_device_model_name
 
 	
 

@@ -2804,12 +2804,14 @@ package body et_kicad_to_native is
 							new_item	=> (
 								appearance	=> APPEARANCE_VIRTUAL,
 
-								-- The link to the device model is a composition of path,file and generic name:
-								model		=> concatenate_lib_name_and_generic_name (
-												library	=> element (component_cursor_kicad).library_name,
-												device	=> element (component_cursor_kicad).generic_name),
+								-- The link to the device model is a composition 
+								-- of path,file and generic name:
+								model_name	=> concatenate_lib_name_and_generic_name (
+									library	=> element (component_cursor_kicad).library_name,
+									device	=> element (component_cursor_kicad).generic_name),
 
-								-- NOTE: The value of virtual components (like power symbols) is discarded here.
+								-- NOTE: The value of virtual components (like power symbols) 
+								-- is discarded here.
 								
 								others 		=> <>), -- unit list is empty at this time
 
@@ -2836,10 +2838,11 @@ package body et_kicad_to_native is
 							new_item	=> (
 								appearance	=> APPEARANCE_PCB,
 
-								-- The link to the device model is a composition of path,file and generic name:
-								model		=> concatenate_lib_name_and_generic_name (
-												library	=> element (component_cursor_kicad).library_name,
-												device	=> element (component_cursor_kicad).generic_name),
+								-- The link to the device model is a composition
+								-- of path,file and generic name:
+								model_name	=> concatenate_lib_name_and_generic_name (
+									library	=> element (component_cursor_kicad).library_name,
+									device	=> element (component_cursor_kicad).generic_name),
 
 								value		=> element (component_cursor_kicad).value,
 								partcode	=> to_partcode (partcode_default), -- not provided by kicad

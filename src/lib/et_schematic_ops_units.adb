@@ -366,7 +366,7 @@ package body et_schematic_ops_units is
 			-- locate the device in the schematic:
 			device_cursor_sch := find (module.devices, device_name);
 
-			device_model := element (device_cursor_sch).model;
+			device_model := element (device_cursor_sch).model_name;
 
 			log (text => "device model " & to_string (device_model),
 				level => log_threshold + 1);
@@ -992,7 +992,8 @@ package body et_schematic_ops_units is
 				variant := element (device_cursor_sch).variant;
 
 				-- get the name of the device model (or the generic name)
-				device_cursor_lib := get_device_model (element (device_cursor_sch).model);
+				device_cursor_lib := get_device_model (element (device_cursor_sch).model_name);
+				-- CS: use element (device_cursor_sch).model_cursor instead
 
 				-- Get the name of the terminal (the pin or pad) according to the device variant.
 				-- Store it in variable terminal_name:

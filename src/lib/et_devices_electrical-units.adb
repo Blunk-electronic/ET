@@ -640,6 +640,8 @@ package body et_devices_electrical.units is
 	is		
 		use pac_device_models;
 
+		-- CS: use renames for device_cursor ?
+
 		-- The positions to be returned depend on the appearance of the requested device:
 		result : type_default_text_positions (element (device_cursor).appearance); -- to be returned
 		
@@ -755,7 +757,7 @@ package body et_devices_electrical.units is
 	begin
 
 		-- Fetch the model name of the given device. 
-		model := pac_devices_electrical.element (device_cursor).model;
+		model := pac_devices_electrical.element (device_cursor).model_name;
 
 		-- Get cursor to device in device library (the model name is the key into the device library).
 		-- CS: constraint_error will arise here if no associated device exists.
@@ -1052,12 +1054,15 @@ package body et_devices_electrical.units is
 		-- CS: 
 		-- simplify header as in function get_terminal
 		-- use function et_devices.get_unit_and_port
+
+		-- CS:
+		-- rename parameter "device" to device_cursor and use renames
 		
 		result : type_get_port_result;
 
 		-- Get the cursor to the full device model in the library:
 		device_model : constant pac_device_models.cursor := 
-			get_device_model (pac_devices_electrical.element (device).model);
+			get_device_model (pac_devices_electrical.element (device).model_name);
 
 		-- This is the package variant used by the given device:
 		variant_sch : constant pac_package_variant_name.bounded_string :=

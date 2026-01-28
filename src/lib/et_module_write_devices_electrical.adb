@@ -262,7 +262,7 @@ package body et_module_write_devices_electrical is
 			section_mark (section_device, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (d)));
 			write (keyword => keyword_appearance, parameters => to_string (element (d).appearance));
-			write (keyword => keyword_model, parameters => to_string (element (d).model));
+			write (keyword => keyword_model, parameters => to_string (device.model_name));
 
 			case element (d).appearance is
 				when APPEARANCE_PCB =>

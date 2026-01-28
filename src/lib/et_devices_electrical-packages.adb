@@ -458,7 +458,7 @@ package body et_devices_electrical.packages is
 		default_placeholders : type_text_placeholders;
 	begin
 		-- Locate the device in the device library:
-		cursor_lib := get_device_model (device.model);
+		cursor_lib := get_device_model (device.model_name);
 
 		-- Get the default placeholders as they are specified
 		-- in the package model:

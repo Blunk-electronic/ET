@@ -231,7 +231,7 @@ package body et_module_read_device_electrical is
 			inserted : boolean;
 
 			
-			-- Derives package name from device.model and device.variant.
+			-- Derives package name from device.model_name and device.variant.
 			-- Checks if variant exits in device.model.
 			function get_package_name return pac_package_name.bounded_string is
 				name : pac_package_name.bounded_string; -- S_SO14 -- to be returned
@@ -266,13 +266,18 @@ package body et_module_read_device_electrical is
 				
 			begin -- get_package_name
 				log_indentation_up;
-				log (text => "verifying package variant " & to_string (device.variant) &
-						" in device model " & to_string (device.model) & " ... ", level => log_threshold + 2);
+				
+				log (text => "verify package variant " & to_string (device.variant) 
+					 & " in device model " & to_string (device.model_name),
+					 -- CS use get_device_model_name (device.model_cursor) instead					 
+					 level => log_threshold + 2);
 
-				-- Locate the device in the library. CS: It should be there, otherwise exception arises here:
+				-- Locate the device in the library. 
+				-- CS: It should be there, otherwise exception arises here:
 				device_cursor := pac_device_models.find (
 					container	=> et_device_library.device_library,
-					key			=> device.model); -- libraries/devices/7400.dev
+					key			=> device.model_name); -- libraries/devices/7400.dev
+				-- CS use device.model_cursor instead
 
 				-- Query package variants
 				pac_device_models.query_element (
@@ -302,7 +307,9 @@ package body et_module_read_device_electrical is
 			end if;
 			
 			-- assign temporarily variable for model:
-			device.model := device_model;
+			device.model_name := device_model;
+			-- CS Assign device.model_cursor :=
+
 
 			-- assign appearance specific temporarily variables and write log information
 			if device.appearance = APPEARANCE_PCB then
@@ -365,10 +372,12 @@ package body et_module_read_device_electrical is
 			-- Read the device model (like ../libraries/transistor/pnp.dev) and
 			-- check the conductor layers:
 			read_device (
-				file_name		=> device.model,
+				file_name		=> device.model_name, 
+				-- CS use get_device_model_name (device.model_cursor)
 				check_layers	=> (check => YES, deepest_layer => get_deepest_conductor_layer (module_cursor)),
 				log_threshold	=> log_threshold + 2);
 
+			
 			-- Validate partcode according to category, package and value:
 			if device.appearance = APPEARANCE_PCB then
 				et_conventions.validate_partcode (

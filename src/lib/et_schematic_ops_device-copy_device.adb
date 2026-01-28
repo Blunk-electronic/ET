@@ -111,7 +111,8 @@ is
 					position	=> device_cursor_sch,
 					new_item	=> (
 						appearance 	=> APPEARANCE_PCB,
-						model		=> original.model,
+						model_name => original.model_name,
+						-- CS model_cursor => device_cursor_lib ?					 
 						units		=> pac_units.empty_map,
 						value		=> original.value,
 						partcode	=> original.partcode,
@@ -129,7 +130,8 @@ is
 					position	=> device_cursor_sch,
 					new_item	=> (
 						appearance 	=> APPEARANCE_VIRTUAL,
-						model		=> original.model,
+						model_name	=> original.model_name,
+						-- CS model_cursor => device_cursor_lib ?
 						units		=> pac_units.empty_map));
 
 			end if;
