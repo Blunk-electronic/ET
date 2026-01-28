@@ -101,10 +101,9 @@ is
 
 			-- Compose the virtual device:
 			device := (
-				appearance 	=> APPEARANCE_VIRTUAL,
-				model_name	=> get_device_model_file (device_cursor_lib),
-				-- CS model_cursor => device_cursor_lib
-				units		=> pac_units.empty_map); -- no units yet
+				appearance 		=> APPEARANCE_VIRTUAL,
+				model_cursor	=> device_cursor_lib,
+				units			=> pac_units.empty_map); -- no units yet
 
 			-- Insert the device in the schematic:
 			pac_devices_electrical.insert (
@@ -139,12 +138,11 @@ is
 				log_indentation_up;
 				
 				device := (
-					appearance 	=> APPEARANCE_PCB,
-					model_name 	=> get_device_model_file (device_cursor_lib),
-					-- CS model_cursor => device_cursor_lib
-					units		=> pac_units.empty_map, -- no units yet
-					value		=> get_default_value (device_cursor_lib), -- if predefined in dev. model
-					variant		=> selected_variant,
+					appearance 		=> APPEARANCE_PCB,
+					model_cursor	=> device_cursor_lib,
+					units			=> pac_units.empty_map, -- no units yet
+					value			=> get_default_value (device_cursor_lib), -- if predefined in dev. model
+					variant			=> selected_variant,
 
 					-- Initially, the text placeholders are copies of 
 					-- the placeholders as they are defined in the package model.

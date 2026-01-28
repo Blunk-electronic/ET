@@ -110,16 +110,15 @@ is
 					inserted	=> inserted,
 					position	=> device_cursor_sch,
 					new_item	=> (
-						appearance 	=> APPEARANCE_PCB,
-						model_name => original.model_name,
-						-- CS model_cursor => device_cursor_lib ?					 
-						units		=> pac_units.empty_map,
-						value		=> original.value,
-						partcode	=> original.partcode,
-						purpose		=> original.purpose,
-						variant		=> original.variant,
+						appearance 		=> APPEARANCE_PCB,
+						model_cursor	=> device_cursor_lib,
+						units			=> pac_units.empty_map,
+						value			=> original.value,
+						partcode		=> original.partcode,
+						purpose			=> original.purpose,
+						variant			=> original.variant,
 						placeholders	=> original.placeholders, -- layout related
-						others		=> <> )); 
+						others			=> <> )); 
 						-- CS: The position in layout assumes default. Should be
 						-- so that it is not placed on top of another device.
 
@@ -129,10 +128,9 @@ is
 					inserted	=> inserted,
 					position	=> device_cursor_sch,
 					new_item	=> (
-						appearance 	=> APPEARANCE_VIRTUAL,
-						model_name	=> original.model_name,
-						-- CS model_cursor => device_cursor_lib ?
-						units		=> pac_units.empty_map));
+						appearance 		=> APPEARANCE_VIRTUAL,
+						model_cursor	=> device_cursor_lib,
+						units			=> pac_units.empty_map));
 
 			end if;
 

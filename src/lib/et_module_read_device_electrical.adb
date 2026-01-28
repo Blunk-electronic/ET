@@ -111,6 +111,7 @@ package body et_module_read_device_electrical is
 	
 	device_name				: et_device_name.type_device_name; -- C12
 	device_model			: et_device_model_names.pac_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
+	-- CS rename to device_model_name
 	
 	device_value			: et_device_value.pac_device_value.bounded_string; -- 470R
 	device_appearance		: et_units.type_appearance_schematic;
@@ -235,7 +236,6 @@ package body et_module_read_device_electrical is
 			-- Checks if variant exits in device.model.
 			function get_package_name return pac_package_name.bounded_string is
 				name : pac_package_name.bounded_string; -- S_SO14 -- to be returned
-				device_cursor : pac_device_models.cursor;
 
 				
 				procedure query_variants (
@@ -244,9 +244,8 @@ package body et_module_read_device_electrical is
 				is
 					use pac_package_variants;
 					variant_cursor : pac_package_variants.cursor;
-					use ada.directories;
-					
-				begin -- query_variants
+					use ada.directories;					
+				begin
 					-- Locate the variant (specified by the device in the module) in
 					-- the device model.
 					variant_cursor := pac_package_variants.find (
@@ -264,24 +263,16 @@ package body et_module_read_device_electrical is
 				end;
 
 				
-			begin -- get_package_name
+			begin
 				log_indentation_up;
 				
 				log (text => "verify package variant " & to_string (device.variant) 
-					 & " in device model " & to_string (device.model_name),
-					 -- CS use get_device_model_name (device.model_cursor) instead					 
+					 & " in device model " & get_device_model_name (device.model_cursor),
 					 level => log_threshold + 2);
-
-				-- Locate the device in the library. 
-				-- CS: It should be there, otherwise exception arises here:
-				device_cursor := pac_device_models.find (
-					container	=> et_device_library.device_library,
-					key			=> device.model_name); -- libraries/devices/7400.dev
-				-- CS use device.model_cursor instead
 
 				-- Query package variants
 				pac_device_models.query_element (
-					position	=> device_cursor,
+					position	=> device.model_cursor,
 					process		=> query_variants'access);
 				
 				log_indentation_down;
@@ -300,15 +291,28 @@ package body et_module_read_device_electrical is
 			log (text => "device " & to_string (device_name), level => log_threshold + 1);
 			log_indentation_up;
 
+			-- The device model must be read first because
+			-- later a cursor to the device model is required
+			-- to create the link between schematic device and device model:
+			log (text => "read device model", level => log_threshold + 2);
+			
+			-- Read the device model (like ../libraries/transistor/pnp.dev) and
+			-- check the conductor layers:
+			read_device (
+				file_name		=> device_model,
+				check_layers	=> (check => YES, deepest_layer => get_deepest_conductor_layer (module_cursor)),
+				log_threshold	=> log_threshold + 3);
+
+			
+			
 			if not et_conventions.prefix_valid (device_name) then 
 				--log (message_warning & "prefix of device " & et_libraries.to_string (device_name) 
 				--	 & " not conformant with conventions !");
 				null; -- CS output something helpful
 			end if;
 			
-			-- assign temporarily variable for model:
-			device.model_name := device_model;
-			-- CS Assign device.model_cursor :=
+			-- Assign the cursor to the device model;
+			device.model_cursor := get_device_model (device_model);
 
 
 			-- assign appearance specific temporarily variables and write log information
@@ -351,6 +355,9 @@ package body et_module_read_device_electrical is
 				-- CS: warn operator if provided but ignored due to the fact that device is virtual
 			end if;
 
+
+			log (text => "add device to schematic", level => log_threshold + 2);
+			
 			pac_devices_electrical.insert (
 				container	=> module.devices,
 				position	=> device_cursor,
@@ -358,6 +365,7 @@ package body et_module_read_device_electrical is
 				key			=> device_name, -- IC23, R5, LED12
 				new_item	=> device.all);
 
+		
 			-- The device name must not be in use by any electrical device:
 			if not inserted then
 				et_devices_electrical.device_name_in_use (device_name);
@@ -368,15 +376,18 @@ package body et_module_read_device_electrical is
 				et_devices_non_electrical.device_name_in_use (device_name);
 			end if;
 
-			
-			-- Read the device model (like ../libraries/transistor/pnp.dev) and
-			-- check the conductor layers:
-			read_device (
-				file_name		=> device.model_name, 
-				-- CS use get_device_model_name (device.model_cursor)
-				check_layers	=> (check => YES, deepest_layer => get_deepest_conductor_layer (module_cursor)),
-				log_threshold	=> log_threshold + 2);
 
+-- 			log (text => "read device model", level => log_threshold + 2);
+-- 			
+-- 			-- Read the device model (like ../libraries/transistor/pnp.dev) and
+-- 			-- check the conductor layers:
+-- 			read_device (
+-- 				file_name		=> get_device_model_name (device.model_cursor),
+-- 				check_layers	=> (check => YES, deepest_layer => get_deepest_conductor_layer (module_cursor)),
+-- 				log_threshold	=> log_threshold + 2);
+
+
+			log (text => "validate partcode", level => log_threshold + 2);
 			
 			-- Validate partcode according to category, package and value:
 			if device.appearance = APPEARANCE_PCB then
@@ -389,7 +400,7 @@ package body et_module_read_device_electrical is
 					packge			=> get_package_name, 
 					
 					value			=> device.value,
-					log_threshold	=> log_threshold + 2);
+					log_threshold	=> log_threshold + 3);
 			end if;
 			
 			-- reset pointer "device" so that the old device gets destroyed

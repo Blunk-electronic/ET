@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -454,16 +454,16 @@ package body et_devices_electrical.packages is
 	procedure reset_placeholder_positions (
 		device		: in out type_device_electrical)
 	is 
-		cursor_lib : pac_device_models.cursor;
+		-- cursor_lib : pac_device_models.cursor;
 		default_placeholders : type_text_placeholders;
 	begin
 		-- Locate the device in the device library:
-		cursor_lib := get_device_model (device.model_name);
+		-- cursor_lib := get_device_model (device.model_name);
 
 		-- Get the default placeholders as they are specified
 		-- in the package model:
 		default_placeholders := get_default_placeholders (
-			cursor_lib, get_package_variant (device));
+			device.model_cursor, get_package_variant (device));
 
 		-- Assign the default placeholders to the given device:
 		device.placeholders := default_placeholders;		

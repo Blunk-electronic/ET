@@ -2694,6 +2694,8 @@ package body et_kicad_to_native is
 			component_cursor_native	: pac_devices_electrical.cursor;
 			component_inserted		: boolean;
 
+			model_name : pac_device_model_file.bounded_string;
+			
 			
 			-- Copies the kicad units to the native component.
 			procedure copy_units (
@@ -2796,19 +2798,21 @@ package body et_kicad_to_native is
 				-- Kicad stuff like the boolean power_flag is ignored.
 				case element (component_cursor_kicad).appearance is
 					when APPEARANCE_VIRTUAL =>
+
+						-- The link to the device model is a composition 
+						-- of path,file and generic name:
+						model_name := concatenate_lib_name_and_generic_name (
+							library	=> element (component_cursor_kicad).library_name,
+							device	=> element (component_cursor_kicad).generic_name);
+
 						
 						pac_devices_electrical.insert (
 							container	=> module.devices,
 							key			=> key (component_cursor_kicad), -- PWR04, FLG01
 							position	=> component_cursor_native,
 							new_item	=> (
-								appearance	=> APPEARANCE_VIRTUAL,
-
-								-- The link to the device model is a composition 
-								-- of path,file and generic name:
-								model_name	=> concatenate_lib_name_and_generic_name (
-									library	=> element (component_cursor_kicad).library_name,
-									device	=> element (component_cursor_kicad).generic_name),
+								appearance		=> APPEARANCE_VIRTUAL,
+								model_cursor	=> get_device_model (model_name),
 
 								-- NOTE: The value of virtual components (like power symbols) 
 								-- is discarded here.
@@ -2830,24 +2834,26 @@ package body et_kicad_to_native is
 -- 
 -- 						log (text => "placeholders assy bottom" & count_type'image (et_package_library.pac_text_placeholders.length (
 -- 							element (component_cursor_kicad).text_placeholders.assy_doc.bottom)));
+
+
+						-- The link to the device model is a composition
+						-- of path,file and generic name:
+						model_name := concatenate_lib_name_and_generic_name (
+							library	=> element (component_cursor_kicad).library_name,
+							device	=> element (component_cursor_kicad).generic_name);
+						
 						
 						pac_devices_electrical.insert (
 							container	=> module.devices,
 							key			=> key (component_cursor_kicad), -- IC308, R12
 							position	=> component_cursor_native,
 							new_item	=> (
-								appearance	=> APPEARANCE_PCB,
-
-								-- The link to the device model is a composition
-								-- of path,file and generic name:
-								model_name	=> concatenate_lib_name_and_generic_name (
-									library	=> element (component_cursor_kicad).library_name,
-									device	=> element (component_cursor_kicad).generic_name),
-
-								value		=> element (component_cursor_kicad).value,
-								partcode	=> to_partcode (partcode_default), -- not provided by kicad
-								purpose		=> empty_purpose, -- not provided by kicad
-								variant		=> element (component_cursor_kicad).variant,
+								appearance		=> APPEARANCE_PCB,
+								model_cursor	=> get_device_model (model_name),
+								value			=> element (component_cursor_kicad).value,
+								partcode		=> to_partcode (partcode_default), -- not provided by kicad
+								purpose			=> empty_purpose, -- not provided by kicad
+								variant			=> element (component_cursor_kicad).variant,
 
 								position		=> element (component_cursor_kicad).position,
 								placeholders	=> element (component_cursor_kicad).text_placeholders,

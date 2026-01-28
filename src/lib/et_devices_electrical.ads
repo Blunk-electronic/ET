@@ -86,17 +86,13 @@ package et_devices_electrical is
 	type type_device_electrical (  -- CS should be private
 		appearance : type_appearance_schematic) 
 	is record
-
 		-- The link to the device model like 
-		-- "../libraries/devices/transistor/pnp.dev":
-		model_name : pac_device_model_file.bounded_string;
-		-- CS rename to model_name
-		
-		-- model_cursor : pac_device_models.cursor;
-		-- CS use a cursor to the model instead ?
+		-- "../libraries/devices/transistor/pnp.dev"
+		-- is a cursor to the device library:		
+		model_cursor : pac_device_models.cursor;
 
 		-- IMPORTANT: When reading the module file, the
-		-- device libraries must have been read beforehand.
+		-- device model must have been read beforehand.
 		-- Otherwise a valid cursor can not be assigned
 		-- to the device !
 
@@ -162,6 +158,11 @@ package et_devices_electrical is
 		device : type_device_electrical)
 		return pac_device_model_file.bounded_string; -- *.dev
 	-- CS rename to get_device_model_name
+
+
+	function get_device_model_name (
+		device : type_device_electrical)
+		return string;
 
 	
 

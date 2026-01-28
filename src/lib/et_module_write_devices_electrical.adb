@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -262,7 +262,9 @@ package body et_module_write_devices_electrical is
 			section_mark (section_device, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (d)));
 			write (keyword => keyword_appearance, parameters => to_string (element (d).appearance));
-			write (keyword => keyword_model, parameters => to_string (device.model_name));
+			
+			write (keyword => keyword_model, 
+				parameters => get_device_model_name (device));
 
 			case element (d).appearance is
 				when APPEARANCE_PCB =>

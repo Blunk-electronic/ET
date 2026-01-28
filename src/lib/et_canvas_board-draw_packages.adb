@@ -880,8 +880,8 @@ procedure draw_packages is
 		device	: in type_device_electrical)
 	is
 		-- The cursor to the actual device model:
-		use et_device_library;
-		device_model_cursor : pac_device_models.cursor;
+		-- use et_device_library;
+		-- device_model_cursor : pac_device_models.cursor;
 
 		package_model_name : pac_package_model_file.bounded_string;
 	begin
@@ -915,11 +915,10 @@ procedure draw_packages is
 			device_placeholders := device.placeholders;
 			
 			-- Get the cursor to the device model:
-			device_model_cursor := get_device_model (device.model_name);
-			-- CS use device.model_cursor instead
+			-- device_model_cursor := device.model_cursor;
 
 			-- Get the name of the package model:
-			package_model_name := get_package_model (device_model_cursor, device.variant);
+			package_model_name := get_package_model (device.model_cursor, device.variant);
 
 			-- Send the actual package model to the draw procedure:
 			draw_package (

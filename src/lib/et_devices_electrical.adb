@@ -79,11 +79,27 @@ package body et_devices_electrical is
 	function get_device_model_file (
 		device : type_device_electrical)
 		return pac_device_model_file.bounded_string
-	is begin
-		return device.model_name;
+	is 
+		use pac_device_models;
+	begin
+		return key (device.model_cursor);
 	end get_device_model_file;
 
 
+
+
+	function get_device_model_name (
+		device : type_device_electrical)
+		return string
+	is 
+		use pac_device_models;
+	begin
+		return to_string (key (device.model_cursor));
+	end;
+
+
+	
+	
 	
 
 	function get_device_model (
@@ -113,12 +129,8 @@ package body et_devices_electrical is
 		return pac_package_model_file.bounded_string
 	is
 		use et_device_library.packages;
-		device_cursor_lib : pac_device_models.cursor;
 	begin
-		-- Locate the device model in the device library
-		device_cursor_lib := get_device_model (device.model_name);
-		
-		return get_package_model (device_cursor_lib, device.variant);
+		return get_package_model (device.model_cursor, device.variant);
 	end get_package_model_name;
 
 
@@ -185,15 +197,9 @@ package body et_devices_electrical is
 		device : in pac_devices_electrical.cursor)
 		return pac_device_models.cursor
 	is
-		use et_device_model_names;
-		model_file : pac_device_model_file.bounded_string;
+		d : type_device_electrical renames element (device);
 	begin
-		-- The name of the device model file is THE link
-		-- from device in schematic to device in library:
-		model_file := get_device_model_file (device);
-
-		-- Locate the device model in the library:
-		return get_device_model (model_file);
+		return d.model_cursor;
 	end get_device_model;
 
 
@@ -491,25 +497,9 @@ package body et_devices_electrical is
 		return pac_package_model_file.bounded_string
 	is
 		use et_device_library.packages;
-		use et_device_model_names;
-		device_model		: pac_device_model_file.bounded_string;
-		device_cursor_lib	: pac_device_models.cursor;
-		device_variant		: pac_package_variant_name.bounded_string; -- N, D
+		d : type_device_electrical renames element (device);
 	begin
-		-- CS: The device is located twice here. Consumes too much time.
-		-- CS: use renames ?
-		-- The issue may dissolve once devices are stored in a hashed map:
-		
-		-- load package variant of given device
-		device_variant := pac_devices_electrical.element (device).variant;
-		
-		-- load the name of the generic device model
-		device_model := pac_devices_electrical.element (device).model_name;
-		
-		-- locate the device model in the device library
-		device_cursor_lib := get_device_model (device_model);
-		
-		return get_package_model (device_cursor_lib, device_variant);
+		return get_package_model (d.model_cursor, d.variant);
 	end get_package_model_name;
 
 
