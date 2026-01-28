@@ -107,14 +107,13 @@ package body et_module_read_device_electrical is
 	
 
 	-- The temporarily device will exist where "device" points at:
-	device					: access et_devices_electrical.type_device_electrical;
+	device				: access et_devices_electrical.type_device_electrical;
 	
-	device_name				: et_device_name.type_device_name; -- C12
-	device_model			: et_device_model_names.pac_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
-	-- CS rename to device_model_name
+	device_name			: et_device_name.type_device_name; -- C12
+	device_model_name	: et_device_model_names.pac_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
 	
-	device_value			: et_device_value.pac_device_value.bounded_string; -- 470R
-	device_appearance		: et_units.type_appearance_schematic;
+	device_value		: et_device_value.pac_device_value.bounded_string; -- 470R
+	device_appearance	: et_units.type_appearance_schematic;
 
 	
 	device_partcode	: et_device_partcode.pac_device_partcode.bounded_string;
@@ -128,6 +127,7 @@ package body et_module_read_device_electrical is
 	device_position	: et_board_coordinates.type_package_position; -- in the layout ! incl. angle and face
 	
 
+	
 		
 	procedure read_device (
 		line : in type_fields_of_line)
@@ -174,7 +174,7 @@ package body et_module_read_device_electrical is
 
 		elsif kw = keyword_model then -- model /models/capacitor.dev
 			expect_field_count (line, 2);
-			device_model := to_file_name (f (line, 2));
+			device_model_name := to_file_name (f (line, 2));
 			
 		elsif kw = keyword_variant then -- variant S_0805, N, D
 			expect_field_count (line, 2);
@@ -224,17 +224,160 @@ package body et_module_read_device_electrical is
 			use et_device_model_names;
 			use et_package_name;
 			use et_package_model_name;
-			use et_pcb_stack;
 			use et_package_variant;
-			use pac_package_variant_name;
+
+
+
+			procedure read_device_model is 
+				use et_pcb_stack;
+				use et_device_read;
+			begin
+				log (text => "read device model", level => log_threshold + 2);
+				log_indentation_up;
+				
+				-- Read the device model (like ../libraries/transistor/pnp.dev) and
+				-- check the conductor layers:
+				read_device (
+					file_name		=> device_model_name,
+					check_layers	=> (
+						check			=> YES, 
+						deepest_layer 	=> get_deepest_conductor_layer (module_cursor)),
+					log_threshold	=> log_threshold + 3);
+
+				log_indentation_down;
+			end read_device_model;
+
 			
-			device_cursor : pac_devices_electrical.cursor;
+
+			use et_device_appearance;
+			use et_device_purpose;
+			use et_device_value;
+			use et_device_partcode;
+			
+
+			procedure validate_prefix is
+				use et_conventions;
+			begin
+				log (text => "validate prefix", level => log_threshold + 2);
+				log_indentation_up;
+				
+				if not prefix_valid (device_name) then 
+					--log (message_warning & "prefix of device " & et_libraries.to_string (device_name) 
+					--	 & " not conformant with conventions !");
+					null; -- CS output something helpful
+				end if;
+
+				log_indentation_down;
+			end validate_prefix;
+
+
+
+			-- Checks for invalid characters in the properties of the 
+			-- device if it is real. 
+			-- Assigns appearance specific variables if the device is real.
+			-- Otherwise nothing happens here:
+			procedure check_characters is
+				use pac_package_variant_name;
+			begin
+				if device.appearance = APPEARANCE_PCB then
+					log (text => "check characters", level => log_threshold + 2);
+					log_indentation_up;
+
+					
+					-- value:
+					if not value_characters_valid (device_value) then
+						log (WARNING, "value of " & to_string (device_name) &
+								" contains invalid characters !");
+						log_indentation_reset; -- CS no need ?						
+						value_invalid (to_string (device_value));
+					end if;
+					
+					log (text => "value " & to_string (device_value), level => log_threshold + 2);
+					device.value := device_value;
+					if not et_conventions.value_valid (device_value, get_prefix (device_name)) then
+						log (WARNING, "value of " & to_string (device_name) &
+							" not conformant with conventions !");
+					end if;
+
+					
+					-- partcode:
+					log (text => "partcode " & to_string (device_partcode), level => log_threshold + 2);
+					if partcode_characters_valid (device_partcode) then
+						device.partcode	:= device_partcode;
+					else
+						log_indentation_reset; -- CS no need ?
+						partcode_invalid (to_string (device_partcode));
+					end if;
+
+					
+					-- purpose:
+					log (text => "purpose " & to_string (device_purpose), level => log_threshold + 2);
+					if purpose_characters_valid (device_purpose) then
+						device.purpose	:= device_purpose;
+					else
+						log_indentation_reset; -- CS no need ?
+						purpose_invalid (to_string (device_purpose));
+					end if;
+
+
+					-- variant:
+					log (text => "variant " & to_string (device_variant), level => log_threshold + 2);
+					check_variant_name_characters (device_variant);
+					device.variant	:= device_variant;
+
+					-- CS: warn operator if provided but ignored due to the fact that device is virtual
+
+					log_indentation_down;
+				end if;
+			end check_characters;
+
+
 			inserted : boolean;
+			
+			-- Adds the device to the schematic:
+			procedure add_device_to_schematic is 
+				device_cursor : pac_devices_electrical.cursor;
+			begin
+				log (text => "add device to schematic", level => log_threshold + 2);
+				log_indentation_up;
+			
+				pac_devices_electrical.insert (
+					container	=> module.devices,
+					position	=> device_cursor,
+					inserted	=> inserted,
+					key			=> device_name, -- IC23, R5, LED12
+					new_item	=> device.all);
+
+				log_indentation_down;
+			end add_device_to_schematic;
+			
+
+			-- Tests the "inserted" flag and issues a log message.
+			-- The inserted-flag indicates that the device does not exist
+			-- already:
+			procedure check_for_name_in_use is begin
+				log (text => "check for name in use", level => log_threshold + 2);
+				log_indentation_up;
+				
+				-- The device name must not be in use by any electrical device:
+				if not inserted then
+					et_devices_electrical.device_name_in_use (device_name);
+				end if;
+
+				-- The device name must not be in use by any non-electrical device:
+				if module.devices_non_electric.contains (device_name) then
+					et_devices_non_electrical.device_name_in_use (device_name);
+				end if;
+
+				log_indentation_down;
+			end check_for_name_in_use;
+			
 
 			
 			-- Derives package name from device.model_name and device.variant.
 			-- Checks if variant exits in device.model.
 			function get_package_name return pac_package_name.bounded_string is
+				use pac_package_variant_name;
 				name : pac_package_name.bounded_string; -- S_SO14 -- to be returned
 
 				
@@ -280,145 +423,75 @@ package body et_module_read_device_electrical is
 			end get_package_name;
 
 
-			use et_device_read;
-			use et_device_appearance;
-			use et_device_purpose;
-			use et_device_value;				
-			use et_device_partcode;
+
+
+			procedure validate_partcode is begin
+				log (text => "validate partcode", level => log_threshold + 2);
+				log_indentation_up;
+				
+				-- Validate partcode according to category, package and value:
+				if device.appearance = APPEARANCE_PCB then
+					et_conventions.validate_partcode (
+						partcode		=> device.partcode,
+						device_name		=> device_name,
+
+						-- Derive package name from device.model and device.variant.
+						-- Check if variant specified in device.model.
+						packge			=> get_package_name, 
+						
+						value			=> device.value,
+						log_threshold	=> log_threshold + 3);
+				end if;
+
+				log_indentation_down;
+			end validate_partcode;
+
+						
+
+			procedure clean_up is begin				
+				-- reset pointer "device" so that the old device gets destroyed
+				device := null;
+				-- CS free memory ?
+
+				-- clean up temporarily variables for next device
+				-- CS ? device_name		:= (others => <>);
+				device_model_name	:= to_file_name ("");
+				device_value		:= pac_device_value.to_bounded_string ("");
+				device_purpose		:= pac_device_purpose.to_bounded_string ("");
+				device_partcode 	:= pac_device_partcode.to_bounded_string ("");
+				device_variant		:= to_variant_name ("");
+			end clean_up;
 
 			
 		begin
-			log (text => "device " & to_string (device_name), level => log_threshold + 1);
+			log (text => "device " & to_string (device_name), 
+				 level => log_threshold + 1);
+			
 			log_indentation_up;
 
 			-- The device model must be read first because
 			-- later a cursor to the device model is required
 			-- to create the link between schematic device and device model:
-			log (text => "read device model", level => log_threshold + 2);
-			
-			-- Read the device model (like ../libraries/transistor/pnp.dev) and
-			-- check the conductor layers:
-			read_device (
-				file_name		=> device_model,
-				check_layers	=> (check => YES, deepest_layer => get_deepest_conductor_layer (module_cursor)),
-				log_threshold	=> log_threshold + 3);
+			read_device_model;
 
-			
-			
-			if not et_conventions.prefix_valid (device_name) then 
-				--log (message_warning & "prefix of device " & et_libraries.to_string (device_name) 
-				--	 & " not conformant with conventions !");
-				null; -- CS output something helpful
-			end if;
+			validate_prefix;
 			
 			-- Assign the cursor to the device model;
-			device.model_cursor := get_device_model (device_model);
+			device.model_cursor := get_device_model (device_model_name);
 
+			check_characters;
 
-			-- assign appearance specific temporarily variables and write log information
-			if device.appearance = APPEARANCE_PCB then
-
-				if not value_characters_valid (device_value) then
-					log (WARNING, "value of " & to_string (device_name) &
-							" contains invalid characters !");
-					log_indentation_reset;
-					value_invalid (to_string (device_value));
-				end if;
-				
-				log (text => "value " & to_string (device_value), level => log_threshold + 2);
-				device.value := device_value;
-				if not et_conventions.value_valid (device_value, get_prefix (device_name)) then
-					log (WARNING, "value of " & to_string (device_name) &
-						" not conformant with conventions !");
-				end if;
-
-				log (text => "partcode " & to_string (device_partcode), level => log_threshold + 2);
-				if partcode_characters_valid (device_partcode) then
-					device.partcode	:= device_partcode;
-				else
-					log_indentation_reset;
-					partcode_invalid (to_string (device_partcode));
-				end if;
-
-				log (text => "purpose " & to_string (device_purpose), level => log_threshold + 2);
-				if purpose_characters_valid (device_purpose) then
-					device.purpose	:= device_purpose;
-				else
-					log_indentation_reset;
-					purpose_invalid (to_string (device_purpose));
-				end if;
-
-				log (text => "variant " & to_string (device_variant), level => log_threshold + 2);
-				check_variant_name_characters (device_variant);
-				device.variant	:= device_variant;
-
-				-- CS: warn operator if provided but ignored due to the fact that device is virtual
-			end if;
-
-
-			log (text => "add device to schematic", level => log_threshold + 2);
-			
-			pac_devices_electrical.insert (
-				container	=> module.devices,
-				position	=> device_cursor,
-				inserted	=> inserted,
-				key			=> device_name, -- IC23, R5, LED12
-				new_item	=> device.all);
-
+			add_device_to_schematic;
 		
-			-- The device name must not be in use by any electrical device:
-			if not inserted then
-				et_devices_electrical.device_name_in_use (device_name);
-			end if;
+			check_for_name_in_use;
+		
+			validate_partcode;
 
-			-- The device name must not be in use by any non-electrical device:
-			if module.devices_non_electric.contains (device_name) then
-				et_devices_non_electrical.device_name_in_use (device_name);
-			end if;
-
-
--- 			log (text => "read device model", level => log_threshold + 2);
--- 			
--- 			-- Read the device model (like ../libraries/transistor/pnp.dev) and
--- 			-- check the conductor layers:
--- 			read_device (
--- 				file_name		=> get_device_model_name (device.model_cursor),
--- 				check_layers	=> (check => YES, deepest_layer => get_deepest_conductor_layer (module_cursor)),
--- 				log_threshold	=> log_threshold + 2);
-
-
-			log (text => "validate partcode", level => log_threshold + 2);
-			
-			-- Validate partcode according to category, package and value:
-			if device.appearance = APPEARANCE_PCB then
-				et_conventions.validate_partcode (
-					partcode		=> device.partcode,
-					device_name		=> device_name,
-
-					-- Derive package name from device.model and device.variant.
-					-- Check if variant specified in device.model.
-					packge			=> get_package_name, 
-					
-					value			=> device.value,
-					log_threshold	=> log_threshold + 3);
-			end if;
-			
-			-- reset pointer "device" so that the old device gets destroyed
-			device := null;
-			-- CS free memory ?
-
-			-- clean up temporarily variables for next device
-			-- CS ? device_name		:= (others => <>);
-			device_model	:= to_file_name ("");
-			device_value	:= pac_device_value.to_bounded_string ("");
-			device_purpose	:= pac_device_purpose.to_bounded_string ("");
-			device_partcode := pac_device_partcode.to_bounded_string ("");
-			device_variant	:= to_variant_name ("");
+			clean_up;
 
 			log_indentation_down;
 		end query_module;
-	
-	
+		
 	
 	
 	begin
@@ -433,8 +506,7 @@ package body et_module_read_device_electrical is
 			process		=> query_module'access);
 	
 		
-		log_indentation_down;
-	
+		log_indentation_down;	
 	end insert_device;
 	
 	
