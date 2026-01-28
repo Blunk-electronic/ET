@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -47,13 +47,14 @@ package et_package_model_name is
 	-- something like "libraries/packages/smd/SOT23.pac".
 	-- So it is about the name of a file that contains
 	-- the actual package model.
-
+	-- The model name is equally to the file name that contains
+	-- the model:
 	
 	package_model_file_name_length_max : constant positive := 300;
 	
 	package pac_package_model_file is new 
 		generic_bounded_length (package_model_file_name_length_max);
-
+	-- CS rename to pac_package_model_name
 		
 		
 	package_model_file_extension : constant string := "pac";

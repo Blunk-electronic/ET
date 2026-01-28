@@ -87,8 +87,12 @@ package et_devices_electrical is
 		appearance : type_appearance_schematic) 
 	is record
 
-		-- The link to the device model like ../libraries/devices/transistor/pnp.dev
+		-- The link to the device model like 
+		-- "../libraries/devices/transistor/pnp.dev":
 		model	: pac_device_model_file.bounded_string;
+		-- CS rename to model_name
+		
+		-- model_cursor : pac_device_models.cursor;
 		-- CS use a cursor to the model instead ?
 
 		-- The deployed units like PWR, A, B, ...

@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -38,6 +38,9 @@
 --
 --   history of changes:
 --
+-- To Do:
+-- - rename this package to et_symbol_model_name
+--
 
 with ada.strings.bounded; 		use ada.strings.bounded;
 
@@ -47,10 +50,15 @@ package et_symbol_name is
 	
 	
 	symbol_file_name_length_max : constant natural := 500;
-	
+
+
+	-- A symbol model has a name like
+	-- "../lbr/logic/nand.sym"
+	-- The model name is equally to the file name that contains
+	-- the model:
 	package pac_symbol_model_file is new 
 		generic_bounded_length (symbol_file_name_length_max);
-
+	-- CS rename to pac_symbol_model_name
 
 	symbol_library_file_extension : constant string := "sym";
 		
