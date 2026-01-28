@@ -94,6 +94,10 @@ package et_devices_electrical is
 		
 		-- model_cursor : pac_device_models.cursor;
 		-- CS use a cursor to the model instead ?
+		-- IMPORTANT: When reading the module file, the
+		-- device libraries must have been read beforehand.
+		-- Otherwise a valid cursor can not be assigned
+		-- to the device !
 
 		-- The deployed units like PWR, A, B, ...
 		-- Virtual devices have only one unit (like the GND symbol).
