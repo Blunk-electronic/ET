@@ -178,7 +178,9 @@ package body et_module_write_device_non_electrical is
 			write (keyword => keyword_position, parameters =>
 				to_string (get_position (device), FORMAT_2));
 			
-			write (keyword => keyword_model, parameters => to_string (element (c).package_model));
+			write (keyword => keyword_model, 
+				parameters => to_string (element (c).model_name));
+			-- CS: use get_package_model_name (device) instead
 
 			query_element (c, query_placeholders'access);
 			

@@ -1203,7 +1203,8 @@ package body et_board_ops_devices is
 				key			=> next_name,
 				new_item	=> (
 					position		=> position,
-					package_model	=> package_model,
+					model_name		=> package_model,
+					-- CS model_cursor => package_cursor_lib
 					placeholders	=> get_default_placeholders (package_cursor_lib),
 					others			=> <>)
 				);

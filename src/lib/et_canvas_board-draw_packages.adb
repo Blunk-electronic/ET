@@ -965,7 +965,8 @@ procedure draw_packages is
 		
 		-- Send the actual package model to the draw procedure:
 		draw_package (
-			packge	=> pac_package_models.element (package_library, device.package_model));
+			packge	=> pac_package_models.element (package_library, device.model_name));
+			-- CS use device.model_cursor instead
 	end query_non_electrical_device;
 
 

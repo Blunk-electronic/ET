@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -83,12 +83,21 @@ package body et_devices_non_electrical is
 		device	: in type_device_non_electrical)
 		return pac_package_model_file.bounded_string
 	is begin
-		return device.package_model;
+		return device.model_name;
+	end;
+
+
+	
+	function get_package_model_name (
+		device : in type_device_non_electrical)
+		return string
+	is begin
+		return to_string (device.model_name);
 	end;
 
 
 
-
+	
 	
 
 -- POSITION:
@@ -596,7 +605,7 @@ package body et_devices_non_electrical is
 		device : in type_device_non_electrical)
 		return boolean
 	is begin
-		return is_bom_relevant (device.package_model);
+		return is_bom_relevant (device.model_name);
 	end;
 
 	
@@ -679,7 +688,7 @@ package body et_devices_non_electrical is
 	is 
 		result : pac_package_models.cursor;
 	begin
-		result := get_package_model (element (device_cursor).package_model);
+		result := get_package_model (element (device_cursor).model_name);
 		return result;
 	end get_package_model;
 
@@ -863,7 +872,8 @@ package body et_devices_non_electrical is
 		default_placeholders : type_text_placeholders;
 	begin
 		-- Locate the device in the package library:
-		cursor_lib := get_package_model (device.package_model);
+		cursor_lib := get_package_model (device.model_name);
+		-- CS use cursor_lib := device.model_cursor instead
 
 		-- Get the default placeholders as they are specified
 		-- in the package model:
@@ -1047,7 +1057,9 @@ package body et_devices_non_electrical is
 		conductors : type_conductor_objects; -- to be returned
 		
 		device : type_device_non_electrical renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+		
+		packge : constant pac_package_models.cursor := 
+			get_package_model (device.model_name);
 		
 		offset : constant type_vector_model := device.position.place;
 	begin
@@ -1083,7 +1095,9 @@ package body et_devices_non_electrical is
 		result : pac_polygon_list.list;
 		
 		device : type_device_non_electrical renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+		
+		packge : constant pac_package_models.cursor :=
+			get_package_model (device.model_name);
 		
 		offset : constant type_vector_model := device.position.place;
 
@@ -1152,7 +1166,9 @@ package body et_devices_non_electrical is
 		use et_route_restrict.packages;
 		restrict : type_one_side; -- to be returned
 		device : type_device_non_electrical renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+		
+		packge : constant pac_package_models.cursor :=
+			get_package_model (device.model_name);
 
 		rotation : type_rotation_model renames device.position.rotation;
 	begin
@@ -1186,7 +1202,9 @@ package body et_devices_non_electrical is
 		result : pac_polygon_list.list;
 		
 		device : type_device_non_electrical renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+		
+		packge : constant pac_package_models.cursor := 
+			get_package_model (device.model_name);
 		
 		use et_route_restrict.packages;
 		restrict : type_one_side;
@@ -1224,7 +1242,9 @@ package body et_devices_non_electrical is
 		restrict : type_one_side; -- to be returned
 		
 		device : type_device_non_electrical renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+		
+		packge : constant pac_package_models.cursor := 
+			get_package_model (device.model_name);
 
 		rotation : type_rotation_model renames device.position.rotation;
 	begin
@@ -1258,7 +1278,9 @@ package body et_devices_non_electrical is
 		result : type_keepout;
 
 		device : type_device_non_electrical renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+		
+		packge : constant pac_package_models.cursor := 
+			get_package_model (device.model_name);
 
 		rotation : type_rotation_model renames device.position.rotation;
 	begin
@@ -1306,7 +1328,9 @@ package body et_devices_non_electrical is
 		result : type_stencil;
 
 		device : type_device_non_electrical renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+		
+		packge : constant pac_package_models.cursor := 
+			get_package_model (device.model_name);
 
 		rotation : type_rotation_model renames device.position.rotation;
 	begin
@@ -1353,7 +1377,9 @@ package body et_devices_non_electrical is
 		result : type_stopmask;
 
 		device : type_device_non_electrical renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+		
+		packge : constant pac_package_models.cursor := 
+			get_package_model (device.model_name);
 
 		rotation : type_rotation_model renames device.position.rotation;
 
@@ -1426,7 +1452,9 @@ package body et_devices_non_electrical is
 		result : type_silkscreen;		
 
 		device : type_device_non_electrical renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+		
+		packge : constant pac_package_models.cursor := 
+			get_package_model (device.model_name);
 
 		rotation : type_rotation_model renames device.position.rotation;
 
@@ -1521,7 +1549,9 @@ package body et_devices_non_electrical is
 		result : type_assy_doc;		
 
 		device : type_device_non_electrical renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+		
+		packge : constant pac_package_models.cursor := 
+			get_package_model (device.model_name);
 
 		rotation : type_rotation_model renames device.position.rotation;
 
@@ -1625,7 +1655,9 @@ package body et_devices_non_electrical is
 		holes : pac_holes.list; -- to be returned
 		
 		device : type_device_non_electrical renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+		
+		packge : constant pac_package_models.cursor := 
+			get_package_model (device.model_name);
 
 		rotation : type_rotation_model renames device.position.rotation;
 	begin
@@ -1645,6 +1677,8 @@ package body et_devices_non_electrical is
 	end get_holes;
 
 
+
+	
 	
 	
 	function get_hole_polygons (
@@ -1655,7 +1689,9 @@ package body et_devices_non_electrical is
 		holes : pac_holes.list;
 		
 		device : type_device_non_electrical renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
+		
+		packge : constant pac_package_models.cursor := 
+			get_package_model (device.model_name);
 		
 		rotation : type_rotation_model renames device.position.rotation;
 	begin

@@ -175,7 +175,7 @@ package body et_module_read_device_non_electrical is
 			end if;					
 
 			device_non_electric.position := device_position;
-			device_non_electric.package_model := device_non_electric_model;
+			device_non_electric.model_name := device_non_electric_model;
 -- 					device_non_electric.text_placeholders := device_text_placeholders;
 
 -- 					put_line (count_type'image (et_packages.pac_text_placeholders.length (

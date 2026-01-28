@@ -115,22 +115,31 @@ package et_devices_non_electrical is
 	-- are modelled via package models:
 	
 	type type_device_non_electrical is record   -- CS should be private
-		position		: type_package_position; -- incl. rotation and face
+		position : type_package_position; -- incl. rotation and face
 
 		-- Text placeholders for value, name, purpose, ...
-		placeholders	: type_text_placeholders;
+		placeholders : type_text_placeholders;
 		
-		package_model	: pac_package_model_file.bounded_string; -- ../lbr/packages/fiducial.pac
+		-- The link to the package model like "../lbr/packages/fiducial.pac":
+		model_name : pac_package_model_file.bounded_string; 
 		-- CS cursor to package model instead ?
+		
+		-- CS model_cursor : pac_package_models.cursor
 
+		-- IMPORTANT: When reading the module file, the
+		-- package libraries must have been read beforehand.
+		-- Otherwise a valid cursor can not be assigned
+		-- to the device !
+
+		
 		-- A value will rarely be assigned. But in case it is required:
-		value		: pac_device_value.bounded_string;
+		value : pac_device_value.bounded_string;
 
 		-- The partcode:
-		partcode	: pac_device_partcode.bounded_string;
+		partcode : pac_device_partcode.bounded_string;
 
 		-- A purpose will rarely be assigned. But in case it is required:
-		purpose		: pac_device_purpose.bounded_string;
+		purpose : pac_device_purpose.bounded_string;
 
 		status : type_object_status;
 	end record;
@@ -144,6 +153,11 @@ package et_devices_non_electrical is
 		return pac_package_model_file.bounded_string;
 
 
+	function get_package_model_name (
+		device : in type_device_non_electrical)
+		return string;
+
+	
 
 	
 
@@ -442,8 +456,13 @@ package et_devices_non_electrical is
 		device_cursor : in pac_devices_non_electrical.cursor)
 		return pac_package_model_file.bounded_string;
 
-	
 
+-- CS:	
+	-- function get_package_model_name (
+	-- 	device_cursor : in pac_devices_non_electrical.cursor)
+	-- 	return string;
+
+	
 
 	-- Returns true if the given device has a
 	-- a real package with a height, means if it is relevant 

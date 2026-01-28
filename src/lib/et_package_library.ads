@@ -183,7 +183,7 @@ package et_package_library is
 	function get_package_model_file (
 		model_cursor : in pac_package_models.cursor)
 		return pac_package_model_file.bounded_string;
-
+	-- CS rename to get_package_model_name
 
 
 
@@ -215,6 +215,7 @@ package et_package_library is
 		return pac_package_models.cursor;
 
 
+	
 	
 	-- Returns true if the given package is
 	-- a real package with a height, means if it is relevant 
