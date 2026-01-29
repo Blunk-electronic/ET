@@ -879,10 +879,7 @@ procedure draw_packages is
 		name	: in type_device_name;
 		device	: in type_device_electrical)
 	is
-		-- The cursor to the actual device model:
-		-- use et_device_library;
-		-- device_model_cursor : pac_device_models.cursor;
-
+		use pac_package_models;
 		package_model_name : pac_package_model_file.bounded_string;
 	begin
 		-- put_line ("device " & to_string (name));
@@ -914,15 +911,14 @@ procedure draw_packages is
 			device_purpose := device.purpose;
 			device_placeholders := device.placeholders;
 			
-			-- Get the cursor to the device model:
-			-- device_model_cursor := device.model_cursor;
-
-			-- Get the name of the package model:
-			package_model_name := get_package_model (device.model_cursor, device.variant);
+			-- Get the name of the package model
+			-- according to the package variant:
+			package_model_name := get_package_model (
+				device.model_cursor, device.variant);
 
 			-- Send the actual package model to the draw procedure:
-			draw_package (
-				packge	=> pac_package_models.element (package_library, package_model_name));
+			draw_package (element (
+				package_library, package_model_name));
 
 		end if;
 	end query_electrical_device;
@@ -936,7 +932,9 @@ procedure draw_packages is
 	procedure query_non_electrical_device (
 		name	: in type_device_name;
 		device	: in type_device_non_electrical)
-	is begin
+	is 
+		use pac_package_models;
+	begin
 		-- put_line ("device " & to_string (name));	
 
 		-- If the device is selected then draw it highlighted:
@@ -960,12 +958,9 @@ procedure draw_packages is
 		device_value := device.value;
 		device_purpose := device.purpose;
 		device_placeholders := device.placeholders;
-
 		
 		-- Send the actual package model to the draw procedure:
-		draw_package (
-			packge	=> pac_package_models.element (package_library, device.model_name));
-			-- CS use device.model_cursor instead
+		draw_package (element (device.model_cursor));
 	end query_non_electrical_device;
 
 

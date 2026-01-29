@@ -1714,7 +1714,10 @@ package body et_module_read is
 					when SEC_DEVICE =>
 						case pac_sections_stack.parent is
 							when SEC_DEVICES => read_device (line);
-							when SEC_DEVICES_NON_ELECTRIC => read_device_non_electric (line);
+							
+							when SEC_DEVICES_NON_ELECTRIC => 
+								read_device_non_electrical (line);
+								
 							when others => invalid_section;
 						end case;
 

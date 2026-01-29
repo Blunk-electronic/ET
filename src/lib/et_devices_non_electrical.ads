@@ -121,16 +121,12 @@ package et_devices_non_electrical is
 		placeholders : type_text_placeholders;
 		
 		-- The link to the package model like "../lbr/packages/fiducial.pac":
-		model_name : pac_package_model_file.bounded_string; 
-		-- CS cursor to package model instead ?
-		
-		-- CS model_cursor : pac_package_models.cursor
+		model_cursor : pac_package_models.cursor;
 
 		-- IMPORTANT: When reading the module file, the
 		-- package libraries must have been read beforehand.
 		-- Otherwise a valid cursor can not be assigned
 		-- to the device !
-
 		
 		-- A value will rarely be assigned. But in case it is required:
 		value : pac_device_value.bounded_string;

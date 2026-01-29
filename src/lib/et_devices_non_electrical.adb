@@ -82,8 +82,10 @@ package body et_devices_non_electrical is
 	function get_package_model_name (
 		device	: in type_device_non_electrical)
 		return pac_package_model_file.bounded_string
-	is begin
-		return device.model_name;
+	is 
+		use pac_package_models;
+	begin
+		return key (device.model_cursor);
 	end;
 
 
@@ -92,7 +94,7 @@ package body et_devices_non_electrical is
 		device : in type_device_non_electrical)
 		return string
 	is begin
-		return to_string (device.model_name);
+		return to_string (get_package_model_name (device));
 	end;
 
 
@@ -604,8 +606,10 @@ package body et_devices_non_electrical is
 	function is_bom_relevant (
 		device : in type_device_non_electrical)
 		return boolean
-	is begin
-		return is_bom_relevant (device.model_name);
+	is 
+		use pac_package_models;
+	begin
+		return is_bom_relevant (key (device.model_cursor));
 	end;
 
 	
@@ -688,7 +692,7 @@ package body et_devices_non_electrical is
 	is 
 		result : pac_package_models.cursor;
 	begin
-		result := get_package_model (element (device_cursor).model_name);
+		result := element (device_cursor).model_cursor;
 		return result;
 	end get_package_model;
 
@@ -872,8 +876,7 @@ package body et_devices_non_electrical is
 		default_placeholders : type_text_placeholders;
 	begin
 		-- Locate the device in the package library:
-		cursor_lib := get_package_model (device.model_name);
-		-- CS use cursor_lib := device.model_cursor instead
+		cursor_lib := device.model_cursor;
 
 		-- Get the default placeholders as they are specified
 		-- in the package model:
@@ -1058,8 +1061,7 @@ package body et_devices_non_electrical is
 		
 		device : type_device_non_electrical renames element (device_cursor);
 		
-		packge : constant pac_package_models.cursor := 
-			get_package_model (device.model_name);
+		packge : constant pac_package_models.cursor := device.model_cursor;
 		
 		offset : constant type_vector_model := device.position.place;
 	begin
@@ -1096,8 +1098,7 @@ package body et_devices_non_electrical is
 		
 		device : type_device_non_electrical renames element (device_cursor);
 		
-		packge : constant pac_package_models.cursor :=
-			get_package_model (device.model_name);
+		packge : constant pac_package_models.cursor := device.model_cursor;
 		
 		offset : constant type_vector_model := device.position.place;
 
@@ -1167,8 +1168,7 @@ package body et_devices_non_electrical is
 		restrict : type_one_side; -- to be returned
 		device : type_device_non_electrical renames element (device_cursor);
 		
-		packge : constant pac_package_models.cursor :=
-			get_package_model (device.model_name);
+		packge : constant pac_package_models.cursor := device.model_cursor;
 
 		rotation : type_rotation_model renames device.position.rotation;
 	begin
@@ -1203,8 +1203,7 @@ package body et_devices_non_electrical is
 		
 		device : type_device_non_electrical renames element (device_cursor);
 		
-		packge : constant pac_package_models.cursor := 
-			get_package_model (device.model_name);
+		packge : constant pac_package_models.cursor := device.model_cursor;
 		
 		use et_route_restrict.packages;
 		restrict : type_one_side;
@@ -1232,6 +1231,7 @@ package body et_devices_non_electrical is
 	
 
 
+	
 
 	function get_via_restrict_objects (
 		device_cursor	: in pac_devices_non_electrical.cursor;
@@ -1243,8 +1243,7 @@ package body et_devices_non_electrical is
 		
 		device : type_device_non_electrical renames element (device_cursor);
 		
-		packge : constant pac_package_models.cursor := 
-			get_package_model (device.model_name);
+		packge : constant pac_package_models.cursor := device.model_cursor;
 
 		rotation : type_rotation_model renames device.position.rotation;
 	begin
@@ -1279,9 +1278,8 @@ package body et_devices_non_electrical is
 
 		device : type_device_non_electrical renames element (device_cursor);
 		
-		packge : constant pac_package_models.cursor := 
-			get_package_model (device.model_name);
-
+		packge : constant pac_package_models.cursor := device.model_cursor;
+		
 		rotation : type_rotation_model renames device.position.rotation;
 	begin
 		case face is
@@ -1329,9 +1327,8 @@ package body et_devices_non_electrical is
 
 		device : type_device_non_electrical renames element (device_cursor);
 		
-		packge : constant pac_package_models.cursor := 
-			get_package_model (device.model_name);
-
+		packge : constant pac_package_models.cursor := device.model_cursor;
+		
 		rotation : type_rotation_model renames device.position.rotation;
 	begin
 		case face is
@@ -1378,9 +1375,8 @@ package body et_devices_non_electrical is
 
 		device : type_device_non_electrical renames element (device_cursor);
 		
-		packge : constant pac_package_models.cursor := 
-			get_package_model (device.model_name);
-
+		packge : constant pac_package_models.cursor := device.model_cursor;
+		
 		rotation : type_rotation_model renames device.position.rotation;
 
 		use et_stopmask.packages;
@@ -1453,9 +1449,8 @@ package body et_devices_non_electrical is
 
 		device : type_device_non_electrical renames element (device_cursor);
 		
-		packge : constant pac_package_models.cursor := 
-			get_package_model (device.model_name);
-
+		packge : constant pac_package_models.cursor := device.model_cursor;
+		
 		rotation : type_rotation_model renames device.position.rotation;
 
 		use et_silkscreen.packages;
@@ -1550,8 +1545,7 @@ package body et_devices_non_electrical is
 
 		device : type_device_non_electrical renames element (device_cursor);
 		
-		packge : constant pac_package_models.cursor := 
-			get_package_model (device.model_name);
+		packge : constant pac_package_models.cursor := device.model_cursor;
 
 		rotation : type_rotation_model renames device.position.rotation;
 
@@ -1656,8 +1650,7 @@ package body et_devices_non_electrical is
 		
 		device : type_device_non_electrical renames element (device_cursor);
 		
-		packge : constant pac_package_models.cursor := 
-			get_package_model (device.model_name);
+		packge : constant pac_package_models.cursor := device.model_cursor;
 
 		rotation : type_rotation_model renames device.position.rotation;
 	begin
@@ -1690,8 +1683,7 @@ package body et_devices_non_electrical is
 		
 		device : type_device_non_electrical renames element (device_cursor);
 		
-		packge : constant pac_package_models.cursor := 
-			get_package_model (device.model_name);
+		packge : constant pac_package_models.cursor := device.model_cursor;
 		
 		rotation : type_rotation_model renames device.position.rotation;
 	begin

@@ -1203,11 +1203,9 @@ package body et_board_ops_devices is
 				key			=> next_name,
 				new_item	=> (
 					position		=> position,
-					model_name		=> package_model,
-					-- CS model_cursor => package_cursor_lib
+					model_cursor	=> package_cursor_lib,
 					placeholders	=> get_default_placeholders (package_cursor_lib),
-					others			=> <>)
-				);
+					others			=> <>));
 
 			-- check inserted flag
 			if not inserted then

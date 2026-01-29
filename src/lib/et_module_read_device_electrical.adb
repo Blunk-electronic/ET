@@ -496,7 +496,7 @@ package body et_module_read_device_electrical is
 	
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " insert device", level => log_threshold);
+			& " insert device (electrical)", level => log_threshold);
 			
 		log_indentation_up;
 		

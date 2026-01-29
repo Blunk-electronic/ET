@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -49,7 +49,7 @@ with et_logging;				use et_logging;
 package et_module_read_device_non_electrical is
 		
 
-	procedure read_device_non_electric (
+	procedure read_device_non_electrical (
 		line : in type_fields_of_line);
 
 	

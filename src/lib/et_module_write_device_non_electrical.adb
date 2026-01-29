@@ -179,8 +179,7 @@ package body et_module_write_device_non_electrical is
 				to_string (get_position (device), FORMAT_2));
 			
 			write (keyword => keyword_model, 
-				parameters => to_string (element (c).model_name));
-			-- CS: use get_package_model_name (device) instead
+				parameters => get_package_model_name (device));
 
 			query_element (c, query_placeholders'access);
 			
