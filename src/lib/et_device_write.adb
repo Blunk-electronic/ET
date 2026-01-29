@@ -91,8 +91,11 @@ with et_units;
 with et_unit_name;
 with et_unit_swap_level;
 with et_unit_add_level;
+
 with et_package_variant_name;
 with et_package_variant;
+with et_package_variant_terminal_port_map;
+
 with et_package_model_name;			use et_package_model_name;
 with et_device_library;				use et_device_library;
 with et_keywords;					use et_keywords;
@@ -138,6 +141,8 @@ package body et_device_write is
 		is
 			use pac_package_variant_name;
 			use et_port_names;
+
+			use et_package_variant_terminal_port_map;
 			use pac_terminal_port_map;	
 			use et_units;
 			

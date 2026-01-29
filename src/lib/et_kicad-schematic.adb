@@ -58,7 +58,7 @@ with et_unit_name;
 with et_net_class;				use et_net_class;
 with et_net_classes;			use et_net_classes;
 with et_package_model_name;		use et_package_model_name;
-
+with et_package_variant_terminal_port_map;	use et_package_variant_terminal_port_map;
 with et_text_content;
 with et_rotation_docu;
 

@@ -49,20 +49,10 @@ with et_package_variant_name;	use et_package_variant_name;
 with et_terminal_name;			use et_terminal_name;
 with et_port_names;				use et_port_names;
 with et_unit_name;				use et_unit_name;
+with et_package_variant_terminal_port_map;	use et_package_variant_terminal_port_map;
 
 
 package et_package_variant is
-
-
-	type type_port_in_terminal_port_map is record
-		name	: pac_port_name.bounded_string; -- CLK, CE, VSS -- CS rename to port
-		unit	: pac_unit_name.bounded_string; -- GPIO_BANK_3
-	end record;
-	
-	package pac_terminal_port_map is new ordered_maps (
-		key_type 		=> pac_terminal_name.bounded_string, -- H7, 14
-		"<"				=> pac_terminal_name."<",
-		element_type 	=> type_port_in_terminal_port_map); -- unit A, OE1
 
 
 	

@@ -48,6 +48,8 @@ with et_symbol_library;
 with et_symbol_text;
 with et_symbol_name;
 
+with et_package_variant_terminal_port_map;	use et_package_variant_terminal_port_map;
+
 
 
 package body et_devices_electrical.units is
