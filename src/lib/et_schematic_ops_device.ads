@@ -64,6 +64,7 @@ with et_device_library;			use et_device_library;
 with et_devices_electrical;		use et_devices_electrical;
 with et_numbering;				use et_numbering;
 
+with et_package_variant_name;	use et_package_variant_name;
 with et_package_variant;		use et_package_variant;
 
 with et_device_property_level;	use et_device_property_level;

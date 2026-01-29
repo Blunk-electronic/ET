@@ -57,6 +57,7 @@ with et_device_name;				use et_device_name;
 with et_device_purpose;
 with et_device_value;
 with et_device_partcode;
+with et_package_variant_name;
 with et_package_variant;
 
 with et_devices_electrical;			
@@ -95,7 +96,7 @@ package body et_module_read_device_non_electrical is
 
 	device_partcode	: et_device_partcode.pac_device_partcode.bounded_string;
 	device_purpose	: et_device_purpose.pac_device_purpose.bounded_string;
-	device_variant	: et_package_variant.pac_package_variant_name.bounded_string; -- D, N
+	device_variant	: et_package_variant_name.pac_package_variant_name.bounded_string; -- D, N
 
 	device_position	: et_board_coordinates.type_package_position; -- in the layout ! incl. angle and face	
 	

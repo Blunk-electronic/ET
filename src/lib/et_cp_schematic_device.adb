@@ -50,6 +50,7 @@ with et_schematic_geometry;				use et_schematic_geometry;
 
 with et_device_name;					use et_device_name;
 with et_device_model_names;				use et_device_model_names;
+with et_package_variant_name;			use et_package_variant_name;
 with et_package_variant;				use et_package_variant;
 with et_device_value;					use et_device_value;
 with et_device_purpose;					use et_device_purpose;

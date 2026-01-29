@@ -56,6 +56,7 @@ use et_schematic_geometry.pac_geometry_2;
 
 with et_generic_modules;			use et_generic_modules;
 with et_symbol_model;				use et_symbol_model;
+with et_package_variant_name;		use et_package_variant_name;
 with et_package_variant;			use et_package_variant;
 with et_device_model;				use et_device_model;
 with et_device_library;				use et_device_library;

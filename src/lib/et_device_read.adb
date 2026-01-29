@@ -96,6 +96,7 @@ with et_units;
 with et_unit_name;
 with et_unit_swap_level;
 with et_unit_add_level;
+with et_package_variant_name;
 with et_package_variant;
 with et_package_model_name;			use et_package_model_name;
 with et_device_library;				use et_device_library;
@@ -118,6 +119,7 @@ package body et_device_read is
 		use et_device_prefix;
 		use et_unit_name;
 		use et_package_variant;
+		use et_package_variant_name;
 		
 		file_handle : ada.text_io.file_type;
 

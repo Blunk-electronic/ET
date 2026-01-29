@@ -104,6 +104,7 @@ with et_device_model;				use et_device_model;
 with et_device_library;				use et_device_library;
 with et_package_model_name;			use et_package_model_name;
 with et_package_model;
+with et_package_variant_name;
 with et_package_variant;
 with et_device_name;				--use et_device_name;
 with et_device_model_names;			use et_device_model_names;
@@ -3774,8 +3775,10 @@ package body et_kicad_to_native is
 					device_name	: in pac_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
 					device		: in out type_device_model) 
 				is
-					use et_package_variant;
+					use et_package_variant_name;
 					use pac_package_variant_name;
+					
+					use et_package_variant;
 					use pac_package_variants;
 					
 					variant_cursor : pac_package_variants.cursor := device.variants.first;

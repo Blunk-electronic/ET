@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -45,6 +45,7 @@ with gtk.text_buffer;				use gtk.text_buffer;
 
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
 with et_device_prefix;
+with et_package_variant_name;
 
 
 package body et_canvas.schematic_device_ops is
@@ -304,8 +305,9 @@ package body et_canvas.schematic_device_ops is
 
 		-- Writes the name and index in the storage model:
 		procedure query_variant (c : in pac_package_variants.cursor) is 
-			use pac_package_variants;
+			use et_package_variant_name;
 			use pac_package_variant_name;
+			use pac_package_variants;
 		begin
 			store.append (iter);
 			set (store, iter, column_0, to_string (key (c)));

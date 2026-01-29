@@ -45,6 +45,7 @@ with ada.containers.ordered_maps;
 
 with et_package_name;			use et_package_name;
 with et_package_model_name;		use et_package_model_name;
+with et_package_variant_name;	use et_package_variant_name;
 with et_terminal_name;			use et_terminal_name;
 with et_port_names;				use et_port_names;
 with et_unit_name;				use et_unit_name;
@@ -53,45 +54,6 @@ with et_unit_name;				use et_unit_name;
 package et_package_variant is
 
 
-	-- The variant is usually a suffix in a device value, given by its manufacturer. The variant is a manufacturer
-	-- specific abbrevation for the package a device comes with.
-	-- Example: An opamp made by TI can be the type TL084N or TL084D. N means the NDIP14 package
-	-- whereas D means the SO14 package.
-	-- If a device has package variants, a suffix after the value indicates the package
-	-- The variant name is manufacturer specific. example: TL084D or TL084N
-	-- device package variant names like "N" or "D" are stored in bounded strings.
-	variant_name_characters : character_set := 
-		to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set ("_-");
-	
-	variant_name_length_max : constant positive := 50;
-	package pac_package_variant_name is new generic_bounded_length (variant_name_length_max);
-	use pac_package_variant_name;
-
-
-	-- Returns true if the given variant name is empty:
-	function is_empty (
-		variant_name : in pac_package_variant_name.bounded_string)
-		return boolean;
-
-	
-	-- function to_string (
-	-- 	variant : in pac_package_variant_name.bounded_string) 
-	-- 	return string;
-
-	
-	function to_variant_name (variant_name : in string) return pac_package_variant_name.bounded_string;
-
-	procedure check_variant_name_length (variant_name : in string);
-	-- tests if the given variant name is not longer than allowed
-	
-	procedure check_variant_name_characters (
-		variant		: in pac_package_variant_name.bounded_string;
-		characters	: in character_set := variant_name_characters);
-	-- Tests if the given variant name contains only valid characters as specified
-	-- by given character set.
-	-- Raises exception if invalid character found.
-
-	
 	type type_port_in_terminal_port_map is record
 		name	: pac_port_name.bounded_string; -- CLK, CE, VSS -- CS rename to port
 		unit	: pac_unit_name.bounded_string; -- GPIO_BANK_3
@@ -109,6 +71,8 @@ package et_package_variant is
 		terminal_port_map	: pac_terminal_port_map.map; -- which port is connected with with terminal
 	end record;
 
+
+	use pac_package_variant_name;
 	
 	package pac_package_variants is new ordered_maps (
 		key_type 		=> pac_package_variant_name.bounded_string, -- D, N

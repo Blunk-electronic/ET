@@ -91,6 +91,7 @@ with et_units;
 with et_unit_name;
 with et_unit_swap_level;
 with et_unit_add_level;
+with et_package_variant_name;
 with et_package_variant;
 with et_package_model_name;			use et_package_model_name;
 with et_device_library;				use et_device_library;
@@ -123,6 +124,8 @@ package body et_device_write is
 		
 		use et_package_variant;
 		use pac_package_variants;
+		
+		use et_package_variant_name;
 		use pac_package_variant_name;
 		
 		variant_cursor : pac_package_variants.cursor;

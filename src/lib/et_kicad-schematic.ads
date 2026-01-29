@@ -71,6 +71,7 @@ with et_device_value;			use et_device_value;
 with et_device_prefix;			use et_device_prefix;
 with et_device_name;			use et_device_name;
 with et_unit_name;				use et_unit_name;
+with et_package_variant_name;	use et_package_variant_name;
 with et_package_variant;		use et_package_variant;
 
 with et_schematic_text;

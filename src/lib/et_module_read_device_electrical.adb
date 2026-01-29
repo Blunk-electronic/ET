@@ -68,6 +68,7 @@ with et_device_model_names;
 with et_device_value;
 with et_device_library;				use et_device_library;
 with et_device_partcode;
+with et_package_variant_name;
 with et_package_variant;
 with et_symbol_read;
 with et_schematic_text;
@@ -118,7 +119,7 @@ package body et_module_read_device_electrical is
 	
 	device_partcode	: et_device_partcode.pac_device_partcode.bounded_string;
 	device_purpose	: et_device_purpose.pac_device_purpose.bounded_string;
-	device_variant	: et_package_variant.pac_package_variant_name.bounded_string; -- D, N
+	device_variant	: et_package_variant_name.pac_package_variant_name.bounded_string; -- D, N
 
 	
 	-- temporarily collection of units:
@@ -140,6 +141,7 @@ package body et_module_read_device_electrical is
 		use et_device_value;
 		use et_device_partcode;
 		use et_package_variant;
+		use et_package_variant_name;
 		
 		kw : constant string := f (line, 1);
 	begin
@@ -277,6 +279,7 @@ package body et_module_read_device_electrical is
 			-- Assigns appearance specific variables if the device is real.
 			-- Otherwise nothing happens here:
 			procedure check_characters is
+				use et_package_variant_name;
 				use pac_package_variant_name;
 			begin
 				if device.appearance = APPEARANCE_PCB then
@@ -376,7 +379,10 @@ package body et_module_read_device_electrical is
 			
 			-- Derives package name from device.model_name and device.variant.
 			-- Checks if variant exits in device.model.
-			function get_package_name return pac_package_name.bounded_string is
+			function get_package_name 
+				return pac_package_name.bounded_string 
+			is
+				use et_package_variant_name;
 				use pac_package_variant_name;
 				name : pac_package_name.bounded_string; -- S_SO14 -- to be returned
 
@@ -448,7 +454,9 @@ package body et_module_read_device_electrical is
 
 						
 
-			procedure clean_up is begin				
+			procedure clean_up is 
+				use et_package_variant_name;
+			begin				
 				-- reset pointer "device" so that the old device gets destroyed
 				device := null;
 				-- CS free memory ?
@@ -460,6 +468,7 @@ package body et_module_read_device_electrical is
 				device_purpose		:= pac_device_purpose.to_bounded_string ("");
 				device_partcode 	:= pac_device_partcode.to_bounded_string ("");
 				device_variant		:= to_variant_name ("");
+				-- CS use constant for emtpy variant
 			end clean_up;
 
 			
