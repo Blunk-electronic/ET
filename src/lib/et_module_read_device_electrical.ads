@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -48,12 +48,12 @@ with et_logging;				use et_logging;
 package et_module_read_device_electrical is
 		
 
-	procedure read_device (
+	procedure read_device_electrical (
 		line : in type_fields_of_line);
 
 
 
-	procedure insert_device (
+	procedure insert_device_electrical (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 

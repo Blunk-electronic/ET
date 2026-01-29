@@ -38,7 +38,7 @@
 --
 -- ToDo:
 -- - clean up
--- - rename global variables
+--
 --
 --
 
@@ -129,7 +129,7 @@ package body et_module_read_device_electrical is
 
 	
 		
-	procedure read_device (
+	procedure read_device_electrical (
 		line : in type_fields_of_line)
 	is
 		use et_device_model;
@@ -195,7 +195,7 @@ package body et_module_read_device_electrical is
 		else
 			invalid_keyword (kw);
 		end if;
-	end read_device;
+	end read_device_electrical;
 
 
 
@@ -209,7 +209,7 @@ package body et_module_read_device_electrical is
 
 
 
-	procedure insert_device (
+	procedure insert_device_electrical (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is 
@@ -507,7 +507,7 @@ package body et_module_read_device_electrical is
 	
 		
 		log_indentation_down;	
-	end insert_device;
+	end insert_device_electrical;
 	
 	
 	

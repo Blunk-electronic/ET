@@ -37,8 +37,8 @@
 --   history of changes:
 --
 -- ToDo:
--- - clean up
--- - rename global variables
+--
+--
 --
 --
 
@@ -76,7 +76,6 @@ with et_module;							use et_module;
 
 with et_mirroring;						use et_mirroring;
 with et_alignment;						use et_alignment;
-with et_object_status;
 
 
 
@@ -84,29 +83,30 @@ with et_object_status;
 package body et_module_read_device_non_electrical is
 
 	use pac_generic_modules;
+
 	
 
-	device_name				: et_device_name.type_device_name; -- C12
+	-- The temporarily non-electrical device:
+	device			: et_devices_non_electrical.type_device_non_electrical;
+
+	device_name		: et_device_name.type_device_name; -- C12
 	
-	device_value			: et_device_value.pac_device_value.bounded_string; -- 470R
+	device_value	: et_device_value.pac_device_value.bounded_string; -- 470R
 
 	device_partcode	: et_device_partcode.pac_device_partcode.bounded_string;
 	device_purpose	: et_device_purpose.pac_device_purpose.bounded_string;
 	device_variant	: et_package_variant.pac_package_variant_name.bounded_string; -- D, N
 
 	device_position	: et_board_coordinates.type_package_position; -- in the layout ! incl. angle and face	
-
-	device_non_electric			: et_devices_non_electrical.type_device_non_electrical;
-	-- CS rename to device
 	
-	device_non_electric_model	: et_package_model_name.pac_package_model_file.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
-	-- CS rename to package_model_name
+	package_model_name	: et_package_model_name.pac_package_model_file.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
 
 	-- the temporarily collection of placeholders of packages (in the layout)
-	device_text_placeholders	: et_device_placeholders.packages.type_text_placeholders; -- silk screen, assy doc, top, bottom
+	text_placeholders	: et_device_placeholders.packages.type_text_placeholders; -- silk screen, assy doc, top, bottom
 
 
 
+	
 	
 		
 	procedure read_device_non_electrical (
@@ -130,7 +130,7 @@ package body et_module_read_device_non_electrical is
 			
 		elsif kw = keyword_model then -- model /lib/fiducials/crosshair.pac
 			expect_field_count (line, 2);
-			device_non_electric_model := to_package_model_name (f (line, 2));
+			package_model_name := to_package_model_name (f (line, 2));
 
 		else
 			invalid_keyword (kw);
@@ -167,7 +167,7 @@ package body et_module_read_device_non_electrical is
 				
 				-- Read the package model (like ../libraries/fiducials/crosshair.pac):
 				read_package (
-					file_name		=> device_non_electric_model,
+					file_name		=> package_model_name,
 					-- CS check_layers	=> YES,
 					log_threshold	=> log_threshold + 3);
 
@@ -207,7 +207,7 @@ package body et_module_read_device_non_electrical is
 					position	=> device_cursor,
 					inserted	=> inserted,
 					key			=> device_name, -- FD1, H1
-					new_item	=> device_non_electric);
+					new_item	=> device);
 
 				log_indentation_down;
 			end;
@@ -238,12 +238,11 @@ package body et_module_read_device_non_electrical is
 			
 			
 			procedure clean_up is begin
-				-- clean up for next non-elecrtical device:
-				device_non_electric 		:= (others => <>);
-				device_name					:= (others => <>);
-				device_position				:= package_position_default;
-				device_text_placeholders	:= (others => <>);
-				-- device_model				:= to_file_name ("");
+				-- clean up for next non-electrical device:
+				device 				:= (others => <>);
+				device_name			:= (others => <>);
+				device_position		:= package_position_default;
+				text_placeholders	:= (others => <>);
 			end clean_up;
 
 			
@@ -262,11 +261,11 @@ package body et_module_read_device_non_electrical is
 			validate_prefix;
 
 			-- Assign the cursor to the package model;
-			device_non_electric.model_cursor := 
-				et_package_library.get_package_model (device_non_electric_model);
+			device.model_cursor := 
+				et_package_library.get_package_model (package_model_name);
 			
 			-- Assign the package position:
-			device_non_electric.position := device_position;
+			device.position := device_position;
 			
 			add_package_to_board;
 
@@ -328,17 +327,16 @@ package body et_module_read_device_non_electrical is
 	
 	
 	-- These two variables assist when a particular placeholder is appended to the
-	-- list of placholders in silk screen, assy doc and their top or bottom face:
-	device_text_placeholder_position: et_board_coordinates.type_package_position := et_board_coordinates.placeholder_position_default; -- incl. rotation and face
+	-- list of placholders in silkscreen, assy doc and their top or bottom face:
+	text_placeholder_position	: type_package_position := placeholder_position_default; -- incl. rotation and face
 
 	
-	device_text_placeholder_layer : et_device_placeholders.packages.type_placeholder_layer := 
-	et_device_placeholders.packages.type_placeholder_layer'first; -- silkscreen/assembly_documentation
-
+	text_placeholder_layer : et_device_placeholders.packages.type_placeholder_layer := 
+		et_device_placeholders.packages.type_placeholder_layer'first; -- silkscreen/assembly_documentation
 	
 	
 	-- a single temporarily placeholder of a package
-	device_text_placeholder : et_device_placeholders.packages.type_text_placeholder;
+	text_placeholder : et_device_placeholders.packages.type_text_placeholder;
 
 	
 
@@ -357,36 +355,36 @@ package body et_module_read_device_non_electrical is
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_meaning then -- meaning name, value, ...
 			expect_field_count (line, 2);
-			device_text_placeholder.meaning := to_meaning (f (line, 2));
+			text_placeholder.meaning := to_meaning (f (line, 2));
 			
 		elsif kw = keyword_layer then -- layer silkscreen/assy_doc
 			expect_field_count (line, 2);
-			device_text_placeholder_layer := to_placeholder_layer (f (line, 2));
+			text_placeholder_layer := to_placeholder_layer (f (line, 2));
 
 		elsif kw = keyword_anchor then -- anchor relative/absolute
 			expect_field_count (line, 2);
-			device_text_placeholder.anchor_mode := to_anchor_mode (f (line, 2));
+			text_placeholder.anchor_mode := to_anchor_mode (f (line, 2));
 			
 		elsif kw = keyword_position then -- position x 0.000 y 5.555 rotation 0.00 face top
 			expect_field_count (line, 9);
 
 			-- extract position of placeholder starting at field 2
-			device_text_placeholder_position := to_position (line, 2);
+			text_placeholder_position := to_position (line, 2);
 
 		elsif kw = keyword_size then -- size 5
 			expect_field_count (line, 2);
-			device_text_placeholder.size := to_distance (f (line, 2));
+			text_placeholder.size := to_distance (f (line, 2));
 
 		elsif kw = keyword_linewidth then -- linewidth 0.15
 			expect_field_count (line, 2);
 
-			device_text_placeholder.line_width := to_distance (f (line, 2));
+			text_placeholder.line_width := to_distance (f (line, 2));
 
 		elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 			expect_field_count (line, 5);
 
 			-- extract alignment of placeholder starting at field 2
-			device_text_placeholder.alignment := to_alignment (line, 2);
+			text_placeholder.alignment := to_alignment (line, 2);
 			
 		else
 			invalid_keyword (kw);
@@ -402,42 +400,42 @@ package body et_module_read_device_non_electrical is
 		use et_device_placeholders.packages;
 		use et_pcb_sides;
 	begin
-		device_text_placeholder.position := et_board_geometry.pac_geometry_2.type_position (device_text_placeholder_position);
+		text_placeholder.position := et_board_geometry.pac_geometry_2.type_position (text_placeholder_position);
 		
-		case device_text_placeholder_layer is
+		case text_placeholder_layer is
 			when SILKSCREEN => 
-				case get_face (device_text_placeholder_position) is
+				case get_face (text_placeholder_position) is
 
 					when TOP =>
 						pac_text_placeholders.append (
-							container	=> device_text_placeholders.silkscreen.top,
-							new_item	=> device_text_placeholder);
+							container	=> text_placeholders.silkscreen.top,
+							new_item	=> text_placeholder);
 						
 					when BOTTOM =>
 						pac_text_placeholders.append (
-							container	=> device_text_placeholders.silkscreen.bottom,
-							new_item	=> device_text_placeholder);
+							container	=> text_placeholders.silkscreen.bottom,
+							new_item	=> text_placeholder);
 				end case;
 				
 			when ASSY_DOC =>
-				case get_face (device_text_placeholder_position) is
+				case get_face (text_placeholder_position) is
 
 					when TOP =>
 						pac_text_placeholders.append (
-							container	=> device_text_placeholders.assy_doc.top,
-							new_item	=> device_text_placeholder);
+							container	=> text_placeholders.assy_doc.top,
+							new_item	=> text_placeholder);
 
 					when BOTTOM =>
 						pac_text_placeholders.append (
-							container	=> device_text_placeholders.assy_doc.bottom,
-							new_item	=> device_text_placeholder);
+							container	=> text_placeholders.assy_doc.bottom,
+							new_item	=> text_placeholder);
 				end case;
 
 		end case;
 
 		-- reset placeholder for next placeholder
-		device_text_placeholder := (others => <>);
-		device_text_placeholder_position := placeholder_position_default;
+		text_placeholder := (others => <>);
+		text_placeholder_position := placeholder_position_default;
 
 	end insert_package_placeholder;
 
@@ -447,10 +445,10 @@ package body et_module_read_device_non_electrical is
 	
 	procedure insert_placeholders is begin
 		-- Insert placeholder collection in temporarily device:
-		device_non_electric.placeholders := device_text_placeholders;
+		device.placeholders := text_placeholders;
 
 		-- clean up for next collection of placeholders
-		device_text_placeholders := (others => <>);
+		text_placeholders := (others => <>);
 
 	end insert_placeholders;
 	

@@ -976,7 +976,7 @@ package body et_module_read is
 					when SEC_DEVICE =>
 						case pac_sections_stack.parent is
 							when SEC_DEVICES =>
-								insert_device (module_cursor, log_threshold);
+								insert_device_electrical (module_cursor, log_threshold);
 
 							when SEC_DEVICES_NON_ELECTRIC => 
 								insert_device_non_electrical (module_cursor, log_threshold);
@@ -1713,7 +1713,8 @@ package body et_module_read is
 						
 					when SEC_DEVICE =>
 						case pac_sections_stack.parent is
-							when SEC_DEVICES => read_device (line);
+							when SEC_DEVICES => 
+								read_device_electrical (line);
 							
 							when SEC_DEVICES_NON_ELECTRIC => 
 								read_device_non_electrical (line);
