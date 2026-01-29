@@ -126,7 +126,9 @@ procedure draw_packages is
 	
 	
 	procedure draw_package (
-		packge 		: in type_package_model)
+		packge : in type_package_model)
+		-- CS: It could be more effective if a cursor to the
+		-- package model is passed instead of the actual package.
 	is
 		-- This flag is set if the package is on the bottom side of the board.
 		-- In that case, EVERYTHING (except the origin
