@@ -48,6 +48,7 @@ with et_symbol_library;
 with et_symbol_text;
 with et_symbol_name;
 
+with et_device_model_unit_internal;			use et_device_model_unit_internal;
 with et_package_variant_terminal_port_map;	use et_package_variant_terminal_port_map;
 
 

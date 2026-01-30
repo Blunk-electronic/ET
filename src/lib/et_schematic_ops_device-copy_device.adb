@@ -48,6 +48,7 @@ with et_symbol_ports;					use et_symbol_ports;
 with et_symbol_model;
 with et_symbol_name;
 with et_symbol_library;
+with et_device_model_unit_internal;		use et_device_model_unit_internal;
 with et_device_model;					use et_device_model;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 with et_device_appearance;				use et_device_appearance;

@@ -44,15 +44,15 @@
 --
 --
 
-with et_terminal_name;			use et_terminal_name;
-with et_port_direction;			use et_port_direction;
-with et_port_names;				use et_port_names;
-with et_symbol_ports;			use et_symbol_ports;
-with et_symbol_model;			use et_symbol_model;
-with et_unit_name;				use et_unit_name;
-with et_unit_swap_level;		use et_unit_swap_level;
-with et_unit_add_level;			use et_unit_add_level;
-
+with et_terminal_name;					use et_terminal_name;
+with et_port_direction;					use et_port_direction;
+with et_port_names;						use et_port_names;
+with et_symbol_ports;					use et_symbol_ports;
+with et_symbol_model;					use et_symbol_model;
+with et_unit_name;						use et_unit_name;
+with et_unit_swap_level;				use et_unit_swap_level;
+with et_unit_add_level;					use et_unit_add_level;
+with et_device_model_unit_internal;		use et_device_model_unit_internal;
 
 
 package et_device_library.units is

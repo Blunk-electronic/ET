@@ -100,6 +100,7 @@ with et_symbol_model;
 with et_device_appearance;
 with et_device_purpose;
 with et_unit_name;					use et_unit_name;
+with et_device_model_unit_internal;	use et_device_model_unit_internal;
 with et_device_model;				use et_device_model;
 with et_device_library;				use et_device_library;
 with et_package_model_name;			use et_package_model_name;

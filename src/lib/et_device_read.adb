@@ -104,6 +104,7 @@ with et_package_variant_terminal_port_map;
 
 with et_package_model_name;			use et_package_model_name;
 with et_device_library;				use et_device_library;
+with et_device_model_unit_internal;	use et_device_model_unit_internal;
 with et_keywords;					use et_keywords;
 with et_terminal_name;				use et_terminal_name;
 with et_terminals;					use et_terminals;

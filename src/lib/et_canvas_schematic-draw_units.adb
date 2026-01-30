@@ -53,6 +53,7 @@ with et_unit_name;						use et_unit_name;
 with et_units;							use et_units;
 with et_device_appearance;				use et_device_appearance;
 with et_device_purpose;					use et_device_purpose;
+with et_device_model_unit_internal;		use et_device_model_unit_internal;
 with et_device_model;					use et_device_model;
 with et_device_library;					use et_device_library;
 with et_device_library.units;			use et_device_library.units;
