@@ -94,7 +94,8 @@ package et_device_library.packages is
 
 		
 	
-	-- Returns the name of the package model of the given device according to the given variant.
+	-- Returns the name of the package model of the given
+	-- device according to the given variant.
 	-- The given device must be real. Means appearance SCH_PCB.							  
 	function get_package_model (
 		device_cursor	: in pac_device_models.cursor;

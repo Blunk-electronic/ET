@@ -68,19 +68,20 @@ with et_device_model_names;
 with et_device_value;
 with et_device_library;				use et_device_library;
 with et_device_partcode;
-with et_package_variant_name;
-with et_package_variant;
-with et_symbol_read;
-with et_schematic_text;
 with et_device_read;
 with et_devices_electrical;
 with et_devices_non_electrical;
-with et_pcb_stack;
 
+with et_schematic_text;
+
+with et_symbol_read;
+
+with et_package_library;
 with et_package_read;
-
 with et_package_name;
 with et_package_model_name;
+with et_package_variant_name;
+with et_package_variant;
 
 with et_conventions;
 
@@ -91,9 +92,13 @@ with et_device_placeholders.packages;
 with et_device_placeholders.symbols;
 
 with et_board_outline;
+
+with et_pcb_stack;
 with et_pcb_placeholders;
+
 with et_unit_name;
 with et_units;
+
 with et_mirroring;						use et_mirroring;
 with et_alignment;						use et_alignment;
 with et_object_status;
@@ -377,8 +382,8 @@ package body et_module_read_device_electrical is
 			
 
 			
-			-- Derives package name from device.model_name and device.variant.
-			-- Checks if variant exits in device.model.
+			-- Derives the package name from the model and parackage
+			-- variant. Checks if variant exits in device model.
 			function get_package_name 
 				return pac_package_name.bounded_string 
 			is
@@ -391,6 +396,7 @@ package body et_module_read_device_electrical is
 					model	: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 					dev_lib	: in type_device_model) -- a device in the library 
 				is
+					use et_package_library;
 					use pac_package_variants;
 					variant_cursor : pac_package_variants.cursor;
 					use ada.directories;					
@@ -404,10 +410,11 @@ package body et_module_read_device_electrical is
 					-- The variant should be there. Otherwise abort.
 					if variant_cursor = pac_package_variants.no_element then
 						log (ERROR, "variant " & to_string (device.variant) &
-							" not available in device model " & to_string (model) & " !", console => true);
+							" not available in device model " & to_string (model) & " !");
 						raise constraint_error;
 					else
-						name := to_package_name (base_name (to_string (element (variant_cursor).package_model)));
+						name := to_package_name (base_name (
+							get_package_model_name (element (variant_cursor).model_cursor)));						
 					end if;
 				end;
 

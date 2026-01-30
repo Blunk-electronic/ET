@@ -57,8 +57,11 @@ with et_erc;
 with et_unit_name;
 with et_net_class;				use et_net_class;
 with et_net_classes;			use et_net_classes;
+
+with et_package_library;
 with et_package_model_name;		use et_package_model_name;
 with et_package_variant_terminal_port_map;	use et_package_variant_terminal_port_map;
+
 with et_text_content;
 with et_rotation_docu;
 
@@ -1030,10 +1033,12 @@ package body et_kicad.schematic is
 				component_name	: in type_component_generic_name.bounded_string; -- RESISTOR
 				component 		: in out type_component_library) 
 			is
+				use et_package_library;
 				use pac_package_name;
 				use pac_package_variants;
 				use pac_package_model_file;
-
+				package_model_name : pac_package_model_file.bounded_string;
+				
 				-- This cursor points to the package variant being queryied.
 				variant_cursor : pac_package_variants.cursor := component.variants.first;
 
@@ -1058,7 +1063,8 @@ package body et_kicad.schematic is
 					-- From the library and package name we can reason the variant name.
 					-- So if both the given library and package name match, the variant name
 					-- is set to be returned.
-					if element (variant_cursor).package_model = to_package_model_name (compose (
+					if get_package_model_file (element (variant_cursor).model_cursor) =
+						to_package_model_name (compose (
 							containing_directory	=> to_string (name => full_package_library_name),
 							name					=> to_string (packge => package_name))) 
 					then						
@@ -1097,15 +1103,16 @@ package body et_kicad.schematic is
 
 						log (text => "Terminal-port-map fits. Updating library ...", level => log_threshold + 4);
 
+						package_model_name := to_package_model_name (compose (
+							containing_directory	=> to_string (name => full_package_library_name),
+							name					=> to_string (packge => package_name)));
+						
 						-- build the new package variant
 						new_variant := (
-							package_model => to_package_model_name (compose (
-								containing_directory	=> to_string (name => full_package_library_name),
-								name					=> to_string (packge => package_name))),
-							
-							terminal_port_map	=> element (variant_cursor).terminal_port_map
-							);
+							model_cursor		=> get_package_model (package_model_name),							
+							terminal_port_map	=> element (variant_cursor).terminal_port_map);
 
+							
 						-- insert the new package variant in the component (in library)
 						pac_package_variants.insert (
 							container	=> component.variants,
@@ -7142,6 +7149,7 @@ package body et_kicad.schematic is
 					name 		: in type_component_generic_name.bounded_string;
 					component 	: in type_component_library) 
 				is
+					use et_package_library;
 					use pac_package_variants;
 					use pac_package_variant_name;
 					use et_import;
@@ -7170,7 +7178,7 @@ package body et_kicad.schematic is
 						terminals := get_terminal_count (
 -- 									library_name	=> element (variant_cursor).packge.library,	-- ../lbr/bel_ic
 -- 									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
-									element (variant_cursor).package_model);
+									get_package_model_file (element (variant_cursor).model_cursor));
 -- 					end if;
 						
 					log_indentation_down;	

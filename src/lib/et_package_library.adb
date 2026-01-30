@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -129,6 +129,15 @@ package body et_package_library is
 
 
 
+	function get_package_model_name (
+		model_cursor : in pac_package_models.cursor)
+		return string
+	is begin
+		return pac_package_model_file.to_string (key (model_cursor));
+	end;
+
+
+	
 	
 	
 	procedure create_package (

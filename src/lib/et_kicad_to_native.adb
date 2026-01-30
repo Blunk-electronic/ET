@@ -3788,11 +3788,20 @@ package body et_kicad_to_native is
 						variant_name	: in pac_package_variant_name.bounded_string; -- N, D, ...
 						variant			: in out type_package_variant)
 					is begin
-						variant.package_model := (rename_package_model (variant.package_model)); -- ../../lbr/transistors.pretty/S_0805
+						-- CS
+						null;
+						
+						-- variant.package_model := (rename_package_model (variant.package_model)); 
+						-- ../../lbr/transistors.pretty/S_0805
+						
+						-- Since the variant contains a selector for the cursor to the package model
+						-- (and no longer the full name of the model file),
+						-- rework is required here. For the time being the related statements
+						-- are put in comments.
 
-						log (text => "package variant " & to_string (variant_name) 
-							 & " now uses package " 
-							 & to_string (name => variant.package_model), level => log_threshold + 4);
+						-- log (text => "package variant " & to_string (variant_name) 
+							 -- & " now uses package " 
+							 -- & to_string (name => variant.package_model), level => log_threshold + 4);
 					end rename;
 					
 					

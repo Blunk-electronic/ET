@@ -92,11 +92,12 @@ with et_unit_name;
 with et_unit_swap_level;
 with et_unit_add_level;
 
+with et_package_library;
 with et_package_variant_name;
 with et_package_variant;
 with et_package_variant_terminal_port_map;
-
 with et_package_model_name;			use et_package_model_name;
+
 with et_device_library;				use et_device_library;
 with et_keywords;					use et_keywords;
 with et_file_sections;				use et_file_sections;
@@ -139,6 +140,7 @@ package body et_device_write is
 			packge	: in pac_package_variant_name.bounded_string;
 			variant	: in type_package_variant) 
 		is
+			use et_package_library;
 			use pac_package_variant_name;
 			use et_port_names;
 
@@ -156,11 +158,15 @@ package body et_device_write is
 
 			
 		begin
-			write (keyword => keyword_package_model, parameters => to_string (variant.package_model)); -- CS path correct ??
+			write (keyword => keyword_package_model, 
+				   parameters => get_package_model_name (variant.model_cursor));
+					-- CS path correct ??
+			
 			section_mark (section_terminal_port_map, HEADER);
 			iterate (variant.terminal_port_map, write_terminal'access);
 			section_mark (section_terminal_port_map, FOOTER);						
 		end write_variant;
+
 
 		
 		use pac_units_internal;
@@ -169,6 +175,7 @@ package body et_device_write is
 		use pac_units_external;
 		unit_external_cursor : pac_units_external.cursor := device.units_external.first;
 
+		
 		
 		procedure query_internal_unit (
 			name	: in pac_unit_name.bounded_string;

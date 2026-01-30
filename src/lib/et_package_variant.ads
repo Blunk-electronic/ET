@@ -46,6 +46,7 @@ with ada.containers.ordered_maps;
 with et_package_name;			use et_package_name;
 with et_package_model_name;		use et_package_model_name;
 with et_package_variant_name;	use et_package_variant_name;
+with et_package_library;		use et_package_library;
 with et_terminal_name;			use et_terminal_name;
 with et_port_names;				use et_port_names;
 with et_unit_name;				use et_unit_name;
@@ -57,8 +58,12 @@ package et_package_variant is
 
 	
 	type type_package_variant is record
-		package_model		: pac_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
-		terminal_port_map	: pac_terminal_port_map.map; -- which port is connected with with terminal
+		-- The link to the package model:
+		model_cursor		: pac_package_models.cursor;
+
+		-- The terminal-port-map tells
+		-- which port is associated with which terminal:
+		terminal_port_map	: pac_terminal_port_map.map;
 	end record;
 
 

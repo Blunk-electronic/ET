@@ -66,6 +66,7 @@ with et_unit_swap_level;
 with et_unit_add_level;
 with et_object_status;					use et_object_status;
 with et_symbol_text;
+with et_package_library;
 
 
 package body et_kicad_libraries is
@@ -2978,10 +2979,13 @@ package body et_kicad_libraries is
 						comp_name	: in type_component_generic_name.bounded_string;
 						component	: in out type_component_library) 
 					is
+						use et_package_library;
 						use pac_package_variants;
 						use pac_terminal_port_map;
 						use pac_package_variant_name;
 
+						package_model_name : pac_package_model_file.bounded_string;
+						
 						tmp_variant_name : pac_package_variant_name.bounded_string; -- temporarily used for building the variant name
 						tmp_variants : pac_package_variants.map; -- temporarily used for building the variant
 
@@ -3001,26 +3005,29 @@ package body et_kicad_libraries is
 									library_name	=> library_name (content (field_package)), -- bel_ic
 									package_name	=> package_name (content (field_package)), -- S_SO14
 									log_threshold	=> log_threshold + 1);
+
 								
 								-- Test whether library, package and terminal_port_map fit together.
 								if terminal_port_map_fits (
 									library_name		=> full_package_library_name,
 									package_name		=> package_name (content (field_package)), -- S_SO14
 									terminal_port_map	=> tmp_terminal_port_map) then
-								
+
+										-- The package field contains something like "bel_ic:S_SO14".
+										-- It provides the library name and the package name.
+										package_model_name := to_package_model_name (compose (
+											containing_directory	=> to_string (full_package_library_name),
+											name					=> to_string (package_name (content (field_package)))));
+
+									
 										-- Insert in tmp_variants (which is temporarily) the default variant.
 										insert (
 											container	=> tmp_variants,
 											key			=> tmp_variant_name, -- the same as the package name -- S_SO14
 											new_item 	=> (
-												-- The package field contains something like "bel_ic:S_SO14".
-												-- It provides the library name and the package name.
-
 												-- create package variant
-												package_model => to_package_model_name (compose (
-													containing_directory	=> to_string (full_package_library_name),
-													name					=> to_string (package_name (content (field_package))))),
-
+												model_cursor => get_package_model (package_model_name),
+												
 												-- The terminal to port map tmp_terminal_port_map is now finally copied
 												-- to its final destination:
 												terminal_port_map => tmp_terminal_port_map)); -- H4/GPIO2
@@ -3437,8 +3444,11 @@ package body et_kicad_libraries is
 				component_name	: in type_component_generic_name.bounded_string; -- RESISTOR
 				component 		: in out type_component_library) 
 			is
+				use et_package_library;
 				use pac_package_variants;
 
+				package_model_name : pac_package_model_file.bounded_string;
+				
 				-- This cursor points to the package variant being queryied.
 				variant_cursor : pac_package_variants.cursor := component.variants.first;
 
@@ -3464,9 +3474,11 @@ package body et_kicad_libraries is
 					-- From the library and package name we can reason the variant name.
 					-- So if both the given library and package name match, the variant name
 					-- is set to be returned.
-					if element (variant_cursor).package_model = to_package_model_name (compose (
+					if get_package_model_file (element (variant_cursor).model_cursor) = 
+						to_package_model_name (compose (
 							containing_directory	=> to_string (name => full_package_library_name),
-							name					=> to_string (packge => package_name))) then
+							name					=> to_string (packge => package_name))) 
+					then
 						
 						log (text => "variant " 
 							& to_string (key (variant_cursor)) 
@@ -3503,14 +3515,16 @@ package body et_kicad_libraries is
 
 						log (text => "Terminal-port-map fits. Updating library ...", level => log_threshold + 4);
 
+						package_model_name := to_package_model_name (compose (
+							containing_directory	=> to_string (name => full_package_library_name),
+							name					=> to_string (packge => package_name)));
+
+						
 						-- build the new package variant
 						new_variant := (
-							package_model => to_package_model_name (compose (
-								containing_directory	=> to_string (name => full_package_library_name),
-								name					=> to_string (packge => package_name))),
-							
-							terminal_port_map	=> element (variant_cursor).terminal_port_map
-							);
+							model_cursor		=> get_package_model (package_model_name),
+							terminal_port_map	=> element (variant_cursor).terminal_port_map);
+						
 
 						-- insert the new package variant in the component (in library)
 						pac_package_variants.insert (

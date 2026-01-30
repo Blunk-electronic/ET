@@ -186,7 +186,13 @@ package et_package_library is
 	-- CS rename to get_package_model_name
 
 
+	-- Returns the name of the package model for 
+	-- a given package cursor:
+	function get_package_model_name (
+		model_cursor : in pac_package_models.cursor)
+		return string;
 
+	
 	
 	
 	-- THIS IS THE RIG WIDE PACKAGE (FOOTPRINT) LIBRARY:

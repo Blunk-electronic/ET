@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -162,11 +162,12 @@ package body et_device_library.packages is
 			device_name	: in pac_device_model_file.bounded_string;
 			device		: in type_device_model) 
 		is
+			use et_package_library;
 			use pac_package_variants;
 			variant_cursor : pac_package_variants.cursor;
 		begin
 			variant_cursor := pac_package_variants.find (device.variants, variant);
-			package_model := element (variant_cursor).package_model;
+			package_model := get_package_model_file (element (variant_cursor).model_cursor);
 		end;
 		
 	begin

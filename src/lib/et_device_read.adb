@@ -97,6 +97,7 @@ with et_unit_name;
 with et_unit_swap_level;
 with et_unit_add_level;
 
+with et_package_library;
 with et_package_variant_name;
 with et_package_variant;
 with et_package_variant_terminal_port_map;
@@ -215,14 +216,64 @@ package body et_device_read is
 
 
 		
-		procedure insert_variant is
+		
+		procedure read_package_variant is
+			use pac_package_variant_name;
+			kw : string := f (line, 1);
+			
+			use et_package_library;
+			use et_package_model_name;
+			package_model_name : pac_package_model_file.bounded_string;
+			
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_name then -- name D
+				expect_field_count (line, 2);
+				check_variant_name_length (f (line, 2));
+				variant_name := to_variant_name (f (line,2));
+				log (text => "variant " & to_string (variant_name), level => log_threshold + 1);
+				
+				
+			elsif kw = keyword_package_model then -- package_model libraries/packages/S_SO14.pac
+				expect_field_count (line, 2);
+
+				-- The given path is something like libraries/packages/S_SO14.pac.
+				-- Check if the package name like S_SO14 is too long or contains invalid characters.
+				check_package_name_length (ada.directories.base_name (f (line, 2)));
+				check_package_name_characters (to_package_name (ada.directories.base_name (f (line, 2))));
+
+				package_model_name := to_package_model_name (f (line,2));
+				log (text => "package model " & to_string (package_model_name), level => log_threshold + 1);
+								
+				-- Read package model 
+				-- (like libraries/packages/__#__#lbr#bel_ic_pretty#S_SO14.pac)
+				-- and do a conductor layer check if required.
+				et_package_read.read_package (
+					file_name		=> package_model_name, 
+					check_layers	=> check_layers, 
+					log_threshold	=> log_threshold + 1);
+
+				-- Create the link to the package model in the
+				-- package library:
+				variant.model_cursor := get_package_model (package_model_name);
+			else
+				invalid_keyword (kw);
+			end if;
+		end read_package_variant;
+
+		
+		
+		
+		procedure insert_variant is -- CS rename to insert_package_variant
+			use et_package_library;
 			use pac_package_variants;
 			use pac_package_variant_name;
 			
 			inserted : boolean;
 			position : pac_package_variants.cursor;
 		begin
-			check_variant_name_characters (variant_name);
+			check_variant_name_characters (variant_name); 
+			-- CS move to procedure read_package_variant
 
 			insert (
 				container	=> variants,
@@ -233,18 +284,16 @@ package body et_device_read is
 
 			-- A particular variant must occur only once in the device model:
 			if not inserted then
-				log (ERROR, "variant " & to_string (variant_name) & " already used !", console => true);
+				log (ERROR, "variant " & to_string (variant_name) 
+					& " already used !");
 				raise constraint_error;
 			end if;
-
-			-- Read package model (like libraries/packages/__#__#lbr#bel_ic_pretty#S_SO14.pac)
-			-- and do a conductor layer check if required.
-			et_package_read.read_package (variant.package_model, check_layers, log_threshold + 1);
 
 			-- clean up for next variant
 			variant := (others => <>);
 		end insert_variant;
 
+		
 		
 		unit_name			: pac_unit_name.bounded_string; -- IO_BANK_2
 		unit_position		: type_vector_model := origin; -- the position of the unit inside the device editor
@@ -869,32 +918,7 @@ package body et_device_read is
 					when SEC_VARIANT =>
 						case pac_sections_stack.parent is
 							when SEC_VARIANTS =>
-								declare
-									use pac_package_variant_name;
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_name then -- name D
-										expect_field_count (line, 2);
-										check_variant_name_length (f (line, 2));
-										variant_name := to_variant_name (f (line,2));
-										log (text => "variant " & to_string (variant_name), level => log_threshold + 1);
-										
-									elsif kw = keyword_package_model then -- package_model libraries/packages/S_SO14.pac
-										expect_field_count (line, 2);
-
-										-- The given path is something like libraries/packages/S_SO14.pac.
-										-- Check if the package name like S_SO14 is too long or contains invalid characters.
-										check_package_name_length (ada.directories.base_name (f (line, 2)));
-										check_package_name_characters (to_package_name (ada.directories.base_name (f (line, 2))));
-
-										variant.package_model := to_package_model_name (f (line,2));
-										log (text => "package model " & to_string (variant.package_model), level => log_threshold + 1);
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
+								read_package_variant;
 
 							when others => invalid_section;
 						end case;

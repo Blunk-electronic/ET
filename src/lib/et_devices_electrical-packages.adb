@@ -1207,7 +1207,7 @@ package body et_devices_electrical.packages is
 
 	begin
 		-- Get a cursor to the package model:
-		package_cursor := get_package_model (element (variant_lib).package_model);
+		package_cursor := element (variant_lib).model_cursor;
 		
 		-- Get the cursor to the actual terminal:
 		return get_terminal (package_cursor, terminal_name);
