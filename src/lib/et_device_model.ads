@@ -43,36 +43,21 @@
 -- a physical representation in the board. 
 --
 -- To Do:
--- 1. Rename everything containing the term "unit" to "symbol".
+-- - Rename everything containing the term "unit" to "symbol".
 
 
-with ada.containers; 			use ada.containers;
-with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-
-with et_schematic_geometry;				use et_schematic_geometry;
-with et_schematic_coordinates;			use et_schematic_coordinates;
-with et_symbol_name;					use et_symbol_name;
-with et_symbol_library;					use et_symbol_library;
-with et_symbol_model;					use et_symbol_model;
-with et_symbol_ports;					use et_symbol_ports;
-with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 with et_device_appearance;				use et_device_appearance;
 with et_device_model_names;				use et_device_model_names;
 with et_device_value;					use et_device_value;
 with et_device_prefix;					use et_device_prefix;
 with et_device_name;					use et_device_name;
 with et_unit_name;						use et_unit_name;
-with et_unit_swap_level;				use et_unit_swap_level;
-with et_unit_add_level;					use et_unit_add_level;
 with et_package_variant_name;			use et_package_variant_name;
 with et_package_variant;				use et_package_variant;
 with et_device_model_unit_internal;		use et_device_model_unit_internal;
 with et_device_model_unit_external;		use et_device_model_unit_external;
 
 package et_device_model is
-
-	use pac_geometry_2;
 
 	
 	-- A device may have up to 1000 units. CS: seems to be reasonable limit
