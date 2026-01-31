@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -124,9 +124,9 @@ procedure et is
 	package_name_save_as	: pac_package_model_file.bounded_string; -- the package to be saved as
 	package_appearance		: et_package_bom_relevance.type_bom_relevant := et_package_bom_relevance.BOM_RELEVANT_YES;
 
-	symbol_name_create		: et_symbol_name.pac_symbol_model_file.bounded_string; -- the symbol to be created like libraries/symbols/nand.sym
-	symbol_name_open		: et_symbol_name.pac_symbol_model_file.bounded_string; -- the symbol to be opened
-	symbol_name_save_as		: et_symbol_name.pac_symbol_model_file.bounded_string; -- the symbol to be saved as
+	symbol_name_create		: et_symbol_name.pac_symbol_model_name.bounded_string; -- the symbol to be created like libraries/symbols/nand.sym
+	symbol_name_open		: et_symbol_name.pac_symbol_model_name.bounded_string; -- the symbol to be opened
+	symbol_name_save_as		: et_symbol_name.pac_symbol_model_name.bounded_string; -- the symbol to be saved as
 	symbol_appearance		: et_device_appearance.type_appearance := et_device_appearance.APPEARANCE_PCB; -- virtual/pcb. mostly pcb.
 	
 	device_name_create		: pac_device_model_file.bounded_string; -- the device to be created like libraries/devices/TL084.dev
@@ -487,7 +487,7 @@ procedure et is
 	
 	procedure save_symbol_as is 
 		use et_symbol_library;
-		use et_symbol_name.pac_symbol_model_file;
+		use et_symbol_name.pac_symbol_model_name;
 	begin
 		-- If symbol_name_save_as is empty nothing happens.
 		-- Otherwise the latest and only symbol is saved.
@@ -584,7 +584,7 @@ procedure et is
 	procedure process_commandline_arguments is
 		use et_conventions.pac_file_name;
 		use pac_package_model_file;
-		use et_symbol_name.pac_symbol_model_file;
+		use et_symbol_name.pac_symbol_model_name;
 		use pac_device_model_file;
 		use et_drawing_frame.pac_template_name;
 		use et_script_processor;
