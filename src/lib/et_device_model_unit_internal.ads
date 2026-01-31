@@ -37,13 +37,10 @@
 --
 -- DESCRIPTION:
 --
--- This is about so called "electrical" device models.
--- A device is called "electrical" because it ALWAYS
--- has an abstract representation in the schematic and mostly 
--- a physical representation in the board. 
+--
 --
 -- To Do:
--- 1. Rename everything containing the term "unit" to "symbol".
+-- - Rename everything containing the term "unit" to "symbol".
 
 
 with ada.containers; 			use ada.containers;
@@ -64,31 +61,7 @@ with et_unit_add_level;			use et_unit_add_level;
 package et_device_model_unit_internal is
 
 	use pac_geometry_2;
-
 	use pac_unit_name;
-	
-
-	-- NOTE: Devices can be composed of internal and/or external units.
-	--
-	-- An internal unit is modelled directly inside the device model, 
-	-- is fixed to the that device model
-	-- and can be used by that device model exclusively.
-	-- For example after importing a KiCad project there will only be 
-	-- internal units.
-	--
-	-- External units in turn provide much more flexibilty as they can 
-	-- be used by many device models. There is no fixed connection between 
-	-- device model and unit..
-
-
-	-- A device has one or more units. A unit is a subsection of a device.
-	-- There are internal units, which exist for the particular device exclusively. 
-	-- An internal unit has a symbol and further properties like a swap level.
-	-- There are external units, which are used for frequently used symbols like resistors or capacitors.
-	-- An external unit is just a reference to a symbol library, the symbol name therein and other properties
-	-- like swap level.	
-	-- The unit name is something like "I/O Bank 3", "PWR" or "Switch 1" "Switch 2"
-
 	
 	
 	

@@ -68,7 +68,7 @@ with et_unit_add_level;					use et_unit_add_level;
 with et_package_variant_name;			use et_package_variant_name;
 with et_package_variant;				use et_package_variant;
 with et_device_model_unit_internal;		use et_device_model_unit_internal;
-
+with et_device_model_unit_external;		use et_device_model_unit_external;
 
 package et_device_model is
 
@@ -100,68 +100,6 @@ package et_device_model is
 	-- An external unit is just a reference to a symbol library, the symbol name therein and other properties
 	-- like swap level.	
 	-- The unit name is something like "I/O Bank 3", "PWR" or "Switch 1" "Switch 2"
-
-	use pac_unit_name;	
-
-	use pac_units_internal;
-	
-	
-
--- EXTERNAL UNITS:
-	
-	-- An external unit has a reference and a swap level.
-    type type_unit_external is record
-        -- file is the link to the symbol in container "symbols":
-        model		: pac_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
-       	position	: type_vector_model := origin; -- the position within the device editor
-		swap_level	: type_swap_level := swap_level_default;
-		add_level	: type_add_level := type_add_level'first;
-	end record;
-
-
-	
-
-	-- External units are collected in a map;
-	package pac_units_external is new ordered_maps (
-		key_type		=> pac_unit_name.bounded_string, -- like "I/O-Bank 3"
-		element_type	=> type_unit_external);
-
-	use pac_units_external;
-	
-
-	-- Returns the ports of the given external unit:
-	function get_ports_external (
-		unit_cursor	: in pac_units_external.cursor)
-		return pac_symbol_ports.map;
-
-
-	
-	
-	function get_symbol_model_file (
-		unit	: in pac_units_external.cursor)
-		return pac_symbol_model_file.bounded_string;
-
-
-	-- Maps from an external unit to the symbol
-	-- in the symbol library:
-	function get_symbol (
-		unit	: in pac_units_external.cursor)
-		return pac_symbol_models.cursor;
-	
-
-
-	
-
-	-- Returns the default x/y-positions 
-	-- of the given external unit. If the given
-	-- cursor of the unit is no_element then the
-	-- return is an empty list:
-	function get_port_positions (
-		unit	: in pac_units_external.cursor)
-		return pac_points.list;
-	
-	
-	
 
 	
 	

@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                            DEVICE MODEL                                  --
+--                     DEVICE MODEL / EXTERNAL UNIT                         --
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                               --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -41,131 +41,113 @@ with ada.text_io;				use ada.text_io;
 -- with et_exceptions;				use et_exceptions;
 
 
-package body et_device_model is
+package body et_device_model_unit_external is
 
 
 
-	function is_real (
-		model : in type_device_model)
-		return boolean
-	is begin
-		if model.appearance = APPEARANCE_PCB then
-			return true;
-		else
-			return false;
-		end if;
-	end;
 
-	
-	
-
-
-	function has_internal_unit (
-		units : in type_device_units)
-		return boolean
+	function get_ports_external (
+		unit_cursor	: in pac_units_external.cursor)
+		return pac_symbol_ports.map
 	is 
-		use pac_units_internal;
+		result : pac_symbol_ports.map; -- to be returned
+
+		sym_model : pac_symbol_model_file.bounded_string; 
+		-- like /libraries/symbols/NAND.sym
+
+		
+		procedure query_symbol (
+			symbol_name	: in pac_symbol_model_file.bounded_string;
+			symbol		: in type_symbol) 
+		is begin
+			result := symbol.ports;
+		end query_symbol;
+
+		
 	begin
-		return has_element (units.int);
-	end;
+		sym_model := element (unit_cursor).model;
 
-	
-
-	function has_external_unit (
-		units : in type_device_units)
-		return boolean
-	is 
-		use pac_units_external;
-	begin
-		return has_element (units.ext);
-	end;
-
-
-	
-
-	function get_name_internal (
-		units : in type_device_units)
-		return pac_unit_name.bounded_string
-	is 
-		use pac_units_internal;
-	begin
-		return key (units.int);
-	end;
-	
-
-	function get_name_external (
-		units : in type_device_units)
-		return pac_unit_name.bounded_string
-	is 
-		use pac_units_external;
-	begin
-		return key (units.ext);
-	end;
-
-
-	
-	
-	procedure locate_internal (
-		model	: in type_device_model;
-		unit	: in pac_unit_name.bounded_string;
-		cursor	: in out pac_units_internal.cursor)
-	is begin
-		cursor := model.units_internal.find (unit);
-	end locate_internal;
-
-
-
-	procedure locate_external (
-		model	: in type_device_model;
-		unit	: in pac_unit_name.bounded_string;
-		cursor	: in out pac_units_external.cursor)
-	is begin
-		cursor := model.units_external.find (unit);
-	end locate_external;
-
-	
-	
-
-	function get_unit_count (
-		device_model : in type_device_model)
-		return type_unit_count
-	is
-		result : type_unit_count;
-	begin
-		result := type_unit_count (
-			device_model.units_internal.length +
-			device_model.units_external.length);
+		-- Fetch the ports of the external unit.
+		-- CS: constraint_error arises here if symbol model could not be located.
+		pac_symbol_models.query_element (
+			position	=> pac_symbol_models.find (symbol_library, sym_model),
+			process		=> query_symbol'access);
 		
 		return result;
-	end get_unit_count;
+	end get_ports_external;
 
+	
 
+	
 
-
-
-	function get_first_package_variant (
-		device_model : in type_device_model)
-		return pac_package_variant_name.bounded_string
+	function get_symbol_model_file (
+		unit	: in pac_units_external.cursor)
+		return pac_symbol_model_file.bounded_string
 	is begin
-		return get_first_package_variant (device_model.variants);
+		return element (unit).model;
+	end get_symbol_model_file;
+	
+
+
+
+	
+	function get_symbol (
+		unit	: in pac_units_external.cursor)
+		return pac_symbol_models.cursor
+	is
+		result : pac_symbol_models.cursor;
+		symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
+	begin
+		symbol_file := get_symbol_model_file (unit);
+
+		get_symbol_model (symbol_file, result);
+		return result;
 	end;
 
 
 
-	function get_default_value (
-		device_model : in type_device_model)
-		return pac_device_value.bounded_string
-	is begin
-		if is_real (device_model) then
-			return device_model.value;
-		else
-			return empty_value;
+
+	
+
+	function get_port_positions (
+		unit	: in pac_units_external.cursor)
+		return pac_points.list
+	is
+		result : pac_points.list;
+		
+		-- The name of the associated symbol model file:
+		sym_name : pac_symbol_model_file.bounded_string;
+		-- like /libraries/symbols/NAND.sym
+
+		-- The cursor of the actual symbol in
+		-- the symbol library:
+		sym_cursor : pac_symbol_models.cursor;
+	
+	begin
+		-- If the given cursor points to a unit, then
+		-- extract the port positions. Otherwise return
+		-- an empty list:
+		if has_element (unit) then
+			
+			-- Get the name of the symbol model file
+			-- of the given external unit:
+			sym_name := get_symbol_model_file (unit);
+
+			-- Locate the symbol in the rig wide 
+			-- symbol model library:
+			get_symbol_model (sym_name, sym_cursor);
+
+			-- Get the port positions via the symbol cursor:
+			result := get_port_positions (sym_cursor);
 		end if;
-	end;
+
+		return result;
+	end get_port_positions;
 
 	
+
 	
-end et_device_model;
+end et_device_model_unit_external;
 
 -- Soli Deo Gloria
 

@@ -100,6 +100,7 @@ with et_package_model_name;			use et_package_model_name;
 
 with et_device_library;				use et_device_library;
 with et_device_model_unit_internal;	use et_device_model_unit_internal;
+with et_device_model_unit_external;	use et_device_model_unit_external;
 with et_keywords;					use et_keywords;
 with et_file_sections;				use et_file_sections;
 with et_terminal_name;				use et_terminal_name;

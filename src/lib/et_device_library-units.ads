@@ -53,6 +53,7 @@ with et_unit_name;						use et_unit_name;
 with et_unit_swap_level;				use et_unit_swap_level;
 with et_unit_add_level;					use et_unit_add_level;
 with et_device_model_unit_internal;		use et_device_model_unit_internal;
+with et_device_model_unit_external;		use et_device_model_unit_external;
 
 
 package et_device_library.units is
