@@ -501,7 +501,7 @@ package body et_device_library.units is
 				symbol_cursor : pac_symbol_models.cursor;
 
 				procedure query_ports (
-					file	: in pac_symbol_model_file.bounded_string; -- ../libraries/symbols/NAND.sym
+					file	: in pac_symbol_model_name.bounded_string; -- ../libraries/symbols/NAND.sym
 					symbol	: in type_symbol) 
 				is begin
 					port_cursor := find (symbol.ports, port_name);

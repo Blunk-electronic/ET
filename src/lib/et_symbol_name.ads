@@ -56,21 +56,21 @@ package et_symbol_name is
 	-- "../lbr/logic/nand.sym"
 	-- The model name is equally to the file name that contains
 	-- the model:
-	package pac_symbol_model_file is new 
+	package pac_symbol_model_name is new 
 		generic_bounded_length (symbol_file_name_length_max);
-	-- CS rename to pac_symbol_model_name
 
+		
 	symbol_library_file_extension : constant string := "sym";
 		
 		
 	function to_string (
-		name : in pac_symbol_model_file.bounded_string) 
+		name : in pac_symbol_model_name.bounded_string) 
 		return string;
 
 	
 	function to_file_name (
 		name : in string) 
-		return pac_symbol_model_file.bounded_string;
+		return pac_symbol_model_name.bounded_string;
 	
 
 

@@ -47,7 +47,7 @@ package body et_symbol_library is
 
 	function get_symbol_model_name (
 		symbol_cursor : in pac_symbol_models.cursor)
-		return pac_symbol_model_file.bounded_string
+		return pac_symbol_model_name.bounded_string
 	is begin
 		return key (symbol_cursor);
 	end;
@@ -57,14 +57,14 @@ package body et_symbol_library is
 		symbol_cursor : in pac_symbol_models.cursor)
 		return string
 	is begin
-		return pac_symbol_model_file.to_string (key (symbol_cursor));
+		return pac_symbol_model_name.to_string (key (symbol_cursor));
 	end;
 
 
 
 	
 	procedure create_symbol (
-		symbol_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
+		symbol_name		: in pac_symbol_model_name.bounded_string; -- libraries/symbols/nand.sym
 		appearance		: in type_appearance;
 		log_threshold	: in type_log_level) 
 	is begin
@@ -101,7 +101,7 @@ package body et_symbol_library is
 
 	
 	procedure get_symbol_model (
-		model_file	: in pac_symbol_model_file.bounded_string;
+		model_file	: in pac_symbol_model_name.bounded_string;
 		cursor		: in out pac_symbol_models.cursor)
 	is begin
 		cursor := symbol_library.find (model_file);
@@ -110,7 +110,7 @@ package body et_symbol_library is
 	
 
 	function get_symbol_model (
-		model_name : in pac_symbol_model_file.bounded_string)
+		model_name : in pac_symbol_model_name.bounded_string)
 		return pac_symbol_models.cursor
 	is begin
 		return symbol_library.find (model_name);

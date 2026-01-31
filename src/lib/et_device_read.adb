@@ -306,7 +306,6 @@ package body et_device_read is
 		units_internal		: pac_units_internal.map;
 		units_external		: pac_units_external.map;
 
-		-- CS move to et_schematic_rw ? wrong ? better to et_symbol_rw ?
 		symbol_line			: type_symbol_line;
 		symbol_arc			: type_symbol_arc;
 		symbol_circle		: type_symbol_circle;
@@ -327,7 +326,7 @@ package body et_device_read is
 		port_power_level		: et_power_sources.type_power_level := et_power_sources.port_power_level_default;
 
 		unit_external : type_unit_external;
-		unit_external_model_name : pac_symbol_model_file.bounded_string;
+		unit_external_model_name : pac_symbol_model_name.bounded_string;
 		
 		
 		

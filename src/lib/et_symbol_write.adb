@@ -269,7 +269,7 @@ package body et_symbol_write is
 	
 	
 	procedure save_symbol (
-		file_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
+		file_name		: in pac_symbol_model_name.bounded_string; -- libraries/symbols/nand.sym
 		symbol			: in type_symbol; -- the actual symbol model
 		log_threshold	: in type_log_level)
 	is

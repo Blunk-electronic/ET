@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -42,18 +42,18 @@ with ada.text_io;				use ada.text_io;
 package body et_symbol_name is
 
 
-	function to_string (name : in pac_symbol_model_file.bounded_string) 
+	function to_string (name : in pac_symbol_model_name.bounded_string) 
 		return string 
 	is begin
-		return pac_symbol_model_file.to_string (name);
+		return pac_symbol_model_name.to_string (name);
 	end to_string;
 
 	
 	
 	function to_file_name (name : in string)
-		return pac_symbol_model_file.bounded_string 
+		return pac_symbol_model_name.bounded_string 
 	is begin
-		return pac_symbol_model_file.to_bounded_string (name);
+		return pac_symbol_model_name.to_bounded_string (name);
 	end;
 
 	
