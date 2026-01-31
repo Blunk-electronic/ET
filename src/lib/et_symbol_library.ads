@@ -69,7 +69,7 @@ package et_symbol_library is
 	package pac_symbol_models is new indefinite_ordered_maps (
 		key_type		=> pac_symbol_model_name.bounded_string,
 		"<"				=> pac_symbol_model_name."<",
-		element_type	=> type_symbol);
+		element_type	=> type_symbol_model);
 
 	use pac_symbol_models;
 
@@ -162,7 +162,7 @@ package et_symbol_library is
 	
 	function get_symbol (
 		symbol	: in pac_symbol_models.cursor)
-		return type_symbol;
+		return type_symbol_model;
 
 							
 end et_symbol_library;

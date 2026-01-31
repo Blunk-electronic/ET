@@ -94,7 +94,7 @@ package body et_device_model_unit_internal is
 
 	function get_symbol (
 		unit	: in pac_units_internal.cursor)
-		return type_symbol
+		return type_symbol_model
 	is
 		u : type_unit_internal renames element (unit);
 	begin

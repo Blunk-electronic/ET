@@ -68,7 +68,7 @@ package et_device_model_unit_internal is
 	-- An internal unit is a symbol with a swap level.
 	-- An internal unit is owned by the particular device exclusively.
 	type type_unit_internal (appearance : type_appearance) is record
-		symbol		: type_symbol (appearance);
+		symbol		: type_symbol_model (appearance);
 		position	: type_vector_model; -- the position of the unit inside the device editor
 		swap_level	: type_swap_level := swap_level_default;
 		add_level	: type_add_level := add_level_default;
@@ -120,7 +120,7 @@ package et_device_model_unit_internal is
 	
 	function get_symbol (
 		unit	: in pac_units_internal.cursor)
-		return type_symbol;
+		return type_symbol_model;
 
 	
 	

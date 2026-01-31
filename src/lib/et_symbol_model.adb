@@ -45,7 +45,7 @@ package body et_symbol_model is
 
 
 	function is_real (
-		symbol : in type_symbol)
+		symbol : in type_symbol_model)
 		return boolean
 	is begin
 		case symbol.appearance is
@@ -59,7 +59,7 @@ package body et_symbol_model is
 	
 
 	function get_port_positions (
-		symbol	: in type_symbol)
+		symbol	: in type_symbol_model)
 		return pac_points.list
 	is
 		use pac_points;
@@ -79,7 +79,7 @@ package body et_symbol_model is
 
 
 	function get_placeholders (
-		symbol : in type_symbol)
+		symbol : in type_symbol_model)
 		return type_text_placeholders
 	is begin
 		if is_real (symbol) then

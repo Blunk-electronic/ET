@@ -153,7 +153,7 @@ package et_device_library.units is
 	-- Maps from the given symbol cursor to the actual symbol:
 	function get_symbol (
 		unit : in type_unit_cursors)
-		return type_symbol;
+		return type_symbol_model;
 		
 	
 

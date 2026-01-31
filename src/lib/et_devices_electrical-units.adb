@@ -718,7 +718,7 @@ package body et_devices_electrical.units is
 			
 			procedure query_symbol (
 				symbol_name	: in pac_symbol_model_name.bounded_string;
-				symbol		: in type_symbol) 
+				symbol		: in type_symbol_model) 
 			is begin
 				-- Collect the positions of texts and store them in result.text
 				-- in the same order as they are listed in symbol.texts:

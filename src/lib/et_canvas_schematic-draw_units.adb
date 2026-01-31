@@ -90,7 +90,7 @@ procedure draw_units is
 	
 	-- This procedure draws a single unit:
 	procedure draw_unit (
-		symbol			: in type_symbol;
+		symbol			: in type_symbol_model;
 		device_name		: in type_device_name;
 		device_value	: in pac_device_value.bounded_string; -- like 100R or TL084
 		device_purpose	: in pac_device_purpose.bounded_string := empty_purpose; -- like "brightness control"

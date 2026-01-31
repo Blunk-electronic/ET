@@ -70,7 +70,7 @@ package et_symbol_model is
 
 	
 	
-	type type_symbol ( -- CS rename to type_symbol_model
+	type type_symbol_model (
 		appearance : type_appearance) 
 	is new type_symbol_base with record
 		shapes	: type_shapes; -- the collection of shapes
@@ -90,7 +90,7 @@ package et_symbol_model is
 
 	-- Returns true if the given symbol will be part of a real device:
 	function is_real (
-		symbol : in type_symbol)
+		symbol : in type_symbol_model)
 		return boolean;
 
 
@@ -98,7 +98,7 @@ package et_symbol_model is
 	
 	-- Retrurns x/y-positions the the ports of the given symbol:
 	function get_port_positions (
-		symbol	: in type_symbol)
+		symbol	: in type_symbol_model)
 		return pac_points.list;
 
 
@@ -107,7 +107,7 @@ package et_symbol_model is
 	-- If the symbol represents a virtual device,
 	-- then default placeholders are returned:
 	function get_placeholders (
-		symbol	: in type_symbol)
+		symbol	: in type_symbol_model)
 		return type_text_placeholders;
 	
 

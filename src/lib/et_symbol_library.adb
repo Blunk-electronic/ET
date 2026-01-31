@@ -145,7 +145,7 @@ package body et_symbol_library is
 		symbol : in pac_symbol_models.cursor)
 		return type_text_placeholders
 	is 
-		sym : type_symbol renames element (symbol);
+		sym : type_symbol_model renames element (symbol);
 	begin
 		if is_real (sym) then
 			return sym.placeholders;
@@ -162,7 +162,7 @@ package body et_symbol_library is
 		destination		: in type_object_position)
 		return type_text_placeholders
 	is
-		sym : type_symbol renames element (symbol_cursor);
+		sym : type_symbol_model renames element (symbol_cursor);
 		
 		r : type_text_placeholders; -- to be returned
 	begin
@@ -183,7 +183,7 @@ package body et_symbol_library is
 
 	function get_symbol (
 		symbol	: in pac_symbol_models.cursor)
-		return type_symbol
+		return type_symbol_model
 	is begin
 		return element (symbol);
 	end;

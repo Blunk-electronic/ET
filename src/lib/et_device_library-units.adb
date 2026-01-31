@@ -424,7 +424,7 @@ package body et_device_library.units is
 
 	function get_symbol (
 		unit : in type_unit_cursors)
-		return type_symbol
+		return type_symbol_model
 	is 
 		use pac_units_external;
 		use pac_units_internal;
@@ -502,7 +502,7 @@ package body et_device_library.units is
 
 				procedure query_ports (
 					file	: in pac_symbol_model_name.bounded_string; -- ../libraries/symbols/NAND.sym
-					symbol	: in type_symbol) 
+					symbol	: in type_symbol_model) 
 				is begin
 					port_cursor := find (symbol.ports, port_name);
 				end;

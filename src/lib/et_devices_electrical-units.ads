@@ -324,7 +324,7 @@ package et_devices_electrical.units is
 		-- For texts, we need only their positions (x/y):
 		texts : pac_text_positions.list; -- same order as the texts in type_symbol_base
 
-		-- The placeholders are copies of those in the symbol (see type_symbol):
+		-- The placeholders are copies of those in the symbol (see type_symbol_model):
 		case appearance is
 			when APPEARANCE_PCB =>
 				placeholders : type_text_placeholders;

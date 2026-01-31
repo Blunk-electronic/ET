@@ -93,7 +93,7 @@ package body et_symbol_read is
 		
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		appearance			: type_appearance;
-		symbol				: access type_symbol;
+		symbol				: access type_symbol_model;
 		symbol_line			: type_symbol_line;
 		symbol_arc			: type_symbol_arc;
 		symbol_circle		: type_symbol_circle;
@@ -468,12 +468,12 @@ package body et_symbol_read is
 								-- Create a new symbol where pointer "symbol" is pointing at.
 								case appearance is
 									when APPEARANCE_VIRTUAL =>
-										symbol := new type_symbol' (
+										symbol := new type_symbol_model' (
 											appearance	=> APPEARANCE_VIRTUAL,
 											others		=> <>);
 
 									when APPEARANCE_PCB =>
-										symbol := new type_symbol' (
+										symbol := new type_symbol_model' (
 											appearance	=> APPEARANCE_PCB,
 											others		=> <>);
 

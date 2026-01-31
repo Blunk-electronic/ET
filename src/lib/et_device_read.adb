@@ -302,7 +302,7 @@ package body et_device_read is
 		unit_position		: type_vector_model := origin; -- the position of the unit inside the device editor
 		unit_swap_level		: et_unit_swap_level.type_swap_level := et_unit_swap_level.swap_level_default;
 		unit_add_level		: et_unit_add_level.type_add_level := et_unit_add_level.add_level_default;
-		unit_symbol			: access type_symbol;
+		unit_symbol			: access type_symbol_model;
 		units_internal		: pac_units_internal.map;
 		units_external		: pac_units_external.map;
 
@@ -345,12 +345,12 @@ package body et_device_read is
 				-- The symbol will be copied to the current unit later.
 				case appearance is
 					when APPEARANCE_VIRTUAL =>
-						unit_symbol := new type_symbol' (
+						unit_symbol := new type_symbol_model' (
 							appearance	=> APPEARANCE_VIRTUAL,
 							others		=> <>);
 
 					when APPEARANCE_PCB =>
-						unit_symbol := new type_symbol' (
+						unit_symbol := new type_symbol_model' (
 							appearance	=> APPEARANCE_PCB,
 							others		=> <>);
 
