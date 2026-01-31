@@ -712,13 +712,13 @@ package body et_devices_electrical.units is
 			use et_symbol_library;
 			use et_symbol_name;
 			use pac_units_external;
-			unit_cursor : pac_units_external.cursor;
-			sym_model : pac_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
-
+			unit_cursor	: pac_units_external.cursor;
+			sym_cursor	: pac_symbol_models.cursor;
+			
 			
 			procedure query_symbol (
 				symbol_name	: in pac_symbol_model_file.bounded_string;
-				symbol		: in type_symbol ) 
+				symbol		: in type_symbol) 
 			is begin
 				-- Collect the positions of texts and store them in result.text
 				-- in the same order as they are listed in symbol.texts:
@@ -745,12 +745,12 @@ package body et_devices_electrical.units is
 			if unit_cursor /= pac_units_external.no_element then
 				unit_status := EXT;
 				
-				sym_model := element (unit_cursor).model;
+				sym_cursor := element (unit_cursor).model_cursor;
 
 				-- Fetch the ports of the external unit.
 				-- CS: constraint_error arises here if symbol model could not be located.
 				pac_symbol_models.query_element (
-					position	=> pac_symbol_models.find (symbol_library, sym_model),
+					position	=> sym_cursor,
 					process		=> query_symbol'access);
 			else
 				unit_status := INT;

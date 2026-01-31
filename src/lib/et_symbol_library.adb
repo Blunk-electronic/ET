@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -44,6 +44,25 @@ with ada.text_io;				use ada.text_io;
 package body et_symbol_library is
 	
 
+
+	function get_symbol_model_name (
+		symbol_cursor : in pac_symbol_models.cursor)
+		return pac_symbol_model_file.bounded_string
+	is begin
+		return key (symbol_cursor);
+	end;
+	
+
+	function get_symbol_model_name (
+		symbol_cursor : in pac_symbol_models.cursor)
+		return string
+	is begin
+		return pac_symbol_model_file.to_string (key (symbol_cursor));
+	end;
+
+
+
+	
 	procedure create_symbol (
 		symbol_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		appearance		: in type_appearance;
@@ -90,6 +109,14 @@ package body et_symbol_library is
 
 	
 
+	function get_symbol_model (
+		model_name : in pac_symbol_model_file.bounded_string)
+		return pac_symbol_models.cursor
+	is begin
+		return symbol_library.find (model_name);
+	end;
+
+	
 	
 	
 	function is_real (

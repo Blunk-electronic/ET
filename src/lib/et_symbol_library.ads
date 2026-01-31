@@ -77,12 +77,20 @@ package et_symbol_library is
 
 	
 	
-	-- THIS IS THE RIG WIDE LIBRARY OF SYMBOLS:
+	-- THIS IS THE RIG WIDE LIBRARY OF SYMBOLS MODELS:
 	
 	symbol_library : pac_symbol_models.map;
 
 
 
+	function get_symbol_model_name (
+		symbol_cursor : in pac_symbol_models.cursor)
+		return pac_symbol_model_file.bounded_string;
+	
+
+	function get_symbol_model_name (
+		symbol_cursor : in pac_symbol_models.cursor)
+		return string;
 
 	
 
@@ -100,9 +108,20 @@ package et_symbol_library is
 	-- the symbol model in the symbol library.
 	-- If the symbol can not be located then cursor is
 	-- set to no_element:
-	procedure get_symbol_model (
-		model_file	: in pac_symbol_model_file.bounded_string;
+	procedure get_symbol_model ( -- CS rename to set_symbol_model
+		model_file	: in pac_symbol_model_file.bounded_string; -- CS rename to model_name
 		cursor		: in out pac_symbol_models.cursor);
+
+
+	-- Returns for a given symbol model file name
+	-- (like ../libraries/symbols/nand.sym)
+	-- the symbol model in the symbol library.
+	-- If the symbol can not be located then cursor is
+	-- set to no_element:
+	function get_symbol_model (
+		model_name : in pac_symbol_model_file.bounded_string)
+		return pac_symbol_models.cursor;
+
 	
 		
 	-- Returns true if the given symbol will be part of a real device:

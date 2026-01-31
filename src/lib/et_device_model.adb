@@ -132,8 +132,9 @@ package body et_device_model is
 	is
 		result : type_unit_count;
 	begin
-		result := type_unit_count (device_model.units_internal.length)
-			+ type_unit_count (device_model.units_external.length);
+		result := type_unit_count (
+			natural (device_model.units_internal.length)
+			+ natural (device_model.units_external.length));
 		
 		return result;
 	end get_unit_count;

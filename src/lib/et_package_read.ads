@@ -61,6 +61,7 @@ package et_package_read is
 		-- CS error : out boolean;
 		-- CS package_curosr : out ?.cursor;
 
+	-- CS rename to read_package_model
 
 	
 	

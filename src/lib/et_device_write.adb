@@ -62,6 +62,7 @@ with et_time;
 with et_file_write;					use et_file_write;
 with et_symbol_read;				use et_symbol_read;
 with et_symbol_write;				use et_symbol_write;
+with et_symbol_library;
 with et_package_write;
 with et_package_read;
 with et_conventions;
@@ -200,6 +201,7 @@ package body et_device_write is
 			name	: in pac_unit_name.bounded_string;
 			unit	: in type_unit_external) 
 		is
+			use et_symbol_library;
 			use et_unit_swap_level;
 			use et_unit_add_level;
 		begin
@@ -207,7 +209,13 @@ package body et_device_write is
 			write (keyword => keyword_position, parameters => to_string (unit.position, FORMAT_2));
 			write (keyword => keyword_swap_level, parameters => to_string (unit.swap_level));
 			write (keyword => keyword_add_level , parameters => to_string (unit.add_level));
-			write (keyword => keyword_symbol_file, parameters => to_string (unit.model));
+			
+			-- write (keyword => keyword_symbol_file, parameters => to_string (unit.model));
+
+			write (keyword => keyword_symbol_file, 
+				   parameters => get_symbol_model_name (unit.model_cursor));
+
+			
 		end query_external_unit;
 
 		

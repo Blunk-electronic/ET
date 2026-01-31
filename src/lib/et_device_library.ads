@@ -117,7 +117,8 @@ package et_device_library is
 	function get_device_model_file (
 		cursor	: in pac_device_models.cursor)
 		return pac_device_model_file.bounded_string;
-
+	-- CS remove. see function get_device_model_name below
+	-- which does the same
 
 	
 

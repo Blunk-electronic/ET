@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -56,6 +56,6 @@ package et_device_read is
 		-- CS error : out boolean;
 		-- CS device_curosr : out pac_devices_lib.cursor;
 		log_threshold	: in type_log_level);
-
+	-- CS rename to read_device_model
 	
 end et_device_read;

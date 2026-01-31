@@ -83,6 +83,7 @@ with et_symbol_name;				use et_symbol_name;
 with et_symbol_ports;				use et_symbol_ports;
 with et_symbol_text;				use et_symbol_text;
 with et_symbol_model;				use et_symbol_model;
+with et_symbol_library;				use et_symbol_library;
 with et_package_name;				use et_package_name;
 with et_device_placeholders;		use et_device_placeholders;
 with et_device_partcode;			use et_device_partcode;
@@ -326,7 +327,61 @@ package body et_device_read is
 		port_power_level		: et_power_sources.type_power_level := et_power_sources.port_power_level_default;
 
 		unit_external : type_unit_external;
+		unit_external_model_name : pac_symbol_model_file.bounded_string;
+		
+		
+		
+		procedure read_unit_internal is
+			kw : string := f (line, 1);
+			use et_unit_swap_level;
+			use et_unit_add_level;
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_name then
+				expect_field_count (line, 2);
+				unit_name := to_unit_name (f (line,2));
 
+				-- Create a new symbol where unit_symbol is pointing at.
+				-- The symbol assumes the appearance of the device.
+				-- The symbol will be copied to the current unit later.
+				case appearance is
+					when APPEARANCE_VIRTUAL =>
+						unit_symbol := new type_symbol' (
+							appearance	=> APPEARANCE_VIRTUAL,
+							others		=> <>);
+
+					when APPEARANCE_PCB =>
+						unit_symbol := new type_symbol' (
+							appearance	=> APPEARANCE_PCB,
+							others		=> <>);
+
+					when others => 
+						raise constraint_error; -- CS
+
+				end case;
+				
+			elsif kw = keyword_position then -- position x 0.00 y 0.00
+				expect_field_count (line, 5);
+
+				-- extract unit position starting at field 2
+				-- NOTE: this is the position of the unit inside the device editor !
+				unit_position := to_vector_model (line, 2);
+
+			elsif kw = keyword_swap_level then
+				expect_field_count (line, 2);
+				unit_swap_level := to_swap_level (f (line, 2));
+
+			elsif kw = keyword_add_level then
+				expect_field_count (line, 2);
+				unit_add_level := to_add_level (f (line, 2));
+				
+			else
+				invalid_keyword (kw);
+			end if;
+		end read_unit_internal;
+		
+
+		
 		
 		-- Inserts in the temporarily collection of internal units a new unit.
 		-- The symbol of the unit is the one accessed by pointer unit_symbol.
@@ -396,45 +451,129 @@ package body et_device_read is
 		end insert_unit_internal;
 
 		
+		
+		
+		
+		
+		procedure read_unit_external is
+			use et_unit_swap_level;
+			use et_unit_add_level;
+			kw : string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_name then -- name A, B, ...
+				expect_field_count (line, 2);
+				unit_name := to_unit_name (f (line,2));
+
+			elsif kw = keyword_position then -- position x 0.00 y 0.00
+				expect_field_count (line, 5);
+
+				-- extract unit position starting at field 2
+				-- NOTE: this is the position of the unit inside the device editor !
+				unit_external.position := to_vector_model (line, 2);
+
+			elsif kw = keyword_swap_level then -- swap_level 1
+				expect_field_count (line, 2);
+				unit_external.swap_level := to_swap_level (f (line, 2));
+
+			elsif kw = keyword_add_level then -- add_level next
+				expect_field_count (line, 2);
+				unit_external.add_level := to_add_level (f (line, 2));
+
+			elsif kw = keyword_symbol_file then -- symbol_model libraries/symbols/nand.sym
+				expect_field_count (line, 2);
+				unit_external_model_name := to_file_name (f (line, 2));
+				
+			else
+				invalid_keyword (kw);
+			end if;
+		end read_unit_external;
+		
+		
+
+		
+		
 		-- Inserts in the temporarily collection of external units a new unit.
 		procedure insert_unit_external is
-			position : pac_units_external.cursor;
-			inserted : boolean;
-
 			use pac_unit_name;
+			
+			-- CS log messages
+			
+			
+			procedure read_symbol_model is
+			begin
+				-- read the symbol model (like ../libraries/symbols/power_gnd.sym)
+				read_symbol (unit_external_model_name,
+					log_threshold + 1);			
+			end read_symbol_model;
+			
+			
+			
+			inserted : boolean;
+			
+			-- Adds the internal unit to the device:
+			procedure add_to_device is 
+				cursor : pac_units_external.cursor;
+			begin
+				pac_units_external.insert (
+					container	=> units_external,
+					position	=> cursor,
+					inserted	=> inserted,
+					key			=> unit_name,
+					new_item	=> unit_external);
+			end add_to_device;
+			
+			
+			
+			-- Tests the "inserted" flag and issues a log message.
+			-- The inserted-flag indicates that the unit does not exist
+			-- already:			
+			procedure check_for_name_in_use is begin
+				-- A unit name must occur only once. 
+				-- Make sure the unit_name is not in use by any internal or external units:
+
+				-- Test occurence in external units:
+				if not inserted then
+					log (ERROR, "unit name " & to_string (unit_name) 
+						& " already used by another external unit !");
+					raise constraint_error;
+				end if;
+
+				-- Make sure the unit name is not in use by any internal unit:
+				if pac_units_internal.contains (units_internal, unit_name) then
+					log (ERROR, "unit name " & to_string (unit_name) 
+						& " already used by an internal unit !");
+					raise constraint_error;
+				end if;			
+			end check_for_name_in_use;
+			
+			
+			
+			procedure clean_up is begin
+				-- clean up for next unit
+				unit_name := to_unit_name ("");
+				-- CS unit_external_model_name := 
+				unit_external := (others => <>);		
+			end clean_up;
+			
+			
 		begin
-			pac_units_external.insert (
-				container	=> units_external,
-				position	=> position,
-				inserted	=> inserted,
-				key			=> unit_name,
-				new_item	=> unit_external);
+			
+			read_symbol_model;			
+			
+			-- Get the cursor to the symbol model:
+			unit_external.model_cursor := get_symbol_model (unit_external_model_name);
+			
+			add_to_device;
+			
+			check_for_name_in_use;
 
-			-- A unit name must occur only once. 
-			-- Make sure the unit_name is not in use by any internal or external units:
-
-			-- Test occurence in external units:
-			if not inserted then
-				log (ERROR, "unit name " & to_string (unit_name) 
-					& " already used by another external unit !", console => true);
-				raise constraint_error;
-			end if;
-
-			-- Make sure the unit name is not in use by any internal unit:
-			if pac_units_internal.contains (units_internal, unit_name) then
-				log (ERROR, "unit name " & to_string (unit_name) 
-					& " already used by an internal unit !", console => true);
-				raise constraint_error;
-			end if;
-
-			-- read the symbol model (like ../libraries/symbols/power_gnd.sym)
-			read_symbol (unit_external.model, log_threshold + 1);
-
-			-- clean up for next unit
-			unit_name := to_unit_name ("");
-			unit_external := (others => <>);
+			clean_up;
 		end insert_unit_external;
 
+		
+		
+		
 		
 		procedure insert_port is 
 			inserted	: boolean;
@@ -571,6 +710,8 @@ package body et_device_read is
 			port_power_level		:= port_power_level_default;
 		end insert_port;
 
+		
+		
 		
 		procedure process_line is 
 			
@@ -940,91 +1081,8 @@ package body et_device_read is
 						
 					when SEC_UNIT =>
 						case pac_sections_stack.parent is
-							when SEC_UNITS_INTERNAL =>
-								declare
-									kw : string := f (line, 1);
-									use et_unit_swap_level;
-									use et_unit_add_level;
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_name then
-										expect_field_count (line, 2);
-										unit_name := to_unit_name (f (line,2));
-
-										-- Create a new symbol where unit_symbol is pointing at.
-										-- The symbol assumes the appearance of the device.
-										-- The symbol will be copied to the current unit later.
-										case appearance is
-											when APPEARANCE_VIRTUAL =>
-												unit_symbol := new type_symbol' (
-													appearance	=> APPEARANCE_VIRTUAL,
-													others		=> <>);
-
-											when APPEARANCE_PCB =>
-												unit_symbol := new type_symbol' (
-													appearance	=> APPEARANCE_PCB,
-													others		=> <>);
-
-											when others => 
-												raise constraint_error; -- CS
-
-										end case;
-										
-									elsif kw = keyword_position then -- position x 0.00 y 0.00
-										expect_field_count (line, 5);
-
-										-- extract unit position starting at field 2
-										-- NOTE: this is the position of the unit inside the device editor !
-										unit_position := to_vector_model (line, 2);
-
-									elsif kw = keyword_swap_level then
-										expect_field_count (line, 2);
-										unit_swap_level := to_swap_level (f (line, 2));
-
-									elsif kw = keyword_add_level then
-										expect_field_count (line, 2);
-										unit_add_level := to_add_level (f (line, 2));
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-								
-							when SEC_UNITS_EXTERNAL =>
-								declare
-									use et_unit_swap_level;
-									use et_unit_add_level;
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_name then -- name A, B, ...
-										expect_field_count (line, 2);
-										unit_name := to_unit_name (f (line,2));
-
-									elsif kw = keyword_position then -- position x 0.00 y 0.00
-										expect_field_count (line, 5);
-
-										-- extract unit position starting at field 2
-										-- NOTE: this is the position of the unit inside the device editor !
-										unit_external.position := to_vector_model (line, 2);
-
-									elsif kw = keyword_swap_level then -- swap_level 1
-										expect_field_count (line, 2);
-										unit_external.swap_level := to_swap_level (f (line, 2));
-
-									elsif kw = keyword_add_level then -- add_level next
-										expect_field_count (line, 2);
-										unit_external.add_level := to_add_level (f (line, 2));
-
-									elsif kw = keyword_symbol_file then -- symbol_model libraries/symbols/nand.sym
-										expect_field_count (line, 2);
-										unit_external.model := to_file_name (f (line, 2));
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-								
+							when SEC_UNITS_INTERNAL => read_unit_internal;
+							when SEC_UNITS_EXTERNAL => read_unit_external;
 							when others => invalid_section;
 						end case;
 

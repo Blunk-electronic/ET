@@ -161,12 +161,10 @@ is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
 			is
-				use et_symbol_name;
 				use et_symbol_library;
 				use pac_symbol_models;
 				placeholders : type_text_placeholders;
 				symbol_cursor : pac_symbol_models.cursor;
-				symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
 			begin
 				log (text => "fetch external unit " 
 					 & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
@@ -181,14 +179,11 @@ is
 								appearance	=> APPEARANCE_VIRTUAL,
 								position	=> destination,
 								others 		=> <>));
+
 						
 					when APPEARANCE_PCB =>
-						-- The symbol file name is provided by unit_cursors.ext.
-						symbol_file := element (unit_cursors.ext).model; -- *.sym
-						
-						-- Locate the external symbol in the symbol library.
-						-- The key into symbols is the file name (*.sym).
-						symbol_cursor := find (symbol_library, symbol_file);
+						-- Get the cursor to the symbol model:
+						symbol_cursor := element (unit_cursors.ext).model_cursor;
 
 						-- CS: The symbol should be there now. Otherwise symbol_cursor would assume no_element
 						-- and constraint_error would arise here:
@@ -254,6 +249,7 @@ is
 
 			log_indentation_down;
 		end add_ports_to_nets;
+
 		
 		
 	begin -- query_module
@@ -290,6 +286,7 @@ is
 
 	end query_module;
 
+	
 	
 begin
 	log (text => "module " & to_string (module_cursor) 

@@ -52,9 +52,8 @@ package body et_device_model_unit_external is
 	is 
 		result : pac_symbol_ports.map; -- to be returned
 
-		sym_model : pac_symbol_model_file.bounded_string; 
-		-- like /libraries/symbols/NAND.sym
-
+		unit : type_unit_external renames element (unit_cursor);
+		
 		
 		procedure query_symbol (
 			symbol_name	: in pac_symbol_model_file.bounded_string;
@@ -65,12 +64,10 @@ package body et_device_model_unit_external is
 
 		
 	begin
-		sym_model := element (unit_cursor).model;
-
 		-- Fetch the ports of the external unit.
 		-- CS: constraint_error arises here if symbol model could not be located.
 		pac_symbol_models.query_element (
-			position	=> pac_symbol_models.find (symbol_library, sym_model),
+			position	=> unit.model_cursor,
 			process		=> query_symbol'access);
 		
 		return result;
@@ -83,12 +80,29 @@ package body et_device_model_unit_external is
 	function get_symbol_model_file (
 		unit	: in pac_units_external.cursor)
 		return pac_symbol_model_file.bounded_string
-	is begin
-		return element (unit).model;
+	is 
+		u : type_unit_external renames element (unit);
+		use pac_symbol_models;
+	begin
+		return key (u.model_cursor);
 	end get_symbol_model_file;
 	
 
 
+	
+	
+	function get_symbol_model_name (
+		unit	: in pac_units_external.cursor)
+		return string
+	is begin
+		return pac_symbol_model_file.to_string (
+			get_symbol_model_file (unit));
+	end;
+
+
+	
+	
+	
 
 	
 	function get_symbol (

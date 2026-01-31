@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -54,12 +54,14 @@ package et_symbol_read is
 
 
 	
-	-- Opens the symbol file and stores the symbol in container symbols.
+	-- Opens the symbol file and stores the symbol in
+	-- the symbol library.
 	-- CS error : out boolean;
 	-- CS device_curosr : out pac_symbols.cursor;
 	procedure read_symbol (
 		file_name 		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		log_threshold	: in type_log_level);
-
+	-- CS rename to read_symbol_model
+	
 	
 end et_symbol_read;

@@ -67,9 +67,18 @@ package et_device_model_unit_external is
 	
 	-- An external unit has a reference and a swap level.
     type type_unit_external is record
-        -- file is the link to the symbol in container "symbols":
-        model		: pac_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
-       	position	: type_vector_model := origin; -- the position within the device editor
+
+		-- This is the link to the symbol in symbol library:
+		model_cursor : pac_symbol_models.cursor;
+
+		-- IMPORTANT: When reading the device model file, the
+		-- symbol model must have been read beforehand.
+		-- Otherwise a valid cursor can not be assigned
+		-- to the unit !
+		
+		-- The position within the device editor:
+		position	: type_vector_model := origin;
+		
 		swap_level	: type_swap_level := swap_level_default;
 		add_level	: type_add_level := type_add_level'first;
 	end record;
@@ -93,11 +102,17 @@ package et_device_model_unit_external is
 
 	
 	
-	function get_symbol_model_file (
+	function get_symbol_model_file ( -- CS rename to get_symbol_model_name
 		unit	: in pac_units_external.cursor)
 		return pac_symbol_model_file.bounded_string;
 
 
+	function get_symbol_model_name (
+		unit	: in pac_units_external.cursor)
+		return string;
+
+	
+	
 	-- Maps from an external unit to the symbol
 	-- in the symbol library:
 	function get_symbol (
