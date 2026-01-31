@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -64,15 +64,15 @@ package et_symbol_model is
 
 
 	
-	type type_symbol_base is tagged record		
+	type type_symbol_base is tagged record -- CS really needed ?
 		texts : pac_symbol_texts.list; -- the collection of texts
 	end record;
 
 	
 	
-	type type_symbol (appearance : type_appearance) 
-	is new type_symbol_base with 
-		record
+	type type_symbol ( -- CS rename to type_symbol_model
+		appearance : type_appearance) 
+	is new type_symbol_base with record
 		shapes	: type_shapes; -- the collection of shapes
 		ports	: pac_symbol_ports.map;
 		

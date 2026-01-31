@@ -61,7 +61,7 @@ package et_symbol_library is
 	use pac_geometry_2;
 
 
-	-- Symbol models are are stored in files ending with *.sym.
+	-- Symbol models are stored in files ending with *.sym.
 	-- At the same time a
 	-- symbol name (like "libraries/symbols/nand.sym")
 	-- is also the key to the symbol library:
