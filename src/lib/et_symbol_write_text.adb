@@ -70,8 +70,9 @@ package body et_symbol_write_text is
 
 
 	
-	procedure write_text_properties (t : in type_text_basic'class) is
-	begin
+	procedure write_text_properties (
+		t : in type_text_basic'class) 
+	is begin
 		write (keyword => keyword_size, parameters => to_string (t.size));
 		write (keyword => keyword_rotation, parameters => to_string (t.rotation));
 -- 		write (keyword => keyword_style, parameters => to_string (t.style));

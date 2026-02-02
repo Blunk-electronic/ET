@@ -192,7 +192,7 @@ package body et_device_write is
 			write (keyword => keyword_swap_level, parameters => to_string (unit.swap_level));
 			write (keyword => keyword_add_level , parameters => to_string (unit.add_level));
 			section_mark (section_symbol, HEADER);
-			write_symbol (unit.symbol, log_threshold + 1);
+			save_symbol_1 (unit.symbol, log_threshold + 1);
 			section_mark (section_symbol, FOOTER);
 		end query_internal_unit;
 

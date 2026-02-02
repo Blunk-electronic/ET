@@ -44,6 +44,7 @@ with et_symbol_model;					use et_symbol_model;
 package et_symbol_write_text is
 
 
+
 	procedure write_texts (
 		symbol			: in type_symbol_model;
 		log_threshold	: in type_log_level);

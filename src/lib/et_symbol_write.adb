@@ -59,40 +59,43 @@ with et_symbol_write_ports;			use et_symbol_write_ports;
 package body et_symbol_write is
 
 
+
+	procedure save_symbol_1 (
+		symbol			: in type_symbol_model;
+		log_threshold	: in type_log_level)
+	is begin
+		-- appearance
+		write (keyword => keyword_appearance, 
+			parameters => to_string (symbol.appearance));
+		
+		-- body section begin
+		section_mark (section_draw, HEADER);
+
+		write_body_lines (symbol, log_threshold + 1);
+		write_body_arcs (symbol, log_threshold + 1);
+		write_body_circles (symbol, log_threshold + 1);
+
+		-- body section end
+		section_mark (section_draw, FOOTER);
+		
+		
+		write_texts (symbol, log_threshold + 1);
+		write_placeholders (symbol, log_threshold + 1);
+		write_ports (symbol, log_threshold + 1);
+	end save_symbol_1;
+
 	
 	
-	procedure save_symbol (
+	
+	
+	
+	procedure save_symbol_2 (
 		file_name		: in pac_symbol_model_name.bounded_string; -- libraries/symbols/nand.sym
 		symbol			: in type_symbol_model; -- the actual symbol model
 		log_threshold	: in type_log_level)
 	is
 		use et_system_info;
 		file_handle : ada.text_io.file_type;
-
-
-		procedure do_write is
-		begin
-			-- appearance
-			write (keyword => keyword_appearance, 
-				parameters => to_string (symbol.appearance));
-			
-			-- body section begin
-			section_mark (section_draw, HEADER);
-
-			-- CS sort the following actions by their importance			
-			write_body_lines (symbol, log_threshold + 1);
-			write_body_arcs (symbol, log_threshold + 1);
-			write_body_circles (symbol, log_threshold + 1);
-
-			-- body section end
-			section_mark (section_draw, FOOTER);
-			
-			
-			write_texts (symbol, log_threshold + 1);
-			write_placeholders (symbol, log_threshold + 1);
-			write_ports (symbol, log_threshold + 1);
-		end do_write;
-
 		
 	begin
 		log (text => to_string (file_name), level => log_threshold);
@@ -112,7 +115,7 @@ package body et_symbol_write is
 
 		-- CS: ? reset_tab_depth;
 		
-		do_write;
+		save_symbol_1 (symbol, log_threshold + 1);
 
 		-- write footer
 		new_line;		
@@ -132,7 +135,7 @@ package body et_symbol_write is
 			end if;
 			raise;
 		
-	end save_symbol;
+	end save_symbol_2;
 	
 	
 end et_symbol_write;

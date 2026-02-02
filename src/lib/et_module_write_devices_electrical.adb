@@ -70,7 +70,7 @@ with et_device_partcode;
 with et_package_variant_name;
 with et_package_variant;
 with et_device_write;
-with et_symbol_write;
+
 with et_devices_electrical;			use et_devices_electrical;
 
 with et_device_placeholders;
@@ -85,6 +85,7 @@ with et_alignment;						use et_alignment;
 with et_file_write;						use et_file_write;
 with et_file_sections;					use et_file_sections;
 
+with et_schematic_text;					use et_schematic_text;
 
 
 package body et_module_write_devices_electrical is
@@ -92,6 +93,27 @@ package body et_module_write_devices_electrical is
 	use pac_generic_modules;
 
 
+
+
+	procedure write_text_properties (
+		t : in type_text_basic'class) 
+	is 
+		use pac_text_schematic;
+		use et_schematic_coordinates;
+		use et_schematic_geometry;
+		use pac_geometry_2;
+	begin
+		write (keyword => keyword_size, parameters => to_string (t.size));
+		write (keyword => keyword_rotation, parameters => to_string (t.rotation));
+-- 		write (keyword => keyword_style, parameters => to_string (t.style));
+		write (keyword => keyword_alignment, parameters =>
+				keyword_horizontal & space & to_string (t.alignment.horizontal) & space &
+				keyword_vertical   & space & to_string (t.alignment.vertical)
+				);
+	end write_text_properties;
+
+
+	
 	
 	procedure write_devices_electrical (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -119,7 +141,6 @@ package body et_module_write_devices_electrical is
 			procedure write_placeholder (
 				ph : in type_text_placeholder) 
 			is 
-				use et_symbol_write;
 				use et_device_placeholders;
 			begin
 				section_mark (section_placeholder, HEADER);

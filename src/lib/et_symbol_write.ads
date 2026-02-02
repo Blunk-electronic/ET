@@ -45,9 +45,25 @@ with et_symbol_model;					use et_symbol_model;
 
 package et_symbol_write is
 
+
+	-- This procedure writes the given symbol in
+	-- the current output file.
+	-- This procedure does not write a header or a footer,
+	-- but just the symbol.
+	-- It is called when:
+	-- 1. a symbol is to be saved with 
+	--    a given name and with a nice header and footer.
+	--    Procedure save_symbol_2 calls save_symbol_1 for example.
+	-- 2. a device is to be saved that has internal units.
+	procedure save_symbol_1 (
+		symbol			: in type_symbol_model;
+		log_threshold	: in type_log_level);
+
+
 	
-	-- Saves the given symbol model in a file specified by file_name:
-	procedure save_symbol (
+	-- Saves the given symbol model in a 
+	-- file specified by file_name:
+	procedure save_symbol_2 (
 		file_name		: in pac_symbol_model_name.bounded_string; -- libraries/symbols/nand.sym
 		symbol			: in type_symbol_model; -- the actual symbol model
 		log_threshold	: in type_log_level);
