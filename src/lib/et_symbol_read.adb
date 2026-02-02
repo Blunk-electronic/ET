@@ -36,40 +36,22 @@
 --   history of changes:
 --
 
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings; 				use ada.strings;
 with ada.text_io;				use ada.text_io;
+with ada.strings; 				use ada.strings;
 
 with ada.exceptions;
 
-with et_directions;					use et_directions;
-with et_coordinates_formatting;		use et_coordinates_formatting;
-with et_system_info;
 with et_directory_and_file_ops;
 with et_file_sections;				use et_file_sections;
-with et_axes;						use et_axes;
 
-with et_text_content;				use et_text_content;
-
-with et_alignment;					use et_alignment;
-with et_logic;
-with et_power_sources;
-with et_port_sensitivity;
-with et_port_strength;
-with et_port_visibility;
-with et_port_direction;
-with et_port_names;
-with et_symbol_shapes;				use et_symbol_shapes;
-with et_symbol_text;				use et_symbol_text;
 with et_symbol_library;				use et_symbol_library;
-with et_symbol_ports;				use et_symbol_ports;
-with et_device_placeholders;		use et_device_placeholders;
-with et_time;						use et_time;
-with et_keywords;					use et_keywords;
--- with et_symbol_sections;			use et_symbol_sections;
+with et_keywords;
+with et_symbol_read_port;			use et_symbol_read_port;
+with et_symbol_read_body;			use et_symbol_read_body;
+with et_symbol_read_text;			use et_symbol_read_text;
+
 
 package body et_symbol_read is
-
 
 	
 	procedure read_symbol (
@@ -88,169 +70,56 @@ package body et_symbol_read is
 			item	=> type_file_section,
 			max 	=> max_section_depth);
 
-		
 
-		
-		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
-		appearance			: type_appearance;
-		symbol				: access type_symbol_model;
-		symbol_line			: type_symbol_line;
-		symbol_arc			: type_symbol_arc;
-		symbol_circle		: type_symbol_circle;
-		symbol_text_base	: type_text_basic;
+			
+		-- This is the pointer that points to the symbol
+		-- being read in the following:
+		symbol_model : type_symbol_model_access;
 
 		symbol_cursor		: pac_symbol_models.cursor;
 		symbol_inserted		: boolean;
 		
-		symbol_text_position		: type_vector_model;
-		symbol_text_content			: pac_text_content.bounded_string;
-		symbol_placeholder_meaning	: type_placeholder_meaning := placeholder_meaning_default;
 		
-		port					: type_port_base;
-		port_name				: et_port_names.pac_port_name.bounded_string;
-		port_direction			: et_port_direction.type_port_direction := et_port_direction.port_direction_default;
-		port_sensitivity_edge	: et_port_sensitivity.type_sensitivity_edge := et_port_sensitivity.sensitivity_edge_default;
-		port_sensitivity_level	: et_port_sensitivity.type_sensitivity_level := et_port_sensitivity.sensitivity_level_default;
-		port_output_inverted	: et_logic.type_output_inverted := et_logic.output_inverted_default;
-		port_output_tristate	: et_port_strength.type_output_tristate := et_port_strength.output_tristate_default;
-		port_output_weakness	: et_port_strength.type_output_weakness := et_port_strength.output_weakness_default;
-		port_power_level		: et_power_sources.type_power_level := et_power_sources.port_power_level_default;
+
 
 		
-		procedure insert_port is 
-			inserted	: boolean;
-			cursor		: pac_symbol_ports.cursor;
-
-			use et_port_names;
-			use et_port_direction;
-			use et_port_sensitivity;
-			use et_port_strength;
-			use et_logic;
-			use et_power_sources;
+		-- This procedure reads the appearance of the
+		-- symbol and creates it where pointer symbol_model
+		-- points to:
+		procedure read_appearance (
+			line : in type_fields_of_line)
+		is
+			use et_keywords;
+			kw : string := f (line, 1);
+			appearance : type_appearance;
 		begin
-			case port_direction is
-				when PASSIVE =>
-					pac_symbol_ports.insert (
-						container	=> symbol.ports,
-						key			=> port_name,
-						inserted	=> inserted,
-						position	=> cursor,
-						new_item	=> (port with 
-							direction				=> PASSIVE)
-						);
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_appearance then -- appearance sch_pcb
+				expect_field_count (line, 2);
+				appearance := to_appearance (f (line,2));
+				-- log (text => "appearance" & to_string (appearance), level => log_threshold + 1);
 
-				when INPUT_ANALOG =>
-					pac_symbol_ports.insert (
-						container	=> symbol.ports,
-						key			=> port_name,
-						inserted	=> inserted,
-						position	=> cursor,
-						new_item	=> (port with 
-							direction				=> INPUT_ANALOG)
-						);
+				-- Create the new symbol:
+				case appearance is
+					when APPEARANCE_VIRTUAL =>
+						symbol_model := new type_symbol_model' (
+							appearance	=> APPEARANCE_VIRTUAL,
+							others		=> <>);
 
-				when INPUT_DIGITAL =>
-					pac_symbol_ports.insert (
-						container	=> symbol.ports,
-						key			=> port_name,
-						inserted	=> inserted,
-						position	=> cursor,
-						new_item	=> (port with 
-							direction				=> INPUT_DIGITAL,
-							sensitivity_edge		=> port_sensitivity_edge,
-							sensitivity_level		=> port_sensitivity_level)
-						);
+					when APPEARANCE_PCB =>
+						symbol_model := new type_symbol_model' (
+							appearance	=> APPEARANCE_PCB,
+							others		=> <>);
 
-				when OUTPUT_ANALOG =>
-					pac_symbol_ports.insert (
-						container	=> symbol.ports,
-						key			=> port_name,
-						inserted	=> inserted,
-						position	=> cursor,
-						new_item	=> (port with 
-							direction				=> OUTPUT_ANALOG,
-							output_analog_tristate	=> port_output_tristate,
-							output_analog_weakness	=> port_output_weakness)
-						);
-
-				when OUTPUT_DIGITAL =>
-					pac_symbol_ports.insert (
-						container	=> symbol.ports,
-						key			=> port_name,
-						inserted	=> inserted,
-						position	=> cursor,
-						new_item	=> (port with 
-							direction				=> OUTPUT_DIGITAL,
-							output_digital_inverted	=> port_output_inverted,
-							output_digital_tristate	=> port_output_tristate,
-							output_digital_weakness	=> port_output_weakness)
-						);
-
-				when BIDIR_DIGITAL =>
-					pac_symbol_ports.insert (
-						container	=> symbol.ports,
-						key			=> port_name,
-						inserted	=> inserted,
-						position	=> cursor,
-						new_item	=> (port with 
-							direction				=> BIDIR_DIGITAL,
-							output_inverted			=> port_output_inverted,
-							output_tristate			=> port_output_tristate,
-							output_weakness			=> port_output_weakness,
-							input_sensitivity_edge	=> port_sensitivity_edge,
-							input_sensitivity_level	=> port_sensitivity_level)
-						);
-
-				when POWER_OUT =>
-					pac_symbol_ports.insert (
-						container	=> symbol.ports,
-						key			=> port_name,
-						inserted	=> inserted,
-						position	=> cursor,
-						new_item	=> (port with 
-							direction				=> POWER_OUT,
-							level					=> port_power_level)
-						);
-
-				when POWER_IN =>
-					pac_symbol_ports.insert (
-						container	=> symbol.ports,
-						key			=> port_name,
-						inserted	=> inserted,
-						position	=> cursor,
-						new_item	=> (port with 
-							direction				=> POWER_IN,
-							level					=> port_power_level)
-						);
-
-				when NOT_CONNECTED =>
-					pac_symbol_ports.insert (
-						container	=> symbol.ports,
-						key			=> port_name,
-						inserted	=> inserted,
-						position	=> cursor,
-						new_item	=> (port with 
-							direction				=> NOT_CONNECTED)
-						);
-			end case;
-
-			-- abort if port name already used:
-			if not inserted then
-				log (ERROR, "port " & to_string (port_name) & " already in use !", console => true);
-				raise constraint_error;
+				end case;
+				
+			else
+				invalid_keyword (kw);
 			end if;
-			
-			-- reset port parameters for next port
-			port					:= (others => <>);
-			port_name				:= to_port_name ("");
-			port_direction			:= port_direction_default;
-			port_sensitivity_edge	:= sensitivity_edge_default;
-			port_sensitivity_level	:= sensitivity_level_default;
-			port_output_inverted	:= output_inverted_default;
-			port_output_tristate	:= output_tristate_default;
-			port_output_weakness	:= output_weakness_default;
-			port_power_level		:= port_power_level_default;
-		end insert_port;
+		end read_appearance;
+
+
+		
 
 		
 		procedure process_line is 
@@ -267,117 +136,39 @@ package body et_symbol_read is
 							when others => invalid_section;
 						end case;
 
-					when SEC_LINE =>
+					when SEC_LINE =>					
 						case pac_sections_stack.parent is
-							when SEC_DRAW => 
-
-								-- append symbol_line to unit_symbol
-								pac_symbol_lines.append (
-									container	=> symbol.shapes.lines,
-									new_item	=> symbol_line);
-
-								-- clean up for next line
-								reset_line (symbol_line);
-								
+							when SEC_DRAW => insert_body_line (symbol_model, log_threshold + 1);
 							when others => invalid_section;
 						end case;
-
+						
 					when SEC_ARC =>
 						case pac_sections_stack.parent is
-							when SEC_DRAW =>
-
-								-- append symbol_arc to unit_symbol
-								pac_symbol_arcs.append (
-									container	=> symbol.shapes.arcs,
-									new_item	=> symbol_arc);
-
-								-- clean up for next arc
-								reset_arc (symbol_arc);
-								
+							when SEC_DRAW => insert_body_arc (symbol_model, log_threshold + 1);
 							when others => invalid_section;
 						end case;
 						
 					when SEC_CIRCLE =>
 						case pac_sections_stack.parent is
-							when SEC_DRAW =>
-
-								-- append symbol_circle to unit_symbol
-								pac_symbol_circles.append (
-									container	=> symbol.shapes.circles,
-									new_item	=> symbol_circle);
-
-								-- clean up for next circle
-								reset_circle (symbol_circle);
-								
+							when SEC_DRAW => insert_body_circle (symbol_model, log_threshold + 1);
 							when others => invalid_section;
 						end case;
 						
 					when SEC_TEXT =>
 						case pac_sections_stack.parent is
-							when SEC_TEXTS =>
-
-								-- append symbol text to symbol
-								pac_symbol_texts.append (
-									container	=> symbol.texts,
-									new_item	=> (symbol_text_base with
-										content		=> symbol_text_content,
-										position	=> symbol_text_position));
-
-								-- clean up for next symbol text
-								symbol_text_base := (others => <>);
-								symbol_text_content := to_content ("");
-								symbol_text_position := origin;
-								
+							when SEC_TEXTS => insert_text (symbol_model, log_threshold + 1);
 							when others => invalid_section;
 						end case;
 						
 					when SEC_PLACEHOLDER =>
 						case pac_sections_stack.parent is
-							when SEC_PLACEHOLDERS =>
-
-								-- Assign symbol text placeholder to symbol.
-								-- The meaning of the placeholder determines where
-								-- the placeholder is to be assigned. 
-								-- If meaning is not specified in section PLACEHOLDER,
-								-- the default meaning is assumed which raise an error.
-
-								-- CS: warn if placeholder exists multiple times. The latest
-								-- placeholder would overwrite the previous one.
-
-								case symbol_placeholder_meaning is
-									when NAME =>
-										symbol.placeholders.name := (symbol_text_base with 
-											position	=> symbol_text_position,
-											meaning		=> symbol_placeholder_meaning);
-
-									when VALUE =>
-										symbol.placeholders.value := (symbol_text_base with 
-											position	=> symbol_text_position,
-											meaning		=> symbol_placeholder_meaning);
-
-									when PURPOSE =>
-										symbol.placeholders.purpose := (symbol_text_base with 
-											position	=> symbol_text_position,
-											meaning		=> symbol_placeholder_meaning);
-
-									-- Default meaning causes an error:
-									when others => 
-										log (ERROR, "meaning of placeholder not specified !",
-											 console => true);
-										raise constraint_error;
-								end case;
-
-								-- clean up for next symbol text placeholder
-								symbol_text_base := (others => <>);
-								symbol_text_position := origin;
-								symbol_placeholder_meaning := placeholder_meaning_default;
-							
+							when SEC_PLACEHOLDERS => insert_placeholder (symbol_model, log_threshold + 1);
 							when others => invalid_section;
 						end case;
 
 					when SEC_PORT =>
 						case pac_sections_stack.parent is
-							when SEC_PORTS => insert_port;
+							when SEC_PORTS => insert_port (symbol_model, log_threshold + 1);
 							when others => invalid_section;
 						end case;
 						
@@ -385,9 +176,9 @@ package body et_symbol_read is
 
 					when others => invalid_section;
 				end case;
-
 			end execute_section;
 
+			
 			
 			function set (
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
@@ -456,33 +247,7 @@ package body et_symbol_read is
 				case pac_sections_stack.current is
 
 					when SEC_INIT =>
-						declare
-							kw : string := f (line, 1);
-						begin
-							-- CS: In the following: set a corresponding parameter-found-flag
-							if kw = keyword_appearance then -- appearance sch_pcb
-								expect_field_count (line, 2);
-								appearance := to_appearance (f (line,2));
--- 								log (text => "appearance" & to_string (appearance), level => log_threshold + 1);								
-
-								-- Create a new symbol where pointer "symbol" is pointing at.
-								case appearance is
-									when APPEARANCE_VIRTUAL =>
-										symbol := new type_symbol_model' (
-											appearance	=> APPEARANCE_VIRTUAL,
-											others		=> <>);
-
-									when APPEARANCE_PCB =>
-										symbol := new type_symbol_model' (
-											appearance	=> APPEARANCE_PCB,
-											others		=> <>);
-
-								end case;
-								
-							else
-								invalid_keyword (kw);
-							end if;
-						end;
+						read_appearance (line);
 
 					when SEC_DRAW | SEC_TEXTS | SEC_PLACEHOLDERS | SEC_PORTS => 
 						case pac_sections_stack.parent is
@@ -492,268 +257,37 @@ package body et_symbol_read is
 
 					when SEC_LINE =>
 						case pac_sections_stack.parent is
-							when SEC_DRAW =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_start then -- start x 1 y 2
-										expect_field_count (line, 5);
-
-										-- extract the start position starting at field 2
-										set_A (symbol_line, to_vector_model (line, 2));
-										
-									elsif kw = keyword_end then -- end x 0.00 y 0.00
-										expect_field_count (line, 5);
-
-										-- extract the end position starting at field 2
-										set_B (symbol_line, to_vector_model (line, 2));
-
-									elsif kw = keyword_width then
-										expect_field_count (line, 2);
-										symbol_line.width := to_distance (f (line, 2));
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
+							when SEC_DRAW => read_body_line (line);
 							when others => invalid_section;
 						end case;
 
 					when SEC_ARC =>
 						case pac_sections_stack.parent is
-							when SEC_DRAW =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 1 y 2
-										expect_field_count (line, 5);
-
-										-- extract the start position starting at field 2
-										set_center (symbol_arc, to_vector_model (line, 2));
-
-									elsif kw = keyword_start then -- start x 1 y 2
-										expect_field_count (line, 5);
-
-										-- extract the start position starting at field 2
-										set_A (symbol_arc, to_vector_model (line, 2));
-										
-									elsif kw = keyword_end then -- end x 0.00 y 0.00
-										expect_field_count (line, 5);
-
-										-- extract the end position starting at field 2
-										set_B (symbol_arc, to_vector_model (line, 2));
-
-									elsif kw = keyword_direction then -- direction ccw
-										expect_field_count (line, 2);
-
-										set_direction (symbol_arc, to_direction (f (line, 2)));
-										
-									elsif kw = keyword_width then
-										expect_field_count (line, 2);
-										symbol_arc.width := to_distance (f (line, 2));
-
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
+							when SEC_DRAW => read_body_arc (line);
 							when others => invalid_section;
 						end case;
 						
 					when SEC_CIRCLE =>
 						case pac_sections_stack.parent is
-							when SEC_DRAW =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 1 y 2
-										expect_field_count (line, 5);
-
-										-- extract the start position starting at field 2
-										set_center (symbol_circle, to_vector_model (line,2));
-
-									elsif kw = keyword_width then -- widht 0.2
-										expect_field_count (line, 2);
-										set_width (symbol_circle, to_distance (f (line, 2)));
-
-									elsif kw = keyword_radius then -- radius 5
-										expect_field_count (line, 2);
-										set_radius (symbol_circle, to_radius (f (line, 2)));
-
-									elsif kw = keyword_filled then -- filled yes/no
-										expect_field_count (line, 2);
-										symbol_circle.filled := to_circle_filled (f (line, 2));
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
+							when SEC_DRAW => read_body_circle (line);
 							when others => invalid_section;
 						end case;
 						
 					when SEC_TEXT =>
 						case pac_sections_stack.parent is
-							when SEC_TEXTS =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_position then -- position x 1 y 2
-										expect_field_count (line, 5);
-
-										-- extract the text position starting at field 2
-										symbol_text_position := to_vector_model (line,2);
-
-									elsif kw = keyword_content then -- content "dummy NAND gate"
-										expect_field_count (line, 2);
-										symbol_text_content := to_content (f (line, 2));
-
-									elsif kw = keyword_size then -- size 5
-										expect_field_count (line, 2);
-										symbol_text_base.size := to_distance (f (line, 2));
-
-									elsif kw = keyword_rotation then -- rotation 90.0
-										expect_field_count (line, 2);
-										symbol_text_base.rotation := pac_text_schematic.to_rotation_doc (f (line, 2));
-										
--- 									elsif kw = keyword_style then -- style italic
--- 										expect_field_count (line, 2);
--- 										symbol_text_base.style := to_text_style (f (line, 2));
-
-									elsif kw = keyword_alignment then -- alignment horizontal center vertical center
-										expect_field_count (line, 5);
-										symbol_text_base.alignment := to_alignment (line, 2);
-
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
+							when SEC_TEXTS => read_text (line);
 							when others => invalid_section;
 						end case;
 						
 					when SEC_PLACEHOLDER =>
 						case pac_sections_stack.parent is
-							when SEC_PLACEHOLDERS =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_position then -- position x 1 y 2
-										expect_field_count (line, 5);
-
-										-- extract the placeholder position starting at field 2
-										symbol_text_position := to_vector_model (line, 2);
-
-									elsif kw = keyword_meaning then -- meaning reference
-										expect_field_count (line, 2);
-										symbol_placeholder_meaning := to_meaning (f (line, 2));
-
-									elsif kw = keyword_size then -- size 5
-										expect_field_count (line, 2);
-										symbol_text_base.size := to_distance (f (line, 2));
-
-									elsif kw = keyword_rotation then -- rotation 90.0
-										expect_field_count (line, 2);
-										symbol_text_base.rotation := pac_text_schematic.to_rotation_doc (f (line, 2));
-
-									elsif kw = keyword_alignment then -- alignment horizontal center vertical center
-										expect_field_count (line, 5);
-										symbol_text_base.alignment := to_alignment (line, 2);
-
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
+							when SEC_PLACEHOLDERS => read_placeholder (line);
 							when others => invalid_section;
 						end case;
 
 					when SEC_PORT =>
 						case pac_sections_stack.parent is
-							when SEC_PORTS =>
-								declare
-									kw : string := f (line, 1);
-									use et_port_visibility;
-									use et_port_sensitivity;
-									use et_port_strength;
-									use et_logic;
-									use et_power_sources;
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_position then -- position x 1 y 2
-										expect_field_count (line, 5);
-
-										-- extract the port position starting at field 2
-										port.position := to_vector_model (line, 2);
-
-									elsif kw = keyword_name then -- name I1A
-										expect_field_count (line, 2);
-										port_name := et_port_names.to_port_name (f (line, 2));
-
-									elsif kw = keyword_length then -- length 5
-										expect_field_count (line, 2);
-										port.length := to_distance (f (line, 2));
-										-- CS warning on zero length ?
-
-									elsif kw = keyword_rotation then -- rotation 90.0
-										expect_field_count (line, 2);
-										port.rotation := to_rotation (f (line, 2));
-										
-									elsif kw = keyword_port_name_visible then -- port_name_visible yes/no
-										expect_field_count (line, 2);
-										port.port_name_visible := to_port_name_visible (f (line, 2));
-
-									elsif kw = keyword_port_name_size then -- port_name_size 2.0
-										expect_field_count (line, 2);
-										port.port_name_size := to_distance (f (line, 2));
-
-									elsif kw = keyword_terminal_name_visible then -- terminal_name_visible yes/no
-										expect_field_count (line, 2);
-										port.terminal_name_visible := to_terminal_name_visible (f (line, 2));
-
-									elsif kw = keyword_terminal_name_size then -- terminal_name_size 2.0
-										expect_field_count (line, 2);
-										port.terminal_name_size := to_distance (f (line, 2));
-
-									elsif kw = keyword_direction then -- direction BIDIR, PASSIVE, NOT_CONNECTED, ...
-										expect_field_count (line, 2);
-										port_direction := et_port_direction.to_port_direction (f (line, 2));
-
-									elsif kw = keyword_sensitivity_edge then -- sensitivity_edge rising/falling/any
-										expect_field_count (line, 2);
-										port_sensitivity_edge := to_sensitivity_edge (f (line, 2));
-
-									elsif kw = keyword_sensitivity_level then -- sensitivity_level high/low
-										expect_field_count (line, 2);
-										port_sensitivity_level := to_sensitivity_level (f (line, 2));
-
-									elsif kw = keyword_inverted then -- inverted yes/no
-										expect_field_count (line, 2);
-										port_output_inverted := to_output_inverted (f (line, 2));
-
-									elsif kw = keyword_tristate then -- tristate yes/no
-										expect_field_count (line, 2);
-										port_output_tristate := to_output_tristate (f (line, 2));
-
-									elsif kw = keyword_level then -- level positive/negative/zero
-										expect_field_count (line, 2);
-										port_power_level := to_power_level (f (line, 2));
-
-									elsif kw = keyword_weakness then -- weakness none/pull0/weak1 ...
-										expect_field_count (line, 2);
-										port_output_weakness := to_output_weakness (f (line, 2));
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
+							when SEC_PORTS => read_port (line);								
 							when others => invalid_section;
 						end case;
 
@@ -761,6 +295,7 @@ package body et_symbol_read is
 				end case;
 			end if;
 
+			
 			exception when event: others =>
 				log (text => "file " & to_string (file_name) & space 
 					 & get_affected_line (line) & to_string (line), console => true);
@@ -768,12 +303,15 @@ package body et_symbol_read is
 			
 		end process_line;
 
+		
 		previous_input : ada.text_io.file_type renames current_input;
 
 		
 	begin -- read_symbol
 		log_indentation_up;
-		log (text => "reading symbol " & to_string (file_name) & " ...", level => log_threshold);
+		log (text => "reading symbol model " & to_string (file_name),
+			 level => log_threshold);
+		
 		log_indentation_up;
 		
 		-- test if container et_symbol_model.symbols already contains the symbol
@@ -794,6 +332,7 @@ package body et_symbol_read is
 			pac_sections_stack.init;
 			pac_sections_stack.push (SEC_INIT);
 
+			
 			-- read the file line by line
 			while not end_of_file loop
 				line := read_line (
@@ -808,21 +347,24 @@ package body et_symbol_read is
 				end if;
 			end loop;
 
+			
 			-- As a safety measure the top section must be reached finally.
 			if pac_sections_stack.depth > 1 then 
 				log (WARNING, write_section_stack_not_empty);
 			end if;
+			
 
 			set_input (previous_input);
 			close (file_handle);
 
-			-- Insert the symbol (accessed by pointer symbol) in et_symbol_model.symbols:
+			
+			-- Insert the symbol in the symbol library:
 			pac_symbol_models.insert (
 				container	=> symbol_library, 
 				key			=> file_name, -- libraries/symbols/nand.sym
 				position	=> symbol_cursor,
 				inserted	=> symbol_inserted,
-				new_item	=> symbol.all);
+				new_item	=> symbol_model.all);
 			
 			-- CS Check integrity of symbol (style guides, conventions ...)
 			-- use symbol_cursor to access the symbol

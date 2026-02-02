@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                             SYMBOL READ                                  --
+--                          SYMBOL READ / BODY                              --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -33,33 +33,54 @@
 --   info@blunk-electronic.de
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
+--
+-- DESCRIPTION:
+-- This package is about primitive objects (lines, arcs, circles)
+-- the symbol body is made of.
+--
+--
 --   history of changes:
 --
 
 with et_string_processing;				use et_string_processing;
 with et_logging;						use et_logging;
-with et_schematic_geometry;				use et_schematic_geometry;
-with et_schematic_coordinates;			use et_schematic_coordinates;
-with et_symbol_name;					use et_symbol_name;
 with et_symbol_model;					use et_symbol_model;
-with et_device_appearance;				use et_device_appearance;
 
 
-package et_symbol_read is
-
-	
-	use pac_geometry_2;
+package et_symbol_read_body is
 
 
-	
-	-- Opens the symbol file and stores the symbol in
-	-- the symbol library.
-	-- CS error : out boolean;
-	-- CS device_curosr : out pac_symbols.cursor;
-	procedure read_symbol (
-		file_name 		: in pac_symbol_model_name.bounded_string; -- libraries/symbols/nand.sym
+	procedure read_body_line (
+		line : in type_fields_of_line);
+		
+		
+	procedure insert_body_line (
+		symbol			: in type_symbol_model_access;
 		log_threshold	: in type_log_level);
-	-- CS rename to read_symbol_model
 	
+
+
 	
-end et_symbol_read;
+
+	procedure read_body_arc (
+		line : in type_fields_of_line);
+		
+		
+	procedure insert_body_arc (
+		symbol			: in type_symbol_model_access;
+		log_threshold	: in type_log_level);
+
+
+	
+
+
+	procedure read_body_circle (
+		line : in type_fields_of_line);
+		
+		
+	procedure insert_body_circle (
+		symbol			: in type_symbol_model_access;
+		log_threshold	: in type_log_level);
+
+	
+end et_symbol_read_body;

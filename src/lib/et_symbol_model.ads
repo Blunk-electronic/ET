@@ -88,6 +88,13 @@ package et_symbol_model is
 
 	
 
+	-- This access type is required for reading a
+	-- symbol model from a file:
+	type type_symbol_model_access is access type_symbol_model;
+
+	
+
+	
 	-- Returns true if the given symbol will be part of a real device:
 	function is_real (
 		symbol : in type_symbol_model)
