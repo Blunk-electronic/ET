@@ -95,6 +95,7 @@ package body et_package_write is
 		reset_tab_depth;
 
 		-- CS sort the follwing actions by their importance:
+		-- CS move them into a procedure like do_write
 		write_meta (packge, log_threshold + 1);
 		write_silkscreen (packge, log_threshold + 1);		
 		write_assy_doc (packge, log_threshold + 1);

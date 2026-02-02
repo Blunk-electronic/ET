@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                            PACKAGE WRITE                                 --
+--                          SYMBOL WRITE / TEXT                             --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab with in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -36,24 +36,24 @@
 --   history of changes:
 --
 
---   do do:
 
-
-with et_package_model;					use et_package_model;
-with et_package_model_name;				use et_package_model_name;
 with et_logging;						use et_logging;
+with et_symbol_model;					use et_symbol_model;
 
 
-package et_package_write is
+package et_symbol_write_text is
 
-	
-	-- Saves the given package model in a file specified by file_name.							   
-	procedure write_package (
-		file_name 		: in pac_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
-		packge			: in type_package_model; -- the actual device model
+
+	procedure write_texts (
+		symbol			: in type_symbol_model;
 		log_threshold	: in type_log_level);
-	-- CS rename to save_package_model
+		
+	
+
+	procedure write_placeholders (
+		symbol			: in type_symbol_model;
+		log_threshold	: in type_log_level);
 
 	
 	
-end et_package_write;
+end et_symbol_write_text;

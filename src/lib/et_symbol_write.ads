@@ -39,39 +39,19 @@
 
 with et_string_processing;				use et_string_processing;
 with et_logging;						use et_logging;
-with et_schematic_geometry;				use et_schematic_geometry;
-with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_symbol_name;					use et_symbol_name;
 with et_symbol_model;					use et_symbol_model;
-with et_device_appearance;				use et_device_appearance;
-with et_schematic_text;					use et_schematic_text;
 
 
 package et_symbol_write is
 
-	use pac_text_schematic;
 	
-	use pac_geometry_2;
-
-
-	
-	procedure write_text_properties (t : in type_text_basic'class);
-
-	
-
-	
-	procedure write_symbol ( 
-		symbol			: in type_symbol_model;
-		log_threshold	: in type_log_level);
-
-	
-	-- Saves the given symbol model in a file specified by file_name.
-	-- CS: Move to package et_symbol_ops ?
+	-- Saves the given symbol model in a file specified by file_name:
 	procedure save_symbol (
 		file_name		: in pac_symbol_model_name.bounded_string; -- libraries/symbols/nand.sym
 		symbol			: in type_symbol_model; -- the actual symbol model
 		log_threshold	: in type_log_level);
-
-
+	-- CS rename to save_symbol_model
+	
 	
 end et_symbol_write;
