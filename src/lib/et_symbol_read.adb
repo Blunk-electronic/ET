@@ -41,10 +41,12 @@ with ada.strings; 				use ada.strings;
 
 with ada.exceptions;
 
+with et_string_processing;			use et_string_processing;
 with et_directory_and_file_ops;
 with et_file_sections;				use et_file_sections;
 
 with et_symbol_library;				use et_symbol_library;
+with et_device_appearance;
 with et_keywords;
 with et_symbol_read_port;			use et_symbol_read_port;
 with et_symbol_read_body;			use et_symbol_read_body;
@@ -91,6 +93,8 @@ package body et_symbol_read is
 		is
 			use et_keywords;
 			kw : string := f (line, 1);
+			
+			use et_device_appearance;
 			appearance : type_appearance;
 		begin
 			-- CS: In the following: set a corresponding parameter-found-flag

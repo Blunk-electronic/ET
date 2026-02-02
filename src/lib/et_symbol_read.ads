@@ -36,20 +36,12 @@
 --   history of changes:
 --
 
-with et_string_processing;				use et_string_processing;
 with et_logging;						use et_logging;
-with et_schematic_geometry;				use et_schematic_geometry;
-with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_symbol_name;					use et_symbol_name;
 with et_symbol_model;					use et_symbol_model;
-with et_device_appearance;				use et_device_appearance;
 
 
 package et_symbol_read is
-
-	
-	use pac_geometry_2;
-
 
 	
 	-- Opens the symbol file and stores the symbol in
