@@ -76,7 +76,9 @@ package body et_package_write is
 		file_handle : ada.text_io.file_type;
 		
 	begin
-		log (text => to_string (file_name), level => log_threshold);
+		log (text => "save package model as " & to_string (file_name),
+			 level => log_threshold);
+		
 		log_indentation_up;
 		
 		create (
@@ -87,7 +89,7 @@ package body et_package_write is
 		set_output (file_handle);
 		
 		-- write a nice header
-		put_line (comment_mark_default & " " & et_system_info.system_name & " package");
+		put_line (comment_mark_default & " " & et_system_info.system_name & " package model");
 		put_line (comment_mark_default & " " & get_date);
 		put_line (comment_mark_default & " " & row_separator_double);
 		new_line;
@@ -117,7 +119,7 @@ package body et_package_write is
 		-- write footer
 		new_line;
 		put_line (comment_mark_default & " " & row_separator_double);
-		put_line (comment_mark_default & " package model file end");
+		put_line (comment_mark_default & " package model end");
 		new_line;
 		
 		reset_tab_depth;

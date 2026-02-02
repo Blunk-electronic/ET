@@ -64,6 +64,8 @@ package body et_symbol_write is
 		symbol			: in type_symbol_model;
 		log_threshold	: in type_log_level)
 	is begin
+		-- CS log messages
+		
 		-- appearance
 		write (keyword => keyword_appearance, 
 			parameters => to_string (symbol.appearance));
@@ -98,7 +100,10 @@ package body et_symbol_write is
 		file_handle : ada.text_io.file_type;
 		
 	begin
-		log (text => to_string (file_name), level => log_threshold);
+		log (text => "save symbol model as " & to_string (file_name), 
+			level => log_threshold);
+			
+		log_indentation_up;
 
 		create (
 			file 	=> file_handle,
@@ -108,7 +113,7 @@ package body et_symbol_write is
 		set_output (file_handle);
 		
 		-- write a nice header
-		put_line (comment_mark_default & " " & system_name & " symbol");
+		put_line (comment_mark_default & " " & system_name & " symbol model");
 		put_line (comment_mark_default & " " & get_date);
 		put_line (comment_mark_default & " " & row_separator_double);
 		new_line;
@@ -120,15 +125,20 @@ package body et_symbol_write is
 		-- write footer
 		new_line;		
 		put_line (comment_mark_default & " " & row_separator_double);
-		put_line (comment_mark_default & " symbol file end");
+		put_line (comment_mark_default & " symbol model end");
 		new_line;
 		
 		reset_tab_depth;		
 		
 		set_output (standard_output);
 		close (file_handle);
+		
+		log_indentation_down;
+		
 
 		exception when event: others =>
+			log_indentation_down;
+			
 			log (text => ada.exceptions.exception_message (event));
 			if is_open (file_handle) then
 				close (file_handle);

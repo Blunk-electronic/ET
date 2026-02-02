@@ -1,4 +1,4 @@
-.. _board:
+.. _packages:
 
 .. .. include:: placeholders.rst
 
@@ -16,6 +16,11 @@ Importing and Syntax Check
 	.. code-block::
 		
 		et --open-package libraries/packages/S_0805.pac
+
+
+	.. code-block::
+		
+		et --open-package libraries/packages/S_0805.pac --log-level 4
 
 	
 	.. code-block::

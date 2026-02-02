@@ -220,7 +220,10 @@ package body et_device_write is
 
 		
 	begin -- save_device
-		log (text => to_string (file_name), level => log_threshold);
+		log (text => "save device model as " & to_string (file_name),
+			 level => log_threshold);
+
+		log_indentation_up;
 
 		create (
 			file 	=> file_handle,
@@ -303,7 +306,11 @@ package body et_device_write is
 		set_output (standard_output);
 		close (file_handle);
 
+		log_indentation_down;
+		
+
 		exception when event: others =>
+			log_indentation_down;
 			log (text => ada.exceptions.exception_message (event));
 			if is_open (file_handle) then
 				close (file_handle);

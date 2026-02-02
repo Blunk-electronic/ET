@@ -313,14 +313,14 @@ package body et_symbol_read is
 		
 	begin -- read_symbol
 		log_indentation_up;
-		log (text => "reading symbol model " & to_string (file_name),
+		log (text => "read symbol model " & to_string (file_name),
 			 level => log_threshold);
 		
 		log_indentation_up;
 		
-		-- test if container et_symbol_model.symbols already contains the symbol
-		-- named "file_name". If so, there would be no need to read the file_name again.
-		if pac_symbol_models.contains (symbol_library, file_name) then
+		-- Test whether the symbol is already in the library.
+		-- If so, there would be no need to read the model file again:
+		if symbol_library.contains (file_name) then
 			log (text => "already read -> skipped", level => log_threshold + 1);
 		else
 			

@@ -492,7 +492,7 @@ procedure et is
 		-- If symbol_name_save_as is empty nothing happens.
 		-- Otherwise the latest and only symbol is saved.
 		if length (symbol_name_save_as) > 0 then
-			et_symbol_write.save_symbol (
+			et_symbol_write.save_symbol_2 (
 				file_name 		=> symbol_name_save_as,
 				symbol			=> pac_symbol_models.last_element (symbol_library),
 				log_threshold	=> 0);

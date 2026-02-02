@@ -23,9 +23,10 @@
    schematic.rst
    board.rst
    assembly_variants.rst
+   packages.rst
+   symbols.rst
 ..    CS cam.rst
 .. CS submodules.rst
-   packages.rst
    
 Index
 =====
