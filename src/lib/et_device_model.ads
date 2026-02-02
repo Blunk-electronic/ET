@@ -110,9 +110,14 @@ package et_device_model is
 				variants	: pac_package_variants.map;
 				
 		end case;
-
 	end record;
 
+
+
+	-- This access type is required for reading a
+	-- device model from a file:
+	type type_device_model_access is access type_device_model;
+	
 
 
 	-- Returns true if the given model
