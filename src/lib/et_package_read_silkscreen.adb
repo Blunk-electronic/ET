@@ -205,6 +205,8 @@ package body et_package_read_silkscreen is
 	is 
 		use pac_silk_lines;
 	begin
+		-- CS log message
+		
 		case face is
 			when TOP => 
 				append (packge.silkscreen.top.lines, silk_line);
@@ -229,6 +231,7 @@ package body et_package_read_silkscreen is
 	is 
 		use pac_silk_arcs;
 	begin
+		-- CS log message
 		-- CS check arc
 		
 		case face is
@@ -256,6 +259,7 @@ package body et_package_read_silkscreen is
 	is 
 		use pac_silk_circles;
 	begin
+		-- CS log message
 		case face is
 			when TOP => 
 				append (packge.silkscreen.top.circles, silk_circle);
@@ -282,6 +286,7 @@ package body et_package_read_silkscreen is
 	is 
 		use pac_contours;
 	begin
+		-- CS log message
 		add_zone (packge.silkscreen, (contour with null record), face);
 
 		-- clean up for next zone
@@ -300,6 +305,7 @@ package body et_package_read_silkscreen is
 		use et_board_text;
 		use pac_text_board_vectorized;
 	begin
+		-- CS log message
 		add_text (packge.silkscreen, (pac_text with null record), face);
 
 		-- clean up for next text
@@ -317,6 +323,7 @@ package body et_package_read_silkscreen is
 	is 
 		use et_device_placeholders.packages;
 	begin
+		-- CS log message
 		add_placeholder (packge.silkscreen, pac_text_placeholder, face);
 
 		-- clean up for next placeholder

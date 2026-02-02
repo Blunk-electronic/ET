@@ -67,8 +67,7 @@ package et_package_read_meta is
 	
 	-- Once the appearance has been read, a new package will be created where this 
 	-- pointer is pointing at:
-	-- packge	: access type_package_model; -- CS rename to package_model
-	packge	: type_package_model_access; -- CS rename to package_model
+	packge : type_package_model_access; -- CS rename to package_model
 		
 
 	

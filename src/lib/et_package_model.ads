@@ -192,6 +192,8 @@ package et_package_model is
 
 
 
+	-- This access type is required for reading
+	-- a package model from a file:
 	type type_package_model_access is access type_package_model;
 
 	

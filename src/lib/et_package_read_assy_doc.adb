@@ -253,6 +253,8 @@ package body et_package_read_assy_doc is
 	is 
 		use pac_doc_circles;
 	begin
+		-- CS log message
+		
 		case face is
 			when TOP => 
 				append (packge.assy_doc.top.circles, doc_circle);
@@ -298,6 +300,7 @@ package body et_package_read_assy_doc is
 		use et_board_text;
 		use pac_text_board_vectorized;
 	begin
+		-- CS log message
 		add_text (packge.assy_doc, (pac_text with null record), face);
 
 		-- clean up for next text
@@ -316,6 +319,7 @@ package body et_package_read_assy_doc is
 	is 
 		use et_device_placeholders.packages;
 	begin
+		-- CS log message
 		add_placeholder (packge.assy_doc, pac_text_placeholder, face);
 
 		-- clean up for next placeholder

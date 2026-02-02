@@ -103,7 +103,10 @@ package body et_package_read is
 			max 	=> max_section_depth);
 
 		
-
+		-- In the following the variable "packge" is used frequently.
+		-- It is an access type to a package model.
+		-- Please find its declaration in the spec of
+		-- package et_package_read_meta.
 
 
 		procedure build_text is begin

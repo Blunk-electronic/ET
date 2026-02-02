@@ -282,6 +282,8 @@ package body et_package_read_terminal is
 
 		
 	begin -- build_terminal
+		-- CS log message
+		
 		case terminal_technology is
 			when THT => 
 				case tht_hole is
