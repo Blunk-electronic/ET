@@ -108,7 +108,7 @@ package body et_device_read is
 		
 
 		
-
+		-- CS: should be outside of procedure read_device.
 		-- This procedure reads general meta information
 		-- of the device model:
 		-- - predefined prefix (like R, C, L)
@@ -172,7 +172,7 @@ package body et_device_read is
 
 		
 
-		
+		-- CS: should be outside of procedure read_device.
 		-- Assemble the final device and add
 		-- it to the device library:
 		procedure add_device_model_to_library is 
@@ -539,6 +539,7 @@ package body et_device_read is
 			
 		log_indentation_up;
 		
+		-- CS clean up below:
 		
 		-- test if container device_library already contains a model
 		-- named "file_name". If so, there would be no need to read the file_name again.
