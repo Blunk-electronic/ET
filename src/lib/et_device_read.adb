@@ -35,6 +35,12 @@
 --
 --   history of changes:
 --
+-- 
+-- To Do:
+-- - clean up
+--
+--
+
 
 with ada.text_io;				use ada.text_io;
 with ada.strings; 				use ada.strings;
@@ -43,38 +49,25 @@ with ada.directories;
 with ada.exceptions;
 
 with et_directory_and_file_ops;
-with et_coordinates_formatting;		use et_coordinates_formatting;
-with et_schematic_geometry;			use et_schematic_geometry;
-use et_schematic_geometry.pac_geometry_2;
 
 with et_string_processing;
 with et_file_sections;				use et_file_sections;
-with et_symbol_read;				use et_symbol_read;
 with et_conventions;
 
-with et_symbol_name;				use et_symbol_name;
-with et_symbol_ports;				use et_symbol_ports;
-with et_symbol_model;				use et_symbol_model;
-with et_symbol_library;				use et_symbol_library;
 with et_device_partcode;			use et_device_partcode;
 with et_device_appearance;			use et_device_appearance;
 with et_device_model;				use et_device_model;
 with et_device_value;
 with et_device_prefix;
-with et_unit_name;
-with et_unit_swap_level;
-with et_unit_add_level;
 
-with et_package_model_name;			use et_package_model_name;
 with et_device_library;				use et_device_library;
-with et_device_model_unit_internal;	use et_device_model_unit_internal;
-with et_device_model_unit_external;	use et_device_model_unit_external;
 with et_keywords;					use et_keywords;
 
 with et_symbol_read_body;			use et_symbol_read_body;
 with et_symbol_read_port;			use et_symbol_read_port;
 with et_symbol_read_text;			use et_symbol_read_text;
 
+with et_device_read_unit;				use et_device_read_unit;
 with et_device_read_package_variant;	use et_device_read_package_variant;
 
 
@@ -89,7 +82,6 @@ package body et_device_read is
 		use et_string_processing;
 		use et_device_value;
 		use et_device_prefix;
-		use et_unit_name;
 		
 		file_handle : ada.text_io.file_type;
 
@@ -107,10 +99,12 @@ package body et_device_read is
 		
 		
 		-- VARIABLES FOR TEMPORARILY STORAGE:
-		prefix				: pac_device_prefix.bounded_string; -- T, IC
-		value				: pac_device_value.bounded_string; -- BC548
-		appearance			: type_appearance; -- virtual/pcb
-		partcode			: pac_device_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
+		
+		prefix		: pac_device_prefix.bounded_string; -- T, IC
+		value		: pac_device_value.bounded_string; -- BC548
+		partcode	: pac_device_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
+		-- NOTE: Please find other global variables in
+		-- package spec et_device_read_unit.
 		
 
 		
@@ -177,268 +171,7 @@ package body et_device_read is
 
 
 		
-		-- This is the pointer that points to the possible
-		-- internal symbol being read in the following:
-		symbol_model : type_symbol_model_access;
 
-		
-		unit_name		: pac_unit_name.bounded_string; -- IO_BANK_2
-		unit_position	: type_vector_model := origin; -- the position of the unit inside the device editor
-		unit_swap_level	: et_unit_swap_level.type_swap_level := et_unit_swap_level.swap_level_default;
-		unit_add_level	: et_unit_add_level.type_add_level := et_unit_add_level.add_level_default;
-		units_internal	: pac_units_internal.map;
-		units_external	: pac_units_external.map;
-
-		unit_external 	: type_unit_external;
-		unit_external_model_name : pac_symbol_model_name.bounded_string;
-		
-		
-		
-		procedure read_unit_internal (
-			line : in type_fields_of_line)
-		is
-			kw : string := f (line, 1);
-			use et_unit_swap_level;
-			use et_unit_add_level;
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_name then
-				expect_field_count (line, 2);
-				unit_name := to_unit_name (f (line, 2));
-
-				-- Create a new symbol where symbol_model is pointing at.
-				-- The symbol assumes the appearance of the device.
-				-- The symbol will be copied to the current unit later.
-				case appearance is
-					when APPEARANCE_VIRTUAL =>
-						symbol_model := new type_symbol_model' (
-							appearance	=> APPEARANCE_VIRTUAL,
-							others		=> <>);
-
-					when APPEARANCE_PCB =>
-						symbol_model := new type_symbol_model' (
-							appearance	=> APPEARANCE_PCB,
-							others		=> <>);
-
-					when others => 
-						raise constraint_error; -- CS
-
-				end case;
-				
-			elsif kw = keyword_position then -- position x 0.00 y 0.00
-				expect_field_count (line, 5);
-
-				-- extract unit position starting at field 2
-				-- NOTE: this is the position of the unit inside the device editor !
-				unit_position := to_vector_model (line, 2);
-
-			elsif kw = keyword_swap_level then
-				expect_field_count (line, 2);
-				unit_swap_level := to_swap_level (f (line, 2));
-
-			elsif kw = keyword_add_level then
-				expect_field_count (line, 2);
-				unit_add_level := to_add_level (f (line, 2));
-				
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_unit_internal;
-		
-
-		
-		
-		-- Inserts in the temporarily collection of internal units a new unit.
-		-- The symbol of the unit is the one accessed by pointer symbol_model.
-		procedure insert_unit_internal is
-			position : pac_units_internal.cursor;
-			inserted : boolean;
-
-			use pac_unit_name;
-			use et_unit_swap_level;
-			use et_unit_add_level;
-		begin
-			-- Depending on the appearance of the device, a unit with the same
-			-- appearance is inserted in units_internal.
-			case appearance is 
-				when APPEARANCE_VIRTUAL =>
-					pac_units_internal.insert (
-						container	=> units_internal,
-						position	=> position,
-						inserted	=> inserted,
-						key			=> unit_name,
-						new_item	=> (
-								appearance	=> APPEARANCE_VIRTUAL,
-								symbol		=> symbol_model.all,
-								position	=> unit_position,
-								swap_level	=> unit_swap_level,
-								add_level	=> unit_add_level));
-
-				when APPEARANCE_PCB =>
-					pac_units_internal.insert (
-						container	=> units_internal,
-						position	=> position,
-						inserted	=> inserted,
-						key			=> unit_name,
-						new_item	=> (
-								appearance	=> APPEARANCE_PCB,
-								symbol		=> symbol_model.all,
-								position	=> unit_position,
-								swap_level	=> unit_swap_level,
-								add_level	=> unit_add_level));
-
-			end case;
-
-			-- A unit name must occur only once. 
-			-- Make sure the unit_name is not in use by any internal or external units:
-			
-			-- Test occurence in internal units:
-			if not inserted then
-				log (ERROR, "unit " & to_string (unit_name) 
-					& " already used by another internal unit !", console => true);
-				raise constraint_error;
-			end if;
-
-			-- Make sure the unit name is not in use by any external unit:
-			if pac_units_external.contains (units_external, unit_name) then
-				log (ERROR, "unit name " & to_string (unit_name) 
-					& " already used by an external unit !", console => true);
-				raise constraint_error;
-			end if;
-			
-			-- clean up for next unit
-			unit_name := to_unit_name ("");
-			unit_position := origin;
-			unit_swap_level := swap_level_default;
-			unit_add_level := add_level_default;
-			symbol_model := null;
-			
-		end insert_unit_internal;
-
-		
-		
-		
-		
-		
-		procedure read_unit_external (
-			line : in type_fields_of_line)
-		is
-			use et_unit_swap_level;
-			use et_unit_add_level;
-			kw : string := f (line, 1);
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_name then -- name A, B, ...
-				expect_field_count (line, 2);
-				unit_name := to_unit_name (f (line, 2));
-
-			elsif kw = keyword_position then -- position x 0.00 y 0.00
-				expect_field_count (line, 5);
-
-				-- extract unit position starting at field 2
-				-- NOTE: this is the position of the unit inside the device editor !
-				unit_external.position := to_vector_model (line, 2);
-
-			elsif kw = keyword_swap_level then -- swap_level 1
-				expect_field_count (line, 2);
-				unit_external.swap_level := to_swap_level (f (line, 2));
-
-			elsif kw = keyword_add_level then -- add_level next
-				expect_field_count (line, 2);
-				unit_external.add_level := to_add_level (f (line, 2));
-
-			elsif kw = keyword_symbol_file then -- symbol_model libraries/symbols/nand.sym
-				expect_field_count (line, 2);
-				unit_external_model_name := to_file_name (f (line, 2));
-				
-			else
-				invalid_keyword (kw);
-			end if;
-		end read_unit_external;
-		
-		
-
-		
-		
-		-- Inserts in the temporarily collection of external units a new unit.
-		procedure insert_unit_external is
-			use pac_unit_name;
-			
-			-- CS log messages
-			
-			
-			procedure read_symbol_model is
-			begin
-				-- read the symbol model (like ../libraries/symbols/power_gnd.sym)
-				read_symbol (unit_external_model_name,
-					log_threshold + 1);			
-			end read_symbol_model;
-			
-			
-			
-			inserted : boolean;
-			
-			-- Adds the internal unit to the device:
-			procedure add_to_device is 
-				cursor : pac_units_external.cursor;
-			begin
-				pac_units_external.insert (
-					container	=> units_external,
-					position	=> cursor,
-					inserted	=> inserted,
-					key			=> unit_name,
-					new_item	=> unit_external);
-			end add_to_device;
-			
-			
-			
-			-- Tests the "inserted" flag and issues a log message.
-			-- The inserted-flag indicates that the unit does not exist
-			-- already:			
-			procedure check_for_name_in_use is begin
-				-- A unit name must occur only once. 
-				-- Make sure the unit_name is not in use by any internal or external units:
-
-				-- Test occurence in external units:
-				if not inserted then
-					log (ERROR, "unit name " & to_string (unit_name) 
-						& " already used by another external unit !");
-					raise constraint_error;
-				end if;
-
-				-- Make sure the unit name is not in use by any internal unit:
-				if pac_units_internal.contains (units_internal, unit_name) then
-					log (ERROR, "unit name " & to_string (unit_name) 
-						& " already used by an internal unit !");
-					raise constraint_error;
-				end if;			
-			end check_for_name_in_use;
-			
-			
-			
-			procedure clean_up is begin
-				-- clean up for next unit
-				unit_name := to_unit_name ("");
-				-- CS unit_external_model_name := 
-				unit_external := (others => <>);		
-			end clean_up;
-			
-			
-		begin
-			
-			read_symbol_model;			
-			
-			-- Get the cursor to the symbol model:
-			unit_external.model_cursor := get_symbol_model (unit_external_model_name);
-			
-			add_to_device;
-			
-			check_for_name_in_use;
-
-			clean_up;
-		end insert_unit_external;
-		
-		
 
 		
 		
@@ -463,19 +196,17 @@ package body et_device_read is
 							when SEC_VARIANTS => insert_package_variant;
 							when others => invalid_section;
 						end case;
-
 						
 					when SEC_TERMINAL_PORT_MAP =>
 						case pac_sections_stack.parent is
 							when SEC_VARIANT => assign_terminal_port_map;								
 							when others => invalid_section;
 						end case;
-
 						
 					when SEC_UNIT =>
 						case pac_sections_stack.parent is
-							when SEC_UNITS_INTERNAL => insert_unit_internal;									
-							when SEC_UNITS_EXTERNAL => insert_unit_external;								
+							when SEC_UNITS_INTERNAL => insert_unit_internal (symbol_model, log_threshold + 1);
+							when SEC_UNITS_EXTERNAL => insert_unit_external (log_threshold + 1);								
 							when others => invalid_section;
 						end case;
 						
@@ -741,13 +472,19 @@ package body et_device_read is
 			
 		end process_line;
 
+		
+		
 		previous_input : ada.text_io.file_type renames current_input;
 
 		
-	begin -- read_device_file
+		
+	begin
 		log_indentation_up;
-		log (text => "reading device model " & to_string (file_name) & " ...", level => log_threshold);
+		log (text => "read device model " & to_string (file_name),
+			level => log_threshold);
+			
 		log_indentation_up;
+		
 		
 		-- test if container device_library already contains a model
 		-- named "file_name". If so, there would be no need to read the file_name again.
@@ -774,12 +511,14 @@ package body et_device_read is
 				end if;
 			end;
 
+			
 			set_input (file_handle);
 			
 			-- Init section pac_sections_stack.
 			pac_sections_stack.init;
 			pac_sections_stack.push (SEC_INIT);
 
+			
 			-- read the file line by line
 			while not end_of_file loop
 				line := read_line (
@@ -795,14 +534,17 @@ package body et_device_read is
 				end if;
 			end loop;
 
+			
 			-- As a safety measure the top section must be reached finally.
 			if pac_sections_stack.depth > 1 then 
 				log (WARNING, write_section_stack_not_empty);
 			end if;
 
+			
 			set_input (previous_input);
 			close (file_handle);
 
+			
 			-- Assemble final device and insert it in device_library:
 			case appearance is
 				when APPEARANCE_PCB => -- a real device

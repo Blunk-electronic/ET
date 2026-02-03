@@ -63,7 +63,7 @@ with et_terminal_name;
 with et_package_variant_terminal_port_map;
 
 with et_keywords;					use et_keywords;
-with et_symbol_ports;				use et_symbol_ports; -- CS
+
 
 
 package body et_device_read_package_variant is
@@ -72,7 +72,7 @@ package body et_device_read_package_variant is
 -- PACKAGE VARIANT:
 	
 	use pac_package_variant_name;
-	variant_name	: pac_package_variant_name.bounded_string; -- N, D
+	variant_name : pac_package_variant_name.bounded_string; -- N, D
 
 
 
