@@ -44,6 +44,9 @@ with et_package_variant;				use et_package_variant;
 
 package et_device_read_package_variant is
 	
+	
+	
+-- PACKAGE VARIANT:
 
 	variant		: type_package_variant;
 	variants	: pac_package_variants.map;
@@ -56,6 +59,21 @@ package et_device_read_package_variant is
 
 
 	procedure insert_package_variant;
+	
+	
+	
+	
+	
+-- TERMINAL-PORT-MAP:
+
+
+	
+	procedure read_terminal_port_assignment (
+		line 			: in type_fields_of_line;
+		log_threshold	: in type_log_level);
+
+		
+	procedure assign_terminal_port_map;
 	
 	
 end et_device_read_package_variant;

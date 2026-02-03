@@ -52,7 +52,6 @@ with et_file_sections;				use et_file_sections;
 with et_symbol_read;				use et_symbol_read;
 with et_conventions;
 
-with et_port_names;
 with et_symbol_name;				use et_symbol_name;
 with et_symbol_ports;				use et_symbol_ports;
 with et_symbol_model;				use et_symbol_model;
@@ -62,20 +61,15 @@ with et_device_appearance;			use et_device_appearance;
 with et_device_model;				use et_device_model;
 with et_device_value;
 with et_device_prefix;
-with et_units;
 with et_unit_name;
 with et_unit_swap_level;
 with et_unit_add_level;
-
-with et_package_variant_terminal_port_map;
 
 with et_package_model_name;			use et_package_model_name;
 with et_device_library;				use et_device_library;
 with et_device_model_unit_internal;	use et_device_model_unit_internal;
 with et_device_model_unit_external;	use et_device_model_unit_external;
 with et_keywords;					use et_keywords;
-with et_terminal_name;				use et_terminal_name;
-with et_terminals;					use et_terminals;
 
 with et_symbol_read_body;			use et_symbol_read_body;
 with et_symbol_read_port;			use et_symbol_read_port;
@@ -96,7 +90,6 @@ package body et_device_read is
 		use et_device_value;
 		use et_device_prefix;
 		use et_unit_name;
-		use et_package_variant_terminal_port_map;		
 		
 		file_handle : ada.text_io.file_type;
 
@@ -118,7 +111,7 @@ package body et_device_read is
 		value				: pac_device_value.bounded_string; -- BC548
 		appearance			: type_appearance; -- virtual/pcb
 		partcode			: pac_device_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
-		terminal_port_map	: pac_terminal_port_map.map;
+		
 
 		
 
@@ -181,76 +174,6 @@ package body et_device_read is
 				invalid_keyword (kw);
 			end if;
 		end read_meta;
-
-
-
-
-		
-		procedure insert_terminal (
-			line : in type_fields_of_line)  -- terminal 14 unit 5 VCC
-		is
-			use et_units;
-			use et_port_names;
-			use pac_terminal_port_map;
-			inserted	: boolean;
-			position	: pac_terminal_port_map.cursor;
-
-			terminal	: pac_terminal_name.bounded_string; -- H5, 14
-			unit		: pac_unit_name.bounded_string; -- PWR, IO_BANK_2
-			port		: pac_port_name.bounded_string; -- VCC
-
-			place : type_field_count_positive := 1; -- the field being read from given line
-
-			-- CS: detect missing parameters
-			-- CS: warn about wrong misplaced keywords
-			-- CS: test if terminal, unit and port exist
-		begin
-			while place <= get_field_count (line) loop
-			
-				-- We expect the terminal name after the keyword "terminal"
-				if f (line, place) = keyword_terminal then
-					terminal := to_terminal_name (f (line, place + 1)); -- 14
-
-				-- After the keyword "unit" must come the unit name:
-				elsif f (line, place) = keyword_unit then 
-					unit := to_unit_name (f (line, place + 1)); -- 5
-
-				-- After the keyword "port" must come the port name
-				elsif f (line, place) = keyword_port then 
-					port := to_port_name (f (line, place + 1)); -- VCC
-					
-				else
-					invalid_keyword (f (line, place));
-				end if;
-					
-				place := place + 2;
-			end loop;
-
-			-- insert terminal to port assigment in temporarily terminal_port_map
-			insert (
-				container	=> terminal_port_map,
-				key			=> terminal, -- H5, 14
-				inserted	=> inserted,
-				position	=> position,
-				new_item	=> (
-								unit	=> unit, -- IO_BANK_2,
-								name	=> port -- VCC
-								));
-
-			-- an assigment must be unique !
-			if not inserted then
-				log (ERROR, "terminal-to-port assigment already used !", console => true);
-				raise constraint_error;
-			end if;
-
-			-- clean up for next terminal to port assigment
-			terminal	:= to_terminal_name ("");
-			unit		:= to_unit_name ("");
-			port		:= to_port_name ("");
-		end insert_terminal;
-
-
-	
 
 
 		
@@ -544,12 +467,7 @@ package body et_device_read is
 						
 					when SEC_TERMINAL_PORT_MAP =>
 						case pac_sections_stack.parent is
-							when SEC_VARIANT =>
-								-- copy temporarily terminal_port_map to current variant
-								variant.terminal_port_map := terminal_port_map;
-
-								-- clean up temporarily terminal_port_map for next variant
-								pac_terminal_port_map.clear (terminal_port_map);
+							when SEC_VARIANT => assign_terminal_port_map;								
 							when others => invalid_section;
 						end case;
 
@@ -725,10 +643,7 @@ package body et_device_read is
 					when SEC_TERMINAL_PORT_MAP =>
 						case pac_sections_stack.parent is
 							when SEC_VARIANT =>
-								expect_field_count (line, 6); -- terminal 14 unit 5 port VCC
-
-								-- extract terminal to port assignment
-								insert_terminal (line);
+								read_terminal_port_assignment (line, log_threshold);
 							
 							when others => invalid_section;
 						end case;

@@ -56,15 +56,24 @@ with et_package_library;
 with et_package_variant_name;		use et_package_variant_name;
 
 with et_package_model_name;			use et_package_model_name;
-with et_keywords;					use et_keywords;
 
+with et_unit_name;
+with et_port_names;
+with et_terminal_name;
+with et_package_variant_terminal_port_map;
+
+with et_keywords;					use et_keywords;
+with et_symbol_ports;				use et_symbol_ports; -- CS
 
 
 package body et_device_read_package_variant is
 	
 	
+-- PACKAGE VARIANT:
+	
 	use pac_package_variant_name;
 	variant_name	: pac_package_variant_name.bounded_string; -- N, D
+
 
 
 		
@@ -152,5 +161,106 @@ package body et_device_read_package_variant is
 	end insert_package_variant;
 
 
+	
+	
+	
+	
+	
+	
+-- TERMINAL-PORT-MAP:
+	
+	use et_package_variant_terminal_port_map;
+	terminal_port_map : pac_terminal_port_map.map;	
+	
+	
+	procedure read_terminal_port_assignment (
+		line 			: in type_fields_of_line;
+		log_threshold	: in type_log_level)
+	is
+		use et_unit_name;
+		use et_port_names;
+		use et_terminal_name;		
+		
+		use pac_terminal_port_map;
+		
+		inserted	: boolean;
+		position	: pac_terminal_port_map.cursor;
+
+		terminal	: pac_terminal_name.bounded_string; -- H5, 14
+		unit		: pac_unit_name.bounded_string; -- PWR, IO_BANK_2
+		port		: pac_port_name.bounded_string; -- VCC
+
+		place : type_field_count_positive := 1; -- the field being read from given line
+
+		-- CS: detect missing parameters
+		-- CS: warn about wrong misplaced keywords
+		-- CS: test if terminal, unit and port exist
+	begin
+		expect_field_count (line, 6); -- terminal 14 unit 5 port VCC
+		
+		while place <= get_field_count (line) loop
+		
+			-- We expect the terminal name after the keyword "terminal"
+			if f (line, place) = keyword_terminal then
+				terminal := to_terminal_name (f (line, place + 1)); -- 14
+
+			-- After the keyword "unit" must come the unit name:
+			elsif f (line, place) = keyword_unit then 
+				unit := to_unit_name (f (line, place + 1)); -- 5
+
+			-- After the keyword "port" must come the port name
+			elsif f (line, place) = keyword_port then 
+				port := to_port_name (f (line, place + 1)); -- VCC
+				
+			else
+				invalid_keyword (f (line, place));
+			end if;
+				
+			place := place + 2;
+		end loop;
+
+		
+		
+		-- insert terminal to port assigment in temporarily terminal_port_map
+		insert (
+			container	=> terminal_port_map,
+			key			=> terminal, -- H5, 14
+			inserted	=> inserted,
+			position	=> position,
+			new_item	=> (
+							unit	=> unit, -- IO_BANK_2,
+							name	=> port -- VCC
+							));
+
+		-- an assigment must be unique !
+		if not inserted then
+			log (ERROR, "terminal-to-port assigment already used !");
+			
+			raise constraint_error;
+		end if;
+
+		-- clean up for next terminal to port assigment
+		terminal	:= to_terminal_name ("");
+		unit		:= to_unit_name ("");
+		port		:= to_port_name ("");
+		
+	end read_terminal_port_assignment;
+
+		
+		
+	
+	
+	
+	
+	procedure assign_terminal_port_map is begin
+		-- copy temporarily terminal_port_map to current variant
+		variant.terminal_port_map := terminal_port_map;
+
+		-- clean up temporarily terminal_port_map for next variant
+		pac_terminal_port_map.clear (terminal_port_map);
+
+	end assign_terminal_port_map;
+	
+	
 	
 end et_device_read_package_variant;
