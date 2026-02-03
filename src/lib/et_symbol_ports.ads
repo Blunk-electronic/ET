@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -58,18 +58,7 @@ package et_symbol_ports is
 	use pac_text_schematic;
 	
 	
--- TERMINALS
 
-	keyword_terminal				: constant string := "terminal";
-	keyword_terminal_name_size		: constant string := "terminal_name_size";
-
-	
-	
--- PORTS
-	keyword_port					: constant string := "port";
-	keyword_port_name_size			: constant string := "port_name_size";
-	keyword_length					: constant string := "length";
-	
 
 	
 	-- A port is something where a net can be attached to.

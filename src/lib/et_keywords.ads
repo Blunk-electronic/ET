@@ -115,6 +115,7 @@ package et_keywords is
 	keyword_layer					: constant string := "layer";	
 	keyword_layers					: constant string := "layers";
 	keyword_layout					: constant string := "layout";	
+	keyword_length					: constant string := "length";
 	keyword_lines					: constant string := "lines";
 	keyword_linewidth				: constant string := "linewidth";
 	keyword_locked 					: constant string := "locked";
@@ -143,6 +144,8 @@ package et_keywords is
 	keyword_paper_size				: constant string := "paper_size";
 	keyword_partcode 				: constant string := "partcode";	
 	keyword_path					: constant string := "path";
+	keyword_port					: constant string := "port";
+	keyword_port_name_size			: constant string := "port_name_size";
 	keyword_position				: constant string := "position";
 	keyword_position_in_board		: constant string := "position_in_board";
 	keyword_position_in_schematic	: constant string := "position_in_schematic";	
@@ -184,6 +187,8 @@ package et_keywords is
 	keyword_symbol_file				: constant string := "symbol_model";
 
 	keyword_template				: constant string := "template";
+	keyword_terminal				: constant string := "terminal";
+	keyword_terminal_name_size		: constant string := "terminal_name_size";
 	keyword_tht_hole				: constant string := "hole";	
 	keyword_to						: constant string := "to";
 	keyword_tracks					: constant string := "tracks";
