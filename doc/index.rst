@@ -23,8 +23,10 @@
    schematic.rst
    board.rst
    assembly_variants.rst
-   packages.rst
-   symbols.rst
+..    component_library.rst
+   package_models.rst
+   symbol_models.rst
+   device_models.rst
 ..    CS cam.rst
 .. CS submodules.rst
    

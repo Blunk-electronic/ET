@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                      DEVICE READ / PACKAGE VARIANT                       --
+--                    DEVICE MODEL / READ PACKAGE VARIANT                   --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -58,7 +58,8 @@ package et_device_read_package_variant is
 		log_threshold	: in type_log_level);
 
 
-	procedure insert_package_variant;
+	procedure insert_package_variant (
+		log_threshold : in type_log_level);
 	
 	
 	

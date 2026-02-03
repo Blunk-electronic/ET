@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                      DEVICE READ / PACKAGE VARIANT                       --
+--                    DEVICE MODEL / READ PACKAGE VARIANT                   --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -132,12 +132,18 @@ package body et_device_read_package_variant is
 	
 		
 		
-	procedure insert_package_variant is
+	procedure insert_package_variant (
+		log_threshold : in type_log_level)
+	is
 		use pac_package_variants;
 		
 		inserted : boolean;
 		position : pac_package_variants.cursor;
 	begin
+		log (text => "add package variant "
+			& to_string (variant_name),
+			level => log_threshold);
+		
 		check_variant_name_characters (variant_name); 
 		-- CS move to procedure read_package_variant
 

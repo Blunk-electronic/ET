@@ -1,4 +1,4 @@
-.. _symbols:
+.. _symbol_modles:
 
 .. .. include:: placeholders.rst
 

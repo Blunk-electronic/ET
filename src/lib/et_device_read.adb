@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                             DEVICE READ                                  --
+--                         DEVICE MODEL / READ                              --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -172,7 +172,61 @@ package body et_device_read is
 
 		
 
+		
+		-- Assemble the final device and add
+		-- it to the device library:
+		procedure add_device_model_to_library is 
+			use et_conventions;
+		begin
+			case appearance is
+				when APPEARANCE_PCB => -- a real device
 
+					-- If a value was specified (via an entry like "value 100R),
+					-- check if it meets certain conventions regarding its prefix.
+					-- The prefix gives information about the category of the device:
+					if pac_device_value.length (value) > 0 then
+						if not value_valid (value, prefix) then
+							log (WARNING, "default value of device model " &
+								to_string (file_name) & 
+								" not conformant with conventions !");
+						end if;
+					end if;
+
+					pac_device_models.insert (
+						container	=> device_library, 
+						key			=> file_name, -- libraries/devices/7400.dev
+						new_item	=> (
+								appearance		=> APPEARANCE_PCB,
+								prefix			=> prefix, -- IC
+								units_internal	=> units_internal,
+								units_external	=> units_external,
+								value			=> value,
+								--partcode		=> partcode,
+								variants		=> variants));
+								
+
+
+				when APPEARANCE_VIRTUAL =>
+					pac_device_models.insert (
+						container	=> device_library, 
+						key			=> file_name, -- libraries/devices/power_gnd.dev
+						new_item	=> (
+								appearance		=> APPEARANCE_VIRTUAL,
+								prefix			=> prefix, -- PWR
+								units_internal	=> units_internal,
+								units_external	=> units_external));
+
+			end case;
+
+			
+			-- clean up for next device:
+			variants.clear;
+			units_internal.clear;
+			units_external.clear;
+		end add_device_model_to_library;
+
+		
+		
 		
 		
 		
@@ -193,7 +247,7 @@ package body et_device_read is
 						
 					when SEC_VARIANT =>
 						case pac_sections_stack.parent is
-							when SEC_VARIANTS => insert_package_variant;
+							when SEC_VARIANTS => insert_package_variant (log_threshold + 1);
 							when others => invalid_section;
 						end case;
 						
@@ -543,48 +597,11 @@ package body et_device_read is
 			
 			set_input (previous_input);
 			close (file_handle);
-
 			
-			-- Assemble final device and insert it in device_library:
-			case appearance is
-				when APPEARANCE_PCB => -- a real device
-
-					-- If a value was specified (via an entry like "value 100R),
-					-- check if it meets certain conventions regarding its prefix.
-					-- The prefix gives information about the category of the device:
-					if pac_device_value.length (value) > 0 then
-						if not et_conventions.value_valid (value, prefix) then
-							log (WARNING, "default value of device model " &
-								to_string (file_name) & 
-								" not conformant with conventions !");
-						end if;
-					end if;
-
-					pac_device_models.insert (
-						container	=> device_library, 
-						key			=> file_name, -- libraries/devices/7400.dev
-						new_item	=> (
-								appearance		=> APPEARANCE_PCB,
-								prefix			=> prefix, -- IC
-								units_internal	=> units_internal,
-								units_external	=> units_external,
-								value			=> value,
-								--partcode		=> partcode,
-								variants		=> variants));
-
-				when APPEARANCE_VIRTUAL =>
-					pac_device_models.insert (
-						container	=> device_library, 
-						key			=> file_name, -- libraries/devices/power_gnd.dev
-						new_item	=> (
-								appearance		=> APPEARANCE_VIRTUAL,
-								prefix			=> prefix, -- PWR
-								units_internal	=> units_internal,
-								units_external	=> units_external));
-
-			end case;
+			add_device_model_to_library;			
 		end if;
 
+		
 		-- CS Check integrity of device: port terminal map, positions of units, ...
 		-- (style guides, conventions ...)
 		-- use function "last" to fetch latest device

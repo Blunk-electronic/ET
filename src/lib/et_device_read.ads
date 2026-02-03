@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                             DEVICE READ                                  --
+--                         DEVICE MODEL / READ                              --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --

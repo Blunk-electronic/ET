@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                          DEVICE READ / UNIt                              --
+--                        DEVICE MODEL / READ UNIT                          --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --

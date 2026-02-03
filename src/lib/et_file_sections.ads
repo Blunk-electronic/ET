@@ -92,7 +92,7 @@ package et_file_sections is
 		SEC_FILL_ZONES_CONDUCTOR,
 		--SEC_FILL_ZONES_NON_CONDUCTOR, -- CS
 
-		SEC_INIT,		
+		SEC_INIT, -- CS rename to SEC_ROOT
 
 		SEC_HOLE,
 		-- CS SEC_HOLES_PLATED ?

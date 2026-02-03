@@ -1,4 +1,4 @@
-.. _packages:
+.. _package_models:
 
 .. .. include:: placeholders.rst
 
