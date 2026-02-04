@@ -166,6 +166,11 @@ non-electrical devices (without a representation in the schematic).
 
 	|VNS| a d
 
+	Initially on placing the device in the drawing, the placeholders
+	(for example for name, value  purpose) are copies of those specified 
+	in the package model. This implies that the position of the
+	placeholders in the board drawing get NOT updated if they are changed
+	in the package model afterward.
 
 
 
@@ -281,21 +286,23 @@ one placeholder is required. For this reason the placholders have
 an index to identify them.
 Placeholders can be part of the silkscreen or the assembly documentation.
 
-By default placeholders are tied to the package and thus have a
+By default, placeholders are tied to the package and thus have a
 position relative to the reference point of the parent package. This implies:
-- If the package moves then the placeholder moves along.
-- If the package rotates then the placeholder rotates about the 
+- If the package moves, then the placeholder moves along.
+- If the package rotates, then the placeholder rotates about the 
   reference point of the package. The new rotation of the actual 
   placeholder content about its own origin is the sum of the new 
   rotation of the package and the rotation of the placeholder.
-- If a console command is applied that performs a relative movement
+- If a console command is applied that performs a relative movement,
   then the placeholder is anchored relatively to the package.
 
-Alternatively the connection between placeholder and package can be
-breached so that the placeholder gets an absolute position. This implies:
-- If the package moves or rotates then the placeholder stays where it is.
+Alternatively, the binding between placeholder and package can be
+lifted so that the placeholder gets an absolute position. This can
+be required when the placeholder must remain on the same spot, regardless
+of the movement of the package. This implies:
+- If the package moves or rotates, then the placeholder stays where it is.
 - The placeholder can be moved independently of the package.
-- If a console command is applied that performs an absolute positioning
+- If a console command is applied that performs an absolute positioning,
   then the connection with the package is severed.
 - If the operator moves a placeholder via the GUI then the connection
   with the package is severed automatically. The connection can be

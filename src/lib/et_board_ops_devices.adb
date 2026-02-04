@@ -1204,7 +1204,17 @@ package body et_board_ops_devices is
 				new_item	=> (
 					position		=> position,
 					model_cursor	=> package_cursor_lib,
+
+					-- Text placeholders in the board drawing:
+					--
+					-- Initially, the text placeholders are copies of 
+					-- the placeholders as they are defined in the package model.
+					-- This approach has the following implication:
+					-- If the position of a placeholder in the package model
+					-- is changed AFTER the device has been added to the drawing,
+					-- then it DOES NOT get updated.
 					placeholders	=> get_default_placeholders (package_cursor_lib),
+					
 					others			=> <>));
 
 			-- check inserted flag

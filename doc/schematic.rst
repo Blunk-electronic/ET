@@ -32,6 +32,14 @@ Devices and Units
 	|VNS| a d
 
 
+	As soon as the unit is dropped in the schematic drawing, the physical
+	counterpart - the package - is dropped in the board drawing.
+
+	Initially on placing the unit and the package in the drawing, the placeholders
+	(for example for name, value  purpose) are copies of those specified 
+	in the symbol and package model. This implies that the position of the
+	placeholders in the drawing get NOT updated if they are changed
+	in the package or symbol model afterward.
 
 
 

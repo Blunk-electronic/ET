@@ -146,10 +146,17 @@ is
 					value			=> get_default_value (device_cursor_lib), -- if predefined in dev. model
 					variant			=> selected_variant,
 
+					-- Text placeholders in the board drawing:
+					--
 					-- Initially, the text placeholders are copies of 
 					-- the placeholders as they are defined in the package model.
-					-- Extract them from the device model and the package variant:
-					placeholders	=> get_default_placeholders (device_cursor_lib, selected_variant),
+					-- This approach has the following implication:
+					-- If the position of a placeholder in the package model
+					-- is changed AFTER the device has been added to the drawing,
+					-- then it DOES NOT get updated.
+					placeholders	=> get_default_placeholders (
+										device_cursor_lib, selected_variant),
+					
 
 					-- Use default position of the device in the layout.
 					-- CS: do not place the package on top of others
@@ -283,8 +290,16 @@ is
 			begin
 				log (text => "add_real", level => log_threshold + 3);
 
-				-- Get the default placeholders as they are defined in the device model:
-				placeholders := get_default_placeholders (first_available_unit.int, destination);
+				-- Text placeholders in the schematic drawing:
+				--
+				-- Initially, the text placeholders are copies of 
+				-- the placeholders as they are defined in the symbol model.
+				-- This approach has the following implication:
+				-- If the position of a placeholder in the symbol model
+				-- is changed AFTER the unit has been added to the drawing,
+				-- then it DOES NOT get updated.
+				placeholders := get_default_placeholders (
+					first_available_unit.int, destination);
 				
 				-- Compose a real unit:
 				unit := (
@@ -367,8 +382,16 @@ is
 				-- Map from the unit back to the symbol in the library:
 				symbol_cursor := get_symbol (first_available_unit.ext);
 
-				-- Get the default placeholders as they are defined in the device model:
-				placeholders := get_default_placeholders (symbol_cursor, destination);
+				-- Text placeholders in the schematic drawing:
+				--
+				-- Initially, the text placeholders are copies of 
+				-- the placeholders as they are defined in the symbol model.
+				-- This approach has the following implication:
+				-- If the position of a placeholder in the symbol model
+				-- is changed AFTER the unit has been added to the drawing,
+				-- then it DOES NOT get updated.				
+				placeholders := get_default_placeholders (
+									symbol_cursor, destination);
 
 				-- Compose a real unit:
 				unit := (

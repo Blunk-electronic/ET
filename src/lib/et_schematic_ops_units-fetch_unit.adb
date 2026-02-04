@@ -103,7 +103,7 @@ is
 					 & to_string (key (unit_cursors.int)),
 					 level => log_threshold + 2);
 
-				-- Instanciate a symbol so that a unit comes into life:
+				-- Instantiate a symbol so that a unit comes into life:
 				case element (device_cursor_lib).appearance is
 					when APPEARANCE_VIRTUAL =>
 						pac_units.insert (
@@ -115,9 +115,20 @@ is
 								others 		=> <>));
 						
 					when APPEARANCE_PCB =>
+
+						-- Text placeholders in the schematic drawing:
+						--
+						-- Initially, the text placeholders are copies of 
+						-- the placeholders as they are defined in the symbol model.
+						-- This approach has the following implication:
+						-- If the position of a placeholder in the symbol model
+						-- is changed AFTER the unit has been added to the drawing,
+						-- then it DOES NOT get updated.
+						
 						-- Get the default positions and rotations of placeholders
 						-- according to the rotation of the unit in the schematic:
-						placeholders := get_default_placeholders (unit_cursors.int, destination);
+						placeholders := get_default_placeholders (
+											unit_cursors.int, destination);
 						
 						pac_units.insert (
 							container	=> device.units,
@@ -188,9 +199,19 @@ is
 						-- CS: The symbol should be there now. Otherwise symbol_cursor would assume no_element
 						-- and constraint_error would arise here:
 
+						-- Text placeholders in the schematic drawing:
+						--
+						-- Initially, the text placeholders are copies of 
+						-- the placeholders as they are defined in the symbol model.
+						-- This approach has the following implication:
+						-- If the position of a placeholder in the symbol model
+						-- is changed AFTER the unit has been added to the drawing,
+						-- then it DOES NOT get updated.
+						
 						-- Get the default positions and rotations of placeholders
 						-- according to the rotation of the unit in the schematic:
-						placeholders := get_default_placeholders (symbol_cursor, destination);
+						placeholders := get_default_placeholders (
+											symbol_cursor, destination);
 						
 						pac_units.insert (
 							container	=> device.units,
