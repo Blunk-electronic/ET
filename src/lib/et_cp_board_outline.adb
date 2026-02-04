@@ -65,26 +65,35 @@ package body et_cp_board_outline is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		
-		-- Extract from the given command the 
-		-- arguments (everything after "outline"):
-		-- Example command: 
-		-- "board demo draw outline line 0 0 line 50 0 line 50 50 line 0 50"
-		arguments : constant type_fields_of_line := 
-			remove_field (get_fields (cmd), 1, 4);
 
-		-- Build a basic contour from the arguments:
-		c : constant type_contour := type_contour (to_contour (arguments));
+		procedure extract_arguments is
+			-- Extract from the given command the 
+			-- arguments (everything after "outline"):
+			-- Example command: 
+			-- "board demo draw outline line 0 0 line 50 0 line 50 50 line 0 50"
+			arguments : constant type_fields_of_line := 
+				remove_field (get_fields (cmd), 1, 4);
+
+			-- Build a basic contour from the arguments:
+			c : constant type_contour := type_contour (to_contour (arguments));
+		begin
+			-- Convert the contour to a pcb outer edge type
+			-- and assign it to the module:
+			set_outline (
+				module,
+				(c with null record),
+				log_threshold + 1);
+			
+		end extract_arguments;
+
+		
 	begin
-		-- CS log message
-		
-		-- Convert the contour to a pcb outer edge type
-		-- and assign it to the module:
-		set_outline (
-			module,
-			(c with null record),
-			log_threshold + 1);
-		
+		log (text => "draw board outline", level => log_threshold);
+		log_indentation_up;
+
+		extract_arguments;
+
+		log_indentation_down;
 	end draw_board_outline;
 
 

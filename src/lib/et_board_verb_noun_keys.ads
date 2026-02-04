@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -65,7 +65,8 @@ package et_board_verb_noun_keys is
 
 	
 -- NOUNS:	
-
+	
+	key_noun_arc		: constant gdk_key_type := GDK_LC_a;	
 	key_noun_assy		: constant gdk_key_type := GDK_LC_a;
 	key_noun_device		: constant gdk_key_type := GDK_LC_d;
 	key_noun_freetrack	: constant gdk_key_type := GDK_LC_f;

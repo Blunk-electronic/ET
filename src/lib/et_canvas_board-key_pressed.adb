@@ -612,7 +612,13 @@ is
 				show_line_properties;
 				set_status (status_draw_line);
 
+				
+			when key_noun_arc =>
+				noun := NOUN_ARC;
+				-- CS show_arc_properties;
+				-- CS set_status (status_draw_arc);
 
+				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when key_space =>
 				case noun is
