@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -121,7 +121,8 @@ package body et_canvas.contours is
 								pos		=> pos_end,		  
 								width	=> zero,  -- don't care. see specs of draw_line.
 								mirror	=> mirror,
-								style	=> style);
+								style	=> style,
+								force	=> true);
 						else
 							draw_line (
 								line		=> segment.segment_line,
@@ -129,7 +130,8 @@ package body et_canvas.contours is
 								width		=> zero,  -- don't care. see specs of draw_line.
 								mirror		=> mirror,
 								style		=> style,
-								polyline	=> true);
+								polyline	=> true,
+								force		=> true);
 
 						end if;
 

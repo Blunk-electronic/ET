@@ -111,6 +111,7 @@ package body et_device_write_package_variant is
 			
 			section_mark (section_terminal_port_map, HEADER);
 			iterate (variant.terminal_port_map, write_terminal'access);
+			-- CS sort the terminals numerical, not alphabetical !
 			section_mark (section_terminal_port_map, FOOTER);						
 		end write_variant;
 

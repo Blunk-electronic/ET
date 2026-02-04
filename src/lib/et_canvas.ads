@@ -1392,7 +1392,8 @@ package et_canvas is
 	--  If the given linewidth is zero, then a minimum linewidth is
 	--  ensured internally that is independed of the zoom-factor.
 	-- 3. If force is true, then the line will be drawn independed
-	--  of its bounding-box. CS: not implemented yet, likewise for circle and arc
+	--  of its bounding-box (area check) and size. This mode is required
+	--  if the line is part of a contour (or a path).
 	-- 4. If the line is being moved by the
 	--  operator then it gets drawn according to the current
 	--  point_of_attack and object_tool:
@@ -1413,6 +1414,7 @@ package et_canvas is
 		force		: in boolean := false);
 
 
+	
 	-- This is a primitive draw operation that draws a circle.
 	-- For arguments see procedure draw_line.
 	-- It is recommended to set the linewidth to zero when

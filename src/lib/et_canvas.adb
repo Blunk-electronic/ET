@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -3744,6 +3744,10 @@ package body et_canvas is
 
 	
 	
+	
+	
+	
+	
 	procedure draw_line (
 		line		: in type_line'class;
 		pos			: in type_position := origin_zero_rotation;
@@ -3759,66 +3763,17 @@ package body et_canvas is
 		-- Make a copy of the given line:
 		l : type_line'class := line;
 
-		-- When the line is drawn, we need canvas points
-		-- for start and end:
-		c1, c2 : type_logical_pixels_vector; -- start and end of the line
 
 		-- The bounding-box of the line. It is required
 		-- for the area and size check:
 		b : type_area;
 
-		use et_mirroring;
-	begin		
-		-- Rotate the line by pos.rotation
-		rotate_line_by (l, pos.rotation);
-
-		-- Mirror the line:
-		case mirror is
-			when MIRROR_NO => null;
-			when MIRROR_ALONG_X_AXIS => mirror_line (l, MIRROR_ALONG_X_AXIS);
-			when MIRROR_ALONG_Y_AXIS => mirror_line (l, MIRROR_ALONG_Y_AXIS);
-		end case;
 		
-		-- Move the line to the given position:
-		move_by (l, (pos.place.x, pos.place.y));
-
-		-- Here we modify the line in case it is being moved:
-		--
-		-- If the line is set as "moving", then
-		-- its position will be modified according to the
-		-- object_point_of_attack and the current tool position.
-		-- Otherwise, if the start/end point of the line is moving
-		-- then the line start/end points (A/B) will be moved
-		-- by the current object_displacement. If object_displacement 
-		-- is zero, then the line will be drawn as it is:
-		if is_moving (l) then
-			attack (l, object_point_of_attack, get_object_tool_position);
-		else
-			-- Move start/end point by global object_displacement:
-			if is_A_moving (l) then
-				move_A_by (l, object_displacement);
-			end if;
-
-			if is_B_moving (l) then
-				move_B_by (l, object_displacement);
-			end if;
-		end if;
-		
-		
-		-- Get the bounding-box of line:
-		b := get_bounding_box (l, width);
-		-- put_line ("b " & to_string (b));
-		
-		-- Do the area check. If the bounding-box of the line
-		-- is inside the visible area then draw the line. Otherwise
-		-- nothing will be drawn:
-		if areas_overlap (visible_area, b) and then
-
-			-- Do the size check. If the bounding-box is greater
-			-- (either in width or heigth) than the visiblity threshold
-			-- then draw the line. Otherwise nothing will be drawn:
-			above_visibility_threshold (b) then
-
+		procedure do_draw is
+			-- When the line is drawn, we need canvas points
+			-- for start and end of the line:
+			c1, c2 : type_logical_pixels_vector;
+		begin
 			-- If an individual stroke is requested for
 			-- the given line, then set the linewidth:
 			if do_stroke then
@@ -3859,13 +3814,78 @@ package body et_canvas is
 			if do_stroke then
 				stroke (context);
 			end if;
-
 			
 			-- CS: use OpenGL ?
+		end do_draw;
+		
+		
+		
+		use et_mirroring;
+	begin		
+		-- Rotate the line by pos.rotation
+		rotate_line_by (l, pos.rotation);
+
+		-- Mirror the line:
+		case mirror is
+			when MIRROR_NO => null;
+			when MIRROR_ALONG_X_AXIS => mirror_line (l, MIRROR_ALONG_X_AXIS);
+			when MIRROR_ALONG_Y_AXIS => mirror_line (l, MIRROR_ALONG_Y_AXIS);
+		end case;
+		
+		-- Move the line to the given position:
+		move_by (l, (pos.place.x, pos.place.y));
+
+		-- Here we modify the line in case it is being moved:
+		--
+		-- If the line is set as "moving", then
+		-- its position will be modified according to the
+		-- object_point_of_attack and the current tool position.
+		-- Otherwise, if the start/end point of the line is moving
+		-- then the line start/end points (A/B) will be moved
+		-- by the current object_displacement. If object_displacement 
+		-- is zero, then the line will be drawn as it is:
+		if is_moving (l) then
+			attack (l, object_point_of_attack, get_object_tool_position);
+		else
+			-- Move start/end point by global object_displacement:
+			if is_A_moving (l) then
+				move_A_by (l, object_displacement);
+			end if;
+
+			if is_B_moving (l) then
+				move_B_by (l, object_displacement);
+			end if;
+		end if;
+		
+		
+		-- If the force-flag is set, then the line will
+		-- be drawn regardless of its bounding box and size:
+		if force then
+			do_draw;
+		else
+			-- Get the bounding-box of the line:
+			b := get_bounding_box (l, width);
+			-- put_line ("b " & to_string (b));
+			
+			-- Do the area check. If the bounding-box of the line
+			-- is inside the visible area then draw the line. Otherwise
+			-- nothing will be drawn:
+			if areas_overlap (visible_area, b) and then
+
+				-- Do the size check. If the bounding-box is greater
+				-- (either in width or heigth) than the visiblity threshold
+				-- then draw the line. Otherwise nothing will be drawn:
+				above_visibility_threshold (b) then
+
+				do_draw;			
+			end if;
 		end if;
 	end draw_line;
 
 
+	
+	
+	
 
 	procedure draw_circle (
 		circle		: in type_circle'class;
