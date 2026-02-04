@@ -87,7 +87,8 @@ package body et_package_write is
 			name	=> to_string (file_name));
 
 		set_output (file_handle);
-		
+
+		-- CS: move into a procedure write_header
 		-- write a nice header
 		put_line (comment_mark_default & " " & et_system_info.system_name & " package model");
 		put_line (comment_mark_default & " " & get_date);
@@ -115,7 +116,7 @@ package body et_package_write is
 		-- incl. pad properties, drill sizes, millings, ...
 
 
-		
+		-- CS: move into a procedure write_footer
 		-- write footer
 		new_line;
 		put_line (comment_mark_default & " " & row_separator_double);

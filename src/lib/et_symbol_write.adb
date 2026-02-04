@@ -112,6 +112,7 @@ package body et_symbol_write is
 
 		set_output (file_handle);
 		
+		-- CS: move into a procedure write_header
 		-- write a nice header
 		put_line (comment_mark_default & " " & system_name & " symbol model");
 		put_line (comment_mark_default & " " & get_date);
@@ -122,6 +123,7 @@ package body et_symbol_write is
 		
 		save_symbol_1 (symbol, log_threshold + 1);
 
+		-- CS: move into a procedure write_footer
 		-- write footer
 		new_line;		
 		put_line (comment_mark_default & " " & row_separator_double);
