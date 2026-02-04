@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                             DEVICE WRITE                                 --
+--                         DEVICE MODEL / WRITE                             --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -60,9 +60,6 @@ with et_schematic_coordinates;		use et_schematic_coordinates;
 with et_string_processing;
 with et_time;
 with et_file_write;					use et_file_write;
-with et_symbol_read;				use et_symbol_read;
-with et_symbol_write;				use et_symbol_write;
-with et_symbol_library;
 with et_package_write;
 with et_package_read;
 with et_conventions;
@@ -75,11 +72,7 @@ with et_port_sensitivity;
 with et_port_visibility;
 with et_port_direction;
 with et_port_names;
-with et_symbol_shapes;				use et_symbol_shapes;
-with et_symbol_name;				use et_symbol_name;
-with et_symbol_ports;				use et_symbol_ports;
-with et_symbol_text;				use et_symbol_text;
-with et_symbol_model;				use et_symbol_model;
+
 with et_package_name;				use et_package_name;
 with et_device_placeholders;		use et_device_placeholders;
 with et_device_partcode;			use et_device_partcode;
@@ -88,10 +81,7 @@ with et_schematic_text;
 with et_system_info;
 with et_device_value;
 with et_device_prefix;
-with et_units;
 with et_unit_name;
-with et_unit_swap_level;
-with et_unit_add_level;
 
 with et_package_library;
 with et_package_variant_name;
@@ -100,12 +90,13 @@ with et_package_variant_terminal_port_map;
 with et_package_model_name;			use et_package_model_name;
 
 with et_device_library;				use et_device_library;
-with et_device_model_unit_internal;	use et_device_model_unit_internal;
-with et_device_model_unit_external;	use et_device_model_unit_external;
 with et_keywords;					use et_keywords;
 with et_file_sections;				use et_file_sections;
 with et_terminal_name;				use et_terminal_name;
 with et_terminals;					use et_terminals;
+
+with et_device_write_unit;			use et_device_write_unit;
+
 
 
 package body et_device_write is
@@ -149,7 +140,6 @@ package body et_device_write is
 
 			use et_package_variant_terminal_port_map;
 			use pac_terminal_port_map;	
-			use et_units;
 			
 			procedure write_terminal (terminal_cursor : in pac_terminal_port_map.cursor) is begin
 				write (keyword => keyword_terminal, parameters => 
@@ -170,53 +160,6 @@ package body et_device_write is
 			section_mark (section_terminal_port_map, FOOTER);						
 		end write_variant;
 
-
-		
-		use pac_units_internal;
-		unit_internal_cursor : pac_units_internal.cursor := device.units_internal.first;
-		
-		use pac_units_external;
-		unit_external_cursor : pac_units_external.cursor := device.units_external.first;
-
-		
-		
-		procedure query_internal_unit (
-			name	: in pac_unit_name.bounded_string;
-			unit	: in type_unit_internal) 
-		is
-			use et_unit_swap_level;
-			use et_unit_add_level;
-		begin
-			write (keyword => keyword_name, parameters => to_string (name));
-			write (keyword => keyword_position, parameters => to_string (unit.position, FORMAT_2));
-			write (keyword => keyword_swap_level, parameters => to_string (unit.swap_level));
-			write (keyword => keyword_add_level , parameters => to_string (unit.add_level));
-			section_mark (section_symbol, HEADER);
-			save_symbol_1 (unit.symbol, log_threshold + 1);
-			section_mark (section_symbol, FOOTER);
-		end query_internal_unit;
-
-		
-		procedure query_external_unit (
-			name	: in pac_unit_name.bounded_string;
-			unit	: in type_unit_external) 
-		is
-			use et_symbol_library;
-			use et_unit_swap_level;
-			use et_unit_add_level;
-		begin
-			write (keyword => keyword_name, parameters => to_string (name));
-			write (keyword => keyword_position, parameters => to_string (unit.position, FORMAT_2));
-			write (keyword => keyword_swap_level, parameters => to_string (unit.swap_level));
-			write (keyword => keyword_add_level , parameters => to_string (unit.add_level));
-			
-			-- write (keyword => keyword_symbol_file, parameters => to_string (unit.model));
-
-			write (keyword => keyword_symbol_file, 
-				   parameters => get_symbol_model_name (unit.model_cursor));
-
-			
-		end query_external_unit;
 
 		
 	begin -- save_device
@@ -271,29 +214,15 @@ package body et_device_write is
 			when others => null;				
 		end case;
 
-		
-		-- internal units
-		section_mark (section_units_internal, HEADER);
-		while unit_internal_cursor /= pac_units_internal.no_element loop
-			section_mark (section_unit, HEADER);
-			query_element (unit_internal_cursor, query_internal_unit'access);
-			section_mark (section_unit, FOOTER);
-			next (unit_internal_cursor);
-		end loop;
-		
-		section_mark (section_units_internal, FOOTER);
 
+		-- CS wrap in a procedure
+		log (text => "units", level => log_threshold + 1);
+		log_indentation_up;
+		write_internal_units (device.units_internal, log_threshold + 2);
+		write_external_units (device.units_external, log_threshold + 2);
+		log_indentation_down;
 		
-		-- external units
-		section_mark (section_units_external, HEADER);
-		while unit_external_cursor /= pac_units_external.no_element loop
-			section_mark (section_unit, HEADER);
-			query_element (unit_external_cursor, query_external_unit'access);
-			section_mark (section_unit, FOOTER);
-			next (unit_external_cursor);
-		end loop;
 		
-		section_mark (section_units_external, FOOTER);
 
 		-- write footer
 		new_line;		

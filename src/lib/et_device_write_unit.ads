@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         DEVICE MODEL / WRITE                             --
+--                      DEVICE MODEL / WRITE UNIT                           --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -37,20 +37,24 @@
 --
 
 with et_logging;						use et_logging;
-with et_device_model;					use et_device_model;
-with et_device_appearance;				use et_device_appearance;
-with et_device_model_names;				use et_device_model_names;
+
+with et_device_model_unit_internal;		use et_device_model_unit_internal;
+with et_device_model_unit_external;		use et_device_model_unit_external;
 
 
-package et_device_write is
+
+package et_device_write_unit is
 
 
-	
-	procedure write_device (
-		file_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
-		device			: in type_device_model; -- the actual device model
+	procedure write_internal_units (
+		units 			: in pac_units_internal.map;
 		log_threshold	: in type_log_level);
-	-- CS rename to save_device_model
-	
-	
-end et_device_write;
+		
+
+		
+	procedure write_external_units (
+		units 			: in pac_units_external.map;
+		log_threshold	: in type_log_level);
+
+		
+end et_device_write_unit;
