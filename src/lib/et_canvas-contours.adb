@@ -157,6 +157,7 @@ package body et_canvas.contours is
 						width	=> zero,
 						mirror	=> mirror,
 						style	=> style);
+						-- CS: force => true ?
 
 			end case;
 		end query_segment;

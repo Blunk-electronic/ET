@@ -1393,7 +1393,7 @@ package et_canvas is
 	--  ensured internally that is independed of the zoom-factor.
 	-- 3. If force is true, then the line will be drawn independed
 	--  of its bounding-box (area check) and size. This mode is required
-	--  if the line is part of a contour (or a path).
+	--  if the line is part of a contour or a zone (or a path).
 	-- 4. If the line is being moved by the
 	--  operator then it gets drawn according to the current
 	--  point_of_attack and object_tool:
@@ -1439,7 +1439,9 @@ package et_canvas is
 		width		: in type_distance_positive;
 		mirror		: in type_mirror := MIRROR_NO;
 		style		: in type_line_style := CONTINUOUS;
-		do_stroke	: in boolean := false);
+		-- CS polyline ?
+		do_stroke	: in boolean := false;
+		force		: in boolean := false); -- CS not implemented yet. ignored currently
 
 	
 	procedure draw_rectangle (

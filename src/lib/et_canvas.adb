@@ -3989,6 +3989,7 @@ package body et_canvas is
 
 
 	
+	
 
 	procedure draw_arc (
 		arc			: in type_arc'class;
@@ -3996,7 +3997,8 @@ package body et_canvas is
 		width		: in type_distance_positive;
 		mirror		: in type_mirror := MIRROR_NO;		
 		style		: in type_line_style := CONTINUOUS;
-		do_stroke	: in boolean := false)
+		do_stroke	: in boolean := false;
+		force		: in boolean := false)
 	is
 		use glib;
 		use cairo;
