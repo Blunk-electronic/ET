@@ -42,6 +42,8 @@
 
 with ada.text_io;					use ada.text_io;
 
+with et_colors;							use et_colors;
+
 with et_net_linewidth;					use et_net_linewidth;
 with et_netchanger_symbol_schematic;	use et_netchanger_symbol_schematic;
 with et_netchangers;					use et_netchangers;
@@ -54,6 +56,11 @@ separate (et_canvas_schematic)
 
 procedure draw_netchangers is
 
+	use et_colors.schematic;
+	
+	brightness : type_brightness := NORMAL;
+
+	
 
 	procedure query_module (
 		module_name	: in pac_module_name.bounded_string;
@@ -75,15 +82,21 @@ procedure draw_netchangers is
 			-- place := get_place (netchanger.position_sch);
 			-- rotation := get_rotation (netchanger.position_sch);
 			
-			-- CS color, name, ports
+			-- CS color, name, ports, origin
 			-- 
+			
+			set_color_symbols (brightness);
+			
 			draw_arc (
 				arc		=> symbol.arc,
 				pos		=> type_position (netchanger.position_sch),
 				width	=> net_linewidth,
 				do_stroke => true
 				);
-		null;
+			
+			null;
+			
+			-- set_color_ports (brightness);
 		end query_netchanger;
 		
 									   

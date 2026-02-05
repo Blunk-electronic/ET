@@ -92,7 +92,12 @@ package et_symbol_ports is
 
 	
 	type type_port_base is tagged record
-		position	: type_vector_model; -- this is the point of connection with a net
+		-- This is the place where a net is connected:
+		position	: type_vector_model;
+
+		-- From the position a line starts.
+		-- This line represents a port.
+		-- The linewidth is the global constant net_linewidth:
 		length		: type_port_length := port_length_default; 
 		
 		--rotation	: et_schematic_coordinates.type_rotation_model := 0.0; -- CS use type_rotation_model_relative ?

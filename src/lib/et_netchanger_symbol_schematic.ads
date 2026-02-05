@@ -55,16 +55,41 @@ package et_netchanger_symbol_schematic is
 		
 -- PORT:
 
+	-- A port is basically a line with a linewidth equal to those
+	-- of net segments (global constant net_linewidth).
+	-- Its start point is the port position.
+	-- At the start point a net will be attached.
+	-- The end point points towards the symbol body. Depending on the port
+	-- rotation the end tail points:
+	--  to the left if rotation is 0 degree. net attached from the right.
+	--  to the right if rotation is 180 degree. net attached from the left.
+	--  downwards if the rotation is 90 degree. net attached from above.
+	--  upwards if the rotation is 270 degree. net attached from below.
+
 	type type_netchanger_port is record
+		-- This is the place where a net is connected:
 		position	: type_vector_model;
-		length		: type_port_length; 
+		
+		-- From the position a line starts.
+		-- This line represents a port.
+		-- The linewidth is the global constant net_linewidth:
+		length		: type_port_length := 5.0; 
+		
 		rotation	: type_rotation_model;
+		--  90.0 -- to be connected with a net from above,
+		-- -90.0 -- from below,
+		-- 180.0 -- from the left,
+		--   0.0 -- from the right
 	end record;
 
 
 	
-	position_master_port_default : constant type_vector_model := (x =>  10.0, y => 0.0);
-	position_slave_port_default  : constant type_vector_model := (x => -10.0, y => 0.0);
+	position_master_port_default : constant 
+		type_vector_model := (x =>  10.0, y => 0.0);
+	
+	
+	position_slave_port_default  : constant 
+		type_vector_model := (x => -10.0, y => 0.0);
 
 	
 	
@@ -73,16 +98,18 @@ package et_netchanger_symbol_schematic is
 	
 -- SYMBOL:
 	
+	-- For netchangers we use this hardcoded symbol:
+	
 	type type_netchanger_symbol is record -- CS make private
 		master_port	: type_netchanger_port := (
 						position	=> position_master_port_default,
-						length		=> 5.0,
-						rotation	=> zero_rotation);
+						rotation	=> zero_rotation,
+						others		=> <>);
 
 		slave_port	: type_netchanger_port := (
-						position	=> position_slave_port_default,
-						length		=> 5.0,
-						rotation	=> 180.0);
+						position	=> position_slave_port_default,						
+						rotation	=> 180.0,
+						others		=> <>);
 
 		-- the arc that connects the ports
 		arc	: type_symbol_arc := (type_arc (to_arc (
@@ -95,6 +122,9 @@ package et_netchanger_symbol_schematic is
 	end record;
 
 
+	
+	
+	
 	netchanger_symbol_default : constant type_netchanger_symbol := (others => <>);
 	
 end et_netchanger_symbol_schematic;

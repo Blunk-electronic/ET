@@ -52,7 +52,7 @@ package et_net_port_length is
 
 	
 	subtype type_port_length is type_distance_positive
-		range 2.5 .. 20.0;
+		range 2.0 .. 20.0;
 
 	
 end et_net_port_length;
