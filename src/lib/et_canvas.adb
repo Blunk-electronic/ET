@@ -3754,12 +3754,10 @@ package body et_canvas is
 		width		: in type_distance_positive;
 		mirror		: in type_mirror := MIRROR_NO;
 		style		: in type_line_style := CONTINUOUS;
-		do_stroke	: in boolean := false;
-		path		: in boolean := false;
-		force		: in boolean := false)
+		stroke		: in type_stroke := NO_STROKE;
+		path		: in type_draw_path := NO_PATH;
+		force		: in type_force := NO_FORCE)
 	is
-		use cairo;
-		
 		-- Make a copy of the given line:
 		l : type_line'class := line;
 
@@ -3770,13 +3768,15 @@ package body et_canvas is
 
 		
 		procedure do_draw is
+			use cairo;
+			
 			-- When the line is drawn, we need canvas points
 			-- for start and end of the line:
 			c1, c2 : type_logical_pixels_vector;
 		begin
 			-- If an individual stroke is requested for
 			-- the given line, then set the linewidth:
-			if do_stroke then
+			if stroke = DO_STROKE then
 				if width > zero then
 					set_line_width (context, 
 						to_gdouble_positive (to_distance (width)));
@@ -3792,7 +3792,7 @@ package body et_canvas is
 			c2 := real_to_canvas (get_B (l), S);
 
 			-- THESE DRAW OPERATIONS CONSUME THE MOST TIME:
-			if path then
+			if path = DRAW_PATH then
 				line_to (context, 
 					to_gdouble_positive (c1.x), to_gdouble_positive (c1.y));
 
@@ -3811,8 +3811,8 @@ package body et_canvas is
 
 			-- If an individual stroke is requested for
 			-- the given line, then do it now:
-			if do_stroke then
-				stroke (context);
+			if stroke = DO_STROKE then
+				cairo.stroke (context);
 			end if;
 			
 			-- CS: use OpenGL ?
@@ -3860,7 +3860,7 @@ package body et_canvas is
 		
 		-- If the force-flag is set, then the line will
 		-- be drawn regardless of its bounding box and size:
-		if force then
+		if force = DO_FORCE then
 			do_draw;
 		else
 			-- Get the bounding-box of the line:
@@ -4184,13 +4184,13 @@ package body et_canvas is
 		set_A (l, (x => - origin_arm_length, y => 0.0));
 		set_B (l, (x => + origin_arm_length, y => 0.0));
 
-		draw_line (l, position, origin_linewidth, do_stroke => true);
+		draw_line (l, position, origin_linewidth, stroke => DO_STROKE);
 
 		
 		set_A (l, (x => 0.0, y => - origin_arm_length));
 		set_B (l, (x => 0.0, y => + origin_arm_length));
 
-		draw_line (l, position, origin_linewidth, do_stroke => true);
+		draw_line (l, position, origin_linewidth, stroke => DO_STROKE);
 	end draw_origin;
 
 

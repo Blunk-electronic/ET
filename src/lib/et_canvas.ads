@@ -1370,7 +1370,10 @@ package et_canvas is
 
 
 
-	
+	type type_stroke is (DO_STROKE, NO_STROKE);
+	type type_draw_path is (DRAW_PATH, NO_PATH);
+	type type_force is (DO_FORCE, NO_FORCE);
+							
 	
 	-- This is a primitive draw operation that draws a line.
 	-- The argument pos contains the position and rotation
@@ -1411,9 +1414,9 @@ package et_canvas is
 		width		: in type_distance_positive;
 		mirror		: in type_mirror := MIRROR_NO;
 		style		: in type_line_style := CONTINUOUS;
-		do_stroke	: in boolean := false;
-		path		: in boolean := false;
-		force		: in boolean := false);
+		stroke		: in type_stroke := NO_STROKE;
+		path		: in type_draw_path := NO_PATH;
+		force		: in type_force := NO_FORCE);
 
 
 	-- CS:
