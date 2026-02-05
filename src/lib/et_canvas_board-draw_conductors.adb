@@ -187,7 +187,8 @@ procedure draw_conductors is
 	is
 
 		procedure draw is begin
-			draw_line (line => line, width => line.width, do_stroke => true);
+			draw_line (line => line, width => line.width, 
+					   stroke => DO_STROKE);
 		end draw;
 		
 	begin
@@ -1157,9 +1158,9 @@ procedure draw_conductors is
 					 -- put_line (to_string (airwire));
 					
 					draw_line (
-						line		=> to_line_coarse (airwire),
-						width		=> 0.0, -- use minimal linewidth
-						do_stroke	=> true);
+						line	=> to_line_coarse (airwire),
+						width	=> 0.0, -- use minimal linewidth
+						stroke	=> DO_STROKE);
 					
 					-- Restore normal brightness.
 					-- If the whole net is selected, then nothing happens here:

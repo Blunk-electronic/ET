@@ -1380,21 +1380,21 @@ package et_canvas is
 	-- of the parent complex object.
 	-- In case there is no parent object then the pos argument
 	-- can be omitted which results in a default of (0;0) and 0 degree.
-	-- Regarding the argument do_stroke there are two modes:
-	-- 1. If the argument do_stroke is false (default) then
+	-- Regarding the argument 'stroke' there are two modes:
+	-- 1. If the argument 'stroke' is NO_STROKE (default) then
 	--  no setting of linewidth and no stroking will be done. In this
 	--  case it is assumed that the caller has already set a linewidth
 	--  and a color and that the caller will later care for a stroke command. 
 	--  The given linewidth has no meaning in this case. This mode
-	--  requires less time for drawing the line than with do_stroke enabled
+	--  requires less time for drawing the line than with DO_STROKE
 	--  and should be used when many lines of same linewidth have to be drawn.
 	--  An explicit call of the stroke procedure is required finally.
-	-- 2. If do_stroke is true, then the given linewidth is applied,
+	-- 2. If 'stroke' is DO_STROKE, then the given linewidth is applied,
 	--  the color previously set by the caller is applied,
 	--  the line drawn and finally a stroke command executed.
 	--  If the given linewidth is zero, then a minimum linewidth is
 	--  ensured internally that is independed of the zoom-factor.
-	-- 3. If force is true, then the line will be drawn independed
+	-- 3. If force is DO_FORCE, then the line will be drawn independed
 	--  of its bounding-box (area check) and size. This mode is required
 	--  if the line is part of a contour or a zone (or a path).
 	-- 4. If the line is being moved by the
@@ -1402,9 +1402,9 @@ package et_canvas is
 	--  point_of_attack and object_tool:
 	-- 	
 	-- NOTE: The path argument is a makeshift as long as there
-	-- in no procedure to draw a path. If path is true, then
+	-- in no procedure to draw a path. If 'path' is DRAW_PATH, then
 	-- the start point of the given line is drawn via a line_to cairo-operation.
-	-- If path is false (default), then the line is drawn
+	-- If 'path' is NO_PATH (default), then the line is drawn
 	-- as a single line without an initial "start-line".
 	--
 	-- NOTE: CS: The line style is currently ignored.
@@ -1419,10 +1419,6 @@ package et_canvas is
 		force		: in type_force := NO_FORCE);
 
 
-	-- CS:
-	-- Introduce new types for do_stroke, path and force
-	-- in order ot avoid mixing up.
-	
 	
 	-- This is a primitive draw operation that draws a circle.
 	-- For arguments see procedure draw_line.

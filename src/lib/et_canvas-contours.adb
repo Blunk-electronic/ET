@@ -122,7 +122,7 @@ package body et_canvas.contours is
 								width	=> zero,  -- don't care. see specs of draw_line.
 								mirror	=> mirror,
 								style	=> style,
-								force	=> true);
+								force	=> DO_FORCE);
 						else
 							draw_line (
 								line	=> segment.segment_line,
@@ -130,8 +130,8 @@ package body et_canvas.contours is
 								width	=> zero,  -- don't care. see specs of draw_line.
 								mirror	=> mirror,
 								style	=> style,
-								path	=> true,
-								force	=> true);
+								path	=> DRAW_PATH,
+								force	=> DO_FORCE);
 
 						end if;
 
@@ -144,7 +144,7 @@ package body et_canvas.contours is
 							width	=> zero,  -- don't care. see specs of draw_line.
 							mirror	=> mirror,
 							style	=> style,
-							path	=> false);
+							path	=> NO_PATH);
 					end if;
 
 					

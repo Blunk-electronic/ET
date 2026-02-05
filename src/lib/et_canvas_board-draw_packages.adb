@@ -279,11 +279,11 @@ procedure draw_packages is
 				line : type_doc_line renames element (c);
 			begin
 				draw_line (
-					line		=> line,
-					pos			=> get_position (package_position),		  
-					width		=> line.width,
-					mirror		=> mirror,
-					do_stroke	=> true);
+					line	=> line,
+					pos		=> get_position (package_position),		  
+					width	=> line.width,
+					mirror	=> mirror,
+					stroke	=> DO_STROKE);
 			end query_line;
 			
 			
@@ -335,11 +335,11 @@ procedure draw_packages is
 				line : type_silk_line renames element (c);
 			begin
 				draw_line (
-					line		=> line,
-					pos			=> get_position (package_position),		  
-					width		=> line.width,
-					mirror		=> mirror,
-					do_stroke	=> true);
+					line	=> line,
+					pos		=> get_position (package_position),		  
+					width	=> line.width,
+					mirror	=> mirror,
+					stroke	=> DO_STROKE);
 			end query_line;
 			
 
@@ -349,10 +349,10 @@ procedure draw_packages is
 				arc : type_silk_arc renames element (c);
 			begin
 				draw_arc (
-					arc			=> arc,
-					pos			=> get_position (package_position),		  
-					width		=> arc.width,
-					mirror		=> mirror,
+					arc		=> arc,
+					pos		=> get_position (package_position),		  
+					width	=> arc.width,
+					mirror	=> mirror,
 					do_stroke	=> true);
 			end query_arc;
 
@@ -411,11 +411,11 @@ procedure draw_packages is
 				line : type_stop_line renames element (c);
 			begin
 				draw_line (
-					line		=> line,
-					pos			=> get_position (package_position),		  
-					width		=> line.width,
-					mirror		=> mirror,
-					do_stroke	=> true);
+					line	=> line,
+					pos		=> get_position (package_position),		  
+					width	=> line.width,
+					mirror	=> mirror,
+					stroke	=> DO_STROKE);
 			end query_line;
 			
 		begin
@@ -463,11 +463,11 @@ procedure draw_packages is
 				line : type_stencil_line renames element (c);
 			begin
 				draw_line (
-					line		=> line,
-					pos			=> get_position (package_position),		  
-					width		=> line.width,
-					mirror		=> mirror,
-					do_stroke	=> true);
+					line	=> line,
+					pos		=> get_position (package_position),		  
+					width	=> line.width,
+					mirror	=> mirror,
+					stroke	=> DO_STROKE);
 			end query_line;
 			
 		begin
@@ -576,11 +576,11 @@ procedure draw_packages is
 				line : type_route_restrict_line renames element (c);
 			begin
 				draw_line (
-					line		=> line,
-					pos			=> get_position (package_position),		  
-					width		=> zero,
-					mirror		=> mirror,
-					do_stroke	=> true);
+					line	=> line,
+					pos		=> get_position (package_position),		  
+					width	=> zero,
+					mirror	=> mirror,
+					stroke	=> DO_STROKE);
 				-- CS do not stroke could be possible, because
 				-- everything has the same color and linewidth.
 			end query_line;
@@ -736,11 +736,11 @@ procedure draw_packages is
 				line : type_conductor_line renames element (c);
 			begin
 				draw_line (
-					line		=> line,
-					pos			=> get_position (package_position),		  
-					width		=> line.width,
-					mirror		=> mirror,
-					do_stroke	=> true);
+					line	=> line,
+					pos		=> get_position (package_position),		  
+					width	=> line.width,
+					mirror	=> mirror,
+					stroke	=> DO_STROKE);
 			end query_line;
 
 

@@ -137,7 +137,7 @@ procedure draw_units is
 			p.place := unit_position;
 			p.rotation := unit_rotation;
 
-			draw_line (l, p, l.width, do_stroke => true);
+			draw_line (l, p, l.width, stroke => DO_STROKE);
 		end draw_line;
 
 
@@ -304,7 +304,7 @@ procedure draw_units is
 				-- Draw the line:
 				set_color_symbols (brightness);
 				draw_line (line, (unit_position, unit_rotation), net_linewidth,
-					do_stroke => true);
+					stroke	=> DO_STROKE);
 
 				-- Draw the circle around the start point
 				-- of the line if the port-layer is enabled:

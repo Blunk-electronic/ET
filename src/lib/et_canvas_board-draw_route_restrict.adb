@@ -69,7 +69,8 @@ procedure draw_route_restrict is
 		-- Draw the line if restrict layer is enabled:
 		if route_restrict_layer_enabled (line.layers) then
 
-			draw_line (line => line, width => zero, do_stroke => true);
+			draw_line (line => line, width => zero, 
+					   stroke => DO_STROKE);
 		end if;
 	end query_line;
 

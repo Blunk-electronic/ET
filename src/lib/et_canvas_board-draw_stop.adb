@@ -79,9 +79,9 @@ is
 
 		procedure draw is begin
 			draw_line (
-				line		=> line,
-				width		=> line.width,
-				do_stroke 	=> true);
+				line	=> line,
+				width	=> line.width,
+				stroke	=> DO_STROKE);
 		end draw;
 			
 	begin

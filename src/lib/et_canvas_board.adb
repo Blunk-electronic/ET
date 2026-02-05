@@ -425,10 +425,12 @@ package body et_canvas_board is
 				case cat is
 					when LAYER_CAT_ROUTE_RESTRICT =>
 						-- Lines in route restrict have zero width:
-						draw_line (line => line, width => zero, do_stroke => true);
+						draw_line (line => line, width => zero, 
+								   stroke => DO_STROKE);
 
 					when others =>
-						draw_line (line => line, width => object_linewidth, do_stroke => true);
+						draw_line (line => line, width => object_linewidth,
+								   stroke => DO_STROKE);
 				end case;
 			end draw;
 			
@@ -521,7 +523,8 @@ package body et_canvas_board is
 			-- Draws the line:
 			procedure draw is begin
 				-- Lines in of contours have zero width:
-				draw_line (line => line, width => zero, do_stroke => true);
+				draw_line (line => line, width => zero, 
+						   stroke => DO_STROKE);
 			end draw;
 			
 			

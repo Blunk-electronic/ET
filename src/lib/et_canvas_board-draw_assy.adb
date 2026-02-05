@@ -82,7 +82,8 @@ is
 		line : type_doc_line renames element (c);
 
 		procedure draw is begin
-			draw_line (line => line, width => line.width, do_stroke => true);
+			draw_line (line => line, width => line.width, 
+					   stroke => DO_STROKE);
 		end draw;
 		
 	begin

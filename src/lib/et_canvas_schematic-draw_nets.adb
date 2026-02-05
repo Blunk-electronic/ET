@@ -209,9 +209,9 @@ procedure draw_nets is
 				-- This procedure draws a single net segment:
 				procedure draw_segment is begin
 					draw_line (
-						line		=> segment,
-						width		=> net_linewidth,
-						do_stroke	=> true);
+						line	=> segment,
+						width	=> net_linewidth,
+						stroke	=> DO_STROKE);
 				end draw_segment;
 
 
@@ -602,10 +602,10 @@ procedure draw_nets is
 			procedure draw is begin
 				-- draw the net segment:
 				draw_line (
-					line		=> line,
-					pos			=> origin_zero_rotation,		  
-					width		=> net_linewidth,
-					do_stroke	=> true);
+					line	=> line,
+					pos		=> origin_zero_rotation,		  
+					width	=> net_linewidth,
+					stroke	=> DO_STROKE);
 			end draw;
 
 			

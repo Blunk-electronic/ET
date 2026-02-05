@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -76,7 +76,8 @@ is
 		line : type_stencil_line renames element (c);
 
 		procedure draw is begin
-			draw_line (line => line, width => line.width, do_stroke => true);
+			draw_line (line => line, width => line.width, 
+					   stroke => DO_STROKE);
 		end draw;
 
 	begin
