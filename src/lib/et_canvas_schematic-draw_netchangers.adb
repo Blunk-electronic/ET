@@ -41,6 +41,9 @@
 
 
 with ada.text_io;					use ada.text_io;
+
+with et_netchanger_symbol_schematic;	use et_netchanger_symbol_schematic;
+with et_netchangers;					use et_netchangers;
 -- with et_primitive_objects;			use et_primitive_objects;
 -- with et_alignment;
 
@@ -54,9 +57,41 @@ procedure draw_netchangers is
 	procedure query_module (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module) 
-	is begin
+	is 
+		use pac_netchangers;
+		netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
+
+
+		procedure query_netchanger (
+			index		: in type_netchanger_id;
+			netchanger	: in type_netchanger)
+		is
+			-- place : type_vector_model;
+			-- rotation : type_rotation;
+			
+			symbol : type_netchanger_symbol := netchanger_symbol_default;
+		begin
+			-- place := get_place (netchanger.position_sch);
+			-- rotation := get_rotation (netchanger.position_sch);
+			
+			-- CS color, name, ports
+			-- 
+			draw_arc (
+				arc		=> symbol.arc,
+				pos		=> type_position (netchanger.position_sch),
+				width	=> 0.2, -- CS use width of nets segments
+				do_stroke => true
+				);
 		null;
-		-- CS
+		end query_netchanger;
+		
+									   
+	begin		
+		-- Iterate through the netchangers of the module:
+		while has_element (netchanger_cursor) loop
+			query_element (netchanger_cursor, query_netchanger'access);
+			next (netchanger_cursor);
+		end loop;
 	end query_module;
 
 	

@@ -39,7 +39,7 @@
 --
 --
 
-
+-- with et_net_segment;
 with et_schematic_geometry;			use et_schematic_geometry;
 with et_symbol_ports;				use et_symbol_ports;
 with et_symbol_shapes;				use et_symbol_shapes;
@@ -73,7 +73,7 @@ package et_netchanger_symbol_schematic is
 	
 -- SYMBOL:
 	
-	type type_netchanger_symbol is record
+	type type_netchanger_symbol is record -- CS make private
 		master_port	: type_netchanger_port := (
 						position	=> position_master_port_default,
 						length		=> 5.0,
@@ -92,8 +92,11 @@ package et_netchanger_symbol_schematic is
 						direction	=> CW))
 						with port_line_width);
 
+		-- linewidth : type_distance_positive := et_net_segment.net_line_width;
 	end record;
 
+
+	netchanger_symbol_default : constant type_netchanger_symbol := (others => <>);
 	
 end et_netchanger_symbol_schematic;
 

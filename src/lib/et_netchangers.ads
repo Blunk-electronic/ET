@@ -107,17 +107,46 @@ package et_netchangers is
 
 		
 	
-	
+	-- 1. In the schematic drawing, there is only one hardcoded
+	--    symbol for a netchanger (see package spec et_netchanger_symbol_schematic).
+	--    So there is no link to a netchanger symbol as we are familar
+	--    with devices. Here we only need to know the position in the schematic.
+	-- 2. Similar the board drawing, we only need the position and the
+	--    signal layer where the netchanger is connecting tracks.
+	--    In the board drawing a hardcoded symbol is used too
+	--    (see package et_netchanger_symbol_board).
 	type type_netchanger is record
 		position_sch	: type_object_position; -- x,y,sheet,rotation
-		--symbol			: type_netchanger_symbol; -- CS for visualisation only
 		
 		position_brd	: et_board_geometry.pac_geometry_2.type_vector_model; -- x,y
-		-- in board there is no rotation because the netchanger is just a point in x/y.
 		layer			: type_signal_layer := type_signal_layer'first;
 	end record;
 
+
+
+
 	
+-- CS
+-- 	function get_place_schematic (
+-- 		netchanger	: in type_netchanger)
+-- 		return type_vector_model;
+-- 	
+-- 	
+-- 	function get_rotation_schematic (
+-- 		netchanger	: in type_netchanger)
+-- 		return type_rotation;
+
+-- set place in schematic
+-- set sheet in schematic
+
+-- set/get place in board
+-- set/get layer in board
+		
+-- move netchanger in schematic and board
+-- rotate netchanger in schematic
+-- set/get signal layer
+		
+
 	
 	package pac_netchangers is new ordered_maps (
 		key_type		=> type_netchanger_id,
