@@ -125,13 +125,13 @@ package body et_canvas.contours is
 								force	=> true);
 						else
 							draw_line (
-								line		=> segment.segment_line,
-								pos			=> pos_end,		  
-								width		=> zero,  -- don't care. see specs of draw_line.
-								mirror		=> mirror,
-								style		=> style,
-								polyline	=> true,
-								force		=> true);
+								line	=> segment.segment_line,
+								pos		=> pos_end,		  
+								width	=> zero,  -- don't care. see specs of draw_line.
+								mirror	=> mirror,
+								style	=> style,
+								path	=> true,
+								force	=> true);
 
 						end if;
 
@@ -139,12 +139,12 @@ package body et_canvas.contours is
 						-- If the contour is not closed, then it can not be filled.
 						-- Each line is drawn as a single independend segment:
 						draw_line (
-							line		=> segment.segment_line,
-							pos			=> pos_end,		  
-							width		=> zero,  -- don't care. see specs of draw_line.
-							mirror		=> mirror,
-							style		=> style,
-							polyline	=> false);
+							line	=> segment.segment_line,
+							pos		=> pos_end,		  
+							width	=> zero,  -- don't care. see specs of draw_line.
+							mirror	=> mirror,
+							style	=> style,
+							path	=> false);
 					end if;
 
 					

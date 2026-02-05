@@ -1398,9 +1398,11 @@ package et_canvas is
 	--  operator then it gets drawn according to the current
 	--  point_of_attack and object_tool:
 	-- 	
-	-- NOTE: The polyline argument is a makeshift as long as there
-	-- in no procedure to draw a polyline. If polyline is true, then
+	-- NOTE: The path argument is a makeshift as long as there
+	-- in no procedure to draw a path. If path is true, then
 	-- the start point of the given line is drawn via a line_to cairo-operation.
+	-- If path is false (default), then the line is drawn
+	-- as a single line without an initial "start-line".
 	--
 	-- NOTE: CS: The line style is currently ignored.
 	procedure draw_line (
@@ -1410,7 +1412,7 @@ package et_canvas is
 		mirror		: in type_mirror := MIRROR_NO;
 		style		: in type_line_style := CONTINUOUS;
 		do_stroke	: in boolean := false;
-		polyline	: in boolean := false;
+		path		: in boolean := false;
 		force		: in boolean := false);
 
 

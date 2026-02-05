@@ -3755,7 +3755,7 @@ package body et_canvas is
 		mirror		: in type_mirror := MIRROR_NO;
 		style		: in type_line_style := CONTINUOUS;
 		do_stroke	: in boolean := false;
-		polyline	: in boolean := false;
+		path		: in boolean := false;
 		force		: in boolean := false)
 	is
 		use cairo;
@@ -3792,7 +3792,7 @@ package body et_canvas is
 			c2 := real_to_canvas (get_B (l), S);
 
 			-- THESE DRAW OPERATIONS CONSUME THE MOST TIME:
-			if polyline then
+			if path then
 				line_to (context, 
 					to_gdouble_positive (c1.x), to_gdouble_positive (c1.y));
 
