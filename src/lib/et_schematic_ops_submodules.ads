@@ -35,7 +35,12 @@
 --
 --   history of changes:
 --
---   ToDo: 
+-- To Do: 
+-- - rework procedures so that a module cursor is taken
+--   instead of a module name.
+-- - move netchanger related stuff to separate package
+-- - rename paramaters "module" to "module_cursor"
+--
 
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
@@ -182,6 +187,22 @@ package et_schematic_ops_submodules is
 		log_threshold	: in type_log_level);
 
 
+
+	-- Inserts the given netchanger ports in the net segments.
+	-- If a port lands on either the start or end point of a segment, it will
+	-- be regarded as "connected" with the segment.
+	-- If a ports lands between start or end point of a segment, nothing happens
+	-- because the docking to net segments is possible on segment ends/starts only.
+	-- CS: Automatic splitting the segment into two and placing a junction is not supported
+	-- jet and probably not a good idea.
+	procedure insert_ports (
+		module_cursor	: in pac_generic_modules.cursor; -- the module
+		index			: in type_netchanger_id;	-- the netchanger id
+		ports			: in type_netchanger_ports; -- the ports to be inserted
+		sheet			: in type_sheet;	-- the sheet to look at
+		log_threshold	: in type_log_level);
+
+	
 	
 	-- Returns true if given netchanger exists in module indicated by module_cursor.
 	function exists_netchanger (

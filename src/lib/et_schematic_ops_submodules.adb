@@ -1932,26 +1932,21 @@ package body et_schematic_ops_submodules is
 	
 
 
+
+	
 	
 
-	-- Inserts the given netchanger ports in the net segments.
-	-- If a port lands on either the start or end point of a segment, it will
-	-- be regarded as "connected" with the segment.
-	-- If a ports lands between start or end point of a segment, nothing happens
-	-- because the docking to net segments is possible on segment ends/starts only.
-	-- CS: Automatic splitting the segment into two and placing a junction is not supported
-	-- jet and probably not a good idea.
 	procedure insert_ports (
-		module			: in pac_generic_modules.cursor;		-- the module
-		index			: in type_netchanger_id;	-- the netchanger id
-		ports			: in type_netchanger_ports; -- the ports to be inserted
-		sheet			: in type_sheet;	-- the sheet to look at
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id;
+		ports			: in type_netchanger_ports;
+		sheet			: in type_sheet;
 		log_threshold	: in type_log_level) 
 	is
 		use et_submodules;
 
 		
-		procedure query_nets (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
@@ -2072,24 +2067,26 @@ package body et_schematic_ops_submodules is
 			end probe_port;
 
 			
-		begin -- query_nets
+		begin
 			log (text => "master port", level => log_threshold + 1);
 			probe_port (ports.master, MASTER);
 
 			log (text => "slave port", level => log_threshold + 1);			
 			probe_port (ports.slave, SLAVE);
-		end query_nets;
+		end query_module;
 
 		
 	begin
-		log (text => "inserting netchanger ports in nets on sheet" & 
-			 to_string (sheet) & " ...", level => log_threshold);
+		log (text => "insert netchanger ports in nets on sheet "
+			 & to_string (sheet),
+			 level => log_threshold);
+		
 		log_indentation_up;
 		
 		update_element (
 			container	=> generic_modules,
-			position	=> module,
-			process		=> query_nets'access);
+			position	=> module_cursor,
+			process		=> query_module'access);
 
 		log_indentation_down;
 	end insert_ports;
@@ -2285,7 +2282,7 @@ package body et_schematic_ops_submodules is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		
-		procedure query_netchangers (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
@@ -2298,11 +2295,13 @@ package body et_schematic_ops_submodules is
 
 			use pac_netchangers;
 			
-		begin -- query_netchangers
+		begin
 
-			-- set the index to be used for the new netchanger
+			-- Get the index to be used for the new netchanger:
 			index := next_netchanger_index (module_cursor);
-			log (text => "netchanger index is" & to_string (index), level => log_threshold + 1);
+			
+			log (text => "netchanger index is " & to_string (index),
+				 level => log_threshold + 1);
 			
 			-- build the new netchanger
 			netchanger.position_sch := place;
@@ -2322,30 +2321,29 @@ package body et_schematic_ops_submodules is
 
 			-- Inserts the given netchanger ports in the net segments.
 			insert_ports (
-				module			=> module_cursor,
+				module_cursor	=> module_cursor,
 				index			=> index,
 				ports			=> ports,
 				sheet			=> get_sheet (place),
 				log_threshold	=> log_threshold + 1);
 			
-		end query_netchangers;
+		end query_module;
 
 		
-	begin -- add_netchanger
-		log (text => "module " & to_string (module_name) &
-			" adding netchanger at" & to_string (position => place) &
-			" rotation" & to_string (get_rotation (place)),
+	begin
+		log (text => "module " & to_string (module_name) 
+			 & " add netchanger at " & to_string (position => place) 
+			 & " rotation " & to_string (get_rotation (place)),
 			level => log_threshold);
 
 		log_indentation_up;
 		
-		-- locate module
 		module_cursor := locate_module (module_name);
 
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
-			process		=> query_netchangers'access);
+			process		=> query_module'access);
 		
 		log_indentation_down;		
 	end add_netchanger;
@@ -2539,7 +2537,7 @@ package body et_schematic_ops_submodules is
 				
 				-- Inserts the netchanger ports in the net segments.
 				insert_ports (
-					module			=> module_cursor,
+					module_cursor	=> module_cursor,
 					index			=> index,
 					ports			=> ports_new,
 					sheet			=> get_sheet (location),
@@ -2823,7 +2821,7 @@ package body et_schematic_ops_submodules is
 
 				-- Inserts the netchanger ports in the net segments.
 				insert_ports (
-					module			=> module_cursor,
+					module_cursor	=> module_cursor,
 					index			=> index,
 					ports			=> ports,
 					sheet			=> get_sheet (location),
@@ -2953,7 +2951,7 @@ package body et_schematic_ops_submodules is
 
 				-- Inserts the netchanger ports in the net segments.
 				insert_ports (
-					module			=> module_cursor,
+					module_cursor	=> module_cursor,
 					index			=> index,
 					ports			=> ports_new,
 					sheet			=> get_sheet (location),
