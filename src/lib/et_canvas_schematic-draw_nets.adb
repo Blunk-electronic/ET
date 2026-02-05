@@ -45,6 +45,7 @@
 with et_primitive_objects;			use et_primitive_objects;
 with et_text_content;				use et_text_content;
 with et_alignment;
+with et_net_linewidth;				use et_net_linewidth;
 with et_nets;						use et_nets;
 with et_net_junction;				use et_net_junction;
 with et_net_segment;				use et_net_segment;
@@ -209,7 +210,7 @@ procedure draw_nets is
 				procedure draw_segment is begin
 					draw_line (
 						line		=> segment,
-						width		=> net_line_width,
+						width		=> net_linewidth,
 						do_stroke	=> true);
 				end draw_segment;
 
@@ -603,7 +604,7 @@ procedure draw_nets is
 				draw_line (
 					line		=> line,
 					pos			=> origin_zero_rotation,		  
-					width		=> net_line_width,
+					width		=> net_linewidth,
 					do_stroke	=> true);
 			end draw;
 

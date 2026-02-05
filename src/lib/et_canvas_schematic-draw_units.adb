@@ -39,6 +39,8 @@
 with et_primitive_objects;				use et_primitive_objects;
 with et_colors;							use et_colors;
 
+with et_net_linewidth;					use et_net_linewidth;
+
 with et_text_content;					use et_text_content;
 with et_alignment;
 with et_symbol_shapes;
@@ -301,7 +303,7 @@ procedure draw_units is
 
 				-- Draw the line:
 				set_color_symbols (brightness);
-				draw_line (line, (unit_position, unit_rotation), port_line_width,
+				draw_line (line, (unit_position, unit_rotation), net_linewidth,
 					do_stroke => true);
 
 				-- Draw the circle around the start point

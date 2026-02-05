@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -607,15 +607,6 @@ package et_net_segment is
 	function get_end_points (
 		segments	: in pac_net_segments.list)
 		return pac_points.list;
-
-	
-	
-	
-	
-	net_line_width : constant type_distance_positive := 0.2;
-	-- CS rename to net_linewidth ?
-
-
 
 	
 	

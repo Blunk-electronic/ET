@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                     NETCHANGER SYMBOL IN SCHEMATIC                       --
+--                            NET LINEWIDTH                                 --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your editor to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,69 +35,22 @@
 --
 --   history of changes:
 --
--- ToDo: 
---
---
-
-with et_net_linewidth;				use et_net_linewidth;
-with et_schematic_geometry;			use et_schematic_geometry;
-with et_symbol_ports;				use et_symbol_ports;
-with et_symbol_shapes;				use et_symbol_shapes;
-with et_directions;					use et_directions;
+-- DESCRIPTION:
+-- The linewidth used for drawing net segments, netchangers
+-- and ports of units is a system wide constant.
 
 
-package et_netchanger_symbol_schematic is
+with et_schematic_geometry;		use et_schematic_geometry;
+
+
+package et_net_linewidth is
 
 	use pac_geometry_2;
-
-
-		
-		
--- PORT:
-
-	type type_netchanger_port is record
-		position	: type_vector_model;
-		length		: type_port_length; 
-		rotation	: type_rotation_model;
-	end record;
-
+	
+	net_linewidth : constant type_distance_positive := 0.2;
 
 	
-	position_master_port_default : constant type_vector_model := (x =>  10.0, y => 0.0);
-	position_slave_port_default  : constant type_vector_model := (x => -10.0, y => 0.0);
-
-	
-	
-	
-	
-	
--- SYMBOL:
-	
-	type type_netchanger_symbol is record -- CS make private
-		master_port	: type_netchanger_port := (
-						position	=> position_master_port_default,
-						length		=> 5.0,
-						rotation	=> zero_rotation);
-
-		slave_port	: type_netchanger_port := (
-						position	=> position_slave_port_default,
-						length		=> 5.0,
-						rotation	=> 180.0);
-
-		-- the arc that connects the ports
-		arc	: type_symbol_arc := (type_arc (to_arc (
-						center	=> (x =>  0.0, y => 0.0),
-						A		=> (x => -5.0, y => 0.0),
-						B		=> (x =>  5.0, y => 0.0),
-						direction	=> CW))
-						with net_linewidth);
-
-	end record;
-
-
-	netchanger_symbol_default : constant type_netchanger_symbol := (others => <>);
-	
-end et_netchanger_symbol_schematic;
+end et_net_linewidth;
 
 -- Soli Deo Gloria
 

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -52,6 +52,7 @@ with ada.containers;
 with et_drawing_frame;
 with et_units;						use et_units;
 with et_devices_electrical;			use et_devices_electrical;
+with et_net_linewidth;				use et_net_linewidth;
 with et_nets;
 with et_net_segment;
 with et_net_strands;
@@ -168,7 +169,7 @@ is
 					segment : type_net_segment renames element (c);
 
 					-- Compute the preliminary bounding-box of the segment:
-					b : type_area := get_bounding_box (segment, net_line_width);
+					b : type_area := get_bounding_box (segment, net_linewidth);
 				begin
 					if debug then
 						put_line (to_string (type_line (segment)));

@@ -42,6 +42,7 @@
 
 with ada.text_io;					use ada.text_io;
 
+with et_net_linewidth;					use et_net_linewidth;
 with et_netchanger_symbol_schematic;	use et_netchanger_symbol_schematic;
 with et_netchangers;					use et_netchangers;
 -- with et_primitive_objects;			use et_primitive_objects;
@@ -79,7 +80,7 @@ procedure draw_netchangers is
 			draw_arc (
 				arc		=> symbol.arc,
 				pos		=> type_position (netchanger.position_sch),
-				width	=> 0.2, -- CS use width of nets segments
+				width	=> net_linewidth,
 				do_stroke => true
 				);
 		null;

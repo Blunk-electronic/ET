@@ -56,6 +56,7 @@ with et_submodules;
 
 with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
 
+with et_net_linewidth;					use et_net_linewidth;
 with et_netchangers;
 
 with et_rotation_docu;					use et_rotation_docu;
@@ -612,7 +613,7 @@ package body et_schematic_ops_nets is
 					procedure query_segment (
 						seg : in out type_net_segment)
 					is begin
-						if in_catch_zone (catch_zone, seg, net_line_width) then
+						if in_catch_zone (catch_zone, seg, net_linewidth) then
 							log (text => "in catch zone", level => log_threshold + 4);
 							set_proposed (seg);
 							count := count + 1;
@@ -2302,7 +2303,7 @@ package body et_schematic_ops_nets is
 					procedure query_segment (
 						seg : in out type_net_segment)
 					is begin
-						if in_catch_zone (catch_zone, seg, net_line_width) then
+						if in_catch_zone (catch_zone, seg, net_linewidth) then
 							log (text => "in catch zone", level => log_threshold + 4);
 							set_proposed (strand);
 							count := count + 1;
@@ -2913,7 +2914,7 @@ package body et_schematic_ops_nets is
 					procedure query_segment (
 						seg : in out type_net_segment)
 					is begin
-						if in_catch_zone (catch_zone, seg, net_line_width) then
+						if in_catch_zone (catch_zone, seg, net_linewidth) then
 							log (text => "in catch zone", level => log_threshold + 4);
 							set_proposed (net);
 							proceed := false; -- no more segments need to be probed
