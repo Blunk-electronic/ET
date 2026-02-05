@@ -1416,6 +1416,10 @@ package et_canvas is
 		force		: in boolean := false);
 
 
+	-- CS:
+	-- Introduce new types for do_stroke, path and force
+	-- in order ot avoid mixing up.
+	
 	
 	-- This is a primitive draw operation that draws a circle.
 	-- For arguments see procedure draw_line.
@@ -1441,8 +1445,8 @@ package et_canvas is
 		width		: in type_distance_positive;
 		mirror		: in type_mirror := MIRROR_NO;
 		style		: in type_line_style := CONTINUOUS;
-		-- CS polyline ?
 		do_stroke	: in boolean := false;
+		path		: in boolean := false;
 		force		: in boolean := false); -- CS not implemented yet. ignored currently
 
 	

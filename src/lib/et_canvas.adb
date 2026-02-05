@@ -3998,8 +3998,12 @@ package body et_canvas is
 		mirror		: in type_mirror := MIRROR_NO;		
 		style		: in type_line_style := CONTINUOUS;
 		do_stroke	: in boolean := false;
+		path		: in boolean := false;
 		force		: in boolean := false)
 	is
+		-- CS:
+		-- handle the force-flag as in procedure draw_line
+		
 		use glib;
 		use cairo;
 		use pac_geometry_1;
@@ -4080,10 +4084,14 @@ package body et_canvas is
 			
 			m := real_to_canvas (get_center (c), S);
 
-			-- required to suppress an initial line:
-			-- new_sub_path (context);
-			-- no need. should be removed if really not required.
+			-- If we are drawing a single arc (means no path),
+			-- then a so called new subpath must be started
+			-- in order to suppress an initial "start-line":
+			if not path then
+				new_sub_path (context);
+			end if;
 
+			
 			if get_direction (a) = CW then
 				
 				-- THIS DRAW OPERATION CONSUMES THE MOST TIME:
