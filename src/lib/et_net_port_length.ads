@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                            NET LINEWIDTH                                 --
+--                           NET PORT LENGTH                                --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -38,22 +38,24 @@
 --
 -- DESCRIPTION:
 --
--- The linewidth used for drawing net segments, netchangers
--- and ports of units and submodules.
--- It is a system wide constant.
+-- A port is something where a net can be attached to.
+-- The length of a port is used for drawing netchangers,
+-- ports of units and submodules.
 
 
 with et_schematic_geometry;		use et_schematic_geometry;
 
 
-package et_net_linewidth is
+package et_net_port_length is
 
 	use pac_geometry_2;
-	
-	net_linewidth : constant type_distance_positive := 0.2;
 
 	
-end et_net_linewidth;
+	subtype type_port_length is type_distance_positive
+		range 2.5 .. 20.0;
+
+	
+end et_net_port_length;
 
 -- Soli Deo Gloria
 

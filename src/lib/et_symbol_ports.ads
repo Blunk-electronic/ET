@@ -35,11 +35,15 @@
 --
 --   history of changes:
 --
-
+--
+-- To Do:
+-- - rename this package to et_symbol_port (singular)
+--
 
 with ada.containers; 					use ada.containers;
 with ada.containers.indefinite_ordered_maps;
 
+with et_net_port_length;				use et_net_port_length;
 with et_net_linewidth;					use et_net_linewidth;
 with et_schematic_text;					use et_schematic_text;
 with et_schematic_geometry;				use et_schematic_geometry;
@@ -58,16 +62,8 @@ package et_symbol_ports is
 	use pac_geometry_2;
 	use pac_text_schematic;
 	
-	
 
-
-	
-	-- A port is something where a net can be attached to.
-	-- The name of a port represents the function of the port like (A14 or RST_N)
-	subtype type_port_length is type_distance_positive range 0.0 .. 20.0; -- unit is millimeters.
 	port_length_default : constant type_port_length := 2.5;
-	
-
 	
 	
 	-- A port is basically a line with a linewidth equal to those
@@ -107,6 +103,9 @@ package et_symbol_ports is
 		--   0.0 -- from the right
 		
 		port_name_visible		: type_port_name_visible := port_name_visible_default;
+
+		-- CS: This selector is probably not required
+		-- if we use a hardcoded text size for the name:
 		port_name_size			: type_text_size := text_size_default;
 		
 		terminal_name_visible	: type_terminal_name_visible := terminal_name_visible_default;

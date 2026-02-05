@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                              SYSTEM ET                                   --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                            NET LINEWIDTH                                 --
+--                 COMMAND PROCESSOR / BOARD / NETCHANGER                   --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                --
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,10 +20,10 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.                                          --
+-- <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,25 +35,36 @@
 --
 --   history of changes:
 --
---
--- DESCRIPTION:
---
--- The linewidth used for drawing net segments, netchangers
--- and ports of units and submodules.
--- It is a system wide constant.
+--   ToDo: 
+
+with et_generic_modules;		use et_generic_modules;
+with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
+with et_cmd_sts;				use et_cmd_sts;
 
 
-with et_schematic_geometry;		use et_schematic_geometry;
+
+package et_cp_board_netchanger is
 
 
-package et_net_linewidth is
+		
+	procedure move_netchanger (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
 
-	use pac_geometry_2;
-	
-	net_linewidth : constant type_distance_positive := 0.2;
 
-	
-end et_net_linewidth;
+		
+	procedure drag_netchanger (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+		
+	-- CS set signal layer
+
+		
+end et_cp_board_netchanger;
 
 -- Soli Deo Gloria
 
