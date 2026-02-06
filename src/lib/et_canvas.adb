@@ -3894,7 +3894,7 @@ package body et_canvas is
 		width		: in type_distance_positive;
 		mirror		: in type_mirror := MIRROR_NO;
 		style		: in type_line_style := CONTINUOUS;
-		do_stroke	: in boolean := false)
+		stroke		: in type_stroke := NO_STROKE)
 	is
 		use cairo;
 		
@@ -3944,7 +3944,7 @@ package body et_canvas is
 			-- If an individual stroke is requested for
 			-- the given circle, then set the linewidth of the 
 			-- circumfence:
-			if do_stroke then
+			if stroke = DO_STROKE then
 				if width > zero then
 					set_line_width (context, 
 						to_gdouble_positive (to_distance (width)));
@@ -3977,8 +3977,8 @@ package body et_canvas is
 			
 			-- If an individual stroke is requested for
 			-- the given circle, then do it now:
-			if do_stroke then
-				stroke (context);
+			if stroke = DO_STROKE then
+				cairo.stroke (context);
 			end if;
 
 			

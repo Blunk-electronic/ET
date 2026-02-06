@@ -1432,7 +1432,7 @@ package et_canvas is
 		width		: in type_distance_positive;
 		mirror		: in type_mirror := MIRROR_NO;
 		style		: in type_line_style := CONTINUOUS;
-		do_stroke	: in boolean := false);
+		stroke		: in type_stroke := NO_STROKE);
 
 
 	-- This is a primitive draw operation that draws an arc.

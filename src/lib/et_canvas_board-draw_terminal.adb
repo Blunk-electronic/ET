@@ -251,12 +251,12 @@ is
 			
 				-- Draw the restring:
 				draw_circle (
-					circle		=> circle, 
-					pos			=> get_position (package_position), 
-					filled		=> NO,
-					width		=> restring,
-					mirror		=> mirror,
-					do_stroke	=> true);
+					circle	=> circle, 
+					pos		=> get_position (package_position), 
+					filled	=> NO,
+					width	=> restring,
+					mirror	=> mirror,
+					stroke	=> DO_STROKE);
 
 
 				-- CS

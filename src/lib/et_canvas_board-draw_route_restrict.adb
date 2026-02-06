@@ -97,10 +97,10 @@ procedure draw_route_restrict is
 		if route_restrict_layer_enabled (circle.layers) then
 			
 			draw_circle (
-				circle		=> circle,
-				filled		=> NO,
-				width		=> zero,
-				do_stroke	=> true);
+				circle	=> circle,
+				filled	=> NO,
+				width	=> zero,
+				stroke	=> DO_STROKE);
 
 		end if;
 	end query_circle;

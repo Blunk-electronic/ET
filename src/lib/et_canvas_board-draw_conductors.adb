@@ -269,10 +269,10 @@ procedure draw_conductors is
 		procedure draw is begin
 			-- We draw a normal non-filled circle:
 			draw_circle (
-				circle		=> circle,
-				filled		=> NO,
-				width		=> circle.width,
-				do_stroke	=> true);
+				circle	=> circle,
+				filled	=> NO,
+				width	=> circle.width,
+				stroke	=> DO_STROKE);
 
 		end draw;
 		
@@ -757,10 +757,10 @@ procedure draw_conductors is
 			set_color_via_restring (brightness);
 			
 			draw_circle (
-				circle		=> circle,
-				filled		=> NO,
-				width		=> linewidth,
-				do_stroke	=> true);			
+				circle	=> circle,
+				filled	=> NO,
+				width	=> linewidth,
+				stroke	=> DO_STROKE);			
 		end draw_restring;
 
 		

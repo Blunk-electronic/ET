@@ -474,10 +474,10 @@ procedure draw_nets is
 
 					procedure draw is begin
 						draw_circle (
-							circle		=> type_circle (j),
-							filled		=> YES,
-							width		=> zero,
-							do_stroke	=> true);
+							circle	=> type_circle (j),
+							filled	=> YES,
+							width	=> zero,
+							stroke	=> DO_STROKE);
 					end draw;
 					
 				begin

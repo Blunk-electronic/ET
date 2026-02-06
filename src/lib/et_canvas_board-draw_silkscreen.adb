@@ -124,10 +124,10 @@ is
 		circle : type_silk_circle renames element (c);
 	begin
 		draw_circle (
-			circle		=> circle,
-			filled		=> NO,
-			width		=> circle.width,
-			do_stroke	=> true);				
+			circle	=> circle,
+			filled	=> NO,
+			width	=> circle.width,
+			stroke	=> DO_STROKE);
 	end query_circle;
 
 	

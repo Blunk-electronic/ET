@@ -281,7 +281,7 @@ package body et_canvas.contours is
 		
 		-- draw inner area to be taken out:
 		draw_circle (inner_border, pos, filled => YES, 
-					 width => zero, mirror => mirror, do_stroke => true);
+			width => zero, mirror => mirror, stroke => DO_STROKE);
 
 		-- restore default compositing operator:
 		set_operator (context, CAIRO_OPERATOR_OVER);		

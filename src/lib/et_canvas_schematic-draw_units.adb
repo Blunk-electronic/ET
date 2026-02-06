@@ -166,7 +166,7 @@ procedure draw_units is
 			p.rotation := unit_rotation;
   
 			-- the circle is not filled -> actual "filled" is NO
-			draw_circle (i, p, NO, i.width, do_stroke => true);
+			draw_circle (i, p, NO, i.width, stroke => DO_STROKE);
 		end draw_circle;
 
 
@@ -321,11 +321,11 @@ procedure draw_units is
 
 					-- Draw the circle. It is not filled:
 					draw_circle (
-						circle		=> circle, 
-						pos			=> (unit_position, unit_rotation), 
-						filled		=> NO,
-						width		=> port_circle_line_width, 
-						do_stroke	=> true);
+						circle	=> circle, 
+						pos		=> (unit_position, unit_rotation), 
+						filled	=> NO,
+						width	=> port_circle_line_width, 
+						stroke	=> DO_STROKE);
 
 					-- CS draw port direction, weakness, power level ?
 					-- probably better in draw_terminal_name or draw_port_name ?

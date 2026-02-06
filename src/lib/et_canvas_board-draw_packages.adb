@@ -590,12 +590,12 @@ procedure draw_packages is
 				circle : type_route_restrict_circle renames element (c);
 			begin
 				draw_circle (
-					circle		=> circle,
-					pos			=> get_position (package_position),		  
-					width		=> zero,
-					mirror		=> mirror,
-					filled		=> NO,
-					do_stroke	=> true);
+					circle	=> circle,
+					pos		=> get_position (package_position),		  
+					width	=> zero,
+					mirror	=> mirror,
+					filled	=> NO,
+					stroke	=> DO_STROKE);
 				-- CS do not stroke could be possible, because
 				-- everything has the same color and linewidth.
 			end query_circle;

@@ -123,10 +123,10 @@ is
 
 		procedure draw is begin
 			draw_circle (
-				circle		=> circle,
-				filled		=> NO,
-				width		=> circle.width,
-				do_stroke 	=> true);
+				circle	=> circle,
+				filled	=> NO,
+				width	=> circle.width,
+				stroke	=> DO_STROKE);
 		end draw;
 	
 	begin

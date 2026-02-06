@@ -117,10 +117,10 @@ is
 		-- CS use renames
 	begin
 		draw_circle (
-			circle		=> element (c),
-			filled		=> NO,
-			width		=> element (c).width,
-			do_stroke => true);
+			circle	=> element (c),
+			filled	=> NO,
+			width	=> element (c).width,
+			stroke	=> DO_STROKE);
 	end query_circle;
 
 	
