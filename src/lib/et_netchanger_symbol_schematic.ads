@@ -91,6 +91,7 @@ package et_netchanger_symbol_schematic is
 	position_slave_port_default  : constant 
 		type_vector_model := (x => -7.5, y => 0.0);
 
+	-- CS: instead of master/slave notation use A/B ?
 	
 	
 	
@@ -121,11 +122,10 @@ package et_netchanger_symbol_schematic is
 
 	end record;
 
+	
+	
+	netchanger_symbol : constant type_netchanger_symbol := (others => <>);
 
-	
-	
-	
-	netchanger_symbol_default : constant type_netchanger_symbol := (others => <>);
 	
 end et_netchanger_symbol_schematic;
 

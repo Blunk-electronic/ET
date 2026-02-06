@@ -87,6 +87,9 @@ package et_netchangers is
 -- PORT NAMES:
 
 	type type_netchanger_port_name is (MASTER, SLAVE);
+	-- CS: instead of master/slave notation use A/B ?
+	-- CS: use prefix like PORT_A, PORT_B
+	
 	
 	function to_port_name (
 		name : in string) 
@@ -158,11 +161,13 @@ package et_netchangers is
 		master	: type_vector_model := position_master_port_default;
 		slave	: type_vector_model := position_slave_port_default;
 	end record;
+	-- CS: instead of master/slave notation use A/B ?
 
 
 
 	
-	-- Returns the absolute x/y positions of the given netchanger.
+	-- Returns the absolute port positions of 
+	-- the given netchanger:
 	function netchanger_ports (
 		netchanger_cursor	: in pac_netchangers.cursor)
 		return type_netchanger_ports;
