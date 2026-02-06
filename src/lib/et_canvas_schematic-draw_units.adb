@@ -783,7 +783,7 @@ procedure draw_units is
 		
 		procedure draw_origin is begin
 			-- NOTE: This is about the origin of the symbol !
-			-- set_color_origin (brightness);
+			set_color_origin (brightness);
 			
 			-- NOTE: The origin is never rotated.
 			draw_origin ((unit_position, 0.0));
