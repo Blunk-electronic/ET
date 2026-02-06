@@ -1445,8 +1445,8 @@ package et_canvas is
 		mirror		: in type_mirror := MIRROR_NO;
 		style		: in type_line_style := CONTINUOUS;
 		stroke		: in type_stroke := NO_STROKE;
-		path		: in boolean := false;
-		force		: in boolean := false); -- CS not implemented yet. ignored currently
+		path		: in type_draw_path := NO_PATH;
+		force		: in type_force := NO_FORCE); -- CS not implemented yet. ignored currently
 
 	
 	procedure draw_rectangle (

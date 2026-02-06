@@ -4000,8 +4000,8 @@ package body et_canvas is
 		mirror		: in type_mirror := MIRROR_NO;		
 		style		: in type_line_style := CONTINUOUS;
 		stroke		: in type_stroke := NO_STROKE;
-		path		: in boolean := false;
-		force		: in boolean := false)
+		path		: in type_draw_path := NO_PATH;
+		force		: in type_force := NO_FORCE)
 	is
 		-- CS:
 		-- handle the force-flag as in procedure draw_line
@@ -4090,7 +4090,7 @@ package body et_canvas is
 			-- If we are drawing a single arc (means no path),
 			-- then a so called new subpath must be started
 			-- in order to suppress an initial "start-line":
-			if not path then
+			if path = NO_PATH then
 				new_sub_path (context);
 			end if;
 
