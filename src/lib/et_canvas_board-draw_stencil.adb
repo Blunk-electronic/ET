@@ -97,9 +97,9 @@ is
 
 		procedure draw is begin
 			draw_arc (
-				arc		=> element (c),
-				width	=> element (c).width,
-				do_stroke => true);
+				arc		=> arc,
+				width	=> arc.width,
+				stroke	=> DO_STROKE);
 		end draw;
 
 	begin

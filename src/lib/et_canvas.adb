@@ -3896,6 +3896,8 @@ package body et_canvas is
 		style		: in type_line_style := CONTINUOUS;
 		stroke		: in type_stroke := NO_STROKE)
 	is
+		-- CS move the actual drawing to a procedure as in draw_line
+		
 		use cairo;
 		
 		-- Make a copy of the given circle:
@@ -3997,12 +3999,13 @@ package body et_canvas is
 		width		: in type_distance_positive;
 		mirror		: in type_mirror := MIRROR_NO;		
 		style		: in type_line_style := CONTINUOUS;
-		do_stroke	: in boolean := false;
+		stroke		: in type_stroke := NO_STROKE;
 		path		: in boolean := false;
 		force		: in boolean := false)
 	is
 		-- CS:
 		-- handle the force-flag as in procedure draw_line
+		-- move the actual drawing to a procedure as in draw_line
 		
 		use glib;
 		use cairo;
@@ -4064,7 +4067,7 @@ package body et_canvas is
 
 			-- If an individual stroke is requested for
 			-- the given arc, then set the linewidth:
-			if do_stroke then
+			if stroke = DO_STROKE then
 				if width > zero then
 					set_line_width (context, 
 						to_gdouble_positive (to_distance (width)));
@@ -4115,8 +4118,8 @@ package body et_canvas is
 			
 			-- If an individual stroke is requested for
 			-- the given circle, then do it now:
-			if do_stroke then
-				stroke (context);
+			if stroke = DO_STROKE then
+				cairo.stroke (context);
 			end if;
 
 			

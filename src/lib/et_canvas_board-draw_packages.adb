@@ -353,7 +353,7 @@ procedure draw_packages is
 					pos		=> get_position (package_position),		  
 					width	=> arc.width,
 					mirror	=> mirror,
-					do_stroke	=> true);
+					stroke	=> DO_STROKE);
 			end query_arc;
 
 			

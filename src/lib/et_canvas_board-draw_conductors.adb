@@ -229,7 +229,7 @@ procedure draw_conductors is
 	is
 
 		procedure draw is begin
-			draw_arc (arc => arc, width => arc.width, do_stroke => true);
+			draw_arc (arc => arc, width => arc.width, stroke => DO_STROKE);
 		end draw;
 		
 	begin

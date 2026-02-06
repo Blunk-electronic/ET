@@ -1444,7 +1444,7 @@ package et_canvas is
 		width		: in type_distance_positive;
 		mirror		: in type_mirror := MIRROR_NO;
 		style		: in type_line_style := CONTINUOUS;
-		do_stroke	: in boolean := false;
+		stroke		: in type_stroke := NO_STROKE;
 		path		: in boolean := false;
 		force		: in boolean := false); -- CS not implemented yet. ignored currently
 

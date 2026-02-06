@@ -82,9 +82,9 @@ procedure draw_route_restrict is
 		if route_restrict_layer_enabled (arc.layers) then
 			
 			draw_arc (
-				arc			=> arc,
-				width		=> zero,
-				do_stroke	=> true);
+				arc		=> arc,
+				width	=> zero,
+				stroke	=> DO_STROKE);
 
 		end if;
 	end query_arc;
