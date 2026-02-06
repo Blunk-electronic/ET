@@ -85,11 +85,11 @@ package et_netchanger_symbol_schematic is
 
 	
 	position_master_port_default : constant 
-		type_vector_model := (x =>  10.0, y => 0.0);
+		type_vector_model := (x =>  7.5, y => 0.0);
 	
 	
 	position_slave_port_default  : constant 
-		type_vector_model := (x => -10.0, y => 0.0);
+		type_vector_model := (x => -7.5, y => 0.0);
 
 	
 	
@@ -114,8 +114,8 @@ package et_netchanger_symbol_schematic is
 		-- the arc that connects the ports
 		arc	: type_symbol_arc := (type_arc (to_arc (
 						center	=> (x =>  0.0, y => 0.0),
-						A		=> (x => -5.0, y => 0.0),
-						B		=> (x =>  5.0, y => 0.0),
+						A		=> (x => -2.5, y => 0.0),
+						B		=> (x =>  2.5, y => 0.0),
 						direction	=> CW))
 						with net_linewidth);
 

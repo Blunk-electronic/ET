@@ -90,10 +90,8 @@ procedure draw_netchangers is
 			draw_arc (
 				arc		=> symbol.arc,
 				pos		=> type_position (netchanger.position_sch),
-				width	=> net_linewidth
-				-- path	=> true
-				-- do_stroke => true
-				);
+				width	=> net_linewidth,
+				stroke	=> DO_STROKE);
 			
 			null;
 			
