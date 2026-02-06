@@ -82,7 +82,12 @@ package et_netchangers is
 		return string;		
 
 
+	-- Returns a full name of a netchanger like N44:
+	function get_netchanger_name (
+		id : in type_netchanger_id) 
+		return string;
 		
+
 		
 -- PORT NAMES:
 

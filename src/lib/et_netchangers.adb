@@ -75,6 +75,16 @@ package body et_netchangers is
 
 
 
+	function get_netchanger_name (
+		id : in type_netchanger_id) 
+		return string
+	is begin
+		return "N" & to_string (id);
+		-- CS consider user defined prefixes. conventions ?
+	end;
+	
+	
+	
 
 	
 -- PORT NAMES:
@@ -95,7 +105,10 @@ package body et_netchangers is
 		return trim (to_lower (type_netchanger_port_name'image (name)), left);
 	end;
 
+	
+		
 
+	
 
 	
 	function opposide_port (

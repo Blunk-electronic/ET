@@ -95,9 +95,24 @@ package et_netchanger_symbol_schematic is
 	
 	
 	
+	-- The distance between port end point and port name:
+	-- port_name_spacing : constant type_distance_positive := 1.0;
+ -- 
+	-- port_circle_radius : constant type_distance_positive := 0.8;
+	
+	name_to_origin_offset : constant type_distance_positive := 2.0;
+	
+	-- The distance between the start point of a port and the
+	-- origin of the port name:
+	port_name_spacing_start : constant type_distance_positive := 1.7;
+	
+	name_size : constant type_distance_positive := 2.0;
+	
+	port_size : constant type_distance_positive := 2.0;
+	
+
 	
 	
--- SYMBOL:
 	
 	-- For netchangers we use this hardcoded symbol:
 	
