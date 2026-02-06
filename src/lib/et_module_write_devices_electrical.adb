@@ -124,7 +124,7 @@ package body et_module_write_devices_electrical is
 
 		-- This procedure queries the units of
 		-- the device candidate:
-		procedure query_units (
+		procedure query_units ( -- CS: rename to query_device
 			device_name	: in type_device_name;
 			device		: in type_device_electrical) 
 		is
@@ -133,6 +133,8 @@ package body et_module_write_devices_electrical is
 			use pac_units;
 						
 			unit_cursor : pac_units.cursor := device.units.first;
+			-- CS: use renames instead of element (unit_cursor)
+			-- in the code below.
 
 			use et_schematic_geometry.pac_geometry_2;
 			use et_device_placeholders.symbols;
@@ -166,7 +168,8 @@ package body et_module_write_devices_electrical is
 					keyword => keyword_position, 
 					parameters => to_string (element (unit_cursor).position, FORMAT_2)); -- position sheet 1 x 147.32 y 96.97 rotation 90.0
 				
-				write (keyword => keyword_mirrored, parameters => to_string (element (unit_cursor).mirror, verbose => false)); -- x_axis, y_axis, none
+				write (keyword => keyword_mirrored, 
+					   parameters => to_string (element (unit_cursor).mirror_status, verbose => false)); -- x_axis, y_axis, none
 
 				if element (unit_cursor).appearance = APPEARANCE_PCB then
 					section_mark (section_placeholders, HEADER);

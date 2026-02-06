@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -84,7 +84,7 @@ package body et_units is
 		unit	: in type_unit)
 		return type_mirror
 	is begin
-		return unit.mirror;
+		return unit.mirror_status;
 	end;
 
 	
@@ -93,7 +93,7 @@ package body et_units is
 		unit	: in out type_unit;
 		mirror	: in type_mirror)
 	is begin
-		unit.mirror := mirror;
+		unit.mirror_status := mirror;
 	end;
 
 	
@@ -433,7 +433,7 @@ package body et_units is
 		unit	: in pac_units.cursor)
 		return type_mirror
 	is begin
-		return element (unit).mirror;
+		return element (unit).mirror_status;
 	end;
 
 

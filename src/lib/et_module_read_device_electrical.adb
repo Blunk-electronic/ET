@@ -650,10 +650,10 @@ package body et_module_read_device_electrical is
 						container	=> device_units,
 						key			=> device_unit_name,
 						new_item	=> (
-							appearance	=> APPEARANCE_VIRTUAL,
-							status		=> get_default_status,
-							mirror		=> device_unit_mirror,
-							position	=> device_unit_position));
+							appearance		=> APPEARANCE_VIRTUAL,
+							status			=> get_default_status,
+							mirror_status	=> device_unit_mirror,
+							position		=> device_unit_position));
 											
 				when APPEARANCE_PCB =>
 					-- A unit of a real device has placeholders:
@@ -661,11 +661,11 @@ package body et_module_read_device_electrical is
 						container	=> device_units,
 						key			=> device_unit_name,
 						new_item	=> (
-							mirror		=> device_unit_mirror,
-							status		=> get_default_status,
-							position	=> device_unit_position,
-							appearance	=> APPEARANCE_PCB,
-							placeholders => (
+							mirror_status	=> device_unit_mirror,
+							status			=> get_default_status,
+							position		=> device_unit_position,
+							appearance		=> APPEARANCE_PCB,
+							placeholders 	=> (
 								-- The placeholders for reference, value and purpose have
 								-- been built and can now be assigned to the unit:
 								name		=> unit_placeholder_reference,

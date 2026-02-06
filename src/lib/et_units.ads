@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -84,9 +84,9 @@ package et_units is
 	-- A unit is a subset of a device.
 	-- Placeholders are available if the device appears in both schematic and layout:
 	type type_unit (appearance : type_appearance_schematic) is record
-		position	: type_object_position; -- incl. rotation and sheet number
-		mirror		: type_mirror := MIRROR_NO; -- CS rename to mirror_status
-		status		: type_object_status;
+		position		: type_object_position; -- incl. rotation and sheet number
+		mirror_status	: type_mirror := MIRROR_NO;
+		status			: type_object_status;
 		case appearance is
 			when APPEARANCE_VIRTUAL => 
 				null; -- CS

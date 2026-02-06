@@ -2732,9 +2732,9 @@ package body et_kicad_to_native is
 					case element (component_cursor_kicad).appearance is
 						when APPEARANCE_VIRTUAL =>
 							unit_native_virtual := (
-								mirror		=> element (unit_cursor_kicad).mirror,
-								status		=> get_default_status,					   
-								position	=> to_native_coordinates (
+								mirror_status	=> element (unit_cursor_kicad).mirror,
+								status			=> get_default_status,					   
+								position		=> to_native_coordinates (
 												point		=> element (unit_cursor_kicad).position,
 												rotation 	=> element (unit_cursor_kicad).rotation),
 								appearance	=> APPEARANCE_VIRTUAL);
@@ -2749,12 +2749,12 @@ package body et_kicad_to_native is
 							
 						when APPEARANCE_PCB => -- real device
 							unit_native_real := (
-								mirror		=> element (unit_cursor_kicad).mirror,
-								status		=> get_default_status,
-								position	=> to_native_coordinates (
+								mirror_status	=> element (unit_cursor_kicad).mirror,
+								status			=> get_default_status,
+								position		=> to_native_coordinates (
 												point		=> element (unit_cursor_kicad).position,
 												rotation 	=> element (unit_cursor_kicad).rotation),
-								appearance	=> APPEARANCE_PCB,
+								appearance		=> APPEARANCE_PCB,
 							
 								-- and stuff that comes with a real device:
 								placeholders => (
