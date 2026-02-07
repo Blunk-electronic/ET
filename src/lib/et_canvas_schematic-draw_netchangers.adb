@@ -51,6 +51,7 @@ with et_netchangers;					use et_netchangers;
 with et_primitive_objects;				use et_primitive_objects;
 with et_alignment;						use et_alignment;
 with et_display.schematic;				use et_display.schematic;
+with et_symbol_port_measures;			use et_symbol_port_measures;
 with et_symbol_ports;					use et_symbol_ports;
 with et_symbol_text;					use et_symbol_text;
 with et_text_content;					use et_text_content;

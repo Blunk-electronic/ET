@@ -43,6 +43,7 @@ with et_net_linewidth;					use et_net_linewidth;
 
 with et_text_content;					use et_text_content;
 with et_alignment;
+with et_symbol_port_measures;			use et_symbol_port_measures;
 with et_symbol_shapes;
 with et_symbol_text;
 with et_symbol_model;					use et_symbol_model;

@@ -43,6 +43,7 @@
 with ada.containers; 					use ada.containers;
 with ada.containers.indefinite_ordered_maps;
 
+with et_symbol_port_measures;			use et_symbol_port_measures;
 with et_net_port_length;				use et_net_port_length;
 with et_net_linewidth;					use et_net_linewidth;
 with et_schematic_text;					use et_schematic_text;
@@ -66,22 +67,6 @@ package et_symbol_ports is
 	port_length_default : constant type_port_length := 2.5;
 	
 	
-	-- A port is basically a line with a linewidth equal to those
-	-- of net segments.
-	-- Its start point is the port position.
-	-- At the start point a net will be attached.
-	-- The end point points towards the symbol body. Depending on the port
-	-- rotation the end tail points:
-	--  to the left if rotation is 0 degree. net attached from the right.
-	--  to the right if rotation is 180 degree. net attached from the left.
-	--  downwards if the rotation is 90 degree. net attached from above.
-	--  upwards if the rotation is 270 degree. net attached from below.
-	
-	port_circle_line_width : constant type_distance_positive := 0.1; 		-- relevant for GUI only
-	port_circle_radius : constant type_distance_positive := 0.8;	-- relevant for GUI only
-
-	-- The distance between port end point and port name:
-	port_name_spacing : constant type_distance_positive := 2.0;		-- relevant for GUI only
 
 	-- The distance between the line of a port and the terminal name:
 	terminal_name_spacing_line : constant type_distance_positive := 1.0; -- relevant for GUI only

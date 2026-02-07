@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                              SYSTEM ET                                   --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                     NETCHANGER SYMBOL IN SCHEMATIC                       --
+--                 SYMBOL PORT / MEASURES AND DIMENSIONS                    --
 --                                                                          --
---                               S p e c                                    --
+--                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,28 +35,24 @@
 --
 --   history of changes:
 --
--- ToDo: 
 --
+-- To Do:
+-- -
 --
 
-with et_net_linewidth;				use et_net_linewidth;
-with et_net_port_length;			use et_net_port_length;
-with et_schematic_geometry;			use et_schematic_geometry;
-with et_symbol_shapes;				use et_symbol_shapes;
-with et_directions;					use et_directions;
+with et_schematic_geometry;				use et_schematic_geometry;
+with et_schematic_coordinates;			use et_schematic_coordinates;
 
 
-package et_netchanger_symbol_schematic is
+package et_symbol_port_measures is
 
 	use pac_geometry_2;
-
-
-		
-		
--- PORT:
-
+	
+	-- CS subtype of type_distance_positive
+	
+	
 	-- A port is basically a line with a linewidth equal to those
-	-- of net segments (global constant net_linewidth).
+	-- of net segments.
 	-- Its start point is the port position.
 	-- At the start point a net will be attached.
 	-- The end point points towards the symbol body. Depending on the port
@@ -65,82 +61,17 @@ package et_netchanger_symbol_schematic is
 	--  to the right if rotation is 180 degree. net attached from the left.
 	--  downwards if the rotation is 90 degree. net attached from above.
 	--  upwards if the rotation is 270 degree. net attached from below.
+	
+	port_circle_line_width : constant type_distance_positive := 0.1;
+	
+	port_circle_radius : constant type_distance_positive := 0.8;
 
-	type type_netchanger_port is record
-		-- This is the place where a net is connected:
-		position	: type_vector_model;
-		
-		-- From the position a line starts.
-		-- This line represents a port.
-		-- The linewidth is the global constant net_linewidth:
-		length		: type_port_length := 5.0; 
-		
-		rotation	: type_rotation_model;
-		--  90.0 -- to be connected with a net from above,
-		-- -90.0 -- from below,
-		-- 180.0 -- from the left,
-		--   0.0 -- from the right
-	end record;
+	-- The distance between port end point and port name:
+	port_name_spacing : constant type_distance_positive := 2.0;
 
 
 	
-	position_master_port_default : constant 
-		type_vector_model := (x =>  7.5, y => 0.0);
-	
-	
-	position_slave_port_default  : constant 
-		type_vector_model := (x => -7.5, y => 0.0);
-
-	-- CS: instead of master/slave notation use A/B ?
-	
-	
-	
-	
-	name_to_origin_offset : constant type_distance_positive := 2.0;
-	
-	-- The distance between the start point of a port and the
-	-- origin of the port name:
-	port_name_spacing_start : constant type_distance_positive := 1.7;
-	
-	-- The size of the name (like N31):
-	name_size : constant type_distance_positive := 2.0;
-	
-	-- The size of the port name:
-	port_size : constant type_distance_positive := 2.0;
-	
-
-	
-	
-	
-	-- For netchangers we use this hardcoded symbol:
-	
-	type type_netchanger_symbol is record -- CS make private
-		master_port	: type_netchanger_port := (
-						position	=> position_master_port_default,
-						rotation	=> zero_rotation,
-						others		=> <>);
-
-		slave_port	: type_netchanger_port := (
-						position	=> position_slave_port_default,						
-						rotation	=> 180.0,
-						others		=> <>);
-
-		-- the arc that connects the ports
-		arc	: type_symbol_arc := (type_arc (to_arc (
-						center	=> (x =>  0.0, y => 0.0),
-						A		=> (x => -2.5, y => 0.0),
-						B		=> (x =>  2.5, y => 0.0),
-						direction	=> CW))
-						with net_linewidth);
-
-	end record;
-
-	
-	
-	netchanger_symbol : constant type_netchanger_symbol := (others => <>);
-
-	
-end et_netchanger_symbol_schematic;
+end et_symbol_port_measures;
 
 -- Soli Deo Gloria
 
