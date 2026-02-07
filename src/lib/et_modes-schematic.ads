@@ -61,6 +61,7 @@ package et_modes.schematic is
 		VERB_FETCH,
 		
 		VERB_MAKE,
+		VERB_MIRROR,
 		VERB_MOVE,
 		VERB_MOUNT,
 		

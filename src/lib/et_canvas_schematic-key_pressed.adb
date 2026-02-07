@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -251,6 +251,52 @@ is
 			when others => status_noun_invalid;
 		end case;
 	end draw;
+
+
+
+
+	
+
+	procedure mirror is begin
+		case key is
+			-- EVALUATE KEY FOR NOUN:
+			when key_noun_unit =>
+				noun := NOUN_UNIT;
+				-- CS
+				null;
+				-- set_status (et_canvas_schematic_units.status_move_placeholder);
+
+				
+			-- If space pressed then the operator wishes to operate
+			-- by keyboard:
+			when key_space =>	
+				case noun is
+					when NOUN_UNIT =>
+						null;
+						-- CS
+						-- et_canvas_schematic_units.move_object (KEYBOARD, get_cursor_position);
+
+					when others => null;
+				end case;
+
+				
+			-- If page down pressed, then the operator is clarifying:
+			when key_clarify =>
+				case noun is
+					when NOUN_UNIT =>
+						if clarification_pending then
+							-- CS
+							null;
+							-- et_canvas_schematic_units.clarify_object;
+						end if;
+						
+					when others => null;
+				end case;
+				
+			when others => status_noun_invalid;
+		end case;
+	end mirror;
+
 
 
 	
@@ -835,6 +881,10 @@ begin -- key_pressed
 							when key_verb_fetch =>
 								verb := VERB_FETCH;
 								status_enter_noun;
+
+							when key_verb_mirror =>
+								verb := VERB_MIRROR;
+								status_enter_noun;
 								
 							when key_verb_move =>
 								verb := VERB_MOVE;
@@ -876,6 +926,7 @@ begin -- key_pressed
 							when VERB_DRAG		=> drag;
 							when VERB_DRAW		=> draw;
 							when VERB_FETCH		=> fetch;
+							when VERB_MIRROR	=> mirror;
 							when VERB_MOVE		=> move;
 							when VERB_PLACE		=> place;
 							when VERB_RENAME	=> rename;

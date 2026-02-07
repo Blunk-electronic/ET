@@ -306,7 +306,7 @@ package et_schematic_ops_units is
 
 	
 
--- UNIT MOVE, DRAG, FETCH, DELETE:
+-- UNIT MOVE, DRAG, ROTATE, MIRROR, DELETE:
 		
 
 	-- Moves the given unit within the schematic. Disconnects the unit from
@@ -370,8 +370,8 @@ package et_schematic_ops_units is
 	-- Already existing connections with net segments are kept.
 	-- This operation applies to a single sheet. Dragging from one sheet
 	-- to another is not possible.
-	-- CS: Reject unit if a port overlaps a port of another
-	-- existing unit.
+	-- CS: Reject unit if a port ends up by overlappin a port
+	-- of another existing unit.	
 	procedure drag_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
@@ -385,8 +385,8 @@ package et_schematic_ops_units is
 	-- Disconnects the unit from attached net segments before the rotation.
 	-- Connects the unit with net segments after the rotation.
 	-- Rotates the placeholders about the unit origin.
-	-- CS: Reject unit if a port overlaps a port of another
-	-- existing unit.	
+	-- CS: Reject unit if a port ends up by overlappin a port
+	-- of another existing unit.	
 	procedure rotate_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
@@ -396,7 +396,20 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
+	-- Mirrors a unit and its placeholders along its y-axis.
+	-- Toggles between mirror and no-mirror status.
+	-- Disconnects the unit from attached net segments before 
+	-- the mirror operation.
+	-- Connects the unit with net segments after the operation.
+	-- CS: Reject unit if a port ends up by overlappin a port
+	-- of another existing unit.	
+	procedure mirror_unit (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in pac_unit_name.bounded_string; -- A
+		log_threshold	: in type_log_level);
 
+	
 
 
 	-- This composite type is meant to identify a unit

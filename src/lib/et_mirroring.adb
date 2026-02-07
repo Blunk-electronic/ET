@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -77,6 +77,46 @@ package body et_mirroring is
 		return type_mirror'value (mirror_prefix & style);
 	end to_mirror_style;
 
+
+
+
+	procedure toggle_along_y (
+		status : in out type_mirror)
+	is begin
+		case status is
+			when MIRROR_NO =>
+				status := MIRROR_ALONG_Y_AXIS;
+				
+			when MIRROR_ALONG_Y_AXIS =>
+				status := MIRROR_NO;
+
+			-- CS: This case should never happen:
+			when MIRROR_ALONG_X_AXIS => 
+				status := MIRROR_NO;
+		end case;
+	end;
+		
+		
+		
+		
+
+	procedure toggle_along_x (
+		status : in out type_mirror)
+	is begin
+		case status is
+			when MIRROR_NO =>
+				status := MIRROR_ALONG_X_AXIS;
+				
+			when MIRROR_ALONG_X_AXIS =>
+				status := MIRROR_NO;
+
+			-- CS: This case should never happen:
+			when MIRROR_ALONG_Y_AXIS => 
+				status := MIRROR_NO;
+		end case;
+	end;
+
+	
 	
 end et_mirroring;
 

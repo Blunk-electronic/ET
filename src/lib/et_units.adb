@@ -97,6 +97,14 @@ package body et_units is
 	end;
 
 	
+
+	procedure toggle_mirror_status (
+		unit	: in out type_unit)
+	is begin
+		toggle_along_y (unit.mirror_status);
+	end;
+
+
 	
 
 	function get_rotation (

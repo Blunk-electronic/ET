@@ -570,7 +570,44 @@ package body et_cp_schematic_unit is
 
 		
 		
+
+
+
+
+	procedure mirror_unit (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+	begin
+		log (text => "mirror unit", level => log_threshold);
+		log_indentation_up;
 		
+		
+		case cmd_field_count is
+			when 6 =>
+				mirror_unit (
+					module_cursor 	=> module,
+					device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
+					unit_name		=> to_unit_name (get_field (cmd, 6)), -- A
+					log_threshold	=> log_threshold + 1);
+
+			when 7 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+
+
+		log_indentation_down;
+	end mirror_unit;
+
+
+
+
+	
 		
 		
 		

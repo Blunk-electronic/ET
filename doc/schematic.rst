@@ -243,6 +243,24 @@ Devices and Units
 
 
 
+
+#. Mirror a Unit
+
+	Mirroring is always along the y-axis of the unit.
+	This command toggles between mirror and no-mirror:
+
+	.. code-block::
+
+		mirror unit IC1 C
+
+
+	|VNS| i u
+
+
+
+
+
+
 #. Set Package Variant
 
 	.. code-block::

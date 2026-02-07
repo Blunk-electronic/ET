@@ -111,7 +111,18 @@ package et_cp_schematic_unit is
 
 		
 		
-		
+
+	-- Parses a command that mirrors a unit.
+	-- Toggles between mirroring along its own y-axis or 
+	-- no mirroring.
+	-- example 1: schematic led_driver mirror unit IC1 A
+	procedure mirror_unit (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+	
 		
 	-- Parses a command that fetches a unit from a device
 	-- and places it in the schematic:

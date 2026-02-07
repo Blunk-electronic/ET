@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -42,11 +42,12 @@
 package et_mirroring is
 
 	mirror_prefix : constant string := ("MIRROR_");
+	-- CS: the prefix is probably not required ?
 	
 	
 	-- Objects can be placed mirrored along the x or y axis or not at all.
 	type type_mirror is (
-		MIRROR_NO, 
+		MIRROR_NO, -- CS: rename to NO_MIRROR ?
 		MIRROR_ALONG_Y_AXIS,
 		MIRROR_ALONG_X_AXIS);
 	-- CAUTION: Package et_text derives a subtype from type_mirror !
@@ -68,6 +69,16 @@ package et_mirroring is
 		style : in string) 
 		return type_mirror;
 	
+
+
+	-- Toggles the mirror status along the y-axis:
+	procedure toggle_along_y (
+		status : in out type_mirror);
+				
+
+	-- Toggles the mirror status along the x-axis:
+	procedure toggle_along_x (
+		status : in out type_mirror);
 
 	
 end et_mirroring;

@@ -38,6 +38,8 @@
 --  This package is about so called "units". A unit is a subset of an
 --  electrical device. The blueprint of a unit is a symbol. As soon as
 --  a symbol is instantiated in the schematic, it becomes a unit.
+--  So this package is about units in the schematic and associated
+--  primitive operations.
 --
 --   history of changes:
 --
@@ -118,6 +120,8 @@ package et_units is
 
 
 
+
+	
 	function get_mirror_status (
 		unit	: in type_unit)
 		return type_mirror;
@@ -127,7 +131,14 @@ package et_units is
 		unit	: in out type_unit;
 		mirror	: in type_mirror);
 
-	
+
+	procedure toggle_mirror_status (
+		unit	: in out type_unit);
+
+
+
+
+		
 	
 	function get_rotation (
 		unit	: in type_unit)

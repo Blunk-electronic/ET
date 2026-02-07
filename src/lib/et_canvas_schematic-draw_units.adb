@@ -304,7 +304,8 @@ procedure draw_units is
 				-- Draw the line:
 				set_color_symbols (brightness);
 				draw_line (line, (unit_position, unit_rotation), net_linewidth,
-					stroke	=> DO_STROKE);
+						   stroke	=> DO_STROKE);
+				-- CS mirror => 
 
 				-- Draw the circle around the start point
 				-- of the line if the port-layer is enabled:
@@ -325,6 +326,7 @@ procedure draw_units is
 						pos		=> (unit_position, unit_rotation), 
 						filled	=> NO,
 						width	=> port_circle_line_width, 
+						-- CS mirror => 
 						stroke	=> DO_STROKE);
 
 					-- CS draw port direction, weakness, power level ?

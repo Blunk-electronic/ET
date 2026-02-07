@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -53,6 +53,7 @@ package et_schematic_verb_noun_keys is
 	key_verb_draw		: constant gdk_key_type := GDK_LC_d;
 	key_verb_fetch		: constant gdk_key_type := GDK_LC_f;
 
+	key_verb_mirror		: constant gdk_key_type := GDK_LC_i;
 	key_verb_move		: constant gdk_key_type := GDK_LC_m;
 	key_verb_rename		: constant gdk_key_type := GDK_LC_n;
 	key_verb_rotate		: constant gdk_key_type := GDK_LC_r;

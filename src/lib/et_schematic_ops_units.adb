@@ -2401,6 +2401,150 @@ package body et_schematic_ops_units is
 
 
 
+
+
+
+	
+
+
+	procedure mirror_unit (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in pac_unit_name.bounded_string; -- A
+		log_threshold	: in type_log_level)
+	is
+		device_cursor_sch : pac_devices_electrical.cursor;
+
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			-- Query whether the given unit is deployed in the schematic:
+			unit_query : constant type_unit_query := 
+				get_unit_position (device_cursor_sch, unit_name);
+
+			-- The old ports of the unit must be removed from the net segments,
+			-- whereas new ports must be inserted in the net segments.
+			-- For this reason we need some temporarily storage place:
+			sheet: type_sheet;
+			ports_old, ports_new : pac_symbol_ports.map;
+			
+
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_electrical) 
+			is
+				
+				-- Does the actual mirroring of the unit:
+				procedure mirror_unit (
+					unit_name	: in pac_unit_name.bounded_string;
+					unit		: in out type_unit) 
+				is begin	
+					toggle_mirror_status (unit);
+					
+					-- The placeholders must be mirrored also:
+					-- CS
+					-- rotate_placeholders (unit.placeholders, rotation);
+				end mirror_unit;
+				
+
+				-- Locate the targeted unit:
+				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
+
+				
+			begin
+				-- Get the sheet where the unit is:
+				sheet := get_sheet (device_cursor_sch, unit_cursor);
+				
+				-- Get the ports of the unit as they are
+				-- BEFORE the mirror operation:
+				ports_old := get_ports_from_schematic (
+					device_cursor_sch, unit_cursor);
+
+				update_element (
+					container	=> device.units,
+					position	=> unit_cursor,
+					process		=> mirror_unit'access);
+
+
+				-- Get the ports of the unit as they are
+				-- AFTER the mirror operation:
+				ports_new := get_ports_from_schematic (
+					device_cursor_sch, unit_cursor);
+			end query_device;
+
+			
+			
+		begin
+			-- Test whether the desired unit is deployed (in schematic).
+			-- If the unit is deployed, then rotate it:
+			if unit_query.exists then
+				
+				update_element (
+					container	=> module.devices,
+					position	=> device_cursor_sch,
+					process		=> query_device'access);
+			
+				-- Remove the old ports of the unit from the net segments:
+				delete_ports (
+					module_cursor	=> module_cursor,
+					device_name		=> device_name,
+					unit_name		=> unit_name,
+					ports			=> ports_old,
+					sheet			=> sheet,
+					log_threshold	=> log_threshold + 1);
+
+				-- Insert the new unit ports in the net segments:
+				insert_ports (
+					module_cursor	=> module_cursor,
+					device_name		=> device_name,
+					unit_name		=> unit_name,
+					ports			=> ports_new,
+					sheet			=> sheet,
+					log_threshold	=> log_threshold + 1);
+
+			else
+				log (WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
+			end if;
+		end query_module;
+
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " mirror device " & to_string (device_name)
+			& " unit " & to_string (unit_name),
+			level => log_threshold);
+		
+		log_indentation_up;
+		
+		-- Locate the targeted device in the given module.
+		-- If the device exists, then proceed with further actions.
+		-- Otherwise abort this procedure with a warning:
+		device_cursor_sch := get_electrical_device (module_cursor, device_name);
+			
+		if has_element (device_cursor_sch) then -- device exists in schematic
+			
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> query_module'access);
+
+		else
+			log (WARNING, " Device " & to_string (device_name) & " not found !");
+		end if;
+
+		update_ratsnest (module_cursor, log_threshold + 1);
+		
+		log_indentation_down;		
+	end mirror_unit;
+
+
+
+
+
 	
 
 

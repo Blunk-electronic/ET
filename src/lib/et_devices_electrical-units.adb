@@ -42,6 +42,8 @@ with ada.characters.handling;
 with ada.strings.unbounded;
 with ada.exceptions;
 
+with et_mirroring;
+
 with et_devices_electrical.packages;
 
 with et_symbol_library;
@@ -529,6 +531,9 @@ package body et_devices_electrical.units is
 
 		position : type_object_position;
 		rotation : type_rotation_model;
+
+		use et_mirroring;
+		mirror : type_mirror;
 	begin
 		-- Get the default positions as described in the 
 		-- symbol model:
@@ -540,7 +545,10 @@ package body et_devices_electrical.units is
 		-- actual rotation and position of the unit in the schematic:
 		position := get_position (unit_cursor);
 		rotation := get_rotation (position);
+		mirror := get_mirror_status (unit_cursor);
 
+
+		
 		if rotation /= zero_rotation then
 			rotate_ports (ports, rotation);
 		end if;
