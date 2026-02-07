@@ -568,7 +568,7 @@ package body et_device_library.units is
 
 
 
-	function get_ports_of_unit (
+	function get_ports_from_symbol_model (
 		device_cursor	: in pac_device_models.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return pac_symbol_ports.map 
@@ -609,8 +609,7 @@ package body et_device_library.units is
 		end query_external_units;
 		
 		
-	begin -- get_ports_of_unit
-
+	begin
 		-- Query external units of the device.
 		-- It is most likely that
 		-- the unit is among the external units:
@@ -641,7 +640,7 @@ package body et_device_library.units is
 		-- 		log (text => ada.exceptions.exception_information (event), console => true);
 		-- 		raise;
 		
-	end get_ports_of_unit;
+	end get_ports_from_symbol_model;
 
 
 	

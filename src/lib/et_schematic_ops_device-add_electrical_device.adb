@@ -475,7 +475,7 @@ is
 				log (text => "fetch default port positions of internal unit " 
 					 & to_string (unit_name), level => log_threshold + 2);
 				
-				ports := get_ports_of_unit (
+				ports := get_ports_from_symbol_model (
 					device_cursor	=> device_cursor_lib,
 					unit_name		=> unit_name);
 
@@ -497,7 +497,7 @@ is
 				log (text => "fetch default port positions of external unit " 
 					 & to_string (unit_name), level => log_threshold + 2);
 
-				ports := get_ports_of_unit (
+				ports := get_ports_from_symbol_model (
 					device_cursor	=> device_cursor_lib,
 					unit_name		=> unit_name);
 

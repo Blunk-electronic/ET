@@ -509,7 +509,9 @@ package body et_devices_electrical.units is
 		device_cursor_lib : pac_device_models.cursor;
 	begin
 		device_cursor_lib := get_device_model (device_cursor);
-		ports := get_ports_of_unit (device_cursor_lib, unit_name);
+		
+		ports := get_ports_from_symbol_model (
+			device_cursor_lib, unit_name);
 		
 		return ports;
 	end get_ports_from_symbol_model;
