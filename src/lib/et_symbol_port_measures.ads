@@ -36,6 +36,12 @@
 --   history of changes:
 --
 --
+-- DESCRIPTION:
+--
+-- A port is something where a net can be attached to.
+-- Units of devices and netchangers use these kind of ports.
+--
+--
 -- To Do:
 -- -
 --
@@ -47,6 +53,11 @@ with et_schematic_coordinates;			use et_schematic_coordinates;
 package et_symbol_port_measures is
 
 	use pac_geometry_2;
+
+
+	subtype type_port_length is type_distance_positive
+		range 2.0 .. 20.0;
+
 	
 	-- CS subtype of type_distance_positive
 	

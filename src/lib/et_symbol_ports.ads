@@ -44,7 +44,6 @@ with ada.containers; 					use ada.containers;
 with ada.containers.indefinite_ordered_maps;
 
 with et_symbol_port_measures;			use et_symbol_port_measures;
-with et_net_port_length;				use et_net_port_length;
 with et_net_linewidth;					use et_net_linewidth;
 with et_schematic_text;					use et_schematic_text;
 with et_schematic_geometry;				use et_schematic_geometry;
@@ -66,6 +65,8 @@ package et_symbol_ports is
 
 	port_length_default : constant type_port_length := 2.5;
 	
+
+	-- CS use subtype defined in et_symbol_port_measures:
 	
 
 	-- The distance between the line of a port and the terminal name:

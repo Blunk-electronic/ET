@@ -40,8 +40,8 @@
 --
 
 with et_net_linewidth;				use et_net_linewidth;
-with et_net_port_length;			use et_net_port_length;
 with et_schematic_geometry;			use et_schematic_geometry;
+with et_symbol_port_measures;		use et_symbol_port_measures;
 with et_symbol_shapes;				use et_symbol_shapes;
 with et_directions;					use et_directions;
 
@@ -95,6 +95,7 @@ package et_netchanger_symbol_schematic is
 	
 	
 	
+	-- CS use subtype defined in et_symbol_port_measures:
 	
 	name_to_origin_offset : constant type_distance_positive := 2.0;
 	
