@@ -1071,13 +1071,15 @@ package body et_schematic_ops_units is
 				device		: in out type_device_electrical) 
 			is
 				-- Locate the targeted unit:
-				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
+				unit_cursor : pac_units.cursor := 
+					locate_unit (device, unit_name);
 			begin
 				-- Get the sheet where the unit is:
 				sheet_old := get_sheet (device_cursor_sch, unit_cursor);
 				
 				-- Get the ports of the unit:
-				ports_old := get_ports_of_unit (device_cursor_sch, unit_cursor);
+				ports_old := get_ports_from_schematic (
+					device_cursor_sch, unit_cursor);
 
 				-- Delete the unit:
 				device.units.delete (unit_cursor);				
@@ -1541,7 +1543,8 @@ package body et_schematic_ops_units is
 				
 				-- Get the ports of the unit as they are
 				-- BEFORE the move operation:
-				ports_old := get_ports_of_unit (device_cursor_sch, unit_cursor);
+				ports_old := get_ports_from_schematic (
+					device_cursor_sch, unit_cursor);
 
 				update_element (
 					container	=> device.units,
@@ -1554,7 +1557,8 @@ package body et_schematic_ops_units is
 
 				-- Get the ports of the unit as they are
 				-- AFTER the move operation:
-				ports_new := get_ports_of_unit (device_cursor_sch, unit_cursor);
+				ports_new := get_ports_from_schematic (
+					device_cursor_sch, unit_cursor);
 				
 			end query_device;
 
@@ -2135,7 +2139,8 @@ package body et_schematic_ops_units is
 				
 				-- Get the ports of the unit as they are
 				-- BEFORE the drag operation:
-				ports_old := get_ports_of_unit (device_cursor_sch, unit_cursor);
+				ports_old := get_ports_from_schematic (
+					device_cursor_sch, unit_cursor);
 				
 				update_element (
 					container	=> device.units,
@@ -2144,7 +2149,8 @@ package body et_schematic_ops_units is
 
 				-- Get the ports of the unit as they are
 				-- AFTER the drag operation:
-				ports_new := get_ports_of_unit (device_cursor_sch, unit_cursor);
+				ports_new := get_ports_from_schematic (
+					device_cursor_sch, unit_cursor);
 			end query_device;
 			
 			
@@ -2294,7 +2300,8 @@ package body et_schematic_ops_units is
 				
 				-- Get the ports of the unit as they are
 				-- BEFORE the rotate operation:
-				ports_old := get_ports_of_unit (device_cursor_sch, unit_cursor);
+				ports_old := get_ports_from_schematic (
+					device_cursor_sch, unit_cursor);
 
 				update_element (
 					container	=> device.units,
@@ -2307,7 +2314,8 @@ package body et_schematic_ops_units is
 
 				-- Get the ports of the unit as they are
 				-- AFTER the rotate operation:
-				ports_new := get_ports_of_unit (device_cursor_sch, unit_cursor);
+				ports_new := get_ports_from_schematic (
+					device_cursor_sch, unit_cursor);
 			end query_device;
 			
 			

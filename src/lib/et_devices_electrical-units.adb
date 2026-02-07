@@ -518,7 +518,7 @@ package body et_devices_electrical.units is
 
 
 
-	function get_ports_of_unit (
+	function get_ports_from_schematic (
 		device_cursor	: in pac_devices_electrical.cursor;
 		unit_cursor		: in pac_units.cursor)
 		return pac_symbol_ports.map
@@ -546,7 +546,7 @@ package body et_devices_electrical.units is
 		move_ports (ports, position);
 		
 		return ports;
-	end get_ports_of_unit;
+	end get_ports_from_schematic;
 
 
 
