@@ -40,6 +40,9 @@ with ada.characters;			use ada.characters;
 -- with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
+with et_mirroring;
+
+
 
 package body et_symbol_ports is
 
@@ -181,6 +184,36 @@ package body et_symbol_ports is
 	end rotate_ports;
 
 
+
+
+
+	
+	procedure mirror_ports (
+		ports	: in out pac_symbol_ports.map)
+	is
+		c : pac_symbol_ports.cursor := ports.first;
+
+		
+		procedure query_port (
+			name : in pac_port_name.bounded_string;
+			port : in out type_symbol_port)
+		is
+			use et_mirroring;
+		begin
+			mirror_point (port.position, MIRROR_ALONG_Y_AXIS);
+		end query_port;
+
+		
+	begin
+		-- Iterate through the ports and mirror
+		-- each one along the y-axis:
+		while has_element (c) loop
+			ports.update_element (c, query_port'access);
+			next (c);
+		end loop;
+	end mirror_ports;
+
+	
 	
 end et_symbol_ports;
 

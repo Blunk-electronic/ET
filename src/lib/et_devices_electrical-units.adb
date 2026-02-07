@@ -545,8 +545,12 @@ package body et_devices_electrical.units is
 		-- actual rotation and position of the unit in the schematic:
 		position := get_position (unit_cursor);
 		rotation := get_rotation (position);
+		
 		mirror := get_mirror_status (unit_cursor);
 
+		if mirror = MIRROR_ALONG_Y_AXIS then
+			mirror_ports (ports);
+		end if;
 		-- CS: handle mirror status
 		
 		if rotation /= zero_rotation then

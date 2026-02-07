@@ -215,6 +215,11 @@ package et_symbol_ports is
 		angle	: in type_rotation_model); -- 90
 
 
+	-- Mirrors the given ports along the y-axis of the symbol:
+	procedure mirror_ports (
+		ports	: in out pac_symbol_ports.map);
+
+	
 
 	-- CS procedure that outputs the properties of a port
 	
