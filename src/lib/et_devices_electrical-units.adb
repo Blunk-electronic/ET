@@ -547,7 +547,7 @@ package body et_devices_electrical.units is
 		rotation := get_rotation (position);
 		mirror := get_mirror_status (unit_cursor);
 
-
+		-- CS: handle mirror status
 		
 		if rotation /= zero_rotation then
 			rotate_ports (ports, rotation);
