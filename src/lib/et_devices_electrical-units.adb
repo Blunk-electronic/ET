@@ -500,7 +500,7 @@ package body et_devices_electrical.units is
 	
 	
 
-	function get_ports_of_unit (
+	function get_ports_from_symbol_model (
 		device_cursor	: in pac_devices_electrical.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return pac_symbol_ports.map 
@@ -512,7 +512,7 @@ package body et_devices_electrical.units is
 		ports := get_ports_of_unit (device_cursor_lib, unit_name);
 		
 		return ports;
-	end get_ports_of_unit;
+	end get_ports_from_symbol_model;
 
 
 
@@ -529,8 +529,9 @@ package body et_devices_electrical.units is
 		rotation : type_rotation_model;
 	begin
 		-- Get the default positions as described in the 
-		-- device model:
-		ports := get_ports_of_unit (device_cursor, key (unit_cursor));
+		-- symbol model:
+		ports := get_ports_from_symbol_model (
+			device_cursor, key (unit_cursor));
 
 		
 		-- Rotate and move the ports according to the 

@@ -260,8 +260,8 @@ package et_devices_electrical.units is
 	
 	-- Returns a map of ports of the given device and unit.
 	-- The coordinates of the ports are the default x/y-positions relative
-	-- to the origin of the unit as they are defined in the symbol model.
-	function get_ports_of_unit (
+	-- to the origin of the unit as they are defined in the symbol model:
+	function get_ports_from_symbol_model (
 		device_cursor	: in pac_devices_electrical.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return pac_symbol_ports.map;
@@ -269,7 +269,7 @@ package et_devices_electrical.units is
 
 	-- Returns a map of ports of the given device and unit.
 	-- The coordinates of the ports are the
-	-- absolute x/y-positions in the schematic::
+	-- absolute x/y-positions as they are in the schematic:
 	function get_ports_of_unit (
 		device_cursor	: in pac_devices_electrical.cursor;
 		unit_cursor		: in pac_units.cursor)

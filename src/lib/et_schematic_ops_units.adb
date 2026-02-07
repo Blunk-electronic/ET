@@ -197,8 +197,9 @@ package body et_schematic_ops_units is
 					--log (text => "unit " & pac_unit_name.to_string (key (unit_cursor)));
 					--log (text => "port " & pac_port_name.to_string (port_name));
 					
-					-- fetch the unit ports from the library model
-					ports := get_ports_of_unit (device_cursor, key (unit_cursor));
+					-- Get the unit ports from the symbol model:
+					ports := get_ports_from_symbol_model (
+						device_cursor, key (unit_cursor));
 
 					-- if the unit has a port named port_name then we have
 					-- a match. no further search required.
@@ -267,8 +268,9 @@ package body et_schematic_ops_units is
 				if contains (device.units, unit_name) then
 					if length (port_name) > 0 then -- search for port in unit
 
-						-- fetch the unit ports from the library model
-						ports := get_ports_of_unit (device_cursor, unit_name);
+						-- Get the unit ports from the symbol model:
+						ports := get_ports_from_symbol_model (
+							device_cursor, unit_name);
 
 						if contains (ports, port_name) then
 							result := true;

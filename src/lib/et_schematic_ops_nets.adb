@@ -174,7 +174,7 @@ package body et_schematic_ops_nets is
 							 pac_unit_name.to_string (key (unit_cursor)), level => log_threshold + 1);
 						log_indentation_up;
 
-						ports := get_ports_of_unit (
+						ports := get_ports_from_symbol_model (
 							device_cursor	=> device_cursor,
 							unit_name		=> key (unit_cursor));
 

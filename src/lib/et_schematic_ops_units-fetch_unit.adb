@@ -148,12 +148,14 @@ is
 				position	=> device_cursor_sch,
 				process		=> do_it'access);
 
-			-- fetch ports of unit and their positions relative to the unit origin
+			-- Get ports of unit and their positions relative to the 
+			-- unit origin:
 			log_indentation_up;				
-			log (text => "fetch relative port positions of internal unit " &
-				to_string (key (unit_cursors.int)), level => log_threshold + 1);
+			log (text => "fetch relative port positions of internal unit " 
+				 & to_string (key (unit_cursors.int)),
+				 level => log_threshold + 1);
 			
-			ports := get_ports_of_unit (
+			ports := get_ports_from_symbol_model (
 				device_cursor	=> device_cursor_sch,
 				unit_name		=> key (unit_cursors.int));
 
@@ -231,12 +233,14 @@ is
 				position	=> device_cursor_sch,
 				process		=> do_it'access);
 
-			-- fetch ports of unit and their positions relative to the unit origin
+			-- Get ports of unit and their positions relative 
+			-- to the unit origin:
 			log_indentation_up;
-			log (text => "fetch relative port positions of external unit " &
-				to_string (key (unit_cursors.ext)), level => log_threshold + 1);
+			log (text => "fetch relative port positions of external unit "
+				 & to_string (key (unit_cursors.ext)), 
+				 level => log_threshold + 1);
 
-			ports := get_ports_of_unit (
+			ports := get_ports_from_symbol_model (
 				device_cursor	=> device_cursor_sch,
 				unit_name		=> key (unit_cursors.ext));
 
