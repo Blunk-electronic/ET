@@ -541,22 +541,23 @@ package body et_devices_electrical.units is
 			device_cursor, key (unit_cursor));
 
 		
-		-- Rotate and move the ports according to the 
-		-- actual rotation and position of the unit in the schematic:
-		position := get_position (unit_cursor);
-		rotation := get_rotation (position);
+		-- Rotate, mirror and move the ports according
+		-- to the actual rotation and position of the unit
+		-- in the schematic:
 		
+		position := get_position (unit_cursor);
+		rotation := get_rotation (position);	
 		mirror := get_mirror_status (unit_cursor);
 
-		if mirror = MIRROR_ALONG_Y_AXIS then
-			mirror_ports (ports);
-		end if;
-		-- CS: handle mirror status
 		
 		if rotation /= zero_rotation then
 			rotate_ports (ports, rotation);
 		end if;
 
+		if mirror = MIRROR_ALONG_Y_AXIS then
+			mirror_ports (ports);
+		end if;
+		
 		move_ports (ports, position);
 		
 		return ports;
