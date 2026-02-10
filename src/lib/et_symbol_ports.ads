@@ -43,6 +43,7 @@
 with ada.containers; 					use ada.containers;
 with ada.containers.indefinite_ordered_maps;
 
+with et_symbol_port_general;			use et_symbol_port_general;
 with et_symbol_port_measures;			use et_symbol_port_measures;
 with et_net_linewidth;					use et_net_linewidth;
 with et_schematic_text;					use et_schematic_text;
@@ -62,8 +63,6 @@ package et_symbol_ports is
 	use pac_geometry_2;
 	use pac_text_schematic;
 	
-
-	port_length_default : constant type_port_length := 2.5;
 	
 
 	-- CS use subtype defined in et_symbol_port_measures:
@@ -77,22 +76,7 @@ package et_symbol_ports is
 	terminal_name_spacing_start : constant type_distance_positive := 1.7; -- relevant for GUI only
 
 	
-	type type_port_base is tagged record
-		-- This is the place where a net is connected:
-		position	: type_vector_model;
-
-		-- From the position a line starts.
-		-- This line represents a port.
-		-- The linewidth is the global constant net_linewidth:
-		length		: type_port_length := port_length_default; 
-		
-		--rotation	: et_schematic_coordinates.type_rotation_model := 0.0; -- CS use type_rotation_model_relative ?
-		rotation	: type_rotation_relative := 0.0;
-		--  90.0 -- to be connected with a net from above,
-		-- -90.0 -- from below,
-		-- 180.0 -- from the left,
-		--   0.0 -- from the right
-		
+	type type_port_base is new type_port_general with record
 		port_name_visible		: type_port_name_visible := port_name_visible_default;
 
 		-- CS: This selector is probably not required

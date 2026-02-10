@@ -33,6 +33,13 @@
 --   info@blunk-electronic.de
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
+-- DESCRIPTION:
+--
+-- This package is about the appearance of a netchanger
+-- in the schematic domain.
+--
+--
+
 --   history of changes:
 --
 -- ToDo: 
@@ -41,6 +48,7 @@
 
 with et_net_linewidth;				use et_net_linewidth;
 with et_schematic_geometry;			use et_schematic_geometry;
+with et_symbol_port_general;		use et_symbol_port_general;
 with et_symbol_port_measures;		use et_symbol_port_measures;
 with et_symbol_shapes;				use et_symbol_shapes;
 with et_directions;					use et_directions;
@@ -55,32 +63,11 @@ package et_netchanger_symbol_schematic is
 		
 -- PORT:
 
-	-- A port is basically a line with a linewidth equal to those
-	-- of net segments (global constant net_linewidth).
-	-- Its start point is the port position.
-	-- At the start point a net will be attached.
-	-- The end point points towards the symbol body. Depending on the port
-	-- rotation the end tail points:
-	--  to the left if rotation is 0 degree. net attached from the right.
-	--  to the right if rotation is 180 degree. net attached from the left.
-	--  downwards if the rotation is 90 degree. net attached from above.
-	--  upwards if the rotation is 270 degree. net attached from below.
 
-	type type_netchanger_port is record
-		-- This is the place where a net is connected:
-		position	: type_vector_model;
-		
-		-- From the position a line starts.
-		-- This line represents a port.
-		-- The linewidth is the global constant net_linewidth:
-		length		: type_port_length := 5.0; 
-		
-		rotation	: type_rotation_model;
-		--  90.0 -- to be connected with a net from above,
-		-- -90.0 -- from below,
-		-- 180.0 -- from the left,
-		--   0.0 -- from the right
-	end record;
+	-- A netchanger port is basically the same as
+	-- a general port. But for clariry we introduce
+	-- a special name for a netchanger port:
+	subtype type_netchanger_port is type_port_general;
 
 
 	
