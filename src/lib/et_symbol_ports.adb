@@ -140,6 +140,7 @@ package body et_symbol_ports is
 			port	: in out type_symbol_port) 
 		is begin
 			move_by (port.position, offset.place);
+			-- CS use primitive operation of et_symbol_port_general
 		end;
 
 		procedure query_port (cursor : in pac_symbol_ports.cursor) is begin
@@ -166,6 +167,7 @@ package body et_symbol_ports is
 			port	: in out type_symbol_port) 
 		is begin
 			rotate_by (port.position, angle);
+			-- CS use primitive operation of et_symbol_port_general
 		end;
 
 		
@@ -201,6 +203,7 @@ package body et_symbol_ports is
 			use et_mirroring;
 		begin
 			mirror_point (port.position, MIRROR_ALONG_Y_AXIS);
+			-- CS use primitive operation of et_symbol_port_general
 		end query_port;
 
 		

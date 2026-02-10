@@ -94,7 +94,7 @@ package et_symbol_port_general is
 	
 
 	-- CS primitive operations
-	-- move, rotate
+	-- move, rotate, mirror
 	-- get_position, get_rotation
 
 	
