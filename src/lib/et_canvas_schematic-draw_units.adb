@@ -142,7 +142,7 @@ procedure draw_units is
 			p.place := unit_place;
 			p.rotation := unit_rotation;
 
-			draw_line (l, p, l.width, stroke => DO_STROKE);
+			draw_line (l, p, l.width, unit_mirror_status, stroke => DO_STROKE);
 		end draw_line;
 
 
@@ -156,7 +156,7 @@ procedure draw_units is
 			p.place := unit_place;
 			p.rotation := unit_rotation;
 
-			draw_arc (a, p, a.width, stroke => DO_STROKE);
+			draw_arc (a, p, a.width, unit_mirror_status, stroke => DO_STROKE);
 		end draw_arc;
 
 
@@ -171,7 +171,7 @@ procedure draw_units is
 			p.rotation := unit_rotation;
   
 			-- the circle is not filled -> actual "filled" is NO
-			draw_circle (i, p, NO, i.width, stroke => DO_STROKE);
+			draw_circle (i, p, NO, i.width, unit_mirror_status, stroke => DO_STROKE);
 		end draw_circle;
 
 
@@ -308,9 +308,10 @@ procedure draw_units is
 
 				-- Draw the line:
 				set_color_symbols (brightness);
+
 				draw_line (line, (unit_place, unit_rotation), net_linewidth,
-						   stroke	=> DO_STROKE);
-				-- CS mirror => 
+					unit_mirror_status, stroke	=> DO_STROKE);
+
 
 				-- Draw the circle around the start point
 				-- of the line if the port-layer is enabled:
@@ -331,7 +332,7 @@ procedure draw_units is
 						pos		=> (unit_place, unit_rotation), 
 						filled	=> NO,
 						width	=> port_circle_linewidth, 
-						-- CS mirror => 
+						mirror	=> unit_mirror_status,
 						stroke	=> DO_STROKE);
 
 					-- CS draw port direction, weakness, power level ?
@@ -382,6 +383,8 @@ procedure draw_units is
 
 				-- Move the name by the unit position:
 				move_by (pos_port_name, unit_place);
+
+				-- CS mirror_point (pos_port_name, unit_mirror_status);
 				
 				set_color_symbols (brightness);
 
@@ -423,6 +426,9 @@ procedure draw_units is
 				-- Move the name by the unit position:
 				move_by (pos_terminal_name, unit_place);
 
+				-- CS mirror_point (pos_terminal_name, unit_mirror_status);
+
+				
 				-- Now some fine adjustment is required to place the terminal
 				-- name some distance away from the line of the port.
 				-- Compute the position of the origin of the terminal name regarding 
