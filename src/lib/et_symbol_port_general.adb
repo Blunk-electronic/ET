@@ -4,7 +4,7 @@
 --                                                                          --
 --                     SYMBOL PORT / GENERAL PROPERTIES                     --
 --                                                                          --
---                              S p e c                                     --
+--                              B o d y                                     --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -34,10 +34,7 @@
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
 --
--- DESCRIPTION:
---
--- This package is about general properties of ports that
--- are used by schematic symbols and netchanger symbols.
+
 --
 --
 --   history of changes:
@@ -49,79 +46,57 @@
 --
 
 
-with et_symbol_port_measures;			use et_symbol_port_measures;
-with et_schematic_geometry;				use et_schematic_geometry;
-
-
-
-package et_symbol_port_general is
-
-	use pac_geometry_2;
-
-	
-	port_length_default : constant type_port_length := 2.5;
-
-
-
-	-- A port is basically a line with a linewidth equal to those
-	-- of net segments (global constant net_linewidth).
-	-- Its start point is the port position.
-	-- At the start point a net will be attached.
-	-- The end point points towards the symbol body. Depending on the port
-	-- rotation the end tail points:
-	--  to the left if rotation is 0 degree. net attached from the right.
-	--  to the right if rotation is 180 degree. net attached from the left.
-	--  downwards if the rotation is 90 degree. net attached from above.
-	--  upwards if the rotation is 270 degree. net attached from below.
-	
-	type type_port_general is tagged record -- CS make private ?
-		-- This is the place where a net is connected:
-		position	: type_vector_model;
-
-		-- From the position a line starts.
-		-- This line represents a port.
-		-- The linewidth is the global constant net_linewidth:
-		length		: type_port_length := port_length_default; 
-		
-		--rotation	: et_schematic_coordinates.type_rotation_model := 0.0; -- CS use type_rotation_model_relative ?
-		rotation	: type_rotation_relative := 0.0;
-		--  90.0 -- to be connected with a net from above,
-		-- -90.0 -- from below,
-		-- 180.0 -- from the left,
-		--   0.0 -- from the right
-	end record;
-
-	
+package body et_symbol_port_general is
 
 
 	
 	function get_place (
 		port 		: in type_port_general)
-		return type_vector_model;
+		return type_vector_model
+	is begin
+		return port.position;
+	end;
+
 
 		
 	procedure set_place (
 		port		: in out type_port_general;
-		place		: in type_vector_model);
+		place		: in type_vector_model)
+	is begin
+		port.position := place;
+	end;
 	
+
 
 	
 	function get_rotation (
 		port		: in type_port_general)
-		return type_rotation_relative;
+		return type_rotation_relative
+	is begin
+		return port.rotation;
+	end;
+
 
 
 	procedure set_rotation (
 		port		: in out type_port_general;
-		rotation	: in type_rotation_relative);
+		rotation	: in type_rotation_relative)
+	is begin
+		port.rotation := rotation;
+	end;
 
 	
-	
+
+
 	function get_length (
 		port		: in type_port_general)
-		return type_port_length;
+		return type_port_length
+	is begin
+		return port.length;
+	end;
 		
-		
+
+	
 	
 end et_symbol_port_general;
 

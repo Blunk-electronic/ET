@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+with et_mirroring;						use et_mirroring;
 with et_primitive_objects;				use et_primitive_objects;
 with et_colors;							use et_colors;
 
@@ -104,10 +105,13 @@ procedure draw_units is
 		-- then the unit name will not be drawn:
 		unit_count		: in type_unit_count;
 
-		-- CS: Unit position and rotation should be unified
-		-- to a single argument ?:
-		unit_position	: in type_vector_model; -- x/y on the schematic sheet
-		unit_rotation	: in type_rotation := zero_rotation;
+		-- Possible question here: Should the unit position and rotation 
+		-- be unified to a single argument of type_position ?
+		-- Answer: Both components are frequently used separately and
+		-- also as an aggreate type. So it should be left as is is:
+		unit_place			: in type_vector_model; -- x/y
+		unit_rotation		: in type_rotation := zero_rotation; -- angle
+		unit_mirror_status 	: in type_mirror := MIRROR_ALONG_Y_AXIS;
 		
 		placeholders	: in type_text_placeholders;
 		preview			: in boolean := false)
@@ -135,7 +139,7 @@ procedure draw_units is
 			-- CS rework, use unit position (incl. x,y,rotation)
 			-- instead.
 		begin
-			p.place := unit_position;
+			p.place := unit_place;
 			p.rotation := unit_rotation;
 
 			draw_line (l, p, l.width, stroke => DO_STROKE);
@@ -149,7 +153,7 @@ procedure draw_units is
 			-- CS rework, use unit position (incl. x,y,rotation)
 			-- instead.
 		begin
-			p.place := unit_position;
+			p.place := unit_place;
 			p.rotation := unit_rotation;
 
 			draw_arc (a, p, a.width, stroke => DO_STROKE);
@@ -163,7 +167,7 @@ procedure draw_units is
 			-- CS rework, use unit position (incl. x,y,rotation)
 			-- instead.
 		begin
-			p.place := unit_position;
+			p.place := unit_place;
 			p.rotation := unit_rotation;
   
 			-- the circle is not filled -> actual "filled" is NO
@@ -304,7 +308,7 @@ procedure draw_units is
 
 				-- Draw the line:
 				set_color_symbols (brightness);
-				draw_line (line, (unit_position, unit_rotation), net_linewidth,
+				draw_line (line, (unit_place, unit_rotation), net_linewidth,
 						   stroke	=> DO_STROKE);
 				-- CS mirror => 
 
@@ -324,9 +328,9 @@ procedure draw_units is
 					-- Draw the circle. It is not filled:
 					draw_circle (
 						circle	=> circle, 
-						pos		=> (unit_position, unit_rotation), 
+						pos		=> (unit_place, unit_rotation), 
 						filled	=> NO,
-						width	=> port_circle_line_width, 
+						width	=> port_circle_linewidth, 
 						-- CS mirror => 
 						stroke	=> DO_STROKE);
 
@@ -377,7 +381,7 @@ procedure draw_units is
 				rotate_by (pos_port_name, unit_rotation);
 
 				-- Move the name by the unit position:
-				move_by (pos_port_name, unit_position);
+				move_by (pos_port_name, unit_place);
 				
 				set_color_symbols (brightness);
 
@@ -417,7 +421,7 @@ procedure draw_units is
 				rotate_by (pos_terminal_name, unit_rotation);
 				
 				-- Move the name by the unit position:
-				move_by (pos_terminal_name, unit_position);
+				move_by (pos_terminal_name, unit_place);
 
 				-- Now some fine adjustment is required to place the terminal
 				-- name some distance away from the line of the port.
@@ -525,7 +529,7 @@ procedure draw_units is
 			rotate_by (p, unit_rotation);
 
 			-- Move text by unit position
-			move_by (p, unit_position);
+			move_by (p, unit_place);
 			
 			draw_text (
 				content		=> text.content,
@@ -601,7 +605,7 @@ procedure draw_units is
 						p := placeholders.name.position;
 						
 						-- Move placeholder by unit position to the final position:
-						move_by (p, unit_position);
+						move_by (p, unit_place);
 					end if;
 
 					
@@ -673,7 +677,7 @@ procedure draw_units is
 							p := placeholders.value.position;
 							
 							-- Move placeholder by unit position to the final position:
-							move_by (p, unit_position);
+							move_by (p, unit_place);
 						end if;
 
 						
@@ -746,7 +750,7 @@ procedure draw_units is
 							p := placeholders.purpose.position;
 							
 							-- Move placeholder by unit position to the final position:
-							move_by (p, unit_position);
+							move_by (p, unit_place);
 						end if;
 
 						
@@ -789,7 +793,7 @@ procedure draw_units is
 			set_color_origin (brightness);
 			
 			-- NOTE: The origin is never rotated.
-			draw_origin ((unit_position, 0.0));
+			draw_origin ((unit_place, 0.0));
 
 		end draw_origin;
 
@@ -870,7 +874,7 @@ procedure draw_units is
 				-- in the schematic:
 				pos : constant type_object_position := get_position (unit);
 
-				unit_position : type_vector_model; -- only x and y relevant
+				unit_place : type_vector_model; -- x/y
 				unit_rotation : type_rotation;
 			
 
@@ -889,8 +893,9 @@ procedure draw_units is
 						unit_name		=> unit_name,
 						unit_count		=> unit_count,
 						
-						unit_position	=> unit_position,
-						unit_rotation	=> unit_rotation,
+						unit_place			=> unit_place,
+						unit_rotation		=> unit_rotation,
+						unit_mirror_status	=> get_mirror_status (unit),
 
 						-- Get the placeholders (for name, value, purpose)
 						-- of the unit as defined in the schematic.
@@ -918,7 +923,7 @@ procedure draw_units is
 
 							-- overwrite position if unit is moving
 							if is_moving (unit) then
-								unit_position := get_object_tool_position;
+								unit_place := get_object_tool_position;
 							end if;
 						end if;
 
@@ -944,7 +949,7 @@ procedure draw_units is
 
 							-- overwrite position if unit is moving
 							if is_moving (unit) then
-								unit_position := get_object_tool_position;
+								unit_place := get_object_tool_position;
 							end if;
 
 							-- get the rotation of the unit
@@ -963,7 +968,7 @@ procedure draw_units is
 				-- Get the x/y-position of the unit.
 				-- If the unit is selected and being moved, then the x/y position
 				-- will be overwritten by the position of the mouse or the cursor.
-				unit_position := get_place (pos);
+				unit_place := get_place (pos);
 
 				-- There are two cases when a unit is to be drawn:
 				
@@ -1032,14 +1037,14 @@ procedure draw_units is
 					symbol_cursor := get_symbol (unit_cursor.external);
 					
 					draw_unit (
-						symbol			=> get_symbol (symbol_cursor),
-						device_name		=> unit_add.device_pre,
-						device_value	=> unit_add.value,
-						unit_name		=> unit_add.name,
-						unit_count		=> unit_add.total,						
-						unit_position	=> destination,
-						unit_rotation	=> unit_add.rotation,						
-						placeholders	=> rotate_placeholders (
+						symbol				=> get_symbol (symbol_cursor),
+						device_name			=> unit_add.device_pre,
+						device_value		=> unit_add.value,
+						unit_name			=> unit_add.name,
+						unit_count			=> unit_add.total,						
+						unit_place			=> destination,
+						unit_rotation		=> unit_add.rotation,				
+						placeholders		=> rotate_placeholders (
 							get_placeholders (symbol_cursor), unit_add.rotation),
 
 						preview			=> true);
@@ -1049,14 +1054,14 @@ procedure draw_units is
 					--put_line ("internal unit");						
 					
 					draw_unit (
-						symbol			=> get_symbol (unit_cursor.internal),
-						device_name		=> unit_add.device_pre,
-						device_value	=> unit_add.value,
-						unit_name		=> unit_add.name,
-						unit_count		=> unit_add.total,						
-						unit_position	=> destination,
-						unit_rotation	=> unit_add.rotation,						
-						placeholders	=> rotate_placeholders (
+						symbol				=> get_symbol (unit_cursor.internal),
+						device_name			=> unit_add.device_pre,
+						device_value		=> unit_add.value,
+						unit_name			=> unit_add.name,
+						unit_count			=> unit_add.total,						
+						unit_place			=> destination,
+						unit_rotation		=> unit_add.rotation,						
+						placeholders		=> rotate_placeholders (
 							get_placeholders (unit_cursor.internal), unit_add.rotation),
 
 						preview			=> true);
@@ -1097,14 +1102,14 @@ procedure draw_units is
 					symbol_cursor := get_symbol (unit_cursor.external);
 
 					draw_unit (
-						symbol			=> get_symbol (symbol_cursor),
-						device_name		=> unit_fetch.device_pre,
-						device_value	=> unit_fetch.value,
-						unit_name		=> unit_fetch.name,
-						unit_count		=> unit_fetch.total,						
-						unit_position	=> destination,
-						unit_rotation	=> unit_fetch.rotation,						
-						placeholders	=> rotate_placeholders (
+						symbol				=> get_symbol (symbol_cursor),
+						device_name			=> unit_fetch.device_pre,
+						device_value		=> unit_fetch.value,
+						unit_name			=> unit_fetch.name,
+						unit_count			=> unit_fetch.total,						
+						unit_place			=> destination,
+						unit_rotation		=> unit_fetch.rotation,						
+						placeholders		=> rotate_placeholders (
 							get_placeholders (symbol_cursor), unit_fetch.rotation),
 						
 						preview			=> true);
@@ -1114,14 +1119,14 @@ procedure draw_units is
 					--put_line ("internal unit");						
 					
 					draw_unit (
-						symbol			=> get_symbol (unit_cursor.internal),
-						device_name		=> unit_fetch.device_pre,
-						device_value	=> unit_fetch.value,
-						unit_name		=> unit_fetch.name,
-						unit_count		=> unit_fetch.total,						
-						unit_position	=> destination,
-						unit_rotation	=> unit_fetch.rotation,						
-						placeholders	=> rotate_placeholders (
+						symbol				=> get_symbol (unit_cursor.internal),
+						device_name			=> unit_fetch.device_pre,
+						device_value		=> unit_fetch.value,
+						unit_name			=> unit_fetch.name,
+						unit_count			=> unit_fetch.total,						
+						unit_place			=> destination,
+						unit_rotation		=> unit_fetch.rotation,
+						placeholders		=> rotate_placeholders (
 							get_placeholders (unit_cursor.internal), unit_fetch.rotation),
 
 						preview			=> true);

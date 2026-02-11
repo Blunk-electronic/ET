@@ -44,11 +44,11 @@ with ada.containers; 					use ada.containers;
 with ada.containers.indefinite_ordered_maps;
 
 with et_symbol_port_general;			use et_symbol_port_general;
-with et_symbol_port_measures;			use et_symbol_port_measures;
-with et_net_linewidth;					use et_net_linewidth;
+
 with et_schematic_text;					use et_schematic_text;
 with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_coordinates;			use et_schematic_coordinates;
+
 with et_port_names;
 with et_port_direction;					use et_port_direction;
 with et_port_visibility;				use et_port_visibility;
@@ -64,16 +64,15 @@ package et_symbol_ports is
 	use pac_text_schematic;
 	
 	
-
-	-- CS use subtype defined in et_symbol_port_measures:
 	
 
 	-- The distance between the line of a port and the terminal name:
-	terminal_name_spacing_line : constant type_distance_positive := 1.0; -- relevant for GUI only
+	terminal_name_spacing_line : constant type_distance_positive := 1.0;
 
 	-- The distance between the start point of a port and the
 	-- origin of the terminal name:
-	terminal_name_spacing_start : constant type_distance_positive := 1.7; -- relevant for GUI only
+	terminal_name_spacing_start : constant type_distance_positive := 1.7;
+
 
 	
 	type type_port_base is new type_port_general with record

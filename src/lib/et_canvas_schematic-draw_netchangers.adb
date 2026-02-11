@@ -176,7 +176,7 @@ procedure draw_netchangers is
 					circle	=> circle, 
 					pos		=> netchanger_position, 
 					filled	=> NO,
-					width	=> port_circle_line_width, 
+					width	=> port_circle_linewidth, 
 					stroke	=> DO_STROKE);
 				
 			end if;
