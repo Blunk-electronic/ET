@@ -381,10 +381,12 @@ procedure draw_units is
 				-- Rotate the position of the port name by the unit rotation:
 				rotate_by (pos_port_name, unit_rotation);
 
+				mirror_point (pos_port_name, unit_mirror_status);
+				
 				-- Move the name by the unit position:
 				move_by (pos_port_name, unit_place);
 
-				-- CS mirror_point (pos_port_name, unit_mirror_status);
+
 				
 				set_color_symbols (brightness);
 
@@ -422,11 +424,11 @@ procedure draw_units is
 			begin
 				-- Rotate the position of the terminal name by the unit rotation:
 				rotate_by (pos_terminal_name, unit_rotation);
+
+				mirror_point (pos_terminal_name, unit_mirror_status);
 				
 				-- Move the name by the unit position:
 				move_by (pos_terminal_name, unit_place);
-
-				-- CS mirror_point (pos_terminal_name, unit_mirror_status);
 
 				
 				-- Now some fine adjustment is required to place the terminal
