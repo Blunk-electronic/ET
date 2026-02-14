@@ -211,12 +211,11 @@ procedure draw_units is
 			--
 			-- NOTE: Regarding the position of terminal and port name:
 			-- For the moment, the computations below leave the rotation of the 
-			-- unit in the schematic outside. For the moment we assume that the unit is not rotated
-			-- in the schematic. We look at the default rotation of the ports as they
-			-- are defined in the device model.
+			-- unit in the schematic outside. For the moment we assume that the unit 
+			-- is not rotated in the schematic. We look at the default rotation of the 
+			-- ports as they are defined in the device model.
 			-- The final coordinates of terminal and port name will be computed later.
-			procedure compute_positions is begin
-				
+			procedure compute_positions is begin				
 				if port.rotation = 0.0 then -- end point points to the left
 					-- Compute the end point. It is left of the start point:
 					set (axis => AXIS_X, value => get_x (A) - port.length, point => B);
@@ -350,37 +349,72 @@ procedure draw_units is
 			
 			
 			-- This procedure draws the port name at its final
-			-- position taking into account the rotation of the unit in the schematic:
+			-- position taking into account the rotation and
+			-- mirror status of the unit in the schematic:
 			procedure draw_port_name is
+				use pac_draw_text;
 				use et_port_names;
+				use et_alignment;
 
 				-- The vertical alignment is untouched and is always CENTER.
-				-- The horizontal alignment depends on the total rotation
-				-- which is a sum of port rotation and unit rotation.
-				use et_alignment;
-				alignment : type_text_alignment := (horizontal => ALIGN_CENTER, vertical => ALIGN_CENTER);
-
-				use pac_draw_text;
+				-- The horizontal alignment depends on:
+				-- 1. the total rotation (which is a sum of port 
+				--    rotation and unit rotation).
+				-- 2. the mirror status of the unit
+				
+				alignment : type_text_alignment := (
+					horizontal => ALIGN_CENTER, vertical => ALIGN_CENTER);
 			begin
-				if rotation_total = 0.0 or rotation_total = 360.0 or rotation_total = -360.0 then
-					alignment.horizontal := ALIGN_RIGHT;
+				if rotation_total = 0.0 or rotation_total = 360.0 
+					or rotation_total = -360.0 then
+					
 
+					case unit_mirror_status is
+						when MIRROR_NO =>
+							alignment.horizontal := ALIGN_RIGHT;
+					
+						when MIRROR_ALONG_Y_AXIS =>
+							alignment.horizontal := ALIGN_LEFT;
+							
+						when others =>
+							raise constraint_error; -- CS should never happen
+					end case;
+
+					
 				elsif rotation_total = 90.0 or rotation_total = -270.0 then
 					alignment.horizontal := ALIGN_RIGHT;
+
 					
 				elsif rotation_total = 180.0 or rotation_total = -180.0 then
-					alignment.horizontal := ALIGN_LEFT;
+				
+					case unit_mirror_status is
+						when MIRROR_NO =>
+							alignment.horizontal := ALIGN_LEFT;
+					
+						when MIRROR_ALONG_Y_AXIS =>
+							alignment.horizontal := ALIGN_RIGHT;
+							
+						when others =>
+							raise constraint_error; -- CS should never happen
+					end case;
+
+					
 					
 				elsif rotation_total = -90.0 or rotation_total = 270.0 then
 					alignment.horizontal := ALIGN_LEFT;
+					
 					
 				else
 					raise constraint_error; -- CS should never happen
 				end if;
 
-				-- Rotate the position of the port name by the unit rotation:
+				
+				-- Rotate the position of the port name by 
+				-- the unit rotation:
 				rotate_by (pos_port_name, unit_rotation);
 
+				-- Mirror the position of the port name
+				-- if the unit is mirrored:
 				mirror_point (pos_port_name, unit_mirror_status);
 				
 				-- Move the name by the unit position:
@@ -409,22 +443,30 @@ procedure draw_units is
 			
 
 			-- This procedure draws the terminal name at its final
-			-- position taking into account the rotation of the unit in the schematic:
+			-- position taking into account the rotation and 
+			-- mirror status of the unit in the schematic:
 			procedure draw_terminal_name is
-				-- The vertical alignment is untouched and is always BOTTOM.
-				-- The horizontal alignment depends on the total rotation
-				-- which is a sum of port rotation and unit rotation.
-				use et_alignment;
-				alignment : type_text_alignment := (horizontal => ALIGN_CENTER, vertical => ALIGN_BOTTOM);
-
-				properties : type_port_properties_access;
-
 				use pac_draw_text;
 				use et_schematic_ops_units;
-			begin
-				-- Rotate the position of the terminal name by the unit rotation:
-				rotate_by (pos_terminal_name, unit_rotation);
+				use et_alignment;
+				
+				-- The vertical alignment is untouched and is always BOTTOM.
+				-- The horizontal alignment depends on
+				-- 1. the total rotation (which is a sum of port 
+				--    rotation and unit rotation).
+				-- 2. the mirror status of the unit
+				
+				alignment : type_text_alignment := (
+					horizontal => ALIGN_CENTER, vertical => ALIGN_BOTTOM);
 
+				properties : type_port_properties_access;
+			begin
+				-- Rotate the position of the terminal name 
+				-- by the unit rotation:
+				rotate_by (pos_terminal_name, unit_rotation);
+				
+				-- Mirror the position of the terminal name
+				-- if the unit is mirrored:
 				mirror_point (pos_terminal_name, unit_mirror_status);
 				
 				-- Move the name by the unit position:
@@ -436,23 +478,45 @@ procedure draw_units is
 				-- Compute the position of the origin of the terminal name regarding 
 				-- its distance from the line of the port:
 				
-				if rotation_total = 0.0 or rotation_total = 360.0 or rotation_total = -360.0 then
+				if rotation_total = 0.0 or rotation_total = 360.0 
+					or rotation_total = -360.0 then
 					-- The line is horizontal. So the terminal name must be 
 					-- moved up above the line by some distance:
 					move (pos_terminal_name, DIR_UP, terminal_name_spacing_line);
-					alignment.horizontal := ALIGN_RIGHT;
+					
+					case unit_mirror_status is
+						when MIRROR_NO =>
+							alignment.horizontal := ALIGN_RIGHT;
+
+						when MIRROR_ALONG_Y_AXIS =>
+							alignment.horizontal := ALIGN_LEFT;
+							
+						when others => raise constraint_error; -- CS: should never happen
+					end case;
+
 
 				elsif rotation_total = 90.0 or rotation_total = -270.0 then
 					-- The line is vertical. So the terminal name must be 
 					-- moved left of the line by some distance:
 					move (pos_terminal_name, DIR_LEFT, terminal_name_spacing_line);
 					alignment.horizontal := ALIGN_RIGHT;
+
 					
 				elsif rotation_total = 180.0 or rotation_total = -180.0 then
 					-- The line is horizontal. So the terminal name must be 
 					-- moved up above the line by some distance:
 					move (pos_terminal_name, DIR_UP, terminal_name_spacing_line);
-					alignment.horizontal := ALIGN_LEFT;
+					
+					case unit_mirror_status is
+						when MIRROR_NO =>
+							alignment.horizontal := ALIGN_LEFT;
+
+						when MIRROR_ALONG_Y_AXIS =>
+							alignment.horizontal := ALIGN_RIGHT;
+							
+						when others => raise constraint_error; -- CS: should never happen
+					end case;
+					
 					
 				elsif rotation_total = -90.0 or rotation_total = 270.0 then
 					-- The line is vertical. So the terminal name must be 
