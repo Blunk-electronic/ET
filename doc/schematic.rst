@@ -247,6 +247,10 @@ Devices and Units
 #. Mirror a Unit
 
 	Mirroring is always along the y-axis of the unit.
+	The operation only mirrors the body and the ports.
+	Placeholders are left as they are because they are not
+	necessarily affected. So the operator has to move the 
+	placeholders if required.
 	This command toggles between mirror and no-mirror:
 
 	.. code-block::

@@ -2444,8 +2444,8 @@ package body et_schematic_ops_units is
 				is begin	
 					toggle_mirror_status (unit);
 					
-					-- The placeholders must be mirrored also:
-					-- CS
+					-- The placeholders are left as they are.
+					-- CS: in case this is required indeed, then use
 					-- rotate_placeholders (unit.placeholders, rotation);
 				end mirror_unit;
 				

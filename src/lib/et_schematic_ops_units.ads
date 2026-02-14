@@ -396,13 +396,16 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
-	-- Mirrors a unit and its placeholders along its y-axis.
+	-- Mirrors a unit along its y-axis.
 	-- Toggles between mirror and no-mirror status.
 	-- Disconnects the unit from attached net segments before 
 	-- the mirror operation.
 	-- Connects the unit with net segments after the operation.
-	-- CS: Reject unit if a port ends up by overlappin a port
+	-- CS: Reject unit if a port ends up by overlapping a port
 	-- of another existing unit.	
+	-- The positions of placeholders are NOT changed because
+	-- mirroring the unit does not necessarily affect the placeholders.
+	-- So the operator is requested to do that if required.
 	procedure mirror_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
