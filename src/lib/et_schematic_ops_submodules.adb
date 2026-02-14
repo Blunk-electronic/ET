@@ -804,7 +804,7 @@ package body et_schematic_ops_submodules is
 
 	procedure delete_submodule_port (
 		module			: in pac_generic_modules.cursor;		-- the module
-		port			: in et_net_ports.type_net_submodule_port; -- OSC1 / clock_output
+		port			: in type_net_submodule_port; -- OSC1 / clock_output
 		position		: in type_object_position; -- the submodule position (only sheet matters)
 		log_threshold	: in type_log_level) 
 	is
@@ -1229,7 +1229,7 @@ package body et_schematic_ops_submodules is
 		log_threshold	: in type_log_level) 
 	is 
 		ports : type_ports;
-		port : et_net_ports.type_net_submodule_port;
+		port : type_net_submodule_port;
 
 		use ada.containers;
 		
@@ -1303,7 +1303,7 @@ package body et_schematic_ops_submodules is
 	-- lands between start and end point.
 	procedure drag_net_segments (
 		module			: in pac_generic_modules.cursor; -- the module
-		port			: in et_net_ports.type_net_submodule_port;	-- instance and port name
+		port			: in type_net_submodule_port;	-- instance and port name
 		pos_before		: in type_object_position;	-- the old port position
 		pos_after		: in type_object_position;	-- the new port position
 		log_threshold	: in type_log_level) 
@@ -3307,7 +3307,7 @@ package body et_schematic_ops_submodules is
 
 			
 			procedure collect_submodule_port (
-				port	: in et_net_ports.type_net_submodule_port;
+				port	: in type_net_submodule_port;
 				net		: in pac_net_name.bounded_string)
 			is begin
 			-- Collect submodule ports. exception will be raised of port occurs more than once.
