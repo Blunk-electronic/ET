@@ -104,11 +104,13 @@ package et_netchanger_symbol_schematic is
 	
 	type type_netchanger_symbol is record -- CS make private
 		master_port	: type_netchanger_port := (
+						length		=> 5.0,
 						position	=> position_master_port_default,
 						rotation	=> zero_rotation,
 						others		=> <>);
 
 		slave_port	: type_netchanger_port := (
+						length		=> 5.0,
 						position	=> position_slave_port_default,						
 						rotation	=> 180.0,
 						others		=> <>);
