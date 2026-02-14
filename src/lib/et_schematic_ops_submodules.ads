@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---          SCHEMATIC OPERATIONS ON NETCHANGERS AND SUBMODULES              --
+--                  SCHEMATIC OPERATIONS / SUBMODULES                       --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -36,9 +36,11 @@
 --   history of changes:
 --
 -- To Do: 
+--
+-- - clean up, rework
 -- - rework procedures so that a module cursor is taken
 --   instead of a module name.
--- - move netchanger related stuff to separate package
+--
 -- - rename paramaters "module" to "module_cursor"
 --
 
@@ -50,19 +52,20 @@ with et_module_names;					use et_module_names;
 with et_module_instance;				use et_module_instance;
 with et_generic_modules;				use et_generic_modules;
 with et_netchangers;					use et_netchangers;
-with et_submodules;
+with et_submodules;						use et_submodules;
 with et_assembly_variants;				use et_assembly_variants;
 with et_assembly_variant_name;			use et_assembly_variant_name;
 
+with et_net_ports;						use et_net_ports;
 with et_nets;							use et_nets;
 with et_net_names;						use et_net_names;
-with et_netlists;
 
 with et_sheets;							use et_sheets;
-with et_schematic_text;					use et_schematic_text;
 with et_device_name;					use et_device_name;
 with et_devices_electrical;				use et_devices_electrical;
 with et_device_partcode;				use et_device_partcode;
+
+with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
 
 with et_logging;						use et_logging;
 
@@ -74,9 +77,6 @@ package et_schematic_ops_submodules is
 	use pac_net_name;
 	
 
-	
-	procedure netchanger_not_found (
-		index : in type_netchanger_id);
 
 	
 	procedure submodule_not_found (
@@ -87,15 +87,9 @@ package et_schematic_ops_submodules is
 		name : in pac_net_name.bounded_string);
 
 	
-	-- Returns true if given port of netchanger is connected with any net.
-	function port_connected (
-		module	: in pac_generic_modules.cursor;	
-		port	: in et_netlists.type_port_netchanger)
-		return boolean;
-
 	
-	-- Returns true if the given net provides a netchanger that may serve as port
-	-- to a parent module.
+	-- Returns true if the given net provides a netchanger 
+	-- that may serve as port to a parent module:
 	function netchanger_as_port_available (
 		module		: in pac_generic_modules.cursor;
 		net			: in et_nets.pac_nets.cursor;
@@ -113,7 +107,8 @@ package et_schematic_ops_submodules is
 
 
 
-	-- Returns true if given submodule with the given port exists in module indicated by module_cursor.
+	-- Returns true if given submodule with the given port exists 
+	-- in module indicated by module_cursor:
 	function submodule_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		submod_instance : in pac_module_instance_name.bounded_string; -- MOT_DRV_3
@@ -132,6 +127,22 @@ package et_schematic_ops_submodules is
 		return type_object_position;
 
 	
+
+
+	-- Inserts the given submodule port in the net segments.
+	-- If the port lands on either the start or end point of a segment, it will
+	-- be regarded as "connected" with the segment.
+	-- If the port lands between start or end point of a segment, nothing happens
+	-- because the docking to net segments is possible on segment ends/starts only.
+	-- CS: Automatic splitting the segment into two and placing a junction is not supported
+	-- jet and probably not a good idea.
+	procedure insert_port (
+		module			: in pac_generic_modules.cursor;		-- the module
+		instance		: in pac_module_instance_name.bounded_string; -- OSC
+		port			: in pac_net_name.bounded_string; -- clock_output
+		position		: in type_object_position; -- the port position
+		log_threshold	: in type_log_level);
+
 	
 
 	-- Adds a port to a submodule instance (the box in the parent sheet).
@@ -148,6 +159,16 @@ package et_schematic_ops_submodules is
 		log_threshold	: in type_log_level);
 
 
+
+
+	-- Removes a port from the net segments.
+	procedure delete_submodule_port (
+		module			: in pac_generic_modules.cursor;		-- the module
+		port			: in et_net_ports.type_submodule_port; -- OSC1 / clock_output
+		position		: in type_object_position; -- the submodule position (only sheet matters)
+		log_threshold	: in type_log_level);
+
+	
 
 	-- Deletes a port of a submodule instance (the box in the parent sheet).
 	procedure delete_port (
@@ -204,74 +225,6 @@ package et_schematic_ops_submodules is
 
 	
 	
-	-- Returns true if given netchanger exists in module indicated by module_cursor.
-	function exists_netchanger (
-		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		index			: in type_netchanger_id) -- 1, 2, 3, ...
-		return boolean;
-
-
-	
-	-- Returns the sheet/x/y position of the given netchanger port.
-	function get_netchanger_port_position (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in type_netchanger_id; -- 1,2,3,...
-		port			: in type_netchanger_port_name; -- SLAVE/MASTER
-		log_threshold	: in type_log_level)
-		return type_object_position;
-
-	
-
-	-- Adds a netchanger to the schematic.
-	procedure add_netchanger (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		place			: in type_object_position; -- sheet/x/y
-		log_threshold	: in type_log_level);
-	
-
-	-- Drags the given netchanger within the schematic.
-	-- Already existing connections with net segments are kept.
-	-- Net segment positions are modified.
-	-- This operation applies to a single sheet. Dragging from one sheet
-	-- to another is not possible.
-	procedure drag_netchanger (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in type_netchanger_id; -- 1,2,3,...
-		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_vector_model; -- x/y
-		log_threshold	: in type_log_level);
-
-
-
-	-- Moves the given netchanger. Disconnects the netchanger from
-	-- start or end points of net segments BEFORE the move. 
-	-- Connects netchanger ports with segment end or strart points AFTER the move.
-	procedure move_netchanger (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in type_netchanger_id; -- 1,2,3,...
-		coordinates		: in type_coordinates; -- relative/absolute
-		sheet			: in type_sheet_relative; -- -3/0/2
-		point			: in type_vector_model; -- x/y
-		log_threshold	: in type_log_level);
-
-
-
-	-- Rotates the given netchanger. Disconnects it from
-	-- start or end points of net segments.
-	procedure rotate_netchanger (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in type_netchanger_id; -- 1,2,3,...
-		coordinates		: in type_coordinates; -- relative/absolute
-		rotation		: in et_schematic_geometry.type_rotation_model; -- 90
-		log_threshold	: in type_log_level);
-
-	
-	
-	-- Deletes a netchanger.
-	procedure delete_netchanger (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in type_netchanger_id; -- 1,2,3,...
-		log_threshold	: in type_log_level);
 
 
 
