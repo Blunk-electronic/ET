@@ -34,7 +34,15 @@ Schematic Editor
 
 #. Drag a Netchanger
 
+
+
 #. Rotate a Netchanger
+
+	.. code-block::
+	
+		demo rotate netchanger 650 90
+
+
 
 #. Delete a Netchanger
 

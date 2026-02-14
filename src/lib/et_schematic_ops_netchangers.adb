@@ -1322,9 +1322,8 @@ package body et_schematic_ops_netchangers is
 
 
 	procedure rotate_netchanger (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in type_netchanger_id; -- 1,2,3,...
-		coordinates		: in type_coordinates; -- relative/absolute
+		module_name		: in pac_module_name.bounded_string;
+		index			: in type_netchanger_id;
 		rotation		: in et_schematic_geometry.type_rotation_model; -- 90
 		log_threshold	: in type_log_level) 
 	is
@@ -1383,15 +1382,7 @@ package body et_schematic_ops_netchangers is
 					log_threshold	=> log_threshold + 1);
 
 				
-				-- Calculate the rotation the netchanger will have 
-				-- AFTER the rotation:
-				case coordinates is
-					when ABSOLUTE =>
-						rotation := rotate_netchanger.rotation;
-
-					when RELATIVE =>
-						rotation := add (rotation, rotate_netchanger.rotation);
-				end case;
+				rotation := rotate_netchanger.rotation;
 
 				
 				-- rotate the netchanger to the new rotation
@@ -1421,23 +1412,12 @@ package body et_schematic_ops_netchangers is
 		
 		
 	begin
-		case coordinates is
-			when ABSOLUTE =>
-				log (text => "module " & to_string (module_name)
-					 & " rotate netchanger" & to_string (index) 
-					 & " to" & to_string (rotation), 
-					 level => log_threshold);
+		log (text => "module " & to_string (module_name)
+			& " rotate netchanger" & to_string (index) 
+			& " to" & to_string (rotation), 
+			level => log_threshold);
 
-			when RELATIVE =>
-				if rotation in type_rotation_relative then
-					log (text => "module " & to_string (module_name)
-						 & " rotate netchanger" & to_string (index) 
-						 & " by" & to_string (rotation),
-						 level => log_threshold);
-				else
-					relative_rotation_invalid;
-				end if;
-		end case;
+		-- CS: validate rotation. must be 0 or 90, nothing else
 		
 		-- locate module
 		module_cursor := locate_module (module_name);

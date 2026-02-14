@@ -222,15 +222,14 @@ package body et_cp_schematic_netchanger is
 		-- CS log message
 
 		case cmd_field_count is
-			when 7 =>
+			when 6 =>
 				rotate_netchanger (
 					module_name 	=> key (module),
 					index			=> to_netchanger_id (get_field (cmd, 5)), -- 1,2,3,...
-					coordinates		=> to_coordinates (get_field (cmd, 6)), -- relative/absolute
-					rotation		=> to_rotation (get_field (cmd, 7)), -- 90
+					rotation		=> to_rotation (get_field (cmd, 6)), -- 90
 					log_threshold	=> log_threshold + 1);
 
-			when 8 .. type_field_count'last =>
+			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
 				
 			when others => command_incomplete (cmd);
