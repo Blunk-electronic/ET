@@ -154,7 +154,7 @@ package et_schematic_ops_submodules is
 
 		direction		: in type_netchanger_port_name; -- master/slave. 
 		-- NOTE: has nothing to do with direction of energy flow. It is relevant when 
-		-- a netlist is exported. See specification et_submodules.type_submodule_port.
+		-- a netlist is exported. See specification et_submodules.type_net_submodule_port.
 		
 		log_threshold	: in type_log_level);
 
@@ -164,7 +164,7 @@ package et_schematic_ops_submodules is
 	-- Removes a port from the net segments.
 	procedure delete_submodule_port (
 		module			: in pac_generic_modules.cursor;		-- the module
-		port			: in et_net_ports.type_submodule_port; -- OSC1 / clock_output
+		port			: in et_net_ports.type_net_submodule_port; -- OSC1 / clock_output
 		position		: in type_object_position; -- the submodule position (only sheet matters)
 		log_threshold	: in type_log_level);
 

@@ -629,7 +629,7 @@ package body et_module_read_nets is
 	net_device_port : et_net_ports.type_device_port;
 	-- net_device_ports : et_net_segment.pac_device_ports.set;
 
-	net_submodule_port : et_net_ports.type_submodule_port;
+	net_submodule_port : et_net_ports.type_net_submodule_port;
 	-- net_submodule_ports : et_net_segment.pac_submodule_ports.set;
 
 	net_netchanger_port : et_netlists.type_port_netchanger;

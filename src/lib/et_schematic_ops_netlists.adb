@@ -189,7 +189,7 @@ package body et_schematic_ops_netlists is
 		use pac_submodule_ports;
 
 		procedure query_ports (port_cursor : in pac_submodule_ports.cursor) is
-			port : type_submodule_port := element (port_cursor);
+			port : type_net_submodule_port := element (port_cursor);
 			direction : type_netchanger_port_name; -- master/slave
 		begin
  			-- get the direction of the current submodule port

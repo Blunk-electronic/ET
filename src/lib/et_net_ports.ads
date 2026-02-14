@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                              NET PORTS                                   --
+--                           NET SEGMENT PORTS                              --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -38,6 +38,7 @@
 --
 -- This package is about ports of units, netchangers and submodules
 -- as they are connected with net segments.
+-- This information is part of a net segment.
 --
 --
 --   history of changes:
@@ -61,10 +62,11 @@ with et_string_processing;		use et_string_processing;
 package et_net_ports is -- CS rename to et_net_segment_ports ?
 	
 
-
+-- DEVICE:
 	
-	-- This is the port of a device as it appears in a net segment:
-	type type_device_port is record
+	-- This is the port of a unit as it is connected 
+	-- with a net segment:
+	type type_device_port is record -- CS rename to type_net_unit_port
 		device_name	: type_device_name; -- IC4
 		-- CS cursor to the electrical device instead ?
 		-- could improve performance.
@@ -79,8 +81,12 @@ package et_net_ports is -- CS rename to et_net_segment_ports ?
 	end record;
 
 
-	function "<" (left, right : in type_device_port) return boolean;
+	
+	function "<" (
+		left, right : in type_device_port) 
+		return boolean;
 
+		
 
 	-- Builds a device port:
 	function to_device_port (
@@ -128,9 +134,15 @@ package et_net_ports is -- CS rename to et_net_segment_ports ?
 		proceed	: not null access boolean);
 
 
+		
+		
+		
+	
+	
+-- SUBMODULE:
 	
 	-- This is the port of a submodule:
-	type type_submodule_port is record
+	type type_net_submodule_port is record
 		-- The instance of a certain submodule:
 		module_name	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
 
@@ -139,14 +151,24 @@ package et_net_ports is -- CS rename to et_net_segment_ports ?
 	end record;
 
 	
-	function "<" (left, right : in type_submodule_port) return boolean;
+	
+	function "<" (
+		left, right : in type_net_submodule_port) 
+		return boolean;
 
 	
-	package pac_submodule_ports is new ordered_sets (type_submodule_port);
+	package pac_submodule_ports is new 
+		ordered_sets (type_net_submodule_port);
 
 
-	
-	type type_ports is record -- CS rename to type_net_ports ?
+
+
+		
+		
+		
+-- AGGREGATION OF DEVICES, SUBMODULES AND NETCHANGERS:
+
+	type type_ports is record -- CS rename to type_net_ports
 		devices		: pac_device_ports.set;
 		submodules	: pac_submodule_ports.set;
 		netchangers	: et_netlists.pac_netchanger_ports.set;
@@ -179,7 +201,7 @@ package et_net_ports is -- CS rename to et_net_segment_ports ?
 	-- is among the given ports:
 	function in_ports (
 		ports	: in type_ports;
-		port	: in type_submodule_port)
+		port	: in type_net_submodule_port)
 		return boolean;
 
 	

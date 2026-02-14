@@ -393,7 +393,7 @@ package body et_net_segment is
 	procedure insert_submodule_port (
 		segment	: in out type_net_segment;
 		AB_end	: in type_start_end_point;
-		port	: in type_submodule_port)
+		port	: in type_net_submodule_port)
 	is 
 		position : pac_submodule_ports.cursor;
 		inserted : boolean;
@@ -449,7 +449,7 @@ package body et_net_segment is
 
 	procedure delete_submodule_port (
 		segment	: in out type_net_segment;
-		port	: in type_submodule_port;
+		port	: in type_net_submodule_port;
 		deleted : out boolean)
 	is
 		use pac_submodule_ports;
@@ -488,7 +488,7 @@ package body et_net_segment is
 	is
 		use pac_submodule_ports;
 		port_cursor : pac_submodule_ports.cursor;
-		port : type_submodule_port;
+		port : type_net_submodule_port;
 
 		use pac_module_instance_name;
 	begin

@@ -58,7 +58,13 @@ package et_net_segment is
 
 	use pac_geometry_2;
 
-	
+
+	-- A net segment is more than just a line.
+	-- It is equipped with information about
+	-- net labels, net connectors, junctions and
+	-- ports of units, netchangers and submodules.
+	-- Each time one of those elements is added or removed,
+	-- the selectors of this record are updated:
 	type type_net_segment is new type_line with record -- CS make private
 		labels		: pac_net_labels.list;
 		connectors	: type_net_connectors;
@@ -238,7 +244,7 @@ package et_net_segment is
 	procedure insert_submodule_port (
 		segment	: in out type_net_segment;
 		AB_end	: in type_start_end_point;
-		port	: in type_submodule_port);
+		port	: in type_net_submodule_port);
 
 
 	procedure delete_netchanger_port (
@@ -249,7 +255,7 @@ package et_net_segment is
 	
 	procedure delete_submodule_port (
 		segment	: in out type_net_segment;
-		port	: in type_submodule_port;
+		port	: in type_net_submodule_port;
 		deleted : out boolean);
 
 

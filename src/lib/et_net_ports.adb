@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                              NET PORTS                                   --
+--                           NET SEGMENT PORTS                              --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -47,7 +47,10 @@ package body et_net_ports is
 
 
 	
-	function "<" (left, right : in type_device_port) return boolean is
+	function "<" (
+		left, right : in type_device_port) 
+		return boolean 
+	is
 		use pac_port_name;
 		use pac_unit_name;
 	begin
@@ -102,7 +105,10 @@ package body et_net_ports is
 
 	
 	
-	function "<" (left, right : in type_submodule_port) return boolean is
+	function "<" (
+		left, right : in type_net_submodule_port)
+		return boolean 
+	is
 		use et_module_names;
 		use pac_module_instance_name;
 		use et_net_names.pac_net_name;
@@ -323,7 +329,7 @@ package body et_net_ports is
 
 	function in_ports (
 		ports	: in type_ports;
-		port	: in type_submodule_port)
+		port	: in type_net_submodule_port)
 		return boolean
 	is
 		result : boolean := false;
