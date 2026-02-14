@@ -130,7 +130,7 @@ procedure draw_units is
 		use pac_symbol_ports;
 
 		use et_symbol_text;
-		use pac_symbol_texts;
+		-- use pac_symbol_texts;
 		
 		
 		procedure draw_line (c : in pac_symbol_lines.cursor) is 
@@ -215,7 +215,7 @@ procedure draw_units is
 			-- is not rotated in the schematic. We look at the default rotation of the 
 			-- ports as they are defined in the device model.
 			-- The final coordinates of terminal and port name will be computed later.
-			procedure compute_positions is begin				
+			procedure compute_preliminary_positions is begin				
 				if port.rotation = 0.0 then -- end point points to the left
 					-- Compute the end point. It is left of the start point:
 					set (axis => AXIS_X, value => get_x (A) - port.length, point => B);
@@ -287,7 +287,7 @@ procedure draw_units is
 				else
 					raise constraint_error; -- CS do something helpful. should never happen
 				end if;
-			end compute_positions;
+			end compute_preliminary_positions;
 
 			
 
@@ -352,8 +352,6 @@ procedure draw_units is
 			-- position taking into account the rotation and
 			-- mirror status of the unit in the schematic:
 			procedure draw_port_name is
-				use pac_draw_text;
-				use et_port_names;
 				use et_alignment;
 
 				-- The vertical alignment is untouched and is always CENTER.
@@ -364,89 +362,109 @@ procedure draw_units is
 				
 				alignment : type_text_alignment := (
 					horizontal => ALIGN_CENTER, vertical => ALIGN_CENTER);
+					
+					
+				-- This procedure sets the alignment of the port name:
+				procedure set_alignment is begin
+					if rotation_total = 0.0 or rotation_total = 360.0 
+						or rotation_total = -360.0 then
+						
+
+						case unit_mirror_status is
+							when MIRROR_NO =>
+								alignment.horizontal := ALIGN_RIGHT;
+						
+							when MIRROR_ALONG_Y_AXIS =>
+								alignment.horizontal := ALIGN_LEFT;
+								
+							when others =>
+								raise constraint_error; -- CS should never happen
+						end case;
+
+						
+					elsif rotation_total = 90.0 or rotation_total = -270.0 then
+						alignment.horizontal := ALIGN_RIGHT;
+
+						
+					elsif rotation_total = 180.0 or rotation_total = -180.0 then
+					
+						case unit_mirror_status is
+							when MIRROR_NO =>
+								alignment.horizontal := ALIGN_LEFT;
+						
+							when MIRROR_ALONG_Y_AXIS =>
+								alignment.horizontal := ALIGN_RIGHT;
+								
+							when others =>
+								raise constraint_error; -- CS should never happen
+						end case;
+
+						
+						
+					elsif rotation_total = -90.0 or rotation_total = 270.0 then
+						alignment.horizontal := ALIGN_LEFT;
+						
+						
+					else
+						raise constraint_error; -- CS should never happen
+					end if;
+
+				end set_alignment;
+				
+				
+				
+				-- This procedure sets the final place of the name:				
+				procedure set_place is begin
+					-- Rotate the position of the port name by 
+					-- the unit rotation:
+					rotate_by (pos_port_name, unit_rotation);
+
+					-- Mirror the position of the port name
+					-- if the unit is mirrored:
+					mirror_point (pos_port_name, unit_mirror_status);
+					
+					-- Move the name by the unit position:
+					move_by (pos_port_name, unit_place);				
+				end set_place;
+				
+				
+				
+				-- This procedure does the actual drawing of the port name:
+				procedure draw is
+					use pac_draw_text;
+					use et_port_names;				
+				begin
+					set_color_symbols (brightness);
+
+					draw_text (
+						content		=> to_content (to_string (get_port_name (c))),
+						size		=> port.port_name_size,
+						font		=> et_symbol_text.text_font,
+						anchor		=> pos_port_name,
+						origin		=> false,  -- no origin required
+
+						-- Text rotation about its anchor point.
+						-- This is documentational text. Its rotation must
+						-- be snapped to either HORIZONAL or VERTICAL so that
+						-- it is readable from the front or the right.
+						rotation	=> to_rotation (to_rotation_doc (rotation_total)),
+						alignment	=> alignment);				
+				end draw;
+				
+				
 			begin
-				if rotation_total = 0.0 or rotation_total = 360.0 
-					or rotation_total = -360.0 then
-					
-
-					case unit_mirror_status is
-						when MIRROR_NO =>
-							alignment.horizontal := ALIGN_RIGHT;
-					
-						when MIRROR_ALONG_Y_AXIS =>
-							alignment.horizontal := ALIGN_LEFT;
-							
-						when others =>
-							raise constraint_error; -- CS should never happen
-					end case;
-
-					
-				elsif rotation_total = 90.0 or rotation_total = -270.0 then
-					alignment.horizontal := ALIGN_RIGHT;
-
-					
-				elsif rotation_total = 180.0 or rotation_total = -180.0 then
-				
-					case unit_mirror_status is
-						when MIRROR_NO =>
-							alignment.horizontal := ALIGN_LEFT;
-					
-						when MIRROR_ALONG_Y_AXIS =>
-							alignment.horizontal := ALIGN_RIGHT;
-							
-						when others =>
-							raise constraint_error; -- CS should never happen
-					end case;
-
-					
-					
-				elsif rotation_total = -90.0 or rotation_total = 270.0 then
-					alignment.horizontal := ALIGN_LEFT;
-					
-					
-				else
-					raise constraint_error; -- CS should never happen
-				end if;
-
-				
-				-- Rotate the position of the port name by 
-				-- the unit rotation:
-				rotate_by (pos_port_name, unit_rotation);
-
-				-- Mirror the position of the port name
-				-- if the unit is mirrored:
-				mirror_point (pos_port_name, unit_mirror_status);
-				
-				-- Move the name by the unit position:
-				move_by (pos_port_name, unit_place);
-
-
-				
-				set_color_symbols (brightness);
-
-				draw_text (
-					content		=> to_content (to_string (get_port_name (c))),
-					size		=> port.port_name_size,
-					font		=> et_symbol_text.text_font,
-					anchor		=> pos_port_name,
-					origin		=> false,  -- no origin required
-
-					-- Text rotation about its anchor point.
-					-- This is documentational text. Its rotation must
-					-- be snapped to either HORIZONAL or VERTICAL so that
-					-- it is readable from the front or the right.
-					rotation	=> to_rotation (to_rotation_doc (rotation_total)),
-					alignment	=> alignment);
-
+				set_alignment;
+				set_place;
+				draw;
 			end draw_port_name;
 
+			
 			
 
 			-- This procedure draws the terminal name at its final
 			-- position taking into account the rotation and 
 			-- mirror status of the unit in the schematic:
 			procedure draw_terminal_name is
-				use pac_draw_text;
 				use et_schematic_ops_units;
 				use et_alignment;
 				
@@ -459,78 +477,119 @@ procedure draw_units is
 				alignment : type_text_alignment := (
 					horizontal => ALIGN_CENTER, vertical => ALIGN_BOTTOM);
 
-				properties : type_port_properties_access;
-			begin
-				-- Rotate the position of the terminal name 
-				-- by the unit rotation:
-				rotate_by (pos_terminal_name, unit_rotation);
+					
+				-- This procedure computes the final place of the terminal name:
+				procedure set_place is begin
+					-- Rotate the position of the terminal name 
+					-- by the unit rotation:
+					rotate_by (pos_terminal_name, unit_rotation);
+					
+					-- Mirror the position of the terminal name
+					-- if the unit is mirrored:
+					mirror_point (pos_terminal_name, unit_mirror_status);
+					
+					-- Move the name by the unit position:
+					move_by (pos_terminal_name, unit_place);				
+				end set_place;
 				
-				-- Mirror the position of the terminal name
-				-- if the unit is mirrored:
-				mirror_point (pos_terminal_name, unit_mirror_status);
-				
-				-- Move the name by the unit position:
-				move_by (pos_terminal_name, unit_place);
+					
+				-- This procedure sets the alignment of the terminal name
+				-- and it offsets the terminal name slightly so that is
+				-- is above or left of the port:
+				procedure set_alignment_and_place is begin
+					if rotation_total = 0.0 or rotation_total = 360.0 
+						or rotation_total = -360.0 then
+						-- The line is horizontal. So the terminal name must be 
+						-- moved up above the line by some distance:
+						move (pos_terminal_name, DIR_UP, terminal_name_spacing_line);
+						
+						case unit_mirror_status is
+							when MIRROR_NO =>
+								alignment.horizontal := ALIGN_RIGHT;
 
+							when MIRROR_ALONG_Y_AXIS =>
+								alignment.horizontal := ALIGN_LEFT;
+								
+							when others => raise constraint_error; -- CS: should never happen
+						end case;
+
+
+					elsif rotation_total = 90.0 or rotation_total = -270.0 then
+						-- The line is vertical. So the terminal name must be 
+						-- moved left of the line by some distance:
+						move (pos_terminal_name, DIR_LEFT, terminal_name_spacing_line);
+						alignment.horizontal := ALIGN_RIGHT;
+
+						
+					elsif rotation_total = 180.0 or rotation_total = -180.0 then
+						-- The line is horizontal. So the terminal name must be 
+						-- moved up above the line by some distance:
+						move (pos_terminal_name, DIR_UP, terminal_name_spacing_line);
+						
+						case unit_mirror_status is
+							when MIRROR_NO =>
+								alignment.horizontal := ALIGN_LEFT;
+
+							when MIRROR_ALONG_Y_AXIS =>
+								alignment.horizontal := ALIGN_RIGHT;
+								
+							when others => raise constraint_error; -- CS: should never happen
+						end case;
+						
+						
+					elsif rotation_total = -90.0 or rotation_total = 270.0 then
+						-- The line is vertical. So the terminal name must be 
+						-- moved left of the line by some distance:
+						move (pos_terminal_name, DIR_LEFT, terminal_name_spacing_line);
+						alignment.horizontal := ALIGN_LEFT;
+						
+					else
+						raise constraint_error; -- CS should never happen
+					end if;
+				end set_alignment_and_place;
+				
+			
+				
+				
+				properties : type_port_properties_access;
+				
+				
+				
+				-- This procedure draws the terminal name:
+				procedure draw is
+					use pac_draw_text;				
+				begin
+					set_color_symbols (brightness);
+
+					draw_text (
+						content		=> to_content (to_string (properties.terminal)), -- H4, 1, 16
+						size		=> port.terminal_name_size,
+						font		=> et_symbol_text.text_font,
+						anchor		=> pos_terminal_name,
+						origin		=> false,  -- no origin required
+
+						-- Text rotation about its anchor point.
+						-- This is documentational text. Its rotation must
+						-- be snapped to either HORIZONAL or VERTICAL so that
+						-- it is readable from the front or the right.
+						rotation	=> to_rotation (to_rotation_doc (rotation_total)),
+						alignment	=> alignment);
+				
+				end draw;
+				
+
+
+				
+			begin
+				set_place;				
 				
 				-- Now some fine adjustment is required to place the terminal
 				-- name some distance away from the line of the port.
 				-- Compute the position of the origin of the terminal name regarding 
 				-- its distance from the line of the port:
+				set_alignment_and_place;
 				
-				if rotation_total = 0.0 or rotation_total = 360.0 
-					or rotation_total = -360.0 then
-					-- The line is horizontal. So the terminal name must be 
-					-- moved up above the line by some distance:
-					move (pos_terminal_name, DIR_UP, terminal_name_spacing_line);
-					
-					case unit_mirror_status is
-						when MIRROR_NO =>
-							alignment.horizontal := ALIGN_RIGHT;
-
-						when MIRROR_ALONG_Y_AXIS =>
-							alignment.horizontal := ALIGN_LEFT;
-							
-						when others => raise constraint_error; -- CS: should never happen
-					end case;
-
-
-				elsif rotation_total = 90.0 or rotation_total = -270.0 then
-					-- The line is vertical. So the terminal name must be 
-					-- moved left of the line by some distance:
-					move (pos_terminal_name, DIR_LEFT, terminal_name_spacing_line);
-					alignment.horizontal := ALIGN_RIGHT;
-
-					
-				elsif rotation_total = 180.0 or rotation_total = -180.0 then
-					-- The line is horizontal. So the terminal name must be 
-					-- moved up above the line by some distance:
-					move (pos_terminal_name, DIR_UP, terminal_name_spacing_line);
-					
-					case unit_mirror_status is
-						when MIRROR_NO =>
-							alignment.horizontal := ALIGN_LEFT;
-
-						when MIRROR_ALONG_Y_AXIS =>
-							alignment.horizontal := ALIGN_RIGHT;
-							
-						when others => raise constraint_error; -- CS: should never happen
-					end case;
-					
-					
-				elsif rotation_total = -90.0 or rotation_total = 270.0 then
-					-- The line is vertical. So the terminal name must be 
-					-- moved left of the line by some distance:
-					move (pos_terminal_name, DIR_LEFT, terminal_name_spacing_line);
-					alignment.horizontal := ALIGN_LEFT;
-					
-				else
-					raise constraint_error; -- CS should never happen
-				end if;
-
 				
-				set_color_symbols (brightness);
-
 				-- Get the properties of the port. Properties is a record that provides
 				-- the terminal name. Other things of properties are not relevant here:
 				properties := get_port_properties (
@@ -538,21 +597,10 @@ procedure draw_units is
 					device_name		=> device_name,
 					unit_name		=> unit_name,
 					port_name		=> key (c));
-
-				draw_text (
-					content		=> to_content (to_string (properties.terminal)), -- H4, 1, 16
-					size		=> port.terminal_name_size,
-					font		=> et_symbol_text.text_font,
-					anchor		=> pos_terminal_name,
-					origin		=> false,  -- no origin required
-
-					-- Text rotation about its anchor point.
-					-- This is documentational text. Its rotation must
-					-- be snapped to either HORIZONAL or VERTICAL so that
-					-- it is readable from the front or the right.
-					rotation	=> to_rotation (to_rotation_doc (rotation_total)),
-					alignment	=> alignment);
-
+				-- CS: This approach seems way to complicate. Use a function
+				-- like get_terminal_name.
+					
+				draw;
 			end draw_terminal_name;
 
 
@@ -562,7 +610,7 @@ procedure draw_units is
 		begin
 			-- Compute preliminary positions of terminal and port names.
 			-- Compute start and end points of the line:
-			compute_positions;
+			compute_preliminary_positions;
 	
 			draw_line_and_circle;
 				
@@ -591,6 +639,7 @@ procedure draw_units is
 		-- Call this procedure after drawing the symbol body because it
 		-- does not change the color to symbol color.
 		procedure draw_text (c : in pac_symbol_texts.cursor) is 
+			use pac_symbol_texts;
 			text : type_symbol_text renames element (c);
 			p : type_vector_model := text.position;
 
@@ -875,6 +924,7 @@ procedure draw_units is
 	begin
 		
 		-- SYMBOL BODY
+		-- CS: move the following in a separate procedure
 		set_color_symbols (brightness);
 
 		iterate (symbol.shapes.lines, draw_line'access);
@@ -883,15 +933,19 @@ procedure draw_units is
 
 		
 		-- SYMBOL PORTS
+		-- CS: move in a separate procedure
 		iterate (symbol.ports, draw_port'access); -- has internal color settings
 
 		-- SYMBOL TEXTS
+		-- CS: move related in a separate procedure
 		set_color_symbols (brightness);
-		iterate (symbol.texts, draw_text'access);
+		pac_symbol_texts.iterate (symbol.texts, draw_text'access);
+		
 		
 		-- Draw placeholders if this is the symbol of a real device. 
 		-- Virtual symbols do not have placeholders.
-		if is_real (symbol) then
+		-- CS: move related stuff in a separate procedure
+		if is_real (symbol) then		
 			draw_placeholders;
 		end if;
 
