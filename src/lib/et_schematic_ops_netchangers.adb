@@ -1322,12 +1322,11 @@ package body et_schematic_ops_netchangers is
 
 
 	procedure rotate_netchanger (
-		module_name		: in pac_module_name.bounded_string;
+		module_cursor	: in pac_generic_modules.cursor; -- the module
 		index			: in type_netchanger_id;
 		rotation		: in et_schematic_geometry.type_rotation_model; -- 90
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		
 		procedure query_module (
@@ -1412,16 +1411,13 @@ package body et_schematic_ops_netchangers is
 		
 		
 	begin
-		log (text => "module " & to_string (module_name)
-			& " rotate netchanger" & to_string (index) 
-			& " to" & to_string (rotation), 
+		log (text => "module " & to_string (module_cursor)
+			& " rotate netchanger " & to_string (index) 
+			& " to " & to_string (rotation), 
 			level => log_threshold);
 
 		-- CS: validate rotation. must be 0 or 90, nothing else
 		
-		-- locate module
-		module_cursor := locate_module (module_name);
-
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,

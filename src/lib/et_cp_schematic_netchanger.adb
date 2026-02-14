@@ -219,12 +219,13 @@ package body et_cp_schematic_netchanger is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 	begin
-		-- CS log message
+		log (text => "rotate netchanger", level => log_threshold);
+		log_indentation_up;
 
 		case cmd_field_count is
 			when 6 =>
 				rotate_netchanger (
-					module_name 	=> key (module),
+					module_cursor 	=> module,
 					index			=> to_netchanger_id (get_field (cmd, 5)), -- 1,2,3,...
 					rotation		=> to_rotation (get_field (cmd, 6)), -- 90
 					log_threshold	=> log_threshold + 1);
@@ -234,6 +235,8 @@ package body et_cp_schematic_netchanger is
 				
 			when others => command_incomplete (cmd);
 		end case;		
+
+		log_indentation_down;
 	end rotate_netchanger;
 
 
