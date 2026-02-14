@@ -33,6 +33,13 @@
 --   info@blunk-electronic.de
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
+--
+-- DESCRIPTION:
+--
+-- This package is about ports of units, netchangers and submodules
+-- as they are connected with net segments.
+--
+--
 --   history of changes:
 --
 
@@ -51,7 +58,8 @@ with et_string_processing;		use et_string_processing;
 
 
 
-package et_net_ports is
+package et_net_ports is -- CS rename to et_net_segment_ports ?
+	
 
 
 	
@@ -138,7 +146,7 @@ package et_net_ports is
 
 
 	
-	type type_ports is record -- CS rename to type_port_group ?
+	type type_ports is record -- CS rename to type_net_ports ?
 		devices		: pac_device_ports.set;
 		submodules	: pac_submodule_ports.set;
 		netchangers	: et_netlists.pac_netchanger_ports.set;
