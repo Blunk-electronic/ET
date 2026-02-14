@@ -2867,8 +2867,7 @@ package body et_schematic_ops_submodules is
 	
 
 
-	-- Rotates the given netchanger. Disconnects it from
-	-- start or end points of net segments.
+
 	procedure rotate_netchanger (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		index			: in type_netchanger_id; -- 1,2,3,...
@@ -2880,7 +2879,7 @@ package body et_schematic_ops_submodules is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		
-		procedure query_netchangers (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
@@ -2902,11 +2901,11 @@ package body et_schematic_ops_submodules is
 			use pac_netchangers;
 			
 			
-		begin -- query_netchangers
-
+		begin
 			-- locate given netchanger
 			cursor := find (module.netchangers, index);
 
+			
 			if cursor /= pac_netchangers.no_element then 
 				-- netchanger exists
 
@@ -2920,6 +2919,7 @@ package body et_schematic_ops_submodules is
 				location := element (cursor).position_sch;
 				rotation := get_rotation (location);
 
+				
 				-- Delete netchanger ports in nets:
 				delete_ports (
 	 				module			=> module_cursor,
@@ -2929,8 +2929,10 @@ package body et_schematic_ops_submodules is
 					sheet			=> get_sheet (location),
 					
 					log_threshold	=> log_threshold + 1);
+
 				
-				-- calculate the rotation the netchanger will have AFTER the move:
+				-- Calculate the rotation the netchanger will have 
+				-- AFTER the rotation:
 				case coordinates is
 					when ABSOLUTE =>
 						rotation := rotate_netchanger.rotation;
@@ -2939,6 +2941,7 @@ package body et_schematic_ops_submodules is
 						rotation := add (rotation, rotate_netchanger.rotation);
 				end case;
 
+				
 				-- rotate the netchanger to the new rotation
 				update_element (
 					container	=> module.netchangers,
@@ -2962,21 +2965,23 @@ package body et_schematic_ops_submodules is
 				-- netchanger does not exist
 				netchanger_not_found (index);
 			end if;
-		end query_netchangers;
+		end query_module;
 		
 		
-	begin -- rotate_netchanger
+	begin
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " & to_string (module_name) &
-					 " rotating netchanger" & to_string (index) &
-					 " to" & to_string (rotation), level => log_threshold);
+				log (text => "module " & to_string (module_name)
+					 & " rotate netchanger" & to_string (index) 
+					 & " to" & to_string (rotation), 
+					 level => log_threshold);
 
 			when RELATIVE =>
 				if rotation in type_rotation_relative then
-					log (text => "module " & to_string (module_name) &
-						" rotating netchanger" & to_string (index) &
-						" by" & to_string (rotation), level => log_threshold);
+					log (text => "module " & to_string (module_name)
+						 & " rotate netchanger" & to_string (index) 
+						 & " by" & to_string (rotation),
+						 level => log_threshold);
 				else
 					relative_rotation_invalid;
 				end if;
@@ -2988,7 +2993,7 @@ package body et_schematic_ops_submodules is
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
-			process		=> query_netchangers'access);
+			process		=> query_module'access);
 
 	end rotate_netchanger;
 
