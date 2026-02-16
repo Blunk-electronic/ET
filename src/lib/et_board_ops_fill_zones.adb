@@ -259,7 +259,7 @@ package body et_board_ops_fill_zones is
 		
 		-- Here the ports of all devices which are connected
 		-- with the given net are stored:
-		ports : type_ports;
+		ports : type_net_ports;
 
 		
 		-- This procedure queries a device port.

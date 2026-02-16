@@ -108,9 +108,9 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_object_position;
 		log_threshold	: in type_log_level)
-		return type_ports 
+		return type_net_ports 
 	is
-		ports : type_ports; -- to be returned
+		ports : type_net_ports; -- to be returned
 
 		
 		procedure query_module (
@@ -1562,7 +1562,7 @@ package body et_schematic_ops_nets is
 					-- searched depends on the zone that has been moved.
 					-- (The given segment sits already at the new position.)
 					procedure connect_ports (segment : in out type_net_segment) is
-						ports : type_ports;
+						ports : type_net_ports;
 
 						-- Append the portlists obtained via function get_ports
 						-- to the segment.
@@ -3917,7 +3917,7 @@ package body et_schematic_ops_nets is
 				
 				-- We search for ALL ports (of devices) in the net.
 				-- We assume the default assembly variant.
-				ports : constant type_ports := 
+				ports : constant type_net_ports := 
 					get_ports (n, pac_assembly_variants.no_element);
 
 				-- ports.devices now contains all ports and units of devices in
@@ -4350,7 +4350,7 @@ package body et_schematic_ops_nets is
 						place : type_object_position;
 
 						-- Here the ports will be stored Temporarily:
-						ports : type_ports;
+						ports : type_net_ports;
 					begin
 						log_indentation_up;
 
@@ -4394,7 +4394,7 @@ package body et_schematic_ops_nets is
 						place : type_object_position;
 
 						-- Here the ports will be stored temporarily:
-						ports : type_ports;
+						ports : type_net_ports;
 					begin
 						log_indentation_up;
 

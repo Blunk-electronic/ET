@@ -1228,7 +1228,7 @@ package body et_schematic_ops_submodules is
 		point 			: in type_object_position;
 		log_threshold	: in type_log_level) 
 	is 
-		ports : type_ports;
+		ports : type_net_ports;
 		port : type_net_submodule_port;
 
 		use ada.containers;

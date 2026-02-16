@@ -3337,7 +3337,7 @@ package body et_board_ops_devices is
 		use et_nets;
 		use et_net_ports;
 		use pac_device_ports;
-		ports : et_net_ports.type_ports;
+		ports : type_net_ports;
 
 		use et_device_model;
 		port_properties : type_port_properties_access;
@@ -3630,7 +3630,7 @@ package body et_board_ops_devices is
 				-- Since this query is about the default assembly variant,
 				-- we do not pass a specific assembly variant here.
 				use et_net_ports;
-				ports : constant type_ports := get_ports (net_cursor);
+				ports : constant type_net_ports := get_ports (net_cursor);
 
 				use pac_device_ports;
 

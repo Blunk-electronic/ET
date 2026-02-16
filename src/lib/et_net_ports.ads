@@ -171,9 +171,9 @@ package et_net_ports is -- CS rename to et_net_segment_ports ?
 		
 		
 		
--- AGGREGATION OF DEVICES, SUBMODULES AND NETCHANGERS:
+-- AGGREGATION OF DEVICE, SUBMODULE AND NETCHANGER PORTS:
 
-	type type_ports is record -- CS rename to type_net_ports
+	type type_net_ports is record
 		devices		: pac_device_ports.set;
 		submodules	: pac_net_submodule_ports.set;
 		netchangers	: et_netlists.pac_netchanger_ports.set;
@@ -184,20 +184,20 @@ package et_net_ports is -- CS rename to et_net_segment_ports ?
 	-- Merges the given two port groups to a
 	-- single one:
 	function merge_ports (
-		right, left : in type_ports)
-		return type_ports;
+		right, left : in type_net_ports)
+		return type_net_ports;
 
 
 	-- Merges the given source ports in the target ports:
 	procedure merge_ports (
-		target	: in out type_ports;
-		source	: in type_ports);					  
+		target	: in out type_net_ports;
+		source	: in type_net_ports);					  
 	
 
 	-- Returns true if the given netchanger port
 	-- is among the given ports:
 	function in_ports (
-		ports	: in type_ports;
+		ports	: in type_net_ports;
 		port	: in et_netlists.type_port_netchanger)
 		return boolean;
 	
@@ -205,7 +205,7 @@ package et_net_ports is -- CS rename to et_net_segment_ports ?
 	-- Returns true if the given submodule port
 	-- is among the given ports:
 	function in_ports (
-		ports	: in type_ports;
+		ports	: in type_net_ports;
 		port	: in type_net_submodule_port)
 		return boolean;
 
@@ -213,29 +213,29 @@ package et_net_ports is -- CS rename to et_net_segment_ports ?
 	
 	-- Returns true if the given record of ports is completely emtpty.
 	function no_ports (
-		ports : in type_ports) 
+		ports : in type_net_ports) 
 		return boolean;
 
 
 	-- Returns the total number of ports contained
 	-- in the given port group:
 	function get_port_count ( -- CS rename to get_port_count_total
-		ports : in type_ports)
+		ports : in type_net_ports)
 		return natural;
 
 
 	function get_port_count_devices (
-		ports : in type_ports)
+		ports : in type_net_ports)
 		return natural;
 
 
 	function get_port_count_submodules (
-		ports : in type_ports)
+		ports : in type_net_ports)
 		return natural;
 
 	
 	function get_port_count_netchangers (
-		ports : in type_ports)
+		ports : in type_net_ports)
 		return natural;
 
 	
@@ -244,7 +244,7 @@ package et_net_ports is -- CS rename to et_net_segment_ports ?
 	-- at the A or B end of a net segment.
 	-- This type models the tag labels of a net segment:
 	type type_ports_AB is record
-		A, B : type_ports;
+		A, B : type_net_ports;
 	end record;
 	
 

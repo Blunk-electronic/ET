@@ -669,9 +669,9 @@ package body et_nets is
 	function get_ports (
 		net		: in pac_nets.cursor;
 		variant	: in pac_assembly_variants.cursor := pac_assembly_variants.no_element)
-		return type_ports 
+		return type_net_ports 
 	is
-		result : type_ports; -- to be returned
+		result : type_net_ports; -- to be returned
 
 		
 		procedure query_segments (segment_cursor : in pac_net_segments.cursor) is

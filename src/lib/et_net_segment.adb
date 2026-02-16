@@ -579,7 +579,7 @@ package body et_net_segment is
 	function get_ports (
 		segment : in type_net_segment;
 		AB_end	: in type_start_end_point)				   
-		return type_ports
+		return type_net_ports
 	is begin
 		case AB_end is
 			when A => return segment.ports.A;
@@ -593,9 +593,9 @@ package body et_net_segment is
 	function get_ports (
 		segment 	: in type_net_segment;
 		NSWE_end	: in type_direction_NSWE)				   
-		return type_ports
+		return type_net_ports
 	is
-		result : type_ports;
+		result : type_net_ports;
 		AB_end : type_start_end_point;
 	begin
 		-- Map from the given NSWE end to the AB end:
@@ -616,7 +616,7 @@ package body et_net_segment is
 		AB_end	: in type_start_end_point)				   
 		return natural
 	is 
-		ports : type_ports;
+		ports : type_net_ports;
 		count : count_type := 0;
 	begin
 		ports := get_ports (segment, AB_end);
@@ -633,7 +633,7 @@ package body et_net_segment is
 
 	procedure append_ports (
 		segment : in out type_net_segment;
-		ports	: in type_ports;						   
+		ports	: in type_net_ports;						   
 		AB_end	: in type_start_end_point)
 	is
 		use pac_device_ports;
@@ -906,15 +906,15 @@ package body et_net_segment is
 		
 
 		-- Ports at A and B end of the resulting segment:
-		PRA, PRB : type_ports;
+		PRA, PRB : type_net_ports;
 
 
 		procedure merge_ports is 
 			-- Ports at the A and B end of the primary segment:
-			PPA, PPB : type_ports;
+			PPA, PPB : type_net_ports;
 			
 			-- Ports at the A and B end of the secondary segment:
-			PSA, PSB : type_ports;
+			PSA, PSB : type_net_ports;
 		begin
 			-- The orientation determines whether to collect
 			-- the ports from the west and east ends or
@@ -1137,7 +1137,7 @@ package body et_net_segment is
 	function get_ports (
 		segment : in pac_net_segments.cursor;
 		AB_end	: in type_start_end_point)				   
-		return type_ports
+		return type_net_ports
 	is begin
 		return get_ports (element (segment), AB_end);
 	end;

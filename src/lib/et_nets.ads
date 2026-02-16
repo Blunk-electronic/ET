@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -339,7 +339,7 @@ package et_nets is
 	function get_ports (
 		net		: in pac_nets.cursor;
 		variant	: in pac_assembly_variants.cursor := pac_assembly_variants.no_element)
-		return type_ports;
+		return type_net_ports;
 
 	
 

@@ -270,13 +270,13 @@ package body et_net_ports is
 
 
 	function merge_ports (
-		right, left : in type_ports)
-		return type_ports
+		right, left : in type_net_ports)
+		return type_net_ports
 	is
 		use pac_device_ports;
 		use et_netlists.pac_netchanger_ports;
 		
-		result : type_ports := left;
+		result : type_net_ports := left;
 
 	begin
 		union (result.devices, right.devices);
@@ -290,10 +290,10 @@ package body et_net_ports is
 
 	
 	procedure merge_ports (
-		target	: in out type_ports;
-		source	: in type_ports)
+		target	: in out type_net_ports;
+		source	: in type_net_ports)
 	is
-		scratch : type_ports;
+		scratch : type_net_ports;
 	begin
 		scratch := merge_ports (target, source);
 		target := scratch;
@@ -303,7 +303,7 @@ package body et_net_ports is
 	
 
 	function in_ports (
-		ports	: in type_ports;
+		ports	: in type_net_ports;
 		port	: in et_netlists.type_port_netchanger)
 		return boolean
 	is
@@ -327,7 +327,7 @@ package body et_net_ports is
 
 
 	function in_ports (
-		ports	: in type_ports;
+		ports	: in type_net_ports;
 		port	: in type_net_submodule_port)
 		return boolean
 	is
@@ -349,7 +349,7 @@ package body et_net_ports is
 	
 
 	function no_ports (
-		ports : in type_ports) 
+		ports : in type_net_ports) 
 		return boolean 
 	is
 		result : boolean := true;
@@ -375,7 +375,7 @@ package body et_net_ports is
 
 
 	function get_port_count (
-		ports : in type_ports)
+		ports : in type_net_ports)
 		return natural
 	is 
 		result : natural := 0;
@@ -398,7 +398,7 @@ package body et_net_ports is
 
 
 	function get_port_count_devices (
-		ports : in type_ports)
+		ports : in type_net_ports)
 		return natural
 	is begin
 		return natural (ports.devices.length);
@@ -406,7 +406,7 @@ package body et_net_ports is
 
 
 	function get_port_count_submodules (
-		ports : in type_ports)
+		ports : in type_net_ports)
 		return natural
 	is begin
 		return natural (ports.submodules.length);
@@ -414,7 +414,7 @@ package body et_net_ports is
 
 	
 	function get_port_count_netchangers (
-		ports : in type_ports)
+		ports : in type_net_ports)
 		return natural
 	is begin
 		return natural (ports.netchangers.length);

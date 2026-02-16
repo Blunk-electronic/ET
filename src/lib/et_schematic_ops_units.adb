@@ -1671,7 +1671,7 @@ package body et_schematic_ops_units is
 		
 		procedure test_point (port_cursor : in pac_symbol_ports.cursor) is
 			point : type_object_position; -- the point
-			ports : type_ports;
+			ports : type_net_ports;
 			port : type_device_port;
 			use pac_net_submodule_ports;
 			use pac_device_ports;
@@ -1838,7 +1838,7 @@ package body et_schematic_ops_units is
 		
 		procedure test_point (port_cursor : in pac_symbol_ports.cursor) is
 			point : type_object_position; -- the point
-			ports : type_ports;
+			ports : type_net_ports;
 			port : type_device_port;
 			use pac_net_submodule_ports;
 			use pac_device_ports;

@@ -1447,7 +1447,7 @@ package body et_net_strands is
 		
 		-- Segments and ports on the ends of the given start segment:
 		segments_A, segments_B : pac_connected_segments.list;
-		ports_A, ports_B : type_ports;
+		ports_A, ports_B : type_net_ports;
 
 		start_AB_end : type_start_end_point := A;
 		
@@ -1683,7 +1683,7 @@ package body et_net_strands is
 		segments_A, segments_B : pac_connected_segments.list;
 		segments_A_count, segments_B_count : natural;
 		
-		ports_A, ports_B : type_ports;
+		ports_A, ports_B : type_net_ports;
 
 		ports_A_count, ports_B_count : natural;
 

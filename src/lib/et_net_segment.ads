@@ -287,7 +287,7 @@ package et_net_segment is
 	function get_ports (
 		segment : in type_net_segment;
 		AB_end	: in type_start_end_point)				   
-		return type_ports;
+		return type_net_ports;
 
 
 	-- Returns the ports that are connected with
@@ -295,7 +295,7 @@ package et_net_segment is
 	function get_ports (
 		segment 	: in type_net_segment;
 		NSWE_end	: in type_direction_NSWE)				   
-		return type_ports;
+		return type_net_ports;
 
 	
 
@@ -311,7 +311,7 @@ package et_net_segment is
 	-- end (A/B):
 	procedure append_ports (
 		segment : in out type_net_segment;
-		ports	: in type_ports;						   
+		ports	: in type_net_ports;						   
 		AB_end	: in type_start_end_point);
 
 	
@@ -453,7 +453,7 @@ package et_net_segment is
 	function get_ports (
 		segment : in pac_net_segments.cursor;
 		AB_end	: in type_start_end_point)				   
-		return type_ports;
+		return type_net_ports;
 
 
 	

@@ -836,7 +836,7 @@ package body et_schematic_ops_netchangers is
 			is 
 				use ada.containers;
 				use et_netlists;
-				ports : type_ports;
+				ports : type_net_ports;
 				port : type_port_netchanger;
 
 				use pac_net_submodule_ports;
