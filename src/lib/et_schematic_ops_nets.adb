@@ -223,7 +223,7 @@ package body et_schematic_ops_nets is
 						log (text => " match", level => log_threshold + 2);
 						
 						-- Insert the port in the portlist to be returned:
-						pac_submodule_ports.insert 
+						pac_net_submodule_ports.insert 
 							(
 							container	=> get_ports.ports.submodules,
 							new_item	=> 

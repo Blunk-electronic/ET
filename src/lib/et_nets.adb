@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -675,11 +675,13 @@ package body et_nets is
 
 		
 		procedure query_segments (segment_cursor : in pac_net_segments.cursor) is
+			-- CS: use renames
+			
 			use pac_device_ports;
 
 			use et_netlists;
 			use pac_netchanger_ports;			
-			use pac_submodule_ports;
+			use pac_net_submodule_ports;
 
 			
 			-- Inserts the device/port in result.devices. Skips the device/port

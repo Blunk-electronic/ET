@@ -106,9 +106,13 @@ package et_net_ports is -- CS rename to et_net_segment_ports ?
 
 	
 	
-	package pac_device_ports is new ordered_sets (type_device_port);
+	-- Many device ports are stored in ordered sets:
+	package pac_device_ports is new 
+		ordered_sets (type_device_port);
+		
 	use pac_device_ports;
 
+	
 
 	-- Returns something like "device IC1 unit A port PD4":
 	function to_string (port : in type_device_port) return string;
@@ -157,10 +161,11 @@ package et_net_ports is -- CS rename to et_net_segment_ports ?
 		return boolean;
 
 	
-	package pac_submodule_ports is new 
+	-- Many submodule ports are stored in ordered sets:
+	package pac_net_submodule_ports is new 
 		ordered_sets (type_net_submodule_port);
 
-
+	use pac_net_submodule_ports;
 
 
 		
@@ -170,7 +175,7 @@ package et_net_ports is -- CS rename to et_net_segment_ports ?
 
 	type type_ports is record -- CS rename to type_net_ports
 		devices		: pac_device_ports.set;
-		submodules	: pac_submodule_ports.set;
+		submodules	: pac_net_submodule_ports.set;
 		netchangers	: et_netlists.pac_netchanger_ports.set;
 	end record;
 

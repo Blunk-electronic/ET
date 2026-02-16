@@ -3393,8 +3393,8 @@ package body et_board_ops_devices is
 		end query_device;
 
 		
-		use pac_submodule_ports;
-		procedure query_submodule (s : in pac_submodule_ports.cursor) is
+		use pac_net_submodule_ports;
+		procedure query_submodule (s : in pac_net_submodule_ports.cursor) is
 		begin
 			-- CS
 			

@@ -395,7 +395,7 @@ package body et_net_segment is
 		AB_end	: in type_start_end_point;
 		port	: in type_net_submodule_port)
 	is 
-		position : pac_submodule_ports.cursor;
+		position : pac_net_submodule_ports.cursor;
 		inserted : boolean;
 	begin
 		case AB_end is
@@ -452,8 +452,8 @@ package body et_net_segment is
 		port	: in type_net_submodule_port;
 		deleted : out boolean)
 	is
-		use pac_submodule_ports;
-		cursor : pac_submodule_ports.cursor;
+		use pac_net_submodule_ports;
+		cursor : pac_net_submodule_ports.cursor;
 	begin
 		deleted := false;
 
@@ -486,8 +486,8 @@ package body et_net_segment is
 		segment	: in out type_net_segment;
 		module	: in pac_module_instance_name.bounded_string)
 	is
-		use pac_submodule_ports;
-		port_cursor : pac_submodule_ports.cursor;
+		use pac_net_submodule_ports;
+		port_cursor : pac_net_submodule_ports.cursor;
 		port : type_net_submodule_port;
 
 		use pac_module_instance_name;
@@ -637,7 +637,7 @@ package body et_net_segment is
 		AB_end	: in type_start_end_point)
 	is
 		use pac_device_ports;
-		use pac_submodule_ports;
+		use pac_net_submodule_ports;
 		use et_netlists.pac_netchanger_ports;
 	begin
 		case AB_end is

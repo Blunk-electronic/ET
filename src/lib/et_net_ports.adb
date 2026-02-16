@@ -274,7 +274,6 @@ package body et_net_ports is
 		return type_ports
 	is
 		use pac_device_ports;
-		use pac_submodule_ports;
 		use et_netlists.pac_netchanger_ports;
 		
 		result : type_ports := left;
@@ -334,8 +333,7 @@ package body et_net_ports is
 	is
 		result : boolean := false;
 
-		use pac_submodule_ports;
-		port_cursor : pac_submodule_ports.cursor;
+		port_cursor : pac_net_submodule_ports.cursor;
 	begin
 		port_cursor := ports.submodules.find (port);
 		
@@ -356,7 +354,6 @@ package body et_net_ports is
 	is
 		result : boolean := true;
 		use pac_device_ports;
-		use pac_submodule_ports;
 		use et_netlists.pac_netchanger_ports;
 	begin
 		if length (ports.devices) > 0 then
@@ -386,7 +383,6 @@ package body et_net_ports is
 		d, s, n : count_type := 0;
 
 		use pac_device_ports;
-		use pac_submodule_ports;
 		use et_netlists.pac_netchanger_ports;
 	begin
 		d := length (ports.devices);

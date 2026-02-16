@@ -1233,7 +1233,7 @@ package body et_schematic_ops_submodules is
 
 		use ada.containers;
 		
-		use et_net_ports.pac_submodule_ports;
+		use pac_net_submodule_ports;
 		use pac_device_ports;
 
 		use et_netlists;
@@ -3302,8 +3302,8 @@ package body et_schematic_ops_submodules is
 			-- Since submodule_port_collector is an ordered set, an exception will be raised if
 			-- a port is to be inserted more than once. Something like "MOT_DRV reset" must
 			-- occur only ONCE throughout the module.
-			use et_net_ports.pac_submodule_ports;
-			submodule_port_collector : et_net_ports.pac_submodule_ports.set;
+			use pac_net_submodule_ports;
+			submodule_port_collector : pac_net_submodule_ports.set;
 
 			
 			procedure collect_submodule_port (
@@ -3403,7 +3403,7 @@ package body et_schematic_ops_submodules is
 								procedure query_ports_submodules (segment : in type_net_segment) is
 									
 									procedure query_port (
-										port_cursor : in et_net_ports.pac_submodule_ports.cursor) 
+										port_cursor : in pac_net_submodule_ports.cursor) 
 									is begin
 										log (text => "submodule " & to_string (element (port_cursor).module_name) &
 											 " port " & pac_net_name.to_string (element (port_cursor).port_name), level => log_threshold + 4);

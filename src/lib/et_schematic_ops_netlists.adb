@@ -180,15 +180,15 @@ package body et_schematic_ops_netlists is
 	-- Adds the port direction (master/slave) to the given submodule ports.
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
-		ports 			: in pac_submodule_ports.set)
+		ports 			: in pac_net_submodule_ports.set)
 		return et_netlists.pac_submodule_ports_extended.set 
 	is
 		use et_netlists;
 		ports_extended : pac_submodule_ports_extended.set; -- to be returned
 
-		use pac_submodule_ports;
+		use pac_net_submodule_ports;
 
-		procedure query_ports (port_cursor : in pac_submodule_ports.cursor) is
+		procedure query_ports (port_cursor : in pac_net_submodule_ports.cursor) is
 			port : type_net_submodule_port := element (port_cursor);
 			direction : type_netchanger_port_name; -- master/slave
 		begin

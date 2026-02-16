@@ -839,7 +839,7 @@ package body et_schematic_ops_netchangers is
 				ports : type_ports;
 				port : type_port_netchanger;
 
-				use et_net_ports.pac_submodule_ports;
+				use pac_net_submodule_ports;
 				use pac_device_ports;
 				use pac_netchanger_ports;
 				use et_schematic_ops_nets;

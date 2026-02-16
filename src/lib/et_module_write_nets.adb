@@ -117,7 +117,7 @@ package body et_module_write_nets is
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					use pac_device_ports;
-					use pac_submodule_ports;
+					use pac_net_submodule_ports;
 
 					use et_netlists;
 					use pac_netchanger_ports;
@@ -255,7 +255,7 @@ package body et_module_write_nets is
 						use et_symbol_ports;
 						use et_module_instance;
 						
-						port_cursor : pac_submodule_ports.cursor;
+						port_cursor : pac_net_submodule_ports.cursor;
 						AB_end : type_start_end_point := A;
 
 						-- Writes something like "A/B submodule CLK_GENERATOR port out"

@@ -1673,7 +1673,7 @@ package body et_schematic_ops_units is
 			point : type_object_position; -- the point
 			ports : type_ports;
 			port : type_device_port;
-			use pac_submodule_ports;
+			use pac_net_submodule_ports;
 			use pac_device_ports;
 			use et_netlists.pac_netchanger_ports;
 			use et_schematic_ops_nets;
@@ -1840,7 +1840,7 @@ package body et_schematic_ops_units is
 			point : type_object_position; -- the point
 			ports : type_ports;
 			port : type_device_port;
-			use pac_submodule_ports;
+			use pac_net_submodule_ports;
 			use pac_device_ports;
 			use et_netlists.pac_netchanger_ports;
 			use et_schematic_ops_nets;
