@@ -35,8 +35,8 @@
 --
 --   history of changes:
 --
--- ToDo: 
---
+-- To Do: 
+-- - separate packages for schematic and board operations
 --
 
 
@@ -47,6 +47,7 @@ with ada.containers.ordered_maps;
 -- with et_logging;						use et_logging;
 with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_coordinates;			use et_schematic_coordinates;
+with et_sheets;							use et_sheets;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_board_coordinates;
 with et_board_geometry;
@@ -134,6 +135,10 @@ package et_netchangers is
 
 
 	
+	function get_position_schematic (
+		netchanger : in type_netchanger)
+		return type_object_position;
+		
 -- CS
 -- 	function get_place_schematic (
 -- 		netchanger	: in type_netchanger)
@@ -143,6 +148,13 @@ package et_netchangers is
 -- 	function get_rotation_schematic (
 -- 		netchanger	: in type_netchanger)
 -- 		return type_rotation;
+
+	procedure set_rotation_schematic (
+		netchanger	: in out type_netchanger;
+		rotation	: in et_schematic_geometry.type_rotation_model);
+
+
+
 
 -- set place in schematic
 -- set sheet in schematic
@@ -160,7 +172,31 @@ package et_netchangers is
 		key_type		=> type_netchanger_id,
 		element_type	=> type_netchanger);
 
+	use pac_netchangers;
+	
 
+		
+	-- Returns a cursor to the given netchanger.
+	-- If the netchanger is not among the given netchangers,
+	-- then no_element will be returned:
+	function get_netchanger (
+		netchangers : in pac_netchangers.map;
+		index		: in type_netchanger_id)
+		return pac_netchangers.cursor;
+		
+
+		
+	function get_position_schematic (
+		netchanger_cursor : in pac_netchangers.cursor)
+		return type_object_position;
+
+
+	function get_sheet (
+		netchanger_cursor : in pac_netchangers.cursor)
+		return type_sheet;
+
+		
+		
 	
 	type type_netchanger_ports is record
 		master	: type_vector_model := position_master_port_default;
@@ -176,7 +212,7 @@ package et_netchangers is
 	function netchanger_ports (
 		netchanger_cursor	: in pac_netchangers.cursor)
 		return type_netchanger_ports;
-	
+	-- CS rename to get_netchanger_ports or just get_ports ?
 	
 	
 end et_netchangers;

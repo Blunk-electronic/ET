@@ -1322,90 +1322,92 @@ package body et_schematic_ops_netchangers is
 
 
 	procedure rotate_netchanger (
-		module_cursor	: in pac_generic_modules.cursor; -- the module
+		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id;
-		rotation		: in et_schematic_geometry.type_rotation_model; -- 90
+		rotation		: in et_schematic_geometry.type_rotation_model;
 		log_threshold	: in type_log_level) 
 	is
 
+		use pac_netchangers;
+		
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			cursor : pac_netchangers.cursor;
-			location : type_object_position;
-			rotation : et_schematic_geometry.type_rotation_model;
+			netchanger_cursor : pac_netchangers.cursor;
+
+			-- The sheet where the netchanger is located
+			-- in the schematic:
+			sheet : type_sheet;
+
 			ports_old : type_netchanger_ports;
 			ports_new : type_netchanger_ports;
 
 			
 			procedure rotate (
 				index		: in type_netchanger_id;
-				netchanger	: in out type_netchanger) is
-			begin
-				set_rotation (netchanger.position_sch, rotation);
+				netchanger	: in out type_netchanger) 
+			is begin
+				set_rotation_schematic (netchanger, rotation);
 			end;
-
-
-			use pac_netchangers;
 			
 			
 		begin
-			-- locate given netchanger
-			cursor := find (module.netchangers, index);
+			-- Locate the requested netchanger in the
+			-- given module. If it does not exist, then output
+			-- a message:
+			netchanger_cursor := get_netchanger (module.netchangers, index);
 
 			
-			if cursor /= pac_netchangers.no_element then 
+			if has_element (netchanger_cursor) then 
 				-- netchanger exists
 
 				log_indentation_up;
 
-				-- Before the actual rotation, the coordinates of the
-				-- netchanger ports must be fetched.
-				ports_old := netchanger_ports (cursor);
+				-- Before the actual rotation, the current (old) coordinates 
+				-- of the netchanger ports must be fetched:
+				ports_old := netchanger_ports (netchanger_cursor);
 			
-				-- Fetch the current netchanger position and rotation:
-				location := element (cursor).position_sch;
-				rotation := get_rotation (location);
+				-- Get the sheet number where the netchanger is:
+				sheet := get_sheet (netchanger_cursor);
 
+				-- log sheet number:
+				log (text => "found the netchanger on sheet " & to_string (sheet),
+					 level => log_threshold + 1);
 				
-				-- Delete netchanger ports in nets:
+				-- Delete the old netchanger ports in connected
+				-- net segments as they are BEFORE the rotation:
 				delete_ports (
 	 				module			=> module_cursor,
 					index			=> index,
-
-					-- Get sheet number from location:
-					sheet			=> get_sheet (location),
-					
+					sheet			=> sheet,
 					log_threshold	=> log_threshold + 1);
 
 				
-				rotation := rotate_netchanger.rotation;
-
-				
-				-- rotate the netchanger to the new rotation
+				-- Rotate the netchanger to the new rotation:
 				update_element (
 					container	=> module.netchangers,
-					position	=> cursor,
+					position	=> netchanger_cursor,
 					process		=> rotate'access);
+				
 
 				-- Get the NEW absolute positions of the netchanger ports AFTER
-				-- the rotation according to location and rotation in schematic.
-				ports_new := netchanger_ports (cursor);
+				-- the rotation:
+				ports_new := netchanger_ports (netchanger_cursor);
 
-				-- Inserts the netchanger ports in the net segments.
+				-- Inserts the new netchanger ports in the net segments:
 				insert_ports (
 					module_cursor	=> module_cursor,
 					index			=> index,
 					ports			=> ports_new,
-					sheet			=> get_sheet (location),
-					log_threshold	=> log_threshold + 1);
+					sheet			=> sheet,
+					log_threshold	=> log_threshold + 2);
 
 				log_indentation_down;
+
 			else
-				-- netchanger does not exist
-				netchanger_not_found (index);
+				log (WARNING, " Netchanger " & to_string (index) & " not found !");
 			end if;
 		end query_module;
 		
@@ -1416,6 +1418,8 @@ package body et_schematic_ops_netchangers is
 			& " to " & to_string (rotation), 
 			level => log_threshold);
 
+		log_indentation_up;
+		
 		-- CS: validate rotation. must be 0 or 90, nothing else
 		
 		update_element (
@@ -1423,6 +1427,7 @@ package body et_schematic_ops_netchangers is
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+		log_indentation_down;
 	end rotate_netchanger;
 
 	

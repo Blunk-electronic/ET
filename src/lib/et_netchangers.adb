@@ -122,9 +122,62 @@ package body et_netchangers is
 	end;	
 	
 	
+
+
+	function get_position_schematic (
+		netchanger : in type_netchanger)
+		return type_object_position
+	is begin
+		return netchanger.position_sch;
+	end;
+
+
 	
 	
+
+	function get_netchanger (
+		netchangers : in pac_netchangers.map;
+		index		: in type_netchanger_id)
+		return pac_netchangers.cursor
+	is begin
+		return netchangers.find (index);
+	end;
+
 	
+	
+
+	function get_position_schematic (
+		netchanger_cursor : in pac_netchangers.cursor)
+		return type_object_position
+	is 
+		n : type_netchanger renames element (netchanger_cursor);
+	begin
+		return get_position_schematic (n);
+	end;
+	
+
+
+
+
+	procedure set_rotation_schematic (
+		netchanger	: in out type_netchanger;
+		rotation	: in et_schematic_geometry.type_rotation_model)
+	is begin
+		set_rotation (netchanger.position_sch, rotation);
+	end;
+
+
+	
+	
+	function get_sheet (
+		netchanger_cursor : in pac_netchangers.cursor)
+		return type_sheet
+	is
+		n : type_netchanger renames element (netchanger_cursor);
+	begin
+		return get_sheet (get_position_schematic (n));
+	end;
+
 	
 	
 	
