@@ -299,8 +299,9 @@ package body et_module_write_nets is
 								write (
 									keyword		=> to_string (AB_end) & space & keyword_netchanger, 
 									parameters	=> to_string (element (port_cursor).index)
+										-- CS use function get_index (port_cursor)
 										& space & keyword_port
-										& to_string (element (port_cursor).port));
+										& space & to_string (element (port_cursor).port));
 
 								next (port_cursor);
 							end loop;
