@@ -1363,8 +1363,6 @@ package body et_schematic_ops_netchangers is
 			if has_element (netchanger_cursor) then 
 				-- netchanger exists
 
-				log_indentation_up;
-
 				-- Before the actual rotation, the current (old) coordinates 
 				-- of the netchanger ports must be fetched:
 				ports_old := netchanger_ports (netchanger_cursor);
@@ -1382,7 +1380,7 @@ package body et_schematic_ops_netchangers is
 	 				module			=> module_cursor,
 					index			=> index,
 					sheet			=> sheet,
-					log_threshold	=> log_threshold + 1);
+					log_threshold	=> log_threshold + 2);
 
 				
 				-- Rotate the netchanger to the new rotation:
@@ -1403,8 +1401,6 @@ package body et_schematic_ops_netchangers is
 					ports			=> ports_new,
 					sheet			=> sheet,
 					log_threshold	=> log_threshold + 2);
-
-				log_indentation_down;
 
 			else
 				log (WARNING, " Netchanger " & to_string (index) & " not found !");
