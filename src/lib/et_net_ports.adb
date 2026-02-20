@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.   
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.

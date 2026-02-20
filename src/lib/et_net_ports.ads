@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -243,7 +243,7 @@ package et_net_ports is -- CS rename to et_net_segment_ports ?
 	-- These are the ports which may exist
 	-- at the A or B end of a net segment.
 	-- This type models the tag labels of a net segment:
-	type type_ports_AB is record
+	type type_net_ports_AB is record
 		A, B : type_net_ports;
 	end record;
 	

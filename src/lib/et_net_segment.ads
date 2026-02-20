@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -69,8 +69,7 @@ package et_net_segment is
 		labels		: pac_net_labels.list;
 		connectors	: type_net_connectors;
 		junctions	: type_junctions;
-		ports		: type_ports_AB; -- CS
-		--ports		: type_ports;
+		ports		: type_net_ports_AB;
 	end record;
 
 
