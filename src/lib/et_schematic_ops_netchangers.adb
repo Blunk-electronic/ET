@@ -1415,14 +1415,22 @@ package body et_schematic_ops_netchangers is
 			level => log_threshold);
 
 		log_indentation_up;
-		
-		-- CS: validate rotation. must be 0 or 90, nothing else
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_module'access);
 
+		
+		-- Validate rotation. Must be 0 or 90, nothing else:
+		if is_0_or_90 (rotation) then
+		
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> query_module'access);
+
+		else
+			log (WARNING, " Rotation " & to_string (rotation) & " invalid !"
+				 & " Must be either 0 or 90 degrees.");
+		end if;
+
+		
 		log_indentation_down;
 	end rotate_netchanger;
 

@@ -264,8 +264,25 @@ package et_geometry_2a is
 		offset		: in type_rotation);
 	
 
-
 	
+	-- Returns true if the given rotation is zero or
+	-- a multiple of 90 degrees:
+	function is_orthogonal (
+		rotation : in type_rotation)
+		return boolean;
+
+
+		
+	-- Returns true if the given rotation is zero or
+	-- 90 degrees:
+	function is_0_or_90 (
+		rotation : in type_rotation)
+		return boolean;
+
+		
+		
+		
+		
 	
 -- POINT / POSITION / LOCATION / LOCATION VECTOR / DISTANCE VECTOR:
 	

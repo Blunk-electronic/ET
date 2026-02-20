@@ -457,7 +457,33 @@ package body et_geometry_2a is
 
 
 
-	
+
+
+
+	function is_orthogonal (
+		rotation : in type_rotation)
+		return boolean
+	is begin
+		-- CS
+		return false;
+	end;
+
+
+		
+	function is_0_or_90 (
+		rotation : in type_rotation)
+		return boolean
+	is begin
+		if rotation = 0.0 or rotation = 90.0 then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+
+
+
 	
 
 
