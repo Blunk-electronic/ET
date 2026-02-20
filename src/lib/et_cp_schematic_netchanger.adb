@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -50,7 +50,7 @@ with et_schematic_geometry;				use et_schematic_geometry;
 
 with et_netchangers;					use et_netchangers;
 with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
-
+with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 
 package body et_cp_schematic_netchanger is

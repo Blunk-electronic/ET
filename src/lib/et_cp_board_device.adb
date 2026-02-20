@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -63,6 +63,7 @@ with et_canvas_board;
 with et_device_prefix;					use et_device_prefix;
 with et_package_model_name;				use et_package_model_name;
 with et_pcb_sides;						use et_pcb_sides;
+with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 with et_device_placeholders;
 with et_device_placeholders.packages;

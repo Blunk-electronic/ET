@@ -98,6 +98,8 @@ with et_fill_zones.boards;
 with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
+with et_coordinates_abs_rel;		use et_coordinates_abs_rel;
+
 
 
 package body et_canvas_board_vias is

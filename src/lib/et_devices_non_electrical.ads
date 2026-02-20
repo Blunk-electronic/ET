@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -81,7 +81,7 @@ with et_silkscreen;						use et_silkscreen;
 with et_assy_doc;						use et_assy_doc;
 with et_text_content;					use et_text_content;
 with et_logging;						use et_logging;
-
+with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 
 package et_devices_non_electrical is

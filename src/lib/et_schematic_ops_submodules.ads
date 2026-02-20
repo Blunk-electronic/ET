@@ -66,7 +66,7 @@ with et_devices_electrical;				use et_devices_electrical;
 with et_device_partcode;				use et_device_partcode;
 
 with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
-
+with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 with et_logging;						use et_logging;
 
 

@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -48,6 +48,7 @@ with et_board_geometry;					use et_board_geometry;
 with et_drawing_frame;					use et_drawing_frame;
 with et_board_ops_frame;				use et_board_ops_frame;
 with et_canvas_board;					use et_canvas_board;
+with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 
 package body et_cp_board_frame is

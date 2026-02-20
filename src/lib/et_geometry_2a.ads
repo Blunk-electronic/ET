@@ -58,6 +58,8 @@ with et_object_status;				use et_object_status;
 with et_mirroring;					use et_mirroring;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_directions;					use et_directions;
+with et_coordinates_abs_rel;		use et_coordinates_abs_rel;
+
 
 
 generic
@@ -85,15 +87,6 @@ package et_geometry_2a is
 		return string;
 
 	
-
-
-
-	-- CS use prefix ?
-	type type_coordinates is (RELATIVE, ABSOLUTE);
-
-	function to_string (coordinates : in type_coordinates) return string;
-	function to_coordinates (coordinates : in string) return type_coordinates;
-
 	
 
 		

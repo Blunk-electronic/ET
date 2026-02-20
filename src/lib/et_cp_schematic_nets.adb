@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -47,6 +47,7 @@ with ada.strings; 						use ada.strings;
 with et_sheets;							use et_sheets;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
+with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 -- with et_device_name;					use et_device_name;
 

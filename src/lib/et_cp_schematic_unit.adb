@@ -49,6 +49,7 @@ with et_modes.schematic;
 with et_sheets;							use et_sheets;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
+with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 with et_device_name;					use et_device_name;
 with et_devices_electrical;				use et_devices_electrical;

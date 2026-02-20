@@ -65,7 +65,7 @@ with et_terminal_name;					use et_terminal_name;
 with et_netlists;
 with et_sheets;							use et_sheets;
 with et_logging;						use et_logging;
-
+with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 
 package et_schematic_ops_nets is

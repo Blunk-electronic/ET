@@ -52,6 +52,7 @@ with et_nets;							use et_nets;
 
 with et_object_status;					use et_object_status;
 with et_logging;						use et_logging;
+with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 
 package et_board_ops_vias is

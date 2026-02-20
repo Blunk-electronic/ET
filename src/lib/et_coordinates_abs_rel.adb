@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                     BOARD OPERATIONS / SUBMODULE                         --
+--                    ABSOLUTE AND RELATIVE COORDINATES                     --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -35,51 +35,45 @@
 --
 --   history of changes:
 --
---   ToDo: 
 
-with et_board_geometry;				use et_board_geometry;
-use et_board_geometry.pac_geometry_2;
+with ada.text_io;					use ada.text_io;
 
-with et_module_names;				use et_module_names;
-with et_module_instance;			use et_module_instance;
-with et_generic_modules;			use et_generic_modules;
-with et_logging;					use et_logging;
-with et_coordinates_abs_rel;		use et_coordinates_abs_rel;
+with ada.strings;					use ada.strings;
+with ada.strings.fixed;				use ada.strings.fixed;
+with ada.strings.unbounded;
+with ada.characters.latin_1;
+with ada.characters.handling;		use ada.characters.handling;
 
 
-package et_board_ops_submodule is
 
-	use pac_generic_modules;
+package body et_coordinates_abs_rel is
+	
 
 
-	-- Returns the position (x/y/rotation) of a submodule instance.
-	-- Assumptions:
-	--  - The module to be searched in must be in the rig already.
-	--  - The submodule instance must exist in the module.
-	function get_position (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string) -- OSC1
-		return type_position;
 
+	function to_string (
+		coordinates : in type_coordinates) 
+		return string 
+	is begin
+		return space & to_lower (type_coordinates'image (coordinates));
+	end;
 
 
 	
-	-- Moves a submodule instance within the parent module layout in x/y direction.
-	-- Leaves rotation and face (top/bottom) as it is.
-	procedure move_submodule (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
-		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in type_vector_model; -- x/y
-		log_threshold	: in type_log_level);
+	function to_coordinates (
+		coordinates : in string)
+		return type_coordinates 
+	is begin
+		return type_coordinates'value (coordinates);
+
+-- 			exception
+-- 				when event: others =>
+-- 					log (text => ada.exceptions.exception_information (event), console => true);
+-- 					raise;
+	end;
 
 
 	
-end et_board_ops_submodule;
+	
+end et_coordinates_abs_rel;
 
--- Soli Deo Gloria
-
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
--- shall not perish but have eternal life.
--- The Bible, John 3.16

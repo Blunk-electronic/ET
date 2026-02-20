@@ -69,7 +69,7 @@ with et_package_variant;				use et_package_variant;
 with et_symbol_ports;					use et_symbol_ports;
 with et_port_names;						use et_port_names;
 with et_terminal_name;					use et_terminal_name;
-
+with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 with et_logging;						use et_logging;
 
 

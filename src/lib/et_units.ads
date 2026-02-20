@@ -66,6 +66,7 @@ with et_mirroring;						use et_mirroring;
 with et_device_model;					use et_device_model;
 with et_device_appearance;				use et_device_appearance;
 with et_object_status;					use et_object_status;
+with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 
 package et_units is

@@ -46,6 +46,7 @@ with et_drawing_frame;					use et_drawing_frame;
 with et_drawing_frame.board;			use et_drawing_frame.board;
 
 with et_logging;						use et_logging;
+with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 
 package et_board_ops_frame is

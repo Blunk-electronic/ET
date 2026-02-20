@@ -55,7 +55,7 @@ with et_net_names;						use et_net_names;
 with et_netlists;
 
 with et_sheets;							use et_sheets;
-
+with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 with et_logging;						use et_logging;
 
 

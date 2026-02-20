@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                     BOARD OPERATIONS / SUBMODULE                         --
+--                    ABSOLUTE AND RELATIVE COORDINATES                     --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -35,51 +35,36 @@
 --
 --   history of changes:
 --
---   ToDo: 
-
-with et_board_geometry;				use et_board_geometry;
-use et_board_geometry.pac_geometry_2;
-
-with et_module_names;				use et_module_names;
-with et_module_instance;			use et_module_instance;
-with et_generic_modules;			use et_generic_modules;
-with et_logging;					use et_logging;
-with et_coordinates_abs_rel;		use et_coordinates_abs_rel;
-
-
-package et_board_ops_submodule is
-
-	use pac_generic_modules;
+--
+-- DESCRIPTION:
+--
+-- This is about enumeration types used to distiguish
+-- between absolute and relative coordinates.
+--
+--  ToDo:
+--
+--
 
 
-	-- Returns the position (x/y/rotation) of a submodule instance.
-	-- Assumptions:
-	--  - The module to be searched in must be in the rig already.
-	--  - The submodule instance must exist in the module.
-	function get_position (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string) -- OSC1
-		return type_position;
+package et_coordinates_abs_rel is
 
+	-- CS use prefix ?
+	type type_coordinates is (RELATIVE, ABSOLUTE);
+	-- CS rename to type_abs_rel ?
+
+	
+	function to_string (
+		coordinates : in type_coordinates)
+		return string;
+
+	
+	function to_coordinates (
+		coordinates : in string)
+		return type_coordinates;
+
+	
 
 
 	
-	-- Moves a submodule instance within the parent module layout in x/y direction.
-	-- Leaves rotation and face (top/bottom) as it is.
-	procedure move_submodule (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
-		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in type_vector_model; -- x/y
-		log_threshold	: in type_log_level);
+end et_coordinates_abs_rel;
 
-
-	
-end et_board_ops_submodule;
-
--- Soli Deo Gloria
-
--- For God so loved the world that he gave 
--- his one and only Son, that whoever believes in him 
--- shall not perish but have eternal life.
--- The Bible, John 3.16
