@@ -4,7 +4,7 @@
 --                                                                          --
 --                          NETCHANGER / BOARD                              --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
@@ -40,32 +40,16 @@
 --
 
 
--- with et_pcb_signal_layers;				use et_pcb_signal_layers;
-with et_board_coordinates;
-with et_board_geometry;					use et_board_geometry;
 
-
-package et_netchangers.board is
-
-	use pac_geometry_2;
-
-	
-	
-	type type_netchanger_position_board is record
-		position_brd	: type_vector_model; -- x,y
-		layer			: type_signal_layer := type_signal_layer'first;
-	end record;
+package body et_netchangers.board is
 
 
 	procedure set_place (
 		netchanger	: in out type_netchanger;
-		place		: in type_vector_model);
-		
--- set/get place in board
--- set/get layer in board
-		
--- move netchanger in board
--- set/get signal layer
+		place		: in type_vector_model)
+	is begin
+		null;
+	end;
 		
 
 	
