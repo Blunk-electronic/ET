@@ -52,8 +52,8 @@ package et_netchangers.board is
 	
 	
 	type type_netchanger_position_board is record
-		position_brd	: type_vector_model; -- x,y
-		layer			: type_signal_layer := type_signal_layer'first;
+		place	: type_vector_model; -- x,y
+		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 
 
