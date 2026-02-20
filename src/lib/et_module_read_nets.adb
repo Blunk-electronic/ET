@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -635,7 +635,7 @@ package body et_module_read_nets is
 	net_netchanger_port : et_netlists.type_port_netchanger;
 	-- net_netchanger_ports : et_netlists.pac_netchanger_ports.set;
 
-	net_segment_ports : et_net_ports.type_ports_AB;
+	net_segment_ports : et_net_ports.type_net_ports_AB;
 
 	
 
