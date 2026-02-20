@@ -432,6 +432,7 @@ package body et_schematic_ops_netchangers is
 						
 						procedure change_segment (segment : in out type_net_segment) is
 							use et_netlists;
+							-- CS log messages
 						begin
 							-- If port sits on the A or B end of the segment,
 							-- then insert it at this end:
@@ -505,7 +506,7 @@ package body et_schematic_ops_netchangers is
 				
 			begin -- probe_port
 				log_indentation_up;
-				log (text => "at" & to_string (port), level => log_threshold + 2);
+				log (text => "at " & to_string (port), level => log_threshold + 2);
 				
 				while not port_processed and net_cursor /= pac_nets.no_element loop
 					
