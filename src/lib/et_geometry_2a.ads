@@ -217,6 +217,9 @@ package et_geometry_2a is
 	
 	procedure clip_distance (d : in out type_distance);
 
+	
+	
+	
 
 	
 
@@ -224,6 +227,9 @@ package et_geometry_2a is
 	
 	zero_rotation : constant type_rotation := 0.0;
 
+	subtype type_rotation_0_90 is type_rotation range 0.0 .. 90.0;
+	
+	
 	
 	-- Converts the given rotation/angle to a string:
 	function to_string (
@@ -279,6 +285,8 @@ package et_geometry_2a is
 		rotation : in type_rotation)
 		return boolean;
 
+		
+		
 		
 		
 		
