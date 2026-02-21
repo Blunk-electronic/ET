@@ -58,6 +58,7 @@ with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
 
 with et_net_linewidth;					use et_net_linewidth;
 
+with et_netchangers;
 with et_netchangers.schematic;
 
 with et_rotation_docu;					use et_rotation_docu;
@@ -260,9 +261,11 @@ package body et_schematic_ops_nets is
 			procedure query_netchangers (
 				netchanger_cursor : in pac_netchangers.cursor) 
 			is
-				netchanger_position : type_object_position;
-				
+				-- CS use renames
+				use et_netchangers;
 				use et_netchangers.schematic;
+				netchanger_position : type_netchanger_position_schematic;
+				
 				ports : type_netchanger_ports;
 				
 				use et_netlists;

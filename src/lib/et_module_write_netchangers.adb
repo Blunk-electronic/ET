@@ -57,7 +57,9 @@ with et_board_geometry;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
 with et_schematic_coordinates;
+
 with et_netchangers;				use et_netchangers;
+with et_netchangers.schematic;		use et_netchangers.schematic;
 
 with et_net_names;					use et_net_names;
 with et_coordinates_formatting;		use et_coordinates_formatting;
@@ -86,6 +88,11 @@ package body et_module_write_netchangers is
 			use et_schematic_geometry;
 			use pac_geometry_2;
 			use et_schematic_coordinates;	
+			
+			-- Convert the netchanger position in the schematic
+			-- to the regular type_position:
+			position_sch : constant type_position := 
+				to_position (netchanger.position_sch);
 		begin
 			section_mark (section_netchanger, HEADER);
 			
@@ -96,12 +103,12 @@ package body et_module_write_netchangers is
 				
 			write (
 				keyword => keyword_position_in_schematic, 
-				parameters => to_string (netchanger.position_sch, FORMAT_2)); 
+				parameters => to_string (position_sch, FORMAT_2)); 
 				-- position_in_schematic sheet 1 x 147.32 y 96.97
 
 			write (
 				keyword => keyword_rotation_in_schematic, 
-				parameters => to_string (get_rotation (netchanger.position_sch))); 
+				parameters => to_string (get_rotation (position_sch))); 
 				-- rotation_in_schematic 90.0
 
 			write (

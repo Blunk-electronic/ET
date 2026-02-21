@@ -50,6 +50,9 @@ with ada.containers;					use ada.containers;
 with ada.containers.ordered_maps;
 
 with et_schematic_coordinates;
+with et_schematic_geometry;
+with et_sheets;
+
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_board_geometry;
 
@@ -109,6 +112,21 @@ package et_netchangers is
 	--    In the board drawing a hardcoded symbol is used too
 	--    (see package et_netchanger_symbol_board).
 	
+	-- The rotation of a netchanger in the schematic is limited
+	-- to a range from 0 to 90 degrees. For this reason the type_object_position
+	-- can not be used for the position of a netchanger in the schematic.
+	-- So we need a special type:
+	type type_netchanger_position_schematic is record
+		place		: et_schematic_geometry.pac_geometry_2.type_vector_model;
+		rotation	: et_schematic_geometry.pac_geometry_2.type_rotation_0_90;
+		sheet		: et_sheets.type_sheet;
+	end record;
+	
+	
+	
+		
+		
+	
 	type type_netchanger_position_board is record
 		place	: et_board_geometry.pac_geometry_2.type_vector_model; -- x,y
 		layer	: type_signal_layer := type_signal_layer'first;
@@ -116,8 +134,7 @@ package et_netchangers is
 
 	
 	type type_netchanger is record -- CS make private
-		position_sch : et_schematic_coordinates.type_object_position; 
-		-- x,y,sheet,rotation
+		position_sch : type_netchanger_position_schematic;
 		
 		-- CS reverse, swap flag ?
 		

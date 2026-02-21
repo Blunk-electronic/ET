@@ -177,6 +177,7 @@ package et_schematic_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor; -- the module
 		index			: in type_netchanger_id; -- 1,2,3,...
 		rotation		: in et_schematic_geometry.type_rotation_model; -- 90
+		-- CS use type_rotation_0_90 ?
 		log_threshold	: in type_log_level);
 
 	

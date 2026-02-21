@@ -87,7 +87,8 @@ package et_netchangers.schematic is
 		
 
 
-
+	
+		
 
 	type type_swap_ports is (
 		NO_SWAP,
@@ -96,34 +97,80 @@ package et_netchangers.schematic is
 
 
 
+	-- Converts a netchanger position type to
+	-- the position type (containing x/y/rotation):
+	function to_position (
+		position : in type_netchanger_position_schematic)
+		return type_position;
+
+		
+	procedure set_place (
+		position	: in out type_netchanger_position_schematic;
+		place		: in type_vector_model);
+		
+
+	function get_place (
+		position	: in type_netchanger_position_schematic)
+		return type_vector_model;
+
+		
+	procedure set_sheet (
+		position	: in out type_netchanger_position_schematic;
+		sheet		: in type_sheet);
+
+		
+	function get_sheet (
+		position : in type_netchanger_position_schematic)
+		return type_sheet;
+		
+
+	function get_rotation (
+		position : in type_netchanger_position_schematic)
+		return type_rotation_0_90;
+
+	-- CS set_rotation
 	
+		
 	function get_position_schematic (
 		netchanger : in type_netchanger)
-		return type_object_position;
+		return type_netchanger_position_schematic;
+	-- CS rename to get_position
+
+
+	procedure set_position (
+		netchanger 	: in out type_netchanger;
+		position	: in type_netchanger_position_schematic);
+	
 		
--- CS
--- 	function get_place_schematic (
--- 		netchanger	: in type_netchanger)
--- 		return type_vector_model;
--- 	
--- 	
--- 	function get_rotation_schematic (
--- 		netchanger	: in type_netchanger)
--- 		return type_rotation;
+	procedure set_place (
+		netchanger	: in out type_netchanger;
+		place		: in type_vector_model);
+
+		
 
 	procedure set_rotation_schematic (
 		netchanger	: in out type_netchanger;
-		rotation	: in et_schematic_geometry.type_rotation_model);
+		rotation	: in pac_geometry_2.type_rotation_0_90);
+	-- CS rename to set_rotation
+	
+
+	procedure set_sheet (
+		netchanger	: in out type_netchanger;
+		sheet		: in type_sheet);
 
 
-
-
--- set place in schematic
--- set sheet in schematic
+	function to_netchanger_position (
+		position : in type_object_position)
+		return type_netchanger_position_schematic;
+		
+		
+	function to_object_position (
+		position : in type_netchanger_position_schematic)
+		return type_object_position;
 
 		
 -- move netchanger in schematic
--- rotate netchanger in schematic
+
 		
 
 	
@@ -131,7 +178,9 @@ package et_netchangers.schematic is
 		
 	function get_position_schematic (
 		netchanger_cursor : in pac_netchangers.cursor)
-		return type_object_position;
+		return type_netchanger_position_schematic;
+
+		
 
 
 	function get_sheet (
@@ -153,7 +202,7 @@ package et_netchangers.schematic is
 	-- Returns the absolute port positions of 
 	-- the given netchanger:
 	function netchanger_ports (
-		netchanger_cursor	: in pac_netchangers.cursor)
+		netchanger_cursor : in pac_netchangers.cursor)
 		return type_netchanger_ports;
 	-- CS rename to get_netchanger_ports or just get_ports ?
 	

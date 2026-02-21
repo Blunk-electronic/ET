@@ -91,25 +91,132 @@ package body et_netchangers.schematic is
 	end;	
 	
 	
+	
+	
+	
+	function to_position (
+		position : in type_netchanger_position_schematic)
+		return type_position
+	is 
+		result : type_position;
+	begin
+		result.place := position.place;
+		result.rotation := position.rotation;
+	
+		return result;
+	end;
 
+	
 
-	function get_position_schematic (
-		netchanger : in type_netchanger)
-		return type_object_position
+	
+	procedure set_place (
+		position	: in out type_netchanger_position_schematic;
+		place		: in type_vector_model)
 	is begin
-		return netchanger.position_sch;
+		position.place := place;
 	end;
 
 
 	
+	function get_place (
+		position	: in type_netchanger_position_schematic)
+		return type_vector_model
+	is begin
+		return position.place;
+	end;
+		
+
 	
+	
+	procedure set_sheet (
+		position	: in out type_netchanger_position_schematic;
+		sheet		: in type_sheet)
+	is begin
+		position.sheet := sheet;
+	end;
+
+	
+	
+	
+	function get_sheet (
+		position : in type_netchanger_position_schematic)
+		return type_sheet
+	is begin
+		return position.sheet;
+	end;
+
+	
+
+	function get_rotation (
+		position : in type_netchanger_position_schematic)
+		return type_rotation_0_90
+	is begin
+		return position.rotation;
+	end;
+	
+	
+	
+	function to_netchanger_position (
+		position : in type_object_position)
+		return type_netchanger_position_schematic
+	is
+		result : type_netchanger_position_schematic;
+	begin
+		result.place := get_place (position);
+		result.rotation := get_rotation (position);
+		result.sheet := get_sheet (position);
+		return result;
+	end;
+
+	
+	
+	function to_object_position (
+		position : in type_netchanger_position_schematic)
+		return type_object_position
+	is
+		result : type_object_position;
+	begin
+		set_place (result, position.place);
+		set_rotation (result, position.rotation);
+		set_sheet (result, position.sheet);
+		
+		return result;
+	end;
+	
+	
+	
+
+	function get_position_schematic (
+		netchanger : in type_netchanger)
+		return type_netchanger_position_schematic
+	is begin
+		return netchanger.position_sch;
+	end;
+
+	
+	
+	procedure set_position (
+		netchanger 	: in out type_netchanger;
+		position	: in type_netchanger_position_schematic)
+	is begin
+		netchanger.position_sch := position;
+	end;
+
+
+	
+	procedure set_place (
+		netchanger	: in out type_netchanger;
+		place		: in type_vector_model)
+	is begin
+		netchanger.position_sch.place := place;
+	end;
 
 	
 	
 
 	function get_position_schematic (
 		netchanger_cursor : in pac_netchangers.cursor)
-		return type_object_position
+		return type_netchanger_position_schematic
 	is 
 		n : type_netchanger renames element (netchanger_cursor);
 	begin
@@ -122,11 +229,19 @@ package body et_netchangers.schematic is
 
 	procedure set_rotation_schematic (
 		netchanger	: in out type_netchanger;
-		rotation	: in et_schematic_geometry.type_rotation_model)
+		rotation	: in pac_geometry_2.type_rotation_0_90)
 	is begin
-		set_rotation (netchanger.position_sch, rotation);
+		netchanger.position_sch.rotation := rotation;
 	end;
 
+
+	
+	procedure set_sheet (
+		netchanger	: in out type_netchanger;
+		sheet		: in type_sheet)
+	is begin
+		netchanger.position_sch.sheet := sheet;
+	end;
 
 	
 	
@@ -136,7 +251,7 @@ package body et_netchangers.schematic is
 	is
 		n : type_netchanger renames element (netchanger_cursor);
 	begin
-		return get_sheet (get_position_schematic (n));
+		return n.position_sch.sheet;
 	end;
 
 	
@@ -145,20 +260,21 @@ package body et_netchangers.schematic is
 -- PORTS:
 
 	function netchanger_ports (
-		netchanger_cursor	: in pac_netchangers.cursor)		
+		netchanger_cursor : in pac_netchangers.cursor)		
 		return type_netchanger_ports 
 	is
-		-- CS use renames
 		use pac_netchangers;
+		n : type_netchanger renames element (netchanger_cursor);
+		
 		ports : type_netchanger_ports;
 	begin
 		-- rotate the ports according to rotation in schematic
-		rotate_by (ports.master, get_rotation (element (netchanger_cursor).position_sch));
-		rotate_by (ports.slave,  get_rotation (element (netchanger_cursor).position_sch));
+		rotate_by (ports.master, n.position_sch.rotation);
+		rotate_by (ports.slave,  n.position_sch.rotation);
 
 		-- move the ports according to position in schematic
-		move_by (ports.master, element (netchanger_cursor).position_sch.place);
-		move_by (ports.slave,  element (netchanger_cursor).position_sch.place);
+		move_by (ports.master, n.position_sch.place);
+		move_by (ports.slave,  n.position_sch.place);
 				
 		return ports;
 	end netchanger_ports;

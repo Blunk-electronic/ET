@@ -663,7 +663,7 @@ package body et_schematic_ops_netchangers is
 			module		: in type_generic_module) 
 		is
 			nc_cursor : pac_netchangers.cursor;
-			nc_position : type_object_position;
+			nc_position : type_netchanger_position_schematic;
 			port_xy : type_vector_model;
 
 			use et_netchanger_symbol_schematic;
@@ -675,7 +675,7 @@ package body et_schematic_ops_netchangers is
 				log_indentation_up;
 
 				-- get netchanger position (sheet/x/y) and rotation in schematic
-				nc_position := element (nc_cursor).position_sch;
+				nc_position := get_position_schematic (nc_cursor);
 
 				-- get the port position relative to the center of the netchanger
 				case port is
@@ -695,7 +695,7 @@ package body et_schematic_ops_netchangers is
 				
 				move_by (
 					point	=> port_xy,
-					offset	=> nc_position.place);
+					offset	=> get_place (nc_position));
 
 				-- Now port_xy holds the absolute x/y of the port in the schematic.
 
@@ -735,8 +735,10 @@ package body et_schematic_ops_netchangers is
 	
 	
 	procedure add_netchanger (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string;
 		place			: in type_object_position; -- sheet/x/y/rotation
+		-- CS rename to position
+		
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -755,7 +757,6 @@ package body et_schematic_ops_netchangers is
 			use pac_netchangers;
 			
 		begin
-
 			-- Get the index to be used for the new netchanger:
 			index := next_netchanger_index (module_cursor);
 			
@@ -763,7 +764,7 @@ package body et_schematic_ops_netchangers is
 				 level => log_threshold + 1);
 			
 			-- build the new netchanger
-			netchanger.position_sch := place;
+			set_position (netchanger, to_netchanger_position (place));
 
 			-- insert the new netchanger in the module
 			insert (
@@ -814,7 +815,7 @@ package body et_schematic_ops_netchangers is
 	
 	
 	procedure drag_netchanger (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string;
 		index			: in type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
@@ -915,6 +916,7 @@ package body et_schematic_ops_netchangers is
 
 
 		
+		
 		procedure query_netchangers (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -923,20 +925,19 @@ package body et_schematic_ops_netchangers is
 			location : type_object_position;
 			ports_old : type_netchanger_ports;
 			ports_new : type_netchanger_ports;
+
 			
 			procedure move (
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger) 
 			is begin
-				netchanger.position_sch := location;
+				set_position (netchanger, to_netchanger_position (location));
 			end move;
 
 
 			use pac_netchangers;
-
 			
-		begin -- query_netchangers
-
+		begin
 			-- locate given netchanger
 			cursor := find (module.netchangers, index);
 
@@ -949,7 +950,7 @@ package body et_schematic_ops_netchangers is
 				ports_old := netchanger_ports (cursor);
 
 				-- Fetch the netchanger position BEFORE the move.
-				location := element (cursor).position_sch;
+				location := to_object_position (get_position_schematic (cursor));
 
 				-- Test whether the port at the current position can be dragged:
 				movable_test (location, ports_old);
@@ -1010,16 +1011,16 @@ package body et_schematic_ops_netchangers is
 		end query_netchangers;
 
 		
-	begin -- drag_netchanger
+	begin
 		case coordinates is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_name) &
-					" dragging netchanger" & to_string (index) &
+					" drag netchanger" & to_string (index) &
 					" to" & to_string (point), level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
-					" dragging netchanger" & to_string (index) &
+					" drag netchanger" & to_string (index) &
 					" by" & to_string (point), level => log_threshold);
 		end case;
 		
@@ -1167,7 +1168,7 @@ package body et_schematic_ops_netchangers is
 
 		
 	begin
-		log (text => "deleting netchanger ports in nets ...", level => log_threshold);
+		log (text => "delete netchanger ports in nets", level => log_threshold);
 
 		log_indentation_up;
 		
@@ -1203,19 +1204,18 @@ package body et_schematic_ops_netchangers is
 			cursor : pac_netchangers.cursor;
 			location : type_object_position;
 			ports : type_netchanger_ports;
+
 			
 			procedure move (
 				index		: in type_netchanger_id;
-				netchanger	: in out type_netchanger) is
-			begin
-				netchanger.position_sch := location;
+				netchanger	: in out type_netchanger) 
+			is begin
+				set_position (netchanger, to_netchanger_position (location));
 			end move;
 
 
-			use pac_netchangers;
-
-			
-		begin -- query_netchangers
+			use pac_netchangers;			
+		begin
 
 			-- locate given netchanger
 			cursor := find (module.netchangers, index);
@@ -1247,6 +1247,7 @@ package body et_schematic_ops_netchangers is
 					
 					log_threshold	=> log_threshold + 1);
 
+				
 				-- calculate the new position 
 				case coordinates is
 					when ABSOLUTE =>
@@ -1258,13 +1259,14 @@ package body et_schematic_ops_netchangers is
 						-- The relative position is the netchanger position BEFORE 
 						-- the move operation shifted by the given point (x/y)
 						-- and the given sheet number:
-						location := element (cursor).position_sch;
+						location := to_object_position (get_position_schematic (cursor));
 						
 						move (
 							position	=> location,
 							offset		=> to_position_relative (point, sheet));
 				end case;
 
+				
 				-- move the netchanger to the new position
 				update_element (
 					container	=> module.netchangers,
@@ -1292,17 +1294,17 @@ package body et_schematic_ops_netchangers is
 		end query_netchangers;
 
 		
-	begin -- move_netchanger
+	begin
 		case coordinates is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_name) &
-					" moving netchanger" & to_string (index) &
+					" move netchanger" & to_string (index) &
 					" to sheet" & to_string (sheet) &
 					to_string (point), level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
-					" moving netchanger" & to_string (index) &
+					" move netchanger" & to_string (index) &
 					" by " & relative_to_string (sheet) & " sheet(s)" &
 					to_string (point), level => log_threshold);
 		end case;
@@ -1419,7 +1421,8 @@ package body et_schematic_ops_netchangers is
 
 		log_indentation_up;
 
-		
+
+		-- CS: move to et_cp_schematic_ops_netchanger:
 		-- Validate rotation. Must be 0 or 90, nothing else:
 		if is_0_or_90 (rotation) then
 		
@@ -1499,9 +1502,9 @@ package body et_schematic_ops_netchangers is
 		end query_netchangers;
 
 		
-	begin -- delete_netchanger
+	begin
 		log (text => "module " & to_string (module_name) &
-			" deleting netchanger" & to_string (index),
+			" delete netchanger" & to_string (index),
 			level => log_threshold);
 
 		log_indentation_up;

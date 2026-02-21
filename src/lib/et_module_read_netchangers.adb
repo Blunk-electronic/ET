@@ -56,7 +56,10 @@ with et_board_geometry;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
 with et_schematic_coordinates;
+
 with et_netchangers;				use et_netchangers;
+with et_netchangers.schematic;		use et_netchangers.schematic;
+
 with et_net_names;					use et_net_names;
 
 
@@ -70,35 +73,55 @@ package body et_module_read_netchangers is
 	netchanger_id	: type_netchanger_id := type_netchanger_id'first;
 
 	
+	
 	procedure read_netchanger (
 		line : in type_fields_of_line)
 	is
+		-- CS separate procedures for board related stuff
+		
 		use et_schematic_geometry;
 		use et_board_geometry.pac_geometry_2;
 		use et_schematic_coordinates;	
 		kw : constant string := f (line, 1);
+
+		position : type_object_position;
+		rotation : et_schematic_geometry.pac_geometry_2.type_rotation_0_90;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
+		
 		if kw = keyword_name then -- name 1, 2, 304, ...
 			expect_field_count (line, 2);
 			netchanger_id := to_netchanger_id (f (line, 2));
+
 			
-		elsif kw = keyword_position_in_schematic then -- position_in_schematic sheet 1 x 1.000 y 5.555
+		elsif kw = keyword_position_in_schematic then 
+			-- position_in_schematic sheet 1 x 1.000 y 5.555
+			
 			expect_field_count (line, 7);
 
 			-- extract position (in schematic) starting at field 2
-			netchanger.position_sch := to_position (line, 2);
+			position := to_position (line, 2);
 
-		elsif kw = keyword_rotation_in_schematic then -- rotation_in_schematic 180.0
+			set_sheet (netchanger, get_sheet (position));
+			set_place (netchanger, get_place (position));
+
+					   
+		elsif kw = keyword_rotation_in_schematic then 
+			-- rotation_in_schematic 90.0
 			expect_field_count (line, 2);
-			set_rotation (netchanger.position_sch, pac_geometry_2.to_rotation (f (line, 2)));
+			
+			rotation := et_schematic_geometry.pac_geometry_2.type_rotation_0_90 (et_schematic_geometry.pac_geometry_2.to_rotation (f (line, 2)));
+			set_rotation_schematic (netchanger, rotation);
 
-		elsif kw = keyword_position_in_board then -- position_in_board x 55.000 y 7.555
+			
+		elsif kw = keyword_position_in_board then 
+			-- position_in_board x 55.000 y 7.555
 			expect_field_count (line, 5);
 
 			-- extract position (in board) starting at field 2
 			netchanger.position_brd.place := to_vector_model (line, 2);
 
+			
 		elsif kw = keyword_layer then -- layer 3 (signal layer in board)
 			expect_field_count (line, 2);
 			netchanger.position_brd.layer := to_signal_layer (f (line, 2));

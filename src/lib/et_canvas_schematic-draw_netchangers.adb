@@ -395,9 +395,11 @@ procedure draw_netchangers is
 			index		: in type_netchanger_id;
 			netchanger	: in type_netchanger)
 		is		
-			-- Get the position of the given netchanger 
-			-- candidate (x/y/rotation):
-			position : type_position := type_position (netchanger.position_sch);
+			-- Get the position of the given netchanger.
+			-- NOTE: A netchanger can only assume a rotation of 0 or 90 degree
+			-- by its specification. This is a conversion from netchanger position
+			-- to a regular position (x/y/rotation):
+			position : type_position := to_position (netchanger.position_sch);
 		begin
 			-- CS being moved
 			-- CS selected
