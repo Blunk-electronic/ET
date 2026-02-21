@@ -58,6 +58,7 @@ with et_pcb_signal_layers;			use et_pcb_signal_layers;
 
 with et_schematic_coordinates;
 with et_netchangers;				use et_netchangers;
+
 with et_net_names;					use et_net_names;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 
@@ -77,26 +78,43 @@ package body et_module_write_netchangers is
 		use pac_netchangers;
 
 
-		procedure query_netchanger (cursor : pac_netchangers.cursor) is
+		procedure query_netchanger (
+			cursor : pac_netchangers.cursor) 
+		is
+			netchanger : type_netchanger renames element (cursor);
+			
 			use et_schematic_geometry;
 			use pac_geometry_2;
 			use et_schematic_coordinates;	
 		begin
 			section_mark (section_netchanger, HEADER);
-			write (keyword => keyword_name,	parameters => to_string (key (cursor))); -- 1, 2, 201, ...
-			write (keyword => keyword_position_in_schematic, 
-				parameters => to_string (element (cursor).position_sch, FORMAT_2)); -- position_in_schematic sheet 1 x 147.32 y 96.97
+			
+			write (
+				keyword => keyword_name,
+				parameters => to_string (key (cursor))); 
+				-- 1, 2, 201, ...
+				
+			write (
+				keyword => keyword_position_in_schematic, 
+				parameters => to_string (netchanger.position_sch, FORMAT_2)); 
+				-- position_in_schematic sheet 1 x 147.32 y 96.97
 
 			write (
 				keyword => keyword_rotation_in_schematic, 
-				parameters => to_string (get_rotation (element (cursor).position_sch))); -- rotation_in_schematic 90.0
+				parameters => to_string (get_rotation (netchanger.position_sch))); 
+				-- rotation_in_schematic 90.0
 
 			write (
 				keyword => keyword_position_in_board, 
 				parameters => et_board_geometry.pac_geometry_2.to_string (
-					element (cursor).position_brd, FORMAT_2)); -- position_in_board x 1.32 y 6.97
+					netchanger.position_brd.place, FORMAT_2));
+				-- position_in_board x 1.32 y 6.97
 			
-			write (keyword => keyword_layer, parameters => to_string (element (cursor).layer)); -- layer 2
+			write (
+				keyword => keyword_layer, 
+				parameters => to_string (netchanger.position_brd.layer)); 
+				-- layer 2
+				
 			section_mark (section_netchanger, FOOTER);
 		end query_netchanger;
 

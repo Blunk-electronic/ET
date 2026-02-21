@@ -124,12 +124,20 @@ package et_netchangers is
 	--    signal layer where the netchanger is connecting tracks.
 	--    In the board drawing a hardcoded symbol is used too
 	--    (see package et_netchanger_symbol_board).
+	
+	type type_netchanger_position_board is record
+		place	: et_board_geometry.pac_geometry_2.type_vector_model; -- x,y
+		layer	: type_signal_layer := type_signal_layer'first;
+	end record;
+
+	
 	type type_netchanger is record -- CS make private
 		position_sch	: type_object_position; -- x,y,sheet,rotation
+		-- CS reverse, swap flag ?
 		
-		-- CS position_brd : type_netchanger_position_board;
-		position_brd	: et_board_geometry.pac_geometry_2.type_vector_model; -- x,y
-		layer			: type_signal_layer := type_signal_layer'first;
+		position_brd : type_netchanger_position_board;
+		-- position_brd	: et_board_geometry.pac_geometry_2.type_vector_model; -- x,y
+		-- layer			: type_signal_layer := type_signal_layer'first;
 	end record;
 
 

@@ -40,26 +40,24 @@
 --
 
 
--- with et_pcb_signal_layers;				use et_pcb_signal_layers;
-with et_board_coordinates;
-with et_board_geometry;					use et_board_geometry;
 
 
 package et_netchangers.board is
 
-	use pac_geometry_2;
+	-- use et_board_coordinates;
+	use et_board_geometry.pac_geometry_2;
 
 	
 	
-	type type_netchanger_position_board is record
-		place	: type_vector_model; -- x,y
-		layer	: type_signal_layer := type_signal_layer'first;
-	end record;
+	-- type type_netchanger_position_board is record
+	-- 	place	: et_board_geometry.pac_geometry_2.type_vector_model; -- x,y
+	-- 	layer	: type_signal_layer := type_signal_layer'first;
+	-- end record;
 
 
 	procedure set_place (
 		netchanger	: in out type_netchanger;
-		place		: in type_vector_model);
+		place		: in et_board_geometry.pac_geometry_2.type_vector_model);
 		
 -- set/get place in board
 -- set/get layer in board

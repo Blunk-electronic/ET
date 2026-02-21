@@ -97,11 +97,11 @@ package body et_module_read_netchangers is
 			expect_field_count (line, 5);
 
 			-- extract position (in board) starting at field 2
-			netchanger.position_brd := to_vector_model (line, 2);
+			netchanger.position_brd.place := to_vector_model (line, 2);
 
 		elsif kw = keyword_layer then -- layer 3 (signal layer in board)
 			expect_field_count (line, 2);
-			netchanger.layer := to_signal_layer (f (line, 2));
+			netchanger.position_brd.layer := to_signal_layer (f (line, 2));
 			-- CS validate_signal_layer (netchanger.layer);
 			
 		else

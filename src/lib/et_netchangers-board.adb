@@ -46,7 +46,7 @@ package body et_netchangers.board is
 
 	procedure set_place (
 		netchanger	: in out type_netchanger;
-		place		: in type_vector_model)
+		place		: in et_board_geometry.pac_geometry_2.type_vector_model)
 	is begin
 		null;
 	end;
