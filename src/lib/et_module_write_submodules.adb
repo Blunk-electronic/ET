@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -57,7 +57,8 @@ with et_board_geometry;
 
 with et_schematic_coordinates;
 with et_coordinates_formatting;		use et_coordinates_formatting;
-with et_netchangers;				use et_netchangers;
+
+with et_netchangers.schematic;
 with et_submodules;					use et_submodules;
 with et_net_names;					use et_net_names;
 
@@ -83,22 +84,39 @@ package body et_module_write_submodules is
 
 
 		
-		procedure query_ports (port_cursor : in pac_submodule_ports.cursor) is
+		procedure query_ports (
+			port_cursor : in pac_submodule_ports.cursor) 
+		is
+			-- CS use renames
 			use pac_submodule_ports;
+			use et_netchangers.schematic;
 		begin
 			section_mark (section_port, HEADER);
-			write (keyword => keyword_name, parameters => to_string (key (port_cursor))); -- name clk_out
+			write (
+				keyword => keyword_name, 
+				parameters => to_string (key (port_cursor))); 
+				-- name clk_out
 
-			write (keyword => keyword_position, 
-				parameters => to_string (element (port_cursor).position, FORMAT_2)); -- position x 0 y 10
+			write (
+				keyword => keyword_position, 
+				parameters => to_string (element (port_cursor).position, FORMAT_2)); 
+				-- position x 0 y 10
 			
-			write (keyword => keyword_direction, parameters => to_string (element (port_cursor).direction)); -- direction master/slave
+			write (
+				keyword => keyword_direction, 
+				parameters => to_string (element (port_cursor).direction)); 
+				-- direction master/slave
+				
 			section_mark (section_port, FOOTER);
 		end;
 
 
 		
-		procedure write (submodule_cursor : in pac_submodules.cursor) is 
+		
+		procedure write (
+			submodule_cursor : in pac_submodules.cursor) 
+		is 
+			-- CS use renames
 			use et_schematic_coordinates;
 			use et_schematic_geometry.pac_geometry_2;
 		begin

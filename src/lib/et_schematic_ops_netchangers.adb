@@ -38,11 +38,11 @@
 --   ToDo: 
 
 
-with ada.text_io;					use ada.text_io;
+with ada.text_io;						use ada.text_io;
 with ada.containers;
 
-with ada.exceptions;				use ada.exceptions;
-with et_string_processing;			use et_string_processing;
+with ada.exceptions;					use ada.exceptions;
+with et_string_processing;				use et_string_processing;
 
 with et_net_segment;					use et_net_segment;
 with et_net_ports;						use et_net_ports;
@@ -50,6 +50,8 @@ with et_net_strands;					use et_net_strands;
 with et_schematic_ops_nets;
 with et_netchanger_symbol_schematic;
 with et_module;							use et_module;
+with et_netchangers.schematic;			use et_netchangers.schematic;
+
 
 
 package body et_schematic_ops_netchangers is

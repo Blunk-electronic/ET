@@ -55,14 +55,18 @@ with et_board_geometry;
 with et_schematic_text;				use et_schematic_text;
 with et_module_names;				use et_module_names;
 with et_module_instance;			use et_module_instance;
+
 with et_fonts;						use et_fonts;
+
 with et_netchangers;				use et_netchangers;
+with et_netchangers.schematic;		use et_netchangers.schematic;
 
 
 package et_submodules is
 
 	use pac_geometry_2;
 	use pac_text_schematic;
+
 	
 	nesting_depth_max : constant positive := 10; -- CS increase if nessecary
 

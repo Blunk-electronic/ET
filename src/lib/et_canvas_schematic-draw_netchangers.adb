@@ -48,6 +48,7 @@ with et_colors;							use et_colors;
 with et_net_linewidth;					use et_net_linewidth;
 with et_netchanger_symbol_schematic;	use et_netchanger_symbol_schematic;
 with et_netchangers;					use et_netchangers;
+with et_netchangers.schematic;			use et_netchangers.schematic;
 with et_primitive_objects;				use et_primitive_objects;
 with et_alignment;						use et_alignment;
 with et_display.schematic;				use et_display.schematic;

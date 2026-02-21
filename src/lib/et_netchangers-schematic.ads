@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                          NETCHANGER / BOARD                              --
+--                         NETCHANGERS / SCHEMATIC                          --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -33,6 +33,13 @@
 --   info@blunk-electronic.de
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
+--
+-- DESCRIPTION:
+--
+-- This package is about properties and primitive operations
+-- of netchangers in the schematic domain.
+--
+--
 --   history of changes:
 --
 -- To Do: 
@@ -40,31 +47,118 @@
 --
 
 
+-- with et_logging;						use et_logging;
+with et_schematic_geometry;				use et_schematic_geometry;
+with et_sheets;							use et_sheets;
+
+with et_netchanger_symbol_schematic;	use et_netchanger_symbol_schematic;
 
 
-package et_netchangers.board is
+package et_netchangers.schematic is
 
-	use et_board_geometry;
+	use et_schematic_coordinates;
 	use pac_geometry_2;
 
 	
+		
+
+		
+-- PORT NAMES:
+
+	type type_netchanger_port_name is (MASTER, SLAVE);
+	-- CS: instead of master/slave notation use A/B ?
+	-- CS: use prefix like PORT_A, PORT_B
+	
+	
+	function to_port_name (
+		name : in string) 
+		return type_netchanger_port_name;
+		
+
+	function to_string (
+		name : in type_netchanger_port_name)
+		return string;	
 
 
-	procedure set_place (
+	
+	function opposide_port (
+		port : in type_netchanger_port_name) 
+		return type_netchanger_port_name;
+		
+
+
+
+
+	type type_swap_ports is (
+		NO_SWAP,
+		SWAP);						
+	
+
+
+
+	
+	function get_position_schematic (
+		netchanger : in type_netchanger)
+		return type_object_position;
+		
+-- CS
+-- 	function get_place_schematic (
+-- 		netchanger	: in type_netchanger)
+-- 		return type_vector_model;
+-- 	
+-- 	
+-- 	function get_rotation_schematic (
+-- 		netchanger	: in type_netchanger)
+-- 		return type_rotation;
+
+	procedure set_rotation_schematic (
 		netchanger	: in out type_netchanger;
-		place		: in type_vector_model);
+		rotation	: in et_schematic_geometry.type_rotation_model);
+
+
+
+
+-- set place in schematic
+-- set sheet in schematic
+
 		
--- set/get place in board
--- set/get layer in board
-		
--- move netchanger in board
--- set/get signal layer
+-- move netchanger in schematic
+-- rotate netchanger in schematic
 		
 
 	
+
+		
+	function get_position_schematic (
+		netchanger_cursor : in pac_netchangers.cursor)
+		return type_object_position;
+
+
+	function get_sheet (
+		netchanger_cursor : in pac_netchangers.cursor)
+		return type_sheet;
+
+		
+		
+	
+	type type_netchanger_ports is record
+		master	: type_vector_model := position_master_port_default;
+		slave	: type_vector_model := position_slave_port_default;
+	end record;
+	-- CS: instead of master/slave notation use A/B ?
+
+
+
+	
+	-- Returns the absolute port positions of 
+	-- the given netchanger:
+	function netchanger_ports (
+		netchanger_cursor	: in pac_netchangers.cursor)
+		return type_netchanger_ports;
+	-- CS rename to get_netchanger_ports or just get_ports ?
 	
 	
-end et_netchangers.board;
+end et_netchangers.schematic;
 
 -- Soli Deo Gloria
 

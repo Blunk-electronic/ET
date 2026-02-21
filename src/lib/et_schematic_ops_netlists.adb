@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -56,7 +56,7 @@ with et_assembly_variant_name;			use et_assembly_variant_name;
 with et_schematic_ops_assembly_variant;	use et_schematic_ops_assembly_variant;
 
 with et_submodules;
-with et_netchangers;
+with et_netchangers.schematic;			use et_netchangers.schematic;
 
 with et_string_processing;				use et_string_processing;
 

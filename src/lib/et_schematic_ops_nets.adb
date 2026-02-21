@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -57,7 +57,8 @@ with et_submodules;
 with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
 
 with et_net_linewidth;					use et_net_linewidth;
-with et_netchangers;
+
+with et_netchangers.schematic;
 
 with et_rotation_docu;					use et_rotation_docu;
 with et_exceptions;						use et_exceptions;
@@ -256,9 +257,14 @@ package body et_schematic_ops_nets is
 
 			
 
-			procedure query_netchangers (netchanger_cursor : in pac_netchangers.cursor) is
+			procedure query_netchangers (
+				netchanger_cursor : in pac_netchangers.cursor) 
+			is
 				netchanger_position : type_object_position;
+				
+				use et_netchangers.schematic;
 				ports : type_netchanger_ports;
+				
 				use et_netlists;
 			begin
 				netchanger_position := element (netchanger_cursor).position_sch;

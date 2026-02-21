@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         NETCHANGERS / BOARD                              --
+--                         NETCHANGERS / SCHEMATIC                          --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,38 +35,137 @@
 --
 --   history of changes:
 --
--- To Do: 
---
---
+--   ToDo: 
+
 
 with ada.text_io;					use ada.text_io;
 
 with ada.characters;				use ada.characters;
 with ada.characters.handling;		use ada.characters.handling;
 with ada.strings;					use ada.strings;
--- with ada.strings.fixed;				use ada.strings.fixed;
--- with ada.strings.bounded;      		use ada.strings.bounded;
--- with ada.strings.maps;				use ada.strings.maps;
+with ada.strings.fixed;				use ada.strings.fixed;
 
 with et_coordinates_formatting;		use et_coordinates_formatting;
 
 
 
-package body et_netchangers.board is
+package body et_netchangers.schematic is
 
+	
+	
+	
 
-	procedure set_place (
-		netchanger	: in out type_netchanger;
-		place		: in et_board_geometry.pac_geometry_2.type_vector_model)
+	
+-- PORT NAMES:
+
+	function to_port_name (
+		name : in string) 
+		return type_netchanger_port_name 
 	is begin
-		null;
+		return type_netchanger_port_name'value (name);
 	end;
+
+	
+	
+	function to_string (
+		name : in type_netchanger_port_name) 
+		return string 
+	is begin
+		return trim (to_lower (type_netchanger_port_name'image (name)), left);
+	end;
+
+	
 		
 
 	
+
+	
+	function opposide_port (
+		port : in type_netchanger_port_name) 
+		return type_netchanger_port_name 
+	is begin
+		case port is
+			when MASTER => return SLAVE;
+			when SLAVE  => return MASTER;
+		end case;
+	end;	
 	
 	
-end et_netchangers.board;
+
+
+	function get_position_schematic (
+		netchanger : in type_netchanger)
+		return type_object_position
+	is begin
+		return netchanger.position_sch;
+	end;
+
+
+	
+	
+
+	
+	
+
+	function get_position_schematic (
+		netchanger_cursor : in pac_netchangers.cursor)
+		return type_object_position
+	is 
+		n : type_netchanger renames element (netchanger_cursor);
+	begin
+		return get_position_schematic (n);
+	end;
+	
+
+
+
+
+	procedure set_rotation_schematic (
+		netchanger	: in out type_netchanger;
+		rotation	: in et_schematic_geometry.type_rotation_model)
+	is begin
+		set_rotation (netchanger.position_sch, rotation);
+	end;
+
+
+	
+	
+	function get_sheet (
+		netchanger_cursor : in pac_netchangers.cursor)
+		return type_sheet
+	is
+		n : type_netchanger renames element (netchanger_cursor);
+	begin
+		return get_sheet (get_position_schematic (n));
+	end;
+
+	
+	
+	
+-- PORTS:
+
+	function netchanger_ports (
+		netchanger_cursor	: in pac_netchangers.cursor)		
+		return type_netchanger_ports 
+	is
+		-- CS use renames
+		use pac_netchangers;
+		ports : type_netchanger_ports;
+	begin
+		-- rotate the ports according to rotation in schematic
+		rotate_by (ports.master, get_rotation (element (netchanger_cursor).position_sch));
+		rotate_by (ports.slave,  get_rotation (element (netchanger_cursor).position_sch));
+
+		-- move the ports according to position in schematic
+		move_by (ports.master, element (netchanger_cursor).position_sch.place);
+		move_by (ports.slave,  element (netchanger_cursor).position_sch.place);
+				
+		return ports;
+	end netchanger_ports;
+
+
+	
+end et_netchangers.schematic;
 
 -- Soli Deo Gloria
 

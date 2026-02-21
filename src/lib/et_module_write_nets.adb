@@ -61,6 +61,7 @@ with et_symbol_ports;
 
 with et_submodules;
 with et_netchangers;
+with et_netchangers.schematic;
 
 with et_net_names;					use et_net_names;
 with et_net_class_name;
@@ -288,6 +289,7 @@ package body et_module_write_nets is
 					
 					procedure query_netchanger_ports (segment : in type_net_segment) is
 						use et_netchangers;
+						use et_netchangers.schematic;
 						use et_symbol_ports;
 
 						port_cursor : pac_netchanger_ports.cursor;

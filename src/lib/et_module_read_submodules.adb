@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -55,7 +55,9 @@ with et_schematic_geometry;
 with et_board_geometry;
 
 with et_schematic_coordinates;
-with et_netchangers;				use et_netchangers;
+
+with et_netchangers.schematic;		use et_netchangers.schematic;
+
 with et_submodules;					use et_submodules;
 with et_net_names;					use et_net_names;
 

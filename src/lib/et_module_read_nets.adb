@@ -61,7 +61,8 @@ with et_sheets;						use et_sheets;
 
 with et_symbol_ports;
 
-with et_netchangers;				use et_netchangers;
+with et_netchangers;
+with et_netchangers.schematic;
 
 with et_net_names;					use et_net_names;
 with et_net_class_name;
@@ -648,6 +649,8 @@ package body et_module_read_nets is
 		use et_module_instance;
 		use et_symbol_ports;
 		use et_net_ports;
+		use et_netchangers;
+		use et_netchangers.schematic;
 		
 		AB_end : type_start_end_point;		
 		kw : constant string := f (line, 2);

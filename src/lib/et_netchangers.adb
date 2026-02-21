@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                             NETCHANGERS                                  --
+--                        NETCHANGERS GENERAL                               --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -40,14 +40,8 @@
 
 with ada.text_io;					use ada.text_io;
 
-with ada.characters;				use ada.characters;
-with ada.characters.handling;		use ada.characters.handling;
 with ada.strings;					use ada.strings;
 with ada.strings.fixed;				use ada.strings.fixed;
-with ada.strings.bounded;      		use ada.strings.bounded;
-with ada.strings.maps;				use ada.strings.maps;
-
-with et_coordinates_formatting;		use et_coordinates_formatting;
 
 
 
@@ -79,57 +73,9 @@ package body et_netchangers is
 		id : in type_netchanger_id) 
 		return string
 	is begin
-		return "N" & to_string (id);
-		-- CS consider user defined prefixes. conventions ?
+		return netchanger_prefix & to_string (id);		
 	end;
 	
-	
-	
-
-	
--- PORT NAMES:
-
-	function to_port_name (
-		name : in string) 
-		return type_netchanger_port_name 
-	is begin
-		return type_netchanger_port_name'value (name);
-	end;
-
-	
-	
-	function to_string (
-		name : in type_netchanger_port_name) 
-		return string 
-	is begin
-		return trim (to_lower (type_netchanger_port_name'image (name)), left);
-	end;
-
-	
-		
-
-	
-
-	
-	function opposide_port (
-		port : in type_netchanger_port_name) 
-		return type_netchanger_port_name 
-	is begin
-		case port is
-			when MASTER => return SLAVE;
-			when SLAVE  => return MASTER;
-		end case;
-	end;	
-	
-	
-
-
-	function get_position_schematic (
-		netchanger : in type_netchanger)
-		return type_object_position
-	is begin
-		return netchanger.position_sch;
-	end;
 
 
 	
@@ -144,63 +90,6 @@ package body et_netchangers is
 	end;
 
 	
-	
-
-	function get_position_schematic (
-		netchanger_cursor : in pac_netchangers.cursor)
-		return type_object_position
-	is 
-		n : type_netchanger renames element (netchanger_cursor);
-	begin
-		return get_position_schematic (n);
-	end;
-	
-
-
-
-
-	procedure set_rotation_schematic (
-		netchanger	: in out type_netchanger;
-		rotation	: in et_schematic_geometry.type_rotation_model)
-	is begin
-		set_rotation (netchanger.position_sch, rotation);
-	end;
-
-
-	
-	
-	function get_sheet (
-		netchanger_cursor : in pac_netchangers.cursor)
-		return type_sheet
-	is
-		n : type_netchanger renames element (netchanger_cursor);
-	begin
-		return get_sheet (get_position_schematic (n));
-	end;
-
-	
-	
-	
--- PORTS:
-
-	function netchanger_ports (
-		netchanger_cursor	: in pac_netchangers.cursor)
-		return type_netchanger_ports 
-	is
-		use pac_netchangers;
-		ports : type_netchanger_ports;
-	begin
-		-- rotate the ports according to rotation in schematic
-		rotate_by (ports.master, get_rotation (element (netchanger_cursor).position_sch));
-		rotate_by (ports.slave,  get_rotation (element (netchanger_cursor).position_sch));
-
-		-- move the ports according to position in schematic
-		move_by (ports.master, element (netchanger_cursor).position_sch.place);
-		move_by (ports.slave,  element (netchanger_cursor).position_sch.place);
-				
-		return ports;
-	end netchanger_ports;
-
 
 	
 end et_netchangers;

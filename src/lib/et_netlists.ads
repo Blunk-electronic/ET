@@ -50,6 +50,8 @@ with ada.containers.indefinite_ordered_sets;
 
 with et_net_names;				use et_net_names;
 with et_netchangers;			use et_netchangers;
+with et_netchangers.schematic;	use et_netchangers.schematic;
+
 with et_assembly_variant_name;	use et_assembly_variant_name;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
