@@ -111,7 +111,7 @@ package body et_module_read_netchangers is
 			expect_field_count (line, 2);
 			
 			rotation := et_schematic_geometry.pac_geometry_2.type_rotation_0_90 (et_schematic_geometry.pac_geometry_2.to_rotation (f (line, 2)));
-			set_rotation_schematic (netchanger, rotation);
+			set_rotation (netchanger, rotation);
 
 			
 		elsif kw = keyword_position_in_board then 
@@ -172,7 +172,7 @@ package body et_module_read_netchangers is
 			
 			-- clean up for next netchanger
 			netchanger_id := type_netchanger_id'first;
-			netchanger := (others => <>);
+			reset_netchanger (netchanger);
 		end insert_netchanger;
 
 		

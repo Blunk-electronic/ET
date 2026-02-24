@@ -78,6 +78,15 @@ package body et_netchangers is
 	
 
 
+
+	procedure reset_netchanger (
+		netchanger : in out type_netchanger)
+	is begin
+		netchanger.position_sch := (others => <>);
+		netchanger.position_brd := (others => <>);
+		netchanger.direction := type_netchanger_direction'first;
+	end;
+	
 	
 	
 

@@ -80,7 +80,7 @@ package body et_netchangers.schematic is
 	
 
 	
-	function opposide_port (
+	function get_opposide_port (
 		port : in type_netchanger_port_name) 
 		return type_netchanger_port_name 
 	is begin
@@ -90,6 +90,17 @@ package body et_netchangers.schematic is
 		end case;
 	end;	
 	
+	
+	
+	
+	
+	
+	procedure set_direction (
+		netchanger	: in out type_netchanger;
+		direction	: in type_netchanger_direction)
+	is begin
+		netchanger.direction := direction;
+	end;
 	
 	
 	
@@ -186,7 +197,7 @@ package body et_netchangers.schematic is
 	
 	
 
-	function get_position_schematic (
+	function get_position (
 		netchanger : in type_netchanger)
 		return type_netchanger_position_schematic
 	is begin
@@ -220,16 +231,16 @@ package body et_netchangers.schematic is
 	is 
 		n : type_netchanger renames element (netchanger_cursor);
 	begin
-		return get_position_schematic (n);
+		return get_position (n);
 	end;
 	
 
 
 
 
-	procedure set_rotation_schematic (
+	procedure set_rotation (
 		netchanger	: in out type_netchanger;
-		rotation	: in pac_geometry_2.type_rotation_0_90)
+		rotation	: in type_rotation_0_90)
 	is begin
 		netchanger.position_sch.rotation := rotation;
 	end;
@@ -259,7 +270,7 @@ package body et_netchangers.schematic is
 	
 -- PORTS:
 
-	function netchanger_ports (
+	function get_netchanger_ports (
 		netchanger_cursor : in pac_netchangers.cursor)		
 		return type_netchanger_ports 
 	is
@@ -277,7 +288,7 @@ package body et_netchangers.schematic is
 		move_by (ports.slave,  n.position_sch.place);
 				
 		return ports;
-	end netchanger_ports;
+	end get_netchanger_ports;
 
 
 	

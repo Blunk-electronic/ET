@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -498,7 +498,7 @@ package body et_netlists is
 					item		=> 
 							(
 							index	=> port.index, 
-							port	=> opposide_port (port.port)
+							port	=> get_opposide_port (port.port)
 							)
 					);
 					-- the given port is a composite of index and port name (master/slave)

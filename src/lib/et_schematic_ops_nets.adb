@@ -278,7 +278,7 @@ package body et_schematic_ops_nets is
 					log_indentation_up;	
 					
 					-- get the absolute port positions of the netchanger
-					ports := netchanger_ports (netchanger_cursor);
+					ports := get_netchanger_ports (netchanger_cursor);
 
 					-- If the port sits at x/y of place then we have a match.
 					-- The match can either be at the msster or slave port.

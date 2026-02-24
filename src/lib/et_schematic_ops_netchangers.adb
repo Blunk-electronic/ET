@@ -777,7 +777,7 @@ package body et_schematic_ops_netchangers is
 
 			-- Get the absolute positions of the netchanger ports according to 
 			-- location and rotation in schematic.
-			ports := netchanger_ports (cursor);
+			ports := get_netchanger_ports (cursor);
 
 			-- Inserts the given netchanger ports in the net segments.
 			insert_ports (
@@ -947,7 +947,7 @@ package body et_schematic_ops_netchangers is
 				-- Before the actual drag, the coordinates of the
 				-- netchanger ports must be fetched. These coordinates will later assist
 				-- in changing the positions of connected net segments.
-				ports_old := netchanger_ports (cursor);
+				ports_old := get_netchanger_ports (cursor);
 
 				-- Fetch the netchanger position BEFORE the move.
 				location := to_object_position (get_position_schematic (cursor));
@@ -979,7 +979,7 @@ package body et_schematic_ops_netchangers is
 
 				-- Get the NEW absolute positions of the netchanger ports AFTER
 				-- the move operation according to location and rotation in schematic.
-				ports_new := netchanger_ports (cursor);
+				ports_new := get_netchanger_ports (cursor);
 
 				-- Change net segments in the affected nets (type_generic_module.nets):
 				drag_net_segments (
@@ -1275,7 +1275,7 @@ package body et_schematic_ops_netchangers is
 
 				-- Get the NEW absolute positions of the netchanger ports AFTER
 				-- the move operation according to location and rotation in schematic.
-				ports := netchanger_ports (cursor);
+				ports := get_netchanger_ports (cursor);
 
 				-- Inserts the netchanger ports in the net segments.
 				insert_ports (
@@ -1354,7 +1354,7 @@ package body et_schematic_ops_netchangers is
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger) 
 			is begin
-				set_rotation_schematic (netchanger, rotation);
+				set_rotation (netchanger, rotation);
 			end;
 			
 			
@@ -1370,7 +1370,7 @@ package body et_schematic_ops_netchangers is
 
 				-- Before the actual rotation, the current (old) coordinates 
 				-- of the netchanger ports must be fetched:
-				ports_old := netchanger_ports (netchanger_cursor);
+				ports_old := get_netchanger_ports (netchanger_cursor);
 			
 				-- Get the sheet number where the netchanger is:
 				sheet := get_sheet (netchanger_cursor);
@@ -1397,7 +1397,7 @@ package body et_schematic_ops_netchangers is
 
 				-- Get the NEW absolute positions of the netchanger ports AFTER
 				-- the rotation:
-				ports_new := netchanger_ports (netchanger_cursor);
+				ports_new := get_netchanger_ports (netchanger_cursor);
 
 				-- Inserts the new netchanger ports in the net segments:
 				insert_ports (

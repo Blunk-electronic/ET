@@ -176,7 +176,7 @@ package body et_schematic_ops_submodules is
 
 							-- If the given direction is MASTER, then we must look for a SLAVE netchanger
 							-- port (and vice versa) in the net segment.
-							if element (port_cursor).port = opposide_port (direction) then 
+							if element (port_cursor).port = get_opposide_port (direction) then 
 
 								-- The opposide port must be not connected. In that case 
 								-- suitable netchanger has been found:

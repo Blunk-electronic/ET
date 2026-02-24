@@ -81,21 +81,24 @@ package et_netchangers.schematic is
 
 
 	
-	function opposide_port (
+	function get_opposide_port (
 		port : in type_netchanger_port_name) 
 		return type_netchanger_port_name;
-		
 
 
 	
 		
 
-	type type_swap_ports is (
-		NO_SWAP,
-		SWAP);						
 	
 
+	procedure set_direction (
+		netchanger	: in out type_netchanger;
+		direction	: in type_netchanger_direction);
 
+
+
+		
+		
 
 	-- Converts a netchanger position type to
 	-- the position type (containing x/y/rotation):
@@ -128,13 +131,12 @@ package et_netchangers.schematic is
 		position : in type_netchanger_position_schematic)
 		return type_rotation_0_90;
 
-	-- CS set_rotation
+
 	
 		
-	function get_position_schematic (
+	function get_position (
 		netchanger : in type_netchanger)
 		return type_netchanger_position_schematic;
-	-- CS rename to get_position
 
 
 	procedure set_position (
@@ -148,10 +150,9 @@ package et_netchangers.schematic is
 
 		
 
-	procedure set_rotation_schematic (
+	procedure set_rotation (
 		netchanger	: in out type_netchanger;
-		rotation	: in pac_geometry_2.type_rotation_0_90);
-	-- CS rename to set_rotation
+		rotation	: in type_rotation_0_90);
 	
 
 	procedure set_sheet (
@@ -201,10 +202,10 @@ package et_netchangers.schematic is
 	
 	-- Returns the absolute port positions of 
 	-- the given netchanger:
-	function netchanger_ports (
+	function get_netchanger_ports (
 		netchanger_cursor : in pac_netchangers.cursor)
 		return type_netchanger_ports;
-	-- CS rename to get_netchanger_ports or just get_ports ?
+
 	
 	
 end et_netchangers.schematic;

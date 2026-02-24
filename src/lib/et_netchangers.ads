@@ -100,7 +100,11 @@ package et_netchangers is
 		
 	
 
+	type type_netchanger_direction is (
+		FORWARD, -- default
+		REVERSED);						
 
+		
 		
 	
 	-- 1. In the schematic drawing, there is only one hardcoded
@@ -118,8 +122,8 @@ package et_netchangers is
 	-- So we need a special type:
 	type type_netchanger_position_schematic is record
 		place		: et_schematic_geometry.pac_geometry_2.type_vector_model;
-		rotation	: et_schematic_geometry.pac_geometry_2.type_rotation_0_90;
-		sheet		: et_sheets.type_sheet;
+		rotation	: et_schematic_geometry.pac_geometry_2.type_rotation_0_90 := 0.0;
+		sheet		: et_sheets.type_sheet := et_sheets.type_sheet'first;
 	end record;
 	
 	
@@ -133,16 +137,21 @@ package et_netchangers is
 	end record;
 
 	
+	
+	
+	
 	type type_netchanger is record -- CS make private
 		position_sch : type_netchanger_position_schematic;
 		
-		-- CS reverse, swap flag ?
+		direction : type_netchanger_direction := FORWARD;
 		
 		position_brd : type_netchanger_position_board;
 	end record;
 
 
 
+	procedure reset_netchanger (
+		netchanger : in out type_netchanger);
 
 		
 
