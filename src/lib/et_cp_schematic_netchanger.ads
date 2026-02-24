@@ -77,6 +77,8 @@ package et_cp_schematic_netchanger is
 
 
 		
+	-- The rotation can either be 0 or 90 degrees. Other angles are
+	-- not accepted:
 	procedure rotate_netchanger (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;

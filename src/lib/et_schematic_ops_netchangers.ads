@@ -170,14 +170,11 @@ package et_schematic_ops_netchangers is
 
 
 	-- Rotates the given netchanger. Disconnects it from
-	-- start or end points of net segments.
-	-- The rotation can either be 0 or 90 degrees. Other angles are
-	-- not accepted:
+	-- start or end points of net segments:
 	procedure rotate_netchanger (
 		module_cursor	: in pac_generic_modules.cursor; -- the module
 		index			: in type_netchanger_id; -- 1,2,3,...
-		rotation		: in et_schematic_geometry.type_rotation_model; -- 90
-		-- CS use type_rotation_0_90 ?
+		rotation		: in type_rotation_0_90;
 		log_threshold	: in type_log_level);
 
 	

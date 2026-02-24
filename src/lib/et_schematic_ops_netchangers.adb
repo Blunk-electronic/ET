@@ -1329,7 +1329,7 @@ package body et_schematic_ops_netchangers is
 	procedure rotate_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id;
-		rotation		: in et_schematic_geometry.type_rotation_model;
+		rotation		: in type_rotation_0_90;
 		log_threshold	: in type_log_level) 
 	is
 
@@ -1421,21 +1421,10 @@ package body et_schematic_ops_netchangers is
 
 		log_indentation_up;
 
-
-		-- CS: move to et_cp_schematic_ops_netchanger:
-		-- Validate rotation. Must be 0 or 90, nothing else:
-		if is_0_or_90 (rotation) then
-		
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> query_module'access);
-
-		else
-			log (WARNING, " Rotation " & to_string (rotation) & " invalid !"
-				 & " Must be either 0 or 90 degrees.");
-		end if;
-
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
 		
 		log_indentation_down;
 	end rotate_netchanger;
