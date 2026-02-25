@@ -941,6 +941,7 @@ package body et_schematic_ops_netchangers is
 			-- locate given netchanger
 			cursor := find (module.netchangers, index);
 
+			
 			if cursor /= pac_netchangers.no_element then 
 				-- netchanger exists
 
@@ -1004,6 +1005,11 @@ package body et_schematic_ops_netchangers is
 
 				log_indentation_down;
 			else
+				
+				-- CS: It is assumed that the requested netchanger
+				-- does exist. So this warning
+				-- should be moved to the command processor.
+
 				-- netchanger does not exist
 				netchanger_not_found (index);
 			end if;
@@ -1287,6 +1293,11 @@ package body et_schematic_ops_netchangers is
 
 				log_indentation_down;
 			else
+				-- CS: It is assumed that the requested netchanger
+				-- does exist. So this warning
+				-- should be moved to the command processor.
+
+				
 				-- netchanger does not exist
 				netchanger_not_found (index);
 			end if;
@@ -1485,6 +1496,10 @@ package body et_schematic_ops_netchangers is
 				
 				log_indentation_down;
 			else
+				-- CS: It is assumed that the requested netchanger
+				-- does exist. So this warning
+				-- should be moved to the command processor.
+				
 				-- netchanger does not exist
 				netchanger_not_found (index);
 			end if;

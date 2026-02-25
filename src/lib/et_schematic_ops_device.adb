@@ -37,7 +37,10 @@
 --
 -- To Do:
 -- - clean up, rework
---
+-- - The existence of requested devices 
+--   can be assumed. Instead the existence-test and the associated
+--   warning should be moved to the command processor.
+
 
 with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;

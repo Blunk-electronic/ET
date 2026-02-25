@@ -38,6 +38,8 @@
 -- To Do:
 -- - rework
 -- - propose arguments if command incomplete
+-- - test the existence of the requested unit and device.
+--   (see comments in et_schematic_ops_units).
 --
 
 with ada.text_io;						use ada.text_io;

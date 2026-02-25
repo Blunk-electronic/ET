@@ -38,6 +38,7 @@
 -- To Do:
 -- - rework
 -- - propose arguments if command incomplete
+-- - test existence of requested netchanger
 --
 
 with ada.text_io;						use ada.text_io;
@@ -110,6 +111,8 @@ package body et_cp_schematic_netchanger is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 	begin
 		-- CS log message
+
+		-- CS: test existence of the given netchanger
 		
 		case cmd_field_count is
 			when 9 =>
@@ -147,6 +150,8 @@ package body et_cp_schematic_netchanger is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 	begin
 		-- CS log message
+
+		-- CS: test existence of the given netchanger
 		
 		case cmd_field_count is
 			when 8 =>
@@ -188,6 +193,8 @@ package body et_cp_schematic_netchanger is
 	begin
 		-- CS log message
 
+		-- CS: test existence of the given netchanger
+		
 		case cmd_field_count is
 			when 5 =>
 				delete_netchanger (
@@ -224,6 +231,8 @@ package body et_cp_schematic_netchanger is
 		log (text => "rotate netchanger", level => log_threshold);
 		log_indentation_up;
 
+		-- CS: test existence of the given netchanger
+		
 		case cmd_field_count is
 			
 			when 6 =>

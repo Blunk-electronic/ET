@@ -35,7 +35,12 @@
 --
 --   history of changes:
 --
---   ToDo: 
+-- To Do: 
+--
+-- - The existence of requested units and devices 
+--   can be assumed. Instead the existence-test and the associated
+--   warning should be moved to the command processor.
+
 
 with et_string_processing;					use et_string_processing;
 
