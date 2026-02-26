@@ -282,7 +282,7 @@ procedure draw_netchangers is
 	-- The name is fixed relative to the origin of the netchanger:
 	procedure draw_name (
 		index		: in type_netchanger_id; -- 31
-		position	: in type_position) -- incl. x/x/rotatoiin
+		position	: in type_position) -- incl. x/x/rotation
 	is
 		use pac_text;
 		use pac_draw_text;
@@ -292,7 +292,7 @@ procedure draw_netchangers is
 			horizontal => ALIGN_CENTER, vertical => ALIGN_CENTER);
 
 		-- The rotation of the netchanger:	
-		rotation : type_rotation := get_rotation (position);
+		rotation : type_rotation_0_90 := get_rotation (position);
 		
 		-- The final position of the name.
 		-- Initially it is the same as the netchanger position
@@ -303,27 +303,18 @@ procedure draw_netchangers is
 		
 		-- This procedure computes the final position of
 		-- the name (like N31) depending on the rotation
-		-- of the netchanger:		 
+		-- of the netchanger. The netchanger can only be
+		-- rotated to 0 or 90 degrees:
 		procedure compute_position is begin
-			if rotation = 0.0 or rotation = 360.0 or rotation = -360.0 then
+			if rotation = 0.0 then
 				-- The netchanger is horizontal. 
 				-- So the name must be moved down:
 				move (pos_final, DIR_DOWN, name_to_origin_offset);
 
-			elsif rotation = 90.0 or rotation = -270.0 then
+			elsif rotation = 90.0 then
 				-- The netchanger is vertical. 
 				-- So the name must be moved right:
 				move (pos_final, DIR_RIGHT, name_to_origin_offset);
-				
-			elsif rotation = 180.0 or rotation = -180.0 then
-				-- The netchanger is horizontal but upside-down. 
-				-- So the name must be moved up:
-				move (pos_final, DIR_UP, name_to_origin_offset);
-				
-			elsif rotation = -90.0 or rotation = 270.0 then
-				-- The netchanger is vertical. 
-				-- So the name must be moved left:
-				move (pos_final, DIR_LEFT, name_to_origin_offset);
 				
 			else
 				raise constraint_error; -- CS should never happen
