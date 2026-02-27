@@ -99,7 +99,35 @@ package body et_schematic_ops_netchangers is
 
 	
 
+	
 
+	function get_netchanger (
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id)
+		return pac_netchangers.cursor
+	is 
+		result : pac_netchangers.cursor;
+		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is begin
+			result := get_netchanger (module.netchangers, index);
+		end;
+		
+		 
+	begin
+		query_element (module_cursor, query_module'access);
+
+		return result;
+	end get_netchanger;
+	
+	
+	
+
+
+	
 	
 
 	function port_connected (

@@ -70,8 +70,16 @@ package et_schematic_ops_netchangers is
 	procedure netchanger_not_found (
 		index : in type_netchanger_id);
 
-	
 
+	-- Locates the given netchanger in the module.
+	-- If the netchanger does not exist, then no_element
+	-- is returned:
+	function get_netchanger (
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id)
+		return pac_netchangers.cursor;
+		
+								
 	
 	-- Returns true if given port of netchanger 
 	-- is connected with any net:
