@@ -1234,7 +1234,7 @@ package body et_schematic_ops_netchangers is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			cursor : pac_netchangers.cursor;
+			netchanger_cursor : pac_netchangers.cursor;
 			location : type_object_position;
 			ports : type_netchanger_ports;
 
@@ -1249,11 +1249,11 @@ package body et_schematic_ops_netchangers is
 
 			use pac_netchangers;			
 		begin
-			-- locate given netchanger
-			cursor := find (module.netchangers, index);
+			-- Locate given netchanger in the module:
+			netchanger_cursor := get_netchanger (module_cursor, index);
 
 			
-			if cursor /= pac_netchangers.no_element then 
+			if has_element (netchanger_cursor) then 
 				-- netchanger exists
 
 				-- Get coordinates of netchanger master port.
@@ -1266,7 +1266,7 @@ package body et_schematic_ops_netchangers is
 					log_threshold	=> log_threshold + 1);
 
 				-- CS this would be easier:
-				-- location := element (cursor).position_sch;
+				-- location := element (netchanger_cursor).position_sch;
 				
 				log_indentation_up;
 
@@ -1292,7 +1292,8 @@ package body et_schematic_ops_netchangers is
 						-- The relative position is the netchanger position BEFORE 
 						-- the move operation shifted by the given point (x/y)
 						-- and the given sheet number:
-						location := to_object_position (get_position_schematic (cursor));
+						location := to_object_position (
+							get_position_schematic (netchanger_cursor));
 						
 						move (
 							position	=> location,
@@ -1303,12 +1304,12 @@ package body et_schematic_ops_netchangers is
 				-- move the netchanger to the new position
 				update_element (
 					container	=> module.netchangers,
-					position	=> cursor,
+					position	=> netchanger_cursor,
 					process		=> move'access);
 
 				-- Get the NEW absolute positions of the netchanger ports AFTER
 				-- the move operation according to location and rotation in schematic.
-				ports := get_netchanger_ports (cursor);
+				ports := get_netchanger_ports (netchanger_cursor);
 
 				-- Inserts the netchanger ports in the net segments.
 				insert_ports (
