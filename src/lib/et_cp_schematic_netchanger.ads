@@ -55,7 +55,8 @@ package et_cp_schematic_netchanger is
 		log_threshold	: in type_log_level);
 
 
-		
+	-- This procedure parses a command that moves a netchanger.
+	-- Example: "schematic led_driver move netchanger 2 absolute 3 30 0"
 	procedure move_netchanger (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;

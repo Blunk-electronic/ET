@@ -1193,17 +1193,16 @@ package body et_schematic_ops_netchangers is
 	
 
 	procedure move_netchanger (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in type_netchanger_id; -- 1,2,3,...
-		coordinates		: in type_coordinates; -- relative/absolute
-		sheet			: in type_sheet_relative; -- -3/0/2
-		point			: in type_vector_model; -- x/y
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id;
+		coordinates		: in type_coordinates;
+		sheet			: in type_sheet_relative;
+		point			: in type_vector_model;
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		
-		procedure query_netchangers (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
@@ -1222,10 +1221,10 @@ package body et_schematic_ops_netchangers is
 
 			use pac_netchangers;			
 		begin
-
 			-- locate given netchanger
 			cursor := find (module.netchangers, index);
 
+			
 			if cursor /= pac_netchangers.no_element then 
 				-- netchanger exists
 
@@ -1300,34 +1299,36 @@ package body et_schematic_ops_netchangers is
 				
 				-- netchanger does not exist
 				netchanger_not_found (index);
-			end if;
-			
-		end query_netchangers;
+			end if;			
+		end query_module;
 
 		
 	begin
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " & to_string (module_name) &
-					" move netchanger" & to_string (index) &
-					" to sheet" & to_string (sheet) &
-					to_string (point), level => log_threshold);
+				log (text => "module " & to_string (module_cursor)
+					& " move netchanger " & to_string (index) 
+					& " to sheet " & to_string (sheet) 
+					& to_string (point),
+					 level => log_threshold);
 
 			when RELATIVE =>
-				log (text => "module " & to_string (module_name) &
-					" move netchanger" & to_string (index) &
-					" by " & relative_to_string (sheet) & " sheet(s)" &
-					to_string (point), level => log_threshold);
+				log (text => "module " & to_string (module_cursor)
+					& " move netchanger " & to_string (index) 
+					& " by " & relative_to_string (sheet) & " sheet(s) " 
+					& to_string (point),
+					level => log_threshold);
 		end case;
+
 		
-		-- locate module
-		module_cursor := locate_module (module_name);
+		log_indentation_up;
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
-			process		=> query_netchangers'access);
+			process		=> query_module'access);
 
+		log_indentation_down;
 	end move_netchanger;
 
 
@@ -1419,6 +1420,9 @@ package body et_schematic_ops_netchangers is
 					log_threshold	=> log_threshold + 2);
 
 			else
+				-- CS: It is assumed that the requested netchanger
+				-- does exist. So this warning
+				-- should be moved to the command processor.
 				log (WARNING, " Netchanger " & to_string (index) & " not found !");
 			end if;
 		end query_module;

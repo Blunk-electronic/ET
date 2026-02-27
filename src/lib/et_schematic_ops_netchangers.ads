@@ -160,7 +160,7 @@ package et_schematic_ops_netchangers is
 	-- start or end points of net segments BEFORE the move. 
 	-- Connects netchanger ports with segment end or strart points AFTER the move.
 	procedure move_netchanger (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
