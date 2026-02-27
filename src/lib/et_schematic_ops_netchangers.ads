@@ -156,9 +156,10 @@ package et_schematic_ops_netchangers is
 
 
 
-	-- Moves the given netchanger. Disconnects the netchanger from
-	-- start or end points of net segments BEFORE the move. 
-	-- Connects netchanger ports with segment end or strart points AFTER the move.
+	-- Moves the given netchanger. Disconnects the 
+	-- netchanger from start or end points of net segments 
+	-- BEFORE the move. Connects netchanger ports with 
+	-- segment end or start points AFTER the move:
 	procedure move_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id; -- 1,2,3,...

@@ -36,6 +36,10 @@ Schematic Editor
 
 #. Move a Netchanger
 
+	Moving a netchanger means that the existing
+	connections with net segments are severed and
+	possible new connectons estabilshed.
+
 	This example moves netchanger 2 to the absolute
 	position sheet 3 to x/y 30/0:
 
