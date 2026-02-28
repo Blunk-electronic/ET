@@ -156,7 +156,7 @@ package body et_cp_schematic_netchanger is
 		case cmd_field_count is
 			when 8 =>
 				drag_netchanger (
-					module_name 	=> key (module),
+					module_cursor 	=> module,
 					index			=> to_netchanger_id (get_field (cmd, 5)), -- 1,2,3,...
 					coordinates		=> to_coordinates (get_field (cmd, 6)), -- relative/absolute
 					point			=> type_vector_model (set (

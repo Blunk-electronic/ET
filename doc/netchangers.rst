@@ -61,6 +61,30 @@ Schematic Editor
 
 #. Drag a Netchanger
 
+	Dragging a netchanger means that the existing
+	connections with net segments are kept and thus
+	the affected net segments are dragged along.
+	Possible new connectons are estabilshed.
+	Dragging from one sheet to another is not possible.
+
+	This example drags netchanger 2 to the absolute
+	position x/y 30/0:
+
+	.. code-block::
+
+		demo drag netchanger 2 absolute 30 0
+
+
+	This example drags netchanger 2 relative by x/y 30/0:
+
+	.. code-block::
+
+		demo drag netchanger 2 relative 30 0
+
+
+
+
+
 
 
 #. Rotate a Netchanger

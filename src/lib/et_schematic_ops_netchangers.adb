@@ -839,117 +839,124 @@ package body et_schematic_ops_netchangers is
 
 
 
+	
+	
+	
+	
+	procedure movable_test (
+		module_cursor		: in pac_generic_modules.cursor;
+		index				: in type_netchanger_id;
+		location 			: in type_object_position; -- only sheet number matters
+		netchanger_ports	: in type_netchanger_ports; -- x/y of master and slave port
+		log_threshold		: in type_log_level)
+	is			
+		-- CS: clean up, rework
+		
+		
+		procedure test_point (
+			point		: in type_object_position; -- sheet/x/y -- the point to be probed
+			port_name	: in type_netchanger_port_name) -- master/slave
+		is 
+			use ada.containers;
+			use et_netlists;
+			ports : type_net_ports;
+			port : type_port_netchanger;
+
+			use pac_net_submodule_ports;
+			use pac_device_ports;
+			use pac_netchanger_ports;
+			use et_schematic_ops_nets;
+		begin
+			-- If no net segments start or end at given point then this test won't
+			-- complain. If segments are meeting this point, no other ports must be
+			-- here (except the port-to-be-dragged):
+			if net_segment_at_place (module_cursor, point) then
+
+				-- There are net segments starting or ending at point.
+				-- Make sure at point are no ports of devices, submodules or other 
+				-- netchangers (except the submodule port to be dragged):
+
+				port := (index, port_name); -- the port to be dragged, like netchanger 12 port master
+
+				-- Collect all ports of possible other devices, submodules and netchangers
+				-- at given point:
+				ports := get_ports (module_cursor, point, log_threshold + 1);
+
+				-- If no device and no submodule ports here:
+				if is_empty (ports.devices) and is_empty (ports.submodules) then
+
+					-- If the ONE and ONLY netchanger port is the 
+					-- port-to-be-dragged then everything is fine.
+					if length (ports.netchangers) = 1 then
+						
+						if contains (ports.netchangers, port) then
+							null; -- fine -> movable test passed
+						else
+							-- there is another netchanger port
+							dragging_not_possible (to_string (port_name), point);
+						end if;
+					
+					else
+						-- there are more submodule ports
+						dragging_not_possible (to_string (port_name), point);
+					end if;
+					
+				else -- device or netchanger ports here
+					dragging_not_possible (to_string (port_name), point);
+				end if;
+			end if;
+		end test_point;
+
+		
+	begin
+		log (text => "movable test", level => log_threshold);
+		log_indentation_up;
+
+		-- Test the point where the master port is:
+		test_point (
+			point		=> to_position (
+							point => netchanger_ports.master,
+							sheet => get_sheet (location)),
+			port_name	=> MASTER);
+
+			
+		-- Test the point where the slave port is:			
+		test_point (
+			point		=> to_position (
+							point => netchanger_ports.slave,
+							sheet => get_sheet (location)),
+			port_name	=> SLAVE);
+	
+		log_indentation_down;
+	end movable_test;
+
 
 	
 	
+	
+	
+	
+	
+	
 	procedure drag_netchanger (
-		module_name		: in pac_module_name.bounded_string;
+		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-
+				
 		
-		procedure movable_test (
-		-- Tests whether the given netchanger ports of the netchanger at location 
-		-- are movable. 
-		-- The criteria for movement are: no device, no submodule ports there.
-		-- The ports allowed here are the ports-to-be-dragged itself.
-			location 			: in type_object_position; -- only sheet number matters
-			netchanger_ports	: in type_netchanger_ports) -- x/y of master and slave port
-		is			
-
-			
-			procedure test_point (
-				point		: in type_object_position; -- sheet/x/y -- the point to be probed
-				port_name	: in type_netchanger_port_name) -- master/slave
-			is 
-				use ada.containers;
-				use et_netlists;
-				ports : type_net_ports;
-				port : type_port_netchanger;
-
-				use pac_net_submodule_ports;
-				use pac_device_ports;
-				use pac_netchanger_ports;
-				use et_schematic_ops_nets;
-			begin
-				-- If no net segments start or end at given point then this test won't
-				-- complain. If segments are meeting this point, no other ports must be
-				-- here (except the port-to-be-dragged):
-				if net_segment_at_place (module_cursor, point) then
-
-					-- There are net segments starting or ending at point.
-					-- Make sure at point are no ports of devices, submodules or other 
-					-- netchangers (except the submodule port to be dragged):
-
-					port := (index, port_name); -- the port to be dragged, like netchanger 12 port master
-
-					-- Collect all ports of possible other devices, submodules and netchangers
-					-- at given point:
-					ports := get_ports (module_cursor, point, log_threshold + 2);
-
-					-- If no device and no submodule ports here:
-					if is_empty (ports.devices) and is_empty (ports.submodules) then
-
-						-- If the ONE and ONLY netchanger port is the 
-						-- port-to-be-dragged then everything is fine.
-						if length (ports.netchangers) = 1 then
-							
-							if contains (ports.netchangers, port) then
-								null; -- fine -> movable test passed
-							else
-								-- there is another netchanger port
-								dragging_not_possible (to_string (port_name), point);
-							end if;
-						
-						else
-							-- there are more submodule ports
-							dragging_not_possible (to_string (port_name), point);
-						end if;
-						
-					else -- device or netchanger ports here
-						dragging_not_possible (to_string (port_name), point);
-					end if;
-				end if;
-			end test_point;
-
-			
-		begin -- movable_test
-			log (text => "movable test ...", level => log_threshold + 1);
-			log_indentation_up;
-
-			-- Test point where the master port is:
-			test_point 
-				(
-				point		=> to_position (
-								point => netchanger_ports.master,
-								sheet => get_sheet (location)),
-				port_name	=> MASTER
-				);
-
-			-- Test point where the slave port is:			
-			test_point 
-				(
-				point		=> to_position (
-								point => netchanger_ports.slave,
-								sheet => get_sheet (location)),
-				port_name	=> SLAVE
-				);
-		
-			log_indentation_down;
-		end movable_test;
-
-
-		
-		
-		procedure query_netchangers (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			cursor : pac_netchangers.cursor;
+			netchanger_cursor : pac_netchangers.cursor;
+			
+			-- The sheet where the netchanger is located
+			-- in the schematic:
+			sheet : type_sheet;
+			
 			location : type_object_position;
 			ports_old : type_netchanger_ports;
 			ports_new : type_netchanger_ports;
@@ -959,31 +966,6 @@ package body et_schematic_ops_netchangers is
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger) 
 			is begin
-				set_position (netchanger, to_netchanger_position (location));
-			end move;
-
-
-			use pac_netchangers;
-			
-		begin
-			-- locate given netchanger
-			cursor := find (module.netchangers, index);
-
-			
-			if cursor /= pac_netchangers.no_element then 
-				-- netchanger exists
-
-				-- Before the actual drag, the coordinates of the
-				-- netchanger ports must be fetched. These coordinates will later assist
-				-- in changing the positions of connected net segments.
-				ports_old := get_netchanger_ports (cursor);
-
-				-- Fetch the netchanger position BEFORE the move.
-				location := to_object_position (get_position_schematic (cursor));
-
-				-- Test whether the port at the current position can be dragged:
-				movable_test (location, ports_old);
-				
 				-- calculate the new position the netchanger will have AFTER the move:
 				case coordinates is
 					when ABSOLUTE =>
@@ -1000,17 +982,55 @@ package body et_schematic_ops_netchangers is
 							offset		=> point);
 				end case;
 
-				-- move the netchanger to the new position
+			
+				set_position (netchanger, to_netchanger_position (location));
+			end move;
+
+
+			use pac_netchangers;
+			
+		begin
+			-- Locate given netchanger in the module:
+			netchanger_cursor := get_netchanger (module_cursor, index);
+
+			
+			if has_element (netchanger_cursor) then 
+				-- netchanger exists
+
+				-- Get the sheet number where the netchanger is:
+				sheet := get_sheet (netchanger_cursor);
+
+				-- log sheet number:
+				log (text => "found the netchanger on sheet " & to_string (sheet),
+					 level => log_threshold + 1);
+
+				
+				-- Before the actual drag, the coordinates of the
+				-- netchanger ports must be fetched. These coordinates 
+				-- will later assist
+				-- in changing the positions of connected net segments.
+				ports_old := get_netchanger_ports (netchanger_cursor);
+
+				-- Fetch the netchanger position BEFORE the move.
+				location := to_object_position (
+					get_position_schematic (netchanger_cursor));
+
+				-- Test whether the ports at the current position can be dragged:
+				movable_test (module_cursor, index, location, 
+					ports_old, log_threshold + 2);
+				
+
+				-- Move the netchanger to the new position:
 				update_element (
 					container	=> module.netchangers,
-					position	=> cursor,
+					position	=> netchanger_cursor,
 					process		=> move'access);
 
 				-- Get the NEW absolute positions of the netchanger ports AFTER
 				-- the move operation according to location and rotation in schematic.
-				ports_new := get_netchanger_ports (cursor);
+				ports_new := get_netchanger_ports (netchanger_cursor);
 
-				-- Change net segments in the affected nets (type_generic_module.nets):
+				-- Drag connected net segments:
 				drag_net_segments (
 					module			=> module_cursor,
 					ports_before	=> ports_old,
@@ -1018,9 +1038,10 @@ package body et_schematic_ops_netchangers is
 					sheet			=> get_sheet (location),
 					log_threshold	=> log_threshold + 1);
 
+					
 				-- The drag operation might result in new port-to-net connections.
 				-- So we must insert new ports in segments.
-				-- Insert possible new netchanger ports in the nets (type_generic_module.nets):
+				-- Insert possible new netchanger ports in the nets:
 				log_indentation_up;
 				
 				-- Inserts the netchanger ports in the net segments.
@@ -1040,32 +1061,34 @@ package body et_schematic_ops_netchangers is
 
 				-- netchanger does not exist
 				netchanger_not_found (index);
-			end if;
-			
-		end query_netchangers;
+			end if;			
+		end query_module;
 
 		
 	begin
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " & to_string (module_name) &
-					" drag netchanger" & to_string (index) &
-					" to" & to_string (point), level => log_threshold);
+				log (text => "module " & to_string (module_cursor) 
+				& " drag netchanger" & to_string (index) 
+				& " to" & to_string (point), 
+				level => log_threshold);
 
 			when RELATIVE =>
-				log (text => "module " & to_string (module_name) &
-					" drag netchanger" & to_string (index) &
-					" by" & to_string (point), level => log_threshold);
+				log (text => "module " & to_string (module_cursor)
+				& " drag netchanger" & to_string (index) 
+				& " by" & to_string (point),
+				level => log_threshold);
 		end case;
 		
-		-- locate module
-		module_cursor := locate_module (module_name);
+
+		log_indentation_up;
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
-			process		=> query_netchangers'access);
+			process		=> query_module'access);
 
+		log_indentation_down;
 	end drag_netchanger;
 
 
@@ -1361,6 +1384,8 @@ package body et_schematic_ops_netchangers is
 
 
 	
+	
+	
 
 
 
@@ -1463,6 +1488,8 @@ package body et_schematic_ops_netchangers is
 
 	
 
+	
+	
 
 	
 

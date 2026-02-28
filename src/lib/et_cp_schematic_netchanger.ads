@@ -63,7 +63,8 @@ package et_cp_schematic_netchanger is
 		log_threshold	: in type_log_level);
 
 
-		
+	-- This procedure parses a command that drags a netchanger.
+	-- Example: "schematic demo drag netchanger 2 relative 30 0"
 	procedure drag_netchanger (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;

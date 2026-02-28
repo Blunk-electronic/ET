@@ -149,14 +149,29 @@ package et_schematic_ops_netchangers is
 		place			: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 	
+	
 
+	
+	-- Tests whether the given netchanger ports of 
+	-- the netchanger at location are movable. 
+	-- The criteria for movement are: no device, no submodule ports there.
+	-- The ports allowed here are the ports-to-be-dragged itself.
+	procedure movable_test (
+		module_cursor		: in pac_generic_modules.cursor;
+		index				: in type_netchanger_id;
+		location 			: in type_object_position; -- only sheet number matters
+		netchanger_ports	: in type_netchanger_ports; -- x/y of master and slave port
+		log_threshold		: in type_log_level);
+
+	
 	-- Drags the given netchanger within the schematic.
 	-- Already existing connections with net segments are kept.
+	-- Connected net segments are dragged along with the netchanger.
 	-- Net segment positions are modified.
 	-- This operation applies to a single sheet. Dragging from one sheet
 	-- to another is not possible.
 	procedure drag_netchanger (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
