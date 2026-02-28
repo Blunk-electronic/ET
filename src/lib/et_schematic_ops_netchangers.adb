@@ -1078,6 +1078,7 @@ package body et_schematic_ops_netchangers is
 	procedure delete_ports (
 		module			: in pac_generic_modules.cursor;			-- the module
 		index			: in type_netchanger_id;	-- the netchanger id
+		-- CS use cursor to Netchanger instead of the index ?
 		sheet			: in type_sheet;		-- the sheet where the netchanger is
 		log_threshold	: in type_log_level) 
 	is
@@ -1235,52 +1236,20 @@ package body et_schematic_ops_netchangers is
 			module		: in out type_generic_module) 
 		is
 			netchanger_cursor : pac_netchangers.cursor;
-			location : type_object_position;
+			
+			-- The sheet where the netchanger is located
+			-- in the schematic:
+			sheet : type_sheet;
+			
 			ports : type_netchanger_ports;
 
 			
 			procedure move (
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger) 
-			is begin
-				set_position (netchanger, to_netchanger_position (location));
-			end move;
-
-
-			use pac_netchangers;			
-		begin
-			-- Locate given netchanger in the module:
-			netchanger_cursor := get_netchanger (module_cursor, index);
-
-			
-			if has_element (netchanger_cursor) then 
-				-- netchanger exists
-
-				-- Get coordinates of netchanger master port.
-				-- Since the ports of a netchanger are all on the same sheet,
-				-- the sheet is now provided by location.
-				location := get_netchanger_port_position (
-					module_name		=> module_name,
-					index			=> index,
-					port			=> MASTER,
-					log_threshold	=> log_threshold + 1);
-
-				-- CS this would be easier:
-				-- location := element (netchanger_cursor).position_sch;
-				
-				log_indentation_up;
-
-				-- Delete netchanger ports in nets:
-				delete_ports (
-	 				module			=> module_cursor,
-					index			=> index,
-
-					-- Get sheet number from location:
-					sheet			=> get_sheet (location),
-					
-					log_threshold	=> log_threshold + 1);
-
-				
+			is 
+				location : type_object_position;			
+			begin
 				-- calculate the new position 
 				case coordinates is
 					when ABSOLUTE =>
@@ -1300,26 +1269,54 @@ package body et_schematic_ops_netchangers is
 							offset		=> to_position_relative (point, sheet));
 				end case;
 
+			
+				set_position (netchanger, to_netchanger_position (location));
+			end move;
+
+
+			use pac_netchangers;			
+		begin
+			-- Locate given netchanger in the module:
+			netchanger_cursor := get_netchanger (module_cursor, index);
+
+			
+			if has_element (netchanger_cursor) then 
+				-- netchanger exists
+
+				-- Get the sheet number where the netchanger is:
+				sheet := get_sheet (netchanger_cursor);
+
+				-- log sheet number:
+				log (text => "found the netchanger on sheet " & to_string (sheet),
+					 level => log_threshold + 1);
+
 				
-				-- move the netchanger to the new position
+				-- Delete the old netchanger ports in connected net
+				-- segments as they are BEFORE the move:
+				delete_ports (
+	 				module			=> module_cursor,
+					index			=> index,
+					sheet			=> sheet,					
+					log_threshold	=> log_threshold + 2);
+				
+				-- Move the netchanger:
 				update_element (
 					container	=> module.netchangers,
 					position	=> netchanger_cursor,
 					process		=> move'access);
-
-				-- Get the NEW absolute positions of the netchanger ports AFTER
-				-- the move operation according to location and rotation in schematic.
+					
+				-- Get the NEW absolute positions of the netchanger 
+				-- ports AFTER the move operation:
 				ports := get_netchanger_ports (netchanger_cursor);
-
+				
 				-- Inserts the netchanger ports in the net segments.
 				insert_ports (
 					module_cursor	=> module_cursor,
 					index			=> index,
 					ports			=> ports,
-					sheet			=> get_sheet (location),
-					log_threshold	=> log_threshold + 1);
+					sheet			=> sheet,
+					log_threshold	=> log_threshold + 2);
 
-				log_indentation_down;
 			else
 				-- CS: It is assumed that the requested netchanger
 				-- does exist. So this warning
@@ -1387,7 +1384,7 @@ package body et_schematic_ops_netchangers is
 			-- in the schematic:
 			sheet : type_sheet;
 
-			ports_old : type_netchanger_ports;
+			-- ports_old : type_netchanger_ports;
 			ports_new : type_netchanger_ports;
 
 			
@@ -1403,7 +1400,7 @@ package body et_schematic_ops_netchangers is
 			-- Locate the requested netchanger in the
 			-- given module. If it does not exist, then output
 			-- a message:
-			netchanger_cursor := get_netchanger (module.netchangers, index);
+			netchanger_cursor := get_netchanger (module_cursor, index);
 
 			
 			if has_element (netchanger_cursor) then 
@@ -1411,7 +1408,8 @@ package body et_schematic_ops_netchangers is
 
 				-- Before the actual rotation, the current (old) coordinates 
 				-- of the netchanger ports must be fetched:
-				ports_old := get_netchanger_ports (netchanger_cursor);
+				--ports_old := get_netchanger_ports (netchanger_cursor);
+				-- CS: no need, remove
 			
 				-- Get the sheet number where the netchanger is:
 				sheet := get_sheet (netchanger_cursor);
