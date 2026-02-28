@@ -73,8 +73,12 @@ Schematic Editor
 
 
 
+
 #. Delete a Netchanger
 
+	.. code-block::
+	
+		demo delete netchanger 2
 
 
 

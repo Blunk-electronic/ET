@@ -1468,54 +1468,49 @@ package body et_schematic_ops_netchangers is
 
 
 	procedure delete_netchanger (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id; -- 1,2,3,...
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		
-		procedure query_netchangers (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
-			cursor : pac_netchangers.cursor;
-			location : type_object_position;
+			netchanger_cursor : pac_netchangers.cursor;
+
+			-- The sheet where the netchanger is located
+			-- in the schematic:
+			sheet : type_sheet;
 
 			use pac_netchangers;
 		begin
+			-- Locate given netchanger in the module:
+			netchanger_cursor := get_netchanger (module_cursor, index);
 
-			-- locate given netchanger
-			cursor := find (module.netchangers, index);
 
-			if cursor /= pac_netchangers.no_element then 
+			if has_element (netchanger_cursor) then 
 				-- netchanger exists
 
-				-- Get coordinates of netchanger master port.
-				-- Since the ports of a netchanger are all on the same sheet,
-				-- the sheet is now provided by location.
-				location := get_netchanger_port_position (
-					module_name		=> module_name,
-					index			=> index,
-					port			=> MASTER,
-					log_threshold	=> log_threshold + 1);
+				-- Get the sheet number where the netchanger is:
+				sheet := get_sheet (netchanger_cursor);
 
-				log_indentation_up;
+				-- log sheet number:
+				log (text => "found the netchanger on sheet " & to_string (sheet),
+					 level => log_threshold + 1);
+
 
 				-- Delete netchanger ports in nets:
 				delete_ports (
 	 				module			=> module_cursor,
 					index			=> index,
-
-					-- Get sheet number from location:
-					sheet			=> get_sheet (location),
-					
-					log_threshold	=> log_threshold + 1);
+					sheet			=> sheet,					
+					log_threshold	=> log_threshold + 2);
 
 				-- Delete the netchanger itself:
-				delete (module.netchangers, cursor);
+				delete (module.netchangers, netchanger_cursor);
 				
-				log_indentation_down;
 			else
 				-- CS: It is assumed that the requested netchanger
 				-- does exist. So this warning
@@ -1524,23 +1519,20 @@ package body et_schematic_ops_netchangers is
 				-- netchanger does not exist
 				netchanger_not_found (index);
 			end if;
-		end query_netchangers;
+		end query_module;
 
 		
 	begin
-		log (text => "module " & to_string (module_name) &
-			" delete netchanger" & to_string (index),
+		log (text => "module " & to_string (module_cursor) 
+			& " delete netchanger " & to_string (index),
 			level => log_threshold);
 
 		log_indentation_up;
-		
-		-- locate module
-		module_cursor := locate_module (module_name);
 
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
-			process		=> query_netchangers'access);
+			process		=> query_module'access);
 		
 		log_indentation_down;		
 	end delete_netchanger;

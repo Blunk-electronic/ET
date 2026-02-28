@@ -190,7 +190,7 @@ package et_schematic_ops_netchangers is
 	
 	-- Deletes a netchanger.
 	procedure delete_netchanger (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id; -- 1,2,3,...
 		log_threshold	: in type_log_level);
 

@@ -198,7 +198,7 @@ package body et_cp_schematic_netchanger is
 		case cmd_field_count is
 			when 5 =>
 				delete_netchanger (
-					module_name		=> key (module),
+					module_cursor	=> module,
 					index			=> to_netchanger_id (get_field (cmd, 5)), -- 1,2,3,...
 					log_threshold	=> log_threshold + 1);
 
