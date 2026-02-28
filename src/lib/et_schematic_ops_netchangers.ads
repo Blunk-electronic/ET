@@ -90,6 +90,23 @@ package et_schematic_ops_netchangers is
 
 	
 
+	-- Deletes ports of the given netchanger in nets:
+	procedure delete_ports (
+		module			: in pac_generic_modules.cursor; -- the module
+		index			: in type_netchanger_id;	-- the netchanger id
+		sheet			: in type_sheet;		-- the sheet where the netchanger is
+		log_threshold	: in type_log_level);
+
+	
+	procedure insert_ports (
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id;
+		ports			: in type_netchanger_ports;
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level);
+
+
+	
 
 	
 	-- Drags the net segments according to the given netchanger ports.
@@ -99,7 +116,7 @@ package et_schematic_ops_netchangers is
 	-- Does NOT create a new connection with a segments if a port
 	-- lands between start and end point.
 	procedure drag_net_segments (
-		module			: in pac_generic_modules.cursor;	-- the module
+		module			: in pac_generic_modules.cursor;
 		ports_before	: in type_netchanger_ports;	-- the old port positions
 		ports_after		: in type_netchanger_ports;	-- the new port positions
 		sheet			: in type_sheet;			-- the sheet to look at
@@ -107,20 +124,13 @@ package et_schematic_ops_netchangers is
 	
 
 
-	procedure insert_ports (
-		module_cursor	: in pac_generic_modules.cursor;
-		index			: in type_netchanger_id;
-		ports			: in type_netchanger_ports;
-		sheet			: in type_sheet;
-		log_threshold	: in type_log_level);
-
 
 
 	-- Returns the next available netchanger index in the module.
 	function next_netchanger_index (
 		module_cursor	: in pac_generic_modules.cursor)
 		return type_netchanger_id;
-
+	-- CS rename to get_next_netchanger_index
 	
 	
 	
@@ -130,12 +140,14 @@ package et_schematic_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		index			: in type_netchanger_id) -- 1, 2, 3, ...
 		return boolean;
-
+	-- CS rename to netchanger_exists
+	
 
 	
 	-- Returns the sheet/x/y position of the given netchanger port.
 	function get_netchanger_port_position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		-- CS module_cursor
 		index			: in type_netchanger_id; -- 1,2,3,...
 		port			: in type_netchanger_port_name; -- SLAVE/MASTER
 		log_threshold	: in type_log_level)
@@ -146,6 +158,7 @@ package et_schematic_ops_netchangers is
 	-- Adds a netchanger to the schematic.
 	procedure add_netchanger (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		-- CS module_cursor
 		place			: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 	
@@ -209,14 +222,6 @@ package et_schematic_ops_netchangers is
 		index			: in type_netchanger_id; -- 1,2,3,...
 		log_threshold	: in type_log_level);
 
-
-
-	-- Deletes ports of the given netchanger in nets:
-	procedure delete_ports (
-		module			: in pac_generic_modules.cursor; -- the module
-		index			: in type_netchanger_id;	-- the netchanger id
-		sheet			: in type_sheet;		-- the sheet where the netchanger is
-		log_threshold	: in type_log_level);
 
 	
 end et_schematic_ops_netchangers;

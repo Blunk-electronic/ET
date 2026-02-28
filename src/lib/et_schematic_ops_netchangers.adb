@@ -129,12 +129,16 @@ package body et_schematic_ops_netchangers is
 
 	
 	
+	
 
 	function port_connected (
 		module	: in pac_generic_modules.cursor;
 		port	: in et_netlists.type_port_netchanger)
 		return boolean 
 	is
+		-- CS rework, clean up
+		
+		
 		result : boolean := false; 
 		-- to be returned. goes true on the first (and only) match.
 
@@ -218,18 +222,330 @@ package body et_schematic_ops_netchangers is
 
 	
 	
+	procedure delete_ports (
+		module			: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id;
+		-- CS use cursor to Netchanger instead of the index ?
+		sheet			: in type_sheet; -- the sheet where the netchanger is
+		log_threshold	: in type_log_level) 
+	is
+		-- CS rework, clean up
+		
+		
+		procedure query_nets (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_nets;
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			-- In order to speed up things we have two flags that indicate
+			-- whether the master or slave port has been deleted from the nets.
+			type type_deleted_ports is record
+				master	: boolean := false;
+				slave	: boolean := false;
+			end record;
+
+			deleted_ports : type_deleted_ports;
+
+			
+			-- This function returns true if master and slave port have been deleted.
+			-- All iterations abort prematurely once all ports have been deleted.
+			function all_ports_deleted return boolean is begin
+				return deleted_ports.master and deleted_ports.slave;
+			end;
+
+			
+			procedure query_strands (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_segments (strand : in out type_strand) is
+					use pac_net_segments;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					
+					procedure query_ports (segment : in out type_net_segment) is
+						deleted : boolean := false;
+
+						
+						procedure delete_port is begin
+							log (text => "sheet" & to_string (sheet) & " net " &
+								to_string (key (net_cursor)) & " " &
+								to_string (segment_cursor),
+								level => log_threshold + 1);
+						end;
+
+						
+					begin -- query_ports
+						-- Search for the master port if it has not been deleted yet:
+						if not deleted_ports.master then
+							delete_port;
+							delete_netchanger_port (segment, (index, MASTER), deleted);
+							
+							if deleted then
+								deleted_ports.master := true;
+							end if;
+						end if;
+
+						-- Search for the slave port if it has not been deleted yet:
+						if not deleted_ports.slave then
+							delete_port;
+							delete_netchanger_port (segment, (index, SLAVE), deleted);
+							
+							if deleted then
+								deleted_ports.slave := true;
+							end if;
+						end if;
+					end query_ports;
+
+					
+				begin -- query_segments
+					while not all_ports_deleted and segment_cursor /= pac_net_segments.no_element loop
+
+						pac_net_segments.update_element (
+							container	=> strand.segments,
+							position	=> segment_cursor,
+							process		=> query_ports'access);
+						
+						next (segment_cursor);
+					end loop;
+				end query_segments;
+				
+
+				use pac_strands;
+
+				
+			begin -- query_strands
+				while not all_ports_deleted and strand_cursor /= pac_strands.no_element loop
+
+					if get_sheet (element (strand_cursor).position) = sheet then
+
+						update_element (
+							container	=> net.strands,
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+
+					end if;
+					
+					next (strand_cursor);
+				end loop;
+			end query_strands;
+
+			
+		begin -- query_nets
+			while not all_ports_deleted and net_cursor /= pac_nets.no_element loop
+
+				update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> query_strands'access);
+				
+				next (net_cursor);
+			end loop;
+
+			-- CS: warning if all_ports_deleted still true ?
+		end query_nets;
+
+		
+	begin
+		log (text => "delete netchanger ports in nets", level => log_threshold);
+
+		log_indentation_up;
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module,
+			process		=> query_nets'access);
+
+		log_indentation_down;
+	end delete_ports;
+
+	
+	
+
+
+
+	
+	
+	
+
+	procedure insert_ports (
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id;
+		ports			: in type_netchanger_ports;
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level) 
+	is
+		-- CS rework, clean up
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			procedure probe_port (
+				port : in type_vector_model; -- x/y
+				name : in type_netchanger_port_name) -- master/slave
+			is
+
+				-- This flag goes true on the first match. It signals
+				-- all iterations to cancel prematurely.
+				port_processed : boolean := false;
+					
+				use pac_nets;
+				net_cursor : pac_nets.cursor := module.nets.first;
+
+				
+				procedure query_strands (
+					net_name	: in pac_net_name.bounded_string;
+					net			: in out type_net) 
+				is
+					strand_cursor : pac_strands.cursor := net.strands.first;
+
+					
+					procedure query_segments (strand : in out type_strand) is
+						use pac_net_segments;
+						segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+						
+						procedure change_segment (segment : in out type_net_segment) is
+							use et_netlists;
+							-- CS log messages
+						begin
+							-- If port sits on the A or B end of the segment,
+							-- then insert it at this end:
+							if get_A (segment) = port then
+								insert_netchanger_port (segment, A, (index, name));  -- 1,2,3, .. / master/slave
+
+								-- signal iterations in upper levels to cancel
+								port_processed := true;
+							end if;
+
+							
+							if get_B (segment) = port then
+								insert_netchanger_port (segment, B, (index, name));  -- 1,2,3, .. / master/slave
+
+								-- signal iterations in upper levels to cancel
+								port_processed := true;
+							end if;
+							
+						end change_segment;
+						
+
+					begin -- query_segments
+						log_indentation_up;
+
+						-- On the first segment, where the port sits on, this loop ends prematurely.
+						while not port_processed and segment_cursor /= pac_net_segments.no_element loop
+							log (text => "probing " & to_string (segment_cursor), level => log_threshold + 4);
+							
+							pac_net_segments.update_element (
+								container	=> strand.segments,
+								position	=> segment_cursor,
+								process		=> change_segment'access);
+
+							next (segment_cursor);
+						end loop;
+
+						log_indentation_down;
+					end query_segments;
+
+
+					use pac_strands;
+
+					
+				begin -- query_strands
+					log_indentation_up;
+					
+					while not port_processed and strand_cursor /= pac_strands.no_element loop
+
+						-- We pick out only the strands on the targeted sheet:
+						if get_sheet (element (strand_cursor).position) = sheet then
+							log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 3);
+
+							log_indentation_up;
+							log (text => "strand " & to_string (position => element (strand_cursor).position),
+								level => log_threshold + 3);
+
+							update_element (
+								container	=> net.strands,
+								position	=> strand_cursor,
+								process		=> query_segments'access);
+						
+							log_indentation_down;
+						end if;
+							
+						next (strand_cursor);
+					end loop;
+					
+					log_indentation_down;
+				end query_strands;
+
+				
+			begin -- probe_port
+				log_indentation_up;
+				log (text => "at " & to_string (port), level => log_threshold + 2);
+				
+				while not port_processed and net_cursor /= pac_nets.no_element loop
+					
+					update_element (
+						container	=> module.nets,
+						position	=> net_cursor,
+						process		=> query_strands'access);
+				
+					next (net_cursor);
+				end loop;
+
+				log_indentation_down;
+			end probe_port;
+
+			
+		begin
+			log (text => "master port", level => log_threshold + 1);
+			probe_port (ports.master, MASTER);
+
+			log (text => "slave port", level => log_threshold + 1);			
+			probe_port (ports.slave, SLAVE);
+		end query_module;
+
+		
+	begin
+		log (text => "insert netchanger ports in nets on sheet "
+			 & to_string (sheet),
+			 level => log_threshold);
+		
+		log_indentation_up;
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end insert_ports;
+
+	
+	
+	
+	
 
 
 
 
 	
 	procedure drag_net_segments (
-		module			: in pac_generic_modules.cursor;	-- the module
-		ports_before	: in type_netchanger_ports;	-- the old port positions
-		ports_after		: in type_netchanger_ports;	-- the new port positions
-		sheet			: in type_sheet;			-- the sheet to look at
+		module			: in pac_generic_modules.cursor;
+		ports_before	: in type_netchanger_ports;
+		ports_after		: in type_netchanger_ports;
+		sheet			: in type_sheet;
 		log_threshold	: in type_log_level) 
 	is
+		-- CS rework, clean up
 		port_before, port_after : type_vector_model;
 		
 		procedure query_nets (
@@ -413,175 +729,6 @@ package body et_schematic_ops_netchangers is
 
 	
 
-	
-
-
-
-	
-	
-
-	procedure insert_ports (
-		module_cursor	: in pac_generic_modules.cursor;
-		index			: in type_netchanger_id;
-		ports			: in type_netchanger_ports;
-		sheet			: in type_sheet;
-		log_threshold	: in type_log_level) 
-	is
-
-
-		
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-
-			procedure probe_port (
-				port : in type_vector_model; -- x/y
-				name : in type_netchanger_port_name) -- master/slave
-			is
-
-				-- This flag goes true on the first match. It signals
-				-- all iterations to cancel prematurely.
-				port_processed : boolean := false;
-					
-				use pac_nets;
-				net_cursor : pac_nets.cursor := module.nets.first;
-
-				
-				procedure query_strands (
-					net_name	: in pac_net_name.bounded_string;
-					net			: in out type_net) 
-				is
-					strand_cursor : pac_strands.cursor := net.strands.first;
-
-					
-					procedure query_segments (strand : in out type_strand) is
-						use pac_net_segments;
-						segment_cursor : pac_net_segments.cursor := strand.segments.first;
-
-						
-						procedure change_segment (segment : in out type_net_segment) is
-							use et_netlists;
-							-- CS log messages
-						begin
-							-- If port sits on the A or B end of the segment,
-							-- then insert it at this end:
-							if get_A (segment) = port then
-								insert_netchanger_port (segment, A, (index, name));  -- 1,2,3, .. / master/slave
-
-								-- signal iterations in upper levels to cancel
-								port_processed := true;
-							end if;
-
-							
-							if get_B (segment) = port then
-								insert_netchanger_port (segment, B, (index, name));  -- 1,2,3, .. / master/slave
-
-								-- signal iterations in upper levels to cancel
-								port_processed := true;
-							end if;
-							
-						end change_segment;
-						
-
-					begin -- query_segments
-						log_indentation_up;
-
-						-- On the first segment, where the port sits on, this loop ends prematurely.
-						while not port_processed and segment_cursor /= pac_net_segments.no_element loop
-							log (text => "probing " & to_string (segment_cursor), level => log_threshold + 4);
-							
-							pac_net_segments.update_element (
-								container	=> strand.segments,
-								position	=> segment_cursor,
-								process		=> change_segment'access);
-
-							next (segment_cursor);
-						end loop;
-
-						log_indentation_down;
-					end query_segments;
-
-
-					use pac_strands;
-
-					
-				begin -- query_strands
-					log_indentation_up;
-					
-					while not port_processed and strand_cursor /= pac_strands.no_element loop
-
-						-- We pick out only the strands on the targeted sheet:
-						if get_sheet (element (strand_cursor).position) = sheet then
-							log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 3);
-
-							log_indentation_up;
-							log (text => "strand " & to_string (position => element (strand_cursor).position),
-								level => log_threshold + 3);
-
-							update_element (
-								container	=> net.strands,
-								position	=> strand_cursor,
-								process		=> query_segments'access);
-						
-							log_indentation_down;
-						end if;
-							
-						next (strand_cursor);
-					end loop;
-					
-					log_indentation_down;
-				end query_strands;
-
-				
-			begin -- probe_port
-				log_indentation_up;
-				log (text => "at " & to_string (port), level => log_threshold + 2);
-				
-				while not port_processed and net_cursor /= pac_nets.no_element loop
-					
-					update_element (
-						container	=> module.nets,
-						position	=> net_cursor,
-						process		=> query_strands'access);
-				
-					next (net_cursor);
-				end loop;
-
-				log_indentation_down;
-			end probe_port;
-
-			
-		begin
-			log (text => "master port", level => log_threshold + 1);
-			probe_port (ports.master, MASTER);
-
-			log (text => "slave port", level => log_threshold + 1);			
-			probe_port (ports.slave, SLAVE);
-		end query_module;
-
-		
-	begin
-		log (text => "insert netchanger ports in nets on sheet "
-			 & to_string (sheet),
-			 level => log_threshold);
-		
-		log_indentation_up;
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_module'access);
-
-		log_indentation_down;
-	end insert_ports;
-
-
-
-
-
-	
-
 
 	
 	function next_netchanger_index (
@@ -639,12 +786,14 @@ package body et_schematic_ops_netchangers is
 
 
 	
+	
 
 	function exists_netchanger (
-		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id) -- 1, 2, 3, ...
 		return boolean 
 	is
+		-- CS rework, clean up
 		result : boolean := false; -- to be returned, goes true once the target has been found		
 
 		
@@ -675,7 +824,7 @@ package body et_schematic_ops_netchangers is
 	
 
 	function get_netchanger_port_position (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string;
 		index			: in type_netchanger_id; -- 1,2,3,...
 		port			: in type_netchanger_port_name; -- SLAVE/MASTER
 		log_threshold	: in type_log_level)
@@ -839,6 +988,7 @@ package body et_schematic_ops_netchangers is
 
 
 
+	
 	
 	
 	
@@ -1096,147 +1246,6 @@ package body et_schematic_ops_netchangers is
 	
 
 	
-
-
-	procedure delete_ports (
-		module			: in pac_generic_modules.cursor;			-- the module
-		index			: in type_netchanger_id;	-- the netchanger id
-		-- CS use cursor to Netchanger instead of the index ?
-		sheet			: in type_sheet;		-- the sheet where the netchanger is
-		log_threshold	: in type_log_level) 
-	is
-
-		procedure query_nets (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			use pac_nets;
-			net_cursor : pac_nets.cursor := module.nets.first;
-
-			-- In order to speed up things we have two flags that indicate
-			-- whether the master or slave port has been deleted from the nets.
-			type type_deleted_ports is record
-				master	: boolean := false;
-				slave	: boolean := false;
-			end record;
-
-			deleted_ports : type_deleted_ports;
-
-			
-			-- This function returns true if master and slave port have been deleted.
-			-- All iterations abort prematurely once all ports have been deleted.
-			function all_ports_deleted return boolean is begin
-				return deleted_ports.master and deleted_ports.slave;
-			end;
-
-			
-			procedure query_strands (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is
-				strand_cursor : pac_strands.cursor := net.strands.first;
-
-				
-				procedure query_segments (strand : in out type_strand) is
-					use pac_net_segments;
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;
-
-					
-					procedure query_ports (segment : in out type_net_segment) is
-						deleted : boolean := false;
-
-						
-						procedure delete_port is begin
-							log (text => "sheet" & to_string (sheet) & " net " &
-								to_string (key (net_cursor)) & " " &
-								to_string (segment_cursor),
-								level => log_threshold + 1);
-						end;
-
-						
-					begin -- query_ports
-						-- Search for the master port if it has not been deleted yet:
-						if not deleted_ports.master then
-							delete_port;
-							delete_netchanger_port (segment, (index, MASTER), deleted);
-							
-							if deleted then
-								deleted_ports.master := true;
-							end if;
-						end if;
-
-						-- Search for the slave port if it has not been deleted yet:
-						if not deleted_ports.slave then
-							delete_port;
-							delete_netchanger_port (segment, (index, SLAVE), deleted);
-							
-							if deleted then
-								deleted_ports.slave := true;
-							end if;
-						end if;
-					end query_ports;
-
-					
-				begin -- query_segments
-					while not all_ports_deleted and segment_cursor /= pac_net_segments.no_element loop
-
-						pac_net_segments.update_element (
-							container	=> strand.segments,
-							position	=> segment_cursor,
-							process		=> query_ports'access);
-						
-						next (segment_cursor);
-					end loop;
-				end query_segments;
-				
-
-				use pac_strands;
-
-				
-			begin -- query_strands
-				while not all_ports_deleted and strand_cursor /= pac_strands.no_element loop
-
-					if get_sheet (element (strand_cursor).position) = sheet then
-
-						update_element (
-							container	=> net.strands,
-							position	=> strand_cursor,
-							process		=> query_segments'access);
-
-					end if;
-					
-					next (strand_cursor);
-				end loop;
-			end query_strands;
-
-			
-		begin -- query_nets
-			while not all_ports_deleted and net_cursor /= pac_nets.no_element loop
-
-				update_element (
-					container	=> module.nets,
-					position	=> net_cursor,
-					process		=> query_strands'access);
-				
-				next (net_cursor);
-			end loop;
-
-			-- CS: warning if all_ports_deleted still true ?
-		end query_nets;
-
-		
-	begin
-		log (text => "delete netchanger ports in nets", level => log_threshold);
-
-		log_indentation_up;
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module,
-			process		=> query_nets'access);
-
-		log_indentation_down;
-	end delete_ports;
 
 
 
