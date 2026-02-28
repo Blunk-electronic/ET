@@ -1370,8 +1370,6 @@ package body et_schematic_ops_netchangers is
 		rotation		: in type_rotation_0_90;
 		log_threshold	: in type_log_level) 
 	is
-
-		use pac_netchangers;
 		
 		
 		procedure query_module (
@@ -1384,8 +1382,7 @@ package body et_schematic_ops_netchangers is
 			-- in the schematic:
 			sheet : type_sheet;
 
-			-- ports_old : type_netchanger_ports;
-			ports_new : type_netchanger_ports;
+			ports : type_netchanger_ports;
 
 			
 			procedure rotate (
@@ -1396,28 +1393,23 @@ package body et_schematic_ops_netchangers is
 			end;
 			
 			
+			use pac_netchangers;
 		begin
-			-- Locate the requested netchanger in the
-			-- given module. If it does not exist, then output
-			-- a message:
+			-- Locate given netchanger in the module:
 			netchanger_cursor := get_netchanger (module_cursor, index);
 
 			
 			if has_element (netchanger_cursor) then 
 				-- netchanger exists
 
-				-- Before the actual rotation, the current (old) coordinates 
-				-- of the netchanger ports must be fetched:
-				--ports_old := get_netchanger_ports (netchanger_cursor);
-				-- CS: no need, remove
-			
 				-- Get the sheet number where the netchanger is:
 				sheet := get_sheet (netchanger_cursor);
 
 				-- log sheet number:
 				log (text => "found the netchanger on sheet " & to_string (sheet),
 					 level => log_threshold + 1);
-				
+
+					 
 				-- Delete the old netchanger ports in connected
 				-- net segments as they are BEFORE the rotation:
 				delete_ports (
@@ -1425,24 +1417,22 @@ package body et_schematic_ops_netchangers is
 					index			=> index,
 					sheet			=> sheet,
 					log_threshold	=> log_threshold + 2);
-
 				
 				-- Rotate the netchanger to the new rotation:
 				update_element (
 					container	=> module.netchangers,
 					position	=> netchanger_cursor,
 					process		=> rotate'access);
-				
 
-				-- Get the NEW absolute positions of the netchanger ports AFTER
-				-- the rotation:
-				ports_new := get_netchanger_ports (netchanger_cursor);
+				-- Get the NEW absolute positions of the netchanger
+				-- ports AFTER the rotation:
+				ports := get_netchanger_ports (netchanger_cursor);
 
 				-- Inserts the new netchanger ports in the net segments:
 				insert_ports (
 					module_cursor	=> module_cursor,
 					index			=> index,
-					ports			=> ports_new,
+					ports			=> ports,
 					sheet			=> sheet,
 					log_threshold	=> log_threshold + 2);
 
