@@ -500,7 +500,10 @@ package body et_cp_schematic is
 
 						when NOUN_CURSOR =>
 							set_cursor (cmd, log_threshold + 1);
-						
+
+						when NOUN_NETCHANGER =>
+							set_netchanger_direction (module_cursor, cmd, log_threshold + 1);
+							
 						when NOUN_ZOOM =>
 							set_zoom (cmd, log_threshold + 1);
 							

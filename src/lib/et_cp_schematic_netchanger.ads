@@ -71,7 +71,8 @@ package et_cp_schematic_netchanger is
 		log_threshold	: in type_log_level);
 
 		
-		
+
+	-- Example: "schematic demo delete netchanger 2"
 	procedure delete_netchanger (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
@@ -80,13 +81,23 @@ package et_cp_schematic_netchanger is
 
 		
 	-- The rotation can either be 0 or 90 degrees. Other angles are
-	-- not accepted:
+	-- not accepted.
+	-- Example: "schematic demo rotate netchanger 2 90"
 	procedure rotate_netchanger (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
+
+	-- Sets the direction of a netchanger.
+	-- Example: "schematic demo set netchanger 2 forward/backward"
+	procedure set_netchanger_direction (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
+	
 end et_cp_schematic_netchanger;
 
 -- Soli Deo Gloria

@@ -78,6 +78,24 @@ package body et_netchangers is
 	
 
 
+	
+	function to_netchanger_direction (
+		direction : in string)
+		return type_netchanger_direction
+	is begin
+		return type_netchanger_direction'value (direction);
+	end;
+
+
+	function to_string (
+		direction : in type_netchanger_direction)
+		return string
+	is begin
+		return type_netchanger_direction'image (direction);
+	end;
+	
+	
+	
 
 	procedure reset_netchanger (
 		netchanger : in out type_netchanger)

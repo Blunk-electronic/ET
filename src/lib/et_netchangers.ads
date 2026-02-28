@@ -102,10 +102,20 @@ package et_netchangers is
 
 	type type_netchanger_direction is (
 		FORWARD, -- default
-		REVERSED);						
+		BACKWARD);						
 
-		
-		
+	
+	function to_netchanger_direction (
+		direction : in string)
+		return type_netchanger_direction;
+
+
+	function to_string (
+		direction : in type_netchanger_direction)
+		return string;
+
+
+	
 	
 	-- 1. In the schematic drawing, there is only one hardcoded
 	--    symbol for a netchanger (see package spec et_netchanger_symbol_schematic).

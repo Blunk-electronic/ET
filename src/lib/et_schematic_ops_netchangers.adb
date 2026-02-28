@@ -1575,7 +1575,107 @@ package body et_schematic_ops_netchangers is
 
 	
 
+	
+	
+	
+	
+	
+	
+	
+	procedure set_netchanger_direction (
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id; -- 1,2,3,...
+		direction		: in type_netchanger_direction;
+		log_threshold	: in type_log_level)
+	is
+	
+	
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			netchanger_cursor : pac_netchangers.cursor;
 
+			-- The sheet where the netchanger is located
+			-- in the schematic:
+			sheet : type_sheet;
+
+			ports : type_netchanger_ports;
+			
+			use pac_netchangers;
+		begin
+			-- Locate given netchanger in the module:
+			netchanger_cursor := get_netchanger (module_cursor, index);
+
+
+			if has_element (netchanger_cursor) then 
+				-- netchanger exists
+
+				-- Get the sheet number where the netchanger is:
+				sheet := get_sheet (netchanger_cursor);
+
+				-- log sheet number:
+				log (text => "found the netchanger on sheet " & to_string (sheet),
+					 level => log_threshold + 1);
+
+
+				-- Delete the old netchanger ports in connected
+				-- net segments as they are BEFORE the rotation:
+				delete_ports (
+	 				module			=> module_cursor,
+					index			=> index,
+					sheet			=> sheet,
+					log_threshold	=> log_threshold + 2);
+				
+
+				-- CS
+				-- update_element (
+				-- 	container	=> module.netchangers,
+				-- 	position	=> netchanger_cursor,
+				-- 	process		=> rotate'access);
+
+				
+				-- Get the NEW absolute positions of the netchanger
+				-- ports AFTER the rotation:
+				ports := get_netchanger_ports (netchanger_cursor);
+
+				-- Inserts the new netchanger ports in the net segments:
+				insert_ports (
+					module_cursor	=> module_cursor,
+					index			=> index,
+					ports			=> ports,
+					sheet			=> sheet,
+					log_threshold	=> log_threshold + 2);
+
+				
+			else
+				-- CS: It is assumed that the requested netchanger
+				-- does exist. So this warning
+				-- should be moved to the command processor.
+				
+				-- netchanger does not exist
+				netchanger_not_found (index);
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " set netchanger " & to_string (index)
+			& " direction " & to_string (direction),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;		
+	end set_netchanger_direction;
+
+	
 	
 end et_schematic_ops_netchangers;
 

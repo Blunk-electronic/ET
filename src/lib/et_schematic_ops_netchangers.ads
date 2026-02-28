@@ -223,6 +223,12 @@ package et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level);
 
 
+	procedure set_netchanger_direction (
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id; -- 1,2,3,...
+		direction		: in type_netchanger_direction;
+		log_threshold	: in type_log_level);
+	
 	
 end et_schematic_ops_netchangers;
 

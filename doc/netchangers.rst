@@ -29,7 +29,7 @@ Schematic Editor
 
 	.. code-block::
 	
-		demo add netchanger 2 60 30 0
+		add netchanger 2 60 30 0
 
 
 
@@ -45,7 +45,7 @@ Schematic Editor
 
 	.. code-block::
 
-		demo move netchanger 2 absolute 3 30 0
+		move netchanger 2 absolute 3 30 0
 
 
 	This example moves netchanger 2 relative by 
@@ -53,7 +53,7 @@ Schematic Editor
 
 	.. code-block::
 
-		demo move netchanger 2 relative 10 30 0
+		move netchanger 2 relative 10 30 0
 
 
 
@@ -72,14 +72,14 @@ Schematic Editor
 
 	.. code-block::
 
-		demo drag netchanger 2 absolute 30 0
+		drag netchanger 2 absolute 30 0
 
 
 	This example drags netchanger 2 relative by x/y 30/0:
 
 	.. code-block::
 
-		demo drag netchanger 2 relative 30 0
+		drag netchanger 2 relative 30 0
 
 
 
@@ -93,7 +93,21 @@ Schematic Editor
 
 	.. code-block::
 	
-		demo rotate netchanger 2 90
+		rotate netchanger 2 90
+
+
+
+
+
+#. Set Direction
+
+	.. code-block::
+	
+		set netchanger 2 forward
+
+	.. code-block::
+	
+		set netchanger 2 backward
 
 
 
@@ -102,7 +116,7 @@ Schematic Editor
 
 	.. code-block::
 	
-		demo delete netchanger 2
+		delete netchanger 2
 
 
 
