@@ -1601,6 +1601,16 @@ package body et_schematic_ops_netchangers is
 			sheet : type_sheet;
 
 			ports : type_netchanger_ports;
+						
+			
+			procedure set_direction (
+				index		: in type_netchanger_id;
+				netchanger	: in out type_netchanger) 
+			is begin
+				set_direction (netchanger, direction);
+			end;
+
+			
 			
 			use pac_netchangers;
 		begin
@@ -1620,7 +1630,7 @@ package body et_schematic_ops_netchangers is
 
 
 				-- Delete the old netchanger ports in connected
-				-- net segments as they are BEFORE the rotation:
+				-- net segments as they are BEFORE the direction change:
 				delete_ports (
 	 				module			=> module_cursor,
 					index			=> index,
@@ -1628,15 +1638,14 @@ package body et_schematic_ops_netchangers is
 					log_threshold	=> log_threshold + 2);
 				
 
-				-- CS
-				-- update_element (
-				-- 	container	=> module.netchangers,
-				-- 	position	=> netchanger_cursor,
-				-- 	process		=> rotate'access);
+				update_element (
+					container	=> module.netchangers,
+					position	=> netchanger_cursor,
+					process		=> set_direction'access);
 
 				
 				-- Get the NEW absolute positions of the netchanger
-				-- ports AFTER the rotation:
+				-- ports AFTER the direction change:
 				ports := get_netchanger_ports (netchanger_cursor);
 
 				-- Inserts the new netchanger ports in the net segments:
