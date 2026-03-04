@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -46,6 +46,8 @@ with et_net_names;					use et_net_names;
 with et_submodules;					use et_submodules;
 with et_module_instance;			use et_module_instance;
 with et_display.schematic;
+with et_netchangers.schematic;
+
 
 with et_board_geometry;
 
@@ -208,6 +210,7 @@ procedure draw_submodules is
 				end draw_vertical;
 				
 
+				use et_netchangers.schematic;
 				use pac_draw_text;
 				use et_alignment;
 
@@ -229,7 +232,7 @@ procedure draw_submodules is
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
 					draw_text (
-						content		=> to_content (to_direction_abbrevation (port.direction)),
+						content		=> to_content (to_short_name (port.direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
 						anchor		=> move (pos, 0.0, port_symbol_width / 2.0),
@@ -259,7 +262,7 @@ procedure draw_submodules is
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
 					draw_text (
-						content		=> to_content (to_direction_abbrevation (port.direction)),
+						content		=> to_content (to_short_name (port.direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
 						anchor		=> move (pos, 180.0, port_symbol_width / 2.0),
@@ -289,7 +292,7 @@ procedure draw_submodules is
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
 					draw_text (
-						content		=> to_content (to_direction_abbrevation (port.direction)),
+						content		=> to_content (to_short_name (port.direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
 						anchor		=> move (pos, 90.0, port_symbol_width / 2.0),
@@ -319,7 +322,7 @@ procedure draw_submodules is
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
 					draw_text (
-						content		=> to_content (to_direction_abbrevation (port.direction)),
+						content		=> to_content (to_short_name (port.direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
 						anchor		=> move (pos, 270.0, port_symbol_width / 2.0),

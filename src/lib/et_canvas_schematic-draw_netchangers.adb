@@ -247,7 +247,7 @@ procedure draw_netchangers is
 
 			-- CS move to a procedure
 			draw_text (
-				content		=> to_content (to_string (name)),
+				content		=> to_content (to_short_name (name)),
 				size		=> port_size,
 				font		=> et_symbol_text.text_font,
 				anchor		=> pos_port_name,

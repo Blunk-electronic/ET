@@ -79,6 +79,21 @@ package et_netchangers.schematic is
 		return string;	
 
 
+
+	-- Frequently the short form
+	-- of a netchanger port is required:
+	port_short_master : constant string := "M";
+	port_short_slave  : constant string := "S";
+
+	
+
+	-- Returns the short name of the given port name:
+	function to_short_name (
+		direction : in type_netchanger_port_name) 
+		return string;
+
+	
+
 	
 	function get_opposide_port (
 		port : in type_netchanger_port_name) 

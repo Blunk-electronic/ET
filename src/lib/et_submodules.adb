@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -130,12 +130,6 @@ package body et_submodules is
 
 
 	
-	function to_direction_abbrevation (direction : in type_netchanger_port_name) return string is begin
-		case direction is 
-			when MASTER => return port_direction_abbrevation_master;
-			when SLAVE => return port_direction_abbrevation_slave;
-		end case;
-	end to_direction_abbrevation;
 
 
 

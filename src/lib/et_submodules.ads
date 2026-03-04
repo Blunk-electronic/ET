@@ -171,12 +171,6 @@ package et_submodules is
 		type_text_size (port_symbol_height) 
 		- 3.0 * port_symbol_line_width;
 
-	-- Required in the GUI to indicate the direction of a submodule port:
-	port_direction_abbrevation_master : constant string := "M";
-	port_direction_abbrevation_slave  : constant string := "S";
-
-	-- Returns an M for MASTER and an S for SLAVE.
-	function to_direction_abbrevation (direction : in type_netchanger_port_name) return string;
 	
 
 

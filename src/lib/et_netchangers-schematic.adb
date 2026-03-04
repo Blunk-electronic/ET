@@ -75,7 +75,18 @@ package body et_netchangers.schematic is
 	end;
 
 	
-		
+
+
+	function to_short_name (
+		direction : in type_netchanger_port_name) 
+		return string 
+	is begin
+		case direction is 
+			when MASTER => return port_short_master;
+			when SLAVE => return port_short_slave;
+		end case;
+	end to_short_name;
+
 
 	
 
