@@ -104,12 +104,17 @@ package et_netchangers.schematic is
 		
 
 	
-
+	function get_direction (
+		netchanger : in type_netchanger)
+		return type_netchanger_direction;
+		
+		
 	procedure set_direction (
 		netchanger	: in out type_netchanger;
 		direction	: in type_netchanger_direction);
 
 
+		
 
 		
 		

@@ -101,21 +101,10 @@ package et_netchanger_symbol_schematic is
 	
 	
 	-- For netchangers we use this hardcoded symbol:
-	
-	type type_netchanger_symbol is record -- CS make private
-		master_port	: type_netchanger_port := (
-						length		=> 5.0,
-						position	=> position_master_port_default,
-						rotation	=> zero_rotation,
-						others		=> <>);
 
-		slave_port	: type_netchanger_port := (
-						length		=> 5.0,
-						position	=> position_slave_port_default,						
-						rotation	=> 180.0,
-						others		=> <>);
+	type type_netchanger_symbol_base is tagged record -- CS make private
 
-		-- the arc that connects the ports
+		-- The body is just an arc that connects the ports:
 		arc	: type_symbol_arc := (type_arc (to_arc (
 						center	=> (x =>  0.0, y => 0.0),
 						A		=> (x => -2.5, y => 0.0),
@@ -125,9 +114,57 @@ package et_netchanger_symbol_schematic is
 
 	end record;
 
+
 	
 	
-	netchanger_symbol : constant type_netchanger_symbol := (others => <>);
+	type type_netchanger_symbol_forward is new type_netchanger_symbol_base 
+	with record -- CS make private
+		-- The master port is on the right side of the body:
+		master_port	: type_netchanger_port := (
+						length		=> 5.0,
+						position	=> position_master_port_default,
+						rotation	=> zero_rotation,
+						others		=> <>);
+
+		-- The slave port is on the left side of the body:
+		slave_port	: type_netchanger_port := (
+						length		=> 5.0,
+						position	=> position_slave_port_default,						
+						rotation	=> 180.0,
+						others		=> <>);
+
+	end record;
+
+	
+	
+	netchanger_symbol_forward : constant type_netchanger_symbol_forward := (others => <>);
+
+
+
+
+
+	type type_netchanger_symbol_backward is new type_netchanger_symbol_base 
+	with record -- CS make private
+		-- The master port is on the left side of the body:
+		master_port	: type_netchanger_port := (
+						length		=> 5.0,
+						position	=> position_slave_port_default,
+						rotation	=> 180.0,
+						others		=> <>);
+
+		-- The slave port is on the right side of the body:
+		slave_port	: type_netchanger_port := (
+						length		=> 5.0,
+						position	=> position_master_port_default,						
+						rotation	=> zero_rotation,
+						others		=> <>);
+
+	end record;
+
+	
+	
+	netchanger_symbol_backward : constant type_netchanger_symbol_backward := (others => <>);
+
 
 	
 end et_netchanger_symbol_schematic;

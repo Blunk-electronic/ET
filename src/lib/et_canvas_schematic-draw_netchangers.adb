@@ -361,7 +361,12 @@ procedure draw_netchangers is
 		set_color_symbols (brightness);
 		
 		draw_arc (
-			arc		=> netchanger_symbol.arc,
+			arc		=> netchanger_symbol_forward.arc,
+			-- It does not matter whether to use the
+			-- netchanger_symbol_forward or netchanger_symbol_backward
+			-- as both have the same body.
+			-- See specs in package et_netchanger_symbol_schematic.
+			
 			pos		=> position,
 			width	=> net_linewidth,
 			stroke	=> DO_STROKE);
@@ -398,13 +403,36 @@ procedure draw_netchangers is
 			-- Draw the body of the netchanger:
 			draw_body (position);
 						
-			-- Draw the ports of the netchanger:
-			draw_port (name => MASTER, port => netchanger_symbol.master_port, 
-					netchanger_position => position);
+			-- Now, depending on the direction of the netchanger candidate,
+			-- we draw either the forward-symbol or the backward-symbol:
+			case get_direction (netchanger) is
+				when FORWARD =>
+					-- Draw the ports of the netchanger:
+					draw_port (
+						name => MASTER, 
+						port => netchanger_symbol_forward.master_port, 
+						netchanger_position => position);
 
-			draw_port (name => SLAVE, port => netchanger_symbol.slave_port, 
-					netchanger_position => position);
+					draw_port (
+						name => SLAVE, 
+						port => netchanger_symbol_forward.slave_port, 
+						netchanger_position => position);
+				
+				when BACKWARD =>
+					-- Draw the ports of the netchanger:
+					draw_port (
+						name => MASTER, 
+						port => netchanger_symbol_backward.master_port, 
+						netchanger_position => position);
 
+					draw_port (
+						name => SLAVE, 
+						port => netchanger_symbol_backward.slave_port, 
+						netchanger_position => position);
+				
+			end case;
+			
+			
 			-- Draw the name of the netchanger (like N33):
 			draw_name (index => index, position => position);
 					
