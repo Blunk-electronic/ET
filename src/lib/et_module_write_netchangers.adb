@@ -100,7 +100,12 @@ package body et_module_write_netchangers is
 				keyword => keyword_name,
 				parameters => to_string (key (cursor))); 
 				-- 1, 2, 201, ...
-				
+
+			write (
+				keyword => keyword_direction,
+				parameters => to_string (get_direction (netchanger))); 
+				-- direction forward/backward
+			
 			write (
 				keyword => keyword_position_in_schematic, 
 				parameters => to_string (position_sch, FORMAT_2)); 

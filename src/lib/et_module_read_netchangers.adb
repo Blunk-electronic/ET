@@ -86,12 +86,20 @@ package body et_module_read_netchangers is
 
 		position : type_object_position;
 		rotation : et_schematic_geometry.pac_geometry_2.type_rotation_0_90;
+		direction : type_netchanger_direction := FORWARD;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		
 		if kw = keyword_name then -- name 1, 2, 304, ...
 			expect_field_count (line, 2);
 			netchanger_id := to_netchanger_id (f (line, 2));
+
+
+		elsif kw = keyword_direction then -- direction forward/backward
+			expect_field_count (line, 2);
+			
+			direction := to_netchanger_direction (f (line, 2));
+			set_direction (netchanger, direction);
 
 			
 		elsif kw = keyword_position_in_schematic then 
