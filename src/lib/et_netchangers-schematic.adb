@@ -266,9 +266,24 @@ package body et_netchangers.schematic is
 	end;
 
 	
+
+
+
 	
 	
 -- PORTS:
+
+
+	procedure swap_ports (
+		ports : in out type_netchanger_ports)
+	is
+		master_bak : type_vector_model := ports.master;
+	begin
+		ports.master := ports.slave;
+		ports.slave := master_bak;
+	end;
+	
+	
 
 	function get_netchanger_ports (
 		netchanger_cursor : in pac_netchangers.cursor)		
@@ -279,6 +294,10 @@ package body et_netchangers.schematic is
 		
 		ports : type_netchanger_ports;
 	begin
+		if n.direction = BACKWARD then
+			swap_ports (ports);
+		end if;
+		
 		-- rotate the ports according to rotation in schematic
 		rotate_by (ports.master, n.position_sch.rotation);
 		rotate_by (ports.slave,  n.position_sch.rotation);

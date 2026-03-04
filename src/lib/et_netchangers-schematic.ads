@@ -66,8 +66,7 @@ package et_netchangers.schematic is
 -- PORT NAMES:
 
 	type type_netchanger_port_name is (MASTER, SLAVE);
-	-- CS: instead of master/slave notation use A/B ?
-	-- CS: use prefix like PORT_A, PORT_B
+	-- CS: use prefix ?
 	
 	
 	function to_port_name (
@@ -189,7 +188,10 @@ package et_netchangers.schematic is
 		return type_sheet;
 
 		
-		
+
+
+-- PORTS:
+	
 	
 	type type_netchanger_ports is record
 		master	: type_vector_model := position_master_port_default;
@@ -198,6 +200,9 @@ package et_netchangers.schematic is
 	-- CS: instead of master/slave notation use A/B ?
 
 
+	procedure swap_ports (
+		ports : in out type_netchanger_ports);
+	 
 
 	
 	-- Returns the absolute port positions of 
