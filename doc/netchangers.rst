@@ -101,6 +101,15 @@ Schematic Editor
 
 #. Set Direction
 
+	The direction of a netchanger is relevant for agile 
+	hardware development. This is not about the information
+	or energy flow but about net names.
+	The direction of a netchanger specifies the way
+	connected nets are renamed when the two nets are
+	to be merged into one net. The net that is connected with
+	the master port enforces its name onto the net on
+	the slave port.
+
 	.. code-block::
 	
 		set netchanger 2 forward
