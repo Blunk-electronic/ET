@@ -233,6 +233,47 @@ package et_netchangers.schematic is
 
 	
 	
+	
+	
+-- CATCH ZONE:
+	
+	-- Returns true if the given netchanger is in
+	-- the given catch zone:
+	function in_catch_zone (
+		netchanger	: in type_netchanger;
+		zone		: in type_catch_zone;
+		sheet		: in type_sheet)
+		return boolean;
+	
+	
+	
+	
+-- STATUS:
+
+
+	function is_selected (
+		netchanger : in type_netchanger)
+		return boolean;
+
+
+	function is_proposed (
+		netchanger : in type_netchanger)
+		return boolean;
+
+
+	procedure set_proposed (
+		netchanger : in out type_netchanger);
+		
+
+	procedure modify_status (
+		netchanger	: in out type_netchanger;
+		operation	: in type_status_operation);
+		
+
+	procedure reset_status (
+		netchanger	: in out type_netchanger);
+
+	
 end et_netchangers.schematic;
 
 -- Soli Deo Gloria

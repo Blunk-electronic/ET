@@ -107,7 +107,15 @@ package body et_netchangers is
 	
 	
 	
+	function get_name (
+		netchanger_cursor : in pac_netchangers.cursor)
+		return string
+	is begin
+		return to_string (key (netchanger_cursor));
+	end;
 
+
+	
 	function get_netchanger (
 		netchangers : in pac_netchangers.map;
 		index		: in type_netchanger_id)

@@ -329,6 +329,95 @@ package body et_netchangers.schematic is
 
 
 	
+	
+
+	
+	
+-- CATCH ZONE:
+	
+	function in_catch_zone (
+		netchanger	: in type_netchanger;
+		zone		: in type_catch_zone;
+		sheet		: in type_sheet)
+		return boolean
+	is
+		result : boolean := false;
+
+		netchanger_position : type_object_position := 
+			to_object_position (netchanger.position_sch);
+	begin
+		-- The netchanger must be on the given sheet and
+		-- in the given catch zone:
+		if 	get_sheet (netchanger_position) = sheet 
+		and	in_catch_zone (zone, get_place (netchanger_position)) then
+			result := true;
+		else
+			result := false;
+		end if;
+		
+		return result;
+	end in_catch_zone;
+
+
+	
+	
+	
+	
+-- STATUS:
+
+
+
+	function is_selected (
+		netchanger : in type_netchanger)
+		return boolean
+	is begin
+		if is_selected (netchanger.status_sch) then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+
+	
+	function is_proposed (
+		netchanger : in type_netchanger)
+		return boolean
+	is begin
+		if is_proposed (netchanger.status_sch) then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+	
+	
+
+	procedure set_proposed (
+		netchanger : in out type_netchanger)
+	is begin
+		set_proposed (netchanger.status_sch);
+	end;
+
+
+
+	procedure modify_status (
+		netchanger	: in out type_netchanger;
+		operation	: in type_status_operation)
+	is begin
+		modify_status (netchanger.status_sch, operation);
+	end;
+
+	
+	
+	procedure reset_status (
+		netchanger	: in out type_netchanger)
+	is begin
+		reset_status (netchanger.status_sch);
+	end;
+
+	
+	
 end et_netchangers.schematic;
 
 -- Soli Deo Gloria

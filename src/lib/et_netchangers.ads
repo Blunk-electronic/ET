@@ -55,6 +55,7 @@ with et_sheets;
 
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_board_geometry;
+with et_object_status;					use et_object_status;
 
 -- with et_logging;						use et_logging;
 
@@ -87,7 +88,7 @@ package et_netchangers is
 
 		
 	function to_string (
-		id : in type_netchanger_id) 
+		id : in type_netchanger_id)
 		return string;		
 
 
@@ -152,10 +153,12 @@ package et_netchangers is
 	
 	type type_netchanger is record -- CS make private
 		position_sch : type_netchanger_position_schematic;
+		status_sch : type_object_status;
 		
 		direction : type_netchanger_direction := FORWARD;
 		
 		position_brd : type_netchanger_position_board;
+		status_brd : type_object_status;
 	end record;
 
 
@@ -171,7 +174,13 @@ package et_netchangers is
 		element_type	=> type_netchanger);
 
 	use pac_netchangers;
-	
+
+
+	-- Returns the name of the given netchanger.
+	-- The name is just the index like 1,2,3, ...
+	function get_name (
+		netchanger_cursor : in pac_netchangers.cursor)
+		return string;
 
 		
 	-- Returns a cursor to the given netchanger.

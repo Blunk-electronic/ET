@@ -1686,6 +1686,361 @@ package body et_schematic_ops_netchangers is
 
 	
 	
+	
+	
+	
+	
+	function get_object_name (
+		object : in type_object_netchanger)
+		return string
+	is begin
+		return get_name (object.netchanger_cursor);
+	end;
+
+	
+	
+	
+	
+	
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		netchanger		: in type_object_netchanger;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is	
+			
+			procedure query_netchanger (
+				name	: in type_netchanger_id;
+				nc		: in out type_netchanger)
+			is 
+			begin
+				modify_status (nc, operation);
+				-- log (text => "done", level => log_threshold + 1);
+
+				-- If the netchanger is set as moving, then
+				-- backup the original position:
+				if get_action (operation) = SET and
+					get_flag (operation) = MOVING then
+
+					object_original_position := get_place (get_position (nc));
+				end if;
+			end query_netchanger;
+
+			
+		begin
+			module.netchangers.update_element (
+				netchanger.netchanger_cursor, query_netchanger'access);
+				
+		end query_module;
+		
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modify status of netchanger "
+			& get_object_name (netchanger)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,		   
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+
+
+
+
+	
+	
+	
+	procedure propose_netchangers (
+		module_cursor	: in pac_generic_modules.cursor;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_netchangers;
+			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
+
+			
+			procedure query_netchanger (
+				name		: in type_netchanger_id;
+				netchanger	: in out type_netchanger)
+			is begin
+				if in_catch_zone (netchanger, catch_zone, active_sheet) then
+					log (text => to_string (name), level => log_threshold + 1);
+					
+					set_proposed (netchanger);
+					count := count + 1;
+				end if;
+			end query_netchanger;
+
+			
+		begin
+			-- Iterate through the netchangers:
+			while has_element (netchanger_cursor) loop
+				module.netchangers.update_element (
+					netchanger_cursor, query_netchanger'access);
+					
+				next (netchanger_cursor);
+			end loop;
+		end query_module;
+
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " propose netchangers in " & to_string (catch_zone),
+			level => log_threshold);
+		
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,		   
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_netchangers;
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	procedure reset_status_netchangers (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+		
+			use pac_netchangers;
+			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
+
+			
+			procedure query_netchanger (
+				name		: in type_netchanger_id;
+				netchanger	: in out type_netchanger)
+			is begin
+				log (text => to_string (name), level => log_threshold + 1);
+				reset_status (netchanger);
+			end query_netchanger;
+
+			
+		begin
+			-- Iterate through the netchangers:
+			while has_element (netchanger_cursor) loop
+				module.netchangers.update_element (
+					netchanger_cursor, query_netchanger'access);
+					
+				next (netchanger_cursor);
+			end loop;
+		end query_module;
+		
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " reset status of all netchangers", 
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_status_netchangers;
+
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	function get_first_netchanger (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_netchanger
+	is
+		result : type_object_netchanger;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use pac_netchangers;
+			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
+
+			proceed : boolean := true;
+
+			
+			procedure query_netchanger (
+				name		: in type_netchanger_id;
+				netchanger	: in type_netchanger)
+			is 
+			
+				procedure set_result is begin
+					log (text => " found " & to_string (name), level => log_threshold + 2);
+					result.netchanger_cursor := netchanger_cursor;
+					proceed := false; -- no further probing required
+				end set_result;
+
+			
+			begin
+				log (text => to_string (name), level => log_threshold + 1);
+				case flag is
+					when PROPOSED =>
+						if is_proposed (netchanger) then
+							set_result;
+						end if;
+	
+					when SELECTED =>
+						if is_selected (netchanger) then
+							set_result;
+						end if;
+	
+					when others => null; -- CS
+				end case;
+			end query_netchanger;
+
+	
+		begin
+			-- Iterate through the netchangers:
+			while has_element (netchanger_cursor) and proceed loop
+				query_element (netchanger_cursor, query_netchanger'access);
+				next (netchanger_cursor);
+			end loop;
+
+			if proceed then
+				log (text => "nothing found", level => log_threshold);
+			end if;
+		end query_module;
+		
+		
+	
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first netchanger / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+
+		return result;
+	end get_first_netchanger;
+
+	
+	
+	
+	
+------------------------------------------------------------------------------------------
+
+-- OBJECTS:
+	
+
+	function get_count (
+		objects : in pac_objects.list)
+		return natural
+	is begin
+		return natural (objects.length);
+	end get_count;
+	
+
+	
+	
+	
+	function get_first_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object
+	is
+		result_category 	: type_object_category := CAT_VOID;
+		result_netchanger	: type_object_netchanger;
+
+		use pac_netchangers;
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first object / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		
+		-- SEARCH FOR A NETCHANGER:
+		
+		-- If a netchanger has been found, then go to the end of this procedure:
+		result_netchanger := get_first_netchanger (module_cursor, flag, log_threshold + 1);
+
+		if has_element (result_netchanger.netchanger_cursor) then
+			-- A netchanger has been found.
+			log (text => get_object_name (result_netchanger),
+				 level => log_threshold + 1);
+			
+			result_category := CAT_NETCHANGER;
+		end if;
+		
+		-- If nothing has been found then the category is CAT_VOID.
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
+
+
+
+
+	<<end_of_search>>
+		
+		-- If nothing has been found then the category is CAT_VOID.
+		log_indentation_down;
+
+		
+		
+		case result_category is
+			when CAT_VOID =>
+				return (cat => CAT_VOID);
+
+			when CAT_NETCHANGER =>
+				return (CAT_NETCHANGER, result_netchanger);
+				
+		end case;
+	end get_first_object;
+
+	
 end et_schematic_ops_netchangers;
 
 -- Soli Deo Gloria
