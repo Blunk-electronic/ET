@@ -103,7 +103,7 @@ package et_canvas_schematic_units is
 
 	
 
--- MOVE/DRAG/ROTATE UNIT
+-- MOVE / DRAG / ROTATE / MIRROR UNIT
 
 	
 	-- to be output in the status bar:
@@ -131,6 +131,14 @@ package et_canvas_schematic_units is
 		& status_hint_for_abort;
 	
 
+	status_mirror : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to mirror unit." 
+		& status_hint_for_abort;
+
+	
 	-- This procedure is required in order to clarify
 	-- which object among the proposed objects is meant.
 	-- On every call of this procedure we advance from one
@@ -159,6 +167,10 @@ package et_canvas_schematic_units is
 		point	: in type_vector_model);
 
 
+	procedure mirror_object (
+		point	: in type_vector_model);
+
+	
 	procedure delete_object (
 		point	: in type_vector_model);
 

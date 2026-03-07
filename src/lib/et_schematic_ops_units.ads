@@ -738,6 +738,14 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
+	-- Mirrors an object along its y-axis:
+	procedure mirror_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level);
+
+
+	
 	-- Sets the start or end points of net segments which are 
 	-- connected with ports of selected units to "moving":
 	procedure set_segments_moving (

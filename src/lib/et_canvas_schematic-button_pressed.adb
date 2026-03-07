@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -211,8 +211,17 @@ is
 						
 					when others => null;
 				end case;
-
 				
+
+			when VERB_MIRROR =>
+				case noun is
+					when NOUN_UNIT =>
+						et_canvas_schematic_units.mirror_object (snap_point);
+						
+					when others => null;
+				end case;
+
+
 			when VERB_SET =>
 				case noun is
 					when NOUN_VALUE =>
@@ -377,6 +386,17 @@ is
 							et_canvas_schematic_units.clarify_object;
 						end if;
 
+					when NOUN_UNIT =>
+						if clarification_pending then
+							et_canvas_schematic_units.clarify_object;
+						end if;
+
+					when others => null;							
+				end case;
+
+
+			when VERB_MIRROR =>
+				case noun is
 					when NOUN_UNIT =>
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;

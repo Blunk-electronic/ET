@@ -274,7 +274,7 @@ package body et_canvas_schematic_units is
 			-- Propose objects according to current verb and noun:
 			case verb is
 				when VERB_COPY | VERB_DELETE | VERB_DRAG | VERB_FETCH | VERB_MOVE 
-					| VERB_RENAME | VERB_ROTATE | VERB_SHOW =>
+					| VERB_RENAME | VERB_ROTATE | VERB_MIRROR | VERB_SHOW =>
 					
 					case noun is
 						when NOUN_DEVICE | NOUN_UNIT =>
@@ -380,8 +380,8 @@ package body et_canvas_schematic_units is
 	
 
 
+
 	
--- MOVE:	
 
 	procedure move_object (
 		tool	: in type_tool;
@@ -478,6 +478,7 @@ package body et_canvas_schematic_units is
 
 
 
+	
 
 	
 	
@@ -558,6 +559,87 @@ package body et_canvas_schematic_units is
 
 
 
+	
+
+
+
+	procedure mirror_object (
+		point	: in type_vector_model)
+	is 
+		
+		-- Assigns the final rotation to the selected object:
+		procedure finalize is
+			use et_modes.schematic;
+			use et_undo_redo;
+			use et_commit;
+
+			object : constant type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
+		begin
+			log (text => "finalize mirror", level => log_threshold);
+			log_indentation_up;
+
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+
+				reset_status_objects (active_module, log_threshold + 1);
+				
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+
+				mirror_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					log_threshold	=> log_threshold + 1);
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+
+				-- If a unit has been mirrored, then the board
+				-- must be redrawn:
+				if object.cat = CAT_UNIT then
+					redraw_board;
+				end if;
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+
+			-- clear status bar
+			status_clear;
+
+			reset_editing_process; -- prepare for a new editing process
+		end finalize;
+
+		
+	begin
+		if not clarification_pending then
+			-- Locate all objects in the vicinity of the given point:
+			find_objects (point);
+			-- NOTE: If many objects have been found, then
+			-- clarification is now pending.
+
+			-- If find_objects has found only one object,				
+			-- then rotate the object immediatley.
+			if edit_process_running then
+				finalize;
+			end if;
+		else
+			-- Here the clarification procedure ends.
+			-- An object has been selected via procedure clarify_object.
+			reset_request_clarification;
+			finalize;
+		end if;
+	end mirror_object;
+
+
+
+	
+
+	
 	
 
 

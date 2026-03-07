@@ -262,9 +262,7 @@ is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_unit =>
 				noun := NOUN_UNIT;
-				-- CS
-				null;
-				-- set_status (et_canvas_schematic_units.status_move_placeholder);
+				set_status (et_canvas_schematic_units.status_mirror);
 
 				
 			-- If space pressed then the operator wishes to operate
@@ -272,9 +270,7 @@ is
 			when key_space =>	
 				case noun is
 					when NOUN_UNIT =>
-						null;
-						-- CS
-						-- et_canvas_schematic_units.move_object (KEYBOARD, get_cursor_position);
+						et_canvas_schematic_units.mirror_object (point);
 
 					when others => null;
 				end case;
@@ -285,9 +281,7 @@ is
 				case noun is
 					when NOUN_UNIT =>
 						if clarification_pending then
-							-- CS
-							null;
-							-- et_canvas_schematic_units.clarify_object;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 						
 					when others => null;

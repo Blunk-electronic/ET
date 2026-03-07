@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -135,7 +135,8 @@ package body et_undo_redo is
 					case verb is
 						when VERB_ADD | VERB_COPY | VERB_FETCH | VERB_MOVE 
 							| VERB_DELETE | VERB_DRAG 
-							| VERB_ROTATE | VERB_RENAME =>
+							| VERB_ROTATE | VERB_RENAME 
+							| VERB_MIRROR =>
 							
 							commit_devices;
 							commit_nets;

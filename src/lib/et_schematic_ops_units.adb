@@ -4087,6 +4087,7 @@ package body et_schematic_ops_units is
 
 
 
+
 	
 
 	procedure rotate_object (
@@ -4133,9 +4134,46 @@ package body et_schematic_ops_units is
 
 
 
+
 	
 	
 
+	procedure mirror_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " mirror object " 
+			-- CS & to_string (object)
+			& " by 90 degrees",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_UNIT =>
+
+				mirror_unit (
+					module_cursor	=> module_cursor,
+					device_name		=> get_device_name (object.unit),
+					unit_name		=> get_unit_name (object.unit),
+					log_threshold	=> log_threshold + 1);
+
+				
+			when others =>
+				null; -- nothing to do
+		end case;		
+		
+		log_indentation_down;
+	end mirror_object;
+
+
+
+
+	
+
+	
 
 	procedure set_segments_moving (
 		module_cursor	: in pac_generic_modules.cursor;
