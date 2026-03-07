@@ -1699,6 +1699,13 @@ package body et_schematic_ops_netchangers is
 
 	
 	
+	function get_object_name (
+		object : in type_object_netchanger)
+		return type_netchanger_id
+	is begin
+		return get_name (object.netchanger_cursor);
+	end;
+
 	
 	
 	
@@ -1717,8 +1724,7 @@ package body et_schematic_ops_netchangers is
 			procedure query_netchanger (
 				name	: in type_netchanger_id;
 				nc		: in out type_netchanger)
-			is 
-			begin
+			is begin
 				modify_status (nc, operation);
 				-- log (text => "done", level => log_threshold + 1);
 
@@ -2040,6 +2046,462 @@ package body et_schematic_ops_netchangers is
 		end case;
 	end get_first_object;
 
+	
+	
+	
+	
+	
+	
+	
+	
+	function get_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return pac_objects.list
+	is
+		use pac_objects;
+
+		-- Here the objects are collected:
+		result : pac_objects.list;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+
+			-- This procedure queries the netchangers
+			-- and collects those which have the given flag set:			
+			procedure query_netchangers is
+				use pac_netchangers;
+				netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
+				
+
+				-- Queries a unit for its status flag
+				-- and appends it to the result:
+				procedure query_netchanger (
+					name		: in type_netchanger_id;
+					netchanger	: in type_netchanger) 
+				is 
+
+					-- This procedure appends the matching
+					-- netchanger to the result:
+					procedure collect is begin
+						log (text => to_string (name), level => log_threshold + 4);
+						
+						result.append ((
+							cat			=> CAT_NETCHANGER,
+							netchanger	=> (netchanger_cursor => netchanger_cursor)));
+
+					end collect;
+						
+					
+				begin
+					log (text => to_string (name), level => log_threshold + 2);
+					log_indentation_up;
+					
+					case flag is
+						when PROPOSED =>
+							if is_proposed (netchanger) then
+								collect;
+							end if;
+
+						when SELECTED =>
+							if is_selected (netchanger) then
+								collect;
+							end if;
+
+						when others => null; -- CS
+					end case;					
+
+					log_indentation_down;
+				end query_netchanger;
+
+				
+			begin
+				log (text => "query_netchangers", level => log_threshold + 1);
+				log_indentation_up;
+				
+				-- Iterate the netchangers of the module:
+				while has_element (netchanger_cursor) loop
+					query_element (netchanger_cursor, query_netchanger'access);
+					next (netchanger_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_netchangers;
+			
+			
+		begin
+			query_netchangers;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up objects / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+
+		return result;
+	end get_objects;
+
+	
+	
+	
+	
+	
+	
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " modify status of object "
+			& type_object_category'image (object.cat)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		case object.cat is
+			when CAT_NETCHANGER =>
+				modify_status (module_cursor, object.netchanger,
+					operation, log_threshold + 1);
+			
+			when CAT_VOID =>
+				null; -- CS
+		end case;
+
+		log_indentation_down;
+	end modify_status;
+
+	
+	
+	
+	
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is 
+		use pac_objects;
+		object : constant type_object := element (object_cursor);
+	begin
+		modify_status (module_cursor, object, operation, log_threshold);
+	end modify_status;
+
+	
+	
+	
+	
+	procedure reset_status_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is 
+
+		procedure reset_devices is begin
+			-- Reset netchangers:
+			reset_status_netchangers (module_cursor, log_threshold + 1);
+			-- CS notes, properties, ...
+		end;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " reset objects",
+			level => log_threshold);
+
+		log_indentation_up;
+		reset_devices;		
+		log_indentation_down;
+	end reset_status_objects;
+
+	
+	
+	
+	
+	
+	
+	
+	
+	procedure move_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " move object " 
+			-- CS & to_string (object)
+			& " to " & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_NETCHANGER =>
+
+				move_netchanger (
+					module_cursor	=> module_cursor,
+					index			=> get_object_name (object.netchanger),
+					coordinates		=> absolute,
+					sheet			=> active_sheet,
+					point			=> destination,
+					log_threshold	=> log_threshold + 1);
+				
+
+			--when CAT_VOID =>
+			when others =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end move_object;
+
+
+	
+	
+	
+	
+	
+
+	procedure rotate_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " rotate object " 
+			-- CS & to_string (object)
+			& " by 90 degrees",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_NETCHANGER =>
+				rotate_netchanger (
+					module_cursor	=> module_cursor,
+					index			=> get_object_name (object.netchanger),
+					rotation		=> 90.0, -- CS
+					log_threshold	=> log_threshold + 1);
+				
+				
+			--when CAT_VOID =>
+			when others =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end rotate_object;
+
+	
+	
+	
+	
+	
+	procedure drag_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " drag object " 
+			-- CS & to_string (object)
+			& " to " & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_NETCHANGER =>
+
+				drag_netchanger (
+					module_cursor	=> module_cursor,
+					index			=> get_object_name (object.netchanger),
+					coordinates		=> absolute,
+					point			=> destination,
+					log_threshold	=> log_threshold + 1);
+				
+				
+			when others =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end drag_object;
+
+	
+	
+	
+	
+	
+
+	procedure delete_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " delete object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_NETCHANGER =>
+
+				delete_netchanger (
+					module_cursor	=> module_cursor,
+					index			=> get_object_name (object.netchanger),
+					log_threshold	=> log_threshold + 1);
+
+				
+			when others =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end delete_object;
+
+
+	
+	
+	
+	
+	
+	
+	procedure show_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level)
+	is 
+		error : boolean := false;
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " show object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_NETCHANGER =>
+				null;
+				-- CS
+				-- show_netchanger (
+				-- 	module_cursor	=> module_cursor,
+				-- 	index			=> get_object_name (object.netchanger),
+				-- 	log_threshold	=> log_threshold + 1);
+
+						
+			when others =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end show_object;
+
+
+	
+	
+	
+	
+
+	procedure rename_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		new_name		: in type_netchanger_id;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " rename object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_NETCHANGER =>
+			
+				-- CS
+				null;
+				
+				-- rename_netchanger (
+				-- 	module_cursor	=> module_cursor,
+				-- 	name_before		=> get_object_name (object.netchanger),
+				-- 	name_after		=> new_name,
+				-- 	log_threshold	=> log_threshold + 1);
+				
+			when others =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end rename_object;
+
+
+	
+	
+	
+
+
+	procedure copy_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		destination		: in type_position;		
+		log_threshold	: in type_log_level)
+	is 
+		object_position : type_object_position;
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " copy object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_NETCHANGER =>
+				object_position := to_position (destination, active_sheet);
+
+				-- CS
+				
+-- 				copy_netchanger (
+-- 					module_cursor	=> module_cursor,
+-- 					index			=> get_object_name (object.netchanger),
+-- 					
+-- 					-- The copy operation takes place on the
+-- 					-- active sheet only:
+-- 					destination		=> object_position,
+-- 					log_threshold	=> log_threshold + 1);
+				
+
+				
+			when others =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end copy_object;
+
+
+	
 	
 end et_schematic_ops_netchangers;
 

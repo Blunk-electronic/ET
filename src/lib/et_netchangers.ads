@@ -182,7 +182,13 @@ package et_netchangers is
 		netchanger_cursor : in pac_netchangers.cursor)
 		return string;
 
-		
+
+	function get_name (
+		netchanger_cursor : in pac_netchangers.cursor)
+		return type_netchanger_id;
+
+	
+	
 	-- Returns a cursor to the given netchanger.
 	-- If the netchanger is not among the given netchangers,
 	-- then no_element will be returned:

@@ -206,7 +206,7 @@ package et_schematic_ops_netchangers is
 		index			: in type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
-		point			: in type_vector_model; -- x/y
+		point			: in type_vector_model; -- x/y, destination or offset
 		log_threshold	: in type_log_level);
 
 
@@ -246,7 +246,12 @@ package et_schematic_ops_netchangers is
 	function get_object_name (
 		object : in type_object_netchanger)
 		return string;
+
 		
+	function get_object_name (
+		object : in type_object_netchanger)
+		return type_netchanger_id;
+
 		
 	
 	-- Modifies the status flag of a netchanger.
@@ -297,6 +302,7 @@ package et_schematic_ops_netchangers is
 	type type_object_category is (
 		CAT_VOID,
 		CAT_NETCHANGER
+		-- CS properties, notes, ...
 		);
 
 
@@ -335,6 +341,95 @@ package et_schematic_ops_netchangers is
 		return type_object;
 
 	
+	
+	-- Collects all objects 
+	-- according to the given flag and returns them in a list:
+	function get_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return pac_objects.list;
+
+		
+		
+	-- Modifies the status flag of an object:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+	
+	
+	-- Modifies the status flag of an object indicated by a cursor:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+	
+	
+	-- This is a collective procedure that resets
+	-- the status flags of all 
+	-- objects (netchangers, notes, properties, ...):
+	procedure reset_status_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+	
+	
+	-- Moves an object to the given destination:
+	procedure move_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+	
+	
+	-- Rotates an object by 90 degrees:
+	procedure rotate_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level);
+
+	
+	
+	procedure drag_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+		
+		
+	procedure delete_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level);
+
+		
+	procedure show_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level);
+
+		
+	procedure rename_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		new_name		: in type_netchanger_id;
+		-- CS add argument for new names of other kinds of objects
+		log_threshold	: in type_log_level);
+	
+
+	procedure copy_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		destination		: in type_position;		
+		log_threshold	: in type_log_level);
+
 end et_schematic_ops_netchangers;
 
 -- Soli Deo Gloria
