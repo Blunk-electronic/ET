@@ -220,7 +220,6 @@ package body et_module_write_nets is
 					
 					procedure query_device_ports (segment : in type_net_segment) is
 						use et_port_names;
-						-- use et_symbol_ports;
 						
 						port_cursor : pac_device_ports.cursor;
 						AB_end : type_start_end_point := A;
@@ -231,7 +230,7 @@ package body et_module_write_nets is
 							while has_element (port_cursor) loop
 								write (
 									keyword 	=> to_string (AB_end), 
-									parameters	=> space & to_string (port_cursor));
+									parameters	=> to_string (port_cursor));
 								
 								next (port_cursor);
 							end loop;
