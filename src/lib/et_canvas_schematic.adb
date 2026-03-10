@@ -70,6 +70,7 @@ with et_canvas_tool;					use et_canvas_tool;
 
 with et_canvas_schematic_nets;
 with et_canvas_schematic_units;
+with et_canvas_schematic_netchangers;
 
 with et_undo_redo;
 

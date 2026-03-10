@@ -54,6 +54,7 @@ is
 	use et_modes.schematic;
 	use et_canvas_schematic_nets;
 	use et_canvas_schematic_units;
+	use et_canvas_schematic_netchangers;
 
 
 	point : type_vector_model renames get_cursor_position;

@@ -40,7 +40,7 @@
 
 with et_schematic_ops_nets;
 with et_schematic_ops_units;
-
+with et_schematic_ops_netchangers;
 
 
 package body et_schematic_ops_groups is
@@ -70,6 +70,17 @@ package body et_schematic_ops_groups is
 			log_indentation_down;
 		end;
 
+
+		procedure reset_netchangers is 
+			use et_schematic_ops_netchangers;
+		begin
+			log (text => "netchangers", level => log_threshold + 1);
+			log_indentation_up;
+			reset_status_objects (module_cursor, log_threshold + 2);
+			log_indentation_down;
+		end;
+
+		
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
@@ -79,7 +90,8 @@ package body et_schematic_ops_groups is
 		log_indentation_up;
 		
 		reset_nets;
-		reset_devices;		
+		reset_devices;
+		reset_netchangers;
 
 		-- CS reset texts, ... ?
 		
