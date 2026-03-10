@@ -169,10 +169,16 @@ package et_netchangers.schematic is
 
 		
 
+	function get_rotation (
+		netchanger	: in type_netchanger)
+		return type_rotation_0_90;
+		
+		
 	procedure set_rotation (
 		netchanger	: in out type_netchanger;
 		rotation	: in type_rotation_0_90);
-	
+
+		
 
 	procedure set_sheet (
 		netchanger	: in out type_netchanger;

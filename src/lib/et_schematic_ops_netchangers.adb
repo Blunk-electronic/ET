@@ -1401,6 +1401,7 @@ package body et_schematic_ops_netchangers is
 	procedure rotate_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id;
+		toggle			: in boolean := false;
 		rotation		: in type_rotation_0_90;
 		log_threshold	: in type_log_level) 
 	is
@@ -1423,7 +1424,19 @@ package body et_schematic_ops_netchangers is
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger) 
 			is begin
-				set_rotation (netchanger, rotation);
+				if toggle then
+					if get_rotation (netchanger) = 0.0 then
+						set_rotation (netchanger, 90.0);
+						
+					elsif get_rotation (netchanger) = 90.0 then
+						set_rotation (netchanger, 0.0);
+					end if;
+					
+					-- CS log messages
+					
+				else
+					set_rotation (netchanger, rotation);
+				end if;
 			end;
 			
 			
@@ -1480,11 +1493,18 @@ package body et_schematic_ops_netchangers is
 		
 		
 	begin
-		log (text => "module " & to_string (module_cursor)
-			& " rotate netchanger " & to_string (index) 
-			& " to " & to_string (rotation), 
-			level => log_threshold);
-
+		if toggle then
+			log (text => "module " & to_string (module_cursor)
+				& " toggle rotation of netchanger " & to_string (index),
+				level => log_threshold);
+		
+		else
+			log (text => "module " & to_string (module_cursor)
+				& " rotate netchanger " & to_string (index) 
+				& " to " & to_string (rotation), 
+				level => log_threshold);
+		end if;
+		
 		log_indentation_up;
 
 		update_element (
@@ -2296,11 +2316,11 @@ package body et_schematic_ops_netchangers is
 				rotate_netchanger (
 					module_cursor	=> module_cursor,
 					index			=> get_object_name (object.netchanger),
-					rotation		=> 90.0, -- CS
+					toggle			=> true,
+					rotation		=> 0.0, -- don't care, see specs
 					log_threshold	=> log_threshold + 1);
-				
-				
-			--when CAT_VOID =>
+			
+
 			when others =>
 				null;
 		end case;		
