@@ -485,6 +485,16 @@ is
 				-- open device model selection
 				show_device_model_selection; 
 
+
+			when key_noun_netchanger =>
+				noun := NOUN_NETCHANGER;					
+				set_status (et_canvas_schematic_netchangers.status_add_netchanger);
+
+				-- When adding a netchanger, we enforce the default grid
+				-- and snap the cursor position to the default grid:
+				reset_grid_and_cursor;
+				
+
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when key_space =>
@@ -502,6 +512,18 @@ is
 							-- are taken from the preliminary unit_add:
 							add_electrical_device (get_cursor_position);
 						end if;
+
+						
+					when NOUN_NETCHANGER =>
+						-- When adding netchangers, we enforce the default grid
+						-- and snap the cursor position to the default grid:
+						reset_grid_and_cursor;
+
+						-- Drop the netchanger at the current 
+						-- cursor position. The properties of the new
+						-- netchanger are taken from the preliminary netchanger_add:
+						add_netchanger (get_cursor_position);
+
 						
 					when others => null;						
 				end case;
@@ -513,9 +535,13 @@ is
 			when key_verb_rotate =>
 				case noun is
 					when NOUN_DEVICE =>
-						put_line ("rotate");
+						-- put_line ("rotate");
 						rotate_unit_add;
 
+					when NOUN_NETCHANGER =>
+						-- put_line ("rotate");
+						rotate_netchanger_add;
+						
 					when others => null;						
 				end case;
 

@@ -75,7 +75,7 @@ package body et_cp_schematic_netchanger is
 		case cmd_field_count is
 			when 8 =>
 				add_netchanger (
-					module_name 	=> key (module),
+					module_cursor 	=> module,
 					place			=> to_position (
 						sheet => to_sheet (get_field (cmd, 5)),
 						point => type_vector_model (set 

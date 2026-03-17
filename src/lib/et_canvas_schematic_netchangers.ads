@@ -200,9 +200,7 @@ package et_canvas_schematic_netchangers is
 	
 	-- When a unit is being added this type is required:
 	type type_netchanger_being_added is record
-		name		: type_netchanger_id := 1; -- 1, 2, 3, ..
-		
-		-- The prospective name (like 4) once the 
+		-- The prospective name (like 4, 5, 6, ...) once the 
 		-- add operation is complete.
 		-- This is relevant for the preview only:
 		name_pre	: type_netchanger_id := 1;

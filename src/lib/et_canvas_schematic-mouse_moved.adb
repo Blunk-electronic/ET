@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -56,6 +56,9 @@ begin
 						redraw;
 					end if;
 
+				when NOUN_NETCHANGER =>
+					redraw;
+					
 				when others => null;
 			end case;
 

@@ -162,8 +162,7 @@ package et_schematic_ops_netchangers is
 
 	-- Adds a netchanger to the schematic.
 	procedure add_netchanger (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		-- CS module_cursor
+		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 	

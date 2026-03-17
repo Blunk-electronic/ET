@@ -912,13 +912,12 @@ package body et_schematic_ops_netchangers is
 	
 	
 	procedure add_netchanger (
-		module_name		: in pac_module_name.bounded_string;
+		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_object_position; -- sheet/x/y/rotation
 		-- CS rename to position
 		
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		
 		procedure query_module (
@@ -968,15 +967,13 @@ package body et_schematic_ops_netchangers is
 
 		
 	begin
-		log (text => "module " & to_string (module_name) 
+		log (text => "module " & to_string (module_cursor) 
 			 & " add netchanger at " & to_string (position => place) 
 			 & " rotation " & to_string (get_rotation (place)),
 			level => log_threshold);
 
 		log_indentation_up;
 		
-		module_cursor := locate_module (module_name);
-
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,

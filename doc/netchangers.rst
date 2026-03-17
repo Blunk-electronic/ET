@@ -31,6 +31,7 @@ Schematic Editor
 	
 		add netchanger 2 60 30 0
 
+	|VNS| a e
 
 
 

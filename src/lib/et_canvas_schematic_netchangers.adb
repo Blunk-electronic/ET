@@ -904,12 +904,10 @@ package body et_canvas_schematic_netchangers is
 		-- Commit the current state of the design:
 		commit (PRE, verb, noun, log_threshold);
 		
-
-		-- CS
-		-- add_netchanger (
-		-- 	module_cursor	=> active_module,
-		-- 	place			=> to_position (place, active_sheet, netchanger_add.rotation),
-		-- 	log_threshold	=> log_threshold + 1);
+		add_netchanger (
+			module_cursor	=> active_module,
+			place			=> to_position (place, active_sheet, netchanger_add.rotation),
+			log_threshold	=> log_threshold + 1);
 
 		-- Commit the new state of the design:
 		commit (POST, verb, noun, log_threshold);
@@ -1002,9 +1000,10 @@ package body et_canvas_schematic_netchangers is
 		begin
 			case object.cat is
 				when CAT_NETCHANGER =>
+					null;
 					-- Build the preview of the netchanger that is going to
 					-- be added:
-					netchanger_add.name := get_object_name (object.netchanger);
+					--netchanger_add.name := get_object_name (object.netchanger);
 
 					-- CS
 					-- unit_add.name := get_first_unit (unit_add.device);

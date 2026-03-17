@@ -85,6 +85,20 @@ is
 			end if;
 		end add_device;
 
+
+		procedure add_netchanger is
+			use et_canvas_schematic_netchangers;
+		begin
+			-- When adding a netchanger, we enforce the default grid
+			-- and snap the cursor position to the default grid:
+			reset_grid_and_cursor;
+
+			-- Drop the netchanger at the current 
+			-- cursor position. The properties of the new
+			-- netchanger are taken from the preliminary netchanger_add:
+			add_netchanger (snap_point);
+		end add_netchanger;
+
 		
 	begin
 		case verb is
@@ -92,7 +106,11 @@ is
 				case noun is
 					when NOUN_DEVICE =>
 						add_device;
-							
+
+					when NOUN_NETCHANGER =>
+						add_netchanger;
+
+						
 					when others => null;							
 				end case;
 
