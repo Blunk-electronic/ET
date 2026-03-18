@@ -796,7 +796,7 @@ package body et_schematic_ops_netchangers is
 	
 	
 
-	function exists_netchanger (
+	function netchanger_exists (
 		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id) -- 1, 2, 3, ...
 		return boolean 
@@ -816,13 +816,13 @@ package body et_schematic_ops_netchangers is
 		end query_netchangers;
 
 		
-	begin -- exists_netchanger
+	begin -- netchanger_exists
 		query_element (
 			position	=> module_cursor,
 			process		=> query_netchangers'access);
 
 		return result;
-	end exists_netchanger;
+	end netchanger_exists;
 
 
 

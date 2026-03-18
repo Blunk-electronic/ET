@@ -3439,7 +3439,7 @@ package body et_schematic_ops_submodules is
 										log (text => "netchanger " & to_string (element (port_cursor).index) &
 											 " port " & to_string (element (port_cursor).port), level => log_threshold + 4);
 
-										if not exists_netchanger (
+										if not netchanger_exists (
 											module_cursor	=> module_cursor,
 											index			=> element (port_cursor).index) then -- 1, 2, 3, ...
 

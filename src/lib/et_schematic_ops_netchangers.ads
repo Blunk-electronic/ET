@@ -142,11 +142,11 @@ package et_schematic_ops_netchangers is
 	
 	-- Returns true if given netchanger exists in 
 	-- the given module:
-	function exists_netchanger (
+	function netchanger_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		index			: in type_netchanger_id) -- 1, 2, 3, ...
 		return boolean;
-	-- CS rename to netchanger_exists
+
 	
 
 	
