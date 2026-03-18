@@ -37,7 +37,7 @@
 --
 -- To Do: 
 --
--- - rename paramaters "module" to "module_cursor"
+--
 --
 
 with ada.containers;           			use ada.containers;
@@ -95,7 +95,7 @@ package et_schematic_ops_netchangers is
 
 	-- Deletes ports of the given netchanger in nets:
 	procedure delete_ports (
-		module			: in pac_generic_modules.cursor; -- the module
+		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id;	-- the netchanger id
 		sheet			: in type_sheet;		-- the sheet where the netchanger is
 		log_threshold	: in type_log_level);

@@ -223,7 +223,7 @@ package body et_schematic_ops_netchangers is
 	
 	
 	procedure delete_ports (
-		module			: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id;
 		-- CS use cursor to Netchanger instead of the index ?
 		sheet			: in type_sheet; -- the sheet where the netchanger is
@@ -352,13 +352,15 @@ package body et_schematic_ops_netchangers is
 
 		
 	begin
-		log (text => "delete netchanger ports in nets", level => log_threshold);
+		log (text => "module " & to_string (module_cursor)
+			 & " delete netchanger ports in nets",
+			 level => log_threshold);
 
 		log_indentation_up;
 		
 		update_element (
 			container	=> generic_modules,
-			position	=> module,
+			position	=> module_cursor,
 			process		=> query_nets'access);
 
 		log_indentation_down;
@@ -1327,7 +1329,7 @@ package body et_schematic_ops_netchangers is
 				-- Delete the old netchanger ports in connected net
 				-- segments as they are BEFORE the move:
 				delete_ports (
-	 				module			=> module_cursor,
+	 				module_cursor	=> module_cursor,
 					index			=> index,
 					sheet			=> sheet,					
 					log_threshold	=> log_threshold + 2);
@@ -1461,7 +1463,7 @@ package body et_schematic_ops_netchangers is
 				-- Delete the old netchanger ports in connected
 				-- net segments as they are BEFORE the rotation:
 				delete_ports (
-	 				module			=> module_cursor,
+	 				module_cursor	=> module_cursor,
 					index			=> index,
 					sheet			=> sheet,
 					log_threshold	=> log_threshold + 2);
@@ -1560,7 +1562,7 @@ package body et_schematic_ops_netchangers is
 
 				-- Delete netchanger ports in nets:
 				delete_ports (
-	 				module			=> module_cursor,
+	 				module_cursor	=> module_cursor,
 					index			=> index,
 					sheet			=> sheet,					
 					log_threshold	=> log_threshold + 2);
@@ -1653,7 +1655,7 @@ package body et_schematic_ops_netchangers is
 				-- Delete the old netchanger ports in connected
 				-- net segments as they are BEFORE the direction change:
 				delete_ports (
-	 				module			=> module_cursor,
+	 				module_cursor	=> module_cursor,
 					index			=> index,
 					sheet			=> sheet,
 					log_threshold	=> log_threshold + 2);
