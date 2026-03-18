@@ -918,7 +918,7 @@ package body et_canvas_schematic_netchangers is
 
 		-- In case further netchangers are to be added,
 		-- assign the prospective next name:
-		netchanger_add.name_pre := next_netchanger_index (active_module);
+		netchanger_add.name_pre := get_next_netchanger_index (active_module);
 		
 		log_indentation_down;
 	end add_netchanger;

@@ -131,11 +131,12 @@ package et_schematic_ops_netchangers is
 
 
 
-	-- Returns the next available netchanger index in the module.
-	function next_netchanger_index (
+	-- Returns the next available netchanger index in 
+	-- the module:
+	function get_next_netchanger_index (
 		module_cursor	: in pac_generic_modules.cursor)
 		return type_netchanger_id;
-	-- CS rename to get_next_netchanger_index
+
 	
 	
 	

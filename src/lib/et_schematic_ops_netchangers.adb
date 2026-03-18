@@ -739,7 +739,7 @@ package body et_schematic_ops_netchangers is
 
 
 	
-	function next_netchanger_index (
+	function get_next_netchanger_index (
 		module_cursor	: in pac_generic_modules.cursor)
 		return type_netchanger_id 
 	is
@@ -780,13 +780,13 @@ package body et_schematic_ops_netchangers is
 		end search_gap;
 		
 		
-	begin -- next_netchanger_index
+	begin
 		query_element (
 			position	=> module_cursor,
 			process		=> search_gap'access);
 		
 		return next_idx;
-	end next_netchanger_index;
+	end get_next_netchanger_index;
 
 	
 	
@@ -942,7 +942,7 @@ package body et_schematic_ops_netchangers is
 			
 		begin
 			-- Get the index to be used for the new netchanger:
-			index := next_netchanger_index (module_cursor);
+			index := get_next_netchanger_index (module_cursor);
 			
 			log (text => "netchanger index is " & to_string (index),
 				 level => log_threshold + 1);
