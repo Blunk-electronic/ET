@@ -150,10 +150,10 @@ package et_schematic_ops_netchangers is
 	
 
 	
-	-- Returns the sheet/x/y position of the given netchanger port.
+	-- Returns the sheet/x/y position of the given netchanger port:
+	-- CS: This function is currently not used.
 	function get_netchanger_port_position (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		-- CS module_cursor
+		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id; -- 1,2,3,...
 		port			: in type_netchanger_port_name; -- SLAVE/MASTER
 		log_threshold	: in type_log_level)

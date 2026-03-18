@@ -832,7 +832,7 @@ package body et_schematic_ops_netchangers is
 	
 
 	function get_netchanger_port_position (
-		module_name		: in pac_module_name.bounded_string;
+		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id; -- 1,2,3,...
 		port			: in type_netchanger_port_name; -- SLAVE/MASTER
 		log_threshold	: in type_log_level)
@@ -840,10 +840,8 @@ package body et_schematic_ops_netchangers is
 	is
 		port_position : type_object_position; -- to be returned		
 		
-		module_cursor : pac_generic_modules.cursor; -- points to the module being inquired
-
 		
-		procedure query_netchangers (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
@@ -894,20 +892,18 @@ package body et_schematic_ops_netchangers is
 			else
 				netchanger_not_found (index);
 			end if;
-		end query_netchangers;
+		end query_module;
 
 		
-	begin -- position
-		log (text => "module " & to_string (module_name) &
-			 " locating netchanger " & to_string (index) & 
-			 " port " &  to_string (port) & " ...", level => log_threshold);
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " locate netchanger " & to_string (index) 
+			 & " port " &  to_string (port),
+			 level => log_threshold);
 
-		-- locate module
-		module_cursor := locate_module (module_name);
-		
 		query_element (
 			position	=> module_cursor,
-			process		=> query_netchangers'access);
+			process		=> query_module'access);
 		
 		return port_position;
 	end get_netchanger_port_position;
