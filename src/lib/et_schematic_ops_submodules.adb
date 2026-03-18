@@ -181,9 +181,11 @@ package body et_schematic_ops_submodules is
 								-- The opposide port must be not connected. In that case 
 								-- suitable netchanger has been found:
 								if not port_connected (
-									module	=> module,
-									port	=> (index	=> element (port_cursor).index,
-												port	=> direction)) then
+									module_cursor	=> module,
+									port			=> (
+										index	=> element (port_cursor).index,
+										port	=> direction)) 
+								then
 									
 									result := true;
 									exit; -- no more searching for netchanger ports required

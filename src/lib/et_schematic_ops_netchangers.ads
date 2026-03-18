@@ -36,8 +36,6 @@
 --   history of changes:
 --
 -- To Do: 
--- - rework procedures so that a module cursor is taken
---   instead of a module name.
 --
 -- - rename paramaters "module" to "module_cursor"
 --
@@ -89,8 +87,8 @@ package et_schematic_ops_netchangers is
 	-- Returns true if given port of netchanger 
 	-- is connected with any net:
 	function port_connected (
-		module	: in pac_generic_modules.cursor;	
-		port	: in et_netlists.type_port_netchanger)
+		module_cursor	: in pac_generic_modules.cursor;	
+		port			: in et_netlists.type_port_netchanger)
 		return boolean;
 
 	

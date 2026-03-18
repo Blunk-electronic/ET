@@ -132,8 +132,8 @@ package body et_schematic_ops_netchangers is
 	
 
 	function port_connected (
-		module	: in pac_generic_modules.cursor;
-		port	: in et_netlists.type_port_netchanger)
+		module_cursor	: in pac_generic_modules.cursor;
+		port			: in et_netlists.type_port_netchanger)
 		return boolean 
 	is
 		-- CS rework, clean up
@@ -209,7 +209,7 @@ package body et_schematic_ops_netchangers is
 		
 	begin
 		pac_generic_modules.query_element (
-			position	=> module,
+			position	=> module_cursor,
 			process		=> query_nets'access);
 		
 		return result;
