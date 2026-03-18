@@ -121,7 +121,7 @@ package et_schematic_ops_netchangers is
 	-- Does NOT create a new connection with a segments if a port
 	-- lands between start and end point.
 	procedure drag_net_segments (
-		module			: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		ports_before	: in type_netchanger_ports;	-- the old port positions
 		ports_after		: in type_netchanger_ports;	-- the new port positions
 		sheet			: in type_sheet;			-- the sheet to look at

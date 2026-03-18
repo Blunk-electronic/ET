@@ -539,7 +539,7 @@ package body et_schematic_ops_netchangers is
 
 	
 	procedure drag_net_segments (
-		module			: in pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		ports_before	: in type_netchanger_ports;
 		ports_after		: in type_netchanger_ports;
 		sheet			: in type_sheet;
@@ -547,10 +547,12 @@ package body et_schematic_ops_netchangers is
 	is
 		-- CS rework, clean up
 		port_before, port_after : type_vector_model;
+
 		
-		procedure query_nets (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) is
+			module		: in out type_generic_module) 
+		is
 
 			use pac_nets;			
 			net_cursor : pac_nets.cursor := module.nets.first;
@@ -565,15 +567,18 @@ package body et_schematic_ops_netchangers is
 				-- and affected end points of segments have been moved to port_after.
 				drag_processed : boolean := false;
 				
-				procedure query_segments (strand : in out type_strand) is
+				procedure query_segments (
+					strand : in out type_strand) 
+				is
 					use pac_net_segments;
 
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					
-					procedure change_segment (segment : in out type_net_segment) is 
 					-- Changes the position of start or end point of a segment according to the drag point.
-					begin -- change_segment
+					procedure change_segment (
+						segment : in out type_net_segment) 
+					is begin
 						log_indentation_up;
 						
 						-- if port sits on a start point of a segment -> move start point
@@ -677,8 +682,8 @@ package body et_schematic_ops_netchangers is
 			end query_strands;
 
 			
-		begin -- query_nets
-			while net_cursor /= pac_nets.no_element loop
+		begin
+			while has_element (net_cursor) loop
 
 				update_element (
 					container	=> module.nets,
@@ -687,12 +692,15 @@ package body et_schematic_ops_netchangers is
 
 				next (net_cursor);
 			end loop;
-		end query_nets;
+		end query_module;
 
 		
 	begin -- drag_net_segments
-		log (text => "dragging net segments with netchangers on sheet" & 
-			 to_string (sheet) & " ...", level => log_threshold);
+		log (text => "module " & to_string (module_cursor)
+			 & " drag net segments with netchangers on sheet " 
+			 & to_string (sheet) & " ...",
+			 level => log_threshold);
+		
 		log_indentation_up;
 
 		--------------
@@ -703,8 +711,8 @@ package body et_schematic_ops_netchangers is
 		
 		update_element (
 			container	=> generic_modules,
-			position	=> module,
-			process		=> query_nets'access);
+			position	=> module_cursor,
+			process		=> query_module'access);
 
 		---------------
 		port_before := ports_before.slave;
@@ -714,8 +722,8 @@ package body et_schematic_ops_netchangers is
 		
 		update_element (
 			container	=> generic_modules,
-			position	=> module,
-			process		=> query_nets'access);
+			position	=> module_cursor,
+			process		=> query_module'access);
 
 		
 		log_indentation_down;
@@ -1179,7 +1187,7 @@ package body et_schematic_ops_netchangers is
 
 				-- Drag connected net segments:
 				drag_net_segments (
-					module			=> module_cursor,
+					module_cursor	=> module_cursor,
 					ports_before	=> ports_old,
 					ports_after		=> ports_new,
 					sheet			=> get_sheet (location),
