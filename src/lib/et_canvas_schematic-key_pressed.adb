@@ -39,6 +39,7 @@
 with et_device_placeholders;			use et_device_placeholders;
 with et_schematic_verb_noun_keys;		use et_schematic_verb_noun_keys;
 with et_schematic_ops_nets;
+with et_schematic_ops_netchangers;
 
 
 separate (et_canvas_schematic)
@@ -486,10 +487,15 @@ is
 				show_device_model_selection; 
 
 
+				
 			when key_noun_netchanger =>
 				noun := NOUN_NETCHANGER;					
 				set_status (et_canvas_schematic_netchangers.status_add_netchanger);
 
+				-- In the preview set the name of the
+				-- netchanger:
+				set_name_netchanger_add;
+				
 				-- When adding a netchanger, we enforce the default grid
 				-- and snap the cursor position to the default grid:
 				reset_grid_and_cursor;
@@ -499,7 +505,6 @@ is
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when key_space =>
 				case noun is
-
 					when NOUN_DEVICE =>
 						if unit_add.valid then
 							-- When adding units, we enforce the default grid
@@ -529,18 +534,34 @@ is
 				end case;
 				
 
-			-- If the operator wants to rotate the unit
-			-- being added, then add 90 degrees to the
-			-- temporaily unit:
 			when key_verb_rotate =>
 				case noun is
 					when NOUN_DEVICE =>
-						-- put_line ("rotate");
+						-- If the operator wants to rotate the unit
+						-- being added, then add 90 degrees to the
+						-- temporaily unit:
 						rotate_unit_add;
 
 					when NOUN_NETCHANGER =>
-						-- put_line ("rotate");
+						-- If the operator wants to rotate the netchanger
+						-- being added, then toggle between 0 add 90 degrees:
 						rotate_netchanger_add;
+						
+					when others => null;						
+				end case;
+
+
+			-- CS key_verb_mirror =>
+			-- mirror unit_add ?
+				
+			when key_verb_direction =>
+				case noun is
+					when NOUN_NETCHANGER =>
+						-- If the operator wants to change the
+						-- direction of the netchanger
+						-- being added, then toggle between
+						-- FORWARD and BACKWARD:
+						toggle_direction_netchanger_add;
 						
 					when others => null;						
 				end case;

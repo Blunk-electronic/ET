@@ -31,6 +31,8 @@ Devices and Units
 
 	|VNS| a d
 
+	While the unit is sticking to the cursor it can be rotated by pressing
+	the r-key.
 
 	As soon as the unit is dropped in the schematic drawing, the physical
 	counterpart - the package - is dropped in the board drawing.

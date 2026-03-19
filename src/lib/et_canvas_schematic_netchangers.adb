@@ -861,6 +861,11 @@ package body et_canvas_schematic_netchangers is
 
 
 
+
+	procedure set_name_netchanger_add is begin
+		netchanger_add.name_pre := 
+			get_next_netchanger_index (active_module);
+	end;
 	
 
 
@@ -868,18 +873,29 @@ package body et_canvas_schematic_netchangers is
 
 
 	procedure rotate_netchanger_add is begin
-		if netchanger_add.valid then
+		put_line ("rotate");
+		-- if netchanger_add.valid then
 			-- CS
 			null;
 			-- add (netchanger_add.rotation, 90.0);
-		end if;
+		-- end if;
 	end;
 
 	
 
+	procedure toggle_direction_netchanger_add is begin
+		put_line ("toggle direction");
+		-- CS
+		null;
+	end;
+		
+
 	
 	procedure reset_netchanger_add is begin
+		put_line ("reset netchanger");
 		netchanger_add := (others => <>);
+		-- CS leave direction and rotation as it is ?
+		-- CS leave everything as it is ?
 	end;
 
 

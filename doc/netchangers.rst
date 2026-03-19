@@ -34,6 +34,10 @@ Schematic Editor
 	|VNS| a e
 
 
+	While the netchanger is sticking to the cursor it can be rotated by pressing
+	the r-key. Similar the direction can be changed via the t-key.
+
+
 
 #. Move a Netchanger
 

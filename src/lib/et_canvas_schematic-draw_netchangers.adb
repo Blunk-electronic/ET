@@ -57,6 +57,9 @@ with et_symbol_ports;					use et_symbol_ports;
 with et_symbol_text;					use et_symbol_text;
 with et_text_content;					use et_text_content;
 
+with et_canvas_schematic_netchangers;
+with et_modes.schematic;
+
 
 separate (et_canvas_schematic)
 
@@ -454,6 +457,78 @@ procedure draw_netchangers is
 
 	
 	
+	
+	
+	-- Draws the netchanger being added.
+	-- The netchanger is drawn in a preview.
+	procedure draw_netchanger_being_added is
+		use et_canvas_schematic_netchangers;
+		use et_modes.schematic;
+
+		position : type_position;
+	begin
+		if verb = VERB_ADD and then noun = NOUN_NETCHANGER then
+		
+			-- The whole netchanger will be drawn highlighted:
+			brightness := BRIGHT;
+		
+			-- Assemble the place where the netchanger will be drawn.
+			-- Depends on the tool used for placing the netchanger:
+			set_place (position, get_primary_tool_position);
+			set_rotation (position, netchanger_add.rotation);
+		
+			draw_body (position);
+			
+			-- Now, depending on the direction of the netchanger 
+			-- being added, we we draw either the forward-symbol 
+			-- or the backward-symbol:
+			case netchanger_add.direction is
+				when FORWARD =>
+					-- Draw the ports of the netchanger:
+					draw_port (
+						name => MASTER, 
+						port => netchanger_symbol_forward.master_port, 
+						netchanger_position => position);
+
+					draw_port (
+						name => SLAVE, 
+						port => netchanger_symbol_forward.slave_port, 
+						netchanger_position => position);
+				
+				when BACKWARD =>
+					-- Draw the ports of the netchanger:
+					draw_port (
+						name => MASTER, 
+						port => netchanger_symbol_backward.master_port, 
+						netchanger_position => position);
+
+					draw_port (
+						name => SLAVE, 
+						port => netchanger_symbol_backward.slave_port, 
+						netchanger_position => position);
+				
+			end case;
+			-- CS double code. see procedure query_netchanger above
+			-- move to a single separate procedure like 
+			-- draw_ports (direction, position)
+
+			
+			-- Draw the name of the netchanger (like N33):
+			draw_name (index => netchanger_add.name_pre, position => position);
+					
+			-- Draw the origin of the netchanger:
+			set_color_origin (brightness);
+			draw_origin ((get_place (position), 0.0));
+			-- NOTE: The origin is never rotated.
+			
+		end if;
+
+	end draw_netchanger_being_added;
+	
+	
+	
+	
+	
 begin
 -- 	put_line ("draw netchangers (schematic)");
 
@@ -462,7 +537,7 @@ begin
 		position	=> active_module,
 		process		=> query_module'access);
 
-	-- CS: draw_netchanger_being_added
+	draw_netchanger_being_added;
 	
 end draw_netchangers;
 

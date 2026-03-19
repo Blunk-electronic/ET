@@ -207,9 +207,13 @@ package et_canvas_schematic_netchangers is
 
 		-- The rotation of the netchanger:
 		rotation	: type_rotation_0_90 := 0.0;
+
+		-- The direction of the netchanger:
+		direction	: type_netchanger_direction := FORWARD;
 		
 		-- Indicates that the information above is valid:
-		valid		: boolean := false;		
+		-- valid		: boolean := false;		
+		-- CS no need
 	end record;
 
 
@@ -218,14 +222,23 @@ package et_canvas_schematic_netchangers is
 	netchanger_add : type_netchanger_being_added;
 
 
+	procedure set_name_netchanger_add;
+	
+
 	-- Rotates the netchanger_add by 90 degrees counter-clockwise
 	-- if it is valid:	
 	procedure rotate_netchanger_add;
+	-- CS rename to toggle_rotation_netchanger_add
 
 
+	-- Toggles the direction of the netchanger
+	-- being added between FORWARD and BACKWARD:
+	procedure toggle_direction_netchanger_add;
+	
 	
 	-- Resets netchanger_add to its default values:
 	procedure reset_netchanger_add;
+	-- CS currently not used
 
 
 	
