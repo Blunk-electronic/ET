@@ -37,6 +37,11 @@ Schematic Editor
 	While the netchanger is sticking to the cursor it can be rotated by pressing
 	the r-key. Similar the direction can be changed via the t-key.
 
+	Regarding the name of the netchanger (like N1, N2, N3, ...):
+	The position of the name is fixed relatively to the body of the netchanger.
+	There is is way to move the name.
+	The prefix N is also fixed and can not be changed.
+
 
 
 #. Move a Netchanger

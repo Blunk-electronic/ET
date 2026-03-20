@@ -48,6 +48,7 @@
 
 with ada.containers;					use ada.containers;
 with ada.containers.ordered_maps;
+with ada.containers.doubly_linked_lists;
 
 with et_schematic_coordinates;
 with et_schematic_geometry;
@@ -56,6 +57,8 @@ with et_sheets;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_board_geometry;
 with et_object_status;					use et_object_status;
+
+with et_commit;
 
 -- with et_logging;						use et_logging;
 
@@ -202,7 +205,27 @@ package et_netchangers is
 		index		: in type_netchanger_id)
 		return pac_netchangers.cursor;
 		
+
+		
+		
+		
+		
+-- COMMITS OF NETCHANGERS:
 	
+	use et_commit;
+	
+	package pac_netchanger_commit is new pac_commit (pac_netchangers.map);
+	use pac_netchanger_commit;
+	
+	package pac_netchanger_commits is new doubly_linked_lists (
+		element_type	=> pac_netchanger_commit.type_commit);
+
+	type type_netchangers_undo_redo_stack is record
+		dos		: pac_netchanger_commits.list;
+		redos	: pac_netchanger_commits.list;
+	end record;
+
+		
 	
 end et_netchangers;
 

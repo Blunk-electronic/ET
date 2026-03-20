@@ -109,7 +109,10 @@ package et_module is
 		
 		net_classes		: pac_net_classes.map;		-- the net classes
 		submods			: et_submodules.pac_submodules.map;	-- instances of submodules (boxes)
-		netchangers		: pac_netchangers.map;
+		
+		netchangers			: pac_netchangers.map;
+		netchanger_commits	: type_netchangers_undo_redo_stack;
+		-- CS wrap both selectors into a record
 
 		-- general notes in schematic, not related to drawing frames !
 		texts       	: et_schematic_text.pac_texts.list; 
