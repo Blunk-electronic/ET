@@ -210,10 +210,6 @@ package et_canvas_schematic_netchangers is
 
 		-- The direction of the netchanger:
 		direction	: type_netchanger_direction := FORWARD;
-		
-		-- Indicates that the information above is valid:
-		-- valid		: boolean := false;		
-		-- CS no need
 	end record;
 
 
