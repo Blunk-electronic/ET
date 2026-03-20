@@ -225,10 +225,9 @@ package et_canvas_schematic_netchangers is
 	procedure set_name_netchanger_add;
 	
 
-	-- Rotates the netchanger_add by 90 degrees counter-clockwise
-	-- if it is valid:	
-	procedure rotate_netchanger_add;
-	-- CS rename to toggle_rotation_netchanger_add
+	-- Toggles the rotation of netchanger_add 
+	-- between 0 and 90 degrees:	
+	procedure toggle_rotation_netchanger_add;
 
 
 	-- Toggles the direction of the netchanger

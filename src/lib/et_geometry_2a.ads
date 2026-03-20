@@ -229,6 +229,12 @@ package et_geometry_2a is
 
 	subtype type_rotation_0_90 is type_rotation range 0.0 .. 90.0;
 	
+
+	-- Toggles between 0 and 90 degrees.
+	-- If the given rotation is neither 0 or 90 degrees,
+	-- then nothing happens:
+	procedure toggle_rotation (
+		rotation : in out type_rotation_0_90);
 	
 	
 	-- Converts the given rotation/angle to a string:

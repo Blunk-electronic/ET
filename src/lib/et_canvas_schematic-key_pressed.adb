@@ -545,7 +545,7 @@ is
 					when NOUN_NETCHANGER =>
 						-- If the operator wants to rotate the netchanger
 						-- being added, then toggle between 0 add 90 degrees:
-						rotate_netchanger_add;
+						toggle_rotation_netchanger_add;
 						
 					when others => null;						
 				end case;

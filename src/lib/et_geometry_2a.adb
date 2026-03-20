@@ -343,6 +343,20 @@ package body et_geometry_2a is
 	
 -- ROTATION / ANGLE:
 
+	procedure toggle_rotation (
+		rotation : in out type_rotation_0_90)
+	is begin
+		if rotation = 0.0 then
+			rotation := 90.0;
+		elsif rotation = 90.0 then
+			rotation := 0.0;
+		else
+			null;
+		end if;
+	end;
+	
+	
+
 	
 	function to_string (
 		rotation : in type_rotation) 

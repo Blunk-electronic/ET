@@ -78,6 +78,21 @@ package body et_netchangers is
 	
 
 
+
+	procedure toggle_direction (
+		direction : in out type_netchanger_direction)
+	is begin
+		case direction is
+			when FORWARD =>
+				direction := BACKWARD;
+				
+			when BACKWARD =>
+				direction := FORWARD;
+		end case;
+	end;
+	
+	
+	
 	
 	function to_netchanger_direction (
 		direction : in string)

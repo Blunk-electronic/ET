@@ -105,6 +105,11 @@ package et_netchangers is
 		FORWARD, -- default
 		BACKWARD);						
 
+
+	-- Toggles between FORWARD and BACKWARD:
+	procedure toggle_direction (
+		direction : in out type_netchanger_direction);
+	
 	
 	function to_netchanger_direction (
 		direction : in string)

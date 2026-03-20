@@ -872,21 +872,14 @@ package body et_canvas_schematic_netchangers is
 
 
 
-	procedure rotate_netchanger_add is begin
-		put_line ("rotate");
-		-- if netchanger_add.valid then
-			-- CS
-			null;
-			-- add (netchanger_add.rotation, 90.0);
-		-- end if;
+	procedure toggle_rotation_netchanger_add is begin
+		toggle_rotation (netchanger_add.rotation);
 	end;
 
 	
 
 	procedure toggle_direction_netchanger_add is begin
-		put_line ("toggle direction");
-		-- CS
-		null;
+		toggle_direction (netchanger_add.direction);
 	end;
 		
 
