@@ -273,6 +273,16 @@ package body et_netchangers.schematic is
 
 
 	
+	
+	function get_sheet (
+		netchanger	: in type_netchanger)
+		return type_sheet
+	is begin
+		return netchanger.position_sch.sheet;
+	end;
+	
+	
+	
 	procedure set_sheet (
 		netchanger	: in out type_netchanger;
 		sheet		: in type_sheet)
@@ -311,6 +321,40 @@ package body et_netchangers.schematic is
 	
 	
 
+	
+	
+	function get_netchanger_ports (
+		netchanger : in type_netchanger)		
+		return type_netchanger_ports 
+	is
+		-- CS: double code. see function get_netchanger_ports
+		-- below. Use a separate subprogram for both
+		-- functions.
+		
+		n : type_netchanger renames netchanger;
+		
+		ports : type_netchanger_ports;
+	begin
+		if n.direction = BACKWARD then
+			swap_ports (ports);
+		end if;
+		
+		-- rotate the ports according to rotation in schematic
+		rotate_by (ports.master, n.position_sch.rotation);
+		rotate_by (ports.slave,  n.position_sch.rotation);
+
+		-- move the ports according to position in schematic
+		move_by (ports.master, n.position_sch.place);
+		move_by (ports.slave,  n.position_sch.place);
+				
+		return ports;
+	end get_netchanger_ports;
+
+	
+	
+	
+	
+	
 	function get_netchanger_ports (
 		netchanger_cursor : in pac_netchangers.cursor)		
 		return type_netchanger_ports 

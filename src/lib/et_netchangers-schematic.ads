@@ -180,6 +180,11 @@ package et_netchangers.schematic is
 
 		
 
+	function get_sheet (
+		netchanger	: in type_netchanger)
+		return type_sheet;
+
+		
 	procedure set_sheet (
 		netchanger	: in out type_netchanger;
 		sheet		: in type_sheet);
@@ -232,7 +237,14 @@ package et_netchangers.schematic is
 
 	
 	-- Returns the absolute port positions of 
-	-- the given netchanger:
+	-- the given netchanger.
+	-- The position, direction and rotation
+	-- the the netchanger in the schematic is taken into account:
+	function get_netchanger_ports (
+		netchanger : in type_netchanger)
+		return type_netchanger_ports;
+
+		
 	function get_netchanger_ports (
 		netchanger_cursor : in pac_netchangers.cursor)
 		return type_netchanger_ports;

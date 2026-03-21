@@ -146,6 +146,12 @@ is
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
 						et_canvas_schematic_units.drag_object (MOUSE, snap_point);
+
+					when NOUN_NETCHANGER =>
+						-- When dragging netchangers, we enforce the default grid
+						-- and snap the cursor position to the default grid:
+						reset_grid_and_cursor;
+						et_canvas_schematic_netchangers.drag_object (MOUSE, snap_point);
 						
 					when NOUN_SEGMENT => 
 						-- When dragging net segments, we enforce the default grid
@@ -332,6 +338,11 @@ is
 					when NOUN_UNIT =>
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
+						end if;
+
+					when NOUN_NETCHANGER =>
+						if clarification_pending then
+							et_canvas_schematic_netchangers.clarify_object;
 						end if;
 
 					when NOUN_SEGMENT => 

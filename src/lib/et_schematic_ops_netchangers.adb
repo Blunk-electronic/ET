@@ -2333,6 +2333,97 @@ package body et_schematic_ops_netchangers is
 
 	
 	
+
+
+
+	
+
+	procedure set_segments_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_netchangers;
+			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
+
+			
+			procedure query_netchanger (
+				index		: in type_netchanger_id;
+				netchanger	: in type_netchanger)
+			is 
+
+				-- Get the sheet where the candidate netchanger is:
+				sheet : type_sheet := get_sheet (netchanger);
+
+				
+				-- This procedure takes a port position
+				-- and sets start or end points of net segments which are
+				-- at the port position as "moving":
+				procedure query_position (place : in type_vector_model) is
+					position : type_object_position;
+				begin
+					-- Compose the position of inquiry 
+					-- from port position and sheet number:
+					position := to_position (place, sheet);
+
+					-- Set the connected net segments as "moving":
+					et_schematic_ops_nets.set_segments_moving (
+						module_cursor, position, log_threshold + 2);
+				end query_position;
+
+					
+				-- These are the ports of the
+				-- candidate netchanger:
+				port_positions : type_netchanger_ports;
+
+										 
+			begin
+				if is_selected (netchanger) then
+					log (text => "netchanger " & get_netchanger_name (index),
+						level => log_threshold + 1);
+
+					-- Get the port positions of the candidate netchanger:
+					port_positions := get_netchanger_ports (netchanger);
+
+					-- Iterate the port positions (a netchanger has only two):
+					query_position (port_positions.master);
+					query_position (port_positions.slave);
+				end if;
+				
+				log_indentation_down;
+			end query_netchanger;
+			
+			
+		begin
+			-- Iterate through the netchangers:
+			while has_element (netchanger_cursor) loop
+				query_element (netchanger_cursor, query_netchanger'access);
+				next (netchanger_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " set net segments (connected with selected netchangers) moving.",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end set_segments_moving;
+
+	
+
+
 	
 	
 	

@@ -397,6 +397,13 @@ package et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level);
 
 	
+
+	-- Sets the start or end points of net segments which are 
+	-- connected with ports of selected netchangers to "moving":
+	procedure set_segments_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+	
 	
 	procedure drag_object (
 		module_cursor	: in pac_generic_modules.cursor;

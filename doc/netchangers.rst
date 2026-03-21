@@ -92,7 +92,7 @@ Schematic Editor
 
 		drag netchanger 2 relative 30 0
 
-
+	|VNS| g e
 
 
 

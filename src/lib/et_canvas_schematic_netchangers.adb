@@ -294,7 +294,7 @@ package body et_canvas_schematic_netchangers is
 						-- Set the net segments which are
 						-- connected with the selected netchanger
 						-- as "moving":
-						-- CS set_segments_moving (active_module, log_threshold + 1);
+						set_segments_moving (active_module, log_threshold + 1);
 
 					when others => null; -- CS
 				end case;
@@ -841,9 +841,8 @@ package body et_canvas_schematic_netchangers is
 				set_first_selected_object_moving;
 				
 				-- Set the net segments which are
-				-- connected with the selected unit as "moving":
-				-- CS
-				-- set_segments_moving (active_module, log_threshold + 1);
+				-- connected with the selected netchanger as "moving":
+				set_segments_moving (active_module, log_threshold + 1);
 
 				-- Furtheron, on the next call of this procedure
 				-- the selected object will be assigned its final position.

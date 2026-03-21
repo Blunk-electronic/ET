@@ -171,7 +171,7 @@ Devices and Units
 		drag unit IC1 C relative 10 4
 
 
-	|VNS| d u
+	|VNS| g u
 
 
 
