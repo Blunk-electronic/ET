@@ -66,16 +66,25 @@ with et_commit;
 
 package et_netchangers is
 
+-- NAMING CONVENTIONS:
+
+	-- Netchangers have names like N1, N2, N45.
+	-- The name consists of a prefix N and 
+	-- an index like 45.
+	
+	
 
 -- PREFIX:
 
+	-- The prefix of netchangers is hard coded here
+	-- and can not be changed by the operator:
 	netchanger_prefix : constant string := "N";
 	-- CS: Instead of N a prefix NC could make things clearer.
 	-- CS consider user defined prefixes. conventions ?
 	
 	
 	
--- ID:
+-- INDEX:
 
 	netchanger_id_max : constant positive := 10000; 
 	-- CS  increase if necessary
@@ -95,6 +104,9 @@ package et_netchangers is
 		return string;		
 
 
+		
+-- NAME:
+
 	-- Returns a full name of a netchanger like N44:
 	function get_netchanger_name (
 		id : in type_netchanger_id) 
@@ -103,6 +115,14 @@ package et_netchangers is
 
 		
 	
+
+	
+-- DIRECTION:
+
+	-- The direction of a netchanger determines the
+	-- way connected nets are renamed.
+	-- The net connected with the MASTER port enforces
+	-- its name onto the net on the SLAVE side.
 
 	type type_netchanger_direction is (
 		FORWARD, -- default
@@ -124,6 +144,8 @@ package et_netchangers is
 		return string;
 
 
+		
+		
 	
 	
 	-- 1. In the schematic drawing, there is only one hardcoded
@@ -144,7 +166,6 @@ package et_netchangers is
 		rotation	: et_schematic_geometry.pac_geometry_2.type_rotation_0_90 := 0.0;
 		sheet		: et_sheets.type_sheet := et_sheets.type_sheet'first;
 	end record;
-	
 	
 	
 		
@@ -184,14 +205,16 @@ package et_netchangers is
 	use pac_netchangers;
 
 
+	
+	
 	-- Returns the name of the given netchanger.
 	-- The name is just the index like 1,2,3, ...
-	function get_name (
+	function get_netchanger_name (
 		netchanger_cursor : in pac_netchangers.cursor)
 		return string;
 
 
-	function get_name (
+	function get_netchanger_id (
 		netchanger_cursor : in pac_netchangers.cursor)
 		return type_netchanger_id;
 

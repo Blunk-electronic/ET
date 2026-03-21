@@ -243,13 +243,14 @@ package et_schematic_ops_netchangers is
 	end record;
 	
 
-	-- Returns the index of the object netchanger:
+	-- Returns the full name of the object netchanger:
 	function get_object_name (
 		object : in type_object_netchanger)
 		return string;
 
-		
-	function get_object_name (
+
+	-- Returns the index of the object netchanger:
+	function get_object_id (
 		object : in type_object_netchanger)
 		return type_netchanger_id;
 

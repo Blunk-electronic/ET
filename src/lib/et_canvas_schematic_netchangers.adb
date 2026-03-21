@@ -685,8 +685,8 @@ package body et_canvas_schematic_netchangers is
 		procedure do_it is
 			netchanger_id : type_netchanger_id; -- 1, 2, 3, ...
 		begin
-			-- Get the name of the selected netchanger:
-			netchanger_id := get_object_name (object.netchanger);
+			-- Get the id of the selected netchanger:
+			netchanger_id := get_object_id (object.netchanger);
 			
 			build_rename_window;
 

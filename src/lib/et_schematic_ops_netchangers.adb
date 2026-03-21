@@ -1717,16 +1717,16 @@ package body et_schematic_ops_netchangers is
 		object : in type_object_netchanger)
 		return string
 	is begin
-		return get_name (object.netchanger_cursor);
+		return get_netchanger_name (object.netchanger_cursor);
 	end;
 
 	
 	
-	function get_object_name (
+	function get_object_id (
 		object : in type_object_netchanger)
 		return type_netchanger_id
 	is begin
-		return get_name (object.netchanger_cursor);
+		return get_netchanger_id (object.netchanger_cursor);
 	end;
 
 	
@@ -2279,7 +2279,7 @@ package body et_schematic_ops_netchangers is
 
 				move_netchanger (
 					module_cursor	=> module_cursor,
-					index			=> get_object_name (object.netchanger),
+					index			=> get_object_id (object.netchanger),
 					coordinates		=> absolute,
 					sheet			=> active_sheet,
 					point			=> destination,
@@ -2318,7 +2318,7 @@ package body et_schematic_ops_netchangers is
 			when CAT_NETCHANGER =>
 				rotate_netchanger (
 					module_cursor	=> module_cursor,
-					index			=> get_object_name (object.netchanger),
+					index			=> get_object_id (object.netchanger),
 					toggle			=> true,
 					rotation		=> 0.0, -- don't care, see specs
 					log_threshold	=> log_threshold + 1);
@@ -2355,7 +2355,7 @@ package body et_schematic_ops_netchangers is
 
 				drag_netchanger (
 					module_cursor	=> module_cursor,
-					index			=> get_object_name (object.netchanger),
+					index			=> get_object_id (object.netchanger),
 					coordinates		=> absolute,
 					point			=> destination,
 					log_threshold	=> log_threshold + 1);
@@ -2391,7 +2391,7 @@ package body et_schematic_ops_netchangers is
 
 				delete_netchanger (
 					module_cursor	=> module_cursor,
-					index			=> get_object_name (object.netchanger),
+					index			=> get_object_id (object.netchanger),
 					log_threshold	=> log_threshold + 1);
 
 				

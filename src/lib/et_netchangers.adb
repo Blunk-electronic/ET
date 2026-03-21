@@ -48,8 +48,6 @@ with ada.strings.fixed;				use ada.strings.fixed;
 package body et_netchangers is
 
 	
--- ID:
-
 	function to_netchanger_id (
 		id : in string) 
 		return type_netchanger_id 
@@ -122,16 +120,16 @@ package body et_netchangers is
 	
 	
 	
-	function get_name (
+	function get_netchanger_name (
 		netchanger_cursor : in pac_netchangers.cursor)
 		return string
 	is begin
-		return to_string (key (netchanger_cursor));
+		return get_netchanger_name (key (netchanger_cursor));
 	end;
 
 
 	
-	function get_name (
+	function get_netchanger_id (
 		netchanger_cursor : in pac_netchangers.cursor)
 		return type_netchanger_id
 	is begin
