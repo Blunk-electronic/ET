@@ -286,6 +286,13 @@ package body et_netchangers.schematic is
 	end;
 
 
+	procedure toggle_rotation (
+		netchanger	: in out type_netchanger)
+	is begin
+		toggle_rotation (netchanger.position_sch.rotation);
+	end;
+
+
 	
 	
 	function get_sheet (

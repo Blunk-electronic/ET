@@ -179,7 +179,9 @@ package et_netchangers.schematic is
 		netchanger	: in out type_netchanger;
 		rotation	: in type_rotation_0_90);
 
-	-- CS procedure toggle_rotation
+
+	procedure toggle_rotation (
+		netchanger	: in out type_netchanger);
 		
 		
 
