@@ -399,6 +399,19 @@ package body et_netchangers.schematic is
 		end if;
 	end;
 	
+
+	
+	function is_moving (
+		netchanger : in type_netchanger)
+		return boolean
+	is begin
+		if is_moving (netchanger.status_sch) then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
 	
 
 	procedure set_proposed (

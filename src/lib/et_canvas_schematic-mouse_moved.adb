@@ -104,6 +104,12 @@ begin
 						redraw_schematic;
 					end if;
 
+
+				when NOUN_NETCHANGER =>
+					if edit_process_running then
+						redraw_schematic;
+					end if;
+
 				when others => null;
 			end case;
 

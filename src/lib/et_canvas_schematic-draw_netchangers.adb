@@ -411,11 +411,10 @@ procedure draw_netchangers is
 
 				brightness := BRIGHT;
 
-			-- CS being moved
-				-- -- overwrite position if unit is moving
-				-- if is_moving (unit) then
-				-- 	unit_place := get_object_tool_position;
-				-- end if;
+				-- overwrite position if netchanger is moving:
+				if is_moving (netchanger) then
+					set_place (position, get_object_tool_position);
+				end if;
 			end if;
 
 

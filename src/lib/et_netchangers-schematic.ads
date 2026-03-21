@@ -267,6 +267,11 @@ package et_netchangers.schematic is
 		return boolean;
 
 
+	function is_moving (
+		netchanger : in type_netchanger)
+		return boolean;
+
+		
 	procedure set_proposed (
 		netchanger : in out type_netchanger);
 		

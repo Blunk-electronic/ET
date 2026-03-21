@@ -323,6 +323,16 @@ is
 				reset_grid_and_cursor;
 
 				
+			when key_noun_netchanger =>
+				noun := NOUN_NETCHANGER;
+				set_status (et_canvas_schematic_netchangers.status_move_netchanger);
+
+				-- When moving netchangers, we enforce the default grid
+				-- and snap the cursor position to the default grid:
+				reset_grid_and_cursor;
+
+
+				
 			-- If space pressed then the operator wishes to operate
 			-- by keyboard:
 			when key_space =>	
@@ -338,6 +348,12 @@ is
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
 						et_canvas_schematic_units.move_object (KEYBOARD, get_cursor_position);
+
+					when NOUN_NETCHANGER =>
+						-- When moving netchangers, we enforce the default grid
+						-- and snap the cursor position to the default grid:
+						reset_grid_and_cursor;
+						et_canvas_schematic_netchangers.move_object (KEYBOARD, get_cursor_position);
 
 					when others => null;
 				end case;
@@ -359,6 +375,11 @@ is
 					when NOUN_UNIT =>
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
+						end if;
+
+					when NOUN_NETCHANGER =>
+						if clarification_pending then
+							et_canvas_schematic_netchangers.clarify_object;
 						end if;
 						
 					when others => null;
