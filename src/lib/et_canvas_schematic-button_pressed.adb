@@ -120,6 +120,9 @@ is
 					when NOUN_DEVICE =>
 						et_canvas_schematic_units.copy_object (MOUSE, snap_point);
 							
+					-- when NOUN_NETCHANGER =>
+						-- et_canvas_schematic_netchangers.copy_object (MOUSE, snap_point);
+
 					when others => null;							
 				end case;
 
@@ -242,6 +245,9 @@ is
 					when NOUN_UNIT =>
 						et_canvas_schematic_units.rotate_object (snap_point);
 						
+					when NOUN_NETCHANGER =>
+						et_canvas_schematic_netchangers.rotate_object (snap_point);
+
 					when others => null;
 				end case;
 				
@@ -306,6 +312,11 @@ is
 					when NOUN_DEVICE =>
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
+						end if;
+
+					when NOUN_NETCHANGER =>
+						if clarification_pending then
+							et_canvas_schematic_netchangers.clarify_object;
 						end if;
 						
 					when others => null;							

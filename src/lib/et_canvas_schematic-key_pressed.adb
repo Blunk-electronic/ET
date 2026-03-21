@@ -481,7 +481,11 @@ is
 				noun := NOUN_UNIT;					
 				set_status (et_canvas_schematic_units.status_rotate);
 
+			when key_noun_netchanger =>
+				noun := NOUN_NETCHANGER;					
+				set_status (et_canvas_schematic_netchangers.status_rotate_netchanger);
 
+				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when key_space =>
 				case noun is
@@ -491,6 +495,9 @@ is
 					when NOUN_UNIT =>
 						et_canvas_schematic_units.rotate_object (point);
 						
+					when NOUN_NETCHANGER =>
+						et_canvas_schematic_netchangers.rotate_object (point);
+
 					when others => null;
 				end case;
 
@@ -508,6 +515,11 @@ is
 							et_canvas_schematic_units.clarify_object;
 						end if;
 
+					when NOUN_NETCHANGER =>
+						if clarification_pending then
+							et_canvas_schematic_netchangers.clarify_object;
+						end if;
+						
 					when others => null;
 						
 				end case;

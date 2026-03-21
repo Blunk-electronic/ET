@@ -106,7 +106,7 @@ Schematic Editor
 	
 		rotate netchanger 2 90
 
-
+	|VNS| r e
 
 
 
