@@ -400,8 +400,24 @@ procedure draw_netchangers is
 			-- to a regular position (x/y/rotation):
 			position : type_position := to_position (netchanger.position_sch);
 		begin
+			-- The default brightness is NORMAL. 
+			-- If the netchanger is selected, 
+			-- then the brightness will be increased:
+			brightness := NORMAL;
+			
+			-- Draw the netchanger candidate highlighted if
+			-- it is selected:
+			if is_selected (netchanger) then
+
+				brightness := BRIGHT;
+
 			-- CS being moved
-			-- CS selected
+				-- -- overwrite position if unit is moving
+				-- if is_moving (unit) then
+				-- 	unit_place := get_object_tool_position;
+				-- end if;
+			end if;
+
 
 			-- Draw the body of the netchanger:
 			draw_body (position);
