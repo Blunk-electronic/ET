@@ -1608,6 +1608,7 @@ package body et_schematic_ops_netchangers is
 	procedure set_netchanger_direction (
 		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id; -- 1,2,3,...
+		toggle			: in boolean := false;
 		direction		: in type_netchanger_direction;
 		log_threshold	: in type_log_level)
 	is
@@ -1630,7 +1631,14 @@ package body et_schematic_ops_netchangers is
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger) 
 			is begin
-				set_direction (netchanger, direction);
+				if toggle then
+					NULL;
+					-- if get_direction (netchanger) = FORWARD then
+						-- set_direction (netchanger, B
+				
+				else
+					set_direction (netchanger, direction);
+				end if;
 			end;
 
 			
@@ -1692,11 +1700,18 @@ package body et_schematic_ops_netchangers is
 
 		
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			& " set netchanger " & to_string (index)
-			& " direction " & to_string (direction),
-			level => log_threshold);
+		if toggle then
+			log (text => "module " & to_string (module_cursor) 
+				& " toggle direction of netchanger " & to_string (index),
+				level => log_threshold);
 
+		else
+			log (text => "module " & to_string (module_cursor) 
+				& " set netchanger " & to_string (index)
+				& " direction " & to_string (direction),
+				level => log_threshold);
+		end if;
+		
 		log_indentation_up;
 
 		update_element (
@@ -2494,7 +2509,46 @@ package body et_schematic_ops_netchangers is
 	end delete_object;
 
 
-	
+
+
+
+
+
+
+
+	procedure set_object_direction (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " set object direction",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_NETCHANGER =>
+
+				set_netchanger_direction (
+					module_cursor	=> module_cursor,
+					index			=> get_object_id (object.netchanger),
+					toggle			=> true,
+					direction		=> FORWARD, -- don't care. see specs
+					log_threshold	=> log_threshold + 1);
+
+				
+			when others =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end set_object_direction;
+
+
+
+
 	
 	
 	

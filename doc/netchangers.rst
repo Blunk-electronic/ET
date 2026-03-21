@@ -129,6 +129,7 @@ Schematic Editor
 	
 		set netchanger 2 backward
 
+	|VNS| s e
 
 
 

@@ -752,6 +752,11 @@ is
 			when key_noun_package_variant =>
 				noun := NOUN_VARIANT;
 				set_status (et_canvas_schematic_units.status_set_variant);
+
+			when key_noun_netchanger =>
+				noun := NOUN_NETCHANGER;
+				set_status (et_canvas_schematic_netchangers.status_set_netchanger);
+
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when key_space =>
@@ -767,10 +772,14 @@ is
 						
 					when NOUN_VARIANT =>
 						et_canvas_schematic_units.set_package_variant (point);
+
+					when NOUN_NETCHANGER =>
+						et_canvas_schematic_netchangers.set_netchanger_direction (point);
 						
 					when others => null;
 				end case;
 
+				
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
@@ -779,6 +788,11 @@ is
 							et_canvas_schematic_units.clarify_object;
 						end if;
 
+					when NOUN_NETCHANGER =>
+						if clarification_pending then
+							et_canvas_schematic_netchangers.clarify_object;
+						end if;
+						
 					when others => null;							
 				end case;
 				

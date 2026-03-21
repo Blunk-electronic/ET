@@ -275,7 +275,9 @@ is
 					when NOUN_VARIANT =>
 						et_canvas_schematic_units.set_package_variant (snap_point);
 
-						
+					when NOUN_NETCHANGER =>
+						et_canvas_schematic_netchangers.set_netchanger_direction (snap_point);
+
 					when others => null;
 				end case;
 
@@ -469,6 +471,11 @@ is
 					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE | NOUN_VARIANT =>
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
+						end if;
+
+					when NOUN_NETCHANGER =>
+						if clarification_pending then
+							et_canvas_schematic_netchangers.clarify_object;
 						end if;
 						
 					when others => null;							

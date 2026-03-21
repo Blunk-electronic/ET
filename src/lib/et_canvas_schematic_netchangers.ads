@@ -110,6 +110,12 @@ package et_canvas_schematic_netchangers is
 		& "to rotate netchanger." 
 		& status_hint_for_abort;
 	
+	status_set_netchanger : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to change netchanger direction." 
+		& status_hint_for_abort;
 
 
 	
@@ -145,6 +151,8 @@ package et_canvas_schematic_netchangers is
 		point	: in type_vector_model);
 
 
+	procedure set_netchanger_direction (
+		point	: in type_vector_model);
 
 
 

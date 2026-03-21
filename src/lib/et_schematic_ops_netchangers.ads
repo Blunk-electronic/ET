@@ -229,9 +229,15 @@ package et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level);
 
 
+	-- Changes the direction of the given netchanger
+	-- by swapping MASTER and SLAVE port.
+	-- If toggle is true, then the direction
+	-- toggels between FORWARD and BACKWARD,
+	-- regardless of the given direction:
 	procedure set_netchanger_direction (
 		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id; -- 1,2,3,...
+		toggle			: in boolean := false;
 		direction		: in type_netchanger_direction;
 		log_threshold	: in type_log_level);
 	
@@ -418,7 +424,13 @@ package et_schematic_ops_netchangers is
 		object			: in type_object;
 		log_threshold	: in type_log_level);
 
-		
+
+	procedure set_object_direction (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level);
+
+	
 	procedure show_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
