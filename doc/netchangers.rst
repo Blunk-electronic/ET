@@ -65,6 +65,7 @@ Schematic Editor
 
 		move netchanger 2 relative 10 30 0
 
+	|VNS| m e
 
 
 
