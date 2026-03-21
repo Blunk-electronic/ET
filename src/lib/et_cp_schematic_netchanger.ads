@@ -97,6 +97,9 @@ package et_cp_schematic_netchanger is
 		log_threshold	: in type_log_level);
 
 
+	-- CS rename
+
+	-- CS copy
 	
 end et_cp_schematic_netchanger;
 
