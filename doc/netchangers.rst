@@ -137,7 +137,7 @@ Schematic Editor
 	
 		delete netchanger 2
 
-
+	|VNS| del e
 
 ++++++++++++
 Board Editor

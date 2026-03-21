@@ -132,6 +132,9 @@ is
 					when NOUN_DEVICE | NOUN_UNIT =>
 						et_canvas_schematic_units.delete_object (snap_point);
 						
+					when NOUN_NETCHANGER =>
+						et_canvas_schematic_netchangers.delete_object (snap_point);
+
 					when others => null;
 				end case;
 
@@ -307,6 +310,11 @@ is
 					when NOUN_DEVICE | NOUN_UNIT =>
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
+						end if;
+
+					when NOUN_NETCHANGER =>
+						if clarification_pending then
+							et_canvas_schematic_netchangers.clarify_object;
 						end if;
 						
 					when others => null;							

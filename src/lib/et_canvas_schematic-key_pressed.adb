@@ -81,6 +81,10 @@ is
 			when key_noun_unit =>
 				noun := NOUN_UNIT;					
 				set_status (et_canvas_schematic_units.status_delete_unit);
+
+			when key_noun_netchanger =>
+				noun := NOUN_NETCHANGER;					
+				set_status (et_canvas_schematic_netchangers.status_delete_netchanger);
 				
 			when key_noun_net_all_sheets =>
 				noun := NOUN_NET;
@@ -111,6 +115,9 @@ is
 						
 					when NOUN_DEVICE | NOUN_UNIT =>
 						et_canvas_schematic_units.delete_object (point);
+
+					when NOUN_NETCHANGER =>
+						et_canvas_schematic_netchangers.delete_object (point);
 						
 					when others => null;							
 				end case;
@@ -129,9 +136,12 @@ is
 							et_canvas_schematic_units.clarify_object;
 						end if;
 
-					when others =>
-						null;
-						
+					when NOUN_NETCHANGER =>
+						if clarification_pending then
+							et_canvas_schematic_netchangers.clarify_object;
+						end if;
+
+					when others => null;						
 				end case;
 
 				
@@ -204,7 +214,6 @@ is
 		end case;
 	end drag;
 
-
 	
 	
 	procedure draw is 
@@ -255,8 +264,6 @@ is
 	end draw;
 
 
-
-
 	
 
 	procedure mirror is begin
@@ -292,7 +299,6 @@ is
 			when others => status_noun_invalid;
 		end case;
 	end mirror;
-
 
 
 	

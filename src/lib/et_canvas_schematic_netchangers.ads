@@ -68,7 +68,15 @@ package et_canvas_schematic_netchangers is
 	use pac_generic_modules;
 
 
+	-- to be output in the status bar:
+	status_add_netchanger : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to add netchanger." 
+		& status_hint_for_abort;
 
+	
 	-- to be output in the status bar:
 	status_delete_netchanger : constant string := 
 		status_click_left 
@@ -184,17 +192,8 @@ package et_canvas_schematic_netchangers is
 
 	
 
-
 	
 	
-	
-	-- to be output in the status bar:
-	status_add_netchanger : constant string := 
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to add netchanger." 
-		& status_hint_for_abort;
 
 
 	
