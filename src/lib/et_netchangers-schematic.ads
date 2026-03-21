@@ -113,7 +113,7 @@ package et_netchangers.schematic is
 		netchanger	: in out type_netchanger;
 		direction	: in type_netchanger_direction);
 
-
+	-- CS procedure toggle_direction
 		
 
 		
@@ -178,6 +178,8 @@ package et_netchangers.schematic is
 		netchanger	: in out type_netchanger;
 		rotation	: in type_rotation_0_90);
 
+	-- CS procedure toggle_rotation
+		
 		
 
 	function get_sheet (

@@ -1434,7 +1434,8 @@ package body et_schematic_ops_netchangers is
 					elsif get_rotation (netchanger) = 90.0 then
 						set_rotation (netchanger, 0.0);
 					end if;
-					
+
+					-- CS toggle_rotation (netchanger)
 					-- CS log messages
 					
 				else
@@ -1633,8 +1634,8 @@ package body et_schematic_ops_netchangers is
 			is begin
 				if toggle then
 					NULL;
-					-- if get_direction (netchanger) = FORWARD then
-						-- set_direction (netchanger, B
+					-- CS toggle_direction (netchanger);
+					
 				
 				else
 					set_direction (netchanger, direction);
