@@ -120,7 +120,21 @@ package body et_netchangers.schematic is
 		netchanger.direction := direction;
 	end;
 	
-	
+
+
+	procedure toggle_direction (
+		netchanger	: in out type_netchanger)
+	is begin
+		case netchanger.direction is
+			when FORWARD =>
+				netchanger.direction := BACKWARD;
+
+			when BACKWARD =>
+				netchanger.direction := FORWARD;
+		end case;
+	end;
+
+
 	
 	
 	function to_position (

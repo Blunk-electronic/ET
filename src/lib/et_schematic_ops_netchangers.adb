@@ -1633,10 +1633,7 @@ package body et_schematic_ops_netchangers is
 				netchanger	: in out type_netchanger) 
 			is begin
 				if toggle then
-					NULL;
-					-- CS toggle_direction (netchanger);
-					
-				
+					toggle_direction (netchanger);				
 				else
 					set_direction (netchanger, direction);
 				end if;
