@@ -1532,32 +1532,59 @@ package body et_schematic_ops_netchangers is
 		is
 			netchanger_cursor : pac_netchangers.cursor;
 
-			-- The sheet where the netchanger is located
-			-- in the schematic:
-			sheet : type_sheet;
-
 			ports : type_netchanger_ports;
 
-			
+			index_new : type_netchanger_id;
+			netchanger : type_netchanger; -- the copy
+			inserted : boolean;
 			
 			use pac_netchangers;
 		begin
-			-- Locate given netchanger in the module:
+			-- Locate given original netchanger in the module:
 			netchanger_cursor := get_netchanger (module_cursor, index);
 
 			
 			if has_element (netchanger_cursor) then 
-				-- netchanger exists
+				-- original netchanger exists
 
-				-- Get the sheet number where the netchanger is:
-				sheet := get_sheet (netchanger_cursor);
+				-- Get the index to be used for the new netchanger:
+				index_new := get_next_netchanger_index (module_cursor);
+			
+				log (text => "netchanger index is " & to_string (index_new),
+					level => log_threshold + 1);
 
-				-- log sheet number:
-				log (text => "found the netchanger on sheet " & to_string (sheet),
-					 level => log_threshold + 1);
+				-- Take a copy of the original netchanger:
+				netchanger := element (netchanger_cursor);
 
+				-- Set the position of the copy as requested
+				-- by the caller:
+				set_position (netchanger, destination);
 
-				-- CS see procedure add_netchanger
+				-- Insert the new netchanger in the module:
+				insert (
+					container 	=> module.netchangers,
+					key			=> index_new,
+					new_item	=> netchanger,
+					position	=> netchanger_cursor,
+					-- points now to the new netchanger
+					inserted	=> inserted); 
+					-- flag "inserted" not further evaluated. 
+					-- should always be true
+
+				-- Get the absolute positions of the 
+				-- new netchanger ports according to 
+				-- location and rotation in schematic:
+				ports := get_netchanger_ports (netchanger_cursor);
+
+				-- Inserts the new netchanger ports in the 
+				-- net segments:
+				insert_ports (
+					module_cursor	=> module_cursor,
+					index			=> index_new,
+					ports			=> ports,
+					sheet			=> get_sheet (destination),
+					log_threshold	=> log_threshold + 1);
+
 
 			else
 				-- CS: It is assumed that the requested netchanger
