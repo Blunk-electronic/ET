@@ -1557,7 +1557,7 @@ package body et_schematic_ops_netchangers is
 					 level => log_threshold + 1);
 
 
-				
+				-- CS see procedure add_netchanger
 
 			else
 				-- CS: It is assumed that the requested netchanger
