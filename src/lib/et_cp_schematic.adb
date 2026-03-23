@@ -214,6 +214,9 @@ package body et_cp_schematic is
 						when NOUN_SUBMODULE =>
 							copy_submodule (module_cursor, cmd, log_threshold + 1);
 							
+						when NOUN_NETCHANGER =>
+							copy_netchanger (module_cursor, cmd, log_threshold + 1);
+
 						when others => invalid_noun (to_string (noun));
 					end case;
 

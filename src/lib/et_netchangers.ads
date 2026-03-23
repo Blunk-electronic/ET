@@ -167,7 +167,18 @@ package et_netchangers is
 		sheet		: et_sheets.type_sheet := et_sheets.type_sheet'first;
 	end record;
 	
+
+
 	
+		
+
+		
+		
+	function to_netchanger_position (
+		sheet		: in et_sheets.type_sheet;
+		place		: in et_schematic_geometry.pac_geometry_2.type_vector_model;
+		rotation	: in et_schematic_geometry.pac_geometry_2.type_rotation_0_90)
+		return type_netchanger_position_schematic;
 		
 		
 	

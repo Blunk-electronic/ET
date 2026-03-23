@@ -220,6 +220,18 @@ package et_schematic_ops_netchangers is
 		rotation		: in type_rotation_0_90;
 		log_threshold	: in type_log_level);
 
+
+
+	-- Copies the netchanger with the given index to
+	-- a new netchanger at the given destination
+	-- The component "rotation" of the given destination
+	-- has no meaning. Only sheet, x/y matters:
+	procedure copy_netchanger (
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id; -- 1,2,3,...
+		destination		: in type_netchanger_position_schematic;
+		log_threshold	: in type_log_level);
+
 	
 	
 	-- Deletes a netchanger.

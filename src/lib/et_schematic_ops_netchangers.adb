@@ -1518,6 +1518,77 @@ package body et_schematic_ops_netchangers is
 
 	
 
+	
+	procedure copy_netchanger (
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id; -- 1,2,3,...
+		destination		: in type_netchanger_position_schematic;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			netchanger_cursor : pac_netchangers.cursor;
+
+			-- The sheet where the netchanger is located
+			-- in the schematic:
+			sheet : type_sheet;
+
+			ports : type_netchanger_ports;
+
+			
+			
+			use pac_netchangers;
+		begin
+			-- Locate given netchanger in the module:
+			netchanger_cursor := get_netchanger (module_cursor, index);
+
+			
+			if has_element (netchanger_cursor) then 
+				-- netchanger exists
+
+				-- Get the sheet number where the netchanger is:
+				sheet := get_sheet (netchanger_cursor);
+
+				-- log sheet number:
+				log (text => "found the netchanger on sheet " & to_string (sheet),
+					 level => log_threshold + 1);
+
+
+				
+
+			else
+				-- CS: It is assumed that the requested netchanger
+				-- does exist. So this warning
+				-- should be moved to the command processor.
+				log (WARNING, " Netchanger " & to_string (index) & " not found !");
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " copy netchanger " & to_string (index)
+			 & " to " & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;		
+	end copy_netchanger;
+
+
+
+	
+	
+
 
 	procedure delete_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;

@@ -227,6 +227,20 @@ package body et_netchangers.schematic is
 	end;
 	
 	
+
+	
+	function to_string (
+		position	: in type_netchanger_position_schematic)
+		return string
+	is 
+		use et_schematic_coordinates;
+		p : type_object_position;
+	begin
+		p := to_object_position (position);
+		return to_string (p);
+	end;
+
+
 	
 
 	function get_position (

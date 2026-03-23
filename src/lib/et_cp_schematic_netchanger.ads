@@ -88,7 +88,7 @@ package et_cp_schematic_netchanger is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-
+	
 	-- Sets the direction of a netchanger.
 	-- Example: "schematic demo set netchanger 2 forward/backward"
 	procedure set_netchanger_direction (
@@ -99,7 +99,13 @@ package et_cp_schematic_netchanger is
 
 	-- CS rename
 
-	-- CS copy
+	-- Parses a command that copies a netchanger.
+	-- Example: "schematic demo copy netchanger 1 4 100 40"
+	procedure copy_netchanger (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
 	
 end et_cp_schematic_netchanger;
 

@@ -118,7 +118,8 @@ package et_netchangers.schematic is
 		netchanger	: in out type_netchanger);
 
 		
-		
+
+	
 
 	-- Converts a netchanger position type to
 	-- the position type (containing x/y/rotation):
@@ -204,6 +205,12 @@ package et_netchangers.schematic is
 		position : in type_netchanger_position_schematic)
 		return type_object_position;
 
+
+	function to_string (
+		position	: in type_netchanger_position_schematic)
+		return string;
+
+	
 		
 -- move netchanger in schematic
 

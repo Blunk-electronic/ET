@@ -110,6 +110,21 @@ Schematic Editor
 
 
 
+#. Copy a Netchanger
+
+	This example command copies the netchanger 1 to
+	sheet 4 x/y 100 40. The copy will be assigned the
+	next available index:
+
+	.. code-block::
+	
+		copy netchanger 1 4 100 40
+
+	|VNS| c e
+
+
+
+
 #. Set Direction
 
 	The direction of a netchanger is relevant for agile 

@@ -309,6 +309,58 @@ package body et_cp_schematic_netchanger is
 	end set_netchanger_direction;
 
 	
+
+
+
+
+
+	
+	procedure copy_netchanger (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+		index : type_netchanger_id;
+		sheet : type_sheet;
+		place : type_vector_model;
+	begin
+		log (text => "copy netchanger", level => log_threshold);
+		log_indentation_up;
+
+		-- CS: test existence of the given netchanger
+		
+		case cmd_field_count is
+			-- "copy netchanger 1 4 100 40"
+			
+			when 8 =>
+				index := to_netchanger_id (get_field (cmd, 5)); -- 1,2,3,...
+				
+				sheet := to_sheet (get_field (cmd, 6));
+				
+				place := to_vector_model (
+					x => get_field (cmd, 7),
+					y => get_field (cmd, 8));
+					
+				copy_netchanger (
+					module_cursor	=> module,
+					index			=> index,
+					destination		=> to_netchanger_position (sheet, place, 0.0),
+					-- rotation 0.0 has no meaning					
+					log_threshold	=> log_threshold + 1);
+					
+					
+			when 9 .. type_field_count'last =>
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;		
+
+		log_indentation_down;
+	end copy_netchanger;
+	
 	
 end et_cp_schematic_netchanger;
 
