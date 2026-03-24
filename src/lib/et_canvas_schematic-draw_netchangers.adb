@@ -399,66 +399,73 @@ procedure draw_netchangers is
 			-- by its specification. This is a conversion from netchanger position
 			-- to a regular position (x/y/rotation):
 			position : type_position := to_position (netchanger.position_sch);
+			
+			-- Get the sheet number where the netchanger is:
+			sheet : type_sheet := get_sheet (netchanger);
 		begin
-			-- The default brightness is NORMAL. 
-			-- If the netchanger is selected, 
-			-- then the brightness will be increased:
-			brightness := NORMAL;
+			-- Draw the netchanger if it is on the current
+			-- active sheet:
+			if sheet = active_sheet then
 			
-			-- Draw the netchanger candidate highlighted if
-			-- it is selected:
-			if is_selected (netchanger) then
+				-- The default brightness is NORMAL. 
+				-- If the netchanger is selected, 
+				-- then the brightness will be increased:
+				brightness := NORMAL;
+				
+				-- Draw the netchanger candidate highlighted if
+				-- it is selected:
+				if is_selected (netchanger) then
 
-				brightness := BRIGHT;
+					brightness := BRIGHT;
 
-				-- overwrite position if netchanger is moving:
-				if is_moving (netchanger) then
-					set_place (position, get_object_tool_position);
+					-- overwrite position if netchanger is moving:
+					if is_moving (netchanger) then
+						set_place (position, get_object_tool_position);
+					end if;
 				end if;
-			end if;
 
 
-			-- Draw the body of the netchanger:
-			draw_body (position);
-						
-			-- Now, depending on the direction of the netchanger candidate,
-			-- we draw either the forward-symbol or the backward-symbol:
-			case get_direction (netchanger) is
-				when FORWARD =>
-					-- Draw the ports of the netchanger:
-					draw_port (
-						name => MASTER, 
-						port => netchanger_symbol_forward.master_port, 
-						netchanger_position => position);
+				-- Draw the body of the netchanger:
+				draw_body (position);
+							
+				-- Now, depending on the direction of the netchanger candidate,
+				-- we draw either the forward-symbol or the backward-symbol:
+				case get_direction (netchanger) is
+					when FORWARD =>
+						-- Draw the ports of the netchanger:
+						draw_port (
+							name => MASTER, 
+							port => netchanger_symbol_forward.master_port, 
+							netchanger_position => position);
 
-					draw_port (
-						name => SLAVE, 
-						port => netchanger_symbol_forward.slave_port, 
-						netchanger_position => position);
-				
-				when BACKWARD =>
-					-- Draw the ports of the netchanger:
-					draw_port (
-						name => MASTER, 
-						port => netchanger_symbol_backward.master_port, 
-						netchanger_position => position);
-
-					draw_port (
-						name => SLAVE, 
-						port => netchanger_symbol_backward.slave_port, 
-						netchanger_position => position);
-				
-			end case;
-			
-			
-			-- Draw the name of the netchanger (like N33):
-			draw_name (index => index, position => position);
+						draw_port (
+							name => SLAVE, 
+							port => netchanger_symbol_forward.slave_port, 
+							netchanger_position => position);
 					
-			-- Draw the origin of the netchanger:
-			set_color_origin (brightness);
-			draw_origin ((get_place (position), 0.0));
-			-- NOTE: The origin is never rotated.
-			
+					when BACKWARD =>
+						-- Draw the ports of the netchanger:
+						draw_port (
+							name => MASTER, 
+							port => netchanger_symbol_backward.master_port, 
+							netchanger_position => position);
+
+						draw_port (
+							name => SLAVE, 
+							port => netchanger_symbol_backward.slave_port, 
+							netchanger_position => position);
+					
+				end case;
+				
+				
+				-- Draw the name of the netchanger (like N33):
+				draw_name (index => index, position => position);
+						
+				-- Draw the origin of the netchanger:
+				set_color_origin (brightness);
+				draw_origin ((get_place (position), 0.0));
+				-- NOTE: The origin is never rotated.
+			end if;
 		end query_netchanger;
 		
 									   

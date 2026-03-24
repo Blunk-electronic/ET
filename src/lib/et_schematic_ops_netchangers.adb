@@ -1514,6 +1514,7 @@ package body et_schematic_ops_netchangers is
 	
 
 	
+
 	
 
 	
@@ -1534,8 +1535,10 @@ package body et_schematic_ops_netchangers is
 
 			ports : type_netchanger_ports;
 
+			
 			index_new : type_netchanger_id;
 			netchanger : type_netchanger; -- the copy
+			rotation : type_rotation_0_90;
 			inserted : boolean;
 			
 			use pac_netchangers;
@@ -1547,19 +1550,34 @@ package body et_schematic_ops_netchangers is
 			if has_element (netchanger_cursor) then 
 				-- original netchanger exists
 
-				-- Get the index to be used for the new netchanger:
+				-- Get the next available index to be used 
+				-- for the new netchanger:
 				index_new := get_next_netchanger_index (module_cursor);
 			
 				log (text => "netchanger index is " & to_string (index_new),
 					level => log_threshold + 1);
 
-				-- Take a copy of the original netchanger:
+				-- Take a copy of the original netchanger.
+				-- (This operation copies the direction also.)
 				netchanger := element (netchanger_cursor);
 
+				-- Backup the rotation of the original netchanger:
+				rotation := get_rotation (netchanger);
+				
 				-- Set the position of the copy as requested
 				-- by the caller:
 				set_position (netchanger, destination);
 
+				-- log (text => "new netchanger position: "
+				-- 	 & to_string (destination),
+				-- 	 level => log_threshold + 1);
+				
+				-- Since no valid rotation was provided 
+				-- by the caller (default 0 degrees),
+				-- assign the rotation of the original to
+				-- the copy:
+				set_rotation (netchanger, rotation);
+				
 				-- Insert the new netchanger in the module:
 				insert (
 					container 	=> module.netchangers,
@@ -1613,6 +1631,9 @@ package body et_schematic_ops_netchangers is
 
 
 
+
+
+	
 	
 	
 
