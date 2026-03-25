@@ -486,11 +486,11 @@ procedure draw_netchangers is
 	procedure draw_netchanger_being_added is
 		use et_canvas_schematic_netchangers;
 		use et_modes.schematic;
-
-		position : type_position;
-	begin
-		if verb = VERB_ADD and then noun = NOUN_NETCHANGER then
 		
+		
+		procedure do_draw is 
+			position : type_position;		
+		begin
 			-- The whole netchanger will be drawn highlighted:
 			brightness := BRIGHT;
 		
@@ -541,10 +541,23 @@ procedure draw_netchangers is
 			-- Draw the origin of the netchanger:
 			set_color_origin (brightness);
 			draw_origin ((get_place (position), 0.0));
-			-- NOTE: The origin is never rotated.
+			-- NOTE: The origin is never rotated.		
+		end do_draw;
+		
+	begin
+		case verb is
+			when VERB_ADD =>
+				if noun = NOUN_NETCHANGER then
+					do_draw;
+				end if;
+				
+			when VERB_COPY =>
+				if netchanger_add.valid then
+					do_draw;
+				end if;
 			
-		end if;
-
+			when others => null; -- CS should never happen
+		end case;
 	end draw_netchanger_being_added;
 	
 	

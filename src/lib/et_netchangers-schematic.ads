@@ -224,7 +224,15 @@ package et_netchangers.schematic is
 		return type_netchanger_position_schematic;
 
 		
+	function get_rotation (
+		netchanger_cursor : in pac_netchangers.cursor)
+		return type_rotation_0_90;
 
+
+	function get_direction (
+		netchanger_cursor : in pac_netchangers.cursor)
+		return type_netchanger_direction;
+	
 
 	function get_sheet (
 		netchanger_cursor : in pac_netchangers.cursor)

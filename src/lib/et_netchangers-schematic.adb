@@ -325,6 +325,32 @@ package body et_netchangers.schematic is
 		netchanger.position_sch.sheet := sheet;
 	end;
 
+
+
+
+
+	function get_rotation (
+		netchanger_cursor : in pac_netchangers.cursor)
+		return type_rotation_0_90
+	is
+		netchanger : type_netchanger renames element (netchanger_cursor);
+	begin
+		return get_rotation (netchanger);
+	end;
+
+	
+
+
+	function get_direction (
+		netchanger_cursor : in pac_netchangers.cursor)
+		return type_netchanger_direction
+	is
+		netchanger : type_netchanger renames element (netchanger_cursor);
+	begin
+		return get_direction (netchanger);
+	end;
+
+
 	
 	
 	function get_sheet (

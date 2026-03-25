@@ -120,8 +120,8 @@ is
 					when NOUN_DEVICE =>
 						et_canvas_schematic_units.copy_object (MOUSE, snap_point);
 							
-					-- when NOUN_NETCHANGER =>
-						-- et_canvas_schematic_netchangers.copy_object (MOUSE, snap_point);
+					when NOUN_NETCHANGER =>
+						et_canvas_schematic_netchangers.copy_object (MOUSE, snap_point);
 
 					when others => null;							
 				end case;

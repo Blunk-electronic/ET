@@ -38,7 +38,7 @@
 --
 
 
-with et_device_library;					use et_device_library;
+-- with et_device_library;					use et_device_library;
 
 
 separate (et_canvas_schematic)
@@ -65,7 +65,7 @@ begin
 
 		when VERB_COPY =>
 			case noun is
-				when NOUN_DEVICE =>
+				when NOUN_DEVICE | NOUN_NETCHANGER =>
 					if edit_process_running then
 						redraw;
 					end if;

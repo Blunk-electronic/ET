@@ -632,6 +632,7 @@ is
 
 
 
+	
 	procedure copy is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
@@ -643,6 +644,15 @@ is
 				-- and snap the cursor position to the default grid:
 				reset_grid_and_cursor;
 				
+
+			when key_noun_netchanger =>
+				noun := NOUN_NETCHANGER;					
+				set_status (et_canvas_schematic_netchangers.status_copy_netchanger);
+
+				-- When copying netchangers, we enforce the default grid
+				-- and snap the cursor position to the default grid:
+				reset_grid_and_cursor;
+
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when key_space =>
@@ -650,6 +660,9 @@ is
 					when NOUN_DEVICE =>
 						et_canvas_schematic_units.copy_object (KEYBOARD, point);
 						
+					when NOUN_NETCHANGER =>
+						et_canvas_schematic_netchangers.copy_object (KEYBOARD, point);
+
 					when others => null;						
 				end case;
 
@@ -662,11 +675,15 @@ is
 							et_canvas_schematic_units.clarify_object;
 						end if;
 
-					when others =>
-						null;
-						
+					when NOUN_NETCHANGER =>
+						if clarification_pending then
+							et_canvas_schematic_netchangers.clarify_object;
+						end if;
+
+					when others => null;						
 				end case;
 
+				
 			-- If the operator wants to rotate the unit
 			-- being added, then add 90 degrees to the
 			-- temporily unit:
@@ -677,6 +694,9 @@ is
 
 					when others => null;						
 				end case;
+
+			-- CS key_verb_mirror =>
+			-- mirror unit_add ?
 				
 			when others => null;
 		end case;

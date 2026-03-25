@@ -2743,10 +2743,10 @@ package body et_schematic_ops_netchangers is
 	procedure copy_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		destination		: in type_position;		
+		destination		: in type_position; -- x/y/rotation
 		log_threshold	: in type_log_level)
 	is 
-		object_position : type_object_position;
+		object_position : type_netchanger_position_schematic;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " copy object",
@@ -2757,23 +2757,24 @@ package body et_schematic_ops_netchangers is
 
 		case object.cat is
 			when CAT_NETCHANGER =>
-				object_position := to_position (destination, active_sheet);
 
-				-- CS
-				
--- 				copy_netchanger (
--- 					module_cursor	=> module_cursor,
--- 					index			=> get_object_name (object.netchanger),
--- 					
--- 					-- The copy operation takes place on the
--- 					-- active sheet only:
--- 					destination		=> object_position,
--- 					log_threshold	=> log_threshold + 1);
-				
+				-- Build the full position of
+				-- the new netchanger.
+				-- The copy operation takes place on the
+				-- active sheet only:
+				object_position := to_netchanger_position (
+					sheet => active_sheet, 
+					place => get_place (destination), 
+					rotation => get_rotation (destination));
 
-				
-			when others =>
-				null;
+				-- Do the final copy operation:
+				copy_netchanger (
+					module_cursor	=> module_cursor,
+					index			=> get_object_id (object.netchanger),					
+					destination		=> object_position,
+					log_threshold	=> log_threshold + 1);
+								
+			when others => null;
 		end case;		
 		
 		log_indentation_down;

@@ -961,10 +961,7 @@ package body et_canvas_schematic_netchangers is
 
 	
 	procedure reset_netchanger_add is begin
-		put_line ("reset netchanger");
 		netchanger_add := (others => <>);
-		-- CS leave direction and rotation as it is ?
-		-- CS leave everything as it is ?
 	end;
 
 
@@ -1044,9 +1041,12 @@ package body et_canvas_schematic_netchangers is
 				copy_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
-					destination		=> type_position (to_position (point, netchanger_add.rotation)),
+					destination		=> type_position (
+						to_position (point, netchanger_add.rotation)),
+						
 					log_threshold	=> log_threshold + 1);
 
+					
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
 
@@ -1073,7 +1073,7 @@ package body et_canvas_schematic_netchangers is
 
 
 		
-		-- After the orignial object has been selected, and the the operator is moving 
+		-- After the original object has been selected, and the the operator is moving 
 		-- the pointer or the cursor, a preview of the copied object is attached to
 		-- the tool. The "preview object" is floating:
 		procedure build_preview is
@@ -1085,25 +1085,25 @@ package body et_canvas_schematic_netchangers is
 		begin
 			case object.cat is
 				when CAT_NETCHANGER =>
-					null;
+
 					-- Build the preview of the netchanger that is going to
 					-- be added:
-					--netchanger_add.name := get_object_name (object.netchanger);
+					netchanger_add.name_pre := 
+						get_next_netchanger_index (active_module);
 
-					-- CS
-					-- unit_add.name := get_first_unit (unit_add.device);
-					-- unit_add.value := get_value (object.unit.device_cursor);
-					-- unit_add.total := get_unit_count (object.unit.device_cursor);
-     -- 
-					-- unit_add.device_pre := get_next_available_device_name (
-					-- 	active_module, get_prefix (unit_add.device), log_threshold + 1);
-     -- 
-					-- unit_add.rotation := get_rotation (object.unit.unit_cursor);
-					-- unit_add.valid := true;
+					-- Copy the rotation of the selected netchanger
+					-- to the preview:
+					netchanger_add.rotation := get_rotation (object.netchanger.netchanger_cursor);
 					
-				when others =>
-					-- CS
-					null;
+					-- Copy the direction of the selected netchanger
+					-- to the preview:
+					netchanger_add.direction := get_direction (object.netchanger.netchanger_cursor);
+
+					-- Signal to the draw procedure that
+					-- the preview of the copy is valid:
+					netchanger_add.valid := true;
+					
+				when others => null;
 			end case;
 		end build_preview;
 

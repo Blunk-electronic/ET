@@ -54,6 +54,7 @@ with et_nets;						use et_nets;
 with et_net_segment;				use et_net_segment;
 
 with et_netchangers;				use et_netchangers;
+with et_netchangers.schematic;		use et_netchangers.schematic;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 
@@ -217,6 +218,13 @@ package et_canvas_schematic_netchangers is
 
 		-- The direction of the netchanger:
 		direction	: type_netchanger_direction := FORWARD;
+
+		-- For copy operations this flag indicates
+		-- that the data above is valid.
+		-- This flag is used to draw the preview 
+		-- when the netchanger is being copied and 
+		-- still sticking to the tool:
+		valid : boolean := false;
 	end record;
 
 
@@ -240,7 +248,7 @@ package et_canvas_schematic_netchangers is
 	
 	-- Resets netchanger_add to its default values:
 	procedure reset_netchanger_add;
-	-- CS currently not used
+
 
 
 	

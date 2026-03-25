@@ -508,6 +508,7 @@ package body et_canvas_schematic is
 		use et_modes.schematic;
 		use et_canvas_schematic_nets;
 		use et_canvas_schematic_units;
+		use et_canvas_schematic_netchangers;
 
 
 		-- Do a level 1 reset. This is a partly reset:
@@ -520,13 +521,17 @@ package body et_canvas_schematic is
 
 			status_clear;
 
-			et_schematic_ops_groups.reset_objects (active_module, log_threshold + 1);
-			
-			unit_add.valid := false;
-			
+			-- Reset status of objects:
+			et_schematic_ops_groups.reset_objects (
+				active_module, log_threshold + 1);
+
+			-- Mark preview data as invalid:
+			unit_add.valid := false;			
 			unit_fetch.valid := false;
+			netchanger_add.valid := false;
 			
-			reset_preliminary_segment; -- after move/drag/draw of a net segment
+			reset_preliminary_segment; 
+			-- after move/drag/draw of a net segment
 			
 			reset_zoom_area; -- abort zoom-to-area operation
 
@@ -548,6 +553,7 @@ package body et_canvas_schematic is
 
 			reset_unit_add; -- after adding a device
 			reset_unit_fetch; -- after fetchung a unit
+			reset_netchanger_add; -- after adding or copying a netchanger
 			
 			status_enter_verb;
 
