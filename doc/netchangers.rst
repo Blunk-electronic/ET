@@ -156,6 +156,22 @@ Schematic Editor
 
 	|VNS| del e
 
+	
+
+	
+	
+#. Rename a Netchanger
+
+	This example command renames netchanger 1 to 14:
+	
+	.. code-block::
+	
+		rename netchanger 1 14
+
+	|VNS| n e
+
+	
+	
 ++++++++++++
 Board Editor
 ++++++++++++

@@ -443,6 +443,9 @@ package body et_cp_schematic is
 					case noun is
 						when NOUN_DEVICE =>
 							rename_device (module_cursor, cmd, log_threshold + 1);
+
+						when NOUN_NETCHANGER =>
+							rename_netchanger (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_SUBMODULE =>
 							rename_submodule (module_cursor, cmd, log_threshold + 1);

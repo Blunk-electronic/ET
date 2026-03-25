@@ -97,7 +97,13 @@ package et_cp_schematic_netchanger is
 		log_threshold	: in type_log_level);
 
 
-	-- CS rename
+	-- Parses a command that renames a netchanger.
+	-- Example: "schematic demo rename netchanger 1 10"
+	procedure rename_netchanger (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
 
 	-- Parses a command that copies a netchanger.
 	-- Example: "schematic demo copy netchanger 1 4 100 40"
