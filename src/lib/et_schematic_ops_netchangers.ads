@@ -272,6 +272,9 @@ package et_schematic_ops_netchangers is
 		object : in type_object_netchanger)
 		return type_netchanger_id;
 
+
+	-- CS function get_rotation (object.netchanger)
+	-- CS function get_direction (object.netchanger)
 		
 	
 	-- Modifies the status flag of a netchanger.
