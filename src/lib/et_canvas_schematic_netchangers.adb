@@ -1093,13 +1093,13 @@ package body et_canvas_schematic_netchangers is
 
 					-- Copy the rotation of the selected netchanger
 					-- to the preview:
-					netchanger_add.rotation := get_rotation (object.netchanger.netchanger_cursor);
-					-- CS function get_rotation (object.netchanger)
+					netchanger_add.rotation :=
+						get_rotation (object.netchanger);
 					
 					-- Copy the direction of the selected netchanger
 					-- to the preview:
-					netchanger_add.direction := get_direction (object.netchanger.netchanger_cursor);
-					-- CS function get_direction (object.netchanger)
+					netchanger_add.direction := 
+						get_direction (object.netchanger);
 					
 					-- Signal to the draw procedure that
 					-- the preview of the copy is valid:

@@ -1856,6 +1856,22 @@ package body et_schematic_ops_netchangers is
 	end;
 
 	
+
+	function get_rotation (
+		object : in type_object_netchanger)
+		return type_rotation_0_90
+	is begin
+		return get_rotation (object.netchanger_cursor);
+	end;
+	
+	
+	function get_direction (
+		object : in type_object_netchanger)
+		return type_netchanger_direction
+	is begin
+		return get_direction (object.netchanger_cursor);
+	end;
+
 	
 	
 	procedure modify_status (
