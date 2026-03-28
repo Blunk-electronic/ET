@@ -113,6 +113,14 @@ package et_cp_schematic_netchanger is
 		log_threshold	: in type_log_level);
 
 	
+	-- Parses a command that locates and shows a netchanger.
+	-- Example: "schematic demo show netchanger 44"
+	procedure show_netchanger (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+	
 end et_cp_schematic_netchanger;
 
 -- Soli Deo Gloria

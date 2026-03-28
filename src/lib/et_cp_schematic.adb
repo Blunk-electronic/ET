@@ -546,6 +546,9 @@ package body et_cp_schematic is
 						when NOUN_DEVICE =>
 							show_device (module_cursor, cmd, log_threshold + 1);
 
+						when NOUN_NETCHANGER =>
+							show_netchanger (module_cursor, cmd, log_threshold + 1);
+							
 						when NOUN_MODULE =>
 							show_module (cmd, log_threshold + 1);
 							

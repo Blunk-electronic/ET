@@ -64,7 +64,7 @@ Devices and Units
 	
 #. Showing and Finding Devices and Units:
 
-	- To show a device:
+	To show a device:
 	
 	|VNS| h d
 
@@ -73,7 +73,8 @@ Devices and Units
 	The argument L1 .. L3 controls the level of information
 	to be output. For L1 the status bar will contain some basic
 	information. For L2 or L3 a window opens that contains a lot
-	more information on the requested device: 
+	more information on the requested device.
+	The schematic editor jumps to the sheet where the unit is.
 
 	.. code-block::
 

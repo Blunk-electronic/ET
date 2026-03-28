@@ -170,6 +170,21 @@ Schematic Editor
 
 	|VNS| n e
 
+
+
+
+
+#. Showing and Finding a Netchanger:
+
+	The schematic editor jumps to the sheet where the netchanger
+	is.
+
+	|VNS| h e
+
+	.. code-block::
+
+		show netchanger 44
+
 	
 	
 ++++++++++++

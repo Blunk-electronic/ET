@@ -253,6 +253,14 @@ package et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level);
 
 
+	-- Marks the netchanger indicated by index as "selected":
+	procedure show_netchanger (
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id; -- 1,2,3,...
+		log_threshold	: in type_log_level);
+
+
+	
 	-- Changes the direction of the given netchanger
 	-- by swapping MASTER and SLAVE port.
 	-- If toggle is true, then the direction

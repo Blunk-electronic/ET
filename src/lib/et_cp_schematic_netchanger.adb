@@ -409,6 +409,52 @@ package body et_cp_schematic_netchanger is
 		log_indentation_down;
 	end copy_netchanger;
 	
+
+
+
+
+
+
+	
+
+	procedure show_netchanger (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
+
+		index : type_netchanger_id;
+		sheet : type_sheet;
+		place : type_vector_model;
+	begin
+		log (text => "show netchanger", level => log_threshold);
+		log_indentation_up;
+
+		-- CS: test existence of the given netchanger
+		
+		case cmd_field_count is
+			-- "show netchanger 44"
+			
+			when 5 =>
+				index := to_netchanger_id (get_field (cmd, 5)); -- 44
+					
+				show_netchanger (
+					module_cursor	=> module,
+					index			=> index,
+					log_threshold	=> log_threshold + 1);
+					
+					
+			when 6 .. type_field_count'last =>
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;		
+
+		log_indentation_down;
+	end show_netchanger;
+	
 	
 end et_cp_schematic_netchanger;
 
