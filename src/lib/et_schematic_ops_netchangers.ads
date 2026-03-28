@@ -232,9 +232,21 @@ package et_schematic_ops_netchangers is
 		destination		: in type_netchanger_position_schematic;
 		log_threshold	: in type_log_level);
 
+
+
+	-- Renames the netchanger indicated by index_old
+	-- to index_new.
+	-- If a netchanger with the new index Already exists,
+	-- then a warning is output and nothing else happens:
+	procedure rename_netchanger (
+		module_cursor	: in pac_generic_modules.cursor;
+		index_old		: in type_netchanger_id; -- 1
+		index_new		: in type_netchanger_id; -- 14
+		log_threshold	: in type_log_level);
+
 	
 	
-	-- Deletes a netchanger.
+	-- Deletes the netchanger indicated by index:
 	procedure delete_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id; -- 1,2,3,...

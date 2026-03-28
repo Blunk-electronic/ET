@@ -1633,6 +1633,122 @@ package body et_schematic_ops_netchangers is
 
 
 
+
+
+	
+	
+
+	procedure rename_netchanger (
+		module_cursor	: in pac_generic_modules.cursor;
+		index_old		: in type_netchanger_id; -- 1
+		index_new		: in type_netchanger_id; -- 14
+		log_threshold	: in type_log_level)
+	is
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			netchanger_cursor : pac_netchangers.cursor;
+
+			sheet : type_sheet;
+			ports : type_netchanger_ports;
+
+			netchanger : type_netchanger; -- the copy
+			inserted : boolean;
+			
+			use pac_netchangers;
+		begin
+			-- The renaming is basically two steps:
+			-- 1. deleting the netchanger with the old index
+			-- 2. adding a copy of the old netchanger with 
+			--    the new index.
+			
+			-- Locate given original netchanger in the module:
+			netchanger_cursor := get_netchanger (module_cursor, index_old);
+
+			
+			if has_element (netchanger_cursor) then 
+				-- original netchanger exists
+
+				-- If a netchanger with the index_new already exists
+				-- in the module, then no renaming will be done:
+				if netchanger_exists (module_cursor, index_new) then
+
+					log (WARNING, " Netchanger " & to_string (index_new)
+						 & " already exists !");
+					
+				else
+					-- Netchanger with new index does not exist, so
+					-- the renaming operation is allowed:
+					
+					-- Step 1:
+					
+					-- Take a copy of the original netchanger:
+					netchanger := element (netchanger_cursor);
+					sheet := get_sheet (netchanger_cursor);
+
+					-- Delete the old netchanger completely:
+					delete_netchanger (module_cursor, index_old, log_threshold + 1);
+
+
+					-- Step 2:					
+					
+					-- Insert the new netchanger in the module:
+					insert (
+						container 	=> module.netchangers,
+						key			=> index_new,
+						new_item	=> netchanger,
+						position	=> netchanger_cursor,
+						-- points now to the new netchanger
+						inserted	=> inserted); 
+						-- flag "inserted" not further evaluated. 
+						-- should always be true
+
+					-- Get the absolute positions of the 
+					-- new netchanger ports according to 
+					-- location and rotation in schematic:
+					ports := get_netchanger_ports (netchanger_cursor);
+
+					-- Inserts the new netchanger ports in the 
+					-- net segments:
+					insert_ports (
+						module_cursor	=> module_cursor,
+						index			=> index_new,
+						ports			=> ports,
+						sheet			=> sheet,
+						log_threshold	=> log_threshold + 1);
+				end if;
+
+			else
+				-- CS: It is assumed that the requested netchanger
+				-- does exist. So this warning
+				-- should be moved to the command processor.
+				log (WARNING, " Netchanger " & to_string (index_old) 
+					 & " not found !");
+			end if;
+		end query_module;
+
+
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " rename netchanger " & to_string (index_old)
+			 & " to " & to_string (index_new),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;		
+	end rename_netchanger;
+		
+
+
 	
 	
 	

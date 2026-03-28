@@ -339,11 +339,11 @@ package body et_cp_schematic_netchanger is
 				index_old := to_netchanger_id (get_field (cmd, 5)); -- 1
 				index_new := to_netchanger_id (get_field (cmd, 6)); -- 14
 				
-				-- rename_netchanger (
-				-- 	module_cursor	=> module,
-				-- 	index_old		=> index_old,
-				-- 	index_new		=> index_new,
-				-- 	log_threshold	=> log_threshold + 1);
+				rename_netchanger (
+					module_cursor	=> module,
+					index_old		=> index_old,
+					index_new		=> index_new,
+					log_threshold	=> log_threshold + 1);
 					
 					
 			when 7 .. type_field_count'last =>
