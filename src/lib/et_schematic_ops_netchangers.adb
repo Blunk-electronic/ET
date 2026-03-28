@@ -2849,18 +2849,14 @@ package body et_schematic_ops_netchangers is
 
 		case object.cat is
 			when CAT_NETCHANGER =>
-			
-				-- CS
-				null;
 				
-				-- rename_netchanger (
-				-- 	module_cursor	=> module_cursor,
-				-- 	name_before		=> get_object_name (object.netchanger),
-				-- 	name_after		=> new_name,
-				-- 	log_threshold	=> log_threshold + 1);
+				rename_netchanger (
+					module_cursor	=> module_cursor,
+					index_old		=> get_object_id (object.netchanger),
+					index_new		=> new_name,
+					log_threshold	=> log_threshold + 1);
 				
-			when others =>
-				null;
+			when others => null;
 		end case;		
 		
 		log_indentation_down;

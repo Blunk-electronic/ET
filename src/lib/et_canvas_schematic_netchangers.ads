@@ -87,6 +87,13 @@ package et_canvas_schematic_netchangers is
 		& status_hint_for_abort;
 
 	
+	status_rename_netchanger : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to rename netchanger." 
+		& status_hint_for_abort;
+	
 	-- to be output in the status bar:
 	status_move_netchanger : constant string := 
 		status_click_left 

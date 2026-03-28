@@ -230,6 +230,9 @@ is
 					when NOUN_DEVICE =>
 						et_canvas_schematic_units.rename_object (snap_point);
 							
+					when NOUN_NETCHANGER =>
+						et_canvas_schematic_netchangers.rename_object (snap_point);
+
 					when NOUN_STRAND | NOUN_NET =>
 						et_canvas_schematic_nets.rename_object (snap_point);
 						
@@ -428,6 +431,11 @@ is
 					when NOUN_DEVICE =>
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
+						end if;
+
+					when NOUN_NETCHANGER =>
+						if clarification_pending then
+							et_canvas_schematic_netchangers.clarify_object;
 						end if;
 
 					when NOUN_STRAND | NOUN_NET =>

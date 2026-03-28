@@ -884,6 +884,10 @@ is
 			when key_noun_device =>
 				noun := NOUN_DEVICE;
 				set_status (et_canvas_schematic_units.status_rename_device);
+
+			when key_noun_netchanger =>
+				noun := NOUN_NETCHANGER;
+				set_status (et_canvas_schematic_netchangers.status_rename_netchanger);
 				
 			when key_noun_strand => -- rename strand
 				noun := NOUN_STRAND;
@@ -906,6 +910,9 @@ is
 					when NOUN_DEVICE =>
 						et_canvas_schematic_units.rename_object (point);
 
+					when NOUN_NETCHANGER =>
+						et_canvas_schematic_netchangers.rename_object (point);
+
 					when NOUN_STRAND | NOUN_NET =>
 						et_canvas_schematic_nets.rename_object (point);
 						
@@ -921,6 +928,11 @@ is
 							et_canvas_schematic_units.clarify_object;
 						end if;
 
+					when NOUN_NETCHANGER =>
+						if clarification_pending then
+							et_canvas_schematic_netchangers.clarify_object;
+						end if;
+						
 					when NOUN_STRAND | NOUN_NET =>
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;

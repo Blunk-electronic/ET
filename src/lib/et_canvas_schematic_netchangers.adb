@@ -715,15 +715,15 @@ package body et_canvas_schematic_netchangers is
 	begin
 		name_new := to_netchanger_id (self.get_text); -- 1, 2, 3, ..
 
-		-- CS: Precheck device name ?
-		-- put_line ("new name entered: " & to_string (device_name_new));
+		-- CS: Precheck netchanger index ?
+		-- put_line ("new name entered: " & to_string (name_new));
 		
 		finalize;
 
 		-- If everything was fine, close the window and clean up.
 		-- If one of the operations above has raised an exception then
 		-- nothing will be cleaned up and the window will remain until the
-		-- operator enters a correct property.
+		-- operator enters a correct index.
 		rename_window.destroy;
 
 		-- CS
@@ -754,7 +754,7 @@ package body et_canvas_schematic_netchangers is
 
 	procedure show_rename_window is
 
-		-- Get the first selected object (which is a unit):
+		-- Get the first selected object (which is a netchanger):
 		object : constant type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
 
