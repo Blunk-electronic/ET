@@ -48,6 +48,7 @@ with et_net_segment;					use et_net_segment;
 with et_net_ports;						use et_net_ports;
 with et_net_strands;					use et_net_strands;
 with et_schematic_ops_nets;
+with et_schematic_ops_groups;
 with et_netchanger_symbol_schematic;
 with et_module;							use et_module;
 with et_netchangers.schematic;			use et_netchangers.schematic;
@@ -1853,6 +1854,16 @@ package body et_schematic_ops_netchangers is
 			sheet : type_sheet;
 
 			use pac_netchangers;
+			
+			
+			procedure query_netchanger (
+				index	: in type_netchanger_id;
+				netchanger	: in out type_netchanger)
+			is begin
+				set_selected (netchanger);
+			end query_netchanger;
+			
+			
 		begin
 			-- Locate given netchanger in the module:
 			netchanger_cursor := get_netchanger (module_cursor, index);
@@ -1868,8 +1879,11 @@ package body et_schematic_ops_netchangers is
 				log (text => "found the netchanger on sheet " & to_string (sheet),
 					 level => log_threshold + 1);
 
-				-- CS set status
-				
+				-- Set the netchanger as selected both
+				-- in schematic and board drawing:
+				module.netchangers.update_element (
+					netchanger_cursor, query_netchanger'access);
+								
 			else
 				-- CS: It is assumed that the requested netchanger
 				-- does exist. So this warning
@@ -1887,6 +1901,11 @@ package body et_schematic_ops_netchangers is
 
 		log_indentation_up;
 
+		-- Deselect all objects of previous show operations
+		-- so that nothing is highlighted anymore:
+		et_schematic_ops_groups.reset_objects (module_cursor,
+			log_threshold + 1);
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,

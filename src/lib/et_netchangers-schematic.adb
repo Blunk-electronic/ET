@@ -526,7 +526,16 @@ package body et_netchangers.schematic is
 	end;
 
 
+	
+	procedure set_selected (
+		netchanger : in out type_netchanger)
+	is begin
+		set_selected (netchanger.status_sch);
+		set_selected (netchanger.status_brd);
+	end;
 
+
+	
 	procedure modify_status (
 		netchanger	: in out type_netchanger;
 		operation	: in type_status_operation)
