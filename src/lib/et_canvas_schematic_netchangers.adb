@@ -1181,7 +1181,7 @@ package body et_canvas_schematic_netchangers is
 
 				reset_status_objects (active_module, log_threshold + 1);
 
-				-- Show the device:
+				-- Show the netchanger:
 				show_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
@@ -1196,6 +1196,7 @@ package body et_canvas_schematic_netchangers is
 					when CAT_NETCHANGER =>
 
 						-- CS
+						-- write direction in the status bar ?
 						null;
 						-- set_status (get_properties (
 						-- 	device_cursor	=> object.unit.device_cursor,

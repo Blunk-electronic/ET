@@ -289,6 +289,9 @@ is
 				case noun is
 					when NOUN_DEVICE =>
 						et_canvas_schematic_units.show_object (snap_point);
+
+					when NOUN_NETCHANGER =>
+						et_canvas_schematic_netchangers.show_object (snap_point);
 						
 					when NOUN_NET | NOUN_NET_LABEL =>
 						et_canvas_schematic_nets.show_object (snap_point);
@@ -497,6 +500,11 @@ is
 							et_canvas_schematic_units.clarify_object;
 						end if;
 
+					when NOUN_NETCHANGER =>
+						if clarification_pending then
+							et_canvas_schematic_netchangers.clarify_object;
+						end if;
+						
 					when NOUN_NET_CONNECTOR | NOUN_NET_LABEL | NOUN_NET =>
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;

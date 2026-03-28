@@ -2900,12 +2900,11 @@ package body et_schematic_ops_netchangers is
 
 		case object.cat is
 			when CAT_NETCHANGER =>
-				null;
-				-- CS
-				-- show_netchanger (
-				-- 	module_cursor	=> module_cursor,
-				-- 	index			=> get_object_name (object.netchanger),
-				-- 	log_threshold	=> log_threshold + 1);
+
+				show_netchanger (
+					module_cursor	=> module_cursor,
+					index			=> get_object_id (object.netchanger),
+					log_threshold	=> log_threshold + 1);
 
 						
 			when others =>
