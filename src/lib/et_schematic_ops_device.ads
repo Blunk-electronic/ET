@@ -82,7 +82,10 @@ package et_schematic_ops_device is
 
 	
 	
-	-- procedure device_not_found (name : in type_device_name);
+	procedure device_not_found (
+		name : in type_device_name);
+
+		
 	-- procedure device_already_exists (name : in type_device_name);
 
 

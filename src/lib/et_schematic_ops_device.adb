@@ -75,13 +75,15 @@ package body et_schematic_ops_device is
 	use pac_devices_electrical;
 	
 	
--- 	
--- 	procedure device_not_found (name : in type_device_name) is begin
--- 		raise semantic_error_1 
--- 			with "ERROR: Device " & to_string (name) & " not found !";
--- 	end device_not_found;
--- 
--- 	
+
+	procedure device_not_found (
+		name : in type_device_name) 
+	is begin
+		log (WARNING, "Device " & to_string (name) & " not found !");
+	end;
+
+	
+	
 -- 	procedure device_already_exists (name : in type_device_name) is begin
 -- 		raise semantic_error_1
 -- 			with "ERROR: Device " & to_string (name) & " already exists !";

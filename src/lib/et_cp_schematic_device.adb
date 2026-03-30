@@ -38,8 +38,8 @@
 -- To Do:
 -- - rework
 -- - propose arguments if command incomplete
--- - test the existence of the requested device.
---   (see comments in et_schematic_ops_device).
+--
+--
 --
 
 with ada.text_io;						use ada.text_io;
@@ -149,17 +149,27 @@ package body et_cp_schematic_device is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
+		name : type_device_name;
 	begin
 		-- CS log message 
 
+		name := to_device_name (get_field (cmd, 5)); -- IC1
+		
 		case cmd_field_count is
 			when 6 =>
-				rename_electrical_device (
-					module_cursor 		=> module,
-					device_name_before	=> to_device_name (get_field (cmd, 5)), -- IC1
-					device_name_after	=> to_device_name (get_field (cmd, 6)), -- IC23
-					log_threshold		=> log_threshold + 1);
+				if electrical_device_exists (module, name) then
+					
+					rename_electrical_device (
+						module_cursor 		=> module,
+						device_name_before	=> name,
+						device_name_after	=> to_device_name (get_field (cmd, 6)), -- IC23
+						log_threshold		=> log_threshold + 1);
 
+				else
+					device_not_found (name);
+				end if;
+
+				
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
 				
@@ -183,19 +193,27 @@ package body et_cp_schematic_device is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
-		device_name : type_device_name;
+		name : type_device_name;
 	begin
 		-- CS log message 
 
-		device_name := to_device_name (get_field (cmd, 5));
 		
 		case cmd_field_count is
 			when 5 =>
-				delete_electrical_device (
-					module_cursor 	=> module,
-					device_name		=> device_name,
-					log_threshold	=> log_threshold + 1);
+				name := to_device_name (get_field (cmd, 5));
+				
+				if electrical_device_exists (module, name) then
+				
+					delete_electrical_device (
+						module_cursor 	=> module,
+						device_name		=> name,
+						log_threshold	=> log_threshold + 1);
 
+				else
+					device_not_found (name);
+				end if;
+
+				
 			when 6 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
 				
@@ -220,33 +238,41 @@ package body et_cp_schematic_device is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
+		name : type_device_name;
 	begin
 		-- CS log message 
 
 		case cmd_field_count is
 			when 9 =>
-				copy_device (
-					module_cursor 	=> module,
-					device_name		=> to_device_name (get_field (cmd, 5)),
-					destination		=> to_position 
-						(
-						sheet => to_sheet (get_field (cmd, 6)),
-						point => type_vector_model (set
-									(
-									x => to_distance (get_field (cmd, 7)),
-									y => to_distance (get_field (cmd, 8))
-									)),
-						rotation		=> to_rotation (get_field (cmd, 9))
-						),
-					log_threshold	=> log_threshold + 1
-					);
+				name := to_device_name (get_field (cmd, 5));
+
+				if electrical_device_exists (module, name) then
+				
+					copy_device (
+						module_cursor 	=> module,
+						device_name		=> name,
+						destination		=> to_position 
+							(
+							sheet => to_sheet (get_field (cmd, 6)),
+							point => type_vector_model (set
+										(
+										x => to_distance (get_field (cmd, 7)),
+										y => to_distance (get_field (cmd, 8))
+										)),
+							rotation		=> to_rotation (get_field (cmd, 9))
+							),
+						log_threshold	=> log_threshold + 1);
+
+				else
+					device_not_found (name);
+				end if;
+				
 
 			when 10 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
 				
 			when others => command_incomplete (cmd);
 		end case;
-
 	end copy_device;
 
 	
@@ -265,24 +291,33 @@ package body et_cp_schematic_device is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
+		name : type_device_name;
+
+		value : pac_device_value.bounded_string; -- 470R
 	begin
 		-- CS log message 
 
 		case cmd_field_count is
 			when 6 =>
-				declare
-					value : pac_device_value.bounded_string; -- 470R
-				begin
+				name := to_device_name (get_field (cmd, 5)); -- R1
+
+				
+				if electrical_device_exists (module, name) then
+
 					-- validate value
 					value := to_value_with_check (get_field (cmd, 6));
 
 					-- set the value
 					set_value (
 						module_cursor 	=> module,
-						device_name		=> to_device_name (get_field (cmd, 5)), -- R1
+						device_name		=> name,
 						value			=> value, -- 470R
 						log_threshold	=> log_threshold + 1);
-				end;
+
+				else
+					device_not_found (name);
+				end if;
+				
 
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
@@ -308,23 +343,26 @@ package body et_cp_schematic_device is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
+		name : type_device_name;
+		purpose : pac_device_purpose.bounded_string; -- brightness_control
 	begin
 		-- CS log message 
 
 		case cmd_field_count is
 			when 6 =>
-				declare
-					purpose : pac_device_purpose.bounded_string; -- brightness_control
-				begin
+				name := to_device_name (get_field (cmd, 5)); -- R1
+
+				if electrical_device_exists (module, name) then
 					purpose := to_purpose (get_field (cmd, 6));
-					
+						
 					-- set the purpose
 					set_purpose (
 						module_cursor 	=> module,
-						device_name		=> to_device_name (get_field (cmd, 5)), -- R1
+						device_name		=> name,
 						purpose			=> purpose, -- brightness_control
 						log_threshold	=> log_threshold + 1);
-				end;
+				end if;
+				
 
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
@@ -349,23 +387,29 @@ package body et_cp_schematic_device is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
+		partcode : pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		name : type_device_name;
 	begin
 		-- CS log message 
 
 		case cmd_field_count is
 			when 6 =>
-				declare
-					partcode : pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-				begin
+				name := to_device_name (get_field (cmd, 5)); -- R1
+
+				if electrical_device_exists (module, name) then
+
 					partcode := to_partcode (get_field (cmd, 6));
 
 					-- set the purpose
 					set_partcode (
 						module_cursor 	=> module,
-						device_name		=> to_device_name (get_field (cmd, 5)), -- R1
+						device_name		=> name,
 						partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
 						log_threshold	=> log_threshold + 1);
-				end;
+				else	
+					device_not_found (name);
+				end if;
+				
 
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
@@ -392,24 +436,31 @@ package body et_cp_schematic_device is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
+		name : type_device_name;
 		variant : pac_package_variant_name.bounded_string; -- N, D
 	begin
 		-- CS log message 
 
 		case cmd_field_count is
 			when 6 =>
+				name := to_device_name (get_field (cmd, 5)); -- IC1
 
-				-- validate variant
-				check_variant_name_length (get_field (cmd, 6));
-				variant := to_variant_name (get_field (cmd, 6));
-				check_variant_name_characters (variant);
+				if electrical_device_exists (module, name) then
+					-- validate variant
+					check_variant_name_length (get_field (cmd, 6));
+					variant := to_variant_name (get_field (cmd, 6));
+					check_variant_name_characters (variant);
+					
+					-- set the variant
+					set_package_variant (
+						module_cursor	=> module,
+						device_name		=> name,
+						variant			=> variant, -- N, D
+						log_threshold	=> log_threshold + 1);
+				else
+					device_not_found (name);
+				end if;
 				
-				-- set the variant
-				set_package_variant (
-					module_cursor	=> module,
-					device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
-					variant			=> variant, -- N, D
-					log_threshold	=> log_threshold + 1);
 
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
