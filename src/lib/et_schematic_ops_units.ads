@@ -270,7 +270,9 @@ package et_schematic_ops_units is
 
 	
 	-- Deletes a whole device (incl. all its units)
-	-- in the module:
+	-- in the module.
+	-- It is assumed that the targeted device with device_name_before
+	-- exists in the module. If not, then an exception is raised.
 	procedure delete_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
@@ -292,6 +294,8 @@ package et_schematic_ops_units is
 	
 
 	-- Renames a device.
+	-- It is assumed that the targeted device with device_name_before
+	-- exists in the module. If not, then an exception is raised.
 	-- Changing the prefix is not allowed. A warning will be issued.
 	-- For example renaming from R1 to C1 is forbidden as this would 
 	-- change the device category:

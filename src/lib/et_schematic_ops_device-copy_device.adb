@@ -457,32 +457,24 @@ begin
 
 
 	-- Locate the targeted device in the given module.
-	-- If the device exists, then proceed with further actions.
-	-- Otherwise abort this procedure with a warning:
 	device_cursor_sch := get_electrical_device (module_cursor, device_name);
-		
-	if has_element (device_cursor_sch) then -- device exists in schematic
 
-		-- Locate the device model:
-		device_cursor_lib := get_device_model (device_cursor_sch);
-		
-		-- Build the next available device name:
-		next_name := get_next_available_device_name (
-			module_cursor, get_prefix (device_name), log_threshold); -- IC46
-
-		log (text => "auto generated next device name: " & to_string (next_name),
-			level => log_threshold);
-
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_module'access);
-
-	else
-		log (WARNING, " Device " & to_string (device_name) & " not found !");
-	end if;
+	-- Locate the device model:
+	device_cursor_lib := get_device_model (device_cursor_sch);
 	
+	-- Build the next available device name:
+	next_name := get_next_available_device_name (
+		module_cursor, get_prefix (device_name), log_threshold); -- IC46
+
+	log (text => "auto generated next device name: " & to_string (next_name),
+		level => log_threshold);
+
+	
+	update_element (
+		container	=> generic_modules,
+		position	=> module_cursor,
+		process		=> query_module'access);
+
 		
 	log_indentation_down;
 	

@@ -194,6 +194,8 @@ package et_schematic_ops_device is
 	
 	
 	-- Sets the value of a device.
+	-- It is assumed that the targeted device
+	-- exists in the module. If not, then an exception is raised.
 	procedure set_value (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
@@ -204,6 +206,8 @@ package et_schematic_ops_device is
 
 	
 	-- Sets the purpose of a device.
+	-- It is assumed that the targeted device
+	-- exists in the module. If not, then an exception is raised.
 	procedure set_purpose (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
@@ -214,6 +218,8 @@ package et_schematic_ops_device is
 
 	
 	-- Sets the partcode of a device.
+	-- It is assumed that the targeted device
+	-- exists in the module. If not, then an exception is raised.
 	procedure set_partcode (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
@@ -250,6 +256,8 @@ package et_schematic_ops_device is
 	
 	
 	-- Sets the package variant of a device.
+	-- It is assumed that the targeted device
+	-- exists in the module. If not, then an exception is raised.
 	-- The device must exist, it must be a real device and
 	-- the given package variant must be available.
 	-- Otherwise a warning will be issued:
@@ -316,6 +324,8 @@ package et_schematic_ops_device is
 	-- Copies the given device. Places the first unit of 
 	-- the device (according to add level)
 	-- at the given destination in the schematic.
+	-- It is assumed that the targeted device
+	-- exists in the module. If not, then an exception is raised.
 	procedure copy_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45

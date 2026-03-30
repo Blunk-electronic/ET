@@ -37,9 +37,9 @@
 --
 -- To Do:
 -- - clean up, rework
--- - The existence of requested devices 
---   can be assumed. Instead the existence-test and the associated
---   warning should be moved to the command processor.
+--
+--
+--
 
 
 with ada.text_io;				use ada.text_io;
@@ -591,20 +591,12 @@ package body et_schematic_ops_device is
 		log_indentation_up;
 		
 		-- Locate the targeted device in the given module.
-		-- If the device exists, then proceed with further actions.
-		-- Otherwise abort this procedure with a warning:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
-			
-		if has_element (device_cursor_sch) then -- device exists in schematic
-			
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> query_module'access);
-
-		else
-			log (WARNING, " Device " & to_string (device_name) & " not found !");
-		end if;
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
 
 		log_indentation_down;
 	end set_value;
@@ -667,16 +659,10 @@ package body et_schematic_ops_device is
 		-- Otherwise abort this procedure with a warning:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
-		if has_element (device_cursor_sch) then -- device exists in schematic
-			
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> query_module'access);
-
-		else
-			log (WARNING, " Device " & to_string (device_name) & " not found !");
-		end if;
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
 
 		log_indentation_down;		
 	end set_purpose;
@@ -736,20 +722,12 @@ package body et_schematic_ops_device is
 		log_indentation_up;
 		
 		-- Locate the targeted device in the given module.
-		-- If the device exists, then proceed with further actions.
-		-- Otherwise abort this procedure with a warning:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
-		if has_element (device_cursor_sch) then -- device exists in schematic
-			
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> query_module'access);
-
-		else
-			log (WARNING, " Device " & to_string (device_name) & " not found !");
-		end if;
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
 
 		log_indentation_down;
 	end set_partcode;
@@ -856,20 +834,12 @@ package body et_schematic_ops_device is
 		log_indentation_up;
 		
 		-- Locate the targeted device in the given module.
-		-- If the device exists, then proceed with further actions.
-		-- Otherwise abort this procedure with a warning:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
-		if has_element (device_cursor_sch) then -- device exists in schematic
-			
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> query_module'access);
-
-		else
-			log (WARNING, " Device " & to_string (device_name) & " not found !");
-		end if;
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
 
 		log_indentation_down;		
 	end set_package_variant;

@@ -1201,21 +1201,14 @@ package body et_schematic_ops_units is
 		log_indentation_up;
 		
 		-- Locate the targeted device in the given module.
-		-- If the device exists, then proceed with further actions.
-		-- Otherwise abort this procedure with a warning:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
-		if has_element (device_cursor_sch) then -- device exists in schematic
+		-- Get the names of deployed units:
+		unit_names := get_unit_names_deployed (device_cursor_sch);
 
-			-- Get the names of deployed units:
-			unit_names := get_unit_names_deployed (device_cursor_sch);
-
-			-- Iterate the name list and delete the units one by one:
-			unit_names.iterate (query_unit'access);
+		-- Iterate the name list and delete the units one by one:
+		unit_names.iterate (query_unit'access);
 			
-		else
-			log (WARNING, " Device " & to_string (device_name) & " not found !");
-		end if;
 
 		update_ratsnest (module_cursor, log_threshold + 1);
 		
@@ -1461,15 +1454,9 @@ package body et_schematic_ops_units is
 		log_indentation_up;
 		
 		-- Locate the targeted device in the given module.
-		-- If the device exists, then proceed with further actions.
-		-- Otherwise abort this procedure with a warning:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name_before);
 			
-		if has_element (device_cursor_sch) then -- device exists in schematic
-			check_names;
-		else
-			log (WARNING, " Device " & to_string (device_name_before) & " not found !");
-		end if;
+		check_names;
 		
 		log_indentation_down;
 	end rename_electrical_device;
