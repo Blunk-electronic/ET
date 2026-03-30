@@ -38,7 +38,7 @@
 -- To Do:
 -- - rework
 -- - propose arguments if command incomplete
---
+-- - test existence of targeted device
 
 with ada.text_io;						use ada.text_io;
 with ada.characters.handling;			use ada.characters.handling;
@@ -363,6 +363,8 @@ package body et_cp_board_device is
 
 	begin
 		-- CS log message
+
+		-- CS test existence of targeted device
 		
 		case cmd_field_count is
 			when 5 => do_it;				
@@ -395,6 +397,8 @@ package body et_cp_board_device is
 	
 	begin
 		-- CS log message
+
+		-- CS test existence of targeted device
 		
 		case cmd_field_count is
 			when 7 =>
@@ -429,6 +433,8 @@ package body et_cp_board_device is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 	begin
 		-- CS log message
+
+		-- CS test existence of targeted device
 		
 		case cmd_field_count is
 			when 8 =>
@@ -466,6 +472,8 @@ package body et_cp_board_device is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 	begin
+		-- CS test existence of targeted device
+		
 		case cmd_field_count is
 			when 5 =>
 				et_board_ops_devices.rotate_device (
@@ -520,6 +528,8 @@ package body et_cp_board_device is
 		
 	begin
 		-- CS log message
+
+		-- CS test existence of targeted device
 		
 		case cmd_field_count is
 			when 6 => do_it; 
@@ -551,6 +561,8 @@ package body et_cp_board_device is
 	begin
 		-- CS log message
 
+		-- CS test existence of targeted device
+		
 		case cmd_field_count is
 			when 5 =>
 				et_board_ops_devices.flip_device (
@@ -622,6 +634,8 @@ package body et_cp_board_device is
 		
 	begin
 		-- CS log message
+
+		-- CS test existence of targeted device
 		
 		case noun is
 			when NOUN_NAME =>
@@ -689,6 +703,8 @@ package body et_cp_board_device is
 		
 	begin
 		-- CS log message
+
+		-- CS test existence of targeted device
 		
 		case noun is
 			when NOUN_NAME =>
@@ -726,6 +742,8 @@ package body et_cp_board_device is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
 	begin
+		-- CS test existence of targeted device
+		
 		case cmd_field_count is
 			when 5 =>
 				reset_placeholder_positions (

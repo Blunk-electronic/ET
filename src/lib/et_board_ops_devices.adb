@@ -35,6 +35,8 @@
 --
 --   history of changes:
 --
+-- To Do:
+-- - move device-existence-checks to command processor
 
 with ada.strings.unbounded;
 

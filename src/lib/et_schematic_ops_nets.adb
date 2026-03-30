@@ -35,6 +35,9 @@
 --
 --   history of changes:
 --
+-- To Do:
+-- - remove the existence-checks of nets and move them
+--   to the command processor.
 
 with ada.strings;						use ada.strings;
 with ada.strings.unbounded;				use ada.strings.unbounded;
