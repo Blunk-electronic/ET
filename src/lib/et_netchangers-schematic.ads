@@ -199,7 +199,15 @@ package et_netchangers.schematic is
 	function to_netchanger_position (
 		position : in type_object_position)
 		return type_netchanger_position_schematic;
-		
+
+	
+	function to_netchanger_position (
+		sheet		: in et_sheets.type_sheet;
+		place		: in et_schematic_geometry.pac_geometry_2.type_vector_model;
+		rotation	: in et_schematic_geometry.pac_geometry_2.type_rotation_0_90)
+		return type_netchanger_position_schematic;
+
+	
 		
 	function to_object_position (
 		position : in type_netchanger_position_schematic)
@@ -211,8 +219,6 @@ package et_netchangers.schematic is
 		return string;
 
 	
-		
--- move netchanger in schematic
 
 		
 

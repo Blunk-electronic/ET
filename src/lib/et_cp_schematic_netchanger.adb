@@ -50,6 +50,7 @@ with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
 
 with et_netchangers;					use et_netchangers;
+with et_netchangers.schematic;			use et_netchangers.schematic;
 with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 

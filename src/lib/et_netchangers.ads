@@ -156,7 +156,10 @@ package et_netchangers is
 	--    signal layer where the netchanger is connecting tracks.
 	--    In the board drawing a hardcoded symbol is used too
 	--    (see package et_netchanger_symbol_board).
-	
+
+	-- This is the specification of the position
+	-- in the schematic:
+	--
 	-- The rotation of a netchanger in the schematic is limited
 	-- to a range from 0 to 90 degrees. For this reason the type_object_position
 	-- can not be used for the position of a netchanger in the schematic.
@@ -168,20 +171,13 @@ package et_netchangers is
 	end record;
 	
 
-
 	
 		
-
-		
-		
-	function to_netchanger_position (
-		sheet		: in et_sheets.type_sheet;
-		place		: in et_schematic_geometry.pac_geometry_2.type_vector_model;
-		rotation	: in et_schematic_geometry.pac_geometry_2.type_rotation_0_90)
-		return type_netchanger_position_schematic;
-		
-		
-	
+	-- This is the specification of the position
+	-- in the board drawing:	
+	-- We have the x/y coordinates
+	-- and the signal layer where the connection
+	-- of two nets (or their tracks) is made:
 	type type_netchanger_position_board is record
 		place	: et_board_geometry.pac_geometry_2.type_vector_model; -- x,y
 		layer	: type_signal_layer := type_signal_layer'first;

@@ -55,15 +55,51 @@ with et_coordinates_formatting;		use et_coordinates_formatting;
 package body et_netchangers.board is
 
 
+	function to_string (
+		position	: in type_netchanger_position_board)
+		return string
+	is begin
+		return to_string (position.place) 
+			& " layer " & to_string (position.layer);
+	end;
+
+
+
 	procedure set_place (
 		netchanger	: in out type_netchanger;
-		place		: in et_board_geometry.pac_geometry_2.type_vector_model)
+		place		: in type_vector_model)
 	is begin
-		null;
+		netchanger.position_brd.place := place;
 	end;
-		
 
+
+
+	function get_place (
+		netchanger	: in type_netchanger)
+		return type_vector_model
+	is begin
+		return netchanger.position_brd.place;
+	end;
+
+
+
+
+	procedure set_layer (
+		netchanger	: in out type_netchanger;
+		layer		: in type_signal_layer)
+	is begin
+		netchanger.position_brd.layer := layer;
+	end;
 	
+	
+	
+	function get_layer (
+		netchanger	: in type_netchanger)
+		return type_signal_layer
+	is begin
+		return netchanger.position_brd.layer;
+	end;
+
 	
 	
 end et_netchangers.board;

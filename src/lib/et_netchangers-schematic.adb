@@ -211,6 +211,17 @@ package body et_netchangers.schematic is
 		return result;
 	end;
 
+
+
+	function to_netchanger_position (
+		sheet		: in et_sheets.type_sheet;
+		place		: in et_schematic_geometry.pac_geometry_2.type_vector_model;
+		rotation	: in et_schematic_geometry.pac_geometry_2.type_rotation_0_90)
+		return type_netchanger_position_schematic
+	is begin
+		return (place, rotation, sheet);
+	end;
+
 	
 	
 	function to_object_position (

@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                          NETCHANGER / BOARD                              --
+--                          NETCHANGERS / BOARD                             --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -48,20 +48,32 @@ package et_netchangers.board is
 	use pac_geometry_2;
 
 	
+	function to_string (
+		position	: in type_netchanger_position_board)
+		return string;
 
+		
 
 	procedure set_place (
 		netchanger	: in out type_netchanger;
 		place		: in type_vector_model);
+
+
+	function get_place (
+		netchanger	: in type_netchanger)
+		return type_vector_model;
 		
--- set/get place in board
--- set/get layer in board
-		
--- move netchanger in board
--- set/get signal layer
 		
 
+	procedure set_layer (
+		netchanger	: in out type_netchanger;
+		layer		: in type_signal_layer);
 	
+	
+	function get_layer (
+		netchanger	: in type_netchanger)
+		return type_signal_layer;
+
 	
 	
 end et_netchangers.board;
