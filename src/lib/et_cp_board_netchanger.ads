@@ -47,7 +47,10 @@ with et_cmd_sts;				use et_cmd_sts;
 package et_cp_board_netchanger is
 
 
-		
+	-- This procedure parses a command that moves a netchanger.
+	-- Example: "board demo move netchanger 1 absolute 210 100"	
+	-- If the netchanger does not exist, then nothing 
+	-- happens and a warning is output:
 	procedure move_netchanger (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;

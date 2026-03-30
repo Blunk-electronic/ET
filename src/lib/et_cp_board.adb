@@ -38,7 +38,7 @@
 --   ToDo:
 --   - command to define a global cutout area
 --   - command to set design rules
---   - command to move netchanger, to change the signal layer of a netchanger
+--
 
 with ada.text_io;					use ada.text_io;
 with ada.strings; 					use ada.strings;
@@ -72,7 +72,7 @@ with et_cp_board_module;			use et_cp_board_module;
 with et_cp_board_material_pnp;		use et_cp_board_material_pnp;
 with et_cp_board_submodule;			use et_cp_board_submodule;
 with et_cp_board_material_bom;		use et_cp_board_material_bom;
--- CS with et_cp_board_netchanger;		use et_cp_board_netchanger;
+with et_cp_board_netchanger;		use et_cp_board_netchanger;
 with et_cp_board_script;			use et_cp_board_script;
 with et_cp_board_libraries;			use et_cp_board_libraries;
 
@@ -377,6 +377,9 @@ package body et_cp_board is
 
 						when NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE =>
 							move_device_placeholder (module_cursor, cmd, log_threshold + 1);
+
+						when NOUN_NETCHANGER =>
+							move_netchanger (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_SUBMODULE =>
 							move_submodule (module_cursor, cmd, log_threshold + 1);

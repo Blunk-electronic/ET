@@ -71,28 +71,33 @@ package body et_cp_board_netchanger is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+
+		index : type_netchanger_id;
 	begin
 		-- CS log message
-		null;
+
 		
--- 		case cmd_field_count is
--- 			when 9 =>
+		case cmd_field_count is
+			when 8 =>
+				-- Extract the index of the targeted netchanger:
+				index := to_netchanger_id (get_field (cmd, 5)); -- 1,2,3, ...
+
+				null;
 -- 				move_netchanger (
--- 					module_name 	=> key (module),
--- 					index			=> to_netchanger_id (get_field (cmd, 5)), -- 1,2,3, ...
+-- 					module 			=> module,
+-- 					index			=> index,
 -- 					coordinates		=> to_coordinates (get_field (cmd, 6)),  -- relative/absolute
--- 					sheet			=> to_sheet_relative (get_field (cmd, 7)),
 -- 					point			=> type_vector_model (set (
 -- 										x => to_distance (get_field (cmd, 8)),
 -- 										y => to_distance (get_field (cmd, 9)))),
 -- 						
 -- 					log_threshold	=> log_threshold + 1);
--- 
--- 			when 10 .. type_field_count'last =>
--- 				command_too_long (cmd, cmd_field_count - 1);
--- 				
--- 			when others => command_incomplete (cmd);
--- 		end case;
+
+			when 10 .. type_field_count'last =>
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
 	end move_netchanger;
 
 

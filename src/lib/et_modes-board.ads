@@ -124,6 +124,7 @@ package et_modes.board is
 
 		NOUN_NAME,
 		NOUN_NET,
+		NOUN_NETCHANGER,
 
 		NOUN_ORIGINS, -- the center of a package
 		NOUN_OUTLINE,

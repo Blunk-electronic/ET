@@ -69,6 +69,7 @@ package et_board_verb_noun_keys is
 	key_noun_arc		: constant gdk_key_type := GDK_LC_a;	
 	key_noun_assy		: constant gdk_key_type := GDK_LC_a;
 	key_noun_device		: constant gdk_key_type := GDK_LC_d;
+	key_noun_netchanger	: constant gdk_key_type := GDK_LC_e;
 	key_noun_freetrack	: constant gdk_key_type := GDK_LC_f;
 	key_noun_line		: constant gdk_key_type := GDK_LC_l;
 	key_noun_outline	: constant gdk_key_type := GDK_LC_o;
@@ -83,7 +84,7 @@ package et_board_verb_noun_keys is
 	key_noun_ratsnest	: constant gdk_key_type := GDK_LC_r;
 	key_noun_silkscreen	: constant gdk_key_type := GDK_LC_s;
 	key_noun_stopmask	: constant gdk_key_type := GDK_LC_t;
-	key_noun_stencil	: constant gdk_key_type := GDK_LC_e;
+	key_noun_stencil	: constant gdk_key_type := GDK_LC_i;
 	key_noun_keepout	: constant gdk_key_type := GDK_LC_k;
 	key_noun_conductors	: constant gdk_key_type := GDK_LC_c;
 	key_noun_text		: constant gdk_key_type := GDK_LC_x;

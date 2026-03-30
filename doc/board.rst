@@ -1104,13 +1104,13 @@ Stencil
 
 #. Moving Objects
 
-	|VNS| m e
+	|VNS| m i
 
 	
 		
 #. Deleting Objects
 
-	|VNS| del e
+	|VNS| del i
 
 		
 	.. code-block::

@@ -186,7 +186,23 @@ Schematic Editor
 		show netchanger 44
 
 	
+
+
 	
 ++++++++++++
 Board Editor
 ++++++++++++
+
+#. Move a Netchanger
+
+	|VNS| m e
+
+	.. code-block::
+
+		move netchanger 1 absolute 210 100"
+
+
+	.. code-block::
+
+		move netchanger 1 relative -10 5.2
+
