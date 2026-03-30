@@ -1276,8 +1276,9 @@ package body et_schematic_ops_netchangers is
 			netchanger_cursor : pac_netchangers.cursor;
 			
 			-- The sheet where the netchanger is located
-			-- in the schematic:
-			sheet : type_sheet;
+			-- before and after the move operation:
+			sheet_old : type_sheet;			
+			sheet_new : type_sheet;
 			
 			ports : type_netchanger_ports;
 
@@ -1305,10 +1306,14 @@ package body et_schematic_ops_netchangers is
 						move (
 							position	=> location,
 							offset		=> to_position_relative (point, sheet));
+
 				end case;
 
-			
+				-- Assign the new position to the netchanger candidate:
 				set_position (netchanger, to_netchanger_position (location));
+				
+				-- Get the new sheet number:
+				sheet_new := get_sheet (netchanger);
 			end move;
 
 			
@@ -1318,19 +1323,19 @@ package body et_schematic_ops_netchangers is
 
 			
 			-- Get the sheet number where the netchanger is:
-			sheet := get_sheet (netchanger_cursor);
+			sheet_old := get_sheet (netchanger_cursor);
 
 			-- log sheet number:
-			log (text => "found the netchanger on sheet " & to_string (sheet),
+			log (text => "found the netchanger on sheet " & to_string (sheet_old),
 					level => log_threshold + 1);
 
 			
 			-- Delete the old netchanger ports in connected net
-			-- segments as they are BEFORE the move:
+			-- segments on the old sheet as they are BEFORE the move:
 			delete_ports (
 				module_cursor	=> module_cursor,
 				index			=> index,
-				sheet			=> sheet,					
+				sheet			=> sheet_old,					
 				log_threshold	=> log_threshold + 2);
 			
 			-- Move the netchanger:
@@ -1343,12 +1348,13 @@ package body et_schematic_ops_netchangers is
 			-- ports AFTER the move operation:
 			ports := get_netchanger_ports (netchanger_cursor);
 			
-			-- Inserts the netchanger ports in the net segments.
+			-- Inserts the netchanger ports in the net segments
+			-- on the new sheet:
 			insert_ports (
 				module_cursor	=> module_cursor,
 				index			=> index,
 				ports			=> ports,
-				sheet			=> sheet,
+				sheet			=> sheet_new,
 				log_threshold	=> log_threshold + 2);
 
 		end query_module;
