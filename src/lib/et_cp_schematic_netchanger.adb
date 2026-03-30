@@ -160,22 +160,33 @@ package body et_cp_schematic_netchanger is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+
+		index : type_netchanger_id;
 	begin
 		-- CS log message
-
-		-- CS: test existence of the given netchanger
 		
 		case cmd_field_count is
 			when 8 =>
-				drag_netchanger (
-					module_cursor 	=> module,
-					index			=> to_netchanger_id (get_field (cmd, 5)), -- 1,2,3,...
-					coordinates		=> to_coordinates (get_field (cmd, 6)), -- relative/absolute
-					point			=> type_vector_model (set (
-										x => to_distance (get_field (cmd, 7)),
-										y => to_distance (get_field (cmd, 8)))),
-					log_threshold	=> log_threshold + 1);
+				-- Extract the index of the targeted netchanger:
+				index := to_netchanger_id (get_field (cmd, 5)); -- 1,2,3, ...
 
+				-- Test whether the given netchanger exists:
+				if netchanger_exists (module, index) then
+				
+					drag_netchanger (
+						module_cursor 	=> module,
+						index			=> index,
+						coordinates		=> to_coordinates (get_field (cmd, 6)), -- relative/absolute
+						point			=> type_vector_model (set (
+											x => to_distance (get_field (cmd, 7)),
+											y => to_distance (get_field (cmd, 8)))),
+						log_threshold	=> log_threshold + 1);
+
+				else
+					netchanger_not_found (index);
+				end if;
+
+					
 			when 9 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
 				
@@ -202,18 +213,29 @@ package body et_cp_schematic_netchanger is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+
+		index : type_netchanger_id;
 	begin
 		-- CS log message
-
-		-- CS: test existence of the given netchanger
 		
 		case cmd_field_count is
 			when 5 =>
-				delete_netchanger (
-					module_cursor	=> module,
-					index			=> to_netchanger_id (get_field (cmd, 5)), -- 1,2,3,...
-					log_threshold	=> log_threshold + 1);
+				-- Extract the index of the targeted netchanger:
+				index := to_netchanger_id (get_field (cmd, 5)); -- 1,2,3, ...
 
+				-- Test whether the given netchanger exists:
+				if netchanger_exists (module, index) then
+				
+					delete_netchanger (
+						module_cursor	=> module,
+						index			=> index,
+						log_threshold	=> log_threshold + 1);
+
+				else
+					netchanger_not_found (index);
+				end if;
+
+					
 			when 6 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
 				
@@ -238,33 +260,43 @@ package body et_cp_schematic_netchanger is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
+		index : type_netchanger_id;
+		
 		rotation : type_rotation_model;
 	begin
 		log (text => "rotate netchanger", level => log_threshold);
 		log_indentation_up;
 
-		-- CS: test existence of the given netchanger
 		
 		case cmd_field_count is
 			
 			when 6 =>
-				rotation := to_rotation (get_field (cmd, 6)); -- 90
+				-- Extract the index of the targeted netchanger:
+				index := to_netchanger_id (get_field (cmd, 5)); -- 1,2,3, ...
 
-							
-				-- Validate rotation. Must be 0 or 90, nothing else:
-				if is_0_or_90 (rotation) then
-					
-					rotate_netchanger (
-						module_cursor 	=> module,
-						index			=> to_netchanger_id (get_field (cmd, 5)), -- 1,2,3,...
-						rotation		=> to_rotation (get_field (cmd, 6)), -- 90
-						log_threshold	=> log_threshold + 1);
+				-- Test whether the given netchanger exists:
+				if netchanger_exists (module, index) then
+				
+					rotation := to_rotation (get_field (cmd, 6)); -- 90
+
+								
+					-- Validate rotation. Must be 0 or 90, nothing else:
+					if is_0_or_90 (rotation) then
+						
+						rotate_netchanger (
+							module_cursor 	=> module,
+							index			=> index,
+							rotation		=> to_rotation (get_field (cmd, 6)), -- 90
+							log_threshold	=> log_threshold + 1);
+
+					else
+						log (WARNING, " Rotation " & to_string (rotation) & " invalid !"
+							& " Must be either 0 or 90 degrees.");
+					end if;
 
 				else
-					log (WARNING, " Rotation " & to_string (rotation) & " invalid !"
-						& " Must be either 0 or 90 degrees.");
+					netchanger_not_found (index);
 				end if;
-
 
 					
 			when 7 .. type_field_count'last =>
@@ -293,23 +325,32 @@ package body et_cp_schematic_netchanger is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
+		index : type_netchanger_id;
 	begin
 		log (text => "set netchanger direction", level => log_threshold);
 		log_indentation_up;
 
-		-- CS: test existence of the given netchanger
 		
 		case cmd_field_count is
 			
 			when 6 =>
 				-- set netchanger 2 forward/backward
+
+				index := to_netchanger_id (get_field (cmd, 5)); -- 1,2,3,...
+				
+				-- Test whether the given netchanger exists:
+				if netchanger_exists (module, index) then
 			
-				set_netchanger_direction (
-					module_cursor 	=> module,
-					index			=> to_netchanger_id (get_field (cmd, 5)), -- 1,2,3,...
-					direction		=> to_netchanger_direction (get_field (cmd, 6)), -- forward
-					log_threshold	=> log_threshold + 1);
-							
+					set_netchanger_direction (
+						module_cursor 	=> module,
+						index			=> index,
+						direction		=> to_netchanger_direction (get_field (cmd, 6)), -- forward
+						log_threshold	=> log_threshold + 1);
+
+				else
+					netchanger_not_found (index);
+				end if;
+				
 					
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
@@ -342,21 +383,28 @@ package body et_cp_schematic_netchanger is
 		log (text => "rename netchanger", level => log_threshold);
 		log_indentation_up;
 
-		-- CS: test existence of the given netchanger
 		
 		case cmd_field_count is
 			-- "rename netchanger 1 14"
 			
 			when 6 =>
 				index_old := to_netchanger_id (get_field (cmd, 5)); -- 1
-				index_new := to_netchanger_id (get_field (cmd, 6)); -- 14
+
+				-- Test whether the given netchanger exists:
+				if netchanger_exists (module, index_old) then
 				
-				rename_netchanger (
-					module_cursor	=> module,
-					index_old		=> index_old,
-					index_new		=> index_new,
-					log_threshold	=> log_threshold + 1);
+					index_new := to_netchanger_id (get_field (cmd, 6)); -- 14
 					
+					rename_netchanger (
+						module_cursor	=> module,
+						index_old		=> index_old,
+						index_new		=> index_new,
+						log_threshold	=> log_threshold + 1);
+
+				else
+					netchanger_not_found (index_old);
+				end if;
+				
 					
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
@@ -390,27 +438,33 @@ package body et_cp_schematic_netchanger is
 		log (text => "copy netchanger", level => log_threshold);
 		log_indentation_up;
 
-		-- CS: test existence of the given netchanger
 		
 		case cmd_field_count is
 			-- "copy netchanger 1 4 100 40"
 			
 			when 8 =>
 				index := to_netchanger_id (get_field (cmd, 5)); -- 1,2,3,...
+
+				-- Test whether the given netchanger exists:
+				if netchanger_exists (module, index) then
 				
-				sheet := to_sheet (get_field (cmd, 6));
+					sheet := to_sheet (get_field (cmd, 6));
+					
+					place := to_vector_model (
+						x => get_field (cmd, 7),
+						y => get_field (cmd, 8));
+						
+					copy_netchanger (
+						module_cursor	=> module,
+						index			=> index,
+						destination		=> to_netchanger_position (sheet, place, 0.0),
+						-- rotation 0.0 has no meaning					
+						log_threshold	=> log_threshold + 1);
+
+				else
+					netchanger_not_found (index);
+				end if;
 				
-				place := to_vector_model (
-					x => get_field (cmd, 7),
-					y => get_field (cmd, 8));
-					
-				copy_netchanger (
-					module_cursor	=> module,
-					index			=> index,
-					destination		=> to_netchanger_position (sheet, place, 0.0),
-					-- rotation 0.0 has no meaning					
-					log_threshold	=> log_threshold + 1);
-					
 					
 			when 9 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
@@ -444,19 +498,24 @@ package body et_cp_schematic_netchanger is
 		log (text => "show netchanger", level => log_threshold);
 		log_indentation_up;
 
-		-- CS: test existence of the given netchanger
 		
 		case cmd_field_count is
 			-- "show netchanger 44"
 			
 			when 5 =>
 				index := to_netchanger_id (get_field (cmd, 5)); -- 44
-					
-				show_netchanger (
-					module_cursor	=> module,
-					index			=> index,
-					log_threshold	=> log_threshold + 1);
-					
+
+				-- Test whether the given netchanger exists:
+				if netchanger_exists (module, index) then
+				
+					show_netchanger (
+						module_cursor	=> module,
+						index			=> index,
+						log_threshold	=> log_threshold + 1);
+				else
+					netchanger_not_found (index);
+				end if;
+				
 					
 			when 6 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);

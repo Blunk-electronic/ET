@@ -1149,75 +1149,62 @@ package body et_schematic_ops_netchangers is
 			netchanger_cursor := get_netchanger (module_cursor, index);
 
 			
-			if has_element (netchanger_cursor) then 
-				-- netchanger exists
+			-- Get the sheet number where the netchanger is:
+			sheet := get_sheet (netchanger_cursor);
 
-				-- Get the sheet number where the netchanger is:
-				sheet := get_sheet (netchanger_cursor);
+			-- log sheet number:
+			log (text => "found the netchanger on sheet " & to_string (sheet),
+					level => log_threshold + 1);
 
-				-- log sheet number:
-				log (text => "found the netchanger on sheet " & to_string (sheet),
-					 level => log_threshold + 1);
+			
+			-- Before the actual drag, the coordinates of the
+			-- netchanger ports must be fetched. These coordinates 
+			-- will later assist
+			-- in changing the positions of connected net segments.
+			ports_old := get_netchanger_ports (netchanger_cursor);
+
+			-- Fetch the netchanger position BEFORE the move.
+			location := to_object_position (
+				get_position_schematic (netchanger_cursor));
+
+			-- Test whether the ports at the current position can be dragged:
+			movable_test (module_cursor, index, location, 
+				ports_old, log_threshold + 2);
+			
+
+			-- Move the netchanger to the new position:
+			update_element (
+				container	=> module.netchangers,
+				position	=> netchanger_cursor,
+				process		=> move'access);
+
+			-- Get the NEW absolute positions of the netchanger ports AFTER
+			-- the move operation according to location and rotation in schematic.
+			ports_new := get_netchanger_ports (netchanger_cursor);
+
+			-- Drag connected net segments:
+			drag_net_segments (
+				module_cursor	=> module_cursor,
+				ports_before	=> ports_old,
+				ports_after		=> ports_new,
+				sheet			=> get_sheet (location),
+				log_threshold	=> log_threshold + 1);
 
 				
-				-- Before the actual drag, the coordinates of the
-				-- netchanger ports must be fetched. These coordinates 
-				-- will later assist
-				-- in changing the positions of connected net segments.
-				ports_old := get_netchanger_ports (netchanger_cursor);
+			-- The drag operation might result in new port-to-net connections.
+			-- So we must insert new ports in segments.
+			-- Insert possible new netchanger ports in the nets:
+			log_indentation_up;
+			
+			-- Inserts the netchanger ports in the net segments.
+			insert_ports (
+				module_cursor	=> module_cursor,
+				index			=> index,
+				ports			=> ports_new,
+				sheet			=> get_sheet (location),
+				log_threshold	=> log_threshold + 1);
 
-				-- Fetch the netchanger position BEFORE the move.
-				location := to_object_position (
-					get_position_schematic (netchanger_cursor));
-
-				-- Test whether the ports at the current position can be dragged:
-				movable_test (module_cursor, index, location, 
-					ports_old, log_threshold + 2);
-				
-
-				-- Move the netchanger to the new position:
-				update_element (
-					container	=> module.netchangers,
-					position	=> netchanger_cursor,
-					process		=> move'access);
-
-				-- Get the NEW absolute positions of the netchanger ports AFTER
-				-- the move operation according to location and rotation in schematic.
-				ports_new := get_netchanger_ports (netchanger_cursor);
-
-				-- Drag connected net segments:
-				drag_net_segments (
-					module_cursor	=> module_cursor,
-					ports_before	=> ports_old,
-					ports_after		=> ports_new,
-					sheet			=> get_sheet (location),
-					log_threshold	=> log_threshold + 1);
-
-					
-				-- The drag operation might result in new port-to-net connections.
-				-- So we must insert new ports in segments.
-				-- Insert possible new netchanger ports in the nets:
-				log_indentation_up;
-				
-				-- Inserts the netchanger ports in the net segments.
-				insert_ports (
-					module_cursor	=> module_cursor,
-					index			=> index,
-					ports			=> ports_new,
-					sheet			=> get_sheet (location),
-					log_threshold	=> log_threshold + 1);
-
-				log_indentation_down;
-			else
-				
-				-- CS: It is assumed that the requested netchanger
-				-- does exist. So this warning
-				-- should be moved to the command processor.
-
-				-- netchanger does not exist
-				log (WARNING, " Netchanger " & to_string (index) 
-					 & " not found !");
-			end if;			
+			log_indentation_down;
 		end query_module;
 
 		
@@ -1437,50 +1424,41 @@ package body et_schematic_ops_netchangers is
 			-- Locate given netchanger in the module:
 			netchanger_cursor := get_netchanger (module_cursor, index);
 
+
+			-- Get the sheet number where the netchanger is:
+			sheet := get_sheet (netchanger_cursor);
+
+			-- log sheet number:
+			log (text => "found the netchanger on sheet " & to_string (sheet),
+					level => log_threshold + 1);
+
+					
+			-- Delete the old netchanger ports in connected
+			-- net segments as they are BEFORE the rotation:
+			delete_ports (
+				module_cursor	=> module_cursor,
+				index			=> index,
+				sheet			=> sheet,
+				log_threshold	=> log_threshold + 2);
 			
-			if has_element (netchanger_cursor) then 
-				-- netchanger exists
+			-- Rotate the netchanger to the new rotation:
+			update_element (
+				container	=> module.netchangers,
+				position	=> netchanger_cursor,
+				process		=> rotate'access);
 
-				-- Get the sheet number where the netchanger is:
-				sheet := get_sheet (netchanger_cursor);
+			-- Get the NEW absolute positions of the netchanger
+			-- ports AFTER the rotation:
+			ports := get_netchanger_ports (netchanger_cursor);
 
-				-- log sheet number:
-				log (text => "found the netchanger on sheet " & to_string (sheet),
-					 level => log_threshold + 1);
+			-- Inserts the new netchanger ports in the net segments:
+			insert_ports (
+				module_cursor	=> module_cursor,
+				index			=> index,
+				ports			=> ports,
+				sheet			=> sheet,
+				log_threshold	=> log_threshold + 2);
 
-					 
-				-- Delete the old netchanger ports in connected
-				-- net segments as they are BEFORE the rotation:
-				delete_ports (
-	 				module_cursor	=> module_cursor,
-					index			=> index,
-					sheet			=> sheet,
-					log_threshold	=> log_threshold + 2);
-				
-				-- Rotate the netchanger to the new rotation:
-				update_element (
-					container	=> module.netchangers,
-					position	=> netchanger_cursor,
-					process		=> rotate'access);
-
-				-- Get the NEW absolute positions of the netchanger
-				-- ports AFTER the rotation:
-				ports := get_netchanger_ports (netchanger_cursor);
-
-				-- Inserts the new netchanger ports in the net segments:
-				insert_ports (
-					module_cursor	=> module_cursor,
-					index			=> index,
-					ports			=> ports,
-					sheet			=> sheet,
-					log_threshold	=> log_threshold + 2);
-
-			else
-				-- CS: It is assumed that the requested netchanger
-				-- does exist. So this warning
-				-- should be moved to the command processor.
-				log (WARNING, " Netchanger " & to_string (index) & " not found !");
-			end if;
 		end query_module;
 		
 		
@@ -1543,70 +1521,59 @@ package body et_schematic_ops_netchangers is
 			netchanger_cursor := get_netchanger (module_cursor, index);
 
 			
-			if has_element (netchanger_cursor) then 
-				-- original netchanger exists
+			-- Get the next available index to be used 
+			-- for the new netchanger:
+			index_new := get_next_netchanger_index (module_cursor);
+		
+			log (text => "netchanger index is " & to_string (index_new),
+				level => log_threshold + 1);
 
-				-- Get the next available index to be used 
-				-- for the new netchanger:
-				index_new := get_next_netchanger_index (module_cursor);
+			-- Take a copy of the original netchanger.
+			-- (This operation copies the direction also.)
+			netchanger := element (netchanger_cursor);
+
+			-- Backup the rotation of the original netchanger:
+			rotation := get_rotation (netchanger);
 			
-				log (text => "netchanger index is " & to_string (index_new),
-					level => log_threshold + 1);
+			-- Set the position of the copy as requested
+			-- by the caller:
+			set_position (netchanger, destination);
 
-				-- Take a copy of the original netchanger.
-				-- (This operation copies the direction also.)
-				netchanger := element (netchanger_cursor);
+			-- log (text => "new netchanger position: "
+			-- 	 & to_string (destination),
+			-- 	 level => log_threshold + 1);
+			
+			-- Since no valid rotation was provided 
+			-- by the caller (default 0 degrees),
+			-- assign the rotation of the original to
+			-- the copy:
+			set_rotation (netchanger, rotation);
+			
+			-- Insert the new netchanger in the module:
+			insert (
+				container 	=> module.netchangers,
+				key			=> index_new,
+				new_item	=> netchanger,
+				position	=> netchanger_cursor,
+				-- points now to the new netchanger
+				inserted	=> inserted); 
+				-- flag "inserted" not further evaluated. 
+				-- should always be true
 
-				-- Backup the rotation of the original netchanger:
-				rotation := get_rotation (netchanger);
-				
-				-- Set the position of the copy as requested
-				-- by the caller:
-				set_position (netchanger, destination);
+			-- Get the absolute positions of the 
+			-- new netchanger ports according to 
+			-- location and rotation in schematic:
+			ports := get_netchanger_ports (netchanger_cursor);
 
-				-- log (text => "new netchanger position: "
-				-- 	 & to_string (destination),
-				-- 	 level => log_threshold + 1);
-				
-				-- Since no valid rotation was provided 
-				-- by the caller (default 0 degrees),
-				-- assign the rotation of the original to
-				-- the copy:
-				set_rotation (netchanger, rotation);
-				
-				-- Insert the new netchanger in the module:
-				insert (
-					container 	=> module.netchangers,
-					key			=> index_new,
-					new_item	=> netchanger,
-					position	=> netchanger_cursor,
-					-- points now to the new netchanger
-					inserted	=> inserted); 
-					-- flag "inserted" not further evaluated. 
-					-- should always be true
+			-- Inserts the new netchanger ports in the 
+			-- net segments:
+			insert_ports (
+				module_cursor	=> module_cursor,
+				index			=> index_new,
+				ports			=> ports,
+				sheet			=> get_sheet (destination),
+				log_threshold	=> log_threshold + 1);
 
-				-- Get the absolute positions of the 
-				-- new netchanger ports according to 
-				-- location and rotation in schematic:
-				ports := get_netchanger_ports (netchanger_cursor);
-
-				-- Inserts the new netchanger ports in the 
-				-- net segments:
-				insert_ports (
-					module_cursor	=> module_cursor,
-					index			=> index_new,
-					ports			=> ports,
-					sheet			=> get_sheet (destination),
-					log_threshold	=> log_threshold + 1);
-
-
-			else
-				-- CS: It is assumed that the requested netchanger
-				-- does exist. So this warning
-				-- should be moved to the command processor.
-				log (WARNING, " Netchanger " & to_string (index) 
-					 & " not found !");
-			end if;
 		end query_module;
 
 		
@@ -1666,65 +1633,55 @@ package body et_schematic_ops_netchangers is
 			netchanger_cursor := get_netchanger (module_cursor, index_old);
 
 			
-			if has_element (netchanger_cursor) then 
-				-- original netchanger exists
+			-- If a netchanger with the index_new already exists
+			-- in the module, then no renaming will be done:
+			if netchanger_exists (module_cursor, index_new) then
 
-				-- If a netchanger with the index_new already exists
-				-- in the module, then no renaming will be done:
-				if netchanger_exists (module_cursor, index_new) then
-
-					log (WARNING, " Netchanger " & to_string (index_new)
-						 & " already exists !");
-					
-				else
-					-- Netchanger with new index does not exist, so
-					-- the renaming operation is allowed:
-					
-					-- Step 1:
-					
-					-- Take a copy of the original netchanger:
-					netchanger := element (netchanger_cursor);
-					sheet := get_sheet (netchanger_cursor);
-
-					-- Delete the old netchanger completely:
-					delete_netchanger (module_cursor, index_old, log_threshold + 1);
-
-
-					-- Step 2:					
-					
-					-- Insert the new netchanger in the module:
-					insert (
-						container 	=> module.netchangers,
-						key			=> index_new,
-						new_item	=> netchanger,
-						position	=> netchanger_cursor,
-						-- points now to the new netchanger
-						inserted	=> inserted); 
-						-- flag "inserted" not further evaluated. 
-						-- should always be true
-
-					-- Get the absolute positions of the 
-					-- new netchanger ports according to 
-					-- location and rotation in schematic:
-					ports := get_netchanger_ports (netchanger_cursor);
-
-					-- Inserts the new netchanger ports in the 
-					-- net segments:
-					insert_ports (
-						module_cursor	=> module_cursor,
-						index			=> index_new,
-						ports			=> ports,
-						sheet			=> sheet,
-						log_threshold	=> log_threshold + 1);
-				end if;
-
+				log (WARNING, " Netchanger " & to_string (index_new)
+						& " already exists !");
+				
 			else
-				-- CS: It is assumed that the requested netchanger
-				-- does exist. So this warning
-				-- should be moved to the command processor.
-				log (WARNING, " Netchanger " & to_string (index_old) 
-					 & " not found !");
+				-- Netchanger with new index does not exist, so
+				-- the renaming operation is allowed:
+				
+				-- Step 1:
+				
+				-- Take a copy of the original netchanger:
+				netchanger := element (netchanger_cursor);
+				sheet := get_sheet (netchanger_cursor);
+
+				-- Delete the old netchanger completely:
+				delete_netchanger (module_cursor, index_old, log_threshold + 1);
+
+
+				-- Step 2:					
+				
+				-- Insert the new netchanger in the module:
+				insert (
+					container 	=> module.netchangers,
+					key			=> index_new,
+					new_item	=> netchanger,
+					position	=> netchanger_cursor,
+					-- points now to the new netchanger
+					inserted	=> inserted); 
+					-- flag "inserted" not further evaluated. 
+					-- should always be true
+
+				-- Get the absolute positions of the 
+				-- new netchanger ports according to 
+				-- location and rotation in schematic:
+				ports := get_netchanger_ports (netchanger_cursor);
+
+				-- Inserts the new netchanger ports in the 
+				-- net segments:
+				insert_ports (
+					module_cursor	=> module_cursor,
+					index			=> index_new,
+					ports			=> ports,
+					sheet			=> sheet,
+					log_threshold	=> log_threshold + 1);
 			end if;
+
 		end query_module;
 
 
@@ -1774,36 +1731,24 @@ package body et_schematic_ops_netchangers is
 			netchanger_cursor := get_netchanger (module_cursor, index);
 
 
-			if has_element (netchanger_cursor) then 
-				-- netchanger exists
+			-- Get the sheet number where the netchanger is:
+			sheet := get_sheet (netchanger_cursor);
 
-				-- Get the sheet number where the netchanger is:
-				sheet := get_sheet (netchanger_cursor);
-
-				-- log sheet number:
-				log (text => "found the netchanger on sheet " & to_string (sheet),
-					 level => log_threshold + 1);
+			-- log sheet number:
+			log (text => "found the netchanger on sheet " & to_string (sheet),
+					level => log_threshold + 1);
 
 
-				-- Delete netchanger ports in nets:
-				delete_ports (
-	 				module_cursor	=> module_cursor,
-					index			=> index,
-					sheet			=> sheet,					
-					log_threshold	=> log_threshold + 2);
+			-- Delete netchanger ports in nets:
+			delete_ports (
+				module_cursor	=> module_cursor,
+				index			=> index,
+				sheet			=> sheet,					
+				log_threshold	=> log_threshold + 2);
 
-				-- Delete the netchanger itself:
-				delete (module.netchangers, netchanger_cursor);
-				
-			else
-				-- CS: It is assumed that the requested netchanger
-				-- does exist. So this warning
-				-- should be moved to the command processor.
-				
-				-- netchanger does not exist
-				log (WARNING, " Netchanger " & to_string (index) 
-					 & " not found !");
-			end if;
+			-- Delete the netchanger itself:
+			delete (module.netchangers, netchanger_cursor);
+
 		end query_module;
 
 		
@@ -1862,28 +1807,18 @@ package body et_schematic_ops_netchangers is
 			netchanger_cursor := get_netchanger (module_cursor, index);
 
 
-			if has_element (netchanger_cursor) then 
-				-- netchanger exists
+			-- Get the sheet number where the netchanger is:
+			sheet := get_sheet (netchanger_cursor);
 
-				-- Get the sheet number where the netchanger is:
-				sheet := get_sheet (netchanger_cursor);
+			-- log sheet number:
+			log (text => "found the netchanger on sheet " & to_string (sheet),
+					level => log_threshold + 1);
 
-				-- log sheet number:
-				log (text => "found the netchanger on sheet " & to_string (sheet),
-					 level => log_threshold + 1);
+			-- Set the netchanger as selected both
+			-- in schematic and board drawing:
+			module.netchangers.update_element (
+				netchanger_cursor, query_netchanger'access);
 
-				-- Set the netchanger as selected both
-				-- in schematic and board drawing:
-				module.netchangers.update_element (
-					netchanger_cursor, query_netchanger'access);
-								
-			else
-				-- CS: It is assumed that the requested netchanger
-				-- does exist. So this warning
-				-- should be moved to the command processor.
-				log (WARNING, " Netchanger " & to_string (index) 
-					 & " not found !");
-			end if;
 		end query_module;
 
 		
@@ -1908,6 +1843,8 @@ package body et_schematic_ops_netchangers is
 	end show_netchanger;
 
 
+	
+	
 	
 	
 	
@@ -1956,53 +1893,41 @@ package body et_schematic_ops_netchangers is
 			netchanger_cursor := get_netchanger (module_cursor, index);
 
 
-			if has_element (netchanger_cursor) then 
-				-- netchanger exists
+			-- Get the sheet number where the netchanger is:
+			sheet := get_sheet (netchanger_cursor);
 
-				-- Get the sheet number where the netchanger is:
-				sheet := get_sheet (netchanger_cursor);
-
-				-- log sheet number:
-				log (text => "found the netchanger on sheet " & to_string (sheet),
-					 level => log_threshold + 1);
+			-- log sheet number:
+			log (text => "found the netchanger on sheet " & to_string (sheet),
+					level => log_threshold + 1);
 
 
-				-- Delete the old netchanger ports in connected
-				-- net segments as they are BEFORE the direction change:
-				delete_ports (
-	 				module_cursor	=> module_cursor,
-					index			=> index,
-					sheet			=> sheet,
-					log_threshold	=> log_threshold + 2);
-				
+			-- Delete the old netchanger ports in connected
+			-- net segments as they are BEFORE the direction change:
+			delete_ports (
+				module_cursor	=> module_cursor,
+				index			=> index,
+				sheet			=> sheet,
+				log_threshold	=> log_threshold + 2);
+			
 
-				update_element (
-					container	=> module.netchangers,
-					position	=> netchanger_cursor,
-					process		=> set_direction'access);
+			update_element (
+				container	=> module.netchangers,
+				position	=> netchanger_cursor,
+				process		=> set_direction'access);
 
-				
-				-- Get the NEW absolute positions of the netchanger
-				-- ports AFTER the direction change:
-				ports := get_netchanger_ports (netchanger_cursor);
+			
+			-- Get the NEW absolute positions of the netchanger
+			-- ports AFTER the direction change:
+			ports := get_netchanger_ports (netchanger_cursor);
 
-				-- Inserts the new netchanger ports in the net segments:
-				insert_ports (
-					module_cursor	=> module_cursor,
-					index			=> index,
-					ports			=> ports,
-					sheet			=> sheet,
-					log_threshold	=> log_threshold + 2);
+			-- Inserts the new netchanger ports in the net segments:
+			insert_ports (
+				module_cursor	=> module_cursor,
+				index			=> index,
+				ports			=> ports,
+				sheet			=> sheet,
+				log_threshold	=> log_threshold + 2);
 
-				
-			else
-				-- CS: It is assumed that the requested netchanger
-				-- does exist. So this warning
-				-- should be moved to the command processor.
-				
-				-- netchanger does not exist
-				netchanger_not_found (index);
-			end if;
 		end query_module;
 
 		
