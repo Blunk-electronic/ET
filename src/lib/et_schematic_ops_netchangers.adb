@@ -59,6 +59,7 @@ package body et_schematic_ops_netchangers is
 
 
 	use pac_net_name;
+	use pac_netchangers;
 	
 	
 
@@ -94,8 +95,8 @@ package body et_schematic_ops_netchangers is
 	procedure netchanger_not_found (
 		index : in type_netchanger_id) 
 	is begin
-		log (ERROR, "netchanger" & to_string (index) & " not found !");
-		raise constraint_error;
+		log (WARNING, "Netchanger " 
+			& to_string (index) & " not found !");
 	end;
 
 	
@@ -1310,60 +1311,46 @@ package body et_schematic_ops_netchangers is
 				set_position (netchanger, to_netchanger_position (location));
 			end move;
 
-
-			use pac_netchangers;			
+			
 		begin
 			-- Locate given netchanger in the module:
 			netchanger_cursor := get_netchanger (module_cursor, index);
 
 			
-			if has_element (netchanger_cursor) then 
-				-- netchanger exists
+			-- Get the sheet number where the netchanger is:
+			sheet := get_sheet (netchanger_cursor);
 
-				-- Get the sheet number where the netchanger is:
-				sheet := get_sheet (netchanger_cursor);
+			-- log sheet number:
+			log (text => "found the netchanger on sheet " & to_string (sheet),
+					level => log_threshold + 1);
 
-				-- log sheet number:
-				log (text => "found the netchanger on sheet " & to_string (sheet),
-					 level => log_threshold + 1);
-
+			
+			-- Delete the old netchanger ports in connected net
+			-- segments as they are BEFORE the move:
+			delete_ports (
+				module_cursor	=> module_cursor,
+				index			=> index,
+				sheet			=> sheet,					
+				log_threshold	=> log_threshold + 2);
+			
+			-- Move the netchanger:
+			update_element (
+				container	=> module.netchangers,
+				position	=> netchanger_cursor,
+				process		=> move'access);
 				
-				-- Delete the old netchanger ports in connected net
-				-- segments as they are BEFORE the move:
-				delete_ports (
-	 				module_cursor	=> module_cursor,
-					index			=> index,
-					sheet			=> sheet,					
-					log_threshold	=> log_threshold + 2);
-				
-				-- Move the netchanger:
-				update_element (
-					container	=> module.netchangers,
-					position	=> netchanger_cursor,
-					process		=> move'access);
-					
-				-- Get the NEW absolute positions of the netchanger 
-				-- ports AFTER the move operation:
-				ports := get_netchanger_ports (netchanger_cursor);
-				
-				-- Inserts the netchanger ports in the net segments.
-				insert_ports (
-					module_cursor	=> module_cursor,
-					index			=> index,
-					ports			=> ports,
-					sheet			=> sheet,
-					log_threshold	=> log_threshold + 2);
+			-- Get the NEW absolute positions of the netchanger 
+			-- ports AFTER the move operation:
+			ports := get_netchanger_ports (netchanger_cursor);
+			
+			-- Inserts the netchanger ports in the net segments.
+			insert_ports (
+				module_cursor	=> module_cursor,
+				index			=> index,
+				ports			=> ports,
+				sheet			=> sheet,
+				log_threshold	=> log_threshold + 2);
 
-			else
-				-- CS: It is assumed that the requested netchanger
-				-- does exist. So this warning
-				-- should be moved to the command processor.
-
-				
-				-- netchanger does not exist
-				log (WARNING, " Netchanger " & to_string (index) 
-					 & " not found !");
-			end if;			
 		end query_module;
 
 		

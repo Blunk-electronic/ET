@@ -48,7 +48,7 @@ package et_cp_schematic_netchanger is
 
 
 	-- This procedure parses a command that places a netchanger.
-	-- Example: "schematic led_driver add netchanger 2 60 30 0
+	-- Example: "schematic led_driver add netchanger 2 60 30 0"
 	procedure add_netchanger (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
@@ -57,6 +57,8 @@ package et_cp_schematic_netchanger is
 
 	-- This procedure parses a command that moves a netchanger.
 	-- Example: "schematic led_driver move netchanger 2 absolute 3 30 0"
+	-- If the targeted netchanger does not exist, then nothing 
+	-- happens and a waring is output:
 	procedure move_netchanger (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;

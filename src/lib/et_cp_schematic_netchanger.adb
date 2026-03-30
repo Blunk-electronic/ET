@@ -110,24 +110,35 @@ package body et_cp_schematic_netchanger is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+
+		index : type_netchanger_id;
 	begin
 		-- CS log message
 
-		-- CS: test existence of the given netchanger
 		
 		case cmd_field_count is
 			when 9 =>
-				move_netchanger (
-					module_cursor 	=> module,
-					index			=> to_netchanger_id (get_field (cmd, 5)), -- 1,2,3, ...
-					coordinates		=> to_coordinates (get_field (cmd, 6)),  -- relative/absolute
-					sheet			=> to_sheet_relative (get_field (cmd, 7)),
-					point			=> type_vector_model (set (
-										x => to_distance (get_field (cmd, 8)),
-										y => to_distance (get_field (cmd, 9)))),
-						
-					log_threshold	=> log_threshold + 1);
+				-- Extract the index of the targeted netchanger:
+				index := to_netchanger_id (get_field (cmd, 5)); -- 1,2,3, ...
 
+				-- Test whether the given netchanger exists.
+				if netchanger_exists (module, index) then
+
+					move_netchanger (
+						module_cursor 	=> module,
+						index			=> index,
+						coordinates		=> to_coordinates (get_field (cmd, 6)),  -- relative/absolute
+						sheet			=> to_sheet_relative (get_field (cmd, 7)),
+						point			=> type_vector_model (set (
+											x => to_distance (get_field (cmd, 8)),
+											y => to_distance (get_field (cmd, 9)))),
+							
+						log_threshold	=> log_threshold + 1);
+				else
+					netchanger_not_found (index);
+				end if;
+
+				
 			when 10 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
 				
