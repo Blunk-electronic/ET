@@ -102,6 +102,13 @@ package body et_netchangers.board is
 
 	
 
+	function get_layer (
+		netchanger	: in type_netchanger)
+		return string
+	is begin
+		return "L" & to_string (get_layer (netchanger));
+	end;
+	
 	
 	
 	

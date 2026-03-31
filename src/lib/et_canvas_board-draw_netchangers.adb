@@ -67,6 +67,7 @@ procedure draw_netchangers is
 		position : type_position;
 	begin
 		set_color_netchanger (brightness);
+		-- CS draw with the color of the signal layer ?
 
 		set_place (position, place);
 		
@@ -105,6 +106,32 @@ procedure draw_netchangers is
 	 
 
 	 
+	 
+	-- This procedure draws the number of
+	-- the signal layer the netchanger is placed in:
+	procedure draw_layer (
+		place : in type_vector_model;
+		layer : in string) -- like L4
+	is
+		use pac_draw_text;
+		p_final : type_vector_model := place;
+	begin
+		-- The final position is right of the body of the netchanger:
+		move (p_final, DIR_RIGHT, layer_id_to_origin_offset);
+		
+		draw_text (
+			content		=> to_content (layer),
+			size		=> layer_size,
+			font		=> netchanger_name_font, -- CS use a slanted font ?
+			anchor		=> p_final,
+			origin		=> false, -- no origin required
+			rotation	=> 0.0, -- never rotated
+			alignment	=> (ALIGN_LEFT, ALIGN_CENTER));
+		null;
+	end draw_layer;
+	 
+	 
+	 
 	
 	procedure query_module (
 		module_name	: in pac_module_name.bounded_string;
@@ -139,7 +166,9 @@ procedure draw_netchangers is
 
 			draw_body (position);
 
-			draw_name (position, index);			
+			draw_name (position, index);
+			
+			draw_layer (position, get_layer (netchanger));
 		end query_netchanger;
 			
 			

@@ -160,6 +160,7 @@ package et_schematic_ops_netchangers is
 	
 
 	-- Adds a netchanger to the schematic.
+	-- CS: add parameter for explicitly given index
 	procedure add_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_object_position; -- sheet/x/y

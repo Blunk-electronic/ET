@@ -60,6 +60,7 @@ package et_board_verb_noun_keys is
 	key_verb_place		: constant gdk_key_type := GDK_LC_p;
 	key_verb_show		: constant gdk_key_type := GDK_LC_h;
 	key_verb_update		: constant gdk_key_type := GDK_LC_u;
+	-- key_verb_set		: constant gdk_key_type := GDK_LC_s;
 
 
 
@@ -78,6 +79,8 @@ package et_board_verb_noun_keys is
 	-- CS: This is a multi-assignment to key "n".
 	-- For the moment it seems not to cause trouble:
 	key_noun_net 		: constant gdk_key_type := GDK_LC_n;
+
+	-- key_noun_layer		: constant gdk_key_type := GDK_LC_y;
 	
 	-- CS ? key_noun_contour		: constant gdk_key_type := GDK_LC_c;
 

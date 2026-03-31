@@ -75,7 +75,13 @@ package et_netchangers.board is
 		return type_signal_layer;
 
 	
-	
+	-- This function returns a full layer
+	-- identification like L4:
+	function get_layer (
+		netchanger	: in type_netchanger)
+		return string;
+
+		
 	
 	
 -- CATCH ZONE:

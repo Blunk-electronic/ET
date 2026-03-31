@@ -50,11 +50,18 @@ package et_netchanger_symbol_board is
 
 
 	name_to_origin_offset : constant type_distance_positive := 1.5;
+
+	layer_id_to_origin_offset : constant type_distance_positive := 1.0;
+	
 	
 	-- The size of the name (like N31):
 	name_size : constant type_distance_positive := 1.0;
 
+	-- The size of the layer id:
+	layer_size : constant type_distance_positive := 1.0;
 
+
+	
 	netchanger_name_font : constant type_font :=
 		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);
 
