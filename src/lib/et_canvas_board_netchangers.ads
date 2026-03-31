@@ -41,17 +41,14 @@
 with ada.containers;	            use ada.containers;
 with ada.containers.doubly_linked_lists;
 
-with gtk.widget;					use gtk.widget;
-with gtk.gentry;					use gtk.gentry;
+-- with gtk.widget;					use gtk.widget;
+-- with gtk.gentry;					use gtk.gentry;
 
 with et_board_geometry;				use et_board_geometry;
 with et_board_coordinates;			use et_board_coordinates;
 use et_board_geometry.pac_geometry_2;
 
 with et_generic_modules;			use et_generic_modules;
-
--- with et_nets;						use et_nets;
--- with et_net_segment;				use et_net_segment;
 
 with et_netchangers;				use et_netchangers;
 with et_netchangers.board;			use et_netchangers.board;

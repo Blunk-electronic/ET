@@ -39,14 +39,13 @@
 with ada.text_io;					use ada.text_io;
 with ada.exceptions;				use ada.exceptions;
 
-with glib;
-with glib.values;
+-- with glib;
+-- with glib.values;
+-- 
+-- with gdk.types;						use gdk.types;
+-- with gdk.event;						use gdk.event;
+-- with gdk.types.keysyms;				use gdk.types.keysyms;
 
-with gdk.types;						use gdk.types;
-with gdk.event;						use gdk.event;
-with gdk.types.keysyms;				use gdk.types.keysyms;
-
-with et_device_property_level;
 with et_board_ops_groups;
 with et_schematic_ops_groups;
 with et_board_ops_netchangers;		use et_board_ops_netchangers;
@@ -68,7 +67,7 @@ with et_object_status;				use et_object_status;
 package body et_canvas_board_netchangers is
 
 	use et_canvas_board.pac_canvas;
-	-- use et_canvas_schematic.pac_device_ops;
+
 
 
 

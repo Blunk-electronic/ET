@@ -135,10 +135,11 @@ is
 						et_canvas_board_conductors.move_object (MOUSE, snap_point);
 						
 					when NOUN_DEVICE | NOUN_PLACEHOLDER =>
-						et_canvas_board_devices.move_object (MOUSE, click_point);
+						et_canvas_board_devices.move_object (MOUSE, click_point); 
+						-- CS use snap_point ?
 
 					when NOUN_NETCHANGER =>
-						et_canvas_board_netchangers.move_object (MOUSE, click_point);
+						et_canvas_board_netchangers.move_object (MOUSE, snap_point);
 						
 					when NOUN_OUTLINE =>
 						et_canvas_board_outline.move_object (MOUSE, snap_point);

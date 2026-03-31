@@ -70,6 +70,8 @@ package body et_board_ops_groups is
 			log_indentation_down;
 		end;
 
+		-- CS:
+		-- Make separate procedures as in package et_schematic_ops_groups
 
 	begin
 		log (text => "module " & to_string (module_cursor) 
