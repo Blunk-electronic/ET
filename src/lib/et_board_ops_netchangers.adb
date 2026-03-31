@@ -86,7 +86,6 @@ package body et_board_ops_netchangers is
 				-- calculate the new position 
 				case coordinates is
 					when ABSOLUTE =>
-						null;
 						-- The absolute position is defined 
 						-- by the given point (x/y):
 						set_place (netchanger, point);

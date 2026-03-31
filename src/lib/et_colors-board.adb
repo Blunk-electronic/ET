@@ -274,6 +274,15 @@ package body et_colors.board is
 	end set_color_outline;
 
 
+
+
+	procedure set_color_netchanger (
+		brightness	: in type_brightness := brightness_default)
+	is begin		
+		set_color (netchanger, brightness);
+	end;
+
+	
 	
 	
 -- VIAS

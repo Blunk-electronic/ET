@@ -40,7 +40,13 @@
 
 
 with ada.text_io;					use ada.text_io;
+with et_colors;						use et_colors;
 -- with et_primitive_objects;			use et_primitive_objects;
+with et_netchangers;				use et_netchangers;
+with et_netchangers.board;			use et_netchangers.board;
+with et_netchanger_symbol_board;	use et_netchanger_symbol_board;
+with et_text_content;				use et_text_content;
+with et_alignment;					use et_alignment;
 
 
 separate (et_canvas_board)
@@ -48,13 +54,103 @@ separate (et_canvas_board)
 
 procedure draw_netchangers is
 
+	use et_colors.board;
+
+	brightness : type_brightness := NORMAL;
+	
+
+	-- This procedure draws the body of the netchanger
+	-- at the given position:
+	procedure draw_body (
+		place : in type_vector_model)
+	is 
+		position : type_position;
+	begin
+		set_color_netchanger (brightness);
+
+		set_place (position, place);
+		
+		draw_line (netchanger_symbol_board.line_1, position,
+				   linewidth_box, stroke => DO_STROKE);
+
+		draw_line (netchanger_symbol_board.line_2, position,
+				   linewidth_box, stroke => DO_STROKE);
+
+		-- CS use just a single stroke command here ?
+	end draw_body;
+
+
+
+
+	-- This procedure draws the full name of the netchanger:
+	procedure draw_name (
+		place : in type_vector_model;
+		index : in type_netchanger_id) -- 1,2,3, ...
+	is
+		use pac_draw_text;
+		p_final : type_vector_model := place;
+	begin
+		-- The final position is below the body of the netchanger:
+		move (p_final, DIR_DOWN, name_to_origin_offset);
+		
+		draw_text (
+			content		=> to_content (get_netchanger_name (index)),
+			size		=> name_size,
+			font		=> netchanger_name_font,
+			anchor		=> p_final,
+			origin		=> false, -- no origin required
+			rotation	=> 0.0, -- never rotated
+			alignment	=> (ALIGN_CENTER, ALIGN_CENTER));
+	end draw_name;
+	 
+
+	 
 	
 	procedure query_module (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module) 
-	is begin
-		null;
-		-- CS
+	is 
+		use pac_netchangers;
+		netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
+
+
+		procedure query_netchanger (
+			index		: in type_netchanger_id;
+			netchanger	: in type_netchanger)
+		is
+			position : type_vector_model := get_place (netchanger);
+		begin
+			-- The default brightness is NORMAL. 
+			-- If the netchanger is selected, 
+			-- then the brightness will be increased:
+			brightness := NORMAL;
+			
+			-- CS
+			-- Draw the netchanger candidate highlighted if
+			-- it is selected:
+			-- if is_selected (netchanger) then
+
+				-- brightness := BRIGHT;
+
+				-- overwrite position if netchanger is moving:
+			-- 	if is_moving (netchanger) then
+			-- 		set_place (position, get_object_tool_position);
+			-- 	end if;
+			-- end if;
+
+			draw_body (position);
+
+			draw_name (position, index);
+			
+		end query_netchanger;
+			
+			
+	begin
+		-- Iterate through the netchangers of the module:
+		while has_element (netchanger_cursor) loop
+			query_element (netchanger_cursor, query_netchanger'access);
+			next (netchanger_cursor);
+		end loop;		
 	end query_module;
 	
 

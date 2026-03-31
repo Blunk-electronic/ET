@@ -40,7 +40,8 @@
 --
 
 
-with et_board_geometry;				use et_board_geometry;
+with et_board_geometry;			use et_board_geometry;
+with et_fonts;					use et_fonts;
 
 
 package et_netchanger_symbol_board is
@@ -48,11 +49,36 @@ package et_netchanger_symbol_board is
 	use pac_geometry_2;
 
 
-			
+	name_to_origin_offset : constant type_distance_positive := 1.5;
+	
+	-- The size of the name (like N31):
+	name_size : constant type_distance_positive := 1.0;
+
+
+	netchanger_name_font : constant type_font :=
+		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);
+
+
+	
+	linewidth_box : constant type_distance_positive := 0.25;
+
+	line_point : constant type_distance_positive := 0.7;
+
+	-- The symbol looks like an X:
 	type type_netchanger_symbol is record
-		line_1 : type_line; -- CS dummy
+		line_1 : type_line := type_line (to_line (
+			A => (-line_point, -line_point), 
+			B => ( line_point,  line_point)));
+
+		line_2 : type_line := type_line (to_line (
+			A => (-line_point,  line_point), 
+			B => ( line_point, -line_point)));
 	end record;
 
+
+	netchanger_symbol_board : constant 
+		type_netchanger_symbol := (others => <>);
+	
 	
 end et_netchanger_symbol_board;
 

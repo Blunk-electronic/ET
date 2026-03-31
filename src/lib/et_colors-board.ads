@@ -77,6 +77,7 @@ package et_colors.board is
 	origin				: type_color := gray;	
 	placeholders		: type_color := gray;
 
+	netchanger			: type_color := gray;
 	ratsnest			: type_color := yellow;
 	
 	via_restring		: type_color := green;
@@ -221,9 +222,15 @@ package et_colors.board is
 	procedure set_color_outline (
 		brightness	: in type_brightness := brightness_default);
 
-		
-		
 
+	
+-- NETCHANGERS:
+	
+	procedure set_color_netchanger (
+		brightness	: in type_brightness := brightness_default);
+	
+
+	
 -- VIAS
 
 	procedure set_color_via_restring (
