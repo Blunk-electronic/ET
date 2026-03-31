@@ -105,6 +105,34 @@ package body et_netchangers.board is
 	
 	
 	
+	
+-- CATCH ZONE:
+	
+	function in_catch_zone (
+		netchanger	: in type_netchanger;
+		zone		: in type_catch_zone)
+		return boolean
+	is
+		result : boolean := false;
+
+		netchanger_position : type_vector_model := 
+			netchanger.position_brd.place;
+			
+	begin
+		if in_catch_zone (zone, netchanger_position) then
+			result := true;
+		else
+			result := false;
+		end if;
+		
+		return result;
+	end in_catch_zone;
+
+	
+	
+	
+	
+	
 -- STATUS:
 
 

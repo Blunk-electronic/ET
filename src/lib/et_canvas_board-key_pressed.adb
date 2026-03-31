@@ -448,6 +448,10 @@ is
 				noun := NOUN_DEVICE;
 				set_status (et_canvas_board_devices.status_move_device);
 
+			when key_noun_netchanger =>
+				noun := NOUN_NETCHANGER;
+				set_status (et_canvas_board_netchangers.status_move_netchanger);
+				
 			when key_noun_outline =>
 				noun := NOUN_OUTLINE;
 				set_status (et_canvas_board_outline.status_move_object);

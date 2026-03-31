@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -128,6 +128,11 @@ begin
 						redraw_board;
 					end if;
 
+				when NOUN_NETCHANGER =>
+					if edit_process_running then
+						redraw_board;
+					end if;
+					
 				-- when NOUN_NON_ELECTRICAL_DEVICE =>
 				-- 	if edit_process_running then
 				-- 		redraw_board;

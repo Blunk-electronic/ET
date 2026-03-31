@@ -78,9 +78,166 @@ package et_board_ops_netchangers is
 
 
 
-	
+
+
+
+	type type_object_netchanger is record
+		netchanger_cursor : pac_netchangers.cursor;
+	end record;
 	
 
+	-- Returns the full name of the object netchanger:
+	function get_object_name (
+		object : in type_object_netchanger)
+		return string;
+
+
+	-- Returns the index of the object netchanger:
+	function get_object_id (
+		object : in type_object_netchanger)
+		return type_netchanger_id;
+
+	
+
+	-- Modifies the status flag of a netchanger.
+	-- If the netchanger is set as moving, then its
+	-- original position will be backup
+	-- in global variable object_original_position:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		netchanger		: in type_object_netchanger;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Sets the proposed-flag of all netchangers which are in the
+	-- given zone around the given place.
+	-- Adds to count the number of netchangers that have been found:
+	procedure propose_netchangers (
+		module_cursor	: in pac_generic_modules.cursor;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural;
+		log_threshold	: in type_log_level);
+
+	
+
+	-- Resets the status flags of netchanger:
+	procedure reset_status_netchangers (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Returns the first netchanger according to the given flag.
+	-- If no netchanger has been found,
+	-- then the return is no_element:
+	function get_first_netchanger (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_netchanger;
+
+
+
+
+
+------------------------------------------------------------------------------------------
+
+-- OBJECTS:
+
+
+	type type_object_category is (
+		CAT_VOID,
+		CAT_NETCHANGER
+		-- CS properties, notes, ...
+		);
+
+
+	-- This type wraps all kinds of objects into a single type:
+	type type_object (cat : type_object_category) is record
+		case cat is
+			when CAT_VOID => null;
+			
+			when CAT_NETCHANGER =>
+				netchanger : type_object_netchanger;
+
+		end case;
+	end record;
+
+
+	
+	
+	package pac_objects is new indefinite_doubly_linked_lists (type_object);
+
+	
+	-- Returns the number of items stored in the given list:
+	function get_count (
+		objects : in pac_objects.list)
+		return natural;
+
+
+
+
+	-- Returns the first object
+	-- according to the given flag.
+	-- If nothing found, then the return is a void object (CAT_VOID):
+	function get_first_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object;
+
+
+
+
+	-- Collects all objects 
+	-- according to the given flag and returns them in a list:
+	function get_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return pac_objects.list;
+
+
+	
+
+
+	-- Modifies the status flag of an object:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+	
+	
+	-- Modifies the status flag of an object indicated by a cursor:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+
+
+	-- This is a collective procedure that resets
+	-- the status flags of all 
+	-- objects (netchangers, notes, properties, ...):
+	procedure reset_status_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+	
+	
+	-- Moves an object to the given destination:
+	procedure move_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+	
 end et_board_ops_netchangers;
 
 -- Soli Deo Gloria

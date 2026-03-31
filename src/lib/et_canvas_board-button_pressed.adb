@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -137,6 +137,9 @@ is
 					when NOUN_DEVICE | NOUN_PLACEHOLDER =>
 						et_canvas_board_devices.move_object (MOUSE, click_point);
 
+					when NOUN_NETCHANGER =>
+						et_canvas_board_netchangers.move_object (MOUSE, click_point);
+						
 					when NOUN_OUTLINE =>
 						et_canvas_board_outline.move_object (MOUSE, snap_point);
 
@@ -325,7 +328,11 @@ is
 							et_canvas_board_devices.clarify_object;
 						end if;
 
-
+					when NOUN_NETCHANGER =>
+						if clarification_pending then
+							et_canvas_board_netchangers.clarify_object;
+						end if;
+						
 					when NOUN_OUTLINE =>
 						if clarification_pending then
 							et_canvas_board_outline.clarify_object;

@@ -39,6 +39,7 @@
 
 
 with et_board_ops_devices;
+with et_board_ops_netchangers;
 with et_board_ops_assy_doc;
 with et_board_ops_silkscreen;
 with et_board_ops_stopmask;
@@ -90,6 +91,7 @@ package body et_board_ops_groups is
 		et_board_ops_conductors.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops_vias.reset_proposed_vias (active_module, log_threshold + 1);
 
+		et_board_ops_netchangers.reset_status_objects (active_module, log_threshold + 1);
 		et_board_ops_ratsnest.reset_proposed_airwires (active_module, log_threshold + 1);
 		et_ripup.reset_ripup_mode;
 

@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                          NETCHANGERS / BOARD                             --
+--                       CANVAS BOARD / NETCHANGERS                         --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                -- 
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,101 +35,75 @@
 --
 --   history of changes:
 --
--- To Do: 
---
---
+-- DESCRIPTION:
+-- 
+
+with ada.containers;	            use ada.containers;
+with ada.containers.doubly_linked_lists;
+
+with gtk.widget;					use gtk.widget;
+with gtk.gentry;					use gtk.gentry;
+
+with et_board_geometry;				use et_board_geometry;
+with et_board_coordinates;			use et_board_coordinates;
+use et_board_geometry.pac_geometry_2;
+
+with et_generic_modules;			use et_generic_modules;
+
+-- with et_nets;						use et_nets;
+-- with et_net_segment;				use et_net_segment;
+
+with et_netchangers;				use et_netchangers;
+with et_netchangers.board;			use et_netchangers.board;
+with et_string_processing;			use et_string_processing;
+with et_logging;					use et_logging;
+
+with et_canvas_messages;			use et_canvas_messages;
+with et_canvas_tool;				use et_canvas_tool;
 
 
+package et_canvas_board_netchangers is
 
-
-package et_netchangers.board is
-
-	use et_board_geometry;
-	use pac_geometry_2;
-
-	
-	function to_string (
-		position	: in type_netchanger_position_board)
-		return string;
-
-		
-
-	procedure set_place (
-		netchanger	: in out type_netchanger;
-		place		: in type_vector_model);
-
-
-	function get_place (
-		netchanger	: in type_netchanger)
-		return type_vector_model;
-		
-		
-
-	procedure set_layer (
-		netchanger	: in out type_netchanger;
-		layer		: in type_signal_layer);
-	
-	
-	function get_layer (
-		netchanger	: in type_netchanger)
-		return type_signal_layer;
+	use pac_generic_modules;
 
 	
-	
-	
-	
--- CATCH ZONE:
-	
-	-- Returns true if the given netchanger is in
-	-- the given catch zone:
-	function in_catch_zone (
-		netchanger	: in type_netchanger;
-		zone		: in type_catch_zone)
-		return boolean;
-	
-	
-	
-	
--- STATUS:
+	-- to be output in the status bar:
+	status_move_netchanger : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to move netchanger."
+		& status_hint_for_abort;
 
-
-	function is_selected (
-		netchanger : in type_netchanger)
-		return boolean;
-
-
-	function is_proposed (
-		netchanger : in type_netchanger)
-		return boolean;
-
-
-	function is_moving (
-		netchanger : in type_netchanger)
-		return boolean;
-
-		
-	procedure set_proposed (
-		netchanger : in out type_netchanger);
-		
-
-	-- Sets the selected flag in both schematic
-	-- and board symbol:
-	procedure set_selected (
-		netchanger : in out type_netchanger);
 
 	
-	procedure modify_status (
-		netchanger	: in out type_netchanger;
-		operation	: in type_status_operation);
-		
+	-- This procedure is required in order to clarify
+	-- which object among the proposed objects is meant.
+	-- On every call of this procedure we advance from one
+	-- proposed segment to the next in a circular manner
+	-- and set it as "selected":
+	procedure clarify_object;
+	
 
-	-- Resets the status flags in both schematic
-	-- and board symbol:
-	procedure reset_status (
-		netchanger	: in out type_netchanger);
+	-- Locates objects in the vicinity of the given point
+	-- and sets their proposed-flag.
+	-- Only displayed layers are taken into account.
+	-- Depending on how many objects have been found, the behaviour is:
+	-- - If only one object found, then it is selected automatically.
+	-- - If more than one object found, then clarification is requested.
+	--   The first object of them is selected.
+	procedure find_objects (
+		point : in type_vector_model);
+
+
+	procedure move_object (
+		tool	: in type_tool;
+		point	: in type_vector_model);
+
+
 
 	
-end et_netchangers.board;
+end et_canvas_board_netchangers;
 
 -- Soli Deo Gloria
 
