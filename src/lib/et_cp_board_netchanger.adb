@@ -50,6 +50,9 @@ with et_board_geometry;					use et_board_geometry;
 with et_netchangers;					use et_netchangers;
 -- with et_schematic_ops_submodules;		use et_schematic_ops_submodules;
 
+with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
+with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
+with et_board_ops_netchangers;			use et_board_ops_netchangers;
 
 
 
@@ -82,18 +85,23 @@ package body et_cp_board_netchanger is
 				-- Extract the index of the targeted netchanger:
 				index := to_netchanger_id (get_field (cmd, 5)); -- 1,2,3, ...
 
-				null;
--- 				move_netchanger (
--- 					module 			=> module,
--- 					index			=> index,
--- 					coordinates		=> to_coordinates (get_field (cmd, 6)),  -- relative/absolute
--- 					point			=> type_vector_model (set (
--- 										x => to_distance (get_field (cmd, 8)),
--- 										y => to_distance (get_field (cmd, 9)))),
--- 						
--- 					log_threshold	=> log_threshold + 1);
+				
+				if netchanger_exists (module, index) then
+					
+					move_netchanger (
+						module_cursor	=> module,
+						index			=> index,
+						coordinates		=> to_coordinates (get_field (cmd, 6)),  -- relative/absolute
+						point			=> type_vector_model (set (
+											x => to_distance (get_field (cmd, 7)),
+											y => to_distance (get_field (cmd, 8)))),						
+						log_threshold	=> log_threshold + 1);
+				else
+					netchanger_not_found (index);
+				end if;
 
-			when 10 .. type_field_count'last =>
+				
+			when 9 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
 				
 			when others => command_incomplete (cmd);
