@@ -71,6 +71,12 @@ package et_board_ops_ratsnest is
 		return pac_points.list;
 
 
+	-- Returns the positions (x/y) of all netchangers
+	-- that are connected with the given net:
+	function get_netchanger_positions (
+		net_cursor : in pac_nets.cursor)
+		return pac_points.list;
+								 
 	
 	-- (Re)generates the ratsnest of all nets according to the current
 	-- positions of vias, tracks and terminals:

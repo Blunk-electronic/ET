@@ -87,6 +87,24 @@ package body et_board_ops_ratsnest is
 	end get_track_ends;
 
 
+
+
+
+
+	function get_netchanger_positions (
+		net_cursor : in pac_nets.cursor)
+		return pac_points.list
+	is
+		result : pac_points.list;
+	begin
+
+		return result;
+	end get_netchanger_positions;
+
+
+
+
+	
 	
 	
 	procedure update_ratsnest (
@@ -126,12 +144,18 @@ package body et_board_ops_ratsnest is
 					net_cursor		=> net_cursor,
 					log_threshold	=> lth + 2);
 
+
+				
+				-- VIAS:
 				log (text => "get via positions", level => lth + 2);
 				
 				-- Get x/y of all vias and append their positions to nodes.
 				-- The via positions must be converted to location vectors:
 				splice_vectors (nodes, to_vectors (get_via_positions (net_cursor)));
 
+
+				
+				-- TRACK SEGMENTS:
 				log (text => "get track ends", level => lth + 2);
 				
 				-- Get x/y of track segments (start and end points)
@@ -139,7 +163,21 @@ package body et_board_ops_ratsnest is
 				-- The end points of the tracks must be converted to location vectors:
 				splice_vectors (nodes, to_vectors (get_track_ends (net_cursor)));
 
+				
+
+				-- NETCHANGERS:
+				log (text => "get netchanger positions", level => lth + 2);
+				
+				-- Get x/y of netchangers and append their positions to nodes.
+				-- The positions of the netchangers must be converted 
+				-- to location vectors:
+				splice_vectors (nodes, to_vectors (get_netchanger_positions (net_cursor)));
+
+
+				
 				-- CS submodules ?
+
+
 				
 				-- remove redundant/overlapping nodes
 				remove_redundant_vectors (nodes);
