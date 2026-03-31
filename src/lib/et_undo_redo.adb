@@ -270,8 +270,21 @@ package body et_undo_redo is
 			end commit_devices;
 
 
-			procedure commit_non_electrical_devices is 
+			procedure commit_netchangers is
+				use et_netchangers;
 			begin
+				log (text => "netchangers", level => lth + 1);
+							
+				module.netchanger_commits.dos.append (pac_netchanger_commit.make_commit (
+					index	=> module.commit_index, 
+					stage	=> stage, 
+					item	=> module.netchangers,
+					message	=> to_bounded_string (verb_noun),
+					domain	=> domain));
+			end commit_netchangers;
+
+			
+			procedure commit_non_electrical_devices is begin
 				log (text => "devices (non-electrical)", level => lth + 1);
 							
 				module.devices_non_electric_commits.dos.append (
@@ -284,8 +297,7 @@ package body et_undo_redo is
 			end commit_non_electrical_devices;
 
 
-			procedure commit_board is 
-			begin
+			procedure commit_board is begin
 				log (text => "board objects (non-electrical)", level => lth + 1);
 							
 				module.board_commits.dos.append (
@@ -337,6 +349,16 @@ package body et_undo_redo is
 					end case;
 
 
+				when NOUN_NETCHANGER =>
+					case verb is
+						when VERB_MOVE =>
+							commit_netchangers;
+							
+						when others =>
+							null;
+					end case;
+
+					
 				when NOUN_PLACEHOLDER =>
 					case verb is
 						when VERB_MOVE | VERB_ROTATE =>							
