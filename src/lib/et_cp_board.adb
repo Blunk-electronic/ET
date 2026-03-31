@@ -492,6 +492,9 @@ package body et_cp_board is
 						when NOUN_VIA =>
 							set_via_properties (module_cursor, cmd, log_threshold + 1);
 
+						when NOUN_NETCHANGER =>
+							set_netchanger_layer (module_cursor, cmd, log_threshold + 1);
+							
 						when others => invalid_noun (to_string (noun));
 					end case;
 

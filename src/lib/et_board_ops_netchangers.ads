@@ -54,6 +54,7 @@ with et_netchangers;					use et_netchangers;
 with et_object_status;					use et_object_status;
 
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_logging;						use et_logging;
 
 
@@ -78,6 +79,17 @@ package et_board_ops_netchangers is
 
 
 
+	-- Sets the signal layer of the given netchanger. 
+	-- It is assumed that the netchanger indicated by index
+	-- exists in the module. If the netchanger does not exist,
+	-- then an exception is raised.
+	procedure set_netchanger_layer (
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id; -- 1,2,3,...
+		layer			: in type_signal_layer; -- 8
+		log_threshold	: in type_log_level);
+
+	
 	-- CS show_netchanger
 
 

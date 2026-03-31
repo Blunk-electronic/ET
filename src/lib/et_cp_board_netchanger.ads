@@ -57,14 +57,23 @@ package et_cp_board_netchanger is
 		log_threshold	: in type_log_level);
 
 
-		
+	-- CS: currently no need:
 	procedure drag_netchanger (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 		
-	-- CS set signal layer
+	-- This procedure parses a command that sets the
+	-- signal layer of a netchanger.
+	-- Example: "board demo set netchanger 1 layer 3"	
+	-- If the netchanger does not exist, then nothing 
+	-- happens and a warning is output:
+	procedure set_netchanger_layer (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
 
 		
 end et_cp_board_netchanger;

@@ -53,7 +53,7 @@ with et_netchangers;					use et_netchangers;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
 with et_board_ops_netchangers;			use et_board_ops_netchangers;
-
+with et_pcb_signal_layers;				use et_pcb_signal_layers;
 
 
 package body et_cp_board_netchanger is
@@ -147,6 +147,56 @@ package body et_cp_board_netchanger is
 
 
 
+	
+
+
+	procedure set_netchanger_layer (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+
+		index : type_netchanger_id;
+		layer : type_signal_layer;
+	begin
+		-- CS log message
+
+		
+		case cmd_field_count is
+			when 7 =>
+				-- Extract the index of the targeted netchanger:
+				index := to_netchanger_id (get_field (cmd, 5)); -- 1,2,3, ...
+
+				
+				if netchanger_exists (module, index) then
+
+					-- CS: test keyword "layer" on place 6
+					
+					layer := to_signal_layer (get_field (cmd, 7));
+					-- CS: make sure the signal layer 
+					-- exists in the module.
+					
+					set_netchanger_layer (
+						module_cursor	=> module,
+						index			=> index,
+						layer			=> layer,
+						log_threshold	=> log_threshold + 1);
+				else
+					netchanger_not_found (index);
+				end if;
+
+				
+			when 8 .. type_field_count'last =>
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+	end set_netchanger_layer;
+
+
+	
 	
 	
 end et_cp_board_netchanger;

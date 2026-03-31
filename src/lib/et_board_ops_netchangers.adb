@@ -144,8 +144,70 @@ package body et_board_ops_netchangers is
 
 
 
+	
 
 
+
+	
+
+
+	procedure set_netchanger_layer (
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id; -- 1,2,3,...
+		layer			: in type_signal_layer; -- 8
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			netchanger_cursor : pac_netchangers.cursor;
+			
+			
+			procedure set_layer (
+				index		: in type_netchanger_id;
+				netchanger	: in out type_netchanger) 
+			is begin
+				set_layer (netchanger, layer);
+			end set_layer;
+
+			
+		begin
+			-- Locate given netchanger in the module:
+			netchanger_cursor := get_netchanger (module_cursor, index);
+
+			update_element (
+				container	=> module.netchangers,
+				position	=> netchanger_cursor,
+				process		=> set_layer'access);
+
+		end query_module;
+
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " set netchanger " & to_string (index) 
+			& " signal layer to " & to_string (layer),
+			level => log_threshold);
+
+
+		log_indentation_up;
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;		
+	end set_netchanger_layer;
+
+
+	
+
+
+	
 	
 
 	function get_object_name (

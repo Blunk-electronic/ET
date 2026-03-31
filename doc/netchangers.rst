@@ -206,3 +206,18 @@ Board Editor
 
 		move netchanger 1 relative -10 5.2
 
+
+
+
+#. Set the Signal Layer
+
+	A netchanger connects the tracks of two nets
+	in a certain signal layer.
+
+	Thus example command sets the signal
+	layer of netchanger 1 to layer 3:
+
+	.. code-block::
+
+		set netchanger 1 layer 3
+
