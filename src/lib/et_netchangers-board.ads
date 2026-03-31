@@ -76,6 +76,46 @@ package et_netchangers.board is
 
 	
 	
+	
+-- STATUS:
+
+
+	function is_selected (
+		netchanger : in type_netchanger)
+		return boolean;
+
+
+	function is_proposed (
+		netchanger : in type_netchanger)
+		return boolean;
+
+
+	function is_moving (
+		netchanger : in type_netchanger)
+		return boolean;
+
+		
+	procedure set_proposed (
+		netchanger : in out type_netchanger);
+		
+
+	-- Sets the selected flag in both schematic
+	-- and board symbol:
+	procedure set_selected (
+		netchanger : in out type_netchanger);
+
+	
+	procedure modify_status (
+		netchanger	: in out type_netchanger;
+		operation	: in type_status_operation);
+		
+
+	-- Resets the status flags in both schematic
+	-- and board symbol:
+	procedure reset_status (
+		netchanger	: in out type_netchanger);
+
+	
 end et_netchangers.board;
 
 -- Soli Deo Gloria

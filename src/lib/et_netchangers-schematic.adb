@@ -560,6 +560,7 @@ package body et_netchangers.schematic is
 		netchanger	: in out type_netchanger)
 	is begin
 		reset_status (netchanger.status_sch);
+		reset_status (netchanger.status_brd);
 	end;
 
 	

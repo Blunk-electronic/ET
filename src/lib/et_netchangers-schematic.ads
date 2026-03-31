@@ -325,6 +325,8 @@ package et_netchangers.schematic is
 		operation	: in type_status_operation);
 		
 
+	-- Resets the status flags in both schematic
+	-- and board symbol:
 	procedure reset_status (
 		netchanger	: in out type_netchanger);
 

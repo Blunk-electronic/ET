@@ -125,24 +125,23 @@ procedure draw_netchangers is
 			-- then the brightness will be increased:
 			brightness := NORMAL;
 			
-			-- CS
 			-- Draw the netchanger candidate highlighted if
 			-- it is selected:
-			-- if is_selected (netchanger) then
+			if is_selected (netchanger) then
 
-				-- brightness := BRIGHT;
+				brightness := BRIGHT;
 
 				-- overwrite position if netchanger is moving:
-			-- 	if is_moving (netchanger) then
-			-- 		set_place (position, get_object_tool_position);
-			-- 	end if;
-			-- end if;
+				if is_moving (netchanger) then
+					position := get_object_tool_position;
+				end if;
+			end if;
 
 			draw_body (position);
 
-			draw_name (position, index);
-			
+			draw_name (position, index);			
 		end query_netchanger;
+			
 			
 			
 	begin
