@@ -130,6 +130,25 @@ package body et_schematic_ops_netchangers is
 
 
 	
+	function get_netchanger_position (
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id) -- 1,2,3,...
+		return type_object_position
+	is
+		result : type_object_position;
+		netchanger_cursor : pac_netchangers.cursor;
+	begin
+		netchanger_cursor := get_netchanger (module_cursor, index);
+		
+		result := to_object_position (
+			get_position_schematic (netchanger_cursor));
+		
+		return result;
+	end;
+	
+	
+	
+	
 	
 	
 

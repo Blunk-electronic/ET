@@ -82,7 +82,16 @@ package et_schematic_ops_netchangers is
 		index			: in type_netchanger_id)
 		return pac_netchangers.cursor;
 		
-								
+
+
+	-- Returns the sheet and x/y coordinates of the given
+	-- netchanger:
+	function get_netchanger_position (
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id) -- 1,2,3,...
+		return type_object_position;
+
+	
 	
 	-- Returns true if given port of netchanger 
 	-- is connected with any net:

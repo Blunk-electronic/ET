@@ -45,6 +45,7 @@ with ada.text_io;						use ada.text_io;
 with ada.characters.handling;			use ada.characters.handling;
 with ada.strings; 						use ada.strings;
 
+with et_runmode;						use et_runmode;
 with et_sheets;							use et_sheets;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
@@ -54,6 +55,8 @@ with et_netchangers.schematic;			use et_netchangers.schematic;
 with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
 with et_schematic_ops_groups;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
+
+with et_canvas_schematic;
 
 
 package body et_cp_schematic_netchanger is
@@ -492,41 +495,76 @@ package body et_cp_schematic_netchanger is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 
-		index : type_netchanger_id;
-		sheet : type_sheet;
-		place : type_vector_model;
+
+		procedure runmode_module is
+			index : type_netchanger_id;
+
+			-- In order to zoom on the targeted netchanger
+			-- we need its position in the schematic:
+			position : type_object_position;
+			
+			use et_canvas_schematic;
+			use et_canvas_schematic.pac_canvas;
+		begin
+			case cmd_field_count is
+				-- "show netchanger 44"
+				
+				when 5 =>
+					index := to_netchanger_id (get_field (cmd, 5)); -- 44
+
+					-- Test whether the given netchanger exists:
+					if netchanger_exists (module, index) then
+
+						-- Zoom on the netchanger:
+						position := get_netchanger_position (module, index);
+						active_sheet := get_sheet (position);
+						update_sheet_number_display;
+
+						-- Zoom on the netchanger and leave the
+						-- zoom factor as it is:
+						zoom_to (get_place (position), S);
+
+						-- Mark the netchanger as "selected":
+						show_netchanger (
+							module_cursor	=> module,
+							index			=> index,
+							log_threshold	=> log_threshold + 1);
+					else
+						netchanger_not_found (index);
+					end if;
+					
+						
+				when 6 .. type_field_count'last =>
+					command_too_long (cmd, cmd_field_count - 1);
+					
+				when others => command_incomplete (cmd);
+			end case;
+		end runmode_module;
+
+
+		
 	begin
 		log (text => "show netchanger", level => log_threshold);
 		log_indentation_up;
 
-		-- Deselect all objects of previous show operations
-		-- so that nothing is highlighted anymore:
-		et_schematic_ops_groups.reset_objects (module, log_threshold + 1);
 
-		
-		case cmd_field_count is
-			-- "show netchanger 44"
-			
-			when 5 =>
-				index := to_netchanger_id (get_field (cmd, 5)); -- 44
+		-- Show operations are only useful and possible in graphical
+		-- runmode:
+		case runmode is
+			when MODE_MODULE =>
 
-				-- Test whether the given netchanger exists:
-				if netchanger_exists (module, index) then
-				
-					show_netchanger (
-						module_cursor	=> module,
-						index			=> index,
-						log_threshold	=> log_threshold + 1);
-				else
-					netchanger_not_found (index);
-				end if;
-				
+				-- Deselect all objects of previous show operations
+				-- so that nothing is highlighted anymore:
+				et_schematic_ops_groups.reset_objects (
+					module, log_threshold + 1);
+
+				runmode_module;
+
+			when others =>
+				skipped_in_this_runmode (log_threshold + 1);
 					
-			when 6 .. type_field_count'last =>
-				command_too_long (cmd, cmd_field_count - 1);
-				
-			when others => command_incomplete (cmd);
-		end case;		
+		end case;				
+	
 
 		log_indentation_down;
 	end show_netchanger;
