@@ -38,7 +38,8 @@
 -- To Do:
 -- - rework
 -- - propose arguments if command incomplete
---
+-- - test the existence of the requested submodule.
+-- - set exit code if targeted object does not exist
 
 with ada.text_io;						use ada.text_io;
 with ada.characters.handling;			use ada.characters.handling;

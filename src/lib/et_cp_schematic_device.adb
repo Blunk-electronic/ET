@@ -38,7 +38,7 @@
 -- To Do:
 -- - rework
 -- - propose arguments if command incomplete
---
+-- - set exit code if targeted object does not exist
 --
 --
 

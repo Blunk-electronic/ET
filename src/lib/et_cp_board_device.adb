@@ -39,6 +39,9 @@
 -- - rework
 -- - propose arguments if command incomplete
 -- - test existence of targeted device
+-- - set exit code if targeted object does not exist
+--
+--
 
 with ada.text_io;						use ada.text_io;
 with ada.characters.handling;			use ada.characters.handling;
