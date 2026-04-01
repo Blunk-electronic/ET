@@ -59,8 +59,8 @@ with et_canvas_schematic;			use et_canvas_schematic;
 
 with et_net_strands;
 
-with et_commit;
-with et_undo_redo;
+-- with et_commit;
+-- with et_undo_redo;
 with et_directory_and_file_ops;
 with et_object_status;				use et_object_status;
 
@@ -325,10 +325,6 @@ package body et_canvas_schematic_netchangers is
 		-- Assigns the final position after the move to the selected object.
 		-- Resets variable preliminary_object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -341,17 +337,11 @@ package body et_canvas_schematic_netchangers is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				move_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					destination		=> point,
 					log_threshold	=> log_threshold + 1);
-				
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				-- If a netchanger has been moved, then the board
 				-- must be redrawn:
@@ -423,10 +413,6 @@ package body et_canvas_schematic_netchangers is
 		
 		-- Assigns the final rotation to the selected object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -439,16 +425,10 @@ package body et_canvas_schematic_netchangers is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				rotate_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				-- If a netchanger has been rotated, then the board
 				-- must be redrawn:
@@ -505,10 +485,6 @@ package body et_canvas_schematic_netchangers is
 		
 		-- Deletes the selected object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -521,17 +497,11 @@ package body et_canvas_schematic_netchangers is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-
 				-- Do the delete operation:
 				delete_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				-- If a netchanger has been deleted, then the board
 				-- must be redrawn:
@@ -586,10 +556,6 @@ package body et_canvas_schematic_netchangers is
 	
 		-- Changes the direction of the selected object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -602,17 +568,11 @@ package body et_canvas_schematic_netchangers is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-
 				-- Do the set-direction operation:
 				set_object_direction (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				-- This operation does not affect the board.
 				-- No board redrawing required.
@@ -670,10 +630,6 @@ package body et_canvas_schematic_netchangers is
 		
 		-- Renames the selected object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -686,18 +642,11 @@ package body et_canvas_schematic_netchangers is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				rename_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					new_name		=> name_new,
 					log_threshold	=> log_threshold + 1);
-
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				redraw_board;
 				-- CS redraw schematic ?
@@ -735,6 +684,7 @@ package body et_canvas_schematic_netchangers is
 	end cb_rename_new_name_entered;
 
 
+	
 
 	
 
@@ -746,6 +696,7 @@ package body et_canvas_schematic_netchangers is
 		put_line ("cb_rename_window_destroy");
 		reset;
 	end cb_rename_window_destroy;
+
 
 
 	
@@ -842,10 +793,6 @@ package body et_canvas_schematic_netchangers is
 
 		-- Drags the selected object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -861,17 +808,11 @@ package body et_canvas_schematic_netchangers is
 				-- is required for netchangers and net segments:
 				et_schematic_ops_groups.reset_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				drag_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					destination		=> point,
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				-- If a netchanger has been dragged, then the board
 				-- must be redrawn:
@@ -976,23 +917,14 @@ package body et_canvas_schematic_netchangers is
 	
 	procedure add_netchanger (
 		place : in type_vector_model)
-	is 
-		use et_commit;
-		use et_undo_redo;
-	begin
+	is begin
 		log (text => "add_netchanger", level => log_threshold);
 		log_indentation_up;
-		
-		-- Commit the current state of the design:
-		commit (PRE, verb, noun, log_threshold);
-		
+	
 		add_netchanger (
 			module_cursor	=> active_module,
 			place			=> to_position (place, active_sheet, netchanger_add.rotation),
 			log_threshold	=> log_threshold + 1);
-
-		-- Commit the new state of the design:
-		commit (POST, verb, noun, log_threshold);
 
 		status_clear;
 
@@ -1018,10 +950,6 @@ package body et_canvas_schematic_netchangers is
 		
 		-- Deletes the selected object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -1034,21 +962,13 @@ package body et_canvas_schematic_netchangers is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-
 				-- Do the copy operation:
 				copy_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					destination		=> type_position (
 						to_position (point, netchanger_add.rotation)),
-						
 					log_threshold	=> log_threshold + 1);
-
-					
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				-- If a netchanger has been copied, then the board
 				-- must be redrawn:
@@ -1073,7 +993,7 @@ package body et_canvas_schematic_netchangers is
 
 
 		
-		-- After the original object has been selected, and the the operator is moving 
+		-- After the original object has been selected, and the operator is moving 
 		-- the pointer or the cursor, a preview of the copied object is attached to
 		-- the tool. The "preview object" is floating:
 		procedure build_preview is

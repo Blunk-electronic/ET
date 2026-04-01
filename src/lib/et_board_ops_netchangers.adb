@@ -51,6 +51,10 @@ with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
 with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
 with et_netchangers.board;				use et_netchangers.board;
 
+with et_commit;
+with et_undo_redo;
+with et_modes.board;
+
 
 package body et_board_ops_netchangers is
 
@@ -109,6 +113,10 @@ package body et_board_ops_netchangers is
 		point			: in type_vector_model;
 		log_threshold	: in type_log_level) 
 	is
+
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.board;
 
 		
 		procedure query_module (
@@ -173,11 +181,18 @@ package body et_board_ops_netchangers is
 
 		
 		log_indentation_up;
+
+		-- Commit the current state of the design:
+		commit (PRE, verb, noun, log_threshold + 1);
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+		-- Commit the new state of the design:
+		commit (POST, verb, noun, log_threshold + 1);
+
 		
 		update_ratsnest (module_cursor, log_threshold + 1);
 		

@@ -75,11 +75,18 @@ package body et_cp_schematic_netchanger is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+
+		do_commit : boolean := false;
 	begin
 		-- CS log message 
 		
 		case cmd_field_count is
 			when 8 =>
+				if get_origin (cmd) = ORIGIN_CONSOLE then
+					do_commit := true;
+				end if;
+
+				
 				add_netchanger (
 					module_cursor 	=> module,
 					place			=> to_position (
@@ -90,6 +97,7 @@ package body et_cp_schematic_netchanger is
 									y => to_distance (get_field (cmd, 7))
 									)),
 						rotation		=> to_rotation (get_field (cmd, 8))),
+					do_commit		=> do_commit,
 					log_threshold	=> log_threshold + 1);
 				
 

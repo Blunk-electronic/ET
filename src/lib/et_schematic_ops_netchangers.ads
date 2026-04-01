@@ -169,10 +169,13 @@ package et_schematic_ops_netchangers is
 	
 
 	-- Adds a netchanger to the schematic.
+	-- If do_commit is true, then the design state before
+	-- and the state after the operation will be committed.
 	-- CS: add parameter for explicitly given index
 	procedure add_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_object_position; -- sheet/x/y
+		do_commit		: in boolean := true;
 		log_threshold	: in type_log_level);
 	
 	

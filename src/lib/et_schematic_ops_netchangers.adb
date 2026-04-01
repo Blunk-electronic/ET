@@ -53,6 +53,10 @@ with et_netchanger_symbol_schematic;
 with et_module;							use et_module;
 with et_netchangers.schematic;			use et_netchangers.schematic;
 
+with et_modes.schematic;
+with et_undo_redo;
+with et_commit;
+
 
 
 package body et_schematic_ops_netchangers is
@@ -941,11 +945,15 @@ package body et_schematic_ops_netchangers is
 	procedure add_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_object_position; -- sheet/x/y/rotation
-		-- CS rename to position
-		
+		-- CS rename to position	
+		do_commit		: in boolean := true;
 		log_threshold	: in type_log_level) 
 	is
-
+	
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+		
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -1001,10 +1009,22 @@ package body et_schematic_ops_netchangers is
 
 		log_indentation_up;
 		
+		if do_commit then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+		
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+		
+		
+		if do_commit then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
 		
 		log_indentation_down;		
 	end add_netchanger;
@@ -1120,6 +1140,10 @@ package body et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level) 
 	is
 				
+		use et_modes.schematic;
+		use et_undo_redo;
+		use et_commit;
+
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -1245,11 +1269,17 @@ package body et_schematic_ops_netchangers is
 
 		log_indentation_up;
 		
+		-- Commit the current state of the design:
+		commit (PRE, verb, noun, log_threshold + 1);
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+		-- Commit the new state of the design:
+		commit (POST, verb, noun, log_threshold + 1);
+			
 		log_indentation_down;
 	end drag_netchanger;
 
@@ -1274,6 +1304,11 @@ package body et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level) 
 	is
 
+		use et_modes.schematic;
+		use et_undo_redo;
+		use et_commit;
+
+		
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -1386,11 +1421,17 @@ package body et_schematic_ops_netchangers is
 		
 		log_indentation_up;
 		
+		-- Commit the current state of the design:
+		commit (PRE, verb, noun, log_threshold + 1);
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+		-- Commit the new state of the design:
+		commit (POST, verb, noun, log_threshold + 1);
+			
 		log_indentation_down;
 	end move_netchanger;
 
@@ -1411,6 +1452,10 @@ package body et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level) 
 	is
 		
+		use et_modes.schematic;
+		use et_undo_redo;
+		use et_commit;
+
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -1496,10 +1541,16 @@ package body et_schematic_ops_netchangers is
 		
 		log_indentation_up;
 
+		-- Commit the current state of the design:
+		commit (PRE, verb, noun, log_threshold + 1);
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+		
+		-- Commit the new state of the design:
+		commit (POST, verb, noun, log_threshold + 1);
 		
 		log_indentation_down;
 	end rotate_netchanger;
@@ -1520,6 +1571,11 @@ package body et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level)
 	is
 
+		use et_modes.schematic;
+		use et_undo_redo;
+		use et_commit;
+
+	
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -1604,10 +1660,16 @@ package body et_schematic_ops_netchangers is
 
 		log_indentation_up;
 
+		-- Commit the current state of the design:
+		commit (PRE, verb, noun, log_threshold + 1);
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+		
+		-- Commit the new state of the design:
+		commit (POST, verb, noun, log_threshold + 1);
 		
 		log_indentation_down;		
 	end copy_netchanger;
@@ -1627,6 +1689,10 @@ package body et_schematic_ops_netchangers is
 		index_new		: in type_netchanger_id; -- 14
 		log_threshold	: in type_log_level)
 	is
+	
+		use et_modes.schematic;
+		use et_undo_redo;
+		use et_commit;
 
 		
 		procedure query_module (
@@ -1712,10 +1778,16 @@ package body et_schematic_ops_netchangers is
 
 		log_indentation_up;
 
+		-- Commit the current state of the design:
+		commit (PRE, verb, noun, log_threshold + 1);
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+		
+		-- Commit the new state of the design:
+		commit (POST, verb, noun, log_threshold + 1);
 		
 		log_indentation_down;		
 	end rename_netchanger;
@@ -1732,6 +1804,10 @@ package body et_schematic_ops_netchangers is
 		index			: in type_netchanger_id; -- 1,2,3,...
 		log_threshold	: in type_log_level) 
 	is
+
+		use et_modes.schematic;
+		use et_undo_redo;
+		use et_commit;
 
 		
 		procedure query_module (
@@ -1778,10 +1854,16 @@ package body et_schematic_ops_netchangers is
 
 		log_indentation_up;
 
+		-- Commit the current state of the design:
+		commit (PRE, verb, noun, log_threshold + 1);
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+		
+		-- Commit the new state of the design:
+		commit (POST, verb, noun, log_threshold + 1);
 		
 		log_indentation_down;		
 	end delete_netchanger;
@@ -1877,7 +1959,11 @@ package body et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level)
 	is
 	
-	
+		use et_modes.schematic;
+		use et_undo_redo;
+		use et_commit;
+
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -1965,10 +2051,17 @@ package body et_schematic_ops_netchangers is
 		
 		log_indentation_up;
 
+		
+		-- Commit the current state of the design:
+		commit (PRE, verb, noun, log_threshold + 1);
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+		
+		-- Commit the new state of the design:
+		commit (POST, verb, noun, log_threshold + 1);
 		
 		log_indentation_down;		
 	end set_netchanger_direction;

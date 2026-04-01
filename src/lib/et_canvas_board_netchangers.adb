@@ -49,15 +49,9 @@ with ada.exceptions;				use ada.exceptions;
 with et_board_ops_groups;
 with et_schematic_ops_groups;
 with et_board_ops_netchangers;		use et_board_ops_netchangers;
-
 with et_module_names;				use et_module_names;
-with et_modes.board;				use et_modes.board;
-
 with et_canvas_board;				use et_canvas_board;
-
-
-with et_commit;
-with et_undo_redo;
+with et_modes.board;
 with et_directory_and_file_ops;
 with et_object_status;				use et_object_status;
 
@@ -313,10 +307,6 @@ package body et_canvas_board_netchangers is
 		-- Assigns the final position after the move to the selected object.
 		-- Resets variable preliminary_object:
 		procedure finalize is
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -329,18 +319,12 @@ package body et_canvas_board_netchangers is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				move_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					destination		=> point,
 					log_threshold	=> log_threshold + 1);
 				
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
-
 				-- If a netchanger has been moved, then the board
 				-- must be redrawn:
 				if object.cat = CAT_NETCHANGER then
