@@ -40,6 +40,8 @@
 -- - The existence of requested units and devices 
 --   can be assumed. Instead the existence-test and the associated
 --   warning should be moved to the command processor.
+-- - remove existence-checks of devices as soon as these checks
+--   are implemented in the calling command processor routines.
 
 
 with et_string_processing;					use et_string_processing;

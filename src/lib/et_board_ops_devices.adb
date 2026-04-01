@@ -37,6 +37,8 @@
 --
 -- To Do:
 -- - move device-existence-checks to command processor
+-- - remove existence-checks of devices as soon as these checks
+--   are implemented in the calling command processor routines.
 
 with ada.strings.unbounded;
 
