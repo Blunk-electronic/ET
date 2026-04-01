@@ -52,6 +52,7 @@ with et_schematic_geometry;				use et_schematic_geometry;
 with et_netchangers;					use et_netchangers;
 with et_netchangers.schematic;			use et_netchangers.schematic;
 with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
+with et_schematic_ops_groups;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 
@@ -497,6 +498,10 @@ package body et_cp_schematic_netchanger is
 	begin
 		log (text => "show netchanger", level => log_threshold);
 		log_indentation_up;
+
+		-- Deselect all objects of previous show operations
+		-- so that nothing is highlighted anymore:
+		et_schematic_ops_groups.reset_objects (module, log_threshold + 1);
 
 		
 		case cmd_field_count is

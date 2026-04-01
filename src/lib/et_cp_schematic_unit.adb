@@ -58,6 +58,7 @@ with et_devices_electrical;				use et_devices_electrical;
 with et_devices_electrical.units;		use et_devices_electrical.units;
 with et_schematic_ops_units;			use et_schematic_ops_units;
 with et_schematic_ops_device;			use et_schematic_ops_device;
+with et_schematic_ops_groups;
 with et_units;							use et_units;
 with et_unit_name;						use et_unit_name;
 with et_device_property_level;
@@ -404,6 +405,12 @@ package body et_cp_schematic_unit is
 		-- runmode:
 		case runmode is
 			when MODE_MODULE =>
+
+				-- Deselect all objects of previous show operations
+				-- so that nothing is highlighted anymore:
+				et_schematic_ops_groups.reset_objects (
+					module, log_threshold + 1);
+
 				runmode_module;
 
 			when others =>
