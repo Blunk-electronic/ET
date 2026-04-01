@@ -43,6 +43,9 @@ with et_conductor_segment.boards;
 with et_board_ops_devices;				use et_board_ops_devices;
 with et_board_ops_vias;					use et_board_ops_vias;
 
+with et_netlists;
+with et_board_ops_netchangers;
+
 
 package body et_board_ops_ratsnest is
 
@@ -89,21 +92,61 @@ package body et_board_ops_ratsnest is
 
 
 
+	
 
 
 	function get_netchanger_positions (
-		net_cursor : in pac_nets.cursor)
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in pac_nets.cursor)
 		return pac_points.list
 	is
-		result : pac_points.list;
-	begin
+		-- 1. In this procedure we first get a list
+		-- of netchangers and their ports. In this list we 
+		-- are only interested in the netchanger indexes.
+		-- 2. Then we iterate the netchangers and look up
+		-- for each of them the x/y position in the module.
+		-- 3. The position is then appended to the resulting
+		-- list of points.
+		
+		use et_netlists;
+		use pac_netchanger_ports;
+		netchangers : pac_netchanger_ports.set; -- the list of netchangers
 
+		result : pac_points.list;
+		
+		
+		procedure query_netchanger (
+			c : in pac_netchanger_ports.cursor)
+		is
+			port : type_port_netchanger renames element (c);
+			position : type_vector_model;
+			
+			use et_board_ops_netchangers;
+		begin
+			position := get_netchanger_position (
+				module_cursor, port.index);
+				
+			result.append (position);
+		end query_netchanger;
+		
+		
+		
+	begin
+		-- Get the netchangers that are connected
+		-- with the given net:
+		netchangers := get_netchanger_ports (net_cursor);
+
+		-- Iterate the netchangers:
+		netchangers.iterate (query_netchanger'access);
+				
 		return result;
 	end get_netchanger_positions;
 
 
 
 
+	
+	
 	
 	
 	
@@ -125,14 +168,25 @@ package body et_board_ops_ratsnest is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is				
+				-- The computation of airwires bases on floating
+				-- point numbers. An airwire may start or end
+				-- on a node. The node is a location vector that
+				-- uses floating point numbers:
 				use pac_geometry_brd;
 				use pac_vectors;
 				nodes : pac_vectors.list;
-				
+			
+				-- The fragments are lines and arcs that have
+				-- been laid out already. Airwires may also start
+				-- or end at those fragments:
+				fragments : et_ratsnest.pac_isolated_fragments.list;
+
+				-- The airwires are the result of this
+				-- procedure. In the end we will assign them
+				-- to the candidate net:
 				use pac_airwires;
 				airwires : pac_airwires.list;
-				
-				fragments : et_ratsnest.pac_isolated_fragments.list;
+
 				
 			begin -- query_net
 				log (text => "net " & to_string (net_name), level => lth + 1);
@@ -171,7 +225,8 @@ package body et_board_ops_ratsnest is
 				-- Get x/y of netchangers and append their positions to nodes.
 				-- The positions of the netchangers must be converted 
 				-- to location vectors:
-				splice_vectors (nodes, to_vectors (get_netchanger_positions (net_cursor)));
+				splice_vectors (nodes, to_vectors (
+					get_netchanger_positions (module_cursor, net_cursor)));
 
 
 				

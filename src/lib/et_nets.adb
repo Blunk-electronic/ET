@@ -834,6 +834,17 @@ package body et_nets is
 
 	
 
+	function get_netchanger_ports (
+		net_cursor	: in pac_nets.cursor)
+		return pac_netchanger_ports.set
+	is begin
+		return get_ports (net_cursor).netchangers;
+	end;
+
+
+
+
+	
 
 
 	function to_string (

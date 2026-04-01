@@ -48,7 +48,7 @@ with et_string_processing;				use et_string_processing;
 
 with et_module;							use et_module;
 with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
-
+with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
 with et_netchangers.board;				use et_netchangers.board;
 
 
@@ -57,6 +57,47 @@ package body et_board_ops_netchangers is
 
 	use pac_netchangers;
 	
+
+
+	function get_netchanger_position (
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id) -- 1,2,3,...
+		return type_vector_model
+	is
+		result : type_vector_model;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			netchanger_cursor : pac_netchangers.cursor;
+			
+			
+			procedure query_netchanger (
+				index		: in type_netchanger_id;
+				netchanger	: in type_netchanger) 
+			is begin
+				result := get_place (netchanger);
+			end;
+
+			
+		begin
+			-- Locate given netchanger in the module:
+			netchanger_cursor := get_netchanger (module_cursor, index);
+
+			query_element (netchanger_cursor, query_netchanger'access);
+		end query_module;
+
+		
+	begin
+		query_element (module_cursor, query_module'access);
+		
+		return result;
+	end get_netchanger_position;
+
+	
+
 
 	
 	
@@ -137,7 +178,9 @@ package body et_board_ops_netchangers is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
-
+		
+		update_ratsnest (module_cursor, log_threshold + 1);
+		
 		log_indentation_down;
 	end move_netchanger;
 

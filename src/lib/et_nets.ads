@@ -57,6 +57,8 @@ with et_net_ports;				use et_net_ports;
 with et_net_segment;			use et_net_segment;
 with et_net_strands;			use et_net_strands;
 with et_net_labels;				use et_net_labels;
+with et_netchangers;			use et_netchangers;
+with et_netlists;				use et_netlists;
 with et_object_status;			use et_object_status;
 
 
@@ -369,9 +371,17 @@ package et_nets is
 		return pac_strands.cursor;
 
 
+	-- Returns all netchanger ports that are connected
+	-- with the given net.
+	-- Each item in the returned list contains the
+	-- id and the connected port of a netchanger:
+	function get_netchanger_ports (
+		net_cursor	: in pac_nets.cursor)
+		return pac_netchanger_ports.set;
 
 
-	
+		
+		
 
 -- OBJECT SEGMENT:
 

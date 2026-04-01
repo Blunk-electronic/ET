@@ -64,6 +64,13 @@ package et_board_ops_netchangers is
 	use pac_generic_modules;
 	
 
+	-- Returns the x/y coordinates of the given
+	-- netchanger:
+	function get_netchanger_position (
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id) -- 1,2,3,...
+		return type_vector_model;
+		
 
 
 	-- Moves the given netchanger. 
