@@ -946,7 +946,7 @@ package body et_schematic_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_object_position; -- sheet/x/y/rotation
 		-- CS rename to position	
-		do_commit		: in boolean := true;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
 	
@@ -1009,7 +1009,7 @@ package body et_schematic_ops_netchangers is
 
 		log_indentation_up;
 		
-		if do_commit then
+		if commit_design = DO_COMMIT then
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 		end if;
@@ -1021,7 +1021,7 @@ package body et_schematic_ops_netchangers is
 			process		=> query_module'access);
 		
 		
-		if do_commit then
+		if commit_design = DO_COMMIT then
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
 		end if;

@@ -58,6 +58,7 @@ with et_schematic_ops_groups;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 with et_canvas_schematic;
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
 package body et_cp_schematic_netchanger is
@@ -75,18 +76,11 @@ package body et_cp_schematic_netchanger is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
-
-		do_commit : boolean := false;
 	begin
 		-- CS log message 
 		
 		case cmd_field_count is
 			when 8 =>
-				if get_origin (cmd) = ORIGIN_CONSOLE then
-					do_commit := true;
-				end if;
-
-				
 				add_netchanger (
 					module_cursor 	=> module,
 					place			=> to_position (
@@ -97,7 +91,11 @@ package body et_cp_schematic_netchanger is
 									y => to_distance (get_field (cmd, 7))
 									)),
 						rotation		=> to_rotation (get_field (cmd, 8))),
-					do_commit		=> do_commit,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+					
 					log_threshold	=> log_threshold + 1);
 				
 

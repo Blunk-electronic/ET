@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -265,7 +265,6 @@ package et_cmd_sts is
 	-- IN HEADLESS MODE THIS STUFF HAS NO MEANING !
 	-- script_cmd : type_script_cmd;
 	
-
 
 
 private

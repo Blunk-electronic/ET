@@ -62,6 +62,9 @@ with et_sheets;							use et_sheets;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 with et_logging;						use et_logging;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+
+
 
 
 package et_schematic_ops_netchangers is
@@ -175,7 +178,7 @@ package et_schematic_ops_netchangers is
 	procedure add_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_object_position; -- sheet/x/y
-		do_commit		: in boolean := true;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 	
 	
