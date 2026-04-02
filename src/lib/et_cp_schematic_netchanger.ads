@@ -126,6 +126,17 @@ package et_cp_schematic_netchanger is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
+
+	-- Parses a command that dissovles a netchanger.
+	-- Example: "schematic demo dissolve netchanger 4"
+	-- If the targeted netchanger does not exist, then nothing 
+	-- happens and a warning is output:
+	procedure dissolve_netchanger (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+	
 	
 	-- Parses a command that locates and shows a netchanger.
 	-- Example: "schematic demo show netchanger 44"

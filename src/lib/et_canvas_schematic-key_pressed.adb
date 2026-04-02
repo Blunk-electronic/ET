@@ -151,6 +151,45 @@ is
 
 	
 
+
+	procedure dissolve is begin
+		case key is
+			-- EVALUATE KEY FOR NOUN:
+			when key_noun_netchanger =>
+				noun := NOUN_NETCHANGER;					
+				set_status (et_canvas_schematic_netchangers.status_dissolve_netchanger);
+				
+			
+				
+			-- If space pressed, then the operator wishes to operate via keyboard:	
+			when key_space =>
+				case noun is
+					when NOUN_NETCHANGER =>
+						et_canvas_schematic_netchangers.dissolve_object (point);
+						
+					when others => null;							
+				end case;
+
+				
+			-- If page down pressed, then the operator is clarifying:
+			when key_clarify =>
+				case noun is
+					when NOUN_NETCHANGER =>
+						if clarification_pending then
+							et_canvas_schematic_netchangers.clarify_object;
+						end if;
+
+					when others => null;						
+				end case;
+
+			-- CS test key to rename net on current sheet
+			-- or everywhere ?
+				
+			when others => status_noun_invalid;
+		end case;
+	end dissolve;
+		
+	
 	
 	procedure drag is begin
 		case key is
@@ -1024,11 +1063,15 @@ begin -- key_pressed
 							when key_verb_copy =>
 								verb := VERB_COPY;
 								status_enter_noun;
+
+							when key_verb_dissolve =>
+								verb := VERB_DISSOLVE;
+								status_enter_noun;
 								
 							when key_verb_drag =>
 								verb := VERB_DRAG;
 								status_enter_noun;
-
+								
 							when key_verb_draw =>
 								verb := VERB_DRAW;
 								status_enter_noun;
@@ -1082,6 +1125,7 @@ begin -- key_pressed
 							when VERB_ADD		=> add;
 							when VERB_COPY		=> copy;
 							when VERB_DELETE	=> delete;
+							when VERB_DISSOLVE	=> dissolve;
 							when VERB_DRAG		=> drag;
 							when VERB_DRAW		=> draw;
 							when VERB_FETCH		=> fetch;

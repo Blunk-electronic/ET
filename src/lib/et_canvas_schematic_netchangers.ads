@@ -77,6 +77,14 @@ package et_canvas_schematic_netchangers is
 		& "to add netchanger." 
 		& status_hint_for_abort;
 
+
+	status_dissolve_netchanger : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to dissolve netchanger." 
+		& status_hint_for_abort;
+
 	
 	-- to be output in the status bar:
 	status_delete_netchanger : constant string := 
@@ -155,6 +163,10 @@ package et_canvas_schematic_netchangers is
 		point	: in type_vector_model);
 
 
+	procedure dissolve_object (
+		point	: in type_vector_model);
+
+	
 	procedure delete_object (
 		point	: in type_vector_model);
 

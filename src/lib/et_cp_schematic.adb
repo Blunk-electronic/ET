@@ -298,6 +298,15 @@ package body et_cp_schematic is
 						when others => invalid_noun (to_string (noun));
 					end case;
 
+
+				when VERB_DISSOLVE =>
+					case noun is
+						when NOUN_NETCHANGER =>
+							dissolve_netchanger (module_cursor, cmd, log_threshold + 1);
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+
 					
 				when VERB_DRAG =>
 					case noun is

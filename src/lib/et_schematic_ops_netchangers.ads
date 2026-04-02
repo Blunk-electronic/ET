@@ -276,6 +276,15 @@ package et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level);
 
 
+	-- Dissolves the netchanger indicated by index:
+	procedure dissolve_netchanger (
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id; -- 1,2,3,...
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level);
+
+	
+	
 	-- Marks the netchanger indicated by index as "selected":
 	procedure show_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -484,7 +493,12 @@ package et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level);
 
 		
-		
+	procedure dissolve_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level);
+
+	
 	procedure delete_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;

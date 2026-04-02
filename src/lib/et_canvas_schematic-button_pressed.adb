@@ -141,6 +141,15 @@ is
 					when others => null;
 				end case;
 
+
+			when VERB_DISSOLVE =>
+				case noun is
+					when NOUN_NETCHANGER =>
+						et_canvas_schematic_netchangers.dissolve_object (snap_point);
+
+					when others => null;
+				end case;
+
 				
 			when VERB_DRAG =>
 				case noun is
@@ -343,6 +352,17 @@ is
 							et_canvas_schematic_units.clarify_object;
 						end if;
 
+					when NOUN_NETCHANGER =>
+						if clarification_pending then
+							et_canvas_schematic_netchangers.clarify_object;
+						end if;
+						
+					when others => null;							
+				end case;
+
+
+			when VERB_DISSOLVE =>
+				case noun is
 					when NOUN_NETCHANGER =>
 						if clarification_pending then
 							et_canvas_schematic_netchangers.clarify_object;

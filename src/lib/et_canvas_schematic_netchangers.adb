@@ -237,7 +237,8 @@ package body et_canvas_schematic_netchangers is
 
 			-- Propose objects according to current verb and noun:
 			case verb is
-				when VERB_COPY | VERB_DELETE | VERB_DRAG | VERB_FETCH | VERB_MOVE 
+				when VERB_COPY | VERB_DELETE | VERB_DISSOLVE | VERB_DRAG 
+					| VERB_FETCH | VERB_MOVE 
 					| VERB_RENAME | VERB_ROTATE | VERB_SET | VERB_SHOW =>
 					
 					case noun is
@@ -473,8 +474,75 @@ package body et_canvas_schematic_netchangers is
 
 
 
+
+
+
+	procedure dissolve_object (
+		point	: in type_vector_model)
+	is 
+		
+		-- Deletes the selected object:
+		procedure finalize is
+			object : type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
+		begin
+			log (text => "finalize dissovle", level => log_threshold);
+			log_indentation_up;
+
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+
+				reset_status_objects (active_module, log_threshold + 1);
+				
+				-- Do the dissolve operation:
+				dissolve_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					log_threshold	=> log_threshold + 1);
+
+				-- If a netchanger has been deleted, then the board
+				-- must be redrawn:
+				if object.cat = CAT_NETCHANGER then
+					redraw_board;
+				end if;
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+
+			-- CS clear status bar ?
+			-- set_status (status_delete);
+
+			reset_editing_process; -- prepare for a new editing process
+		end finalize;
+
+		
+	begin
+		if not clarification_pending then
+			-- Locate all objects in the vicinity of the given point:
+			find_objects (point);
+			-- NOTE: If many objects have been found, then
+			-- clarification is now pending.
+
+			-- If find_objects has found only one object,				
+			-- then delete the object immediateley.
+			if edit_process_running then
+				finalize;
+			end if;
+		else
+			-- Here the clarification procedure ends.
+			-- An object has been selected via procedure clarify_object.
+			reset_request_clarification;
+			finalize;
+		end if;
+	end dissolve_object;
+
 	
 
+	
 	
 	
 

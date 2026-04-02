@@ -53,6 +53,7 @@ package et_modes.schematic is
 		VERB_DELETE,
 		VERB_DESCRIBE,
 		VERB_DISPLAY,
+		VERB_DISSOLVE,
 		VERB_DRAG,
 		VERB_DRAW,
 		

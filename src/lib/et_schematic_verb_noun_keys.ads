@@ -62,6 +62,7 @@ package et_schematic_verb_noun_keys is
 	-- key_verb_update		: constant gdk_key_type := GDK_LC_u;
 	key_verb_set		: constant gdk_key_type := GDK_LC_s;
 	key_verb_show		: constant gdk_key_type := GDK_LC_h;
+	key_verb_dissolve	: constant gdk_key_type := GDK_LC_v;
 
 
 	

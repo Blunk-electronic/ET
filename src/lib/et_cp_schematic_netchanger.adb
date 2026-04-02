@@ -523,8 +523,55 @@ package body et_cp_schematic_netchanger is
 
 
 
+	
 
 
+	procedure dissolve_netchanger (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+
+		index : type_netchanger_id;
+	begin
+		-- CS log message
+		
+		case cmd_field_count is
+			when 5 =>
+				-- Extract the index of the targeted netchanger:
+				index := to_netchanger_id (get_field (cmd, 5)); -- 1,2,3, ...
+
+				-- Test whether the given netchanger exists:
+				if netchanger_exists (module, index) then
+				
+					dissolve_netchanger (
+						module_cursor	=> module,
+						index			=> index,
+
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
+
+						log_threshold	=> log_threshold + 1);
+
+				else
+					netchanger_not_found (index);
+				end if;
+
+					
+			when 6 .. type_field_count'last =>
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+	end dissolve_netchanger;
+
+
+
+
+	
 
 	
 

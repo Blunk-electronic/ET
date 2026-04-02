@@ -1915,6 +1915,89 @@ package body et_schematic_ops_netchangers is
 	
 
 	
+	procedure dissolve_netchanger (
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id; -- 1,2,3,...
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level) 
+	is
+
+		use et_modes.schematic;
+		use et_undo_redo;
+		use et_commit;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			netchanger_cursor : pac_netchangers.cursor;
+
+			-- The sheet where the netchanger is located
+			-- in the schematic:
+			sheet : type_sheet;
+
+			use pac_netchangers;
+		begin
+			-- Locate given netchanger in the module:
+			netchanger_cursor := get_netchanger (module_cursor, index);
+
+
+			-- Get the sheet number where the netchanger is:
+			sheet := get_sheet (netchanger_cursor);
+
+			-- log sheet number:
+			log (text => "found the netchanger on sheet " & to_string (sheet),
+					level => log_threshold + 1);
+
+
+			-- -- Delete netchanger ports in nets:
+			-- delete_ports (
+			-- 	module_cursor	=> module_cursor,
+			-- 	index			=> index,
+			-- 	sheet			=> sheet,					
+			-- 	log_threshold	=> log_threshold + 2);
+   -- 
+			-- -- Delete the netchanger itself:
+			-- delete (module.netchangers, netchanger_cursor);
+
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " dissolve netchanger " & to_string (index),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold + 1);
+		end if;
+		
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold + 1);
+		end if;
+
+		
+		log_indentation_down;		
+	end dissolve_netchanger;
+
+	
+	
+	
+	
+	
+	
 
 
 	procedure show_netchanger (
@@ -2882,6 +2965,40 @@ package body et_schematic_ops_netchangers is
 		log_indentation_down;
 	end drag_object;
 
+	
+	
+	
+	
+
+	procedure dissolve_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " dissolve object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_NETCHANGER =>
+
+				dissolve_netchanger (
+					module_cursor	=> module_cursor,
+					index			=> get_object_id (object.netchanger),
+					log_threshold	=> log_threshold + 1);
+
+				
+			when others =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end dissolve_object;
+
+	
 	
 	
 	
