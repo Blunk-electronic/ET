@@ -111,6 +111,7 @@ package body et_board_ops_netchangers is
 		index			: in type_netchanger_id;
 		coordinates		: in type_coordinates;
 		point			: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
 
@@ -182,16 +183,23 @@ package body et_board_ops_netchangers is
 		
 		log_indentation_up;
 
-		-- Commit the current state of the design:
-		commit (PRE, verb, noun, log_threshold + 1);
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold + 1);
+		end if;
+		
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+		
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold + 1);
+		end if;
 
-		-- Commit the new state of the design:
-		commit (POST, verb, noun, log_threshold + 1);
 
 		
 		update_ratsnest (module_cursor, log_threshold + 1);
@@ -213,9 +221,15 @@ package body et_board_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id; -- 1,2,3,...
 		layer			: in type_signal_layer; -- 8
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
 
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.board;
+
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -253,10 +267,23 @@ package body et_board_ops_netchangers is
 
 		log_indentation_up;
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold + 1);
+		end if;
+		
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+		
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold + 1);
+		end if;
+
 
 		log_indentation_down;		
 	end set_netchanger_layer;

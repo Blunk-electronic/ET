@@ -172,8 +172,6 @@ package et_schematic_ops_netchangers is
 	
 
 	-- Adds a netchanger to the schematic.
-	-- If do_commit is true, then the design state before
-	-- and the state after the operation will be committed.
 	-- CS: add parameter for explicitly given index
 	procedure add_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -207,6 +205,7 @@ package et_schematic_ops_netchangers is
 		index			: in type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -224,6 +223,7 @@ package et_schematic_ops_netchangers is
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
 		point			: in type_vector_model; -- x/y, destination or offset
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -237,6 +237,7 @@ package et_schematic_ops_netchangers is
 		index			: in type_netchanger_id; -- 1,2,3,...
 		toggle			: in boolean := false;
 		rotation		: in type_rotation_0_90;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -249,6 +250,7 @@ package et_schematic_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id; -- 1,2,3,...
 		destination		: in type_netchanger_position_schematic;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -261,6 +263,7 @@ package et_schematic_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor;
 		index_old		: in type_netchanger_id; -- 1
 		index_new		: in type_netchanger_id; -- 14
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -269,6 +272,7 @@ package et_schematic_ops_netchangers is
 	procedure delete_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id; -- 1,2,3,...
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -290,6 +294,7 @@ package et_schematic_ops_netchangers is
 		index			: in type_netchanger_id; -- 1,2,3,...
 		toggle			: in boolean := false;
 		direction		: in type_netchanger_direction;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 	
 

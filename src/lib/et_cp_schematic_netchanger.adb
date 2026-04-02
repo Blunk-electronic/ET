@@ -143,7 +143,11 @@ package body et_cp_schematic_netchanger is
 						point			=> type_vector_model (set (
 											x => to_distance (get_field (cmd, 8)),
 											y => to_distance (get_field (cmd, 9)))),
-							
+
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
+
 						log_threshold	=> log_threshold + 1);
 				else
 					netchanger_not_found (index);
@@ -191,6 +195,11 @@ package body et_cp_schematic_netchanger is
 						point			=> type_vector_model (set (
 											x => to_distance (get_field (cmd, 7)),
 											y => to_distance (get_field (cmd, 8)))),
+
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
+						
 						log_threshold	=> log_threshold + 1);
 
 				else
@@ -240,6 +249,11 @@ package body et_cp_schematic_netchanger is
 					delete_netchanger (
 						module_cursor	=> module,
 						index			=> index,
+
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
+
 						log_threshold	=> log_threshold + 1);
 
 				else
@@ -298,6 +312,11 @@ package body et_cp_schematic_netchanger is
 							module_cursor 	=> module,
 							index			=> index,
 							rotation		=> to_rotation (get_field (cmd, 6)), -- 90
+
+							-- Depending on the origin of the command,
+							-- the design state is to be commited or not:
+							commit_design	=> to_commit_design (cmd),
+							
 							log_threshold	=> log_threshold + 1);
 
 					else
@@ -356,6 +375,11 @@ package body et_cp_schematic_netchanger is
 						module_cursor 	=> module,
 						index			=> index,
 						direction		=> to_netchanger_direction (get_field (cmd, 6)), -- forward
+
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
+						
 						log_threshold	=> log_threshold + 1);
 
 				else
@@ -410,6 +434,11 @@ package body et_cp_schematic_netchanger is
 						module_cursor	=> module,
 						index_old		=> index_old,
 						index_new		=> index_new,
+
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
+
 						log_threshold	=> log_threshold + 1);
 
 				else
@@ -470,6 +499,11 @@ package body et_cp_schematic_netchanger is
 						index			=> index,
 						destination		=> to_netchanger_position (sheet, place, 0.0),
 						-- rotation 0.0 has no meaning					
+
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
+
 						log_threshold	=> log_threshold + 1);
 
 				else

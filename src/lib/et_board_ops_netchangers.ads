@@ -57,6 +57,7 @@ with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_logging;						use et_logging;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
 package et_board_ops_netchangers is
@@ -82,6 +83,7 @@ package et_board_ops_netchangers is
 		index			: in type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y, destination or offset
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -94,6 +96,7 @@ package et_board_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id; -- 1,2,3,...
 		layer			: in type_signal_layer; -- 8
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
