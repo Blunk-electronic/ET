@@ -1001,7 +1001,7 @@ package body et_schematic_ops_netchangers is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
-	
+		use et_board_ops_ratsnest;
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.schematic;
@@ -1078,6 +1078,9 @@ package body et_schematic_ops_netchangers is
 			commit (POST, verb, noun, log_threshold);
 		end if;
 		
+		
+		update_ratsnest (module_cursor, log_threshold + 1);
+				
 		log_indentation_down;		
 	end add_netchanger;
 
@@ -1192,7 +1195,7 @@ package body et_schematic_ops_netchangers is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
-				
+		use et_board_ops_ratsnest;
 		use et_modes.schematic;
 		use et_undo_redo;
 		use et_commit;
@@ -1337,6 +1340,9 @@ package body et_schematic_ops_netchangers is
 			commit (POST, verb, noun, log_threshold + 1);
 		end if;
 			
+			
+		update_ratsnest (module_cursor, log_threshold + 1);
+			
 		log_indentation_down;
 	end drag_netchanger;
 
@@ -1361,7 +1367,7 @@ package body et_schematic_ops_netchangers is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
-
+		use et_board_ops_ratsnest;
 		use et_modes.schematic;
 		use et_undo_redo;
 		use et_commit;
@@ -1495,6 +1501,9 @@ package body et_schematic_ops_netchangers is
 			commit (POST, verb, noun, log_threshold + 1);
 		end if;
 			
+			
+		update_ratsnest (module_cursor, log_threshold + 1);
+		
 		log_indentation_down;
 	end move_netchanger;
 
@@ -1515,7 +1524,7 @@ package body et_schematic_ops_netchangers is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
-		
+		use et_board_ops_ratsnest;
 		use et_modes.schematic;
 		use et_undo_redo;
 		use et_commit;
@@ -1621,6 +1630,9 @@ package body et_schematic_ops_netchangers is
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold + 1);
 		end if;
+		
+		
+		update_ratsnest (module_cursor, log_threshold + 1);
 		
 		log_indentation_down;
 	end rotate_netchanger;
@@ -1890,7 +1902,7 @@ package body et_schematic_ops_netchangers is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
-
+		use et_board_ops_ratsnest;
 		use et_modes.schematic;
 		use et_undo_redo;
 		use et_commit;
@@ -1958,6 +1970,8 @@ package body et_schematic_ops_netchangers is
 		end if;
 
 		
+		update_ratsnest (module_cursor, log_threshold + 1);
+					
 		log_indentation_down;		
 	end delete_netchanger;
 
