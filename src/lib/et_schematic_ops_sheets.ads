@@ -43,6 +43,8 @@ with et_drawing_frame;					use et_drawing_frame;
 with et_drawing_frame.schematic;		use et_drawing_frame.schematic;
 with et_schematic_text;					use et_schematic_text;
 with et_sheets;							use et_sheets;
+with et_logging;						use et_logging;
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
 package et_schematic_ops_sheets is
@@ -57,6 +59,14 @@ package et_schematic_ops_sheets is
 		return type_schematic_description;
 	
 
+
+	procedure set_sheet_category (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		category		: in type_schematic_sheet_category;
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level);
+	
 
 	-- CS subprograms to get and set the title block position ?
 	-- currently this is defined in the frame template file *.frs

@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---              COMMAND PROCESSOR / SCHEMATIC / SHEET                       --
+--                COMMAND PROCESSOR / SCHEMATIC / SHEETS                    --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -35,9 +35,11 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--  To Do: 
+--
+--
 
--- with et_generic_modules;		use et_generic_modules;
+with et_generic_modules;		use et_generic_modules;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_cmd_sts;				use et_cmd_sts;
@@ -54,6 +56,15 @@ package et_cp_schematic_sheet is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
+
+
+	-- This procedure parses a command that 
+	-- sets the category of a sheet.
+	-- Example: "module demo set sheet 2 development"
+	procedure set_sheet_category (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
 
 		
 end et_cp_schematic_sheet;

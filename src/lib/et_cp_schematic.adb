@@ -534,6 +534,9 @@ package body et_cp_schematic is
 						when NOUN_SCOPE =>
 							set_net_scope (module_cursor, cmd, log_threshold + 1);
 							
+						when NOUN_SHEET =>
+							set_sheet_category (module_cursor, cmd, log_threshold + 1);
+
 						when NOUN_SUBMODULE_FILE =>
 							set_submodule_file (module_cursor, cmd, log_threshold + 1);							
 

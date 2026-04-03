@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---              COMMAND PROCESSOR / SCHEMATIC / NETCHANGER                  --
+--                COMMAND PROCESSOR / SCHEMATIC / SHEETS                    --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -44,11 +44,14 @@ with ada.text_io;						use ada.text_io;
 with ada.characters.handling;			use ada.characters.handling;
 with ada.strings; 						use ada.strings;
 
+with et_drawing_frame.schematic;
 with et_sheets;							use et_sheets;
+with et_schematic_ops_sheets;			use et_schematic_ops_sheets;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
 
 with et_canvas_schematic;				use et_canvas_schematic;
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
 package body et_cp_schematic_sheet is
@@ -81,7 +84,7 @@ package body et_cp_schematic_sheet is
 
 		
 	begin
-		log (text => "set sheet" & to_string (sheet),
+		log (text => "show sheet" & to_string (sheet),
 			 level => log_threshold); 
 		
 		case cmd_field_count is
@@ -97,6 +100,58 @@ package body et_cp_schematic_sheet is
 
 	
 
+
+
+
+
+
+	procedure set_sheet_category (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+
+		
+		sheet : type_sheet;
+
+		use et_drawing_frame.schematic;
+		category : type_schematic_sheet_category;
+
+	begin
+		log (text => "set sheet category", level => log_threshold); 
+
+		
+		case cmd_field_count is
+			when 6 =>
+				sheet := to_sheet (get_field (cmd, 5));
+				-- CS: test existence of given sheet number
+				
+				category := to_category (get_field (cmd, 6));
+				-- CS: exception is raised if given category is invalid
+
+				set_sheet_category (
+					module_cursor	=> module,
+					sheet			=> sheet,
+					category		=> category,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+
+					log_threshold	=> log_threshold + 1);
+				
+			
+			when 7 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+		
+	end set_sheet_category;
+
+	
 	
 	
 end et_cp_schematic_sheet;

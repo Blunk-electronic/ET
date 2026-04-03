@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -80,6 +80,50 @@ package body et_schematic_ops_sheets is
 		end if;
 	end get_sheet_description;
 
+
+
+
+
+
+
+
+	
+
+
+	procedure set_sheet_category (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		category		: in type_schematic_sheet_category;
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is	
+		begin
+			null;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " set sheet " & to_string (sheet) 
+			 & " category " & to_string (category),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,		   
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end set_sheet_category;
+
+
+	
 	
 end et_schematic_ops_sheets;
 	
