@@ -49,6 +49,7 @@ with et_net_ports;						use et_net_ports;
 with et_net_strands;					use et_net_strands;
 with et_schematic_ops_nets;
 with et_schematic_ops_groups;
+with et_board_ops_ratsnest;
 with et_netchanger_symbol_schematic;
 with et_module;							use et_module;
 with et_netchangers.schematic;			use et_netchangers.schematic;
@@ -854,6 +855,57 @@ package body et_schematic_ops_netchangers is
 
 
 
+	
+	
+	
+	
+	function get_connected_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id;
+		port			: in type_netchanger_port_name) -- SLAVE/MASTER
+		return pac_nets.cursor
+	is
+		use pac_nets;
+		result : pac_nets.cursor;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is			
+			net_cursor : pac_nets.cursor := module.nets.first;
+			
+			use et_netlists;
+			ports : pac_netchanger_ports.set;
+			proceed : boolean := true;
+		begin
+			-- Iterate the nets of the module and abort
+			-- as soon as a net has been found that contains
+			-- the given netchanger and port.
+			-- The cursor to the affected net is returned:
+			while has_element (net_cursor) and proceed loop
+				
+				ports := get_netchanger_ports (net_cursor);
+				
+				if contains_netchanger_port (ports, index, port) then
+					result := net_cursor;
+					exit;
+				end if;
+				
+				next (net_cursor);
+			end loop;			
+		end query_module;
+		
+		
+	begin
+		query_element (module_cursor, query_module'access);	
+		return result;
+	end get_connected_net;
+
+	
+	
+	
+	
 	
 
 	
@@ -1921,27 +1973,36 @@ package body et_schematic_ops_netchangers is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
-
+		use et_board_ops_ratsnest;
 		use et_modes.schematic;
 		use et_undo_redo;
 		use et_commit;
 
+		-- The names of the nets connected with the
+		-- MASTER and the SLAVE side of the netchanger:
+		name_M, name_S : pac_net_name.bounded_string;
+		
+		-- If both nets exist, then the dissolving
+		-- is granted:
+		dissolving_allowed : boolean := false;
+		
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module)
+			module		: in type_generic_module)
 		is
+			use pac_netchangers;
 			netchanger_cursor : pac_netchangers.cursor;
 
 			-- The sheet where the netchanger is located
 			-- in the schematic:
 			sheet : type_sheet;
-
-			use pac_netchangers;
+						
+			use pac_nets;
+			net_M, net_S : pac_nets.cursor;
 		begin
 			-- Locate given netchanger in the module:
 			netchanger_cursor := get_netchanger (module_cursor, index);
-
 
 			-- Get the sheet number where the netchanger is:
 			sheet := get_sheet (netchanger_cursor);
@@ -1950,19 +2011,72 @@ package body et_schematic_ops_netchangers is
 			log (text => "found the netchanger on sheet " & to_string (sheet),
 					level => log_threshold + 1);
 
+					
+			
+			-- Query net on MASTER port side:
+			net_M := get_connected_net (module_cursor, index, MASTER);
+			
+			if has_element (net_M) then
+				name_M := get_net_name (net_M);
+				
+				log (text => "MASTER port is connected with net " 
+					& to_string (name_M), level => log_threshold + 1);
+					
+			else
+				log (WARNING, "No net on MASTER port found !");
+			end if;
 
-			-- -- Delete netchanger ports in nets:
-			-- delete_ports (
-			-- 	module_cursor	=> module_cursor,
-			-- 	index			=> index,
-			-- 	sheet			=> sheet,					
-			-- 	log_threshold	=> log_threshold + 2);
-   -- 
-			-- -- Delete the netchanger itself:
-			-- delete (module.netchangers, netchanger_cursor);
 
+			
+			-- Query net on SLAVE port side:
+			net_S := get_connected_net (module_cursor, index, SLAVE);
+			
+			if has_element (net_S) then
+				name_S := get_net_name (net_S);
+				
+				log (text => "SLAVE port is connected with net " 
+					& to_string (name_s), level => log_threshold + 1);
+
+			else
+				log (WARNING, "No net on SLAVE port found !");
+			end if;
+
+
+			-- Set the flag dissolving_allowed if a
+			-- net on the MASTER and a net on the SLAVE side
+			-- has been found:
+			if has_element (net_M) and has_element (net_S) then
+				dissolving_allowed := true;
+			end if;
 		end query_module;
 
+		
+		
+		-- This procedure renames the net on the SLAVE
+		-- side by the net name on the MASTER side
+		-- and deletes the targeted netchanger:
+		procedure do_dissolve is
+			use et_schematic_ops_nets;
+		begin
+			rename_net (
+				module_cursor	=> module_cursor,
+				net_name_before	=> name_S,
+				net_name_after	=> name_M,
+				all_sheets		=> true,
+				-- CS currently we rename on all
+				-- sheets. see et_schematic_ops_nets
+				log_threshold	=> log_threshold + 1);
+
+				
+			delete_netchanger (
+				module_cursor	=> module_cursor,
+				index			=> index,
+				commit_design	=> NO_COMMIT,
+				log_threshold	=> log_threshold + 1);
+				
+		end do_dissolve;
+			
+		
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
@@ -1971,24 +2085,30 @@ package body et_schematic_ops_netchangers is
 
 		log_indentation_up;
 
-		if commit_design = DO_COMMIT then
-			-- Commit the current state of the design:
-			commit (PRE, verb, noun, log_threshold + 1);
+		-- Ask for permission to dissolve the netchanger:
+		query_element (module_cursor, query_module'access);
+				
+				
+		if dissolving_allowed then
+		
+			if commit_design = DO_COMMIT then
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+			end if;
+			
+			
+			do_dissolve;	
+			
+			
+			if commit_design = DO_COMMIT then
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+			end if;
+		
+		
+			update_ratsnest (module_cursor, log_threshold + 1);
 		end if;
-		
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_module'access);
-		
-		
-		if commit_design = DO_COMMIT then
-			-- Commit the new state of the design:
-			commit (POST, verb, noun, log_threshold + 1);
-		end if;
-
-		
+				
 		log_indentation_down;		
 	end dissolve_netchanger;
 

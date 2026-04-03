@@ -159,6 +159,16 @@ package et_schematic_ops_netchangers is
 
 	
 
+	-- Returns the cursor to the net that is connected
+	-- with the given port.
+	-- If no net is connected, then the return is no_element:
+	function get_connected_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		index			: in type_netchanger_id;
+		port			: in type_netchanger_port_name) -- SLAVE/MASTER
+		return pac_nets.cursor;
+
+	
 	
 	-- Returns the sheet/x/y position of the given netchanger port:
 	-- CS: This function is currently not used.
@@ -257,7 +267,7 @@ package et_schematic_ops_netchangers is
 
 	-- Renames the netchanger indicated by index_old
 	-- to index_new.
-	-- If a netchanger with the new index Already exists,
+	-- If a netchanger with the new index already exists,
 	-- then a warning is output and nothing else happens:
 	procedure rename_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -276,7 +286,10 @@ package et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level);
 
 
-	-- Dissolves the netchanger indicated by index:
+	-- Dissolves the netchanger indicated by index.
+	-- This operation requires that the netchanger is connected
+	-- with a net on both MASTER and SLAVE port respectively.
+	-- Otherwise a warning is output and nothing else happens:
 	procedure dissolve_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id; -- 1,2,3,...

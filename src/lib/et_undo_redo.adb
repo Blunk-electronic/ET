@@ -186,7 +186,7 @@ package body et_undo_redo is
 				when NOUN_NETCHANGER =>
 					case verb is
 						when VERB_ADD | VERB_COPY | VERB_MOVE 
-							| VERB_DELETE | VERB_DRAG 
+							| VERB_DELETE | VERB_DRAG | VERB_DISSOLVE
 							| VERB_ROTATE | VERB_RENAME
 							| VERB_SET => -- direction
 							

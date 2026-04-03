@@ -143,6 +143,22 @@ package body et_netlists is
 	end;
 
 
+
+
+	function contains_netchanger_port (
+		ports	: in pac_netchanger_ports.set;
+		index	: in type_netchanger_id;
+		port	: in type_netchanger_port_name)
+		return boolean
+	is 
+		use pac_netchanger_ports;
+		item : type_port_netchanger := (index, port);			
+	begin
+		return ports.contains (item); 
+	end;
+
+
+	
 	
 	function to_string (net_scope : in type_net_scope) return string is begin
 		return " " & to_lower (type_net_scope'image (net_scope));

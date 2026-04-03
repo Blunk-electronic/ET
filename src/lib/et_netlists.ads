@@ -135,6 +135,15 @@ package et_netlists is
 	package pac_netchanger_ports is new ordered_sets (type_port_netchanger);
 
 	
+	-- Returns true if the given list contains
+	-- a netchanger port with the given index and port:
+	function contains_netchanger_port (
+		ports	: in pac_netchanger_ports.set;
+		index	: in type_netchanger_id;
+		port	: in type_netchanger_port_name)
+		return boolean;
+		
+		
 
 	-- If a net exists in a (sub)module exclusively or whether it can be
 	-- seen from the parent module. For example power nets like GND are global.
@@ -149,7 +158,7 @@ package et_netlists is
 
 	
 	
-	type type_net is tagged record
+	type type_net is tagged record -- CS rename to type_net_ports ?
 		devices		: pac_device_ports_extended.set;
 		submodules	: pac_submodule_ports_extended.set;
 		netchangers	: pac_netchanger_ports.set;
@@ -163,13 +172,13 @@ package et_netlists is
 		
 	function "<" (left, right : in type_net_name) return boolean;
 	
-	package pac_nets is new ordered_maps (
+	package pac_nets is new ordered_maps ( -- CS rename to pac_net_ports ?
 		key_type		=> type_net_name, 
 		element_type	=> type_net);
 	
 	-- In the tree of modules, each module provides its
 	-- generic name, instance name and a list of its nets:
-	type type_module is record
+	type type_module is record -- CS rename to something more desrciptive
 		generic_name	: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver		
 		instance_name	: pac_module_instance_name.bounded_string; -- OSC1
 		nets			: pac_nets.map;
