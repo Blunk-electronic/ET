@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -34,6 +34,9 @@
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
 --   history of changes:
+--
+-- To Do:
+-- - rename this package to et_sheet_numbers
 --
 
 with ada.containers;    		        use ada.containers;
