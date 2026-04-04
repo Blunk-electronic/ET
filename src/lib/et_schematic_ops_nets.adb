@@ -2186,6 +2186,92 @@ package body et_schematic_ops_nets is
 
 	
 
+
+
+
+	
+
+	function get_strands (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level)
+		return pac_object_strands.list
+	is
+		result : pac_object_strands.list;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net)
+			is
+				strand_cursor : pac_strands.cursor := net.strands.first;
+				
+				
+				procedure query_strand (
+					strand : in type_strand) 
+				is begin
+					result.append ((net_cursor, strand_cursor));
+				end query_strand;
+
+				
+			begin
+				log (text => "net " & to_string (net_name), 
+					 level => log_threshold + 1);
+				
+				log_indentation_up;
+				
+				-- Iterate through the strands:
+				while has_element (strand_cursor) loop
+					
+					-- We pick out only the strands on the given sheet:
+					if get_sheet (strand_cursor) = sheet then
+						query_element (strand_cursor, query_strand'access);					
+					end if;
+					
+					next (strand_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_net;
+
+			
+		begin
+			-- Iterate through the nets:
+			while has_element (net_cursor) loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " collect net strands on sheet " & to_string (sheet),
+			 level => log_threshold);
+
+		log_indentation_up;
+		query_element (module_cursor, query_module'access);
+		log_indentation_down;
+
+		return result;
+	end get_strands;
+
+
+
+
+
+	
+
+
+
+	
 	
 
 	procedure reset_status_strands (
@@ -3765,6 +3851,8 @@ package body et_schematic_ops_nets is
 
 
 	
+
+
 	
 
 
@@ -3774,6 +3862,46 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 
 	is
+		use pac_object_strands;
+		strands_on_sheet : pac_object_strands.list;
+
+
+
+		procedure delete_strands is
+			-- Points to the strand to be deleted
+			-- in list strands_on_sheet:
+			cursor : pac_object_strands.cursor;
+
+			-- WARNING: This approach might be a 
+			-- dirty solution ! The iteration below
+			-- deletes objects based on list strands_on_sheet.
+			-- So while the strands are deleted, the
+			-- cursors in the list strands_on_sheet
+			-- are becoming probably invalid.
+			--
+			-- Instead the list strands_on_sheet should
+			-- be updated after each deletion.
+
+			-- The strand candidate to be deleted:
+			strand : type_object_strand; 
+		begin
+			-- Start with the first strand:
+			cursor := strands_on_sheet.first;
+
+			-- Iterate the strands and delete
+			-- them one by one:
+			while has_element (cursor) loop
+
+				strand := element (cursor);
+			
+				delete_strand (module_cursor, strand, 
+					log_threshold + 2);
+				
+				next (cursor);
+			end loop;
+		end delete_strands;
+			
+		
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " delete all nets on sheet " & to_string (sheet),
@@ -3781,12 +3909,18 @@ package body et_schematic_ops_nets is
 
 		log_indentation_up;
 
-		-- CS 
+		-- Get all strands which are on the given sheet:
+		strands_on_sheet := get_strands (
+			module_cursor, sheet, log_threshold + 1);
+
+		delete_strands;
 		
 		log_indentation_down;
 	end delete_nets;
 
 
+
+	
 	
 
 

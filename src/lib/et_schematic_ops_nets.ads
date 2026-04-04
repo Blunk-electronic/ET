@@ -345,6 +345,14 @@ package et_schematic_ops_nets is
 		return pac_object_strands.list;
 	
 
+	-- Returns a list of strands which are on the given sheet:
+	function get_strands (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level)
+		return pac_object_strands.list;
+
+
 	
 
 	-- Resets the status flags of all strands:
