@@ -191,6 +191,19 @@ package body et_drawing_frame.schematic is
 	
 	
 	
+	function get_sheet_count (
+		frames	: in type_frames_schematic)
+		return type_sheet
+	is
+		use pac_schematic_descriptions;
+	begin
+		return type_sheet (frames.descriptions.length);
+	end;
+		
+		
+	
+	
+	
 	procedure delete_sheet (
 		frames	: in out type_frames_schematic;
 		sheet	: in type_sheet)

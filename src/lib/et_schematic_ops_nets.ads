@@ -83,6 +83,13 @@ package et_schematic_ops_nets is
 
 
 
+	-- Returns the cursor to the first net in the module:
+	function get_first_net (
+		module_cursor	: in pac_generic_modules.cursor)
+		return pac_nets.cursor;
+
+	
+
 	-- Returns lists of device, netchanger and 
 	-- submodule ports at the given place:
 	function get_ports ( 
@@ -311,6 +318,30 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 	
 
+
+	-- Moves all strands of a given net by the
+	-- given number of sheets. Moves only those strands
+	-- which are on the sheet_old:
+	procedure move_strands (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in pac_nets.cursor;
+		sheet_old		: in type_sheet; -- the sheet of origin
+		offset			: in type_sheet_relative; -- the number of sheets
+		log_threshold	: in type_log_level);
+
+
+
+	-- Moves all strands of all nets by the
+	-- given number of sheets. 
+	-- Starts with the sheet given by sheet_start
+	-- and ends with the last sheet of the module:
+	procedure move_strands_all_nets (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet_start		: in type_sheet;
+		offset			: in type_sheet_relative; -- the number of sheets
+		log_threshold	: in type_log_level);
+
+	
 
 	-- Returns for a given net a list of strands
 	-- that cross the given place:

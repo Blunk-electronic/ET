@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -175,6 +175,12 @@ package et_net_strands is
 	procedure set_sheet (
 		strand	: in out type_strand;
 		sheet	: in type_sheet);					
+
+
+	-- Moves a strand by the given number of sheets:
+	procedure move_strand (
+		strand	: in out type_strand;
+		offset	: in type_sheet_relative);					
 
 	
 	-- Searches for net segments that run into the same direction

@@ -165,6 +165,12 @@ package et_drawing_frame.schematic is
 		return boolean;
 
 		
+	function get_sheet_count (
+		frames	: in type_frames_schematic)
+		return type_sheet;
+		
+		
+		
 	-- CS append sheet
 	-- CS insert sheet
 	-- CS edit description

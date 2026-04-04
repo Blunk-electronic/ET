@@ -48,7 +48,9 @@ package et_sheets is
 	
 	sheet_count_max : constant positive := 100;
 	type type_sheet_relative is new integer range -(sheet_count_max) .. sheet_count_max;
+	
 	subtype type_sheet is type_sheet_relative range 1 .. type_sheet_relative'last;
+	-- CS rename to type_sheet_id or similar
 
 	sheet_default : constant type_sheet := type_sheet'first;
 	
@@ -59,6 +61,11 @@ package et_sheets is
 	function to_sheet_relative (sheet : in string) return type_sheet_relative;
 	
 
+	procedure add (
+		sheet	: in out type_sheet;
+		offset	: in type_sheet_relative);
+		
+	
 	package pac_sheet_numbers is new doubly_linked_lists (type_sheet);
 
 	package pac_sheet_sorting is new pac_sheet_numbers.generic_sorting;

@@ -295,6 +295,16 @@ package body et_net_strands is
 	
 
 
+	procedure move_strand (
+		strand	: in out type_strand;
+		offset	: in type_sheet_relative)
+	is begin
+		add (strand.position.sheet, offset);
+	end;
+
+
+	
+
 
 	procedure optimize_strand_1 (
 		strand			: in out type_strand;

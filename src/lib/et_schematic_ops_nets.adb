@@ -48,6 +48,7 @@ with et_axes;
 with et_assembly_variants;
 with et_schematic_ops_units;			use et_schematic_ops_units;
 with et_schematic_ops_groups;
+with et_schematic_ops_sheets;
 
 with et_symbol_model;
 with et_units;
@@ -103,6 +104,31 @@ package body et_schematic_ops_nets is
 
 	
 
+
+	
+	
+	
+	function get_first_net (
+		module_cursor	: in pac_generic_modules.cursor)
+		return pac_nets.cursor
+	is 
+		result : pac_nets.cursor;		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is begin
+			result := module.nets.first;
+		end;
+	
+	begin	
+		query_element (module_cursor, query_module'access);		
+		return result;
+	end get_first_net;
+	
+	
+	
+	
 
 
 
@@ -1967,6 +1993,156 @@ package body et_schematic_ops_nets is
 		log_indentation_down;
 	end add_strand;
 
+
+
+	
+	
+
+	
+
+
+
+	procedure move_strands (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in pac_nets.cursor;
+		sheet_old		: in type_sheet;
+		offset			: in type_sheet_relative;
+		log_threshold	: in type_log_level)
+	is 
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is 
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+
+				procedure query_strand (
+					strand : in out type_strand)
+				is begin
+					if get_sheet (strand) = sheet_old then
+						move_strand (strand, offset);
+					end if;
+				end;
+				
+					
+			begin
+				while has_element (strand_cursor) loop
+					net.strands.update_element (
+						strand_cursor, query_strand'access);
+						
+					next (strand_cursor);
+				end loop;
+			end query_net;
+			
+			
+		begin
+			module.nets.update_element (net_cursor, query_net'access);
+		end query_module;
+
+		
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " move strands of net " & get_net_name (net_cursor)
+			 & " from sheet " & to_string (sheet_old) 
+			 & " by " & relative_to_string (offset) & " sheets.",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (module_cursor, query_module'access);
+		
+		log_indentation_down;
+	end move_strands;
+
+
+
+	
+	
+	
+	
+	
+	
+	procedure move_strands_all_nets (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet_start		: in type_sheet;
+		offset			: in type_sheet_relative; -- the number of sheets
+		log_threshold	: in type_log_level)
+	is
+		sheets_total : type_sheet;
+		
+		use et_schematic_ops_sheets;
+
+		
+		procedure do_it is 
+			net_cursor : pac_nets.cursor;		
+		begin
+			-- Process the sheets from sheet_start to
+			-- the last sheet:
+			for i in sheet_start .. sheets_total loop
+				log (text => "sheet " & to_string (i), level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Start with the first net of the module:
+				net_cursor := get_first_net (module_cursor);
+				
+				while has_element (net_cursor) loop
+					log (text => "net " & get_net_name (net_cursor),
+						level => log_threshold + 1);
+						
+					log_indentation_up;
+				
+					move_strands (module_cursor, net_cursor, 
+						i, offset, log_threshold + 1);
+						
+					log_indentation_down;
+					
+					next (net_cursor);
+				end loop;
+				
+				
+				log_indentation_down;
+			end loop;
+		end do_it;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " move strands of all nets by "
+			& relative_to_string (offset) & " sheets."
+			& " Start with sheet " & to_string (sheet_start),
+			level => log_threshold);
+		
+		log_indentation_up;
+		
+		
+		-- Get the total number of sheets:
+		sheets_total := get_sheet_count (module_cursor);
+
+		
+		-- The whole procedure makes only sense if sheet_start
+		-- is less than the total number of sheets:
+		if sheet_start < sheets_total then		
+			do_it;			
+		else		
+			log (text => "The last sheet was given. Nothing to do.",
+				level => log_threshold);
+
+		end if;
+
+		log_indentation_down;	
+	end move_strands_all_nets;
+
+	
+	
+	
 
 	
 	

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -56,6 +56,16 @@ package body et_sheets is
 	function to_sheet_relative (sheet : in string) return type_sheet_relative is begin
 		return type_sheet_relative'value (sheet);
 	end;
+
+
+
+	procedure add (
+		sheet	: in out type_sheet;
+		offset	: in type_sheet_relative)
+	is begin
+		sheet := sheet + offset;
+	end;
+
 	
 end et_sheets;
 

@@ -65,6 +65,32 @@ package body et_schematic_ops_sheets is
 	
 	
 	
+	function get_sheet_count (
+		module	: in pac_generic_modules.cursor)
+		return type_sheet
+	is
+		result : type_sheet;
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is begin
+			result := get_sheet_count (module.frames);
+		end query_module;
+		
+	begin
+		query_element (module, query_module'access);
+		return result;
+	end get_sheet_count;
+	
+
+	
+	
+	
+	
+	
+	
+	
 	function sheet_exists (
 		module	: in pac_generic_modules.cursor;
 		sheet	: in type_sheet)
@@ -198,6 +224,13 @@ package body et_schematic_ops_sheets is
 		begin
 			-- Delete all nets on the given sheet:
 			delete_nets (module_cursor, sheet, log_threshold + 1);
+			
+			move_strands_all_nets (
+				module_cursor	=> module_cursor, 
+				sheet_start		=> sheet + 1,
+				offset			=> -1,
+				log_threshold	=> log_threshold + 1);
+				
 			
 			-- Delete all units on the given sheet:
 			delete_units (module_cursor, sheet, log_threshold + 1);

@@ -56,6 +56,14 @@ package et_schematic_ops_sheets is
 		sheet : in type_sheet);
 	
 
+	-- Returns the total number of sheets
+	-- that the module currently has:
+	function get_sheet_count (
+		module	: in pac_generic_modules.cursor)
+		return type_sheet;
+		
+		
+		
 	-- Returns true if the given sheet exists:
 	function sheet_exists (
 		module	: in pac_generic_modules.cursor;
