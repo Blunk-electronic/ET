@@ -188,6 +188,20 @@ Schematic Editor
 	
 
 
+
+#. Dissolve a Netchanger:
+
+	Dissolving a netchanger means to merge the two connected
+	nets into a single one and removing the netchanger from the design.
+	The direction of the netchagner determines which
+	net name dominates and which name is to be discarded.
+
+
+	.. code-block::
+
+		dissovle netchanger 44
+
+
 	
 ++++++++++++
 Board Editor
