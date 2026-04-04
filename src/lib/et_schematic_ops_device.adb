@@ -92,6 +92,37 @@ package body et_schematic_ops_device is
 -- 	
 
 
+
+
+	
+	function get_device_names (
+		module_cursor 	: in pac_generic_modules.cursor)
+		return pac_device_names.set
+	is
+		result : pac_device_names.set;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is begin
+			result := get_device_names (module.devices);
+		end query_module;
+
+
+	begin
+		query_element (module_cursor, query_module'access);
+
+		return result;
+	end get_device_names;
+
+
+
+	
+
+
+	
+
 	function sort_by_coordinates_2 (
 		module_cursor 	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level) 

@@ -1171,8 +1171,56 @@ package body et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;
 		log_threshold	: in type_log_level)
-
 	is
+		-- A list of all device names of the given module:
+		device_names : pac_device_names.set;
+		
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_device_names;
+
+			
+			procedure query_device_name (
+				c : in pac_device_names.cursor) 
+			is
+				device_name : type_device_name renames element (c);
+
+				use pac_unit_names;
+				unit_names : pac_unit_names.list;
+
+				
+				procedure query_unit (
+					c : in pac_unit_names.cursor) 
+				is
+					unit_name : pac_unit_name.bounded_string 
+						renames element (c);
+				begin					
+					delete_unit (module_cursor, device_name, 
+						unit_name, log_threshold + 2);
+				end query_unit;
+
+				
+			begin				
+				-- Get the names of all units of the candidate
+				-- device on the given sheet:
+				unit_names := get_units_on_sheet (
+					module_cursor, device_name, sheet, log_threshold + 1);
+
+				-- Iterate through the units:
+				unit_names.iterate (query_unit'access);
+			end query_device_name;
+				
+				
+		begin
+			-- Iterate through the device names:
+			device_names.iterate (query_device_name'access);			
+		end query_module;
+
+
+		
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " delete all units on sheet " & to_string (sheet),
@@ -1180,7 +1228,14 @@ package body et_schematic_ops_units is
 
 		log_indentation_up;
 
-		-- CS
+		-- Get the names of all devices of the module:
+		device_names := get_device_names (module_cursor);
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
 		
 		log_indentation_down;
 	end delete_units;

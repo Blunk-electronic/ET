@@ -88,6 +88,12 @@ package et_schematic_ops_device is
 		
 	-- procedure device_already_exists (name : in type_device_name);
 
+	-- Returns the names of all electrical
+	-- devices in the module in a list like IC1, R23, D23):
+	function get_device_names (
+		module_cursor 	: in pac_generic_modules.cursor)
+		return pac_device_names.set;
+		
 
 
 	-- CS description !
