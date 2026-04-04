@@ -77,6 +77,14 @@ package et_schematic_ops_netchangers is
 		index : in type_netchanger_id);
 
 
+	-- Returns the indexes of all netchangers in
+	-- the module:
+	function get_netchangers (
+		module_cursor	: in pac_generic_modules.cursor)
+		return pac_netchanger_ids.list;
+		
+		
+								 
 	-- Locates the given netchanger in the module.
 	-- If the netchanger does not exist, then no_element
 	-- is returned:
@@ -278,7 +286,9 @@ package et_schematic_ops_netchangers is
 
 	
 	
-	-- Deletes the netchanger indicated by index:
+	-- Deletes the netchanger indicated by index.
+	-- Deletes also the ports of the netchanger 
+	-- in connected net segments:
 	procedure delete_netchanger (
 		module_cursor	: in pac_generic_modules.cursor;
 		index			: in type_netchanger_id; -- 1,2,3,...
@@ -287,6 +297,8 @@ package et_schematic_ops_netchangers is
 
 
 	-- Deletes all netchangers on the given sheet:
+	-- Deletes also the portss of the netchangers 
+	-- in connected net segments:
 	procedure delete_netchangers (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;

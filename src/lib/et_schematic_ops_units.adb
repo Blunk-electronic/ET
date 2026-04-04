@@ -1200,6 +1200,7 @@ package body et_schematic_ops_units is
 				begin					
 					delete_unit (module_cursor, device_name, 
 						unit_name, log_threshold + 2);
+						-- CS no commit
 				end query_unit;
 
 				

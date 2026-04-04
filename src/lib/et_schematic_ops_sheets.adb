@@ -42,6 +42,11 @@ with et_schematic_ops_nets;
 with et_schematic_ops_units;
 with et_schematic_ops_netchangers;
 
+with et_board_ops_ratsnest;
+with et_modes.schematic;
+with et_undo_redo;
+with et_commit;
+
 
 
 package body et_schematic_ops_sheets is
@@ -177,7 +182,12 @@ package body et_schematic_ops_sheets is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
-
+		use et_board_ops_ratsnest;
+		use et_modes.schematic;
+		use et_undo_redo;
+		use et_commit;
+	
+	
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -199,8 +209,6 @@ package body et_schematic_ops_sheets is
 			
 			-- CS delete_sheet (module.frames, sheet);
 			-- This procedure is not complete yet.
-			
-			null;
 		end query_module;
 
 	
@@ -212,10 +220,26 @@ package body et_schematic_ops_sheets is
 
 		log_indentation_up;
 
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold + 1);
+		end if;
+		
+		
 		generic_modules.update_element (
 			position	=> module_cursor,		   
 			process		=> query_module'access);
 		
+		
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold + 1);
+		end if;
+
+		
+		update_ratsnest (module_cursor, log_threshold + 1);
+				
 		log_indentation_down;
 	end delete_sheet;
 

@@ -196,6 +196,19 @@ package body et_undo_redo is
 						when others => null;
 					end case;
 
+
+				when NOUN_SHEET =>
+					case verb is
+						when VERB_DELETE =>
+
+							commit_nets;
+							commit_devices;
+							commit_netchangers;
+							-- CS submodules, texts, ...
+
+						when others => null;
+					end case;
+
 					
 				when others => null;
 			end case;

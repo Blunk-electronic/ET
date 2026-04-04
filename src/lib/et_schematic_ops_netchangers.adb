@@ -106,6 +106,44 @@ package body et_schematic_ops_netchangers is
 
 	
 
+
+
+	function get_netchangers (
+		module_cursor	: in pac_generic_modules.cursor)
+		return pac_netchanger_ids.list
+	is
+		result : pac_netchanger_ids.list;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is 
+
+			procedure query_netchanger (
+				c : pac_netchangers.cursor) 
+			is 
+				index : type_netchanger_id renames key (c);
+			begin
+				result.append (index);
+			end;
+
+			
+		begin
+			module.netchangers.iterate (query_netchanger'access);
+		end;
+
+
+	begin
+		query_element (module_cursor, query_module'access);
+		
+		return result;
+	end get_netchangers;
+
+
+	
+
+	
 	
 
 	function get_netchanger (
@@ -1978,6 +2016,7 @@ package body et_schematic_ops_netchangers is
 	
 
 	
+	
 
 
 
@@ -1988,6 +2027,28 @@ package body et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level)
 
 	is
+		use pac_netchanger_ids;
+		netchanger_indexes : pac_netchanger_ids.list;
+
+
+		-- This procedure queries a netchanger by its index:
+		procedure query_index (c : pac_netchanger_ids.cursor) is
+			-- The index candidate being queried:
+			index : type_netchanger_id renames element (c);
+			position : type_object_position;
+		begin
+			-- Get the position of the netchanger:
+			position := get_netchanger_position (module_cursor, index);
+
+			-- If the netchanger is on the giben sheet, then
+			-- delete it:
+			if get_sheet (position) = sheet then
+				delete_netchanger (module_cursor, index, NO_COMMIT,
+					log_threshold + 1);
+			end if;
+		end query_index;
+		
+		
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " delete all netchangers on sheet " & to_string (sheet),
@@ -1995,7 +2056,11 @@ package body et_schematic_ops_netchangers is
 
 		log_indentation_up;
 
-		-- CS 
+		-- Get the indexes of all netchangers in the module:
+		netchanger_indexes := get_netchangers (module_cursor);
+
+		-- Iterate through the indexes:
+		netchanger_indexes.iterate (query_index'access);
 		
 		log_indentation_down;
 	end delete_netchangers;

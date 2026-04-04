@@ -92,6 +92,10 @@ package et_netchangers is
 	type type_netchanger_id is range 1 .. netchanger_id_max;
 
 
+	-- To collect indexes of netchangers use this
+	-- package:
+	package pac_netchanger_ids is new 
+		doubly_linked_lists (type_netchanger_id);
 	
 	
 	function to_netchanger_id (
