@@ -286,6 +286,14 @@ package et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level);
 
 
+	-- Deletes all netchangers on the given sheet:
+	procedure delete_netchangers (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level);
+
+	
+
 	-- Dissolves the netchanger indicated by index.
 	-- This operation requires that the netchanger is connected
 	-- with a net on both MASTER and SLAVE port respectively.

@@ -587,7 +587,13 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 
+	-- Deletes all nets on the given sheet:
+	procedure delete_nets (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level);
 
+	
 	
 	-- Shows/highlights a complete net by just
 	-- setting the status of the whole net as "selected":

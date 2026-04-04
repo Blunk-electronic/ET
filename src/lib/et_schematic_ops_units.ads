@@ -259,6 +259,11 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
+	-- Deletes all units on the given sheet:
+	procedure delete_units (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level);
 
 
 	

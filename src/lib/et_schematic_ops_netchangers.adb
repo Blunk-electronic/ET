@@ -1978,6 +1978,33 @@ package body et_schematic_ops_netchangers is
 	
 
 	
+
+
+
+
+	procedure delete_netchangers (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level)
+
+	is
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " delete all netchangers on sheet " & to_string (sheet),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		-- CS 
+		
+		log_indentation_down;
+	end delete_netchangers;
+
+	
+
+
+
+
 	
 
 	

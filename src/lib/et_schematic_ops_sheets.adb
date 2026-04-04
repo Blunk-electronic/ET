@@ -38,6 +38,9 @@
 
 
 with et_module_names;					use et_module_names;
+with et_schematic_ops_nets;
+with et_schematic_ops_units;
+with et_schematic_ops_netchangers;
 
 
 
@@ -178,7 +181,22 @@ package body et_schematic_ops_sheets is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is 
+			use et_schematic_ops_nets;
+			use et_schematic_ops_units;
+			use et_schematic_ops_netchangers;
+		begin
+			-- Delete all nets on the given sheet:
+			delete_nets (module_cursor, sheet, log_threshold + 1);
+			
+			-- Delete all units on the given sheet:
+			delete_units (module_cursor, sheet, log_threshold + 1);
+
+			-- Delete all netchangers on the given sheet:
+			delete_netchangers (module_cursor, sheet, log_threshold + 1);
+
+			-- CS: delete submodules, texts, ...
+			
 			-- CS delete_sheet (module.frames, sheet);
 			-- This procedure is not complete yet.
 			
