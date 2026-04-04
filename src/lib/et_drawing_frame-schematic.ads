@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,6 +35,9 @@
 --
 --   history of changes:
 --
+-- To Do:
+-- - clean up
+-- - rename types
 
 
 with ada.directories;				use ada.directories;
@@ -154,6 +157,20 @@ package et_drawing_frame.schematic is
 	end record;
 
 	
+	
+	-- Returns true if the given sheet exists:
+	function sheet_exists (
+		frames	: in type_frames_schematic;
+		sheet	: in type_sheet)
+		return boolean;
+
+
+	-- Sets the category of the given sheet:
+	procedure set_category (
+		frames	: in out type_frames_schematic;
+		sheet	: in type_sheet;
+		cat		: in type_schematic_sheet_category);
+		
 	
 end et_drawing_frame.schematic;
 

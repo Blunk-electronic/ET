@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -169,6 +169,57 @@ package body et_drawing_frame.schematic is
 	function to_category (cat : in string) return type_schematic_sheet_category is begin
 		return type_schematic_sheet_category'value (cat);
 	end;
+
+
+
+	
+	function sheet_exists (
+		frames	: in type_frames_schematic;
+		sheet	: in type_sheet)
+		return boolean
+	is
+		use pac_schematic_descriptions;
+		cursor : pac_schematic_descriptions.cursor;
+	begin
+		-- Locate the given sheet among the frames:
+		cursor := frames.descriptions.find (sheet);
+
+		return has_element (cursor);
+	end;
+	
+
+	
+	
+
+	procedure set_category (
+		frames	: in out type_frames_schematic;
+		sheet	: in type_sheet;
+		cat		: in type_schematic_sheet_category)
+	is
+		use pac_schematic_descriptions;
+		cursor : pac_schematic_descriptions.cursor;
+
+		
+		-- Assigns the given category to the sheet:		
+		procedure query_sheet (
+			sheet		: in type_sheet;
+			description	: in out type_schematic_description)
+		is begin
+			description.category := cat;
+		end;
+		
+		
+	begin
+		-- Locate the given sheet among the frames:
+		cursor := frames.descriptions.find (sheet);
+
+		frames.descriptions.update_element (
+			cursor, query_sheet'access);
+			
+	end set_category;
+
+
+	
 	
 end et_drawing_frame.schematic;
 

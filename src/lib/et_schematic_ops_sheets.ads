@@ -50,8 +50,20 @@ with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 package et_schematic_ops_sheets is
 
 	use pac_generic_modules;
+
+
+	procedure sheet_not_found (
+		sheet : in type_sheet);
 	
 
+	-- Returns true if the given sheet exists:
+	function sheet_exists (
+		module	: in pac_generic_modules.cursor;
+		sheet	: in type_sheet)
+		return boolean;
+	
+
+							  
 	-- Returns the description of a sheet of a generic module:
 	function get_sheet_description (
 		module	: in pac_generic_modules.cursor;
@@ -60,6 +72,9 @@ package et_schematic_ops_sheets is
 	
 
 
+	-- Sets the category of the given sheet.
+	-- Assumes that the sheet exists. Otherwise an exception
+	-- is raised:
 	procedure set_sheet_category (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;

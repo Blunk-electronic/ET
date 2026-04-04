@@ -47,6 +47,41 @@ package body et_schematic_ops_sheets is
 	use pac_text_schematic;
 
 	
+	procedure sheet_not_found (
+		sheet : in type_sheet)
+	is begin
+		log (WARNING, "Sheet no. " & to_string (sheet) & " not found !");
+	end;
+
+	
+	
+	
+	
+	function sheet_exists (
+		module	: in pac_generic_modules.cursor;
+		sheet	: in type_sheet)
+		return boolean
+	is
+		result : boolean := false;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is begin
+			result := sheet_exists (module.frames, sheet);
+		end query_module;
+
+		
+	begin
+		query_element (module, query_module'access);
+		return result;
+	end sheet_exists;
+		
+		
+	
+	
+	
 	
 	function get_sheet_description (
 		module	: in pac_generic_modules.cursor;
@@ -101,9 +136,12 @@ package body et_schematic_ops_sheets is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is	
-		begin
-			null;
+		is begin
+			set_category (
+				frames	=> module.frames,
+				sheet	=> sheet,
+				cat		=> category);
+
 		end query_module;
 
 		
