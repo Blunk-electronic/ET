@@ -179,6 +179,9 @@ package body et_schematic_ops_sheets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is begin
+			-- CS delete_sheet (module.frames, sheet);
+			-- This procedure is not complete yet.
+			
 			null;
 		end query_module;
 

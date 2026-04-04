@@ -164,6 +164,18 @@ package et_drawing_frame.schematic is
 		sheet	: in type_sheet)
 		return boolean;
 
+		
+	-- CS append sheet
+	-- CS insert sheet
+	-- CS edit description
+	
+		
+	-- Deletes the given sheet.
+	-- Decrements following sheet numbers by 1:
+	procedure delete_sheet (
+		frames	: in out type_frames_schematic;
+		sheet	: in type_sheet);
+
 
 	-- Sets the category of the given sheet:
 	procedure set_category (

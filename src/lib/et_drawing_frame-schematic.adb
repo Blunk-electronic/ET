@@ -190,7 +190,28 @@ package body et_drawing_frame.schematic is
 
 	
 	
+	
+	procedure delete_sheet (
+		frames	: in out type_frames_schematic;
+		sheet	: in type_sheet)
+	is 
+		use pac_schematic_descriptions;
+		cursor : pac_schematic_descriptions.cursor;
+	begin
+		-- Locate the given sheet among the frames:
+		cursor := frames.descriptions.find (sheet);
 
+		-- Delete the sheet:
+		frames.descriptions.delete (cursor);			
+		
+		-- CS update the following sheet numbers !!!
+	end delete_sheet;
+
+	
+	
+		
+	
+	
 	procedure set_category (
 		frames	: in out type_frames_schematic;
 		sheet	: in type_sheet;
