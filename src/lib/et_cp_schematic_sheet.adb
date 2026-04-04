@@ -121,8 +121,8 @@ package body et_cp_schematic_sheet is
 
 		
 		case cmd_field_count is
-			when 7 =>
-				sheet := to_sheet (get_field (cmd, 7));
+			when 5 =>
+				sheet := to_sheet (get_field (cmd, 5));
 				
 				-- Test existence of given sheet number:
 				if sheet_exists (module, sheet) then
@@ -140,7 +140,7 @@ package body et_cp_schematic_sheet is
 				end if;
 				
 			
-			when 8 .. type_field_count'last => 
+			when 6 .. type_field_count'last => 
 				command_too_long (cmd, cmd_field_count - 1);
 				
 			when others => command_incomplete (cmd);
