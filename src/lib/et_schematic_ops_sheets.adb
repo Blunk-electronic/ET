@@ -163,6 +163,42 @@ package body et_schematic_ops_sheets is
 
 	
 	
+	
+	
+	
+	
+	
+	procedure delete_sheet (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is begin
+			null;
+		end query_module;
+
+	
+	
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " delete sheet " & to_string (sheet), 
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,		   
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end delete_sheet;
+
+	
 end et_schematic_ops_sheets;
 	
 -- Soli Deo Gloria

@@ -83,6 +83,18 @@ package et_schematic_ops_sheets is
 		log_threshold	: in type_log_level);
 	
 
+	
+	-- Deletes the given sheet.
+	-- Assumes that the sheet exists. Otherwise an exception
+	-- is raised:
+	procedure delete_sheet (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level);
+	
+	
+	
 	-- CS subprograms to get and set the title block position ?
 	-- currently this is defined in the frame template file *.frs
 	

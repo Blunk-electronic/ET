@@ -273,6 +273,9 @@ package body et_cp_schematic is
 							
 						when NOUN_VARIANT => 
 							delete_assembly_variant (module_cursor, cmd, log_threshold + 1);
+
+						when NOUN_SHEET => 
+							delete_sheet (module_cursor, cmd, log_threshold + 1);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;

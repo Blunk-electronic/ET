@@ -101,6 +101,57 @@ package body et_cp_schematic_sheet is
 	
 
 
+	
+	
+	
+	
+	
+	
+	procedure delete_sheet (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		
+		sheet : type_sheet;
+	begin
+		log (text => "delete sheet", level => log_threshold); 
+
+		
+		case cmd_field_count is
+			when 7 =>
+				sheet := to_sheet (get_field (cmd, 7));
+				
+				-- Test existence of given sheet number:
+				if sheet_exists (module, sheet) then
+
+					delete_sheet (
+						module_cursor	=> module,
+						sheet			=> sheet,
+     
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
+						log_threshold	=> log_threshold + 1);
+				else
+					sheet_not_found (sheet);
+				end if;
+				
+			
+			when 8 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;		
+	end delete_sheet;
+
+	
+
+	
+	
+	
 
 
 
@@ -112,7 +163,6 @@ package body et_cp_schematic_sheet is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
-
 		
 		sheet : type_sheet;
 

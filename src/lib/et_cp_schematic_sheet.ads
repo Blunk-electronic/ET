@@ -57,6 +57,15 @@ package et_cp_schematic_sheet is
 		log_threshold	: in type_log_level);
 
 
+	-- This procedure parses a command that deletes
+	-- a sheet.
+	-- Example: "module demo delete sheet 2"
+	procedure delete_sheet (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+	
 
 	-- This procedure parses a command that 
 	-- sets the category of a sheet.
