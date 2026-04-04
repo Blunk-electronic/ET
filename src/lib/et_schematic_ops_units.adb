@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                    SCHEMATIC OPERATIONS ON UNITS                         --
+--                    SCHEMATIC OPERATIONS / UNITS                          --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --

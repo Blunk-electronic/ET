@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                    SCHEMATIC OPERATIONS ON UNITS                         --
+--                    SCHEMATIC OPERATIONS / UNITS                          --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -259,7 +259,9 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
-	-- Deletes all units which are on the given sheet:
+	-- Deletes all units which are on the given sheet.
+	-- In case the last unit of a device has been deleted,
+	-- then the device is deleted entirely from the module:
 	procedure delete_units (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;
