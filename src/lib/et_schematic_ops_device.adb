@@ -275,6 +275,36 @@ package body et_schematic_ops_device is
 
 
 
+
+
+
+
+	
+	function get_first_electrical_device (
+		module_cursor	: in pac_generic_modules.cursor)
+		return pac_devices_electrical.cursor
+	is
+		result : pac_devices_electrical.cursor;
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is begin
+			result := module.devices.first;
+		end;
+
+	begin
+		pac_generic_modules.query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		return result;
+	end get_first_electrical_device;
+
+
+
+
+
 	
 	
 	function get_device_model (

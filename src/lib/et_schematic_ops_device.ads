@@ -119,6 +119,13 @@ package et_schematic_ops_device is
 		device	: in type_device_name) -- R2
 		return pac_devices_electrical.cursor;
 
+		
+	-- Returns the cursor to the first electrical
+	-- device of the module:
+	function get_first_electrical_device (
+		module_cursor	: in pac_generic_modules.cursor)
+		return pac_devices_electrical.cursor;
+
 	
 	-- Returns the cursor to the device model
 	-- for the given device in the given module.

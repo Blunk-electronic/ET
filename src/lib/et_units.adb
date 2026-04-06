@@ -160,6 +160,18 @@ package body et_units is
 	end set_sheet;
 	
 
+
+
+
+	procedure move_unit (
+		unit	: in out type_unit;
+		offset	: in type_sheet_relative)
+	is begin
+		move_by_sheets (unit.position, offset);
+	end;
+
+
+	
 	
 	
 	function in_catch_zone (

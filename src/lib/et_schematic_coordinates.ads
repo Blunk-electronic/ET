@@ -167,7 +167,13 @@ package et_schematic_coordinates is
 		sheet		: in type_sheet);
 
 
+	-- Moves the position by the given number of sheets:
+	procedure move_by_sheets (
+		position	: in out type_object_position;
+		offset		: in type_sheet_relative);
 
+
+	
 	
 	private 
 

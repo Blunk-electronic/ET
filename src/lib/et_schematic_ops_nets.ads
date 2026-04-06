@@ -332,9 +332,9 @@ package et_schematic_ops_nets is
 
 
 	-- This procedure is to be used in connection with
-	-- deleting sheets. It should be called after the nets/strands
+	-- deleting sheets. It should be called after all nets/strands
 	-- have been deleted on the sheet to be deleted.
-	-- It moves all following strands of all nets by one sheet downward.
+	-- It moves all strands on following sheets by one sheet downward.
 	-- Starts with the sheet that follow sheet_delete
 	-- and ends with the last sheet of the module.
 	-- So sheet_delete is the sheet that is to be deleted.

@@ -335,6 +335,42 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
+		
+	-- Moves all units of a given electrical device by the
+	-- given number of sheets. Moves only those units
+	-- which are on the sheet_old.
+	-- IMPORTAT: This procedure only changes the coordinates
+	-- affected units ! It does not care about ports and
+	-- net segments:
+	procedure move_units (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
+		sheet_old		: in type_sheet;
+		offset			: in type_sheet_relative;
+		log_threshold	: in type_log_level);
+		
+		
+	-- This procedure is to be used in connection with
+	-- deleting sheets. 
+	--
+	-- IMPORTANT: It should only be called after:
+	-- 1. all strands have been moved via procedure 
+	--    et_schematic_ops_nets.move_strands_on_sheet_delete
+	--    because this operation has moved the ports of units already.
+	-- 2. all units have been deleted on the sheet to be deleted.
+	--
+	-- It moves all untis on following sheets by one sheet downward.
+	-- Starts with the sheet that follow sheet_delete
+	-- and ends with the last sheet of the module.
+	-- So sheet_delete is the sheet that is to be deleted.
+	-- If sheet_delete is the last sheet of the module,
+	-- then nothing happens because there are no following
+	-- sheets to move anything:
+	procedure move_units_on_sheet_delete (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet_delete	: in type_sheet;	
+		log_threshold	: in type_log_level);
+		
 
 	-- Returns the position of given unit. If the unit_name is empty ("")
 	-- then the position of the first unit of the device is returned.

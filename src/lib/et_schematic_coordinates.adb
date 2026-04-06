@@ -333,6 +333,16 @@ package body et_schematic_coordinates is
 	end set_sheet;
 
 
+
+	
+	procedure move_by_sheets (
+		position	: in out type_object_position;
+		offset		: in type_sheet_relative)
+	is begin
+		add (position.sheet, offset);
+	end;
+
+
 	
 end et_schematic_coordinates;
 

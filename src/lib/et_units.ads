@@ -168,6 +168,14 @@ package et_units is
 		unit	: in out type_unit;
 		sheet	: in type_sheet);
 	
+
+
+	-- Moves a unit by the given number of sheets:
+	procedure move_unit (
+		unit	: in out type_unit;
+		offset	: in type_sheet_relative);					
+
+
 	
 
 	-- Returns true if the given unit is in
