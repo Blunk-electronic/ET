@@ -146,7 +146,13 @@ package et_netchangers.schematic is
 	function get_sheet (
 		position : in type_netchanger_position_schematic)
 		return type_sheet;
-		
+
+
+	-- Moves the netchanger by the given number of sheets:
+	procedure move_netchanger (
+		netchanger	: in out type_netchanger;
+		offset		: in type_sheet_relative);
+	
 
 	function get_rotation (
 		position : in type_netchanger_position_schematic)

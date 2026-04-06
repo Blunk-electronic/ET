@@ -188,6 +188,16 @@ package body et_netchangers.schematic is
 		return position.sheet;
 	end;
 
+
+
+	procedure move_netchanger (
+		netchanger	: in out type_netchanger;
+		offset		: in type_sheet_relative)
+	is begin
+		add (netchanger.position_sch.sheet, offset);
+	end;
+
+
 	
 
 	function get_rotation (

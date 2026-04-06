@@ -340,7 +340,7 @@ package et_schematic_ops_units is
 	-- given number of sheets. Moves only those units
 	-- which are on the sheet_old.
 	-- IMPORTAT: This procedure only changes the coordinates
-	-- affected units ! It does not care about ports and
+	-- of affected units ! It does not care about ports and
 	-- net segments:
 	procedure move_units (
 		module_cursor	: in pac_generic_modules.cursor;

@@ -221,6 +221,7 @@ package body et_schematic_ops_sheets is
 			use et_schematic_ops_nets;
 			use et_schematic_ops_units;
 			use et_schematic_ops_netchangers;
+			-- CS separate procedures for nets, units, netchangers, ...
 		begin
 			-- Delete all nets on the given sheet:
 			delete_nets (module_cursor, sheet, log_threshold + 1);
@@ -247,6 +248,15 @@ package body et_schematic_ops_sheets is
 			-- Delete all netchangers on the given sheet:
 			delete_netchangers (module_cursor, sheet, log_threshold + 1);
 
+			-- Move all netchangerss on following sheets
+			-- downward by one sheet:
+			move_netchangers_on_sheet_delete (
+				module_cursor	=> module_cursor, 
+				sheet_delete	=> sheet,
+				log_threshold	=> log_threshold + 1);
+
+			
+			
 			-- CS: delete submodules, texts, ...
 			
 			-- CS delete_sheet (module.frames, sheet);

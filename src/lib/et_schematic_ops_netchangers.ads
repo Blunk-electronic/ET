@@ -83,6 +83,13 @@ package et_schematic_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor)
 		return pac_netchanger_ids.list;
 		
+
+	-- Returns a cursor to the first netchanger
+	-- of the module:
+	function get_first_netchanger (
+		module_cursor	: in pac_generic_modules.cursor)
+		return pac_netchangers.cursor;
+
 		
 								 
 	-- Locates the given netchanger in the module.
@@ -245,6 +252,43 @@ package et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level);
 
 
+		
+		
+	-- Moves all netchangers given number of sheets. 
+	-- Moves only those netchangers which are on the sheet_old.
+	-- IMPORTAT: This procedure only changes the coordinates
+	-- of affected netchangers ! It does not care about ports and
+	-- net segments:
+	procedure move_netchangers (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet_old		: in type_sheet;
+		offset			: in type_sheet_relative;
+		log_threshold	: in type_log_level);
+
+		
+		
+	-- This procedure is to be used in connection with
+	-- deleting sheets. 
+	--
+	-- IMPORTANT: It should only be called after:
+	-- 1. all strands have been moved via procedure 
+	--    et_schematic_ops_nets.move_strands_on_sheet_delete
+	--    because this operation has moved the ports of netchangers already.
+	-- 2. all netchangers have been deleted on the sheet to be deleted.
+	--
+	-- It moves all netchangers on following sheets by one sheet downward.
+	-- Starts with the sheet that follow sheet_delete
+	-- and ends with the last sheet of the module.
+	-- So sheet_delete is the sheet that is to be deleted.
+	-- If sheet_delete is the last sheet of the module,
+	-- then nothing happens because there are no following
+	-- sheets to move anything:
+	procedure move_netchangers_on_sheet_delete (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet_delete	: in type_sheet;	
+		log_threshold	: in type_log_level);
+
+		
 
 	-- Rotates the given netchanger. Disconnects it from
 	-- start or end points of net segments.

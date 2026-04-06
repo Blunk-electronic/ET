@@ -49,6 +49,8 @@ with et_net_ports;						use et_net_ports;
 with et_net_strands;					use et_net_strands;
 with et_schematic_ops_nets;
 with et_schematic_ops_groups;
+with et_schematic_ops_sheets;
+
 with et_board_ops_ratsnest;
 with et_netchanger_symbol_schematic;
 with et_module;							use et_module;
@@ -143,6 +145,36 @@ package body et_schematic_ops_netchangers is
 
 	
 
+	
+	
+	
+	
+	function get_first_netchanger (
+		module_cursor	: in pac_generic_modules.cursor)
+		return pac_netchangers.cursor
+	is
+		result : pac_netchangers.cursor;
+		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is begin
+			result := module.netchangers.first;
+		end;
+		
+		 
+	begin
+		query_element (module_cursor, query_module'access);
+
+		return result;
+	end get_first_netchanger;
+
+
+	
+	
+	
+	
 	
 	
 
@@ -1548,6 +1580,142 @@ package body et_schematic_ops_netchangers is
 
 
 
+	
+	
+	
+	
+	procedure move_netchangers (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet_old		: in type_sheet;
+		offset			: in type_sheet_relative;
+		log_threshold	: in type_log_level)
+	is 
+
+	
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is 
+			netchanger_cursor : pac_netchangers.cursor := 
+				module.netchangers.first;
+	
+	
+			procedure query_netchanger (
+				index		: in type_netchanger_id;
+				netchanger	: in out type_netchanger)
+			is begin
+				if get_sheet (netchanger) = sheet_old then
+					move_netchanger (netchanger, offset);
+				end if;
+			end;
+			
+			
+		begin
+			module.netchangers.update_element (
+				netchanger_cursor, query_netchanger'access);
+		end query_module;
+		
+	
+	begin	
+		generic_modules.update_element (
+			position	=> module_cursor,		   
+			process		=> query_module'access);
+	
+	end move_netchangers;
+
+	
+	
+	
+	
+	
+	
+	
+	
+	procedure move_netchangers_on_sheet_delete (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet_delete	: in type_sheet;	
+		log_threshold	: in type_log_level)
+	is		
+		sheets_total : type_sheet;
+		
+		-- We start processing the sheets with the
+		-- sheet after sheet_delete:
+		sheet_start : type_sheet := sheet_delete + 1;
+		
+		use et_schematic_ops_sheets;
+
+		
+		procedure do_it is 
+			netchanger_cursor : pac_netchangers.cursor;		
+		begin
+			-- Process the sheets from sheet_start to
+			-- the last sheet:
+			for i in sheet_start .. sheets_total loop
+				log (text => "sheet " & to_string (i), level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate through the netchangers of the module.
+				-- Start with the first netchanger:
+				netchanger_cursor := get_first_netchanger (module_cursor);
+				
+				while has_element (netchanger_cursor) loop
+					log (text => "netchanger " & get_netchanger_name (netchanger_cursor),
+						level => log_threshold + 1);
+						
+					log_indentation_up;
+				
+					-- Move the netchangers:
+					move_netchangers (
+						module_cursor	=> module_cursor,
+						sheet_old		=> i, -- the current sheet
+						offset			=> - 1, -- one sheet down
+						log_threshold	=> log_threshold + 1);
+						
+					log_indentation_down;
+					
+					next (netchanger_cursor);
+				end loop;
+				
+				
+				log_indentation_down;
+			end loop;
+		end do_it;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " move all netchangers one sheet downward."
+			& " Sheet to be deleted: " & to_string (sheet_delete),
+			level => log_threshold);
+		
+		log_indentation_up;
+		
+		
+		-- Get the total number of sheets:
+		sheets_total := get_sheet_count (module_cursor);
+	
+		
+		-- If the sheet to be deleted is not the last sheet
+		-- of the module, then proceed further. Otherwise
+		-- there is nothing to do:
+		if sheet_delete < sheets_total then
+			do_it;			
+		elsif sheet_delete = sheets_total then
+			log (text => "The last sheet was given. Nothing to do.",
+				level => log_threshold);
+		else
+			-- sheet_delete is greater than sheets_total:
+			raise constraint_error;
+		end if;
+
+		log_indentation_down;
+	end move_netchangers_on_sheet_delete;
+
+	
+	
+	
+	
+	
 	
 	
 	
