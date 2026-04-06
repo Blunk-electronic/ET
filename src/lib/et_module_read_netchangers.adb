@@ -100,27 +100,20 @@ package body et_module_read_netchangers is
 			
 			direction := to_netchanger_direction (f (line, 2));
 			set_direction (netchanger, direction);
+		
 
-			
 		elsif kw = keyword_position_in_schematic then 
-			-- position_in_schematic sheet 1 x 1.000 y 5.555
+			-- position_in_schematic sheet 1 x 1.000 y 5.555 rotation 0
 			
-			expect_field_count (line, 7);
+			expect_field_count (line, 9);
 
 			-- extract position (in schematic) starting at field 2
 			position := to_position (line, 2);
 
 			set_sheet (netchanger, get_sheet (position));
 			set_place (netchanger, get_place (position));
-
-					   
-		elsif kw = keyword_rotation_in_schematic then 
-			-- rotation_in_schematic 90.0
-			expect_field_count (line, 2);
+			set_rotation (netchanger, get_rotation (position));
 			
-			rotation := et_schematic_geometry.pac_geometry_2.type_rotation_0_90 (et_schematic_geometry.pac_geometry_2.to_rotation (f (line, 2)));
-			set_rotation (netchanger, rotation);
-
 			
 		elsif kw = keyword_position_in_board then 
 			-- position_in_board x 55.000 y 7.555
