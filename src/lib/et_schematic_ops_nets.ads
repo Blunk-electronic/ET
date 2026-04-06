@@ -331,14 +331,19 @@ package et_schematic_ops_nets is
 
 
 
-	-- Moves all strands of all nets by the
-	-- given number of sheets. 
-	-- Starts with the sheet given by sheet_start
-	-- and ends with the last sheet of the module:
-	procedure move_strands_all_nets (
+	-- This procedure is to be used in connection with
+	-- deleting sheets. It should be called after the nets/strands
+	-- have been deleted on the sheet to be deleted.
+	-- It moves all following strands of all nets by one sheet downward.
+	-- Starts with the sheet that follow sheet_delete
+	-- and ends with the last sheet of the module.
+	-- So sheet_delete is the sheet that is to be deleted.
+	-- If sheet_delete is the last sheet of the module,
+	-- then nothing happens because there are no following
+	-- sheets to move anything:
+	procedure move_strands_on_sheet_delete (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet_start		: in type_sheet;
-		offset			: in type_sheet_relative; -- the number of sheets
+		sheet_delete	: in type_sheet;
 		log_threshold	: in type_log_level);
 
 	

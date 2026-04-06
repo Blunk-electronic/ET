@@ -2070,13 +2070,16 @@ package body et_schematic_ops_nets is
 	
 	
 	
-	procedure move_strands_all_nets (
+	procedure move_strands_on_sheet_delete (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet_start		: in type_sheet;
-		offset			: in type_sheet_relative; -- the number of sheets
+		sheet_delete	: in type_sheet;
 		log_threshold	: in type_log_level)
 	is
 		sheets_total : type_sheet;
+		
+		-- We start processing the sheets with the
+		-- sheet after sheet_delete:
+		sheet_start : type_sheet := sheet_delete + 1;
 		
 		use et_schematic_ops_sheets;
 
@@ -2090,7 +2093,8 @@ package body et_schematic_ops_nets is
 				log (text => "sheet " & to_string (i), level => log_threshold + 1);
 				log_indentation_up;
 
-				-- Start with the first net of the module:
+				-- Iterate through the nets of the module.
+				-- Start with the first net:
 				net_cursor := get_first_net (module_cursor);
 				
 				while has_element (net_cursor) loop
@@ -2099,8 +2103,12 @@ package body et_schematic_ops_nets is
 						
 					log_indentation_up;
 				
-					move_strands (module_cursor, net_cursor, 
-						i, offset, log_threshold + 1);
+					move_strands (
+						module_cursor	=> module_cursor,
+						net_cursor		=> net_cursor, 
+						sheet_old		=> i, -- the current sheet
+						offset			=> - 1, -- one sheet down
+						log_threshold	=> log_threshold + 1);
 						
 					log_indentation_down;
 					
@@ -2115,9 +2123,8 @@ package body et_schematic_ops_nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " move strands of all nets by "
-			& relative_to_string (offset) & " sheets."
-			& " Start with sheet " & to_string (sheet_start),
+			& " move all strands one sheet downward."
+			& " Sheet to be deleted: " & to_string (sheet_delete),
 			level => log_threshold);
 		
 		log_indentation_up;
@@ -2125,20 +2132,23 @@ package body et_schematic_ops_nets is
 		
 		-- Get the total number of sheets:
 		sheets_total := get_sheet_count (module_cursor);
-
+	
 		
-		-- The whole procedure makes only sense if sheet_start
-		-- is less than the total number of sheets:
-		if sheet_start < sheets_total then		
+		-- If the sheet to be deleted is not the last sheet
+		-- of the module, then proceed further. Otherwise
+		-- there is nothing to do:
+		if sheet_delete < sheets_total then
 			do_it;			
-		else		
+		elsif sheet_delete = sheets_total then
 			log (text => "The last sheet was given. Nothing to do.",
 				level => log_threshold);
-
+		else
+			-- sheet_delete is greater than sheets_total:
+			raise constraint_error;
 		end if;
 
 		log_indentation_down;	
-	end move_strands_all_nets;
+	end move_strands_on_sheet_delete;
 
 	
 	

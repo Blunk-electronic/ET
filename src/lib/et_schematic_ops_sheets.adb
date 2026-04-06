@@ -225,10 +225,11 @@ package body et_schematic_ops_sheets is
 			-- Delete all nets on the given sheet:
 			delete_nets (module_cursor, sheet, log_threshold + 1);
 			
-			move_strands_all_nets (
+			-- Move all strands of nets on follwing sheets
+			-- downward by one sheet:
+			move_strands_on_sheet_delete (
 				module_cursor	=> module_cursor, 
-				sheet_start		=> sheet + 1,
-				offset			=> -1,
+				sheet_delete	=> sheet,
 				log_threshold	=> log_threshold + 1);
 				
 			
