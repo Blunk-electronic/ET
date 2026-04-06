@@ -1600,6 +1600,8 @@ package body et_schematic_ops_netchangers is
 				module.netchangers.first;
 	
 	
+			-- Moves the netchanger candidate by
+			-- the given offset if it is on the given sheet_old:
 			procedure query_netchanger (
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger)
@@ -1611,8 +1613,13 @@ package body et_schematic_ops_netchangers is
 			
 			
 		begin
-			module.netchangers.update_element (
-				netchanger_cursor, query_netchanger'access);
+			-- Iterate through the netchangers of the module:
+			while has_element (netchanger_cursor) loop
+				module.netchangers.update_element (
+					netchanger_cursor, query_netchanger'access);
+					
+				next (netchanger_cursor);
+			end loop;
 		end query_module;
 		
 	

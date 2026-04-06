@@ -1750,6 +1750,8 @@ package body et_schematic_ops_units is
 				unit_cursor : pac_units.cursor := device.units.first;
 				
 				
+				-- Moves the unit candidate by the given offset
+				-- if it is on the given sheet_old:
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
@@ -1761,7 +1763,12 @@ package body et_schematic_ops_units is
 				
 				
 			begin
-				device.units.update_element (unit_cursor, query_unit'access);
+				-- Iterate trough the units of the device candidate:
+				while has_element (unit_cursor) loop
+					device.units.update_element (unit_cursor, query_unit'access);
+				
+					next (unit_cursor);
+				end loop;
 			end query_device;
 			
 			
