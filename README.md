@@ -324,6 +324,22 @@ $ sh install.sh
 - Ada is defined by ISO/IEC 8652:2012 and MIL-STD-1815
 - Ada is beautiful :-)
 
+### Documentation
+
+Documentation uses [Sphinx](https://www.sphinx-doc.org).
+The required Python dependencies can be installed using [uv](https://docs.astral.sh/uv/):
+
+```sh
+uv sync
+```
+
+and built with:
+
+```sh
+cd doc
+uv run make html
+```
+
 ### Roadmap, things to do and issues
 - zero-Ohms resistors
 - accessories of components (screws, washers, clamps, ...)

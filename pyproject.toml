@@ -1,0 +1,10 @@
+[project]
+name = "et"
+version = "0.0.7"
+description = "An ECAD design tool for complex schematics and layouts"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+dev = ["sphinx>=8.2.3"]
