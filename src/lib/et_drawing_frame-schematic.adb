@@ -171,7 +171,17 @@ package body et_drawing_frame.schematic is
 	end;
 
 
+	
+	
+	function get_sheet_count (
+		descriptions : in pac_schematic_descriptions.map)
+		return type_sheet
+	is begin
+		return type_sheet (descriptions.length);
+	end;
 
+
+	
 	
 	function sheet_exists (
 		frames	: in type_frames_schematic;
@@ -206,18 +216,90 @@ package body et_drawing_frame.schematic is
 	
 	procedure delete_sheet (
 		frames	: in out type_frames_schematic;
-		sheet	: in type_sheet)
+		sheet	: in type_sheet) -- CS rename to target
 	is 
 		use pac_schematic_descriptions;
-		cursor : pac_schematic_descriptions.cursor;
-	begin
-		-- Locate the given sheet among the frames:
-		cursor := frames.descriptions.find (sheet);
-
-		-- Delete the sheet:
-		frames.descriptions.delete (cursor);			
+		cursor : pac_schematic_descriptions.cursor;		
 		
-		-- CS update the following sheet numbers !!!
+		total : type_sheet := get_sheet_count (frames);
+		
+		
+		-- procedure delete_last_sheet is 
+		-- begin
+		-- 	-- Locate the given sheet among the frames:
+		-- 	cursor := frames.descriptions.find (sheet);
+  -- 
+		-- 	-- Delete the sheet:
+		-- 	frames.descriptions.delete (cursor);		
+		-- end;
+		
+		
+-- 		procedure delete_other_sheet is
+-- 			lower_end : pac_schematic_descriptions.map;
+-- 			upper_end : pac_schematic_descriptions.map;
+-- 			
+-- 			
+-- 			procedure get_lower_end is 
+-- 				cursor : pac_schematic_descriptions.cursor;
+-- 				place : type_sheet := 1;
+-- 			begin
+-- 				cursor := frames.descriptions.first;
+-- 			
+-- 				while has_element (cursor) loop
+-- 					lower_end.insert (element (cursor));
+-- 					place := place + 1;
+-- 					if place = sheet - 1 then
+-- 						exit;
+-- 					end if;
+-- 					next (cursor);
+-- 				end loop;
+-- 			end get_lower_end;
+-- 			
+-- 			
+-- 			procedure get_upper_end is
+-- 				cursor : pac_schematic_descriptions.cursor;
+-- 				place : type_sheet := sheet + 1;
+-- 			begin
+-- 				cursor := frames.descriptions.find (sheet + 1);
+-- 				
+-- 				while has_element (cursor) loop
+-- 					upper_end.insert (element (cursor));
+-- 					next (cursor);
+-- 				end loop;
+-- 			end get_upper_end;
+-- 						
+-- 
+-- 			procedure append is
+-- 				cursor : pac_schematic_descriptions.cursor;
+-- 			begin
+-- 				null;
+-- 			end append;
+							
+		-- begin
+-- 			get_lower_end;
+-- 			get_upper_end;
+-- 			
+-- 			append;
+		-- end delete_other_sheet;
+		
+		
+	begin
+		if sheet > total then
+			-- The given sheet number is greater
+			-- than the total number of sheets:
+			null; -- CS raise exception ? or just do nothing ?
+			
+		elsif sheet = total then
+			-- The last sheet is to be deleted:
+			-- delete_last_sheet;
+			null;
+		else
+			-- Delete a sheet that is not 
+			-- the last sheet:
+			-- delete_other_sheet;
+			null;
+		end if;
+
 	end delete_sheet;
 
 	

@@ -259,8 +259,8 @@ package body et_schematic_ops_sheets is
 			
 			-- CS: delete submodules, texts, ...
 			
-			-- CS delete_sheet (module.frames, sheet);
-			-- This procedure is not complete yet.
+			delete_sheet (module.frames, sheet);
+
 		end query_module;
 
 	

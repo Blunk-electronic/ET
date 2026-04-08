@@ -144,6 +144,11 @@ package et_drawing_frame.schematic is
 		element_type	=> type_schematic_description);
 
 
+	-- Returns the total number of sheets:
+	function get_sheet_count (
+		descriptions : in pac_schematic_descriptions.map)
+		return type_sheet;
+		
 	
 	-- The final drawing frames:
 	type type_frames_schematic is record
