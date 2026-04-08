@@ -201,7 +201,9 @@ package et_drawing_frame.schematic is
 	
 		
 	-- Deletes the given sheet.
-	-- Decrements following sheet numbers by 1:
+	-- Decrements following sheet numbers by 1.
+	-- If the targeted sheet does not exist, then
+	-- nothing happens (CS: raise exception instead ?):
 	procedure delete_sheet (
 		frames	: in out type_frames_schematic;
 		sheet	: in type_sheet);

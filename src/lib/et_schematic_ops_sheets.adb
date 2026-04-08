@@ -255,10 +255,11 @@ package body et_schematic_ops_sheets is
 				sheet_delete	=> sheet,
 				log_threshold	=> log_threshold + 1);
 
-			
-			
+						
 			-- CS: delete submodules, texts, ...
 			
+			
+			-- Remove the sheet from the drawing frames:
 			delete_sheet (module.frames, sheet);
 
 		end query_module;
