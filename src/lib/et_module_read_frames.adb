@@ -68,7 +68,7 @@ package body et_module_read_frames is
 
 	
 	
-	sheet_descriptions			: pac_schematic_descriptions.map;
+	sheet_descriptions			: pac_schematic_descriptions.vector;
 	sheet_description_category	: type_schematic_sheet_category := 
 		schematic_sheet_category_default; -- product/develpment/routing
 	
@@ -154,16 +154,12 @@ package body et_module_read_frames is
 	procedure add_sheet_description is 
 		use et_schematic_coordinates;	
 		use pac_schematic_descriptions;
-		inserted : boolean;
 		position : pac_schematic_descriptions.cursor;
 	begin
 		insert (
 			container	=> sheet_descriptions,
-			key			=> sheet_description_number,
-			inserted	=> inserted,
-			position	=> position,
-			new_item	=> (sheet_description_text, sheet_description_category)
-			);
+			before		=> sheet_description_number,
+			new_item	=> (sheet_description_text, sheet_description_category));
 
 		-- clean up for next sheet description
 		sheet_description_category := schematic_sheet_category_default;

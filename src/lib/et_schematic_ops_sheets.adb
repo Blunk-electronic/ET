@@ -132,7 +132,7 @@ package body et_schematic_ops_sheets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is begin
-			cursor := find (module.frames.descriptions, sheet);
+			cursor := module.frames.descriptions.to_cursor (sheet);
 		end query_descriptions;
 
 		

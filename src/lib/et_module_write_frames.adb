@@ -97,16 +97,16 @@ package body et_module_write_frames is
 						section_mark (section_sheet, HEADER);
 						write (
 							keyword		=> keyword_sheet_number,
-							parameters	=> to_string (key (s)));
+							parameters	=> get_sheet (s));
 
 						write (
 							keyword		=> keyword_sheet_category,
-							parameters	=> to_string (element (s).category));
+							parameters	=> get_category (s));
 
 						write (
 							keyword		=> keyword_sheet_description,
 							wrap		=> true,
-							parameters	=> to_string (element (s).content));
+							parameters	=> get_content (s));
 						
 						section_mark (section_sheet, FOOTER);
 					end query_sheet;

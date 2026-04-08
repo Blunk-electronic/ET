@@ -174,7 +174,7 @@ package body et_drawing_frame.schematic is
 	
 	
 	function get_sheet_count (
-		descriptions : in pac_schematic_descriptions.map)
+		descriptions : in pac_schematic_descriptions.vector)
 		return type_sheet
 	is begin
 		return type_sheet (descriptions.length);
@@ -192,12 +192,55 @@ package body et_drawing_frame.schematic is
 		cursor : pac_schematic_descriptions.cursor;
 	begin
 		-- Locate the given sheet among the frames:
-		cursor := frames.descriptions.find (sheet);
+		cursor := frames.descriptions.to_cursor (sheet);
 
 		return has_element (cursor);
 	end;
 	
 
+	
+	
+	function get_sheet (
+		sheet_cursor : in pac_schematic_descriptions.cursor)
+		return string
+	is 
+		sheet : type_sheet;
+		use pac_schematic_descriptions;
+	begin
+		sheet := to_index (sheet_cursor);
+		return to_string (sheet);
+	end;
+
+	
+
+	
+	function get_category (
+		sheet_cursor : in pac_schematic_descriptions.cursor)
+		return string
+	is
+		use pac_schematic_descriptions;
+		category : type_schematic_sheet_category;
+	begin
+		category := element (sheet_cursor).category;
+		return to_string (category);
+	end;
+	
+	
+
+	
+	function get_content (
+		sheet_cursor : in pac_schematic_descriptions.cursor)
+		return string
+	is
+		use pac_schematic_descriptions;
+		content : pac_text_content.bounded_string;
+	begin
+		content := element (sheet_cursor).content;
+		return to_string (content);
+	end;
+
+	
+	
 	
 	
 	
@@ -235,8 +278,8 @@ package body et_drawing_frame.schematic is
 		
 		
 -- 		procedure delete_other_sheet is
--- 			lower_end : pac_schematic_descriptions.map;
--- 			upper_end : pac_schematic_descriptions.map;
+-- 			lower_end : pac_schematic_descriptions.vector;
+-- 			upper_end : pac_schematic_descriptions.vector;
 -- 			
 -- 			
 -- 			procedure get_lower_end is 
@@ -313,12 +356,10 @@ package body et_drawing_frame.schematic is
 		cat		: in type_schematic_sheet_category)
 	is
 		use pac_schematic_descriptions;
-		cursor : pac_schematic_descriptions.cursor;
 
 		
 		-- Assigns the given category to the sheet:		
 		procedure query_sheet (
-			sheet		: in type_sheet;
 			description	: in out type_schematic_description)
 		is begin
 			description.category := cat;
@@ -326,11 +367,8 @@ package body et_drawing_frame.schematic is
 		
 		
 	begin
-		-- Locate the given sheet among the frames:
-		cursor := frames.descriptions.find (sheet);
-
 		frames.descriptions.update_element (
-			cursor, query_sheet'access);
+			sheet, query_sheet'access);
 			
 	end set_category;
 

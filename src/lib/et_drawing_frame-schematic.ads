@@ -42,6 +42,7 @@
 
 with ada.directories;				use ada.directories;
 with ada.containers.ordered_maps;
+with ada.containers.vectors;
 
 with et_sheets;						use et_sheets;
 
@@ -139,14 +140,32 @@ package et_drawing_frame.schematic is
 	
 	-- For each sheet of a schematic a description is required. 
 	-- The descriptions are ordered by the sheet numbers:
-	package pac_schematic_descriptions is new ordered_maps (
-		key_type		=> type_sheet,
+	package pac_schematic_descriptions is new vectors (
+		index_type		=> type_sheet,
 		element_type	=> type_schematic_description);
 
 
+	-- Maps from the cursor of a sheet description to
+	-- the sheet index:
+	function get_sheet (
+		sheet_cursor : in pac_schematic_descriptions.cursor)
+		return string;
+		
+		
+	function get_category (
+		sheet_cursor : in pac_schematic_descriptions.cursor)
+		return string;
+		
+
+	function get_content (
+		sheet_cursor : in pac_schematic_descriptions.cursor)
+		return string;
+
+		
+		
 	-- Returns the total number of sheets:
 	function get_sheet_count (
-		descriptions : in pac_schematic_descriptions.map)
+		descriptions : in pac_schematic_descriptions.vector)
 		return type_sheet;
 		
 	
@@ -158,7 +177,7 @@ package et_drawing_frame.schematic is
 		--frame			: type_frame (DOMAIN_SCHEMATIC) := make_default_frame (DOMAIN_SCHEMATIC);
 		frame			: type_frame_schematic := make_default_frame_schematic;
 		
-		descriptions	: pac_schematic_descriptions.map;
+		descriptions	: pac_schematic_descriptions.vector;
 	end record;
 
 	
