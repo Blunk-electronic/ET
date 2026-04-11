@@ -82,11 +82,13 @@ package et_device_renumbering is
 	
 	-- Returns true if left index range is below right index range.
 	function below (left, right : in type_index_range) return boolean;
+	-- CS: rename to "<"
 
 	
 	-- Returns true if left index range is above right index range.		
 	function above (left, right : in type_index_range) return boolean;
-
+	-- CS: rename to ">"
+	
 	
 	type type_renumber_module is record
 		name				: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
