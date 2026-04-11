@@ -75,6 +75,7 @@ with et_net_ports_devices;
 with et_net_ports_submodules;
 with et_net_ports_netchangers;
 with et_nets;						use et_nets;
+with et_net_scope;
 with et_netlists;
 with et_port_names;
 
@@ -389,7 +390,7 @@ package body et_module_write_nets is
 
 				write (keyword => keyword_name, parameters => to_string (key (net_cursor)));
 				write (keyword => keyword_class, parameters => to_string (element (net_cursor).class));
-				write (keyword => keyword_scope, parameters => et_netlists.to_string (element (net_cursor).scope));
+				write (keyword => keyword_scope, parameters => et_net_scope.to_string (element (net_cursor).scope));
 
 				query_element (net_cursor, query_strands'access);
 				query_element (net_cursor, query_route'access);

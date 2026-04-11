@@ -64,6 +64,7 @@ with et_device_name;			use et_device_name;
 with et_module_names;			use et_module_names;
 with et_module_instance;		use et_module_instance;
 with et_net_ports_netchangers;	use et_net_ports_netchangers;
+with et_net_scope;				use et_net_scope;
 
 
 package et_netlists is
@@ -126,20 +127,8 @@ package et_netlists is
 
 
 	
-		
-		
 
-	-- If a net exists in a (sub)module exclusively or whether it can be
-	-- seen from the parent module. For example power nets like GND are global.
-	type type_net_scope is (
-		LOCAL,	-- parent module can connect to it via netchanger only
-		GLOBAL	-- parent module can connect to it directly
-		);
-
-	function to_string (net_scope : in type_net_scope) return string;
-	function to_net_scope (scope : in string) return type_net_scope;
-
-
+	
 	
 	
 	type type_net is tagged record -- CS rename to type_net_ports ?

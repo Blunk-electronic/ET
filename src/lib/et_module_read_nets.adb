@@ -76,7 +76,7 @@ with et_net_ports_devices;
 with et_net_ports_submodules;
 with et_net_ports_netchangers;
 with et_nets;						use et_nets;
-with et_netlists;
+with et_net_scope;					use et_net_scope;
 
 
 
@@ -131,7 +131,7 @@ package body et_module_read_nets is
 			
 		elsif kw = keyword_scope then
 			expect_field_count (line, 2);
-			net.scope := et_netlists.to_net_scope (f (line,2));
+			net.scope := to_net_scope (f (line,2));
 			
 		else
 			invalid_keyword (kw);

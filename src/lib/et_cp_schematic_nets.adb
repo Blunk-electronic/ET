@@ -61,7 +61,7 @@ with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 with et_net_class_name;					use et_net_class_name;
 with et_net_connectors;					use et_net_connectors;
-with et_netlists;
+with et_net_scope;						use et_net_scope;
 with et_schematic_ops_netlists;
 with et_net_names;						use et_net_names;
 with et_schematic_ops_nets;				use et_schematic_ops_nets;
@@ -124,7 +124,6 @@ package body et_cp_schematic_nets is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
-		use et_netlists;
 		
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		

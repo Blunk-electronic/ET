@@ -678,8 +678,6 @@ package body et_nets is
 			-- CS: use renames
 			
 			use pac_device_ports;
-
-			use et_netlists;
 			use pac_netchanger_ports;			
 			use pac_net_submodule_ports;
 

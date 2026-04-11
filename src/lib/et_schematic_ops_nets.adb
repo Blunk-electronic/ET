@@ -5078,7 +5078,7 @@ package body et_schematic_ops_nets is
 	procedure set_scope (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		scope			: in et_netlists.type_net_scope; -- local/global
+		scope			: in et_net_scope.type_net_scope; -- local/global
 		log_threshold	: in type_log_level) 
 	is
 		net_cursor : pac_nets.cursor; -- points to the net
@@ -5108,7 +5108,7 @@ package body et_schematic_ops_nets is
 	begin -- set_scope
 		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &
 			" setting scope of net " & to_string (net_name) &
-			" to" & et_netlists.to_string (scope),
+			" to" & et_net_scope.to_string (scope),
 			level => log_threshold);
 
 

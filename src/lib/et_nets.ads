@@ -49,7 +49,6 @@ with et_logging;				use et_logging;
 with et_net_names;				use et_net_names;
 with et_net_class;				use et_net_class;
 with et_net_class_name;			use et_net_class_name;
-with et_netlists;
 with et_route;
 with et_commit;
 with et_sheets;					use et_sheets;
@@ -62,6 +61,8 @@ with et_net_strands;			use et_net_strands;
 with et_net_labels;				use et_net_labels;
 with et_netchangers;			use et_netchangers;
 with et_object_status;			use et_object_status;
+with et_net_scope;				use et_net_scope;
+
 
 
 package et_nets is
@@ -91,7 +92,8 @@ package et_nets is
 
 -- NETS (basic stuff):
 	
-	type type_net_scope is (
+	type type_net_scope is ( -- CS rename so that it can not be confused with
+							   -- et_net_scope.type_net_scope
 		STRAND,
 		SHEET,
 		EVERYWHERE
@@ -111,7 +113,7 @@ package et_nets is
 	
 	type type_net is new type_net_base with record
 		strands		: pac_strands.list;
-		scope		: et_netlists.type_net_scope := et_netlists.LOCAL;
+		scope		: et_net_scope.type_net_scope := et_net_scope.LOCAL;
 
 		status : type_object_status; 
 		-- IMPORTANT: status "moving" shall not be used. 

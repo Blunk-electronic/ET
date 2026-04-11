@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                              SYSTEM ET                                   --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                     NET SEGMENT PORTS / NETCHANGERS                      --
+--                             NET SCOPE                                    --
 --                                                                          --
---                               S p e c                                    --
+--                              S p e c                                     --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -33,55 +33,30 @@
 --   info@blunk-electronic.de
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
---
--- DESCRIPTION:
---
--- This package is about ports of netchangers
--- as they are connected with net segments.
--- This information is part of a net segment.
---
---
 --   history of changes:
 --
+--   ToDo: 
 
 
-with ada.containers; 			use ada.containers;
-with ada.containers.ordered_sets;
 
-with et_netchangers;			use et_netchangers;
-with et_netchangers.schematic;	use et_netchangers.schematic;
--- with et_module_instance;		use et_module_instance;
--- with et_net_names;				use et_net_names;
--- with et_string_processing;		use et_string_processing;
-
-
-package et_net_ports_netchangers is
-	
-	
-
-	-- This is the port of a netchanger as it appears in a net segment:
-	type type_port_netchanger is record
-		index	: type_netchanger_id := type_netchanger_id'first;
-		port	: type_netchanger_port_name := SLAVE; -- CS reasonable default ?
-	end record;
-
-	function "<" (left, right : in type_port_netchanger) return boolean;	
-
-
-	package pac_netchanger_ports is new ordered_sets (type_port_netchanger);
-
-	
-	-- Returns true if the given list contains
-	-- a netchanger port with the given index and port:
-	function contains_netchanger_port (
-		ports	: in pac_netchanger_ports.set;
-		index	: in type_netchanger_id;
-		port	: in type_netchanger_port_name)
-		return boolean;
-
-
+package et_net_scope is
 		
-end et_net_ports_netchangers;
+
+	-- If a net exists in a (sub)module exclusively or whether it can be
+	-- seen from the parent module. For example power nets like GND are global.
+	type type_net_scope is (
+		LOCAL,	-- parent module can connect to it via netchanger only
+		GLOBAL	-- parent module can connect to it directly
+		);
+	-- CS use prefix ?
+	
+
+	function to_string (net_scope : in type_net_scope) return string;
+
+	function to_net_scope (scope : in string) return type_net_scope;
+
+	
+end et_net_scope;
 
 -- Soli Deo Gloria
 

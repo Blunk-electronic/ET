@@ -77,7 +77,7 @@ with et_kicad.schematic;
 with et_kicad_coordinates;
 with et_import;
 with et_sheets;
-with et_netlists;
+with et_net_scope;					use et_net_scope;
 with et_net_strands;
 
 with et_text_content;				use et_text_content;
@@ -3319,7 +3319,7 @@ package body et_kicad_to_native is
 					key			=> key (kicad_net_cursor), -- net name
 					new_item	=> (
 							-- convert the kicad net scope to native net scope
-							scope	=> et_netlists.to_net_scope (et_kicad.schematic.to_string (
+							scope	=> to_net_scope (et_kicad.schematic.to_string (
 										element (kicad_net_cursor).scope)),
 							others 	=> <>)
 					);

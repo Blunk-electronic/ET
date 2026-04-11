@@ -47,6 +47,7 @@ use et_schematic_geometry.pac_geometry_2;
 with et_module;							use et_module;
 with et_generic_modules;				use et_generic_modules;
 with et_nets;							use et_nets;
+with et_net_scope;
 with et_net_names;						use et_net_names;
 with et_net_strands;					use et_net_strands;
 with et_net_labels;						use et_net_labels;
@@ -770,7 +771,7 @@ package et_schematic_ops_nets is
 	procedure set_scope (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		scope			: in et_netlists.type_net_scope; -- local/global
+		scope			: in et_net_scope.type_net_scope; -- local/global
 		log_threshold	: in type_log_level);
 
 

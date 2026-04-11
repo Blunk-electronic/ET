@@ -64,6 +64,7 @@ with et_module_ops;
 with et_schematic_ops_units;			use et_schematic_ops_units;
 
 with et_netlists;
+with et_net_scope;						use et_net_scope;
 
 with et_schematic_ops_nets;
 with et_module_read;
@@ -283,10 +284,10 @@ package body et_schematic_ops_submodules is
 			if net_cursor /= pac_nets.no_element then -- net found
 
 				case element (net_cursor).scope is
-					when et_netlists.GLOBAL => 
+					when GLOBAL => 
 						result := true;
 
-					when et_netlists.LOCAL =>
+					when LOCAL =>
 						if netchanger_as_port_available (module_cursor, net_cursor, direction) then
 							result := true;
 						else
