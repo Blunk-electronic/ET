@@ -62,7 +62,7 @@ with et_device_prefix;			use et_device_prefix;
 with et_device_model_names;		use et_device_model_names;
 with et_device_library;			use et_device_library;
 with et_devices_electrical;		use et_devices_electrical;
-with et_numbering;				use et_numbering;
+with et_device_renumbering;		use et_device_renumbering;
 
 with et_package_variant_name;	use et_package_variant_name;
 with et_package_variant;		use et_package_variant;
@@ -100,7 +100,7 @@ package et_schematic_ops_device is
 	function sort_by_coordinates_2 (
 		module_cursor 	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
-		return et_numbering.pac_renumber_devices.map;
+		return pac_renumber_devices.map;
 
 
 

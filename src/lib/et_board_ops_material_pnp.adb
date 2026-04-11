@@ -49,7 +49,7 @@ with et_pick_and_place;
 with et_devices_electrical;					use et_devices_electrical;
 -- CS export non electrical devices missing ?
 
-with et_numbering;							use et_numbering;
+with et_device_renumbering;					use et_device_renumbering;
 with et_symbol_model;
 with et_device_appearance;
 with et_device_name;

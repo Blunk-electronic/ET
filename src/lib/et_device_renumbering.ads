@@ -53,7 +53,7 @@ with et_device_name;			use et_device_name;
 with et_unit_name;				use et_unit_name;
 
 
-package et_numbering is
+package et_device_renumbering is
 
 	
 	type type_renumber_device is record
@@ -102,7 +102,7 @@ package et_numbering is
 	package pac_renumber_modules is new multiway_trees (type_renumber_module);
 
 	
-end et_numbering;
+end et_device_renumbering;
 
 -- Soli Deo Gloria
 

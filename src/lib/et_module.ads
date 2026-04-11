@@ -65,7 +65,7 @@ with et_commit;
 with et_text_content;				use et_text_content;
 with et_drawing_frame;
 with et_drawing_frame.schematic;
-with et_numbering;
+with et_device_renumbering;			use et_device_renumbering;
 
 with et_design_rules;				use et_design_rules;
 with et_design_rules_board;			use et_design_rules_board;
@@ -143,7 +143,7 @@ package et_module is
 		-- The tree of submodules is stored here. 
 		-- NOTE: This container is exclusively used if the module is a top module.
 		-- In submodules it is not used (should always be empty):
-		submod_tree		: et_numbering.pac_renumber_modules.tree;
+		submod_tree		: pac_renumber_modules.tree;
 
 		-- The netlists containing nets of top module and submodule instances:
 		-- Provide information on primary nets and their subordinated secondary nets per 

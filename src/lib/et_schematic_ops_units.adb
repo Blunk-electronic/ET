@@ -72,7 +72,7 @@ with et_devices_electrical.packages;		use et_devices_electrical.packages;
 
 with et_device_placeholders.symbols;		use et_device_placeholders.symbols;
 
-with et_numbering;
+with et_device_renumbering;
 with et_device_library.packages;
 
 with et_schematic_ops_assembly_variant;		use et_schematic_ops_assembly_variant;
@@ -914,7 +914,7 @@ package body et_schematic_ops_units is
 		log_threshold	: in type_log_level)
 		return boolean 
 	is
-		use et_numbering;
+		use et_device_renumbering;
 		devices : pac_renumber_devices.map;
 	begin
 		devices := sort_by_coordinates_2 (module_cursor, log_threshold);

@@ -55,7 +55,7 @@ with et_board_geometry;
 with et_board_coordinates;
 with et_generic_stacks;
 with et_device_appearance;
-with et_numbering;					use et_numbering;
+with et_device_renumbering;				use et_device_renumbering;
 with et_package_name;
 with et_package_model_name;
 with et_net_segment;					use et_net_segment;
@@ -3576,10 +3576,11 @@ package body et_schematic_ops_submodules is
 	is		
 		module_cursor : pac_generic_modules.cursor;
 
+		
 		procedure query_submodules (
    			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) is
-			use et_numbering;
+			module		: in type_generic_module) 
+		is
 
 			procedure query (cursor : in pac_renumber_modules.cursor) is
 				use pac_renumber_modules;
@@ -4161,10 +4162,10 @@ package body et_schematic_ops_submodules is
 	function device_index_range (
 		module_cursor		: in pac_generic_modules.cursor; -- the cursor to the module
 		log_threshold		: in type_log_level) 
-		return et_numbering.type_index_range 
+		return type_index_range 
 	is
 
-		index_range : et_numbering.type_index_range; -- to be returned
+		index_range : type_index_range; -- to be returned
 
 		
 		procedure query_devices (
@@ -4191,8 +4192,9 @@ package body et_schematic_ops_submodules is
 				next (device_cursor);
 			end loop;
 
+			
 			if length (module.devices) > 0 then
-				log (text => et_numbering.to_index_range (module_name, index_range),
+				log (text => to_index_range (module_name, index_range),
 					 level => log_threshold + 1);
 			else
 				log (WARNING, "no devices found in module " &
@@ -4202,11 +4204,10 @@ package body et_schematic_ops_submodules is
 				index_range.highest := type_name_index'first;
 
 			end if;
-
 		end query_devices;
 
 		
-	begin -- device_index_range
+	begin
 		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))),
 			--" obtaining device index range ...",
 			level => log_threshold);
@@ -4234,23 +4235,22 @@ package body et_schematic_ops_submodules is
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor := generic_modules.first;
-		index_range : et_numbering.type_index_range;
+		index_range : type_index_range;
 
-		use et_numbering;
 		
 		package type_ranges is new ordered_maps (
 			key_type		=> pac_module_name.bounded_string, -- motor_driver (generic module name)
 			"<"				=> pac_module_name."<",
-			element_type	=> et_numbering.type_index_range); -- 3..190
+			element_type	=> type_index_range); -- 3..190
 
 		-- The device name indexes of all (sub)modules are stored here:
 		ranges : type_ranges.map;
 
 		
-		function query_range (module : in pac_module_name.bounded_string)
 		-- Returns the index range of the given generic module.
 		-- NOTE: This is about the indexes used by the generic module.			
-			return et_numbering.type_index_range is
+		function query_range (module : in pac_module_name.bounded_string)
+			return type_index_range is
 			cursor : type_ranges.cursor;
 		begin
 			cursor := type_ranges.find (ranges, module);

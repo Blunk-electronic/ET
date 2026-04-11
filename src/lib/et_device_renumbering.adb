@@ -40,7 +40,7 @@
 --
 
 
-package body et_numbering is
+package body et_device_renumbering is
 
 	
 
@@ -101,7 +101,7 @@ package body et_numbering is
 	end;
 
 	
-end et_numbering;
+end et_device_renumbering;
 	
 -- Soli Deo Gloria
 

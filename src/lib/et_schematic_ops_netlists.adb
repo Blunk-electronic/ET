@@ -47,7 +47,7 @@ with et_netlists_export;
 
 with et_device_library.units;			use et_device_library.units;
 with et_device_name;					use et_device_name;
-with et_numbering;						use et_numbering;
+with et_device_renumbering;				use et_device_renumbering;
 with et_schematic_ops_submodules;
 with et_schematic_ops_units;
 with et_schematic_ops_device;			use et_schematic_ops_device;
