@@ -165,15 +165,16 @@ package et_netlists is
 	
 	-- In the tree of modules, each module provides its
 	-- generic name, instance name and a list of its nets:
-	type type_module is record -- CS rename to something more desrciptive
+	type type_netlist_module is record
 		generic_name	: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver		
 		instance_name	: pac_module_instance_name.bounded_string; -- OSC1
 		nets			: pac_nets.map;
 	end record;
+
 	
-	package pac_modules is new ada.containers.multiway_trees (type_module);
+	package pac_netlist_modules is new multiway_trees (type_netlist_module);
 
-
+	use pac_netlist_modules;
 
 
 
@@ -241,7 +242,7 @@ package et_netlists is
 	-- and a list thereof:
 	type type_global_net is record
 		--submodule	: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver		
-		submodule	: pac_modules.cursor;
+		submodule	: pac_netlist_modules.cursor;
 		net			: pac_nets.cursor;
 	end record;
 
@@ -254,7 +255,7 @@ package et_netlists is
 	
 	-- Returns a list of cursors to same named nets in submodules.
 	function global_nets_in_submodules (
-		module_cursor	: in pac_modules.cursor; -- the module that contains the port
+		module_cursor	: in pac_netlist_modules.cursor; -- the module that contains the port
 		net_cursor		: in pac_nets.cursor;
 		log_threshold	: in type_log_level)
 		return pac_global_nets.list;
@@ -269,7 +270,7 @@ package et_netlists is
 	-- slave is returned (and vice versa).
 	-- If the netchanger is not connected then the return is no_element.
 	function net_on_netchanger (
-		module_cursor	: in pac_modules.cursor; -- the module that contains the port
+		module_cursor	: in pac_netlist_modules.cursor; -- the module that contains the port
 		port			: in type_port_netchanger;
 		log_threshold	: in type_log_level)
 		return pac_nets.cursor;
@@ -281,7 +282,7 @@ package et_netlists is
 	-- submodule port.
 	-- If the port is not connected inside the submodule then the return is no_element.
 	function net_in_submodule (
-		module_cursor	: in pac_modules.cursor; -- the module that contains the port
+		module_cursor	: in pac_netlist_modules.cursor; -- the module that contains the port
 		port			: in type_submodule_port_extended;
 		log_threshold	: in type_log_level)		
 		return pac_nets.cursor;
@@ -297,7 +298,7 @@ package et_netlists is
 	-- If the net is not connected in the parent module (via the port in the box representing
 	-- the submodule instance) then the return is no_element.
 	function net_in_parent_module (
-		module_cursor	: in pac_modules.cursor; -- the module that contains the net
+		module_cursor	: in pac_netlist_modules.cursor; -- the module that contains the net
 		net_cursor		: in pac_nets.cursor;
 		log_threshold	: in type_log_level)
 		return pac_nets.cursor;
@@ -332,7 +333,7 @@ package et_netlists is
 	-- - The netlist file will be named after the module name and assembly variant.	
 	-- - Exports the netlist of the given module to the export/CAM directory.
 	function make_netlist (
-		modules			: in pac_modules.tree;
+		modules			: in pac_netlist_modules.tree;
 		module_name		: in pac_module_name.bounded_string; -- motor_driver 
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		write_file		: in boolean;
