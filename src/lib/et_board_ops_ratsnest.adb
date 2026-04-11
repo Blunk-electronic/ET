@@ -43,7 +43,7 @@ with et_conductor_segment.boards;
 with et_board_ops_devices;				use et_board_ops_devices;
 with et_board_ops_vias;					use et_board_ops_vias;
 
-with et_netlists;
+with et_net_ports_netchangers;
 with et_board_ops_netchangers;
 
 
@@ -108,7 +108,7 @@ package body et_board_ops_ratsnest is
 		-- 3. The position is then appended to the resulting
 		-- list of points.
 		
-		use et_netlists;
+		use et_net_ports_netchangers;
 		use pac_netchanger_ports;
 		netchangers : pac_netchanger_ports.set; -- the list of netchangers
 

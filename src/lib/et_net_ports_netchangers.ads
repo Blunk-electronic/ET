@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           NET SEGMENT PORTS                              --
+--                     NET SEGMENT PORTS / NETCHANGERS                      --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -36,7 +36,7 @@
 --
 -- DESCRIPTION:
 --
--- This package is about ports of units, netchangers and submodules
+-- This package is about ports of submodules
 -- as they are connected with net segments.
 -- This information is part of a net segment.
 --
@@ -48,101 +48,40 @@
 with ada.containers; 			use ada.containers;
 with ada.containers.ordered_sets;
 
-with et_module_instance;		use et_module_instance;
-with et_port_names;				use et_port_names;
-with et_net_names;				use et_net_names;
-with et_netlists;
-with et_string_processing;		use et_string_processing;
-
-with et_net_ports_devices;		use et_net_ports_devices;
-with et_net_ports_submodules;	use et_net_ports_submodules;
-with et_net_ports_netchangers;	use et_net_ports_netchangers;
+with et_netchangers;			use et_netchangers;
+with et_netchangers.schematic;	use et_netchangers.schematic;
+-- with et_module_instance;		use et_module_instance;
+-- with et_net_names;				use et_net_names;
+-- with et_string_processing;		use et_string_processing;
 
 
-package et_net_ports is
-			
-		
-		
--- AGGREGATION OF DEVICE, SUBMODULE AND NETCHANGER PORTS:
+package et_net_ports_netchangers is
+	
+	
 
-	type type_net_ports is record
-		devices		: pac_device_ports.set;
-		submodules	: pac_net_submodule_ports.set;
-		netchangers	: pac_netchanger_ports.set;
+	-- This is the port of a netchanger as it appears in a net segment:
+	type type_port_netchanger is record
+		index	: type_netchanger_id := type_netchanger_id'first;
+		port	: type_netchanger_port_name := SLAVE; -- CS reasonable default ?
 	end record;
 
+	function "<" (left, right : in type_port_netchanger) return boolean;	
 
 
-	-- Merges the given two port groups to a
-	-- single one:
-	function merge_ports (
-		right, left : in type_net_ports)
-		return type_net_ports;
-
-
-	-- Merges the given source ports in the target ports:
-	procedure merge_ports (
-		target	: in out type_net_ports;
-		source	: in type_net_ports);					  
-	
-
-	-- Returns true if the given netchanger port
-	-- is among the given ports:
-	function in_ports (
-		ports	: in type_net_ports;
-		port	: in type_port_netchanger)
-		return boolean;
-	
-
-	-- Returns true if the given submodule port
-	-- is among the given ports:
-	function in_ports (
-		ports	: in type_net_ports;
-		port	: in type_net_submodule_port)
-		return boolean;
+	package pac_netchanger_ports is new ordered_sets (type_port_netchanger);
 
 	
-	
-	-- Returns true if the given record of ports is completely emtpty.
-	function no_ports (
-		ports : in type_net_ports) 
+	-- Returns true if the given list contains
+	-- a netchanger port with the given index and port:
+	function contains_netchanger_port (
+		ports	: in pac_netchanger_ports.set;
+		index	: in type_netchanger_id;
+		port	: in type_netchanger_port_name)
 		return boolean;
 
 
-	-- Returns the total number of ports contained
-	-- in the given port group:
-	function get_port_count ( -- CS rename to get_port_count_total
-		ports : in type_net_ports)
-		return natural;
-
-
-	function get_port_count_devices (
-		ports : in type_net_ports)
-		return natural;
-
-
-	function get_port_count_submodules (
-		ports : in type_net_ports)
-		return natural;
-
-	
-	function get_port_count_netchangers (
-		ports : in type_net_ports)
-		return natural;
-
-	
-	
-	-- These are the ports which may exist
-	-- at the A or B end of a net segment.
-	-- This type models the tag labels of a net segment:
-	type type_net_ports_AB is record
-		A, B : type_net_ports;
-	end record;
-	
-
-	
-	
-end et_net_ports;
+		
+end et_net_ports_netchangers;
 
 -- Soli Deo Gloria
 

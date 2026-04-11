@@ -63,6 +63,7 @@ with et_terminal_name;			use et_terminal_name;
 with et_device_name;			use et_device_name;
 with et_module_names;			use et_module_names;
 with et_module_instance;		use et_module_instance;
+with et_net_ports_netchangers;	use et_net_ports_netchangers;
 
 
 package et_netlists is
@@ -125,23 +126,6 @@ package et_netlists is
 
 
 	
-	-- This is the port of a netchanger as it appears in a net segment:
-	type type_port_netchanger is record
-		index	: type_netchanger_id := type_netchanger_id'first;
-		port	: type_netchanger_port_name := SLAVE; -- CS reasonable default ?
-	end record;
-
-	function "<" (left, right : in type_port_netchanger) return boolean;	
-	package pac_netchanger_ports is new ordered_sets (type_port_netchanger);
-
-	
-	-- Returns true if the given list contains
-	-- a netchanger port with the given index and port:
-	function contains_netchanger_port (
-		ports	: in pac_netchanger_ports.set;
-		index	: in type_netchanger_id;
-		port	: in type_netchanger_port_name)
-		return boolean;
 		
 		
 

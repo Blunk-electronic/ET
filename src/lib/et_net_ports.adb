@@ -53,7 +53,7 @@ package body et_net_ports is
 	is
 		use pac_device_ports;
 		use pac_net_submodule_ports;
-		use et_netlists.pac_netchanger_ports;
+		use pac_netchanger_ports;
 		
 		result : type_net_ports := left;
 
@@ -83,12 +83,11 @@ package body et_net_ports is
 
 	function in_ports (
 		ports	: in type_net_ports;
-		port	: in et_netlists.type_port_netchanger)
+		port	: in type_port_netchanger)
 		return boolean
 	is
 		result : boolean := false;
 
-		use et_netlists;
 		use pac_netchanger_ports;
 		port_cursor : pac_netchanger_ports.cursor;
 	begin
@@ -135,7 +134,7 @@ package body et_net_ports is
 		result : boolean := true;
 		use pac_device_ports;
 		use pac_net_submodule_ports;
-		use et_netlists.pac_netchanger_ports;
+		use pac_netchanger_ports;
 	begin
 		if length (ports.devices) > 0 then
 			return false;
@@ -165,7 +164,7 @@ package body et_net_ports is
 
 		use pac_device_ports;
 		use pac_net_submodule_ports;
-		use et_netlists.pac_netchanger_ports;
+		use pac_netchanger_ports;
 	begin
 		d := length (ports.devices);
 		s := length (ports.submodules);

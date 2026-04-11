@@ -48,6 +48,7 @@ with et_net_segment;					use et_net_segment;
 with et_net_ports;						use et_net_ports;
 with et_net_ports_devices;				use et_net_ports_devices;
 with et_net_ports_submodules;			use et_net_ports_submodules;
+with et_net_ports_netchangers;			use et_net_ports_netchangers;
 with et_net_strands;					use et_net_strands;
 with et_schematic_ops_nets;
 with et_schematic_ops_groups;
@@ -231,7 +232,7 @@ package body et_schematic_ops_netchangers is
 
 	function port_connected (
 		module_cursor	: in pac_generic_modules.cursor;
-		port			: in et_netlists.type_port_netchanger)
+		port			: in type_port_netchanger)
 		return boolean 
 	is
 		-- CS rework, clean up
@@ -514,7 +515,6 @@ package body et_schematic_ops_netchangers is
 
 						
 						procedure change_segment (segment : in out type_net_segment) is
-							use et_netlists;
 							-- CS log messages
 						begin
 							-- If port sits on the A or B end of the segment,
@@ -947,7 +947,6 @@ package body et_schematic_ops_netchangers is
 		is			
 			net_cursor : pac_nets.cursor := module.nets.first;
 			
-			use et_netlists;
 			ports : pac_netchanger_ports.set;
 			proceed : boolean := true;
 		begin
@@ -1179,7 +1178,6 @@ package body et_schematic_ops_netchangers is
 			port_name	: in type_netchanger_port_name) -- master/slave
 		is 
 			use ada.containers;
-			use et_netlists;
 			ports : type_net_ports;
 			port : type_port_netchanger;
 

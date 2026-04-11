@@ -261,7 +261,7 @@ package body et_net_segment is
 		return result;
 	end get_connector_status;
 
-	
+		
 	
 
 
@@ -300,7 +300,7 @@ package body et_net_segment is
 
 	function is_connected (
 		segment	: in type_net_segment;
-		port	: in et_netlists.type_port_netchanger)
+		port	: in type_port_netchanger)
 		return boolean
 	is
 	begin
@@ -372,9 +372,8 @@ package body et_net_segment is
 	procedure insert_netchanger_port (
 		segment	: in out type_net_segment;
 		AB_end	: in type_start_end_point;
-		port	: in et_netlists.type_port_netchanger)
+		port	: in type_port_netchanger)
 	is
-		use et_netlists;
 		position : pac_netchanger_ports.cursor;
 		inserted : boolean;
 	begin
@@ -414,10 +413,9 @@ package body et_net_segment is
 
 	procedure delete_netchanger_port (
 		segment	: in out type_net_segment;
-		port	: in et_netlists.type_port_netchanger;
+		port	: in type_port_netchanger;
 		deleted : out boolean)
 	is
-		use et_netlists;
 		use pac_netchanger_ports;
 		cursor : pac_netchanger_ports.cursor;
 	begin
@@ -638,7 +636,7 @@ package body et_net_segment is
 	is
 		use pac_device_ports;
 		use pac_net_submodule_ports;
-		use et_netlists.pac_netchanger_ports;
+		use pac_netchanger_ports;
 	begin
 		case AB_end is
 			when A =>

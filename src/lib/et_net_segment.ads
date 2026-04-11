@@ -54,6 +54,7 @@ with et_netlists;
 with et_directions;				use et_directions;
 with et_net_ports_devices;		use et_net_ports_devices;
 with et_net_ports_submodules;	use et_net_ports_submodules;
+with et_net_ports_netchangers;	use et_net_ports_netchangers;
 
 
 package et_net_segment is
@@ -206,7 +207,7 @@ package et_net_segment is
 	-- is connected with the given segment:
 	function is_connected (
 		segment	: in type_net_segment;
-		port	: in et_netlists.type_port_netchanger)
+		port	: in type_port_netchanger)
 		return boolean;
 
 
@@ -234,7 +235,7 @@ package et_net_segment is
 	procedure insert_netchanger_port (
 		segment	: in out type_net_segment;
 		AB_end	: in type_start_end_point;
-		port	: in et_netlists.type_port_netchanger);
+		port	: in type_port_netchanger);
 
 
 	
@@ -250,7 +251,7 @@ package et_net_segment is
 
 	procedure delete_netchanger_port (
 		segment	: in out type_net_segment;
-		port	: in et_netlists.type_port_netchanger;
+		port	: in type_port_netchanger;
 		deleted : out boolean);
 
 	

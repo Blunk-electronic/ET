@@ -54,8 +54,7 @@ with et_netchangers.schematic;			use et_netchangers.schematic;
 
 with et_nets;							use et_nets;
 with et_net_names;						use et_net_names;
-with et_netlists;
-
+with et_net_ports_netchangers;			use et_net_ports_netchangers;
 with et_object_status;					use et_object_status;
 
 with et_sheets;							use et_sheets;
@@ -115,7 +114,7 @@ package et_schematic_ops_netchangers is
 	-- is connected with any net:
 	function port_connected (
 		module_cursor	: in pac_generic_modules.cursor;	
-		port			: in et_netlists.type_port_netchanger)
+		port			: in type_port_netchanger)
 		return boolean;
 
 	

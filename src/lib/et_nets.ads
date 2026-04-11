@@ -56,11 +56,11 @@ with et_sheets;					use et_sheets;
 with et_net_ports;				use et_net_ports;
 with et_net_ports_devices;		use et_net_ports_devices;
 with et_net_ports_submodules;	use et_net_ports_submodules;
+with et_net_ports_netchangers;	use et_net_ports_netchangers;
 with et_net_segment;			use et_net_segment;
 with et_net_strands;			use et_net_strands;
 with et_net_labels;				use et_net_labels;
 with et_netchangers;			use et_netchangers;
-with et_netlists;				use et_netlists;
 with et_object_status;			use et_object_status;
 
 

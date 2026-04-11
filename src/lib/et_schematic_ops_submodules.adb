@@ -166,7 +166,6 @@ package body et_schematic_ops_submodules is
 				procedure query_segment (segment : in type_net_segment) is 
 					use et_submodules;
 
-					use et_netlists;
 					use pac_netchanger_ports;
 					port_cursor : pac_netchanger_ports.cursor;
 
@@ -3331,12 +3330,12 @@ package body et_schematic_ops_submodules is
 			-- Since netchanger_ports_collector is an ordered set, an exception will be raised if
 			-- a port is to be inserted more than once. Something like "netchanger port master" must
 			-- occur only ONCE throughout the module.
-			use et_netlists.pac_netchanger_ports;
-			netchanger_ports_collector : et_netlists.pac_netchanger_ports.set;
+			use pac_netchanger_ports;
+			netchanger_ports_collector : pac_netchanger_ports.set;
 
 			
 			procedure collect_netchanger_port (
-				port	: in et_netlists.type_port_netchanger;
+				port	: in type_port_netchanger;
 				net		: in pac_net_name.bounded_string)
 			is begin
 			-- Collect netchanger ports. exception will be raised of port occurs more than once.

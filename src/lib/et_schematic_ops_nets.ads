@@ -55,6 +55,7 @@ with et_net_segment;					use et_net_segment;
 with et_net_ports;						use et_net_ports;
 with et_net_ports_devices;				use et_net_ports_devices;
 with et_net_ports_submodules;			use et_net_ports_submodules;
+with et_net_ports_netchangers;			use et_net_ports_netchangers;
 with et_object_status;					use et_object_status;
 with et_device_name;					use et_device_name;
 with et_devices_electrical;				use et_devices_electrical;

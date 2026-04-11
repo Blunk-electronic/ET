@@ -60,6 +60,7 @@ with et_net_strands;						use et_net_strands;
 with et_net_ports;							use et_net_ports;
 with et_net_ports_devices;					use et_net_ports_devices;
 with et_net_ports_submodules;				use et_net_ports_submodules;
+with et_net_ports_netchangers;				use et_net_ports_netchangers;
 with et_nets;								use et_nets;
 
 with et_port_direction;
@@ -1905,7 +1906,7 @@ package body et_schematic_ops_units is
 			port : type_device_port;
 			use pac_net_submodule_ports;
 			use pac_device_ports;
-			use et_netlists.pac_netchanger_ports;
+			use pac_netchanger_ports;
 			use et_schematic_ops_nets;
 		begin
 			-- assemble the point to be probed
@@ -2072,7 +2073,7 @@ package body et_schematic_ops_units is
 			port : type_device_port;
 			use pac_net_submodule_ports;
 			use pac_device_ports;
-			use et_netlists.pac_netchanger_ports;
+			use pac_netchanger_ports;
 			use et_schematic_ops_nets;
 		begin
 			-- assemble the point to be probed

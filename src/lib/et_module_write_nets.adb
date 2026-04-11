@@ -73,6 +73,7 @@ with et_net_labels;					use et_net_labels;
 with et_net_ports;
 with et_net_ports_devices;
 with et_net_ports_submodules;
+with et_net_ports_netchangers;
 with et_nets;						use et_nets;
 with et_netlists;
 with et_port_names;
@@ -124,7 +125,7 @@ package body et_module_write_nets is
 					use pac_device_ports;
 					use pac_net_submodule_ports;
 
-					use et_netlists;
+					use et_net_ports_netchangers;
 					use pac_netchanger_ports;
 
 

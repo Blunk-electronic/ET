@@ -74,6 +74,7 @@ with et_net_labels;					use et_net_labels;
 with et_net_ports;
 with et_net_ports_devices;
 with et_net_ports_submodules;
+with et_net_ports_netchangers;
 with et_nets;						use et_nets;
 with et_netlists;
 
@@ -635,7 +636,7 @@ package body et_module_read_nets is
 	net_submodule_port : et_net_ports_submodules.type_net_submodule_port;
 	-- net_submodule_ports : et_net_segment.pac_submodule_ports.set;
 
-	net_netchanger_port : et_netlists.type_port_netchanger;
+	net_netchanger_port : et_net_ports_netchangers.type_port_netchanger;
 	-- net_netchanger_ports : et_netlists.pac_netchanger_ports.set;
 
 	net_segment_ports : et_net_ports.type_net_ports_AB;

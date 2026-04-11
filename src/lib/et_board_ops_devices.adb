@@ -62,6 +62,7 @@ with et_schematic_ops_groups;
 with et_net_ports;
 with et_net_ports_devices;
 with et_net_ports_submodules;
+with et_net_ports_netchangers;
 with et_net_segment;
 with et_submodules;
 with et_package_read;
@@ -3344,6 +3345,7 @@ package body et_board_ops_devices is
 		use et_net_ports;
 		use et_net_ports_devices;
 		use et_net_ports_submodules;
+		use et_net_ports_netchangers;
 		use pac_device_ports;
 		ports : type_net_ports;
 
@@ -3412,7 +3414,6 @@ package body et_board_ops_devices is
 		end query_submodule;
 
 		
-		use et_netlists;
 		use pac_netchanger_ports;
 		procedure query_netchanger (n : in pac_netchanger_ports.cursor) is
 		begin

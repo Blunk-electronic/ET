@@ -130,32 +130,6 @@ package body et_netlists is
 		return to_net_name (to_string (instance) & level_separator);
 	end;
 
-	function "<" (left, right : in type_port_netchanger) return boolean is begin
-		if left.index < right.index then
-			return true;
-		elsif left.index > right.index then
-			return false;
-		elsif left.port < right.port then
-			return true;
-		else
-			return false;
-		end if;
-	end;
-
-
-
-
-	function contains_netchanger_port (
-		ports	: in pac_netchanger_ports.set;
-		index	: in type_netchanger_id;
-		port	: in type_netchanger_port_name)
-		return boolean
-	is 
-		use pac_netchanger_ports;
-		item : type_port_netchanger := (index, port);			
-	begin
-		return ports.contains (item); 
-	end;
 
 
 	
