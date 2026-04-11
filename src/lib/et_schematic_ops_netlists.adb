@@ -312,7 +312,7 @@ package body et_schematic_ops_netlists is
 					procedure insert_net (module : in out type_netlist_module) is begin
 						-- Prepend the given net prefix to the net name.
 						-- Insert the net with its ports in the netlist of the submodule.
-						et_netlists.pac_nets.insert (
+						et_netlists.pac_netlist_nets.insert (
 							container	=> module.nets,
 							key			=> (prefix => prefix, base_name => net_name), -- CLK_GENERATOR/FLT1/ , clock_out
 							new_item	=> (

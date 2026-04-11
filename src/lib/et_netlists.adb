@@ -176,7 +176,7 @@ package body et_netlists is
 	
 	
 	function get_port_count (
-		net_cursor : in pac_nets.cursor)
+		net_cursor : in pac_netlist_nets.cursor)
 		return type_port_count 
 	is
 		port_count : type_port_count; -- to be returned
@@ -230,7 +230,7 @@ package body et_netlists is
 		end query_ports;
 			
 	begin
-		pac_nets.query_element (
+		pac_netlist_nets.query_element (
 			position	=> net_cursor,
 			process		=> query_ports'access);
 		
@@ -244,14 +244,12 @@ package body et_netlists is
 
 	
 	
-	function is_primary (net_cursor : in pac_nets.cursor) return boolean is
+	function is_primary (net_cursor : in pac_netlist_nets.cursor) return boolean is
 	-- CS Currently these test are very simple and should be refined.
 		ports : type_port_count;
 		
 		result : boolean := false; -- CS is this a good safety measure ?
 
-		use pac_nets;
-		
 -- 		result_on_netchangers : boolean;
 -- 		result_on_submodules : boolean;
 
@@ -327,15 +325,13 @@ package body et_netlists is
 	-- Returns true if net (indicated by net_cursor) is connected with the
 	-- given port of a submodule instance.
 	function contains (
-		net_cursor		: in pac_nets.cursor;
+		net_cursor		: in pac_netlist_nets.cursor;
 		submodule		: in pac_module_instance_name.bounded_string; -- OSC1
 		port			: in pac_net_name.bounded_string) -- clock_out
 		return boolean 
 	is
 		result : boolean := false;
 		
-		use pac_nets;
-
 		procedure query_submod_ports (
 			net_name	: in type_net_name;
 			net			: in type_netlist_ports) 
@@ -376,12 +372,11 @@ package body et_netlists is
 	
 	function global_nets_in_submodules (
 		module_cursor	: in pac_netlist_modules.cursor; -- the module that contains the port
-		net_cursor		: in pac_nets.cursor;
+		net_cursor		: in pac_netlist_nets.cursor;
 		log_threshold	: in type_log_level)
 		return pac_global_nets.list
 	is
 
-		use pac_nets;
 		
 		global_nets : pac_global_nets.list; -- to be returned
 
@@ -396,10 +391,10 @@ package body et_netlists is
 			-- the name of the generic module is then
 			-- appended to the list net_cursors (to be returned).
 				use pac_net_name;
-				cursor : pac_nets.cursor := module.nets.first;
+				cursor : pac_netlist_nets.cursor := module.nets.first;
 			begin
 				-- iterate the nets of the module
-				while cursor /= pac_nets.no_element loop
+				while cursor /= pac_netlist_nets.no_element loop
 
 					-- the net must be a global net:
 					if element (cursor).scope = GLOBAL then
@@ -468,10 +463,10 @@ package body et_netlists is
 		module_cursor	: in pac_netlist_modules.cursor; -- the module that contains the port
 		port			: in type_port_netchanger;
 		log_threshold	: in type_log_level)
-		return pac_nets.cursor 
+		return pac_netlist_nets.cursor 
 	is
-		use pac_nets;
-		net_cursor : pac_nets.cursor; -- to be returned
+
+		net_cursor : pac_netlist_nets.cursor; -- to be returned
 
 		
 		procedure query_nets (
@@ -508,7 +503,7 @@ package body et_netlists is
 			log_indentation_up;
 
 			net_cursor := module.nets.first;
-			while net_cursor /= pac_nets.no_element loop
+			while net_cursor /= pac_netlist_nets.no_element loop
 				ports := get_port_count (net_cursor);
 
 				-- search in the net if it contains netchangers:
@@ -516,7 +511,7 @@ package body et_netlists is
 
 					--log (text => to_string (key (net_cursor).base_name), level => log_threshold + 1);
 					
-					pac_nets.query_element (
+					pac_netlist_nets.query_element (
 						position	=> net_cursor,
 						process		=> query_netchangers'access);
 
@@ -545,7 +540,7 @@ package body et_netlists is
 		-- iterate nets inside the given module
 		query_element (module_cursor, query_nets'access);
 
-		if net_cursor = pac_nets.no_element then
+		if net_cursor = pac_netlist_nets.no_element then
 			log (text => " none found", level => log_threshold);
 		else
 			log (text => " secondary net " & enclose_in_quotes (to_string (key (net_cursor).base_name)),
@@ -569,10 +564,9 @@ package body et_netlists is
 		module_cursor	: in pac_netlist_modules.cursor; -- the module that contains the port
 		port			: in type_submodule_port_extended;
 		log_threshold	: in type_log_level)
-		return pac_nets.cursor 
+		return pac_netlist_nets.cursor 
 	is
-		use pac_nets;
-		net_cursor : pac_nets.cursor; -- to be returned
+		net_cursor : pac_netlist_nets.cursor; -- to be returned
 
 		
 		procedure query_submodules (submodule_cursor : in pac_netlist_modules.cursor) is
@@ -591,7 +585,7 @@ package body et_netlists is
 				-- iterate the nets of the module
 				net_cursor := module.nets.first;
 
-				while net_cursor /= pac_nets.no_element loop
+				while net_cursor /= pac_netlist_nets.no_element loop
 
 					-- test against the base name:
 					if key (net_cursor).base_name = port.port then
@@ -628,7 +622,7 @@ package body et_netlists is
 		-- CS: the iteration does not stop after finding the submodule. It is slightly 
 		-- a waste of time to query remaining submodules.
 
-		if net_cursor = pac_nets.no_element then
+		if net_cursor = pac_netlist_nets.no_element then
 			log (text => " none found -> not connected", level => log_threshold);
 		else
 			log (text => " secondary net " & enclose_in_quotes (to_string (key (net_cursor).base_name)),
@@ -650,13 +644,13 @@ package body et_netlists is
 	
 	function net_in_parent_module (
 		module_cursor	: in pac_netlist_modules.cursor; -- the module that contains the net
-		net_cursor		: in pac_nets.cursor;
+		net_cursor		: in pac_netlist_nets.cursor;
 		log_threshold	: in type_log_level)
-		return pac_nets.cursor 
+		return pac_netlist_nets.cursor 
 	is
 		use pac_netlist_modules;
-		use pac_nets;
-		net_cursor_parent : pac_nets.cursor; -- to be returned
+
+		net_cursor_parent : pac_netlist_nets.cursor; -- to be returned
 
 		-- Get the cursor to the parent module. If module_cursor points to the top
 		-- module, then parent_module_cursor will point to root.
@@ -682,12 +676,12 @@ package body et_netlists is
 		
 		
 		procedure query_nets (module : in type_netlist_module) is
-			net_cursor : pac_nets.cursor := module.nets.first;
+			net_cursor : pac_netlist_nets.cursor := module.nets.first;
 		begin
 			-- iterate nets of module. cancel search once the desired port has been found
-			while net_cursor /= pac_nets.no_element loop
+			while net_cursor /= pac_netlist_nets.no_element loop
 
-				pac_nets.query_element (
+				pac_netlist_nets.query_element (
 					position	=> net_cursor,
 					process		=> query_submodules'access);
 
@@ -705,7 +699,7 @@ package body et_netlists is
 	begin -- net_in_parent_module
 		if is_root (parent_module_cursor) then -- this is the top module
 			-- there is no net
-			net_cursor_parent := pac_nets.no_element;
+			net_cursor_parent := pac_netlist_nets.no_element;
 		else
 			log_indentation_up;
 			
@@ -716,13 +710,13 @@ package body et_netlists is
 			-- Build the submodule port to be searched for.
 			port_to_search_for := (
 				module		=> element (module_cursor).instance_name, -- MOT_DRV_2
-				port		=> pac_nets.key (net_cursor).base_name,  -- clock_out
+				port		=> pac_netlist_nets.key (net_cursor).base_name,  -- clock_out
 				direction	=> SLAVE);
 
 			-- iterate in nets of parent module
 			query_element (parent_module_cursor, query_nets'access);
 
-			if net_cursor_parent = pac_nets.no_element then
+			if net_cursor_parent = pac_netlist_nets.no_element then
 				log (text => " none found -> not connected", level => log_threshold);
 			else
 				log (text => " secondary net " & enclose_in_quotes (to_string (key (net_cursor_parent).base_name)),

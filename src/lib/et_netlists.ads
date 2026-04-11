@@ -154,9 +154,13 @@ package et_netlists is
 
 
 	
-	package pac_nets is new ordered_maps ( -- CS rename to pac_net_ports ?
+	package pac_netlist_nets is new ordered_maps (
 		key_type		=> type_net_name, 
 		element_type	=> type_netlist_ports);
+
+
+	use pac_netlist_nets;
+	
 
 
 
@@ -170,7 +174,7 @@ package et_netlists is
 	type type_netlist_module is record
 		generic_name	: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver		
 		instance_name	: pac_module_instance_name.bounded_string; -- OSC1
-		nets			: pac_nets.map;
+		nets			: pac_netlist_nets.map;
 	end record;
 
 	
@@ -215,7 +219,7 @@ package et_netlists is
 	-- Returns the number of netchanger and submodule 
 	-- ports in the given net.
 	function get_port_count (
-		net_cursor : in pac_nets.cursor)
+		net_cursor : in pac_netlist_nets.cursor)
 		return type_port_count;
 
 
@@ -237,7 +241,7 @@ package et_netlists is
 	
 	-- Returns true if given net is a primary net according to the terms above.
 	-- Performs some other important checks on slave ports of netchangers and submodules.
-	function is_primary (net_cursor : in pac_nets.cursor) return boolean;
+	function is_primary (net_cursor : in pac_netlist_nets.cursor) return boolean;
 
 
 	
@@ -246,7 +250,7 @@ package et_netlists is
 	type type_global_net is record
 		--submodule	: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver		
 		submodule	: pac_netlist_modules.cursor;
-		net			: pac_nets.cursor;
+		net			: pac_netlist_nets.cursor;
 	end record;
 
 	
@@ -259,7 +263,7 @@ package et_netlists is
 	-- Returns a list of cursors to same named nets in submodules.
 	function global_nets_in_submodules (
 		module_cursor	: in pac_netlist_modules.cursor; -- the module that contains the port
-		net_cursor		: in pac_nets.cursor;
+		net_cursor		: in pac_netlist_nets.cursor;
 		log_threshold	: in type_log_level)
 		return pac_global_nets.list;
 
@@ -276,7 +280,7 @@ package et_netlists is
 		module_cursor	: in pac_netlist_modules.cursor; -- the module that contains the port
 		port			: in type_port_netchanger;
 		log_threshold	: in type_log_level)
-		return pac_nets.cursor;
+		return pac_netlist_nets.cursor;
 
 
 
@@ -288,7 +292,7 @@ package et_netlists is
 		module_cursor	: in pac_netlist_modules.cursor; -- the module that contains the port
 		port			: in type_submodule_port_extended;
 		log_threshold	: in type_log_level)		
-		return pac_nets.cursor;
+		return pac_netlist_nets.cursor;
 
 
 
@@ -302,9 +306,9 @@ package et_netlists is
 	-- the submodule instance) then the return is no_element.
 	function net_in_parent_module (
 		module_cursor	: in pac_netlist_modules.cursor; -- the module that contains the net
-		net_cursor		: in pac_nets.cursor;
+		net_cursor		: in pac_netlist_nets.cursor;
 		log_threshold	: in type_log_level)
-		return pac_nets.cursor;
+		return pac_netlist_nets.cursor;
 
 
 
@@ -324,18 +328,27 @@ package et_netlists is
 
 	
 	package pac_module_netlist is new multiway_trees (type_netlist_net);
+	use pac_module_netlist;
+
+
 
 
 
 	
+	
+	use pac_assembly_variant_name;
+	
 
 	-- As there are assembly variants, for each of them 
-	-- a dedicated netlist must be generated:
+	-- a dedicated netlist must be generated.
+	-- The key into the list is the assembly variant name
+	-- like "low_cost". It is empty if the default variant is adressed.
+	-- The element is a tree of netlists. It provides info on primary 
+	-- and secondary net dependencies:
 	package pac_module_netlists is new ordered_maps (
-		key_type		=> pac_assembly_variant_name.bounded_string, -- low_cost, empty if default variant
-		"<"				=> pac_assembly_variant_name."<",
-		element_type	=> pac_module_netlist.tree, -- provides info on primary and secondary net dependencies
-		"="				=> pac_module_netlist."=");
+		key_type		=> pac_assembly_variant_name.bounded_string,
+		element_type	=> pac_module_netlist.tree);
+
 
 
 	
