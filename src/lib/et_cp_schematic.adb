@@ -407,6 +407,7 @@ package body et_cp_schematic is
 					case noun is
 						when NOUN_NETLISTS => 
 							export_netlist (module_cursor, cmd, log_threshold + 1);
+						-- CS should be verb_export instead
 							
 						when others => invalid_noun (to_string (noun));
 					end case;

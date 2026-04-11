@@ -750,6 +750,26 @@ Sheets
 		delete sheet 2
 
 
+
+
+
+++++++++
+Netlists
+++++++++
+
+#. Export netlists
+
+	For a module assembly variants may exist.
+	So for each variant a netlist is to be exported
+	via this command:
+
+	.. code-block::
+
+		make netlist
+
+
+
+
 		
 +++++++++++++++++
 Executing Scripts
