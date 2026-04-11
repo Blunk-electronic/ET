@@ -61,6 +61,7 @@ with et_schematic_ops_groups;
 
 with et_net_ports;
 with et_net_ports_devices;
+with et_net_ports_submodules;
 with et_net_segment;
 with et_submodules;
 with et_package_read;
@@ -3342,6 +3343,7 @@ package body et_board_ops_devices is
 		use et_nets;
 		use et_net_ports;
 		use et_net_ports_devices;
+		use et_net_ports_submodules;
 		use pac_device_ports;
 		ports : type_net_ports;
 

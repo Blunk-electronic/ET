@@ -47,6 +47,7 @@ with et_string_processing;				use et_string_processing;
 with et_net_segment;					use et_net_segment;
 with et_net_ports;						use et_net_ports;
 with et_net_ports_devices;				use et_net_ports_devices;
+with et_net_ports_submodules;			use et_net_ports_submodules;
 with et_net_strands;					use et_net_strands;
 with et_schematic_ops_nets;
 with et_schematic_ops_groups;

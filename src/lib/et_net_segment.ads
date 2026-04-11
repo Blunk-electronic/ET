@@ -53,6 +53,7 @@ with et_device_name;			use et_device_name;
 with et_netlists;
 with et_directions;				use et_directions;
 with et_net_ports_devices;		use et_net_ports_devices;
+with et_net_ports_submodules;	use et_net_ports_submodules;
 
 
 package et_net_segment is

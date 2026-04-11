@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                   SCHEMATIC OPERATIONS / NETLISTS                        --
+--                     NET SEGMENT PORTS / SUBMODULES                       --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                --
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,10 +20,10 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.                                          --
+-- <http://www.gnu.org/licenses/>.   
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your editor to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -36,54 +36,43 @@
 --   history of changes:
 --
 
-with et_module_names;					use et_module_names;
-with et_generic_modules;				use et_generic_modules;
-with et_devices_electrical;				use et_devices_electrical;
-with et_netlists;
-with et_net_ports;						use et_net_ports;
-with et_net_ports_devices;				use et_net_ports_devices;
-with et_net_ports_submodules;			use et_net_ports_submodules;
-with et_logging;						use et_logging;
+with ada.text_io;				use ada.text_io;
+with ada.characters.handling;
+
+with et_keywords;				use et_keywords;
+with et_module_names;
 
 
+package body et_net_ports_submodules is
 
-package et_schematic_ops_netlists is
 
-	use pac_generic_modules;
 
 	
-	-- Adds further properties to the given device ports.
-	-- Ignores ports of virtual devices (like GND symbols).
-	-- Additional properties are electrical characteristics
-	-- and the terminal name.
-	function extend_ports (
-		module_cursor	: in pac_generic_modules.cursor;
-		ports 			: in pac_device_ports.set)
-		return et_netlists.pac_device_ports_extended.set;
+	function "<" (
+		left, right : in type_net_submodule_port)
+		return boolean 
+	is
+		use et_module_names;
+		use pac_module_instance_name;
+		use et_net_names.pac_net_name;
+	begin
+		if left.module_name < right.module_name then
+			return true;
+		elsif left.module_name > right.module_name then
+			return false;
+		elsif left.port_name < right.port_name then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
 
 	
-
 	
-	-- Generates the netlists of all assembly variants from the given top module.
-	-- If parameter "write_files" is true, then exports the netlists in files.
-	-- The netlist files are named after the module name and the variant name.
-	procedure make_netlists (
-		module_cursor 	: in pac_generic_modules.cursor;
-		write_files		: in boolean := false;
-		log_threshold	: in type_log_level);
+end et_net_ports_submodules;
 
-
-	-- Generates the netlist files of all assembly variants from the given top module.
-	-- The netlist files are named after the module name and the variant name.
-	procedure make_netlists (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		log_threshold	: in type_log_level);
-
-	
-end et_schematic_ops_netlists;
-	
 -- Soli Deo Gloria
-
 
 -- For God so loved the world that he gave 
 -- his one and only Son, that whoever believes in him 

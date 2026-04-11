@@ -47,36 +47,12 @@ package body et_net_ports is
 
 
 
-	
-	function "<" (
-		left, right : in type_net_submodule_port)
-		return boolean 
-	is
-		use et_module_names;
-		use pac_module_instance_name;
-		use et_net_names.pac_net_name;
-	begin
-		if left.module_name < right.module_name then
-			return true;
-		elsif left.module_name > right.module_name then
-			return false;
-		elsif left.port_name < right.port_name then
-			return true;
-		else
-			return false;
-		end if;
-	end;
-
-	
-
-
-
-
 	function merge_ports (
 		right, left : in type_net_ports)
 		return type_net_ports
 	is
 		use pac_device_ports;
+		use pac_net_submodule_ports;
 		use et_netlists.pac_netchanger_ports;
 		
 		result : type_net_ports := left;
@@ -136,6 +112,7 @@ package body et_net_ports is
 	is
 		result : boolean := false;
 
+		use pac_net_submodule_ports;
 		port_cursor : pac_net_submodule_ports.cursor;
 	begin
 		port_cursor := ports.submodules.find (port);
@@ -157,6 +134,7 @@ package body et_net_ports is
 	is
 		result : boolean := true;
 		use pac_device_ports;
+		use pac_net_submodule_ports;
 		use et_netlists.pac_netchanger_ports;
 	begin
 		if length (ports.devices) > 0 then
@@ -186,6 +164,7 @@ package body et_net_ports is
 		d, s, n : count_type := 0;
 
 		use pac_device_ports;
+		use pac_net_submodule_ports;
 		use et_netlists.pac_netchanger_ports;
 	begin
 		d := length (ports.devices);

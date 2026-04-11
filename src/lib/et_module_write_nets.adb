@@ -72,6 +72,7 @@ with et_net_connectors;				use et_net_connectors;
 with et_net_labels;					use et_net_labels;
 with et_net_ports;
 with et_net_ports_devices;
+with et_net_ports_submodules;
 with et_nets;						use et_nets;
 with et_netlists;
 with et_port_names;
@@ -115,6 +116,7 @@ package body et_module_write_nets is
 				procedure query_segments (strand : in type_strand) is
 					use et_net_ports;
 					use et_net_ports_devices;
+					use et_net_ports_submodules;
 					use et_net_segment;
 					use pac_net_segments;
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;

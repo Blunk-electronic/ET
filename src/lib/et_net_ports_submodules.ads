@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           NET SEGMENT PORTS                              --
+--                     NET SEGMENT PORTS / SUBMODULES                       --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -36,7 +36,7 @@
 --
 -- DESCRIPTION:
 --
--- This package is about ports of units, netchangers and submodules
+-- This package is about ports of submodules
 -- as they are connected with net segments.
 -- This information is part of a net segment.
 --
@@ -49,99 +49,39 @@ with ada.containers; 			use ada.containers;
 with ada.containers.ordered_sets;
 
 with et_module_instance;		use et_module_instance;
-with et_port_names;				use et_port_names;
 with et_net_names;				use et_net_names;
-with et_netlists;
 with et_string_processing;		use et_string_processing;
 
-with et_net_ports_devices;		use et_net_ports_devices;
-with et_net_ports_submodules;	use et_net_ports_submodules;
 
+package et_net_ports_submodules is
+	
+	
+	
+	-- This is the port of a submodule:
+	type type_net_submodule_port is record
+		-- The instance of a certain submodule:
+		module_name	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
 
-package et_net_ports is
-			
-		
-		
--- AGGREGATION OF DEVICE, SUBMODULE AND NETCHANGER PORTS:
-
-	type type_net_ports is record
-		devices		: pac_device_ports.set;
-		submodules	: pac_net_submodule_ports.set;
-		netchangers	: et_netlists.pac_netchanger_ports.set;
+		-- The net of the submodule is here the port name:
+		port_name	: pac_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
 	end record;
 
-
-
-	-- Merges the given two port groups to a
-	-- single one:
-	function merge_ports (
-		right, left : in type_net_ports)
-		return type_net_ports;
-
-
-	-- Merges the given source ports in the target ports:
-	procedure merge_ports (
-		target	: in out type_net_ports;
-		source	: in type_net_ports);					  
 	
-
-	-- Returns true if the given netchanger port
-	-- is among the given ports:
-	function in_ports (
-		ports	: in type_net_ports;
-		port	: in et_netlists.type_port_netchanger)
-		return boolean;
 	
-
-	-- Returns true if the given submodule port
-	-- is among the given ports:
-	function in_ports (
-		ports	: in type_net_ports;
-		port	: in type_net_submodule_port)
+	function "<" (
+		left, right : in type_net_submodule_port) 
 		return boolean;
 
 	
-	
-	-- Returns true if the given record of ports is completely emtpty.
-	function no_ports (
-		ports : in type_net_ports) 
-		return boolean;
+	-- Many submodule ports are stored in ordered sets:
+	package pac_net_submodule_ports is new 
+		ordered_sets (type_net_submodule_port);
+
+	use pac_net_submodule_ports;
 
 
-	-- Returns the total number of ports contained
-	-- in the given port group:
-	function get_port_count ( -- CS rename to get_port_count_total
-		ports : in type_net_ports)
-		return natural;
-
-
-	function get_port_count_devices (
-		ports : in type_net_ports)
-		return natural;
-
-
-	function get_port_count_submodules (
-		ports : in type_net_ports)
-		return natural;
-
-	
-	function get_port_count_netchangers (
-		ports : in type_net_ports)
-		return natural;
-
-	
-	
-	-- These are the ports which may exist
-	-- at the A or B end of a net segment.
-	-- This type models the tag labels of a net segment:
-	type type_net_ports_AB is record
-		A, B : type_net_ports;
-	end record;
-	
-
-	
-	
-end et_net_ports;
+		
+end et_net_ports_submodules;
 
 -- Soli Deo Gloria
 
