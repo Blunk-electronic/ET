@@ -54,6 +54,7 @@ with et_route;
 with et_commit;
 with et_sheets;					use et_sheets;
 with et_net_ports;				use et_net_ports;
+with et_net_ports_devices;		use et_net_ports_devices;
 with et_net_segment;			use et_net_segment;
 with et_net_strands;			use et_net_strands;
 with et_net_labels;				use et_net_labels;

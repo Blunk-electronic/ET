@@ -72,6 +72,7 @@ with et_net_junction;				use et_net_junction;
 with et_net_connectors;				use et_net_connectors;
 with et_net_labels;					use et_net_labels;
 with et_net_ports;
+with et_net_ports_devices;
 with et_nets;						use et_nets;
 with et_netlists;
 
@@ -627,7 +628,7 @@ package body et_module_read_nets is
 -- PORTS:
 	
 
-	net_device_port : et_net_ports.type_device_port;
+	net_device_port : et_net_ports_devices.type_device_port;
 	-- net_device_ports : et_net_segment.pac_device_ports.set;
 
 	net_submodule_port : et_net_ports.type_net_submodule_port;
@@ -648,7 +649,7 @@ package body et_module_read_nets is
 	is
 		use et_module_instance;
 		use et_symbol_ports;
-		use et_net_ports;
+		use et_net_ports_devices;
 		use et_netchangers;
 		use et_netchangers.schematic;
 		

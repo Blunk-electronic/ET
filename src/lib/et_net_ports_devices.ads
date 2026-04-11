@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           NET SEGMENT PORTS                              --
+--                       NET SEGMENT PORTS / DEVICES                        --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -36,7 +36,7 @@
 --
 -- DESCRIPTION:
 --
--- This package is about ports of units, netchangers and submodules
+-- This package is about devices, units and their ports
 -- as they are connected with net segments.
 -- This information is part of a net segment.
 --
@@ -48,129 +48,95 @@
 with ada.containers; 			use ada.containers;
 with ada.containers.ordered_sets;
 
-with et_module_instance;		use et_module_instance;
 with et_port_names;				use et_port_names;
-with et_net_names;				use et_net_names;
-with et_netlists;
+with et_symbol_ports;			use et_symbol_ports;
+with et_device_name;			use et_device_name;
+with et_unit_name;				use et_unit_name;
 with et_string_processing;		use et_string_processing;
 
-with et_net_ports_devices;		use et_net_ports_devices;
 
 
-package et_net_ports is -- CS rename to et_net_segment_ports ?
+package et_net_ports_devices is
 	
+
+-- DEVICE:
 	
+	-- This is the port of a unit as it is connected 
+	-- with a net segment:
+	type type_device_port is record -- CS rename to type_net_unit_port
+		device_name	: type_device_name; -- IC4
+		-- CS cursor to the electrical device instead ?
+		-- could improve performance.
 		
-	
-	
--- SUBMODULE:
-	
-	-- This is the port of a submodule:
-	type type_net_submodule_port is record
-		-- The instance of a certain submodule:
-		module_name	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
-
-		-- The net of the submodule is here the port name:
-		port_name	: pac_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
+		unit_name	: pac_unit_name.bounded_string; -- A
+		-- CS cursor to the unit instead ?
+		-- could improve performance.
+		
+		port_name	: pac_port_name.bounded_string; -- IN1
+		-- CS cursor to the port instead ?
+		-- could improve performance.
 	end record;
 
-	
+
 	
 	function "<" (
-		left, right : in type_net_submodule_port) 
+		left, right : in type_device_port) 
 		return boolean;
-
-	
-	-- Many submodule ports are stored in ordered sets:
-	package pac_net_submodule_ports is new 
-		ordered_sets (type_net_submodule_port);
-
-	use pac_net_submodule_ports;
-
 
 		
+
+	-- Builds a device port:
+	function to_device_port (
+		device	: in type_device_name;
+		unit	: in pac_unit_name.bounded_string;
+		port	: in pac_port_name.bounded_string)
+		return type_device_port;
+
+
+	
+	-- Converts a string like "device IC1 unit C port I1"
+	-- to a device port.
+	-- If something is wrong, then the error-flag is set:
+	procedure make_device_port (
+		arguments	: in type_fields_of_line;
+		error		: out boolean;
+		port		: out type_device_port);
+
+	
+	
+	-- Many device ports are stored in ordered sets:
+	package pac_device_ports is new 
+		ordered_sets (type_device_port);
 		
-		
--- AGGREGATION OF DEVICE, SUBMODULE AND NETCHANGER PORTS:
+	use pac_device_ports;
 
-	type type_net_ports is record
-		devices		: pac_device_ports.set;
-		submodules	: pac_net_submodule_ports.set;
-		netchangers	: et_netlists.pac_netchanger_ports.set;
-	end record;
-
-
-
-	-- Merges the given two port groups to a
-	-- single one:
-	function merge_ports (
-		right, left : in type_net_ports)
-		return type_net_ports;
-
-
-	-- Merges the given source ports in the target ports:
-	procedure merge_ports (
-		target	: in out type_net_ports;
-		source	: in type_net_ports);					  
 	
 
-	-- Returns true if the given netchanger port
-	-- is among the given ports:
-	function in_ports (
-		ports	: in type_net_ports;
-		port	: in et_netlists.type_port_netchanger)
-		return boolean;
-	
+	-- Returns something like "device IC1 unit A port PD4":
+	function to_string (port : in type_device_port) return string;
 
-	-- Returns true if the given submodule port
-	-- is among the given ports:
-	function in_ports (
-		ports	: in type_net_ports;
-		port	: in type_net_submodule_port)
-		return boolean;
+	-- Returns something like "device IC1 unit A port PD4":
+	function to_string (port : in pac_device_ports.cursor) return string;
+
+
+	-- Renames the device names in the given
+	-- list of device ports:
+	procedure rename_device_ports (
+		ports		: in out pac_device_ports.set;
+		device_old	: in type_device_name;
+		device_new	: in type_device_name);
 
 	
 	
-	-- Returns true if the given record of ports is completely emtpty.
-	function no_ports (
-		ports : in type_net_ports) 
-		return boolean;
-
-
-	-- Returns the total number of ports contained
-	-- in the given port group:
-	function get_port_count ( -- CS rename to get_port_count_total
-		ports : in type_net_ports)
-		return natural;
-
-
-	function get_port_count_devices (
-		ports : in type_net_ports)
-		return natural;
-
-
-	function get_port_count_submodules (
-		ports : in type_net_ports)
-		return natural;
+	-- Iterates the device ports. 
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		ports	: in pac_device_ports.set;
+		process	: not null access procedure (position : in pac_device_ports.cursor);
+		proceed	: not null access boolean);
 
 	
-	function get_port_count_netchangers (
-		ports : in type_net_ports)
-		return natural;
-
-	
-	
-	-- These are the ports which may exist
-	-- at the A or B end of a net segment.
-	-- This type models the tag labels of a net segment:
-	type type_net_ports_AB is record
-		A, B : type_net_ports;
-	end record;
-	
-
-	
-	
-end et_net_ports;
+end et_net_ports_devices;
 
 -- Soli Deo Gloria
 

@@ -58,6 +58,7 @@ with et_netlists;
 with et_net_segment;						use et_net_segment;
 with et_net_strands;						use et_net_strands;
 with et_net_ports;							use et_net_ports;
+with et_net_ports_devices;					use et_net_ports_devices;
 with et_nets;								use et_nets;
 
 with et_port_direction;

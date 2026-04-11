@@ -55,6 +55,7 @@ with et_net_class;
 with et_net_class_name;
 
 with et_net_ports;
+with et_net_ports_devices;
 
 with et_devices_electrical.packages;
 with et_devices_non_electrical;
@@ -255,6 +256,7 @@ package body et_board_ops_fill_zones is
 		use et_nets;
 
 		use et_net_ports;
+		use et_net_ports_devices;
 		use pac_device_ports;
 		
 		-- Here the ports of all devices which are connected

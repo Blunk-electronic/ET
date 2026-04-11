@@ -53,6 +53,7 @@ with et_net_labels;						use et_net_labels;
 with et_net_connectors;					use et_net_connectors;
 with et_net_segment;					use et_net_segment;
 with et_net_ports;						use et_net_ports;
+with et_net_ports_devices;				use et_net_ports_devices;
 with et_object_status;					use et_object_status;
 with et_device_name;					use et_device_name;
 with et_devices_electrical;				use et_devices_electrical;

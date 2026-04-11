@@ -60,6 +60,7 @@ with et_assembly_variants;				use et_assembly_variants;
 with et_assembly_variant_name;			use et_assembly_variant_name;
 
 with et_net_ports;						use et_net_ports;
+with et_net_ports_devices;				use et_net_ports_devices;
 with et_nets;							use et_nets;
 with et_net_names;						use et_net_names;
 

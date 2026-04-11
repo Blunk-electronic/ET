@@ -60,6 +60,7 @@ with et_schematic_ops_units;			use et_schematic_ops_units;
 with et_schematic_ops_groups;
 
 with et_net_ports;
+with et_net_ports_devices;
 with et_net_segment;
 with et_submodules;
 with et_package_read;
@@ -3340,6 +3341,7 @@ package body et_board_ops_devices is
 
 		use et_nets;
 		use et_net_ports;
+		use et_net_ports_devices;
 		use pac_device_ports;
 		ports : type_net_ports;
 
@@ -3634,6 +3636,7 @@ package body et_board_ops_devices is
 				-- Since this query is about the default assembly variant,
 				-- we do not pass a specific assembly variant here.
 				use et_net_ports;
+				use et_net_ports_devices;
 				ports : constant type_net_ports := get_ports (net_cursor);
 
 				use pac_device_ports;
