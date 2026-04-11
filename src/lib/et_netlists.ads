@@ -67,11 +67,6 @@ with et_netlist_name;			use et_netlist_name;
 
 package et_netlists is
 
-	
-	comment_mark : constant string := "#";
-
-	use pac_net_name;
-	
 
 
 	
@@ -150,6 +145,13 @@ package et_netlists is
 
 	
 	function "<" (left, right : in type_net_name) return boolean;
+
+
+	procedure log_net_name (
+		name			: in type_net_name;
+		primary			: in boolean;
+		log_threshold	: in type_log_level);
+
 
 	
 	package pac_nets is new ordered_maps ( -- CS rename to pac_net_ports ?
@@ -322,24 +324,6 @@ package et_netlists is
 
 	
 	package pac_netlist is new multiway_trees (type_netlist_net);
-
-
-
-	
-	
-	-- If write_file ist true, creates the netlist file (which inevitably and intentionally 
-	-- overwrites the previous file).
-	-- - modules contains the modules and their nets ordered in a tree structure.
-	-- - module_name is the name of the top module. to be written in the header of the netlist file.
-	-- - The netlist file will be named after the module name and assembly variant.	
-	-- - Exports the netlist of the given module to the export/CAM directory.
-	function make_netlist (
-		modules			: in pac_netlist_modules.tree;
-		module_name		: in pac_module_name.bounded_string; -- motor_driver 
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
-		write_file		: in boolean;
-		log_threshold	: in type_log_level)
-		return pac_netlist.tree;
 
 
 

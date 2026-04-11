@@ -43,6 +43,8 @@ with et_module_instance;				use et_module_instance;
 with et_net_names;						use et_net_names;
 with et_nets;							use et_nets;
 
+with et_netlists_export;
+
 with et_device_library.units;			use et_device_library.units;
 with et_device_name;					use et_device_name;
 with et_numbering;
@@ -221,6 +223,8 @@ package body et_schematic_ops_netlists is
 		log_threshold	: in type_log_level) 
 	is
 		use et_netlists;
+		use et_netlists_export;
+		
 		use pac_net_name;
 		use et_assembly_variants;
 		use et_assembly_variants.pac_assembly_variants;
@@ -652,7 +656,7 @@ package body et_schematic_ops_netlists is
 			-- It contains the modules and their nets ordered in a tree structure.
 			-- But the connections between nets are
 			-- still unknown and will be analyzed now:
-			netlist := et_netlists.make_netlist (
+			netlist := make_netlist (
 				modules			=> netlist_tree,	
 				module_name		=> key (module_cursor), -- motor_driver (to be written in the netlist file header)
 				variant_name	=> variant_name, 	-- low_cost, empty if default variant
