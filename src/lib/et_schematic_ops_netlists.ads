@@ -39,7 +39,7 @@
 with et_module_names;					use et_module_names;
 with et_generic_modules;				use et_generic_modules;
 with et_devices_electrical;				use et_devices_electrical;
-with et_netlists;
+with et_netlists;						use et_netlists;
 with et_net_ports;						use et_net_ports;
 with et_net_ports_devices;				use et_net_ports_devices;
 with et_net_ports_submodules;			use et_net_ports_submodules;
@@ -59,7 +59,7 @@ package et_schematic_ops_netlists is
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		ports 			: in pac_device_ports.set)
-		return et_netlists.pac_device_ports_extended.set;
+		return pac_device_ports_extended.set;
 
 	
 

@@ -79,9 +79,8 @@ package body et_schematic_ops_netlists is
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		ports 			: in pac_device_ports.set)
-		return et_netlists.pac_device_ports_extended.set 
+		return pac_device_ports_extended.set 
 	is
-		use et_netlists;
 		ports_extended : pac_device_ports_extended.set; -- to be returned
 
 		use pac_device_ports;
@@ -188,9 +187,8 @@ package body et_schematic_ops_netlists is
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		ports 			: in pac_net_submodule_ports.set)
-		return et_netlists.pac_submodule_ports_extended.set 
+		return pac_submodule_ports_extended.set 
 	is
-		use et_netlists;
 		ports_extended : pac_submodule_ports_extended.set; -- to be returned
 
 		use pac_net_submodule_ports;
@@ -214,7 +212,7 @@ package body et_schematic_ops_netlists is
 			
 		end query_ports;
 		
-	begin -- extend_ports
+	begin
 		iterate (ports, query_ports'access);
 		return ports_extended;
 	end extend_ports;
@@ -231,7 +229,6 @@ package body et_schematic_ops_netlists is
 		write_files		: in boolean := false;
 		log_threshold	: in type_log_level) 
 	is
-		use et_netlists;
 		use et_netlists_export;
 		
 		use pac_net_name;
@@ -248,12 +245,12 @@ package body et_schematic_ops_netlists is
 			-- and finally passed to netlists.write_netlist for further processing.
 			-- The netlist_tree does not provide information on dependencies between nets (such
 			-- as primary or secondary nets. see netlist specs).
-			netlist_tree : et_netlists.pac_netlist_modules.tree := et_netlists.pac_netlist_modules.empty_tree;
-			netlist_cursor : et_netlists.pac_netlist_modules.cursor := et_netlists.pac_netlist_modules.root (netlist_tree);
+			netlist_tree : pac_netlist_modules.tree := pac_netlist_modules.empty_tree;
+			netlist_cursor : pac_netlist_modules.cursor := pac_netlist_modules.root (netlist_tree);
 
 			-- This stack keeps record of the netlist_cursor as we go trough the design structure.
 			package stack_netlist is new et_generic_stacks.stack_lifo (
-				item	=> et_netlists.pac_netlist_modules.cursor,
+				item	=> pac_netlist_modules.cursor,
 				max 	=> et_submodules.nesting_depth_max);
 
 			
@@ -312,7 +309,7 @@ package body et_schematic_ops_netlists is
 					end; -- apply_offsets
 
 					
-					procedure insert_net (module : in out et_netlists.type_netlist_module) is begin
+					procedure insert_net (module : in out type_netlist_module) is begin
 						-- Prepend the given net prefix to the net name.
 						-- Insert the net with its ports in the netlist of the submodule.
 						et_netlists.pac_nets.insert (
@@ -367,7 +364,7 @@ package body et_schematic_ops_netlists is
 						apply_offsets;
 						
 						-- insert the net with its ports in the list of nets
-						et_netlists.pac_netlist_modules.update_element (
+						pac_netlist_modules.update_element (
 							container	=> netlist_tree,
 							position	=> netlist_cursor,
 							process		=> insert_net'access);
@@ -375,6 +372,7 @@ package body et_schematic_ops_netlists is
 						next (net_cursor_sch);
 					end loop;
 				end query_nets;
+
 				
 			begin -- collect_nets
 					
@@ -383,6 +381,7 @@ package body et_schematic_ops_netlists is
 					process		=> query_nets'access);
 
 			end collect_nets;
+
 			
 			submod_tree : pac_renumber_modules.tree := pac_renumber_modules.empty_tree;
 			tree_cursor : pac_renumber_modules.cursor := pac_renumber_modules.root (submod_tree);
@@ -397,7 +396,7 @@ package body et_schematic_ops_netlists is
 				cursor : pac_renumber_modules.cursor := tree_cursor;
 			begin
 				-- The first prefix to PREPEND is the name of the current submodule instance:
-				prefix := et_netlists.to_prefix (element (cursor).instance);
+				prefix := to_prefix (element (cursor).instance);
 
 				-- look for the overlying parent submodule
 				cursor := parent (cursor);
@@ -406,7 +405,7 @@ package body et_schematic_ops_netlists is
 				-- soon as the top module has been reached.
 				while not is_root (cursor) loop
 					-- prepend instance name of parent submodule
-					prefix := et_netlists.to_prefix (element (cursor).instance) & prefix;
+					prefix := to_prefix (element (cursor).instance) & prefix;
 					cursor := parent (cursor);
 				end loop;
 					
@@ -449,10 +448,10 @@ package body et_schematic_ops_netlists is
 					-- backup netlist_cursor
 					stack_netlist.push (netlist_cursor);
 					
-					et_netlists.pac_netlist_modules.insert_child (
+					pac_netlist_modules.insert_child (
 						container	=> netlist_tree,
 						parent		=> netlist_cursor,
-						before		=> et_netlists.pac_netlist_modules.no_element,
+						before		=> pac_netlist_modules.no_element,
 						position	=> netlist_cursor, -- points afterwards to the child that has just been inserted
 						new_item	=> (
 							generic_name	=> module_name,
@@ -569,7 +568,7 @@ package body et_schematic_ops_netlists is
 
 			
 			-- before updating the netlist of the module we keep the new netlist here temporarily:
-			netlist : et_netlists.pac_module_netlist.tree;
+			netlist : pac_module_netlist.tree;
 
 			
 			-- Updates the netlist of the module. The netlist is indicated by the variant_name.
@@ -580,7 +579,7 @@ package body et_schematic_ops_netlists is
 				
 				procedure assign_netlist (
 					variant		: in pac_assembly_variant_name.bounded_string;
-					netlist		: in out et_netlists.pac_module_netlist.tree) 
+					netlist		: in out pac_module_netlist.tree) 
 				is begin
 					-- overwrite the current netlist by the new netlist:
 					netlist := make_for_variant.netlist;
@@ -639,10 +638,10 @@ package body et_schematic_ops_netlists is
 			-- Insert the top module in the netlist_tree. It is the only node on this level.
 			-- Submodules will be inserted as children of the top module (where netlist_cursor 
 			-- points at AFTER this statement):
-			et_netlists.pac_netlist_modules.insert_child (
+			pac_netlist_modules.insert_child (
 				container	=> netlist_tree,
-				parent		=> et_netlists.pac_netlist_modules.root (netlist_tree),
-				before		=> et_netlists.pac_netlist_modules.no_element,
+				parent		=> pac_netlist_modules.root (netlist_tree),
+				before		=> pac_netlist_modules.no_element,
 				position	=> netlist_cursor,
 				new_item	=> (
 					generic_name	=> key (make_netlists.module_cursor),
