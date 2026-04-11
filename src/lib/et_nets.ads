@@ -92,13 +92,14 @@ package et_nets is
 
 -- NETS (basic stuff):
 	
-	type type_net_scope is ( -- CS rename so that it can not be confused with
-							   -- et_net_scope.type_net_scope
-		STRAND,
-		SHEET,
-		EVERYWHERE
-		);
-	
+-- CS: Currently this is not used:	
+-- 	type type_net_scope is ( -- CS rename so that it can not be confused with
+-- 							   -- et_net_scope.type_net_scope
+-- 		STRAND,
+-- 		SHEET,
+-- 		EVERYWHERE
+-- 		);
+-- 	
 	
 
 	type type_net_base is tagged record
@@ -113,7 +114,7 @@ package et_nets is
 	
 	type type_net is new type_net_base with record
 		strands		: pac_strands.list;
-		scope		: et_net_scope.type_net_scope := et_net_scope.LOCAL;
+		scope		: type_net_scope := LOCAL;
 
 		status : type_object_status; 
 		-- IMPORTANT: status "moving" shall not be used. 

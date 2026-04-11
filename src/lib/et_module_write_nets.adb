@@ -76,7 +76,6 @@ with et_net_ports_submodules;
 with et_net_ports_netchangers;
 with et_nets;						use et_nets;
 with et_net_scope;
-with et_netlists;
 with et_port_names;
 
 with et_module_write_tracks_route;
