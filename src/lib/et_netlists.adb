@@ -180,31 +180,40 @@ package body et_netlists is
 	
 	
 	
-	function port_count (net_cursor : in pac_nets.cursor)
+	function get_port_count (
+		net_cursor : in pac_nets.cursor)
 		return type_port_count 
 	is
-
 		port_count : type_port_count; -- to be returned
 
+		
 		procedure query_ports (
 			net_name	: in type_net_name;
-			net			: in type_net) is
+			net			: in type_net) 
+		is
 			use pac_submodule_ports_extended;
 			use pac_netchanger_ports;
 
-			procedure count_netchanger_ports (cursor : in pac_netchanger_ports.cursor) is begin
+			
+			procedure count_netchanger_ports (
+				cursor : in pac_netchanger_ports.cursor) 
+			is begin
 				case element (cursor).port is
 					when MASTER => port_count.netchangers.masters := port_count.netchangers.masters + 1;
 					when SLAVE => port_count.netchangers.slaves := port_count.netchangers.slaves + 1;
 				end case;
 			end;
 
-			procedure count_submodule_ports (cursor : in pac_submodule_ports_extended.cursor) is begin
+			
+			procedure count_submodule_ports (
+				cursor : in pac_submodule_ports_extended.cursor) 
+			is begin
 				case element (cursor).direction is
 					when MASTER => port_count.submodules.masters := port_count.submodules.masters + 1;
 					when SLAVE => port_count.submodules.slaves := port_count.submodules.slaves + 1;
 				end case;
 			end;
+
 			
 		begin -- query_ports
 			-- The number of master or slave ports
@@ -225,13 +234,13 @@ package body et_netlists is
 			
 		end query_ports;
 			
-	begin -- port_count
+	begin
 		pac_nets.query_element (
 			position	=> net_cursor,
 			process		=> query_ports'access);
 		
 		return port_count;
-	end port_count;
+	end get_port_count;
 
 
 
@@ -269,7 +278,7 @@ package body et_netlists is
 		end;
 		
 	begin
-		ports := port_count (net_cursor);
+		ports := get_port_count (net_cursor);
 
 -- 		-- Test the number of netchanger slave ports:
 -- 		
@@ -470,20 +479,23 @@ package body et_netlists is
 		net_cursor : pac_nets.cursor; -- to be returned
 
 		
-		procedure query_nets (module : in type_netlist_module) is
+		procedure query_nets (
+			module : in type_netlist_module) 
+		is
 
 			ports : type_port_count;
 
 			use pac_netchanger_ports;
 			netchanger_cursor : pac_netchanger_ports.cursor;
 			
-			procedure query_netchangers (
+			
 			-- Search the net for a netchanger with given index and port
 			-- opposide the given port. If netchanger found then netchanger_cursor
 			-- points to an element (means it points no longer to no_element).
+			procedure query_netchangers (
 				net_name	: in type_net_name;
-				net			: in type_net) is
-			begin
+				net			: in type_net) 
+			is begin
 				netchanger_cursor := find 
 					(
 					container	=> net.netchangers,
@@ -502,7 +514,7 @@ package body et_netlists is
 
 			net_cursor := module.nets.first;
 			while net_cursor /= pac_nets.no_element loop
-				ports := port_count (net_cursor);
+				ports := get_port_count (net_cursor);
 
 				-- search in the net if it contains netchangers:
 				if ports.netchangers.total > 0 then
@@ -528,7 +540,7 @@ package body et_netlists is
 		end query_nets;
 		
 		
-	begin -- net_on_netchanger
+	begin
 		log_indentation_up;
 		
 		log (text => "searching secondary net connected via netchanger in module " &
@@ -1056,7 +1068,7 @@ package body et_netlists is
 			
 			-- In order to save computing time, get number of netchanger and submodule 
 			-- ports of this net before exploring the net.
-			ports : type_port_count := port_count (net_cursor);
+			ports : type_port_count := get_port_count (net_cursor);
 			-- ports now provides the number of submodule and netchanger ports
 
 			

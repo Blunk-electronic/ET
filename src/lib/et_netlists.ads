@@ -212,7 +212,8 @@ package et_netlists is
 
 	-- Returns the number of netchanger and submodule 
 	-- ports in the given net.
-	function port_count (net_cursor : in pac_nets.cursor)
+	function get_port_count (
+		net_cursor : in pac_nets.cursor)
 		return type_port_count;
 
 
@@ -320,7 +321,7 @@ package et_netlists is
 	nesting_depth_max : constant positive := 100; -- CS increase if nessecary
 
 	
-	package pac_netlist is new ada.containers.multiway_trees (type_netlist_net);
+	package pac_netlist is new multiway_trees (type_netlist_net);
 
 
 
