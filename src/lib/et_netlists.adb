@@ -37,21 +37,13 @@
 --
 --   ToDo: 
 
+
+with ada.text_io;				use ada.text_io;
+
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
-with ada.text_io;				use ada.text_io;
-with ada.strings; 				use ada.strings;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded;       use ada.strings.bounded;
-with ada.containers;            use ada.containers;
-with ada.containers.vectors;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
 with ada.directories;
 with gnat.directory_operations;
 with ada.exceptions;
@@ -65,15 +57,6 @@ with et_system_info;
 
 package body et_netlists is
 	
-	function to_string (name : in pac_netlist_file_name.bounded_string) return string is begin
-		return pac_netlist_file_name.to_string (name);
-	end;
-
-	
-	function to_file_name (name : in string) return pac_netlist_file_name.bounded_string is begin
-		return pac_netlist_file_name.to_bounded_string (name);
-	end;
-
 
 	function "<" (left, right : in type_device_port_extended) return boolean is
 		use pac_port_name;
@@ -98,6 +81,8 @@ package body et_netlists is
 	end;
 
 
+
+	
 	
 	function "<" (left, right : in type_submodule_port_extended) return boolean is
 		use pac_module_instance_name;
@@ -122,6 +107,8 @@ package body et_netlists is
 		return result;
 	end;
 
+
+
 	
 	
 	function to_prefix (instance : in pac_module_instance_name.bounded_string) -- OSC1
@@ -134,14 +121,6 @@ package body et_netlists is
 
 	
 	
-	function to_string (net_scope : in type_net_scope) return string is begin
-		return " " & to_lower (type_net_scope'image (net_scope));
-	end to_string;
-
-	
-	function to_net_scope (scope : in string) return type_net_scope is begin
-		return type_net_scope'value (scope);
-	end to_net_scope;
 
 
 	
@@ -168,6 +147,9 @@ package body et_netlists is
 	end log_net_name;
 
 
+
+	
+
 	
 	function "<" (left, right : in type_net_name) return boolean is
 		result : boolean := false;
@@ -192,10 +174,15 @@ package body et_netlists is
 	end;
 
 
+
+
+
+	
+	
 	
 	function port_count (net_cursor : in pac_nets.cursor)
-		return type_port_count is
-	-- Returns the number of netchanger and submodule ports in the given net.
+		return type_port_count 
+	is
 
 		port_count : type_port_count; -- to be returned
 
@@ -247,10 +234,13 @@ package body et_netlists is
 	end port_count;
 
 
+
+	
+
+
+	
 	
 	function is_primary (net_cursor : in pac_nets.cursor) return boolean is
-	-- Returns true if given net is a primary net.
-	-- Performs some other important checks on slave ports of netchangers and submodules.
 	-- CS Currently these test are very simple and should be refined.
 		ports : type_port_count;
 		
@@ -325,6 +315,10 @@ package body et_netlists is
 	end is_primary;
 
 
+
+
+	
+
 	
 	-- Returns true if net (indicated by net_cursor) is connected with the
 	-- given port of a submodule instance.
@@ -368,8 +362,14 @@ package body et_netlists is
 	end contains;
 
 
+
+
+
+
 	
-	-- Returns a list of cursors to same named nets in submodules.
+	
+
+	
 	function global_nets_in_submodules (
 		module_cursor	: in pac_modules.cursor; -- the module that contains the port
 		net_cursor		: in pac_nets.cursor;
@@ -452,12 +452,14 @@ package body et_netlists is
 	end global_nets_in_submodules;
 
 
+
+
+
+
+
 	
-	-- Returns a cursor to the net connected with the given netchanger
-	-- port opposide to the given port.
-	-- If the given port is a master, then the net connected with the
-	-- slave is returned (and vice versa).
-	-- If the netchanger is not connected then the return is no_element.
+	
+	
 	function net_on_netchanger (
 		module_cursor	: in pac_modules.cursor; -- the module that contains the port
 		port			: in type_port_netchanger;
@@ -548,10 +550,14 @@ package body et_netlists is
 	end net_on_netchanger;
 
 
+
+
+
+
+
 	
-	-- Returns a cursor to the submodule net connected with the given
-	-- submodule port.
-	-- If the port is not connected inside the submodule then the return is no_element.
+	
+	
 	function net_in_submodule (
 		module_cursor	: in pac_modules.cursor; -- the module that contains the port
 		port			: in type_submodule_port_extended;
@@ -628,15 +634,15 @@ package body et_netlists is
 	end net_in_submodule;
 
 
+
+
+
+	
+	
+
+
 	
 	function net_in_parent_module (
-	-- Returns a cursor to the net in the parent module connected with the given net.
-	-- Searches for a net in the parent module that is connected to the submodule instance
-	-- given by element (module_cursor).instance_name, a port named after key (net_cursor).base_name
-	-- and port direction "slave".
-	-- If the net is in the top module, then the return is no_element.
-	-- If the net is not connected in the parent module (via the port in the box representing
-	-- the submodule instance) then the return is no_element.
 		module_cursor	: in pac_modules.cursor; -- the module that contains the net
 		net_cursor		: in pac_nets.cursor;
 		log_threshold	: in type_log_level)
@@ -722,6 +728,10 @@ package body et_netlists is
 		
 		return net_cursor_parent;
 	end net_in_parent_module;
+
+
+
+
 
 
 	
@@ -906,6 +916,10 @@ package body et_netlists is
 				raise;
 
 	end write_netlist;
+
+
+
+
 
 	
 	
