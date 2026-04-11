@@ -55,7 +55,7 @@ with et_board_geometry;
 with et_board_coordinates;
 with et_generic_stacks;
 with et_device_appearance;
-with et_numbering;
+with et_numbering;					use et_numbering;
 with et_package_name;
 with et_package_model_name;
 with et_net_segment;					use et_net_segment;
@@ -3581,8 +3581,8 @@ package body et_schematic_ops_submodules is
 			module		: in type_generic_module) is
 			use et_numbering;
 
-			procedure query (cursor : in et_numbering.pac_modules.cursor) is
-				use et_numbering.pac_modules;
+			procedure query (cursor : in pac_renumber_modules.cursor) is
+				use pac_renumber_modules;
 			begin
 				log (text => "instance " & to_string (element (cursor).instance) &
 					 " offset " & to_string (element (cursor).device_names_offset),
@@ -3591,7 +3591,7 @@ package body et_schematic_ops_submodules is
 			end query;
 			
 		begin
-			et_numbering.pac_modules.iterate (module.submod_tree, query'access);
+			pac_renumber_modules.iterate (module.submod_tree, query'access);
 		end query_submodules;
 
 	begin
@@ -3617,13 +3617,13 @@ package body et_schematic_ops_submodules is
 		-- the cursor to the given top module
 		module_cursor : pac_generic_modules.cursor;
 		
-		submod_tree : et_numbering.pac_modules.tree := et_numbering.pac_modules.empty_tree;
-		tree_cursor : et_numbering.pac_modules.cursor := et_numbering.pac_modules.root (submod_tree);
+		submod_tree : pac_renumber_modules.tree := pac_renumber_modules.empty_tree;
+		tree_cursor : pac_renumber_modules.cursor := pac_renumber_modules.root (submod_tree);
 
 		
 		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
 		package stack is new et_generic_stacks.stack_lifo (
-			item	=> et_numbering.pac_modules.cursor,
+			item	=> pac_renumber_modules.cursor,
 			max 	=> et_submodules.nesting_depth_max);
 
 		
@@ -3648,10 +3648,10 @@ package body et_schematic_ops_submodules is
 				-- at this level must be saved on the stack:
 				stack.push (tree_cursor);
 
-				et_numbering.pac_modules.insert_child (
+				pac_renumber_modules.insert_child (
 					container	=> submod_tree,
 					parent		=> tree_cursor,
-					before		=> et_numbering.pac_modules.no_element,
+					before		=> pac_renumber_modules.no_element,
 					new_item	=> (
 							name				=> submod_name,
 							instance			=> submod_instance,
@@ -3692,7 +3692,7 @@ package body et_schematic_ops_submodules is
 			log_indentation_up;
 			
 			log (text => "submodules total" & 
-				 count_type'image (et_numbering.pac_modules.node_count (module.submod_tree) - 1),
+				 count_type'image (pac_renumber_modules.node_count (module.submod_tree) - 1),
 				 level => log_threshold + 1);
 
 			log_indentation_down;
@@ -3959,13 +3959,13 @@ package body et_schematic_ops_submodules is
 			end collect;
 
 			
-			submod_tree : et_numbering.pac_modules.tree := et_numbering.pac_modules.empty_tree;
-			tree_cursor : et_numbering.pac_modules.cursor := et_numbering.pac_modules.root (submod_tree);
+			submod_tree : pac_renumber_modules.tree := pac_renumber_modules.empty_tree;
+			tree_cursor : pac_renumber_modules.cursor := pac_renumber_modules.root (submod_tree);
 
 			
 			-- A stack keeps record of the submodule level where tree_cursor is pointing at.
 			package stack_level is new et_generic_stacks.stack_lifo (
-				item	=> et_numbering.pac_modules.cursor,
+				item	=> pac_renumber_modules.cursor,
 				max 	=> et_submodules.nesting_depth_max);
 
 			
@@ -3980,7 +3980,7 @@ package body et_schematic_ops_submodules is
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
 			-- until the deepest submodule (the bottom of the design structure) has been reached.
 			procedure query_submodules is 
-				use et_numbering.pac_modules;
+				use pac_renumber_modules;
 				module_name 	: pac_module_name.bounded_string; -- motor_driver
 				parent_name 	: pac_module_name.bounded_string; -- water_pump
 				module_instance	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
@@ -3995,7 +3995,7 @@ package body et_schematic_ops_submodules is
 				tree_cursor := first_child (tree_cursor);
 
 				-- iterate through the submodules on this level
-				while tree_cursor /= et_numbering.pac_modules.no_element loop
+				while tree_cursor /= pac_renumber_modules.no_element loop
 					module_name := element (tree_cursor).name;
 					module_instance := element (tree_cursor).instance;
 
@@ -4043,7 +4043,7 @@ package body et_schematic_ops_submodules is
 						offset			=> offset);
 
 					
-					if first_child (tree_cursor) = et_numbering.pac_modules.no_element then 
+					if first_child (tree_cursor) = pac_renumber_modules.no_element then 
 					-- No submodules on the current level. means we can't go deeper:
 						
 						log_indentation_up;
@@ -4099,7 +4099,7 @@ package body et_schematic_ops_submodules is
 			submod_tree := element (module_cursor).submod_tree;
 
 			-- set the cursor inside the tree at root position:
-			tree_cursor := et_numbering.pac_modules.root (submod_tree);
+			tree_cursor := pac_renumber_modules.root (submod_tree);
 			
 			stack_level.init;
 			stack_variant.init;
@@ -4258,12 +4258,12 @@ package body et_schematic_ops_submodules is
 		end query_range;
 
 		
-		submod_tree : et_numbering.pac_modules.tree;
-		tree_cursor : et_numbering.pac_modules.cursor;
+		submod_tree : pac_renumber_modules.tree;
+		tree_cursor : pac_renumber_modules.cursor;
 
 		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
 		package stack is new et_generic_stacks.stack_lifo (
-			item	=> et_numbering.pac_modules.cursor,
+			item	=> pac_renumber_modules.cursor,
 			max 	=> et_submodules.nesting_depth_max);
 
 		-- For calculating the device index offset of submodule instances:
@@ -4282,13 +4282,13 @@ package body et_schematic_ops_submodules is
 		procedure set_offset is 
 		-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
 		-- until the deepest submodule (the bottom of the design structure) has been reached.
-			use et_numbering.pac_modules;
+			use pac_renumber_modules;
 			module_name 	: pac_module_name.bounded_string; -- motor_driver
 			parent_name 	: pac_module_name.bounded_string; -- water_pump
 			module_range 	: type_index_range;
 			module_instance	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
 
-			procedure assign_offset (module : in out et_numbering.type_module) is begin
+			procedure assign_offset (module : in out type_renumber_module) is begin
 			-- assign the device name offset to the current submodule according to the latest index_max.
 				module.device_names_offset := index_max + 1;
 				
@@ -4307,7 +4307,7 @@ package body et_schematic_ops_submodules is
 			tree_cursor := first_child (tree_cursor);
 
 			-- iterate through the submodules on this level
-			while tree_cursor /= et_numbering.pac_modules.no_element loop
+			while tree_cursor /= pac_renumber_modules.no_element loop
 				module_name := element (tree_cursor).name;
 				module_instance := element (tree_cursor).instance;
 				module_range := query_range (module_name);
@@ -4331,7 +4331,7 @@ package body et_schematic_ops_submodules is
 				
 				log (text => "index max" & to_string (index_max), level => log_threshold + 1);
 				
-				if first_child (tree_cursor) = et_numbering.pac_modules.no_element then 
+				if first_child (tree_cursor) = pac_renumber_modules.no_element then 
 					-- no submodules on the current level. means we can't go deeper.
 					
 					log_indentation_up;
@@ -4373,8 +4373,8 @@ package body et_schematic_ops_submodules is
 		end;
 		
 
-		procedure query_submodules (submod_cursor : in et_numbering.pac_modules.cursor) is
-			use et_numbering.pac_modules;
+		procedure query_submodules (submod_cursor : in pac_renumber_modules.cursor) is
+			use pac_renumber_modules;
 			-- Map from submodule_cursor to module in et_project.modules:
 
 			-- submod_cursor points to a submodule in the submod_tree:
@@ -4421,7 +4421,7 @@ package body et_schematic_ops_submodules is
 			new_item	=> index_range);
 
 		-- submodules:		
-		et_numbering.pac_modules.iterate (element (module_cursor).submod_tree, query_submodules'access);
+		pac_renumber_modules.iterate (element (module_cursor).submod_tree, query_submodules'access);
 		
 		-- calculation of index ranges complete
 		----------------
@@ -4447,7 +4447,7 @@ package body et_schematic_ops_submodules is
 		submod_tree := element (module_cursor).submod_tree;
 
 		-- set the cursor inside the tree at root position:
-		tree_cursor := et_numbering.pac_modules.root (submod_tree);
+		tree_cursor := pac_renumber_modules.root (submod_tree);
 		
 		stack.init;
 

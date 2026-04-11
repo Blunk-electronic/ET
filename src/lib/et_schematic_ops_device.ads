@@ -100,7 +100,7 @@ package et_schematic_ops_device is
 	function sort_by_coordinates_2 (
 		module_cursor 	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
-		return et_numbering.pac_devices.map;
+		return et_numbering.pac_renumber_devices.map;
 
 
 

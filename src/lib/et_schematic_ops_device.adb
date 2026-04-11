@@ -126,11 +126,12 @@ package body et_schematic_ops_device is
 	function sort_by_coordinates_2 (
 		module_cursor 	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level) 
-		return et_numbering.pac_devices.map 
+		return et_numbering.pac_renumber_devices.map 
 	is
 		use et_numbering;
-		devices : et_numbering.pac_devices.map; -- to be returned
+		devices : et_numbering.pac_renumber_devices.map; -- to be returned
 
+		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
@@ -147,7 +148,7 @@ package body et_schematic_ops_device is
 					unit_name : pac_unit_name.bounded_string := key (unit_cursor);  -- 1, C, IO_BANK1
 					unit_position : type_object_position := element (unit_cursor).position;
 					inserted : boolean := false;
-					cursor_sort : et_numbering.pac_devices.cursor;
+					cursor_sort : et_numbering.pac_renumber_devices.cursor;
 
 					use pac_unit_name;
 				begin
@@ -155,7 +156,7 @@ package body et_schematic_ops_device is
 						" at " & to_string (position => unit_position),
 						 level => log_threshold + 2);
 					
-					et_numbering.pac_devices.insert 
+					et_numbering.pac_renumber_devices.insert 
 						(
 						container	=> devices,
 						key			=> unit_position, -- sheet/x/y
@@ -200,7 +201,7 @@ package body et_schematic_ops_device is
 		end query_devices;
 
 		
-	begin -- sort_by_coordinates_2
+	begin
 		log (text => "sorting devices/units by schematic coordinates ...", level => log_threshold);
 
 		log_indentation_up;
@@ -1065,7 +1066,7 @@ package body et_schematic_ops_device is
 
 		-- The list of devices sorted by their coordinates.
 		-- By their order in this list the devices will be renumbered.
-		devices : et_numbering.pac_devices.map;
+		devices : et_numbering.pac_renumber_devices.map;
 
 		
 		-- Renumbers devices of given category. Returns true if all devices
@@ -1078,8 +1079,8 @@ package body et_schematic_ops_device is
 		is
 			result : boolean := true;
 			
-			use et_numbering.pac_devices;
-			cursor : et_numbering.pac_devices.cursor := devices.first;
+			use et_numbering.pac_renumber_devices;
+			cursor : et_numbering.pac_renumber_devices.cursor := devices.first;
 			name_before, name_after : type_device_name; -- R1
 			sheet_before, sheet_now : type_sheet := type_sheet'first;
 
@@ -1107,12 +1108,12 @@ package body et_schematic_ops_device is
 
 				-- Start with the unit indicated by cursor. All other
 				-- units of the device come after this one.
-				cursor_done : et_numbering.pac_devices.cursor := cursor;
+				cursor_done : et_numbering.pac_renumber_devices.cursor := cursor;
 
 				procedure set_done (
 					coordinates : in type_object_position;
-					device		: in out et_numbering.type_device) is
-				begin
+					device		: in out et_numbering.type_renumber_device)
+				is begin
 					device.done := true;
 				end;
 
@@ -1120,7 +1121,7 @@ package body et_schematic_ops_device is
 			begin -- mark_units_done
 				log (text => "marking all units done ...", level => log_threshold + 2);
 				
-				while cursor_done /= et_numbering.pac_devices.no_element loop
+				while cursor_done /= et_numbering.pac_renumber_devices.no_element loop
 					
 					if element (cursor_done).name = name_before then -- IC5
 						
@@ -1141,7 +1142,7 @@ package body et_schematic_ops_device is
 
 			
 		begin -- renumber
-			while cursor /= et_numbering.pac_devices.no_element loop
+			while cursor /= et_numbering.pac_renumber_devices.no_element loop
 
 				if not element (cursor).done then
 					name_before := element (cursor).name; -- R1

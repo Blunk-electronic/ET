@@ -2,27 +2,28 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                             NUMBERING                                    --
+--                          DEVICE RENUMBERING                              --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+-- Copyright (C) 2017 - 2026                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
 --   finished yet or intended for the future.
@@ -34,10 +35,16 @@
 --
 --   history of changes:
 --
+-- To Do: 
+--
+--
+
 
 package body et_numbering is
 
-	function "<" (left, right : in type_module) return boolean is
+	
+
+	function "<" (left, right : in type_renumber_module) return boolean is
 		use pac_module_name;
 		use pac_module_instance_name;
 		result : boolean;
@@ -58,9 +65,11 @@ package body et_numbering is
 
 		return result;
 	end "<";
-			
+
+
+
+	
 	function to_index_range (
-	-- Returns a string like "module 'templates/clock_generator' range 78 .. 133"
 		module_name	: in pac_module_name.bounded_string;
 		index_range	: in type_index_range) return string is
 	begin
@@ -69,17 +78,21 @@ package body et_numbering is
 			" .." & to_string (index_range.highest));
 	end to_index_range;
 
+
+
+	
 	function below (left, right : in type_index_range) return boolean is begin
-	-- Returns true if left index range is below right index range.
 		if left.highest < right.lowest then
 			return true;
 		else
 			return false;
 		end if;
 	end;
-		
+
+
+
+	
 	function above (left, right : in type_index_range) return boolean is begin
-	-- Returns true if left index range is above right index range.		
 		if left.lowest > right.highest then
 			return true;
 		else

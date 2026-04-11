@@ -143,7 +143,7 @@ package et_module is
 		-- The tree of submodules is stored here. 
 		-- NOTE: This container is exclusively used if the module is a top module.
 		-- In submodules it is not used (should always be empty):
-		submod_tree		: et_numbering.pac_modules.tree;
+		submod_tree		: et_numbering.pac_renumber_modules.tree;
 
 		-- The netlists containing nets of top module and submodule instances:
 		-- Provide information on primary nets and their subordinated secondary nets per 

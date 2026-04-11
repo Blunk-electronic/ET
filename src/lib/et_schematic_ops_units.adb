@@ -915,7 +915,7 @@ package body et_schematic_ops_units is
 		return boolean 
 	is
 		use et_numbering;
-		devices : et_numbering.pac_devices.map;
+		devices : pac_renumber_devices.map;
 	begin
 		devices := sort_by_coordinates_2 (module_cursor, log_threshold);
 		-- If a unit sits on top of another unit, sort_by_coordinates_2 throws a

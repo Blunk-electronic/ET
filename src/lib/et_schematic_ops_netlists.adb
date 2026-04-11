@@ -47,7 +47,7 @@ with et_netlists_export;
 
 with et_device_library.units;			use et_device_library.units;
 with et_device_name;					use et_device_name;
-with et_numbering;
+with et_numbering;						use et_numbering;
 with et_schematic_ops_submodules;
 with et_schematic_ops_units;
 with et_schematic_ops_device;			use et_schematic_ops_device;
@@ -375,8 +375,8 @@ package body et_schematic_ops_netlists is
 
 			end collect_nets;
 			
-			submod_tree : et_numbering.pac_modules.tree := et_numbering.pac_modules.empty_tree;
-			tree_cursor : et_numbering.pac_modules.cursor := et_numbering.pac_modules.root (submod_tree);
+			submod_tree : pac_renumber_modules.tree := pac_renumber_modules.empty_tree;
+			tree_cursor : pac_renumber_modules.cursor := pac_renumber_modules.root (submod_tree);
 
 			
 			function make_prefix return pac_net_name.bounded_string is
@@ -384,8 +384,8 @@ package body et_schematic_ops_netlists is
 			-- Starts at the position of the current tree_cursor and goes up to the first submodule level.
 			-- NOTE: The nets in the top module do not have prefixes.
 				prefix : pac_net_name.bounded_string;
-				use et_numbering.pac_modules;
-				cursor : et_numbering.pac_modules.cursor := tree_cursor;
+				use pac_renumber_modules;
+				cursor : pac_renumber_modules.cursor := tree_cursor;
 			begin
 				-- The first prefix to PREPEND is the name of the current submodule instance:
 				prefix := et_netlists.to_prefix (element (cursor).instance);
@@ -407,7 +407,7 @@ package body et_schematic_ops_netlists is
 			
 			-- A stack keeps record of the submodule level where tree_cursor is pointing at.
 			package stack_level is new et_generic_stacks.stack_lifo (
-				item	=> et_numbering.pac_modules.cursor,
+				item	=> pac_renumber_modules.cursor,
 				max 	=> et_submodules.nesting_depth_max);
 
 			
@@ -422,7 +422,7 @@ package body et_schematic_ops_netlists is
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
 			-- until the deepest submodule (the bottom of the design structure) has been reached.
 			procedure query_submodules is 
-				use et_numbering.pac_modules;
+				use pac_renumber_modules;
 				module_name 	: pac_module_name.bounded_string; -- motor_driver
 				parent_name 	: pac_module_name.bounded_string; -- water_pump
 				module_instance	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
@@ -473,7 +473,7 @@ package body et_schematic_ops_netlists is
 				tree_cursor := first_child (tree_cursor);
 
 				-- iterate through the submodules on this level
-				while tree_cursor /= et_numbering.pac_modules.no_element loop
+				while tree_cursor /= pac_renumber_modules.no_element loop
 					module_name := element (tree_cursor).name;
 					module_instance := element (tree_cursor).instance;
 
@@ -519,7 +519,7 @@ package body et_schematic_ops_netlists is
 					insert_submodule;
 
 					
-					if first_child (tree_cursor) = et_numbering.pac_modules.no_element then 
+					if first_child (tree_cursor) = pac_renumber_modules.no_element then 
 					-- No submodules on the current level. means we can't go deeper:
 						
 						log_indentation_up;
@@ -620,7 +620,7 @@ package body et_schematic_ops_netlists is
 			submod_tree := element (module_cursor).submod_tree;
 
 			-- set the cursor inside the tree at root position:
-			tree_cursor := et_numbering.pac_modules.root (submod_tree);
+			tree_cursor := pac_renumber_modules.root (submod_tree);
 			
 			stack_level.init;
 			stack_variant.init;

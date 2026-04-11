@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                             NUMBERING                                    --
+--                          DEVICE RENUMBERING                              --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,9 @@
 --
 --   history of changes:
 --
---   ToDo: 
+-- To Do: 
+--
+--
 
 with ada.text_io;				use ada.text_io;
 with ada.containers;            use ada.containers;
@@ -53,43 +55,51 @@ with et_unit_name;				use et_unit_name;
 
 package et_numbering is
 
-	type type_device is record
+	
+	type type_renumber_device is record
 		name	: type_device_name; -- R56, IC4
 		unit	: pac_unit_name.bounded_string; -- 1, A, B, ...
 		done	: boolean := false; -- indicates whether the device has been renumbered
 	end record;
 
 
-	package pac_devices is new ordered_maps (
+	package pac_renumber_devices is new ordered_maps (
 		key_type		=> type_object_position, -- sheet/x/y
-		element_type	=> type_device);
+		element_type	=> type_renumber_device);
 
+	
 	type type_index_range is record
 		lowest	: type_name_index := type_name_index'last; -- "last" is not a bug
 		highest	: type_name_index := type_name_index'first; -- "first" is not a bug	
 	end record;
+	
 
-	function to_index_range (
 	-- Returns a string like "module 'templates/clock_generator' range 78 .. 133"
+	function to_index_range (
 		module_name	: in pac_module_name.bounded_string;
 		index_range	: in type_index_range) return string;
 
-	function below (left, right : in type_index_range) return boolean;
-	-- Returns true if left index range is below right index range.
-		
-	function above (left, right : in type_index_range) return boolean;
-	-- Returns true if left index range is above right index range.		
 	
-	type type_module is record -- CS rename to something more detailled ?
+	-- Returns true if left index range is below right index range.
+	function below (left, right : in type_index_range) return boolean;
+
+	
+	-- Returns true if left index range is above right index range.		
+	function above (left, right : in type_index_range) return boolean;
+
+	
+	type type_renumber_module is record
 		name				: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
 		instance			: pac_module_instance_name.bounded_string; -- AMP_2, DRV1
 		device_names_offset	: type_name_index := type_name_index'first;	-- R88 turns to R1088
 	end record;
 
-	function "<" (left, right : in type_module) return boolean;
+
+	
+	function "<" (left, right : in type_renumber_module) return boolean;
 
 
-	package pac_modules is new multiway_trees (type_module);
+	package pac_renumber_modules is new multiway_trees (type_renumber_module);
 
 	
 end et_numbering;
