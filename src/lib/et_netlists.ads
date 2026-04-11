@@ -130,7 +130,7 @@ package et_netlists is
 
 -- NETS:
 	
-	type type_net is tagged record -- CS rename to type_net_ports ?
+	type type_netlist_ports is tagged record
 		devices		: pac_device_ports_extended.set;
 		submodules	: pac_submodule_ports_extended.set;
 		netchangers	: pac_netchanger_ports.set;
@@ -156,7 +156,7 @@ package et_netlists is
 	
 	package pac_nets is new ordered_maps ( -- CS rename to pac_net_ports ?
 		key_type		=> type_net_name, 
-		element_type	=> type_net);
+		element_type	=> type_netlist_ports);
 
 
 
@@ -309,9 +309,9 @@ package et_netlists is
 
 
 	
-	-- The final netlist is a tree that reflects primary nets with their subordinated
-	-- secondary nets.
-	type type_netlist_net is new type_net with record
+	-- The final netlist is a tree that reflects 
+	-- primary nets with their subordinated secondary nets:
+	type type_netlist_net is new type_netlist_ports with record
 		name	: type_net_name; -- base_name and prefix
 	end record;
 
@@ -329,7 +329,8 @@ package et_netlists is
 
 	
 
-	-- As there are assembly variants, for each of them a dedicated netlist must be generated.
+	-- As there are assembly variants, for each of them 
+	-- a dedicated netlist must be generated:
 	package pac_module_netlists is new ordered_maps (
 		key_type		=> pac_assembly_variant_name.bounded_string, -- low_cost, empty if default variant
 		"<"				=> pac_assembly_variant_name."<",

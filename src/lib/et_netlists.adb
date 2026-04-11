@@ -184,7 +184,7 @@ package body et_netlists is
 		
 		procedure query_ports (
 			net_name	: in type_net_name;
-			net			: in type_net) 
+			net			: in type_netlist_ports) 
 		is
 			use pac_submodule_ports_extended;
 			use pac_netchanger_ports;
@@ -338,7 +338,7 @@ package body et_netlists is
 
 		procedure query_submod_ports (
 			net_name	: in type_net_name;
-			net			: in type_net) 
+			net			: in type_netlist_ports) 
 		is
 			use pac_submodule_ports_extended;
 			port_cursor : pac_submodule_ports_extended.cursor := net.submodules.first;
@@ -489,7 +489,7 @@ package body et_netlists is
 			-- points to an element (means it points no longer to no_element).
 			procedure query_netchangers (
 				net_name	: in type_net_name;
-				net			: in type_net) 
+				net			: in type_netlist_ports) 
 			is begin
 				netchanger_cursor := find 
 					(
@@ -668,7 +668,7 @@ package body et_netlists is
 		
 		procedure query_submodules (
 			net_name	: in type_net_name;
-			net			: in type_net) is
+			net			: in type_netlist_ports) is
 			use pac_submodule_ports_extended;
 			port_cursor : pac_submodule_ports_extended.cursor;
 		begin
