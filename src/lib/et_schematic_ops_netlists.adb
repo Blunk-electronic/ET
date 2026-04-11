@@ -128,6 +128,8 @@ package body et_schematic_ops_netlists is
 	
 	
 
+
+	
 	-- Returns the direction (master/slave) of the given submodule port in module indicated by module_cursor.
 	-- The submodule must exist in the module.
 	function port_direction (
@@ -168,7 +170,7 @@ package body et_schematic_ops_netlists is
 		end query_submodules;
 
 		
-	begin -- port_properties 
+	begin
 		query_element (
 			position	=> module_cursor,
 			process		=> query_submodules'access);
@@ -178,8 +180,11 @@ package body et_schematic_ops_netlists is
 
 
 	
+
+
 	
-	-- Adds the port direction (master/slave) to the given submodule ports.
+
+	
 	function extend_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		ports 			: in pac_net_submodule_ports.set)
@@ -213,6 +218,10 @@ package body et_schematic_ops_netlists is
 		iterate (ports, query_ports'access);
 		return ports_extended;
 	end extend_ports;
+
+
+
+
 
 
 	
@@ -560,7 +569,7 @@ package body et_schematic_ops_netlists is
 
 			
 			-- before updating the netlist of the module we keep the new netlist here temporarily:
-			netlist : et_netlists.pac_netlist.tree;
+			netlist : et_netlists.pac_module_netlist.tree;
 
 			
 			-- Updates the netlist of the module. The netlist is indicated by the variant_name.
@@ -568,16 +577,17 @@ package body et_schematic_ops_netlists is
 				module_name		: in pac_module_name.bounded_string;
 				module			: in out type_generic_module) 
 			is
+				
 				procedure assign_netlist (
 					variant		: in pac_assembly_variant_name.bounded_string;
-					netlist		: in out et_netlists.pac_netlist.tree) 
+					netlist		: in out et_netlists.pac_module_netlist.tree) 
 				is begin
 					-- overwrite the current netlist by the new netlist:
 					netlist := make_for_variant.netlist;
 				end assign_netlist;
 
-				use pac_netlists;
-				netlist_cursor : pac_netlists.cursor;
+				use pac_module_netlists;
+				netlist_cursor : pac_module_netlists.cursor;
 
 				
 			begin -- update_netlist
@@ -588,15 +598,15 @@ package body et_schematic_ops_netlists is
 				-- If the netlist does exist, overwrite it by the new netlist.
 				netlist_cursor := find (module.netlists, variant_name);
 
-				if netlist_cursor = pac_netlists.no_element then
+				if netlist_cursor = pac_module_netlists.no_element then
 
-					pac_netlists.insert (
+					pac_module_netlists.insert (
 						container	=> module.netlists,
 						key			=> variant_name,
 						new_item	=> make_for_variant.netlist); -- the new netlist
 
 				else
-					pac_netlists.update_element (
+					pac_module_netlists.update_element (
 						container	=> module.netlists,
 						position	=> netlist_cursor,
 						process		=> assign_netlist'access);
@@ -707,6 +717,8 @@ package body et_schematic_ops_netlists is
 
 
 
+
+	
 	
 	procedure make_netlists (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)

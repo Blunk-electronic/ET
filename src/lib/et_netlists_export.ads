@@ -64,7 +64,7 @@ package et_netlists_export is
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		write_file		: in boolean;
 		log_threshold	: in type_log_level)
-		return pac_netlist.tree;
+		return pac_module_netlist.tree;
 
 
 	

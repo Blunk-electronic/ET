@@ -323,18 +323,18 @@ package et_netlists is
 	nesting_depth_max : constant positive := 100; -- CS increase if nessecary
 
 	
-	package pac_netlist is new multiway_trees (type_netlist_net);
+	package pac_module_netlist is new multiway_trees (type_netlist_net);
 
 
 
 	
 
 	-- As there are assembly variants, for each of them a dedicated netlist must be generated.
-	package pac_netlists is new ordered_maps (
+	package pac_module_netlists is new ordered_maps (
 		key_type		=> pac_assembly_variant_name.bounded_string, -- low_cost, empty if default variant
 		"<"				=> pac_assembly_variant_name."<",
-		element_type	=> pac_netlist.tree, -- provides info on primary and secondary net dependencies
-		"="				=> pac_netlist."=");
+		element_type	=> pac_module_netlist.tree, -- provides info on primary and secondary net dependencies
+		"="				=> pac_module_netlist."=");
 
 
 	

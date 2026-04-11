@@ -148,7 +148,7 @@ package et_module is
 		-- The netlists containing nets of top module and submodule instances:
 		-- Provide information on primary nets and their subordinated secondary nets per 
 		-- assembly variant.
-		netlists		: et_netlists.pac_netlists.map; -- variant name and netlist
+		netlists		: et_netlists.pac_module_netlists.map; -- variant name and netlist
 
 		-- Devices which do not have a counterpart in the schematic:
 		devices_non_electric			: pac_devices_non_electrical.map; -- fiducials, mounting holes, ...
