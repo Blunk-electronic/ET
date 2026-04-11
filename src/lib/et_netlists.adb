@@ -859,6 +859,9 @@ package body et_netlists is
 				
 				pac_device_ports_extended.iterate (element (net_cursor).devices, query_device'access);
 
+				-- Extract the ports of netchangers:
+				null; -- CS
+				
 				-- Iterate secondary nets:
 				iterate_children (net_cursor, query_secondary_net'access);
 
@@ -879,6 +882,9 @@ package body et_netlists is
 				-- Extract the ports of devices of the primary net:
 				pac_device_ports_extended.iterate (element (net_cursor).devices, query_device'access);
 
+				-- Extract the ports of netchangers:
+				null; -- CS
+				
 				-- Iterate secondary nets:
 				iterate_children (net_cursor, query_secondary_net'access);
 
