@@ -715,25 +715,6 @@ package body et_schematic_ops_netlists is
 	end make_netlists;
 
 
-
-
-	
-	
-	procedure make_netlists (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		log_threshold	: in type_log_level) 
-	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module
-	begin
-		-- locate the given top module
-		module_cursor := locate_module (module_name);
-
-		make_netlists (
-			module_cursor	=> module_cursor,
-			write_files		=> true,
-			log_threshold	=> log_threshold);
-	end;
-	
 	
 end et_schematic_ops_netlists;
 	

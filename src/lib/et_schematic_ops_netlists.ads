@@ -73,12 +73,6 @@ package et_schematic_ops_netlists is
 		log_threshold	: in type_log_level);
 
 
-	-- Generates the netlist files of all assembly variants from the given top module.
-	-- The netlist files are named after the module name and the variant name.
-	procedure make_netlists (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		log_threshold	: in type_log_level);
-
 	
 end et_schematic_ops_netlists;
 	
