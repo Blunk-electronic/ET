@@ -302,7 +302,8 @@ package body et_cp_schematic_module is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 	begin
-		-- CS log message
+		log (text => "save module", level => log_threshold);
+		log_indentation_up;
 
 		-- Since we are already in the project directory,
 		-- we can call the write_module procedures right away.
@@ -327,6 +328,8 @@ package body et_cp_schematic_module is
 				
 			when others => command_incomplete (cmd);
 		end case;	
+
+		log_indentation_down;
 	end save_module;
 
 	

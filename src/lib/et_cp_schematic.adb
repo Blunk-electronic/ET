@@ -500,7 +500,7 @@ package body et_cp_schematic is
 				when VERB_SAVE =>
 					case noun is
 						when NOUN_MODULE =>
-							save_module;
+							save_module (module_cursor, cmd, log_threshold + 1);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
