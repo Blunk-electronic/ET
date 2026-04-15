@@ -24,6 +24,7 @@
    board.rst
    assembly_variants.rst
    netchangers.rst
+   submodules.rst
 ..    component_library.rst
    package_models.rst
    symbol_models.rst

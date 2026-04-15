@@ -765,7 +765,7 @@ Netlists
 
 	.. code-block::
 
-		make netlist
+		make netlists
 
 
 
