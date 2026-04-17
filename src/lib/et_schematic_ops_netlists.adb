@@ -694,14 +694,16 @@ package body et_schematic_ops_netlists is
 
 		
 	begin -- make_netlists
-		log (text => "generating netlists ...", level => log_threshold);
+		log (text => "module " & to_string (module_cursor)
+			 & " generate netlists", level => log_threshold);
+		
 		log_indentation_up;
 
-		-- Build the submodule tree of the module according to the current design structure in
-		-- type_netlist_module.submod_tree.
+		-- Build the submodule tree of the module according 
+		-- to the current design structure.
 		-- All further operations rely on this tree:
 		et_schematic_ops_submodules.build_submodules_tree (
-			module_name 	=> key (module_cursor),
+			module_cursor 	=> module_cursor,
 			log_threshold	=> log_threshold + 1);
 
 		-- make netlist of default variant

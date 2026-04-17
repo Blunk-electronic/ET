@@ -46,6 +46,15 @@ with et_exceptions;				use et_exceptions;
 package body et_generic_modules is
 
 
+	function get_module_name (
+		module_cursor	: in pac_generic_modules.cursor)
+		return pac_module_name.bounded_string
+	is begin
+		return key (module_cursor);
+	end;
+
+
+	
 	function design_rules_schematic_assigned (
 		module : in type_generic_module)
 		return boolean

@@ -82,8 +82,14 @@ package et_generic_modules is
 		"<"				=> pac_module_name."<",
 		element_type	=> type_generic_module);
 
-
+	
 	use pac_generic_modules;
+
+	
+	function get_module_name (
+		module_cursor	: in pac_generic_modules.cursor)
+		return pac_module_name.bounded_string;
+		
 
 
 	-- Returns the name of the module indicated by module_cursor:

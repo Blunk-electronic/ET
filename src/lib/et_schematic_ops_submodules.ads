@@ -400,7 +400,7 @@ package et_schematic_ops_submodules is
 	
 	-- Re(builds) the submodule tree of the given parent module.
 	procedure build_submodules_tree (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 
@@ -414,11 +414,13 @@ package et_schematic_ops_submodules is
 	-- CAM related stuff
 
 
-	-- Calculates the device index ranges of the given top module and all its submodules.
+	-- Calculates the device index ranges of the given top module
+	-- and all its submodules.
 	-- Assigns the device names offset of the instantiated submodules.
-	-- Assumes that all devices of the modules are mounted -> assembly variants ignored.
+	-- Assumes that all devices of the modules are 
+	-- mounted -> assembly variants ignored.
 	procedure autoset_device_name_offsets (
-		module_name		: in pac_module_name.bounded_string; -- the top module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string;
 		log_threshold	: in type_log_level);
 
 	

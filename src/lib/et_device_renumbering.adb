@@ -100,6 +100,24 @@ package body et_device_renumbering is
 		end if;
 	end;
 
+
+
+	function get_module_count (
+		modules	: in pac_renumber_modules.tree)
+		return count_type
+	is begin
+		return modules.node_count;
+	end;
+
+
+	function get_module_count (
+		modules	: in pac_renumber_modules.tree)
+		return string
+	is begin
+		return count_type'image (modules.node_count);
+	end;
+
+
 	
 end et_device_renumbering;
 	

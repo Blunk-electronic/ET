@@ -1890,7 +1890,7 @@ package body et_schematic_ops_submodules is
 			" instance " & enclose_in_quotes (to_string (instance)),
 			level => log_threshold);
 
-		log (text => " at" & to_string (position => position) &
+		log (text => " at " & to_string (position => position) &
 			to_submodule_size (size),
 			level => log_threshold);
 
@@ -3607,127 +3607,139 @@ package body et_schematic_ops_submodules is
 
 
 
+
 	
 
 
 	
 	procedure build_submodules_tree (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level) 
 	is
-		-- the cursor to the given top module
-		module_cursor : pac_generic_modules.cursor;
 		
-		submod_tree : pac_renumber_modules.tree := pac_renumber_modules.empty_tree;
-		tree_cursor : pac_renumber_modules.cursor := pac_renumber_modules.root (submod_tree);
-
 		
-		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
+		-- A stack keeps record of the submodule level where 
+		-- tree_cursor is pointing at:
 		package stack is new et_generic_stacks.stack_lifo (
 			item	=> pac_renumber_modules.cursor,
 			max 	=> et_submodules.nesting_depth_max);
 
 		
-		procedure query_submodules (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is
-			use et_submodules;
-			submod_cursor	: et_submodules.pac_submodules.cursor := module.submods.first;
-			submod_name		: pac_module_name.bounded_string; -- $ET_TEMPLATES/motor_driver
-			submod_instance	: pac_module_instance_name.bounded_string; -- OSC1
-
-			use pac_submodules;
-		begin -- query_submodules in given top module
-			while submod_cursor /= et_submodules.pac_submodules.no_element loop
-				submod_name := to_module_name (remove_extension (to_string (element (submod_cursor).file)));
-				submod_instance := key (submod_cursor);
-				log (text => "submodule " & enclose_in_quotes (to_string (submod_name)) &
-					 " instance " & to_string (submod_instance), level => log_threshold + 1);
-
-				-- Before inserting the submodule in the tree, the current tree cursor
-				-- at this level must be saved on the stack:
-				stack.push (tree_cursor);
-
-				pac_renumber_modules.insert_child (
-					container	=> submod_tree,
-					parent		=> tree_cursor,
-					before		=> pac_renumber_modules.no_element,
-					new_item	=> (
-							name				=> submod_name,
-							instance			=> submod_instance,
-							device_names_offset	=> type_name_index'first
-							), -- templates/CLOCK_GENERATOR OSC1 100
-					position	=> tree_cursor
-					);
-
-				-- tree_cursor points now to the submodule that has been inserted last.
-				-- Submodules of this submodule will be inserted as childs.
-				log_indentation_up;
-				
-				-- locate the current submodule
-				module_cursor := locate_module (submod_name);
-
-				-- search for submodules at deeper levels. Here the procedure query_submodules
-				-- calls itself (recursive).
-				query_element (
-					position	=> module_cursor,
-					process		=> query_submodules'access);
-
-				log_indentation_down;
-
-				-- Restore the tree cursor. See stack.push statement above.
-				tree_cursor := stack.pop;
-				
-				next (submod_cursor);
-			end loop;
-		end query_submodules;
-
-		
-		procedure assign_tree (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is begin
+		is
+
+			submod_tree : pac_renumber_modules.tree := pac_renumber_modules.empty_tree;
+			tree_cursor : pac_renumber_modules.cursor := pac_renumber_modules.root (submod_tree);
+
+			
+			generic_submodule_cursor : pac_generic_modules.cursor;
+			
+
+			use pac_submodules;
+
+
+			procedure iterate_submodules is 
+				submod_instance	: pac_module_instance_name.bounded_string; -- OSC1
+				
+				use et_submodules;
+				submod_cursor	: et_submodules.pac_submodules.cursor := module.submods.first;
+				submod_name		: pac_module_name.bounded_string; -- $ET_TEMPLATES/motor_driver
+			begin
+				log (text => "iterate submodules", level => log_threshold + 1);
+				log_indentation_up;
+				
+				
+				while has_element (submod_cursor) loop
+					
+					submod_name := to_module_name (
+						remove_extension (to_string (element (submod_cursor).file)));
+					
+					submod_instance := key (submod_cursor);
+
+					log (text => "submodule " & enclose_in_quotes (to_string (submod_name)) &
+						 " instance " & to_string (submod_instance), 
+						 level => log_threshold + 2);
+
+					-- Before inserting the submodule in the tree, the current tree cursor
+					-- at this level must be saved on the stack:
+					stack.push (tree_cursor);
+
+					pac_renumber_modules.insert_child (
+						container	=> submod_tree,
+						parent		=> tree_cursor,
+						before		=> pac_renumber_modules.no_element,
+						new_item	=> (
+								name				=> submod_name,
+								instance			=> submod_instance,
+								device_names_offset	=> type_name_index'first
+								), -- templates/CLOCK_GENERATOR OSC1 100
+						position	=> tree_cursor
+						);
+
+					-- tree_cursor points now to the submodule that has been inserted last.
+					-- Submodules of this submodule will be inserted as childs.
+					log_indentation_up;
+					
+					-- locate the current submodule
+					generic_submodule_cursor := locate_module (submod_name);
+
+					-- Search for submodules at deeper levels. 
+					-- Here the procedure query_module
+					-- calls itself (recursive).
+					generic_modules.update_element (
+						position	=> generic_submodule_cursor,
+						process		=> query_module'access);
+
+					log_indentation_down;
+
+					-- Restore the tree cursor. See stack.push statement above.
+					tree_cursor := stack.pop;
+					
+					next (submod_cursor);
+				end loop;
+
+				
+				log_indentation_down;
+			end iterate_submodules;
+		
+
+			
+		begin
+			-- Iterate the submodules of the given top module:
+			iterate_submodules;
+
+			-- Assign the tree to the module candidate:
 			module.submod_tree := submod_tree;
 
-			log_indentation_up;
-			
-			log (text => "submodules total" & 
-				 count_type'image (pac_renumber_modules.node_count (module.submod_tree) - 1),
+			log (text => "submodules total " & 
+				 count_type'image (get_module_count (module.submod_tree) - 1),
 				 level => log_threshold + 1);
+			
+		end query_module;
 
-			log_indentation_down;
-		end assign_tree;
 
 		
-	begin -- build_submodules_tree
-		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
-			" building submodules tree ...", level => log_threshold);
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " build submodules tree", level => log_threshold);
+		
 		log_indentation_up;
 		
 		stack.init;
 		
-		-- locate the given top module
-		module_cursor := locate_module (module_name);
-
-		-- build the submodule tree in container submod_tree:
-		query_element (
+		-- Build the submodule tree in container submod_tree:
+		generic_modules.update_element (
 			position	=> module_cursor,
-			process		=> query_submodules'access);
+			process		=> query_module'access);
+		
+
+		-- Update device name offsets of submodules:
+		autoset_device_name_offsets (
+			get_module_name (module_cursor), log_threshold + 1);
 		
 		log_indentation_down;
-
-		-- relocate the given top module
-		module_cursor := locate_module (module_name);
-		
-		-- assign the submod_tree to the given top module
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> assign_tree'access);
-
-		-- update device name offsets of submodules
-		autoset_device_name_offsets (module_name, log_threshold + 1);
 		
 	end build_submodules_tree;
 
@@ -4138,7 +4150,7 @@ package body et_schematic_ops_submodules is
 		-- Build the submodule tree of the module according to the current design structure.
 		-- All further operations rely on this tree:
 		build_submodules_tree (
-			module_name 	=> module_name,
+			module_cursor 	=> module_cursor,
 			log_threshold	=> log_threshold + 1);
 
 		-- make netlist of default variant
@@ -4227,6 +4239,8 @@ package body et_schematic_ops_submodules is
 	
 
 
+
+	
 
 	
 
@@ -4400,8 +4414,12 @@ package body et_schematic_ops_submodules is
 
 		
 	begin -- autoset_device_name_offsets
-		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
-			" exploring current ranges of device indexes ...", level => log_threshold);
+		log (text => "module " & enclose_in_quotes (to_string (module_name)) 
+			 & " autoset device name offsets", level => log_threshold);
+		
+		log (text => "explore current ranges of device indexes",
+			 level => log_threshold);
+		
 		log_indentation_up;
 
 		-- locate the given top module
@@ -4428,7 +4446,7 @@ package body et_schematic_ops_submodules is
 		
 		log_indentation_down;
 
-		log (text => "autosetting device name offset of submodules instances ...", level => log_threshold);
+		log (text => "autoset device name offset of submodules instances", level => log_threshold);
 		log_indentation_up;
 		
 		-- locate the given top module
@@ -4441,6 +4459,8 @@ package body et_schematic_ops_submodules is
 		-- Show the index range used by the top module:
 		log (text => "top" & to_index_range (module_name, query_range (module_name)), level => log_threshold + 1);
 
+		log_indentation_up;
+		
 		log (text => "index max" & to_string (index_max), level => log_threshold + 1);
 		
 		-- take a copy of the submodule tree of the given top module:
@@ -4458,6 +4478,7 @@ package body et_schematic_ops_submodules is
 		-- contains the device name offsets for the instantiated submodules.
 		update_element (generic_modules, module_cursor, replace_tree'access);
 		
+		log_indentation_down;
 		log_indentation_down;
 
 		exception

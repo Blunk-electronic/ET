@@ -523,7 +523,7 @@ package body et_board_ops_material_pnp is
 		-- Build the submodule tree of the module according to the current design structure.
 		-- All further operations rely on this tree:
 		et_schematic_ops_submodules.build_submodules_tree (
-			module_name 	=> module_name,
+			module_cursor 	=> module_cursor,
 			log_threshold	=> log_threshold + 1);
 
 		-- make p&p of default variant

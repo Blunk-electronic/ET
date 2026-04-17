@@ -104,6 +104,18 @@ package et_device_renumbering is
 	package pac_renumber_modules is new multiway_trees (type_renumber_module);
 
 	
+	-- Returns the total number of modules that
+	-- the given tree contains:
+	function get_module_count (
+		modules	: in pac_renumber_modules.tree)
+		return count_type;
+		
+
+	function get_module_count (
+		modules	: in pac_renumber_modules.tree)
+		return string;
+
+	
 end et_device_renumbering;
 
 -- Soli Deo Gloria
