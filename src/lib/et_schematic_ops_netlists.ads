@@ -39,6 +39,7 @@
 with et_module_names;					use et_module_names;
 with et_generic_modules;				use et_generic_modules;
 with et_device_name;					use et_device_name;
+with et_device_renumbering;				use et_device_renumbering;
 with et_devices_electrical;				use et_devices_electrical;
 with et_netlists;						use et_netlists;
 with et_net_names;						use et_net_names;
@@ -81,6 +82,15 @@ package et_schematic_ops_netlists is
 		netlist_cursor 	: in pac_netlist_modules.cursor;
 		log_threshold	: in type_log_level);
 
+
+
+	-- Builds a prefix like CLK_GENERATOR/FLT1/ for the
+	-- given submodule in a tree of submodules.
+	-- The prefix is composed of the overlying parent submodule
+	-- instances:
+	function make_prefix (
+		tree_cursor		: in pac_renumber_modules.cursor)
+		return pac_net_name.bounded_string;
 	
 	
 	-- Generates the netlists of all assembly variants from the given top module.

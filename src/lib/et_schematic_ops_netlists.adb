@@ -45,7 +45,6 @@ with et_nets;							use et_nets;
 with et_netlists_export;
 
 with et_device_library.units;			use et_device_library.units;
-with et_device_renumbering;				use et_device_renumbering;
 with et_schematic_ops_submodules;
 with et_schematic_ops_units;
 with et_schematic_ops_device;			use et_schematic_ops_device;
@@ -378,6 +377,40 @@ package body et_schematic_ops_netlists is
 
 	
 	
+	function make_prefix (
+		tree_cursor		: in pac_renumber_modules.cursor)
+		return pac_net_name.bounded_string
+	is
+		use pac_net_name;
+		prefix : pac_net_name.bounded_string;
+		
+		use pac_renumber_modules;
+		cursor : pac_renumber_modules.cursor := tree_cursor;
+	begin
+		-- The first prefix to PREPEND is the name of the current submodule instance:
+		prefix := to_prefix (element (cursor).instance);
+
+		-- look for the overlying parent submodule
+		cursor := parent (cursor);
+
+		-- travel upwards toward other overlying submodules. The search ends as
+		-- soon as the top module has been reached.
+		while not is_root (cursor) loop
+			-- prepend instance name of parent submodule
+			prefix := to_prefix (element (cursor).instance) & prefix;
+			cursor := parent (cursor);
+		end loop;
+			
+		return prefix;
+	end make_prefix;
+
+	
+
+		
+	
+	
+	
+	
 	
 	procedure make_netlists (
 		module_cursor 	: in pac_generic_modules.cursor;
@@ -409,36 +442,9 @@ package body et_schematic_ops_netlists is
 				max 	=> et_submodules.nesting_depth_max);
 
 			
-
-			
 			submod_tree : pac_renumber_modules.tree := pac_renumber_modules.empty_tree;
 			tree_cursor : pac_renumber_modules.cursor := pac_renumber_modules.root (submod_tree);
 
-			
-			function make_prefix return pac_net_name.bounded_string is
-			-- Builds a string like CLK_GENERATOR/FLT1/ from the parent submodule instances.
-			-- Starts at the position of the current tree_cursor and goes up to the first submodule level.
-			-- NOTE: The nets in the top module do not have prefixes.
-				prefix : pac_net_name.bounded_string;
-				use pac_renumber_modules;
-				cursor : pac_renumber_modules.cursor := tree_cursor;
-			begin
-				-- The first prefix to PREPEND is the name of the current submodule instance:
-				prefix := to_prefix (element (cursor).instance);
-
-				-- look for the overlying parent submodule
-				cursor := parent (cursor);
-
-				-- travel upwards toward other overlying submodules. The search ends as
-				-- soon as the top module has been reached.
-				while not is_root (cursor) loop
-					-- prepend instance name of parent submodule
-					prefix := to_prefix (element (cursor).instance) & prefix;
-					cursor := parent (cursor);
-				end loop;
-					
-				return prefix;
-			end make_prefix;
 
 			
 			-- A stack keeps record of the submodule level where tree_cursor is pointing at.
@@ -492,7 +498,7 @@ package body et_schematic_ops_netlists is
 					collect_nets (
 						module_cursor	=> locate_module (module_name),
 						variant			=> variant,
-						prefix			=> make_prefix,
+						prefix			=> make_prefix (tree_cursor),
 						offset			=> offset,
 						netlist_tree	=> netlist_tree,
 						netlist_cursor	=> netlist_cursor,

@@ -99,7 +99,8 @@ package body et_cp_schematic_nets is
 		case cmd_field_count is
 			when 4 =>
 				make_netlists (
-					module_cursor 	=> module,								  
+					module_cursor 	=> module,
+					write_files		=> true,
 					log_threshold	=> log_threshold + 1);
 
 			when 5 .. type_field_count'last =>
