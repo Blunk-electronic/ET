@@ -398,7 +398,10 @@ package et_schematic_ops_submodules is
 		log_threshold	: in type_log_level);
 
 	
-	-- Re(builds) the submodule tree of the given parent module.
+	-- Re(builds) the submodule tree of the given parent module
+	-- according to the current design structure.
+	-- For each submodule that has been found, it searches 
+	-- for other submodules inside that submodule and so on:
 	procedure build_submodules_tree (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);

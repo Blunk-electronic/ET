@@ -4252,23 +4252,24 @@ package body et_schematic_ops_submodules is
 		index_range : type_index_range;
 
 		
-		package type_ranges is new ordered_maps (
+		package pac_index_ranges is new ordered_maps (
 			key_type		=> pac_module_name.bounded_string, -- motor_driver (generic module name)
 			"<"				=> pac_module_name."<",
 			element_type	=> type_index_range); -- 3..190
 
 		-- The device name indexes of all (sub)modules are stored here:
-		ranges : type_ranges.map;
+		ranges : pac_index_ranges.map;
 
+		
 		
 		-- Returns the index range of the given generic module.
 		-- NOTE: This is about the indexes used by the generic module.			
 		function query_range (module : in pac_module_name.bounded_string)
 			return type_index_range is
-			cursor : type_ranges.cursor;
+			cursor : pac_index_ranges.cursor;
 		begin
-			cursor := type_ranges.find (ranges, module);
-			return type_ranges.element (cursor);
+			cursor := pac_index_ranges.find (ranges, module);
+			return pac_index_ranges.element (cursor);
 		end query_range;
 
 		
@@ -4293,17 +4294,23 @@ package body et_schematic_ops_submodules is
 		end;
 
 		
+		-- Reads the submodule tree submod_tree. 
+		-- It is recursive, means it calls itself
+		-- until the deepest submodule (the bottom of the design structure) 
+		-- has been reached:
 		procedure set_offset is 
-		-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
-		-- until the deepest submodule (the bottom of the design structure) has been reached.
 			use pac_renumber_modules;
 			module_name 	: pac_module_name.bounded_string; -- motor_driver
 			parent_name 	: pac_module_name.bounded_string; -- water_pump
 			module_range 	: type_index_range;
 			module_instance	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
 
-			procedure assign_offset (module : in out type_renumber_module) is begin
-			-- assign the device name offset to the current submodule according to the latest index_max.
+			
+			-- Assign the device name offset to the current submodule 
+			-- according to the latest index_max:
+			procedure assign_offset (
+				module : in out type_renumber_module) 
+			is begin
 				module.device_names_offset := index_max + 1;
 				
 				log (text => "module " & enclose_in_quotes (to_string (module_name)) &
@@ -4379,12 +4386,14 @@ package body et_schematic_ops_submodules is
 
 
 		
+		
 		procedure replace_tree (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is begin
 			module.submod_tree := submod_tree;
 		end;
+		
 		
 
 		procedure query_submodules (submod_cursor : in pac_renumber_modules.cursor) is
@@ -4400,11 +4409,11 @@ package body et_schematic_ops_submodules is
 		begin
 			-- If the range for this generic module has not been computed already, then do
 			-- it now. Otherwise there is no need to do that all over:
-			if not type_ranges.contains (ranges, module_name) then
+			if not pac_index_ranges.contains (ranges, module_name) then
 				
 				index_range := device_index_range (module_cursor, log_threshold + 1);
 
-				type_ranges.insert (
+				pac_index_ranges.insert (
 					container	=> ranges,
 					key			=> key (module_cursor), -- generic name
 					new_item	=> index_range);
@@ -4433,7 +4442,7 @@ package body et_schematic_ops_submodules is
 		-- top module:
 		index_range := device_index_range (module_cursor, log_threshold + 1);
 
-		type_ranges.insert (
+		pac_index_ranges.insert (
 			container	=> ranges,
 			key			=> module_name,
 			new_item	=> index_range);
