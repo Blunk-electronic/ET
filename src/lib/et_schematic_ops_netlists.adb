@@ -406,7 +406,199 @@ package body et_schematic_ops_netlists is
 
 	
 
+	
+	
 		
+	
+	
+	
+	-- This stack keeps record of the netlist_cursor as we 
+	-- go trough the design structure:
+	package stack_netlist is new et_generic_stacks.stack_lifo (
+		item	=> pac_netlist_modules.cursor,
+		max 	=> et_submodules.nesting_depth_max);
+
+	
+	-- A stack keeps record of the submodule level where 
+	-- tree_cursor is pointing at.
+	package stack_level is new et_generic_stacks.stack_lifo (
+		item	=> pac_renumber_modules.cursor,
+		max 	=> et_submodules.nesting_depth_max);
+
+	
+	-- Another stack keeps record of the assembly variant 
+	-- at the submodule level.
+	package stack_variant is new et_generic_stacks.stack_lifo (
+		item	=> pac_assembly_variant_name.bounded_string,
+		max 	=> et_submodules.nesting_depth_max);
+
+	
+	
+	
+	procedure query_submodules (
+		module_cursor	: in pac_generic_modules.cursor;
+		variant_name	: in pac_assembly_variant_name.bounded_string;
+		netlist_tree 	: in out pac_netlist_modules.tree;
+		netlist_cursor 	: in out pac_netlist_modules.cursor;
+		submod_tree		: in pac_renumber_modules.tree;
+		tree_cursor		: in out pac_renumber_modules.cursor;
+		variant			: in out pac_assembly_variant_name.bounded_string;
+		log_threshold	: in type_log_level)	
+	is 
+		use pac_renumber_modules;
+		module_name 	: pac_module_name.bounded_string; -- motor_driver
+		parent_name 	: pac_module_name.bounded_string; -- water_pump
+		module_instance	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
+		offset			: type_name_index;
+
+		use pac_submodule_variants;
+		alt_submod : pac_submodule_variants.cursor;
+
+		
+		procedure insert_submodule is begin
+		-- Insert a submodule in netlist_tree. Wherever procedure query_submodules is
+		-- called, cursor netlist_cursor is pointing at the latest parent module. The
+		-- submodules detected here must be inserted as children of that parent module.
+
+			-- backup netlist_cursor
+			stack_netlist.push (netlist_cursor);
+			
+			pac_netlist_modules.insert_child (
+				container	=> netlist_tree,
+				parent		=> netlist_cursor,
+				before		=> pac_netlist_modules.no_element,
+				position	=> netlist_cursor, -- points afterwards to the child that has just been inserted
+				new_item	=> (
+					generic_name	=> module_name,
+					instance_name	=> module_instance,
+					others			=> <>)
+				);
+
+			-- Collect nets from current module. inserts the nets in
+			-- the submodule indicated by netlist_cursor:
+			collect_nets (
+				module_cursor	=> locate_module (module_name),
+				variant			=> variant,
+				prefix			=> make_prefix (tree_cursor),
+				offset			=> offset,
+				netlist_tree	=> netlist_tree,
+				netlist_cursor	=> netlist_cursor,
+				log_threshold	=> log_threshold + 2);
+			
+			-- restore netlist_cursor
+			netlist_cursor := stack_netlist.pop;
+		end insert_submodule;
+
+
+		use et_schematic_ops_submodules;
+		
+	begin -- query_submodules
+		log (text => "query submodules", level => log_threshold);		
+		log_indentation_up;
+
+		-- start with the first submodule on the current hierarchy level
+		tree_cursor := first_child (tree_cursor);
+
+		
+		-- iterate through the submodules on this level
+		while tree_cursor /= pac_renumber_modules.no_element loop
+			module_name := element (tree_cursor).name;
+			module_instance := element (tree_cursor).instance;
+
+			log (text => "instance " & enclose_in_quotes (to_string (module_instance)) &
+				" of generic module " & enclose_in_quotes (to_string (module_name)),
+				level => log_threshold + 1);
+
+			-- In case we are on the first level, the parent module is the given top module.
+			-- In that case the parent variant is the given variant of the top module.
+			-- If the top module has the default variant, all submodules in all levels
+			-- assume default variant too.
+			if parent (tree_cursor) = root (submod_tree) then
+				parent_name := key (module_cursor);
+				variant := variant_name; -- argument of make_for_variant
+			else
+				parent_name := element (parent (tree_cursor)).name;
+			end if;
+
+			
+			-- Get the device name offset of the current submodule;
+			offset := element (tree_cursor).device_names_offset;
+			
+			
+			if not is_default (variant) then
+				-- Query in parent module: Is there any assembly variant specified for this submodule ?
+
+				alt_submod := get_alternative_submodule (
+							module	=> locate_module (parent_name),
+							variant	=> variant,
+							submod	=> module_instance);
+
+				if alt_submod = et_assembly_variants.pac_submodule_variants.no_element then
+				-- no variant specified for this submodule -> collect devices of default variant
+
+					variant := default;
+				else
+				-- alternative variant specified for this submodule
+					variant := element (alt_submod).variant;
+				end if;
+
+			end if;
+
+			
+			-- Insert submodule in netlist_tree.
+			insert_submodule;
+
+			
+			if first_child (tree_cursor) = pac_renumber_modules.no_element then 
+			-- No submodules on the current level. means we can't go deeper:
+				
+				log_indentation_up;
+				log (text => "no submodules here -> bottom reached",
+					level => log_threshold + 1);
+				log_indentation_down;
+			else
+			-- There are submodules on the current level:
+				
+				-- backup the cursor to the current submodule on this level
+				stack_level.push (tree_cursor);
+
+				-- backup the parent assembly variant
+				stack_variant.push (variant);
+
+				-- iterate through submodules on the level below
+				query_submodules ( -- this is recursive !
+					module_cursor	=> module_cursor,
+					variant_name	=> variant_name,
+					netlist_tree	=> netlist_tree,
+					netlist_cursor	=> netlist_cursor,
+					submod_tree		=> submod_tree,
+					tree_cursor		=> tree_cursor,
+					variant			=> variant,
+					log_threshold	=> log_threshold);
+
+				-- restore cursor to submodule (see stack_level.push above)
+				tree_cursor := stack_level.pop;
+
+				-- restore the parent assembly variant (see stack_variant.push above)
+				variant := stack_variant.pop;
+			end if;
+
+			next_sibling (tree_cursor); -- next submodule on this level
+		end loop;
+
+		
+		log_indentation_down;
+
+		exception
+			when event: others =>
+				log_indentation_reset;
+				log (text => ada.exceptions.exception_information (event), console => true);
+				raise;
+		
+	end query_submodules;
+
+
+	
 	
 	
 	
@@ -418,8 +610,7 @@ package body et_schematic_ops_netlists is
 		log_threshold	: in type_log_level) 
 	is
 		use et_netlists_export;
-		
-		use pac_net_name;
+
 		use et_assembly_variants;
 		use et_assembly_variants.pac_assembly_variants;
 		use pac_assembly_variant_name;
@@ -436,173 +627,10 @@ package body et_schematic_ops_netlists is
 			netlist_tree : pac_netlist_modules.tree := pac_netlist_modules.empty_tree;
 			netlist_cursor : pac_netlist_modules.cursor := pac_netlist_modules.root (netlist_tree);
 
-			-- This stack keeps record of the netlist_cursor as we go trough the design structure.
-			package stack_netlist is new et_generic_stacks.stack_lifo (
-				item	=> pac_netlist_modules.cursor,
-				max 	=> et_submodules.nesting_depth_max);
-
-			
 			submod_tree : pac_renumber_modules.tree := pac_renumber_modules.empty_tree;
 			tree_cursor : pac_renumber_modules.cursor := pac_renumber_modules.root (submod_tree);
 
-
-			
-			-- A stack keeps record of the submodule level where tree_cursor is pointing at.
-			package stack_level is new et_generic_stacks.stack_lifo (
-				item	=> pac_renumber_modules.cursor,
-				max 	=> et_submodules.nesting_depth_max);
-
-			
-			-- Another stack keeps record of the assembly variant at the submodule level.
-			package stack_variant is new et_generic_stacks.stack_lifo (
-				item	=> pac_assembly_variant_name.bounded_string,
-				max 	=> et_submodules.nesting_depth_max);
-			
 			variant : pac_assembly_variant_name.bounded_string; -- low_cost
-
-			
-			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
-			-- until the deepest submodule (the bottom of the design structure) has been reached.
-			procedure query_submodules is 
-				use pac_renumber_modules;
-				module_name 	: pac_module_name.bounded_string; -- motor_driver
-				parent_name 	: pac_module_name.bounded_string; -- water_pump
-				module_instance	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
-				offset			: type_name_index;
-
-				use et_assembly_variants.pac_submodule_variants;
-				alt_submod : et_assembly_variants.pac_submodule_variants.cursor;
-
-				
-				procedure insert_submodule is begin
-				-- Insert a submodule in netlist_tree. Wherever procedure query_submodules is
-				-- called, cursor netlist_cursor is pointing at the latest parent module. The
-				-- submodules detected here must be inserted as children of that parent module.
-
-					-- backup netlist_cursor
-					stack_netlist.push (netlist_cursor);
-					
-					pac_netlist_modules.insert_child (
-						container	=> netlist_tree,
-						parent		=> netlist_cursor,
-						before		=> pac_netlist_modules.no_element,
-						position	=> netlist_cursor, -- points afterwards to the child that has just been inserted
-						new_item	=> (
-							generic_name	=> module_name,
-							instance_name	=> module_instance,
-							others			=> <>)
-						);
-
-					-- Collect nets from current module. inserts the nets in
-					-- the submodule indicated by netlist_cursor:
-					collect_nets (
-						module_cursor	=> locate_module (module_name),
-						variant			=> variant,
-						prefix			=> make_prefix (tree_cursor),
-						offset			=> offset,
-						netlist_tree	=> netlist_tree,
-						netlist_cursor	=> netlist_cursor,
-						log_threshold	=> log_threshold + 2);
-					
-					-- restore netlist_cursor
-					netlist_cursor := stack_netlist.pop;
-				end insert_submodule;
-
-
-				use et_schematic_ops_submodules;
-				
-			begin -- query_submodules
-				log_indentation_up;
-
-				-- start with the first submodule on the current hierarchy level
-				tree_cursor := first_child (tree_cursor);
-
-				-- iterate through the submodules on this level
-				while tree_cursor /= pac_renumber_modules.no_element loop
-					module_name := element (tree_cursor).name;
-					module_instance := element (tree_cursor).instance;
-
-					log (text => "instance " & enclose_in_quotes (to_string (module_instance)) &
-						" of generic module " & enclose_in_quotes (to_string (module_name)),
-						level => log_threshold + 1);
-
-					-- In case we are on the first level, the parent module is the given top module.
-					-- In that case the parent variant is the given variant of the top module.
-					-- If the top module has the default variant, all submodules in all levels
-					-- assume default variant too.
-					if parent (tree_cursor) = root (submod_tree) then
-						parent_name := key (make_netlists.module_cursor);
-						variant := variant_name; -- argument of make_for_variant
-					else
-						parent_name := element (parent (tree_cursor)).name;
-					end if;
-
-					-- Get the device name offset of the current submodule;
-					offset := element (tree_cursor).device_names_offset;
-
-					if not is_default (variant) then
-						-- Query in parent module: Is there any assembly variant specified for this submodule ?
-
-						alt_submod := get_alternative_submodule (
-									module	=> locate_module (parent_name),
-									variant	=> variant,
-									submod	=> module_instance);
-
-						if alt_submod = et_assembly_variants.pac_submodule_variants.no_element then
-						-- no variant specified for this submodule -> collect devices of default variant
-
-							variant := default;
-						else
-						-- alternative variant specified for this submodule
-							variant := element (alt_submod).variant;
-						end if;
-
-					end if;
-
-					
-					-- Insert submodule in netlist_tree.
-					insert_submodule;
-
-					
-					if first_child (tree_cursor) = pac_renumber_modules.no_element then 
-					-- No submodules on the current level. means we can't go deeper:
-						
-						log_indentation_up;
-						log (text => "no submodules here -> bottom reached", level => log_threshold + 1);
-						log_indentation_down;
-					else
-					-- There are submodules on the current level:
-						
-						-- backup the cursor to the current submodule on this level
-						stack_level.push (tree_cursor);
-
-						-- backup the parent assembly variant
-						stack_variant.push (variant);
-
-						-- iterate through submodules on the level below
-						query_submodules; -- this is recursive !
-
-						-- restore cursor to submodule (see stack_level.push above)
-						tree_cursor := stack_level.pop;
-
-						-- restore the parent assembly variant (see stack_variant.push above)
-						variant := stack_variant.pop;
-					end if;
-
-					next_sibling (tree_cursor); -- next submodule on this level
-				end loop;
-
-				
-				log_indentation_down;
-
-				exception
-					when event: others =>
-						log_indentation_reset;
-						log (text => ada.exceptions.exception_information (event), console => true);
-						raise;
-				
-			end query_submodules;
-
 			
 			-- before updating the netlist of the module we keep the new netlist here temporarily:
 			netlist : pac_module_netlist.tree;
@@ -699,7 +727,17 @@ package body et_schematic_ops_netlists is
 				log_threshold	=> log_threshold + 2);
 
 			-- collect devices of the submodules
-			query_submodules;
+			query_submodules (
+				module_cursor	=> module_cursor,
+				variant_name	=> variant_name,
+				netlist_tree	=> netlist_tree,
+				netlist_cursor	=> netlist_cursor,
+				submod_tree		=> submod_tree,
+				tree_cursor		=> tree_cursor,
+				variant			=> variant,
+				log_threshold	=> log_threshold + 2);
+
+			
 			
 			-- Container netlist_tree is now ready for further processing.
 			-- It contains the modules and their nets ordered in a tree structure.
