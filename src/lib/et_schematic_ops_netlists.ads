@@ -38,11 +38,14 @@
 
 with et_module_names;					use et_module_names;
 with et_generic_modules;				use et_generic_modules;
+with et_device_name;					use et_device_name;
 with et_devices_electrical;				use et_devices_electrical;
 with et_netlists;						use et_netlists;
+with et_net_names;						use et_net_names;
 with et_net_ports;						use et_net_ports;
 with et_net_ports_devices;				use et_net_ports_devices;
 with et_net_ports_submodules;			use et_net_ports_submodules;
+with et_assembly_variant_name;			use et_assembly_variant_name;
 with et_logging;						use et_logging;
 
 
@@ -63,6 +66,22 @@ package et_schematic_ops_netlists is
 
 	
 
+	-- Collects net names of the given module and its variant
+	-- in container netlist_tree. The adressed netlist is
+	-- given by netlist_cursor.
+	-- Collects names and ports of devices, submodules,
+	-- and netchangers. Adds to the device index the given offset.
+	-- If offset is zero, we are dealing with the top module.
+	procedure collect_nets (
+		module_cursor	: in pac_generic_modules.cursor;
+		variant			: in pac_assembly_variant_name.bounded_string;
+		prefix			: in pac_net_name.bounded_string; -- DRV3/OSC1/
+		offset			: in type_name_index;
+		netlist_tree 	: in out pac_netlist_modules.tree;
+		netlist_cursor 	: in pac_netlist_modules.cursor;
+		log_threshold	: in type_log_level);
+
+	
 	
 	-- Generates the netlists of all assembly variants from the given top module.
 	-- If parameter "write_files" is true, then exports the netlists in files.

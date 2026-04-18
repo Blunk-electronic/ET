@@ -40,13 +40,11 @@ with ada.exceptions;					use ada.exceptions;
 
 with et_module;							use et_module;
 with et_module_instance;				use et_module_instance;
-with et_net_names;						use et_net_names;
 with et_nets;							use et_nets;
 
 with et_netlists_export;
 
 with et_device_library.units;			use et_device_library.units;
-with et_device_name;					use et_device_name;
 with et_device_renumbering;				use et_device_renumbering;
 with et_schematic_ops_submodules;
 with et_schematic_ops_units;
@@ -54,7 +52,6 @@ with et_schematic_ops_device;			use et_schematic_ops_device;
 with et_generic_stacks;
 
 with et_assembly_variants;				use et_assembly_variants;
-with et_assembly_variant_name;			use et_assembly_variant_name;
 with et_schematic_ops_assembly_variant;	use et_schematic_ops_assembly_variant;
 
 with et_submodules;
@@ -223,6 +220,164 @@ package body et_schematic_ops_netlists is
 
 
 	
+
+
+
+	procedure collect_nets (
+		module_cursor	: in pac_generic_modules.cursor;
+		variant			: in pac_assembly_variant_name.bounded_string;
+		prefix			: in pac_net_name.bounded_string; -- DRV3/OSC1/
+		offset			: in type_name_index;
+		netlist_tree 	: in out pac_netlist_modules.tree;
+		netlist_cursor 	: in pac_netlist_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+		-- CS: rework, simplify code
+		
+		use et_assembly_variants.pac_assembly_variants;
+		variant_cursor : et_assembly_variants.pac_assembly_variants.cursor;
+
+		
+		procedure query_nets (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use et_nets.pac_nets;
+			net_cursor_sch : et_nets.pac_nets.cursor := module.nets.first;
+
+			net_name : pac_net_name.bounded_string;
+			all_ports : type_net_ports;
+			device_ports_extended : pac_device_ports_extended.set;
+			submodule_ports_extended : pac_submodule_ports_extended.set;
+
+			
+			-- Applies the given offset to the devices
+			-- in device_ports_extended:
+			procedure apply_offsets is
+				use pac_device_ports_extended;
+				-- temporarily the ports will be stored here. Once all ports of
+				-- device_ports_extended have been offset, the list
+				-- ports_with_offset overwrites device_ports_extended:
+				ports_with_offset : pac_device_ports_extended.set;
+
+				
+				procedure query_ports (
+					cursor : in pac_device_ports_extended.cursor)
+				is 
+					-- take a copy of the port as it is:
+					port : type_device_port_extended := element (cursor);
+				begin
+					-- apply offset to device name of port
+					apply_offset (port.device, offset, log_threshold + 2);
+
+					-- insert the modified port in the container ports_with_offset
+					pac_device_ports_extended.insert (
+						container	=> ports_with_offset,
+						new_item	=> port);
+				end;
+
+				
+			begin
+				iterate (device_ports_extended, query_ports'access);
+
+				-- overwrite by ports_with_offset
+				device_ports_extended := ports_with_offset;
+			end apply_offsets;
+
+			
+			
+			procedure insert_net (
+				module : in out type_netlist_module)
+			is begin
+				-- Prepend the given net prefix to the net name.
+				-- Insert the net with its ports in the netlist of the submodule.
+				et_netlists.pac_netlist_nets.insert (
+					container	=> module.nets,
+					key			=> (prefix => prefix, base_name => net_name), -- CLK_GENERATOR/FLT1/ , clock_out
+					new_item	=> (
+							devices		=> device_ports_extended,
+							submodules	=> submodule_ports_extended,
+							netchangers	=> all_ports.netchangers,
+							scope		=> element (net_cursor_sch).scope)
+					--position	=> net_cursor_netlist,
+					--inserted	=> inserted
+					);
+					-- CS: constraint_error arises here if net already in list. should never happen.
+			end insert_net;
+
+			
+			
+		begin -- query_nets			
+			if is_default (variant) then
+				variant_cursor := et_assembly_variants.pac_assembly_variants.no_element;
+			else
+				variant_cursor := find (module.assembly_variants.variants, variant);
+				if variant_cursor = et_assembly_variants.pac_assembly_variants.no_element then
+					assembly_variant_not_found (variant);
+				end if;
+			end if;
+			-- Now variant_cursor points to the given assembly variant. If it points to
+			-- no element then it is about the default variant.
+			
+			-- loop in nets of given module
+			while has_element (net_cursor_sch) loop
+
+				net_name := et_nets.pac_nets.key (net_cursor_sch);
+				
+				log (text => "net " 
+						& pac_net_name.to_string (prefix) 
+						& pac_net_name.to_string (net_name),
+						level => log_threshold + 1);
+
+				log_indentation_up;
+				
+				-- Get all device, netchanger and submodule ports of this net
+				-- according to the given assembly variant:
+				all_ports := get_ports (net_cursor_sch, variant_cursor);
+			
+				-- extend the submodule ports by their directions (master/slave):
+				submodule_ports_extended := extend_ports (module_cursor, all_ports.submodules);
+				
+				-- extend the device ports by further properties (direction, terminal name, ...):
+				device_ports_extended := extend_ports (module_cursor, all_ports.devices);
+				
+				-- The portlist device_ports_extended now requires the device indexes 
+				-- to be changed according to the given offset:
+				apply_offsets;
+				
+				-- insert the net with its ports in the list of nets
+				pac_netlist_modules.update_element (
+					container	=> netlist_tree,
+					position	=> netlist_cursor,
+					process		=> insert_net'access);
+				
+				log_indentation_down;
+				
+				next (net_cursor_sch);
+			end loop;
+		end query_nets;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " collect nets", level => log_threshold);
+			
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_nets'access);
+
+		log_indentation_down;
+	end collect_nets;
+
+
+
+	
+
+
+	
+	
 	
 	procedure make_netlists (
 		module_cursor 	: in pac_generic_modules.cursor;
@@ -254,133 +409,6 @@ package body et_schematic_ops_netlists is
 				max 	=> et_submodules.nesting_depth_max);
 
 			
-			-- Collects net names of the given module and its variant in container netlist.
-			-- Adds to the device index the given offset.
-			-- If offset is zero, we are dealing with the top module.
-			procedure collect_nets (
-				module_cursor	: in pac_generic_modules.cursor;
-				variant			: in pac_assembly_variant_name.bounded_string;
-				prefix			: in pac_net_name.bounded_string; -- DRV3/OSC1/
-				offset			: in type_name_index) 
-			is
-				use et_assembly_variants.pac_assembly_variants;
-				variant_cursor : et_assembly_variants.pac_assembly_variants.cursor;
-
-				
-				procedure query_nets (
-					module_name	: in pac_module_name.bounded_string;
-					module		: in type_generic_module) 
-				is
-					use et_nets.pac_nets;
-					net_cursor_sch : et_nets.pac_nets.cursor := module.nets.first;
-
-					net_name : pac_net_name.bounded_string;
-					all_ports : type_net_ports;
-					device_ports_extended : pac_device_ports_extended.set;
-					submodule_ports_extended : pac_submodule_ports_extended.set;
-
-					
-					procedure apply_offsets is
-					-- Applies the given offset to the devices in device_ports_extended.
-						use pac_device_ports_extended;
-						-- temporarily the ports will be stored here. Once all ports of
-						-- device_ports_extended have been offset, the list
-						-- ports_with_offset overwrites device_ports_extended:
-						ports_with_offset : pac_device_ports_extended.set;
-						
-						procedure query_ports (cursor : in pac_device_ports_extended.cursor) is 
-							-- take a copy of the port as it is:
-							port : type_device_port_extended := element (cursor);
-						begin -- query_ports
-							-- apply offset to device name of port
-							apply_offset (port.device, offset, log_threshold + 2);
-
-							-- insert the modified port in the container ports_with_offset
-							pac_device_ports_extended.insert (
-								container	=> ports_with_offset,
-								new_item	=> port);
-						end; -- query_ports
-						
-					begin -- apply_offsets
-						iterate (device_ports_extended, query_ports'access);
-
-						-- overwrite by ports_with_offset
-						device_ports_extended := ports_with_offset;
-					end; -- apply_offsets
-
-					
-					procedure insert_net (module : in out type_netlist_module) is begin
-						-- Prepend the given net prefix to the net name.
-						-- Insert the net with its ports in the netlist of the submodule.
-						et_netlists.pac_netlist_nets.insert (
-							container	=> module.nets,
-							key			=> (prefix => prefix, base_name => net_name), -- CLK_GENERATOR/FLT1/ , clock_out
-							new_item	=> (
-									devices		=> device_ports_extended,
-									submodules	=> submodule_ports_extended,
-									netchangers	=> all_ports.netchangers,
-									scope		=> element (net_cursor_sch).scope)
-							--position	=> net_cursor_netlist,
-							--inserted	=> inserted
-							);
-							-- CS: constraint_error arises here if net already in list. should never happen.
-					end insert_net;
-
-					
-				begin -- query_nets
-					if is_default (variant) then
-						variant_cursor := et_assembly_variants.pac_assembly_variants.no_element;
-					else
-						variant_cursor := find (module.assembly_variants.variants, variant);
-						if variant_cursor = et_assembly_variants.pac_assembly_variants.no_element then
-							assembly_variant_not_found (variant);
-						end if;
-					end if;
-					-- Now variant_cursor points to the given assembly variant. If it points to
-					-- no element then it is about the default variant.
-					
-					-- loop in nets of given module
-					while net_cursor_sch /= et_nets.pac_nets.no_element loop
-
-						net_name := et_nets.pac_nets.key (net_cursor_sch);
-						
-						log (text => "net " 
-							 & pac_net_name.to_string (prefix) 
-							 & pac_net_name.to_string (net_name),
-							 level => log_threshold + 2);
-
-						-- Get all device, netchanger and submodule ports of this net
-						-- according to the given assembly variant:
-						all_ports := get_ports (net_cursor_sch, variant_cursor);
-					
-						-- extend the submodule ports by their directions (master/slave):
-						submodule_ports_extended := extend_ports (module_cursor, all_ports.submodules);
-						
-						-- extend the device ports by further properties (direction, terminal name, ...):
-						device_ports_extended := extend_ports (module_cursor, all_ports.devices);
-						
-						-- The portlist device_ports_extended now requires the device indexes 
-						-- to be changed according to the given offset:
-						apply_offsets;
-						
-						-- insert the net with its ports in the list of nets
-						pac_netlist_modules.update_element (
-							container	=> netlist_tree,
-							position	=> netlist_cursor,
-							process		=> insert_net'access);
-						
-						next (net_cursor_sch);
-					end loop;
-				end query_nets;
-
-				
-			begin -- collect_nets
-					
-				query_element (
-					position	=> module_cursor,
-					process		=> query_nets'access);
-
-			end collect_nets;
 
 			
 			submod_tree : pac_renumber_modules.tree := pac_renumber_modules.empty_tree;
@@ -465,7 +493,10 @@ package body et_schematic_ops_netlists is
 						module_cursor	=> locate_module (module_name),
 						variant			=> variant,
 						prefix			=> make_prefix,
-						offset			=> offset);
+						offset			=> offset,
+						netlist_tree	=> netlist_tree,
+						netlist_cursor	=> netlist_cursor,
+						log_threshold	=> log_threshold + 2);
 					
 					-- restore netlist_cursor
 					netlist_cursor := stack_netlist.pop;
@@ -656,7 +687,10 @@ package body et_schematic_ops_netlists is
 				module_cursor	=> module_cursor,
 				variant			=> variant_name,
 				prefix			=> to_net_name (""), -- no net prefix in top module
-				offset			=> 0); 
+				offset			=> 0,
+				netlist_tree	=> netlist_tree,
+				netlist_cursor	=> netlist_cursor,
+				log_threshold	=> log_threshold + 2);
 
 			-- collect devices of the submodules
 			query_submodules;
