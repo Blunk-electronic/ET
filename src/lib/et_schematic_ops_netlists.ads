@@ -100,8 +100,6 @@ package et_schematic_ops_netlists is
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- of top module
 		netlist_tree 	: in out pac_netlist_modules.tree;
 		netlist_cursor 	: in out pac_netlist_modules.cursor;
-		submod_tree		: in pac_renumber_modules.tree;
-		tree_cursor		: in out pac_renumber_modules.cursor;
 		variant			: in out pac_assembly_variant_name.bounded_string;
 		log_threshold	: in type_log_level);
 
