@@ -91,9 +91,12 @@ package et_device_renumbering is
 	
 	
 	type type_renumber_module is record
+	-- CS rename to type_submodule_instance ?
 		name				: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
 		instance			: pac_module_instance_name.bounded_string; -- AMP_2, DRV1
 		device_names_offset	: type_name_index := type_name_index'first;	-- R88 turns to R1088
+		-- CS rename to device_offset
+		-- CS netchanger_offset
 	end record;
 
 
@@ -101,8 +104,20 @@ package et_device_renumbering is
 	function "<" (left, right : in type_renumber_module) return boolean;
 
 
-	package pac_renumber_modules is new multiway_trees (type_renumber_module);
-
+	package pac_renumber_modules is new 
+		multiway_trees (type_renumber_module);
+		
+	use pac_renumber_modules;
+	
+	
+	
+	-- Returns the cursor to the first child of 
+	-- submodules in the given tree of submodules:
+	function get_first_child_submodule (
+		submodules	: in pac_renumber_modules.tree)
+		return pac_renumber_modules.cursor;
+		
+		
 	
 	-- Returns the total number of modules that
 	-- the given tree contains:

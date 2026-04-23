@@ -102,6 +102,22 @@ package body et_device_renumbering is
 
 
 
+	function get_first_child_submodule (
+		submodules	: in pac_renumber_modules.tree)
+		return pac_renumber_modules.cursor
+	is
+		result : pac_renumber_modules.cursor;
+	begin
+		-- Get to the root of the submodules tree:
+		result := submodules.root;
+
+		-- Get the first child submodule:
+		return first_child (result);
+	end;
+
+
+	
+
 	function get_module_count (
 		modules	: in pac_renumber_modules.tree)
 		return count_type

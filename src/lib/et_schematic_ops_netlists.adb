@@ -445,7 +445,7 @@ package body et_schematic_ops_netlists is
 	is 
 				
 		
-		-- This procedure queries the given top module
+		-- This procedure queries the given top-module
 		-- and iterates through its submodules:
 		procedure query_topmodule (
 			top_module_name	: in pac_module_name.bounded_string;

@@ -94,12 +94,26 @@ package et_schematic_ops_netlists is
 
 
 
-	
+	-- This procedure examines a given submodule "Sub-Parent"
+	-- for other submodules inside.	
+	-- The netlist_tree is the result of this procedure.
+	-- It is extended by each submodule "Sub-Child" that 
+	-- is inside "Sub-Parent".
+	-- Cursor netlist_cursor points to a the submodule candidate
+	-- "Sub-Parent" that is to be examined.
 	procedure query_submodules (
+		-- The cursor to the top-module of the whole design:
 		module_cursor	: in pac_generic_modules.cursor;
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- of top module
+		
+		-- This is the netlist_tree to be extended with
+		-- submodules "Sub-Childs" of the candidate submodule
+		-- "Sub-Parent":
 		netlist_tree 	: in out pac_netlist_modules.tree;
+		
+		-- This cursor points to the submodule to be examined:
 		netlist_cursor 	: in out pac_netlist_modules.cursor;
+		
 		variant			: in out pac_assembly_variant_name.bounded_string;
 		log_threshold	: in type_log_level);
 
