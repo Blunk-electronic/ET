@@ -43,11 +43,18 @@
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
+with et_generic_modules;		use et_generic_modules;
+with et_module_names;			use et_module_names;
+with et_assembly_variant_name;	use et_assembly_variant_name;
+
 with et_net_names;				use et_net_names;
 with et_net_ports_netchangers;	use et_net_ports_netchangers;
 
 with et_netlist_devices;		use et_netlist_devices;
 with et_netlist_submodules;		use et_netlist_submodules;
+
+with et_logging;				use et_logging;
+
 
 
 package et_netlist_cat_1 is
@@ -81,7 +88,21 @@ package et_netlist_cat_1 is
 		submodules	: in pac_submodule_ports_extended.set;
 		netchangers	: in pac_netchanger_ports.set);
 	
+
 	
+	comment_mark : constant string := "#";
+	
+	
+	
+	-- Exports the netlist into the export/CAM directory.
+	-- Overwrites an already existing netlist.
+	procedure write_netlist (
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		variant			: in pac_assembly_variant_name.bounded_string; -- low_cost
+		netlist			: in pac_netlist_cat_1.map;
+		log_threshold	: in type_log_level);
+		
+								
 end et_netlist_cat_1;
 
 

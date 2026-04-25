@@ -405,7 +405,7 @@ package body et_cp_schematic is
 					
 				when VERB_MAKE =>
 					case noun is
-						when NOUN_NETLISTS => 
+						when NOUN_NETLIST => 
 							export_netlist (module_cursor, cmd, log_threshold + 1);
 						-- CS should be verb_export instead
 							

@@ -289,7 +289,7 @@ package body et_schematic_ops_netlists_2 is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " assembly variant " & to_variant (variant)
-			& " generate netlist " & to_string (NETLIST_CAT_1),
+			& " generate " & to_string (NETLIST_CAT_1),
 			level => log_threshold);
 		
 		log_indentation_up;
@@ -298,6 +298,8 @@ package body et_schematic_ops_netlists_2 is
 			module_cursor, variant);
 				
 		query_element (module_cursor, query_module'access);
+		
+		write_netlist (module_cursor, variant, netlist, log_threshold + 1);
 		
 		log_indentation_down;
 	end make_netlist_cat_1;
