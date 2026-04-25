@@ -79,6 +79,18 @@ package body et_schematic_ops_assembly_variant is
 	
 
 
+
+	function get_assembly_variant (
+		module_cursor	: in pac_generic_modules.cursor;
+		variant_name	: in pac_assembly_variant_name.bounded_string)							  
+		return pac_assembly_variants.cursor
+	is
+		module : type_generic_module renames element (module_cursor);
+		use pac_assembly_variants;
+	begin
+		return find (module.assembly_variants.variants, variant_name);
+	end;
+	
 	
 
 	
