@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                              SYSTEM ET                                   --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                          ASSEMBLY VARIANT NAME                           --
+--                         NETLIST / SUBMODULES                             --
 --                                                                          --
---                               S p e c                                    --
+--                              S p e c                                     --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -35,46 +35,39 @@
 --
 --   history of changes:
 --
-
--- To Do:
--- - clean up
-
-with ada.strings.bounded;       	use ada.strings.bounded;
+--   ToDo: 
 
 
-package et_assembly_variant_name is
-	
-	-- The name of an assembly variant is a text like "low_cost" 
-	-- or "with temperature sensor" or just a number like V345:
-	variant_name_length_max : constant positive := 100;
+with ada.containers;            use ada.containers;
+with ada.containers.ordered_sets;
 
-	package pac_assembly_variant_name is new 
-		generic_bounded_length (variant_name_length_max);
-	
-	use pac_assembly_variant_name;
+with et_net_names;				use et_net_names;
+with et_module_instance;		use et_module_instance;
 
-	
-	default : constant pac_assembly_variant_name.bounded_string := 
-		pac_assembly_variant_name.to_bounded_string ("");
-	-- CS rename to default_assembly_variant
-	-- CS remove ?
 
-	default_name : constant string := "default";
-	
-	function is_default (variant : in pac_assembly_variant_name.bounded_string) return boolean;
-	-- Returns true if the given variant name is empty.
+package et_netlist_submodules is
+
+
+	-- In a netlist, a submodule that is connected with
+	-- a certain net is modelled by this type:
+	type type_submodule_port_extended is record
+		module		: pac_module_instance_name.bounded_string; -- MOT_DRV_3
+		port		: pac_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
+		-- CS ? direction	: type_netchanger_port_name; -- master/slave
+	end record;
 
 	
-	function to_variant (variant : in pac_assembly_variant_name.bounded_string) return string;
-	-- CS rename to to_string
+	function "<" (
+		left, right : in type_submodule_port_extended) 
+		return boolean;
 
 	
-	function to_variant (variant : in string) return pac_assembly_variant_name.bounded_string;
-
-
+	package pac_submodule_ports_extended is new ordered_sets (
+		element_type	=> type_submodule_port_extended);
 	
 	
-end et_assembly_variant_name;
+	
+end et_netlist_submodules;
 
 -- Soli Deo Gloria
 

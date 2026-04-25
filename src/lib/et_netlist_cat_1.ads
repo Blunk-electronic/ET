@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                              SYSTEM ET                                   --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                          ASSEMBLY VARIANT NAME                           --
+--                             NETLISTS                                     --
 --                                                                          --
---                               S p e c                                    --
+--                              S p e c                                     --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -35,46 +35,47 @@
 --
 --   history of changes:
 --
-
--- To Do:
--- - clean up
-
-with ada.strings.bounded;       	use ada.strings.bounded;
+--   To Do: 
+--
+--
 
 
-package et_assembly_variant_name is
-	
-	-- The name of an assembly variant is a text like "low_cost" 
-	-- or "with temperature sensor" or just a number like V345:
-	variant_name_length_max : constant positive := 100;
+with ada.containers;            use ada.containers;
+with ada.containers.ordered_maps;
 
-	package pac_assembly_variant_name is new 
-		generic_bounded_length (variant_name_length_max);
-	
-	use pac_assembly_variant_name;
+with et_net_names;				use et_net_names;
+with et_net_ports_netchangers;	use et_net_ports_netchangers;
 
-	
-	default : constant pac_assembly_variant_name.bounded_string := 
-		pac_assembly_variant_name.to_bounded_string ("");
-	-- CS rename to default_assembly_variant
-	-- CS remove ?
+with et_netlist_devices;		use et_netlist_devices;
+with et_netlist_submodules;		use et_netlist_submodules;
 
-	default_name : constant string := "default";
-	
-	function is_default (variant : in pac_assembly_variant_name.bounded_string) return boolean;
-	-- Returns true if the given variant name is empty.
 
-	
-	function to_variant (variant : in pac_assembly_variant_name.bounded_string) return string;
-	-- CS rename to to_string
-
-	
-	function to_variant (variant : in string) return pac_assembly_variant_name.bounded_string;
+package et_netlist_cat_1 is
 
 
 	
+	type type_net_ports_cat_1 is record
+		devices		: pac_device_ports_extended.set;
+		submodules	: pac_submodule_ports_extended.set;
+		netchangers	: pac_netchanger_ports.set;
+		-- CS ? scope		: type_net_scope;
+	end record;
+
 	
-end et_assembly_variant_name;
+
+	use pac_net_name;
+	
+	package pac_netlist_cat_1 is new ordered_maps (
+		key_type		=> pac_net_name.bounded_string, 
+		element_type	=> type_net_ports_cat_1);
+
+
+	-- use pac_netlist_cat_1;
+
+
+	
+end et_netlist_cat_1;
+
 
 -- Soli Deo Gloria
 

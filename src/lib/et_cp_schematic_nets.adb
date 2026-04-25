@@ -62,12 +62,12 @@ with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 with et_net_class_name;					use et_net_class_name;
 with et_net_connectors;					use et_net_connectors;
 with et_net_scope;						use et_net_scope;
-with et_schematic_ops_netlists;
+with et_schematic_ops_netlists_2;
 with et_net_names;						use et_net_names;
 with et_schematic_ops_nets;				use et_schematic_ops_nets;
 -- with et_schematic_ops.submodules;		use et_schematic_ops.submodules;
 
--- with et_assembly_variant_name;			use et_assembly_variant_name;
+with et_assembly_variant_name;
 -- with et_assembly_variants;				use et_assembly_variants;
 with et_canvas_schematic;
 -- with et_module_instance;				use et_module_instance;
@@ -88,22 +88,26 @@ package body et_cp_schematic_nets is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
-		use et_schematic_ops_netlists;
+		use et_schematic_ops_netlists_2;
+		use et_assembly_variant_name;
 		
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 	begin
 		-- CS log message
 
+		-- CS test whether given variant exists
 
 		case cmd_field_count is
-			when 4 =>
-				make_netlists (
+			when 6 =>
+				-- schematic demo make netlist low_cost 1
+				make_netlist (
 					module_cursor 	=> module,
-					write_files		=> true,
+					variant			=> to_variant (get_field (cmd, 5)),
+					category		=> to_netlist_category (get_field (cmd, 6)),
 					log_threshold	=> log_threshold + 1);
 
-			when 5 .. type_field_count'last =>
+			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
 				
 			when others => command_incomplete (cmd);

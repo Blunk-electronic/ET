@@ -759,13 +759,23 @@ Netlists
 
 #. Export netlists
 
-	For a module assembly variants may exist.
-	So for each variant a netlist is to be exported
-	via this command:
+	This example command exports a category 1 netlist
+	of the module in the default assembly variant:
+
 
 	.. code-block::
 
-		make netlists
+		make netlist default 1
+
+
+
+	This example command exports a category 1 netlist
+	of the module in the given assembly variant "low_cost":
+
+
+	.. code-block::
+
+		make netlist low_cost 1
 
 
 

@@ -2,9 +2,9 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                          ASSEMBLY VARIANT NAME                           --
+--                          NETLIST / DEVICES                               --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -35,46 +35,46 @@
 --
 --   history of changes:
 --
-
--- To Do:
--- - clean up
-
-with ada.strings.bounded;       	use ada.strings.bounded;
-
-
-package et_assembly_variant_name is
-	
-	-- The name of an assembly variant is a text like "low_cost" 
-	-- or "with temperature sensor" or just a number like V345:
-	variant_name_length_max : constant positive := 100;
-
-	package pac_assembly_variant_name is new 
-		generic_bounded_length (variant_name_length_max);
-	
-	use pac_assembly_variant_name;
-
-	
-	default : constant pac_assembly_variant_name.bounded_string := 
-		pac_assembly_variant_name.to_bounded_string ("");
-	-- CS rename to default_assembly_variant
-	-- CS remove ?
-
-	default_name : constant string := "default";
-	
-	function is_default (variant : in pac_assembly_variant_name.bounded_string) return boolean;
-	-- Returns true if the given variant name is empty.
-
-	
-	function to_variant (variant : in pac_assembly_variant_name.bounded_string) return string;
-	-- CS rename to to_string
-
-	
-	function to_variant (variant : in string) return pac_assembly_variant_name.bounded_string;
+-- To Do: 
+--
+--
+--
 
 
+with ada.text_io;				use ada.text_io;
+with ada.exceptions;
+
+
+
+package body et_netlist_devices is
 	
 	
-end et_assembly_variant_name;
+
+	function "<" (left, right : in type_device_port_extended) return boolean is
+		use pac_port_name;
+		result : boolean := false;
+	begin
+		if left.device < right.device then
+			result := true;
+			
+		elsif left.device = right.device then
+
+			if left.port < right.port then
+				result := true;
+			else
+				result := false;
+			end if;
+			
+		else
+			result := false;
+		end if;
+		
+		return result;
+	end;
+
+
+	
+end et_netlist_devices;
 
 -- Soli Deo Gloria
 

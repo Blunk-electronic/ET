@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                              SYSTEM ET                                   --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                          ASSEMBLY VARIANT NAME                           --
+--                          NETLIST / DEVICES                               --
 --                                                                          --
---                               S p e c                                    --
+--                              S p e c                                     --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -35,46 +35,49 @@
 --
 --   history of changes:
 --
-
--- To Do:
--- - clean up
-
-with ada.strings.bounded;       	use ada.strings.bounded;
+--   ToDo: 
 
 
-package et_assembly_variant_name is
-	
-	-- The name of an assembly variant is a text like "low_cost" 
-	-- or "with temperature sensor" or just a number like V345:
-	variant_name_length_max : constant positive := 100;
+with ada.containers;            use ada.containers;
+with ada.containers.indefinite_ordered_sets;
 
-	package pac_assembly_variant_name is new 
-		generic_bounded_length (variant_name_length_max);
-	
-	use pac_assembly_variant_name;
+with et_symbol_model;			use et_symbol_model;
+with et_port_direction;			use et_port_direction;
+with et_port_names;				use et_port_names;
+with et_symbol_ports;			use et_symbol_ports;
+with et_terminal_name;			use et_terminal_name;
+with et_device_name;			use et_device_name;
 
-	
-	default : constant pac_assembly_variant_name.bounded_string := 
-		pac_assembly_variant_name.to_bounded_string ("");
-	-- CS rename to default_assembly_variant
-	-- CS remove ?
+package et_netlist_devices is
 
-	default_name : constant string := "default";
-	
-	function is_default (variant : in pac_assembly_variant_name.bounded_string) return boolean;
-	-- Returns true if the given variant name is empty.
+
+	-- In a netlist, a device that is connected with
+	-- a certain net is modelled by this type:
+	type type_device_port_extended (
+		direction : type_port_direction) 
+	is record
+		device			: type_device_name; -- IC4		
+		port			: pac_port_name.bounded_string; -- CLOCK, CE, VDD, GND
+		characteristics	: type_symbol_port (direction); -- direction, sensitivity, ...
+		terminal		: pac_terminal_name.bounded_string; -- H4, 1, 16
+	end record;
 
 	
-	function to_variant (variant : in pac_assembly_variant_name.bounded_string) return string;
-	-- CS rename to to_string
-
-	
-	function to_variant (variant : in string) return pac_assembly_variant_name.bounded_string;
-
-
+	function "<" (
+		left, right : in type_device_port_extended)
+		return boolean;
 	
 	
-end et_assembly_variant_name;
+	
+	package pac_device_ports_extended is new indefinite_ordered_sets (
+		element_type	=> type_device_port_extended);
+
+		
+	use pac_device_ports_extended;
+
+
+	
+end et_netlist_devices;
 
 -- Soli Deo Gloria
 

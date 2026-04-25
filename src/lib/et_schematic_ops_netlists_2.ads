@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                              SYSTEM ET                                   --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                          ASSEMBLY VARIANT NAME                           --
+--                   SCHEMATIC OPERATIONS / NETLISTS                        --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your editor to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -36,47 +36,58 @@
 --   history of changes:
 --
 
--- To Do:
--- - clean up
+-- with et_module_names;					use et_module_names;
+with et_generic_modules;				use et_generic_modules;
+-- with et_device_name;					use et_device_name;
+-- with et_device_renumbering;				use et_device_renumbering;
+-- with et_devices_electrical;				use et_devices_electrical;
+-- with et_netlists;						use et_netlists;
+with et_net_names;						use et_net_names;
+-- with et_net_ports;						use et_net_ports;
+-- with et_net_ports_devices;				use et_net_ports_devices;
+-- with et_net_ports_submodules;			use et_net_ports_submodules;
+with et_assembly_variant_name;			use et_assembly_variant_name;
+with et_netlist_cat_1;
+with et_logging;						use et_logging;
 
-with ada.strings.bounded;       	use ada.strings.bounded;
 
 
-package et_assembly_variant_name is
+package et_schematic_ops_netlists_2 is
+
+	use pac_generic_modules;
+
+	type type_netlist_category is (
+		NETLIST_CAT_1,
+		NETLIST_CAT_2);
+		-- CS: others ?
+		
+		
+	function to_string (
+		category	: in type_netlist_category)
+		return string;
+		
+		
+	-- Converts from a string like 1, 2, 3, to 
+	-- a type_netlist_category:
+	function to_netlist_category (
+		category	: in string)
+		return type_netlist_category;
+		
+		
+	-- Generates for the given assembly variant of a
+	-- generic module a netlist of category 1:
+	procedure make_netlist (
+		module_cursor 	: in pac_generic_modules.cursor;
+		variant			: in pac_assembly_variant_name.bounded_string;
+		category		: in type_netlist_category;
+		log_threshold	: in type_log_level);
+
+
 	
-	-- The name of an assembly variant is a text like "low_cost" 
-	-- or "with temperature sensor" or just a number like V345:
-	variant_name_length_max : constant positive := 100;
-
-	package pac_assembly_variant_name is new 
-		generic_bounded_length (variant_name_length_max);
+end et_schematic_ops_netlists_2;
 	
-	use pac_assembly_variant_name;
-
-	
-	default : constant pac_assembly_variant_name.bounded_string := 
-		pac_assembly_variant_name.to_bounded_string ("");
-	-- CS rename to default_assembly_variant
-	-- CS remove ?
-
-	default_name : constant string := "default";
-	
-	function is_default (variant : in pac_assembly_variant_name.bounded_string) return boolean;
-	-- Returns true if the given variant name is empty.
-
-	
-	function to_variant (variant : in pac_assembly_variant_name.bounded_string) return string;
-	-- CS rename to to_string
-
-	
-	function to_variant (variant : in string) return pac_assembly_variant_name.bounded_string;
-
-
-	
-	
-end et_assembly_variant_name;
-
 -- Soli Deo Gloria
+
 
 -- For God so loved the world that he gave 
 -- his one and only Son, that whoever believes in him 

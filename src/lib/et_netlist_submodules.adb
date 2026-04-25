@@ -2,9 +2,9 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                          ASSEMBLY VARIANT NAME                           --
+--                         NETLIST / SUBMODULES                             --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -35,46 +35,55 @@
 --
 --   history of changes:
 --
+-- To Do: 
+--
+--
+--
 
--- To Do:
--- - clean up
 
-with ada.strings.bounded;       	use ada.strings.bounded;
+with ada.text_io;				use ada.text_io;
+with ada.exceptions;
 
 
-package et_assembly_variant_name is
+
+
+package body et_netlist_submodules is
 	
-	-- The name of an assembly variant is a text like "low_cost" 
-	-- or "with temperature sensor" or just a number like V345:
-	variant_name_length_max : constant positive := 100;
-
-	package pac_assembly_variant_name is new 
-		generic_bounded_length (variant_name_length_max);
-	
-	use pac_assembly_variant_name;
-
-	
-	default : constant pac_assembly_variant_name.bounded_string := 
-		pac_assembly_variant_name.to_bounded_string ("");
-	-- CS rename to default_assembly_variant
-	-- CS remove ?
-
-	default_name : constant string := "default";
-	
-	function is_default (variant : in pac_assembly_variant_name.bounded_string) return boolean;
-	-- Returns true if the given variant name is empty.
-
-	
-	function to_variant (variant : in pac_assembly_variant_name.bounded_string) return string;
-	-- CS rename to to_string
-
-	
-	function to_variant (variant : in string) return pac_assembly_variant_name.bounded_string;
-
 
 	
 	
-end et_assembly_variant_name;
+	function "<" (
+		left, right : in type_submodule_port_extended) 
+		return boolean
+	is
+		use pac_module_instance_name;
+		use pac_net_name;
+		
+		result : boolean := false;
+	begin
+		if left.module < right.module then
+			result := true;
+			
+		elsif left.module = right.module then
+
+			if left.port < right.port then
+				result := true;
+			else
+				result := false;
+			end if;
+			
+		else
+			result := false;
+		end if;
+		
+		return result;
+	end;
+
+
+
+
+	
+end et_netlist_submodules;
 
 -- Soli Deo Gloria
 
