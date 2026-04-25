@@ -36,18 +36,13 @@
 --   history of changes:
 --
 
--- with et_module_names;					use et_module_names;
+
 with et_generic_modules;				use et_generic_modules;
--- with et_device_name;					use et_device_name;
--- with et_device_renumbering;				use et_device_renumbering;
--- with et_devices_electrical;				use et_devices_electrical;
--- with et_netlists;						use et_netlists;
-with et_net_names;						use et_net_names;
--- with et_net_ports;						use et_net_ports;
--- with et_net_ports_devices;				use et_net_ports_devices;
--- with et_net_ports_submodules;			use et_net_ports_submodules;
+with et_net_ports_devices;				use et_net_ports_devices;
+with et_net_ports_submodules;			use et_net_ports_submodules;
+with et_netlist_devices;				use et_netlist_devices;
+with et_netlist_submodules;				use et_netlist_submodules;
 with et_assembly_variant_name;			use et_assembly_variant_name;
-with et_netlist_cat_1;
 with et_logging;						use et_logging;
 
 
@@ -74,12 +69,31 @@ package et_schematic_ops_netlists_2 is
 		return type_netlist_category;
 		
 		
+		
+	-- Adds further properties to the given device ports.
+	-- Ignores ports of virtual devices (like GND symbols).
+	-- Additional properties are electrical characteristics
+	-- and the terminal name.
+	function extend_ports (
+		module_cursor	: in pac_generic_modules.cursor;
+		ports 			: in pac_device_ports.set)
+		return pac_device_ports_extended.set;
+
+		
+	-- Adds further properties to the given submodule ports:
+	function extend_ports (
+		module_cursor	: in pac_generic_modules.cursor;
+		ports 			: in pac_net_submodule_ports.set)
+		return pac_submodule_ports_extended.set;
+		
+		
+		
+		
 	-- Generates for the given assembly variant of a
 	-- generic module a netlist of category 1:
-	procedure make_netlist (
+	procedure make_netlist_cat_1 (
 		module_cursor 	: in pac_generic_modules.cursor;
 		variant			: in pac_assembly_variant_name.bounded_string;
-		category		: in type_netlist_category;
 		log_threshold	: in type_log_level);
 
 

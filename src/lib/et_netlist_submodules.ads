@@ -35,7 +35,10 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--
+--
+-- To Do: 
+-- - implement characteristics of submodule port
 
 
 with ada.containers;            use ada.containers;
@@ -51,9 +54,16 @@ package et_netlist_submodules is
 	-- In a netlist, a submodule that is connected with
 	-- a certain net is modelled by this type:
 	type type_submodule_port_extended is record
-		module		: pac_module_instance_name.bounded_string; -- MOT_DRV_3
+		-- The name of the submodule instance:
+		submodule	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
+		
+		-- The port of the submodule instance 
+		-- is named after a net that is exported by
+		-- the submodule:
 		port		: pac_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
+		
 		-- CS ? direction	: type_netchanger_port_name; -- master/slave
+		-- CS ? characteristics. See et_netlist_devices.type_device_port_extended
 	end record;
 
 	

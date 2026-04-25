@@ -52,25 +52,15 @@ with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
--- with et_device_name;					use et_device_name;
-
--- with et_package_variant;				use et_package_variant;
--- with et_device_value;					use et_device_value;
--- with et_device_purpose;					use et_device_purpose;
--- with et_device_partcode;				use et_device_partcode;
-
 with et_net_class_name;					use et_net_class_name;
 with et_net_connectors;					use et_net_connectors;
 with et_net_scope;						use et_net_scope;
 with et_schematic_ops_netlists_2;
 with et_net_names;						use et_net_names;
 with et_schematic_ops_nets;				use et_schematic_ops_nets;
--- with et_schematic_ops.submodules;		use et_schematic_ops.submodules;
 
 with et_assembly_variant_name;
--- with et_assembly_variants;				use et_assembly_variants;
 with et_canvas_schematic;
--- with et_module_instance;				use et_module_instance;
 with et_board_ops_net_class;
 with et_canvas_schematic_nets;
 with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
@@ -93,6 +83,9 @@ package body et_cp_schematic_nets is
 		
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
+		
+		category : type_netlist_category := type_netlist_category'first;
+		
 	begin
 		-- CS log message
 
@@ -101,12 +94,25 @@ package body et_cp_schematic_nets is
 		case cmd_field_count is
 			when 6 =>
 				-- schematic demo make netlist low_cost 1
-				make_netlist (
-					module_cursor 	=> module,
-					variant			=> to_variant (get_field (cmd, 5)),
-					category		=> to_netlist_category (get_field (cmd, 6)),
-					log_threshold	=> log_threshold + 1);
+				
+				category := to_netlist_category (get_field (cmd, 6));
+				
+				case category is
+					when NETLIST_CAT_1 =>
+					
+						make_netlist_cat_1 (
+							module_cursor 	=> module,
+							variant			=> to_variant (get_field (cmd, 5)),
+							log_threshold	=> log_threshold + 1);
 
+					when NETLIST_CAT_2 =>
+						null;
+						-- CS
+				end case;
+				
+				
+				
+							
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
 				

@@ -73,6 +73,14 @@ package et_netlist_cat_1 is
 	-- use pac_netlist_cat_1;
 
 
+	-- Adds a net to the given netlist:
+	procedure add_net_to_netlist (
+		netlist		: in out pac_netlist_cat_1.map;
+		name		: in pac_net_name.bounded_string;
+		devices		: in pac_device_ports_extended.set;
+		submodules	: in pac_submodule_ports_extended.set;
+		netchangers	: in pac_netchanger_ports.set);
+	
 	
 end et_netlist_cat_1;
 

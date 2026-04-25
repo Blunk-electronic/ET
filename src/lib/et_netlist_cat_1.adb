@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                              SYSTEM ET                                   --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                         NETLIST / SUBMODULES                             --
+--                             NETLISTS                                     --
 --                                                                          --
---                               B o d y                                    --
+--                              B o d y                                     --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -35,55 +35,34 @@
 --
 --   history of changes:
 --
--- To Do: 
+--   To Do: 
 --
 --
---
 
 
-with ada.text_io;				use ada.text_io;
-with ada.exceptions;
+with ada.text_io;						use ada.text_io;
+
+
+package body et_netlist_cat_1 is
 
 
 
+	procedure add_net_to_netlist (
+		netlist		: in out pac_netlist_cat_1.map;
+		name		: in pac_net_name.bounded_string;
+		devices		: in pac_device_ports_extended.set;
+		submodules	: in pac_submodule_ports_extended.set;
+		netchangers	: in pac_netchanger_ports.set)
+	is begin
+		netlist.insert (
+			key		=> name,
+			new_item	=> (devices, submodules, netchangers));
 
-package body et_netlist_submodules is
-	
-
-	
-	
-	function "<" (
-		left, right : in type_submodule_port_extended) 
-		return boolean
-	is
-		use pac_module_instance_name;
-		use pac_net_name;
-		
-		result : boolean := false;
-	begin
-		if left.submodule < right.submodule then
-			result := true;
-			
-		elsif left.submodule = right.submodule then
-
-			if left.port < right.port then
-				result := true;
-			else
-				result := false;
-			end if;
-			
-		else
-			result := false;
-		end if;
-		
-		return result;
 	end;
-
-
-
-
 	
-end et_netlist_submodules;
+	
+end et_netlist_cat_1;
+
 
 -- Soli Deo Gloria
 

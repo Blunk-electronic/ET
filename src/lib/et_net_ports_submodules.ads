@@ -61,9 +61,11 @@ package et_net_ports_submodules is
 	type type_net_submodule_port is record
 		-- The instance of a certain submodule:
 		module_name	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
+		-- CS rename to submodule ?
 
 		-- The net of the submodule is here the port name:
 		port_name	: pac_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
+		-- CS rename to port ?
 	end record;
 
 	
