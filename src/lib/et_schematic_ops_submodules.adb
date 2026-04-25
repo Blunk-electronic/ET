@@ -4041,7 +4041,7 @@ package body et_schematic_ops_submodules is
 						if alt_submod = et_assembly_variants.pac_submodule_variants.no_element then
 						-- no variant specified for this submodule -> collect devices of default variant
 
-							variant := default;
+							variant := default_assembly_variant;
 						else
 						-- alternative variant specified for this submodule
 							variant := element (alt_submod).variant;
@@ -4154,7 +4154,7 @@ package body et_schematic_ops_submodules is
 			log_threshold	=> log_threshold + 1);
 
 		-- make netlist of default variant
-		make_for_variant (default);
+		make_for_variant (default_assembly_variant);
 
 		-- make netlists of other variants
 		et_assembly_variants.pac_assembly_variants.iterate (

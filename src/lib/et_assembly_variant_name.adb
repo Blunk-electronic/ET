@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -43,8 +43,11 @@ with ada.text_io;				use ada.text_io;
 package body et_assembly_variant_name is
 	
 
-	function is_default (variant : in pac_assembly_variant_name.bounded_string) return boolean is begin
-		if pac_assembly_variant_name.length (variant) = 0 then -- CS better compare with constant "default"
+	function is_default (
+		variant : in pac_assembly_variant_name.bounded_string)
+		return boolean 
+	is begin
+		if variant = default_assembly_variant then
 			return true;
 		else
 			return false;
@@ -53,13 +56,19 @@ package body et_assembly_variant_name is
 
 
 	
-	function to_variant (variant : in pac_assembly_variant_name.bounded_string) return string is begin
+	function to_variant (
+		variant : in pac_assembly_variant_name.bounded_string) 
+		return string 
+	is begin
 		return pac_assembly_variant_name.to_string (variant);
 	end;
 
 
 	
-	function to_variant (variant : in string) return pac_assembly_variant_name.bounded_string is begin
+	function to_variant (
+		variant : in string) 
+		return pac_assembly_variant_name.bounded_string 
+	is begin
 		-- CS lenght and character check
 		return pac_assembly_variant_name.to_bounded_string (variant);
 	end;

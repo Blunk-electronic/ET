@@ -48,28 +48,39 @@ package et_assembly_variant_name is
 	-- or "with temperature sensor" or just a number like V345:
 	variant_name_length_max : constant positive := 100;
 
+	
 	package pac_assembly_variant_name is new 
 		generic_bounded_length (variant_name_length_max);
 	
 	use pac_assembly_variant_name;
 
 	
-	default : constant pac_assembly_variant_name.bounded_string := 
-		pac_assembly_variant_name.to_bounded_string ("");
+	-- default : constant pac_assembly_variant_name.bounded_string := 
+		-- pac_assembly_variant_name.to_bounded_string ("");
 	-- CS rename to default_assembly_variant
 	-- CS remove ?
 
-	default_name : constant string := "default";
-	
-	function is_default (variant : in pac_assembly_variant_name.bounded_string) return boolean;
-	-- Returns true if the given variant name is empty.
+	default_assembly_variant : constant pac_assembly_variant_name.bounded_string :=
+		to_bounded_string ("default");
 
 	
-	function to_variant (variant : in pac_assembly_variant_name.bounded_string) return string;
+	
+	-- Returns true if the given variant name is 
+	-- the default variant:
+	function is_default (
+		variant : in pac_assembly_variant_name.bounded_string) 
+		return boolean;
+
+	
+	function to_variant (
+		variant : in pac_assembly_variant_name.bounded_string) 
+		return string;
 	-- CS rename to to_string
 
 	
-	function to_variant (variant : in string) return pac_assembly_variant_name.bounded_string;
+	function to_variant (
+		variant : in string) 
+		return pac_assembly_variant_name.bounded_string;
 
 
 	

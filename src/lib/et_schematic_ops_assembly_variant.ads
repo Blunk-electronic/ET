@@ -74,7 +74,8 @@ package et_schematic_ops_assembly_variant is
 	procedure assembly_variant_not_found (variant : in pac_assembly_variant_name.bounded_string);
 
 
-	-- Returns the cursor to the given assembly variant:
+	-- Returns the cursor to the given assembly variant.
+	-- If the variant does not exist, then the return is no_element:
 	function get_assembly_variant (
 		module_cursor	: in pac_generic_modules.cursor;
 		variant_name	: in pac_assembly_variant_name.bounded_string)

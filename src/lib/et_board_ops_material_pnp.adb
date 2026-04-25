@@ -391,7 +391,7 @@ package body et_board_ops_material_pnp is
 						if alt_submod = et_assembly_variants.pac_submodule_variants.no_element then
 						-- no variant specified for this submodule -> collect devices of default variant
 
-							variant := default;
+							variant := default_assembly_variant;
 						else
 						-- alternative variant specified for this submodule
 							variant := element (alt_submod).variant;
@@ -527,7 +527,7 @@ package body et_board_ops_material_pnp is
 			log_threshold	=> log_threshold + 1);
 
 		-- make p&p of default variant
-		make_for_variant (default);
+		make_for_variant (default_assembly_variant);
 
 		-- make p&p of other variants
 		iterate (element (module_cursor).assembly_variants.variants, query_variant'access);
