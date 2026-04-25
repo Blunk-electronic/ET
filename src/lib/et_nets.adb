@@ -666,7 +666,7 @@ package body et_nets is
 
 	
 
-	function get_ports (
+	function get_net_ports (
 		net		: in pac_nets.cursor;
 		variant	: in pac_assembly_variants.cursor := pac_assembly_variants.no_element)
 		return type_net_ports 
@@ -730,7 +730,7 @@ package body et_nets is
 		--put_line ("net " & to_string (key (net)));		
 		iterate (element (net).strands, query_strands'access);
 		return result;
-	end get_ports;
+	end get_net_ports;
 
 
 	
@@ -836,7 +836,7 @@ package body et_nets is
 		net_cursor	: in pac_nets.cursor)
 		return pac_netchanger_ports.set
 	is begin
-		return get_ports (net_cursor).netchangers;
+		return get_net_ports (net_cursor).netchangers;
 	end;
 
 

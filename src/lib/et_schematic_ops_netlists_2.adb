@@ -43,6 +43,9 @@ with et_module;							use et_module;
 -- with et_module_instance;				use et_module_instance;
 with et_nets;							use et_nets;
 with et_net_ports;						use et_net_ports;
+with et_netlist_submodules;
+with et_netlist_devices;
+
 -- with et_netlists_export;
 -- 
 -- with et_device_library.units;			use et_device_library.units;
@@ -132,7 +135,7 @@ package body et_schematic_ops_netlists_2 is
 
 				-- Get all device, netchanger and submodule ports of this net
 				-- according to the given assembly variant:
-				all_ports := get_ports (net_cursor, variant_cursor);
+				all_ports := get_net_ports (net_cursor, variant_cursor);
 
 				
 				log_indentation_down;

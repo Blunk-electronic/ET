@@ -3434,7 +3434,7 @@ package body et_board_ops_devices is
 
 		-- Get the ports of devices, netchangers and submodules that are connected
 		-- with the given net. Assume default assembly variant:
-		ports := get_ports (
+		ports := get_net_ports (
 				net		=> net_cursor,
 				variant	=> et_assembly_variants.pac_assembly_variants.no_element);
 
@@ -3639,7 +3639,7 @@ package body et_board_ops_devices is
 				-- we do not pass a specific assembly variant here.
 				use et_net_ports;
 				use et_net_ports_devices;
-				ports : constant type_net_ports := get_ports (net_cursor);
+				ports : constant type_net_ports := get_net_ports (net_cursor);
 
 				use pac_device_ports;
 

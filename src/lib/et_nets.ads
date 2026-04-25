@@ -343,7 +343,7 @@ package et_nets is
 	-- assembly variant).
 	-- NOTE: If no variant is given, then the default variant is assumend
 	-- and ALL devices are returned.
-	function get_ports (
+	function get_net_ports (
 		net		: in pac_nets.cursor;
 		variant	: in pac_assembly_variants.cursor := pac_assembly_variants.no_element)
 		return type_net_ports;

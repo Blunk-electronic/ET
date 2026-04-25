@@ -375,7 +375,7 @@ package body et_board_ops_fill_zones is
 
 		-- Get the ports of ALL devices connected with the given net.
 		-- Therefore we do not pass a specific assembly variant here.
-		ports := get_ports (net_cursor); 
+		ports := get_net_ports (net_cursor); 
 
 		-- In variable "ports" we are interested in selector "devices" exclusively.
 		-- Submodule ports and netchangers are just virtual devices
