@@ -92,7 +92,7 @@ package body et_cp_schematic_nets is
 		use et_assembly_variant_name;
 		
 		-- Contains the number of fields given by the caller of this procedure:
-		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		cmd_field_count : constant type_field_count := get_field_count (cmd);
 	begin
 		-- CS log message
 

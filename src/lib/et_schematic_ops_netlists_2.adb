@@ -51,8 +51,8 @@ with et_net_ports;						use et_net_ports;
 -- with et_schematic_ops_device;			use et_schematic_ops_device;
 -- with et_generic_stacks;
 
--- with et_assembly_variants;				use et_assembly_variants;
--- with et_schematic_ops_assembly_variant;	use et_schematic_ops_assembly_variant;
+with et_assembly_variants;				use et_assembly_variants;
+with et_schematic_ops_assembly_variant;	use et_schematic_ops_assembly_variant;
 
 -- with et_submodules;
 -- with et_netchangers.schematic;			use et_netchangers.schematic;
@@ -103,6 +103,9 @@ package body et_schematic_ops_netlists_2 is
 	is
 		use et_netlist_cat_1;
 		
+		variant_cursor : pac_assembly_variants.cursor;
+		
+		
 		-- CS netlist : et_netlist_cat_1.pac_netlist_cat_1.map;
 		
 		procedure query_module (
@@ -118,7 +121,7 @@ package body et_schematic_ops_netlists_2 is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
 			is
-				-- all_ports : type_net_ports;
+				all_ports : type_net_ports;
 				-- device_ports_extended : pac_device_ports_extended.set;
 				-- submodule_ports_extended : pac_submodule_ports_extended.set;
 			begin
@@ -129,7 +132,7 @@ package body et_schematic_ops_netlists_2 is
 
 				-- Get all device, netchanger and submodule ports of this net
 				-- according to the given assembly variant:
-				-- all_ports := get_ports (net_cursor, variant_cursor);
+				all_ports := get_ports (net_cursor, variant_cursor);
 
 				
 				log_indentation_down;
@@ -153,6 +156,8 @@ package body et_schematic_ops_netlists_2 is
 		
 		log_indentation_up;
 
+		variant_cursor := get_assembly_variant (module_cursor, variant);
+				
 		query_element (module_cursor, query_module'access);
 		
 		log_indentation_down;
