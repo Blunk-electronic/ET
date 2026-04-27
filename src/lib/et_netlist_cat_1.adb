@@ -41,6 +41,8 @@
 
 
 with ada.text_io;						use ada.text_io;
+with ada.strings;
+
 with ada.directories;
 with gnat.directory_operations;
 
@@ -49,7 +51,14 @@ with et_system_info;
 with et_time;
 with et_netlist_name;
 with et_string_processing;
+with et_device_name;
+with et_port_direction;			
+with et_port_names;
+with et_terminal_name;
+with et_module_instance;
 
+-- with et_netchangers;
+with et_netchangers.schematic;
 
 
 package body et_netlist_cat_1 is
@@ -159,25 +168,137 @@ package body et_netlist_cat_1 is
 		-- and submodules in the netlist file:
 		procedure write_nets is
 
-			procedure query_net (c : in pac_netlist_cat_1.cursor) is
-				use pac_netlist_cat_1;
-				net : type_net_ports_cat_1 renames element (c);
-				net_name : pac_net_name.bounded_string := key (c);
+			use pac_netlist_cat_1;
+			net_cursor : pac_netlist_cat_1.cursor := netlist.first;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net_ports_cat_1)
+			is			
+				use ada.strings;
+				separator : constant character := space;
+
+			
+				-- This procedure writes the ports of
+				-- the devices which are connected with the
+				-- candidate net:
+				procedure write_devices is 
+
+					use pac_device_ports_extended;
+					device_cursor : pac_device_ports_extended.cursor :=
+						net.devices.first;
+
+				
+					procedure query_device (
+						device : in type_device_port_extended)
+					is	
+						use et_device_name;
+						use et_port_direction;
+						use et_port_names;
+						use et_terminal_name;
+					begin
+						put_line (file_handle, -- IC1 CE input H5
+							to_string (device.device) & separator
+							& to_string (device.port) & separator
+							& to_string (device.direction) & separator
+							& to_string (device.terminal));
+						-- CS characteristics
+					end query_device;
+				
+				
+				begin
+					-- Iterate through the devices of the candidate net:
+					while has_element (device_cursor) loop				
+						query_element (device_cursor, query_device'access);
+						next (device_cursor);
+					end loop;
+				end write_devices;
+				
+				
+				
+				-- This procedure writes the ports of
+				-- the submodules which are connected with the
+				-- candidate net:
+				procedure write_submodules is
+					use pac_submodule_ports_extended;
+					submodule_cursor : pac_submodule_ports_extended.cursor :=
+						net.submodules.first;
+						
+						
+					procedure query_submodule (
+						submodule : type_submodule_port_extended)
+					is 
+						use et_module_instance;
+					begin
+						put_line (file_handle, -- OSC1 RF_OUT
+							to_string (submodule.submodule) & separator
+							& to_string (submodule.port));
+							-- CS direction, characteristics
+					end query_submodule;
+					
+
+				begin
+					-- Iterate through the submodules of the candidate net:
+					while has_element (submodule_cursor) loop
+						query_element (submodule_cursor, query_submodule'access);
+						next (submodule_cursor);
+					end loop;
+				end write_submodules;
+				
+				
+
+				
+				-- This procedure writes the ports of
+				-- the netchangers which are connected with the
+				-- candidate net:
+				procedure write_netchangers is
+					use pac_netchanger_ports;
+					netchanger_cursor : pac_netchanger_ports.cursor :=
+						net.netchangers.first;
+						
+						
+					procedure query_netchanger (
+						netchanger : type_port_netchanger)
+					is 
+						use et_netchangers;
+						use et_netchangers.schematic;
+					begin
+						put_line (file_handle, -- N14 master/slave
+							get_netchanger_name (netchanger.index) & separator
+							& to_string (netchanger.port));
+					end query_netchanger;
+					
+
+				begin
+					-- Iterate through the netchangers of the candidate net:
+					while has_element (netchanger_cursor) loop
+						query_element (netchanger_cursor, query_netchanger'access);
+						next (netchanger_cursor);
+					end loop;
+				end write_netchangers;
+
+				
+				
 			begin
 				log (text => "net " & to_string (net_name),
 					level => log_threshold + 1);
 
 				new_line (file_handle);
-				put_line (file_handle, comment_mark & " -------");
+				-- put_line (file_handle, comment_mark & " -------");
 				put_line (file_handle, to_string (net_name));
 
-				-- write device ports, submodule ports, netchanger ports
-				
+				write_devices;				
+				write_submodules;				
+				write_netchangers;	
 			end query_net;
 
 			
 		begin
-			netlist.iterate (query_net'access);
+			while has_element (net_cursor) loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
 		end write_nets;
 		
 		
