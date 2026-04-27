@@ -76,8 +76,7 @@ package et_netlist_cat_1 is
 		key_type		=> pac_net_name.bounded_string, 
 		element_type	=> type_net_ports_cat_1);
 
-
-	-- use pac_netlist_cat_1;
+	
 
 
 	-- Adds a net to the given netlist:
