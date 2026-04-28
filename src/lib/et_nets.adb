@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.   
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -75,6 +75,28 @@ package body et_nets is
 
 	
 
+
+
+	function get_net_scope (
+		net : in type_net)
+		return type_net_scope
+	is begin
+		return net.scope;
+	end;
+
+		
+
+	procedure set_net_scope (
+		net		: in out type_net;
+		scope	: in type_net_scope)
+	is begin
+		net.scope := scope;
+	end;
+
+
+		
+
+	
 
 	procedure set_proposed (
 		net : in out type_net)

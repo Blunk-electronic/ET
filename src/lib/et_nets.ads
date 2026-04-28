@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -92,14 +92,6 @@ package et_nets is
 
 -- NETS (basic stuff):
 	
--- CS: Currently this is not used:	
--- 	type type_net_scope is ( -- CS rename so that it can not be confused with
--- 							   -- et_net_scope.type_net_scope
--- 		STRAND,
--- 		SHEET,
--- 		EVERYWHERE
--- 		);
--- 	
 	
 
 	type type_net_base is tagged record
@@ -133,8 +125,19 @@ package et_nets is
 		return string;
 
 
-	
-	
+
+
+	function get_net_scope (
+		net : in type_net)
+		return type_net_scope;
+		
+
+	procedure set_net_scope (
+		net		: in out type_net;
+		scope	: in type_net_scope);
+		
+		
+		
 
 	procedure set_proposed (
 		net : in out type_net);
