@@ -5157,6 +5157,7 @@ package body et_schematic_ops_nets is
 		-- locate the net
 		net_cursor := locate_net (module_cursor, net_name);
 
+		-- CS
 		-- 	update_element (
 		-- 		container	=> generic_modules,
 		-- 		position	=> module_cursor,
