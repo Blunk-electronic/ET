@@ -5078,7 +5078,7 @@ package body et_schematic_ops_nets is
 	procedure set_scope (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		scope			: in et_net_scope.type_net_scope; -- local/global
+		scope			: in type_net_scope; -- local/global
 		log_threshold	: in type_log_level) 
 	is
 		net_cursor : pac_nets.cursor; -- points to the net
@@ -5106,16 +5106,18 @@ package body et_schematic_ops_nets is
 
 		
 	begin -- set_scope
-		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &
-			" setting scope of net " & to_string (net_name) &
-			" to" & et_net_scope.to_string (scope),
+		log (text => "module " & to_string (module_cursor)
+			& " set scope of net " & to_string (net_name) 
+			& " to" & to_string (scope),
 			level => log_threshold);
 
 
 		-- locate the net
 		net_cursor := locate_net (module_cursor, net_name);
 
-		if net_cursor /= pac_nets.no_element then
+		-- CS: move this test to et_cp_schematic_nets
+		-- to ensure that the given net exists:
+		if has_element (net_cursor) then
 
 			update_element (
 				container	=> generic_modules,
@@ -5130,6 +5132,41 @@ package body et_schematic_ops_nets is
 	end set_scope;
 
 
+	
+	
+	
+	
+	
+	
+	
+	function get_scope (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		log_threshold	: in type_log_level)
+		return type_net_scope
+	is
+		result : type_net_scope := type_net_scope'first;
+		
+		net_cursor : pac_nets.cursor; -- points to the net
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " get scope of net " & to_string (net_name),
+			level => log_threshold);
+
+
+		-- locate the net
+		net_cursor := locate_net (module_cursor, net_name);
+
+		-- 	update_element (
+		-- 		container	=> generic_modules,
+		-- 		position	=> module_cursor,
+		-- 		process		=> query_nets'access);
+		
+		return result;
+	end get_scope;
+	
+	
+	
 	
 	
 

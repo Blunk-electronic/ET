@@ -79,7 +79,6 @@ package et_netlist_cat_1 is
 		devices		: pac_device_ports_extended.set;
 		submodules	: pac_submodule_ports_extended.set;
 		netchangers	: pac_netchanger_ports.set;
-		-- CS ? scope		: type_net_scope;
 	end record;
 
 	
