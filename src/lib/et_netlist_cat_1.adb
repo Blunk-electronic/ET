@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                             NETLISTS                                     --
+--                          NETLIST CAT 1                                   --
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
@@ -49,6 +49,7 @@ with gnat.directory_operations;
 with et_export;
 with et_system_info;
 with et_time;
+with et_netlist_category;
 with et_netlist_name;
 with et_string_processing;
 with et_device_name;
@@ -57,11 +58,24 @@ with et_port_names;
 with et_terminal_name;
 with et_module_instance;
 
--- with et_netchangers;
 with et_netchangers.schematic;
 
 
 package body et_netlist_cat_1 is
+
+
+	function get_net_count (
+		netlist : in pac_netlist_cat_1.map)
+		return string
+	is 
+		ct : count_type := 0;
+	begin
+		ct := netlist.length;		
+		return count_type'image (ct);
+	end;
+	
+	
+
 
 
 
@@ -83,6 +97,7 @@ package body et_netlist_cat_1 is
 
 
 	
+	
 	procedure write_netlist (
 		module_cursor	: in pac_generic_modules.cursor;
 		variant			: in pac_assembly_variant_name.bounded_string;
@@ -90,10 +105,14 @@ package body et_netlist_cat_1 is
 		log_threshold	: in type_log_level)
 	is
 		use et_netlist_name;
+		
+		-- The netlist file:
 		file_name	: pac_netlist_file_name.bounded_string;
 		file_handle	: ada.text_io.file_type;
 
 
+		-- Composes the name of the file to
+		-- be created and written to:
 		procedure set_file_name is 
 			use ada.directories;
 			use gnat.directory_operations;
@@ -133,22 +152,42 @@ package body et_netlist_cat_1 is
 			use et_system_info;
 			use et_time;
 			use et_string_processing;
+			use et_netlist_category;
 		begin
-			put_line (file_handle, comment_mark & " " & system_name & " " & version & " netlist");
-			put_line (file_handle, comment_mark & " " & get_date);
-			put_line (file_handle, comment_mark & " module " & to_string (module_cursor));
-			put_line (file_handle, comment_mark & " " & row_separator_double);
-			-- CS put_line (file_handle, comment_mark & " net count total" & count_type'image (child_count (netlist_cursor)));
-			-- CS: use dedicated subtype for net count instead of count_type
+			put_line (file_handle, comment_mark 
+				& " " & system_name & " " & to_string (NETLIST_CAT_1)
+				& " format version " & format_version);
+				
+			put_line (file_handle, comment_mark 
+				& " " & get_date);
+				
+			put_line (file_handle, comment_mark
+				& " module " & to_string (module_cursor));
+				
+			put_line (file_handle, comment_mark 
+				& " " & row_separator_double);
+			
+			put_line (file_handle, comment_mark 
+				& " net count total" & get_net_count (netlist));
+				
 			-- CS: statistics about pin count ?
 			
 			put_line (file_handle, comment_mark);
 			put_line (file_handle, comment_mark & " legend:");
-			put_line (file_handle, comment_mark & "  net_name");
-			put_line (file_handle, comment_mark & "  device port direction terminal/pin/pad");
+			put_line (file_handle, comment_mark & "  net name");
+			put_line (file_handle, comment_mark 
+				& "  device name port characteristic terminal/pin/pad");
+				
+			put_line (file_handle, comment_mark 
+				& "  submodule name port"); -- CS direction, characteristic
+				
+			put_line (file_handle, comment_mark 
+				& "  netchanger name port ");
+				
 			put_line (file_handle, comment_mark);
-			-- put_line (file_handle, comment_mark & "  Names of secondary nets are comments.");
-			put_line (file_handle, comment_mark & " " & row_separator_single);
+
+			put_line (file_handle, comment_mark 
+				& " " & row_separator_single);
 		end write_header;
 
 
@@ -199,7 +238,8 @@ package body et_netlist_cat_1 is
 						use et_terminal_name;
 					begin
 						put_line (file_handle, -- IC1 CE input H5
-							to_string (device.device) & separator
+							identifier_device & separator
+							& to_string (device.device) & separator
 							& to_string (device.port) & separator
 							& to_string (device.direction) & separator
 							& to_string (device.terminal));
@@ -232,7 +272,8 @@ package body et_netlist_cat_1 is
 						use et_module_instance;
 					begin
 						put_line (file_handle, -- OSC1 RF_OUT
-							to_string (submodule.submodule) & separator
+							identifier_submodule & separator
+							& to_string (submodule.submodule) & separator
 							& to_string (submodule.port));
 							-- CS direction, characteristics
 					end query_submodule;
@@ -265,7 +306,8 @@ package body et_netlist_cat_1 is
 						use et_netchangers.schematic;
 					begin
 						put_line (file_handle, -- N14 master/slave
-							get_netchanger_name (netchanger.index) & separator
+							identifier_netchanger & separator
+							& get_netchanger_name (netchanger.index) & separator
 							& to_string (netchanger.port));
 					end query_netchanger;
 					
@@ -286,7 +328,9 @@ package body et_netlist_cat_1 is
 
 				new_line (file_handle);
 				-- put_line (file_handle, comment_mark & " -------");
-				put_line (file_handle, to_string (net_name));
+				put_line (file_handle, 
+					identifier_net & separator
+					& to_string (net_name));
 
 				write_devices;				
 				write_submodules;				
@@ -307,7 +351,7 @@ package body et_netlist_cat_1 is
 		log (text => "module " & to_string (module_cursor)
 			& " assembly variant " & to_variant (variant)
 			& " write netlist",
-			-- CS full file name and directory
+			-- CS full file name and target directory
 			level => log_threshold);
 			
 		log_indentation_up;

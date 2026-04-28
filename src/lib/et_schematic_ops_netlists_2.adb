@@ -56,41 +56,13 @@ with et_schematic_ops_device;
 with et_assembly_variants;
 with et_schematic_ops_assembly_variant;
 
+with et_netlist_category;
 with et_netlist_cat_1;
 
 
 package body et_schematic_ops_netlists_2 is
 
 
-
-	function to_string (
-		category	: in type_netlist_category)
-		return string
-	is begin
-		return type_netlist_category'image (category);
-	end;
-
-
-
-	
-	function to_netlist_category (
-		category	: in string)
-		return type_netlist_category
-	is
-		result : type_netlist_category := type_netlist_category'first;
-	begin
-		if category = "1" then
-			result := NETLIST_CAT_1;
-		elsif category = "2" then
-			result := NETLIST_CAT_2;
-		end if;
-		
-		return result;
-	end;
-
-	
-	
-	
 	
 	
 	
@@ -210,6 +182,7 @@ package body et_schematic_ops_netlists_2 is
 		use et_module;
 		use et_module_names;
 		use et_netlist_cat_1;
+		use et_netlist_category;
 
 		use et_assembly_variants;
 		variant_cursor : pac_assembly_variants.cursor;

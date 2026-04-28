@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                   SCHEMATIC OPERATIONS / NETLISTS                        --
+--                            NETLIST CATEGORY                              --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -37,51 +37,38 @@
 --
 
 
-with et_generic_modules;				use et_generic_modules;
-with et_net_ports_devices;				use et_net_ports_devices;
-with et_net_ports_submodules;			use et_net_ports_submodules;
-with et_netlist_devices;				use et_netlist_devices;
-with et_netlist_submodules;				use et_netlist_submodules;
-with et_assembly_variant_name;			use et_assembly_variant_name;
-with et_logging;						use et_logging;
 
 
+package body et_netlist_category is
 
-package et_schematic_ops_netlists_2 is
 
-	use pac_generic_modules;
+	function to_string (
+		category	: in type_netlist_category)
+		return string
+	is begin
+		return type_netlist_category'image (category);
+	end;
 
-		
-		
-	-- Adds further properties to the given device ports.
-	-- Ignores ports of virtual devices (like GND symbols).
-	-- Additional properties are electrical characteristics
-	-- and the terminal name.
-	function extend_ports (
-		module_cursor	: in pac_generic_modules.cursor;
-		ports 			: in pac_device_ports.set)
-		return pac_device_ports_extended.set;
-
-		
-	-- Adds further properties to the given submodule ports:
-	function extend_ports (
-		module_cursor	: in pac_generic_modules.cursor;
-		ports 			: in pac_net_submodule_ports.set)
-		return pac_submodule_ports_extended.set;
-		
-		
-		
-		
-	-- Generates for the given assembly variant of a
-	-- generic module a netlist of category 1:
-	procedure make_netlist_cat_1 (
-		module_cursor 	: in pac_generic_modules.cursor;
-		variant			: in pac_assembly_variant_name.bounded_string;
-		log_threshold	: in type_log_level);
 
 
 	
-end et_schematic_ops_netlists_2;
+	function to_netlist_category (
+		category	: in string)
+		return type_netlist_category
+	is
+		result : type_netlist_category := type_netlist_category'first;
+	begin
+		if category = "1" then
+			result := NETLIST_CAT_1;
+		elsif category = "2" then
+			result := NETLIST_CAT_2;
+		end if;
+		
+		return result;
+	end;		
+		
+	
+end et_netlist_category;
 	
 -- Soli Deo Gloria
 

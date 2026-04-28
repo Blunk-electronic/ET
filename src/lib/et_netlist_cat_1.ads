@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                             NETLISTS                                     --
+--                          NETLIST CAT 1                                   --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
@@ -60,7 +60,21 @@ with et_logging;				use et_logging;
 package et_netlist_cat_1 is
 
 
+	-- These constants are used when the netlist 
+	-- is written to a file:
 	
+	comment_mark 			: constant string := "#";
+
+	format_version			: constant string := "1.0";
+	identifier_net			: constant string := "net";
+	identifier_device		: constant string := "device";
+	identifier_submodule	: constant string := "submodule";
+	identifier_netchanger	: constant string := "netchanger";
+	
+	
+	
+	-- A net contains the ports of devices, submodules
+	-- and netchangers:
 	type type_net_ports_cat_1 is record
 		devices		: pac_device_ports_extended.set;
 		submodules	: pac_submodule_ports_extended.set;
@@ -72,12 +86,21 @@ package et_netlist_cat_1 is
 
 	use pac_net_name;
 	
+	-- The key to the netlist is the net name:
 	package pac_netlist_cat_1 is new ordered_maps (
 		key_type		=> pac_net_name.bounded_string, 
 		element_type	=> type_net_ports_cat_1);
 
 	
+	
+	-- Returns the number of nets that the
+	-- given netlist contains:
+	function get_net_count (
+		netlist : in pac_netlist_cat_1.map)
+		return string;
 
+		
+		
 
 	-- Adds a net to the given netlist:
 	procedure add_net_to_netlist (
@@ -89,7 +112,7 @@ package et_netlist_cat_1 is
 	
 
 	
-	comment_mark : constant string := "#";
+
 	
 	
 	

@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                   SCHEMATIC OPERATIONS / NETLISTS                        --
+--                            NETLIST CATEGORY                              --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -37,51 +37,41 @@
 --
 
 
-with et_generic_modules;				use et_generic_modules;
-with et_net_ports_devices;				use et_net_ports_devices;
-with et_net_ports_submodules;			use et_net_ports_submodules;
-with et_netlist_devices;				use et_netlist_devices;
-with et_netlist_submodules;				use et_netlist_submodules;
-with et_assembly_variant_name;			use et_assembly_variant_name;
-with et_logging;						use et_logging;
 
 
+package et_netlist_category is
 
-package et_schematic_ops_netlists_2 is
 
-	use pac_generic_modules;
+	-- There are several categories of netlists.
 
+	type type_netlist_category is (
+
+		-- Generated from a generic module.
+		-- No offsets for device and netchanger indexes.
+		-- No prefixes in net names.
+		-- The netlist constains device, submodule
+		-- and netchanger nams as they have been drawn
+		-- and named by the operator:
+		NETLIST_CAT_1,
+		
+		NETLIST_CAT_2);
+		-- CS: others ?
 		
 		
-	-- Adds further properties to the given device ports.
-	-- Ignores ports of virtual devices (like GND symbols).
-	-- Additional properties are electrical characteristics
-	-- and the terminal name.
-	function extend_ports (
-		module_cursor	: in pac_generic_modules.cursor;
-		ports 			: in pac_device_ports.set)
-		return pac_device_ports_extended.set;
-
-		
-	-- Adds further properties to the given submodule ports:
-	function extend_ports (
-		module_cursor	: in pac_generic_modules.cursor;
-		ports 			: in pac_net_submodule_ports.set)
-		return pac_submodule_ports_extended.set;
+	function to_string (
+		category	: in type_netlist_category)
+		return string;
 		
 		
+	-- Converts from a string like 1, 2, 3, to 
+	-- a type_netlist_category:
+	function to_netlist_category (
+		category	: in string)
+		return type_netlist_category;
 		
 		
-	-- Generates for the given assembly variant of a
-	-- generic module a netlist of category 1:
-	procedure make_netlist_cat_1 (
-		module_cursor 	: in pac_generic_modules.cursor;
-		variant			: in pac_assembly_variant_name.bounded_string;
-		log_threshold	: in type_log_level);
-
-
 	
-end et_schematic_ops_netlists_2;
+end et_netlist_category;
 	
 -- Soli Deo Gloria
 

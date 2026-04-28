@@ -55,6 +55,7 @@ with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 with et_net_class_name;					use et_net_class_name;
 with et_net_connectors;					use et_net_connectors;
 with et_net_scope;						use et_net_scope;
+with et_netlist_category;				use et_netlist_category;
 with et_schematic_ops_netlists_2;
 with et_net_names;						use et_net_names;
 with et_schematic_ops_nets;				use et_schematic_ops_nets;
