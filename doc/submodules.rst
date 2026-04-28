@@ -12,6 +12,37 @@ Submodules
 Schematic Editor
 ++++++++++++++++
 
+Designing a Submodule
+---------------------
+
+The design of a submodule is mainly the same
+as with any other generic module.
+An important thing is how to define which nets
+are visible from the parent module.
+
+
+#. The Scope of a Net
+
+	.. code-block::
+
+		set scope GND global
+
+
+	.. code-block::
+
+		set scope AGND local
+
+
+#. Netchangers
+
+
+
+
+
+Using a Submodule
+-----------------
+
+
 
 #. Add a Submodule
 
