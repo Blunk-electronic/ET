@@ -25,12 +25,11 @@
    assembly_variants.rst
    netchangers.rst
    submodules.rst
-..    component_library.rst
-   package_models.rst
    symbol_models.rst
+   package_models.rst
    device_models.rst
 ..    CS cam.rst
-.. CS submodules.rst
+
    
 Index
 =====

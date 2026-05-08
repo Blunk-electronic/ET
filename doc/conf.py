@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'CAE System ET'
-copyright = '2020, Mario Blunk'
+copyright = '2026, Mario Blunk'
 author = 'Mario Blunk'
 
 # The full version, including alpha/beta/rc tags
-release = '2020-11-07'
+release = '2026-05-07'
 
 
 # -- General configuration ---------------------------------------------------
