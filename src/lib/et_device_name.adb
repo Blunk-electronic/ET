@@ -473,7 +473,7 @@ package body et_device_name is
 			name : in type_device_name) 
 			return string
 		is begin
-			return "Device " & to_string (name) & " does not exist !";
+			return "Device " & to_string (name) & " not found !";
 		end;
 
 		

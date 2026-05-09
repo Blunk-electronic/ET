@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -66,8 +66,43 @@ package body et_unit_name is
 		return pac_unit_name.to_bounded_string (to_upper (unit_name));
 	end;
 
+
 	
+	
+
+
+	procedure message_unit_not_found (
+		severity	: in type_message_severity;
+		name		: in pac_unit_name.bounded_string)
+	is 
+
+		function get_message_text (
+			name : in pac_unit_name.bounded_string)
+			return string
+		is begin
+			return "Unit " & to_string (name) & " not found !";
+		end;
+
 		
+	begin
+		case severity is
+			when SEVERITY_ERROR =>
+				log (
+					importance 	=> severity,
+					text		=> get_message_text (name),
+					console		=> true);
+
+			when others =>
+				log (
+					importance 	=> severity,
+					text		=> get_message_text (name),
+					console		=> false);
+		end case;
+	end message_unit_not_found;
+
+
+	
+	
 end et_unit_name;
 
 -- Soli Deo Gloria

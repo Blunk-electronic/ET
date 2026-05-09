@@ -39,8 +39,10 @@
 with ada.containers;           			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.strings.maps;					use ada.strings.maps;
+with ada.strings.bounded; 				use ada.strings.bounded;
+
+with et_logging;						use et_logging;
 
 
 package et_unit_name is
@@ -67,7 +69,16 @@ package et_unit_name is
 		unit_name : in string) 
 		return pac_unit_name.bounded_string; 
 
-	
+
+
+	-- Logs a message like "WARNING. Unit D not found."
+	-- The severity decides whether to output the message on 
+	-- the console. Currently this is done only when the severity
+	-- is ERROR:
+	procedure message_unit_not_found (
+		severity	: in type_message_severity;
+		name		: in pac_unit_name.bounded_string);
+
 		
 end et_unit_name;
 

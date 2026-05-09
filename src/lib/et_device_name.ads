@@ -220,7 +220,7 @@ package et_device_name is
 		return type_device_name;
 
 
-	-- Logs a message like "WARNING. Device C12 does not exist."
+	-- Logs a message like "WARNING. Device C12 not found."
 	-- The severity decides whether to output the message on 
 	-- the console. Currently this is done only when the severity
 	-- is ERROR:
