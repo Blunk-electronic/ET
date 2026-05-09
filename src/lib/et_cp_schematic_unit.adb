@@ -132,10 +132,6 @@ package body et_cp_schematic_unit is
 			end;
 
 			
-			procedure device_not_found is begin
-				log (WARNING, " Device " & to_string (device) & " not found !");
-				-- CS output in status bar
-			end;
 
 			
 			procedure unit_not_found is 
@@ -203,7 +199,9 @@ package body et_cp_schematic_unit is
 					end case;
 					
 				else
-					device_not_found;
+					-- The device exists.
+					-- So this should never happen:
+					raise constraint_error; 
 				end if;
 			end show_first_unit;
 
@@ -331,12 +329,15 @@ package body et_cp_schematic_unit is
 						
 						
 					else
-						log (WARNING, " Device " & to_string (device) & " is not on this sheet !");
-						-- CS output in status bar
+						-- log (WARNING, " Device " & to_string (device) 
+						--   & " is not on this sheet !");
+						message_device_not_found (et_logging.ERROR, device);
 					end if;
 
 				else
-					device_not_found;
+					-- The device exists.
+					-- So this should never happen:
+					raise constraint_error; 
 				end if;
 			end show_first_unit_on_active_sheet;
 			
@@ -359,37 +360,82 @@ package body et_cp_schematic_unit is
 		
 		procedure runmode_module is 
 			error : boolean := false;
+			device_name : type_device_name;
+			unit_name : pac_unit_name.bounded_string;
 		begin
 			case cmd_field_count is
 				when 6 => 
 					-- show device L1 R1
-					properties_level := to_properties_level (get_field (cmd, 5), error); -- L1
+
+					-- Get the properties level:
+					properties_level := to_properties_level (
+						get_field (cmd, 5), error); -- L1
 					
-					if not error then						
-						do_it (
-							device	=> to_device_name (get_field (cmd, 6)), -- R1, IC1
-							mode	=> SEARCH_MODE_FIRST_UNIT);
+					-- Proceed if no error occured:
+					if not error then
+						-- Get the name of the target device:
+						device_name := to_device_name (get_field (cmd, 6)); -- R1, IC1
+						
+						-- Proceed if the device exists:
+						if electrical_device_exists (module, device_name) then
+						
+							do_it (
+								device	=> device_name,
+								mode	=> SEARCH_MODE_FIRST_UNIT);
+								
+						else
+							message_device_not_found (et_logging.ERROR, device_name);
+						end if;
 					end if;
 				
+				
 				when 7 =>
-					properties_level := to_properties_level (get_field (cmd, 5), error); -- L1
-					
+					-- Get the properties level:
+					properties_level := to_properties_level (
+						get_field (cmd, 5), error); -- L1
+						
+					-- Proceed if no error occured:					
 					if not error then
 						-- The 7th field may be a period, which means
 						-- the unit is to be shown on the current active sheet.
 						-- Otherwise the field provides an explicit
 						-- unit name:
 						if get_field (cmd, 7) = here then
-							do_it ( -- show device L1 IC1 .
-								device	=> to_device_name (get_field (cmd, 6)), -- IC1
-								mode	=> SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET);
+
+							-- Get the name of the target device:
+							device_name := to_device_name (get_field (cmd, 6)); -- IC1
+
+							-- Proceed if the device exists:
+							if electrical_device_exists (module, device_name) then
+						
+								do_it ( -- show device L1 IC1 .
+									device	=> device_name,
+									mode	=> SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET);
+
+							else
+								message_device_not_found (et_logging.ERROR, device_name);
+							end if;
+					
+
 						else
-							do_it ( -- show device L1 IC1 A
-								device	=> to_device_name (get_field (cmd, 6)), -- IC1
-								unit	=> to_unit_name (get_field (cmd, 7)), -- A
-								mode	=> SEARCH_MODE_BY_UNIT_NAME);
+							-- Get the name of the target device:
+							device_name := to_device_name (get_field (cmd, 6)); -- IC1
+
+							-- Proceed if the device exists:
+							if electrical_device_exists (module, device_name) then
+
+								do_it ( -- show device L1 IC1 A
+									device	=> device_name,
+									unit	=> to_unit_name (get_field (cmd, 7)), -- A
+									mode	=> SEARCH_MODE_BY_UNIT_NAME);
+
+							else
+								message_device_not_found (et_logging.ERROR, device_name);
+							end if;
+									
 						end if;
 					end if;
+					
 					
 				when 8 .. type_field_count'last => 
 					command_too_long (cmd, cmd_field_count - 1);
