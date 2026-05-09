@@ -1523,12 +1523,13 @@ package body et_schematic_ops_units is
 							process		=> query_module'access);
 
 					else
-						log (WARNING, "Device " & to_string (device_name_after)
-							 & " already exists !");
+						message_device_already_exists (ERROR, device_name_after);
 					end if;
+
 				else
 					log (WARNING, "Changing the prefix is not allowed !");
 				end if;
+
 			else
 				log (WARNING, "Old and new device name are equal !");
 			end if;

@@ -228,7 +228,15 @@ package et_device_name is
 		severity	: in type_message_importance;
 		name		: in type_device_name);
 				 
-	
+	-- Logs a message like "WARNING. Device C12 already exists."
+	-- The severity decides whether to output the message on 
+	-- the console. Currently this is done only when the severity
+	-- is ERROR:
+	procedure message_device_already_exists (
+		severity	: in type_message_importance;
+		name		: in type_device_name);
+
+				 
 end et_device_name;
 
 -- Soli Deo Gloria

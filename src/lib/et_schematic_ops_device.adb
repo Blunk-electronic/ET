@@ -74,13 +74,6 @@ package body et_schematic_ops_device is
 
 	use pac_devices_electrical;
 	
-	
--- 	procedure device_already_exists (name : in type_device_name) is begin
--- 		raise semantic_error_1
--- 			with "ERROR: Device " & to_string (name) & " already exists !";
--- 	end device_already_exists;
--- 
--- 	
 
 
 

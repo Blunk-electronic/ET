@@ -494,6 +494,44 @@ package body et_device_name is
 	end message_device_not_found;
 
 	
+
+
+
+
+
+	
+
+	
+
+	procedure message_device_already_exists (
+		severity	: in type_message_importance;
+		name		: in type_device_name)
+	is 
+
+		function get_message_text (
+			name : in type_device_name) 
+			return string
+		is begin
+			return "Device " & to_string (name) & " already exists !";
+		end;
+
+		
+	begin
+		case severity is
+			when ERROR =>
+				log (
+					importance 	=> severity,
+					text		=> get_message_text (name),
+					console		=> true);
+
+			when others =>
+				log (
+					importance 	=> severity,
+					text		=> get_message_text (name),
+					console		=> false);
+		end case;
+	end message_device_already_exists;
+
 	
 end et_device_name;
 
