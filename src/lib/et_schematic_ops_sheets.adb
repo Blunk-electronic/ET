@@ -58,7 +58,7 @@ package body et_schematic_ops_sheets is
 	procedure sheet_not_found (
 		sheet : in type_sheet)
 	is begin
-		log (WARNING, "Sheet no. " & to_string (sheet) & " not found !");
+		log (SEVERITY_WARNING, "Sheet no. " & to_string (sheet) & " not found !");
 	end;
 
 	

@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -85,7 +85,7 @@ package body et_package_variant_name is
 		variant_name : in string) 
 	is begin
 		if variant_name'length > variant_name_length_max then
-			log (WARNING, "variant name too long. Max. length is" 
+			log (SEVERITY_WARNING, "variant name too long. Max. length is" 
 				 & positive'image (variant_name_length_max) & " !");
 		end if;
 	end check_variant_name_length;
@@ -108,7 +108,7 @@ package body et_package_variant_name is
 
 		-- Evaluate position of invalid character.
 		if invalid_character_position > 0 then
-			log (WARNING, "invalid character in variant name " 
+			log (SEVERITY_WARNING, "invalid character in variant name " 
 				& to_string (variant) & " at position" & natural'image (invalid_character_position));
 		end if;
 	end check_variant_name_characters;

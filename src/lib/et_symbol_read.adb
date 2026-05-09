@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -221,7 +221,7 @@ package body et_symbol_read is
 						return true;
 
 					else
-						log (ERROR, write_missing_begin_end, console => true);
+						log (SEVERITY_ERROR, write_missing_begin_end, console => true);
 						raise constraint_error;
 					end if;
 
@@ -354,7 +354,7 @@ package body et_symbol_read is
 			
 			-- As a safety measure the top section must be reached finally.
 			if pac_sections_stack.depth > 1 then 
-				log (WARNING, write_section_stack_not_empty);
+				log (SEVERITY_WARNING, write_section_stack_not_empty);
 			end if;
 			
 

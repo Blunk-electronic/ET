@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -256,7 +256,7 @@ is
 					return true;
 
 				else
-					log (ERROR, write_missing_begin_end, console => true);
+					log (SEVERITY_ERROR, write_missing_begin_end, console => true);
 					raise constraint_error;
 				end if;
 
@@ -381,7 +381,7 @@ begin -- read_rules
 		end if;
 		
 	else
-		log (ERROR, "file " & enclose_in_quotes (expanded_name) & " not found !", console => true);
+		log (SEVERITY_ERROR, "file " & enclose_in_quotes (expanded_name) & " not found !", console => true);
 		raise constraint_error;
 	end if;
 	

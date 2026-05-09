@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -370,7 +370,7 @@ package body et_board_ops_devices is
 				-- If the requested device has not been found,
 				-- then log a warning:
 				else
-					log (WARNING, " Device " & to_string (device_name) & " not found !");
+					log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 				end if;
 
 			end if;
@@ -483,7 +483,7 @@ package body et_board_ops_devices is
 				-- If the requested device has not been found,
 				-- then log a warning:
 				else
-					log (WARNING, " Device " & to_string (device_name) & " not found !");
+					log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 				end if;
 
 			end if;
@@ -596,7 +596,7 @@ package body et_board_ops_devices is
 				-- If the requested device has not been found,
 				-- then log a warning:
 				else
-					log (WARNING, " Device " & to_string (device_name) & " not found !");
+					log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 				end if;
 
 			end if;
@@ -739,7 +739,7 @@ package body et_board_ops_devices is
 			generic_modules.update_element (module_cursor, query_module'access);
 		else
 			if log_warning then
-				log (WARNING, " Device " & to_string (device_name) & " not found !");
+				log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 			end if;
 
 			error := true;
@@ -795,7 +795,7 @@ package body et_board_ops_devices is
 				level			=> level));
 				
 		else
-			log (WARNING, " Device " & to_string (device_name) & " not found !");
+			log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 			error := true;			
 		end if;
 
@@ -1316,7 +1316,7 @@ package body et_board_ops_devices is
 		if has_element (device_cursor) then -- device exists in board
 			generic_modules.update_element (module_cursor, query_module'access);
 		else
-			log (WARNING, " Device " & to_string (device_name) & " not found !");
+			log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 		end if;
 
 		log_indentation_down;
@@ -1358,7 +1358,7 @@ package body et_board_ops_devices is
 		if has_element (device_cursor) then -- device exists in board
 			generic_modules.update_element (module_cursor, query_module'access);
 		else
-			log (WARNING, " Device " & to_string (device_name) & " not found !");
+			log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 		end if;
 
 		log_indentation_down;
@@ -1393,7 +1393,7 @@ package body et_board_ops_devices is
 				position	=> device_after);
 
 			if not inserted then
-				log (WARNING, "Device " & to_string (device_name_after)
+				log (SEVERITY_WARNING, "Device " & to_string (device_name_after)
 					 & " already exists !");
 			end if;
 
@@ -1421,14 +1421,14 @@ package body et_board_ops_devices is
 							process		=> query_module'access);
 
 					else
-						log (WARNING, "Device " & to_string (device_name_after)
+						log (SEVERITY_WARNING, "Device " & to_string (device_name_after)
 							 & " already exists !");
 					end if;
 				else
-					log (WARNING, "Changing the prefix is not allowed !");
+					log (SEVERITY_WARNING, "Changing the prefix is not allowed !");
 				end if;
 			else
-				log (WARNING, "Old and new device name are equal !");
+				log (SEVERITY_WARNING, "Old and new device name are equal !");
 			end if;
 		end check_names;
 		
@@ -1450,7 +1450,7 @@ package body et_board_ops_devices is
 		if has_element (device_cursor) then -- device exists in board
 			check_names;			
 		else
-			log (WARNING, " Device " & to_string (device_name_before) & " not found !");
+			log (SEVERITY_WARNING, " Device " & to_string (device_name_before) & " not found !");
 		end if;
 
 		log_indentation_down;
@@ -1526,7 +1526,7 @@ package body et_board_ops_devices is
 				-- If the requested device has not been found,
 				-- then log a warning:
 				else
-					log (WARNING, " Device " & to_string (device_name) & " not found !");
+					log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 				end if;
 
 			end if;
@@ -1630,7 +1630,7 @@ package body et_board_ops_devices is
 				-- If the requested device has not been found,
 				-- then log a warning:
 				else
-					log (WARNING, " Device " & to_string (device_name) & " not found !");
+					log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 				end if;
 
 			end if;
@@ -1755,7 +1755,7 @@ package body et_board_ops_devices is
 				-- If the requested device has not been found,
 				-- then log a warning:
 				else
-					log (WARNING, " Device " & to_string (device_name) & " not found !");
+					log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 				end if;
 
 			end if;
@@ -3485,7 +3485,7 @@ package body et_board_ops_devices is
 	is 
 		use et_terminals;
 	begin
-		log (ERROR,	"terminal " & enclose_in_quotes (to_string (terminal_name)) & " not found !",
+		log (SEVERITY_ERROR,	"terminal " & enclose_in_quotes (to_string (terminal_name)) & " not found !",
 			 console => true);
 		raise constraint_error;
 	end terminal_not_found;

@@ -282,7 +282,7 @@ is
 		-- Test whether desired unit is already used by 
 		-- the device (in schematic). Abort if unit already deployed:
 		if unit_query.exists then
-			log (WARNING, "Unit " & to_string (unit_name) 
+			log (SEVERITY_WARNING, "Unit " & to_string (unit_name) 
 				& " is already deployed in the schematic at "
 				& to_string (unit_query.position));
 		else
@@ -335,7 +335,7 @@ begin
 			process		=> query_module'access);
 
 	else
-		log (WARNING, " Device " & to_string (device_name) & " not found !");
+		log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 	end if;
 	
 

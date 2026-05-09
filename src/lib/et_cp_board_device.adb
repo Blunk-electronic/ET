@@ -218,7 +218,7 @@ package body et_cp_board_device is
 							end if;
 							
 							if error then
-								log (WARNING, "Device " 
+								log (SEVERITY_WARNING, "Device " 
 									& to_string (device_name) & " not found !");
 							end if;
 						end if;

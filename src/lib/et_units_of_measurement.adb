@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -59,7 +59,7 @@ package body et_units_of_measurement is
 
 		exception
 			when others =>
-				log (ERROR, unit & " is not a supported unit of measurement !",
+				log (SEVERITY_ERROR, unit & " is not a supported unit of measurement !",
 					 console => true);
 
 				log (text => "supported units are:");
@@ -98,7 +98,7 @@ package body et_units_of_measurement is
 			test => outside);
 
 		if invalid_character_position > 0 then
-			log (ERROR, "abbrevaton of unit of measurement " 
+			log (SEVERITY_ERROR, "abbrevaton of unit of measurement " 
 				& to_string (abbrevation) 
 				& " has invalid character at position"
 				& natural'image (invalid_character_position),

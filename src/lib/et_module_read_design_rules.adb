@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -104,7 +104,7 @@ package body et_module_read_design_rules is
 				-- in project wide container et_design_rules.design_rules.
 				read_rules (rules.layout, log_threshold + 3);
 			else
-				log (WARNING, "No layout design rules specified ! Defaults will be applied !");
+				log (SEVERITY_WARNING, "No layout design rules specified ! Defaults will be applied !");
 			end if;
 				
 			-- CS module.rules.erc ?

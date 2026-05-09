@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -67,7 +67,7 @@ package body et_device_value is
 	-- Returns true if length is in allowed range.		
 	begin
 		if value'length > value_length_max then
-			log (WARNING, "value " & enclose_in_quotes (value) & " is longer than" 
+			log (SEVERITY_WARNING, "value " & enclose_in_quotes (value) & " is longer than" 
 				 & positive'image (value_length_max) & " characters !");
 			return false;
 		else
@@ -82,7 +82,7 @@ package body et_device_value is
 	begin
 		value_out := value ((value'first) .. value'first - 1 + value_length_max);
 
-		log (WARNING, "value will be truncated to " & enclose_in_quotes (value_out));
+		log (SEVERITY_WARNING, "value will be truncated to " & enclose_in_quotes (value_out));
 		return pac_device_value.to_bounded_string (value_out);
 	end truncate;
 
@@ -105,7 +105,7 @@ package body et_device_value is
 			test 	=> outside);
 
 		if invalid_character_position > 0 then
-			log (WARNING, "value " &
+			log (SEVERITY_WARNING, "value " &
 				 enclose_in_quotes (pac_device_value.to_string (value))
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position) & " !");
@@ -120,7 +120,7 @@ package body et_device_value is
 
 	procedure value_invalid (value : in string) is 
 	begin
-		--log (ERROR, "value " & enclose_in_quotes (value) &
+		--log (SEVERITY_ERROR, "value " & enclose_in_quotes (value) &
 			 --" invalid !", console => true);
 		--raise constraint_error;
 		raise syntax_error_1 with

@@ -97,7 +97,7 @@ package body et_device_name is
 	
 		procedure invalid_device_name is
 		begin
-			--log (ERROR, latin_1.lf & "invalid device name '" 
+			--log (SEVERITY_ERROR, latin_1.lf & "invalid device name '" 
 				 --& text_in_justified & "'", console => true);
 
 			-- CS show position of affected character ?
@@ -465,7 +465,7 @@ package body et_device_name is
 
 
 	procedure message_device_not_found (
-		severity	: in type_message_importance;
+		severity	: in type_message_severity;
 		name		: in type_device_name)
 	is 
 
@@ -479,7 +479,7 @@ package body et_device_name is
 		
 	begin
 		case severity is
-			when ERROR =>
+			when SEVERITY_ERROR =>
 				log (
 					importance 	=> severity,
 					text		=> get_message_text (name),
@@ -504,7 +504,7 @@ package body et_device_name is
 	
 
 	procedure message_device_already_exists (
-		severity	: in type_message_importance;
+		severity	: in type_message_severity;
 		name		: in type_device_name)
 	is 
 
@@ -518,7 +518,7 @@ package body et_device_name is
 		
 	begin
 		case severity is
-			when ERROR =>
+			when SEVERITY_ERROR =>
 				log (
 					importance 	=> severity,
 					text		=> get_message_text (name),

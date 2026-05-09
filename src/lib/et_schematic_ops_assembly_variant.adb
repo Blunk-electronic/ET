@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -71,7 +71,7 @@ package body et_schematic_ops_assembly_variant is
 	
 	procedure assembly_variant_not_found (variant : in pac_assembly_variant_name.bounded_string) is 
 	begin
-		log (ERROR, "assembly variant " &
+		log (SEVERITY_ERROR, "assembly variant " &
 			 enclose_in_quotes (to_variant (variant)) & " not found !", console => true);
 		raise constraint_error;
 	end;
@@ -169,7 +169,7 @@ package body et_schematic_ops_assembly_variant is
 				inserted	=> inserted);
 
 			if not inserted then
-				log (ERROR, "assembly variant " & enclose_in_quotes (to_variant (variant_name)) &
+				log (SEVERITY_ERROR, "assembly variant " & enclose_in_quotes (to_variant (variant_name)) &
 					 " already exists !", console => true);
 				raise constraint_error;
 			end if;
@@ -674,7 +674,7 @@ package body et_schematic_ops_assembly_variant is
 				if cursor /= et_assembly_variants.pac_device_variants.no_element then  -- device in assembly variant
 					delete (variant.devices, cursor); -- delete device
 				else
-					log (ERROR, "device " & to_string (device) &
+					log (SEVERITY_ERROR, "device " & to_string (device) &
 						" not found in assembly variant " &
 						enclose_in_quotes (to_variant (variant_name)) & " !",
 						 console => true);

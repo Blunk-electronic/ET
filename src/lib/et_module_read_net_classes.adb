@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -183,7 +183,7 @@ package body et_module_read_net_classes is
 				position	=> cursor);
 
 			if not inserted then
-				log (ERROR, "net class '" & to_string (net_class_name) 
+				log (SEVERITY_ERROR, "net class '" & to_string (net_class_name) 
 						& "' already exists !");
 				raise constraint_error;
 			end if;			

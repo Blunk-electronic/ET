@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -166,7 +166,7 @@ package body et_module_read_netchangers is
 
 			-- A netchanger name must be unique:
 			if not inserted then
-				log (ERROR, "netchanger id" & to_string (netchanger_id) 
+				log (SEVERITY_ERROR, "netchanger id" & to_string (netchanger_id) 
 					& " already used !", console => true);
 				raise constraint_error;
 			end if;

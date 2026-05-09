@@ -246,7 +246,7 @@ package body et_canvas_board_devices is
 			
 				modify_status (active_module, c, to_operation (SET, MOVING), log_threshold + 1);
 			else
-				log (ERROR, text => "nothing found");
+				log (SEVERITY_ERROR, text => "nothing found");
 			end if;
 		end do_it;
 		

@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -110,7 +110,7 @@ package body et_board_ops_signal_layers is
 		layers_used : type_signal_layer := get_layer_count (module_cursor);
 	begin
 		if layer > layers_used then
-			log (ERROR, "Layer " & to_string (layer) & " invalid !" &
+			log (SEVERITY_ERROR, "Layer " & to_string (layer) & " invalid !" &
 				 " The current layer stack allows only " & to_string (layers_used) & " layers !",
 				 console => true);
 			raise constraint_error;
@@ -142,11 +142,11 @@ package body et_board_ops_signal_layers is
 		begin
 			-- The bottom layer can not be deleted:
 			if layer = layers_used then
-				log (WARNING, "The bottom layer" & to_string (layer) & " can not be deleted !");
+				log (SEVERITY_WARNING, "The bottom layer" & to_string (layer) & " can not be deleted !");
 
 			-- The layer must not be greater than the total number of layers:
 			elsif layer > layers_used then
-				log (WARNING, "layer" & to_string (layer) & " does not exist. " &
+				log (SEVERITY_WARNING, "layer" & to_string (layer) & " does not exist. " &
 					 "The board uses only" & to_string (layers_used) & " layers !");
 			else
 				-- Rebuild the layer stack by copying the old layers one by one

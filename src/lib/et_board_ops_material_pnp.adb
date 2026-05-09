@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -139,7 +139,7 @@ package body et_board_ops_material_pnp is
 					
 					procedure test_inserted is begin
 						if not inserted then
-							log (ERROR, "multiple occurence of device " & to_string (device_name),
+							log (SEVERITY_ERROR, "multiple occurence of device " & to_string (device_name),
 									console => true);
 							raise constraint_error;
 						end if;

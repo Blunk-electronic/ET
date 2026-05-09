@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -378,7 +378,7 @@ package body et_project is
 			-- CS test if it is a directory
 			-- CS test if it contains the project file
 		else
-			log (ERROR, "Native project " & to_string (project_name) 
+			log (SEVERITY_ERROR, "Native project " & to_string (project_name) 
 					& " does not exist !", console => true);
 			raise constraint_error;
 		end if;

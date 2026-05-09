@@ -98,7 +98,7 @@ package body et_schematic_ops_units is
 		port 		: in string;
 		position	: in type_object_position) is
 	begin
-		log (ERROR, "port " & enclose_in_quotes (port) &
+		log (SEVERITY_ERROR, "port " & enclose_in_quotes (port) &
 			 " is directly connected with other ports at" &
 			to_string (position => position) &
 			 ". Dragging not possible !",
@@ -111,7 +111,7 @@ package body et_schematic_ops_units is
 
 
 	procedure relative_rotation_invalid is begin
-		log (ERROR, "Relative rotation must be in range" & 
+		log (SEVERITY_ERROR, "Relative rotation must be in range" & 
 			to_string (rotation_relative_min) &
 			" .." & 
 			to_string (rotation_relative_max),
@@ -1127,7 +1127,7 @@ package body et_schematic_ops_units is
 					module.devices.delete (device_cursor_sch);
 				end if;
 			else
-				log (WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
+				log (SEVERITY_WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
 			end if;
 		end query_module;
 
@@ -1154,7 +1154,7 @@ package body et_schematic_ops_units is
 				process		=> query_module'access);
 
 		else
-			log (WARNING, " Device " & to_string (device_name) & " not found !");
+			log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 		end if;
 
 		update_ratsnest (module_cursor, log_threshold + 1);
@@ -1523,15 +1523,15 @@ package body et_schematic_ops_units is
 							process		=> query_module'access);
 
 					else
-						message_device_already_exists (ERROR, device_name_after);
+						message_device_already_exists (SEVERITY_ERROR, device_name_after);
 					end if;
 
 				else
-					log (WARNING, "Changing the prefix is not allowed !");
+					log (SEVERITY_WARNING, "Changing the prefix is not allowed !");
 				end if;
 
 			else
-				log (WARNING, "Old and new device name are equal !");
+				log (SEVERITY_WARNING, "Old and new device name are equal !");
 			end if;
 		end check_names;
 
@@ -1678,7 +1678,7 @@ package body et_schematic_ops_units is
 					log_threshold	=> log_threshold + 1);
 
 			else
-				log (WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
+				log (SEVERITY_WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
 			end if;
 		end query_module;
 
@@ -1718,7 +1718,7 @@ package body et_schematic_ops_units is
 				process		=> query_module'access);
 
 		else
-			log (WARNING, " Device " & to_string (device_name) & " not found !");
+			log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 		end if;
 
 		update_ratsnest (module_cursor, log_threshold + 1);
@@ -2416,7 +2416,7 @@ package body et_schematic_ops_units is
 					log_threshold	=> log_threshold + 1);
 
 			else
-				log (WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic !");
+				log (SEVERITY_WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic !");
 			end if;
 		end query_module;
 
@@ -2454,7 +2454,7 @@ package body et_schematic_ops_units is
 				process		=> query_module'access);
 
 		else
-			log (WARNING, " Device " & to_string (device_name) & " not found !");
+			log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 		end if;
 
 		et_schematic_ops_nets.update_strand_positions (module_cursor, log_threshold + 2);		
@@ -2581,7 +2581,7 @@ package body et_schematic_ops_units is
 					log_threshold	=> log_threshold + 1);
 
 			else
-				log (WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
+				log (SEVERITY_WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
 			end if;
 		end query_module;
 
@@ -2623,7 +2623,7 @@ package body et_schematic_ops_units is
 				process		=> query_module'access);
 
 		else
-			log (WARNING, " Device " & to_string (device_name) & " not found !");
+			log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 		end if;
 
 		update_ratsnest (module_cursor, log_threshold + 1);
@@ -2738,7 +2738,7 @@ package body et_schematic_ops_units is
 					log_threshold	=> log_threshold + 1);
 
 			else
-				log (WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
+				log (SEVERITY_WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
 			end if;
 		end query_module;
 
@@ -2765,7 +2765,7 @@ package body et_schematic_ops_units is
 				process		=> query_module'access);
 
 		else
-			log (WARNING, " Device " & to_string (device_name) & " not found !");
+			log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 		end if;
 
 		update_ratsnest (module_cursor, log_threshold + 1);
@@ -3277,7 +3277,7 @@ package body et_schematic_ops_units is
 			if unit_query.exists then
 				module.devices.update_element (device_cursor_sch, query_device'access);
 			else
-				log (WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
+				log (SEVERITY_WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
 			end if;
 		end query_module;
 
@@ -3317,7 +3317,7 @@ package body et_schematic_ops_units is
 				process		=> query_module'access);
 
 		else
-			log (WARNING, " Device " & to_string (device_name) & " not found !");
+			log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 		end if;
 		
 		log_indentation_down;		
@@ -3377,7 +3377,7 @@ package body et_schematic_ops_units is
 			if unit_query.exists then
 				module.devices.update_element (device_cursor_sch, query_device'access);
 			else
-				log (WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
+				log (SEVERITY_WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
 			end if;
 		end query_module;
 		
@@ -3405,7 +3405,7 @@ package body et_schematic_ops_units is
 				process		=> query_module'access);
 
 		else
-			log (WARNING, " Device " & to_string (device_name) & " not found !");
+			log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 		end if;
 		
 		log_indentation_down;

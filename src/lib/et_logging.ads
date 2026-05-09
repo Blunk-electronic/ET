@@ -126,8 +126,11 @@ package et_logging is
 
 	
 	
-	type type_message_importance is (NORMAL, NOTE, WARNING, ERROR);
-	-- CS rename to type_message_severity
+	type type_message_severity is (
+		SEVERITY_NORMAL, 
+		SEVERITY_NOTE, 
+		SEVERITY_WARNING, 
+		SEVERITY_ERROR);
 
 	
 	-- Writes the given text with the current log_indentation 
@@ -139,7 +142,7 @@ package et_logging is
 	-- If the importance is WARNING or ERROR then the indentation
 	-- level is ignored:
 	procedure log (
-		importance	: in type_message_importance := NORMAL;
+		importance	: in type_message_severity := SEVERITY_NORMAL;
 
 		-- The actual text to be logged:
 		text		: in string;

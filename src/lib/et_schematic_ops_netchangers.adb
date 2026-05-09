@@ -77,7 +77,7 @@ package body et_schematic_ops_netchangers is
 		port 		: in string;
 		position	: in type_object_position) is
 	begin
-		log (ERROR, "port " & enclose_in_quotes (port) &
+		log (SEVERITY_ERROR, "port " & enclose_in_quotes (port) &
 			 " is directly connected with other ports at" &
 			to_string (position => position) &
 			 ". Dragging not possible !",
@@ -89,7 +89,7 @@ package body et_schematic_ops_netchangers is
 
 
 	procedure relative_rotation_invalid is begin
-		log (ERROR, "Relative rotation must be in range" & 
+		log (SEVERITY_ERROR, "Relative rotation must be in range" & 
 			to_string (rotation_relative_min) &
 			" .." & 
 			to_string (rotation_relative_max),
@@ -105,7 +105,7 @@ package body et_schematic_ops_netchangers is
 	procedure netchanger_not_found (
 		index : in type_netchanger_id) 
 	is begin
-		log (WARNING, "Netchanger " 
+		log (SEVERITY_WARNING, "Netchanger " 
 			& to_string (index) & " not found !");
 	end;
 
@@ -2025,7 +2025,7 @@ package body et_schematic_ops_netchangers is
 			-- in the module, then no renaming will be done:
 			if netchanger_exists (module_cursor, index_new) then
 
-				log (WARNING, " Netchanger " & to_string (index_new)
+				log (SEVERITY_WARNING, " Netchanger " & to_string (index_new)
 						& " already exists !");
 				
 			else
@@ -2304,7 +2304,7 @@ package body et_schematic_ops_netchangers is
 					& to_string (name_M), level => log_threshold + 1);
 					
 			else
-				log (WARNING, "No net on MASTER port found !");
+				log (SEVERITY_WARNING, "No net on MASTER port found !");
 			end if;
 
 
@@ -2319,7 +2319,7 @@ package body et_schematic_ops_netchangers is
 					& to_string (name_s), level => log_threshold + 1);
 
 			else
-				log (WARNING, "No net on SLAVE port found !");
+				log (SEVERITY_WARNING, "No net on SLAVE port found !");
 			end if;
 
 

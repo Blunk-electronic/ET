@@ -320,7 +320,7 @@ package body et_cp_schematic_netchanger is
 							log_threshold	=> log_threshold + 1);
 
 					else
-						log (WARNING, " Rotation " & to_string (rotation) & " invalid !"
+						log (SEVERITY_WARNING, " Rotation " & to_string (rotation) & " invalid !"
 							& " Must be either 0 or 90 degrees.");
 					end if;
 

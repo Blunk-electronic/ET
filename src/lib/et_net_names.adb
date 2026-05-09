@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -56,7 +56,7 @@ package body et_net_names is
 	
 	procedure check_net_name_length (net : in string) is begin
 		if net'length > net_name_length_max then
-			log (ERROR, "max. number of characters for net name is" 
+			log (SEVERITY_ERROR, "max. number of characters for net name is" 
 				 & positive'image (net_name_length_max) & " !",
 				 console => true);
 			raise constraint_error;
@@ -81,7 +81,7 @@ package body et_net_names is
 
 		-- Evaluate position of invalid character.
 		if invalid_character_position > 0 then
-			log (ERROR, "invalid character in net name '" 
+			log (SEVERITY_ERROR, "invalid character in net name '" 
 				 & to_string (net) & "' at position" 
 				 & natural'image (invalid_character_position) & " !",
 				 console => true);
@@ -94,7 +94,7 @@ package body et_net_names is
 		inversion_mark_position := pac_net_name.index (net, net_inversion_mark);
 		if inversion_mark_position > 0 then
 			if inversion_mark_position /= pac_net_name.length (net) then
-				log (ERROR, "net " & to_string (net) 
+				log (SEVERITY_ERROR, "net " & to_string (net) 
 					& " inversion mark must be at the end of the net name !",
 					console => true);
 				raise constraint_error;

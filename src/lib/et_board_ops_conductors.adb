@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -105,7 +105,7 @@ package body et_board_ops_conductors is
 		layer		: in type_signal_layer;
 		zone		: in type_catch_zone) 
 	is begin
-		log (importance => WARNING, text => "no net segment found in layer" 
+		log (SEVERITY_WARNING, "no net segment found in layer" 
 			& to_string (layer) 
 			& " in" & to_string (zone));
 	end no_net_segment_found;
@@ -122,7 +122,7 @@ package body et_board_ops_conductors is
 		layer			: in type_signal_layer) 
 	is
 		procedure warning is begin
-			log (WARNING, "The terminal is an SMT type. Via required to connect with inner layer !");
+			log (SEVERITY_WARNING, "The terminal is an SMT type. Via required to connect with inner layer !");
 		end;
 		
 	begin
@@ -187,7 +187,7 @@ package body et_board_ops_conductors is
 					process		=> add'access);
 				
 			else
-				log (ERROR, "Net " & to_string (net_name) & " not found !");
+				log (SEVERITY_ERROR, "Net " & to_string (net_name) & " not found !");
 				raise constraint_error;
 			end if;
 
@@ -1613,7 +1613,7 @@ package body et_board_ops_conductors is
 					process		=> query_net'access);
 
 			else
-				log (ERROR, "Net " & to_string (net_name) & " not found !");
+				log (SEVERITY_ERROR, "Net " & to_string (net_name) & " not found !");
 				raise constraint_error;
 			end if;
 		end query_module;
@@ -1730,7 +1730,7 @@ package body et_board_ops_conductors is
 					process		=> add'access);
 				
 			else
-				log (ERROR, "Net " & to_string (net_name) & " not found !");
+				log (SEVERITY_ERROR, "Net " & to_string (net_name) & " not found !");
 				raise constraint_error;
 			end if;
 		end add_named_track;
@@ -2381,7 +2381,7 @@ package body et_board_ops_conductors is
 					process		=> query_net'access);
 
 			else
-				log (ERROR, "Net " & to_string (net_name) & " not found !");
+				log (SEVERITY_ERROR, "Net " & to_string (net_name) & " not found !");
 				raise constraint_error;
 			end if;
 		end query_module;
@@ -2569,7 +2569,7 @@ package body et_board_ops_conductors is
 					process		=> ripup'access);
 
 			else
-				log (ERROR, "Net " & to_string (net_name) & " not found !");
+				log (SEVERITY_ERROR, "Net " & to_string (net_name) & " not found !");
 				raise constraint_error;
 			end if;
 
@@ -2652,7 +2652,7 @@ package body et_board_ops_conductors is
 					process		=> query_net'access);
 
 			else
-				log (ERROR, "Net " & to_string (net_name) & " not found !");
+				log (SEVERITY_ERROR, "Net " & to_string (net_name) & " not found !");
 				raise constraint_error;
 			end if;
 		end query_module;

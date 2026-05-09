@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -294,7 +294,7 @@ package body et_module_read_device_electrical is
 					
 					-- value:
 					if not value_characters_valid (device_value) then
-						log (WARNING, "value of " & to_string (device_name) &
+						log (SEVERITY_WARNING, "value of " & to_string (device_name) &
 								" contains invalid characters !");
 						log_indentation_reset; -- CS no need ?						
 						value_invalid (to_string (device_value));
@@ -303,7 +303,7 @@ package body et_module_read_device_electrical is
 					log (text => "value " & to_string (device_value), level => log_threshold + 2);
 					device.value := device_value;
 					if not et_conventions.value_valid (device_value, get_prefix (device_name)) then
-						log (WARNING, "value of " & to_string (device_name) &
+						log (SEVERITY_WARNING, "value of " & to_string (device_name) &
 							" not conformant with conventions !");
 					end if;
 
@@ -409,7 +409,7 @@ package body et_module_read_device_electrical is
 
 					-- The variant should be there. Otherwise abort.
 					if variant_cursor = pac_package_variants.no_element then
-						log (ERROR, "variant " & to_string (device.variant) &
+						log (SEVERITY_ERROR, "variant " & to_string (device.variant) &
 							" not available in device model " & to_string (model) & " !");
 						raise constraint_error;
 					else
@@ -802,7 +802,7 @@ package body et_module_read_device_electrical is
 					position	=> unit_placeholder_position);
 
 			when others =>
-				log (ERROR, "meaning of placeholder not supported !", console => true);
+				log (SEVERITY_ERROR, "meaning of placeholder not supported !", console => true);
 				raise constraint_error;
 		end case;
 

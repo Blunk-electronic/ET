@@ -225,7 +225,7 @@ package et_device_name is
 	-- the console. Currently this is done only when the severity
 	-- is ERROR:
 	procedure message_device_not_found (
-		severity	: in type_message_importance;
+		severity	: in type_message_severity;
 		name		: in type_device_name);
 				 
 	-- Logs a message like "WARNING. Device C12 already exists."
@@ -233,7 +233,7 @@ package et_device_name is
 	-- the console. Currently this is done only when the severity
 	-- is ERROR:
 	procedure message_device_already_exists (
-		severity	: in type_message_importance;
+		severity	: in type_message_severity;
 		name		: in type_device_name);
 
 				 

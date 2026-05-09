@@ -152,7 +152,7 @@ package body et_schematic_ops_device is
 						);
 
 					if not inserted then
-						log (ERROR, "device " & to_string (device_name) &
+						log (SEVERITY_ERROR, "device " & to_string (device_name) &
 							 " unit " & to_string (unit_name) &
 							 " at " & to_string (position => unit_position) &
 							 " sits on top of another unit !",
@@ -436,7 +436,7 @@ package body et_schematic_ops_device is
 			generic_modules.update_element (module_cursor, query_module'access);
 		else
 			if log_warning then
-				log (WARNING, " Device " & to_string (device_name) & " not found !");
+				log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 			end if;
 			
 			error := true;
@@ -499,7 +499,7 @@ package body et_schematic_ops_device is
 						unit_cursor		=> unit_cursor));
 
 				else
-					log (WARNING, " Unit " & to_string (unit_name) & " not found !");
+					log (SEVERITY_WARNING, " Unit " & to_string (unit_name) & " not found !");
 					error := true;
 				end if;
 			end query_device;
@@ -556,7 +556,7 @@ package body et_schematic_ops_device is
 			end if;
 				
 		else
-			log (WARNING, " Device " & to_string (device_name) & " not found !");
+			log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
 			error := true;			
 		end if;
 
@@ -611,7 +611,7 @@ package body et_schematic_ops_device is
 						process		=> set_value'access);
 
 				else
-					log (WARNING, "Value " & enclose_in_quotes (to_string (value)) 
+					log (SEVERITY_WARNING, "Value " & enclose_in_quotes (to_string (value)) 
 						 & " invalid for this kind of device !");
 					-- CS: ERROR instead ?, exception ?
 					-- CS more details ?
@@ -620,7 +620,7 @@ package body et_schematic_ops_device is
 
 			else -- virtual device
 		
-				log (WARNING, " Device " & to_string (device_name) 
+				log (SEVERITY_WARNING, " Device " & to_string (device_name) 
 					& " is virtual and has no value !");
 			end if;
 		end query_module;
@@ -684,7 +684,7 @@ package body et_schematic_ops_device is
 					process		=> set_purpose'access);
 
 			else
-				log (WARNING, "device " & to_string (device_name) 
+				log (SEVERITY_WARNING, "device " & to_string (device_name) 
 					& " is virtual and has no practical purpose !");
 			end if;
 		end query_module;
@@ -751,7 +751,7 @@ package body et_schematic_ops_device is
 					process		=> set_partcode'access);
 
 			else
-				log (WARNING, "Device " & to_string (device_name) 
+				log (SEVERITY_WARNING, "Device " & to_string (device_name) 
 					& " is virtual and has no partcode !");
 			end if;
 		end query_module;
@@ -851,12 +851,12 @@ package body et_schematic_ops_device is
 					if is_variant_available (cursor_lib, variant) then
 						device.variant := variant;
 					else
-						log (WARNING, "Package variant " & to_string (variant) 
+						log (SEVERITY_WARNING, "Package variant " & to_string (variant) 
 							& " is not defined in device model !"); 
 							-- CS output file name ?
 					end if;
 				else
-					log (WARNING, "The requested device is virtual and has no package !");
+					log (SEVERITY_WARNING, "The requested device is virtual and has no package !");
 				end if;
 			end query_device;
 
@@ -1224,7 +1224,7 @@ package body et_schematic_ops_device is
 						
 						if renumber (type_device_category'val (cat)) = false then
 							-- second iteration failed: abort
-							log (ERROR, "renumbering failed !", console => true);
+							log (SEVERITY_ERROR, "renumbering failed !", console => true);
 							raise constraint_error;
 						end if;
 						

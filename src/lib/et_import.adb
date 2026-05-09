@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
 --   finished yet or intended for the future.
@@ -51,7 +51,7 @@ package body et_import is
 		if format = to_lower (type_cad_format'image (kicad_v4)) then
 			null;
 		else
-			log (ERROR, "CAD format '"
+			log (SEVERITY_ERROR, "CAD format '"
 					& format & "' invalid !" 
 					& " Supported formats: "
 					& type_cad_format'image (kicad_v4) -- CS: use a loop to offer formats
@@ -98,7 +98,7 @@ package body et_import is
 		if exists (pac_project_name.to_string (name)) then
 			null; -- fine
 		else
-			log (ERROR, "project '" & to_string (name) 
+			log (SEVERITY_ERROR, "project '" & to_string (name) 
 				& "' not found ! Working directory correct ?",
 				console => true);
 			raise constraint_error;

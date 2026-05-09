@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          -- 
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -137,7 +137,7 @@ package body et_kicad.pcb is
 -- 		if tech = "smd" then return SMT;
 -- 		elsif tech = "thru_hole" then return THT;
 -- 		else
--- 			log (ERROR, "invalid assembly technology", console => true);
+-- 			log (SEVERITY_ERROR, "invalid assembly technology", console => true);
 -- 			raise constraint_error;
 -- 		end if;
 -- 	end to_assembly_technology;
@@ -148,7 +148,7 @@ package body et_kicad.pcb is
 		id : type_signal_layer_id; -- to be returned
 
 		procedure invalid_layer is begin
-			log (ERROR, "invalid layer '" & layer & "' !", console => true);
+			log (SEVERITY_ERROR, "invalid layer '" & layer & "' !", console => true);
 			raise constraint_error;
 		end invalid_layer;
 
@@ -630,7 +630,7 @@ package body et_kicad.pcb is
 			use et_board_coordinates;
 			
 			procedure invalid is begin
-				log (ERROR, "contradicting layers in terminal !", console => true);
+				log (SEVERITY_ERROR, "contradicting layers in terminal !", console => true);
 				log (text => "face " & to_string (terminal_face), console => true);
 				log (text => " solder paste top " & to_string (terminal_top_solder_paste), console => true);
 				log (text => " solder paste bot " & to_string (terminal_bot_solder_paste), console => true);
@@ -707,8 +707,8 @@ package body et_kicad.pcb is
 				log (text => "line " & to_string (current_line), level => log_threshold + 4);
 			else
 				-- This should never happen:
-				log (ERROR, "in " & file_name, console => true);
-				log (ERROR, "no more lines available !", console => true);
+				log (SEVERITY_ERROR, "in " & file_name, console => true);
+				log (SEVERITY_ERROR, "no more lines available !", console => true);
 				raise constraint_error;
 			end if;
 		end get_next_line;
@@ -733,7 +733,7 @@ package body et_kicad.pcb is
 			end_of_kw : integer;  -- may become negative if no terminating character present
 
 			procedure invalid_section is begin
-				log (ERROR, "invalid subsection '" & to_string (section.name) 
+				log (SEVERITY_ERROR, "invalid subsection '" & to_string (section.name) 
 					 & "' in parent section '" & to_string (section.parent) & "' ! (read section)", console => true);
 				raise constraint_error;
 			end invalid_section;
@@ -777,7 +777,7 @@ package body et_kicad.pcb is
 					-- NOTE: The layer_id must be set here and further processed in procedure read_arg.
 					section.name := SEC_LAYER_ID; -- see comments above
 				else
-					log (ERROR, "expect subsection name !", console => true);
+					log (SEVERITY_ERROR, "expect subsection name !", console => true);
 					raise constraint_error;
 				end if;
 			end if;
@@ -971,11 +971,11 @@ package body et_kicad.pcb is
 			exception
 				when event:
 					others =>
-						log (ERROR, "in " & file_name, console => true);
-						log (ERROR, get_affected_line (element (line_cursor)) 
+						log (SEVERITY_ERROR, "in " & file_name, console => true);
+						log (SEVERITY_ERROR, get_affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
 
-						log (ERROR, "section '" & slice (current_line, character_cursor, end_of_kw) 
+						log (SEVERITY_ERROR, "section '" & slice (current_line, character_cursor, end_of_kw) 
 							& "' invalid or not supported yet", console => true);
 						raise;
 			
@@ -1000,20 +1000,20 @@ package body et_kicad.pcb is
 			arg : type_argument.bounded_string; -- here the argument goes temporarily
 
 			procedure invalid_layer is begin
-				log (ERROR, "invalid layer " & to_string (arg), console => true);
+				log (SEVERITY_ERROR, "invalid layer " & to_string (arg), console => true);
 				raise constraint_error;
 			end invalid_layer;
 
 			
 			procedure too_many_arguments is begin
-				log (ERROR, "too many arguments in section " & to_string (section.name) & " !", console => true);
+				log (SEVERITY_ERROR, "too many arguments in section " & to_string (section.name) & " !", console => true);
 				log (text => "excessive argument reads '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end too_many_arguments;
 
 			
 			procedure invalid_fp_text_keyword is begin
-				log (ERROR, "expect keyword '" & keyword_fp_text_reference 
+				log (SEVERITY_ERROR, "expect keyword '" & keyword_fp_text_reference 
 					 & "' or '" & keyword_fp_text_value 
 					 & "' or '" & keyword_fp_text_user
 					 & "' ! found '" & to_string (arg) & "'", console => true);
@@ -1022,20 +1022,20 @@ package body et_kicad.pcb is
 
 			
 			procedure invalid_attribute is begin
-				log (ERROR, "invalid attribute !", console => true);
+				log (SEVERITY_ERROR, "invalid attribute !", console => true);
 				raise constraint_error;
 			end invalid_attribute;
 
 			
 			procedure invalid_section is begin
-				log (ERROR, "invalid subsection '" & to_string (section.name) 
+				log (SEVERITY_ERROR, "invalid subsection '" & to_string (section.name) 
 					 & "' in parent section '" & to_string (section.parent) & "' ! (read argument)", console => true);
 				raise constraint_error;
 			end invalid_section;
 
 			
 			procedure invalid_file_format is begin
-				log (ERROR, "invalid file format ! Expect format version " & pcb_file_format_version_4 & " !",
+				log (SEVERITY_ERROR, "invalid file format ! Expect format version " & pcb_file_format_version_4 & " !",
 					 console => true);
 				raise constraint_error;
 			end invalid_file_format;
@@ -1084,7 +1084,7 @@ package body et_kicad.pcb is
 			-- or in v5 like:
 			-- (kicad_pcb (version 20171130) (host pcbnew 5.0.0-5.0.0)
 				procedure invalid_pcbnew_version (version : in string) is begin
-					log (ERROR, "invalid " & host_name_pcbnew & " version ! Expect " & version & " !",
+					log (SEVERITY_ERROR, "invalid " & host_name_pcbnew & " version ! Expect " & version & " !",
 						console => true);
 					raise constraint_error;
 				end invalid_pcbnew_version;
@@ -1118,7 +1118,7 @@ package body et_kicad.pcb is
 			-- or in v5 like:
 			-- (kicad_pcb (version 20171130) (host pcbnew 5.0.0-5.0.0)
 				procedure invalid_host_name is begin
-					log (ERROR, "invalid host name ! Expect " & host_name_pcbnew & " !",
+					log (SEVERITY_ERROR, "invalid host name ! Expect " & host_name_pcbnew & " !",
 						console => true);
 					raise constraint_error;
 				end invalid_host_name;
@@ -1187,7 +1187,7 @@ package body et_kicad.pcb is
 
 				-- if no trailing quotation found -> error
 				if end_of_arg = -1 then
-					log (ERROR, get_affected_line (element (line_cursor))
+					log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
 						& latin_1.space & latin_1.quotation & " expected");
 						raise constraint_error;
 				end if;
@@ -1653,7 +1653,7 @@ package body et_kicad.pcb is
 								when 0 => null;
 								when 1 => 
 									if to_string (arg) /= keyword_fp_text_mirrored then
-										log (ERROR, "expect keyword '" & keyword_fp_text_mirrored & "' !", console => true);
+										log (SEVERITY_ERROR, "expect keyword '" & keyword_fp_text_mirrored & "' !", console => true);
 										raise constraint_error;
 									end if;
 								when others => too_many_arguments;
@@ -3015,7 +3015,7 @@ package body et_kicad.pcb is
 								when 1 => 
 									if to_string (arg) = "segment" then polygon.fill_mode_segment := true; -- CS use constant for "segment"
 									else 
-										log (ERROR, "expect argument 'segment' for fill mode !", console => true);
+										log (SEVERITY_ERROR, "expect argument 'segment' for fill mode !", console => true);
 										raise constraint_error;
 									end if;
 									
@@ -3109,8 +3109,8 @@ package body et_kicad.pcb is
 			exception
 				when event:
 					others =>
-						log (ERROR, "in " & file_name, console => true);
-						log (ERROR, get_affected_line (element (line_cursor)) 
+						log (SEVERITY_ERROR, "in " & file_name, console => true);
+						log (SEVERITY_ERROR, get_affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
 						log (text => ada.exceptions.exception_message (event));
 						raise;
@@ -3126,25 +3126,25 @@ package body et_kicad.pcb is
 			use et_board_coordinates;
 
 			procedure invalid_layer_reference is begin
-				log (ERROR, "reference " & to_string (package_reference) & " must be in a silk screen layer !", console => true);
+				log (SEVERITY_ERROR, "reference " & to_string (package_reference) & " must be in a silk screen layer !", console => true);
 				raise constraint_error;
 			end invalid_layer_reference;
 
 			
 			procedure invalid_layer_value is begin
-				log (WARNING, "value " & to_string (package_value) & " should be in a fabrication layer !");
+				log (SEVERITY_WARNING, "value " & to_string (package_value) & " should be in a fabrication layer !");
 			end invalid_layer_value;
 
 			
 			procedure invalid_layer_user is begin
-				log (ERROR, "user text " & to_string (package_text.content) 
+				log (SEVERITY_ERROR, "user text " & to_string (package_text.content) 
 					 & " must be in a silk screen or fabrication layer !", console => true);
 				raise constraint_error;
 			end invalid_layer_user;
 
 			
 			procedure invalid_layer is begin
-				log (ERROR, "invalid layer for this object !", console => true);
+				log (SEVERITY_ERROR, "invalid layer for this object !", console => true);
 				raise constraint_error;
 			end invalid_layer;
 
@@ -3154,7 +3154,7 @@ package body et_kicad.pcb is
 				use pac_net_name;
 			begin
 				if length (terminal_net_name) = 0 then
-					log (WARNING, to_string (package_reference) & latin_1.space
+					log (SEVERITY_WARNING, to_string (package_reference) & latin_1.space
 						 & to_string (terminal_name) & " not connected with a net !");
 				end if;
 			end warn_on_missing_net;
@@ -3306,7 +3306,7 @@ package body et_kicad.pcb is
 					package_copper.bottom.texts.clear;
 
 				else
-					log (ERROR, "package " & to_string (package_reference) 
+					log (SEVERITY_ERROR, "package " & to_string (package_reference) 
 						& to_string (package_position)
 						& " already used !",
 						 console => true);
@@ -3335,7 +3335,7 @@ package body et_kicad.pcb is
 						 & " name " & type_layer_name.to_string (layer.name)
 						 & " meaning " & type_layer_meaning'image (layer.meaning), level => log_threshold + 2);
 				else
-					log (ERROR, "layer id" & type_layer_id'image (layer_id) & " already used !", 
+					log (SEVERITY_ERROR, "layer id" & type_layer_id'image (layer_id) & " already used !", 
 						 console => true);
 					raise constraint_error;
 				end if;
@@ -3373,7 +3373,7 @@ package body et_kicad.pcb is
 					-- next net class section and thus become overwritten.
 					net_class.net_names.clear;
 				else
-					log (ERROR, "net class '" & to_string (net_class_name) & "' already defined !", console => true);
+					log (SEVERITY_ERROR, "net class '" & to_string (net_class_name) & "' already defined !", console => true);
 					raise constraint_error;
 				end if;
 			end insert_net_class;
@@ -3399,7 +3399,7 @@ package body et_kicad.pcb is
 							level => log_threshold + 1);
 					end if;
 				else
-					log (ERROR, "either net id" & to_string (netlist_net.id) 
+					log (SEVERITY_ERROR, "either net id" & to_string (netlist_net.id) 
 						& " or net name '" & to_string (netlist_net.name) & "' already used !",
 						 console => true);
 					raise constraint_error;
@@ -3669,7 +3669,7 @@ package body et_kicad.pcb is
 						else
 							-- CS currently there is no reason for texts in stencil, keepout, glue or other layers.
 							-- This would cause an error:
-							log (ERROR, "Text not allowed in this layer !", console => true);
+							log (SEVERITY_ERROR, "Text not allowed in this layer !", console => true);
 							-- CS output the layer by its full kicad name like B.SilkS or T.CU.
 							-- This requires a function that translates from type_layer_id to layer_top_solder_paste ... 
 							-- see layer name declarations in spec of this package
@@ -4236,7 +4236,7 @@ package body et_kicad.pcb is
 					init_terminal_net_name; -- in case the next terminal has no net connected
 
 				else -- terminal could not be inserted
-					log (ERROR, "duplicated terminal " & to_string (terminal_name) & " !", console => true);
+					log (SEVERITY_ERROR, "duplicated terminal " & to_string (terminal_name) & " !", console => true);
 					raise constraint_error;
 				end if;
 					
@@ -4362,7 +4362,7 @@ package body et_kicad.pcb is
 			procedure insert_via is begin
 			-- inserts a via in the list "vias"
 				if via.layer_start > via.layer_end then
-					log (ERROR, "via start layer id must be less than end layer id !", console => true);
+					log (SEVERITY_ERROR, "via start layer id must be less than end layer id !", console => true);
 					raise constraint_error;
 				end if;
 			
@@ -4391,7 +4391,7 @@ package body et_kicad.pcb is
 				if not contains (polygon.corners, polygon_point) then
 					log (text => "polygon corner point at" & to_string (polygon_point), level => log_threshold + 3);
 				else
-					log (WARNING, "multiple polygon corner points at" & to_string (polygon_point));
+					log (SEVERITY_WARNING, "multiple polygon corner points at" & to_string (polygon_point));
 				end if;
 
 				polygon.corners.append (polygon_point);
@@ -4433,7 +4433,7 @@ package body et_kicad.pcb is
 
 				-- Warn about floating polygons:
 				if pac_net_name.length (polygon.net_name) = 0 then
-					log (WARNING, "Polygon without connection with any net found !");
+					log (SEVERITY_WARNING, "Polygon without connection with any net found !");
 				end if;
 
 				-- Reset selectors of "polygon" (variable "polygon" is a scratch variable).
@@ -4578,8 +4578,8 @@ package body et_kicad.pcb is
 			exception
 				when event:
 					others =>
-						log (ERROR, "in " & file_name, console => true);
-						log (ERROR, get_affected_line (element (line_cursor)) 
+						log (SEVERITY_ERROR, "in " & file_name, console => true);
+						log (SEVERITY_ERROR, get_affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
 						log (text => ada.exceptions.exception_message (event));
 						raise;
@@ -4668,8 +4668,8 @@ package body et_kicad.pcb is
 
 		-- check section name. must be top level section
 		if section.name /= INIT then -- should never happen
-			log (ERROR, "in " & file_name, console => true);
-			log (ERROR, "top level section not closed !", console => true);
+			log (SEVERITY_ERROR, "in " & file_name, console => true);
+			log (SEVERITY_ERROR, "top level section not closed !", console => true);
 			raise constraint_error;
 		end if;
 
@@ -4822,14 +4822,14 @@ package body et_kicad.pcb is
 					if terminal_cursor /= pac_terminals.no_element then -- terminal found
 						net := element (terminal_cursor).net_name;
 					else
-						log (ERROR, "component reference " & to_string (reference) &
+						log (SEVERITY_ERROR, "component reference " & to_string (reference) &
 							" terminal " & to_string (terminal) &
 							 " not found in board !",
 							console => true);
 						raise constraint_error;
 					end if;
 				else -- component package does not exist
-					log (ERROR, "component reference " & to_string (reference) &
+					log (SEVERITY_ERROR, "component reference " & to_string (reference) &
 						 " not found in board !",
 						 console => true);
 					raise constraint_error;
@@ -4898,7 +4898,7 @@ package body et_kicad.pcb is
 
 						-- if the net could not be found, then board and schematic are not consistent -> error
 						if length (net_name_in_board) = 0 then
-							log (ERROR, "net '" & to_string (name) & "' not found in board !", console => true);
+							log (SEVERITY_ERROR, "net '" & to_string (name) & "' not found in board !", console => true);
 							raise constraint_error;
 						end if;
 
@@ -5335,7 +5335,7 @@ package body et_kicad.pcb is
 						end loop;
 
 						if not terminal_found then
-							log (ERROR, "net " & to_string (net_name_in) 
+							log (SEVERITY_ERROR, "net " & to_string (net_name_in) 
 								 & " not connected to any package !", console => true);
 							raise constraint_error;
 						end if;
@@ -5448,7 +5448,7 @@ package body et_kicad.pcb is
 							module.board.conductors_floating.zones.solid.append (p);
 
 							floating_copper_polygon_properties (module.board.conductors_floating.zones.solid.last, log_threshold + 2);
-							log (WARNING, "polygon is not connected with any net !", level => log_threshold + 2);
+							log (SEVERITY_WARNING, "polygon is not connected with any net !", level => log_threshold + 2);
 
 						end if;
 						next (polygon_cursor);
@@ -5553,7 +5553,7 @@ package body et_kicad.pcb is
 
 								
 							else -- value mismatch
-								log (ERROR, "value of " & to_string (package_reference) &
+								log (SEVERITY_ERROR, "value of " & to_string (package_reference) &
 									 " mismatch ! In schematic: " & to_string (element (component_cursor).value) &
 									 " in layout: " & to_string (element (package_cursor).value),
 									console => true);
@@ -5561,7 +5561,7 @@ package body et_kicad.pcb is
 							end if;
 								
 						else -- package not found in layout
-							log (ERROR, "package " & to_string (package_reference) &
+							log (SEVERITY_ERROR, "package " & to_string (package_reference) &
 								 " not found in the board !", console => true);
 							raise constraint_error;
 						end if;
@@ -5731,7 +5731,7 @@ package body et_kicad.pcb is
 		library_cursor := type_libraries.find (package_libraries, library_name);
 
 		if library_cursor = type_libraries.no_element then
-			log (ERROR, to_string (library_name) & " not found !", console => true);
+			log (SEVERITY_ERROR, to_string (library_name) & " not found !", console => true);
 			raise constraint_error;
 		else
 			-- query packages in library

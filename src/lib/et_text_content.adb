@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -97,7 +97,7 @@ package body et_text_content is
 			test 	=> outside);
 
 		if invalid_character_position > 0 then
-			log (WARNING, "Text " & enclose_in_quotes (to_string (content))
+			log (SEVERITY_WARNING, "Text " & enclose_in_quotes (to_string (content))
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position)
 				 & " !"
@@ -125,7 +125,7 @@ package body et_text_content is
 		if characters_valid (content) then
 			null;
 		else
-			log (WARNING, "Replacing invalid characters in text " 
+			log (SEVERITY_WARNING, "Replacing invalid characters in text " 
 				& enclose_in_quotes (to_string (content))
 				& " by " & enclose_in_quotes (replace_by) & " !");
 
@@ -160,7 +160,7 @@ package body et_text_content is
 	procedure check_text_content_length (content : in string) is
 	begin
 		if content'length > text_length_max then
-			log (ERROR, "max. number of characters for a text field is" 
+			log (SEVERITY_ERROR, "max. number of characters for a text field is" 
 				 & positive'image (text_length_max) & " !",
 				 console => true);
 			raise constraint_error;

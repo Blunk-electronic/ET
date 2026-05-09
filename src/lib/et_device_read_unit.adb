@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -183,14 +183,14 @@ package body et_device_read_unit is
 		
 		-- Test occurence in internal units:
 		if not inserted then
-			log (ERROR, "unit " & to_string (unit_name) 
+			log (SEVERITY_ERROR, "unit " & to_string (unit_name) 
 				& " already used by another internal unit !", console => true);
 			raise constraint_error;
 		end if;
 
 		-- Make sure the unit name is not in use by any external unit:
 		if pac_units_external.contains (units_external, unit_name) then
-			log (ERROR, "unit name " & to_string (unit_name) 
+			log (SEVERITY_ERROR, "unit name " & to_string (unit_name) 
 				& " already used by an external unit !", console => true);
 			raise constraint_error;
 		end if;
@@ -297,14 +297,14 @@ package body et_device_read_unit is
 
 			-- Test occurence in external units:
 			if not inserted then
-				log (ERROR, "unit name " & to_string (unit_name) 
+				log (SEVERITY_ERROR, "unit name " & to_string (unit_name) 
 					& " already used by another external unit !");
 				raise constraint_error;
 			end if;
 
 			-- Make sure the unit name is not in use by any internal unit:
 			if pac_units_internal.contains (units_internal, unit_name) then
-				log (ERROR, "unit name " & to_string (unit_name) 
+				log (SEVERITY_ERROR, "unit name " & to_string (unit_name) 
 					& " already used by an internal unit !");
 				raise constraint_error;
 			end if;			

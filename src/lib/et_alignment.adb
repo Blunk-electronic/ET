@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -110,7 +110,7 @@ package body et_alignment is
 				alignment.vertical := to_alignment_vertical (f (line, place + 1));
 				
 			else
-				log (ERROR, "alignment invalid: " & (f (line, place)));
+				log (SEVERITY_ERROR, "alignment invalid: " & (f (line, place)));
 				raise constraint_error;
 			end if;
 				

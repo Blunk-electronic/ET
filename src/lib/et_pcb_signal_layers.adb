@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -155,7 +155,7 @@ package body et_pcb_signal_layers is
 
 		
 		procedure warning (layer : in type_signal_layer) is begin
-			log (WARNING, "Multiple occurence of layer " & to_string (layer) & " !");
+			log (SEVERITY_WARNING, "Multiple occurence of layer " & to_string (layer) & " !");
 		end;
 
 		
@@ -175,7 +175,7 @@ package body et_pcb_signal_layers is
 		begin
 			-- The range must be going upwards:
 			if range_start > range_end then
-				log (ERROR, "Layer range must be going upwards !", console => true);
+				log (SEVERITY_ERROR, "Layer range must be going upwards !", console => true);
 				raise constraint_error;
 			else
 				for l in range_start .. range_end loop
@@ -192,7 +192,7 @@ package body et_pcb_signal_layers is
 		
 	begin -- to_layers
 		if layers'length = 0 then
-			log (ERROR, "Layer term must not be empty !", console => true);
+			log (SEVERITY_ERROR, "Layer term must not be empty !", console => true);
 			raise constraint_error;
 		end if;
 		
@@ -200,11 +200,11 @@ package body et_pcb_signal_layers is
 			char := layers (place);
 
 			if place = layers'first and char /= layer_term_start then
-				log (ERROR, "Layer term must start with '" & layer_term_start & "' !", console => true);
+				log (SEVERITY_ERROR, "Layer term must start with '" & layer_term_start & "' !", console => true);
 				raise constraint_error;
 				
 			elsif place = layers'last and char /= layer_term_end then
-				log (ERROR, "Layer term must end with '" & layer_term_end & "' !", console => true);
+				log (SEVERITY_ERROR, "Layer term must end with '" & layer_term_end & "' !", console => true);
 				raise constraint_error;
 
 			elsif char = layer_term_start then null;
@@ -240,7 +240,7 @@ package body et_pcb_signal_layers is
 				reset_number;
 				
 			else
-				log (ERROR, "Invalid character in layer term !", console => true);
+				log (SEVERITY_ERROR, "Invalid character in layer term !", console => true);
 				raise constraint_error;
 			end if;
 		end loop;

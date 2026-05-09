@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -146,7 +146,7 @@ is
 
 					-- An instance may exist only once:
 					if not instance_created then
-						log (ERROR, "module instance '" 
+						log (SEVERITY_ERROR, "module instance '" 
 							& to_string (instance_name) & "' already exists !", console => true);
 						raise constraint_error;
 					end if;
@@ -188,7 +188,7 @@ is
 
 							-- A module connection may exist only once:
 							if not connection_inserted then
-								log (ERROR, "module connection already exists !", console => true);
+								log (SEVERITY_ERROR, "module connection already exists !", console => true);
 								raise constraint_error;
 							end if;
 
@@ -198,22 +198,22 @@ is
 						else
 							-- test length of instance_A/B and purpose A/B. must be greater zero
 							if length (instance_A) = 0 then
-								log (ERROR, "instance A not specified !", console => true);
+								log (SEVERITY_ERROR, "instance A not specified !", console => true);
 								raise constraint_error;
 							end if;
 
 							if length (purpose_A) = 0 then
-								log (ERROR, "purpose A not specified !", console => true);
+								log (SEVERITY_ERROR, "purpose A not specified !", console => true);
 								raise constraint_error;
 							end if;						
 
 							if length (instance_B) = 0 then
-								log (ERROR, "instance B not specified !", console => true);
+								log (SEVERITY_ERROR, "instance B not specified !", console => true);
 								raise constraint_error;
 							end if;
 
 							if length (purpose_B) = 0 then
-								log (ERROR, "purpose B not specified !", console => true);
+								log (SEVERITY_ERROR, "purpose B not specified !", console => true);
 								raise constraint_error;
 							end if;						
 						end if;
@@ -304,7 +304,7 @@ is
 						return true;
 						
 					else
-						log (ERROR, write_missing_begin_end, console => true);
+						log (SEVERITY_ERROR, write_missing_begin_end, console => true);
 						raise constraint_error;
 					end if;
 					
@@ -359,7 +359,7 @@ is
 										
 										-- test whether a module with this generic name exists
 										if not generic_module_exists (generic_name) then
-											log (WARNING, "Module " & enclose_in_quotes (to_string (generic_name)) &
+											log (SEVERITY_WARNING, "Module " & enclose_in_quotes (to_string (generic_name)) &
 													" does not exist !", console => true);
 											--raise constraint_error;
 										end if;
@@ -377,7 +377,7 @@ is
 										-- test whether module provides the assembly variant
 										module_cursor := locate_module (generic_name);
 										if not assembly_variant_exists (module_cursor, assembly_variant) then
-											log (ERROR, "module " & enclose_in_quotes (to_string (generic_name)) &
+											log (SEVERITY_ERROR, "module " & enclose_in_quotes (to_string (generic_name)) &
 													" does not provide assembly variant " &
 													enclose_in_quotes (to_variant (assembly_variant)) & " !",
 												console => true);
@@ -480,7 +480,7 @@ is
 
 		-- As a safety measure the top section must be reached:
 		if pac_sections_stack.depth > 1 then 
-			log (WARNING, write_section_stack_not_empty);
+			log (SEVERITY_WARNING, write_section_stack_not_empty);
 		end if;
 
 		log_indentation_down;
@@ -518,7 +518,7 @@ begin -- read_rigs
 	if more_entries (module_file_search) then
 		search (current_directory, module_file_name_extension_asterisk, module_file_filter, read_module_file_pre'access);
 	else
-		log (WARNING, "No modules found !"); -- CS: write implications !
+		log (SEVERITY_WARNING, "No modules found !"); -- CS: write implications !
 	end if;
 	end_search (module_file_search);
 
@@ -536,7 +536,7 @@ begin -- read_rigs
 	if more_entries (conf_file_search) then
 		search (current_directory, file_extension_asterisk, conf_file_filter, read_conf_file'access);
 	else
-		log (WARNING, "No rig configuration files found !"); -- CS: write implications !
+		log (SEVERITY_WARNING, "No rig configuration files found !"); -- CS: write implications !
 	end if;
 	end_search (conf_file_search);
 	log_indentation_down;

@@ -141,7 +141,7 @@ package body et_generic_modules is
 		module : in pac_module_name.bounded_string) 
 	is begin
 		if not generic_module_exists (module) then
-			log (ERROR, "module " & to_string (module) &
+			log (SEVERITY_ERROR, "module " & to_string (module) &
 				" not found !", console => true);
 			raise constraint_error;
 		end if;

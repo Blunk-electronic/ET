@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -38,7 +38,7 @@
 --
 -- DESCRIPTION:
 -- 
--- This is about contours in general.
+--
 --
 --
 --
@@ -363,7 +363,7 @@ package body et_package_read_terminal is
 		end case;
 
 		if not inserted then
-			log (ERROR, "terminal" & to_string (terminal_name) 
+			log (SEVERITY_ERROR, "terminal" & to_string (terminal_name) 
 					& " already used !", console => true);
 			raise constraint_error;
 		end if;

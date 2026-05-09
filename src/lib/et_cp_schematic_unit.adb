@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -137,7 +137,7 @@ package body et_cp_schematic_unit is
 			procedure unit_not_found is 
 				use pac_unit_name;
 			begin
-				log (WARNING, " Device " & to_string (device) 
+				log (SEVERITY_WARNING, " Device " & to_string (device) 
 					& " unit " & to_string (unit) & " not found !");
 				-- CS output in status bar
 			end;
@@ -329,9 +329,9 @@ package body et_cp_schematic_unit is
 						
 						
 					else
-						-- log (WARNING, " Device " & to_string (device) 
+						-- log (SEVERITY_WARNING, " Device " & to_string (device) 
 						--   & " is not on this sheet !");
-						message_device_not_found (et_logging.ERROR, device);
+						message_device_not_found (SEVERITY_ERROR, device);
 					end if;
 
 				else
@@ -384,7 +384,7 @@ package body et_cp_schematic_unit is
 								mode	=> SEARCH_MODE_FIRST_UNIT);
 								
 						else
-							message_device_not_found (et_logging.ERROR, device_name);
+							message_device_not_found (SEVERITY_ERROR, device_name);
 						end if;
 					end if;
 				
@@ -413,7 +413,7 @@ package body et_cp_schematic_unit is
 									mode	=> SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET);
 
 							else
-								message_device_not_found (et_logging.ERROR, device_name);
+								message_device_not_found (SEVERITY_ERROR, device_name);
 							end if;
 					
 
@@ -430,7 +430,7 @@ package body et_cp_schematic_unit is
 									mode	=> SEARCH_MODE_BY_UNIT_NAME);
 
 							else
-								message_device_not_found (et_logging.ERROR, device_name);
+								message_device_not_found (SEVERITY_ERROR, device_name);
 							end if;
 									
 						end if;

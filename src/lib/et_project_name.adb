@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -95,11 +95,11 @@ package body et_project_name is
 			if kind (expanded_name) = DIRECTORY then -- is a directory
 				null;
 			else
-				log (ERROR, "The project must be a directory !", console => true);
+				log (SEVERITY_ERROR, "The project must be a directory !", console => true);
 				raise constraint_error;
 			end if;
 		else
-			log (ERROR, "The project must be a child directory !", console => true);
+			log (SEVERITY_ERROR, "The project must be a child directory !", console => true);
 			raise constraint_error;
 		end if;
 	end validate_project_name;

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -195,7 +195,7 @@ package body et_module_read_board_contour is
 		if status.closed then
 			null;
 		else
-			log (WARNING, "Contour not properly closed at: " 
+			log (SEVERITY_WARNING, "Contour not properly closed at: " 
 				& to_string (status.gaps));
 			-- CS: write implications and dangers !
 		end if;

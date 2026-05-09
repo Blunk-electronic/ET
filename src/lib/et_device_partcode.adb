@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -68,7 +68,7 @@ package body et_device_partcode is
 		-- Returns true if length of given partcode is ok. Issues warning if not.	
 	begin
 		if partcode'length > partcode_length_max then
-			log (WARNING, "partcode " & enclose_in_quotes (partcode) & " is longer than" 
+			log (SEVERITY_WARNING, "partcode " & enclose_in_quotes (partcode) & " is longer than" 
 				 & positive'image (partcode_length_max) & " characters !");
 			return false;
 		else
@@ -90,7 +90,7 @@ package body et_device_partcode is
 			test	=> outside);
 
 		if invalid_character_position > 0 then
-			log (WARNING, "partcode " & enclose_in_quotes (to_string (partcode))
+			log (SEVERITY_WARNING, "partcode " & enclose_in_quotes (to_string (partcode))
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position));
 			return false;
@@ -102,7 +102,7 @@ package body et_device_partcode is
 	
 	procedure partcode_invalid (partcode : in string) is 
 	begin
-		--log (ERROR, "partcode " & enclose_in_quotes (partcode) &
+		--log (SEVERITY_ERROR, "partcode " & enclose_in_quotes (partcode) &
 			 --" invalid !", console => true);
 		--raise constraint_error;
 		raise syntax_error_1 with

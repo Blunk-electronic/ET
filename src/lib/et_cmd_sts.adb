@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -253,7 +253,7 @@ package body et_cmd_sts is
 	procedure invalid_keyword (
 		field : in type_field_count) 
 	is begin
-		log (ERROR, "invalid keyword in field no." 
+		log (SEVERITY_ERROR, "invalid keyword in field no." 
 			 & type_field_count'image (field) & " !",
 			 console => true);
 		raise constraint_error;
@@ -289,11 +289,11 @@ package body et_cmd_sts is
 				-- Instead in console mode, further actions 
 				-- can be proposed to the operator:
 				null;				
-				log (NOTE, "Incomplete command: " & enclose_in_quotes (get_all_fields (cmd)));
+				log (SEVERITY_NOTE, "Incomplete command: " & enclose_in_quotes (get_all_fields (cmd)));
 
 				
 			when ORIGIN_SCRIPT =>
-				log (ERROR, "Incomplete command: " & enclose_in_quotes (get_all_fields (cmd)));
+				log (SEVERITY_ERROR, "Incomplete command: " & enclose_in_quotes (get_all_fields (cmd)));
 				
 				-- In script mode, an incomplete command is not accepted.
 				-- The exit code must be set accordingly:
@@ -312,7 +312,7 @@ package body et_cmd_sts is
 		cmd		: in out type_single_cmd;
 		from	: in type_field_count) 
 	is begin
-		log (ERROR, "Command: " & enclose_in_quotes (get_all_fields (cmd)) 
+		log (SEVERITY_ERROR, "Command: " & enclose_in_quotes (get_all_fields (cmd)) 
 			 & " too long !");
 		
 		log (text => "Excessive arguments after no." 

@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -267,7 +267,7 @@ package body et_module_read_meta is
 			lib := to_library_path (f (line, 2));
 			
 			if not library_path_exists (lib) then
-				log (WARNING, "Preferred library path for devices " 
+				log (SEVERITY_WARNING, "Preferred library path for devices " 
 					& enclose_in_quotes (to_string (lib))
 					& " does not exist !");
 			end if;
@@ -296,7 +296,7 @@ package body et_module_read_meta is
 			lib := to_library_path (f (line, 2));
 
 			if not library_path_exists (lib) then
-				log (WARNING, "Preferred library path for non-electrical packages " 
+				log (SEVERITY_WARNING, "Preferred library path for non-electrical packages " 
 					& enclose_in_quotes (to_string (lib))
 					& " does not exist !");
 			end if;

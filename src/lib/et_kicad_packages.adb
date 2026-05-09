@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -85,7 +85,7 @@ package body et_kicad_packages is
 		if tech = "smd" then return SMT;
 		elsif tech = "thru_hole" then return THT;
 		else
-			log (ERROR, "invalid assembly technology", console => true);
+			log (SEVERITY_ERROR, "invalid assembly technology", console => true);
 			raise constraint_error;
 		end if;
 	end to_assembly_technology;
@@ -109,7 +109,7 @@ package body et_kicad_packages is
 		elsif shape = "circle" then return CIRCULAR;
 		elsif shape = "oval" then return OVAL;
 		else
-			log (ERROR, "invalid or not supported shape for a THT terminal !", console => true);
+			log (SEVERITY_ERROR, "invalid or not supported shape for a THT terminal !", console => true);
 			raise constraint_error;
 		end if;
 	end to_pad_shape_tht;
@@ -121,7 +121,7 @@ package body et_kicad_packages is
 		elsif shape = "oval" then return OVAL;
 		elsif shape = "circle" then return CIRCULAR;
 		else
-			log (ERROR, "invalid or not supported shape for an SMT terminal !", console => true);
+			log (SEVERITY_ERROR, "invalid or not supported shape for an SMT terminal !", console => true);
 			raise constraint_error;
 		end if;
 	end to_pad_shape_smt;
@@ -695,7 +695,7 @@ package body et_kicad_packages is
 			use et_board_coordinates;
 			
 			procedure invalid is begin
-				log (ERROR, "contradicting layers in terminal !", console => true);
+				log (SEVERITY_ERROR, "contradicting layers in terminal !", console => true);
 				log (text => "face " & to_string (terminal_face), console => true);
 				log (text => " solder paste top " & to_string (terminal_top_solder_paste), console => true);
 				log (text => " solder paste bot " & to_string (terminal_bot_solder_paste), console => true);
@@ -768,8 +768,8 @@ package body et_kicad_packages is
 				log (text => "line " & to_string (current_line), level => log_threshold + 4);
 			else
 				-- This should never happen:
-				log (ERROR, "in " & path_and_file_name, console => true);
-				log (ERROR, "no more lines available !", console => true);
+				log (SEVERITY_ERROR, "in " & path_and_file_name, console => true);
+				log (SEVERITY_ERROR, "no more lines available !", console => true);
 				raise constraint_error;
 			end if;
 		end get_next_line;
@@ -796,7 +796,7 @@ package body et_kicad_packages is
 
 			procedure invalid_section is
 			begin
-				log (ERROR, "invalid subsection '" & to_string (section.name) 
+				log (SEVERITY_ERROR, "invalid subsection '" & to_string (section.name) 
 					 & "' in parent section '" & to_string (section.parent) & "' !", console => true);
 				raise constraint_error;
 			end invalid_section;
@@ -891,11 +891,11 @@ package body et_kicad_packages is
 			exception
 				when event:
 					others =>
-						log (ERROR, "in " & path_and_file_name, console => true);
-						log (ERROR, get_affected_line (element (line_cursor)) 
+						log (SEVERITY_ERROR, "in " & path_and_file_name, console => true);
+						log (SEVERITY_ERROR, get_affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
 
-						log (ERROR, "section '" & slice (current_line, character_cursor, end_of_kw) 
+						log (SEVERITY_ERROR, "section '" & slice (current_line, character_cursor, end_of_kw) 
 							& "' invalid or not supported yet", console => true);
 						raise;
 			
@@ -920,20 +920,20 @@ package body et_kicad_packages is
 			arg : type_argument.bounded_string; -- here the argument goes temporarily
 
 			procedure invalid_layer is begin
-				log (ERROR, "invalid layer " & to_string (arg), console => true);
+				log (SEVERITY_ERROR, "invalid layer " & to_string (arg), console => true);
 				raise constraint_error;
 			end invalid_layer;
 
 			
 			procedure too_many_arguments is begin
-				log (ERROR, "too many arguments in section " & to_string (section.name) & " !", console => true);
+				log (SEVERITY_ERROR, "too many arguments in section " & to_string (section.name) & " !", console => true);
 				log (text => "excessive argument reads '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end too_many_arguments;
 
 			
 			procedure invalid_fp_text_keyword is begin
-				log (ERROR, "expect keyword '" & keyword_fp_text_reference 
+				log (SEVERITY_ERROR, "expect keyword '" & keyword_fp_text_reference 
 					 & "' or '" & keyword_fp_text_value 
 					 & "' or '" & keyword_fp_text_user
 					 & "' ! found '" & to_string (arg) & "'", console => true);
@@ -942,7 +942,7 @@ package body et_kicad_packages is
 
 			
 			procedure invalid_placeholder_reference is begin
-				log (ERROR, "expect reference placeholder '" & placeholder_reference & "' !"
+				log (SEVERITY_ERROR, "expect reference placeholder '" & placeholder_reference & "' !"
 					 & " found '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end invalid_placeholder_reference;
@@ -950,7 +950,7 @@ package body et_kicad_packages is
 			
 			procedure invalid_placeholder_value is
 			begin
-				log (ERROR, "expect value placeholder '" & to_string (package_name) & "' !"
+				log (SEVERITY_ERROR, "expect value placeholder '" & to_string (package_name) & "' !"
 					 & " found '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end invalid_placeholder_value;
@@ -958,14 +958,14 @@ package body et_kicad_packages is
 			
 			procedure invalid_package_name is
 			begin
-				log (ERROR, "expect package name '" & to_string (package_name) & "' !"
+				log (SEVERITY_ERROR, "expect package name '" & to_string (package_name) & "' !"
 					 & " found '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end invalid_package_name;
 
 			
 			procedure invalid_component_assembly_face is begin
-				log (ERROR, "default assembly face " & to_string (BOTTOM) 
+				log (SEVERITY_ERROR, "default assembly face " & to_string (BOTTOM) 
 					 & " found. Must be " & to_string (TOP) & " !", console => true);
 				raise constraint_error;
 			end invalid_component_assembly_face;
@@ -973,14 +973,14 @@ package body et_kicad_packages is
 			
 			procedure invalid_attribute is
 			begin
-				log (ERROR, "invalid attribute !", console => true);
+				log (SEVERITY_ERROR, "invalid attribute !", console => true);
 				raise constraint_error;
 			end invalid_attribute;
 
 			
 			procedure invalid_section is
 			begin
-				log (ERROR, "invalid subsection '" & to_string (section.name) 
+				log (SEVERITY_ERROR, "invalid subsection '" & to_string (section.name) 
 					 & "' in parent section '" & to_string (section.parent) & "' !", console => true);
 				raise constraint_error;
 			end invalid_section;
@@ -998,7 +998,7 @@ package body et_kicad_packages is
 
 				-- if no trailing quotation found -> error
 				if end_of_arg = -1 then
-					log (ERROR, get_affected_line (element (line_cursor))
+					log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
 						& space & latin_1.quotation & " expected");
 						raise constraint_error;
 				end if;
@@ -1721,8 +1721,8 @@ package body et_kicad_packages is
 			exception
 				when event:
 					others =>
-						log (ERROR, "in " & path_and_file_name, console => true);
-						log (ERROR, get_affected_line (element (line_cursor)) 
+						log (SEVERITY_ERROR, "in " & path_and_file_name, console => true);
+						log (SEVERITY_ERROR, get_affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
 						log (text => ada.exceptions.exception_message (event));
 						raise;
@@ -1739,24 +1739,24 @@ package body et_kicad_packages is
 			use et_board_coordinates;
 
 			procedure invalid_layer is begin
-				log (ERROR, "invalid layer for this object !", console => true);
+				log (SEVERITY_ERROR, "invalid layer for this object !", console => true);
 				raise constraint_error;
 			end invalid_layer;
 
 			
 			procedure invalid_layer_reference is begin
-				log (ERROR, "reference placeholder must be in a silk screen layer !", console => true);
+				log (SEVERITY_ERROR, "reference placeholder must be in a silk screen layer !", console => true);
 				raise constraint_error;
 			end invalid_layer_reference;
 
 			
 			procedure invalid_layer_value is begin
-				log (WARNING, "value placeholder should be in a fabrication layer !");
+				log (SEVERITY_WARNING, "value placeholder should be in a fabrication layer !");
 			end invalid_layer_value;
 
 			
 			procedure invalid_layer_user is begin
-				log (ERROR, "user text must be in a silk screen or fabrication layer !", console => true);
+				log (SEVERITY_ERROR, "user text must be in a silk screen or fabrication layer !", console => true);
 				raise constraint_error;
 			end invalid_layer_user;
 
@@ -2240,7 +2240,7 @@ package body et_kicad_packages is
 						name			=> et_terminals.pac_terminals.key (terminal_cursor),
 						log_threshold	=> log_threshold + 1);
 				else
-					log (ERROR, "duplicated terminal " & to_string (terminal_name) & " !", console => true);
+					log (SEVERITY_ERROR, "duplicated terminal " & to_string (terminal_name) & " !", console => true);
 					raise constraint_error;
 				end if;
 
@@ -2368,8 +2368,8 @@ package body et_kicad_packages is
 			exception
 				when event:
 					others =>
-						log (ERROR, "in " & path_and_file_name, console => true);
-						log (ERROR, get_affected_line (element (line_cursor)) 
+						log (SEVERITY_ERROR, "in " & path_and_file_name, console => true);
+						log (SEVERITY_ERROR, get_affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
 						log (text => ada.exceptions.exception_message (event));
 						raise;
@@ -2400,8 +2400,8 @@ package body et_kicad_packages is
 			end loop;
 
 			if not reference_found then
-				log (ERROR, "in " & path_and_file_name, console => true);
-				log (ERROR, "no placeholder for component " 
+				log (SEVERITY_ERROR, "in " & path_and_file_name, console => true);
+				log (SEVERITY_ERROR, "no placeholder for component " 
 					 & to_string (NAME) 
 					 & " found in " & to_string (TOP) & " silk screen !", console => true);
 				raise constraint_error;
@@ -2419,8 +2419,8 @@ package body et_kicad_packages is
 			end loop;
 
 			if not value_found then
-				log (ERROR, "in " & path_and_file_name, console => true);
-				log (ERROR, "no placeholder for component " 
+				log (SEVERITY_ERROR, "in " & path_and_file_name, console => true);
+				log (SEVERITY_ERROR, "no placeholder for component " 
 					 & to_string (VALUE) 
 					 & " found in " & to_string (TOP) & " assembly documentation !", console => true);
 				raise constraint_error;
@@ -2462,7 +2462,7 @@ package body et_kicad_packages is
 				case package_technology is
 					when THT =>
 						if tht_count < smt_count then
-							log (WARNING, "in " & path_and_file_name &
+							log (SEVERITY_WARNING, "in " & path_and_file_name &
 								" majority of terminals is " & to_string (SMT) &
 								number (smt_count) &
 								"Package technology should be " & to_string (SMT) & " !");
@@ -2470,7 +2470,7 @@ package body et_kicad_packages is
 
 					when SMT =>
 						if smt_count < tht_count then
-							log (WARNING, "in " & path_and_file_name &
+							log (SEVERITY_WARNING, "in " & path_and_file_name &
 								" majority of terminals is " & to_string (THT) &
 								number (tht_count) &
 								"Package technology should be " & to_string (THT) & " !");
@@ -2562,8 +2562,8 @@ package body et_kicad_packages is
 
 		-- check section name. must be top level section
 		if section.name /= INIT then -- should never happen
-			log (ERROR, "in " & path_and_file_name, console => true);
-			log (ERROR, "top level section not closed !", console => true);
+			log (SEVERITY_ERROR, "in " & path_and_file_name, console => true);
+			log (SEVERITY_ERROR, "top level section not closed !", console => true);
 			raise constraint_error;
 		end if;
 
@@ -2708,7 +2708,7 @@ package body et_kicad_packages is
 
 			-- show number of package libraries
 			if is_empty (package_names) then
-				log (WARNING, "library " & to_string (library_name) & " is empty !");
+				log (SEVERITY_WARNING, "library " & to_string (library_name) & " is empty !");
 			else
 				log (text => "found" & count_type'image (length (package_names)) & " packages", level => log_threshold + 4);
 			end if;
@@ -2799,7 +2799,7 @@ package body et_kicad_packages is
 					-- If directory contains no packages, notify operator that there are no package libraries.
 					-- Otherwise loop through the library names and create the libraries in container package_libraries.
 					if is_empty (library_names) then
-						log (WARNING, "no package libraries found in " &
+						log (SEVERITY_WARNING, "no package libraries found in " &
 							to_string (element (lib_dir_cursor)) & " !");
 					else
 						-- show number of package libraries found in the directory

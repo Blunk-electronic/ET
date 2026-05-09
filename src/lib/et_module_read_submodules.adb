@@ -214,7 +214,7 @@ package body et_module_read_submodules is
 				);
 
 			if not inserted then
-				log (ERROR, "port " & 
+				log (SEVERITY_ERROR, "port " & 
 					to_string (submodule_port_name) & " already used !",
 					console => true
 					);
@@ -222,7 +222,7 @@ package body et_module_read_submodules is
 			end if;
 
 		else
-			log (ERROR, "port " & to_string (submodule_port_name)
+			log (SEVERITY_ERROR, "port " & to_string (submodule_port_name)
 				& " is not on the edge of the submodule !");
 			
 			raise constraint_error;
@@ -276,7 +276,7 @@ package body et_module_read_submodules is
 				position	=> cursor);
 
 			if not inserted then
-				log (ERROR, "submodule '" & to_string (submodule_name) 
+				log (SEVERITY_ERROR, "submodule '" & to_string (submodule_name) 
 					& "' already exists !", console => true);
 				raise constraint_error;
 			end if;

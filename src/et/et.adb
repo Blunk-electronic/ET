@@ -647,12 +647,12 @@ procedure et is
 							-- evaluate exit code
 							case exit_code_script is
 								when ERROR =>
-									log (ERROR, "Execution of script " & to_string (script_name) &
+									log (SEVERITY_ERROR, "Execution of script " & to_string (script_name) &
 										" failed !", console => true);
 									raise constraint_error;
 
 								when WARNINGS =>
-									log (WARNING, "Execution of script " & to_string (script_name) &
+									log (SEVERITY_WARNING, "Execution of script " & to_string (script_name) &
 										" produced warnings !", console => true);
 
 								when SUCCESSFUL =>

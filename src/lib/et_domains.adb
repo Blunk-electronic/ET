@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.   
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -61,7 +61,7 @@ package body et_domains is
 		return type_domain'value (domain_prefix & domain);
 
 		exception when event: others => 
-			log (ERROR, "domain " & enclose_in_quotes (domain) & " invalid !", console => true);
+			log (SEVERITY_ERROR, "domain " & enclose_in_quotes (domain) & " invalid !", console => true);
 			--put_line ("ERROR domain " & domain & " invalid !");
 			raise;
 	end to_domain;

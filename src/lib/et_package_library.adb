@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -154,7 +154,7 @@ package body et_package_library is
 		
 		-- Test if package already exists. If already exists, issue warning and exit.
 		if pac_package_models.contains (package_library, package_name) then
-			log (WARNING, text => "package already exists -> skipped", 
+			log (SEVERITY_WARNING, text => "package already exists -> skipped", 
 				 level => log_threshold + 1);
 		else
 			case appearance is

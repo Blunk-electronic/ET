@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -55,7 +55,7 @@ package body et_device_purpose is
 	function purpose_length_valid (purpose : in string) return boolean is 
 	begin
 		if purpose'length > purpose_length_max then
-			log (WARNING, "purpose " & enclose_in_quotes (purpose) & " is longer than" 
+			log (SEVERITY_WARNING, "purpose " & enclose_in_quotes (purpose) & " is longer than" 
 				 & positive'image (purpose_length_max) & " characters !", 
 				console => true);
 			return false;
@@ -90,7 +90,7 @@ package body et_device_purpose is
 			test 	=> outside);
 
 		if invalid_character_position > 0 then
-			log (WARNING, "purpose " & enclose_in_quotes (to_string (purpose))
+			log (SEVERITY_WARNING, "purpose " & enclose_in_quotes (to_string (purpose))
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position)
 				);

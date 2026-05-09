@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -212,7 +212,7 @@ package body et_kicad_to_native is
 			end loop;
 
 			if not sheet_found then
-				log (ERROR, "sheet with number" & to_string (sheet_number) & " not found !");
+				log (SEVERITY_ERROR, "sheet with number" & to_string (sheet_number) & " not found !");
 				raise constraint_error;
 			end if;
 			
@@ -3072,7 +3072,7 @@ package body et_kicad_to_native is
 
 						-- If junction misplaced, issue warning:
 						else
-							log (WARNING, 
+							log (SEVERITY_WARNING, 
 								"misplaced junction between start and end point of segment -> ignored !");
 						end if;
 						

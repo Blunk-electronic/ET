@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -43,7 +43,7 @@ package body et_drills is
 
 	procedure validate_drill_size (drill : in type_distance_model) is begin
 		if drill not in type_drill_size then
-			log (ERROR, "drill size invalid ! Allowed range is" 
+			log (SEVERITY_ERROR, "drill size invalid ! Allowed range is" 
 				 & to_string (type_drill_size'first) & " .."
 				 & to_string (type_drill_size'last),
 				 console => true);

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -792,7 +792,7 @@ package body et_conventions is
 		-- If prefix not specified (or no conventions at all) return category UNKNOWN.
 		-- Otherwise return the respecitve category.
 		if prefix_cursor = pac_device_prefixes.no_element then
-			log (WARNING, "category of prefix " 
+			log (SEVERITY_WARNING, "category of prefix " 
 				 & to_string (prefix)
 				 & latin_1.space
 				 & to_string (UNKNOWN) & " !");
@@ -819,7 +819,7 @@ package body et_conventions is
 		-- If prefix not specified (or no conventions at all) return category UNKNOWN.
 		-- Otherwise return the respecitve category.
 		if prefix_cursor = pac_device_prefixes.no_element then
-			log (WARNING, " category of device " 
+			log (SEVERITY_WARNING, " category of device " 
 				 & to_string (reference)
 				 & latin_1.space & to_string (UNKNOWN) & " !");
 			return UNKNOWN;
@@ -1855,7 +1855,7 @@ package body et_conventions is
 
 		exception
 			when others =>
-				log (ERROR, text & " is not a supported text category !",
+				log (SEVERITY_ERROR, text & " is not a supported text category !",
 					 console => true);
 
 				-- show supported text categories
@@ -1900,7 +1900,7 @@ package body et_conventions is
 			if cursor /= no_element then
 			
 				if size /= element (cursor) then
-					log (WARNING, "Text size " & to_string (size) 
+					log (SEVERITY_WARNING, "Text size " & to_string (size) 
 						& " invalid for category " & to_string (category) 
 						& " ! " & "Expected size " & to_string (element (cursor)) 
 						& " ! "); --(equals " & to_mil_string (element (cursor)) & " mil)");
@@ -1998,7 +1998,7 @@ package body et_conventions is
 		use et_string_processing;
 	begin
 		if keyword'length > partcode_keyword_length_max then
-			log (ERROR, "max. number of characters for part code keyword is" 
+			log (SEVERITY_ERROR, "max. number of characters for part code keyword is" 
 				 & positive'image (partcode_keyword_length_max) & " !",
 				 console => true);
 			raise constraint_error;
@@ -2027,7 +2027,7 @@ package body et_conventions is
 
 		-- Evaluate position of invalid character.
 		if invalid_character_position > 0 then
-			log (ERROR, "invalid character in part code keyword '" 
+			log (SEVERITY_ERROR, "invalid character in part code keyword '" 
 				& to_string (keyword) & "' at position" & natural'image (invalid_character_position) & " !",
 				console => true);
 
@@ -2060,7 +2060,7 @@ package body et_conventions is
 		end loop;
 
 		if not valid then
-			log (ERROR, "invalid keyword " & to_string (keyword) & " in part code !");
+			log (SEVERITY_ERROR, "invalid keyword " & to_string (keyword) & " in part code !");
 			log (text => "Available keywords are:");
 			cursor := partcode_keywords.first;
 			while cursor /= type_partcode_keywords.no_element loop
@@ -2193,7 +2193,7 @@ package body et_conventions is
 					
 					-- A keyword must occur only once:
 					if pac_device_partcode.count (partcode, to_string (keyword)) > 1 then
-						log (WARNING, "keyword " & enclose_in_quotes (to_string (keyword)) & " can be used only once !");
+						log (SEVERITY_WARNING, "keyword " & enclose_in_quotes (to_string (keyword)) & " can be used only once !");
 					end if;
 				else
 					place := place + 1;	-- next character of keyword
@@ -2211,7 +2211,7 @@ package body et_conventions is
 
 					-- detect missing argument
 					if place = argument_start then
-						log (WARNING, "expect argument after keyword at position" & positive'image (place) & " !");
+						log (SEVERITY_WARNING, "expect argument after keyword at position" & positive'image (place) & " !");
 					end if;
 					
 					keyword_follows := true;
@@ -2236,7 +2236,7 @@ package body et_conventions is
 		exception
 			when event:
 				others =>
-				log (WARNING, "Error in optional keywords of partcode " & 
+				log (SEVERITY_WARNING, "Error in optional keywords of partcode " & 
 					 enclose_in_quotes (pac_device_partcode.to_string (partcode)) &
 					 " at position" & positive'image (place) & " !");
 				
@@ -2262,7 +2262,7 @@ package body et_conventions is
 		partcode_root : pac_device_partcode.bounded_string;
 		
 		procedure partcode_invalid is begin
-			log (WARNING, "device " & to_string (device_name)
+			log (SEVERITY_WARNING, "device " & to_string (device_name)
 				 & " partcode invalid ! Found " & enclose_in_quotes (pac_device_partcode.to_string (partcode)) &
 				". Expected " & enclose_in_quotes (pac_device_partcode.to_string (partcode_root)) & " !");
 		end partcode_invalid;
@@ -2315,7 +2315,7 @@ package body et_conventions is
 
 		exception
 			when others =>
-				log (ERROR, text & " is not a supported partcode section !",
+				log (SEVERITY_ERROR, text & " is not a supported partcode section !",
 					 console => true);
 
 				-- show supported sections
@@ -2582,7 +2582,7 @@ package body et_conventions is
 			when event:
 				others =>
 					set_output (standard_output);
-					log (ERROR, "Read export report for warnings and error messages !"); -- CS: show path to report file
+					log (SEVERITY_ERROR, "Read export report for warnings and error messages !"); -- CS: show path to report file
 					raise;
 		
 	end make_default_conventions;
@@ -2641,7 +2641,7 @@ package body et_conventions is
 			
 			procedure test_multiple_occurences is begin
 				if not inserted then
-					log (WARNING, get_affected_line (element (line_cursor)) & "multiple occurence of assignment ! Entry ignored !");
+					log (SEVERITY_WARNING, get_affected_line (element (line_cursor)) & "multiple occurence of assignment ! Entry ignored !");
 				end if;
 			end test_multiple_occurences;
 
@@ -2706,7 +2706,7 @@ package body et_conventions is
 
 					-- Notify operator if no prefixes specified:
 					if pac_device_prefixes.is_empty (device_prefixes) then
-						log (WARNING, "no device prefixes specified !" & reduced_check_coverage);
+						log (SEVERITY_WARNING, "no device prefixes specified !" & reduced_check_coverage);
 					end if;
 					
 					log_indentation_down;
@@ -2749,7 +2749,7 @@ package body et_conventions is
 
 					-- Notify operator if no units of measurement specified:
 					if pac_units_of_measurement.is_empty (units_of_measurement) then
-						log (WARNING, "no units of measurement specified !" & reduced_check_coverage);
+						log (SEVERITY_WARNING, "no units of measurement specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
 
@@ -2759,8 +2759,8 @@ package body et_conventions is
 					log_indentation_up;
 
 					if not component_prefixes_specified then
-						log (WARNING, "section " & section_component_prefixes & " empty or missing !");
-						log (WARNING, "section " & section_components_with_operator_interaction & " without effect !");
+						log (SEVERITY_WARNING, "section " & section_component_prefixes & " empty or missing !");
+						log (SEVERITY_WARNING, "section " & section_components_with_operator_interaction & " without effect !");
 					end if;
 					
 					while line_cursor /= type_lines.no_element loop
@@ -2779,7 +2779,7 @@ package body et_conventions is
 
 					-- Notify operator if no components specified:
 					if type_categories_with_operator_interacton.is_empty (et_conventions.component_categories_with_operator_interaction) then
-						log (WARNING, "no categories specified !" & reduced_check_coverage);
+						log (SEVERITY_WARNING, "no categories specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
 
@@ -2831,7 +2831,7 @@ package body et_conventions is
 
 					-- Notify operator if no sizes specified:
 					if type_text_sizes_schematic.is_empty (et_conventions.text_sizes_schematic) then
-						log (WARNING, "no text sizes specified !" & reduced_check_coverage);
+						log (SEVERITY_WARNING, "no text sizes specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
 
@@ -2862,7 +2862,7 @@ package body et_conventions is
 
 					-- Notify operator if no keywrds specified:
 					if type_partcode_keywords.is_empty (et_conventions.partcode_keywords) then
-						log (WARNING, "no part code keywords specified !" & reduced_check_coverage);
+						log (SEVERITY_WARNING, "no part code keywords specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
 
@@ -2875,7 +2875,7 @@ package body et_conventions is
 
 			exception
 				when others =>
-					log (ERROR, get_affected_line (element (line_cursor)) 
+					log (SEVERITY_ERROR, get_affected_line (element (line_cursor)) 
 						 & latin_1.space & to_string (element (line_cursor)),
 						 console => true);
 
@@ -2969,7 +2969,7 @@ package body et_conventions is
 			close (conventions_file_handle);
 			
 		else
-			log (ERROR, "conventions file " & to_string (file_name) & " not found !",
+			log (SEVERITY_ERROR, "conventions file " & to_string (file_name) & " not found !",
 				 console => true);
 			raise constraint_error;
 		end if;
@@ -2994,13 +2994,13 @@ package body et_conventions is
 		value_length : natural := pac_device_value.length (value);
 
 		procedure value_invalid is begin
-			log (WARNING, "value " & enclose_in_quotes (to_string (value)) &
+			log (SEVERITY_WARNING, "value " & enclose_in_quotes (to_string (value)) &
 				" invalid ! Check unit of measurement !");
 			result := false;			
 		end;
 
 		procedure no_value is begin
-			log (WARNING, "no value found !");
+			log (SEVERITY_WARNING, "no value found !");
 			result := false;
 		end;
 
@@ -3212,7 +3212,7 @@ package body et_conventions is
 		-- If there are prefixes specified, test if the given prefix is among them:
 		if component_prefixes_specified then
 			if device_prefixes.find (prefix) = pac_device_prefixes.no_element then
-				log (WARNING, "invalid prefix " & to_string (prefix => prefix) & " !");
+				log (SEVERITY_WARNING, "invalid prefix " & to_string (prefix => prefix) & " !");
 				result := false;
 			end if;
 		end if;
@@ -3230,7 +3230,7 @@ package body et_conventions is
 		-- if there are prefixes specified, test if the given particular prefix is among them
 		if component_prefixes_specified then
 			if device_prefixes.find (device_name.prefix) = pac_device_prefixes.no_element then
-				log (WARNING, "invalid prefix in device name "
+				log (SEVERITY_WARNING, "invalid prefix in device name "
 					 & to_string (device_name) & " !");
 				result := false;
 			end if;

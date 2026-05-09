@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.   
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -249,7 +249,7 @@ package body et_devices_electrical is
 	is 
 		use et_logging;
 	begin
-		log (ERROR, "Name " & enclose_in_quotes (to_string (name)) &
+		log (SEVERITY_ERROR, "Name " & enclose_in_quotes (to_string (name)) &
 			 " already used by another electrical device !",
 			 console => true);
 		

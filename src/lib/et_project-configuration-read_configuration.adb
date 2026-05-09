@@ -103,7 +103,7 @@ is
 			project.rules.conventions := conventions_file_name;
 
 		else
-			log (WARNING, "No conventions file specified ! Design check limited !");
+			log (SEVERITY_WARNING, "No conventions file specified ! Design check limited !");
 		end if;
 	end set_rules;
 
@@ -173,7 +173,7 @@ is
 						return true;
 						
 					else
-						log (ERROR, write_missing_begin_end, console => true);
+						log (SEVERITY_ERROR, write_missing_begin_end, console => true);
 						raise constraint_error;
 					end if;
 					
@@ -264,7 +264,7 @@ begin
 
 		-- As a safety measure the top section must be reached:
 		if pac_sections_stack.depth > 1 then 
-			log (WARNING, write_section_stack_not_empty);
+			log (SEVERITY_WARNING, write_section_stack_not_empty);
 		end if;
 		
 
@@ -272,7 +272,7 @@ begin
 		close (file_handle);
 		
 	else
-		log (ERROR, "Project configuration file " & enclose_in_quotes (file_name) & " not found !",
+		log (SEVERITY_ERROR, "Project configuration file " & enclose_in_quotes (file_name) & " not found !",
 			 console => true);
 		
 		raise constraint_error;

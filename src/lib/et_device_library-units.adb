@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -208,7 +208,7 @@ package body et_device_library.units is
 			
 				-- if no suitable external unit found, we have a problem:
 				if cursors.ext = pac_units_external.no_element then
-					log (ERROR, " Device model has no units !", console => true);
+					log (SEVERITY_ERROR, " Device model has no units !", console => true);
 					raise constraint_error;
 				end if;
 
@@ -305,7 +305,7 @@ package body et_device_library.units is
 				
 				-- if no suitable external unit found, we have a problem:
 				if cursors.ext = pac_units_external.no_element then
-					log (ERROR, "Unit " & to_string (unit_name) &
+					log (SEVERITY_ERROR, "Unit " & to_string (unit_name) &
 						 " not defined in device model !", console => true);
 					
 					raise semantic_error_1 with

@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -92,15 +92,15 @@ package body et_cp_board is
 			when 0 => null; -- no errors
 
 			when 1 => -- command incomplete
-				log (ERROR, "Command incomplete. Exit code" & to_string (code), 
+				log (SEVERITY_ERROR, "Command incomplete. Exit code" & to_string (code), 
 					level => log_threshold);
 
 			when 2 => -- command too long
-				log (ERROR, "Command too long. Exit code" & to_string (code), 
+				log (SEVERITY_ERROR, "Command too long. Exit code" & to_string (code), 
 					level => log_threshold);
 
 			when others =>
-				log (ERROR, "Other error. Exit code" & to_string (code), 
+				log (SEVERITY_ERROR, "Other error. Exit code" & to_string (code), 
 					level => log_threshold);
 		end case;
 	end evaluate_command_exit_code;

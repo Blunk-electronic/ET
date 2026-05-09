@@ -84,7 +84,7 @@ package body et_schematic_ops_submodules is
 		port 		: in string;
 		position	: in type_object_position) is
 	begin
-		log (ERROR, "port " & enclose_in_quotes (port) &
+		log (SEVERITY_ERROR, "port " & enclose_in_quotes (port) &
 			 " is directly connected with other ports at" &
 			to_string (position => position) &
 			 ". Dragging not possible !",
@@ -96,7 +96,7 @@ package body et_schematic_ops_submodules is
 
 
 	procedure relative_rotation_invalid is begin
-		log (ERROR, "Relative rotation must be in range" & 
+		log (SEVERITY_ERROR, "Relative rotation must be in range" & 
 			to_string (rotation_relative_min) &
 			" .." & 
 			to_string (rotation_relative_max),
@@ -111,7 +111,7 @@ package body et_schematic_ops_submodules is
 	procedure submodule_not_found (
 		name : in pac_module_instance_name.bounded_string) 
 	is begin
-		log (ERROR, "submodule instance " & enclose_in_quotes (to_string (name)) &
+		log (SEVERITY_ERROR, "submodule instance " & enclose_in_quotes (to_string (name)) &
 			 " not found !", console => true);
 		raise constraint_error;
 	end;
@@ -126,7 +126,7 @@ package body et_schematic_ops_submodules is
 	is 
 		use et_string_processing;
 	begin
-		log (ERROR, "port " 
+		log (SEVERITY_ERROR, "port " 
 			 & enclose_in_quotes (net_name_to_string (name))
 			 & " must be at the edge of the submodule !", console => true);
 		raise constraint_error;
@@ -446,7 +446,7 @@ package body et_schematic_ops_submodules is
 						);
 
 				else
-					log (ERROR, "port " 
+					log (SEVERITY_ERROR, "port " 
 						& net_name_to_string (port_name) & " not found !");
 				end if;
 			end query_ports;
@@ -498,7 +498,7 @@ package body et_schematic_ops_submodules is
 	
 
 	procedure port_not_provided (port_name : in pac_net_name.bounded_string) is begin
-		log (ERROR, "submodule does not provide a port named " &
+		log (SEVERITY_ERROR, "submodule does not provide a port named " &
 			 enclose_in_quotes (to_string (port_name)) & " with the desired direction (master/slave) !", console => true);
 		raise constraint_error;
 	end;
@@ -709,7 +709,7 @@ package body et_schematic_ops_submodules is
 						inserted	=> inserted);
 
 					if not inserted then
-						log (ERROR, "port " & 
+						log (SEVERITY_ERROR, "port " & 
 							enclose_in_quotes (to_string (port_name)) &
 							" already in submodule !", console => true);
 						raise constraint_error;
@@ -934,7 +934,7 @@ package body et_schematic_ops_submodules is
 	
 
 	procedure submodule_port_not_found (name : in pac_net_name.bounded_string) is begin
-		log (ERROR, "port " &
+		log (SEVERITY_ERROR, "port " &
 			enclose_in_quotes (to_string (name)) & " not found !", console => true);
 		raise constraint_error;
 	end;
@@ -1874,7 +1874,7 @@ package body et_schematic_ops_submodules is
 				inserted	=> inserted);
 
 			if not inserted then
-				log (ERROR, "submodule instance " &
+				log (SEVERITY_ERROR, "submodule instance " &
 					enclose_in_quotes (to_string (instance)) &
 					" already exists !", console => true);
 				raise constraint_error;
@@ -1896,7 +1896,7 @@ package body et_schematic_ops_submodules is
 
 		-- Make sure the parent module does not use itself as submodule:
 		if module_name = to_module_name (file) then
-			log (ERROR, "Circular dependency: A module can not have itself as submodule !", console => true);
+			log (SEVERITY_ERROR, "Circular dependency: A module can not have itself as submodule !", console => true);
 		end if;
 
 		-- locate module
@@ -1915,7 +1915,7 @@ package body et_schematic_ops_submodules is
 				process		=> add'access);
 
 		else
-			log (ERROR, "submodule file " & to_string (file) & " not found !",
+			log (SEVERITY_ERROR, "submodule file " & to_string (file) & " not found !",
 				 console => true);
 			raise constraint_error;
 		end if;
@@ -2156,7 +2156,7 @@ package body et_schematic_ops_submodules is
 
 				exception
 					when event: others =>
-						log (ERROR, "coordinates invalid !", console => true); -- CS required more details
+						log (SEVERITY_ERROR, "coordinates invalid !", console => true); -- CS required more details
 						log (text => ada.exceptions.exception_information (event), console => true);
 						raise;
 				
@@ -2400,7 +2400,7 @@ package body et_schematic_ops_submodules is
 
 				exception
 					when event: others =>
-						log (ERROR, "coordinates invalid !", console => true); -- CS required more details
+						log (SEVERITY_ERROR, "coordinates invalid !", console => true); -- CS required more details
 						log (text => ada.exceptions.exception_information (event), console => true);
 						raise;
 
@@ -2572,7 +2572,7 @@ package body et_schematic_ops_submodules is
 					new_item	=> submodule);
 					
 				if not inserted then
-					log (ERROR, "submodule instance " &
+					log (SEVERITY_ERROR, "submodule instance " &
 						enclose_in_quotes (to_string (instance_new)) &
 						" already exists !", console => true);
 					raise constraint_error;
@@ -2724,7 +2724,7 @@ package body et_schematic_ops_submodules is
 
 		-- The new name must not be in use already:
 		if submodule_instance_exists (module_cursor, instance_new) then
-			log (ERROR, "submodule instance " & enclose_in_quotes (to_string (instance_new)) &
+			log (SEVERITY_ERROR, "submodule instance " & enclose_in_quotes (to_string (instance_new)) &
 				 " already exists !", console => true);
 			raise constraint_error;
 		else
@@ -2829,7 +2829,7 @@ package body et_schematic_ops_submodules is
 					position	=> module_cursor,
 					process		=> query_variants'access);
 			else
-				log (ERROR, "submodule instance " &
+				log (SEVERITY_ERROR, "submodule instance " &
 					 enclose_in_quotes (to_string (instance)) &
 					 " does not provide assembly variant " &
 					 enclose_in_quotes (to_variant (variant_submod)) & " !",
@@ -2881,7 +2881,7 @@ package body et_schematic_ops_submodules is
 				if cursor /= pac_submodule_variants.no_element then -- submodule in assembly variant
 					delete (variant.submodules, cursor); -- delete submodule instance
 				else
-					log (ERROR, "submodule " & to_string (instance) &
+					log (SEVERITY_ERROR, "submodule " & to_string (instance) &
 						" not found in assembly variant " &
 						enclose_in_quotes (to_variant (variant_parent)) & " !",
 						 console => true);
@@ -3242,7 +3242,7 @@ package body et_schematic_ops_submodules is
 
 			log_indentation_down;
 		else
-			log (ERROR, "submodule file " & to_string (file) & " not found !",
+			log (SEVERITY_ERROR, "submodule file " & to_string (file) & " not found !",
 				 console => true);
 			raise constraint_error;
 		end if;
@@ -3289,7 +3289,7 @@ package body et_schematic_ops_submodules is
 				insert (device_port_collector, port);
 
 				exception when event: others =>
-					log (ERROR, "net " & to_string (net) &
+					log (SEVERITY_ERROR, "net " & to_string (net) &
 						" device " & to_string (port.device_name) &
 						" port " & to_string (port.port_name) &
 						" already used !",
@@ -3316,7 +3316,7 @@ package body et_schematic_ops_submodules is
 				insert (submodule_port_collector, port);
 
 				exception when event: others =>
-					log (ERROR, "net " & to_string (net) &
+					log (SEVERITY_ERROR, "net " & to_string (net) &
 						" submodule " & to_string (port.module_name) &
 						" port " & to_string (port.port_name) &
 						" already used !",
@@ -3343,7 +3343,7 @@ package body et_schematic_ops_submodules is
 				insert (netchanger_ports_collector, port);
 
 				exception when event: others =>
-					log (ERROR, "net " & to_string (net) &
+					log (SEVERITY_ERROR, "net " & to_string (net) &
 						" netchanger" & to_string (port.index) &
 						" port" & to_string (port.port) &
 						" already used !",
@@ -3385,7 +3385,7 @@ package body et_schematic_ops_submodules is
 
 											error;
 											
-											log (ERROR, "device " & to_string (element (port_cursor).device_name) &
+											log (SEVERITY_ERROR, "device " & to_string (element (port_cursor).device_name) &
 												 " port " & to_string (element (port_cursor).port_name) &
 												 " does not exist !");
 										end if;
@@ -3417,7 +3417,7 @@ package body et_schematic_ops_submodules is
 
 											error;
 											
-											log (ERROR, "submodule " & to_string (element (port_cursor).module_name) &
+											log (SEVERITY_ERROR, "submodule " & to_string (element (port_cursor).module_name) &
 												 " port " & pac_net_name.to_string (element (port_cursor).port_name) &
 												 " does not exist !");
 										end if;
@@ -3447,7 +3447,7 @@ package body et_schematic_ops_submodules is
 
 											error;
 											
-											log (ERROR, "netchanger" & to_string (element (port_cursor).index) &
+											log (SEVERITY_ERROR, "netchanger" & to_string (element (port_cursor).index) &
 												 " does not exist !");
 										end if;
 
@@ -3552,12 +3552,12 @@ package body et_schematic_ops_submodules is
 
 		
 		if errors > 0 then
-			log (WARNING, "integrity check found errors !");
+			log (SEVERITY_WARNING, "integrity check found errors !");
 			log (text => "errors   :" & natural'image (errors));
 		end if;
 
 		if warnings > 0 then
-			log (WARNING, "integrity check issued warnings !");
+			log (SEVERITY_WARNING, "integrity check issued warnings !");
 			log (text => "warnings :" & natural'image (warnings));
 		end if;
 
@@ -3784,7 +3784,7 @@ package body et_schematic_ops_submodules is
 					
 					procedure test_inserted is begin
 						if not inserted then
-							log (ERROR, "multiple occurence of device " & to_string (device_name),
+							log (SEVERITY_ERROR, "multiple occurence of device " & to_string (device_name),
 									console => true);
 							raise constraint_error;
 						end if;
@@ -3794,7 +3794,7 @@ package body et_schematic_ops_submodules is
 					procedure test_partcode (partcode : in pac_device_partcode.bounded_string) is
 					begin
 						if pac_device_partcode.length (partcode) = 0 then
-							log (WARNING, text => "device " & to_string (device_name) &
+							log (SEVERITY_WARNING, text => "device " & to_string (device_name) &
 								" has no partcode !");
 						end if;
 					end;
@@ -4209,7 +4209,7 @@ package body et_schematic_ops_submodules is
 				log (text => to_index_range (module_name, index_range),
 					 level => log_threshold + 1);
 			else
-				log (WARNING, "no devices found in module " &
+				log (SEVERITY_WARNING, "no devices found in module " &
 					 enclose_in_quotes (to_string (module_name)) & " !");
 
 				index_range.lowest := type_name_index'first;

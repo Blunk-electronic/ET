@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -92,7 +92,7 @@ package body et_cp_schematic_display is
 				when NOUN_VALUES	=> layers.device_values := ls;
 				
 				when others => 
-					log (importance => ERROR, text => "invalid layer !", console => true);
+					log (SEVERITY_ERROR, "invalid layer !", console => true);
 			end case;
 
 			-- CS exception handler if status is invalid

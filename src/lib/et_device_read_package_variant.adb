@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -156,7 +156,7 @@ package body et_device_read_package_variant is
 
 		-- A particular variant must occur only once in the device model:
 		if not inserted then
-			log (ERROR, "variant " & to_string (variant_name) 
+			log (SEVERITY_ERROR, "variant " & to_string (variant_name) 
 				& " already used !");
 				
 			raise constraint_error;
@@ -240,7 +240,7 @@ package body et_device_read_package_variant is
 
 		-- an assigment must be unique !
 		if not inserted then
-			log (ERROR, "terminal-to-port assigment already used !");
+			log (SEVERITY_ERROR, "terminal-to-port assigment already used !");
 			
 			raise constraint_error;
 		end if;

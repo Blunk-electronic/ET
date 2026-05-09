@@ -89,7 +89,7 @@ package body et_submodules is
 					result := true;
 
 					if get_y (point) = zero then
-						log (WARNING, "Net connected with port at lower edge of submodule at" & 
+						log (SEVERITY_WARNING, "Net connected with port at lower edge of submodule at" & 
 							to_string (point) & " may overlap with texts !");
 					end if;
 				end if;

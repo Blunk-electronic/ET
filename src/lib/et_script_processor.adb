@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --   
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -145,17 +145,17 @@ package body et_script_processor is
 							
 						when 1 =>
 							log_command;							
-							log (ERROR, "Script command incomplete !");
+							log (SEVERITY_ERROR, "Script command incomplete !");
 							exit; -- abort script execution
 							
 						when 2 =>
 							log_command;
-							log (ERROR, "Script command too long !");
+							log (SEVERITY_ERROR, "Script command too long !");
 							exit; -- abort script execution
 
 						when 3 =>
 							log_command;
-							log (ERROR, "Other script error.");
+							log (SEVERITY_ERROR, "Other script error.");
 							exit; -- abort script execution
 
 					end case;					
@@ -177,7 +177,7 @@ package body et_script_processor is
 			-- 	& enclose_in_quotes (to_string (script_name)) 
 			-- 	& " not found !";
 
-			log (ERROR, "script file " 
+			log (SEVERITY_ERROR, "script file " 
 				 & enclose_in_quotes (to_string (script_name)) 
 				 & " not found !", console => true);
 					

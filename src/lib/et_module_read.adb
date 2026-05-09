@@ -1172,7 +1172,7 @@ package body et_module_read is
 						return true;
 
 					else
-						log (ERROR, write_missing_begin_end, console => true);
+						log (SEVERITY_ERROR, write_missing_begin_end, console => true);
 						raise constraint_error;
 					end if;
 
@@ -1928,7 +1928,7 @@ package body et_module_read is
 			
 			-- As a safety measure the top section must be reached finally:
 			if pac_sections_stack.depth > 1 then 
-				log (WARNING, write_section_stack_not_empty);
+				log (SEVERITY_WARNING, write_section_stack_not_empty);
 			end if;
 
 			-- Close the module file and set the input back to standard input:

@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -137,7 +137,7 @@ package body et_kicad_libraries is
 			test	=> outside);
 
 		if invalid_character_position > 0 then
-			log (ERROR, "component prefix " & to_string (prefix => prefix) 
+			log (SEVERITY_ERROR, "component prefix " & to_string (prefix => prefix) 
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position),
 				console => true
@@ -172,7 +172,7 @@ package body et_kicad_libraries is
 		p : pac_device_prefix.bounded_string;
 	
 		procedure invalid_reference is begin
-			log (ERROR, latin_1.lf & "invalid component reference " & enclose_in_quotes (text_in_justified),
+			log (SEVERITY_ERROR, latin_1.lf & "invalid component reference " & enclose_in_quotes (text_in_justified),
 				console => true);
 			
 			raise constraint_error;
@@ -320,7 +320,7 @@ package body et_kicad_libraries is
 		generic_name	: in type_component_generic_name.bounded_string) -- TRANSISTOR_NPN
 		is
 	begin
-		log (ERROR, "component " & to_string (reference) -- CS: output coordinates
+		log (SEVERITY_ERROR, "component " & to_string (reference) -- CS: output coordinates
 			& " has no generic model " & to_string (generic_name)
 			& " in library " & to_string (library), console => true);
 		raise constraint_error;
@@ -358,7 +358,7 @@ package body et_kicad_libraries is
 
 			-- In case the component has no units, abort.
 			if unit_cursor = type_units_library.no_element then
-				log (ERROR, "generic component " 
+				log (SEVERITY_ERROR, "generic component " 
 						& to_string (type_components_library.key (component_cursor)) 
 						& " has no units !",
 					console => true);
@@ -398,7 +398,7 @@ package body et_kicad_libraries is
 
 			-- In case the unit has no ports, abort.
 			if port_cursor = type_ports_library.no_element then
-				log (WARNING, "generic unit " 
+				log (SEVERITY_WARNING, "generic unit " 
 						& to_string (type_units_library.key (unit_cursor)) 
 						& " has no ports !");
 					--console => true);
@@ -421,7 +421,7 @@ package body et_kicad_libraries is
 	-- Tests if the given datasheet is longer than allowed.
 	begin
 		if datasheet'length > component_datasheet_length_max then
-			log (ERROR, "max. number of characters for URL is" 
+			log (SEVERITY_ERROR, "max. number of characters for URL is" 
 				 & positive'image (component_datasheet_length_max) & " !",
 				console => true);
 			raise constraint_error;
@@ -445,7 +445,7 @@ package body et_kicad_libraries is
 			test => outside);
 
 		if invalid_character_position > 0 then
-			log (WARNING, "URL to datasheet " & to_string (datasheet) 
+			log (SEVERITY_WARNING, "URL to datasheet " & to_string (datasheet) 
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position)
 				);
@@ -457,7 +457,7 @@ package body et_kicad_libraries is
 
 	
 	procedure invalid_field (line : in type_fields_of_line) is begin
-		log (ERROR, get_affected_line (line) & "invalid field !", console => true);
+		log (SEVERITY_ERROR, get_affected_line (line) & "invalid field !", console => true);
 
 		log (text => to_string (line), console => true);
 
@@ -481,7 +481,7 @@ package body et_kicad_libraries is
 			or to_string (prefix) = power_symbol_prefix then
 			null;
 		else
-			log (ERROR, "invalid prefix "
+			log (SEVERITY_ERROR, "invalid prefix "
 				 & to_string (prefix) & " !"
 				 & " Expected " 
 				 & power_flag_prefix & " or "
@@ -503,7 +503,7 @@ package body et_kicad_libraries is
 			or to_string (reference.prefix) = power_symbol_prefix then
 			null;
 		else
-			log (ERROR, "invalid prefix in component reference "
+			log (SEVERITY_ERROR, "invalid prefix in component reference "
 				 & to_string (reference) & " !"
 				 & " Expected " 
 				 & power_flag_prefix & " or "
@@ -657,10 +657,10 @@ package body et_kicad_libraries is
 
 		exception 
 			when constraint_error =>
-				log (ERROR, "invalid text orientation !", console => true);
+				log (SEVERITY_ERROR, "invalid text orientation !", console => true);
 				raise;
 			when others =>
-				log (ERROR, "invalid text orientation !", console => true);
+				log (SEVERITY_ERROR, "invalid text orientation !", console => true);
 				raise;
 	end to_field_orientation;
 
@@ -709,7 +709,7 @@ package body et_kicad_libraries is
 -- 	
 -- 		procedure invalid_style is
 -- 		begin
--- 			log (ERROR, "invalid text style '" & style_in & "' !");
+-- 			log (SEVERITY_ERROR, "invalid text style '" & style_in & "' !");
 -- 			raise constraint_error;
 -- 		end invalid_style;
 -- 		
@@ -798,7 +798,7 @@ package body et_kicad_libraries is
 		lca			: type_library_component_appearance;
 
 		procedure invalid_appearance is begin
-			log (ERROR, get_affected_line (line) 
+			log (SEVERITY_ERROR, get_affected_line (line) 
 				 & "invalid visibility flag !", console => true);
 			raise constraint_error;
 		end invalid_appearance;	
@@ -855,7 +855,7 @@ package body et_kicad_libraries is
 				rep_out := yes;
 
 				-- We do not support alternative representations.
-				log (ERROR, "alternative representation (DeMorgan) not supported !",
+				log (SEVERITY_ERROR, "alternative representation (DeMorgan) not supported !",
 					 console => true);
 				raise constraint_error;
 				
@@ -867,7 +867,7 @@ package body et_kicad_libraries is
 
 		exception
 			when others => 
-				log (ERROR, "invalid alternative representation flag !", console => true);
+				log (SEVERITY_ERROR, "invalid alternative representation flag !", console => true);
 				raise;			
 		
 	end to_alternative_representation;
@@ -944,7 +944,7 @@ package body et_kicad_libraries is
 				
 		-- Evaluate position of invalid character.
 		if invalid_character_position > 0 then
-			log (WARNING, "invalid character in generic component name '" 
+			log (SEVERITY_WARNING, "invalid character in generic component name '" 
 				& to_string (name) & "' at position" & natural'image (invalid_character_position));
 		end if;
 	end check_generic_name_characters;
@@ -1001,7 +1001,7 @@ package body et_kicad_libraries is
 		use pac_package_name;
 		
 		procedure no_package is begin
-			log (ERROR, "no package associated !", 
+			log (SEVERITY_ERROR, "no package associated !", 
 				console => true);
 			raise constraint_error;
 		end no_package;
@@ -1149,7 +1149,7 @@ package body et_kicad_libraries is
 
 				-- If the library could not be located anywhere, abort here:
 				if pac_package_model_file.length (full_library_name) = 0 then
-					log (ERROR, "No library '" & et_kicad_general.to_string (library_name) 
+					log (SEVERITY_ERROR, "No library '" & et_kicad_general.to_string (library_name) 
 						 & "' found ! Check local and global fp-lib-tables !", console => true);
 					raise constraint_error;
 				end if;
@@ -1162,7 +1162,7 @@ package body et_kicad_libraries is
 		if package_found then
 			log (text => " found !", level => log_threshold + 2);
 		else
-			log (ERROR, "package '" & to_string (package_name) &
+			log (SEVERITY_ERROR, "package '" & to_string (package_name) &
 				"' not found in any library named '" & et_kicad_general.to_string (library_name) & "' !", console => true);
 			raise constraint_error;
 		end if;
@@ -1204,7 +1204,7 @@ package body et_kicad_libraries is
 				terminal_name_in_map := key (terminal_cursor);
 
 				if package_terminals.find (terminal_name_in_map) = et_terminals.pac_terminals.no_element then
-					log (ERROR, "package " & to_string (packge => package_name)
+					log (SEVERITY_ERROR, "package " & to_string (packge => package_name)
 						 & " does not have a terminal '" 
 						 & to_string (terminal_name_in_map) & "' !", console => true);
 					raise constraint_error;
@@ -1229,14 +1229,14 @@ package body et_kicad_libraries is
 			terminals : natural;
 		begin
 			if is_empty (packages) then
-				log (ERROR, "package library " & to_string (library_name)
+				log (SEVERITY_ERROR, "package library " & to_string (library_name)
 					 & " is empty !", console => true);
 				raise constraint_error;
 			else
 				-- locate the package
 				package_cursor := packages.find (package_name);
 				if package_cursor = type_packages_library.no_element then
-					log (ERROR, "package " & to_string (packge => package_name)
+					log (SEVERITY_ERROR, "package " & to_string (packge => package_name)
 						& " not found in library " & to_string (library_name)
 						& " !", console => true);
 					raise constraint_error;
@@ -1246,7 +1246,7 @@ package body et_kicad_libraries is
 
 					-- If the package has less terminals than the given terminal_port_map abort:
 					if terminals < natural (length (terminal_port_map)) then
-						log (ERROR, "package " & to_string (packge => package_name)
+						log (SEVERITY_ERROR, "package " & to_string (packge => package_name)
 							& " as too few terminals !",
 							console => true);
 						raise constraint_error;
@@ -1266,7 +1266,7 @@ package body et_kicad_libraries is
 			library_cursor := package_libraries.find (library_name);
 
 			if library_cursor = type_libraries.no_element then
-				log (ERROR, "package library " & to_string (library_name)
+				log (SEVERITY_ERROR, "package library " & to_string (library_name)
 					 --& " not found in " & et_libraries.to_string (et_libraries.library_group)
 					 & " not found"
 					 & " !", console => true);
@@ -1279,7 +1279,7 @@ package body et_kicad_libraries is
 			end if;
 				
 		else
-			log (ERROR, "no package libraries available !", console => true);
+			log (SEVERITY_ERROR, "no package libraries available !", console => true);
 			raise constraint_error;
 		end if;
 
@@ -1796,7 +1796,7 @@ package body et_kicad_libraries is
 -- 					a : type_text_style;
 -- 
 -- 					procedure invalid_style is begin
--- 						log (ERROR, "invalid text style '" & style_in & "' !");
+-- 						log (SEVERITY_ERROR, "invalid text style '" & style_in & "' !");
 -- 						raise constraint_error;
 -- 					end invalid_style;
 -- 
@@ -1980,7 +1980,7 @@ package body et_kicad_libraries is
 						when 'R' => rot := 180.0; -- from the left,
 						when 'L' => rot :=   0.0; -- from the right
 						when others => 
-							log (ERROR, "invalid port orientation !", console => true);
+							log (SEVERITY_ERROR, "invalid port orientation !", console => true);
 							raise constraint_error;
 					end case;
 					return rot;
@@ -2153,7 +2153,7 @@ package body et_kicad_libraries is
 				-- CS: check style.
 			
 				procedure missing_field (meaning : in type_placeholder_meaning) is begin
-					log (ERROR, "text field " & to_string (meaning) & " missing !",
+					log (SEVERITY_ERROR, "text field " & to_string (meaning) & " missing !",
 						console => true);
 					raise constraint_error;
 				end missing_field;
@@ -2174,7 +2174,7 @@ package body et_kicad_libraries is
 					-- KiCad insists that the value contains something.
 					-- So the first choice is to set value like the generic component name:
 					if content (field_value) /= to_string (strip_tilde (tmp_component_name)) then
-						log (WARNING, "default value " 
+						log (SEVERITY_WARNING, "default value " 
 							& content (field_value) & " differs from name "
 							& to_string (tmp_component_name) & " !");
 					end if;
@@ -2326,14 +2326,14 @@ package body et_kicad_libraries is
 				if comp_inserted then
 					null;
 				else
-					log (ERROR, "line" & get_affected_line (line) & " : component already in library !",
+					log (SEVERITY_ERROR, "line" & get_affected_line (line) & " : component already in library !",
 						 console => true);
 					raise constraint_error;
 				end if;
 
 				exception
 					when event: others =>
-						log (ERROR, "component " & to_string (tmp_component_name) & " invalid !",
+						log (SEVERITY_ERROR, "component " & to_string (tmp_component_name) & " invalid !",
 							 console => true);
 						-- CS: provide details about the problem (line number, ...)
 						log (text => ada.exceptions.exception_message (event));
@@ -2930,7 +2930,7 @@ package body et_kicad_libraries is
 						if strip_quotes (f (line,2)) = pac_device_prefix.to_string (tmp_prefix) then
 							null; -- fine
 						else
-							log (WARNING, get_affected_line (line) & ": prefix vs. reference mismatch !");
+							log (SEVERITY_WARNING, get_affected_line (line) & ": prefix vs. reference mismatch !");
 							-- CS: better raise constraint_error
 						end if;
 
@@ -3148,7 +3148,7 @@ package body et_kicad_libraries is
 
 								-- The unknown field #4 is always a zero
 								if f (line, 4) /= "0" then
-									log (WARNING, "expect 0 in field #4 !");
+									log (SEVERITY_WARNING, "expect 0 in field #4 !");
 								end if;
 								
 								tmp_port_name_offset := mil_to_distance (mil => f (line,5)); -- relevant for supply pins only
@@ -3317,7 +3317,7 @@ package body et_kicad_libraries is
 			exception
 				when event:
 					others =>
-						log (ERROR, get_affected_line (line) & to_string (line), console => true);
+						log (SEVERITY_ERROR, get_affected_line (line) & to_string (line), console => true);
 						log (text => ada.exceptions.exception_message (event));
 						raise;
 		end read_library;
@@ -3362,7 +3362,7 @@ package body et_kicad_libraries is
 					end loop;
 					
 				else
-					log (WARNING, "no component libraries defined in project file !");
+					log (SEVERITY_WARNING, "no component libraries defined in project file !");
 				end if;
 
 				
@@ -3396,7 +3396,7 @@ package body et_kicad_libraries is
 					end loop;
 					
 				else
-					log (WARNING, "no component libraries defined !");
+					log (SEVERITY_WARNING, "no component libraries defined !");
 				end if;
 
 				
@@ -3538,7 +3538,7 @@ package body et_kicad_libraries is
 						variant := to_variant_name (to_string (packge => package_name));
 						
 					else
-						log (ERROR, "Terminal-port-map does not fit !", console => true); -- CS: more details
+						log (SEVERITY_ERROR, "Terminal-port-map does not fit !", console => true); -- CS: more details
 						raise constraint_error; -- CS
 					end if;
 
@@ -3710,7 +3710,7 @@ package body et_kicad_libraries is
 				position	=> lib_cursor,
 				process		=> locate'access);
 		else
-			log (WARNING, "library " & to_string (library) & " not found !");
+			log (SEVERITY_WARNING, "library " & to_string (library) & " not found !");
 			-- CS: raise constraint_error ?
 		end if;
 

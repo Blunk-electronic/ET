@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -1694,13 +1694,12 @@ package body et_board_ops_fill_zones is
 					-- helpful information and restore the zone:
 					exception when event:
 						others =>
-						log (
-							importance => WARNING,
-							text => exception_information (event));
+						log (SEVERITY_WARNING,
+							exception_information (event));
 					
 						log (
-							importance => WARNING,
-							text => "Zone at"
+							SEVERITY_WARNING,
+							"Zone at"
 								& to_string (get_corner_nearest_to_origin (zone))
 								& " has NOT been filled !");
 							--level => log_threshold + 3);
@@ -1834,7 +1833,7 @@ package body et_board_ops_fill_zones is
 				if has_element (net_cursor) then
 					query_net;
 				else
-					log (WARNING, "Net " & to_string (name) & " does not exist !");
+					log (SEVERITY_WARNING, "Net " & to_string (name) & " does not exist !");
 				end if;
 				
 				log_indentation_down;
@@ -2534,8 +2533,8 @@ package body et_board_ops_fill_zones is
 						query_net;
 					else
 						log (
-							importance => WARNING, 
-							text => "Net " & enclose_in_quotes (to_string (element (gn))) 
+							SEVERITY_WARNING, 
+							"Net " & enclose_in_quotes (to_string (element (gn))) 
 								& " does not exist !", 
 							level => log_threshold + 2);
 					end if;

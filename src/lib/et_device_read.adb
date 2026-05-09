@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -144,7 +144,7 @@ package body et_device_read is
 					error_on_invalid_character	=> false);
 
 				if not value_characters_valid (value) then
-					log (WARNING, "default value in device model " &
+					log (SEVERITY_WARNING, "default value in device model " &
 							to_string (file_name) & " contains invalid characters !");
 					log_indentation_reset;
 					value_invalid (to_string (value));
@@ -186,7 +186,7 @@ package body et_device_read is
 					-- The prefix gives information about the category of the device:
 					if pac_device_value.length (value) > 0 then
 						if not value_valid (value, prefix) then
-							log (WARNING, "default value of device model " &
+							log (SEVERITY_WARNING, "default value of device model " &
 								to_string (file_name) & 
 								" not conformant with conventions !");
 						end if;
@@ -375,7 +375,7 @@ package body et_device_read is
 						return true;
 
 					else
-						log (ERROR, write_missing_begin_end, console => true);
+						log (SEVERITY_ERROR, write_missing_begin_end, console => true);
 						raise constraint_error;
 					end if;
 
@@ -560,7 +560,7 @@ package body et_device_read is
 						name => file);
 
 				else
-					log (ERROR, "device model " & file &
+					log (SEVERITY_ERROR, "device model " & file &
 						 " not found !", console => true);
 					raise constraint_error;
 				end if;
@@ -592,7 +592,7 @@ package body et_device_read is
 			
 			-- As a safety measure the top section must be reached finally.
 			if pac_sections_stack.depth > 1 then 
-				log (WARNING, write_section_stack_not_empty);
+				log (SEVERITY_WARNING, write_section_stack_not_empty);
 			end if;
 
 			

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -74,7 +74,7 @@ package body et_kicad_coordinates is
 
 		-- Evaluate position of invalid character.
 		if invalid_character_position > 0 then
-			log (WARNING, "invalid character in submodule name '" 
+			log (SEVERITY_WARNING, "invalid character in submodule name '" 
 				& to_string (name) & "' at position" & natural'image (invalid_character_position) & " !");
 		end if;
 	end check_submodule_name_characters;

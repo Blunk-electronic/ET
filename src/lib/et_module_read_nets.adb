@@ -174,7 +174,7 @@ package body et_module_read_nets is
 				position	=> cursor);
 
 			if not inserted then
-				log (ERROR, "net " & to_string (net_name) & " already exists !");
+				log (SEVERITY_ERROR, "net " & to_string (net_name) & " already exists !");
 				raise constraint_error;
 			end if;
 		end query_module;
@@ -257,7 +257,7 @@ package body et_module_read_nets is
 		-- Issue warning about this mismatch:
 		if strand.position.place /= position_found_in_module_file then
 			
-			log (WARNING, get_affected_line (line) 
+			log (SEVERITY_WARNING, get_affected_line (line) 
 					& "Sheet" & to_string (get_sheet (strand.position))
 					& " net " 
 					& to_string (net_name) & ": Lowest x/y position of strand invalid !");
@@ -677,7 +677,7 @@ package body et_module_read_nets is
 				-- Insert port in port collection of device ports. First make sure it is
 				-- not already in the net segment.
 				-- if pac_device_ports.contains (net_device_ports, net_device_port) then
-				-- 	log (ERROR, "device " & to_string (net_device_port.device_name) &
+				-- 	log (SEVERITY_ERROR, "device " & to_string (net_device_port.device_name) &
 				-- 		" port " & to_string (net_device_port.port_name) & 
 				-- 		" already in net segment !", console => true);
 				-- 	raise constraint_error;
@@ -707,7 +707,7 @@ package body et_module_read_nets is
 				-- Insert submodule port in collection of submodule ports. First make sure it is
 				-- not already in the net segment.
 				-- if pac_submodule_ports.contains (net_submodule_ports, net_submodule_port) then
-				-- 	log (ERROR, "submodule " & to_string (net_submodule_port.module_name) &
+				-- 	log (SEVERITY_ERROR, "submodule " & to_string (net_submodule_port.module_name) &
 				-- 		" port " & to_string (net_submodule_port.port_name) & 
 				-- 		" already in net segment !", console => true);
 				-- 	raise constraint_error;
@@ -738,7 +738,7 @@ package body et_module_read_nets is
 				-- Insert netchanger port in collection of netchanger ports. First make sure it is
 				-- not already in the net segment.
 				-- if et_netlists.pac_netchanger_ports.contains (net_netchanger_ports, net_netchanger_port) then
-				-- 	log (ERROR, "netchanger" & et_submodules.to_string (net_netchanger_port.index) &
+				-- 	log (SEVERITY_ERROR, "netchanger" & et_submodules.to_string (net_netchanger_port.index) &
 				-- 		et_submodules.to_string (net_netchanger_port.port) & " port" & 
 				-- 		" already in net segment !", console => true);
 				-- 	raise constraint_error;

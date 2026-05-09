@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -156,7 +156,7 @@ package body et_module_read_assembly_variant is
 
 			-- test whether device exists
 			if not electrical_device_exists (module_cursor, device_name) then
-				log (ERROR, "device " &
+				log (SEVERITY_ERROR, "device " &
 						enclose_in_quotes (to_string (device_name)) &
 						" does not exist !", console => true);
 				raise constraint_error;
@@ -187,7 +187,7 @@ package body et_module_read_assembly_variant is
 				if f (line, 5) = keyword_partcode then
 					device.partcode := to_partcode (f (line, 6));
 				else -- keyword partcode not found
-					log (ERROR, "expect keyword " & enclose_in_quotes (keyword_partcode) &
+					log (SEVERITY_ERROR, "expect keyword " & enclose_in_quotes (keyword_partcode) &
 							" after value !", console => true);
 					raise constraint_error;
 				end if;
@@ -202,14 +202,14 @@ package body et_module_read_assembly_variant is
 						device.purpose := to_purpose (f (line, 8));
 
 					else -- keyword purpose not found
-						log (ERROR, "expect keyword " & enclose_in_quotes (keyword_purpose) &
+						log (SEVERITY_ERROR, "expect keyword " & enclose_in_quotes (keyword_purpose) &
 							" after partcode !", console => true);
 						raise constraint_error;
 					end if;
 				end if;
 					
 			else -- keyword value not found
-				log (ERROR, "expect keyword " & enclose_in_quotes (keyword_value) &
+				log (SEVERITY_ERROR, "expect keyword " & enclose_in_quotes (keyword_value) &
 						" or keyword " & enclose_in_quotes (keyword_not_mounted) &
 						" after device name !", console => true);
 				raise constraint_error;
@@ -226,7 +226,7 @@ package body et_module_read_assembly_variant is
 
 			-- Raise error if device occurs more than once:
 			if not inserted then
-				log (ERROR, "device " &
+				log (SEVERITY_ERROR, "device " &
 						enclose_in_quotes (to_string (device_name)) &
 						" already specified !", console => true);
 				raise constraint_error;
@@ -244,7 +244,7 @@ package body et_module_read_assembly_variant is
 
 			-- test whether submodule instance exists
 			if not submodule_instance_exists (module_cursor, submod_name) then
-				log (ERROR, "submodule instance " &
+				log (SEVERITY_ERROR, "submodule instance " &
 						enclose_in_quotes (to_string (submod_name)) &
 						" does not exist !", console => true);
 				raise constraint_error;
@@ -270,14 +270,14 @@ package body et_module_read_assembly_variant is
 
 				-- Raise error if submodule occurs more than once:
 				if not inserted then
-					log (ERROR, "submodule " &
+					log (SEVERITY_ERROR, "submodule " &
 						enclose_in_quotes (to_string (submod_name)) &
 						" already specified !", console => true);
 					raise constraint_error;
 				end if;
 
 			else
-				log (ERROR, "expect keyword " & enclose_in_quotes (keyword_variant) &
+				log (SEVERITY_ERROR, "expect keyword " & enclose_in_quotes (keyword_variant) &
 						" after instance name !", console => true);
 				raise constraint_error;
 			end if;
@@ -323,7 +323,7 @@ package body et_module_read_assembly_variant is
 
 			-- An assembly variant must be unique:
 			if not inserted then
-				log (ERROR, "assembly variant " & 
+				log (SEVERITY_ERROR, "assembly variant " & 
 						enclose_in_quotes (to_variant (assembly_variant_name)) 
 						& " already used !", console => true);
 				raise constraint_error;
@@ -400,7 +400,7 @@ package body et_module_read_assembly_variant is
 								level => log_threshold + 2);
 
 						if not assembly_variant_exists (module_cursor, submod_name, submod_variant) then
-							log (ERROR, "submodule " &
+							log (SEVERITY_ERROR, "submodule " &
 								enclose_in_quotes (to_string (submod_name)) &
 								" does not provide assembly variant " &
 								enclose_in_quotes (to_variant (submod_variant)) & " !",

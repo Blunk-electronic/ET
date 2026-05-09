@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -201,7 +201,7 @@ is
 					insert_device;
 										
 				else -- The variant does not exist.
-					log (ERROR, "Package variant " & to_string (variant)
+					log (SEVERITY_ERROR, "Package variant " & to_string (variant)
 						 & " does not exist in the specified device model !");
 				end if;
 
@@ -211,7 +211,7 @@ is
 				-- Select the first available variant:
 				selected_variant := get_first_package_variant (device_cursor_lib);
 				
-				log (WARNING, "No variant specified !"
+				log (SEVERITY_WARNING, "No variant specified !"
 					 & " Default to first available variant " & to_string (selected_variant));
 				
 				insert_device;

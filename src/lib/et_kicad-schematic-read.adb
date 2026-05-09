@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -93,7 +93,7 @@ is
 
 	procedure error_in_schematic_file (line : in type_fields_of_line) is
 	begin
-		log (ERROR, "in schematic file '" 
+		log (SEVERITY_ERROR, "in schematic file '" 
 			& to_string (current_schematic.sheet.file) & "' " 
 			& get_affected_line (line)
 			& to_string (line),
@@ -381,7 +381,7 @@ is
 
 		
 		procedure output_net_label_conflict is begin
-			log (ERROR, "Net label conflict !", console => true);
+			log (SEVERITY_ERROR, "Net label conflict !", console => true);
 		end output_net_label_conflict;
 
 		
@@ -445,7 +445,7 @@ is
 
 											when hierarchic => -- strand has been marked as "hierarchic" already. no local label allowed !
 												output_net_label_conflict;
-												log (ERROR,
+												log (SEVERITY_ERROR,
 													"hierarchic net " & to_string (anon_strand_a.name) 
 													& " has a local label at" 
 													--& to_string (position => ls.coordinates) & " !");
@@ -454,7 +454,7 @@ is
 
 											when global => -- strand has been marked as "global" already. no local label allowed !
 												output_net_label_conflict;
-												log (ERROR,
+												log (SEVERITY_ERROR,
 													"global net " & to_string (anon_strand_a.name) 
 													& " has a local label at" 
 													--& to_string (position => ls.coordinates) & " !");
@@ -475,7 +475,7 @@ is
 												output_net_label_conflict;
 
 												-- for the log, some more information
-												log (ERROR, 
+												log (SEVERITY_ERROR, 
 														"Net " & to_string (anon_strand_a.name) & " has contradicting label " 
 														--& "at" & to_string (position => ls.coordinates) & " !");
 														& "at" & to_string (ls.coordinates) & " !");
@@ -552,7 +552,7 @@ is
 											when local => -- strand has been marked as "local" already. no hierarchic or global label allowed !
 												if lt.global or lt.hierarchic then
 													output_net_label_conflict;
-													log (ERROR,
+													log (SEVERITY_ERROR,
 														"local net " & to_string (anon_strand_a.name) 
 														& " has a hierarchic or global label at" 
 														--& to_string (position => lt.coordinates) & " !");
@@ -563,7 +563,7 @@ is
 											when hierarchic => -- strand has been marked as "hierarchic" already. no global label allowed !
 												if lt.global then
 													output_net_label_conflict;
-													log (ERROR,
+													log (SEVERITY_ERROR,
 														"hierarchic net " & to_string (anon_strand_a.name) 
 														& " has a global label at" 
 														--& to_string (position => lt.coordinates) & " !");
@@ -574,7 +574,7 @@ is
 											when global => -- strand has been marked as "global" already. no hierarchic label allowed !
 												if lt.hierarchic then
 													output_net_label_conflict;
-													log (ERROR,
+													log (SEVERITY_ERROR,
 														"global net " & to_string (anon_strand_a.name) 
 														& " has a hierarchic label at" 
 														--& to_string (position => lt.coordinates) & " !");
@@ -590,7 +590,7 @@ is
 										else
 											-- If label text is different from previously assigned net name:
 											if anon_strand_a.name /= lt.text then 
-												log (ERROR, 
+												log (SEVERITY_ERROR, 
 														"Net " & to_string (anon_strand_a.name) & " has contradicting label " 
 														--& "at" & to_string (position => lt.coordinates) & " !");
 														& "at" & to_string (lt.coordinates) & " !");
@@ -761,8 +761,8 @@ is
 			log_indentation_down;
 			
 		else
-			log (NOTE,
-					"The schematic does not contain nets to associate net labels with !");
+			log (SEVERITY_NOTE,
+				"The schematic does not contain nets to associate net labels with !");
 		end if;
 
 		log_indentation_down;
@@ -1077,7 +1077,7 @@ is
 							-- headline ok, version is supported
 							schematic_version_valid := true;
 						else
-							log (ERROR, "schematic version" 
+							log (SEVERITY_ERROR, "schematic version" 
 									& positive'image (schematic_version_v4) & " required.",
 								console => true);
 							raise constraint_error;
@@ -1089,7 +1089,7 @@ is
 							-- headline ok, version is supported
 							schematic_version_valid := true;
 						else
-							log (ERROR, "schematic version" 
+							log (SEVERITY_ERROR, "schematic version" 
 									& positive'image(schematic_version_v5) & " required.",
 								console => true);
 							raise constraint_error;
@@ -1237,7 +1237,7 @@ is
 		if f (element (line_cursor), 1) = schematic_keyword_encoding then
 			-- CS test field count
 			if f (element (line_cursor), 2) /= encoding_default then
-				log (WARNING, "non-default endcoding '" 
+				log (SEVERITY_WARNING, "non-default endcoding '" 
 						& f (element (line_cursor), 2) & "' found !");
 			end if;
 		end if;
@@ -1401,7 +1401,7 @@ is
 
 			exception
 				when constraint_error =>
-					log (ERROR, "invalid port direction '" 
+					log (SEVERITY_ERROR, "invalid port direction '" 
 							& dir_in & "' !");
 					-- CS: provide more details
 					raise;
@@ -1429,7 +1429,7 @@ is
 
 			exception
 				when constraint_error =>
-					log (ERROR, "invalid port orientation '" 
+					log (SEVERITY_ERROR, "invalid port orientation '" 
 							& or_in & "' !");
 					-- CS: provide more details
 					raise;
@@ -1542,7 +1542,7 @@ is
 
 				-- if port could not be inserted -> abort
 				if not port_inserted then
-					log (ERROR, "multiple usage of port " & f (element (line_cursor), 2) & " !");
+					log (SEVERITY_ERROR, "multiple usage of port " & f (element (line_cursor), 2) & " !");
 					raise constraint_error;
 				end if;
 				
@@ -1551,7 +1551,7 @@ is
 			end loop;
 
 		else -- sheet has no ports -> warning
-			log (WARNING, "hierarchic sheet " & to_string (submodule => sheet_name.name) & " has no ports !");
+			log (SEVERITY_WARNING, "hierarchic sheet " & to_string (submodule => sheet_name.name) & " has no ports !");
 		end if;
 
 		-- insert the hierarchical sheet in module (see type_module)
@@ -1628,7 +1628,7 @@ is
 			
 			type_wild_segments.append (wild_segments, segment);
 		else -- segment has zero length
-			log (WARNING, get_affected_line (line) & "Net segment with zero length found -> ignored !");
+			log (SEVERITY_WARNING, get_affected_line (line) & "Net segment with zero length found -> ignored !");
 		end if; -- length
 
 		--log_indentation_down;
@@ -1891,7 +1891,7 @@ is
 		rotation : et_schematic_geometry.type_rotation_relative;
 
 		procedure warn is begin 
-			log (WARNING, " text note at " 
+			log (SEVERITY_WARNING, " text note at " 
 				& et_kicad_coordinates.to_string (position => note.position, scope => SHEET) 
 				& " might be misplaced !");
 		end;
@@ -1932,7 +1932,7 @@ is
 
 -- 				-- If the line width is too small, assume default and issue warning:
 -- 				if mil_to_distance (f (element (line_cursor), 8)) < pac_text.type_text_line_width'first then
--- 					log (WARNING, "Line width too small. Defaulting to minimal width !");
+-- 					log (SEVERITY_WARNING, "Line width too small. Defaulting to minimal width !");
 -- 					note.line_width := pac_text.type_text_line_width'first;
 -- 				else
 -- 					note.line_width := mil_to_distance (f (element (line_cursor), 8));
@@ -2122,7 +2122,7 @@ is
 			use et_conventions;
 		
 			procedure missing_field (m : in type_placeholder_meaning) is begin
-				log (ERROR,
+				log (SEVERITY_ERROR,
 						"component " & to_string (reference) 
 						& latin_1.space
 						& to_string (position => unit_position)
@@ -2209,7 +2209,7 @@ is
 					log (text => "reference " & to_string (reference), level => log_threshold + 1);
 					
 					if to_string (reference) /= content (field_reference) then
-						log (ERROR, "reference mismatch ! Header reads " 
+						log (SEVERITY_ERROR, "reference mismatch ! Header reads " 
 							& to_string (reference) & " but field contains " 
 							& content (field_reference),
 							console => true);
@@ -2271,7 +2271,7 @@ is
 			exception
 				when event:
 					others =>
-						log (ERROR, 
+						log (SEVERITY_ERROR, 
 							"invalid field in component " & to_string (reference)
 							& to_string (position => unit_position),
 							console => true);
@@ -2363,7 +2363,7 @@ is
 			if component_found then
 				return key (lib_cursor);
 			else
-				log (ERROR, "for component "  
+				log (SEVERITY_ERROR, "for component "  
 					& to_string (reference)
 					& " no generic model in any library found !",
 					console => true);
@@ -2441,7 +2441,7 @@ is
 			if component_found then
 				return full_name;
 			else
-				log (ERROR, "for component "  
+				log (SEVERITY_ERROR, "for component "  
 					& to_string (reference)
 					& " no generic model in any library named '" & et_kicad_general.to_string (component_library_name) 
 					& "' found !",
@@ -2589,7 +2589,7 @@ is
 
 						-- Test if footprint has been associated with the component.
 						if content (field_package)'size = 0 then
-							log (ERROR, "component " & to_string (reference) 
+							log (SEVERITY_ERROR, "component " & to_string (reference) 
 									& " footprint not specified !",
 								console => true);
 							raise constraint_error;
@@ -2601,7 +2601,7 @@ is
 			
 			exception
 				when constraint_error =>
-					log (ERROR, "component " & to_string (reference)
+					log (SEVERITY_ERROR, "component " & to_string (reference)
 							& " " & to_string (position => unit_position),
 						console => true);
 					raise constraint_error;
@@ -2715,7 +2715,7 @@ is
 			use pac_unit_name;
 		begin			
 			if to_string (unit_name) /= f (line,1) then
-				log (ERROR, "invalid unit name '" & f (line,1) & "'", console => true);
+				log (SEVERITY_ERROR, "invalid unit name '" & f (line,1) & "'", console => true);
 				raise constraint_error;
 			end if;
 			
@@ -3546,7 +3546,7 @@ begin -- read
 		associate_net_labels_with_anonymous_strands (log_threshold + 1);
 
 	else
-		log (ERROR, "schematic file '" & to_string (current_schematic.sheet.file) & "' not found !",
+		log (SEVERITY_ERROR, "schematic file '" & to_string (current_schematic.sheet.file) & "' not found !",
 			console => true);
 		raise constraint_error;
 	end if;

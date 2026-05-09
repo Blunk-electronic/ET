@@ -166,7 +166,7 @@ package body et_cp_schematic_device is
 						log_threshold		=> log_threshold + 1);
 
 				else
-					message_device_not_found (ERROR, name);
+					message_device_not_found (SEVERITY_ERROR, name);
 				end if;
 
 				
@@ -210,7 +210,7 @@ package body et_cp_schematic_device is
 						log_threshold	=> log_threshold + 1);
 
 				else
-					message_device_not_found (ERROR, name);
+					message_device_not_found (SEVERITY_ERROR, name);
 				end if;
 
 				
@@ -265,7 +265,7 @@ package body et_cp_schematic_device is
 						log_threshold	=> log_threshold + 1);
 
 				else
-					message_device_not_found (ERROR, name);
+					message_device_not_found (SEVERITY_ERROR, name);
 				end if;
 				
 
@@ -316,7 +316,7 @@ package body et_cp_schematic_device is
 						log_threshold	=> log_threshold + 1);
 
 				else
-					message_device_not_found (ERROR, name);
+					message_device_not_found (SEVERITY_ERROR, name);
 				end if;
 				
 
@@ -365,7 +365,7 @@ package body et_cp_schematic_device is
 						log_threshold	=> log_threshold + 1);
 
 				else
-					message_device_not_found (ERROR, name);
+					message_device_not_found (SEVERITY_ERROR, name);
 				end if;
 				
 
@@ -415,7 +415,7 @@ package body et_cp_schematic_device is
 						partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
 						log_threshold	=> log_threshold + 1);
 				else	
-					message_device_not_found (ERROR, name);
+					message_device_not_found (SEVERITY_ERROR, name);
 				end if;
 				
 
@@ -466,7 +466,7 @@ package body et_cp_schematic_device is
 						variant			=> variant, -- N, D
 						log_threshold	=> log_threshold + 1);
 				else
-					message_device_not_found (ERROR, name);
+					message_device_not_found (SEVERITY_ERROR, name);
 				end if;
 				
 

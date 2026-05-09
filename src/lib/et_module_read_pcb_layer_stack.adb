@@ -99,7 +99,7 @@ package body et_module_read_pcb_layer_stack is
 			-- have the next number:
 			if dielectric_found then
 				if to_index (board_layers.last) /= conductor_layer - 1 then
-					log (ERROR, "expect conductor layer number" &
+					log (SEVERITY_ERROR, "expect conductor layer number" &
 						to_string (to_index (board_layers.last) + 1) & " !",
 						console => true);
 					raise constraint_error;
@@ -117,7 +117,7 @@ package body et_module_read_pcb_layer_stack is
 			if dielectric_layer = conductor_layer then
 				append (board_layers, board_layer);
 			else
-				log (ERROR, "expect dielectric layer number" & to_string (conductor_layer) & " !", console => true);
+				log (SEVERITY_ERROR, "expect dielectric layer number" & to_string (conductor_layer) & " !", console => true);
 				raise constraint_error;
 			end if;
 		else
@@ -150,7 +150,7 @@ package body et_module_read_pcb_layer_stack is
 			if not dielectric_found then
 				module.board.stack.bottom.thickness := conductor_thickness;
 			else
-				log (ERROR, "dielectric not allowed underneath the bottom conductor layer !", console => true);
+				log (SEVERITY_ERROR, "dielectric not allowed underneath the bottom conductor layer !", console => true);
 				raise constraint_error;
 			end if;
 			

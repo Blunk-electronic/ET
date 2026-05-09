@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -69,7 +69,7 @@ package body et_device_prefix is
 		prefix : in string) 
 	is begin
 		if prefix'length > prefix_length_max then
-			log (ERROR, "max. number of characters for device name prefix is" 
+			log (SEVERITY_ERROR, "max. number of characters for device name prefix is" 
 				 & positive'image (prefix_length_max) & " !",
 				console => true);
 			raise constraint_error;
@@ -90,7 +90,7 @@ package body et_device_prefix is
 			test	=> outside);
 
 		if invalid_character_position > 0 then
-			log (ERROR, "device prefix " & to_string (prefix) 
+			log (SEVERITY_ERROR, "device prefix " & to_string (prefix) 
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position),
 				console => true

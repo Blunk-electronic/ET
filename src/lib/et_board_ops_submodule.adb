@@ -125,7 +125,7 @@ package body et_board_ops_submodule is
 
 				exception
 					when event: others =>
-						log (ERROR, "coordinates invalid !", console => true); -- CS required more details
+						log (SEVERITY_ERROR, "coordinates invalid !", console => true); -- CS required more details
 						log (text => ada.exceptions.exception_information (event), console => true);
 						raise;
 				

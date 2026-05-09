@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -52,7 +52,7 @@ package body et_modes.project is
 		return type_verb_project'value (verb_prefix & verb);
 	
 		exception when event: others => 
-			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
+			log (SEVERITY_ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
 			raise;
 	end;
 
@@ -70,7 +70,7 @@ package body et_modes.project is
 		return type_noun_project'value (noun_prefix & noun);
 	
 		exception when event: others => 
-			log (ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
+			log (SEVERITY_ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
 			raise;
 	end;
 	

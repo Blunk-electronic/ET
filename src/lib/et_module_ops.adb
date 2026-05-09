@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -139,7 +139,7 @@ package body et_module_ops is
 				position	=> module_cursor);
 
 			--else
-				--log (WARNING, "module " & enclose_in_quotes (to_string (module_name)) &
+				--log (SEVERITY_WARNING, "module " & enclose_in_quotes (to_string (module_name)) &
 					 --" is outside the project and will not be deleted !");
 			--end if;
 		else
@@ -189,12 +189,12 @@ package body et_module_ops is
 					log_threshold 	=> log_threshold + 1);
 
 			else
-				log (WARNING, "module " & enclose_in_quotes (to_string (module_name)) &
+				log (SEVERITY_WARNING, "module " & enclose_in_quotes (to_string (module_name)) &
 					 " is outside the project and will not be saved !");
 			end if;
 			
 		else
-			log (WARNING, "module " & enclose_in_quotes (to_string (module_name)) &
+			log (SEVERITY_WARNING, "module " & enclose_in_quotes (to_string (module_name)) &
 					" does not exist !");
 		end if;
 		

@@ -4185,7 +4185,7 @@ end;
 	procedure nothing_found (
 		zone	: in type_catch_zone)
 	is begin
-		log (importance => WARNING, 
+		log (importance => SEVERITY_WARNING, 
 			 text => "nothing found in" & to_string (zone));
 	end nothing_found;
 

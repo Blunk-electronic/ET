@@ -264,7 +264,7 @@ package body et_netlists is
 -- 		end;
 
 		procedure contention_by_both is begin
-			log (importance => ERROR, text => "net name contention caused by multiple netchanger or submodule slave ports !");
+			log (SEVERITY_ERROR, "net name contention caused by multiple netchanger or submodule slave ports !");
 
 			-- CS: list affected ports
 			raise constraint_error;

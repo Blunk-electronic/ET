@@ -3588,7 +3588,7 @@ package body et_schematic_ops_nets is
 			-- If an object strand exists, then rename it.
 			-- Otherwise nothing happens
 			if is_empty (object_strand) then
-				log (WARNING, "No strand of net " & to_string (net_name_before)
+				log (SEVERITY_WARNING, "No strand of net " & to_string (net_name_before)
 					& " found at the specified place !");
 
 			else
@@ -3601,7 +3601,7 @@ package body et_schematic_ops_nets is
 			end if;
 			
 		else
-			log (WARNING, "Net " & to_string (net_name_before) & " does not exist !");
+			log (SEVERITY_WARNING, "Net " & to_string (net_name_before) & " does not exist !");
 		end if;
 		
 		log_indentation_down;
@@ -3886,7 +3886,7 @@ package body et_schematic_ops_nets is
 				log_threshold	=> log_threshold + 1);
 			
 		else
-			log (WARNING, "Net " & to_string (net_name_before) & " does not exist !");
+			log (SEVERITY_WARNING, "Net " & to_string (net_name_before) & " does not exist !");
 		end if;
 		
 		log_indentation_down;
@@ -4028,7 +4028,7 @@ package body et_schematic_ops_nets is
 		if has_element (net.net_cursor) then
 			delete_net (module_cursor, net, sheet, all_sheets, log_threshold + 1);			
 		else
-			log (WARNING, "Net " & to_string (net_name) & " does not exist !");
+			log (SEVERITY_WARNING, "Net " & to_string (net_name) & " does not exist !");
 		end if;		
 			
 		log_indentation_down;
@@ -4201,7 +4201,7 @@ package body et_schematic_ops_nets is
 		if has_element (net_cursor) then -- net exists
 			generic_modules.update_element (module_cursor, query_module'access);
 		else
-			log (WARNING, "Net " & to_string (net_name) & " does not exist !");
+			log (SEVERITY_WARNING, "Net " & to_string (net_name) & " does not exist !");
 		end if;
 		
 		log_indentation_down;
@@ -5126,7 +5126,7 @@ package body et_schematic_ops_nets is
 
 			-- CS update_ratsnest (module_cursor, log_threshold + 1)
 		else
-			log (ERROR, "Net " & to_string (net_name) & " not found !");
+			log (SEVERITY_ERROR, "Net " & to_string (net_name) & " not found !");
 			raise constraint_error;
 		end if;
 	end set_scope;
@@ -5683,7 +5683,7 @@ package body et_schematic_ops_nets is
 								-- In case the net segment is a slope, then
 								-- we do not place a label:
 							when ORIENT_SLOPING =>
-								log (WARNING, "Targeted net segment is a slope. No label allowed here !.");
+								log (SEVERITY_WARNING, "Targeted net segment is a slope. No label allowed here !.");
 								
 						end case;
 					end query_segment;
@@ -5774,13 +5774,13 @@ package body et_schematic_ops_nets is
 		-- one segment exists at the specified place:
 		case length (segments) is
 			when 0 =>
-				log (WARNING, "No net found at" & to_string (position));
+				log (SEVERITY_WARNING, "No net found at" & to_string (position));
 
 			when 1 => 
 				do_it;
 
 			when others =>
-				log (WARNING, "More than one net found at" & to_string (position));
+				log (SEVERITY_WARNING, "More than one net found at" & to_string (position));
 				-- CS show the net names ?				
 		end case;
 		
@@ -5955,7 +5955,7 @@ package body et_schematic_ops_nets is
 			process		=> query_nets'access);
 
 		if not label_found then
-			log (WARNING, "No net label found at given position !");
+			log (SEVERITY_WARNING, "No net label found at given position !");
 		end if;
 		
 		log_indentation_down;
@@ -6679,13 +6679,13 @@ package body et_schematic_ops_nets is
 		-- one segment exists at the specified place:
 		case length (segments) is
 			when 0 =>
-				log (WARNING, "No net found at" & to_string (position));
+				log (SEVERITY_WARNING, "No net found at" & to_string (position));
 
 			when 1 => 
 				do_it;
 
 			when others =>
-				log (WARNING, "More than one net found at" & to_string (position));
+				log (SEVERITY_WARNING, "More than one net found at" & to_string (position));
 				-- CS show the net names ?				
 		end case;
 		

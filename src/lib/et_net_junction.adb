@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                -- 
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.   
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -45,7 +45,7 @@ package body et_net_junction is
 	procedure junction_in_sloping_segment (
 		point : in type_object_position) 
 	is begin
-		log (ERROR, "Junction not allowed in a sloping net segment at" 
+		log (SEVERITY_ERROR, "Junction not allowed in a sloping net segment at" 
 			 & to_string (point),
 			 console => true);
 		raise constraint_error;

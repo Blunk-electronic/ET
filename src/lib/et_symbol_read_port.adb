@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -288,7 +288,7 @@ package body et_symbol_read_port is
 		
 		-- abort if port name already used:
 		if not inserted then
-			log (ERROR, "port " & to_string (port_name) & " already in use !", console => true);
+			log (SEVERITY_ERROR, "port " & to_string (port_name) & " already in use !", console => true);
 			raise constraint_error;
 		end if;
 		

@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -209,7 +209,7 @@ package body et_cp_board_display is
 						when NOUN_ORIGINS		=> layers.device_origins.top	:= ls;
 						
 						when others => 
-							log (importance => ERROR, text => "invalid layer !", console => true);
+							log (SEVERITY_ERROR, "invalid layer !", console => true);
 					end case;
 
 				when BOTTOM =>
@@ -222,7 +222,7 @@ package body et_cp_board_display is
 						when NOUN_ORIGINS		=> layers.device_origins.bottom	:= ls;
 						
 						when others => 
-							log (importance => ERROR, text => "invalid layer !", console => true);
+							log (SEVERITY_ERROR, "invalid layer !", console => true);
 					end case;
 			end case;
 			
@@ -416,8 +416,7 @@ package body et_cp_board_display is
 				layers.via_restrict (ly) := ls;
 				
 			else
-				log (importance => ERROR, 
-						text => "Expect keyword " &
+				log (SEVERITY_ERROR, "Expect keyword " &
 						enclose_in_quotes (keyword_route) & " or " &
 						enclose_in_quotes (keyword_via) & "after noun " &
 						to_string (NOUN_RESTRICT) & " !",

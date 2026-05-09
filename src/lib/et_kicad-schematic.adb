@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -108,7 +108,7 @@ package body et_kicad.schematic is
 	-- Returns a message stating that the given module does not exist.
 		use et_string_processing;
 	begin
-		log (ERROR, " module " & to_string (module) & " not found !");
+		log (SEVERITY_ERROR, " module " & to_string (module) & " not found !");
 		raise constraint_error;
 	end module_not_found;
 
@@ -283,7 +283,7 @@ package body et_kicad.schematic is
 			test	=> outside);
 
 		if invalid_character_position > 0 then
-			log (ERROR, "component prefix " & to_string (prefix => prefix) 
+			log (SEVERITY_ERROR, "component prefix " & to_string (prefix => prefix) 
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position),
 				console => true
@@ -320,7 +320,7 @@ package body et_kicad.schematic is
 		procedure invalid_reference is
 			use et_string_processing;
 		begin
-			log (ERROR, latin_1.lf & "invalid component reference " & enclose_in_quotes (text_in_justified),
+			log (SEVERITY_ERROR, latin_1.lf & "invalid component reference " & enclose_in_quotes (text_in_justified),
 				console => true);
 			
 			raise constraint_error;
@@ -504,7 +504,7 @@ package body et_kicad.schematic is
 
 	
 	procedure invalid_field (line : in type_fields_of_line) is begin
-		log (ERROR, get_affected_line (line) & "invalid field !", console => true);
+		log (SEVERITY_ERROR, get_affected_line (line) & "invalid field !", console => true);
 
 		log (text => to_string (line), console => true);
 
@@ -529,7 +529,7 @@ package body et_kicad.schematic is
 			or to_string (prefix) = power_symbol_prefix then
 			null;
 		else
-			log (ERROR, "invalid prefix "
+			log (SEVERITY_ERROR, "invalid prefix "
 				 & to_string (prefix) & " !"
 				 & " Expected " 
 				 & power_flag_prefix & " or "
@@ -550,7 +550,7 @@ package body et_kicad.schematic is
 			or to_string (reference.prefix) = power_symbol_prefix then
 			null;
 		else
-			log (ERROR, "invalid prefix in component reference "
+			log (SEVERITY_ERROR, "invalid prefix in component reference "
 				 & to_string (reference) & " !"
 				 & " Expected " 
 				 & power_flag_prefix & " or "
@@ -700,10 +700,10 @@ package body et_kicad.schematic is
 
 		exception 
 			when constraint_error =>
-				log (ERROR, "invalid text orientation !", console => true);
+				log (SEVERITY_ERROR, "invalid text orientation !", console => true);
 				raise;
 			when others =>
-				log (ERROR, "invalid text orientation !", console => true);
+				log (SEVERITY_ERROR, "invalid text orientation !", console => true);
 				raise;
 	end to_field_orientation;
 
@@ -753,7 +753,7 @@ package body et_kicad.schematic is
 -- 	
 -- 		procedure invalid_style is
 -- 		begin
--- 			log (ERROR, "invalid text style '" & style_in & "' !");
+-- 			log (SEVERITY_ERROR, "invalid text style '" & style_in & "' !");
 -- 			raise constraint_error;
 -- 		end invalid_style;
 -- 		
@@ -844,7 +844,7 @@ package body et_kicad.schematic is
 
 		procedure invalid_appearance is
 		begin
-			log (ERROR, get_affected_line (line) 
+			log (SEVERITY_ERROR, get_affected_line (line) 
 				 & "invalid visibility flag !", console => true);
 			raise constraint_error;
 		end invalid_appearance;	
@@ -903,7 +903,7 @@ package body et_kicad.schematic is
 				rep_out := yes;
 
 				-- We do not support alternative representations.
-				log (ERROR, "alternative representation (DeMorgan) not supported !",
+				log (SEVERITY_ERROR, "alternative representation (DeMorgan) not supported !",
 					 console => true);
 				raise constraint_error;
 				
@@ -915,7 +915,7 @@ package body et_kicad.schematic is
 
 		exception
 			when others => 
-				log (ERROR, "invalid alternative representation flag !", console => true);
+				log (SEVERITY_ERROR, "invalid alternative representation flag !", console => true);
 				raise;			
 		
 	end to_alternative_representation;
@@ -981,7 +981,7 @@ package body et_kicad.schematic is
 		
 		procedure no_package is
 		begin
-			log (ERROR, "no package associated !", 
+			log (SEVERITY_ERROR, "no package associated !", 
 				console => true);
 			raise constraint_error;
 		end no_package;
@@ -1125,7 +1125,7 @@ package body et_kicad.schematic is
 						variant := to_variant_name (to_string (packge => package_name));
 						
 					else
-						log (ERROR, "Terminal-port-map does not fit !", console => true); -- CS: more details
+						log (SEVERITY_ERROR, "Terminal-port-map does not fit !", console => true); -- CS: more details
 						raise constraint_error; -- CS
 					end if;
 
@@ -1291,7 +1291,7 @@ package body et_kicad.schematic is
 
 					-- Output a warning if strand has no name.
 					if anonymous (element (strand).name) then
-						log (WARNING, "net " & to_string (element (strand).name) 
+						log (SEVERITY_WARNING, "net " & to_string (element (strand).name) 
 							& " at" & to_string (
 								position => element (strand).position, scope => et_kicad_coordinates.MODULE)
 							& " has no dedicated name !");
@@ -1344,7 +1344,7 @@ package body et_kicad.schematic is
                         process		=> add_net'access);
 
 				when UNKNOWN =>
-					log (ERROR, "unknown scope of net !");
+					log (SEVERITY_ERROR, "unknown scope of net !");
 					raise constraint_error; -- CS: should never happen as all strands should have a scope by now
 
 				when HIERARCHIC =>
@@ -1658,7 +1658,7 @@ package body et_kicad.schematic is
 
 				-- Raise warning if hierarchic net not found in submodule:
 				if not hierarchic_net_found then
-					log (WARNING, "hierarchic net " & to_string (net.name) 
+					log (SEVERITY_WARNING, "hierarchic net " & to_string (net.name) 
 						& " in submodule " & to_string (net.path) 
 						& " not found ! "
 						& "Hierarchic sheet in parent module requires this net !");
@@ -1985,7 +1985,7 @@ package body et_kicad.schematic is
 		elsif text_in = schematic_keyword_label_dir_passive then
 			d_out := PASSIVE;
 		else
-			log (ERROR, "Label direction unknown !", console => true);
+			log (SEVERITY_ERROR, "Label direction unknown !", console => true);
 			raise constraint_error;
 		end if;
 		
@@ -2106,18 +2106,18 @@ package body et_kicad.schematic is
 							if not type_project_lib_dirs.contains (search_list_project_lib_dirs, lib_dir_name) then
 								type_project_lib_dirs.append (search_list_project_lib_dirs, lib_dir_name);
 							else
-								log (WARNING, "multiple usage of directory " & to_string (lib_dir_name));
+								log (SEVERITY_WARNING, "multiple usage of directory " & to_string (lib_dir_name));
 							end if;
 
 							-- Test if the library directory exists:
 							if not exists (to_string (lib_dir_name)) then
-								log (ERROR, "directory " & to_string (lib_dir_name) & " does not exist !", console => true);
+								log (SEVERITY_ERROR, "directory " & to_string (lib_dir_name) & " does not exist !", console => true);
 								raise constraint_error;
 							end if;
 								
 						end loop;
 					else
-						log (WARNING, "no directory for libraries specified !");
+						log (SEVERITY_WARNING, "no directory for libraries specified !");
 					end if;
 
 					log_indentation_down;
@@ -2188,7 +2188,7 @@ package body et_kicad.schematic is
 
 						-- raise alarm and abort if current library not found in any directory
 						if not library_found then
-							log (ERROR, "library " & to_string (element (search_list_library_cursor)) &
+							log (SEVERITY_ERROR, "library " & to_string (element (search_list_library_cursor)) &
 								" not found in any directory !", console => true);
 							raise constraint_error;
 						end if;
@@ -2373,7 +2373,7 @@ package body et_kicad.schematic is
 							
 						-- raise alarm and abort if library file not found
 						else
-							log (ERROR, "library " & to_string (uri) 
+							log (SEVERITY_ERROR, "library " & to_string (uri) 
 								 & " not found !", console => true);
 							raise constraint_error;
 						end if;
@@ -2417,7 +2417,7 @@ package body et_kicad.schematic is
 							
 						-- raise alarm and abort if library file not found
 						else
-							log (ERROR, "library " & to_string (uri) 
+							log (SEVERITY_ERROR, "library " & to_string (uri) 
 								 & " not found !", console => true);
 							raise constraint_error;
 						end if;
@@ -2541,8 +2541,8 @@ package body et_kicad.schematic is
 							--log (text => "line " & to_string (current_line), level => log_threshold);
 						else
 							-- This should never happen:
-							log (ERROR, "in " & to_string (lib_table_path), console => true);
-							log (ERROR, "no more lines available !", console => true);
+							log (SEVERITY_ERROR, "in " & to_string (lib_table_path), console => true);
+							log (SEVERITY_ERROR, "no more lines available !", console => true);
 							raise constraint_error;
 						end if;
 					end get_next_line;
@@ -2566,7 +2566,7 @@ package body et_kicad.schematic is
 						end_of_kw : integer;  -- may become negative if no terminating character present
 
 						procedure invalid_section is begin
-							log (ERROR, "invalid subsection '" & to_string (section.name) 
+							log (SEVERITY_ERROR, "invalid subsection '" & to_string (section.name) 
 								& "' in parent section '" & to_string (section.parent) & "' ! (read section)", console => true);
 							raise constraint_error;
 						end invalid_section;
@@ -2621,11 +2621,11 @@ package body et_kicad.schematic is
 						exception
 							when event:
 								others =>
-									log (ERROR, "in " & to_string (lib_table_path), console => true);
-									log (ERROR, get_affected_line (element (line_cursor)) 
+									log (SEVERITY_ERROR, "in " & to_string (lib_table_path), console => true);
+									log (SEVERITY_ERROR, get_affected_line (element (line_cursor)) 
 										& to_string (element (line_cursor)), console => true);
 
-									log (ERROR, "section '" & slice (current_line, character_cursor, end_of_kw) 
+									log (SEVERITY_ERROR, "section '" & slice (current_line, character_cursor, end_of_kw) 
 										& "' invalid or not supported yet", console => true);
 									raise;
 
@@ -2646,13 +2646,13 @@ package body et_kicad.schematic is
 						arg : type_argument.bounded_string; -- here the argument goes temporarily
 
 						procedure too_many_arguments is begin
-							log (ERROR, "too many arguments in section " & to_string (section.name) & " !", console => true);
+							log (SEVERITY_ERROR, "too many arguments in section " & to_string (section.name) & " !", console => true);
 							log (text => "excessive argument reads '" & to_string (arg) & "'", console => true);
 							raise constraint_error;
 						end too_many_arguments;
 
 						procedure invalid_section is begin
-							log (ERROR, "invalid subsection '" & to_string (section.name) 
+							log (SEVERITY_ERROR, "invalid subsection '" & to_string (section.name) 
 								& "' in parent section '" & to_string (section.parent) & "' ! (read argument)", console => true);
 							raise constraint_error;
 						end invalid_section;
@@ -2667,7 +2667,7 @@ package body et_kicad.schematic is
 
 							-- if no trailing quotation found -> error
 							if end_of_arg = -1 then
-								log (ERROR, get_affected_line (element (line_cursor))
+								log (SEVERITY_ERROR, get_affected_line (element (line_cursor))
 									& latin_1.space & latin_1.quotation & " expected");
 									raise constraint_error;
 							end if;
@@ -2757,8 +2757,8 @@ package body et_kicad.schematic is
 						exception
 							when event:
 								others =>
-									log (ERROR, "in " & to_string (lib_table_path), console => true);
-									log (ERROR, get_affected_line (element (line_cursor)) 
+									log (SEVERITY_ERROR, "in " & to_string (lib_table_path), console => true);
+									log (SEVERITY_ERROR, get_affected_line (element (line_cursor)) 
 										& to_string (element (line_cursor)), console => true);
 									log (text => ada.exceptions.exception_message (event));
 									raise;
@@ -2808,8 +2808,8 @@ package body et_kicad.schematic is
 						exception
 							when event:
 								others =>
-									log (ERROR, "in " & to_string (lib_table_path), console => true);
-									log (ERROR, get_affected_line (element (line_cursor)) 
+									log (SEVERITY_ERROR, "in " & to_string (lib_table_path), console => true);
+									log (SEVERITY_ERROR, get_affected_line (element (line_cursor)) 
 										& to_string (element (line_cursor)), console => true);
 									log (text => ada.exceptions.exception_message (event));
 									raise;
@@ -2924,8 +2924,8 @@ package body et_kicad.schematic is
 
 					-- check section name. must be top level section
 					if section.name /= INIT then -- should never happen
-						log (ERROR, "in " & to_string (lib_table_path), console => true);
-						log (ERROR, "top level section not closed !", console => true);
+						log (SEVERITY_ERROR, "in " & to_string (lib_table_path), console => true);
+						log (SEVERITY_ERROR, "top level section not closed !", console => true);
 						raise constraint_error;
 					end if;
 
@@ -2938,7 +2938,7 @@ package body et_kicad.schematic is
 				
 				procedure warning_on_multiple_entry_in_lib_table (library : in string) is
 				begin
-					log (WARNING, "global library table: '" & library 
+					log (SEVERITY_WARNING, "global library table: '" & library 
 						 & "' already in local library table -> skipped !");
 				end warning_on_multiple_entry_in_lib_table;
 
@@ -3270,7 +3270,7 @@ package body et_kicad.schematic is
 					inserted	=> module_inserted);
 
 				if not module_inserted then -- CS should never happen
-					log (ERROR, "module " & to_string (module_name) & " already in imported !");
+					log (SEVERITY_ERROR, "module " & to_string (module_name) & " already in imported !");
 					raise constraint_error;
 				end if;
 
@@ -3429,7 +3429,7 @@ package body et_kicad.schematic is
 					log (text => ada.exceptions.exception_message (event), console => true);
 					set_directory (current_working_directory);
 				
--- 					log (ERROR, "in schematic file '" 
+-- 					log (SEVERITY_ERROR, "in schematic file '" 
 -- 						& to_string (current_schematic) & "' " 
 -- 						console => true);
 -- 						et_import.close_report;
@@ -3716,7 +3716,7 @@ package body et_kicad.schematic is
 			log (text => "renamed" & natural'image (count) & " strands", level => log_threshold);
 		else
 			-- CS: This should never happen
-			log (ERROR, "strand " 
+			log (SEVERITY_ERROR, "strand " 
 				& to_string (name_before) & " not found !");
 			raise constraint_error;
 		end if;
@@ -3840,7 +3840,7 @@ package body et_kicad.schematic is
 			if junction_here then
 				sits_on_segment := true;
 			else
-				log (ERROR, "missing junction at " 
+				log (SEVERITY_ERROR, "missing junction at " 
 					& to_string (port.coordinates, et_kicad_coordinates.MODULE),
 						console => true);
 				raise constraint_error;
@@ -3984,7 +3984,7 @@ package body et_kicad.schematic is
 								-- If strand has been given a name already (for example by previous power-in ports) AND
 								-- if strand name differs from name of current power-in port -> warning
 								elsif to_string (element (strand).name) /= to_string (element (port).name) then
-									log (WARNING, "component " & to_string (key (component)) 
+									log (SEVERITY_WARNING, "component " & to_string (key (component)) 
 										& " POWER IN port " & to_string (element (port).name) 
 										& " at" & to_string (element (port).coordinates, module)
 										& " conflicts with net " & to_string (element (strand).name) & " !");
@@ -3993,7 +3993,7 @@ package body et_kicad.schematic is
 								-- If strand has a name and is local or hierarchic -> error and abort
 								--elsif et_schematic."/=" (element (strand).scope, et_schematic.global) then
 								elsif element (strand).scope /= GLOBAL then
-									log (ERROR, "component " & to_string (key (component)) 
+									log (SEVERITY_ERROR, "component " & to_string (key (component)) 
 										& " POWER IN port " & to_string (element (port).name) 
 										& " at" & to_string (element (port).coordinates, module)
 										& " conflicts with " & to_string (element (strand).scope) 
@@ -4162,7 +4162,7 @@ package body et_kicad.schematic is
 				position	=> lib_cursor,
 				process		=> locate'access);
 		else
-			log (WARNING, "library " & to_string (library) & " not found !");
+			log (SEVERITY_WARNING, "library " & to_string (library) & " not found !");
 			-- CS: raise constraint_error ?
 		end if;
 
@@ -4574,7 +4574,7 @@ package body et_kicad.schematic is
 			else
 				-- this should never happen
 				log_indentation_down;
-				log (ERROR, "comonent appearance mismatch !", console => true);
+				log (SEVERITY_ERROR, "comonent appearance mismatch !", console => true);
 				-- CS: provide more details on the affected component
 				raise constraint_error;
 			end if;
@@ -4861,18 +4861,18 @@ package body et_kicad.schematic is
 							-- For ports with other directions, issue a warning.
 							if element (port_cursor).direction = POWER_IN then
 								if not connected_by_other_unit then
-									log (ERROR, "power supply not connected at" 
+									log (SEVERITY_ERROR, "power supply not connected at" 
 										& to_string (element (port_cursor).coordinates, et_kicad_coordinates.MODULE)
 										& " nor via other units of this component !");
 									raise constraint_error;
 								end if;
 							else
-								log (WARNING, "port not connected at" 
+								log (SEVERITY_WARNING, "port not connected at" 
 									& to_string (element (port_cursor).coordinates, et_kicad_coordinates.MODULE));
 							end if;
 
 						else
-							log (WARNING, "port not connected at" 
+							log (SEVERITY_WARNING, "port not connected at" 
 								& to_string (element (port_cursor).coordinates, et_kicad_coordinates.MODULE));
 						end if;
 					end if;
@@ -5011,7 +5011,7 @@ package body et_kicad.schematic is
 -- 									-- Procdure check_open_ports detects such design errors. 
 -- 
 -- 									if et_import.cad_format /= kicad_v4 then
--- 										log (ERROR, unit_not_deployed
+-- 										log (SEVERITY_ERROR, unit_not_deployed
 -- 											& et_schematic.show_danger (et_schematic.no_power_supply));
 -- 										raise constraint_error;
 -- 									end if;
@@ -5019,7 +5019,7 @@ package body et_kicad.schematic is
 -- 								-- raise alarm if "must" unit is missing. there are numerous reasons
 -- 								-- for such a unit to be there. So no further advise possible.
 -- 								when et_libraries.must =>
--- 									log (ERROR, unit_not_deployed);
+-- 									log (SEVERITY_ERROR, unit_not_deployed);
 -- 									raise constraint_error;
 -- 
 -- 								-- "can" units may be left non-deployed
@@ -5027,7 +5027,7 @@ package body et_kicad.schematic is
 -- 									null;
 -- 									
 -- 								when et_libraries.next | et_libraries.always =>
-									log (WARNING, unit_not_deployed
+									log (SEVERITY_WARNING, unit_not_deployed
 										& show_danger (FLOATING_INPUT));
 -- 
 -- 								-- CS: special threatment for "always" ?
@@ -5213,7 +5213,7 @@ package body et_kicad.schematic is
 		use et_string_processing;
 	begin
 		if find (modules, module_name) = type_modules.no_element then
-			log (ERROR, "module " & to_string (module_name)
+			log (SEVERITY_ERROR, "module " & to_string (module_name)
 				 & " does not exist !",
 				console => true);
 			raise constraint_error;
@@ -5458,7 +5458,7 @@ package body et_kicad.schematic is
 			if inserted then -- fine. unit was inserted successfully
 				write_unit_properties (unit => cursor, log_threshold => log_threshold + 1);
 			else -- not inserted, unit already in component -> failure
-				log (ERROR, "component " & to_string (reference) &
+				log (SEVERITY_ERROR, "component " & to_string (reference) &
 					 " unit " & to_string (unit_name) & " used multiple times !" &
 					 " Make sure " & to_string (reference) & " exists ONLY ONCE !",
 					console	=> true);
@@ -5665,7 +5665,7 @@ package body et_kicad.schematic is
 
 					if junction.expected then
 						if not junction_here then
-							log (WARNING, "missing net junction at " 
+							log (SEVERITY_WARNING, "missing net junction at " 
 							 & to_string (junction.position, et_kicad_coordinates.MODULE));
 						end if;
 					end if;
@@ -5808,7 +5808,7 @@ package body et_kicad.schematic is
 			while junction_cursor /= type_junctions.no_element loop
 
 				if not segment_here then
-					log (WARNING, "orphaned net junction at " 
+					log (SEVERITY_WARNING, "orphaned net junction at " 
 						 & to_string (element (junction_cursor).coordinates, et_kicad_coordinates.MODULE));
 				end if;
 					
@@ -5969,7 +5969,7 @@ package body et_kicad.schematic is
 
 			procedure log_misplaced_junction is
 			begin
-				log (WARNING, "misplaced net junction at " 
+				log (SEVERITY_WARNING, "misplaced net junction at " 
 					& to_string (element (junction_cursor).coordinates, et_kicad_coordinates.MODULE));
 			end log_misplaced_junction;
 			
@@ -6072,7 +6072,7 @@ package body et_kicad.schematic is
 										B	=> get_point (element (segment_cursor).coordinates_end)));
 								begin
 									if line.on_line (get_point (element (no_connection_flag_cursor).coordinates)) then
-										log (WARNING, "no-connection-flag misplaced on a net at " 
+										log (SEVERITY_WARNING, "no-connection-flag misplaced on a net at " 
 											& to_string (element (no_connection_flag_cursor).coordinates, et_kicad_coordinates.MODULE));
 									end if;
 
@@ -6230,7 +6230,7 @@ package body et_kicad.schematic is
 				-- If the flag is still orphaned issue a warning.
 				if flag_orphaned then
 					-- no_connection_flag is not placed at any port
-					log (WARNING, "orphaned no_connection_flag found at " 
+					log (SEVERITY_WARNING, "orphaned no_connection_flag found at " 
 						 & to_string (element (no_connection_flag_cursor).coordinates, et_kicad_coordinates.MODULE));
 				end if;
 					
@@ -6511,7 +6511,7 @@ package body et_kicad.schematic is
 						when POWER_OUT	=> power_out_count := power_out_count + 1;
 						
 						when UNKNOWN	=> -- CS: verification required
-							log (ERROR, show_net & " has a port with unknown direction at " 
+							log (SEVERITY_ERROR, show_net & " has a port with unknown direction at " 
 								& to_string (element (port_cursor).coordinates, scope => et_kicad_coordinates.MODULE)
 								& show_danger (NOT_PREDICTABLE),
 								console => true
@@ -6551,17 +6551,17 @@ package body et_kicad.schematic is
 				-- Test if net has zero OR one single port. Warn about floating inputs:
 				case length (ports) is
 					when 0 =>
-						log (WARNING, "net " & to_string (key (net_cursor)) & " has no ports !"
+						log (SEVERITY_WARNING, "net " & to_string (key (net_cursor)) & " has no ports !"
 							& " See import report for coordinates.");
 					
 					when 1 =>
-						log (WARNING, "net " & to_string (key (net_cursor)) 
+						log (SEVERITY_WARNING, "net " & to_string (key (net_cursor)) 
 							& " has only one port at "
 							& to_string (element (ports.first).coordinates, scope => et_kicad_coordinates.MODULE));
 
 						-- warn about single inputs
 						if input_count = 1 then
-							log (WARNING, show_net & " has only one input !" & 
+							log (SEVERITY_WARNING, show_net & " has only one input !" & 
 							 show_danger (FLOATING_INPUT));
 							-- CS: show affected ports and their coordinates. use a loop in ports and show inputs.
 						end if;
@@ -6571,7 +6571,7 @@ package body et_kicad.schematic is
 						if sum_drivers = 0 then -- no kind of driver
 							if input_count > 0 then -- one or more inputs
 								if others_count = 0 then
-									log (WARNING, show_net & " has no energy sources !" &
+									log (SEVERITY_WARNING, show_net & " has no energy sources !" &
 										show_danger (FLOATING_INPUT));
 									-- CS: show affected ports and their coordinates. use a loop in ports and show inputs.
 								end if;
@@ -6582,7 +6582,7 @@ package body et_kicad.schematic is
 				
 				-- Test if outputs drive against each other:
 				if output_count > 1 then
-					log (WARNING, show_net & " has more than one output !" &
+					log (SEVERITY_WARNING, show_net & " has more than one output !" &
 						show_danger (CONTENTION));
 					-- CS: show affected ports and their coordinates. use a loop in ports and show outputs
 				end if;
@@ -6592,7 +6592,7 @@ package body et_kicad.schematic is
 					-- For the moment we warn if there are as many bidir as ports. this implies there is nothing that
 					-- could pull the net to a definite level:
 					if length (ports) = count_type (bidir_count) then
-						log (WARNING, show_net & " has no pull resistors !" &
+						log (SEVERITY_WARNING, show_net & " has no pull resistors !" &
 							show_danger (FLOATING_INPUT));
 					end if;
 				end if;
@@ -6602,7 +6602,7 @@ package body et_kicad.schematic is
 					-- For the moment we warn if there are as many weak0 outputs as ports. this implies there is nothing that
 					-- could pull the net to a definite level:
 					if length (ports) = count_type (weak0_count) then
-						log (WARNING, show_net & " has no pull-down resistors !" & 
+						log (SEVERITY_WARNING, show_net & " has no pull-down resistors !" & 
 							show_danger (FLOATING_INPUT));
 					end if;
 				end if;
@@ -6612,21 +6612,21 @@ package body et_kicad.schematic is
 					-- For the moment we warn if there are as many weak1 outputs as ports. this implies there is nothing that
 					-- could pull the net to a definite level:
 					if length (ports) = count_type (weak1_count) then
-						log (WARNING, show_net & " has no pull-up resistors !" &
+						log (SEVERITY_WARNING, show_net & " has no pull-up resistors !" &
 							show_danger (FLOATING_INPUT));
 					end if;
 				end if;
 				
 				-- Test contending weak0 against weak1 outputs -- CS: verification required
 				if weak0_count > 0 and weak1_count > 0 then
-					log (WARNING, show_net & " has weak0 and weak1 outputs !" &
+					log (SEVERITY_WARNING, show_net & " has weak0 and weak1 outputs !" &
 						show_danger (contention));
 				end if;
 				
 				-- Test if any outputs are connected with a power source
 				if power_out_count > 0 then
 					if output_count > 0 then -- CS: or bidir_count pull_high pull_low
-						log (ERROR, show_net & " has outputs connected with power sources !" &
+						log (SEVERITY_ERROR, show_net & " has outputs connected with power sources !" &
 							 show_danger (SHORT_CIRCUIT));
 						-- CS: show affected ports and their coordinates. use a loop in ports and show outputs and power outs.
 						raise constraint_error;
@@ -6637,7 +6637,7 @@ package body et_kicad.schematic is
 				-- CS: depends on port names
 				-- CS: mind power flags
 -- 				if power_out_count > 1 then
--- 					log (ERROR, show_net & " has more than one power source !" & show_danger (contention));
+-- 					log (SEVERITY_ERROR, show_net & " has more than one power source !" & show_danger (contention));
 -- 					-- CS: show affected ports and their coordinates
 -- 					raise constraint_error;
 -- 				end if;
@@ -6776,12 +6776,12 @@ package body et_kicad.schematic is
 
 				-- If no port was found, issue warning.
 				if not net_found then
-					log (WARNING, "module " & to_string (module_name) 
+					log (SEVERITY_WARNING, "module " & to_string (module_name) 
 						& " port " & to_string (port.name) & " is not connected with any net !");
 				end if;
 					
 			else
-				log (WARNING, "module " & to_string (module_name) & " does not have any nets !");
+				log (SEVERITY_WARNING, "module " & to_string (module_name) & " does not have any nets !");
 			end if;
 
 			log_indentation_down;
@@ -6805,7 +6805,7 @@ package body et_kicad.schematic is
 				process		=> query_nets'access);
 			
 		else -- module not found
-			log (ERROR, "module " & to_string (port.module) & " not found !", console => true);
+			log (SEVERITY_ERROR, "module " & to_string (port.module) & " not found !", console => true);
 			raise constraint_error;
 		end if;
 		
@@ -7432,7 +7432,7 @@ package body et_kicad.schematic is
 				process		=> locate_component_in_schematic'access);
 			
 		else -- abort
-			log (ERROR, to_string (port.reference) 
+			log (SEVERITY_ERROR, to_string (port.reference) 
 				& " is a virtual component and thus has no package !");
 			raise constraint_error;
 		end if;
@@ -7516,7 +7516,7 @@ package body et_kicad.schematic is
 							
 							log (text => "port name " & to_string (port.name), level => log_threshold + 4);
 						else
-							log (ERROR, "terminal " & to_string (terminal) & " not found !",
+							log (SEVERITY_ERROR, "terminal " & to_string (terminal) & " not found !",
 								 console => true);
 							raise constraint_error;
 						end if;
@@ -7542,7 +7542,7 @@ package body et_kicad.schematic is
 							process 	=> locate_terminal'access);
 
 					else
-						log (ERROR, "package variant " & to_string (key (variant_cursor)) &
+						log (SEVERITY_ERROR, "package variant " & to_string (key (variant_cursor)) &
 							" not found !", console => true);
 						raise constraint_error;
 					end if;
@@ -7577,7 +7577,7 @@ package body et_kicad.schematic is
 						process 	=> query_variants'access);
 					
 				else -- generic model not found -> abort
-					log (ERROR, "generic model for " & to_string (reference) & " not found !", console => true);
+					log (SEVERITY_ERROR, "generic model for " & to_string (reference) & " not found !", console => true);
 					raise constraint_error;
 				end if;
 					
@@ -7606,12 +7606,12 @@ package body et_kicad.schematic is
 						position	=> library_cursor,
 						process		=> locate_component_in_library'access);
 				else -- library not found -> abort
-					log (ERROR, "library " & to_string (library_name) & " not found !", console => true);
+					log (SEVERITY_ERROR, "library " & to_string (library_name) & " not found !", console => true);
 					raise constraint_error;
 				end if;
 
 			else -- component nof found in schematic -> abort
-				log (ERROR, "component " & to_string (reference) & " not found !", console => true);
+				log (SEVERITY_ERROR, "component " & to_string (reference) & " not found !", console => true);
 				raise constraint_error;
 			end if;
 				
@@ -7635,7 +7635,7 @@ package body et_kicad.schematic is
 				process 	=> query_components'access);
 			
 		else -- module not found
-			log (ERROR, "module " & to_string (module) & " not found !", console => true);
+			log (SEVERITY_ERROR, "module " & to_string (module) & " not found !", console => true);
 			raise constraint_error;
 		end if;
 
@@ -7720,7 +7720,7 @@ package body et_kicad.schematic is
 							pac_ports_with_reference.next (port_cursor);
 						end loop;
 					else
-						log (WARNING, "net " & to_string (net) & " is not connected with any ports !");
+						log (SEVERITY_WARNING, "net " & to_string (net) & " is not connected with any ports !");
 					end if;
 
 					log_indentation_down;
@@ -7728,7 +7728,7 @@ package body et_kicad.schematic is
 				end if;
 					
 			else -- net does not exist -> abort
-				log (ERROR, "in module " 
+				log (SEVERITY_ERROR, "in module " 
 					 & to_string (module_name) & " net " & to_string (net) 
 					 & " not found !", console => true);
 				raise constraint_error;
@@ -7754,7 +7754,7 @@ package body et_kicad.schematic is
 				process		=> locate_net'access);
 			
 		else -- module not found
-			log (ERROR, "module " & to_string (module) & " not found !", console => true);
+			log (SEVERITY_ERROR, "module " & to_string (module) & " not found !", console => true);
 			raise constraint_error;
 		end if;
 		
@@ -7823,11 +7823,11 @@ package body et_kicad.schematic is
 						pac_ports_with_reference.next (port_cursor);
 					end loop;
 				else
-					log (WARNING, "net " & to_string (net) & " is not connected with any ports !");
+					log (SEVERITY_WARNING, "net " & to_string (net) & " is not connected with any ports !");
 				end if;
 					
 			else -- net does not exist -> abort
-				log (ERROR, "in module " 
+				log (SEVERITY_ERROR, "in module " 
 					 & to_string (module_name) & " net " & to_string (net) 
 					 & " not found !", console => true);
 				raise constraint_error;
@@ -7853,7 +7853,7 @@ package body et_kicad.schematic is
 				process		=> locate_net'access);
 			
 		else -- module not found
-			log (ERROR, "module " & to_string (module) & " not found !", console => true);
+			log (SEVERITY_ERROR, "module " & to_string (module) & " not found !", console => true);
 			raise constraint_error;
 		end if;
 		
@@ -7901,7 +7901,7 @@ package body et_kicad.schematic is
 -- 		end locate_component;
 -- 			
 -- 	begin -- multiple_purpose_warning
--- -- 		log (ERROR, "There must be ONLY ONE" 
+-- -- 		log (SEVERITY_ERROR, "There must be ONLY ONE" 
 -- -- 			 & to_string (category) 
 -- -- 			 & " with purpose " 
 -- -- 			 & enclose_in_quotes (et_libraries.to_string (purpose)) & " !",

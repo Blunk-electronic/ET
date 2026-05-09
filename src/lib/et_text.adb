@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -71,7 +71,7 @@ package body et_text is
 
 		begin
 			if size not in type_text_size then
-				log (ERROR, "text " 
+				log (SEVERITY_ERROR, "text " 
 					& to_string (size => size, preamble => true)  
 					& " out of range !",
 					console => true);
@@ -90,7 +90,7 @@ package body et_text is
 		procedure validate_text_size (size : in pac_geometry.type_distance) is
 		begin
 			if size not in type_text_size then
-				log (ERROR, "text size invalid ! Allowed range is" 
+				log (SEVERITY_ERROR, "text size invalid ! Allowed range is" 
 					& to_string (type_text_size'first) & " .."
 					& to_string (type_text_size'last),
 					console => true);
@@ -271,7 +271,7 @@ package body et_text is
 		
 		procedure warning_rotation_outside_range is
 		begin
-			log (WARNING, "rotation of documentational text invalid. Must be 0 or 90 degrees !");
+			log (SEVERITY_WARNING, "rotation of documentational text invalid. Must be 0 or 90 degrees !");
 		end;
 
 		

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -129,19 +129,19 @@ package body et_logging is
 
 	
 	procedure log (
-		importance	: in type_message_importance := NORMAL;
+		importance	: in type_message_severity := SEVERITY_NORMAL;
 		text		: in string;
 		level		: in type_log_level := type_log_level'first;
 		console		: in boolean := false) 
 	is
 
 		function to_importance (
-			importance : in type_message_importance)
+			importance : in type_message_severity)
 			return string 
 		is begin
 			case importance is
-				when NORMAL => return "";
-				when others => return type_message_importance'image (importance) & ": ";
+				when SEVERITY_NORMAL => return "";
+				when others => return type_message_severity'image (importance) & ": ";
 			end case;
 		end;
 
@@ -161,35 +161,35 @@ package body et_logging is
 	begin -- log
 		-- 		if level < no_logging then
 
-		if importance = WARNING then
+		if importance = SEVERITY_WARNING then
 			increment_warning_counter;			
 		end if;
 		
 			if log_level >= level then
 
 				case importance is
-					when NORMAL =>
+					when SEVERITY_NORMAL =>
 						put_line (report_handle, write_text);
 
 						if console then
 							put_line (standard_output, write_text);
 						end if;
 
-					when NOTE =>
+					when SEVERITY_NOTE =>
 						put_line (report_handle, write_text);
 
 						if console then
 							put_line (standard_output, write_text);
 						end if;
 
-					when WARNING =>
+					when SEVERITY_WARNING =>
 						put_line (report_handle, write_text (false)); -- indentation off
 
 						if console then
 							put_line (standard_output, write_text (false)); -- indentation off
 						end if;
 
-					when ERROR =>
+					when SEVERITY_ERROR =>
 						put_line (report_handle, write_text (false)); -- indentation off
 
 						if console then

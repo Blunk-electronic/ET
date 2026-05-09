@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -632,7 +632,7 @@ package body et_board_ops_vias is
 					process		=> locate_net'access);
 				
 			else
-				log (ERROR, "Net " & to_string (net_name) & " not found !");
+				log (SEVERITY_ERROR, "Net " & to_string (net_name) & " not found !");
 				raise constraint_error;
 			end if;
 		end locate_module;

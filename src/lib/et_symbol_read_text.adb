@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -215,7 +215,7 @@ package body et_symbol_read_text is
 
 			-- Default meaning causes an error:
 			when others => 
-				log (ERROR, "meaning of placeholder not specified !");
+				log (SEVERITY_ERROR, "meaning of placeholder not specified !");
 				raise constraint_error;
 		end case;
 

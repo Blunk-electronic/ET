@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -770,7 +770,7 @@ package body et_drawing_frame_rw is
 
 		
 		procedure invalid_domain is begin
-			log (ERROR, text => "invalid domain ", console => true);
+			log (SEVERITY_ERROR, text => "invalid domain ", console => true);
 			-- CS improve message
 			raise constraint_error;
 		end;
@@ -1165,7 +1165,7 @@ package body et_drawing_frame_rw is
 						return true;
 
 					else
-						log (ERROR, write_missing_begin_end, console => true);
+						log (SEVERITY_ERROR, write_missing_begin_end, console => true);
 						raise constraint_error;
 					end if;
 
@@ -1328,7 +1328,7 @@ package body et_drawing_frame_rw is
 
 			-- As a safety measure the top section must be reached finally.
 			if pac_sections_stack.depth > 1 then 
-				log (WARNING, write_section_stack_not_empty);
+				log (SEVERITY_WARNING, write_section_stack_not_empty);
 			end if;
 
 			set_input (previous_input);
@@ -1384,7 +1384,7 @@ package body et_drawing_frame_rw is
 
 		
 		procedure invalid_domain is begin
-			log (ERROR, text => "invalid domain ", console => true);
+			log (SEVERITY_ERROR, text => "invalid domain ", console => true);
 			-- CS improve message
 			raise constraint_error;
 		end;
@@ -1948,7 +1948,7 @@ package body et_drawing_frame_rw is
 						return true;
 
 					else
-						log (ERROR, write_missing_begin_end, console => true);
+						log (SEVERITY_ERROR, write_missing_begin_end, console => true);
 						raise constraint_error;
 					end if;
 
@@ -2133,7 +2133,7 @@ package body et_drawing_frame_rw is
 
 			-- As a safety measure the top section must be reached finally.
 			if pac_sections_stack.depth > 1 then 
-				log (WARNING, write_section_stack_not_empty);
+				log (SEVERITY_WARNING, write_section_stack_not_empty);
 			end if;
 
 			set_input (previous_input);
