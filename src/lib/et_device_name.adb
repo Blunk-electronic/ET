@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -459,6 +459,40 @@ package body et_device_name is
 
 
 	
+
+
+	
+
+
+	procedure message_device_not_found (
+		severity	: in type_message_importance;
+		name		: in type_device_name)
+	is 
+
+		function get_message_text (
+			name : in type_device_name) 
+			return string
+		is begin
+			return "Device " & to_string (name) & " does not exist !";
+		end;
+
+		
+	begin
+		case severity is
+			when ERROR =>
+				log (
+					importance 	=> severity,
+					text		=> get_message_text (name),
+					console		=> true);
+
+			when others =>
+				log (
+					importance 	=> severity,
+					text		=> get_message_text (name),
+					console		=> false);
+		end case;
+	end message_device_not_found;
+
 	
 	
 end et_device_name;

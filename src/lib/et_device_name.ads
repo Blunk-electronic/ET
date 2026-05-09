@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -219,6 +219,15 @@ package et_device_name is
 		log_threshold	: in type_log_level)
 		return type_device_name;
 
+
+	-- Logs a message like "WARNING. Device C12 does not exist."
+	-- The severity decides whether to output the message on 
+	-- the console. Currently this is done only when the severity
+	-- is ERROR:
+	procedure message_device_not_found (
+		severity	: in type_message_importance;
+		name		: in type_device_name);
+				 
 	
 end et_device_name;
 
