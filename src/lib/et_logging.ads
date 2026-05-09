@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -50,6 +50,8 @@ with et_string_processing;		use et_string_processing;
 
 package et_logging is
 
+
+	-- CS; This stuff is probably no longer required:
 	type type_log_category is (
 		NORMAL,
 		HIGH,
@@ -59,6 +61,10 @@ package et_logging is
 	
 	function to_string (cat : in type_log_category) return string;
 	function to_log_category (cat : in string) return type_log_category;
+
+
+
+
 	
 	
 	-- The log level is limited to a reasonable value.
@@ -79,7 +85,9 @@ package et_logging is
 	--log_level : type_log_level := type_log_level'first;
 
 	log_level_cmd_line_max : constant type_log_level := 50;
-	subtype type_log_level_cmd_line is type_log_level range 0..log_level_cmd_line_max;
+
+	subtype type_log_level_cmd_line is 
+		type_log_level range 0 .. log_level_cmd_line_max;
 
 	
 	-- This global variable is set on launching ET. See et.adb. It receives its
@@ -87,10 +95,19 @@ package et_logging is
 	-- limited to a reasonable value.
 	log_level : type_log_level_cmd_line := type_log_level_cmd_line'first;
 
+
+
+
+
+
+
+	
 	-- The log indentation is a global variable that serves to shift log messages
 	-- to the right.
 	log_indentation_max : constant positive := 100;
+
 	type type_indentation_level is range 0..log_indentation_max;
+
 	log_indentation : type_indentation_level := type_indentation_level'first;
 	
 	procedure log_indentation_up;
@@ -102,8 +119,15 @@ package et_logging is
 	
 	function indent (width : in type_indentation_level) return string;
 
+
+
+
+
+
+	
 	
 	type type_message_importance is (NORMAL, NOTE, WARNING, ERROR);
+	-- CS rename to type_message_severity
 
 	
 	-- Writes the given text with the current log_indentation 
