@@ -155,6 +155,7 @@ package body et_schematic_ops_units is
 	
 
 	
+	
 
 	function is_deployed (
 		module_cursor	: in pac_generic_modules.cursor;

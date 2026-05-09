@@ -90,7 +90,6 @@ package et_schematic_ops_units is
 		return pac_units.cursor;
 	
 
-
 	
 	-- Returns true if the unit of the given device in the 
 	-- given module has been deployed somewhere.
@@ -103,6 +102,15 @@ package et_schematic_ops_units is
 		return boolean;
 
 
+	-- Returns true if the given unit of a given device
+	-- exists in the given module:
+	function unit_exists (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name;
+		unit	: in pac_unit_name.bounded_string)
+		return boolean renames is_deployed;
+
+	
 	
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.
 	function device_port_exists (
