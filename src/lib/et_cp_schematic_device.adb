@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -166,7 +166,7 @@ package body et_cp_schematic_device is
 						log_threshold		=> log_threshold + 1);
 
 				else
-					device_not_found (name);
+					message_device_not_found (ERROR, name);
 				end if;
 
 				
@@ -210,7 +210,7 @@ package body et_cp_schematic_device is
 						log_threshold	=> log_threshold + 1);
 
 				else
-					device_not_found (name);
+					message_device_not_found (ERROR, name);
 				end if;
 
 				
@@ -225,6 +225,7 @@ package body et_cp_schematic_device is
 
 
 	
+
 
 
 	
@@ -264,7 +265,7 @@ package body et_cp_schematic_device is
 						log_threshold	=> log_threshold + 1);
 
 				else
-					device_not_found (name);
+					message_device_not_found (ERROR, name);
 				end if;
 				
 
@@ -315,7 +316,7 @@ package body et_cp_schematic_device is
 						log_threshold	=> log_threshold + 1);
 
 				else
-					device_not_found (name);
+					message_device_not_found (ERROR, name);
 				end if;
 				
 
@@ -353,6 +354,7 @@ package body et_cp_schematic_device is
 				name := to_device_name (get_field (cmd, 5)); -- R1
 
 				if electrical_device_exists (module, name) then
+					
 					purpose := to_purpose (get_field (cmd, 6));
 						
 					-- set the purpose
@@ -361,6 +363,9 @@ package body et_cp_schematic_device is
 						device_name		=> name,
 						purpose			=> purpose, -- brightness_control
 						log_threshold	=> log_threshold + 1);
+
+				else
+					message_device_not_found (ERROR, name);
 				end if;
 				
 
@@ -374,6 +379,9 @@ package body et_cp_schematic_device is
 
 
 
+
+
+	
 
 
 
@@ -407,7 +415,7 @@ package body et_cp_schematic_device is
 						partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
 						log_threshold	=> log_threshold + 1);
 				else	
-					device_not_found (name);
+					message_device_not_found (ERROR, name);
 				end if;
 				
 
@@ -458,7 +466,7 @@ package body et_cp_schematic_device is
 						variant			=> variant, -- N, D
 						log_threshold	=> log_threshold + 1);
 				else
-					device_not_found (name);
+					message_device_not_found (ERROR, name);
 				end if;
 				
 
