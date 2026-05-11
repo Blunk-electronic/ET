@@ -90,10 +90,6 @@ package body et_cp_schematic_unit is
 		-- The degree of how much information is to be inqured:
 		properties_level : type_properties_level;
 
-		-- In order to tell the command processor that an operation is meant to 
-		-- apply to the current sheet, we use the UNIX-bash-like period character:
-		here : constant string := ".";
-		
 		
 		-- Selects the device so that a certain unit or all its units become
 		-- highlighted in the canvas.
@@ -122,6 +118,9 @@ package body et_cp_schematic_unit is
 		is
 			
 			-- This small function performs a unit query:
+			-- From its output we can tell whether the specified
+			-- unit exists and - more important - where it is located
+			-- in the drawing:
 			function locate_unit (unit : in pac_unit_name.bounded_string) 
 				return type_unit_query
 			is begin
@@ -131,16 +130,6 @@ package body et_cp_schematic_unit is
 					unit_name		=> unit);				
 			end;
 
-			
-
-			
-			procedure unit_not_found is 
-				use pac_unit_name;
-			begin
-				log (SEVERITY_WARNING, " Device " & to_string (device) 
-					& " unit " & to_string (unit) & " not found !");
-				-- CS output in status bar
-			end;
 
 			
 
@@ -152,6 +141,9 @@ package body et_cp_schematic_unit is
 				unit_query : constant type_unit_query := locate_unit (to_unit_name (""));
 				error : boolean := false;
 			begin
+				log (text => "show_first_unit", level => log_threshold + 3);
+				log_indentation_up;
+				
 				if unit_query.exists then
 					-- Set the active sheet where the unit is:
 					active_sheet := get_sheet (unit_query.position);
@@ -169,7 +161,7 @@ package body et_cp_schematic_unit is
 						all_units		=> true,
 						unit_name		=> unit_name_default,
 						error			=> error,
-						log_threshold	=> log_threshold + 2);
+						log_threshold	=> log_threshold + 4);
 					
 					-- Show some basic information in the staus bar:
 					set_status (get_device_properties (
@@ -177,7 +169,7 @@ package body et_cp_schematic_unit is
 						device_name		=> device, 
 						level			=> DEVICE_PROPERTIES_LEVEL_1,
 						error			=> error,
-						log_threshold	=> log_threshold + 2));
+						log_threshold	=> log_threshold + 4));
 
 					-- For property levels greater 1 we open
 					-- the properties window in order to conveniently
@@ -195,14 +187,16 @@ package body et_cp_schematic_unit is
 									linebreaks		=> true,
 									level			=> properties_level,
 									error			=> error,
-									log_threshold	=> log_threshold + 2));
+									log_threshold	=> log_threshold + 4));
 					end case;
 					
 				else
-					-- The device exists.
+					-- The device and the first unit exist.
 					-- So this should never happen:
 					raise constraint_error; 
 				end if;
+				
+				log_indentation_down;
 			end show_first_unit;
 
 
@@ -215,6 +209,9 @@ package body et_cp_schematic_unit is
 				unit_query : constant type_unit_query := locate_unit (unit);
 				error : boolean := false;
 			begin
+				log (text => "show_by_unit_name", level => log_threshold + 3);
+				log_indentation_up;
+			
 				if unit_query.exists then
 					-- Set the active sheet where the unit is:
 					active_sheet := get_sheet (unit_query.position);
@@ -232,7 +229,7 @@ package body et_cp_schematic_unit is
 						all_units		=> false, 
 						unit_name		=> unit,
 						error			=> error,
-						log_threshold	=> log_threshold + 2);
+						log_threshold	=> log_threshold + 4);
 					
 					-- Show some basic information in the staus bar:
 					set_status (get_device_properties (
@@ -242,7 +239,7 @@ package body et_cp_schematic_unit is
 						all_units		=> false,
 						unit_name		=> unit,
 						error			=> error,
-						log_threshold	=> log_threshold + 2));
+						log_threshold	=> log_threshold + 4));
 
 					-- For property levels greater 1 we open
 					-- the properties window in order to conveniently
@@ -262,14 +259,18 @@ package body et_cp_schematic_unit is
 									all_units		=> false,
 									unit_name		=> unit,
 									error			=> error,
-									log_threshold	=> log_threshold + 2));
+									log_threshold	=> log_threshold + 4));
 
 					end case;
 
 					
 				else
-					unit_not_found;
+					-- The device and the specified unit exist.
+					-- So this should never happen:
+					raise constraint_error; 
 				end if;
+				
+				log_indentation_down;
 			end show_by_unit_name;
 
 
@@ -282,6 +283,9 @@ package body et_cp_schematic_unit is
 				unit_query : constant type_unit_query := locate_unit (to_unit_name (""));
 				error : boolean := false;
 			begin
+				log (text => "show_first_unit_on_active_sheet", level => log_threshold + 3);
+				log_indentation_up;
+
 				if unit_query.exists then
 					if get_sheet (unit_query.position) = active_sheet then
 						
@@ -297,7 +301,7 @@ package body et_cp_schematic_unit is
 							all_units		=> true, 
 							unit_name		=> unit_name_default,
 							error			=> error,
-							log_threshold	=> log_threshold + 2);
+							log_threshold	=> log_threshold + 4);
 
 						-- Show some basic information in the staus bar:
 						set_status (get_device_properties (
@@ -305,7 +309,7 @@ package body et_cp_schematic_unit is
 							device_name		=> device, 
 							level			=> DEVICE_PROPERTIES_LEVEL_1,
 							error			=> error,
-							log_threshold	=> log_threshold + 2));
+							log_threshold	=> log_threshold + 4));
 
 						-- For property levels greater 1 we open
 						-- the properties window in order to conveniently
@@ -323,7 +327,7 @@ package body et_cp_schematic_unit is
 										linebreaks		=> true,
 										level			=> properties_level,
 										error			=> error,
-										log_threshold	=> log_threshold + 2));	   
+										log_threshold	=> log_threshold + 4));	   
 
 						end case;
 						
@@ -335,10 +339,12 @@ package body et_cp_schematic_unit is
 					end if;
 
 				else
-					-- The device exists.
+					-- The device and a first unit exist.
 					-- So this should never happen:
 					raise constraint_error; 
 				end if;
+				
+				log_indentation_down;
 			end show_first_unit_on_active_sheet;
 			
 			
@@ -358,98 +364,146 @@ package body et_cp_schematic_unit is
 
 
 		
-		procedure runmode_module is 
-			error : boolean := false;
-			device_name : type_device_name;
-			unit_name : pac_unit_name.bounded_string;
+		
+		-- This procedure pre-processes the given command.
+		-- Depending on the length of the command the sub-procedures
+		-- show_mode_1 or show_mode_2 are called for in depth
+		-- processing:
+		procedure preprocess_command is 
+			
+			procedure show_mode_1 is
+				error : boolean := false;
+				device_name : type_device_name;			
+			begin
+				log (text => "show_mode_1", level => log_threshold + 2);
+				log_indentation_up;
+				
+				-- Get the properties level:
+				properties_level := to_properties_level (
+					get_field (cmd, 5), error); -- L1
+				
+				-- Proceed if no error occured:
+				if not error then
+					-- Get the name of the target device:
+					device_name := to_device_name (get_field (cmd, 6)); -- R1, IC1
+					
+					-- Proceed if the device exists:
+					if electrical_device_exists (module, device_name) then
+					
+						do_it (
+							device	=> device_name,
+							mode	=> SEARCH_MODE_FIRST_UNIT);
+							
+					else
+						message_device_not_found (SEVERITY_ERROR, device_name);
+					end if;
+				end if;
+				
+				log_indentation_down;
+			end show_mode_1;
+
+			
+
+			procedure show_mode_2 is
+				error : boolean := false;
+				device_name : type_device_name;
+				unit_name : pac_unit_name.bounded_string;			
+				
+				-- In order to tell the command processor that 
+				-- an operation is meant to apply to the current sheet,
+				-- we use the UNIX-bash-like period character:
+				here : constant string := ".";
+			begin
+				log (text => "show_mode_2", level => log_threshold + 2);
+				log_indentation_up;
+			
+				-- Get the properties level:
+				properties_level := to_properties_level (
+					get_field (cmd, 5), error); -- L1
+					
+					
+				-- Proceed if no error occured:					
+				if not error then
+					-- The 7th field may be a period, which means
+					-- the unit is to be shown on the current active sheet.
+					-- Otherwise the field provides an explicit
+					-- unit name:
+					if get_field (cmd, 7) = here then
+
+						-- Get the name of the target device:
+						device_name := to_device_name (get_field (cmd, 6)); -- IC1
+
+						-- Proceed if the device exists:
+						if electrical_device_exists (module, device_name) then
+					
+							do_it ( -- show device L1 IC1 .
+								device	=> device_name,
+								mode	=> SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET);
+
+						else
+							message_device_not_found (SEVERITY_ERROR, device_name);
+						end if;
+				
+
+					else
+						-- Get the name of the target device:
+						device_name := to_device_name (get_field (cmd, 6)); -- IC1
+
+						-- Proceed if the device exists:
+						if electrical_device_exists (module, device_name) then
+
+							-- Get the name of the target unit:
+							unit_name := to_unit_name (get_field (cmd, 7)); -- A
+							
+							-- Proceed if the unit exists:
+							if unit_exists (module, device_name, unit_name) then
+							
+								do_it ( -- show device L1 IC1 A
+									device	=> device_name,
+									unit	=> unit_name,
+									mode	=> SEARCH_MODE_BY_UNIT_NAME);
+									
+							else
+								message_unit_not_found (SEVERITY_ERROR, unit_name);
+							end if;
+
+						else
+							message_device_not_found (SEVERITY_ERROR, device_name);
+						end if;
+								
+					end if;
+				end if;
+				
+				log_indentation_down;
+			end show_mode_2;
+			
+			
 		begin
 			case cmd_field_count is
 				when 6 => 
 					-- show device L1 R1
-
-					-- Get the properties level:
-					properties_level := to_properties_level (
-						get_field (cmd, 5), error); -- L1
-					
-					-- Proceed if no error occured:
-					if not error then
-						-- Get the name of the target device:
-						device_name := to_device_name (get_field (cmd, 6)); -- R1, IC1
-						
-						-- Proceed if the device exists:
-						if electrical_device_exists (module, device_name) then
-						
-							do_it (
-								device	=> device_name,
-								mode	=> SEARCH_MODE_FIRST_UNIT);
-								
-						else
-							message_device_not_found (SEVERITY_ERROR, device_name);
-						end if;
-					end if;
-				
-				
-				when 7 =>
-					-- Get the properties level:
-					properties_level := to_properties_level (
-						get_field (cmd, 5), error); -- L1
-						
-					-- Proceed if no error occured:					
-					if not error then
-						-- The 7th field may be a period, which means
-						-- the unit is to be shown on the current active sheet.
-						-- Otherwise the field provides an explicit
-						-- unit name:
-						if get_field (cmd, 7) = here then
-
-							-- Get the name of the target device:
-							device_name := to_device_name (get_field (cmd, 6)); -- IC1
-
-							-- Proceed if the device exists:
-							if electrical_device_exists (module, device_name) then
-						
-								do_it ( -- show device L1 IC1 .
-									device	=> device_name,
-									mode	=> SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET);
-
-							else
-								message_device_not_found (SEVERITY_ERROR, device_name);
-							end if;
-					
-
-						else
-							-- Get the name of the target device:
-							device_name := to_device_name (get_field (cmd, 6)); -- IC1
-
-							-- Proceed if the device exists:
-							if electrical_device_exists (module, device_name) then
-
-								do_it ( -- show device L1 IC1 A
-									device	=> device_name,
-									unit	=> to_unit_name (get_field (cmd, 7)), -- A
-									mode	=> SEARCH_MODE_BY_UNIT_NAME);
-
-							else
-								message_device_not_found (SEVERITY_ERROR, device_name);
-							end if;
+					show_mode_1;
 									
-						end if;
-					end if;
-					
+				when 7 =>
+					-- show device L1 IC1 .
+					-- show device L1 IC1 A
+					show_mode_2;	
 					
 				when 8 .. type_field_count'last => 
 					command_too_long (cmd, cmd_field_count - 1);
 					
 				when others => command_incomplete (cmd);
 			end case;
-		end runmode_module;
+		end preprocess_command;
 
 		
 	begin
-	-- CS log message
+		log (text => "show device", level => log_threshold);
+		log_indentation_up;
 	
 		-- Show operations are only useful and possible in graphical
-		-- runmode:
+		-- runmode. So we start preprocessing the given command
+		-- only in graphical runmode:
 		case runmode is
 			when MODE_MODULE =>
 
@@ -458,12 +512,14 @@ package body et_cp_schematic_unit is
 				et_schematic_ops_groups.reset_objects (
 					module, log_threshold + 1);
 
-				runmode_module;
+				preprocess_command;
 
 			when others =>
 				skipped_in_this_runmode (log_threshold + 1);
 					
-		end case;				
+		end case;			
+		
+		log_indentation_down;
 	end show_device;
 
 
