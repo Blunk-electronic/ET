@@ -503,12 +503,6 @@ package body et_cp_schematic_unit is
 		-- only in graphical runmode:
 		case runmode is
 			when MODE_MODULE =>
-
-				-- Deselect all objects of previous show operations
-				-- so that nothing is highlighted anymore:
-				et_schematic_ops_groups.reset_objects (
-					module, log_threshold + 1);
-
 				preprocess_command;
 
 			when others =>
