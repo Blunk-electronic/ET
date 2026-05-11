@@ -3159,7 +3159,6 @@ package body et_board_ops_devices is
 					module_cursor	=> module_cursor,
 					device_name		=> get_device_name (object.electrical_device.cursor),
 					all_units		=> true,
-					error			=> error,
 					log_threshold	=> log_threshold + 1);
 
 

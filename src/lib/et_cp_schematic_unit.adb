@@ -160,7 +160,6 @@ package body et_cp_schematic_unit is
 						device_name		=> device, 
 						all_units		=> true,
 						unit_name		=> unit_name_default,
-						error			=> error,
 						log_threshold	=> log_threshold + 4);
 					
 					-- Show some basic information in the staus bar:
@@ -228,7 +227,6 @@ package body et_cp_schematic_unit is
 						device_name		=> device, 
 						all_units		=> false, 
 						unit_name		=> unit,
-						error			=> error,
 						log_threshold	=> log_threshold + 4);
 					
 					-- Show some basic information in the staus bar:
@@ -300,7 +298,6 @@ package body et_cp_schematic_unit is
 							device_name		=> device, 
 							all_units		=> true, 
 							unit_name		=> unit_name_default,
-							error			=> error,
 							log_threshold	=> log_threshold + 4);
 
 						-- Show some basic information in the staus bar:

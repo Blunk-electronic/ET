@@ -93,13 +93,122 @@ package body et_cp_board_device is
 		properties_level : type_properties_level;
 
 
-		procedure runmode_module is 
+		procedure preprocess_command is 
 			use et_canvas_board;
 			use pac_canvas;
 		-- CS: Clean up. Move stuff in separate procedures.
 			
 			device_name : type_device_name;
 			error : boolean := false;
+
+			
+			procedure show_electrical_device is
+				-- CS:
+				-- Center on the device and leave the
+				-- zoom factor as it is. If the runmode is
+				-- headless, then nothing happens here:
+				-- zoom_to (get_place (unit_query.position), S);
+			begin		
+				log (text => "show_electrical_device", level => log_threshold + 1);
+				log_indentation_up;
+				
+				show_device (
+					module_cursor	=> module, 
+					device_name		=> device_name,
+					all_units		=> true,
+					unit_name		=> unit_name_default,
+					log_threshold	=> log_threshold + 2);
+
+
+				-- Show some basic information in the staus bar:
+				set_status (et_schematic_ops_device.get_device_properties (
+					module_cursor	=> module, 
+					device_name		=> device_name, 
+					level			=> DEVICE_PROPERTIES_LEVEL_1,
+					error			=> error,
+					log_threshold	=> log_threshold + 2));
+
+				-- For property levels greater 1 we open
+				-- the properties window in order to conveniently
+				-- show a lot of information:
+				case properties_level is
+					when DEVICE_PROPERTIES_LEVEL_1 => null;
+
+					when others =>
+						
+						pac_device_ops.show_properties_window (
+							device	=> device_name,
+							text	=> et_schematic_ops_device.get_device_properties (
+								module_cursor	=> module, 
+								device_name		=> device_name, 
+								linebreaks		=> true,
+								level			=> properties_level,
+								error			=> error,
+								log_threshold	=> log_threshold + 2));
+				end case;
+
+				log_indentation_down;
+			end show_electrical_device;
+
+
+
+			procedure show_non_electrical_device is
+			begin
+				log (text => "show_non_electrical_device", level => log_threshold + 1);
+				log_indentation_up;
+
+				-- CS:
+				-- Center on the device and leave the
+				-- zoom factor as it is. If the runmode is
+				-- headless, then nothing happens here:
+				-- zoom_to (get_place (unit_query.position), S);
+				
+				show_non_electrical_device (
+					module_cursor	=> module, 
+					device_name		=> device_name,
+					error			=> error,
+					log_warning		=> false, 
+					log_threshold	=> log_threshold + 2);
+
+				
+				-- Write some basic information in the status bar:
+				if not error then
+					set_status (et_board_ops_devices.get_device_properties (
+						module_cursor	=> module,
+						device_name		=> device_name, 
+						level			=> DEVICE_PROPERTIES_LEVEL_1,
+						error			=> error,
+						log_threshold	=> log_threshold + 2));
+
+
+					-- For property levels greater 1 we open
+					-- the properties window in order to conveniently
+					-- show a lot of information:
+					case properties_level is
+						when DEVICE_PROPERTIES_LEVEL_1 => null;
+
+						when others =>
+							
+							pac_device_ops.show_properties_window (
+								device	=> device_name,
+								text	=> et_board_ops_devices.get_device_properties (
+									module_cursor	=> module, 
+									device_name		=> device_name, 
+									linebreaks		=> true,
+									level			=> properties_level,
+									error			=> error,
+									log_threshold	=> log_threshold + 2));
+					end case;
+				end if;
+
+				
+				if error then
+					message_device_not_found (SEVERITY_ERROR, device_name);
+				end if;
+			end show_non_electrical_device;
+
+			
+			
 		begin
 			case cmd_field_count is
 				when 6 => 
@@ -111,141 +220,46 @@ package body et_cp_board_device is
 						device_name := to_device_name (get_field (cmd, 6)); -- R1, IC1, FD1
 
 						-- Search among the electrical devices first.
-						-- Highlight the device and all its units if it
-						-- exists.
+						-- Highlight the device and all its units (in the schematic)
+						-- if it exists.
 						-- If it does not exist, then search among the non-electrical
 						-- devices:
-
-						-- We do not want to generate warnings in case the device
-						-- does not exist. For this reason log_warning is false.
-						-- Instead we generate a warning if the device is not among
-						-- the electrical nor the non-electrical devices.
-
-						-- CS:
-						-- Center on the device and leave the
-						-- zoom factor as it is. If the runmode is
-						-- headless, then nothing happens here:
-						-- zoom_to (get_place (unit_query.position), S);
-
-						
-						show_device (
-							module_cursor	=> module, 
-							device_name		=> device_name,
-							all_units		=> true,
-							unit_name		=> unit_name_default,
-							error			=> error,
-							log_warning		=> false, 
-							log_threshold	=> log_threshold + 1);
-
-						if not error then
-							-- Show some basic information in the staus bar:
-							set_status (et_schematic_ops_device.get_device_properties (
-								module_cursor	=> module, 
-								device_name		=> device_name, 
-								level			=> DEVICE_PROPERTIES_LEVEL_1,
-								error			=> error,
-								log_threshold	=> log_threshold + 1));
-
-							-- For property levels greater 1 we open
-							-- the properties window in order to conveniently
-							-- show a lot of information:
-							case properties_level is
-								when DEVICE_PROPERTIES_LEVEL_1 => null;
-
-								when others =>
-									
-									pac_device_ops.show_properties_window (
-										device	=> device_name,
-										text	=> et_schematic_ops_device.get_device_properties (
-											module_cursor	=> module, 
-											device_name		=> device_name, 
-											linebreaks		=> true,
-											level			=> properties_level,
-											error			=> error,
-											log_threshold	=> log_threshold + 2));
-							end case;
-
-							
+						if electrical_device_exists (module, device_name) then
+							show_electrical_device;
+						else
+							-- If the device could not be located among the
+							-- electrical devices, then search
+							-- among non-electrical devices:
+							show_non_electrical_device;
 						end if;
-						
-						-- If the device could not be located among the
-						-- electrical devices, then search
-						-- among non-electrical devices:
-						if error then
+					end if;
 
-							-- CS:
-							-- Center on the device and leave the
-							-- zoom factor as it is. If the runmode is
-							-- headless, then nothing happens here:
-							-- zoom_to (get_place (unit_query.position), S);
-							
-							show_non_electrical_device (
-								module_cursor	=> module, 
-								device_name		=> device_name,
-								error			=> error,
-								log_warning		=> false, 
-								log_threshold	=> log_threshold + 1);
-
-							-- Write some basic information in the status bar:
-							if not error then
-								set_status (et_board_ops_devices.get_device_properties (
-									module_cursor	=> module,
-									device_name		=> device_name, 
-									level			=> DEVICE_PROPERTIES_LEVEL_1,
-									error			=> error,
-									log_threshold	=> log_threshold + 1));
-
-
-								-- For property levels greater 1 we open
-								-- the properties window in order to conveniently
-								-- show a lot of information:
-								case properties_level is
-									when DEVICE_PROPERTIES_LEVEL_1 => null;
-
-									when others =>
-										
-										pac_device_ops.show_properties_window (
-											device	=> device_name,
-											text	=> et_board_ops_devices.get_device_properties (
-												module_cursor	=> module, 
-												device_name		=> device_name, 
-												linebreaks		=> true,
-												level			=> properties_level,
-												error			=> error,
-												log_threshold	=> log_threshold + 2));
-								end case;
-
-							end if;
-							
-							if error then
-								log (SEVERITY_WARNING, "Device " 
-									& to_string (device_name) & " not found !");
-							end if;
-						end if;
-
-				end if;
-				
+					
 				when 7 .. type_field_count'last => 
 					command_too_long (cmd, cmd_field_count - 1);
 					
 				when others => command_incomplete (cmd);
 			end case;
-		end runmode_module;
+		end preprocess_command;
 
 		
 	begin
-		-- CS log message
+		log (text => "show device", level => log_threshold);
+		log_indentation_up;
 		
 		-- Show operations are only useful and possible in graphical
-		-- runmode:
+		-- runmode. So we start preprocessing the given command
+		-- only in graphical runmode:
 		case runmode is
 			when MODE_MODULE =>
-				runmode_module;
+				preprocess_command;
 
 			when others =>
 				skipped_in_this_runmode (log_threshold + 1);
 					
 		end case;
+
+		log_indentation_down;
 	end show_device;
 
 

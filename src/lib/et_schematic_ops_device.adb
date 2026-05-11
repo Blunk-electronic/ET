@@ -366,8 +366,6 @@ package body et_schematic_ops_device is
 		device_name		: in type_device_name;
 		all_units		: in boolean;
 		unit_name		: in pac_unit_name.bounded_string := unit_name_default;
-		error			: out boolean;
-		log_warning		: in boolean := true;
 		log_threshold	: in type_log_level)
 	is
 		device_cursor_sch : pac_devices_electrical.cursor;
@@ -419,8 +417,6 @@ package body et_schematic_ops_device is
 			 & " show electrical device " & to_string (device_name),
 			level => log_threshold);
 
-		error := false;
-		
 		log_indentation_up;
 		
 		-- Deselect all objects of previous show operations
@@ -428,19 +424,9 @@ package body et_schematic_ops_device is
 		et_schematic_ops_groups.reset_objects (module_cursor, log_threshold + 1);
 		
 		-- Locate the targeted device in the given module.
-		-- If the device exists, then proceed with further actions.
-		-- Otherwise abort this procedure with a warning:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
-			
-		if has_element (device_cursor_sch) then -- device exists in schematic			
-			generic_modules.update_element (module_cursor, query_module'access);
-		else
-			if log_warning then
-				log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
-			end if;
-			
-			error := true;
-		end if;
+
+		generic_modules.update_element (module_cursor, query_module'access);
 
 		log_indentation_down;
 	end show_device;
@@ -448,6 +434,7 @@ package body et_schematic_ops_device is
 	
 	
 
+	
 
 	
 	function get_device_properties (

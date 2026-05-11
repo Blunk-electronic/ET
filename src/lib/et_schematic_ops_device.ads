@@ -144,6 +144,8 @@ package et_schematic_ops_device is
 
 
 	-- Sets all units or an explicitly given unit as selected.
+	-- Assumes that the given device and unit exist. Otherwise
+	-- an exception is raised.
 	-- The search mode is specified by "all_units".
 	-- If all_units is true, then the parameter "unit" is ignored
 	-- and all units adressed.
@@ -151,16 +153,11 @@ package et_schematic_ops_device is
 	-- will be addressed.
 	-- In any case the package will be set as selected so that is
 	-- becomes highlighted in the board domain.
-	-- If the given device does not exist, then a warning
-	-- is written in the log and the error flag is set.
-	-- If output_warning is false then no warning will be logged:
 	procedure show_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- R2, IC4
 		all_units		: in boolean;
 		unit_name		: in pac_unit_name.bounded_string := unit_name_default;
-		error			: out boolean;
-		log_warning		: in boolean := true;
 		log_threshold	: in type_log_level);
 
 

@@ -4601,9 +4601,7 @@ package body et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		log_threshold	: in type_log_level)
-	is 
-		error : boolean := false;
-	begin
+	is begin
 		log (text => "module " & to_string (module_cursor)
 			& " show object",
 			-- CS & to_string (object)
@@ -4619,7 +4617,6 @@ package body et_schematic_ops_units is
 					device_name		=> get_device_name (object.unit),
 					all_units		=> false,
 					unit_name		=> get_unit_name (object.unit),
-					error			=> error,
 					log_threshold	=> log_threshold + 1);
 
 				
