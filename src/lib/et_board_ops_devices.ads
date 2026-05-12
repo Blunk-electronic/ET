@@ -282,8 +282,8 @@ package et_board_ops_devices is
 		log_threshold	: in type_log_level);
 
 	
-	-- Clears the proposed-flag and the selected-flag of all real devices:
-	procedure reset_proposed_non_electrical_devices ( -- CS rename to reset_status_non_electrical_devices
+	-- Clears the status flags all non-electrical devices:
+	procedure reset_status_non_electrical_devices (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 

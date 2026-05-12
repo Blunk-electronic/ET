@@ -943,7 +943,7 @@ package body et_board_ops_devices is
 
 	
 	
-	procedure reset_proposed_non_electrical_devices (
+	procedure reset_status_non_electrical_devices (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
@@ -981,7 +981,7 @@ package body et_board_ops_devices is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& "resetting proposed non-electrical devices", 
+			& "reset status of non-electrical devices", 
 			level => log_threshold);
 
 		log_indentation_up;
@@ -991,7 +991,7 @@ package body et_board_ops_devices is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_proposed_non_electrical_devices;
+	end reset_status_non_electrical_devices;
 
 
 
@@ -2833,7 +2833,7 @@ package body et_board_ops_devices is
 			module_cursor, log_threshold + 1);
 
 		-- Reset non-electrical devices:
-		reset_proposed_non_electrical_devices (
+		reset_status_non_electrical_devices (
 			module_cursor, log_threshold + 1);
 
 		-- Reset placeholders:
