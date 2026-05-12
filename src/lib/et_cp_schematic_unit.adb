@@ -508,7 +508,11 @@ package body et_cp_schematic_unit is
 			
 				-- Deselect all objects in the schematic
 				-- and board drawing. This is required in case
-				-- the specified device does not exist:
+				-- the specified device does not exist. 
+				-- It is redundant in case the specified device
+				-- does exist. The reset would be executed twice,
+				-- the first time here and the second time
+				-- by procedure show_device in package et_schematic_ops_device:
 				et_schematic_ops_groups.reset_objects (
 					module, log_threshold + 1);
 					
