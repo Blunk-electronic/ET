@@ -68,6 +68,8 @@ with et_canvas_schematic;
 with et_device_placeholders;
 with et_rotation_docu;
 
+with et_board_ops_groups;
+
 
 package body et_cp_schematic_unit is
 
@@ -503,6 +505,16 @@ package body et_cp_schematic_unit is
 		-- only in graphical runmode:
 		case runmode is
 			when MODE_MODULE =>
+			
+				-- Deselect all objects in the schematic
+				-- and board drawing. This is required in case
+				-- the specified device does not exist:
+				et_schematic_ops_groups.reset_objects (
+					module, log_threshold + 1);
+					
+				et_board_ops_groups.reset_objects (
+					module, log_threshold + 1);
+
 				preprocess_command;
 
 			when others =>

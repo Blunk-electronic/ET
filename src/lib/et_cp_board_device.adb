@@ -55,10 +55,13 @@ with et_module;							use et_module;
 with et_module_names;					use et_module_names;
 with et_board_geometry;					use et_board_geometry;
 with et_board_coordinates;				use et_board_coordinates;
+with et_board_ops_groups;
 with et_design_rules_board;
+
 with et_device_name;					use et_device_name;
 with et_unit_name;						use et_unit_name;
 with et_schematic_ops_device;			use et_schematic_ops_device;
+with et_schematic_ops_groups;
 with et_board_ops_devices;				use et_board_ops_devices;
 with et_devices_electrical;				use et_devices_electrical;
 with et_device_property_level;			use et_device_property_level;
@@ -253,6 +256,21 @@ package body et_cp_board_device is
 		-- only in graphical runmode:
 		case runmode is
 			when MODE_MODULE =>
+
+				-- Deselect all objects in the schematic
+				-- and board drawing. This is required in case
+				-- the specified device does not exist.
+				-- It is redundant in case the specified device
+				-- does exist. The reset would be executed twice,
+				-- the first time here and the second time
+				-- by procedure show_non_electrical_device in 
+				-- package et_board_ops_device:
+				et_schematic_ops_groups.reset_objects (
+					module, log_threshold + 1);
+					
+				et_board_ops_groups.reset_objects (
+					module, log_threshold + 1);
+				
 				preprocess_command;
 
 			when others =>
