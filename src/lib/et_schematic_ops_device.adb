@@ -66,6 +66,7 @@ with et_devices_electrical.units;	use et_devices_electrical.units;
 with et_devices_non_electrical;		use et_devices_non_electrical;
 
 with et_board_ops_devices;			use et_board_ops_devices;
+with et_board_ops_groups;
 with et_conventions;				use et_conventions;
 
 
@@ -422,6 +423,7 @@ package body et_schematic_ops_device is
 		-- Deselect all objects of previous show operations
 		-- so that nothing is highlighted anymore:
 		et_schematic_ops_groups.reset_objects (module_cursor, log_threshold + 1);
+		et_board_ops_groups.reset_objects (module_cursor, log_threshold + 1);
 		
 		-- Locate the targeted device in the given module.
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
