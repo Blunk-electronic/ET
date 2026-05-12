@@ -260,6 +260,8 @@ package et_schematic_ops_units is
 	-- Deletes a unit of a device. 
 	-- In case the last unit has been deleted, then the device is 
 	-- deleted entirely from the module.
+	-- It is assumed, that the given device and unit exist.
+	-- Otherwise an execption will be raised:
 	procedure delete_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45

@@ -548,22 +548,43 @@ package body et_cp_schematic_unit is
 		device_name : type_device_name;
 		unit_name	: pac_unit_name.bounded_string;
 	begin
+		log (text => "delete unit", level => log_threshold);
+		log_indentation_up;
+		
 		device_name := to_device_name (get_field (cmd, 5));
 		unit_name	:= to_unit_name (get_field (cmd, 6));
 		
-		case cmd_field_count is
-			when 6 =>
-				delete_unit (
-					module_cursor 	=> module,
-					device_name		=> device_name,
-					unit_name		=> unit_name,
-					log_threshold	=> log_threshold + 1);
+		-- Do an existence-check of the specified device and unit.
+		
+		-- Proceed if the specified device exists:
+		if electrical_device_exists (module, device_name) then
+		
+			-- Proceed if the specified unit exists:
+			if unit_exists (module, device_name, unit_name) then
+		
+				case cmd_field_count is
+					when 6 =>
+						delete_unit (
+							module_cursor 	=> module,
+							device_name		=> device_name,
+							unit_name		=> unit_name,
+							log_threshold	=> log_threshold + 1);
 
-			when 7 .. type_field_count'last => 
-				command_too_long (cmd, cmd_field_count - 1);
+					when 7 .. type_field_count'last => 
+						command_too_long (cmd, cmd_field_count - 1);
+						
+					when others => command_incomplete (cmd);
+				end case;
 				
-			when others => command_incomplete (cmd);
-		end case;
+			else
+				message_unit_not_found (SEVERITY_ERROR, unit_name);
+			end if;
+			
+		else
+			message_device_not_found (SEVERITY_ERROR, device_name);
+		end if;
+		
+		log_indentation_down;
 	end delete_unit;
 
 	

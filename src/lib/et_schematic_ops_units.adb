@@ -1068,10 +1068,6 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			-- Query whether the given unit is deployed in the schematic:
-			unit_query : constant type_unit_query := 
-				get_unit_position (device_cursor_sch, unit_name);
-
 			-- The ports of the unit must be removed from the net segments.
 			-- For this reason we need some temporarily storage place:
 			sheet_old : type_sheet;
@@ -1099,36 +1095,28 @@ package body et_schematic_ops_units is
 
 			
 			
-		begin -- query_module
+		begin				
+			update_element (
+				container	=> module.devices,
+				position	=> device_cursor_sch,
+				process		=> query_device'access);
+		
+			-- Remove the old ports of the unit from the net segments:
+			delete_ports (
+				module_cursor	=> module_cursor,
+				device_name		=> device_name,
+				unit_name		=> unit_name,
+				ports			=> ports_old,
+				sheet			=> sheet_old,
+				log_threshold	=> log_threshold + 1);
 
-			-- Test whether the desired unit is deployed (in schematic).
-			-- If the unit is deployed, then delete it:
-			if unit_query.exists then
+			-- If no more units are deployed, then the whole device
+			-- must be removed from the module:
+			if get_unit_count_deployed (device_cursor_sch) = 0 then
+				log (text => "No more units deployed. Delete device entirely.",
+						level => log_threshold + 1);
 				
-				update_element (
-					container	=> module.devices,
-					position	=> device_cursor_sch,
-					process		=> query_device'access);
-			
-				-- Remove the old ports of the unit from the net segments:
-				delete_ports (
-					module_cursor	=> module_cursor,
-					device_name		=> device_name,
-					unit_name		=> unit_name,
-					ports			=> ports_old,
-					sheet			=> sheet_old,
-					log_threshold	=> log_threshold + 1);
-
-				-- If no more units are deployed, then the whole device
-				-- must be removed from the module:
-				if get_unit_count_deployed (device_cursor_sch) = 0 then
-					log (text => "No more units deployed. Delete device entirely.",
-						 level => log_threshold + 1);
-					
-					module.devices.delete (device_cursor_sch);
-				end if;
-			else
-				log (SEVERITY_WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
+				module.devices.delete (device_cursor_sch);
 			end if;
 		end query_module;
 
@@ -1144,19 +1132,13 @@ package body et_schematic_ops_units is
 		
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.
-		-- Otherwise abort this procedure with a warning:
+		-- Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
-		if has_element (device_cursor_sch) then -- device exists in schematic
-			
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> query_module'access);
-
-		else
-			log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
-		end if;
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
 
 		update_ratsnest (module_cursor, log_threshold + 1);
 		
