@@ -692,8 +692,6 @@ package body et_board_ops_devices is
 	procedure show_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- FD1, MH2
-		error			: out boolean;
-		log_warning		: in boolean := true;
 		log_threshold	: in type_log_level)
 	is
 		device_cursor : pac_devices_non_electrical.cursor;
@@ -720,8 +718,6 @@ package body et_board_ops_devices is
 		log (text => "module " & to_string (module_cursor) 
 			 & " show non-electrical device " & to_string (device_name),
 			level => log_threshold);
-
-		error := false;
 		
 		log_indentation_up;
 		
@@ -732,18 +728,10 @@ package body et_board_ops_devices is
 		
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.
-		-- Otherwise abort this procedure with a warning:
+		-- Otherwise an exception will be raised here:
 		device_cursor := get_non_electrical_device (module_cursor, device_name);
 			
-		if has_element (device_cursor) then -- device exists in board
-			generic_modules.update_element (module_cursor, query_module'access);
-		else
-			if log_warning then
-				log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
-			end if;
-
-			error := true;
-		end if;
+		generic_modules.update_element (module_cursor, query_module'access);
 
 		log_indentation_down;
 	end show_non_electrical_device;
@@ -3168,7 +3156,6 @@ package body et_board_ops_devices is
 				show_non_electrical_device (
 					module_cursor	=> module_cursor,
 					device_name		=> get_device_name (object.non_electrical_device.cursor),
-					error			=> error,
 					log_threshold	=> log_threshold + 1);
 
 				

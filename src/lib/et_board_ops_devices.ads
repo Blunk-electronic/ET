@@ -212,14 +212,11 @@ package et_board_ops_devices is
 -- SHOW DEVICE:
 	
 	-- Sets the given non-electrical device as selected.
-	-- If the given device does not exist, then a warning
-	-- is written in the log and the error flag is set.
-	-- If output_warning is false then no warning will be logged:
+	-- Assumes that the given device exists. Otherwise
+	-- an exception is raised:
 	procedure show_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- FD1, MH2
-		error			: out boolean;
-		log_warning		: in boolean := true;
 		log_threshold	: in type_log_level);
 
 
