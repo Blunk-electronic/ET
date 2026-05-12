@@ -157,54 +157,55 @@ package body et_cp_board_device is
 				log (text => "show_non_electrical_device", level => log_threshold + 1);
 				log_indentation_up;
 
-				-- CS:
-				-- Center on the device and leave the
-				-- zoom factor as it is. If the runmode is
-				-- headless, then nothing happens here:
-				-- zoom_to (get_place (unit_query.position), S);
-				
-				show_non_electrical_device (
-					module_cursor	=> module, 
-					device_name		=> device_name,
-					error			=> error,
-					log_warning		=> false, 
-					log_threshold	=> log_threshold + 2);
+				-- Proceed if the non-electrical device exists:
+				if non_electrical_device_exists (module, device_name) then
+					-- CS:
+					-- Center on the device and leave the
+					-- zoom factor as it is. If the runmode is
+					-- headless, then nothing happens here:
+					-- zoom_to (get_place (unit_query.position), S);
+					
+					show_non_electrical_device (
+						module_cursor	=> module, 
+						device_name		=> device_name,
+						log_threshold	=> log_threshold + 2);
 
-				
-				-- Write some basic information in the status bar:
-				if not error then
-					set_status (et_board_ops_devices.get_device_properties (
-						module_cursor	=> module,
-						device_name		=> device_name, 
-						level			=> DEVICE_PROPERTIES_LEVEL_1,
-						error			=> error,
-						log_threshold	=> log_threshold + 2));
+					
+					-- Write some basic information in the status bar:
+					if not error then
+						set_status (et_board_ops_devices.get_device_properties (
+							module_cursor	=> module,
+							device_name		=> device_name, 
+							level			=> DEVICE_PROPERTIES_LEVEL_1,
+							error			=> error,
+							log_threshold	=> log_threshold + 2));
 
 
-					-- For property levels greater 1 we open
-					-- the properties window in order to conveniently
-					-- show a lot of information:
-					case properties_level is
-						when DEVICE_PROPERTIES_LEVEL_1 => null;
+						-- For property levels greater 1 we open
+						-- the properties window in order to conveniently
+						-- show a lot of information:
+						case properties_level is
+							when DEVICE_PROPERTIES_LEVEL_1 => null;
 
-						when others =>
-							
-							pac_device_ops.show_properties_window (
-								device	=> device_name,
-								text	=> et_board_ops_devices.get_device_properties (
-									module_cursor	=> module, 
-									device_name		=> device_name, 
-									linebreaks		=> true,
-									level			=> properties_level,
-									error			=> error,
-									log_threshold	=> log_threshold + 2));
-					end case;
-				end if;
+							when others =>
+								
+								pac_device_ops.show_properties_window (
+									device	=> device_name,
+									text	=> et_board_ops_devices.get_device_properties (
+										module_cursor	=> module, 
+										device_name		=> device_name, 
+										linebreaks		=> true,
+										level			=> properties_level,
+										error			=> error,
+										log_threshold	=> log_threshold + 2));
+						end case;
+					end if;
 
-				
-				if error then
+				else
 					message_device_not_found (SEVERITY_ERROR, device_name);
 				end if;
+
+				log_indentation_down;
 			end show_non_electrical_device;
 
 			
