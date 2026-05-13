@@ -193,24 +193,26 @@ package body et_cp_schematic_device is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
-		name : type_device_name;
+		device_name : type_device_name;
 	begin
-		-- CS log message 
+		log (text => "delete device", level => log_threshold);
+		log_indentation_up;
 
 		
 		case cmd_field_count is
 			when 5 =>
-				name := to_device_name (get_field (cmd, 5));
-				
-				if electrical_device_exists (module, name) then
+				device_name := to_device_name (get_field (cmd, 5));
+
+				-- Proceed if the specified device exists:
+				if electrical_device_exists (module, device_name) then
 				
 					delete_electrical_device (
 						module_cursor 	=> module,
-						device_name		=> name,
+						device_name		=> device_name,
 						log_threshold	=> log_threshold + 1);
 
 				else
-					message_device_not_found (SEVERITY_ERROR, name);
+					message_device_not_found (SEVERITY_ERROR, device_name);
 				end if;
 
 				
@@ -220,6 +222,8 @@ package body et_cp_schematic_device is
 			when others => command_incomplete (cmd);
 		end case;
 
+		
+		log_indentation_down;
 	end delete_device;
 
 

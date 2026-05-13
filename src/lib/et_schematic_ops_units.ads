@@ -288,7 +288,7 @@ package et_schematic_ops_units is
 	
 	-- Deletes a whole device (incl. all its units)
 	-- in the module.
-	-- It is assumed that the targeted device with device_name_before
+	-- It is assumed that the targeted device with device_name
 	-- exists in the module. If not, then an exception is raised.
 	procedure delete_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
