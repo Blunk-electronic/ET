@@ -340,7 +340,9 @@ package et_board_ops_devices is
 
 
 	-- Deletes a non-electrical device in the board layout.
-	-- Electrical devices must be deleted in the schematic domain !
+	-- Assumes that the specified device exists. Otherwise
+	-- an exception will be raised.	
+	-- NOTE: Electrical devices must be deleted in the schematic domain !
 	procedure delete_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- FD1 -- CS cursor insted ?

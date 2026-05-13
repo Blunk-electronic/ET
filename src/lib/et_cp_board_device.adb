@@ -389,19 +389,27 @@ package body et_cp_board_device is
 		
 		procedure do_it is 
 			use et_board_ops_devices;
+			device_name : type_device_name := to_device_name (get_field (cmd, 5));
 		begin
-			delete_non_electrical_device (
-				module_cursor	=> active_module,
-				device_name		=> to_device_name (get_field (cmd, 5)),
-				log_threshold	=> log_threshold + 1);
+			-- Proceed if the specified non-electrical
+			-- device exists:
+			if non_electrical_device_exists (module, device_name) then
+				
+				delete_non_electrical_device (
+					module_cursor	=> active_module,
+					device_name		=> device_name,
+					log_threshold	=> log_threshold + 1);
+
+			else
+				message_device_not_found (SEVERITY_ERROR, device_name);
+			end if;
 		end do_it;
 		
 
 	begin
-		-- CS log message
+		log (text => "delete non-electrical device", level => log_threshold);
+		log_indentation_up;
 
-		-- CS test existence of targeted device
-		
 		case cmd_field_count is
 			when 5 => do_it;				
 			
@@ -411,6 +419,8 @@ package body et_cp_board_device is
 			when others => 
 				command_incomplete (cmd);
 		end case;		
+
+		log_indentation_down;
 	end delete_device;
 
 		

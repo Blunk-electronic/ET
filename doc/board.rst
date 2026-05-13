@@ -249,6 +249,11 @@ non-electrical devices (without a representation in the schematic).
 	
 #. Delete Non-Electrical Device
 
+	Devices which appear only in the board drawing
+	can be deleted only in the board editor. They are
+	so called non-electrical devices because they 
+	are not connected to any net.
+
 	.. code-block::
 
 		delete device FD1

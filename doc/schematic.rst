@@ -124,6 +124,9 @@ Devices and Units
 
 #. Delete a Device
 
+	Devices which have a representation in the schematic
+	and in the board drawing can be deleted only in the
+	schematic editor.
 	A whole device (incl. all its units) can be deleted
 	via this simple command:
 
