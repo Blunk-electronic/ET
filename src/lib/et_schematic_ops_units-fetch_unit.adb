@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -307,8 +307,6 @@ is
 					-- function any_unit excludes this case.
 			end if;				
 		end if;
-
-
 	end query_module;
 
 	
@@ -323,26 +321,17 @@ begin
 	log_indentation_up;
 	
 	-- Locate the targeted device in the given module.
-	-- If the device exists, then proceed with further actions.
-	-- Otherwise abort this procedure with a warning:
+	-- The device must exist. Otherwise an exception will be raised here:
 	device_cursor_sch := get_electrical_device (module_cursor, device_name);
 		
-	if has_element (device_cursor_sch) then -- device exists in schematic
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_module'access);
-
-	else
-		log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
-	end if;
-	
+	update_element (
+		container	=> generic_modules,
+		position	=> module_cursor,
+		process		=> query_module'access);
 
 	update_ratsnest (module_cursor, log_threshold + 1);
 	
-	log_indentation_down;		
-	
+	log_indentation_down;	
 end fetch_unit;
 
 

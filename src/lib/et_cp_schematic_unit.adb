@@ -880,24 +880,25 @@ package body et_cp_schematic_unit is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 	
-		device_name : type_device_name;
-		unit_name	: pac_unit_name.bounded_string;
-		sheet		: type_sheet;
-		place		: type_vector_model;
-		rotation	: type_rotation;
-	begin
-		-- CS log message
-		
-		device_name := to_device_name (get_field (cmd, 5)); -- IC1
-		unit_name	:= to_unit_name (get_field (cmd, 6)); -- C
-		sheet		:= to_sheet (get_field (cmd, 7)); -- 1
-		place		:= set (x => to_distance (get_field (cmd, 8)), -- 70
-							y => to_distance (get_field (cmd, 9))); -- 100
 	
-		rotation	:= to_rotation (get_field (cmd, 10)); -- -90
+		procedure do_it is
+			device_name : type_device_name;
+			unit_name	: pac_unit_name.bounded_string;
+			sheet		: type_sheet;
+			place		: type_vector_model;
+			rotation	: type_rotation;
+		begin
+			device_name := to_device_name (get_field (cmd, 5)); -- IC1
+			unit_name	:= to_unit_name (get_field (cmd, 6)); -- C
+			sheet		:= to_sheet (get_field (cmd, 7)); -- 1
+			place		:= set (x => to_distance (get_field (cmd, 8)), -- 70
+								y => to_distance (get_field (cmd, 9))); -- 100
+		
+			rotation	:= to_rotation (get_field (cmd, 10)); -- -90
 
-		case cmd_field_count is
-			when 10 =>
+			-- Proceed if the specified device exists:
+			if electrical_device_exists (module, device_name) then
+			
 				fetch_unit (
 					module_cursor	=> module,
 					device_name		=> device_name,
@@ -905,11 +906,27 @@ package body et_cp_schematic_unit is
 					destination		=> to_position (place, sheet, rotation),
 					log_threshold	=> log_threshold + 1);
 
+			else
+				message_device_not_found (SEVERITY_ERROR, device_name);
+			end if;
+		end do_it;
+		
+		
+	begin
+		log (text => "mirror unit", level => log_threshold);
+		log_indentation_up;
+
+		case cmd_field_count is
+			when 10 =>
+				do_it;
+
 			when 11 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
 				
 			when others => command_incomplete (cmd);
 		end case;
+		
+		log_indentation_down;
 	end fetch_unit;
 		
 
