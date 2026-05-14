@@ -594,6 +594,7 @@ package body et_cp_schematic_unit is
 	
 	
 	
+	
 	procedure drag_unit (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
@@ -601,26 +602,57 @@ package body et_cp_schematic_unit is
 	is 
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+
+		
+		procedure do_it is
+			device_name : type_device_name;
+			unit_name	: pac_unit_name.bounded_string;
+		begin
+			device_name := to_device_name (get_field (cmd, 5));
+			unit_name := to_unit_name (get_field (cmd, 6));
+		
+		
+			-- Proceed if the specified device exists:
+			if electrical_device_exists (module, device_name) then
+			
+				-- Proceed if the specified unit exists:
+				if unit_exists (module, device_name, unit_name) then
+		
+					drag_unit (
+						module_cursor 	=> module,
+						device_name		=> device_name,
+						unit_name		=> unit_name,
+						coordinates		=> to_coordinates (get_field (cmd, 7)), -- relative/absolute
+						destination		=> type_vector_model (set (
+											x => to_distance (get_field (cmd, 8)),
+											y => to_distance (get_field (cmd, 9)))),
+						log_threshold	=> log_threshold + 1);
+
+				else
+					message_unit_not_found (SEVERITY_ERROR, unit_name);
+				end if;
+				
+			else
+				message_device_not_found (SEVERITY_ERROR, device_name);
+			end if;						
+		end do_it;
+		
+		
 	begin
-		-- CS log message
+		log (text => "drag unit", level => log_threshold);
+		log_indentation_up;
 		
 		case cmd_field_count is
 			when 9 =>
-				drag_unit (
-					module_cursor 	=> module,
-					device_name		=> to_device_name (get_field (cmd, 5)),
-					unit_name		=> to_unit_name (get_field (cmd, 6)),
-					coordinates		=> to_coordinates (get_field (cmd, 7)), -- relative/absolute
-					destination		=> type_vector_model (set (
-										x => to_distance (get_field (cmd, 8)),
-										y => to_distance (get_field (cmd, 9)))),
-					log_threshold	=> log_threshold + 1);
+				do_it;
 
 			when 10 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
 				
 			when others => command_incomplete (cmd);
 		end case;
+		
+		log_indentation_down;
 	end drag_unit;
 
 	

@@ -2303,10 +2303,6 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			-- Query whether the given unit is deployed in the schematic:
-			unit_query : constant type_unit_query := 
-				get_unit_position (device_cursor_sch, unit_name);
-
 			-- The new ports must be inserted in the net segments.
 			-- For this reason we need some temporarily storage place:
 			sheet : type_sheet;
@@ -2336,13 +2332,17 @@ package body et_schematic_ops_units is
 						when RELATIVE =>
 							move (
 								position	=> unit.position,
-								offset		=> to_position_relative (destination, sheet));
-								-- rotation remains as it is
+								offset		=> to_position_relative (destination, 0));
+								-- The relative sheet change is 0 because
+								-- we only drag the unit across the current sheet.
+								-- The rotation remains as it is.
 					end case;								
 				end move_unit;
 				
 
-				-- Locate the targeted unit:
+				-- Locate the targeted unit.
+				-- The unit must exist. Otherwise an exception
+				-- will be raised here:
 				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
 				
 			begin
@@ -2370,37 +2370,29 @@ package body et_schematic_ops_units is
 			
 			
 		begin
-			-- Test whether the desired unit is deployed (in schematic).
-			-- If the unit is deployed, then rotate it:
-			if unit_query.exists then
-				
-				update_element (
-					container	=> module.devices,
-					position	=> device_cursor_sch,
-					process		=> query_device'access);
+			update_element (
+				container	=> module.devices,
+				position	=> device_cursor_sch,
+				process		=> query_device'access);		
+
+			-- Make a list of ports and their old and new positions:
+			drag_list.ports := make_drag_list (ports_old, ports_new);
+
+			-- Drag the net segments which are connected with the unit:
+			drag_net_segments (
+				module_cursor	=> module_cursor,
+				port_drag_list	=> drag_list,
+				log_threshold	=> log_threshold + 1);
 			
+			-- Insert the new unit ports in the net segments:
+			insert_ports (
+				module_cursor	=> module_cursor,
+				device_name		=> device_name,
+				unit_name		=> unit_name,
+				ports			=> ports_new,
+				sheet			=> sheet,
+				log_threshold	=> log_threshold + 1);
 
-				-- Make a list of ports and their old and new positions:
-				drag_list.ports := make_drag_list (ports_old, ports_new);
-
-				-- Drag the net segments which are connected with the unit:
-				drag_net_segments (
-					module_cursor	=> module_cursor,
-					port_drag_list	=> drag_list,
-					log_threshold	=> log_threshold + 1);
-				
-				-- Insert the new unit ports in the net segments:
-				insert_ports (
-					module_cursor	=> module_cursor,
-					device_name		=> device_name,
-					unit_name		=> unit_name,
-					ports			=> ports_new,
-					sheet			=> sheet,
-					log_threshold	=> log_threshold + 1);
-
-			else
-				log (SEVERITY_WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic !");
-			end if;
 		end query_module;
 
 		
@@ -2425,22 +2417,20 @@ package body et_schematic_ops_units is
 		log_indentation_up;
 		
 		-- Locate the targeted device in the given module.
-		-- If the device exists, then proceed with further actions.
-		-- Otherwise abort this procedure with a warning:
-		device_cursor_sch := get_electrical_device (module_cursor, device_name);
+		-- The specified device must exist. Otherwise an exception
+		-- will be raised here:
+		device_cursor_sch := get_electrical_device (
+			module_cursor, device_name);
 			
-		if has_element (device_cursor_sch) then -- device exists in schematic
-			
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> query_module'access);
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
 
-		else
-			log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
-		end if;
 
-		et_schematic_ops_nets.update_strand_positions (module_cursor, log_threshold + 2);		
+		et_schematic_ops_nets.update_strand_positions (
+			module_cursor, log_threshold + 2);		
+		
 		update_ratsnest (module_cursor, log_threshold + 1);
 		
 		log_indentation_down;		

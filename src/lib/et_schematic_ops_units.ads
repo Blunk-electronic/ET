@@ -424,6 +424,8 @@ package et_schematic_ops_units is
 
 	
 	-- Drags the given unit about the sheet.
+	-- Assumes that the specified device and unit exist.
+	-- Otherwise an exception will be raised.
 	-- Already existing connections with net segments are kept.
 	-- This operation applies to a single sheet. Dragging from one sheet
 	-- to another is not possible.
