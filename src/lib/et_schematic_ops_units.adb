@@ -2594,10 +2594,6 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			-- Query whether the given unit is deployed in the schematic:
-			unit_query : constant type_unit_query := 
-				get_unit_position (device_cursor_sch, unit_name);
-
 			-- The old ports of the unit must be removed from the net segments,
 			-- whereas new ports must be inserted in the net segments.
 			-- For this reason we need some temporarily storage place:
@@ -2623,7 +2619,8 @@ package body et_schematic_ops_units is
 				end mirror_unit;
 				
 
-				-- Locate the targeted unit:
+				-- Locate the targeted unit. It must exist.
+				-- Otherwise an exception will be raised here:
 				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
 
 				
@@ -2647,42 +2644,33 @@ package body et_schematic_ops_units is
 				ports_new := get_ports_from_schematic (
 					device_cursor_sch, unit_cursor);
 			end query_device;
-
 			
 			
 		begin
-			-- Test whether the desired unit is deployed (in schematic).
-			-- If the unit is deployed, then rotate it:
-			if unit_query.exists then
-				
-				update_element (
-					container	=> module.devices,
-					position	=> device_cursor_sch,
-					process		=> query_device'access);
-			
-				-- Remove the old ports of the unit from the net segments:
-				delete_ports (
-					module_cursor	=> module_cursor,
-					device_name		=> device_name,
-					unit_name		=> unit_name,
-					ports			=> ports_old,
-					sheet			=> sheet,
-					log_threshold	=> log_threshold + 1);
+			update_element (
+				container	=> module.devices,
+				position	=> device_cursor_sch,
+				process		=> query_device'access);
+		
+			-- Remove the old ports of the unit from the net segments:
+			delete_ports (
+				module_cursor	=> module_cursor,
+				device_name		=> device_name,
+				unit_name		=> unit_name,
+				ports			=> ports_old,
+				sheet			=> sheet,
+				log_threshold	=> log_threshold + 1);
 
-				-- Insert the new unit ports in the net segments:
-				insert_ports (
-					module_cursor	=> module_cursor,
-					device_name		=> device_name,
-					unit_name		=> unit_name,
-					ports			=> ports_new,
-					sheet			=> sheet,
-					log_threshold	=> log_threshold + 1);
+			-- Insert the new unit ports in the net segments:
+			insert_ports (
+				module_cursor	=> module_cursor,
+				device_name		=> device_name,
+				unit_name		=> unit_name,
+				ports			=> ports_new,
+				sheet			=> sheet,
+				log_threshold	=> log_threshold + 1);
 
-			else
-				log (SEVERITY_WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
-			end if;
 		end query_module;
-
 
 		
 	begin
@@ -2694,20 +2682,14 @@ package body et_schematic_ops_units is
 		log_indentation_up;
 		
 		-- Locate the targeted device in the given module.
-		-- If the device exists, then proceed with further actions.
-		-- Otherwise abort this procedure with a warning:
+		-- The device must exist. Otherwise an exception
+		-- will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
-		if has_element (device_cursor_sch) then -- device exists in schematic
-			
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> query_module'access);
-
-		else
-			log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
-		end if;
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
 
 		update_ratsnest (module_cursor, log_threshold + 1);
 		
@@ -2718,6 +2700,7 @@ package body et_schematic_ops_units is
 
 
 
+	
 	
 
 
