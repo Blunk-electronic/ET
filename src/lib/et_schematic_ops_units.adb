@@ -3152,6 +3152,8 @@ package body et_schematic_ops_units is
 
 
 	
+	
+	
 
 	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3169,16 +3171,15 @@ package body et_schematic_ops_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			-- Query whether the given unit is deployed in the schematic:
-			unit_query : constant type_unit_query := 
-				get_unit_position (device_cursor_sch, unit_name);
 			
 			
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical) 
 			is
-				-- Locate the targeted unit:
+				-- Locate the targeted unit.
+				-- It must exist. Otherwise an exception
+				-- is raised here:
 				unit_cursor : pac_units.cursor := locate_unit (device, unit_name);
 
 
@@ -3196,13 +3197,7 @@ package body et_schematic_ops_units is
 
 			
 		begin
-			-- Test whether the desired unit is deployed (in schematic).
-			-- If the unit is deployed, then proceed:
-			if unit_query.exists then
-				module.devices.update_element (device_cursor_sch, query_device'access);
-			else
-				log (SEVERITY_WARNING, "Unit " & to_string (unit_name) & " is not deployed in the schematic");
-			end if;
+			module.devices.update_element (device_cursor_sch, query_device'access);
 		end query_module;
 
 		
@@ -3213,7 +3208,7 @@ package body et_schematic_ops_units is
 					& " move " & to_string (device_name) 
 					& " unit " & to_string (unit_name) 
 					& " placeholder " & enclose_in_quotes (to_string (meaning))
-					& " to" & to_string (point),
+					& " to " & to_string (point),
 					level => log_threshold);
 
 			when RELATIVE =>
@@ -3221,7 +3216,7 @@ package body et_schematic_ops_units is
 					& " move " & to_string (device_name) 
 					& " unit " & to_string (unit_name) 
 					& " placeholder " & enclose_in_quotes (to_string (meaning))
-					& " by" & to_string (point),
+					& " by " & to_string (point),
 					level => log_threshold);
 		end case;
 
@@ -3229,27 +3224,23 @@ package body et_schematic_ops_units is
 		log_indentation_up;
 		
 		-- Locate the targeted device in the given module.
-		-- If the device exists, then proceed with further actions.
-		-- Otherwise abort this procedure with a warning:
+		-- The device must exist. Otherwise an exception
+		-- will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
-		if has_element (device_cursor_sch) then -- device exists in schematic
-			
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> query_module'access);
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
 
-		else
-			log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
-		end if;
-		
 		log_indentation_down;		
 	end move_placeholder;
 
 
 
 
+	
+	
 
 	
 

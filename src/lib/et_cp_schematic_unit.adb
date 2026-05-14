@@ -1041,48 +1041,82 @@ package body et_cp_schematic_unit is
 
 		use et_modes.schematic;
 		use et_device_placeholders;
-		meaning : type_placeholder_meaning;
 
 		
-		procedure do_it is begin
-			case cmd_field_count is
-				when 9 =>
+		procedure do_it is
+			meaning : type_placeholder_meaning;
+			device_name : type_device_name;
+			unit_name	: pac_unit_name.bounded_string;
+			coordinates : type_coordinates;
+			place		: type_vector_model;
+		begin
+			-- Set the meaning according to the active noun:
+			case noun is
+				when NOUN_NAME =>
+					meaning := NAME;
+					
+				when NOUN_VALUE =>
+					meaning := VALUE;
+									
+				when NOUN_PURPOSE =>
+					meaning := PURPOSE;
+
+				-- CS partcode ?
+
+				when others => null; -- CS should never happen
+			end case;
+
+			
+			device_name := to_device_name (get_field (cmd, 5)); -- IC1
+			unit_name := to_unit_name (get_field (cmd, 6)); -- A
+			coordinates := to_coordinates (get_field (cmd, 7));  -- relative/absolute
+			place := to_vector_model (get_field (cmd, 8), get_field (cmd, 9));
+			
+			
+			-- Proceed if the specified device exists:
+			if electrical_device_exists (module, device_name) then
+			
+				-- Proceed if the specified unit exists:
+				if unit_exists (module, device_name, unit_name) then
+			
 					move_placeholder (
 						module_cursor 	=> module,
-						device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
-						unit_name		=> to_unit_name (get_field (cmd, 6)), -- A
-						coordinates		=> to_coordinates (get_field (cmd, 7)),  -- relative/absolute
-						point			=> to_vector_model (get_field (cmd, 8), get_field (cmd, 9)),
+						device_name		=> device_name,
+						unit_name		=> unit_name,
+						coordinates		=> coordinates,
+						point			=> place,
 						meaning			=> meaning,
 						log_threshold	=> log_threshold + 1);
 
-				when 10 .. type_field_count'last => 
-					command_too_long (cmd, cmd_field_count - 1);
-					
-				when others => command_incomplete (cmd);
-			end case;
+				else
+					message_unit_not_found (SEVERITY_ERROR, unit_name);
+				end if;
+				
+			else
+				message_device_not_found (SEVERITY_ERROR, device_name);
+			end if;		
 		end do_it;
 
 		
 	begin
-		case noun is
-			when NOUN_NAME =>
-				meaning := NAME;
+		log (text => "move unit placeholder", level => log_threshold);
+		log_indentation_up;
+		
+		case cmd_field_count is
+			when 9 =>
+				do_it;
 				
-			when NOUN_VALUE =>
-				meaning := VALUE;
-								
-			when NOUN_PURPOSE =>
-				meaning := PURPOSE;
-
-			-- CS partcode ?
-
-			when others => null; -- CS should never happen
+			when 10 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
 		end case;
-
-		do_it;		
+			
+		log_indentation_down;
 	end move_unit_placeholder;
 
+	
+	
 		
 end et_cp_schematic_unit;
 
