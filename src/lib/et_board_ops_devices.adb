@@ -1249,6 +1249,7 @@ package body et_board_ops_devices is
 	end add_non_electrical_device;
 
 
+
 	
 
 
@@ -1292,24 +1293,23 @@ package body et_board_ops_devices is
 		log_indentation_up;
 		
 		-- Locate the targeted device in the given module.
-		-- If the device exists, then proceed with further actions.
-		-- Otherwise abort this procedure with a warning:
+		-- The device must exist. Otherwise an exception is raised here:
 		device_cursor := get_non_electrical_device (module_cursor, device_name);
 
 		-- Build the next available device name:
 		next_name := get_next_available_device_name (
 			module_cursor, get_prefix (device_name), log_threshold + 1); -- FD2
-
 		
-		if has_element (device_cursor) then -- device exists in board
-			generic_modules.update_element (module_cursor, query_module'access);
-		else
-			log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
-		end if;
+		generic_modules.update_element (module_cursor, query_module'access);
 
 		log_indentation_down;
 	end copy_non_electrical_device;
 
+
+
+
+
+	
 
 
 	

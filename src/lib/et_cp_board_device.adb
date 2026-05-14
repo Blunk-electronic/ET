@@ -355,7 +355,9 @@ package body et_cp_board_device is
 		
 
 	begin
-		-- CS log message
+		log (text => "add non-electrical device", level => log_threshold);
+		log_indentation_up;
+
 
 		case cmd_field_count is
 			when 8..10 => do_it;
@@ -368,6 +370,8 @@ package body et_cp_board_device is
 			
 			when others => command_incomplete (cmd);
 		end case;
+
+		log_indentation_down;
 	end add_non_electrical_device;
 
 
@@ -440,26 +444,48 @@ package body et_cp_board_device is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
-	
-	begin
-		-- CS log message
 
-		-- CS test existence of targeted device
-		
-		case cmd_field_count is
-			when 7 =>
 
+		procedure do_it is
+			device_name : type_device_name;
+			destination : type_vector_model;
+		begin
+			device_name := to_device_name (get_field (cmd, 5));
+			destination := to_vector_model (get_field (cmd, 6), get_field (cmd, 7)); -- x/y
+
+			-- Proceed if the specified non-electrical
+			-- device exists:
+			if non_electrical_device_exists (module, device_name) then
+				
 				et_board_ops_devices.copy_non_electrical_device (
 					module_cursor 	=> module,
-					device_name		=> to_device_name (get_field (cmd, 5)),
-					destination		=> to_vector_model (get_field (cmd, 6), get_field (cmd, 7)), -- x/y
+					device_name		=> device_name,
+					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
 
+			else
+				message_device_not_found (SEVERITY_ERROR, device_name);
+			end if;
+		end do_it;
+		
+		
+	begin
+		log (text => "copy non-electrical device", level => log_threshold);
+		log_indentation_up;
+
+
+		case cmd_field_count is
+			when 7 =>
+				do_it;
+
 			when 8 .. type_field_count'last => 
-					command_too_long (cmd, cmd_field_count - 1);
+				command_too_long (cmd, cmd_field_count - 1);
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+		
+		log_indentation_down;
 	end copy_device;
 
 

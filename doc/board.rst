@@ -176,6 +176,8 @@ non-electrical devices (without a representation in the schematic).
 
 #. Copy Non-Electrical Device
 
+	The specified device must be a non-electrical device.
+
 	.. code-block::
 
 		copy device FD1 140 27

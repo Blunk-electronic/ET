@@ -330,7 +330,9 @@ package et_board_ops_devices is
 	-- CS procedure add_device with explicit device name like MH1
 
 
-	-- Copies a non-electrical device to the given destination:
+	-- Copies a non-electrical device to the given destination.
+	-- Assumes that the specified device exists. Otherwise
+	-- an exception is raised:	
 	procedure copy_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- FD1
