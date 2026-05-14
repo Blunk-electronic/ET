@@ -671,37 +671,64 @@ package body et_cp_schematic_unit is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
-
-		device_name : type_device_name;
-		unit_name	: pac_unit_name.bounded_string;
-		coordinates : type_coordinates;
-		sheet		: type_sheet_relative;		
-		destination	: type_vector_model;
-	begin
-		device_name := to_device_name (get_field (cmd, 5)); -- IC1
-		unit_name	:= to_unit_name (get_field (cmd, 6)); -- A
-		coordinates := to_coordinates (get_field (cmd, 7)); -- relative/absolute
-		sheet		:= to_sheet_relative (get_field (cmd, 8)); -- -1, 2
-
-		destination	:= set (x => to_distance (get_field (cmd, 9)), -- 2, 210
+		
+		
+		procedure do_it is
+			device_name : type_device_name;
+			unit_name	: pac_unit_name.bounded_string;
+			coordinates : type_coordinates;
+			sheet		: type_sheet_relative;		
+			destination	: type_vector_model;
+		begin
+			device_name := to_device_name (get_field (cmd, 5)); -- IC1
+			unit_name	:= to_unit_name (get_field (cmd, 6)); -- A
+			coordinates := to_coordinates (get_field (cmd, 7)); -- relative/absolute
+			sheet		:= to_sheet_relative (get_field (cmd, 8)); -- -1, 2
+		
+			destination	:= set (x => to_distance (get_field (cmd, 9)), -- 2, 210
 							y => to_distance (get_field (cmd, 10))); -- 4, 100
+
+		
+			-- Proceed if the specified device exists:
+			if electrical_device_exists (module, device_name) then
+			
+				-- Proceed if the specified unit exists:
+				if unit_exists (module, device_name, unit_name) then
+		
+					move_unit (
+						module_cursor 	=> module,
+						device_name		=> device_name,
+						unit_name		=> unit_name,
+						coordinates		=> coordinates,
+						sheet			=> sheet,
+						destination		=> destination,						
+						log_threshold	=> log_threshold + 1);
+
+				else
+					message_unit_not_found (SEVERITY_ERROR, unit_name);
+				end if;
+				
+			else
+				message_device_not_found (SEVERITY_ERROR, device_name);
+			end if;						
+		end do_it;
+
+		
+	begin
+		log (text => "move unit", level => log_threshold);
+		log_indentation_up;
 
 		case cmd_field_count is
 			when 10 =>
-				move_unit (
-					module_cursor 	=> module,
-					device_name		=> device_name,
-					unit_name		=> unit_name,
-					coordinates		=> coordinates,
-					sheet			=> sheet,
-					destination		=> destination,						
-					log_threshold	=> log_threshold + 1);
+				do_it;
 
 			when 11 .. type_field_count'last => 
 				command_too_long (cmd, cmd_field_count - 1);
 				
 			when others => command_incomplete (cmd);
 		end case;
+		
+		log_indentation_down;
 	end move_unit;
 	
 
