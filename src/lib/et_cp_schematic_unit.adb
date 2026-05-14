@@ -953,44 +953,74 @@ package body et_cp_schematic_unit is
 		meaning : type_placeholder_meaning;
 
 		
-		procedure do_it is begin
-			case cmd_field_count is
-				when 7 =>
+		procedure do_it is 
+			device_name : type_device_name;
+			unit_name	: pac_unit_name.bounded_string;
+			rotation	: type_rotation_documentation;
+		begin
+			-- Set the meaning according to the active noun:
+			case noun is
+				when NOUN_NAME =>
+					meaning := NAME;
+					
+				when NOUN_VALUE =>
+					meaning := VALUE;
+									
+				when NOUN_PURPOSE =>
+					meaning := PURPOSE;
+
+				-- CS partcode ?
+
+				when others => null; -- CS should never happen
+			end case;
+			
+		
+			device_name := to_device_name (get_field (cmd, 5)); -- IC1
+			unit_name := to_unit_name (get_field (cmd, 6)); -- A
+			rotation := to_rotation_documentation (get_field (cmd, 7)); -- horizontal
+			
+			
+			-- Proceed if the specified device exists:
+			if electrical_device_exists (module, device_name) then
+			
+				-- Proceed if the specified unit exists:
+				if unit_exists (module, device_name, unit_name) then
+		
 					rotate_placeholder (
 						module_cursor 	=> module,
-						device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
-						unit_name		=> to_unit_name (get_field (cmd, 6)), -- A
-						rotation		=> to_rotation_documentation (get_field (cmd, 7)), -- horizontal
+						device_name		=> device_name,
+						unit_name		=> unit_name,
+						rotation		=> rotation,
 						meaning			=> meaning,
 						log_threshold	=> log_threshold + 1);
 
-				when 8 .. type_field_count'last => 
-					command_too_long (cmd, cmd_field_count - 1);
-					
-				when others => command_incomplete (cmd);
-			end case;
+				else
+					message_unit_not_found (SEVERITY_ERROR, unit_name);
+				end if;
+				
+			else
+				message_device_not_found (SEVERITY_ERROR, device_name);
+			end if;		
 		end do_it;
+
 		
 		
 	begin
-		-- CS log message
+		log (text => "rotate unit placeholder", level => log_threshold);
+		log_indentation_up;
+
 		
-		case noun is
-			when NOUN_NAME =>
-				meaning := NAME;
+		case cmd_field_count is
+			when 7 =>
+				do_it;
+
+			when 8 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1);
 				
-			when NOUN_VALUE =>
-				meaning := VALUE;
-								
-			when NOUN_PURPOSE =>
-				meaning := PURPOSE;
-
-			-- CS partcode ?
-
-			when others => null; -- CS should never happen
-		end case;
-
-		do_it;		
+			when others => command_incomplete (cmd);
+		end case;		
+		
+		log_indentation_down;
 	end rotate_unit_placeholder;
 
 
