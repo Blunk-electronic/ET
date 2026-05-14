@@ -36,10 +36,7 @@
 --   history of changes:
 --
 -- To Do:
--- - rework
 -- - propose arguments if command incomplete
--- - test the existence of the requested unit and device.
---   (see comments in et_schematic_ops_units).
 -- - set exit code if targeted object does not exist
 --
 
