@@ -674,7 +674,9 @@ package body et_cp_board_device is
 
 		
 	begin
-		-- CS log message
+		log (text => "rename device", level => log_threshold);
+		log_indentation_up;
+
 
 		-- CS test existence of targeted device
 		
@@ -686,6 +688,8 @@ package body et_cp_board_device is
 			
 			when others => command_incomplete (cmd);
 		end case;
+		
+		log_indentation_down;
 	end rename_device;
 
 
@@ -705,31 +709,75 @@ package body et_cp_board_device is
 	is 
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
-	begin
-		-- CS log message
-
-		-- CS test existence of targeted device
 		
-		case cmd_field_count is
-			when 5 =>
+		
+		-- This procedure toggles the face of the specified device:
+		procedure do_flip_1 is
+			device_name : type_device_name;
+		begin
+			device_name := to_device_name (get_field (cmd, 5)); -- IC1
+			
+			-- Proceed if the specified device exists.
+			-- It can be an electrical or a non-electrical device:
+			if electrical_device_exists (module, device_name) 
+			or non_electrical_device_exists (module, device_name) then
+
 				et_board_ops_devices.flip_device (
 					module_cursor 	=> active_module,
-					device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
+					device_name		=> device_name,
 					toggle			=> true,
 					log_threshold	=> log_threshold + 1);
 
-			when 6 =>
+			else
+				message_device_not_found (SEVERITY_ERROR, device_name);
+			end if;
+		end do_flip_1;
+		
+		
+		
+		-- This procedure sets the face of the specified device:
+		procedure do_flip_2 is
+			device_name : type_device_name;
+			face : type_face;
+		begin
+			device_name := to_device_name (get_field (cmd, 5)); -- IC1
+			face := to_face (get_field (cmd, 6));  -- top/bottom
+			
+			-- Proceed if the specified device exists.
+			-- It can be an electrical or a non-electrical device:
+			if electrical_device_exists (module, device_name) 
+			or non_electrical_device_exists (module, device_name) then
+
 				et_board_ops_devices.flip_device (
 					module_cursor 	=> active_module,
-					device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
-					face			=> to_face  (get_field (cmd, 6)),  -- top/bottom
+					device_name		=> device_name,
+					face			=> face,
 					log_threshold	=> log_threshold + 1);
+
+			else
+				message_device_not_found (SEVERITY_ERROR, device_name);
+			end if;
+		end do_flip_2;
+
+		
+	begin
+		log (text => "flip device", level => log_threshold);
+		log_indentation_up;
+		
+		case cmd_field_count is
+			when 5 =>
+				do_flip_1;
+
+			when 6 =>
+				do_flip_2;
 
 			when 7 .. type_field_count'last => 
 				command_too_long (cmd, cmd_field_count - 1);
 				
 			when others => command_incomplete (cmd);
 		end case;
+		
+		log_indentation_down;
 	end flip_device;
 
 
