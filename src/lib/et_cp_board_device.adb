@@ -38,7 +38,6 @@
 -- To Do:
 -- - rework
 -- - propose arguments if command incomplete
--- - test existence of targeted device
 -- - set exit code if targeted object does not exist
 --
 --

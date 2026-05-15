@@ -140,7 +140,7 @@ package body et_board_ops_devices is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of electrical device "
+			& " modify status of electrical device "
 			& get_device_name (device.cursor)
 			& " / " & to_string (operation),
 			level => log_threshold);
@@ -214,7 +214,7 @@ package body et_board_ops_devices is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " proposing electrical devices in " & to_string (catch_zone),
+			& " propose electrical devices in " & to_string (catch_zone),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -273,7 +273,7 @@ package body et_board_ops_devices is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up the first device /" & to_string (flag),
+			& " look up the first device /" & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -702,7 +702,8 @@ package body et_board_ops_devices is
 			end query_device;
 			
 		begin
-			module.devices_non_electric.update_element (device_cursor, query_device'access);
+			module.devices_non_electric.update_element (
+				device_cursor, query_device'access);
 		end query_module;
 
 		
@@ -732,6 +733,8 @@ package body et_board_ops_devices is
 
 
 
+
+	
 
 	function get_device_properties (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -837,7 +840,7 @@ package body et_board_ops_devices is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of non-electrical device "
+			& " modify status of non-electrical device "
 			& to_string (key (device.cursor))
 			& " / " & to_string (operation),
 			level => log_threshold);
@@ -854,6 +857,8 @@ package body et_board_ops_devices is
 
 
 
+
+	
 	
 	
 	procedure propose_non_electrical_devices (
@@ -878,7 +883,8 @@ package body et_board_ops_devices is
 			end query_device;
 
 			
-			device_cursor : pac_devices_non_electrical.cursor := module.devices_non_electric.first;
+			device_cursor : pac_devices_non_electrical.cursor :=
+				module.devices_non_electric.first;
 			
 		begin
 			while device_cursor /= pac_devices_non_electrical.no_element loop
@@ -905,7 +911,8 @@ package body et_board_ops_devices is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " proposing non-electrical devices in" & to_string (catch_zone),
+			 & " proposing non-electrical devices in" 
+			 & to_string (catch_zone),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -916,6 +923,7 @@ package body et_board_ops_devices is
 
 		log_indentation_down;
 	end propose_non_electrical_devices;
+
 
 
 
@@ -942,7 +950,8 @@ package body et_board_ops_devices is
 			end query_device;
 
 			
-			device_cursor : pac_devices_non_electrical.cursor := module.devices_non_electric.first;
+			device_cursor : pac_devices_non_electrical.cursor := 
+				module.devices_non_electric.first;
 		begin
 			while device_cursor /= pac_devices_non_electrical.no_element loop
 					
@@ -975,6 +984,9 @@ package body et_board_ops_devices is
 
 
 
+
+
+	
 
 	
 	function get_first_non_electrical_device (
@@ -1016,7 +1028,8 @@ package body et_board_ops_devices is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up the first non-electrical device /" & to_string (flag),
+			 & " look up the first non-electrical device /" 
+			 & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -1035,6 +1048,8 @@ package body et_board_ops_devices is
 
 	
 
+	
+
 	function get_first_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
@@ -1048,7 +1063,8 @@ package body et_board_ops_devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			device_cursor : pac_devices_non_electrical.cursor := module.devices_non_electric.first;
+			device_cursor : pac_devices_non_electrical.cursor := 
+				module.devices_non_electric.first;
 		begin
 			while device_cursor /= pac_devices_non_electrical.no_element loop
 				case flag is
@@ -1073,7 +1089,7 @@ package body et_board_ops_devices is
 
 		
 	begin
-		log (text => "looking up the first non-electrical device /" & to_string (flag),
+		log (text => "look up the first non-electrical device /" & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -1412,8 +1428,7 @@ package body et_board_ops_devices is
 				log (SEVERITY_WARNING, "Old and new device name are equal !");
 			end if;
 		end check_names;
-		
-		
+			
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
@@ -1528,6 +1543,8 @@ package body et_board_ops_devices is
 	
 
 	
+
+
 	
 	
 
@@ -1643,6 +1660,8 @@ package body et_board_ops_devices is
 	
 		log_indentation_down;		
 	end move_placeholder;
+
+
 
 
 
@@ -1952,6 +1971,7 @@ package body et_board_ops_devices is
 	
 	
 	
+
 	
 	
 	
@@ -2297,7 +2317,7 @@ package body et_board_ops_devices is
 		use pac_devices_electrical;
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up the first object / " & to_string (flag),
+			& " look up the first object / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -2707,7 +2727,7 @@ package body et_board_ops_devices is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up objects / " & to_string (flag),
+			& " look up objects / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -2737,7 +2757,7 @@ package body et_board_ops_devices is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of object "
+			& " modify status of object "
 			& type_object_category'image (object.cat)
 			& " / " & to_string (operation),
 			level => log_threshold);
@@ -2867,7 +2887,7 @@ package body et_board_ops_devices is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving object " 
+			& " move object " 
 			-- CS & to_string (object)
 			& " to " & to_string (destination),
 			level => log_threshold);
@@ -3158,6 +3178,7 @@ package body et_board_ops_devices is
 	-- Assumptions:
 	--  - The module to be searched in must be in the rig already.
 	--  - The submodule instance must exist in the module.
+	-- CS: This function is misplaced here. Move it to the correspoinding package.
 	function get_position (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string) -- OSC1
@@ -3449,8 +3470,10 @@ package body et_board_ops_devices is
 	is 
 		use et_terminals;
 	begin
-		log (SEVERITY_ERROR,	"terminal " & enclose_in_quotes (to_string (terminal_name)) & " not found !",
-			 console => true);
+		log (SEVERITY_ERROR, "terminal " 
+			 & enclose_in_quotes (to_string (terminal_name)) 
+			 & " not found !");
+		
 		raise constraint_error;
 	end terminal_not_found;
 
