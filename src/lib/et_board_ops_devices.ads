@@ -224,8 +224,8 @@ package et_board_ops_devices is
 
 
 	-- Returns properties of the given non-electrical device. 
-	-- 1. If the given device does not exist, then error is set and an empty 
-	--    string will be returned.
+	-- 1. The given device must exist. Otherwise an exception
+	--    will be raised.
 	-- 2. Level determines the degree and amount of information to be returned.
 	-- 3. By default no linebreaks are inserted in the output,
 	--    so that the result is a single line.
@@ -237,7 +237,6 @@ package et_board_ops_devices is
 		device_name		: in type_device_name;
 		level			: in type_properties_level;
 		linebreaks		: in boolean := false;
-		error			: out boolean;
 		log_threshold	: in type_log_level)
 		return string;
 

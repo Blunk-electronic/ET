@@ -179,7 +179,6 @@ package body et_cp_board_device is
 							module_cursor	=> module,
 							device_name		=> device_name, 
 							level			=> DEVICE_PROPERTIES_LEVEL_1,
-							error			=> error,
 							log_threshold	=> log_threshold + 2));
 
 
@@ -198,7 +197,6 @@ package body et_cp_board_device is
 										device_name		=> device_name, 
 										linebreaks		=> true,
 										level			=> properties_level,
-										error			=> error,
 										log_threshold	=> log_threshold + 2));
 						end case;
 					end if;

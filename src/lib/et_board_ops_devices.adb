@@ -36,9 +36,8 @@
 --   history of changes:
 --
 -- To Do:
--- - move device-existence-checks to command processor
--- - remove existence-checks of devices as soon as these checks
---   are implemented in the calling command processor routines.
+--
+--
 
 with ada.strings.unbounded;
 
@@ -741,46 +740,31 @@ package body et_board_ops_devices is
 		device_name		: in type_device_name;
 		level			: in type_properties_level;
 		linebreaks		: in boolean := false;
-		error			: out boolean;
 		log_threshold	: in type_log_level)
 		return string
 	is
 		device_cursor : pac_devices_non_electrical.cursor;
 
-
 		use ada.strings.unbounded;
 		result : unbounded_string := to_unbounded_string ("");
-
-		
 	begin
-		error := false;
-		
 		log (text => "module " & to_string (module_cursor) 
-			 & " get properties of non-electrical device " & to_string (device_name)
+			 & " get properties of non-electrical device " 
+			 & to_string (device_name)
 			 & " linebreaks " & boolean'image (linebreaks)
 			 & " inquiry level " & to_string (level),
 			level => log_threshold);
-
 		
 		log_indentation_up;
 		
 		-- Locate the targeted device in the given module.
-		-- If the device exists, then proceed with further actions.
-		-- Otherwise abort this function, set the error flag and return
-		-- an empty string:
+		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor := get_non_electrical_device (module_cursor, device_name);
 			
-		if has_element (device_cursor) then -- device exists in the board drawing
-
-			result := to_unbounded_string (get_properties (
-				device_cursor	=> device_cursor,
-				linebreaks		=> linebreaks,											  
-				level			=> level));
-				
-		else
-			log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
-			error := true;			
-		end if;
+		result := to_unbounded_string (get_properties (
+			device_cursor	=> device_cursor,
+			linebreaks		=> linebreaks,											  
+			level			=> level));
 
 		log_indentation_down;
 
