@@ -77,6 +77,7 @@ with et_device_library.packages;
 
 with et_schematic_ops_assembly_variant;		use et_schematic_ops_assembly_variant;
 with et_schematic_ops_device;				use et_schematic_ops_device;
+with et_board_ops_devices;
 
 with et_package_variant_terminal_port_map;	use et_package_variant_terminal_port_map;
 
@@ -1487,7 +1488,9 @@ package body et_schematic_ops_units is
 
 		
 
-		procedure check_names is begin
+		procedure check_names is 
+			use et_board_ops_devices;
+		begin
 				
 			-- The old and new name must not be the same:
 			if device_name_after /= device_name_before then
@@ -1497,8 +1500,14 @@ package body et_schematic_ops_units is
 				if same_prefix (device_name_after, device_name_before) then
 
 					-- A device having the new name must
-					-- not exist yet:
-					if not electrical_device_exists (module_cursor, device_name_after) then
+					-- not exist yet. So we must probe the 
+					-- electrical and non-electrical devices:
+					if not electrical_device_exists (
+						module_cursor, device_name_after) 
+						
+					and not non_electrical_device_exists (
+						module_cursor, device_name_after) 
+					then
 						
 						update_element (
 							container	=> generic_modules,
@@ -1510,7 +1519,7 @@ package body et_schematic_ops_units is
 					end if;
 
 				else
-					log (SEVERITY_WARNING, "Changing the prefix is not allowed !");
+					log (SEVERITY_ERROR, "Changing the prefix is not allowed !");
 				end if;
 
 			else

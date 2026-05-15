@@ -663,23 +663,29 @@ package body et_cp_board_device is
 
 		
 		procedure do_it is
+			device_name : type_device_name;
 		begin
-			rename_non_electrical_device (
-				module_cursor		=> active_module,
-				device_name_before	=> to_device_name (get_field (cmd, 5)),
-				device_name_after	=> to_device_name (get_field (cmd, 6)),
-				log_threshold		=> log_threshold + 1);
+			device_name := to_device_name (get_field (cmd, 5));
+			
+			-- Proceed if the specified non-electrical device exists:
+			if non_electrical_device_exists (module, device_name) then
+			
+				rename_non_electrical_device (
+					module_cursor		=> active_module,
+					device_name_before	=> device_name,
+					device_name_after	=> to_device_name (get_field (cmd, 6)),
+					log_threshold		=> log_threshold + 1);
 
+			else
+				message_device_not_found (SEVERITY_ERROR, device_name);
+			end if;
 		end do_it;
 
 		
 	begin
-		log (text => "rename device", level => log_threshold);
+		log (text => "rename non-electrical device", level => log_threshold);
 		log_indentation_up;
 
-
-		-- CS test existence of targeted device
-		
 		case cmd_field_count is
 			when 6 => do_it; 
 

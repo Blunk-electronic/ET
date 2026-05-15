@@ -151,7 +151,9 @@ package body et_cp_schematic_device is
 
 		name : type_device_name;
 	begin
-		-- CS log message 
+		log (text => "rename electrical device", level => log_threshold);
+		log_indentation_up;
+
 
 		name := to_device_name (get_field (cmd, 5)); -- IC1
 		
@@ -176,6 +178,8 @@ package body et_cp_schematic_device is
 			when others => command_incomplete (cmd);
 		end case; 
 
+		
+		log_indentation_down;
 	end rename_device;
 
 	

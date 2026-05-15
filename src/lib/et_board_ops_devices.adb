@@ -1370,8 +1370,7 @@ package body et_board_ops_devices is
 				position	=> device_after);
 
 			if not inserted then
-				log (SEVERITY_WARNING, "Device " & to_string (device_name_after)
-					 & " already exists !");
+				message_device_already_exists (SEVERITY_ERROR, device_name_after);
 			end if;
 
 			-- Delete the old device:
@@ -1389,8 +1388,14 @@ package body et_board_ops_devices is
 				if same_prefix (device_name_after, device_name_before) then
 
 					-- A device having the new name must
-					-- not exist yet:
-					if not non_electrical_device_exists (module_cursor, device_name_after) then
+					-- not exist yet. So we must probe the 
+					-- electrical and non-electrical devices:
+					if not electrical_device_exists (
+						module_cursor, device_name_after) 
+						
+					and not non_electrical_device_exists (
+						module_cursor, device_name_after) 
+					then
 						
 						update_element (
 							container	=> generic_modules,
@@ -1398,11 +1403,10 @@ package body et_board_ops_devices is
 							process		=> query_module'access);
 
 					else
-						log (SEVERITY_WARNING, "Device " & to_string (device_name_after)
-							 & " already exists !");
+						message_device_already_exists (SEVERITY_ERROR, device_name_after);
 					end if;
 				else
-					log (SEVERITY_WARNING, "Changing the prefix is not allowed !");
+					log (SEVERITY_ERROR, "Changing the prefix is not allowed !");
 				end if;
 			else
 				log (SEVERITY_WARNING, "Old and new device name are equal !");
@@ -1420,15 +1424,12 @@ package body et_board_ops_devices is
 		log_indentation_up;
 		
 		-- Locate the targeted device in the given module.
-		-- If the device exists, then proceed with further actions.
-		-- Otherwise abort this procedure with a warning:
-		device_cursor := get_non_electrical_device (module_cursor, device_name_before);
+		-- The device must exist. Otherwise an exception 
+		-- will be raised here:
+		device_cursor := get_non_electrical_device (
+			module_cursor, device_name_before);
 			
-		if has_element (device_cursor) then -- device exists in board
-			check_names;			
-		else
-			log (SEVERITY_WARNING, " Device " & to_string (device_name_before) & " not found !");
-		end if;
+		check_names;			
 
 		log_indentation_down;
 	end rename_non_electrical_device;

@@ -354,7 +354,9 @@ package et_board_ops_devices is
 		log_threshold	: in type_log_level);
 
 	
-	-- Renames a non-electric device in the board layout.
+	-- Renames a non-electrical device in the board layout.
+	-- Assumes that the device named after device_name_before
+	-- exists. Otherwise an exception will be raised:
 	procedure rename_non_electrical_device (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name_before	: in type_device_name; -- FD1
