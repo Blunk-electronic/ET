@@ -312,7 +312,7 @@ package body et_cp_board_device is
 			case cmd_field_count is
 				when 8 =>
 					add_non_electrical_device (
-						module_cursor	=> active_module,
+						module_cursor	=> module,
 						package_model	=> model,
 						position		=> to_package_position
 							(
@@ -324,7 +324,7 @@ package body et_cp_board_device is
 					
 				when 9 =>
 					add_non_electrical_device (
-						module_cursor	=> active_module,
+						module_cursor	=> module,
 						package_model	=> model,
 						position		=> to_package_position
 							(
@@ -337,7 +337,7 @@ package body et_cp_board_device is
 					
 				when 10 =>
 					add_non_electrical_device (
-						module_cursor	=> active_module,
+						module_cursor	=> module,
 						package_model	=> model,
 						position		=> to_package_position
 							(
@@ -400,7 +400,7 @@ package body et_cp_board_device is
 			if non_electrical_device_exists (module, device_name) then
 				
 				delete_non_electrical_device (
-					module_cursor	=> active_module,
+					module_cursor	=> module,
 					device_name		=> device_name,
 					log_threshold	=> log_threshold + 1);
 
@@ -671,7 +671,7 @@ package body et_cp_board_device is
 			if non_electrical_device_exists (module, device_name) then
 			
 				rename_non_electrical_device (
-					module_cursor		=> active_module,
+					module_cursor		=> module,
 					device_name_before	=> device_name,
 					device_name_after	=> to_device_name (get_field (cmd, 6)),
 					log_threshold		=> log_threshold + 1);
@@ -729,7 +729,7 @@ package body et_cp_board_device is
 			or non_electrical_device_exists (module, device_name) then
 
 				et_board_ops_devices.flip_device (
-					module_cursor 	=> active_module,
+					module_cursor 	=> module,
 					device_name		=> device_name,
 					toggle			=> true,
 					log_threshold	=> log_threshold + 1);
@@ -755,7 +755,7 @@ package body et_cp_board_device is
 			or non_electrical_device_exists (module, device_name) then
 
 				et_board_ops_devices.flip_device (
-					module_cursor 	=> active_module,
+					module_cursor 	=> module,
 					device_name		=> device_name,
 					face			=> face,
 					log_threshold	=> log_threshold + 1);
@@ -899,53 +899,77 @@ package body et_cp_board_device is
 		use et_device_placeholders;
 		use et_device_placeholders.packages;
 
-		meaning : type_placeholder_meaning;
-
 		
 		procedure do_it is 
+			meaning : type_placeholder_meaning;
+			device_name : type_device_name;
+			layer : type_placeholder_layer;
+			face : type_face;
+			index : type_placeholder_index;
+			coordinates : type_coordinates;
+			rotation : type_rotation_model;
 		begin
-			case cmd_field_count is
-				when 10 =>
-					rotate_placeholder (
-						module_cursor 	=> active_module,
-						device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
-						meaning			=> meaning,
-						layer			=> to_placeholder_layer (get_field (cmd, 6)), -- assy
-						face			=> to_face (get_field (cmd, 7)), -- top
-						index			=> to_placeholder_index (get_field (cmd, 8)), -- 2
-						coordinates		=> to_coordinates (get_field (cmd, 9)),  -- relative/absolute
-						rotation		=> to_rotation (get_field (cmd, 10)), -- 45
-						log_threshold	=> log_threshold + 1);
-
-				when 11 .. type_field_count'last => 
-					command_too_long (cmd, cmd_field_count - 1); 
+			-- Set the meaning according to the active noun:
+			case noun is
+				when NOUN_NAME =>
+					meaning := NAME;
 					
-				when others => command_incomplete (cmd);
+				when NOUN_VALUE =>
+					meaning := VALUE;
+									
+				when NOUN_PURPOSE =>
+					meaning := PURPOSE;
+
+				-- CS partcode ?
+
+				when others => null; -- CS should never happen
 			end case;
+		
+		
+			-- Get the arguments of the given command:
+			device_name := to_device_name (get_field (cmd, 5)); -- IC1
+			layer := to_placeholder_layer (get_field (cmd, 6)); -- assy
+			face := to_face (get_field (cmd, 7)); -- top
+			index := to_placeholder_index (get_field (cmd, 8)); -- 2
+			coordinates := to_coordinates (get_field (cmd, 9));  -- relative/absolute
+			rotation := to_rotation (get_field (cmd, 10)); -- 45
+
+			-- Proceed if the specified device exists:
+			if electrical_device_exists (module, device_name)
+			or non_electrical_device_exists (module, device_name) then
+		
+				rotate_placeholder (
+					module_cursor 	=> module,
+					device_name		=> device_name,
+					meaning			=> meaning,
+					layer			=> layer,
+					face			=> face,
+					index			=> index,
+					coordinates		=> coordinates,
+					rotation		=> rotation,
+					log_threshold	=> log_threshold + 1);
+
+			else
+				message_device_not_found (SEVERITY_ERROR, device_name);
+			end if;
 		end do_it;
 
 		
 	begin
-		-- CS log message
+		log (text => "move device placeholder", level => log_threshold);
+		log_indentation_up;
 
-		-- CS test existence of targeted device
-		
-		case noun is
-			when NOUN_NAME =>
-				meaning := NAME;
+		case cmd_field_count is
+			when 10 =>
+				do_it;
+
+			when 11 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1); 
 				
-			when NOUN_VALUE =>
-				meaning := VALUE;
-								
-			when NOUN_PURPOSE =>
-				meaning := PURPOSE;
-
-			-- CS partcode ?
-
-			when others => null; -- CS should never happen
+			when others => command_incomplete (cmd);
 		end case;
 
-		do_it;		
+		log_indentation_down;
 	end rotate_device_placeholder;
 
 
@@ -965,21 +989,43 @@ package body et_cp_board_device is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
-	begin
-		-- CS test existence of targeted device
 		
+		procedure do_it is
+			device_name : type_device_name;
+		begin
+			device_name := to_device_name (get_field (cmd, 5)); -- IC1
+			
+			-- Proceed if the specified device exists:
+			if electrical_device_exists (module, device_name)
+			or non_electrical_device_exists (module, device_name) then
+
+				reset_placeholder_positions (
+					module_cursor 	=> module,
+					device_name		=> device_name,
+					log_threshold	=> log_threshold + 1);
+			
+			else
+				message_device_not_found (SEVERITY_ERROR, device_name);
+			end if;
+		end do_it;
+		
+		
+	begin
+		log (text => "restore device placeholders", level => log_threshold);
+		log_indentation_up;
+
+
 		case cmd_field_count is
 			when 5 =>
-				reset_placeholder_positions (
-					module_cursor 	=> active_module,
-					device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
-					log_threshold	=> log_threshold + 1);
+				do_it;
 
 			when 6 .. type_field_count'last => 
 				command_too_long (cmd, cmd_field_count - 1); 
 				
 			when others => command_incomplete (cmd);
 		end case;		
+		
+		log_indentation_down;
 	end restore_device_placeholders;
 
 	

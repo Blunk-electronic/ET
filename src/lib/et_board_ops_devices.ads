@@ -381,6 +381,8 @@ package et_board_ops_devices is
 	-- Moves the placeholder given by meaning, layer, face and index.
 	-- Automatically detects whether the given device is
 	-- electrical or non-electrical.
+	-- It assumes that the given device exists. Otherwise an
+	-- exception is raised.
 	-- NOTE: Index identifies the targeted placeholder in connection
 	--       with its meaning. For example, if meaning is "value" and index is 3
 	--       then the 3rd value placeholder is adressed.
@@ -411,6 +413,8 @@ package et_board_ops_devices is
 	-- about its origin.
 	-- Automatically detects whether the given device is
 	-- electrical or non-electrical.
+	-- It assumes that the given device exists. Otherwise an
+	-- exception is raised.
 	-- Rotates the placeholder given by meaning, layer, face and index.
 	-- NOTE: Index identifies the targeted placeholder in connection
 	--       with its meaning. For example, if meaning is "value" and index is 3
