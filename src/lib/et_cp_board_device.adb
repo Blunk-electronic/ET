@@ -806,54 +806,77 @@ package body et_cp_board_device is
 		use et_device_placeholders;
 		use et_device_placeholders.packages;
 
-		meaning : type_placeholder_meaning;
-
 
 		
 		procedure do_it is 
+			meaning : type_placeholder_meaning;
+			device_name : type_device_name;
+			layer : type_placeholder_layer;
+			face : type_face;
+			index : type_placeholder_index;
+			coordinates : type_coordinates;
+			point : type_vector_model;
 		begin
-			case cmd_field_count is
-				when 11 =>
-					move_placeholder (
-						module_cursor 	=> module,
-						device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
-						meaning			=> meaning,
-						layer			=> to_placeholder_layer (get_field (cmd, 6)), -- assy
-						face			=> to_face (get_field (cmd, 7)), -- top
-						index			=> to_placeholder_index (get_field (cmd, 8)), -- 2
-						coordinates		=> to_coordinates (get_field (cmd, 9)),  -- relative/absolute
-						point			=> to_vector_model (get_field (cmd, 10), get_field (cmd, 11)),
-						log_threshold	=> log_threshold + 1);
-
-				when 12 .. type_field_count'last => 
-					command_too_long (cmd, cmd_field_count - 1); 
+			-- Set the meaning according to the active noun:
+			case noun is
+				when NOUN_NAME =>
+					meaning := NAME;
 					
-				when others => command_incomplete (cmd);
+				when NOUN_VALUE =>
+					meaning := VALUE;
+									
+				when NOUN_PURPOSE =>
+					meaning := PURPOSE;
+
+				-- CS partcode ?
+
+				when others => null; -- CS should never happen
 			end case;
+		
+			-- Get the arguments of the given command:
+			device_name := to_device_name (get_field (cmd, 5)); -- IC1
+			layer := to_placeholder_layer (get_field (cmd, 6)); -- assy
+			face := to_face (get_field (cmd, 7)); -- top
+			index := to_placeholder_index (get_field (cmd, 8)); -- 2
+			coordinates := to_coordinates (get_field (cmd, 9));  -- relative/absolute
+			point := to_vector_model (get_field (cmd, 10), get_field (cmd, 11));
+			
+			-- Proceed if the specified device exists:
+			if electrical_device_exists (module, device_name)
+			or non_electrical_device_exists (module, device_name) then
+			
+				move_placeholder (
+					module_cursor 	=> module,
+					device_name		=> device_name,
+					meaning			=> meaning,
+					layer			=> layer,
+					face			=> face,
+					index			=> index,
+					coordinates		=> coordinates,
+					point			=> point,
+					log_threshold	=> log_threshold + 1);
+
+			else
+				message_device_not_found (SEVERITY_ERROR, device_name);
+			end if;
 		end do_it;
 
 		
 	begin
-		-- CS log message
+		log (text => "move device placeholder", level => log_threshold);
+		log_indentation_up;
 
-		-- CS test existence of targeted device
-		
-		case noun is
-			when NOUN_NAME =>
-				meaning := NAME;
+		case cmd_field_count is
+			when 11 =>
+				do_it;
+
+			when 12 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1); 
 				
-			when NOUN_VALUE =>
-				meaning := VALUE;
-								
-			when NOUN_PURPOSE =>
-				meaning := PURPOSE;
-
-			-- CS partcode ?
-
-			when others => null; -- CS should never happen
+			when others => command_incomplete (cmd);
 		end case;
-
-		do_it;		
+		
+		log_indentation_down;
 	end move_device_placeholder;
 
 

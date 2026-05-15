@@ -1580,12 +1580,14 @@ package body et_board_ops_devices is
 
 			
 		begin
-
+			-- The given device must exist. Otherwise an exception will
+			-- be raised here.
 			-- Search the device first among the electrical devices.
 			-- Most likely it will be among them. If not,
 			-- search in non-electrical devices:
 			
-			device_electrical := get_electrical_device (module_cursor, device_name);
+			device_electrical := get_electrical_device (
+				module_cursor, device_name);
 			
 			if has_element (device_electrical) then
 
@@ -1596,20 +1598,13 @@ package body et_board_ops_devices is
 
 			else
 				-- Search among non-electrical devices:
-				device_non_electrical := get_non_electrical_device (module_cursor, device_name);
+				device_non_electrical := get_non_electrical_device (
+					module_cursor, device_name);
 
-				if has_element (device_non_electrical) then
-
-					update_element (
-						container	=> module.devices_non_electric,
-						position	=> device_non_electrical,
-						process		=> move_non_electrical'access);
-
-				-- If the requested device has not been found,
-				-- then log a warning:
-				else
-					log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
-				end if;
+				update_element (
+					container	=> module.devices_non_electric,
+					position	=> device_non_electrical,
+					process		=> move_non_electrical'access);
 
 			end if;
 		end query_module;
