@@ -138,7 +138,8 @@ package et_board_ops_devices is
 	-- Moves a device in the board layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
 	-- Automatically detects whether the given device is
-	-- electrical or non-electrical:
+	-- electrical or non-electrical. However, the device
+	-- is assumed to exist. Otherwise an exception is raised:
 	procedure move_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
@@ -150,7 +151,8 @@ package et_board_ops_devices is
 	-- Rotates a device in the board layout.
 	-- Leaves x/y and face (top/bottom) as it is.
 	-- Automatically detects whether the given device is
-	-- electrical or non-electrical:
+	-- electrical or non-electrical. However, the device
+	-- is assumed to exist. Otherwise an exception is raised:
 	procedure rotate_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
@@ -165,7 +167,8 @@ package et_board_ops_devices is
 	-- Resets the positions of all placeholders to their default
 	-- as specified in the package model.
 	-- Automatically detects whether the given device is
-	-- electrical or non-electrical.
+	-- electrical or non-electrical. However, the device
+	-- is assumed to exist. Otherwise an exception is raised:
 	-- 1. If toggle is false, then the destination face must be
 	-- provided. 
 	-- 2. If toggle is true, then the face of the targeted device
