@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -37,8 +37,8 @@
 --
 -- To Do:
 -- - clean up, rework
--- - remove existence-checks of devices as soon as these checks
---   are implemented in the calling command processor routines.
+--
+--
 --
 
 
@@ -332,24 +332,6 @@ package body et_schematic_ops_device is
 
 
 
-	
-
--- ASSEMBLY VARIANT:
-
-	
-
-
-
-	
-
-	
-
-
-
-
-
-
-
 
 
 
@@ -426,6 +408,7 @@ package body et_schematic_ops_device is
 		et_board_ops_groups.reset_objects (module_cursor, log_threshold + 1);
 		
 		-- Locate the targeted device in the given module.
+		-- The device must exist. Otherwise an exception is raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 
 		generic_modules.update_element (module_cursor, query_module'access);
@@ -446,7 +429,6 @@ package body et_schematic_ops_device is
 		all_units		: in boolean := true;
 		unit_name		: in pac_unit_name.bounded_string := unit_name_default;
 		linebreaks		: in boolean := false;
-		error			: out boolean;
 		log_threshold	: in type_log_level)
 		return string
 	is
@@ -472,7 +454,9 @@ package body et_schematic_ops_device is
 			is 
 				unit_cursor : pac_units.cursor;
 			begin
-				-- Get the cursor to the targeted unit:
+				-- Get the cursor to the targeted unit.
+				-- The unit must exist. Otherwise an exception
+				-- will be raised here:
 				unit_cursor := locate_unit (device, unit_name);
 
 				-- If the targeted unit exists then get its properties.
@@ -487,9 +471,6 @@ package body et_schematic_ops_device is
 						all_units		=> false,
 						unit_cursor		=> unit_cursor));
 
-				else
-					log (SEVERITY_WARNING, " Unit " & to_string (unit_name) & " not found !");
-					error := true;
 				end if;
 			end query_device;
 		
@@ -500,8 +481,6 @@ package body et_schematic_ops_device is
 
 		
 	begin
-		error := false;
-		
 		log (text => "module " & to_string (module_cursor) 
 			 & " get properties of electrical device " & to_string (device_name)
 			 & " linebreaks " & boolean'image (linebreaks)
@@ -523,32 +502,23 @@ package body et_schematic_ops_device is
 		log_indentation_up;
 		
 		-- Locate the targeted device in the given module.
-		-- If the device exists, then proceed with further actions.
-		-- Otherwise abort this function, set the error flag and return
-		-- an empty string:
+		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
-		if has_element (device_cursor_sch) then -- device exists in schematic
-
-			-- If all units of the device are enquired for,
-			-- then the cursor to the device is sufficient
-			-- to query properties:
-			if all_units then
-				result := to_unbounded_string (get_properties (
-					device_cursor	=> device_cursor_sch,
-					linebreaks		=> linebreaks,											  
-					level			=> level));
-			else
-				-- If a dedicated unit is enquired for, then
-				-- the cursor to that unit must be set:
-				query_element (module_cursor, query_module'access);
-			end if;
-				
+		-- If all units of the device are enquired for,
+		-- then the cursor to the device is sufficient
+		-- to query properties:
+		if all_units then
+			result := to_unbounded_string (get_properties (
+				device_cursor	=> device_cursor_sch,
+				linebreaks		=> linebreaks,											  
+				level			=> level));
 		else
-			log (SEVERITY_WARNING, " Device " & to_string (device_name) & " not found !");
-			error := true;			
+			-- If a dedicated unit is enquired for, then
+			-- the cursor to that unit must be set:
+			query_element (module_cursor, query_module'access);
 		end if;
-
+				
 		log_indentation_down;
 
 		return to_string (result);
@@ -558,6 +528,10 @@ package body et_schematic_ops_device is
 
 	
 
+
+
+
+	
 	
 -- VALUE, PURPOSE, PARTCODE:
 	
@@ -624,6 +598,7 @@ package body et_schematic_ops_device is
 		log_indentation_up;
 		
 		-- Locate the targeted device in the given module.
+		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 		
 		update_element (
@@ -637,6 +612,8 @@ package body et_schematic_ops_device is
 
 
 	
+
+
 	
 
 	procedure set_purpose (
@@ -688,8 +665,7 @@ package body et_schematic_ops_device is
 		log_indentation_up;
 		
 		-- Locate the targeted device in the given module.
-		-- If the device exists, then proceed with further actions.
-		-- Otherwise abort this procedure with a warning:
+		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
 		update_element (
@@ -755,6 +731,7 @@ package body et_schematic_ops_device is
 		log_indentation_up;
 		
 		-- Locate the targeted device in the given module.
+		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
 		update_element (
@@ -770,6 +747,7 @@ package body et_schematic_ops_device is
 	
 
 
+	
 
 -- PACKAGE VARIANT:
 
@@ -867,6 +845,7 @@ package body et_schematic_ops_device is
 		log_indentation_up;
 		
 		-- Locate the targeted device in the given module.
+		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
 		update_element (
@@ -880,6 +859,8 @@ package body et_schematic_ops_device is
 
 
 
+
+	
 
 
 	function get_electrical_devices_by_prefix (
@@ -1177,9 +1158,9 @@ package body et_schematic_ops_device is
 
 		
 	begin -- renumber_devices
-		log (text => "module " & to_string (module_name) &
-			" renumbering devices." &
-			" step width per sheet" & to_string (step_width),
+		log (text => "module " & to_string (module_name) 
+			 & " renumbe devices." 
+			 & " step width per sheet" & to_string (step_width),
 			level => log_threshold);
 
 		log_indentation_up;

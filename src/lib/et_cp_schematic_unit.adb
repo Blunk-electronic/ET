@@ -166,7 +166,6 @@ package body et_cp_schematic_unit is
 						module_cursor	=> module, 
 						device_name		=> device, 
 						level			=> DEVICE_PROPERTIES_LEVEL_1,
-						error			=> error,
 						log_threshold	=> log_threshold + 4));
 
 					-- For property levels greater 1 we open
@@ -184,7 +183,6 @@ package body et_cp_schematic_unit is
 									device_name		=> device, 
 									linebreaks		=> true,
 									level			=> properties_level,
-									error			=> error,
 									log_threshold	=> log_threshold + 4));
 					end case;
 					
@@ -235,7 +233,6 @@ package body et_cp_schematic_unit is
 						level			=> DEVICE_PROPERTIES_LEVEL_1,
 						all_units		=> false,
 						unit_name		=> unit,
-						error			=> error,
 						log_threshold	=> log_threshold + 4));
 
 					-- For property levels greater 1 we open
@@ -255,7 +252,6 @@ package body et_cp_schematic_unit is
 									level			=> properties_level,
 									all_units		=> false,
 									unit_name		=> unit,
-									error			=> error,
 									log_threshold	=> log_threshold + 4));
 
 					end case;
@@ -304,7 +300,6 @@ package body et_cp_schematic_unit is
 							module_cursor	=> module, 
 							device_name		=> device, 
 							level			=> DEVICE_PROPERTIES_LEVEL_1,
-							error			=> error,
 							log_threshold	=> log_threshold + 4));
 
 						-- For property levels greater 1 we open
@@ -322,7 +317,6 @@ package body et_cp_schematic_unit is
 										device_name		=> device, 
 										linebreaks		=> true,
 										level			=> properties_level,
-										error			=> error,
 										log_threshold	=> log_threshold + 4));	   
 
 						end case;
@@ -910,7 +904,7 @@ package body et_cp_schematic_unit is
 		
 		
 	begin
-		log (text => "mirror unit", level => log_threshold);
+		log (text => "fetch unit", level => log_threshold);
 		log_indentation_up;
 
 		case cmd_field_count is

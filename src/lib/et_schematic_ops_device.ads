@@ -164,8 +164,8 @@ package et_schematic_ops_device is
 
 	
 	-- Returns properties of the given device. 
-	-- 1. If the given device does not exist, then error is set and an empty 
-	--    string will be returned.
+	-- 1. Assumes that the given device exists. Otherwise
+	--    an exception will be raised.
 	-- 2. Level determines the degree and amount of information to be returned.
 	-- 3. If all_units is true, then no special focus is on a certain unit
 	--    and information about all units is returned.
@@ -184,7 +184,6 @@ package et_schematic_ops_device is
 		all_units		: in boolean := true;
 		unit_name		: in pac_unit_name.bounded_string := unit_name_default;
 		linebreaks		: in boolean := false;
-		error			: out boolean;
 		log_threshold	: in type_log_level)
 		return string;
 

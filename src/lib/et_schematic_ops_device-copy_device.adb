@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -457,6 +457,7 @@ begin
 
 
 	-- Locate the targeted device in the given module.
+	-- The device must exist. Otherwise an exception will be raised here:
 	device_cursor_sch := get_electrical_device (module_cursor, device_name);
 
 	-- Locate the device model:
