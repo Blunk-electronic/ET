@@ -86,7 +86,9 @@ package body et_cp_schematic_device is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
 	begin
-		-- CS log message 
+		log (text => "add device", level => log_threshold);
+		log_indentation_up;
+		
 
 		case cmd_field_count is
 			when 9 =>
@@ -132,7 +134,8 @@ package body et_cp_schematic_device is
 			when others => command_incomplete (cmd);
 		end case;
 
-
+		
+		log_indentation_down;
 	end add_device;
 
 
@@ -249,7 +252,9 @@ package body et_cp_schematic_device is
 
 		name : type_device_name;
 	begin
-		-- CS log message 
+		log (text => "copy device", level => log_threshold);
+		log_indentation_up;
+		
 
 		case cmd_field_count is
 			when 9 =>
@@ -282,6 +287,8 @@ package body et_cp_schematic_device is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+		log_indentation_down;
 	end copy_device;
 
 	
@@ -289,6 +296,7 @@ package body et_cp_schematic_device is
 
 
 
+	
 
 	
 
@@ -304,7 +312,9 @@ package body et_cp_schematic_device is
 
 		value : pac_device_value.bounded_string; -- 470R
 	begin
-		-- CS log message 
+		log (text => "set value", level => log_threshold);
+		log_indentation_up;
+
 
 		case cmd_field_count is
 			when 6 =>
@@ -334,6 +344,8 @@ package body et_cp_schematic_device is
 			when others => command_incomplete (cmd);
 		end case;
 
+		
+		log_indentation_down;
 	end set_device_value;
 
 
@@ -341,6 +353,8 @@ package body et_cp_schematic_device is
 	
 
 
+
+	
 
 
 
@@ -355,7 +369,9 @@ package body et_cp_schematic_device is
 		name : type_device_name;
 		purpose : pac_device_purpose.bounded_string; -- brightness_control
 	begin
-		-- CS log message 
+		log (text => "set purpose", level => log_threshold);
+		log_indentation_up;
+
 
 		case cmd_field_count is
 			when 6 =>
@@ -383,6 +399,7 @@ package body et_cp_schematic_device is
 			when others => command_incomplete (cmd);
 		end case;
 
+		log_indentation_down;
 	end set_device_purpose;
 
 
@@ -406,7 +423,9 @@ package body et_cp_schematic_device is
 		partcode : pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		name : type_device_name;
 	begin
-		-- CS log message 
+		log (text => "set partcode", level => log_threshold);
+		log_indentation_up;
+
 
 		case cmd_field_count is
 			when 6 =>
@@ -433,6 +452,8 @@ package body et_cp_schematic_device is
 			when others => command_incomplete (cmd);
 		end case;
 
+		
+		log_indentation_down;
 	end set_device_partcode;
 
 	
@@ -455,13 +476,16 @@ package body et_cp_schematic_device is
 		name : type_device_name;
 		variant : pac_package_variant_name.bounded_string; -- N, D
 	begin
-		-- CS log message 
+		log (text => "set package variant", level => log_threshold);
+		log_indentation_up;
+
 
 		case cmd_field_count is
 			when 6 =>
 				name := to_device_name (get_field (cmd, 5)); -- IC1
 
 				if electrical_device_exists (module, name) then
+					
 					-- validate variant
 					check_variant_name_length (get_field (cmd, 6));
 					variant := to_variant_name (get_field (cmd, 6));
@@ -484,6 +508,8 @@ package body et_cp_schematic_device is
 			when others => command_incomplete (cmd);
 		end case;
 
+
+		log_indentation_down;
 	end set_device_package_variant;
 
 
@@ -505,15 +531,16 @@ package body et_cp_schematic_device is
 
 		use et_device_name;
 	begin
-		-- CS log message
+		log (text => "renumber devices", level => log_threshold);
+		log_indentation_up;
+
 
 		case cmd_field_count is
 			when 5 =>
 				renumber_devices (
 					module_name 	=> key (module),
 					step_width		=> to_index (get_field (cmd, 5)), -- 100
-					log_threshold	=> log_threshold + 1
-					);
+					log_threshold	=> log_threshold + 1);
 
 			when 6 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
@@ -521,6 +548,8 @@ package body et_cp_schematic_device is
 			when others => command_incomplete (cmd);
 		end case;
 
+
+		log_indentation_down;
 	end renumber_devices;
 
 	

@@ -37,11 +37,11 @@
 --
 -- To Do: 
 --
--- - The existence of requested units and devices 
---   can be assumed. Instead the existence-test and the associated
---   warning should be moved to the command processor.
--- - remove existence-checks of devices as soon as these checks
---   are implemented in the calling command processor routines.
+--
+--
+--
+--
+--
 
 
 with et_string_processing;					use et_string_processing;
@@ -329,6 +329,8 @@ package body et_schematic_ops_units is
 	
 	
 	
+	
+	
 	function get_available_units (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
@@ -426,6 +428,8 @@ package body et_schematic_ops_units is
 
 
 	
+	
+	
 
 	
 	function unit_available (
@@ -485,6 +489,8 @@ package body et_schematic_ops_units is
 
 
 	
+	
+	
 
 	function get_units_on_sheet (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -522,7 +528,7 @@ package body et_schematic_ops_units is
 
 		
 	begin
-		log (text => "looking up units of " 
+		log (text => "look up units of " 
 			 & to_string (device_name) 
 			 & " on sheet " & to_string (sheet) & " ...",
 			 level => log_threshold);
@@ -547,6 +553,8 @@ package body et_schematic_ops_units is
 
 
 
+	
+	
 	
 	
 	function get_position (
@@ -754,6 +762,8 @@ package body et_schematic_ops_units is
 
 	
 
+	
+	
 
 	procedure insert_ports (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -910,6 +920,8 @@ package body et_schematic_ops_units is
 
 
 
+		
+		
 	
 	function unit_positions_valid (
 		module_cursor 	: in pac_generic_modules.cursor;
@@ -932,6 +944,8 @@ package body et_schematic_ops_units is
 	
 
 
+	
+	
 	
 	
 
@@ -1053,6 +1067,8 @@ package body et_schematic_ops_units is
 
 	
 
+	
+	
 	
 	
 	
@@ -1276,6 +1292,7 @@ package body et_schematic_ops_units is
 		log_indentation_up;
 		
 		-- Locate the targeted device in the given module.
+		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
 			
 		-- Get the names of deployed units:
@@ -1293,6 +1310,8 @@ package body et_schematic_ops_units is
 
 
 
+	
+	
 	
 
 
@@ -1435,6 +1454,8 @@ package body et_schematic_ops_units is
 
 	
 	
+	
+	
 
 	procedure rename_electrical_device (
 		module_cursor		: in pac_generic_modules.cursor;
@@ -1538,6 +1559,7 @@ package body et_schematic_ops_units is
 		log_indentation_up;
 		
 		-- Locate the targeted device in the given module.
+		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name_before);
 			
 		check_names;
@@ -1947,6 +1969,9 @@ package body et_schematic_ops_units is
 
 
 
+	
+	
+	
 
 	function get_unit_position (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
@@ -2024,6 +2049,9 @@ package body et_schematic_ops_units is
 
 
 
+	
+	
+	
 
 	
 	
@@ -2122,6 +2150,8 @@ package body et_schematic_ops_units is
 
 
 
+	
+	
 
 	
 	procedure drag_net_segments (
@@ -2809,7 +2839,7 @@ package body et_schematic_ops_units is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of device unit "
+			& " modify status of device unit "
 			& get_object_name (unit)
 			& " / " & to_string (operation),
 			level => log_threshold);
@@ -2933,6 +2963,9 @@ package body et_schematic_ops_units is
 
 
 
+	
+	
+	
 
 
 	procedure reset_status_units (
@@ -3007,6 +3040,8 @@ package body et_schematic_ops_units is
 
 
 
+	
+	
 
 
 
@@ -3143,7 +3178,7 @@ package body et_schematic_ops_units is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up the first unit / " & to_string (flag),
+			& " look up the first unit / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -3443,7 +3478,7 @@ package body et_schematic_ops_units is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of device " & get_device_name (placeholder)
+			& " modify status of device " & get_device_name (placeholder)
 			& " unit " & get_unit_name (placeholder)
 			& " / " & to_string (operation),
 			level => log_threshold);
@@ -3459,6 +3494,9 @@ package body et_schematic_ops_units is
 
 
 
+	
+	
+	
 	
 	
 	
@@ -3561,6 +3599,8 @@ package body et_schematic_ops_units is
 
 
 	
+	
+	
 
 	procedure reset_status_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3608,6 +3648,7 @@ package body et_schematic_ops_units is
 			
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 			
+			
 		begin
 			-- Iterate through the devices:
 			while has_element (device_cursor) loop
@@ -3615,6 +3656,7 @@ package body et_schematic_ops_units is
 				next (device_cursor);
 			end loop;
 		end query_module;
+		
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -3633,6 +3675,7 @@ package body et_schematic_ops_units is
 
 
 
+	
 
 	
 
@@ -3801,7 +3844,7 @@ package body et_schematic_ops_units is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up the first object / " & to_string (flag),
+			& " look up the first object / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -3868,6 +3911,8 @@ package body et_schematic_ops_units is
 
 
 
+	
+	
 
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4075,7 +4120,7 @@ package body et_schematic_ops_units is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up objects / " & to_string (flag),
+			& " look up objects / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -4092,6 +4137,8 @@ package body et_schematic_ops_units is
 
 
 
+	
+	
 
 
 	procedure modify_status (
@@ -4101,7 +4148,7 @@ package body et_schematic_ops_units is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of object "
+			& " modify status of object "
 			& type_object_category'image (object.cat)
 			& " / " & to_string (operation),
 			level => log_threshold);
@@ -4145,6 +4192,8 @@ package body et_schematic_ops_units is
 
 
 
+	
+	
 
 	procedure reset_status_objects (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4173,6 +4222,7 @@ package body et_schematic_ops_units is
 
 
 
+	
 
 
 	
@@ -4228,6 +4278,8 @@ package body et_schematic_ops_units is
 
 
 
+	
+	
 	
 
 	procedure rotate_object (
@@ -4409,6 +4461,8 @@ package body et_schematic_ops_units is
 
 
 	
+	
+	
 
 	procedure drag_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4452,6 +4506,7 @@ package body et_schematic_ops_units is
 
 
 
+	
 	
 
 	procedure delete_object (
@@ -4577,6 +4632,7 @@ package body et_schematic_ops_units is
 
 
 	
+	
 
 
 	procedure copy_object (
@@ -4657,6 +4713,7 @@ package body et_schematic_ops_units is
 	
 
 
+	
 
 
 	procedure set_purpose (
