@@ -565,24 +565,74 @@ package body et_cp_board_device is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
-	begin
-		-- CS test existence of targeted device
-		
-		case cmd_field_count is
-			when 5 =>
+
+
+		-- This procedure rotates the specified device 
+		-- by 90 degrees ccw:
+		procedure do_rotate_1 is
+			device_name : type_device_name;
+		begin
+			device_name := to_device_name (get_field (cmd, 5)); -- IC1
+
+			-- Proceed if the specified device exists.
+			-- It can be an electrical or a non-electrical device:
+			if electrical_device_exists (module, device_name) 
+			or non_electrical_device_exists (module, device_name) then
+
 				et_board_ops_devices.rotate_device (
 					module_cursor 	=> module,
-					device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
+					device_name		=> device_name,
 					coordinates		=> RELATIVE,
 					log_threshold	=> log_threshold + 1);
 
-			when 7 =>
+			else
+				message_device_not_found (SEVERITY_ERROR, device_name);
+			end if;
+		end do_rotate_1;
+
+
+		
+		-- This procedure rotates the specified device 
+		-- by the specified angle:
+		procedure do_rotate_2 is
+			device_name : type_device_name;
+			coordinates	: type_coordinates;
+			rotation	: type_rotation_model;
+		begin
+			device_name := to_device_name (get_field (cmd, 5)); -- IC1
+			coordinates := to_coordinates (get_field (cmd, 6));  -- relative/absolute
+			rotation	:= to_rotation (get_field (cmd, 7));
+
+			-- Proceed if the specified device exists.
+			-- It can be an electrical or a non-electrical device:
+			if electrical_device_exists (module, device_name) 
+			or non_electrical_device_exists (module, device_name) then
+			
 				et_board_ops_devices.rotate_device (
 					module_cursor 	=> module,
-					device_name		=> to_device_name (get_field (cmd, 5)), -- IC1
-					coordinates		=> to_coordinates (get_field (cmd, 6)),  -- relative/absolute
-					rotation		=> to_rotation (get_field (cmd, 7)),
+					device_name		=> device_name,
+					coordinates		=> coordinates,
+					rotation		=> rotation,
 					log_threshold	=> log_threshold + 1);
+
+			else
+				message_device_not_found (SEVERITY_ERROR, device_name);
+			end if;
+		end do_rotate_2;
+
+
+		
+	begin
+		log (text => "rotate device", level => log_threshold);
+		log_indentation_up;
+
+		
+		case cmd_field_count is
+			when 5 =>
+				do_rotate_1;
+
+			when 7 =>
+				do_rotate_2;
 
 			when 8 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
@@ -590,6 +640,9 @@ package body et_cp_board_device is
 			when others =>
 				command_incomplete (cmd);
 		end case;
+
+		
+		log_indentation_down;
 	end rotate_device;
 
 
