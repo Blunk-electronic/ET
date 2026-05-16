@@ -36,8 +36,8 @@
 --   history of changes:
 --
 -- To Do:
--- - remove the existence-checks of nets and move them
---   to the command processor.
+--
+--
 
 with ada.strings;						use ada.strings;
 with ada.strings.unbounded;				use ada.strings.unbounded;
@@ -3942,6 +3942,7 @@ package body et_schematic_ops_nets is
 	
 
 
+
 	
 
 
@@ -4074,13 +4075,13 @@ package body et_schematic_ops_nets is
 	begin
 		if all_sheets then
 			log (text => "module " & to_string (module_cursor)
-				& " deleting net " & to_string (net)
+				& " delete net " & to_string (net)
 				& " on all sheets.",
 				level => log_threshold);
 
 		else
 			log (text => "module " & to_string (module_cursor)
-				& " deleting net " & to_string (net)
+				& " delete net " & to_string (net)
 				& " on sheet " & to_string (sheet) & ".",
 				level => log_threshold);
 
@@ -4353,6 +4354,7 @@ package body et_schematic_ops_nets is
 
 
 	
+	
 
 	function get_net (
 		module		: in pac_generic_modules.cursor;
@@ -4517,6 +4519,8 @@ package body et_schematic_ops_nets is
 		
 		return index;
 	end get_net_index;
+
+
 
 
 
@@ -4730,6 +4734,8 @@ package body et_schematic_ops_nets is
 
 
 
+
+	
 
 	procedure insert_net_segments (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -5043,6 +5049,8 @@ package body et_schematic_ops_nets is
 	
 
 
+	
+
 	procedure insert_net_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in pac_nets.cursor;
@@ -5116,6 +5124,7 @@ package body et_schematic_ops_nets is
 	
 
 
+	
 	
 	
 	procedure insert_net_segment (
@@ -5375,6 +5384,9 @@ package body et_schematic_ops_nets is
 	
 
 
+
+	
+
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		label			: in type_object_net_label;
@@ -5437,6 +5449,8 @@ package body et_schematic_ops_nets is
 
 		log_indentation_down;
 	end modify_status;
+
+
 
 	
 
@@ -5548,6 +5562,8 @@ package body et_schematic_ops_nets is
 
 	
 
+
+	
 
 	
 
@@ -5678,6 +5694,9 @@ package body et_schematic_ops_nets is
 
 
 
+
+
+	
 	
 
 	procedure place_net_label (
@@ -5818,6 +5837,7 @@ package body et_schematic_ops_nets is
 	end place_net_label;
 
 	
+
 
 
 
@@ -6065,6 +6085,8 @@ package body et_schematic_ops_nets is
 	
 
 
+
+	
 	
 
 
@@ -6223,6 +6245,8 @@ package body et_schematic_ops_nets is
 
 
 
+
+
 	
 
 	
@@ -6288,6 +6312,9 @@ package body et_schematic_ops_nets is
 
 	
 
+
+
+	
 -- CONNECTORS:
 
 
@@ -6369,6 +6396,7 @@ package body et_schematic_ops_nets is
 	end reset_status_connectors;
 
 	
+
 
 	
 
