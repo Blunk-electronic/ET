@@ -83,7 +83,10 @@ package et_board_ops_net_class is
 
 	
 
-	-- Sets the net class of a net:
+	-- Sets the net class of a net.
+	-- 1. Assumes that the specified net exists. Otherwise
+	--    an exception will be raised.
+	-- 2. Assumes that the specified net class exists.
 	procedure set_net_class (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF

@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -217,19 +217,16 @@ package body et_board_ops_net_class is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " setting class of net " & net_name_to_string (net_name) 
+			& " set class of net " & net_name_to_string (net_name) 
 			& " to " & enclose_in_quotes (to_string (net_class)),
 			level => log_threshold);
-		
 
-		-- The net can be in the module already. Locate the requested net in the module.
-		-- net_cursor will point to no_element if the net is not already there.
+		-- The net must exist. Otherwise an
+		-- exception will be raised here:
 		net_cursor := locate_net (module_cursor, net_name);
 
 		log_indentation_up;
 
-		-- CS test whether given net class exists
-		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
