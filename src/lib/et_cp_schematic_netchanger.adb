@@ -77,7 +77,9 @@ package body et_cp_schematic_netchanger is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 	begin
-		-- CS log message 
+		log (text => "add netchanger", level => log_threshold);
+		log_indentation_up;
+		
 		
 		case cmd_field_count is
 			when 8 =>
@@ -104,6 +106,9 @@ package body et_cp_schematic_netchanger is
 				
 			when others => command_incomplete (cmd);
 		end case;		
+
+		
+		log_indentation_down;
 	end add_netchanger;
 
 	
@@ -124,7 +129,8 @@ package body et_cp_schematic_netchanger is
 
 		index : type_netchanger_id;
 	begin
-		-- CS log message
+		log (text => "move netchanger", level => log_threshold);
+		log_indentation_up;
 
 		
 		case cmd_field_count is
@@ -159,6 +165,9 @@ package body et_cp_schematic_netchanger is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end move_netchanger;
 
 
@@ -178,7 +187,9 @@ package body et_cp_schematic_netchanger is
 
 		index : type_netchanger_id;
 	begin
-		-- CS log message
+		log (text => "drag netchanger", level => log_threshold);
+		log_indentation_up;
+
 		
 		case cmd_field_count is
 			when 8 =>
@@ -212,6 +223,9 @@ package body et_cp_schematic_netchanger is
 				
 			when others => command_incomplete (cmd);
 		end case;		
+
+
+		log_indentation_down;
 	end drag_netchanger;
 
 
@@ -236,7 +250,9 @@ package body et_cp_schematic_netchanger is
 
 		index : type_netchanger_id;
 	begin
-		-- CS log message
+		log (text => "delete netchanger", level => log_threshold);
+		log_indentation_up;
+
 		
 		case cmd_field_count is
 			when 5 =>
@@ -266,6 +282,9 @@ package body et_cp_schematic_netchanger is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end delete_netchanger;
 
 	
@@ -525,6 +544,8 @@ package body et_cp_schematic_netchanger is
 
 	
 
+	
+
 
 	procedure dissolve_netchanger (
 		module			: in pac_generic_modules.cursor;
@@ -536,7 +557,9 @@ package body et_cp_schematic_netchanger is
 
 		index : type_netchanger_id;
 	begin
-		-- CS log message
+		log (text => "dissolve netchanger", level => log_threshold);
+		log_indentation_up;
+
 		
 		case cmd_field_count is
 			when 5 =>
@@ -566,6 +589,9 @@ package body et_cp_schematic_netchanger is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end dissolve_netchanger;
 
 

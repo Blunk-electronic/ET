@@ -219,6 +219,8 @@ package et_schematic_ops_netchangers is
 
 	
 	-- Drags the given netchanger within the schematic.
+	-- It is assumed that the netchanger indicated by index
+	-- exists in the module. If the netchanger does not exist,
 	-- Already existing connections with net segments are kept.
 	-- Connected net segments are dragged along with the netchanger.
 	-- Net segment positions are modified.
@@ -291,6 +293,8 @@ package et_schematic_ops_netchangers is
 
 	-- Rotates the given netchanger. Disconnects it from
 	-- start or end points of net segments.
+	-- It is assumed that the netchanger indicated by index
+	-- exists in the module. If the netchanger does not exist,
 	-- If toggle is true, then the rotation toggels between
 	-- 0 and 90 degrees, regardless of the given rotation:
 	procedure rotate_netchanger (
@@ -304,7 +308,10 @@ package et_schematic_ops_netchangers is
 
 
 	-- Copies the netchanger with the given index to
-	-- a new netchanger at the given destination
+	-- a new netchanger at the given destination.
+	-- It is assumed that the netchanger indicated by index
+	-- exists in the module. If the netchanger does not exist,
+	-- then an exception will be raised.	
 	-- The component "rotation" of the given destination
 	-- has no meaning. Only sheet, x/y matters:
 	procedure copy_netchanger (
@@ -318,6 +325,9 @@ package et_schematic_ops_netchangers is
 
 	-- Renames the netchanger indicated by index_old
 	-- to index_new.
+	-- It is assumed that the netchanger indicated by index
+	-- exists in the module. If the netchanger does not exist,
+	-- then an exception will be raised.	
 	-- If a netchanger with the new index already exists,
 	-- then a warning is output and nothing else happens:
 	procedure rename_netchanger (
@@ -330,6 +340,9 @@ package et_schematic_ops_netchangers is
 	
 	
 	-- Deletes the netchanger indicated by index.
+	-- It is assumed that the netchanger indicated by index
+	-- exists in the module. If the netchanger does not exist,
+	-- then an exception will be raised.
 	-- Deletes also the ports of the netchanger 
 	-- in connected net segments:
 	procedure delete_netchanger (
@@ -350,6 +363,9 @@ package et_schematic_ops_netchangers is
 	
 
 	-- Dissolves the netchanger indicated by index.
+	-- It is assumed that the netchanger indicated by index
+	-- exists in the module. If the netchanger does not exist,
+	-- then an exception will be raised.	
 	-- This operation requires that the netchanger is connected
 	-- with a net on both MASTER and SLAVE port respectively.
 	-- Otherwise a warning is output and nothing else happens:
@@ -371,6 +387,9 @@ package et_schematic_ops_netchangers is
 	
 	-- Changes the direction of the given netchanger
 	-- by swapping MASTER and SLAVE port.
+	-- It is assumed that the netchanger indicated by index
+	-- exists in the module. If the netchanger does not exist,
+	-- then an exception will be raised.	
 	-- If toggle is true, then the direction
 	-- toggels between FORWARD and BACKWARD,
 	-- regardless of the given direction:
