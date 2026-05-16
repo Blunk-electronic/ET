@@ -841,6 +841,7 @@ package body et_cp_schematic_nets is
 		
 		
 
+		
 	
 	
 	procedure delete_net_segment (
@@ -853,7 +854,9 @@ package body et_cp_schematic_nets is
 		
 		catch_zone : type_catch_zone;
 	begin
-		-- CS log message
+		log (text => "delete net segment", level => log_threshold);
+		log_indentation_up;
+
 		
 		case cmd_field_count is
 			-- example: "delete segment 1 97 99 2"
@@ -873,6 +876,9 @@ package body et_cp_schematic_nets is
 				
 			when others => command_incomplete (cmd);
 		end case;
+		
+		
+		log_indentation_down;
 	end delete_net_segment;
 	
 	

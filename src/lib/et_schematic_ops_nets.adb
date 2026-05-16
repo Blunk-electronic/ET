@@ -998,19 +998,21 @@ package body et_schematic_ops_nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& " deleting segment in " & to_string (catch_zone),
+			& " delete net segment in " & to_string (catch_zone),
 			level => log_threshold);
 
 		log_indentation_up;
 
 		-- Get all net segments which are in the given zone:
-		segments_in_zone := get_segments (module_cursor, sheet, catch_zone, log_threshold + 1);
+		segments_in_zone := get_segments (
+			module_cursor, sheet, catch_zone, log_threshold + 1);
 
 		-- Issue warning if nothing found in given zone.
 		-- Otherwise the first segment that has been found
 		-- will be deleted:
 		if is_empty (segments_in_zone) then
-			log (text => "No segment found at given position !", level => log_threshold + 1);			
+			log (text => "No segment found at given position !",
+				 level => log_threshold + 1);			
 		else
 			-- From the segments found at the given position, 
 			-- take the first one and delete it:
