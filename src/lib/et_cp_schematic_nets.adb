@@ -38,7 +38,6 @@
 -- To Do:
 -- - rework
 -- - propose arguments if command incomplete
--- - test the existence of targeted nets
 -- - set exit code if targeted object does not exist
 --
 
@@ -69,7 +68,7 @@ with et_assembly_variant_name;
 with et_canvas_schematic;
 with et_board_ops_net_class;
 with et_canvas_schematic_nets;
-with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
+with et_canvas_schematic_preliminary_object;
 
 
 package body et_cp_schematic_nets is
@@ -284,7 +283,9 @@ package body et_cp_schematic_nets is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 	begin
-		-- CS log message
+		log (text => "place net connector", level => log_threshold);
+		log_indentation_up;
+
 
 		case cmd_field_count is
 			when 8 =>
@@ -307,6 +308,9 @@ package body et_cp_schematic_nets is
 				
 			when others => command_incomplete (cmd);
 		end case;
+		
+		
+		log_indentation_down;
 	end place_net_connector;
 	
 	
@@ -331,6 +335,7 @@ package body et_cp_schematic_nets is
 	end delete_net_connector;
 
 
+	
 	
 	
 	
@@ -403,6 +408,8 @@ package body et_cp_schematic_nets is
 			when others => command_incomplete (cmd);
 		end case;
 	end delete_net_label;
+	
+	
 	
 	
 	
@@ -500,7 +507,8 @@ package body et_cp_schematic_nets is
 
 		use et_canvas_schematic.pac_canvas;
 		use et_canvas_schematic_nets;
-
+		use et_canvas_schematic_preliminary_object;
+		
 		
 		procedure no_name_given is begin
 			-- If this is the first net right after system start,
@@ -886,6 +894,9 @@ package body et_cp_schematic_nets is
 	
 	
 
+	
+	
+	
 		
 	
 	procedure drag_net_segment (
@@ -898,7 +909,9 @@ package body et_cp_schematic_nets is
 		
 		catch_zone : type_catch_zone;
 	begin
-		-- CS log message
+		log (text => "drag net segment", level => log_threshold);
+		log_indentation_up;
+
 		
 		-- example: "drag segment 1 80 100 2 relative 10 0"
 		case cmd_field_count is
@@ -922,9 +935,13 @@ package body et_cp_schematic_nets is
 				
 			when others => command_incomplete (cmd);
 		end case;
+		
+		
+		log_indentation_down;
 	end drag_net_segment;
 
 
+	
 	
 	
 
@@ -940,7 +957,9 @@ package body et_cp_schematic_nets is
 		
 		catch_zone : type_catch_zone;
 	begin
-		-- CS log message
+		log (text => "delete net strand", level => log_threshold);
+		log_indentation_up;
+
 
 		case cmd_field_count is
 			-- example: "delete strand 1 97 99 2"
@@ -960,6 +979,9 @@ package body et_cp_schematic_nets is
 				
 			when others => command_incomplete (cmd);
 		end case;
+		
+		
+		log_indentation_down;
 	end delete_net_strand;
 
 		

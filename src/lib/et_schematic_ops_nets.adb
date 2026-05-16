@@ -364,7 +364,7 @@ package body et_schematic_ops_nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " locating ports at " & to_string (position => place),
+			& " locate ports at " & to_string (position => place),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -1792,7 +1792,7 @@ package body et_schematic_ops_nets is
 		
 
 		praeamble : constant string := "module " & to_string (module_cursor)
-			& " dragging segment in " & to_string (catch_zone);
+			& " drag net segment in " & to_string (catch_zone);
 
 		
 	begin
@@ -1810,13 +1810,17 @@ package body et_schematic_ops_nets is
 		log_indentation_up;
 		
 		-- Get all net segments which are in the given zone:
-		segments_in_zone := get_segments (module_cursor, sheet, catch_zone, log_threshold + 1);
+		segments_in_zone := get_segments (
+			module_cursor, sheet, catch_zone, log_threshold + 1);
 
 		-- Issue warning if nothing found in given zone.
 		-- Otherwise the first segment that has been found
 		-- will be subjected to a drag operation:
 		if is_empty (segments_in_zone) then
-			log (text => "No segment found at given position !", level => log_threshold + 1);			
+			
+			log (text => "No segment found at given position !",
+				 level => log_threshold + 1);	
+			
 		else
 			-- From the segments found at the given position, 
 			-- take the first one and subject it to the drag operation:
@@ -1922,7 +1926,7 @@ package body et_schematic_ops_nets is
 				
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " dragging segment " & to_string (primary_segment)
+			& " drag net segment " & to_string (primary_segment)
 			& " point of attack: " & to_string (POA)
 			& " to " & to_string (destination),
 			level => log_threshold);
@@ -2612,6 +2616,7 @@ package body et_schematic_ops_nets is
 
 	
 	
+	
 
 	procedure propose_strands (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2697,7 +2702,7 @@ package body et_schematic_ops_nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " proposing net strands in " & to_string (catch_zone),
+			& " propose net strands in " & to_string (catch_zone),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -2748,7 +2753,7 @@ package body et_schematic_ops_nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of net strand "
+			& " modify status of net strand "
 			& get_net_name (strand.net_cursor) 
 			& " strand " & get_position (strand.strand_cursor)
 			& " / " & to_string (operation),
@@ -2847,7 +2852,7 @@ package body et_schematic_ops_nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up the first net strand / " & to_string (flag),
+			& " look up the first net strand / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -2865,6 +2870,8 @@ package body et_schematic_ops_nets is
 	
 
 	
+
+
 
 	
 
@@ -2927,6 +2934,9 @@ package body et_schematic_ops_nets is
 	
 
 
+
+	
+
 	
 	procedure delete_strand (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2941,7 +2951,7 @@ package body et_schematic_ops_nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& " deleting strand in " & to_string (catch_zone),
+			& " delete strand in " & to_string (catch_zone),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -2972,6 +2982,7 @@ package body et_schematic_ops_nets is
 
 
 
+	
 	
 	
 
@@ -3103,6 +3114,8 @@ package body et_schematic_ops_nets is
 	
 
 
+
+	
 	
 	
 
@@ -3132,7 +3145,7 @@ package body et_schematic_ops_nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of whole net "
+			& " modify status of whole net "
 			& get_net_name (net.net_cursor) 
 			& " / " & to_string (operation),
 			level => log_threshold);
@@ -3152,6 +3165,8 @@ package body et_schematic_ops_nets is
 
 	
 
+
+	
 	
 
 	function get_first_net (
@@ -3211,7 +3226,7 @@ package body et_schematic_ops_nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up the first net (as a whole) / " & to_string (flag),
+			& " look up the first net (as a whole) / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -3225,6 +3240,7 @@ package body et_schematic_ops_nets is
 		return result;
 	end get_first_net;
 	
+
 
 
 	
@@ -3315,7 +3331,7 @@ package body et_schematic_ops_nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " proposing nets in " & to_string (catch_zone),
+			& " propose nets in " & to_string (catch_zone),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -3332,6 +3348,8 @@ package body et_schematic_ops_nets is
 
 	
 
+
+	
 
 	function locate_net (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3358,6 +3376,7 @@ package body et_schematic_ops_nets is
 
 
 
+	
 
 
 
@@ -3371,6 +3390,8 @@ package body et_schematic_ops_nets is
 		net_cursor := locate_net (module_cursor, net_name);
 		return has_element (net_cursor);
 	end;
+
+
 
 
 
@@ -3642,8 +3663,8 @@ package body et_schematic_ops_nets is
 	
 	procedure rename_strand (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
+		net_name_before	: in pac_net_name.bounded_string;
+		net_name_after	: in pac_net_name.bounded_string;
 		sheet			: in type_sheet;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
@@ -3668,36 +3689,32 @@ package body et_schematic_ops_nets is
 
 		log_indentation_up;
 
-		-- Locate net where the strand is to be renamed:
+		-- Locate net where the strand is to be renamed.
+		-- The net must exist. Otherwise an exception
+		-- will be raised here:
 		net_cursor := locate_net (module_cursor, net_name_before);
 
-		-- If the net exists, then do rename the strand it.
-		-- Otherwise output warning and do nothing else:		
-		if has_element (net_cursor) then
-			
-			-- Locate all strands at the given place:
-			strands_found := get_strands (module_cursor, sheet, catch_zone, log_threshold + 2);
+		-- Locate all strands at the given place:
+		strands_found := get_strands (
+			module_cursor, sheet, catch_zone, log_threshold + 2);
 
-			-- Get the first object strand that belongs to the given net:
-			object_strand := get_strand (strands_found, net_cursor);
+		-- Get the first object strand that belongs to the given net:
+		object_strand := get_strand (strands_found, net_cursor);
 
-			-- If an object strand exists, then rename it.
-			-- Otherwise nothing happens
-			if is_empty (object_strand) then
-				log (SEVERITY_WARNING, "No strand of net " & to_string (net_name_before)
-					& " found at the specified place !");
+		-- If an object strand exists, then rename it.
+		-- Otherwise nothing happens
+		if is_empty (object_strand) then
+			log (SEVERITY_WARNING, "No strand of net " 
+				& to_string (net_name_before)
+				& " found at the specified place !");
 
-			else
-				rename_strand (
-					module_cursor	=> module_cursor,
-					strand			=> object_strand,
-					new_name		=> net_name_after,
-					log_threshold	=> log_threshold + 1);
-					
-			end if;
-			
 		else
-			log (SEVERITY_WARNING, "Net " & to_string (net_name_before) & " does not exist !");
+			rename_strand (
+				module_cursor	=> module_cursor,
+				strand			=> object_strand,
+				new_name		=> net_name_after,
+				log_threshold	=> log_threshold + 1);
+				
 		end if;
 		
 		log_indentation_down;

@@ -581,8 +581,9 @@ package et_schematic_ops_nets is
 
 	
 	-- Renames a strand of a given net on a given sheet
-	-- in a given catch zone. This procedure should be called
-	-- via the command processor:
+	-- in a given catch zone.
+	-- Assumes that the given net exists. Otherwise an
+	-- exception will be raised:
 	procedure rename_strand (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
