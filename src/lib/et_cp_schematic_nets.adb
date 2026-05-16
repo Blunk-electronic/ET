@@ -330,8 +330,13 @@ package body et_cp_schematic_nets is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 	begin
-		-- CS log message
+		log (text => "delete net connector", level => log_threshold);
+		log_indentation_up;
+
+		-- CS
 		null;
+		
+		log_indentation_down;
 	end delete_net_connector;
 
 
@@ -348,7 +353,9 @@ package body et_cp_schematic_nets is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 	begin
-		-- CS log message
+		log (text => "place net label", level => log_threshold);
+		log_indentation_up;
+
 
 		case cmd_field_count is
 			when 7 =>
@@ -369,6 +376,9 @@ package body et_cp_schematic_nets is
 				
 			when others => command_incomplete (cmd);
 		end case;
+		
+		
+		log_indentation_down;
 	end place_net_label;
 
 		
@@ -386,7 +396,9 @@ package body et_cp_schematic_nets is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 	begin
-		-- CS log message
+		log (text => "delete net label", level => log_threshold);
+		log_indentation_up;
+
 
 		case cmd_field_count is
 			when 7 =>
@@ -407,6 +419,9 @@ package body et_cp_schematic_nets is
 				
 			when others => command_incomplete (cmd);
 		end case;
+		
+		
+		log_indentation_down;
 	end delete_net_label;
 	
 	
@@ -425,9 +440,13 @@ package body et_cp_schematic_nets is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 	begin
-		-- CS log message
-	
+		log (text => "move net label", level => log_threshold);
+		log_indentation_up;
+
+		-- CS
 		null;
+		
+		log_indentation_down;
 	end move_net_label;
 	
 	
