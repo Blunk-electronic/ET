@@ -646,36 +646,77 @@ package body et_cp_schematic_nets is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
-	begin
-		-- CS log message
 		
-		case cmd_field_count is
-			-- example 1: "delete net RESET_N"
-			-- example 2: "delete net RESET_N 2"
+		
+		-- This procedure deletes the net on all sheets:
+		procedure delete_all is
+			net_name : pac_net_name.bounded_string;
+		begin
+			net_name := to_net_name (get_field (cmd, 5)); -- RESET_N
+			
+			if net_exists (module, net_name) then
 
-			when 5 =>
 				delete_net (
 					module_cursor		=> module,
-					net_name			=> to_net_name (get_field (cmd, 5)), -- RESET_N
+					net_name			=> net_name,
 					sheet				=> 1, -- no meaning
 					all_sheets			=> TRUE,
 					log_threshold		=> log_threshold + 1);
+		
+			else	
+				message_net_not_found (SEVERITY_ERROR, net_name);
+			end if;
+		end delete_all;
+		
+		
+		
+		-- This procedure deletes the net on a single sheet:
+		procedure delete_sheet is
+			net_name : pac_net_name.bounded_string;
+			sheet : type_sheet;
+		begin
+			net_name := to_net_name (get_field (cmd, 5)); -- RESET_N
+			sheet := to_sheet (get_field (cmd, 6));
+			
+			if net_exists (module, net_name) then
 
-			when 6 =>
 				delete_net (
 					module_cursor		=> module,
-					net_name			=> to_net_name (get_field (cmd, 5)), -- RESET
-					sheet				=> to_sheet (get_field (cmd, 6)),
+					net_name			=> net_name,
+					sheet				=> sheet,
 					log_threshold		=> log_threshold + 1);
+		
+			else	
+				message_net_not_found (SEVERITY_ERROR, net_name);
+			end if;		
+		end delete_sheet;
+		
+		
+	begin
+		log (text => "delete net", level => log_threshold);
+		log_indentation_up;
+		
+		case cmd_field_count is
+			when 5 =>
+				-- example 1: "delete net RESET_N"
+				delete_all;
+
+			when 6 =>
+				-- example 2: "delete net RESET_N 2"
+				delete_sheet;
 			
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
 				
 			when others => command_incomplete (cmd);
 		end case;
+		
+		log_indentation_down;
 	end delete_net;
 		
 
+		
+		
 		
 		
 		

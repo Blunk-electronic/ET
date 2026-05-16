@@ -4114,16 +4114,12 @@ package body et_schematic_ops_nets is
 
 		log_indentation_up;
 
-		-- Locate the requested net in the module
+		-- Locate the requested net in the module. The net
+		-- must exist. Otherwise an exception will be raised here:
 		net.net_cursor := locate_net (module_cursor, net_name);
 
-		-- If the requested net exists, then delete it. 
-		-- Otherwise nothing happens:
-		if has_element (net.net_cursor) then
-			delete_net (module_cursor, net, sheet, all_sheets, log_threshold + 1);			
-		else
-			log (SEVERITY_WARNING, "Net " & to_string (net_name) & " does not exist !");
-		end if;		
+		delete_net (module_cursor, net, sheet, 
+			all_sheets, log_threshold + 1);			
 			
 		log_indentation_down;
 	end delete_net;

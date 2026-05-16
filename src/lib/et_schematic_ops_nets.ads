@@ -634,7 +634,9 @@ package et_schematic_ops_nets is
 
 
 	-- Deletes a net on the given sheet. If all_sheets is
-	-- true, then all nets on all sheets are deleted:
+	-- true, then all nets on all sheets are deleted.
+	-- Assumes that the given net exists. Otherwise an
+	-- exception will be raised:
 	procedure delete_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string;
