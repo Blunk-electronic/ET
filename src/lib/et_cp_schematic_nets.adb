@@ -488,6 +488,7 @@ package body et_cp_schematic_nets is
 		
 		
 		
+		
 
 	procedure draw_net (
 		module			: in pac_generic_modules.cursor;
@@ -508,14 +509,17 @@ package body et_cp_schematic_nets is
 			-- as it is stored in object_net_name.
 			if is_empty (object_net_name) then -- after system start
 				object_net_name := get_lowest_available_anonymous_net (module);
-				log (text => "apply anonymous name: " & net_name_to_string (object_net_name),
+				log (text => "apply anonymous name: " 
+					& net_name_to_string (object_net_name),
 					level => log_threshold + 2);
 			else
-				log (text => "apply name used last: " & net_name_to_string (object_net_name),
+				log (text => "apply name used last: " 
+					& net_name_to_string (object_net_name),
 					level => log_threshold + 2);
 			end if;
 
-			set_status (status_draw_net & " of net " & net_name_to_string (object_net_name));
+			set_status (status_draw_net & " of net " 
+				& net_name_to_string (object_net_name));
 		end;
 
 		
@@ -531,7 +535,8 @@ package body et_cp_schematic_nets is
 			-- Assign the net name:
 			object_net_name := name_b;
 
-			set_status (status_draw_net & " of net " & net_name_to_string (object_net_name));
+			set_status (status_draw_net & " of net " 
+				& net_name_to_string (object_net_name));
 		end explicit_name_given;
 
 
@@ -569,11 +574,10 @@ package body et_cp_schematic_nets is
 		
 		
 	begin	
-		-- CS log message
-
-	
+		log (text => "draw net", level => log_threshold);
 		log_indentation_up;
 
+	
 		case get_origin (cmd) is
 			when ORIGIN_CONSOLE =>
 
@@ -626,6 +630,8 @@ package body et_cp_schematic_nets is
 		-- CS exception handler
 		-- CS set_exit_code (cmd, 3);
 	end draw_net;
+		
+		
 		
 		
 		
