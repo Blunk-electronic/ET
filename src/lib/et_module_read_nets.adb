@@ -528,6 +528,9 @@ package body et_module_read_nets is
 	end assign_net_connectors;
 
 
+
+
+	
 	
 	
 	
@@ -535,18 +538,9 @@ package body et_module_read_nets is
 	
 -- LABELS:
 		
-	net_labels			: pac_net_labels.list;
-	net_label 			: type_net_label;
+	net_labels	: pac_net_labels.list;
+	net_label 	: type_net_label;
 	
-	net_label_rotation	: type_rotation_documentation := 
-		type_rotation_documentation'first;
-
-	-- The net label direction is relevant if it is a tag label:
-	net_label_direction : type_connector_direction := 
-		type_connector_direction'first;
-
-	-- CS warn about parameter "direction" being ignored
-
 
 	
 	
@@ -571,7 +565,9 @@ package body et_module_read_nets is
 			
 		elsif kw = keyword_rotation then -- rotation 0.0
 			expect_field_count (line, 2);
-			net_label_rotation := to_rotation_doc (to_rotation (f (line, 2)));
+			
+			net_label.rotation := to_rotation_doc (
+				to_rotation (f (line, 2)));
 
 			
 		elsif kw = keyword_size then -- size 1.3
