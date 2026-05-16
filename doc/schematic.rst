@@ -450,32 +450,34 @@ Nets and Net Labels
 	
 #. Renaming a Net
 
-	- A single particular strand on the current sheet:
+	A single particular strand on the current sheet:
 	
 	|VNS| n s
 
 
-	- All strands on the current sheet:
+	All strands on the current sheet:
 	
 	|VNS| n n
 
 
-	- A specific strand on a specific sheet:
+	Rename a specific strand on a specific sheet.
+	This example renames a strand on sheet 2 that
+	crosses a zone of 2mm radius around the point 50/90:
 
 	.. code-block::
 
-		rename net RESET_N RST_N 2 50 90
+		rename net RESET_N RST_N 2 50 90 2
 
 
 
-	- All strands on a specific sheet:
+	All strands on a specific sheet:
 
 	.. code-block::
 
 		rename net RESET_N RST_N 5
 
 	
-	- All strands on all sheets:
+	All strands on all sheets:
 
 	.. code-block::
 

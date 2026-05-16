@@ -3963,25 +3963,19 @@ package body et_schematic_ops_nets is
 		log_indentation_up;
 
 		-- Locate the net that is to be renamed:
+		-- The net must exist. Otherwise an exception 
+		-- will be raised here:
 		net_cursor := locate_net (module_cursor, net_name_before);
 
-		-- If the net exists, then do rename it.
-		-- Otherwise output warning and do nothing else:
-		if has_element (net_cursor) then
-
-			object_net.net_cursor := net_cursor;
-			
-			rename_net (
-				module_cursor	=> module_cursor,
-				net				=> object_net,
-				sheet			=> sheet,
-				all_sheets		=> all_sheets,
-				new_name		=> net_name_after,
-				log_threshold	=> log_threshold + 1);
-			
-		else
-			log (SEVERITY_WARNING, "Net " & to_string (net_name_before) & " does not exist !");
-		end if;
+		object_net.net_cursor := net_cursor;
+		
+		rename_net (
+			module_cursor	=> module_cursor,
+			net				=> object_net,
+			sheet			=> sheet,
+			all_sheets		=> all_sheets,
+			new_name		=> net_name_after,
+			log_threshold	=> log_threshold + 1);
 		
 		log_indentation_down;
 	end rename_net;

@@ -605,7 +605,9 @@ package et_schematic_ops_nets is
 
 
 	
-	-- Renames a net. 
+	-- Renames a net. Assumes that the net named after
+	-- net_name_before exists. Otherwise an exception will be
+	-- raised.
 	-- 1. If all_sheets is true, then all strands
 	--    on all sheets are renamed. So the whole net is renamed.
 	--    The argument "sheet" is ignored.

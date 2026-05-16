@@ -730,65 +730,113 @@ package body et_cp_schematic_nets is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
+		net_name_before, net_name_after : pac_net_name.bounded_string;
+		sheet : type_sheet;
 		catch_zone : type_catch_zone;
+		
+		
+		-- This procedure renames the net on all sheets:
+		procedure rename_all is begin
+			net_name_before := to_net_name (get_field (cmd, 5)); -- RESET
+			net_name_after  := to_net_name (get_field (cmd, 6)); -- RESET_N
+		
+			if net_exists (module, net_name_before) then
+			
+				rename_net (
+					module_cursor		=> module,
+					net_name_before		=> net_name_before,
+					net_name_after		=> net_name_after,
+					all_sheets			=> true,
+					log_threshold		=> log_threshold + 1);
+		
+			else
+				message_net_not_found (SEVERITY_ERROR, net_name_before);
+			end if;
+		end rename_all;
+		
+
+		
+		-- This procedure renames the net on the specified sheet:
+		procedure rename_on_sheet is begin
+			net_name_before := to_net_name (get_field (cmd, 5)); -- RESET
+			net_name_after  := to_net_name (get_field (cmd, 6)); -- RESET_N
+			sheet := to_sheet (get_field (cmd, 7)); -- 2
+			
+			if net_exists (module, net_name_before) then
+			
+				-- CS: Test if the given sheet exists.
+				
+				rename_net (
+					module_cursor		=> module,
+					net_name_before		=> net_name_before,
+					net_name_after		=> net_name_after,
+					sheet				=> sheet,
+					log_threshold		=> log_threshold + 1);
+		
+			else
+				message_net_not_found (SEVERITY_ERROR, net_name_before);
+			end if;
+		end rename_on_sheet;
+
+		
+		
+		-- This procedure renames a strand on a given sheet:
+		procedure rename_strand is begin
+			net_name_before := to_net_name (get_field (cmd, 5)); -- RESET
+			net_name_after  := to_net_name (get_field (cmd, 6)); -- RESET_N
+			sheet := to_sheet (get_field (cmd, 7)); -- 2
+		
+			catch_zone := set_catch_zone (
+				center	=> to_vector_model (get_field (cmd, 8), get_field (cmd, 9)),
+				radius	=> to_zone_radius (get_field (cmd, 10))); -- 50 90 5
+
+			if net_exists (module, net_name_before) then
+			
+				-- CS: Test if the given sheet exist.
+				
+				rename_strand (
+					module_cursor		=> module,
+					net_name_before		=> net_name_before,
+					net_name_after		=> net_name_after,
+					sheet				=> sheet,
+					catch_zone			=> catch_zone,
+					log_threshold		=> log_threshold + 1);
+		
+			else
+				message_net_not_found (SEVERITY_ERROR, net_name_before);
+			end if;
+		end rename_strand;
+		
+		
+		
 	begin
-		-- CS log message
+		log (text => "rename net", level => log_threshold);
+		log_indentation_up;
 
 		case cmd_field_count is
 
-			-- If the command has only 6 fields, then
-			-- all strands on all sheets are renamed.
-			-- example: rename net RESET_N RST_N
 			when 6 =>
-				-- Rename the net everywhere:
-				rename_net (
-					module_cursor		=> module,
-					net_name_before		=> to_net_name (get_field (cmd, 5)), -- RESET
-					net_name_after		=> to_net_name (get_field (cmd, 6)), -- RESET_N
-					all_sheets			=> true,
-					log_threshold		=> log_threshold + 1);
-
+				-- example: rename net RESET_N RST_N
+				rename_all;
 				
-			-- If the command has 7 fields, then
-			-- the renaming takes place on the strands of the given sheet only.	
-			-- Sheet is set by the 7th argument.
-			-- and are further-on ignored by the called procedure.
-			-- example: rename net RESET_N RST_N 2
 			when 7 =>
-				-- Rename the net on the given sheet:
-				rename_net (
-					module_cursor		=> module,
-					net_name_before		=> to_net_name (get_field (cmd, 5)), -- RESET
-					net_name_after		=> to_net_name (get_field (cmd, 6)), -- RESET_N
-					sheet				=> to_sheet (get_field (cmd, 7)), -- 2
-					log_threshold		=> log_threshold + 1);
-
+				-- example: rename net RESET_N RST_N 2
+				rename_on_sheet;
 				
-			-- If the command has 10 fields, the net scope is STRAND.
-			-- Place is set according to arguments 7..9.
-			-- example: rename net RESET_N RST_N 2 50 90 5
 			when 10 =>
-				-- Rename a strand on a given sheet:
-
-				catch_zone := set_catch_zone (
-					center	=> to_vector_model (get_field (cmd, 8), get_field (cmd, 9)),
-					radius	=> to_zone_radius (get_field (cmd, 10))); -- 50 90 5
-
-				rename_strand (
-					module_cursor		=> module,
-					net_name_before		=> to_net_name (get_field (cmd, 5)), -- RESET
-					net_name_after		=> to_net_name (get_field (cmd, 6)), -- RESET_N
-					sheet				=> to_sheet (get_field (cmd, 7)), -- 2
-					catch_zone			=> catch_zone,
-					log_threshold		=> log_threshold + 1);
+				-- example: rename net RESET_N RST_N 2 50 90 5
+				rename_strand;
 				
 			when 11 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
 				
 			when others => command_incomplete (cmd);
 		end case;
+		
+		log_indentation_down;
 	end rename_net;
 
+		
 		
 		
 		
