@@ -135,20 +135,39 @@ package body et_cp_schematic_nets is
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
-	is
-		
+	is		
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+		
+		
+		procedure do_it is
+			net_name : pac_net_name.bounded_string;
+			scope : type_net_scope;
+		begin
+			net_name := to_net_name (get_field (cmd, 5));
+			scope := to_net_scope (get_field (cmd, 6));
+			
+			if net_exists (module, net_name) then
+			
+				set_scope (
+					module_cursor 	=> module,
+					net_name		=> net_name,
+					scope			=> scope,
+					log_threshold	=> log_threshold + 1);
+
+			else
+				message_net_not_found (SEVERITY_ERROR, net_name);
+			end if;
+		end do_it;
+		
+		
 	begin
-		-- CS log message
+		log (text => "set net scope", level => log_threshold);
+		log_indentation_up;
 
 		case cmd_field_count is
 			when 6 =>
-				set_scope (
-					module_cursor 	=> module,
-					net_name		=> to_net_name (get_field (cmd, 5)),
-					scope			=> to_net_scope (get_field (cmd, 6)),
-					log_threshold	=> log_threshold + 1);
+				do_it;
 
 			when 7 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
@@ -156,6 +175,7 @@ package body et_cp_schematic_nets is
 			when others => command_incomplete (cmd);
 		end case;		
 
+		log_indentation_down;
 	end set_net_scope;
 
 

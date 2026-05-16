@@ -383,6 +383,8 @@ package body et_schematic_ops_nets is
 
 	
 
+	
+
 
 	procedure set_segments_moving (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -481,6 +483,12 @@ package body et_schematic_ops_nets is
 
 
 
+
+
+	
+
+
+
 	procedure reset_status_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -563,6 +571,7 @@ package body et_schematic_ops_nets is
 
 
 	
+	
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -622,6 +631,9 @@ package body et_schematic_ops_nets is
 
 
 
+
+
+	
 
 	procedure propose_segments (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -711,6 +723,9 @@ package body et_schematic_ops_nets is
 		log_indentation_down;
 	end propose_segments;
 	
+
+
+
 
 
 
@@ -825,6 +840,10 @@ package body et_schematic_ops_nets is
 
 
 
+
+
+
+	
 
 
 	procedure delete_segment (
@@ -962,6 +981,9 @@ package body et_schematic_ops_nets is
 
 
 
+	
+
+
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;
@@ -1006,6 +1028,9 @@ package body et_schematic_ops_nets is
 	
 
 
+
+
+	
 	
 	function segment_is_movable (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1057,6 +1082,9 @@ package body et_schematic_ops_nets is
 
 
 
+
+
+	
 	
 
 	function segment_is_movable (
@@ -1108,6 +1136,10 @@ package body et_schematic_ops_nets is
 	end segment_is_movable;
 
 
+
+
+
+
 	
 
 	
@@ -1151,6 +1183,8 @@ package body et_schematic_ops_nets is
 
 	
 
+
+	
 	
 
 
@@ -1272,6 +1306,9 @@ package body et_schematic_ops_nets is
 	end move_secondary_segments;
 
 
+
+
+
 	
 
 	
@@ -1373,6 +1410,9 @@ package body et_schematic_ops_nets is
 
 	
 
+
+
+
 	
 	
 	
@@ -1464,6 +1504,7 @@ package body et_schematic_ops_nets is
 
 
 
+	
 
 
 	
@@ -1708,6 +1749,8 @@ package body et_schematic_ops_nets is
 
 
 
+
+
 	
 	
 		
@@ -1846,6 +1889,9 @@ package body et_schematic_ops_nets is
 
 
 	
+
+
+
 	
 
 
@@ -2066,6 +2112,7 @@ package body et_schematic_ops_nets is
 
 	
 	
+
 	
 	
 	
@@ -2154,6 +2201,8 @@ package body et_schematic_ops_nets is
 	
 	
 
+
+
 	
 	
 	
@@ -2211,6 +2260,9 @@ package body et_schematic_ops_nets is
 
 
 
+
+
+	
 
 
 	function get_strands (
@@ -2280,6 +2332,9 @@ package body et_schematic_ops_nets is
 	end get_strands;
 
 	
+
+
+
 	
 	
 
@@ -2375,6 +2430,7 @@ package body et_schematic_ops_nets is
 
 
 
+	
 	
 
 	function get_strands (
@@ -2550,6 +2606,7 @@ package body et_schematic_ops_nets is
 	
 
 	
+
 	
 	
 
@@ -2707,6 +2764,8 @@ package body et_schematic_ops_nets is
 
 
 
+
+	
 	
 
 
@@ -2799,6 +2858,7 @@ package body et_schematic_ops_nets is
 		return result;
 	end get_first_strand;
 
+
 	
 
 	
@@ -2864,6 +2924,7 @@ package body et_schematic_ops_nets is
 	
 
 
+	
 	procedure delete_strand (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;
@@ -3084,6 +3145,8 @@ package body et_schematic_ops_nets is
 
 
 
+
+
 	
 
 	
@@ -3164,6 +3227,8 @@ package body et_schematic_ops_nets is
 	
 	
 
+
+	
 	procedure propose_nets (
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
@@ -3261,6 +3326,7 @@ package body et_schematic_ops_nets is
 
 
 
+
 	
 
 
@@ -3291,6 +3357,22 @@ package body et_schematic_ops_nets is
 
 
 
+
+	function net_exists (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string)
+		return boolean
+	is
+		net_cursor : pac_nets.cursor;
+	begin
+		net_cursor := locate_net (module_cursor, net_name);
+		return has_element (net_cursor);
+	end;
+
+
+
+	
+	
 
 	procedure create_net (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3338,7 +3420,10 @@ package body et_schematic_ops_nets is
 	end create_net;
 
 
+
+
 	
+
 	
 	
 
@@ -3420,6 +3505,10 @@ package body et_schematic_ops_nets is
 
 
 
+
+	
+
+	
 	
 
 	
@@ -3458,6 +3547,8 @@ package body et_schematic_ops_nets is
 	
 
 	
+
+
 
 
 	
@@ -3540,6 +3631,8 @@ package body et_schematic_ops_nets is
 
 
 
+
+	
 	
 
 
@@ -5083,6 +5176,7 @@ package body et_schematic_ops_nets is
 	is
 		net_cursor : pac_nets.cursor; -- points to the net
 
+		
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -5096,7 +5190,7 @@ package body et_schematic_ops_nets is
 			end set;
 
 			
-		begin -- query_nets
+		begin
 			pac_nets.update_element (
 				container	=> module.nets,
 				position	=> net_cursor,
@@ -5105,30 +5199,24 @@ package body et_schematic_ops_nets is
 		end query_nets;
 
 		
-	begin -- set_scope
+	begin
 		log (text => "module " & to_string (module_cursor)
 			& " set scope of net " & to_string (net_name) 
-			& " to" & to_string (scope),
+			& " to " & to_string (scope),
 			level => log_threshold);
 
 
-		-- locate the net
+		-- Locate the net in the given module.
+		-- The net must exists. Otherwise an exception
+		-- will be raised here:
 		net_cursor := locate_net (module_cursor, net_name);
 
-		-- CS: move this test to et_cp_schematic_nets
-		-- to ensure that the given net exists:
-		if has_element (net_cursor) then
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_nets'access);
 
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> query_nets'access);
-
-			-- CS update_ratsnest (module_cursor, log_threshold + 1)
-		else
-			log (SEVERITY_ERROR, "Net " & to_string (net_name) & " not found !");
-			raise constraint_error;
-		end if;
+		-- CS update_ratsnest (module_cursor, log_threshold + 1)
 	end set_scope;
 
 

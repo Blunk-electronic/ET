@@ -649,8 +649,18 @@ Nets and Net Labels
 
 
 
+#. Set Net Scope
+
+	This example sets the GND as global:
+
+	.. code-block::
+	
+		set scope GND global
 
 
+	.. code-block::
+	
+		set scope AGND local
 
 	
 ++++++++++++++++++

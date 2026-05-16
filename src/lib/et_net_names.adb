@@ -197,6 +197,78 @@ package body et_net_names is
 	end to_string;
 
 
+
+	
+
+
+
+	procedure message_net_not_found (
+		severity	: in type_message_severity;
+		name		: in pac_net_name.bounded_string)
+	is 
+
+		function get_message_text (
+			name : in pac_net_name.bounded_string)
+			return string
+		is begin
+			return "Net " & to_string (name) & " not found !";
+		end;
+
+		
+	begin
+		case severity is
+			when SEVERITY_ERROR =>
+				log (
+					importance 	=> severity,
+					text		=> get_message_text (name),
+					console		=> true);
+
+			when others =>
+				log (
+					importance 	=> severity,
+					text		=> get_message_text (name),
+					console		=> false);
+		end case;
+	end message_net_not_found;
+
+	
+
+
+
+
+
+	
+
+	
+
+	procedure message_net_already_exists (
+		severity	: in type_message_severity;
+		name		: in pac_net_name.bounded_string)
+	is 
+
+		function get_message_text (
+			name : in pac_net_name.bounded_string)
+			return string
+		is begin
+			return "Net " & to_string (name) & " already exists !";
+		end;
+
+		
+	begin
+		case severity is
+			when SEVERITY_ERROR =>
+				log (
+					importance 	=> severity,
+					text		=> get_message_text (name),
+					console		=> true);
+
+			when others =>
+				log (
+					importance 	=> severity,
+					text		=> get_message_text (name),
+					console		=> false);
+		end case;
+	end message_net_already_exists;
 	
 	
 end et_net_names;

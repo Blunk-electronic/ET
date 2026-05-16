@@ -508,6 +508,14 @@ package et_schematic_ops_nets is
 		return pac_nets.cursor;
 
 
+	-- Returns true if the given net exists in 
+	-- the given module:
+	function net_exists (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string)
+		return boolean;
+
+	
 
 	-- Creates a new net. If the net does not exist already,
 	-- then it will be created and the flag "created" is set.
@@ -768,7 +776,8 @@ package et_schematic_ops_nets is
 
 	
 	-- Sets the scope of a net.
-	-- Assumes that the given net exists.
+	-- Assumes that the given net exists. Otherwise
+	-- an exception will be raised:
 	procedure set_scope (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF

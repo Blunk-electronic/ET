@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -135,6 +135,24 @@ package et_net_names is
 	function to_string (
 		net	: in pac_net_names.cursor)
 		return string;
+
+
+
+	-- Logs a message like "WARNING. Net GND not found."
+	-- The severity decides whether to output the message on 
+	-- the console. Currently this is done only when the severity
+	-- is ERROR:
+	procedure message_net_not_found (
+		severity	: in type_message_severity;
+		name		: in pac_net_name.bounded_string);
+				 
+	-- Logs a message like "WARNING. Net GND already exists."
+	-- The severity decides whether to output the message on 
+	-- the console. Currently this is done only when the severity
+	-- is ERROR:
+	procedure message_net_already_exists (
+		severity	: in type_message_severity;
+		name		: in pac_net_name.bounded_string);
 
 	
 end et_net_names;
