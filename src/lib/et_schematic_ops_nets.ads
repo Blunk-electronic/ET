@@ -660,7 +660,9 @@ package et_schematic_ops_nets is
 
 	
 	-- Shows/highlights a complete net by just
-	-- setting the status of the whole net as "selected":
+	-- setting the status of the whole net as "selected".
+	-- Assumes that the specified net exsits. Otherwise
+	-- an exception will be raised:
 	procedure show_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string;

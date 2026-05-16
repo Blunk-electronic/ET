@@ -47,6 +47,8 @@ with ada.text_io;						use ada.text_io;
 with ada.characters.handling;			use ada.characters.handling;
 with ada.strings; 						use ada.strings;
 
+with et_runmode;						use et_runmode;
+
 with et_sheets;							use et_sheets;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
@@ -59,6 +61,9 @@ with et_netlist_category;				use et_netlist_category;
 with et_schematic_ops_netlists_2;
 with et_net_names;						use et_net_names;
 with et_schematic_ops_nets;				use et_schematic_ops_nets;
+
+with et_schematic_ops_groups;
+with et_board_ops_groups;
 
 with et_assembly_variant_name;
 with et_canvas_schematic;
@@ -146,7 +151,8 @@ package body et_cp_schematic_nets is
 		begin
 			net_name := to_net_name (get_field (cmd, 5));
 			scope := to_net_scope (get_field (cmd, 6));
-			
+
+			-- Proceed if the net exists:
 			if net_exists (module, net_name) then
 			
 				set_scope (
@@ -181,6 +187,7 @@ package body et_cp_schematic_nets is
 
 
 
+	
 
 
 
@@ -193,22 +200,77 @@ package body et_cp_schematic_nets is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
-		net_name : pac_net_name.bounded_string; -- RESET_N
-	begin
-		-- CS log message
-		case cmd_field_count is
-			when 5 => 
-				net_name := to_net_name (get_field (cmd, 5)); -- RESET_N
+		
+		
+		procedure do_it is
+			net_name : pac_net_name.bounded_string;
+		begin
+			net_name := to_net_name (get_field (cmd, 5));
+
+			-- Proceed if the net exists:
+			if net_exists (module, net_name) then
 				show_net (module, net_name, log_threshold + 1);
+			else
+				message_net_not_found (SEVERITY_ERROR, net_name);
+			end if;
+		end do_it;
+
+		
+		
+		
+		procedure preprocess_command is begin
+			case cmd_field_count is
+				when 5 => 
+					do_it;
+				
+				when 6 .. type_field_count'last =>
+					command_too_long (cmd, cmd_field_count - 1);
+				
+				when others => command_incomplete (cmd);
+			end case;		
+		end preprocess_command;
+		
+		
+	begin
+		log (text => "show net", level => log_threshold);
+		log_indentation_up;		
+		
+		
+		-- Show operations are only useful and possible in graphical
+		-- runmode. So we start preprocessing the given command
+		-- only in graphical runmode:
+		case runmode is
+			when MODE_MODULE =>
 			
-			when 6 .. type_field_count'last =>
-				command_too_long (cmd, cmd_field_count - 1);
-			
-			when others => command_incomplete (cmd);
-		end case;
+				-- Deselect all objects in the schematic
+				-- and board drawing. This is required in case
+				-- the specified net does not exist. 
+				-- It is redundant in case the specified net
+				-- does exist. The reset would be executed twice,
+				-- the first time here and the second time
+				-- by procedure show_net in package et_schematic_ops_nets:
+				et_schematic_ops_groups.reset_objects (
+					module, log_threshold + 1);
+					
+				et_board_ops_groups.reset_objects (
+					module, log_threshold + 1);
+
+				preprocess_command;
+
+				
+			when others =>
+				skipped_in_this_runmode (log_threshold + 1);
+					
+		end case;			
+
+		
+		log_indentation_down;
 	end show_net;
 
 
+	
+	
+	
 	
 	
 	

@@ -58,6 +58,7 @@ with et_module_instance;				use et_module_instance;
 with et_module_names;					use et_module_names;
 with et_submodules;
 
+with et_board_ops_groups;
 with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
 
 with et_net_linewidth;					use et_net_linewidth;
@@ -4231,7 +4232,7 @@ package body et_schematic_ops_nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " show/highlight whole net "
+			& " show whole net "
 			& get_net_name (net_cursor),
 			level => log_threshold);
 
@@ -4247,6 +4248,8 @@ package body et_schematic_ops_nets is
 	
 	
 
+
+	
 
 
 
@@ -4277,29 +4280,31 @@ package body et_schematic_ops_nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " show/highlight whole net " & to_string (net_name),
+			& " show whole net " & to_string (net_name),
 			level => log_threshold);
 		
 		log_indentation_up;
 
 		-- Deselect all objects of previous show operations
 		-- so that nothing is highlighted anymore:
-		et_schematic_ops_groups.reset_objects (module_cursor, log_threshold + 1);
+		et_schematic_ops_groups.reset_objects (
+			module_cursor, log_threshold + 1);
+
+		et_board_ops_groups.reset_objects (
+			module_cursor, log_threshold + 1);
 		
 		-- Locate the targeted net in the given module.
-		-- If the net exists, then proceed with further actions.
-		-- Otherwise abort this procedure with a warning:
+		-- The net must exist. Otherwise an exception will
+		-- be raised here:
 		net_cursor := locate_net (module_cursor, net_name);
 		
-		if has_element (net_cursor) then -- net exists
-			generic_modules.update_element (module_cursor, query_module'access);
-		else
-			log (SEVERITY_WARNING, "Net " & to_string (net_name) & " does not exist !");
-		end if;
+		generic_modules.update_element (module_cursor, query_module'access);
 		
 		log_indentation_down;
 	end show_net;
 
+
+	
 	
 	
 
