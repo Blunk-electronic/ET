@@ -38,7 +38,6 @@
 -- To Do:
 -- - rework
 -- - propose arguments if command incomplete
--- - test existence of requested netchanger
 -- - set exit code if targeted object does not exist
 --
 
@@ -54,8 +53,10 @@ with et_schematic_geometry;				use et_schematic_geometry;
 with et_netchangers;					use et_netchangers;
 with et_netchangers.schematic;			use et_netchangers.schematic;
 with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
-with et_schematic_ops_groups;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
+
+with et_schematic_ops_groups;
+with et_board_ops_groups;
 
 with et_canvas_schematic;
 with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
@@ -667,9 +668,18 @@ package body et_cp_schematic_netchanger is
 		case runmode is
 			when MODE_MODULE =>
 
-				-- Deselect all objects of previous show operations
-				-- so that nothing is highlighted anymore:
+				-- Deselect all objects in the schematic
+				-- and board drawing. This is required in case
+				-- the specified netchanger does not exist. 
+				-- It is redundant in case the specified netchanger
+				-- does exist. The reset would be executed twice,
+				-- the first time here and the second time
+				-- by procedure show_netchanger in package 
+				-- et_schematic_ops_netchangers:
 				et_schematic_ops_groups.reset_objects (
+					module, log_threshold + 1);
+					
+				et_board_ops_groups.reset_objects (
 					module, log_threshold + 1);
 
 				runmode_module;

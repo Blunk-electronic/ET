@@ -36,7 +36,8 @@
 --   history of changes:
 --
 --   ToDo: 
-
+--
+--
 
 with ada.text_io;						use ada.text_io;
 with ada.containers;
@@ -51,8 +52,10 @@ with et_net_ports_submodules;			use et_net_ports_submodules;
 with et_net_ports_netchangers;			use et_net_ports_netchangers;
 with et_net_strands;					use et_net_strands;
 with et_schematic_ops_nets;
-with et_schematic_ops_groups;
 with et_schematic_ops_sheets;
+
+with et_schematic_ops_groups;
+with et_board_ops_groups;
 
 with et_board_ops_ratsnest;
 with et_netchanger_symbol_schematic;
@@ -2460,6 +2463,9 @@ package body et_schematic_ops_netchangers is
 		et_schematic_ops_groups.reset_objects (module_cursor,
 			log_threshold + 1);
 		
+		et_board_ops_groups.reset_objects (module_cursor,
+			log_threshold + 1);
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
