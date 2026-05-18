@@ -67,7 +67,46 @@ package body et_cp_board_netchanger is
 
 
 
+	procedure show_netchanger (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
+		index : type_netchanger_id;
+	begin
+		-- CS log message
+
+		
+		case cmd_field_count is
+			when 5 =>
+				-- Extract the index of the targeted netchanger:
+				index := to_netchanger_id (get_field (cmd, 5)); -- 1,2,3, ...
+
+				
+				if netchanger_exists (module, index) then
+					null;
+					-- CS
+				else
+					netchanger_not_found (index);
+				end if;
+
+				
+			when 9 .. type_field_count'last =>
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+	end show_netchanger;
+
+
+	
+
+
+
+	
 	
 
 	procedure move_netchanger (

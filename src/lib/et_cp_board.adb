@@ -509,7 +509,10 @@ package body et_cp_board is
 							
 						when NOUN_NET =>
 							show_net (module_cursor, cmd, log_threshold + 1);
-		
+
+						when NOUN_NETCHANGER =>
+							show_netchanger (module_cursor, cmd, log_threshold + 1);
+							
 					when others => invalid_noun (to_string (noun));
 				end case;
 
