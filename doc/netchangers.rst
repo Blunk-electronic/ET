@@ -235,3 +235,16 @@ Board Editor
 
 		set netchanger 1 layer 3
 
+
+
+#. Showing and Finding a Netchanger:
+
+	The board editor pans the drawing so 
+	that the netchangner is in the center of the visible area.
+
+	|VNS| h e
+
+	.. code-block::
+
+		show netchanger 44
+
