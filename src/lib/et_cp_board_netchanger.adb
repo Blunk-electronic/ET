@@ -122,6 +122,8 @@ package body et_cp_board_netchanger is
 			end zoom_in_schematic;
 
 
+			-- This procedure shows the netchanger
+			-- in the board drawing:
 			procedure zoom_in_board is
 				-- In order to zoom on the targeted netchanger
 				-- we need its position on the board
