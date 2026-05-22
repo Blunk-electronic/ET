@@ -176,8 +176,10 @@ Schematic Editor
 
 #. Showing and Finding a Netchanger:
 
-	The schematic editor jumps to the sheet where the netchanger
-	is.
+	This command is effective only in a graphical mode.
+	The schematic and board editor pan the drawing so 
+	that the netchangner is in the center of the visible area.
+
 
 	|VNS| h e
 
@@ -239,7 +241,8 @@ Board Editor
 
 #. Showing and Finding a Netchanger:
 
-	The board editor pans the drawing so 
+	This command is effective only in a graphical mode.
+	The schematic and board editor pan the drawing so 
 	that the netchangner is in the center of the visible area.
 
 	|VNS| h e

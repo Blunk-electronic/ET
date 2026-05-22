@@ -49,16 +49,20 @@ with et_runmode;						use et_runmode;
 with et_sheets;							use et_sheets;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
+with et_board_geometry;
 
 with et_netchangers;					use et_netchangers;
 with et_netchangers.schematic;			use et_netchangers.schematic;
 with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
+with et_board_ops_netchangers;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 with et_schematic_ops_groups;
 with et_board_ops_groups;
 
 with et_canvas_schematic;
+with et_canvas_board;
+
 with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
@@ -614,12 +618,56 @@ package body et_cp_schematic_netchanger is
 		procedure runmode_module is
 			index : type_netchanger_id;
 
-			-- In order to zoom on the targeted netchanger
-			-- we need its position in the schematic:
-			position : type_object_position;
+			-- This procedure shows the netchanger
+			-- in the schematic drawing:
+			procedure zoom_in_schematic is
+				-- In order to zoom on the targeted netchanger
+				-- we need its position in the schematic:
+				position : type_object_position;
+				
+				use et_canvas_schematic;
+				use pac_canvas;
+			begin
+				-- Zoom on the netchanger:
+				position := get_netchanger_position (module, index);
+				active_sheet := get_sheet (position);
+				update_sheet_number_display;
+
+				-- Zoom on the netchanger and leave the
+				-- zoom factor as it is:
+				zoom_to (get_place (position), S);
+
+				-- Mark the netchanger as "selected":
+				show_netchanger (
+					module_cursor	=> module,
+					index			=> index,
+					log_threshold	=> log_threshold + 1);
+
+			end zoom_in_schematic;
+
+
+
+			-- This procedure shows the netchanger
+			-- in the board drawing:
+			procedure zoom_in_board is
+				-- In order to zoom on the targeted netchanger
+				-- we need its position in the board:				
+				position : et_board_geometry.pac_geometry_2.type_vector_model;
+
+				use et_board_ops_netchangers;
+				use et_canvas_board;
+				use pac_canvas;
+			begin
+				-- Zoom on the netchanger:
+				position := get_netchanger_position (module, index);
+
+				-- Zoom on the netchanger and leave the
+				-- zoom factor as it is:
+				zoom_to (position, S);
+			end zoom_in_board;
+
 			
-			use et_canvas_schematic;
-			use et_canvas_schematic.pac_canvas;
+			
 		begin
 			case cmd_field_count is
 				-- "show netchanger 44"
@@ -630,20 +678,11 @@ package body et_cp_schematic_netchanger is
 					-- Test whether the given netchanger exists:
 					if netchanger_exists (module, index) then
 
-						-- Zoom on the netchanger:
-						position := get_netchanger_position (module, index);
-						active_sheet := get_sheet (position);
-						update_sheet_number_display;
-
-						-- Zoom on the netchanger and leave the
-						-- zoom factor as it is:
-						zoom_to (get_place (position), S);
-
-						-- Mark the netchanger as "selected":
-						show_netchanger (
-							module_cursor	=> module,
-							index			=> index,
-							log_threshold	=> log_threshold + 1);
+						-- Show the netchanger in the
+						-- schematic and in the board drawing:
+						zoom_in_schematic;
+						zoom_in_board;
+						
 					else
 						netchanger_not_found (index);
 					end if;

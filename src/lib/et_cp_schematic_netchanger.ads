@@ -140,8 +140,14 @@ package et_cp_schematic_netchanger is
 	
 	-- Parses a command that locates and shows a netchanger.
 	-- Example: "schematic demo show netchanger 44"
-	-- If the targeted netchanger does not exist, then nothing 
-	-- happens and a warning is output:
+	-- If the targeted netchanger does not exist, then
+	-- an error mesage is output.
+	-- This command is effective only in a graphical mode.
+	-- In the schematic the sheet where the netchanger is
+	-- will be opened and the view centers the netchanger.
+	-- Likewise in the board editor the drawing is moved
+	-- so that the operator sees the netchanger in the center
+	-- of the view:
 	procedure show_netchanger (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
