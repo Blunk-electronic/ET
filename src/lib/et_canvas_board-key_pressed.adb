@@ -846,6 +846,10 @@ is
 				noun := NOUN_NET;
 				set_status (et_canvas_board_tracks.status_show_net);
 
+			when key_noun_netchanger =>
+				noun := NOUN_NETCHANGER;
+				set_status (et_canvas_board_netchangers.status_show_netchanger);
+
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when key_space =>
@@ -857,6 +861,9 @@ is
 					when NOUN_NET =>
 						-- et_canvas_schematic_nets.show_object (get_cursor_position);
 						null;
+
+					when NOUN_NETCHANGER =>
+						et_canvas_board_netchangers.show_object (get_cursor_position);
 						
 					when others => null;
 				end case;
@@ -876,8 +883,13 @@ is
 							null;
 						end if;
 
-					when others => null;
+					when NOUN_NETCHANGER =>
+						if clarification_pending then
+							et_canvas_board_netchangers.clarify_object;
+						end if;
+
 						
+					when others => null;						
 				end case;
 				
 			when others => status_noun_invalid;

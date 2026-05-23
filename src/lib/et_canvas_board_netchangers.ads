@@ -63,6 +63,7 @@ package et_canvas_board_netchangers is
 
 	use pac_generic_modules;
 
+
 	
 	-- to be output in the status bar:
 	status_move_netchanger : constant string := 
@@ -98,6 +99,18 @@ package et_canvas_board_netchangers is
 		point	: in type_vector_model);
 
 
+
+
+	procedure show_object (
+		position : in type_vector_model);
+
+	
+	status_show_netchanger : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to select netchanger." 
+		& status_hint_for_abort;
 
 	
 end et_canvas_board_netchangers;

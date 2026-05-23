@@ -254,6 +254,9 @@ is
 						null;
 						-- et_canvas_board_tracks.show_object (event.point);
 						
+					when NOUN_NETCHANGER =>
+						et_canvas_board_netchangers.show_object (event.point);
+
 					when others => null;
 				end case;
 
@@ -505,6 +508,11 @@ is
 							-- et_canvas_schematic_nets.clarify_object;
 						end if;
 						
+					when NOUN_NETCHANGER =>
+						if clarification_pending then
+							et_canvas_board_netchangers.clarify_object;
+						end if;
+
 					when others => null;							
 				end case;
 

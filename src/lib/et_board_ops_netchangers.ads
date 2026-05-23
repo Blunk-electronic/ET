@@ -260,6 +260,13 @@ package et_board_ops_netchangers is
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level);
 
+
+
+	procedure show_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level);
+
 	
 end et_board_ops_netchangers;
 
