@@ -47,7 +47,7 @@ with ada.exceptions;					use ada.exceptions;
 with et_string_processing;				use et_string_processing;
 
 with et_module;							use et_module;
-with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
+with et_schematic_ops_netchangers;
 with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
 with et_netchangers.board;				use et_netchangers.board;
 
@@ -85,7 +85,8 @@ package body et_board_ops_netchangers is
 				result := get_place (netchanger);
 			end;
 
-			
+
+			use et_schematic_ops_netchangers;
 		begin
 			-- Locate given netchanger in the module:
 			netchanger_cursor := get_netchanger (module_cursor, index);
@@ -152,6 +153,7 @@ package body et_board_ops_netchangers is
 			end move;
 
 			
+			use et_schematic_ops_netchangers;			
 		begin
 			-- Locate given netchanger in the module:
 			netchanger_cursor := get_netchanger (module_cursor, index);
@@ -245,6 +247,7 @@ package body et_board_ops_netchangers is
 			end set_layer;
 
 			
+			use et_schematic_ops_netchangers;
 		begin
 			-- Locate given netchanger in the module:
 			netchanger_cursor := get_netchanger (module_cursor, index);
@@ -892,6 +895,8 @@ package body et_board_ops_netchangers is
 		log_threshold	: in type_log_level)
 	is 
 		error : boolean := false;
+
+		use et_schematic_ops_netchangers;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " show object",
