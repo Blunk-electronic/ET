@@ -457,6 +457,7 @@ package et_schematic_ops_units is
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute		
 		rotation		: in type_rotation_model; -- 90
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
