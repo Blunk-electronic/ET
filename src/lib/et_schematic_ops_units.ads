@@ -594,6 +594,7 @@ package et_schematic_ops_units is
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
 		meaning			: in type_placeholder_meaning; -- name, value, purpose
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -610,6 +611,7 @@ package et_schematic_ops_units is
 		toggle			: in boolean := false;
 		rotation		: in type_rotation_documentation := HORIZONTAL;
 		meaning			: in type_placeholder_meaning; -- name, value, purpose		
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 

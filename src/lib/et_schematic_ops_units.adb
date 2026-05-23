@@ -3304,6 +3304,7 @@ package body et_schematic_ops_units is
 	
 	
 	
+	
 
 	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3312,9 +3313,14 @@ package body et_schematic_ops_units is
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
 		meaning			: in type_placeholder_meaning; -- name, value, purpose
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
 		device_cursor_sch : pac_devices_electrical.cursor;
+
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
 
 		
 		procedure query_module (
@@ -3373,6 +3379,13 @@ package body et_schematic_ops_units is
 		
 		log_indentation_up;
 		
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception
 		-- will be raised here:
@@ -3383,6 +3396,12 @@ package body et_schematic_ops_units is
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+			
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+			
 		log_indentation_down;		
 	end move_placeholder;
 
@@ -3401,10 +3420,16 @@ package body et_schematic_ops_units is
 		toggle			: in boolean := false;
 		rotation		: in type_rotation_documentation := HORIZONTAL;
 		meaning			: in type_placeholder_meaning; -- name, value, purpose		
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
 		device_cursor_sch : pac_devices_electrical.cursor;
 
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+
+		
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -3449,6 +3474,13 @@ package body et_schematic_ops_units is
 			 level => log_threshold);
 
 		log_indentation_up;
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+	
 		
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception
@@ -3460,10 +3492,18 @@ package body et_schematic_ops_units is
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+			
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+			
 		log_indentation_down;
 	end rotate_placeholder;
 
 
+	
 
 	
 

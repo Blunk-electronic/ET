@@ -1012,6 +1012,10 @@ package body et_cp_schematic_unit is
 						unit_name		=> unit_name,
 						rotation		=> rotation,
 						meaning			=> meaning,
+
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
 						log_threshold	=> log_threshold + 1);
 
 				else
@@ -1106,6 +1110,10 @@ package body et_cp_schematic_unit is
 						coordinates		=> coordinates,
 						point			=> place,
 						meaning			=> meaning,
+
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
 						log_threshold	=> log_threshold + 1);
 
 				else
