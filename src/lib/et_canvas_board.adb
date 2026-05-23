@@ -62,7 +62,10 @@ with et_canvas_tool;
 with et_display.board;
 with et_colors.board;
 with et_board_ops_grid;
+
+with et_schematic_ops_groups;
 with et_board_ops_groups;
+
 with et_module_board;
 
 with et_text;
@@ -879,6 +882,8 @@ package body et_canvas_board is
 
 	
 
+	
+
 -- RESET:
 	
 	procedure reset is 
@@ -905,8 +910,15 @@ package body et_canvas_board is
 
 			status_clear;
 
-			et_board_ops_groups.reset_objects (active_module, log_threshold + 1);
+			-- Reset the status of objects in schematic
+			-- and board editor:
+			et_schematic_ops_groups.reset_objects (
+				active_module, log_threshold + 1);
+			
+			et_board_ops_groups.reset_objects (
+				active_module, log_threshold + 1);
 
+			
 			device_add.valid := false;
 			
 			reset_preliminary_text; -- after placing a text
@@ -969,6 +981,9 @@ package body et_canvas_board is
 	
 
 
+
+
+	
 	
 	procedure key_pressed (
 		key			: in gdk_key_type;

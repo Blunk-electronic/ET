@@ -75,7 +75,9 @@ with et_canvas_schematic_netchangers;
 with et_undo_redo;
 
 with et_schematic_ops_grid;
+
 with et_schematic_ops_groups;
+with et_board_ops_groups;
 
 with et_system_info;
 with et_project_name;
@@ -501,7 +503,6 @@ package body et_canvas_schematic is
 
 	
 -- RESET:
-
 	
 	procedure reset is
 		use et_modes;
@@ -521,9 +522,15 @@ package body et_canvas_schematic is
 
 			status_clear;
 
-			-- Reset status of objects:
+			
+			-- Reset the status of objects in schematic
+			-- and board editor:
 			et_schematic_ops_groups.reset_objects (
 				active_module, log_threshold + 1);
+			
+			et_board_ops_groups.reset_objects (
+				active_module, log_threshold + 1);
+
 
 			-- Mark preview data as invalid:
 			unit_add.valid := false;			
@@ -598,6 +605,8 @@ package body et_canvas_schematic is
 		redraw_schematic;
 		redraw_board;
 	end reset;
+
+
 
 	
 

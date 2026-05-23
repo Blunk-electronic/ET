@@ -272,8 +272,11 @@ package et_board_ops_conductors is
 
 	
 	-- Clears the status flags of all lines.
-	-- If freetracks is false, then only nets are adressed.
-	-- If freetracks is true, then only freetracks are adressed:
+	-- 1. If freetracks is false, then only nets are adressed.
+	--    The status flags of the whole net are not touched here.
+	--    In order to reset the whole net use procedure reset_status_objects
+	--    in package et_schematic_ops_nets.
+	-- 2. If freetracks is true, then only freetracks are adressed:
 	procedure reset_status_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		freetracks		: in boolean;							   
@@ -421,10 +424,13 @@ package et_board_ops_conductors is
 
 	
 	
-	-- Clears the proposed-flag and the selected-flag of all arcs.
-	-- If freetracks is false, then only nets are adressed.
-	-- If freetracks is true, then only freetracks are adressed:
-	procedure reset_proposed_arcs (
+	-- Clears the status flags of all arcs.
+	-- 1. If freetracks is false, then only nets are adressed.
+	--    The status flags of the whole net are not touched here.
+	--    In order to reset the whole net use procedure reset_status_objects
+	--    in package et_schematic_ops_nets.
+	-- 2. If freetracks is true, then only freetracks are adressed:
+	procedure reset_proposed_arcs ( -- CS rename to reset_status_arcs
 		module_cursor	: in pac_generic_modules.cursor;
 		freetracks		: in boolean;							   
 		log_threshold	: in type_log_level);
