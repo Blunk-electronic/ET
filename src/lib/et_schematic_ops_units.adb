@@ -2338,11 +2338,15 @@ package body et_schematic_ops_units is
 		unit_name		: in pac_unit_name.bounded_string;
 		coordinates		: in type_coordinates;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
 		device_cursor_sch : pac_devices_electrical.cursor;
 		
-		
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -2460,6 +2464,13 @@ package body et_schematic_ops_units is
 		
 		
 		log_indentation_up;
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+		
 		
 		-- Locate the targeted device in the given module.
 		-- The specified device must exist. Otherwise an exception
@@ -2473,6 +2484,12 @@ package body et_schematic_ops_units is
 			process		=> query_module'access);
 
 
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+			
 		et_schematic_ops_nets.update_strand_positions (
 			module_cursor, log_threshold + 2);		
 		
@@ -2486,6 +2503,8 @@ package body et_schematic_ops_units is
 
 	
 
+	
+	
 	
 	procedure rotate_unit (
 		module_cursor	: in pac_generic_modules.cursor;
