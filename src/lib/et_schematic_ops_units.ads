@@ -475,6 +475,7 @@ package et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
