@@ -209,6 +209,9 @@ package body et_cp_schematic_nets is
 			-- Proceed if the net exists:
 			if net_exists (module, net_name) then
 				show_net (module, net_name, log_threshold + 1);
+				
+				-- CS: Move the view so that the first strand
+				-- of the net is in the center.
 			else
 				message_net_not_found (SEVERITY_ERROR, net_name);
 			end if;

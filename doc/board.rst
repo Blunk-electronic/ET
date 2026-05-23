@@ -421,6 +421,23 @@ Ratsnest and Airwires
 Routing, laying out Tracks and Traces
 +++++++++++++++++++++++++++++++++++++
 
+
+#. Showing and Finding Nets
+
+	To show a net:
+
+	|VNS| h n
+	
+	To find a net use this command:
+	
+	.. code-block::
+
+		show net RESET_N
+
+	|VNS| |NI|
+
+
+
 #. Laying out Tacks of a Net
 
 	|VNS| t n

@@ -64,8 +64,11 @@ package et_cp_schematic_nets is
 
 	
 
-	-- This procedure parses a command that highlights a net.
+	-- This procedure parses a command that shows a net.
 	-- Example: "schematic demo show net RESET_N"
+	-- CS: add argument that specifies the degree
+	-- of information to be output. See show_device
+	-- in package et_cp_schematic_unit for inspiration.
 	procedure show_net (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
