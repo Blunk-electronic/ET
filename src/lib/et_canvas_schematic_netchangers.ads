@@ -137,8 +137,8 @@ package et_canvas_schematic_netchangers is
 	
 	-- This procedure is required in order to clarify
 	-- which object among the proposed objects is meant.
-	-- On every call of this procedure we advance from one
-	-- proposed segment to the next in a circular manner
+	-- On each call of this procedure we advance from one
+	-- proposed object to the next in a circular manner
 	-- and set it as "selected":
 	procedure clarify_object;
 	
