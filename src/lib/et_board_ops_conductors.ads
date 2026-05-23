@@ -271,10 +271,10 @@ package et_board_ops_conductors is
 
 
 	
-	-- Clears the proposed-flag and the selected-flag of all lines.
+	-- Clears the status flags of all lines.
 	-- If freetracks is false, then only nets are adressed.
 	-- If freetracks is true, then only freetracks are adressed:
-	procedure reset_proposed_lines (
+	procedure reset_status_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		freetracks		: in boolean;							   
 		log_threshold	: in type_log_level);

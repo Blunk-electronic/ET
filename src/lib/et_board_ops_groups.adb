@@ -61,15 +61,43 @@ package body et_board_ops_groups is
 		log_threshold	: in type_log_level)
 	is
 
+
+		procedure reset_conductors is
+			use et_board_ops_conductors;
+		begin
+			log (text => "conductors",
+				 level => log_threshold + 1);
+
+			log_indentation_up;
+			reset_status_objects (active_module, log_threshold + 1);
+			log_indentation_down;
+		end;
+
+
+					
 		procedure reset_devices is 
 			use et_board_ops_devices;
 		begin
-			log (text => "devices (electrical and non-electrical)", level => log_threshold + 1);
+			log (text => "devices (electrical and non-electrical)",
+				 level => log_threshold + 1);
+			
 			log_indentation_up;
 			reset_status_objects (module_cursor, log_threshold + 2);
 			log_indentation_down;
 		end;
 
+		
+		procedure reset_assy_doc is
+			use et_board_ops_assy_doc;
+		begin
+			log (text => "assembly documentation",
+				 level => log_threshold + 1);
+			
+			log_indentation_up;
+			reset_status_objects (active_module, log_threshold + 1);
+			log_indentation_down;
+		end;
+		
 		-- CS:
 		-- Make separate procedures as in package et_schematic_ops_groups
 
@@ -81,20 +109,23 @@ package body et_board_ops_groups is
 		log_indentation_up;
 		
 		reset_devices;
+		reset_conductors;
 
-		-- CS reset board placeholders, texts, ... ?
+		reset_assy_doc;
 
-		et_board_ops_assy_doc.reset_status_objects (active_module, log_threshold + 1);
+		
 		et_board_ops_silkscreen.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops_stopmask.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops_stencil.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops_keepout.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops_outline.reset_proposed_objects (active_module, log_threshold + 1);
-		et_board_ops_conductors.reset_status_objects (active_module, log_threshold + 1);
 		et_board_ops_vias.reset_proposed_vias (active_module, log_threshold + 1);
 
 		et_board_ops_netchangers.reset_status_objects (active_module, log_threshold + 1);
 		et_board_ops_ratsnest.reset_proposed_airwires (active_module, log_threshold + 1);
+
+		-- CS reset board placeholders, texts, ... ?
+
 		et_ripup.reset_ripup_mode;
 
 		log_indentation_down;

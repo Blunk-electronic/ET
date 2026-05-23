@@ -1022,7 +1022,7 @@ package body et_board_ops_conductors is
 
 
 	
-	procedure reset_proposed_lines (
+	procedure reset_status_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
@@ -1054,7 +1054,7 @@ package body et_board_ops_conductors is
 					use et_nets;					
 					line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
 				begin
-					while line_cursor /= pac_conductor_lines.no_element loop
+					while has_element (line_cursor) loop
 						net.route.lines.update_element (line_cursor, query_line'access);
 						next (line_cursor);
 					end loop;
@@ -1062,21 +1062,34 @@ package body et_board_ops_conductors is
 
 				net_cursor : pac_nets.cursor := module.nets.first;
 			begin			
-				while net_cursor /= pac_nets.no_element loop
+				log (text => "tracks of nets", level => log_threshold + 1);
+				log_indentation_up;
+				
+				while has_element (net_cursor) loop
 					module.nets.update_element (net_cursor, query_net'access);
 					next (net_cursor);
 				end loop;
+
+				log_indentation_down;
 			end process_nets;
 
 
 
 			procedure process_freetracks is
-				line_cursor : pac_conductor_lines.cursor := module.board.conductors_floating.lines.first;
+				line_cursor : pac_conductor_lines.cursor := 
+					module.board.conductors_floating.lines.first;
 			begin
-				while line_cursor /= pac_conductor_lines.no_element loop
-					module.board.conductors_floating.lines.update_element (line_cursor, query_line'access);
+				log (text => "freetracks", level => log_threshold + 1);
+				log_indentation_up;
+
+				while has_element (line_cursor) loop
+					module.board.conductors_floating.lines.update_element (
+						line_cursor, query_line'access);
+					
 					next (line_cursor);
 				end loop;
+
+				log_indentation_down;
 			end process_freetracks;
 
 			
@@ -1092,7 +1105,7 @@ package body et_board_ops_conductors is
 
 		
 	begin
-		log (text => "resetting proposed lines",
+		log (text => "reset status lines",
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -1102,10 +1115,13 @@ package body et_board_ops_conductors is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_proposed_lines;
+	end reset_status_lines;
+	
 	
 
 
+	
+	
 	
 	
 	function get_first_line_net (
@@ -5927,7 +5943,7 @@ package body et_board_ops_conductors is
 		log_indentation_up;
 
 		-- Nets:
-		reset_proposed_lines (
+		reset_status_lines (
 			module_cursor	=> active_module, 
 			freetracks		=> false,
 			log_threshold	=> log_threshold + 1);
@@ -5940,7 +5956,7 @@ package body et_board_ops_conductors is
 
 		
 		-- Floating objects (freetracks):
-		reset_proposed_lines (
+		reset_status_lines (
 			module_cursor	=> active_module, 
 			freetracks		=> true,
 			log_threshold	=> log_threshold + 1);
