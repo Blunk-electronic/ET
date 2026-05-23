@@ -532,7 +532,7 @@ begin -- button_pressed
 		when others => null;
 	end case;
  
-	-- redraw;
+	redraw;
 	-- CS use redraw_board if only board affected
 
 
