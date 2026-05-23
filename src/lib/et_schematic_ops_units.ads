@@ -345,6 +345,7 @@ package et_schematic_ops_units is
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
 		destination		: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 

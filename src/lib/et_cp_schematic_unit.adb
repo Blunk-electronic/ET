@@ -705,7 +705,11 @@ package body et_cp_schematic_unit is
 						unit_name		=> unit_name,
 						coordinates		=> coordinates,
 						sheet			=> sheet,
-						destination		=> destination,						
+						destination		=> destination,
+
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
 						log_threshold	=> log_threshold + 1);
 
 				else
