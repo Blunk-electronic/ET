@@ -81,6 +81,10 @@ with et_board_ops_devices;
 
 with et_package_variant_terminal_port_map;	use et_package_variant_terminal_port_map;
 
+with et_modes.schematic;
+with et_undo_redo;
+with et_commit;
+
 
 
 package body et_schematic_ops_units is
@@ -1076,9 +1080,14 @@ package body et_schematic_ops_units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
 		device_cursor_sch : pac_devices_electrical.cursor;
+
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
 
 
 		procedure query_module (
@@ -1146,6 +1155,14 @@ package body et_schematic_ops_units is
 			 level => log_threshold);
 
 		log_indentation_up;
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+
 		
 		-- Locate the targeted device in the given module.
 		-- If the device exists, then proceed with further actions.
@@ -1157,6 +1174,13 @@ package body et_schematic_ops_units is
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+		
 		update_ratsnest (module_cursor, log_threshold + 1);
 		
 		log_indentation_down;
@@ -1203,8 +1227,8 @@ package body et_schematic_ops_units is
 						renames element (c);
 				begin					
 					delete_unit (module_cursor, device_name, 
-						unit_name, log_threshold + 2);
-						-- CS no commit
+						unit_name, NO_COMMIT, log_threshold + 2);
+
 				end query_unit;
 
 				
@@ -1232,7 +1256,7 @@ package body et_schematic_ops_units is
 			level => log_threshold);
 
 		log_indentation_up;
-
+		
 		-- Get the names of all devices of the module:
 		device_names := get_device_names (module_cursor);
 		
@@ -1240,8 +1264,7 @@ package body et_schematic_ops_units is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
-
-		
+	
 		log_indentation_down;
 	end delete_units;
 
@@ -1278,7 +1301,7 @@ package body et_schematic_ops_units is
 
 			log_indentation_up;
 			
-			delete_unit (module_cursor, device_name, name, log_threshold + 2);
+			delete_unit (module_cursor, device_name, name, NO_COMMIT, log_threshold + 2);
 			
 			log_indentation_down;
 		end;
