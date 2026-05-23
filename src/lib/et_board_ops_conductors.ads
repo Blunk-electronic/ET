@@ -976,9 +976,9 @@ package et_board_ops_conductors is
 	
 	
 	-- This is a collective procedure that resets
-	-- the proposed-flag and the selected-flag 
+	-- the status flags of
 	-- of texts, lines, arcs, circles and zone segments:
-	procedure reset_proposed_objects ( -- CS rename to reset_status_objects
+	procedure reset_status_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 

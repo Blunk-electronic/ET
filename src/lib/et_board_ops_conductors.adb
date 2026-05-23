@@ -5916,12 +5916,12 @@ package body et_board_ops_conductors is
 	
 
 
-	procedure reset_proposed_objects (
+	procedure reset_status_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is begin
-		log (text => "module " & to_string (module_cursor) &
-			" resetting proposed objects",
+		log (text => "module " & to_string (module_cursor) 
+			 & " reset objects",
 			level => log_threshold);
 
 		log_indentation_up;
@@ -5962,7 +5962,7 @@ package body et_board_ops_conductors is
 		reset_proposed_placeholders (module_cursor, log_threshold + 1);
 		
 		log_indentation_down;
-	end reset_proposed_objects;
+	end reset_status_objects;
 
 
 	

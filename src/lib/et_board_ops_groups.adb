@@ -90,7 +90,7 @@ package body et_board_ops_groups is
 		et_board_ops_stencil.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops_keepout.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops_outline.reset_proposed_objects (active_module, log_threshold + 1);
-		et_board_ops_conductors.reset_proposed_objects (active_module, log_threshold + 1);
+		et_board_ops_conductors.reset_status_objects (active_module, log_threshold + 1);
 		et_board_ops_vias.reset_proposed_vias (active_module, log_threshold + 1);
 
 		et_board_ops_netchangers.reset_status_objects (active_module, log_threshold + 1);
