@@ -255,6 +255,9 @@ package body et_schematic_ops_units is
 
 
 	
+	
+	
+	
 
 	function device_unit_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
@@ -434,6 +437,8 @@ package body et_schematic_ops_units is
 	
 	
 	
+	
+	
 
 	
 	function unit_available (
@@ -492,6 +497,7 @@ package body et_schematic_ops_units is
 
 
 
+	
 	
 	
 	
@@ -557,6 +563,7 @@ package body et_schematic_ops_units is
 
 
 
+	
 	
 	
 	
@@ -919,6 +926,7 @@ package body et_schematic_ops_units is
 		device_name		: in type_device_name; -- IC1
 		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
 		destination		: in type_object_position; -- sheet/x/y/rotation
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) is separate;
 
 

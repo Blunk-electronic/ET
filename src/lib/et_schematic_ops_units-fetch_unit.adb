@@ -51,9 +51,13 @@ procedure fetch_unit (
 	device_name		: in type_device_name; -- IC1
 	unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
 	destination		: in type_object_position; -- sheet/x/y/rotation
+	commit_design	: in type_commit_design := DO_COMMIT;	
 	log_threshold	: in type_log_level) 
 is
-		
+	use et_commit;
+	use et_undo_redo;
+	use et_modes.schematic;
+	
 	device_cursor_sch : pac_devices_electrical.cursor;
 
 	
@@ -319,6 +323,13 @@ begin
 		level => log_threshold);
 
 	log_indentation_up;
+
+
+	if commit_design = DO_COMMIT then
+		-- Commit the current state of the design:
+		commit (PRE, verb, noun, log_threshold);
+	end if;
+
 	
 	-- Locate the targeted device in the given module.
 	-- The device must exist. Otherwise an exception will be raised here:
@@ -329,6 +340,13 @@ begin
 		position	=> module_cursor,
 		process		=> query_module'access);
 
+
+	if commit_design = DO_COMMIT then
+		-- Commit the new state of the design:
+		commit (POST, verb, noun, log_threshold);
+	end if;
+
+	
 	update_ratsnest (module_cursor, log_threshold + 1);
 	
 	log_indentation_down;	
