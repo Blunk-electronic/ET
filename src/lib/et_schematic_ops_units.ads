@@ -324,6 +324,7 @@ package et_schematic_ops_units is
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name_before	: in type_device_name; -- IC1
 		device_name_after	: in type_device_name; -- IC23
+		commit_design		: in type_commit_design := DO_COMMIT;
 		log_threshold		: in type_log_level);
 
 

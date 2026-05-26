@@ -1492,10 +1492,15 @@ package body et_schematic_ops_units is
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name_before	: in type_device_name; -- IC1
 		device_name_after	: in type_device_name; -- IC23
+		commit_design		: in type_commit_design := DO_COMMIT;
 		log_threshold		: in type_log_level) 
 	is
 		device_cursor_sch : pac_devices_electrical.cursor;
 
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+		
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -1589,11 +1594,25 @@ package body et_schematic_ops_units is
 
 		log_indentation_up;
 		
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception will be raised here:
-		device_cursor_sch := get_electrical_device (module_cursor, device_name_before);
+		device_cursor_sch := get_electrical_device (
+			module_cursor, device_name_before);
 			
 		check_names;
+		
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end rename_electrical_device;
