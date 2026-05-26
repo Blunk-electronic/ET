@@ -70,6 +70,9 @@ with et_package_variant;		use et_package_variant;
 with et_device_property_level;	use et_device_property_level;
 with et_logging;				use et_logging;
 
+with et_cmd_origin_to_commit;	use et_cmd_origin_to_commit;
+
+
 
 package et_schematic_ops_device is
 
@@ -314,6 +317,7 @@ package et_schematic_ops_device is
 		device_model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
 		destination		: in type_object_position; -- sheet/x/y/rotation
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	-- CS procedure add_electrical_device with explicit device name like R12

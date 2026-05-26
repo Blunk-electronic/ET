@@ -67,6 +67,8 @@ with et_schematic_ops_units;			use et_schematic_ops_units;
 -- with et_module_instance;				use et_module_instance;
 with et_schematic_ops_device;			use et_schematic_ops_device;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+
 
 
 package body et_cp_schematic_device is
@@ -104,9 +106,13 @@ package body et_cp_schematic_device is
 									x => to_distance (get_field (cmd, 7)),
 									y => to_distance (get_field (cmd, 8))
 									)),
-						rotation => to_rotation (get_field (cmd, 9))
-						),
+						rotation => to_rotation (get_field (cmd, 9))),
+					
 					variant			=> to_variant_name (""),
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 
 				
@@ -126,8 +132,13 @@ package body et_cp_schematic_device is
 						rotation		=> to_rotation (get_field (cmd, 9))
 						),
 					variant			=> to_variant_name (get_field (cmd, 10)),
+					
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),					
 					log_threshold	=> log_threshold + 1);
 
+					
 			when 11 .. type_field_count'last => 
 				command_too_long (cmd, cmd_field_count - 1);
 				

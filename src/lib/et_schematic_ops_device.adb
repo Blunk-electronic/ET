@@ -69,6 +69,10 @@ with et_board_ops_devices;			use et_board_ops_devices;
 with et_board_ops_groups;
 with et_conventions;				use et_conventions;
 
+with et_modes.schematic;
+with et_undo_redo;
+with et_commit;
+
 
 package body et_schematic_ops_device is
 
@@ -980,6 +984,7 @@ package body et_schematic_ops_device is
 		device_model	: in pac_device_model_file.bounded_string;
 		variant			: in pac_package_variant_name.bounded_string;
 		destination		: in type_object_position;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) is separate;
 
 

@@ -61,8 +61,14 @@ procedure add_electrical_device (
 	device_model	: in pac_device_model_file.bounded_string;
 	variant			: in pac_package_variant_name.bounded_string;
 	destination		: in type_object_position;
+	commit_design	: in type_commit_design := DO_COMMIT;
 	log_threshold	: in type_log_level) 
 is	
+	use et_commit;
+	use et_undo_redo;
+	use et_modes.schematic;
+
+	
 	use pac_package_variant_name;
 	
 	use pac_device_models;
@@ -573,6 +579,7 @@ begin -- add_electrical_device
 	end if;
 		
 	log_indentation_up;
+
 	
 	-- Read the device file and store it in the rig wide device library.
 	-- If the device is already in the library, nothing happpens.
@@ -597,14 +604,27 @@ begin -- add_electrical_device
 	log (text => "auto generated device name: " & to_string (next_name),
 		 level => log_threshold);
 	
+
+	if commit_design = DO_COMMIT then
+		-- Commit the current state of the design:
+		commit (PRE, verb, noun, log_threshold);
+	end if;
+
 	
 	update_element (
 		container	=> generic_modules,
 		position	=> module_cursor,
 		process		=> query_module'access);
+
+	
+	if commit_design = DO_COMMIT then
+		-- Commit the new state of the design:
+		commit (POST, verb, noun, log_threshold);
+	end if;
+
 	
 	log_indentation_down;
-
+	
 end add_electrical_device;
 
 
