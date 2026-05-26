@@ -1291,8 +1291,14 @@ package body et_schematic_ops_units is
 	procedure delete_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+
+	
 		device_cursor_sch : pac_devices_electrical.cursor;
 
 		-- We use list of deployed units here. By iterating the names
@@ -1322,6 +1328,12 @@ package body et_schematic_ops_units is
 
 		log_indentation_up;
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+		
+		
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
@@ -1331,11 +1343,16 @@ package body et_schematic_ops_units is
 
 		-- Iterate the name list and delete the units one by one:
 		unit_names.iterate (query_unit'access);
-			
+				
+				
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
 
 		update_ratsnest (module_cursor, log_threshold + 1);
 		
-		log_indentation_down;
+		log_indentation_down;		
 	end delete_electrical_device;
 
 
