@@ -544,8 +544,14 @@ package body et_schematic_ops_device is
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
 		value				: in pac_device_value.bounded_string; -- 470R
+		commit_design		: in type_commit_design := DO_COMMIT;
 		log_threshold		: in type_log_level) 
-	is		
+	is	
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+
+		
 		device_cursor_sch : pac_devices_electrical.cursor;
 		
 
@@ -604,12 +610,26 @@ package body et_schematic_ops_device is
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+		
 		log_indentation_down;
 	end set_value;
 
@@ -617,6 +637,7 @@ package body et_schematic_ops_device is
 
 	
 
+	
 
 	
 
@@ -624,8 +645,13 @@ package body et_schematic_ops_device is
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
 		purpose				: in pac_device_purpose.bounded_string; -- brightness_control
+		commit_design		: in type_commit_design := DO_COMMIT;
 		log_threshold		: in type_log_level) 
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+
 		device_cursor_sch : pac_devices_electrical.cursor;
 		
 
@@ -671,12 +697,26 @@ package body et_schematic_ops_device is
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
-			
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+		
 		log_indentation_down;		
 	end set_purpose;
 
@@ -685,13 +725,20 @@ package body et_schematic_ops_device is
 
 	
 	
+
+
 	
 	procedure set_partcode (
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name			: in type_device_name; -- R2
 		partcode			: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		commit_design		: in type_commit_design := DO_COMMIT;
 		log_threshold		: in type_log_level) 
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+		
 		device_cursor_sch : pac_devices_electrical.cursor;
 
 		
@@ -737,14 +784,31 @@ package body et_schematic_ops_device is
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
-			
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+		
 		log_indentation_down;
 	end set_partcode;
+
+
+
 
 
 
@@ -787,14 +851,25 @@ package body et_schematic_ops_device is
 
 
 
+
+
+
+
+	
 	
 	
 	procedure set_package_variant (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- R2
 		variant			: in pac_package_variant_name.bounded_string; -- N, D
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+
+		
 		use pac_generic_modules;
 		device_cursor_sch : pac_devices_electrical.cursor;
 
@@ -851,17 +926,33 @@ package body et_schematic_ops_device is
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor_sch := get_electrical_device (module_cursor, device_name);
-			
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+		
 		log_indentation_down;		
 	end set_package_variant;
 
 
 
+
+	
 
 
 	
