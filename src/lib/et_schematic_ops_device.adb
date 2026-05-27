@@ -1007,6 +1007,8 @@ package body et_schematic_ops_device is
 
 
 
+	
+
 
 
 
@@ -1103,10 +1105,15 @@ package body et_schematic_ops_device is
 	procedure renumber_devices (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		step_width		: in type_name_index;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+		
 		use et_device_category;
 		use et_conventions;
 		use pac_unit_name;
@@ -1265,6 +1272,13 @@ package body et_schematic_ops_device is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		-- Get a list of devices and units where they are sorted by their coordinates.
 		devices := sort_by_coordinates_2 (module_cursor, log_threshold + 2);
 
@@ -1302,6 +1316,12 @@ package body et_schematic_ops_device is
 			end case;
 		end loop;
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+		
 		log_indentation_down;
 	end renumber_devices;
 

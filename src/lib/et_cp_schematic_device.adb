@@ -410,6 +410,10 @@ package body et_cp_schematic_device is
 						module_cursor 	=> module,
 						device_name		=> name,
 						purpose			=> purpose, -- brightness_control
+						
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
 						log_threshold	=> log_threshold + 1);
 
 				else
@@ -464,7 +468,12 @@ package body et_cp_schematic_device is
 						module_cursor 	=> module,
 						device_name		=> name,
 						partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
+
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
 						log_threshold	=> log_threshold + 1);
+						
 				else	
 					message_device_not_found (SEVERITY_ERROR, name);
 				end if;
@@ -520,7 +529,12 @@ package body et_cp_schematic_device is
 						module_cursor	=> module,
 						device_name		=> name,
 						variant			=> variant, -- N, D
+
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
 						log_threshold	=> log_threshold + 1);
+						
 				else
 					message_device_not_found (SEVERITY_ERROR, name);
 				end if;
@@ -564,6 +578,10 @@ package body et_cp_schematic_device is
 				renumber_devices (
 					module_name 	=> key (module),
 					step_width		=> to_index (get_field (cmd, 5)), -- 100
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 
 			when 6 .. type_field_count'last =>
