@@ -284,16 +284,17 @@ package body et_cp_schematic_device is
 					copy_device (
 						module_cursor 	=> module,
 						device_name		=> name,
-						destination		=> to_position 
-							(
+						destination		=> to_position (
 							sheet => to_sheet (get_field (cmd, 6)),
 							point => type_vector_model (set
 										(
 										x => to_distance (get_field (cmd, 7)),
-										y => to_distance (get_field (cmd, 8))
-										)),
-							rotation		=> to_rotation (get_field (cmd, 9))
-							),
+										y => to_distance (get_field (cmd, 8)))),
+							rotation		=> to_rotation (get_field (cmd, 9))),
+							
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
 						log_threshold	=> log_threshold + 1);
 
 				else

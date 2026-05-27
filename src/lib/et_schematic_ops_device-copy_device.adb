@@ -65,8 +65,14 @@ procedure copy_device (
 	module_cursor	: in pac_generic_modules.cursor;
 	device_name		: in type_device_name; -- IC45
 	destination		: in type_object_position; -- sheet/x/y/rotation
+	commit_design	: in type_commit_design := DO_COMMIT;
 	log_threshold	: in type_log_level)
 is
+	use et_commit;
+	use et_undo_redo;
+	use et_modes.schematic;
+
+	
 	-- The pointer to the device in the schematic:	
 	device_cursor_sch : pac_devices_electrical.cursor;
 
@@ -470,13 +476,25 @@ begin
 	log (text => "auto generated next device name: " & to_string (next_name),
 		level => log_threshold);
 
+
+	if commit_design = DO_COMMIT then
+		-- Commit the current state of the design:
+		commit (PRE, verb, noun, log_threshold);
+	end if;
+
 	
 	update_element (
 		container	=> generic_modules,
 		position	=> module_cursor,
 		process		=> query_module'access);
 
-		
+
+	if commit_design = DO_COMMIT then
+		-- Commit the new state of the design:
+		commit (POST, verb, noun, log_threshold);
+	end if;
+
+	
 	log_indentation_down;
 	
 end copy_device;

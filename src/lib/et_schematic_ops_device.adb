@@ -995,6 +995,7 @@ package body et_schematic_ops_device is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		destination		: in type_object_position; -- sheet/x/y/rotation
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) is separate;
 
 
