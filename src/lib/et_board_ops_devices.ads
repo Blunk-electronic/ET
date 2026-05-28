@@ -69,6 +69,8 @@ with et_object_status;					use et_object_status;
 with et_logging;						use et_logging;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+
 
 package et_board_ops_devices is
 
@@ -145,6 +147,7 @@ package et_board_ops_devices is
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -158,6 +161,7 @@ package et_board_ops_devices is
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		rotation		: in et_board_geometry.type_rotation_model := 90.0;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -179,6 +183,7 @@ package et_board_ops_devices is
 		device_name		: in type_device_name; -- IC45
 		toggle			: in boolean := false;
 		face			: in type_face := TOP; -- top/bottom
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -327,6 +332,7 @@ package et_board_ops_devices is
 		package_model	: in pac_package_model_file.bounded_string; -- ../lbr/packages/fiducial.pac
 		position		: in type_package_position; -- x,y,rotation,face
 		prefix			: in pac_device_prefix.bounded_string; -- FD
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	-- CS procedure add_device with explicit device name like MH1
@@ -339,6 +345,7 @@ package et_board_ops_devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- FD1
 		destination		: in type_vector_model; -- x,y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -350,6 +357,7 @@ package et_board_ops_devices is
 	procedure delete_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- FD1 -- CS cursor insted ?
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -360,6 +368,7 @@ package et_board_ops_devices is
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name_before	: in type_device_name; -- FD1
 		device_name_after	: in type_device_name; -- FD3
+		commit_design		: in type_commit_design := DO_COMMIT;
 		log_threshold		: in type_log_level);
 
 
@@ -373,6 +382,7 @@ package et_board_ops_devices is
 	procedure reset_placeholder_positions (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -404,6 +414,7 @@ package et_board_ops_devices is
 		index			: in type_placeholder_index; -- 1, 2, 3, ...
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -436,6 +447,7 @@ package et_board_ops_devices is
 		index			: in type_placeholder_index; -- 1, 2, 3, ...
 		coordinates		: in type_coordinates;
 		rotation		: in type_rotation_model := 90.0;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 

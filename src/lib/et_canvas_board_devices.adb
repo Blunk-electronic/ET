@@ -125,6 +125,8 @@ package body et_canvas_board_devices is
 
 
 	
+
+	
 	procedure show_selected_object (
 		object		: in type_object)
 	is 
@@ -221,6 +223,8 @@ package body et_canvas_board_devices is
 
 	
 
+	
+
 	-- This procedure searches for the first selected object
 	-- and sets its status to "moving":
 	procedure set_first_selected_object_moving is
@@ -257,6 +261,7 @@ package body et_canvas_board_devices is
 		do_it;
 		log_indentation_down;
 	end set_first_selected_object_moving;
+
 
 
 	
@@ -446,6 +451,7 @@ package body et_canvas_board_devices is
 	end get_top_most_important_library;
 
 
+
 	
 
 
@@ -464,6 +470,7 @@ package body et_canvas_board_devices is
 
 
 
+	
 	
 
 
@@ -530,6 +537,7 @@ package body et_canvas_board_devices is
 	
 
 
+	
 
 	procedure cb_package_prefix_selected (
 		combo : access gtk_combo_box_record'class) 

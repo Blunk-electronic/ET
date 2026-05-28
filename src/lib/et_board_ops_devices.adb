@@ -71,6 +71,11 @@ with et_board_ops_groups;
 with et_board_ops_ratsnest;				use et_board_ops_ratsnest;
 with et_mirroring;						use et_mirroring;
 
+with et_modes.board;
+with et_undo_redo;
+with et_commit;
+
+
 
 package body et_board_ops_devices is
 
@@ -291,6 +296,7 @@ package body et_board_ops_devices is
 		
 
 	
+	
 
 	
 	procedure move_device (
@@ -298,9 +304,15 @@ package body et_board_ops_devices is
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
 
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.board;
+
+		
 	
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -387,12 +399,25 @@ package body et_board_ops_devices is
 
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+		
 		update_ratsnest (module_cursor, log_threshold + 1);
 
 		log_indentation_down;
@@ -401,6 +426,8 @@ package body et_board_ops_devices is
 
 
 
+
+	
 	
 
 	
@@ -410,6 +437,7 @@ package body et_board_ops_devices is
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		rotation		: in et_board_geometry.type_rotation_model := 90.0;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
 
@@ -518,6 +546,7 @@ package body et_board_ops_devices is
 		device_name		: in type_device_name; -- IC45
 		toggle			: in boolean := false;
 		face			: in type_face := TOP; -- top/bottom
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
 
@@ -1157,6 +1186,7 @@ package body et_board_ops_devices is
 		package_model	: in pac_package_model_file.bounded_string; -- ../lbr/packages/fiducial.pac
 		position		: in type_package_position; -- x,y,rotation,face
 		prefix			: in pac_device_prefix.bounded_string; -- FD
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
 
@@ -1251,6 +1281,7 @@ package body et_board_ops_devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- FD1
 		destination		: in type_vector_model; -- x,y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
 		device_cursor : pac_devices_non_electrical.cursor;
@@ -1310,6 +1341,7 @@ package body et_board_ops_devices is
 	procedure delete_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- FD1
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
 		device_cursor : pac_devices_non_electrical.cursor;
@@ -1341,6 +1373,7 @@ package body et_board_ops_devices is
 
 
 
+
 	
 
 	
@@ -1349,6 +1382,7 @@ package body et_board_ops_devices is
 		module_cursor		: in pac_generic_modules.cursor;
 		device_name_before	: in type_device_name; -- FD1
 		device_name_after	: in type_device_name; -- FD3
+		commit_design		: in type_commit_design := DO_COMMIT;
 		log_threshold		: in type_log_level) 
 	is		
 		device_cursor : pac_devices_non_electrical.cursor;
@@ -1447,6 +1481,7 @@ package body et_board_ops_devices is
 	procedure reset_placeholder_positions (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
 
@@ -1541,6 +1576,7 @@ package body et_board_ops_devices is
 		index			: in type_placeholder_index;
 		coordinates		: in type_coordinates;
 		point			: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
 		
@@ -1664,6 +1700,7 @@ package body et_board_ops_devices is
 		index			: in type_placeholder_index;
 		coordinates		: in type_coordinates;
 		rotation		: in type_rotation_model := 90.0;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
 

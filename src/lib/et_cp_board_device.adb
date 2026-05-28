@@ -73,6 +73,7 @@ with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 with et_device_placeholders;
 with et_device_placeholders.packages;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
 package body et_cp_board_device is
@@ -281,6 +282,7 @@ package body et_cp_board_device is
 
 	
 
+	
 
 	procedure add_non_electrical_device (
 		module			: in pac_generic_modules.cursor;
@@ -313,7 +315,12 @@ package body et_cp_board_device is
 							(
 							point	=> xy
 							),
-						prefix			=> prefix,
+							prefix			=> prefix,
+
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
+
 						log_threshold	=> log_threshold + 1);
 
 					
@@ -327,6 +334,11 @@ package body et_cp_board_device is
 							rotation	=> to_rotation (get_field (cmd, 9))
 							),
 						prefix			=> prefix,
+
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
+
 						log_threshold	=> log_threshold + 1);
 
 					
@@ -341,6 +353,11 @@ package body et_cp_board_device is
 							face		=> to_face (get_field (cmd, 10))
 							),
 						prefix			=> prefix,
+
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
+
 						log_threshold	=> log_threshold + 1);
 					
 				when others => raise constraint_error; -- CS should never happen
@@ -397,6 +414,11 @@ package body et_cp_board_device is
 				delete_non_electrical_device (
 					module_cursor	=> module,
 					device_name		=> device_name,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+				
 					log_threshold	=> log_threshold + 1);
 
 			else
@@ -448,6 +470,7 @@ package body et_cp_board_device is
 			device_name := to_device_name (get_field (cmd, 5));
 			destination := to_vector_model (get_field (cmd, 6), get_field (cmd, 7)); -- x/y
 
+			
 			-- Proceed if the specified non-electrical
 			-- device exists:
 			if non_electrical_device_exists (module, device_name) then
@@ -456,6 +479,11 @@ package body et_cp_board_device is
 					module_cursor 	=> module,
 					device_name		=> device_name,
 					destination		=> destination,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+
 					log_threshold	=> log_threshold + 1);
 
 			else
@@ -519,6 +547,11 @@ package body et_cp_board_device is
 					point			=> type_vector_model (set (
 										x => to_distance (dd => get_field (cmd, 7)),
 										y => to_distance (dd => get_field (cmd, 8)))),
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+
 					log_threshold	=> log_threshold + 1);
 
 			else
@@ -578,6 +611,11 @@ package body et_cp_board_device is
 					module_cursor 	=> module,
 					device_name		=> device_name,
 					coordinates		=> RELATIVE,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+
 					log_threshold	=> log_threshold + 1);
 
 			else
@@ -608,6 +646,11 @@ package body et_cp_board_device is
 					device_name		=> device_name,
 					coordinates		=> coordinates,
 					rotation		=> rotation,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+
 					log_threshold	=> log_threshold + 1);
 
 			else
@@ -669,6 +712,11 @@ package body et_cp_board_device is
 					module_cursor		=> module,
 					device_name_before	=> device_name,
 					device_name_after	=> to_device_name (get_field (cmd, 6)),
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+
 					log_threshold		=> log_threshold + 1);
 
 			else
@@ -727,6 +775,11 @@ package body et_cp_board_device is
 					module_cursor 	=> module,
 					device_name		=> device_name,
 					toggle			=> true,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+					
 					log_threshold	=> log_threshold + 1);
 
 			else
@@ -753,8 +806,13 @@ package body et_cp_board_device is
 					module_cursor 	=> module,
 					device_name		=> device_name,
 					face			=> face,
-					log_threshold	=> log_threshold + 1);
 
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+
+					log_threshold	=> log_threshold + 1);
+			
 			else
 				message_device_not_found (SEVERITY_ERROR, device_name);
 			end if;
@@ -849,6 +907,11 @@ package body et_cp_board_device is
 					index			=> index,
 					coordinates		=> coordinates,
 					point			=> point,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+
 					log_threshold	=> log_threshold + 1);
 
 			else
@@ -942,6 +1005,11 @@ package body et_cp_board_device is
 					index			=> index,
 					coordinates		=> coordinates,
 					rotation		=> rotation,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+
 					log_threshold	=> log_threshold + 1);
 
 			else
@@ -997,6 +1065,11 @@ package body et_cp_board_device is
 				reset_placeholder_positions (
 					module_cursor 	=> module,
 					device_name		=> device_name,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+					
 					log_threshold	=> log_threshold + 1);
 			
 			else
