@@ -89,8 +89,6 @@ with et_canvas_schematic;			use et_canvas_schematic;
 with et_net_strands;
 with et_schematic_text;				use et_schematic_text;
 
-with et_commit;
-with et_undo_redo;
 with et_directory_and_file_ops;
 with et_object_status;				use et_object_status;
 
@@ -229,6 +227,7 @@ package body et_canvas_schematic_units is
 
 
 	
+
 	
 
 
@@ -391,10 +390,6 @@ package body et_canvas_schematic_units is
 		-- Assigns the final position after the move to the selected object.
 		-- Resets variable preliminary_object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -407,18 +402,12 @@ package body et_canvas_schematic_units is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				move_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					destination		=> point,
 					log_threshold	=> log_threshold + 1);
 				
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
-
 				-- If a unit has been moved, then the board
 				-- must be redrawn:
 				if object.cat = CAT_UNIT then
@@ -489,10 +478,6 @@ package body et_canvas_schematic_units is
 		
 		-- Assigns the final rotation to the selected object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -505,16 +490,10 @@ package body et_canvas_schematic_units is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				rotate_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				-- If a unit has been rotated, then the board
 				-- must be redrawn:
@@ -569,10 +548,6 @@ package body et_canvas_schematic_units is
 		
 		-- Assigns the final rotation to the selected object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -585,16 +560,10 @@ package body et_canvas_schematic_units is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-
 				mirror_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				-- If a unit has been mirrored, then the board
 				-- must be redrawn:
@@ -649,10 +618,6 @@ package body et_canvas_schematic_units is
 		
 		-- Deletes the selected object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -665,9 +630,6 @@ package body et_canvas_schematic_units is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-
 				-- If a whole device is to be deleted, then
 				-- we clear the cursor that points to the unit.
 				-- This way, procedure delete_object is notified
@@ -681,9 +643,6 @@ package body et_canvas_schematic_units is
 					module_cursor	=> active_module, 
 					object			=> object, 
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				-- If a unit has been deleted, then the board
 				-- must be redrawn:
@@ -727,6 +686,7 @@ package body et_canvas_schematic_units is
 
 
 
+
 	
 
 
@@ -738,10 +698,6 @@ package body et_canvas_schematic_units is
 		
 		-- Sets the value of the selected object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -754,18 +710,12 @@ package body et_canvas_schematic_units is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-
 				-- Do the set value operation:
 				set_value (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					new_value		=> device_value_new,
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				-- If a unit has been deleted, then the board
 				-- must be redrawn:
@@ -922,10 +872,6 @@ package body et_canvas_schematic_units is
 		
 		-- Sets the purpose of the selected object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -938,18 +884,12 @@ package body et_canvas_schematic_units is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-
 				-- Do the set purpose operation:
 				set_purpose (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					new_purpose		=> device_purpose_new,
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				-- If a unit has been deleted, then the board
 				-- must be redrawn:
@@ -995,6 +935,8 @@ package body et_canvas_schematic_units is
 	
 
 
+	
+
 
 	procedure cb_purpose_window_destroy (
 		window : access gtk_widget_record'class)
@@ -1006,6 +948,7 @@ package body et_canvas_schematic_units is
 
 	
 
+	
 	
 
 	procedure show_purpose_window is
@@ -1056,6 +999,8 @@ package body et_canvas_schematic_units is
 	end show_purpose_window;
 
 
+
+	
 	
 
 
@@ -1102,10 +1047,6 @@ package body et_canvas_schematic_units is
 		
 		-- Sets the partcode of the selected object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -1118,18 +1059,12 @@ package body et_canvas_schematic_units is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-
 				-- Do the set partcode operation:
 				set_partcode (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					new_partcode	=> device_partcode_new,
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				-- If a unit has been deleted, then the board
 				-- must be redrawn:
@@ -1175,6 +1110,7 @@ package body et_canvas_schematic_units is
 	
 
 	
+	
 
 
 	procedure cb_partcode_window_destroy (
@@ -1188,6 +1124,7 @@ package body et_canvas_schematic_units is
 	
 
 	
+
 	
 
 	procedure show_partcode_window is
@@ -1331,10 +1268,6 @@ package body et_canvas_schematic_units is
 
 		-- Sets the package_variant of the selected object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
 		begin
@@ -1347,18 +1280,12 @@ package body et_canvas_schematic_units is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-
 				-- Do the set package variant operation:
 				set_package_variant (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					new_variant		=> variant_new,
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				-- If a unit has been deleted, then the board
 				-- must be redrawn:
@@ -1396,6 +1323,7 @@ package body et_canvas_schematic_units is
 
 
 
+	
 	
 	
 	
@@ -1458,6 +1386,7 @@ package body et_canvas_schematic_units is
 
 	
 
+	
 
 	procedure set_package_variant (
 		point	: in type_vector_model)
@@ -1502,10 +1431,6 @@ package body et_canvas_schematic_units is
 		
 		-- Renames the selected object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -1518,18 +1443,12 @@ package body et_canvas_schematic_units is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				rename_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					new_name_device	=> device_name_new,
 					log_threshold	=> log_threshold + 1);
 
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				redraw_board;
 				-- CS redraw schematic ?
@@ -1542,7 +1461,6 @@ package body et_canvas_schematic_units is
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
-
 		
 		
 	begin
@@ -1571,6 +1489,7 @@ package body et_canvas_schematic_units is
 
 	
 
+	
 
 	procedure cb_rename_window_destroy (
 		window : access gtk_widget_record'class)
@@ -1579,6 +1498,7 @@ package body et_canvas_schematic_units is
 		put_line ("cb_rename_window_destroy");
 		reset;
 	end cb_rename_window_destroy;
+
 
 
 	
@@ -1677,10 +1597,6 @@ package body et_canvas_schematic_units is
 
 		-- Drags the selected object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -1696,17 +1612,11 @@ package body et_canvas_schematic_units is
 				-- is required for units and net segments:
 				et_schematic_ops_groups.reset_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				drag_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					destination		=> point,
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				-- If a unit has been dragged, then the board
 				-- must be redrawn:
@@ -2220,17 +2130,12 @@ package body et_canvas_schematic_units is
 
 	
 	
+	
 	procedure add_electrical_device (
 		place : in type_vector_model)
-	is 
-		use et_commit;
-		use et_undo_redo;
-	begin
+	is begin
 		log (text => "add_electrical_device", level => log_threshold);
 		log_indentation_up;
-		
-		-- Commit the current state of the design:
-		commit (PRE, verb, noun, log_threshold);
 		
 		add_electrical_device (
 			module_cursor	=> active_module,
@@ -2238,9 +2143,6 @@ package body et_canvas_schematic_units is
 			variant			=> unit_add.variant,
 			destination		=> to_position (place, active_sheet, unit_add.rotation),
 			log_threshold	=> log_threshold + 1);
-
-		-- Commit the new state of the design:
-		commit (POST, verb, noun, log_threshold);
 
 		status_clear;
 
@@ -2259,6 +2161,7 @@ package body et_canvas_schematic_units is
 	
 
 	
+	
 
 	procedure copy_object (
 		tool	: in type_tool;
@@ -2267,10 +2170,6 @@ package body et_canvas_schematic_units is
 		
 		-- Deletes the selected object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -2283,18 +2182,12 @@ package body et_canvas_schematic_units is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-
 				-- Do the copy operation:
 				copy_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					destination		=> type_position (to_position (point, unit_add.rotation)),
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				-- If a device has been copied, then the board
 				-- must be redrawn:
@@ -2661,17 +2554,11 @@ package body et_canvas_schematic_units is
 		use pac_unit_name;
 
 		
-		procedure finalize is 
-			use et_commit;
-			use et_undo_redo;
-		begin
+		procedure finalize is begin
 			log (text => "finalize fetch", level => log_threshold);
 			log_indentation_up;
 						
 			reset_status_objects (active_module, log_threshold + 1);
-			
-			-- Commit the current state of the design:
-			commit (PRE, verb, noun, log_threshold);
 			
 			fetch_unit (
 				module_cursor	=> active_module,
@@ -2679,10 +2566,6 @@ package body et_canvas_schematic_units is
 				unit_name		=> unit_fetch.name,
 				destination		=> to_position (point, active_sheet, unit_fetch.rotation),
 				log_threshold	=> log_threshold + 1);
-
-
-			-- Commit the current state of the design:
-			commit (POST, verb, noun, log_threshold);
 
 			-- If a unit has been fetched, then the board
 			-- must be redrawn:
@@ -2736,6 +2619,7 @@ package body et_canvas_schematic_units is
 
 
 
+	
 	
 
 

@@ -1263,7 +1263,7 @@ package body et_schematic_ops_device is
 		
 	begin -- renumber_devices
 		log (text => "module " & to_string (module_name) 
-			 & " renumbe devices." 
+			 & " renumber devices." 
 			 & " step width per sheet" & to_string (step_width),
 			level => log_threshold);
 
