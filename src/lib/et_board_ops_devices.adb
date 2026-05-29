@@ -307,7 +307,6 @@ package body et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
-
 		use et_commit;
 		use et_undo_redo;
 		use et_modes.board;
@@ -440,6 +439,9 @@ package body et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.board;
 
 		
 		procedure query_module (
@@ -523,16 +525,31 @@ package body et_board_ops_devices is
 		end case;
 
 		log_indentation_up;
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+		
 		update_ratsnest (module_cursor, log_threshold + 1);
 
 		log_indentation_down;
 	end rotate_device;
+
 
 
 
@@ -549,7 +566,11 @@ package body et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.board;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -628,11 +649,24 @@ package body et_board_ops_devices is
 		
 		log_indentation_up;
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+		
 		update_ratsnest (module_cursor, log_threshold + 1);		
 
 		log_indentation_down;
@@ -1189,7 +1223,11 @@ package body et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.board;
 
+		
 		package_cursor_lib : pac_package_models.cursor;
 
 		
@@ -1261,11 +1299,25 @@ package body et_board_ops_devices is
 		-- locate the package in the library
 		package_cursor_lib := get_package_model (package_model);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		-- add the device to the module
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
 		
 		log_indentation_down;
 	end add_non_electrical_device;
@@ -1273,6 +1325,7 @@ package body et_board_ops_devices is
 
 
 	
+
 
 
 	
@@ -1284,6 +1337,11 @@ package body et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.board;
+
+		
 		device_cursor : pac_devices_non_electrical.cursor;
 		
 		-- The next available device name:
@@ -1322,9 +1380,22 @@ package body et_board_ops_devices is
 		-- Build the next available device name:
 		next_name := get_next_available_device_name (
 			module_cursor, get_prefix (device_name), log_threshold + 1); -- FD2
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (module_cursor, query_module'access);
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+		
 		log_indentation_down;
 	end copy_non_electrical_device;
 
@@ -1344,6 +1415,11 @@ package body et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.board;
+
+		
 		device_cursor : pac_devices_non_electrical.cursor;
 
 		
@@ -1365,14 +1441,28 @@ package body et_board_ops_devices is
 		-- Locate the targeted device in the given module.
 		-- The device must exist. Otherwise an exception will be raised here:
 		device_cursor := get_non_electrical_device (module_cursor, device_name);
-			
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+		
+		
 		generic_modules.update_element (module_cursor, query_module'access);
 
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+		
 		log_indentation_down;
 	end delete_non_electrical_device;
 
 
 
+
+	
 
 	
 
@@ -1385,6 +1475,11 @@ package body et_board_ops_devices is
 		commit_design		: in type_commit_design := DO_COMMIT;
 		log_threshold		: in type_log_level) 
 	is		
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.board;
+
+		
 		device_cursor : pac_devices_non_electrical.cursor;
 
 		
@@ -1461,9 +1556,23 @@ package body et_board_ops_devices is
 		-- will be raised here:
 		device_cursor := get_non_electrical_device (
 			module_cursor, device_name_before);
-			
+
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		check_names;			
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+		
 		log_indentation_down;
 	end rename_non_electrical_device;
 	
@@ -1473,6 +1582,7 @@ package body et_board_ops_devices is
 	
 
 
+	
 
 	
 -- PLACEHOLDERS:
@@ -1484,6 +1594,10 @@ package body et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.board;
+		
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -1548,14 +1662,26 @@ package body et_board_ops_devices is
 			& " placeholder positions",
 			level => log_threshold);
 	
-
 		log_indentation_up;
-			
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+		
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
-	
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+		
 		log_indentation_down;
 	end reset_placeholder_positions;
 	
@@ -1579,6 +1705,9 @@ package body et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.board;
 		
 
 		procedure query_module (
@@ -1672,12 +1801,25 @@ package body et_board_ops_devices is
 
 		
 		log_indentation_up;
-			
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
-	
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+		
 		log_indentation_down;		
 	end move_placeholder;
 
@@ -1703,7 +1845,9 @@ package body et_board_ops_devices is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
-
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.board;
 
 		
 		procedure query_module (
@@ -1792,17 +1936,31 @@ package body et_board_ops_devices is
 
 		
 		log_indentation_up;
-			
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
 		
 		log_indentation_down;
 	end rotate_placeholder;
 
 
 
+	
 
 
 	
@@ -2070,6 +2228,8 @@ package body et_board_ops_devices is
 	
 	
 	
+
+
 	
 	
 	function get_first_placeholder (
@@ -2233,6 +2393,7 @@ package body et_board_ops_devices is
 	
 	
 	
+
 	
 	
 
