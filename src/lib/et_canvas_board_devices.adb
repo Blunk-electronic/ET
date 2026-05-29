@@ -75,8 +75,6 @@ with et_package_model_name;
 with et_package_read;
 
 with et_modes.board;
-with et_undo_redo;
-with et_commit;
 with et_directory_and_file_ops;
 with et_object_status;				use et_object_status;
 
@@ -790,10 +788,6 @@ package body et_canvas_board_devices is
 		use et_package_library;
 		use pac_package_models;
 		
-		use et_modes.board;
-		use et_commit;
-		use et_undo_redo;
-
 		-- Build the full package position from the
 		-- given place, with rotation as given by device_add and on the
 		-- top side of the board:
@@ -803,18 +797,12 @@ package body et_canvas_board_devices is
 		log (text => "add_non_electrical_device", level => log_threshold);
 		log_indentation_up;
 		
-		-- Commit the current state of the design:
-		commit (PRE, verb, noun, log_threshold);
-		
 		add_non_electrical_device (
 			module_cursor	=> active_module,
 			package_model	=> get_package_model_file (device_add.packge),
 			position		=> position,
 			prefix			=> get_prefix (device_add.device_pre),
 			log_threshold	=> log_threshold + 1);
-
-		-- Commit the new state of the design:
-		commit (POST, verb, noun, log_threshold);
 
 		status_clear;
 
@@ -844,10 +832,6 @@ package body et_canvas_board_devices is
 		
 		-- Deletes the selected object:
 		procedure finalize is
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-
 			object : type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -860,18 +844,12 @@ package body et_canvas_board_devices is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-
 				-- Do the copy operation:
 				copy_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					destination		=> point,
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				-- If a device has been copied, then the board
 				-- must be redrawn:
@@ -987,10 +965,6 @@ package body et_canvas_board_devices is
 		-- Assigns the final position after the move to the selected object.
 		-- Resets variable preliminary_object:
 		procedure finalize is
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -1003,17 +977,11 @@ package body et_canvas_board_devices is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				move_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					destination		=> snap_to_grid (point),
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 			else
 				log (text => "nothing to do", level => log_threshold);
@@ -1080,10 +1048,6 @@ package body et_canvas_board_devices is
 	is 
 
 		procedure finalize is
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-
 			object : type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -1096,16 +1060,10 @@ package body et_canvas_board_devices is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				rotate_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 			else
 				log (text => "nothing to do", level => log_threshold);
@@ -1117,7 +1075,6 @@ package body et_canvas_board_devices is
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
-
 		
 
 	begin		
@@ -1160,10 +1117,6 @@ package body et_canvas_board_devices is
 		
 		-- Renames the selected object:
 		procedure finalize is
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -1176,21 +1129,13 @@ package body et_canvas_board_devices is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				rename_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					new_name_device	=> device_name_new,
 					log_threshold	=> log_threshold + 1);
 
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
-
 				redraw_board;
-				
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
@@ -1199,7 +1144,6 @@ package body et_canvas_board_devices is
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
-
 		
 		
 	begin
@@ -1286,6 +1230,8 @@ package body et_canvas_board_devices is
 	end show_rename_window;
 
 
+
+
 	
 
 	
@@ -1331,10 +1277,6 @@ package body et_canvas_board_devices is
 	is 
 
 		procedure finalize is
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-
 			object : type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -1347,16 +1289,10 @@ package body et_canvas_board_devices is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				flip_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 			else
 				log (text => "nothing to do", level => log_threshold);
@@ -1368,7 +1304,6 @@ package body et_canvas_board_devices is
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
-
 		
 
 	begin		
@@ -1413,10 +1348,6 @@ package body et_canvas_board_devices is
 
 		-- Shows some information in the status bar:
 		procedure finalize is
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-			
 			object : type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
@@ -1429,16 +1360,10 @@ package body et_canvas_board_devices is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				delete_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 			else
 				log (text => "nothing to do", level => log_threshold);
@@ -1476,6 +1401,8 @@ package body et_canvas_board_devices is
 
 	
 
+
+	
 
 	
 
