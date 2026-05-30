@@ -40,7 +40,7 @@
 -- DESCRIPTION:
 -- This package is about conductor objects.
 -- Such objects are either connected with a net (as part of a route)
--- or not connected at all (floating).
+-- or not connected at all (floating or freetracks).
 
 
 with et_generic_modules;		use et_generic_modules;
@@ -63,7 +63,15 @@ package et_cp_board_conductors is
 		log_threshold	: in type_log_level);
 	
 
-
+	-- Parses a command that draws a track that
+	-- is connected with a net. Examples:
+	-- board demo route net GND 1 line 2  50 10  50 20
+	-- board demo route net GND 1 line 2  R1 1  50 20
+	-- board demo route net GND 1 line 2  R1 1  x 5
+	-- board demo route net GND 1 line 2  IC1 H7 direction 45 50
+	--
+	-- board demo route net GND 1 arc 0.25 50 50 50 0 50 100 ccw
+	-- width 0.25, center 50/50, from 50/0 to 50/100, counterclockwise
 	procedure route_net (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;

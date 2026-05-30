@@ -118,6 +118,15 @@ Devices and Units
 	
 
 
+#. Renumber Devices
+
+	.. code-block::
+
+		renumber devices 100
+	
+
+
+
 
 
 

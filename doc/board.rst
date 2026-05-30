@@ -455,9 +455,41 @@ Routing, laying out Tracks and Traces
 
 		route net GND 1 line 2  20 20  50 20
 	
-		
 
+	This example draws a track starting at R1
+	Terminal 1 and ending at 50/20:
+
+		
+	.. code-block::
+
+		route net GND 1 line 2  R1 1  50 20
+
+
+	This example draws a track starting at R1
+	Terminal 1 and ending at 50/20:
+
+		
+	.. code-block::
+
+		route net GND 1 line 2  R1 1  50 20
+
+
+	This example draws a track from IC1 pad H7 in 
+	x direction to the 5th grid line in along x axis:
 	
+	.. code-block::
+
+		route net NET_1 1 line 0.25 R1 1 to x 5
+
+
+	This command draws an arc. Center at 50/50,
+	start at 50/0, and at 50/100 and CCW direction:
+
+	.. code-block::
+
+		route net GND 1 arc 0.25 50 50 50 0 50 100 ccw
+
+
 #. Deleting Track Segments
 
 	.. code-block::
