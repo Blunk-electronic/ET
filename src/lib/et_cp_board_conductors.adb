@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -38,7 +38,8 @@
 -- To Do:
 -- - rework
 -- - propose arguments if command incomplete
---
+-- - existence check of nets
+-- - rework commit ops
 
 with ada.text_io;						use ada.text_io;
 with ada.characters.handling;			use ada.characters.handling;
@@ -83,6 +84,7 @@ with et_directions;
 
 with et_canvas_board;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
 
@@ -485,7 +487,8 @@ package body et_cp_board_conductors is
 
 		
 	begin -- route_net
-		-- CS log message
+		log (text => "route net", level => log_threshold);
+		log_indentation_up;
 		
 		case shape is
 			when LINE =>
@@ -698,6 +701,8 @@ package body et_cp_board_conductors is
 				end case;
 				
 		end case;
+
+		log_indentation_down;
 	end route_net;
 
 
@@ -827,7 +832,9 @@ package body et_cp_board_conductors is
 
 		
 	begin
-		-- CS log message
+		log (text => "delete net segment", level => log_threshold);
+		log_indentation_up;		
+
 		
 		case cmd_field_count is
 			when 9 => do_it;
@@ -836,11 +843,14 @@ package body et_cp_board_conductors is
 				
 			when others => command_incomplete (cmd);
 		end case;
-	
+
+		
+		log_indentation_down;		
 	end delete_net_segment;
 
 
 
+	
 
 
 
@@ -928,7 +938,9 @@ package body et_cp_board_conductors is
 
 		
 	begin -- route_freetrack
-		-- CS log message
+		log (text => "route freetrack", level => log_threshold);
+		log_indentation_up;		
+
 		
 		case shape is
 			when LINE =>
@@ -992,6 +1004,9 @@ package body et_cp_board_conductors is
 						command_incomplete (cmd);
 				end case;
 		end case;
+
+		
+		log_indentation_down;
 	end route_freetrack;
 
 
@@ -1030,7 +1045,9 @@ package body et_cp_board_conductors is
 
 		
 	begin
-		-- CS log message
+		log (text => "delete freetrack segment", level => log_threshold);
+		log_indentation_up;		
+
 		
 		case cmd_field_count is
 			when 8 => do_it;
@@ -1040,6 +1057,9 @@ package body et_cp_board_conductors is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end delete_freetrack_segment;
 
 
@@ -1062,7 +1082,9 @@ package body et_cp_board_conductors is
 		nets : pac_net_names.list;
 
 	begin
-		-- CS log message
+		log (text => "fill zones", level => log_threshold);
+		log_indentation_up;		
+
 		
 		case cmd_field_count is
 			when 4 => -- fill all zones
@@ -1085,6 +1107,9 @@ package body et_cp_board_conductors is
 		if runmode /= MODE_HEADLESS then
 			set_status ("conductor zones filled");
 		end if;
+
+
+		log_indentation_down;
 	end fill_zones;
 		
 
@@ -1107,7 +1132,9 @@ package body et_cp_board_conductors is
 		use et_board_ops_fill_zones;
 		nets : pac_net_names.list;
 	begin
-		-- CS log message
+		log (text => "clear zones", level => log_threshold);
+		log_indentation_up;		
+
 		
 		case cmd_field_count is
 			when 4 => -- clear all zones
@@ -1130,12 +1157,16 @@ package body et_cp_board_conductors is
 		if runmode /= MODE_HEADLESS then
 			set_status ("conductor zone(s) cleared");
 		end if;
+
+
+		log_indentation_down;
 	end clear_zones;
 
 
 
 
 
+	
 	
 
 	procedure update_ratsnest (
@@ -1150,7 +1181,8 @@ package body et_cp_board_conductors is
 		use et_ratsnest;
 		use et_board_ops_ratsnest;
 	begin
-		-- CS log message
+		log (text => "update ratsnest", level => log_threshold);
+		log_indentation_up;		
 		
 		
 		case cmd_field_count is
@@ -1164,6 +1196,9 @@ package body et_cp_board_conductors is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end update_ratsnest;
 
 	
