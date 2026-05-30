@@ -70,6 +70,10 @@ with et_rotation_docu;					use et_rotation_docu;
 with et_exceptions;						use et_exceptions;
 with et_string_processing;				use et_string_processing;
 
+with et_modes.schematic;
+with et_undo_redo;
+with et_commit;
+
 
 package body et_schematic_ops_nets is
 
@@ -989,8 +993,14 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;
 		catch_zone		: in type_catch_zone;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+
+		
 		use pac_object_segments;
 		segments_in_zone : pac_object_segments.list;
 		
@@ -1016,11 +1026,25 @@ package body et_schematic_ops_nets is
 		else
 			-- From the segments found at the given position, 
 			-- take the first one and delete it:
-			segment := first_element (segments_in_zone);			
+			segment := first_element (segments_in_zone);
+
+			
+			if commit_design = DO_COMMIT then
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold);
+			end if;
+
+			
 			delete_segment (module_cursor, segment, log_threshold + 2);
 
 			update_strand_positions (module_cursor, log_threshold + 2);
 
+			
+			if commit_design = DO_COMMIT then
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold);
+			end if;
+			
 			update_ratsnest (module_cursor, log_threshold + 2);
 		end if;
 			
@@ -1763,8 +1787,13 @@ package body et_schematic_ops_nets is
 		catch_zone		: in type_catch_zone;
 		coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model; -- x/y, the new position 
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+		
 		use pac_object_segments;
 		segments_in_zone : pac_object_segments.list;
 		primary_segment : type_object_segment; -- the segment being dragged
@@ -1825,6 +1854,13 @@ package body et_schematic_ops_nets is
 			-- From the segments found at the given position, 
 			-- take the first one and subject it to the drag operation:
 			primary_segment := first_element (segments_in_zone);		
+
+
+			if commit_design = DO_COMMIT then
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold);
+			end if;
+			
 			
 			move_primary_segment (
 				module_cursor	=> module_cursor,
@@ -1886,7 +1922,13 @@ package body et_schematic_ops_nets is
 				-- outcome of the drag operation, then the ratsnest
 				-- in the board drawing must be updated:
 				update_ratsnest (module_cursor, log_threshold + 1);
-			end if;					
+			end if;	
+
+
+			if commit_design = DO_COMMIT then
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold);
+			end if;
 		end if;
 
 		
@@ -2717,6 +2759,8 @@ package body et_schematic_ops_nets is
 
 
 
+	
+
 
 	
 	
@@ -2942,8 +2986,13 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;
 		catch_zone		: in type_catch_zone;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+		
 		use pac_object_strands;
 		strands_in_zone : pac_object_strands.list;
 		
@@ -2957,21 +3006,36 @@ package body et_schematic_ops_nets is
 		log_indentation_up;
 
 		-- Get all strands which are in the given zone:
-		strands_in_zone := get_strands (module_cursor, sheet, catch_zone, log_threshold + 1);
+		strands_in_zone := get_strands (
+			module_cursor, sheet, catch_zone, log_threshold + 1);
   
 		-- Issue warning if nothing found in given zone.
 		-- Otherwise the first strand that has been found
 		-- will be deleted:
 		if is_empty (strands_in_zone) then
-			log (text => "No strand found at given position !", level => log_threshold + 1);			
+			log (text => "No strand found at given position !", 
+				 level => log_threshold + 1);			
 		else
 			-- From the strands found at the given position, 
 			-- take the first one and delete it:
 			strand := first_element (strands_in_zone);			
+
+			if commit_design = DO_COMMIT then
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold);
+			end if;
+
+			
 			delete_strand (module_cursor, strand, log_threshold + 2);
   
 			update_strand_positions (module_cursor, log_threshold + 2);
-  
+
+
+			if commit_design = DO_COMMIT then
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold);
+			end if;
+			
 			update_ratsnest (module_cursor, log_threshold + 2);
 		end if;
 			
@@ -3667,8 +3731,13 @@ package body et_schematic_ops_nets is
 		net_name_after	: in pac_net_name.bounded_string;
 		sheet			: in type_sheet;
 		catch_zone		: in type_catch_zone;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+		
 		-- Here we store the strands of all nets that
 		-- exist on the given place:
 		strands_found : pac_object_strands.list;
@@ -3709,12 +3778,23 @@ package body et_schematic_ops_nets is
 				& " found at the specified place !");
 
 		else
+			if commit_design = DO_COMMIT then
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold);
+			end if;
+
+			
 			rename_strand (
 				module_cursor	=> module_cursor,
 				strand			=> object_strand,
 				new_name		=> net_name_after,
 				log_threshold	=> log_threshold + 1);
-				
+
+
+			if commit_design = DO_COMMIT then
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold);
+			end if;
 		end if;
 		
 		log_indentation_down;
@@ -3724,6 +3804,7 @@ package body et_schematic_ops_nets is
 
 
 
+	
 	
 
 
@@ -3952,8 +4033,13 @@ package body et_schematic_ops_nets is
 		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
 		all_sheets		: in boolean := false;
 		sheet			: in type_sheet := 1;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+		
 		-- This cursor points to the targeted net in 
 		-- order to locate it and to test whether it exists at all:
 		net_cursor : pac_nets.cursor;
@@ -3988,6 +4074,12 @@ package body et_schematic_ops_nets is
 		net_cursor := locate_net (module_cursor, net_name_before);
 
 		object_net.net_cursor := net_cursor;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		rename_net (
 			module_cursor	=> module_cursor,
@@ -3996,6 +4088,12 @@ package body et_schematic_ops_nets is
 			all_sheets		=> all_sheets,
 			new_name		=> net_name_after,
 			log_threshold	=> log_threshold + 1);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
 		
 		log_indentation_down;
 	end rename_net;
@@ -4108,8 +4206,13 @@ package body et_schematic_ops_nets is
 		net_name		: in pac_net_name.bounded_string;
 		sheet			: in type_sheet;
 		all_sheets		: in boolean := false;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+		
 		net : type_object_net;
 	begin
 		if all_sheets then
@@ -4132,9 +4235,22 @@ package body et_schematic_ops_nets is
 		-- must exist. Otherwise an exception will be raised here:
 		net.net_cursor := locate_net (module_cursor, net_name);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		delete_net (module_cursor, net, sheet, 
 			all_sheets, log_threshold + 1);			
-			
+
+	
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+		
 		log_indentation_down;
 	end delete_net;
 
@@ -4150,7 +4266,6 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;
 		log_threshold	: in type_log_level)
-
 	is
 		use pac_object_strands;
 		strands_on_sheet : pac_object_strands.list;
@@ -4482,7 +4597,9 @@ package body et_schematic_ops_nets is
 
 
 
+	
 
+	
 	
 	
 	function get_net_index (
@@ -4735,6 +4852,7 @@ package body et_schematic_ops_nets is
 
 
 
+	
 	
 
 	procedure insert_net_segments (
@@ -5048,6 +5166,7 @@ package body et_schematic_ops_nets is
 
 	
 
+	
 
 	
 
@@ -5127,13 +5246,19 @@ package body et_schematic_ops_nets is
 	
 	
 	
+	
 	procedure insert_net_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		A				: in type_object_position; -- sheet/x/y
 		B				: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is		
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+		
 		net_cursor : pac_nets.cursor;
 		segment : type_net_segment;
 	begin
@@ -5156,6 +5281,13 @@ package body et_schematic_ops_nets is
 		-- be no_element:
 		net_cursor := locate_net (module_cursor, net_name);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		if not has_element (net_cursor) then
 			log (text => "Net " & to_string (net_name) & 
 				 " does not exist yet and will be created.",
@@ -5178,6 +5310,13 @@ package body et_schematic_ops_nets is
 			get_sheet (A), segment, log_threshold + 2);					
 
 		update_strand_positions (module_cursor, log_threshold + 2);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
 		
 		update_ratsnest (module_cursor, log_threshold + 2);
 		
@@ -5195,8 +5334,14 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		scope			: in type_net_scope; -- local/global
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+
+		
 		net_cursor : pac_nets.cursor; -- points to the net
 
 		
@@ -5234,11 +5379,24 @@ package body et_schematic_ops_nets is
 		-- will be raised here:
 		net_cursor := locate_net (module_cursor, net_name);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+		
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_nets'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+		
 		-- CS update_ratsnest (module_cursor, log_threshold + 1)
 	end set_scope;
 
@@ -5840,14 +5998,19 @@ package body et_schematic_ops_nets is
 
 
 
+	
 
 	
 	
 	procedure place_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		position		: in type_object_position; -- sheet/x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
 
 		use pac_object_segments;
 		segments : pac_object_segments.list;
@@ -5863,14 +6026,29 @@ package body et_schematic_ops_nets is
 			net_name := get_net_name (segment.net_cursor);
 
 			log_indentation_up;
-			log (text => "Found net: " & to_string (net_name), level => log_threshold + 1);
+			
+			log (text => "Found net: " & to_string (net_name), 
+				 level => log_threshold + 1);
 
+	
+			if commit_design = DO_COMMIT then
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold);
+			end if;
+
+			
 			place_net_label (
 				module_cursor	=> module_cursor,
 				segment			=> segment,
 				position		=> get_place (position),
 				log_threshold	=> log_threshold + 1);
 
+
+			if commit_design = DO_COMMIT then
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold);
+			end if;
+			
 			log_indentation_down;
 		end do_it;
 
@@ -5911,6 +6089,7 @@ package body et_schematic_ops_nets is
 
 
 
+	
 
 	
 
@@ -5969,15 +6148,24 @@ package body et_schematic_ops_nets is
 	
 
 
+	
 
 
+
+	
 
 
 	procedure delete_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		position		: in type_object_position; -- sheet/x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+
+		
 		-- This flag goes true once the targeted net label
 		-- has been found. All iterations are cancelled as soon as it goes true.
 		label_found : boolean := false;
@@ -6071,11 +6259,25 @@ package body et_schematic_ops_nets is
 		
 		log_indentation_up;
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_nets'access);
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+		
 		if not label_found then
 			log (SEVERITY_WARNING, "No net label found at given position !");
 		end if;
@@ -6401,6 +6603,7 @@ package body et_schematic_ops_nets is
 	
 
 
+	
 
 
 	procedure modify_status (
@@ -6463,6 +6666,8 @@ package body et_schematic_ops_nets is
 	
 
 
+
+	
 
 
 
@@ -6754,13 +6959,21 @@ package body et_schematic_ops_nets is
 
 
 
+	
+
+
 
 	procedure place_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
 		position		: in type_object_position; -- sheet/x/y
 		direction		: in type_connector_direction; -- INPUT, OUTPUT, PASSIVE, ...
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+		
 		use pac_object_segments;
 		segments : pac_object_segments.list;
 		segment : type_object_segment;
@@ -6775,8 +6988,17 @@ package body et_schematic_ops_nets is
 			net_name := get_net_name (segment.net_cursor);
 
 			log_indentation_up;
-			log (text => "Found net: " & to_string (net_name), level => log_threshold + 1);
+			
+			log (text => "Found net: " & to_string (net_name),
+				 level => log_threshold + 1);
 
+			
+			if commit_design = DO_COMMIT then
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold);
+			end if;
+
+			
 			place_net_connector (
 				module_cursor	=> module_cursor,
 				segment			=> segment,
@@ -6784,6 +7006,13 @@ package body et_schematic_ops_nets is
 				-- CS direction ?
 				log_threshold	=> log_threshold + 1);
 
+			
+			if commit_design = DO_COMMIT then
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold);
+			end if;
+
+			
 			log_indentation_down;
 		end do_it;
 	
@@ -6892,6 +7121,7 @@ package body et_schematic_ops_nets is
 
 
 	
+
 
 
 

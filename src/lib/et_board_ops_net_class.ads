@@ -46,6 +46,8 @@ with et_net_class;					use et_net_class;
 with et_net_class_name;				use et_net_class_name;
 with et_logging;					use et_logging;
 
+with et_cmd_origin_to_commit;		use et_cmd_origin_to_commit;
+
 
 package et_board_ops_net_class is
 
@@ -91,6 +93,7 @@ package et_board_ops_net_class is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		net_class		: in pac_net_class_name.bounded_string; -- pwr
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 

@@ -71,6 +71,9 @@ with et_sheets;							use et_sheets;
 with et_logging;						use et_logging;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+
+
 
 package et_schematic_ops_nets is
 
@@ -168,6 +171,7 @@ package et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;
 		catch_zone		: in type_catch_zone;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -290,6 +294,7 @@ package et_schematic_ops_nets is
 		catch_zone		: in type_catch_zone;
 		coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -443,6 +448,7 @@ package et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;
 		catch_zone		: in type_catch_zone;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -590,6 +596,7 @@ package et_schematic_ops_nets is
 		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
 		sheet			: in type_sheet;
 		catch_zone		: in type_catch_zone;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 	
 	
@@ -620,6 +627,7 @@ package et_schematic_ops_nets is
 		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
 		all_sheets		: in boolean := false;
 		sheet			: in type_sheet := 1;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 	
 
@@ -645,6 +653,7 @@ package et_schematic_ops_nets is
 		net_name		: in pac_net_name.bounded_string;
 		sheet			: in type_sheet;
 		all_sheets		: in boolean := false;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -776,6 +785,7 @@ package et_schematic_ops_nets is
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		A				: in type_object_position; -- sheet/x/y
 		B				: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -789,6 +799,7 @@ package et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		scope			: in type_net_scope; -- local/global
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -862,6 +873,7 @@ package et_schematic_ops_nets is
 		
 		-- The reference point at the segment:
 		position		: in type_object_position; -- sheet/x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -879,6 +891,7 @@ package et_schematic_ops_nets is
 	procedure delete_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		position		: in type_object_position; -- sheet/x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -959,6 +972,7 @@ package et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		position		: in type_object_position; -- sheet/x/y
 		direction		: in type_connector_direction; -- INPUT, OUTPUT, PASSIVE, ...
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 

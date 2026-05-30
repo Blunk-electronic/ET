@@ -42,6 +42,10 @@ with et_schematic_ops_nets;			use et_schematic_ops_nets;
 with et_net_classes;				use et_net_classes;
 with et_module;						use et_module;
 
+with et_modes.board;
+with et_undo_redo;
+with et_commit;
+
 
 package body et_board_ops_net_class is
 
@@ -172,8 +176,14 @@ package body et_board_ops_net_class is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		net_class		: in pac_net_class_name.bounded_string; -- pwr
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
+		
 		net_cursor : pac_nets.cursor; -- points to the net
 
 		use pac_nets;
@@ -227,11 +237,25 @@ package body et_board_ops_net_class is
 
 		log_indentation_up;
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+		
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
-			
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+		
 		log_indentation_down;
 	end set_net_class;
 

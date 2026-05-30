@@ -70,6 +70,10 @@ with et_board_ops_net_class;
 with et_canvas_schematic_nets;
 with et_canvas_schematic_preliminary_object;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+
+
+
 
 package body et_cp_schematic_nets is
 
@@ -158,6 +162,11 @@ package body et_cp_schematic_nets is
 					module_cursor 	=> module,
 					net_name		=> net_name,
 					scope			=> scope,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+
 					log_threshold	=> log_threshold + 1);
 
 			else
@@ -186,8 +195,9 @@ package body et_cp_schematic_nets is
 
 
 
-	
 
+
+	
 
 
 
@@ -296,13 +306,19 @@ package body et_cp_schematic_nets is
 				place_net_connector (
 					module_cursor	=> module,
 					position		=> to_position (
-											point => type_vector_model (set (
-												x => to_distance (get_field (cmd, 6)),
-												y => to_distance (get_field (cmd, 7)))),
-											sheet => to_sheet (get_field (cmd, 5))), -- sheet number
+						point => type_vector_model (set (
+							x => to_distance (get_field (cmd, 6)),
+							y => to_distance (get_field (cmd, 7)))),
+						sheet => to_sheet (get_field (cmd, 5))), -- sheet number
 	
 					-- A connector requires specification of signal direction:
-					direction		=> to_direction (get_field (cmd, 8)), -- INPUT, OUTPUT, PASSIVE, ...
+					direction		=> to_direction (get_field (cmd, 8)),
+					-- INPUT, OUTPUT, PASSIVE, ...
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+
 					log_threshold	=> log_threshold + 1);
 
 				
@@ -345,6 +361,8 @@ package body et_cp_schematic_nets is
 
 	
 	
+
+
 	
 	
 
@@ -366,11 +384,15 @@ package body et_cp_schematic_nets is
 				place_net_label (
 					module_cursor	=> module,
 					position		=> to_position (
-											point => type_vector_model (set (
-												x => to_distance (get_field (cmd, 6)),
-												y => to_distance (get_field (cmd, 7)))),
-											sheet => to_sheet (get_field (cmd, 5))), -- sheet number
-	
+						point => type_vector_model (set (
+							x => to_distance (get_field (cmd, 6)),
+							y => to_distance (get_field (cmd, 7)))),
+						sheet => to_sheet (get_field (cmd, 5))), -- sheet number
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+
 					log_threshold	=> log_threshold + 1);
 
 				
@@ -385,7 +407,8 @@ package body et_cp_schematic_nets is
 	end place_net_label;
 
 		
-		
+
+	
 		
 		
 
@@ -410,10 +433,14 @@ package body et_cp_schematic_nets is
 					module_cursor	=> module,
 
 					position		=> to_position (
-										point => type_vector_model (set (
-											x => to_distance (get_field (cmd, 6)),
-											y => to_distance (get_field (cmd, 7)))),
-										sheet => to_sheet (get_field (cmd, 5))), -- sheet number
+						point => type_vector_model (set (
+							x => to_distance (get_field (cmd, 6)),
+							y => to_distance (get_field (cmd, 7)))),
+						sheet => to_sheet (get_field (cmd, 5))), -- sheet number
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					
 					log_threshold	=> log_threshold + 1);
 				
@@ -486,6 +513,11 @@ package body et_cp_schematic_nets is
 					module_cursor	=> module,
 					net_name		=> net_name,
 					net_class		=> net_class,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+
 					log_threshold	=> log_threshold + 1);
 
 			else
@@ -512,7 +544,9 @@ package body et_cp_schematic_nets is
 	end set_net_class;
 		
 		
-		
+
+
+	
 
 		
 		
@@ -598,7 +632,12 @@ package body et_cp_schematic_nets is
 				module_cursor	=> module,
 				net_name		=> object_net_name,
 				A				=> A,					
-				B 				=> B,					
+				B 				=> B,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
+				
 				log_threshold	=> log_threshold + 1);
 		end segment_given;
 		
@@ -691,6 +730,11 @@ package body et_cp_schematic_nets is
 					net_name			=> net_name,
 					sheet				=> 1, -- no meaning
 					all_sheets			=> TRUE,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+
 					log_threshold		=> log_threshold + 1);
 		
 			else	
@@ -714,6 +758,11 @@ package body et_cp_schematic_nets is
 					module_cursor		=> module,
 					net_name			=> net_name,
 					sheet				=> sheet,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+
 					log_threshold		=> log_threshold + 1);
 		
 			else	
@@ -777,6 +826,11 @@ package body et_cp_schematic_nets is
 					net_name_before		=> net_name_before,
 					net_name_after		=> net_name_after,
 					all_sheets			=> true,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+
 					log_threshold		=> log_threshold + 1);
 		
 			else
@@ -801,6 +855,11 @@ package body et_cp_schematic_nets is
 					net_name_before		=> net_name_before,
 					net_name_after		=> net_name_after,
 					sheet				=> sheet,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+
 					log_threshold		=> log_threshold + 1);
 		
 			else
@@ -830,6 +889,11 @@ package body et_cp_schematic_nets is
 					net_name_after		=> net_name_after,
 					sheet				=> sheet,
 					catch_zone			=> catch_zone,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+					
 					log_threshold		=> log_threshold + 1);
 		
 			else
@@ -899,6 +963,11 @@ package body et_cp_schematic_nets is
 					module_cursor	=> module,
 					sheet			=> to_sheet (get_field (cmd, 5)),
 					catch_zone		=> catch_zone,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+
 					log_threshold	=> log_threshold + 1);
 
 			when 9 .. type_field_count'last =>
@@ -949,6 +1018,11 @@ package body et_cp_schematic_nets is
 					catch_zone		=> catch_zone,					
 					coordinates		=> to_coordinates (get_field (cmd, 9)), -- relative/absolute					
 					destination		=> to_vector_model (get_field (cmd, 10), get_field (cmd, 11)),
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+					
 					log_threshold	=> log_threshold + 1);
 					
 
@@ -961,6 +1035,8 @@ package body et_cp_schematic_nets is
 		
 		log_indentation_down;
 	end drag_net_segment;
+
+
 
 
 	
@@ -994,6 +1070,11 @@ package body et_cp_schematic_nets is
 					module_cursor	=> module,
 					sheet			=> to_sheet (get_field (cmd, 5)),
 					catch_zone		=> catch_zone,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+					
 					log_threshold	=> log_threshold + 1);
 
 			when 9 .. type_field_count'last => 
