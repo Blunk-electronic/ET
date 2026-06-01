@@ -216,21 +216,13 @@ package body et_canvas_schematic_nets is
 -- 			end if;
 		end extend_net;
 
-
-		use et_undo_redo;
-		use et_commit;
-
 		
 	begin
-		log (text => "adding net segment on sheet " & to_string (sheet) 
+		log (text => "add net segment on sheet " & to_string (sheet) 
 			 & " " & to_string (segment), 
 			 level => log_threshold);
 
 		log_indentation_up;
-
-		-- Commit the current state of the design:
-		commit (PRE, verb, noun, log_threshold + 1);
-		
 
 		-- Look for already existing nets on the A and B end
 		-- of the given segment:
@@ -307,9 +299,6 @@ package body et_canvas_schematic_nets is
 		-- if not is_empty (net_name_end) and not is_empty (net_name_start) then
 		-- 	extend_net (net_name_start);
 		-- end if;
-
-		-- Commit the new state of the design:
-		commit (POST, verb, noun, log_threshold + 1);
 		
 		log_indentation_down;
 	end add_net_segment;
