@@ -461,7 +461,7 @@ Nets and Net Labels
 
 	A single particular strand on the current sheet:
 	
-	|VNS| n s
+	|VNS| n t
 
 
 	All strands on the current sheet:

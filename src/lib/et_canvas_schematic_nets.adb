@@ -344,8 +344,6 @@ package body et_canvas_schematic_nets is
 		-- Renames the selected object:
 		procedure finalize is
 			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
 
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
@@ -359,18 +357,11 @@ package body et_canvas_schematic_nets is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				rename_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					new_name_net	=> net_name_new,
 					log_threshold	=> log_threshold + 1);
-
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				redraw_board; -- board is not always affected
 				-- CS redraw schematic ?

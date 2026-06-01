@@ -3645,8 +3645,12 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		strand			: in type_object_strand;
 		new_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
 
 		-- This cursor points to the net where the given strand
 		-- will be moved to. The destination net can be an existing
@@ -3684,11 +3688,18 @@ package body et_schematic_ops_nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& " rename " & to_string (strand),
+			& " rename strand " & to_string (strand),
 			level => log_threshold);
 
 		log_indentation_up;
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		-- If a net named after new_name does not exist already, then
 		-- it wil be created now:
 		create_net (
@@ -3711,6 +3722,13 @@ package body et_schematic_ops_nets is
 		-- completely if no strands are left over:
 		delete_strand (module_cursor, strand, log_threshold + 2);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+		
 		update_ratsnest (module_cursor, log_threshold + 2);
 			
 		log_indentation_down;		
@@ -3788,6 +3806,7 @@ package body et_schematic_ops_nets is
 				module_cursor	=> module_cursor,
 				strand			=> object_strand,
 				new_name		=> net_name_after,
+				commit_design	=> NO_COMMIT,
 				log_threshold	=> log_threshold + 1);
 
 
@@ -3814,8 +3833,14 @@ package body et_schematic_ops_nets is
 		sheet			: in type_sheet;
 		all_sheets		: in boolean := false;
 		new_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is 
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+		
+		
 		net_name : constant pac_net_name.bounded_string := get_net_name (net.net_cursor);
 
 		-- This procedure renames the whole net on all sheets.
@@ -3968,7 +3993,7 @@ package body et_schematic_ops_nets is
 				-- found - as specified in object_strand - rename it:
 				if strand_found then
 					rename_strand (module_cursor, object_strand, 
-						new_name, log_threshold + 1);
+						new_name, NO_COMMIT, log_threshold + 1);
 				else
 					-- If no strand has been found, then there is nothing
 					-- to do anymore.
@@ -3992,13 +4017,13 @@ package body et_schematic_ops_nets is
 	begin
 		if all_sheets then
 			log (text => "module " & to_string (module_cursor)
-				& " rename " & to_string (net)
+				& " rename net " & to_string (net)
 				& " on all sheets.",
 				level => log_threshold);
 
 		else
 			log (text => "module " & to_string (module_cursor)
-				& " rename " & to_string (net)
+				& " rename net " & to_string (net)
 				& " on sheet " & to_string (sheet) & ".",
 				level => log_threshold);
 
@@ -4007,12 +4032,25 @@ package body et_schematic_ops_nets is
 
 		log_indentation_up;
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		if all_sheets then
 			rename_whole_net;
 		else
 			rename_on_sheet;
 		end if;
 		
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
 		
 		update_ratsnest (module_cursor, log_threshold + 1);
 			
@@ -4087,6 +4125,7 @@ package body et_schematic_ops_nets is
 			sheet			=> sheet,
 			all_sheets		=> all_sheets,
 			new_name		=> net_name_after,
+			commit_design	=> NO_COMMIT,
 			log_threshold	=> log_threshold + 1);
 
 		

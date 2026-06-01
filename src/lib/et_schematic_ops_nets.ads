@@ -581,6 +581,7 @@ package et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		strand			: in type_object_strand;
 		new_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -609,6 +610,7 @@ package et_schematic_ops_nets is
 		sheet			: in type_sheet;
 		all_sheets		: in boolean := false;
 		new_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
