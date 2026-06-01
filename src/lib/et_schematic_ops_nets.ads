@@ -308,6 +308,7 @@ package et_schematic_ops_nets is
 		primary_segment	: in type_object_segment;
 		POA				: in type_vector_model;
 		destination		: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 

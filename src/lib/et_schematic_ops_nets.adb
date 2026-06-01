@@ -1949,8 +1949,13 @@ package body et_schematic_ops_nets is
 		primary_segment	: in type_object_segment;
 		POA				: in type_vector_model;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is	
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+		
 		-- Other segments which might be connected with the segment
 		-- being attacked must be dragged along.
 		-- In order to compute the displacement of secondary
@@ -1975,6 +1980,13 @@ package body et_schematic_ops_nets is
 
 		log_indentation_up;
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		-- Drag the given primary segment:
 		move_primary_segment (
 			module_cursor	=> module_cursor,
@@ -2040,6 +2052,12 @@ package body et_schematic_ops_nets is
 		end if;					
 		
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+		
 		log_indentation_down;
 	end drag_segment;
 
@@ -2047,6 +2065,9 @@ package body et_schematic_ops_nets is
 
 	
 
+
+
+	
 
 
 
