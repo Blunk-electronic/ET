@@ -854,9 +854,14 @@ package body et_schematic_ops_nets is
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -973,9 +978,27 @@ package body et_schematic_ops_nets is
 			level => log_threshold);
 
 		log_indentation_up;
+
 		
-		generic_modules.update_element (module_cursor, query_module'access);
-		update_strand_positions (module_cursor, log_threshold + 2);
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
+		generic_modules.update_element (
+			module_cursor, query_module'access);
+		
+		update_strand_positions (
+			module_cursor, log_threshold + 2);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+		
 		update_ratsnest (module_cursor, log_threshold + 2);
 			
 		log_indentation_down;		
@@ -1035,7 +1058,8 @@ package body et_schematic_ops_nets is
 			end if;
 
 			
-			delete_segment (module_cursor, segment, log_threshold + 2);
+			delete_segment (module_cursor, segment, 
+				NO_COMMIT, log_threshold + 2);
 
 			update_strand_positions (module_cursor, log_threshold + 2);
 
@@ -2943,9 +2967,14 @@ package body et_schematic_ops_nets is
 	procedure delete_strand (
 		module_cursor	: in pac_generic_modules.cursor;
 		strand			: in type_object_strand;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -2986,9 +3015,26 @@ package body et_schematic_ops_nets is
 			level => log_threshold);
 
 		log_indentation_up;
+
 		
-		generic_modules.update_element (module_cursor, query_module'access);
-		update_ratsnest (module_cursor, log_threshold + 2);
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
+		generic_modules.update_element (
+			module_cursor, query_module'access);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+		
+		update_ratsnest (
+			module_cursor, log_threshold + 2);
 			
 		log_indentation_down;		
 	end delete_strand;
@@ -3041,15 +3087,18 @@ package body et_schematic_ops_nets is
 			-- take the first one and delete it:
 			strand := first_element (strands_in_zone);			
 
+			
 			if commit_design = DO_COMMIT then
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold);
 			end if;
 
 			
-			delete_strand (module_cursor, strand, log_threshold + 2);
+			delete_strand (module_cursor, 
+				strand, NO_COMMIT, log_threshold + 2);
   
-			update_strand_positions (module_cursor, log_threshold + 2);
+			update_strand_positions (
+				module_cursor, log_threshold + 2);
 
 
 			if commit_design = DO_COMMIT then
@@ -3741,7 +3790,8 @@ package body et_schematic_ops_nets is
 		
 		-- Delete the old strand. Delete the origin net 
 		-- completely if no strands are left over:
-		delete_strand (module_cursor, strand, log_threshold + 2);
+		delete_strand (module_cursor, strand, 
+			NO_COMMIT, log_threshold + 2);
 
 
 		if commit_design = DO_COMMIT then
@@ -4171,9 +4221,14 @@ package body et_schematic_ops_nets is
 		net				: in type_object_net;
 		sheet			: in type_sheet;
 		all_sheets		: in boolean := false;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -4247,14 +4302,31 @@ package body et_schematic_ops_nets is
 
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
-		generic_modules.update_element (module_cursor, query_module'access);
-		update_ratsnest (module_cursor, log_threshold + 1);
-			
+		generic_modules.update_element (
+			module_cursor, query_module'access);
+		
+		update_ratsnest (
+			module_cursor, log_threshold + 1);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+		
 		log_indentation_down;		
 	end delete_net;
 
 	
+
 
 
 
@@ -4303,7 +4375,7 @@ package body et_schematic_ops_nets is
 
 		
 		delete_net (module_cursor, net, sheet, 
-			all_sheets, log_threshold + 1);			
+			all_sheets, NO_COMMIT, log_threshold + 1);			
 
 	
 		if commit_design = DO_COMMIT then
@@ -4360,7 +4432,7 @@ package body et_schematic_ops_nets is
 				strand := element (cursor);
 			
 				delete_strand (module_cursor, strand, 
-					log_threshold + 2);
+					NO_COMMIT, log_threshold + 2);
 				
 				next (cursor);
 			end loop;
@@ -5921,9 +5993,14 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment;						  
 		position		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -6050,7 +6127,22 @@ package body et_schematic_ops_nets is
 			level => log_threshold);
 		
 		log_indentation_up;
-		generic_modules.update_element (module_cursor, query_module'access);		
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
+		generic_modules.update_element (
+		   module_cursor, query_module'access);		
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+		
 		log_indentation_down;
 	end place_net_label;
 
@@ -6101,6 +6193,7 @@ package body et_schematic_ops_nets is
 				module_cursor	=> module_cursor,
 				segment			=> segment,
 				position		=> get_place (position),
+				commit_design	=> NO_COMMIT,
 				log_threshold	=> log_threshold + 1);
 
 
@@ -6158,9 +6251,14 @@ package body et_schematic_ops_nets is
 	procedure delete_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		label			: in type_object_net_label;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -6198,11 +6296,23 @@ package body et_schematic_ops_nets is
 		
 		log_indentation_up;
 
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+		
 		log_indentation_down;
 	end delete_net_label;
 	
@@ -6995,9 +7105,14 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment;						  
 		position		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -7029,7 +7144,23 @@ package body et_schematic_ops_nets is
 			level => log_threshold);
 		
 		log_indentation_up;
-		generic_modules.update_element (module_cursor, query_module'access);		
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
+		generic_modules.update_element (
+			module_cursor, query_module'access);		
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+		
 		log_indentation_down;
 	end place_net_connector;
 
@@ -7144,9 +7275,14 @@ package body et_schematic_ops_nets is
 	procedure delete_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
 		connector		: in type_object_net_connector;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -7190,11 +7326,25 @@ package body et_schematic_ops_nets is
 		
 		log_indentation_up;
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+		
 		log_indentation_down;
 	end delete_net_connector;
 
@@ -8570,6 +8720,7 @@ package body et_schematic_ops_nets is
 
 
 
+	
 
 
 	procedure delete_object (
@@ -8578,7 +8729,7 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting object",
+			& " delete object",
 			-- CS & to_string (object)
 			level => log_threshold);
 
@@ -8586,10 +8737,12 @@ package body et_schematic_ops_nets is
 
 		case object.cat is
 			when CAT_SEGMENT =>
-				delete_segment (module_cursor, object.segment, log_threshold + 1);
+				delete_segment (module_cursor, 
+					object.segment, DO_COMMIT, log_threshold + 1);
 				
 			when CAT_STRAND =>
-				delete_strand (module_cursor, object.strand, log_threshold + 1);
+				delete_strand (module_cursor,
+					object.strand, DO_COMMIT, log_threshold + 1);
 				
 			when CAT_NET => 
 				delete_net (
@@ -8597,14 +8750,16 @@ package body et_schematic_ops_nets is
 					net				=> object.net,
 					sheet			=> active_sheet,
 					all_sheets		=> modify_net_on_all_sheets,
+					commit_design	=> DO_COMMIT,
 					log_threshold	=> log_threshold + 1);
-
 				
 			when CAT_LABEL => 
-				delete_net_label (module_cursor, object.label, log_threshold + 1);
+				delete_net_label (module_cursor, 
+					object.label, DO_COMMIT, log_threshold + 1);
 				
 			when CAT_CONNECTOR => 
-				delete_net_connector (module_cursor, object.connector, log_threshold + 1);
+				delete_net_connector (module_cursor, 
+					object.connector, DO_COMMIT, log_threshold + 1);
 				
 			when CAT_VOID =>
 				null;
@@ -8615,6 +8770,9 @@ package body et_schematic_ops_nets is
 
 
 
+
+
+	
 
 
 	procedure rename_object (

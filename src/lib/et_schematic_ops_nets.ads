@@ -162,6 +162,7 @@ package et_schematic_ops_nets is
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -439,6 +440,7 @@ package et_schematic_ops_nets is
 	procedure delete_strand (
 		module_cursor	: in pac_generic_modules.cursor;
 		strand			: in type_object_strand;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -644,6 +646,7 @@ package et_schematic_ops_nets is
 		net				: in type_object_net;
 		sheet			: in type_sheet;
 		all_sheets		: in boolean := false;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -865,6 +868,7 @@ package et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment;						  
 		position		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 	
 	
@@ -885,6 +889,7 @@ package et_schematic_ops_nets is
 	procedure delete_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		label			: in type_object_net_label;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -965,6 +970,7 @@ package et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment;						  
 		position		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		-- CS direction ?
 		log_threshold	: in type_log_level);
 
@@ -985,6 +991,7 @@ package et_schematic_ops_nets is
 	procedure delete_net_connector (
 		module_cursor	: in pac_generic_modules.cursor;
 		connector		: in type_object_net_connector;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	

@@ -52,8 +52,8 @@ with et_net_class;
 with et_schematic_ops_groups;
 with et_schematic_ops_nets;			use et_schematic_ops_nets;
 
-with et_undo_redo;
-with et_commit;
+-- with et_undo_redo;
+-- with et_commit;
 with et_object_status;				use et_object_status;
 with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
 
@@ -1060,14 +1060,10 @@ package body et_canvas_schematic_nets is
 
 		-- Deletes the selected object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
-					active_module, SELECTED, log_threshold + 1);
+				active_module, SELECTED, log_threshold + 1);
 		begin
-			log (text => "finalizing delete ...", level => log_threshold);
+			log (text => "finalize delete", level => log_threshold);
 			log_indentation_up;
 
 			-- If a selected object has been found, then
@@ -1076,16 +1072,10 @@ package body et_canvas_schematic_nets is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				delete_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 				redraw_board; -- board is not always affected
 				-- CS redraw schematic ?
@@ -1176,12 +1166,8 @@ package body et_canvas_schematic_nets is
 
 		-- Shows the selected object:
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
-					active_module, SELECTED, log_threshold + 1);
+				active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalize show", level => log_threshold);
 			log_indentation_up;
@@ -1267,16 +1253,11 @@ package body et_canvas_schematic_nets is
 
 
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalize place net label", level => log_threshold);
 			log_indentation_up;
-
 			
 			-- If a selected object has been found, then
 			-- we do the actual finalizing:
@@ -1284,17 +1265,11 @@ package body et_canvas_schematic_nets is
 				
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				place_net_label (
 					module_cursor	=> active_module, 
 					segment			=> object.segment,
 					position		=> point,
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 				
 			else
 				log (text => "nothing to do", level => log_threshold);
@@ -1346,6 +1321,7 @@ package body et_canvas_schematic_nets is
 
 
 
+	
 
 	
 
@@ -1356,12 +1332,8 @@ package body et_canvas_schematic_nets is
 
 
 		procedure finalize is
-			use et_modes.schematic;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
-					active_module, SELECTED, log_threshold + 1);
+				active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalize place net connector", level => log_threshold);
 			log_indentation_up;
@@ -1372,17 +1344,11 @@ package body et_canvas_schematic_nets is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-
 				place_net_connector (
 					module_cursor	=> active_module, 
 					segment			=> object.segment,
 					position		=> point,
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 				
 			else
 				log (text => "nothing to do", level => log_threshold);
