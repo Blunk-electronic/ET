@@ -6357,9 +6357,14 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		label			: in type_object_net_label;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -6497,16 +6502,30 @@ package body et_schematic_ops_nets is
 		
 		log_indentation_up;
 
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
 		log_indentation_down;
 	end move_net_label;
 
 
 
+
+	
 
 
 	
@@ -8452,6 +8471,8 @@ package body et_schematic_ops_nets is
 	
 
 
+	
+
 
 	procedure move_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -8461,7 +8482,7 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving object " 
+			& " move object " 
 			-- CS & to_string (object)
 			& " to " & to_string (destination),
 			level => log_threshold);
@@ -8509,7 +8530,7 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " dragging object",
+			& " drag object",
 			-- CS & to_string (object)
 			-- & " to " & to_string (destination),
 			level => log_threshold);
