@@ -2572,6 +2572,7 @@ package body et_board_ops_conductors is
 
 			use et_nets;
 			
+			
 			procedure ripup (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
@@ -2615,18 +2616,11 @@ package body et_board_ops_conductors is
 			end ripup;
 
 			
-		begin -- ripup_named_track
-			if net_exists (net_cursor) then
-
-				pac_nets.update_element (
-					container	=> module.nets,
-					position	=> net_cursor,
-					process		=> ripup'access);
-
-			else
-				log (SEVERITY_ERROR, "Net " & to_string (net_name) & " not found !");
-				raise constraint_error;
-			end if;
+		begin
+			pac_nets.update_element (
+				container	=> module.nets,
+				position	=> net_cursor,
+				process		=> ripup'access);
 
 		end ripup_named_track;
 
@@ -2638,6 +2632,8 @@ package body et_board_ops_conductors is
 			& " in " & to_string (catch_zone),
 			level => log_threshold);
 
+		log_indentation_up;
+		
 		-- Make sure the targeted layer is 
 		-- available according to current layer stack:
 		test_layer (module_cursor, layer);
@@ -2658,6 +2654,9 @@ package body et_board_ops_conductors is
 
 			update_ratsnest (module_cursor, log_threshold + 1);
 		end if;		
+		
+		
+		log_indentation_down;
 	end delete_track;
 
 	

@@ -512,8 +512,11 @@ package et_board_ops_conductors is
 	
 -- TRACKS:
 	
-	-- Deletes the track segment that crosses the given point in given layer.
+	-- Deletes the track segment that crosses the given 
+	-- point in given layer.
 	-- If a net name is given, then net segments are affected.
+	-- Assumes that the targeted net exists. Otherwise an exception
+	-- will be raised.
 	-- If the given name is empty, then only freetrack segments
 	-- are targeted.
 	-- CS currently deletes the first segment found. Leaves other segments untouched.

@@ -915,18 +915,29 @@ package body et_cp_board_conductors is
 			use et_pcb_signal_layers;
 			use et_board_ops_conductors;
 			catch_zone : type_catch_zone;
-		begin
-			catch_zone := set_catch_zone (
-				center	=> to_vector_model (get_field (cmd, 7), get_field (cmd, 8)),
-				radius	=> to_zone_radius (get_field (cmd, 9)));
-		
-			delete_track (
-				module_cursor 	=> module,
-				net_name		=> to_net_name (get_field (cmd, 5)),
-				layer			=> to_signal_layer (get_field (cmd, 6)),
-				catch_zone		=> catch_zone,				
-				log_threshold	=> log_threshold + 1);
 
+			net_name : pac_net_name.bounded_string;
+			use et_schematic_ops_nets;
+		begin
+			net_name := to_net_name (get_field (cmd, 5));
+
+			-- Proceed if net exists:
+			if net_exists (module, net_name) then
+			
+				catch_zone := set_catch_zone (
+					center	=> to_vector_model (get_field (cmd, 7), get_field (cmd, 8)),
+					radius	=> to_zone_radius (get_field (cmd, 9)));
+			
+				delete_track (
+					module_cursor 	=> module,
+					net_name		=> net_name,
+					layer			=> to_signal_layer (get_field (cmd, 6)),
+					catch_zone		=> catch_zone,				
+					log_threshold	=> log_threshold + 1);
+
+			else
+				message_net_not_found (SEVERITY_ERROR, net_name);
+			end if;
 		end do_it;
 
 		
