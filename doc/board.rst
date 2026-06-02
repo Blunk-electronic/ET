@@ -2,130 +2,18 @@
 
 .. include:: placeholders.rst
 
-*******************
+
 Board Layout Editor
-*******************
-
-+++++++++++++++++++++++++++
-Board Outline (Outer Edges)
-+++++++++++++++++++++++++++
-
-#. Drawing the Board Outline:
-
-	Only the start point of lines is required.
-	
-	Draw the outline of a EURO card with dimensions 160x100 mm:
-
-	.. code-block::
-		
-		draw outline line 0 0 line 160 0 line 160 80 line 0 80
+===================
 
 
-	Arcs can also be segments of the outline. For an arc the first two
-	fields identify x/y of the center. So in this example the arc center
-	is at 130/140. The arc starts at 130/170, runs counter-clockwise and
-	ends where the contour has started, at 130/110:
+.. include:: board_outline.rst
 
-	.. code-block::
+.. include:: board_holes.rst
 
-		draw outline line 130 110 line 160 110 line 160 170 line 130 170 arc 130 140  130 170 ccw
-
-
-	|VNS| d l
-
-
+.. include:: board_signal_layers.rst
 
 	
-		
-#. Move Outline Segment
-
-	To move a segment of the board contour:
-
-	|VNS| m o
-
-
-	
-
-#. Delete Outline Segment
-
-	To delete a segment of the board contour:
-
-	|VNS| del o
-
-	.. code-block::
-	
-		board demo delete outline 32 0 1
-
-
-
-++++++++++++++++++++++++++++++++
-Holes in the Board (Inner Edges)
-++++++++++++++++++++++++++++++++
-
-#. Drawing Holes
-
-	|VNS| d l
-	
-
-	This command draws a hole consisting of four lines:
-
-	.. code-block::
-
-		board demo draw hole line 45.5 0.5 line 48 0.5 line 48 8 line 47 8
-	
-	
-	This command draws a circular hole at (32/5) with a radius of 6mm:
-	
-	.. code-block::
-	
-		board demo draw hole circle 32 5 6
-	
-
-
-	
-#. Move Hole Segment
-
-	To move a segment of a hole:
-
-	|VNS| m o
-
-	
-
-
-#. Delete Hole Segment
-
-	To delete a segment of a hole:
-
-	|VNS| del o
-
-	.. code-block::
-	
-		board demo delete hole 32 5 2
-	
-	
-+++++++++++++
-Signal Layers
-+++++++++++++
-
-#. Adding a Signal Layer
-
-	This example adds a signal layer with
-	conductor thickness of 0.035mm and a dielectric
-	thickness of 0.2mm:
-	
-	.. code-block::
-	
-		add layer 0.035 0.2
-		
-
-#. Deleting a Signal Layer
-
-	This example deletes signal layer 2:
-	
-	.. code-block::
-	
-		delete layer 2
-
 		
 		
 +++++++
