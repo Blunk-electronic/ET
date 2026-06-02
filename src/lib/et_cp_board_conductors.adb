@@ -342,6 +342,7 @@ package body et_cp_board_conductors is
 		
 		procedure make_fill_zone is
 			use et_board_ops_fill_zones;
+			use et_schematic_ops_nets;
 
 			net_name : pac_net_name.bounded_string;
 			
@@ -477,23 +478,30 @@ package body et_cp_board_conductors is
 			
 		begin
 			net_name := to_net_name (get_field (cmd, 5));
-			-- CS existence check
+
 			
+			-- Proceed if net exists:
+			if net_exists (module, net_name) then
 			
-			case settings.polygons_conductor.fill_style is
-				when SOLID =>
-					case settings.polygons_conductor.connection is
-						when THERMAL	=> make_solid_thermal;
-						when SOLID		=> make_solid_solid;
-					end case;
-					
-				when HATCHED =>
-					case settings.polygons_conductor.connection is
-						when THERMAL	=> make_hatched_thermal;
-						when SOLID		=> make_hatched_solid;
-					end case;
-					
-			end case;
+				case settings.polygons_conductor.fill_style is
+					when SOLID =>
+						case settings.polygons_conductor.connection is
+							when THERMAL	=> make_solid_thermal;
+							when SOLID		=> make_solid_solid;
+						end case;
+						
+					when HATCHED =>
+						case settings.polygons_conductor.connection is
+							when THERMAL	=> make_hatched_thermal;
+							when SOLID		=> make_hatched_solid;
+						end case;
+						
+				end case;
+
+			else
+				message_net_not_found (SEVERITY_ERROR, net_name);
+			end if;
+			
 		end make_fill_zone;
 
 
@@ -508,26 +516,34 @@ package body et_cp_board_conductors is
 			layer_tmp : type_signal_layer;
 			line_tmp : type_line;
 			net_name : pac_net_name.bounded_string;
+
+			use et_schematic_ops_nets;
 		begin
 			case cmd_field_count is
 				when 12 =>
 					net_name := to_net_name (get_field (cmd, 5));
 
-					-- CS existence check of net
+					-- Proceed if net exists:
+					if net_exists (module, net_name) then
 					
-					layer_tmp := to_signal_layer (get_field (cmd, 6));
-					width_tmp := to_distance (get_field (cmd, 8));
-					
-					line_tmp := type_line (to_line (
-						A => to_vector_model (get_field (cmd, 9), get_field (cmd, 10)),
-						B => to_vector_model (get_field (cmd, 11), get_field (cmd, 12))));
-												
-					add_line (
-						module_cursor 	=> module,
-						net_name		=> net_name,
-						line			=> (line_tmp with width_tmp, layer_tmp),								
-						log_threshold	=> log_threshold + 1);
+						layer_tmp := to_signal_layer (get_field (cmd, 6));
+						width_tmp := to_distance (get_field (cmd, 8));
+						
+						line_tmp := type_line (to_line (
+							A => to_vector_model (get_field (cmd, 9), get_field (cmd, 10)),
+							B => to_vector_model (get_field (cmd, 11), get_field (cmd, 12))));
+													
+						add_line (
+							module_cursor 	=> module,
+							net_name		=> net_name,
+							line			=> (line_tmp with width_tmp, layer_tmp),								
+							log_threshold	=> log_threshold + 1);
 
+					else
+						message_net_not_found (SEVERITY_ERROR, net_name);
+					end if;
+					
+				
 				when 13 .. type_field_count'last =>
 					command_too_long (cmd, cmd_field_count - 1);
 					
@@ -536,6 +552,7 @@ package body et_cp_board_conductors is
 		end line_starts_at_point;
 		
 
+		
 		-- board motor_driver route net GND 1 line 2  R1 1  50 20
 		-- board motor_driver route net NET_1 1 line 0.25 R1 1 to x 5
 		procedure line_starts_at_terminal is
@@ -543,59 +560,36 @@ package body et_cp_board_conductors is
 			layer_tmp : type_signal_layer;
 			line_tmp : type_line;
 			net_name : pac_net_name.bounded_string;
+
+			use et_schematic_ops_nets;
 		begin
 			net_name := to_net_name (get_field (cmd, 5));
-			-- CS existence check
 
-			layer_tmp := to_signal_layer (get_field (cmd, 6));
-			width_tmp := to_distance (get_field (cmd, 8));
+			-- Proceed if net exists:
+			if net_exists (module, net_name) then
 
-			
-			if get_field (cmd, 11) = keyword_to then
-				-- board motor_driver route net NET_1 1 line 0.25 R1 1 to 35 40
-				-- board motor_driver route net NET_1 1 line 0.25 R1 1 to x 5
+				layer_tmp := to_signal_layer (get_field (cmd, 6));
+				width_tmp := to_distance (get_field (cmd, 8));
+
 				
-				if is_number (get_field (cmd, 12)) then
-					-- THE TRACK ENDS AT A DEDICATED POINT X/Y
-					
+				if get_field (cmd, 11) = keyword_to then
 					-- board motor_driver route net NET_1 1 line 0.25 R1 1 to 35 40
-					case cmd_field_count is
-						when 13 =>
-							add_line_start_at_terminal_end_at_point (
-								module_cursor 	=> module,
-								net_name		=> net_name,
-								layer			=> layer_tmp,
-								width			=> width_tmp,
-								device			=> to_device_name (get_field (cmd, 9)),
-								terminal		=> to_terminal_name (get_field (cmd, 10)),
-								end_point		=> to_vector_model (get_field (cmd, 12), get_field (cmd, 13)), -- 35 40
-								log_threshold	=> log_threshold + 1);
-							
-						when 14 .. type_field_count'last =>
-							command_too_long (cmd, cmd_field_count - 1);
-							
-						when others =>
-							command_incomplete (cmd);
-					end case;
-							
-				else
-					-- THE TRACK ENDS ON A GRID LINE ALONG A GIVEN AXIS:
-					
 					-- board motor_driver route net NET_1 1 line 0.25 R1 1 to x 5
-					if get_field (cmd, 12) = to_string (AXIS_X) 
-					or get_field (cmd, 12) = to_string (AXIS_Y) then
+					
+					if is_number (get_field (cmd, 12)) then
+						-- THE TRACK ENDS AT A DEDICATED POINT X/Y
 						
+						-- board motor_driver route net NET_1 1 line 0.25 R1 1 to 35 40
 						case cmd_field_count is
 							when 13 =>
-								add_line_start_at_terminal_with_notches_along_axis_2 (
-									module_cursor => module,
+								add_line_start_at_terminal_end_at_point (
+									module_cursor 	=> module,
 									net_name		=> net_name,
 									layer			=> layer_tmp,
 									width			=> width_tmp,
 									device			=> to_device_name (get_field (cmd, 9)),
 									terminal		=> to_terminal_name (get_field (cmd, 10)),
-									axis			=> to_axis (get_field (cmd, 12)),
-									notches			=> to_notches (get_field (cmd, 13)), -- 5									
+									end_point		=> to_vector_model (get_field (cmd, 12), get_field (cmd, 13)), -- 35 40
 									log_threshold	=> log_threshold + 1);
 								
 							when 14 .. type_field_count'last =>
@@ -604,80 +598,113 @@ package body et_cp_board_conductors is
 							when others =>
 								command_incomplete (cmd);
 						end case;
-						
-					else
-						invalid_keyword (12);
-					end if;
-				end if;
-				
-				
-			elsif get_field (cmd, 11) = keyword_direction then
-				-- THE TRACK RUNS INTO GIVEN DIRECTION SPECIFIED BY AN ANGLE
-				
-				if is_number (get_field (cmd, 13)) then
-					-- THE TRACK ENDS AFTER A GIVEN DISTANCE (it has a given length)
-					
-					-- board motor_driver route net NET_1 1 line 0.25 R1 1 direction 45 50
-					
-					case cmd_field_count is
-						when 13 =>
-							add_line_start_at_terminal_with_length (
-								module_cursor	=> module,
-								net_name		=> net_name,
-								layer			=> layer_tmp,
-								width			=> width_tmp,
-								device			=> to_device_name (get_field (cmd, 9)),
-								terminal		=> to_terminal_name (get_field (cmd, 10)),
-								direction		=> to_rotation (get_field (cmd, 12)), -- 45 degree
-								length			=> to_distance (get_field (cmd, 13)), -- 50mm
 								
-								log_threshold	=> log_threshold + 1);
-
-						when 14 .. type_field_count'last =>
-							command_too_long (cmd, cmd_field_count - 1);
+					else
+						-- THE TRACK ENDS ON A GRID LINE ALONG A GIVEN AXIS:
+						
+						-- board motor_driver route net NET_1 1 line 0.25 R1 1 to x 5
+						if get_field (cmd, 12) = to_string (AXIS_X) 
+						or get_field (cmd, 12) = to_string (AXIS_Y) then
 							
-						when others =>
-							command_incomplete (cmd);
-					end case;
-
-				else
-					-- THE TRACK ENDS AT A GIVEN GRID LINE ALONG A GIVEN AXIS
+							case cmd_field_count is
+								when 13 =>
+									add_line_start_at_terminal_with_notches_along_axis_2 (
+										module_cursor => module,
+										net_name		=> net_name,
+										layer			=> layer_tmp,
+										width			=> width_tmp,
+										device			=> to_device_name (get_field (cmd, 9)),
+										terminal		=> to_terminal_name (get_field (cmd, 10)),
+										axis			=> to_axis (get_field (cmd, 12)),
+										notches			=> to_notches (get_field (cmd, 13)), -- 5									
+										log_threshold	=> log_threshold + 1);
+									
+								when 14 .. type_field_count'last =>
+									command_too_long (cmd, cmd_field_count - 1);
+									
+								when others =>
+									command_incomplete (cmd);
+							end case;
+							
+						else
+							invalid_keyword (12);
+						end if;
+					end if;
 					
-					-- board motor_driver route net NET_1 1 line 0.25 R1 1 direction 45 x 5
-					if get_field (cmd, 13) = to_string (AXIS_X) 
-					or get_field (cmd, 13) = to_string (AXIS_Y) then
+					
+				elsif get_field (cmd, 11) = keyword_direction then
+					-- THE TRACK RUNS INTO GIVEN DIRECTION SPECIFIED BY AN ANGLE
+					
+					if is_number (get_field (cmd, 13)) then
+						-- THE TRACK ENDS AFTER A GIVEN DISTANCE (it has a given length)
+						
+						-- board motor_driver route net NET_1 1 line 0.25 R1 1 direction 45 50
 						
 						case cmd_field_count is
-							when 14 =>
-								add_line_start_at_terminal_with_notches_along_axis (
-									module_cursor => module,
+							when 13 =>
+								add_line_start_at_terminal_with_length (
+									module_cursor	=> module,
 									net_name		=> net_name,
 									layer			=> layer_tmp,
 									width			=> width_tmp,
 									device			=> to_device_name (get_field (cmd, 9)),
 									terminal		=> to_terminal_name (get_field (cmd, 10)),
 									direction		=> to_rotation (get_field (cmd, 12)), -- 45 degree
-									axis			=> to_axis (get_field (cmd, 13)),
-									notches			=> to_notches (get_field (cmd, 14)), -- 5
+									length			=> to_distance (get_field (cmd, 13)), -- 50mm
 									
 									log_threshold	=> log_threshold + 1);
 
-							when 15 .. type_field_count'last =>
+							when 14 .. type_field_count'last =>
 								command_too_long (cmd, cmd_field_count - 1);
 								
-							when others => 
+							when others =>
 								command_incomplete (cmd);
 						end case;
-						
+
 					else
-						invalid_keyword (13);
+						-- THE TRACK ENDS AT A GIVEN GRID LINE ALONG A GIVEN AXIS
+						
+						-- board motor_driver route net NET_1 1 line 0.25 R1 1 direction 45 x 5
+						if get_field (cmd, 13) = to_string (AXIS_X) 
+						or get_field (cmd, 13) = to_string (AXIS_Y) then
+							
+							case cmd_field_count is
+								when 14 =>
+									add_line_start_at_terminal_with_notches_along_axis (
+										module_cursor => module,
+										net_name		=> net_name,
+										layer			=> layer_tmp,
+										width			=> width_tmp,
+										device			=> to_device_name (get_field (cmd, 9)),
+										terminal		=> to_terminal_name (get_field (cmd, 10)),
+										direction		=> to_rotation (get_field (cmd, 12)), -- 45 degree
+										axis			=> to_axis (get_field (cmd, 13)),
+										notches			=> to_notches (get_field (cmd, 14)), -- 5
+										
+										log_threshold	=> log_threshold + 1);
+
+								when 15 .. type_field_count'last =>
+									command_too_long (cmd, cmd_field_count - 1);
+									
+								when others => 
+									command_incomplete (cmd);
+							end case;
+							
+						else
+							invalid_keyword (13);
+						end if;
 					end if;
+
+				else
+					invalid_keyword (11);
 				end if;
 
 			else
-				invalid_keyword (11);
+				message_net_not_found (SEVERITY_ERROR, net_name);
 			end if;
 		end line_starts_at_terminal;
+		
+
 		
 
 		
@@ -687,35 +714,44 @@ package body et_cp_board_conductors is
 			layer_tmp : type_signal_layer;
 			arc_tmp	: type_arc;
 			net_name : pac_net_name.bounded_string;
+
+			use et_schematic_ops_nets;
 		begin
 			case cmd_field_count is
 				when 15 =>
 					net_name := to_net_name (get_field (cmd, 5));
-					-- CS existence check
 
-					layer_tmp := to_signal_layer (get_field (cmd, 6));
-					width_tmp := to_distance (get_field (cmd, 8));
+					-- Proceed if net exists:
+					if net_exists (module, net_name) then
 
-					arc_tmp := type_arc (to_arc (
-						center		=> type_vector_model (set (
-							x => to_distance (dd => get_field (cmd, 9)),
-							y => to_distance (dd => get_field (cmd, 10)))),
-						A	=> type_vector_model (set (
-							x => to_distance (dd => get_field (cmd, 11)),
-							y => to_distance (dd => get_field (cmd, 12)))),
-						B	=> type_vector_model (set (
-							x => to_distance (dd => get_field (cmd, 13)),
-							y => to_distance (dd => get_field (cmd, 14)))),
-						direction	=> to_direction (get_field (cmd, 15))));
-													
-					-- draw a named track
-					add_arc (
-						module_cursor => module,
-						net_name		=> net_name,
-						arc				=> (arc_tmp with
-									layer	=> layer_tmp,
-									width	=> width_tmp),
-						log_threshold	=> log_threshold + 1);
+						layer_tmp := to_signal_layer (get_field (cmd, 6));
+						width_tmp := to_distance (get_field (cmd, 8));
+
+						arc_tmp := type_arc (to_arc (
+							center		=> type_vector_model (set (
+								x => to_distance (dd => get_field (cmd, 9)),
+								y => to_distance (dd => get_field (cmd, 10)))),
+							A	=> type_vector_model (set (
+								x => to_distance (dd => get_field (cmd, 11)),
+								y => to_distance (dd => get_field (cmd, 12)))),
+							B	=> type_vector_model (set (
+								x => to_distance (dd => get_field (cmd, 13)),
+								y => to_distance (dd => get_field (cmd, 14)))),
+							direction	=> to_direction (get_field (cmd, 15))));
+														
+						-- draw a named track
+						add_arc (
+							module_cursor => module,
+							net_name		=> net_name,
+							arc				=> (arc_tmp with
+										layer	=> layer_tmp,
+										width	=> width_tmp),
+							log_threshold	=> log_threshold + 1);
+
+					else
+						message_net_not_found (SEVERITY_ERROR, net_name);
+					end if;
+
 					
 				when 16 .. type_field_count'last => 
 					command_too_long (cmd, cmd_field_count - 1);

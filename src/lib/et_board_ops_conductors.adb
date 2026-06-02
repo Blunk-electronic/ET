@@ -163,14 +163,15 @@ package body et_board_ops_conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			-- A track belonging to a net requires the net to be located in the given module:
+			-- A track belonging to a net requires the net 
+			-- to be located in the given module:
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
 
 			use et_nets;
 			
 			
-			procedure add (
 			-- Appends the track to the net.
+			procedure add (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
@@ -182,29 +183,31 @@ package body et_board_ops_conductors is
 			end add;
 
 			
-		begin -- add_named_track
-			if net_exists (net_cursor) then
-				
-				pac_nets.update_element (
-					container	=> module.nets,
-					position	=> net_cursor,
-					process		=> add'access);
-				
-			else
-				log (SEVERITY_ERROR, "Net " & to_string (net_name) & " not found !");
-				raise constraint_error;
-			end if;
+		begin				
+			pac_nets.update_element (
+				container	=> module.nets,
+				position	=> net_cursor,
+				process		=> add'access);
 
 		end do_it;
 
 		
 	begin
+		log (text => "module " & to_string (module_cursor)
+			& " add line to net " & to_string (net_name)
+			& " line: " & to_string (line),
+			level => log_threshold);
+			
+		log_indentation_up;
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
-
+			
 		update_ratsnest (module_cursor, log_threshold + 1);
+		
+		log_indentation_down;
 	end add_line_to_net;
 	
 
@@ -239,6 +242,7 @@ package body et_board_ops_conductors is
 			& " draw " & to_string (line, true),  -- log incl. width
 			level => log_threshold);
 
+		log_indentation_up;
 
 		-- Make sure the targeted  signal layer is 
 		-- available according to current layer stack:
@@ -255,8 +259,11 @@ package body et_board_ops_conductors is
 			add_line_to_net (module_cursor, 
 				net_name, line, log_threshold + 1);
 		end if;
+		
+		log_indentation_down;
 	end add_line;
 
+	
 	
 	
 
@@ -1726,6 +1733,9 @@ package body et_board_ops_conductors is
 
 	
 	
+	
+	
+	
 -- ARCS:
 	
 	
@@ -1769,17 +1779,11 @@ package body et_board_ops_conductors is
 
 			
 		begin
-			if net_exists (net_cursor) then
+			pac_nets.update_element (
+				container	=> module.nets,
+				position	=> net_cursor,
+				process		=> add'access);
 
-				pac_nets.update_element (
-					container	=> module.nets,
-					position	=> net_cursor,
-					process		=> add'access);
-				
-			else
-				log (SEVERITY_ERROR, "Net " & to_string (net_name) & " not found !");
-				raise constraint_error;
-			end if;
 		end add_named_track;
 
 		
@@ -1790,6 +1794,7 @@ package body et_board_ops_conductors is
 			& to_string (arc),
 			level => log_threshold);
 
+		log_indentation_up;
 
 		-- Make sure the targeted layer is 
 		-- available according to current layer stack:
@@ -1810,8 +1815,12 @@ package body et_board_ops_conductors is
 
 			update_ratsnest (module_cursor, log_threshold + 1);
 		end if;
+		
+		log_indentation_down;
 	end add_arc;
 
+	
+	
 	
 	
 	

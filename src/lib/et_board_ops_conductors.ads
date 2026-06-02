@@ -80,7 +80,7 @@ package et_board_ops_conductors is
 -- LINES:
 	
 	-- Adds a line track segment to the given net in the given module.
-	-- The given net must exist:
+	-- Assumes that the given exists. Otherwise an exception will be raised:
 	procedure add_line_to_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
@@ -90,7 +90,9 @@ package et_board_ops_conductors is
 
 	
 	-- Draws a track line. If net_name is empty (default) 
-	-- then a freetrack will be drawn.
+	-- then a freetrack will be drawn. If a net name
+	-- is given, then it calls procedure add_line_to_net (see above).
+	-- It does not check if the given net exists.
 	procedure add_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string := et_net_names.no_name; -- reset_n
@@ -109,6 +111,8 @@ package et_board_ops_conductors is
 	
 	-- Draws a track starting at a terminal. The track ends
 	-- after the given length in given direction.
+	-- It does not check if the given net exists. Calls procedure
+	-- add_line_to_net (see above).
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
@@ -127,6 +131,8 @@ package et_board_ops_conductors is
 	-- Draws a track starting at a terminal. The track ends
 	-- after the given number of notches along the given axis
 	-- in to the given direction.
+	-- It does not check if the given net exists. Calls procedure
+	-- add_line_to_net (see above).
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
@@ -144,6 +150,8 @@ package et_board_ops_conductors is
 
 	
 	-- Draws a track starting at a terminal. The track ends at the given point.
+	-- It does not check if the given net exists. Calls procedure
+	-- add_line_to_net (see above).
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.								  
@@ -160,6 +168,8 @@ package et_board_ops_conductors is
 	
 	-- Draws a track starting at a terminal. The track runs
 	-- ends after the given number of notches along the given axis.
+	-- It does not check if the given net exists. Calls procedure
+	-- add_line_to_net (see above).
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
@@ -368,6 +378,8 @@ package et_board_ops_conductors is
 -- ARCS:
 	
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
+	-- If a net name is given, then it assumes that the net
+	-- exists. Otherwise an exception will be raised:
 	procedure add_arc (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
