@@ -213,13 +213,11 @@ package body et_board_ops_conductors is
 	
 	
 	procedure add_line (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string := et_net_names.no_name; -- reset_n
 		line			: in type_conductor_line;
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-
 		use pac_conductor_lines;
 		
 		
@@ -234,15 +232,14 @@ package body et_board_ops_conductors is
 		
 		
 	begin
-		log (text => "module " & to_string (module_name) &
-			freetrack (net_name) &
-			" drawing " & to_string (line, true),  -- log incl. width
+		log (text => "module " & to_string (module_cursor) 
+			& freetrack (net_name) 
+			& " draw " & to_string (line, true),  -- log incl. width
 			level => log_threshold);
 
-		-- locate module
-		module_cursor := locate_module (module_name);
 
-		-- make sure the desired layer is available according to current layer stack:
+		-- Make sure the targeted  signal layer is 
+		-- available according to current layer stack:
 		test_layer (module_cursor, line.layer);
 		
 		if is_freetrack (net_name) then
@@ -256,9 +253,9 @@ package body et_board_ops_conductors is
 			add_line_to_net (module_cursor, 
 				net_name, line, log_threshold + 1);
 		end if;
-
 	end add_line;
 
+	
 	
 
 	
@@ -305,7 +302,7 @@ package body et_board_ops_conductors is
 
 	
 	procedure add_line (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
@@ -315,7 +312,6 @@ package body et_board_ops_conductors is
 		length			: in type_distance_positive;
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position, direction and length.
@@ -351,23 +347,25 @@ package body et_board_ops_conductors is
 
 
 	begin
-		log (text => "module " & to_string (module_name) &
-			" " & to_string (net_name) &
-			" drawing line in layer" & to_string (layer) &
-			" from " & to_string (device) & " terminal " & to_string (terminal) &
-			" direction " & to_string (direction) & " length " & to_string (length),
+		log (text => "module " & to_string (module_cursor) 
+			& " " & to_string (net_name) 
+			& " draw line in layer" & to_string (layer) 
+			& " from " & to_string (device) & " terminal " 
+			& to_string (terminal) 
+			& " direction " & to_string (direction) 
+			& " length " & to_string (length),
 			level => log_threshold);
 
-		-- locate module and device
-		module_cursor := locate_module (module_name);
 		device_cursor := get_electrical_device (module_cursor, device);
 		-- CS call procedure device_not_found if
 		-- device_cursor is no_element ?
 		
-		-- make sure the desired layer is available according to current layer stack:
+		-- Make sure the targeted layer is 
+		-- available according to current layer stack:
 		test_layer (module_cursor, layer);
 		
-		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
+		make_line (get_terminal_position (module_cursor, 
+			device_cursor, terminal));
 
 		add_line_to_net (module_cursor, 
 			net_name, line, log_threshold + 1);
@@ -378,8 +376,11 @@ package body et_board_ops_conductors is
 	
 	
 	
+	
+	
+	
 	procedure add_line (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
@@ -390,8 +391,6 @@ package body et_board_ops_conductors is
 		notches			: in type_grid_notches;
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position, direction, axis and grid notches.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
@@ -422,25 +421,26 @@ package body et_board_ops_conductors is
 
 
 	begin
-		log (text => "module " & to_string (module_name) &
-			" " & to_string (net_name) &
-			" drawing line in layer" & to_string (layer) &
-			" from " & to_string (device) & " terminal " & to_string (terminal) &
-			" direction " & to_string (direction) &
-			" along axis " & to_string (axis) &
-			" grid notches " & to_string (notches),
+		log (text => "module " & to_string (module_cursor) 
+			& " " & to_string (net_name) 
+			& " draw line in layer" & to_string (layer) 
+			& " from " & to_string (device) & " terminal " 
+			& to_string (terminal) 
+			& " direction " & to_string (direction) 
+			& " along axis " & to_string (axis) 
+			& " grid notches " & to_string (notches),
 			level => log_threshold);
 
-		-- locate module and device
-		module_cursor := locate_module (module_name);
 		device_cursor := get_electrical_device (module_cursor, device);
 		-- CS call procedure device_not_found if
 		-- device_cursor is no_element ?
 		
-		-- make sure the desired layer is available according to current layer stack:
+		-- Make sure the targeted layer is 
+		-- available according to current layer stack:
 		test_layer (module_cursor, layer);
 		
-		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
+		make_line (get_terminal_position (
+			module_cursor, device_cursor, terminal));
 
 		add_line_to_net (module_cursor, 
 			net_name, line, log_threshold + 1);
@@ -451,8 +451,11 @@ package body et_board_ops_conductors is
 	
 	
 	
+	
+	
+	
 	procedure add_line (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
@@ -461,8 +464,6 @@ package body et_board_ops_conductors is
 		end_point		: in type_vector_model;
 		log_threshold	: in type_log_level) 
 	is		
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position and end point.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
@@ -492,23 +493,24 @@ package body et_board_ops_conductors is
 
 		
 	begin
-		log (text => "module " & to_string (module_name) &
-			" " & to_string (net_name) &
-			" drawing line in layer" & to_string (layer) &
-			" from " & to_string (device) & " terminal " & to_string (terminal) &
-			" to " & to_string (end_point),
+		log (text => "module " & to_string (module_cursor) 
+			& " " & to_string (net_name) 
+			& " draw line in layer" & to_string (layer) 
+			& " from " & to_string (device) & " terminal " 
+			& to_string (terminal) 
+			& " to " & to_string (end_point),
 			level => log_threshold);
 
-		-- locate module and device
-		module_cursor := locate_module (module_name);
 		device_cursor := get_electrical_device (module_cursor, device);
 		-- CS call procedure device_not_found if
 		-- device_cursor is no_element ?
 		
-		-- make sure the desired layer is available according to current layer stack:
+		-- Make sure the targeted layer is 
+		-- available according to current layer stack:
 		test_layer (module_cursor, layer);
 		
-		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
+		make_line (get_terminal_position (
+			module_cursor, device_cursor, terminal));
 
 		add_line_to_net (module_cursor, 
 			net_name, line, log_threshold + 1);
@@ -520,7 +522,7 @@ package body et_board_ops_conductors is
 	
 	
 	procedure add_line (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
@@ -530,8 +532,6 @@ package body et_board_ops_conductors is
 		notches			: in type_grid_notches;
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position, axis and grid notches.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
@@ -561,30 +561,33 @@ package body et_board_ops_conductors is
 
 		
 	begin
-		log (text => "module " & to_string (module_name) &
-			" " & to_string (net_name) &
-			" drawing line in layer" & to_string (layer) &
-			" from " & to_string (device) & " terminal " & to_string (terminal) &
-			" along axis " & to_string (axis) &
-			" grid notches " & to_string (notches),
+		log (text => "module " & to_string (module_cursor) 
+			& " " & to_string (net_name) 
+			& " draw line in layer" & to_string (layer) 
+			& " from " & to_string (device) & " terminal " 
+			& to_string (terminal) 
+			& " along axis " & to_string (axis) 
+			& " grid notches " & to_string (notches),
 			level => log_threshold);
 
-		-- locate module and device
-		module_cursor := locate_module (module_name);
 		device_cursor := get_electrical_device (module_cursor, device);
 		-- CS call procedure device_not_found if
 		-- device_cursor is no_element ?
 		
-		-- make sure the desired layer is available according to current layer stack:
+		-- Make sure the targeted layer is 
+		-- available according to current layer stack:
 		test_layer (module_cursor, layer);
 		
-		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
+		make_line (get_terminal_position (
+			module_cursor, device_cursor, terminal));
 
 		add_line_to_net (module_cursor, 
 			net_name, line, log_threshold + 1);
 	end add_line;
 
 
+	
+	
 	
 
 
@@ -642,6 +645,8 @@ package body et_board_ops_conductors is
 
 
 	
+	
+	
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_object_line_floating;
@@ -684,6 +689,8 @@ package body et_board_ops_conductors is
 
 
 
+	
+	
 	
 	
 
@@ -762,6 +769,8 @@ package body et_board_ops_conductors is
 
 	
 	
+	
+	
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in type_signal_layer;
@@ -825,6 +834,8 @@ package body et_board_ops_conductors is
 	
 	
 
+	
+	
 	
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -925,6 +936,7 @@ package body et_board_ops_conductors is
 
 
 
+	
 	
 
 	procedure propose_lines (
@@ -1028,6 +1040,8 @@ package body et_board_ops_conductors is
 	end propose_lines;
 
 
+	
+	
 	
 
 
@@ -1662,6 +1676,8 @@ package body et_board_ops_conductors is
 
 	
 
+	
+	
 
 
 	procedure delete_line_floating (
@@ -1708,13 +1724,11 @@ package body et_board_ops_conductors is
 	
 	
 	procedure add_arc (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		arc				: in type_conductor_arc;
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-
 		use pac_conductor_arcs;
 
 		
@@ -1747,6 +1761,7 @@ package body et_board_ops_conductors is
 					new_item	=> arc);
 			end add;
 
+			
 		begin
 			if net_exists (net_cursor) then
 
@@ -1763,17 +1778,15 @@ package body et_board_ops_conductors is
 
 		
 	begin
-		log (text => "module " & to_string (module_name) &
-			 freetrack (net_name) &
-			" drawing arc" &
-			" in layer" & to_string (arc.layer) &
-			to_string (arc),
+		log (text => "module " & to_string (module_cursor) 
+			& freetrack (net_name) 
+			& " draw arc in layer" & to_string (arc.layer) 
+			& to_string (arc),
 			level => log_threshold);
 
-		-- locate module
-		module_cursor := locate_module (module_name);
 
-		-- make sure the desired layer is available according to current layer stack:
+		-- Make sure the targeted layer is 
+		-- available according to current layer stack:
 		test_layer (module_cursor, arc.layer);
 		
 		if is_freetrack (net_name) then
@@ -1793,6 +1806,9 @@ package body et_board_ops_conductors is
 		end if;
 	end add_arc;
 
+	
+	
+	
 	
 
 

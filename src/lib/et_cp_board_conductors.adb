@@ -523,7 +523,7 @@ package body et_cp_board_conductors is
 						B => to_vector_model (get_field (cmd, 11), get_field (cmd, 12))));
 												
 					add_line (
-						module_name 	=> key (module),
+						module_cursor 	=> module,
 						net_name		=> net_name,
 						line			=> (line_tmp with width_tmp, layer_tmp),								
 						log_threshold	=> log_threshold + 1);
@@ -562,7 +562,7 @@ package body et_cp_board_conductors is
 					case cmd_field_count is
 						when 13 =>
 							add_line (
-								module_name 	=> key (module),
+								module_cursor 	=> module,
 								net_name		=> net_name,
 								layer			=> layer_tmp,
 								width			=> width_tmp,
@@ -588,14 +588,14 @@ package body et_cp_board_conductors is
 						case cmd_field_count is
 							when 13 =>
 								add_line (
-									module_name => key (module),
-									net_name	=> net_name,
-									layer		=> layer_tmp,
-									width		=> width_tmp,
-									device		=> to_device_name (get_field (cmd, 9)),
-									terminal	=> to_terminal_name (get_field (cmd, 10)),
-									axis		=> to_axis (get_field (cmd, 12)),
-									notches		=> to_notches (get_field (cmd, 13)), -- 5									
+									module_cursor => module,
+									net_name		=> net_name,
+									layer			=> layer_tmp,
+									width			=> width_tmp,
+									device			=> to_device_name (get_field (cmd, 9)),
+									terminal		=> to_terminal_name (get_field (cmd, 10)),
+									axis			=> to_axis (get_field (cmd, 12)),
+									notches			=> to_notches (get_field (cmd, 13)), -- 5									
 									log_threshold	=> log_threshold + 1);
 								
 							when 14 .. type_field_count'last =>
@@ -622,14 +622,14 @@ package body et_cp_board_conductors is
 					case cmd_field_count is
 						when 13 =>
 							add_line (
-								module_name => key (module),
-								net_name	=> net_name,
-								layer		=> layer_tmp,
-								width		=> width_tmp,
-								device		=> to_device_name (get_field (cmd, 9)),
-								terminal	=> to_terminal_name (get_field (cmd, 10)),
-								direction	=> to_rotation (get_field (cmd, 12)), -- 45 degree
-								length		=> to_distance (get_field (cmd, 13)), -- 50mm
+								module_cursor	=> module,
+								net_name		=> net_name,
+								layer			=> layer_tmp,
+								width			=> width_tmp,
+								device			=> to_device_name (get_field (cmd, 9)),
+								terminal		=> to_terminal_name (get_field (cmd, 10)),
+								direction		=> to_rotation (get_field (cmd, 12)), -- 45 degree
+								length			=> to_distance (get_field (cmd, 13)), -- 50mm
 								
 								log_threshold	=> log_threshold + 1
 								);
@@ -651,15 +651,15 @@ package body et_cp_board_conductors is
 						case cmd_field_count is
 							when 14 =>
 								add_line (
-									module_name => key (module),
-									net_name	=> net_name,
-									layer		=> layer_tmp,
-									width		=> width_tmp,
-									device		=> to_device_name (get_field (cmd, 9)),
-									terminal	=> to_terminal_name (get_field (cmd, 10)),
-									direction	=> to_rotation (get_field (cmd, 12)), -- 45 degree
-									axis		=> to_axis (get_field (cmd, 13)),
-									notches		=> to_notches (get_field (cmd, 14)), -- 5
+									module_cursor => module,
+									net_name		=> net_name,
+									layer			=> layer_tmp,
+									width			=> width_tmp,
+									device			=> to_device_name (get_field (cmd, 9)),
+									terminal		=> to_terminal_name (get_field (cmd, 10)),
+									direction		=> to_rotation (get_field (cmd, 12)), -- 45 degree
+									axis			=> to_axis (get_field (cmd, 13)),
+									notches			=> to_notches (get_field (cmd, 14)), -- 5
 									
 									log_threshold	=> log_threshold + 1
 									);
@@ -712,11 +712,11 @@ package body et_cp_board_conductors is
 													
 					-- draw a named track
 					add_arc (
-						module_name => key (module),
-						net_name	=> net_name,
-						arc			=> (arc_tmp with
-								layer	=> layer_tmp,
-								width	=> width_tmp),
+						module_cursor => module,
+						net_name		=> net_name,
+						arc				=> (arc_tmp with
+									layer	=> layer_tmp,
+									width	=> width_tmp),
 						log_threshold	=> log_threshold + 1);
 					
 				when 16 .. type_field_count'last => 
@@ -1020,7 +1020,7 @@ package body et_cp_board_conductors is
 							B => to_vector_model (get_field (cmd, 10), get_field (cmd, 11))));
 														
 						add_line (
-							module_name 	=> key (module),
+							module_cursor 	=> module,
 							net_name		=> to_net_name (""),
 							line			=> (line_tmp with width_tmp, layer_tmp),							
 							log_threshold	=> log_threshold + 1);
@@ -1047,7 +1047,7 @@ package body et_cp_board_conductors is
 														
 						-- draw a freetrack
 						add_arc (
-							module_name 	=> key (module),
+							module_cursor 	=> module,
 							arc				=> (arc_tmp with width_tmp, layer_tmp),
 							net_name		=> to_net_name (""),
 							log_threshold	=> log_threshold + 1);
