@@ -696,7 +696,7 @@ package body et_canvas_board_tracks is
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold + 1);
 
-			add_line (
+			add_line_to_net (
 				module_cursor	=> active_module, 
 				net_name		=> object_net_name,
 				line			=> (line with object_linewidth, object_signal_layer),

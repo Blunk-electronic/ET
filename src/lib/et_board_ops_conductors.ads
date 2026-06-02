@@ -85,7 +85,7 @@ package et_board_ops_conductors is
 	
 	-- Adds a line track segment to the given net in the given module.
 	-- The given net must exist:
-	procedure add_line (
+	procedure add_line_to_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		line			: in type_conductor_line;

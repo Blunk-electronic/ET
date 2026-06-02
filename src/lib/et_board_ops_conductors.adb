@@ -148,7 +148,9 @@ package body et_board_ops_conductors is
 
 	
 	
-	procedure add_line (
+	
+	
+	procedure add_line_to_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		line			: in type_conductor_line;
@@ -201,10 +203,13 @@ package body et_board_ops_conductors is
 			process		=> do_it'access);
 
 		update_ratsnest (module_cursor, log_threshold + 1);
-	end add_line;
+	end add_line_to_net;
 	
 
 
+	
+	
+	
 	
 	
 	procedure add_line (
@@ -248,7 +253,8 @@ package body et_board_ops_conductors is
 				process		=> add_freetrack'access);
 
 		else
-			add_line (module_cursor, net_name, line, log_threshold + 1);
+			add_line_to_net (module_cursor, 
+				net_name, line, log_threshold + 1);
 		end if;
 
 	end add_line;
@@ -363,7 +369,8 @@ package body et_board_ops_conductors is
 		
 		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
-		add_line (module_cursor, net_name, line, log_threshold + 1);
+		add_line_to_net (module_cursor, 
+			net_name, line, log_threshold + 1);
 	end add_line;
 
 
@@ -435,7 +442,8 @@ package body et_board_ops_conductors is
 		
 		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
-		add_line (module_cursor, net_name, line, log_threshold + 1);
+		add_line_to_net (module_cursor, 
+			net_name, line, log_threshold + 1);
 	end add_line;
 
 
@@ -502,7 +510,8 @@ package body et_board_ops_conductors is
 		
 		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
-		add_line (module_cursor, net_name, line, log_threshold + 1);
+		add_line_to_net (module_cursor, 
+			net_name, line, log_threshold + 1);
 	end add_line;
 
 
@@ -571,7 +580,8 @@ package body et_board_ops_conductors is
 		
 		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
-		add_line (module_cursor, net_name, line, log_threshold + 1);
+		add_line_to_net (module_cursor, 
+			net_name, line, log_threshold + 1);
 	end add_line;
 
 
