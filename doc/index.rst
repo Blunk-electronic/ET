@@ -10,7 +10,7 @@
 =======================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Content:
 
    preface.rst
