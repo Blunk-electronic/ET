@@ -1206,6 +1206,8 @@ package body et_cp_board_conductors is
 			when others => 
 				-- like: board demo fill zone GND P3V3 AGND
 
+				-- CS: existence checks for all nets
+				
 				-- collect the optional net names in list "nets":
 				for place in 5 .. cmd_field_count loop
 					nets.append (to_net_name (get_field (cmd, place)));
@@ -1256,6 +1258,8 @@ package body et_cp_board_conductors is
 			when others => 
 				-- like: board demo clear zone GND P3V3 AGND
 
+				-- CS: existence check for all nets
+				
 				-- collect the optional net names in list "nets":
 				for place in 5 .. cmd_field_count loop
 					nets.append (to_net_name (get_field (cmd, place)));
