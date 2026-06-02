@@ -561,7 +561,7 @@ package body et_cp_board_conductors is
 					-- board motor_driver route net NET_1 1 line 0.25 R1 1 to 35 40
 					case cmd_field_count is
 						when 13 =>
-							add_line (
+							add_line_start_at_terminal_end_at_point (
 								module_cursor 	=> module,
 								net_name		=> net_name,
 								layer			=> layer_tmp,
@@ -587,7 +587,7 @@ package body et_cp_board_conductors is
 						
 						case cmd_field_count is
 							when 13 =>
-								add_line (
+								add_line_start_at_terminal_with_notches_along_axis_2 (
 									module_cursor => module,
 									net_name		=> net_name,
 									layer			=> layer_tmp,
@@ -621,7 +621,7 @@ package body et_cp_board_conductors is
 					
 					case cmd_field_count is
 						when 13 =>
-							add_line (
+							add_line_start_at_terminal_with_length (
 								module_cursor	=> module,
 								net_name		=> net_name,
 								layer			=> layer_tmp,
@@ -631,8 +631,7 @@ package body et_cp_board_conductors is
 								direction		=> to_rotation (get_field (cmd, 12)), -- 45 degree
 								length			=> to_distance (get_field (cmd, 13)), -- 50mm
 								
-								log_threshold	=> log_threshold + 1
-								);
+								log_threshold	=> log_threshold + 1);
 
 						when 14 .. type_field_count'last =>
 							command_too_long (cmd, cmd_field_count - 1);
@@ -650,7 +649,7 @@ package body et_cp_board_conductors is
 						
 						case cmd_field_count is
 							when 14 =>
-								add_line (
+								add_line_start_at_terminal_with_notches_along_axis (
 									module_cursor => module,
 									net_name		=> net_name,
 									layer			=> layer_tmp,
@@ -661,8 +660,7 @@ package body et_cp_board_conductors is
 									axis			=> to_axis (get_field (cmd, 13)),
 									notches			=> to_notches (get_field (cmd, 14)), -- 5
 									
-									log_threshold	=> log_threshold + 1
-									);
+									log_threshold	=> log_threshold + 1);
 
 							when 15 .. type_field_count'last =>
 								command_too_long (cmd, cmd_field_count - 1);

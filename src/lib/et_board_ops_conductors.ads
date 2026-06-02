@@ -112,7 +112,7 @@ package et_board_ops_conductors is
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
-	procedure add_line (
+	procedure add_line_start_at_terminal_with_length (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
@@ -125,11 +125,12 @@ package et_board_ops_conductors is
 
 	
 	-- Draws a track starting at a terminal. The track ends
-	-- after the given number of notches along the given axis.
+	-- after the given number of notches along the given axis
+	-- in to the given direction.
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
-	procedure add_line (
+	procedure add_line_start_at_terminal_with_notches_along_axis (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
@@ -146,7 +147,7 @@ package et_board_ops_conductors is
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.								  
-	procedure add_line (
+	procedure add_line_start_at_terminal_end_at_point (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
@@ -157,12 +158,12 @@ package et_board_ops_conductors is
 		log_threshold	: in type_log_level);
 
 	
-	-- Draws a track starting at a terminal. The track runs into the 
-	-- given direction and ends after the given number of notches along the given axis.
+	-- Draws a track starting at a terminal. The track runs
+	-- ends after the given number of notches along the given axis.
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
-	procedure add_line (
+	procedure add_line_start_at_terminal_with_notches_along_axis_2 (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;

@@ -303,7 +303,7 @@ package body et_board_ops_conductors is
 
 
 	
-	procedure add_line (
+	procedure add_line_start_at_terminal_with_length (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
@@ -371,7 +371,7 @@ package body et_board_ops_conductors is
 
 		add_line_to_net (module_cursor, 
 			net_name, line, log_threshold + 1);
-	end add_line;
+	end add_line_start_at_terminal_with_length;
 
 
 
@@ -381,7 +381,7 @@ package body et_board_ops_conductors is
 	
 	
 	
-	procedure add_line (
+	procedure add_line_start_at_terminal_with_notches_along_axis (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
@@ -446,7 +446,7 @@ package body et_board_ops_conductors is
 
 		add_line_to_net (module_cursor, 
 			net_name, line, log_threshold + 1);
-	end add_line;
+	end add_line_start_at_terminal_with_notches_along_axis;
 
 
 
@@ -456,7 +456,7 @@ package body et_board_ops_conductors is
 	
 	
 	
-	procedure add_line (
+	procedure add_line_start_at_terminal_end_at_point (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
@@ -516,14 +516,16 @@ package body et_board_ops_conductors is
 
 		add_line_to_net (module_cursor, 
 			net_name, line, log_threshold + 1);
-	end add_line;
+	end add_line_start_at_terminal_end_at_point;
 
 
 
 	
 	
 	
-	procedure add_line (
+	
+	
+	procedure add_line_start_at_terminal_with_notches_along_axis_2 (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
@@ -585,9 +587,11 @@ package body et_board_ops_conductors is
 
 		add_line_to_net (module_cursor, 
 			net_name, line, log_threshold + 1);
-	end add_line;
+	end add_line_start_at_terminal_with_notches_along_axis_2;
 
 
+	
+	
 	
 	
 	
