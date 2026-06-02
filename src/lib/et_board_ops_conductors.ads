@@ -45,7 +45,6 @@ with et_board_geometry;					use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 
 with et_primitive_objects;				use et_primitive_objects;
-with et_module_names;					use et_module_names;
 with et_generic_modules;				use et_generic_modules;
 with et_axes;							use et_axes;
 with et_board_text;						use et_board_text;
@@ -70,9 +69,6 @@ with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
 package et_board_ops_conductors is
-
-	-- CS rework procedures so that a module cursor
-	-- is used instead the module_name.
 
 	use pac_generic_modules;
 	use pac_text_board;
@@ -510,7 +506,7 @@ package et_board_ops_conductors is
 	-- CS currently deletes the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 	procedure delete_track (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
 		catch_zone		: in type_catch_zone;

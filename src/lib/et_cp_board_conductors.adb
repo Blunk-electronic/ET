@@ -887,7 +887,7 @@ package body et_cp_board_conductors is
 				radius	=> to_zone_radius (get_field (cmd, 9)));
 		
 			delete_track (
-				module_name 	=> key (module),
+				module_cursor 	=> module,
 				net_name		=> to_net_name (get_field (cmd, 5)),
 				layer			=> to_signal_layer (get_field (cmd, 6)),
 				catch_zone		=> catch_zone,				
@@ -1100,7 +1100,7 @@ package body et_cp_board_conductors is
 				radius	=> to_zone_radius (get_field (cmd, 8)));
 				
 			delete_track (
-				module_name 	=> key (module),
+				module_cursor 	=> module,
 				net_name		=> to_net_name (""),
 				layer			=> to_signal_layer (get_field (cmd, 5)),
 				catch_zone		=> catch_zone,

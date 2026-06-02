@@ -41,6 +41,8 @@ with et_text;
 with et_string_processing;			use et_string_processing;
 with et_mirroring;
 
+with et_module_names;				use et_module_names;
+
 with et_schematic_ops_device;		use et_schematic_ops_device;
 with et_schematic_ops_nets;			use et_schematic_ops_nets;
 
@@ -2492,14 +2494,12 @@ package body et_board_ops_conductors is
 	
 	
 	procedure delete_track (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-
 		use pac_conductor_lines;
 		use pac_conductor_arcs;
 
@@ -2618,19 +2618,17 @@ package body et_board_ops_conductors is
 		end ripup_named_track;
 
 		
-	begin -- delete_track
-		log (text => "module " & to_string (module_name) &
-			freetrack (net_name) &
-			" deleting segment" &
-			" in layer " & to_string (layer) &
-			" in " & to_string (catch_zone),
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& freetrack (net_name) 
+			& " delete segment in layer " & to_string (layer) 
+			& " in " & to_string (catch_zone),
 			level => log_threshold);
 
-		-- locate module
-		module_cursor := locate_module (module_name);
-
-		-- make sure the desired layer is available according to current layer stack:
+		-- Make sure the targeted layer is 
+		-- available according to current layer stack:
 		test_layer (module_cursor, layer);
+
 		
 		if is_freetrack (net_name) then
 			
@@ -2703,7 +2701,7 @@ package body et_board_ops_conductors is
 	begin
 		log (text => "module " & to_string (module_cursor) &
 			" net " & to_string (net_name) &
-			" deleting all segments",
+			" delete all segments",
 			level => log_threshold);
 
 		update_element (
