@@ -402,13 +402,15 @@ package et_board_ops_fill_zones is
 
 
 
-	-- This procedure adds a fill zone to the board:
+	-- This procedure adds a fill zone to the board.
+	-- If a net name is given, then it is assumed that
+	-- the net exists. Otherwise an exception will be raised:
 	procedure add_zone (
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_zone'class;
 		log_threshold	: in type_log_level;
 
-		-- Net name is relevant if filil zone is part of a route.
+		-- Net name is relevant if the zone is part of a route.
 		-- The type of the given fill zone is the cirteria:
 		net_name		: in pac_net_name.bounded_string := et_net_names.no_name);
 

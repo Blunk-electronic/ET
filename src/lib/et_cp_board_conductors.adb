@@ -38,7 +38,6 @@
 -- To Do:
 -- - rework
 -- - propose arguments if command incomplete
--- - existence check of nets
 -- - rework commit ops
 
 with ada.text_io;						use ada.text_io;

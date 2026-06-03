@@ -2234,12 +2234,6 @@ package body et_board_ops_fill_zones is
 			use et_schematic_ops_nets;
 		begin
 			net_cursor := locate_net (module_cursor, net_name);
-
-			if net_cursor = pac_nets.no_element then
-				raise semantic_error_1 with
-					"ERROR: Net " & enclose_in_quotes (to_string (net_name)) 
-					& " does not exist !";
-			end if;
 		end locate_targeted_net;
 
 		
@@ -2305,7 +2299,7 @@ package body et_board_ops_fill_zones is
 		
 	begin -- add_zone
 		log (text => "module " & to_string (module_cursor)
-			& " placing fill zone in conductor layer ...",
+			& " add fill zone in conductor layer",
 			level => log_threshold);
 
 		log_indentation_up;
