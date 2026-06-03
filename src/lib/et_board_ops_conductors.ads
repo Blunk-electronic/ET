@@ -354,8 +354,8 @@ package et_board_ops_conductors is
 
 	
 	-- Deletes the given line segment in the given net.
-	-- If the net or the segment does not exist then
-	-- nothing happens and an error message is logged:
+	-- It is assumed that the given net exists. Otherwise
+	-- an exception will be raised:
 	procedure delete_line_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n

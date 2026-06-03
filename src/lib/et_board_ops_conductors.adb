@@ -1623,6 +1623,8 @@ package body et_board_ops_conductors is
 
 	
 	
+	
+	
 
 	procedure delete_line_net (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1658,25 +1660,21 @@ package body et_board_ops_conductors is
 			
 
 		begin			
-			if net_exists (net_cursor) then
+			pac_nets.update_element (
+				container	=> module.nets,
+				position	=> net_cursor,
+				process		=> query_net'access);
 
-				pac_nets.update_element (
-					container	=> module.nets,
-					position	=> net_cursor,
-					process		=> query_net'access);
-
-			else
-				log (SEVERITY_ERROR, "Net " & to_string (net_name) & " not found !");
-				raise constraint_error;
-			end if;
 		end query_module;
 
 		
 	begin
-		log (text => "module " & to_string (module_cursor) &
-			" net " & to_string (net_name) &
-			" deleting segment" & to_string (line, true), -- log linewidth
+		log (text => "module " & to_string (module_cursor) 
+			& " net " & to_string (net_name) 
+			& " delete segment" & to_string (line, true), -- log linewidth
 			level => log_threshold);
+			
+		log_indentation_up;
 
 		update_element (
 			container	=> generic_modules,
@@ -1684,8 +1682,12 @@ package body et_board_ops_conductors is
 			process		=> query_module'access);
 
 		update_ratsnest (module_cursor, log_threshold + 1);
+		
+		log_indentation_down;
 	end delete_line_net;
 
+	
+	
 
 	
 
