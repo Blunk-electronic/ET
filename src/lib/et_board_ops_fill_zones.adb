@@ -74,6 +74,10 @@ with et_assembly_technology;		use et_assembly_technology;
 with et_module;						use et_module;
 with et_exceptions;					use et_exceptions;
 
+with et_modes.board;
+with et_undo_redo;
+with et_commit;
+
 
 package body et_board_ops_fill_zones is
 

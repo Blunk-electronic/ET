@@ -61,6 +61,8 @@ with et_design_rules_board;				use et_design_rules_board;
 with et_terminals;						use et_terminals;
 with et_logging;						use et_logging;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+
 
 package et_board_ops_fill_zones is
 

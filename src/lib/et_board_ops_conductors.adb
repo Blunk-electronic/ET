@@ -63,6 +63,10 @@ with et_module;						use et_module;
 with et_terminals;					use et_terminals;
 with et_assembly_technology;		use et_assembly_technology;
 
+with et_modes.board;
+with et_undo_redo;
+with et_commit;
+
 
 
 package body et_board_ops_conductors is
