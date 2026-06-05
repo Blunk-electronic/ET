@@ -373,11 +373,16 @@ package body et_cp_board_conductors is
 						priority_level	=> settings.polygons_conductor.priority_level,
 						others			=> <>),
 					others				=> <>);
-					
+
+				
 				add_zone (
 					module_cursor	=> module,
 					zone			=> p2,
 					net_name		=> net_name,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 				
 			end make_solid_thermal;
@@ -403,11 +408,16 @@ package body et_cp_board_conductors is
 						priority_level	=> settings.polygons_conductor.priority_level,
 						others			=> <>),
 					others				=> <>);
-					
+
+				
 				add_zone (
 					module_cursor	=> module,
 					zone			=> p2,
 					net_name		=> net_name,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 
 			end make_solid_solid;
@@ -434,11 +444,16 @@ package body et_cp_board_conductors is
 						priority_level	=> settings.polygons_conductor.priority_level,
 						others			=> <>),
 					others				=> <>);
-					
+
+				
 				add_zone (
 					module_cursor	=> module,
 					zone			=> p2,
 					net_name		=> net_name,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 				
 			end make_hatched_thermal;
@@ -465,11 +480,16 @@ package body et_cp_board_conductors is
 						priority_level	=> settings.polygons_conductor.priority_level,
 						others			=> <>),
 					others				=> <>);
-					
+
+				
 				add_zone (
 					module_cursor	=> module,
 					zone			=> p2,
 					net_name		=> net_name,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 				
 			end make_hatched_solid;
@@ -1016,7 +1036,15 @@ package body et_cp_board_conductors is
 						islands		=> no_islands,
 						easing		=> settings.polygons_conductor.easing);
 
-					add_zone (module, ps, log_threshold + 1);
+					
+					add_zone (
+						module_cursor 	=> module, 
+						zone			=> ps, 
+						
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
+						log_threshold	=> log_threshold + 1);
 
 					
 				when HATCHED =>
@@ -1034,7 +1062,16 @@ package body et_cp_board_conductors is
 						islands		=> no_islands,
 						easing		=> settings.polygons_conductor.easing);
 
-					add_zone (module, ph, log_threshold + 1);
+					
+					add_zone (
+						module_cursor 	=> module, 
+						zone			=> ph, 
+						
+						-- Depending on the origin of the command,
+						-- the design state is to be commited or not:
+						commit_design	=> to_commit_design (cmd),
+						log_threshold	=> log_threshold + 1);
+
 					
 			end case;
 		end make_fill_zone;

@@ -410,11 +410,12 @@ package et_board_ops_fill_zones is
 	procedure add_zone (
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_zone'class;
-		log_threshold	: in type_log_level;
 
 		-- Net name is relevant if the zone is part of a route.
 		-- The type of the given fill zone is the cirteria:
-		net_name		: in pac_net_name.bounded_string := et_net_names.no_name);
+		net_name		: in pac_net_name.bounded_string := et_net_names.no_name;
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level);
 
 
 

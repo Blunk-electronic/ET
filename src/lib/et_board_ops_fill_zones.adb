@@ -2182,11 +2182,16 @@ package body et_board_ops_fill_zones is
 	procedure add_zone (
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_zone'class;
-		log_threshold	: in type_log_level;
-		net_name		: in pac_net_name.bounded_string := et_net_names.no_name)
+		net_name		: in pac_net_name.bounded_string := et_net_names.no_name;
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level)
 	is
-		use ada.tags;
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		use ada.tags;
+		
 		use et_nets;
 		use pac_nets;
 		use pac_net_name;
@@ -2307,6 +2312,14 @@ package body et_board_ops_fill_zones is
 			level => log_threshold);
 
 		log_indentation_up;
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		
 		-- floating:
 		if zone'tag = type_floating_solid'tag then
@@ -2346,6 +2359,13 @@ package body et_board_ops_fill_zones is
 		else
 			null; -- CS ?
 		end if;
+
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end add_zone;
@@ -2354,6 +2374,13 @@ package body et_board_ops_fill_zones is
 
 
 
+
+		
+
+
+
+
+	
 
 
 
