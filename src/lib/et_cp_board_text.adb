@@ -69,6 +69,9 @@ with et_pcb_placeholders;
 with et_pcb_placeholders.conductor;
 with et_pcb_placeholders.non_conductor;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+
+
 
 package body et_cp_board_text is
 
@@ -142,12 +145,17 @@ package body et_cp_board_text is
 				module_cursor 	=> module,
 				signal_layer	=> signal_layer,
 				text			=> text,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 		end place_in_conductor_layer;
 		
 		
 	begin
-		-- CS log message
+		log (text => "place text", level => log_threshold);
+		log_indentation_up;
 		
 		-- board demo place text silkscreen top 0.15 1 140 100 0 "SILKSCREEN"
 		-- board demo place text conductor  5   0.15 1 140 100 0 "L1"
@@ -207,6 +215,9 @@ package body et_cp_board_text is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end place_text;
 
 		
