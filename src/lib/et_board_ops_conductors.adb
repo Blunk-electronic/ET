@@ -3088,6 +3088,7 @@ package body et_board_ops_conductors is
 
 
 	
+	
 
 	
 
@@ -3197,6 +3198,9 @@ package body et_board_ops_conductors is
 
 
 
+	
+
+
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment_floating;
@@ -3287,6 +3291,9 @@ package body et_board_ops_conductors is
 	end modify_status;
 
 
+
+
+	
 	
 
 
@@ -3695,6 +3702,8 @@ package body et_board_ops_conductors is
 
 	
 
+
+	
 	
 
 	
@@ -3886,6 +3895,7 @@ package body et_board_ops_conductors is
 	end get_first_segment_net;
 
 
+	
 
 
 
@@ -4477,8 +4487,13 @@ package body et_board_ops_conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		signal_layer	: in type_signal_layer;
 		text			: in type_text_fab_with_content;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		use et_conductor_text.boards;
 		use et_mirroring;
 		
@@ -4530,17 +4545,29 @@ package body et_board_ops_conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " placing text in conductor layer at"
+			& " place text in conductor layer at"
 			& to_string (text.position)
 			& " signal layer " & to_string (signal_layer),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> place_text'access);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 
 		log_indentation_down;
 	end add_text;
@@ -4548,6 +4575,10 @@ package body et_board_ops_conductors is
 	
 	
 
+  
+  
+
+	
 
 
 
@@ -5070,9 +5101,14 @@ package body et_board_ops_conductors is
 	procedure add_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_placeholder_conductor;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -5085,17 +5121,29 @@ package body et_board_ops_conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " placing text placeholder in conductor layer "
+			& " place text placeholder in conductor layer "
 			& to_string (placeholder),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;	
+		
 		log_indentation_down;
 	end add_placeholder;
 

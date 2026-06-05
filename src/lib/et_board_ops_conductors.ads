@@ -736,6 +736,7 @@ package et_board_ops_conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		signal_layer	: in type_signal_layer;
 		text			: in type_text_fab_with_content;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -825,6 +826,7 @@ package et_board_ops_conductors is
 	procedure add_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_placeholder_conductor;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 	
 
