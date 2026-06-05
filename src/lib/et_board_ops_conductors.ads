@@ -345,6 +345,7 @@ package et_board_ops_conductors is
 		line			: in type_object_line_net;
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 	
 
@@ -354,6 +355,7 @@ package et_board_ops_conductors is
 		line			: in type_object_line_floating;
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -366,6 +368,7 @@ package et_board_ops_conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		line			: in type_conductor_line;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -484,6 +487,7 @@ package et_board_ops_conductors is
 		arc				: in type_object_arc_net;
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 	
 
@@ -493,6 +497,7 @@ package et_board_ops_conductors is
 		arc				: in type_object_arc_floating;
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -539,10 +544,13 @@ package et_board_ops_conductors is
 	
 
 
-	-- Deletes all segments of the given net:
+	-- Deletes all segments of the given net.
+	-- Assumes that the given net exists. Otherwise 
+	-- an exception will be raised:
 	procedure ripup_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 

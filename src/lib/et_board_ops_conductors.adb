@@ -736,6 +736,8 @@ package body et_board_ops_conductors is
 
 	
 	
+
+
 	
 	
 
@@ -1396,6 +1398,7 @@ package body et_board_ops_conductors is
 
 
 
+
 	
 
 
@@ -1470,6 +1473,7 @@ package body et_board_ops_conductors is
 
 
 
+	
 
 	
 	
@@ -1658,6 +1662,7 @@ package body et_board_ops_conductors is
 
 
 
+
 	
 	
 	
@@ -1666,8 +1671,13 @@ package body et_board_ops_conductors is
 		line			: in type_object_line_net;
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		use pac_conductor_lines;
 		use et_nets;
 
@@ -1704,18 +1714,31 @@ package body et_board_ops_conductors is
 			level => log_threshold);
 
 		log_indentation_up;
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
 		
-		log_indentation_down;
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 
+		
 		update_ratsnest (module_cursor, log_threshold + 1);
+
+		log_indentation_down;
 	end move_line_net;
 
 
 
+	
 
 
 	
@@ -1725,9 +1748,14 @@ package body et_board_ops_conductors is
 		line			: in type_object_line_floating;
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -1739,7 +1767,8 @@ package body et_board_ops_conductors is
 				attack (line, point_of_attack, destination);
 				log (text => (to_string (line, true)), level => log_threshold + 1);
 			end;
-	
+
+			
 		begin
 			module.board.conductors_floating.lines.update_element (line.line_cursor, move'access);
 		end query_module;
@@ -1753,11 +1782,22 @@ package body et_board_ops_conductors is
 			level => log_threshold);
 
 		log_indentation_up;
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
 		log_indentation_down;
 	end move_line_floating;
 
@@ -1765,6 +1805,7 @@ package body et_board_ops_conductors is
 
 	
 	
+
 	
 	
 
@@ -1772,8 +1813,12 @@ package body et_board_ops_conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		line			: in type_conductor_line;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
 
 		procedure query_module (
@@ -1818,11 +1863,24 @@ package body et_board_ops_conductors is
 			
 		log_indentation_up;
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+		
 		update_ratsnest (module_cursor, log_threshold + 1);
 		
 		log_indentation_down;
@@ -2290,6 +2348,7 @@ package body et_board_ops_conductors is
 	
 	
 
+	
 
 	function get_first_arc_net (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2387,6 +2446,7 @@ package body et_board_ops_conductors is
 	end get_first_arc_net;
 
 
+
 	
 
 
@@ -2465,6 +2525,7 @@ package body et_board_ops_conductors is
 
 
 	
+
 	
 
 	
@@ -2473,8 +2534,13 @@ package body et_board_ops_conductors is
 		arc				: in type_object_arc_net;
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		use pac_conductor_arcs;
 		use et_nets;
 
@@ -2511,14 +2577,24 @@ package body et_board_ops_conductors is
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
 		
-		log_indentation_down;
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 
 		update_ratsnest (module_cursor, log_threshold + 1);
+
+		log_indentation_down;
 	end move_arc_net;
 
 
@@ -2533,9 +2609,14 @@ package body et_board_ops_conductors is
 		arc				: in type_object_arc_floating;
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -2547,7 +2628,8 @@ package body et_board_ops_conductors is
 				attack (arc, point_of_attack, destination);
 				log (text => (to_string (arc, true)), level => log_threshold + 1);
 			end;
-	
+
+			
 		begin
 			module.board.conductors_floating.arcs.update_element (arc.arc_cursor, move'access);
 		end query_module;
@@ -2561,17 +2643,28 @@ package body et_board_ops_conductors is
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
 		log_indentation_down;
 	end move_arc_floating;
 
 
 
 
+	
 	
 	
 
@@ -2868,9 +2961,14 @@ package body et_board_ops_conductors is
 	procedure ripup_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -2894,17 +2992,11 @@ package body et_board_ops_conductors is
 			
 
 		begin			
-			if net_exists (net_cursor) then
+			pac_nets.update_element (
+				container	=> module.nets,
+				position	=> net_cursor,
+				process		=> query_net'access);
 
-				pac_nets.update_element (
-					container	=> module.nets,
-					position	=> net_cursor,
-					process		=> query_net'access);
-
-			else
-				log (SEVERITY_ERROR, "Net " & to_string (net_name) & " not found !");
-				raise constraint_error;
-			end if;
 		end query_module;
 
 		
@@ -2914,17 +3006,34 @@ package body et_board_ops_conductors is
 			" delete all segments",
 			level => log_threshold);
 
+		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+		
 		update_ratsnest (module_cursor, log_threshold + 1);
+		
+		log_indentation_down;
 	end ripup_net;
 
 
 
 
+	
 
 	
 
@@ -5934,6 +6043,10 @@ package body et_board_ops_conductors is
 
 
 
+
+	
+	
+
 	procedure move_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
@@ -6042,6 +6155,9 @@ package body et_board_ops_conductors is
 
 
 
+
+
+	
 	
 
 	procedure delete_object (
@@ -6161,6 +6277,8 @@ package body et_board_ops_conductors is
 		log_indentation_down;
 	end delete_object;
 	
+
+
 
 
 	
