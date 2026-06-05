@@ -738,7 +738,6 @@ package body et_board_ops_conductors is
 	
 	
 	
-	
 
 
 
@@ -1397,6 +1396,8 @@ package body et_board_ops_conductors is
 
 
 
+	
+
 
 	function get_first_line_floating (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1466,6 +1467,8 @@ package body et_board_ops_conductors is
 		
 		return result;
 	end get_first_line_floating;
+
+
 
 
 	
@@ -1654,6 +1657,8 @@ package body et_board_ops_conductors is
 	
 
 
+
+	
 	
 	
 	procedure move_line_net (
@@ -1943,6 +1948,13 @@ package body et_board_ops_conductors is
 		-- Make sure the targeted layer is 
 		-- available according to current layer stack:
 		test_layer (module_cursor, arc.layer);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		if is_freetrack (net_name) then
 			
@@ -1959,7 +1971,13 @@ package body et_board_ops_conductors is
 
 			update_ratsnest (module_cursor, log_threshold + 1);
 		end if;
+
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
 		log_indentation_down;
 	end add_arc;
 
@@ -2024,6 +2042,9 @@ package body et_board_ops_conductors is
 
 
 
+
+
+	
 	
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2067,6 +2088,9 @@ package body et_board_ops_conductors is
 
 
 
+
+
+	
 
 
 	procedure propose_arcs (
@@ -2174,6 +2198,10 @@ package body et_board_ops_conductors is
 	
 
 
+
+	
+
+
 	procedure reset_proposed_arcs (
 		module_cursor	: in pac_generic_modules.cursor;
 		freetracks		: in boolean;
@@ -2256,6 +2284,8 @@ package body et_board_ops_conductors is
 		log_indentation_down;
 	end reset_proposed_arcs;
 	
+
+
 
 	
 	
@@ -2357,6 +2387,8 @@ package body et_board_ops_conductors is
 	end get_first_arc_net;
 
 
+	
+
 
 
 
@@ -2433,6 +2465,7 @@ package body et_board_ops_conductors is
 
 
 	
+	
 
 	
 	procedure move_arc_net (
@@ -2491,6 +2524,7 @@ package body et_board_ops_conductors is
 
 
 
+	
 
 	
 
@@ -2537,6 +2571,8 @@ package body et_board_ops_conductors is
 
 
 
+
+	
 	
 
 
@@ -2605,6 +2641,7 @@ package body et_board_ops_conductors is
 
 	
 
+	
 
 
 	procedure delete_arc_floating (
@@ -2649,14 +2686,20 @@ package body et_board_ops_conductors is
 	
 
 	
+
 	
 	procedure delete_track (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
 		catch_zone		: in type_catch_zone;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		use pac_conductor_lines;
 		use pac_conductor_arcs;
 
@@ -2783,6 +2826,12 @@ package body et_board_ops_conductors is
 		test_layer (module_cursor, layer);
 
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		if is_freetrack (net_name) then
 			
 			update_element (
@@ -2798,7 +2847,12 @@ package body et_board_ops_conductors is
 
 			update_ratsnest (module_cursor, log_threshold + 1);
 		end if;		
+
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end delete_track;
