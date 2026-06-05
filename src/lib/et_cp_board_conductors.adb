@@ -1130,9 +1130,14 @@ package body et_cp_board_conductors is
 						add_line (
 							module_cursor 	=> module,
 							net_name		=> to_net_name (""),
-							line			=> (line_tmp with width_tmp, layer_tmp),							
+							line			=> (line_tmp with width_tmp, layer_tmp),
+
+							-- Depending on the origin of the command,
+							-- the design state is to be commited or not:
+							commit_design	=> to_commit_design (cmd),
 							log_threshold	=> log_threshold + 1);
 
+						
 					when 12 .. type_field_count'last =>
 						command_too_long (cmd, cmd_field_count - 1);
 						
@@ -1158,7 +1163,12 @@ package body et_cp_board_conductors is
 							module_cursor 	=> module,
 							arc				=> (arc_tmp with width_tmp, layer_tmp),
 							net_name		=> to_net_name (""),
+
+							-- Depending on the origin of the command,
+							-- the design state is to be commited or not:
+							commit_design	=> to_commit_design (cmd),
 							log_threshold	=> log_threshold + 1);
+
 						
 					when 15 .. type_field_count'last =>
 						command_too_long (cmd, cmd_field_count - 1);
@@ -1181,6 +1191,8 @@ package body et_cp_board_conductors is
 		
 		log_indentation_down;
 	end route_freetrack;
+
+
 
 
 	
