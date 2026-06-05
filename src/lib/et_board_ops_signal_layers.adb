@@ -37,6 +37,7 @@
 --
 -- To Do:
 -- - rework
+-- - add commit operations
 
 
 
@@ -46,6 +47,9 @@ with ada.strings;					use ada.strings;
 
 with et_string_processing;			use et_string_processing;
 
+with et_modes.board;
+with et_undo_redo;
+with et_commit;
 
 
 

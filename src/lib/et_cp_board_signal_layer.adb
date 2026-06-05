@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -37,7 +37,7 @@
 --
 -- To Do:
 -- - rework
---
+-- - add commit operations
 --
 
 with ada.text_io;						use ada.text_io;
@@ -52,6 +52,8 @@ with et_keywords;						use et_keywords;
 with et_pcb_stack;						use et_pcb_stack;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_board_geometry;					use et_board_geometry;
+
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
 

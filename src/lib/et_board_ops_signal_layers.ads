@@ -35,9 +35,10 @@
 --
 --   history of changes:
 --
---   ToDo: 
---
---
+-- To Do: 
+-- - rework procedures so that they take a module cursor
+--   instead of a module name
+-- - add commit operations (commit_design	: in type_commit_design := DO_COMMIT;)
 --
 
 
@@ -53,6 +54,8 @@ with et_board_geometry;				use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 
 with et_logging;					use et_logging;
+
+with et_cmd_origin_to_commit;		use et_cmd_origin_to_commit;
 
 
 
