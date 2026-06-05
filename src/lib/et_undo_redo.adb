@@ -342,7 +342,8 @@ package body et_undo_redo is
 					end case;
 
 
-				when NOUN_TRACK =>
+				--when NOUN_TRACK =>
+				when NOUN_CONDUCTORS =>
 					case verb is
 						when VERB_MOVE | VERB_DELETE =>
 							commit_nets;
