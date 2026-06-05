@@ -38,7 +38,7 @@
 -- To Do:
 -- - rework
 -- - propose arguments if command incomplete
--- - rework commit ops
+--
 
 with ada.text_io;						use ada.text_io;
 with ada.characters.handling;			use ada.characters.handling;
@@ -1224,6 +1224,10 @@ package body et_cp_board_conductors is
 				net_name		=> to_net_name (""),
 				layer			=> to_signal_layer (get_field (cmd, 5)),
 				catch_zone		=> catch_zone,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 
 		end do_it;
