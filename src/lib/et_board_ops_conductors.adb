@@ -1898,9 +1898,14 @@ package body et_board_ops_conductors is
 	procedure delete_line_floating (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_conductor_line;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -1921,14 +1926,29 @@ package body et_board_ops_conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) &
-			" deleting segment" & to_string (line, true), -- log linewidth
+			" delete segment" & to_string (line, true), -- log linewidth
 			level => log_threshold);
 
+		log_indentation_up;
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;		
 	end delete_line_floating;
 
 
@@ -2673,8 +2693,12 @@ package body et_board_ops_conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		arc				: in type_conductor_arc;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
 
 		procedure query_module (
@@ -2703,32 +2727,42 @@ package body et_board_ops_conductors is
 			
 
 		begin			
-			if net_exists (net_cursor) then
+			pac_nets.update_element (
+				container	=> module.nets,
+				position	=> net_cursor,
+				process		=> query_net'access);
 
-				pac_nets.update_element (
-					container	=> module.nets,
-					position	=> net_cursor,
-					process		=> query_net'access);
-
-			else
-				log (SEVERITY_ERROR, "Net " & to_string (net_name) & " not found !");
-				raise constraint_error;
-			end if;
 		end query_module;
 
 		
 	begin
 		log (text => "module " & to_string (module_cursor) &
 			" net " & to_string (net_name) &
-			" deleting segment" & to_string (arc, true), -- log linewidth
+			" delete segment" & to_string (arc, true), -- log linewidth
 			level => log_threshold);
 
+		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+		
 		update_ratsnest (module_cursor, log_threshold + 1);
+
+		log_indentation_down;
 	end delete_arc_net;
 
 
@@ -2736,13 +2770,19 @@ package body et_board_ops_conductors is
 
 	
 
+	
 
 	procedure delete_arc_floating (
 		module_cursor	: in pac_generic_modules.cursor;
 		arc				: in type_conductor_arc;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -2763,14 +2803,29 @@ package body et_board_ops_conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) &
-			" deleting segment" & to_string (arc, true), -- log linewidth
+			" delete segment" & to_string (arc, true), -- log linewidth
 			level => log_threshold);
 
+		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end delete_arc_floating;
 
 
@@ -4166,6 +4221,7 @@ package body et_board_ops_conductors is
 
 
 	
+	
 
 
 	
@@ -4173,8 +4229,13 @@ package body et_board_ops_conductors is
 	procedure delete_segment_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment_net;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		use pac_contours;
 		use pac_segments;
 		use pac_route_solid;
@@ -4235,29 +4296,57 @@ package body et_board_ops_conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting zone segment " & to_string (segment.segment)
+			& " delete zone segment " & to_string (segment.segment)
 			& " of net " & get_net_name (segment.net),
 			level => log_threshold);
 
 		log_indentation_up;
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
 		
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
 		log_indentation_down;
 	end delete_segment_net;
 
 
 
+		
+		
+
+
+
+
+
+
+
+
+	
 
 
 
 	procedure delete_segment_floating (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment_floating;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		use pac_contours;
 		use pac_segments;
 		use pac_floating_solid;
@@ -4308,20 +4397,35 @@ package body et_board_ops_conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting floating zone segment " & to_string (segment.segment),
+			& " delete floating zone segment " & to_string (segment.segment),
 			level => log_threshold);
 
 		log_indentation_up;
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
+
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;	
+		
+
 		log_indentation_down;
 	end delete_segment_floating;
 
 	
 	
+
 	
 
 
@@ -4401,6 +4505,10 @@ package body et_board_ops_conductors is
 
 	
 	
+
+
+
+
 	
 
 	function get_texts (
@@ -4463,6 +4571,9 @@ package body et_board_ops_conductors is
 	
 
 
+
+	
+
 	procedure move_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		text			: in type_conductor_text_board;
@@ -4519,6 +4630,9 @@ package body et_board_ops_conductors is
 
 
 
+
+
+
 	
 
 	procedure modify_status (
@@ -4566,6 +4680,8 @@ package body et_board_ops_conductors is
 
 
 
+
+	
 
 	procedure propose_texts (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4631,6 +4747,9 @@ package body et_board_ops_conductors is
 
 
 
+
+	
+
 	procedure move_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		text			: in type_object_text;
@@ -4674,15 +4793,23 @@ package body et_board_ops_conductors is
 
 	
 
+
+
+
 	
 	
 
 	procedure delete_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		text			: in type_object_text;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -4695,18 +4822,32 @@ package body et_board_ops_conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting conductor text " & to_string (text.cursor),
+			& " delete conductor text " & to_string (text.cursor),
 			level => log_threshold);
 
 		log_indentation_up;
 
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;	
 		
 		log_indentation_down;
 	end delete_text;
+
+
 
 
 	
@@ -5026,12 +5167,20 @@ package body et_board_ops_conductors is
 	
 
 
+	
+
+
 	procedure delete_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_object_placeholder;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -5044,18 +5193,35 @@ package body et_board_ops_conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting conductor text placeholder" & to_string (placeholder.cursor),
+			& " delete conductor text placeholder" & to_string (placeholder.cursor),
 			level => log_threshold);
 
 		log_indentation_up;
 
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;	
 		
 		log_indentation_down;
 	end delete_placeholder;
+
+
+
+
+
 
 
 	

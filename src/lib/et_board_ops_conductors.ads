@@ -378,6 +378,7 @@ package et_board_ops_conductors is
 	procedure delete_line_floating (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_conductor_line;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -503,12 +504,13 @@ package et_board_ops_conductors is
 
 
 	-- Deletes the given arc segment in the given net.
-	-- If the net or the segment does not exist then
-	-- nothing happens and an error message is logged:
+	-- Assumes that the targeted net exists. Otherwise an exception
+	-- will be raised:
 	procedure delete_arc_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		arc				: in type_conductor_arc;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -518,6 +520,7 @@ package et_board_ops_conductors is
 	procedure delete_arc_floating (
 		module_cursor	: in pac_generic_modules.cursor;
 		arc				: in type_conductor_arc;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -710,6 +713,7 @@ package et_board_ops_conductors is
 	procedure delete_segment_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment_net;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -717,6 +721,7 @@ package et_board_ops_conductors is
 	procedure delete_segment_floating (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment_floating;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -787,6 +792,7 @@ package et_board_ops_conductors is
 	procedure delete_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		text			: in type_object_text;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -855,6 +861,7 @@ package et_board_ops_conductors is
 	procedure delete_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_object_placeholder;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
  
  
