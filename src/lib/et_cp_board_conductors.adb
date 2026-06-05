@@ -551,11 +551,16 @@ package body et_cp_board_conductors is
 						line_tmp := type_line (to_line (
 							A => to_vector_model (get_field (cmd, 9), get_field (cmd, 10)),
 							B => to_vector_model (get_field (cmd, 11), get_field (cmd, 12))));
-													
+
+						
 						add_line (
 							module_cursor 	=> module,
 							net_name		=> net_name,
-							line			=> (line_tmp with width_tmp, layer_tmp),								
+							line			=> (line_tmp with width_tmp, layer_tmp),
+
+							-- Depending on the origin of the command,
+							-- the design state is to be commited or not:
+							commit_design	=> to_commit_design (cmd),
 							log_threshold	=> log_threshold + 1);
 
 					else
@@ -609,6 +614,10 @@ package body et_cp_board_conductors is
 									device			=> to_device_name (get_field (cmd, 9)),
 									terminal		=> to_terminal_name (get_field (cmd, 10)),
 									end_point		=> to_vector_model (get_field (cmd, 12), get_field (cmd, 13)), -- 35 40
+
+									-- Depending on the origin of the command,
+									-- the design state is to be commited or not:
+									commit_design	=> to_commit_design (cmd),
 									log_threshold	=> log_threshold + 1);
 								
 							when 14 .. type_field_count'last =>
@@ -635,7 +644,11 @@ package body et_cp_board_conductors is
 										device			=> to_device_name (get_field (cmd, 9)),
 										terminal		=> to_terminal_name (get_field (cmd, 10)),
 										axis			=> to_axis (get_field (cmd, 12)),
-										notches			=> to_notches (get_field (cmd, 13)), -- 5									
+										notches			=> to_notches (get_field (cmd, 13)), -- 5
+
+										-- Depending on the origin of the command,
+										-- the design state is to be commited or not:
+										commit_design	=> to_commit_design (cmd),
 										log_threshold	=> log_threshold + 1);
 									
 								when 14 .. type_field_count'last =>
@@ -670,7 +683,10 @@ package body et_cp_board_conductors is
 									terminal		=> to_terminal_name (get_field (cmd, 10)),
 									direction		=> to_rotation (get_field (cmd, 12)), -- 45 degree
 									length			=> to_distance (get_field (cmd, 13)), -- 50mm
-									
+
+									-- Depending on the origin of the command,
+									-- the design state is to be commited or not:
+									commit_design	=> to_commit_design (cmd),
 									log_threshold	=> log_threshold + 1);
 
 							when 14 .. type_field_count'last =>
@@ -699,7 +715,10 @@ package body et_cp_board_conductors is
 										direction		=> to_rotation (get_field (cmd, 12)), -- 45 degree
 										axis			=> to_axis (get_field (cmd, 13)),
 										notches			=> to_notches (get_field (cmd, 14)), -- 5
-										
+
+										-- Depending on the origin of the command,
+										-- the design state is to be commited or not:
+										commit_design	=> to_commit_design (cmd),
 										log_threshold	=> log_threshold + 1);
 
 								when 15 .. type_field_count'last =>
@@ -765,6 +784,10 @@ package body et_cp_board_conductors is
 							arc				=> (arc_tmp with
 										layer	=> layer_tmp,
 										width	=> width_tmp),
+
+							-- Depending on the origin of the command,
+							-- the design state is to be commited or not:
+							commit_design	=> to_commit_design (cmd),
 							log_threshold	=> log_threshold + 1);
 
 					else

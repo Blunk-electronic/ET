@@ -80,11 +80,12 @@ package et_board_ops_conductors is
 -- LINES:
 	
 	-- Adds a line track segment to the given net in the given module.
-	-- Assumes that the given exists. Otherwise an exception will be raised:
+	-- Assumes that the given net exists. Otherwise an exception will be raised:
 	procedure add_line_to_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		line			: in type_conductor_line;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -97,6 +98,7 @@ package et_board_ops_conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string := et_net_names.no_name; -- reset_n
 		line			: in type_conductor_line;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -125,6 +127,7 @@ package et_board_ops_conductors is
 		terminal		: in pac_terminal_name.bounded_string;
 		direction		: in type_rotation_model;
 		length			: in type_distance_positive;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -146,6 +149,7 @@ package et_board_ops_conductors is
 		direction		: in type_rotation_model;
 		axis			: in type_axis_2d;
 		notches			: in type_grid_notches;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -163,6 +167,7 @@ package et_board_ops_conductors is
 		device			: in type_device_name;
 		terminal		: in pac_terminal_name.bounded_string;
 		end_point		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -182,6 +187,7 @@ package et_board_ops_conductors is
 		terminal		: in pac_terminal_name.bounded_string;
 		axis			: in type_axis_2d;
 		notches			: in type_grid_notches;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -384,6 +390,7 @@ package et_board_ops_conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		arc				: in type_conductor_arc;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	

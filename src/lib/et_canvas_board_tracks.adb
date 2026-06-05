@@ -81,8 +81,6 @@ with et_logging;						use et_logging;
 with et_string_processing;				use et_string_processing;
 with et_exceptions;						use et_exceptions;
 
-with et_undo_redo;
-with et_commit;
 with et_object_status;
 
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
@@ -689,21 +687,13 @@ package body et_canvas_board_tracks is
 		
 		
 		procedure add_to_net is
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
 		begin
-			-- Commit the current state of the design:
-			commit (PRE, verb, noun, log_threshold + 1);
-
 			add_line_to_net (
 				module_cursor	=> active_module, 
 				net_name		=> object_net_name,
 				line			=> (line with object_linewidth, object_signal_layer),
 				log_threshold	=> log_threshold + 1);
 			
-			-- Commit the new state of the design:
-			commit (POST, verb, noun, log_threshold + 1);
 		end add_to_net;
 
 

@@ -156,12 +156,18 @@ package body et_board_ops_conductors is
 	
 	
 	
+	
 	procedure add_line_to_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		line			: in type_conductor_line;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
@@ -203,12 +209,26 @@ package body et_board_ops_conductors is
 			level => log_threshold);
 			
 		log_indentation_up;
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
-			
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		
 		update_ratsnest (module_cursor, log_threshold + 1);
 		
 		log_indentation_down;
@@ -225,8 +245,13 @@ package body et_board_ops_conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string := et_net_names.no_name; -- reset_n
 		line			: in type_conductor_line;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		use pac_conductor_lines;
 		
 		
@@ -248,9 +273,16 @@ package body et_board_ops_conductors is
 
 		log_indentation_up;
 
-		-- Make sure the targeted  signal layer is 
+		-- Make sure the targeted signal layer is 
 		-- available according to current layer stack:
 		test_layer (module_cursor, line.layer);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		if is_freetrack (net_name) then
 			
@@ -261,8 +293,15 @@ package body et_board_ops_conductors is
 
 		else
 			add_line_to_net (module_cursor, 
-				net_name, line, log_threshold + 1);
+				net_name, line, NO_COMMIT, log_threshold + 1);
 		end if;
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
 		
 		log_indentation_down;
 	end add_line;
@@ -323,9 +362,14 @@ package body et_board_ops_conductors is
 		terminal		: in pac_terminal_name.bounded_string;
 		direction		: in type_rotation_model;
 		length			: in type_distance_positive;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position, direction and length.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
@@ -369,6 +413,8 @@ package body et_board_ops_conductors is
 			& " length " & to_string (length),
 			level => log_threshold);
 
+		log_indentation_up;
+		
 		device_cursor := get_electrical_device (module_cursor, device);
 		-- CS call procedure device_not_found if
 		-- device_cursor is no_element ?
@@ -380,13 +426,30 @@ package body et_board_ops_conductors is
 		make_line (get_terminal_position (module_cursor, 
 			device_cursor, terminal));
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		add_line_to_net (module_cursor, 
-			net_name, line, log_threshold + 1);
+			net_name, line, NO_COMMIT, log_threshold + 1);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+
+		log_indentation_down;
 	end add_line_start_at_terminal_with_length;
 
 
 
 	
+
 	
 	
 	
@@ -402,8 +465,13 @@ package body et_board_ops_conductors is
 		direction		: in type_rotation_model;
 		axis			: in type_axis_2d;
 		notches			: in type_grid_notches;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position, direction, axis and grid notches.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
@@ -444,6 +512,8 @@ package body et_board_ops_conductors is
 			& " grid notches " & to_string (notches),
 			level => log_threshold);
 
+		log_indentation_up;
+		
 		device_cursor := get_electrical_device (module_cursor, device);
 		-- CS call procedure device_not_found if
 		-- device_cursor is no_element ?
@@ -455,14 +525,31 @@ package body et_board_ops_conductors is
 		make_line (get_terminal_position (
 			module_cursor, device_cursor, terminal));
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		add_line_to_net (module_cursor, 
-			net_name, line, log_threshold + 1);
+			net_name, line, NO_COMMIT, log_threshold + 1);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end add_line_start_at_terminal_with_notches_along_axis;
 
 
 
 	
 	
+
+
 	
 	
 	
@@ -475,8 +562,13 @@ package body et_board_ops_conductors is
 		device			: in type_device_name;
 		terminal		: in pac_terminal_name.bounded_string;
 		end_point		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is		
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position and end point.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
@@ -514,6 +606,9 @@ package body et_board_ops_conductors is
 			& " to " & to_string (end_point),
 			level => log_threshold);
 
+		log_indentation_up;
+
+		
 		device_cursor := get_electrical_device (module_cursor, device);
 		-- CS call procedure device_not_found if
 		-- device_cursor is no_element ?
@@ -525,14 +620,30 @@ package body et_board_ops_conductors is
 		make_line (get_terminal_position (
 			module_cursor, device_cursor, terminal));
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		add_line_to_net (module_cursor, 
-			net_name, line, log_threshold + 1);
+			net_name, line, NO_COMMIT, log_threshold + 1);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+		
+		log_indentation_down;
 	end add_line_start_at_terminal_end_at_point;
 
 
 
 	
 	
+
 	
 	
 	
@@ -545,8 +656,13 @@ package body et_board_ops_conductors is
 		terminal		: in pac_terminal_name.bounded_string;
 		axis			: in type_axis_2d;
 		notches			: in type_grid_notches;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position, axis and grid notches.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
@@ -585,6 +701,8 @@ package body et_board_ops_conductors is
 			& " grid notches " & to_string (notches),
 			level => log_threshold);
 
+		log_indentation_up;
+		
 		device_cursor := get_electrical_device (module_cursor, device);
 		-- CS call procedure device_not_found if
 		-- device_cursor is no_element ?
@@ -596,8 +714,23 @@ package body et_board_ops_conductors is
 		make_line (get_terminal_position (
 			module_cursor, device_cursor, terminal));
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		add_line_to_net (module_cursor, 
-			net_name, line, log_threshold + 1);
+			net_name, line, NO_COMMIT, log_threshold + 1);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;		
 	end add_line_start_at_terminal_with_notches_along_axis_2;
 
 
@@ -1749,8 +1882,13 @@ package body et_board_ops_conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		arc				: in type_conductor_arc;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		use pac_conductor_arcs;
 
 		
