@@ -3007,10 +3007,9 @@ package body et_board_ops_conductors is
 
 	
 
+
+
 	
-
-
-
 	
 
 	procedure ripup_net (
@@ -4054,6 +4053,9 @@ package body et_board_ops_conductors is
 	
 
 
+
+	
+
 	
 
 	procedure move_segment_net (
@@ -4062,8 +4064,13 @@ package body et_board_ops_conductors is
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		use pac_contours;
 		use pac_segments;
 		use pac_route_solid;
@@ -4126,24 +4133,39 @@ package body et_board_ops_conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving zone segment " & to_string (segment.segment)
+			& " move zone segment " & to_string (segment.segment)
 			& " of net " & get_net_name (segment.net)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
+
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
 		log_indentation_down;
 	end move_segment_net;
 
 
 
+	
 
+
+	
 
 
 	procedure move_segment_floating (
@@ -4152,8 +4174,13 @@ package body et_board_ops_conductors is
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		use pac_contours;
 		use pac_segments;
 		use pac_floating_solid;
@@ -4205,17 +4232,29 @@ package body et_board_ops_conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving floating zone segment " & to_string (segment.segment)
+			& " move floating zone segment " & to_string (segment.segment)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
+
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
 		log_indentation_down;
 	end move_segment_floating;
 
@@ -4224,6 +4263,7 @@ package body et_board_ops_conductors is
 	
 
 
+	
 	
 
 	procedure delete_segment_net (
@@ -4430,6 +4470,8 @@ package body et_board_ops_conductors is
 
 
 
+	
+
 
 	procedure add_text (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4509,6 +4551,7 @@ package body et_board_ops_conductors is
 
 
 
+
 	
 
 	function get_texts (
@@ -4579,8 +4622,13 @@ package body et_board_ops_conductors is
 		text			: in type_conductor_text_board;
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		old_position : constant type_vector_model := get_place (text);
 		new_position : type_vector_model;
 		offset : type_vector_model;
@@ -4617,15 +4665,30 @@ package body et_board_ops_conductors is
 		end case;
 		
 		log (text => "module " & to_string (module_cursor)
-			& " moving conductor text from" & to_string (old_position)
+			& " move conductor text from" & to_string (old_position)
 			& " to" & to_string (new_position), -- CS by offset, signal layer number
 			level => log_threshold);
 
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+  	
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end move_text;
 
 
@@ -4754,9 +4817,14 @@ package body et_board_ops_conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		text			: in type_object_text;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -4777,16 +4845,28 @@ package body et_board_ops_conductors is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving conductor text " & to_string (text.cursor)
+			& " move conductor text " & to_string (text.cursor)
 			& " " & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
 
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end move_text;
@@ -4794,6 +4874,10 @@ package body et_board_ops_conductors is
 	
 
 
+
+
+
+	
 
 
 	
@@ -4929,6 +5013,8 @@ package body et_board_ops_conductors is
 	
 
 
+
+	
 	
 
 	procedure reset_proposed_texts (
@@ -4978,6 +5064,7 @@ package body et_board_ops_conductors is
 
 	
 	
+	
 
 
 	procedure add_placeholder (
@@ -5014,6 +5101,7 @@ package body et_board_ops_conductors is
 
 	
 
+	
 	
 
 
@@ -5057,6 +5145,8 @@ package body et_board_ops_conductors is
 		
 		log_indentation_down;
 	end modify_status;
+
+
 
 
 
@@ -5117,6 +5207,8 @@ package body et_board_ops_conductors is
 
 
 
+
+	
 	
 
 
@@ -5124,9 +5216,14 @@ package body et_board_ops_conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_object_placeholder;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -5147,24 +5244,37 @@ package body et_board_ops_conductors is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving conductor text placeholder " 
+			& " move conductor text placeholder " 
 			& to_string (placeholder.cursor)
 			& " " & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
 
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end move_placeholder;
 
 
 
-	
+
+
 
 
 	

@@ -694,6 +694,7 @@ package et_board_ops_conductors is
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -706,6 +707,7 @@ package et_board_ops_conductors is
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -752,6 +754,7 @@ package et_board_ops_conductors is
 		text			: in type_conductor_text_board;
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -786,6 +789,7 @@ package et_board_ops_conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		text			: in type_object_text;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -855,6 +859,7 @@ package et_board_ops_conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_object_placeholder;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
