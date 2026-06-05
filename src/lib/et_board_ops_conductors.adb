@@ -4545,7 +4545,7 @@ package body et_board_ops_conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " place text in conductor layer at"
+			& " place text in conductor layer at "
 			& to_string (text.position)
 			& " signal layer " & to_string (signal_layer),
 			level => log_threshold);

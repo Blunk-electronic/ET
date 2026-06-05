@@ -50,6 +50,7 @@ package et_cp_board_text is
 	-- Parses a command that places a text.
 	-- Examples: 
 	-- board demo place text conductor 3 0.15 1 20 5 0 "Dummy Text"
+	-- board demo place text silkscreen top 0.15 1 140 100 0 "Dummy Text"
 	procedure place_text (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
