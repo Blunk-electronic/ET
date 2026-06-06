@@ -32,11 +32,6 @@ Stopmask
 
 		
 
-#. Texts
-
-	.. code-block::
-		
-		place text stopmask top 0.5 3 33 33 0 "SILK 1"
 
 		
 

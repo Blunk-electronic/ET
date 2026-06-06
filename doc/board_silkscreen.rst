@@ -33,11 +33,6 @@ Silkscreen
 	
 	
 	
-#. Texts
-
-	.. code-block::
-		
-		place text silkscreen top 0.5 3 33 33 0 "SILK 1"
 	
 
 #. Move

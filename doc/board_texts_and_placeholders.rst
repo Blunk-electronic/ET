@@ -23,6 +23,22 @@ Texts and Placeholders
 	.. code-block::
 		
 		place text conductor 3 0.15 1 20 5 0 "Dummy Text"
+
+
+	.. code-block::
+		
+		place text silkscreen top 0.5 3 33 33 0 "SILK 1"
+
+
+	.. code-block::
+		
+		place text assy top 0.5 3 33 25 0 "ASSY 1"
+
+
+	.. code-block::
+		
+		place text stopmask top 0.5 3 33 33 0 "STOP 1"
+
 	
 	
 #. Move Text
