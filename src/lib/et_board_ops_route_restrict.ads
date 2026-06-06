@@ -95,6 +95,7 @@ package et_board_ops_route_restrict is
 	procedure draw_zone (
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_route_restrict_contour;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 

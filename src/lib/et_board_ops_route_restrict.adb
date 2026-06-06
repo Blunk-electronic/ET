@@ -339,14 +339,23 @@ package body et_board_ops_route_restrict is
 		
 	end delete_route_restrict;
 
+
+
+
+	
 	
 
 
 	procedure draw_zone (
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_route_restrict_contour;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is 
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -357,14 +366,29 @@ package body et_board_ops_route_restrict is
 
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& "drawing route restrict zone",
+			& "draw route restrict zone",
 			level => log_threshold);
 
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end draw_zone;
 
 
