@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -221,6 +221,8 @@ package body et_cp_board_silkscreen is
 
 
 	
+
+
 	
 
 
@@ -244,12 +246,18 @@ package body et_cp_board_silkscreen is
 				module_name 	=> key (module),
 				face			=> to_face (get_field (cmd, 5)),
 				catch_zone		=> catch_zone,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 			
 		end do_it;
-					
+
+		
 	begin
-		-- CS log message
+		log (text => "delete silkscreen", level => log_threshold);
+		log_indentation_up;
 		
 		case cmd_field_count is			
 			when 8 => do_it;
@@ -259,6 +267,8 @@ package body et_cp_board_silkscreen is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+		log_indentation_down;
 	end delete_silkscreen;
 
 	

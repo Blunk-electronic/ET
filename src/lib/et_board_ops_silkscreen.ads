@@ -640,6 +640,7 @@ package et_board_ops_silkscreen is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		catch_zone		: in type_catch_zone;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
