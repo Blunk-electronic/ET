@@ -451,6 +451,7 @@ package et_board_ops_silkscreen is
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_placeholder_non_conductor;
 		face			: in type_face;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	

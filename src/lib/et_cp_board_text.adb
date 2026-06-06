@@ -107,6 +107,10 @@ package body et_cp_board_text is
 				module_cursor 	=> module,
 				face			=> face,
 				text			=> text,
+				
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 		end place_in_assy_doc;
 
@@ -272,6 +276,10 @@ package body et_cp_board_text is
 				module_cursor 	=> module,
 				placeholder		=> ph,
 				face			=> face,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 
 		end place_in_assy_doc;
@@ -291,6 +299,10 @@ package body et_cp_board_text is
 				module_cursor 	=> module,
 				placeholder		=> ph,
 				face			=> face,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 
 		end place_in_silkscreen;
@@ -310,6 +322,10 @@ package body et_cp_board_text is
 				module_cursor 	=> module,
 				placeholder		=> ph,
 				face			=> face,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 
 		end place_in_stopmask;
@@ -331,6 +347,10 @@ package body et_cp_board_text is
 			add_placeholder (
 				module_cursor 	=> module,
 				placeholder		=> ph,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 
 		end place_in_conductor_layer;

@@ -373,7 +373,9 @@ package body et_undo_redo is
 							null;
 					end case;
 
-					
+
+				-- CS: This is for placeholders of devices.
+				-- What about general placeholders (like project, module, ...) ?	
 				when NOUN_PLACEHOLDER =>
 					case verb is
 						when VERB_MOVE | VERB_ROTATE =>							
