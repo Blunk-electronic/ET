@@ -53,13 +53,20 @@ package body et_board_ops_silkscreen is
 	use pac_silk_circles;
 	use pac_silk_texts;
 	
+
 	
 	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_silk_line;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		
@@ -82,23 +89,41 @@ package body et_board_ops_silkscreen is
 
 		
 	begin
-		log (text => "module " & to_string (module_name) &
-			" drawing silkscreen line" &
-			" face" & to_string (face) &
-			to_string (line),
+		log (text => "module " & to_string (module_name) 
+			 & " drawing silkscreen line face " & to_string (face) 
+			 & to_string (line),
 			level => log_threshold);
 
+		log_indentation_up;
+		
 		-- locate module
 		module_cursor := locate_module (module_name);
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end add_line;
 
 
+
+
+
+	
 
 	
 	function get_lines (
@@ -161,6 +186,10 @@ package body et_board_ops_silkscreen is
 
 	
 
+
+
+
+	
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_object_line;
@@ -224,6 +253,8 @@ package body et_board_ops_silkscreen is
 
 
 
+
+	
 	
 
 
@@ -310,6 +341,9 @@ package body et_board_ops_silkscreen is
 
 	
 
+
+	
+
 	procedure reset_proposed_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -376,6 +410,10 @@ package body et_board_ops_silkscreen is
 
 
 
+
+
+
+	
 
 	
 	function get_first_line (
@@ -454,6 +492,9 @@ package body et_board_ops_silkscreen is
 
 
 
+
+
+
 	
 
 	
@@ -521,6 +562,9 @@ package body et_board_ops_silkscreen is
 
 
 
+	
+
+
 
 	procedure delete_line (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -581,12 +625,20 @@ package body et_board_ops_silkscreen is
 
 
 
+
+	
+
 	procedure add_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_silk_arc;		
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		
@@ -609,13 +661,18 @@ package body et_board_ops_silkscreen is
 
 		
 	begin
-		log (text => "module " & to_string (module_name) &
-			" drawing silkscreen arc" &
-			" face" & to_string (face) &
-			to_string (arc) &
-			" width" & to_string (arc.width),
-
+		log (text => "module " & to_string (module_name) 
+			 & " draw silkscreen arc face " & to_string (face) 
+			 & to_string (arc) 
+			 & " width" & to_string (arc.width),
 			level => log_threshold);
+
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -625,9 +682,18 @@ package body et_board_ops_silkscreen is
 			position	=> module_cursor,
 			process		=> add'access);
 
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end add_arc;
 
 
+	
+
+	
 
 	
 
@@ -696,6 +762,7 @@ package body et_board_ops_silkscreen is
 
 	
 
+	
 
 
 	procedure propose_arcs (
@@ -781,6 +848,9 @@ package body et_board_ops_silkscreen is
 
 
 
+
+	
+
 	procedure reset_proposed_arcs (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -847,6 +917,10 @@ package body et_board_ops_silkscreen is
 
 
 
+
+
+
+	
 
 	function get_first_arc (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -927,6 +1001,8 @@ package body et_board_ops_silkscreen is
 
 
 	
+
+	
 	procedure move_arc (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -990,6 +1066,8 @@ package body et_board_ops_silkscreen is
 
 
 
+	
+
 
 
 
@@ -1051,14 +1129,23 @@ package body et_board_ops_silkscreen is
 	
 	
 
+
 	
+
+
 	
 	procedure add_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_silk_circle;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		
@@ -1082,12 +1169,21 @@ package body et_board_ops_silkscreen is
 
 		
 	begin
-		log (text => "module " & to_string (module_name) &
-			" drawing silkscreen circle" &
-			" face" & to_string (face) &
-			to_string (circle),
+		log (text => "module " & to_string (module_name) 
+			 & " draw silkscreen circle face " 
+			 & to_string (face) 
+			 & to_string (circle),
 			level => log_threshold);
 
+		log_indentation_up;
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		-- locate module
 		module_cursor := locate_module (module_name);
 		
@@ -1096,7 +1192,18 @@ package body et_board_ops_silkscreen is
 			position	=> module_cursor,
 			process		=> add'access);
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;		
 	end add_circle;
+
+
+
+	
 
 
 
@@ -1107,8 +1214,13 @@ package body et_board_ops_silkscreen is
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_silk_zone;
 		face			: in type_face;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		-- When searching among already existing zones then
 		-- this flag is used to abort the iteration prematurely:
 		proceed : boolean := true;
@@ -1183,19 +1295,35 @@ package body et_board_ops_silkscreen is
 
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			 & "drawing silkscreen zone"			 
+			 & "draw silkscreen zone"			 
 			 & to_string (face)
 			 & " " & to_string (contour => zone, full => true),
 			level => log_threshold);
 
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end add_zone;
 
 
+	
 
 	
 

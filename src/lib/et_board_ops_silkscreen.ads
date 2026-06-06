@@ -77,6 +77,7 @@ package et_board_ops_silkscreen is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_silk_line;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -164,6 +165,7 @@ package et_board_ops_silkscreen is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_silk_arc;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -241,6 +243,7 @@ package et_board_ops_silkscreen is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;	
 		circle			: in type_silk_circle;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -262,6 +265,7 @@ package et_board_ops_silkscreen is
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_silk_zone;
 		face			: in type_face;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
