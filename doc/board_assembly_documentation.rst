@@ -32,6 +32,14 @@ Assembly Documentation
 		draw assy top zone line 26 25 line 28 25 line 28 33 line 26 33
 
 	
+#. Texts
+
+	.. code-block::
+		
+		place text assy top 0.5 3 33 25 0 "ASSY 1"
+
+
+
 		
 #. Moving Objects
 
