@@ -41,6 +41,10 @@ with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_module;						use et_module;
 
+with et_modes.board;
+with et_undo_redo;
+with et_commit;
+
 
 package body et_board_ops_via_restrict is
 	

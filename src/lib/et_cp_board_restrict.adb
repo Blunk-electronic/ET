@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -54,6 +54,8 @@ with et_board_geometry;					use et_board_geometry;
 with et_board_ops_route_restrict;
 with et_board_ops_via_restrict;
 with et_keywords;
+
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
 
@@ -108,7 +110,8 @@ package body et_cp_board_restrict is
 		
 		
 	begin
-		-- CS log message
+		log (text => "draw route restrict", level => log_threshold);
+		log_indentation_up;
 
 
 		if get_field (cmd, 6) = keyword_zone then
@@ -140,6 +143,10 @@ package body et_cp_board_restrict is
 							draw_route_restrict_line (
 								module_name 	=> key (module),
 								line			=> (line_tmp with layers_tmp),
+
+								-- Depending on the origin of the command,
+								-- the design state is to be commited or not:
+								commit_design	=> to_commit_design (cmd),
 								log_threshold	=> log_threshold + 1);
 
 						when 11 .. type_field_count'last => 
@@ -165,6 +172,10 @@ package body et_cp_board_restrict is
 							draw_route_restrict_arc (
 								module_name 	=> key (module),
 								arc				=> (arc_tmp with layers_tmp),
+
+								-- Depending on the origin of the command,
+								-- the design state is to be commited or not:
+								commit_design	=> to_commit_design (cmd),
 								log_threshold	=> log_threshold + 1);
 
 						when 14 .. type_field_count'last => 
@@ -190,6 +201,10 @@ package body et_cp_board_restrict is
 								draw_route_restrict_circle (
 									module_name 	=> key (module),
 									circle			=> (circle_tmp with layers_tmp),
+
+									-- Depending on the origin of the command,
+									-- the design state is to be commited or not:
+									commit_design	=> to_commit_design (cmd),
 									log_threshold	=> log_threshold + 1);
 								
 							-- else
@@ -227,8 +242,10 @@ package body et_cp_board_restrict is
 			end case;
 		end if;
 
+		log_indentation_down;
 	end draw_route_restrict;
 
+	
 
 
 
@@ -270,7 +287,9 @@ package body et_cp_board_restrict is
 
 			
 	begin
-		-- CS log message
+		log (text => "draw via restrict", level => log_threshold);
+		log_indentation_up;
+
 		
 		if get_field (cmd, 6) = keyword_zone then
 			build_zone;
@@ -278,11 +297,15 @@ package body et_cp_board_restrict is
 			null;
 			-- CS error. only zone allowed here
 		end if;		
+
+		log_indentation_down;
 	end draw_via_restrict;
 
 
 
 
+
+	
 
 	
 
@@ -314,7 +337,9 @@ package body et_cp_board_restrict is
 
 		
 	begin
-		-- CS log message
+		log (text => "delete route restrict", level => log_threshold);
+		log_indentation_up;
+
 		
 		case cmd_field_count is
 			when 7 => do_it;
@@ -324,11 +349,15 @@ package body et_cp_board_restrict is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end delete_route_restrict;
 	
 
 
 
+	
 
 
 
@@ -360,7 +389,9 @@ package body et_cp_board_restrict is
 		end do_it;
 		
 	begin
-		-- CS log message
+		log (text => "delete via restrict", level => log_threshold);
+		log_indentation_up;
+
 		
 		case cmd_field_count is
 			when 7 => do_it;
@@ -370,6 +401,9 @@ package body et_cp_board_restrict is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end delete_via_restrict;
 
 	

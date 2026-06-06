@@ -149,13 +149,18 @@ package body et_cp_board_keepout is
 			-- 	module_cursor	=> module,
 			-- 	zone			=> (c with null record),
 			-- 	face			=> face,
+
+			-- Depending on the origin of the command,
+			-- the design state is to be commited or not:
+			--	commit_design	=> to_commit_design (cmd),
 			-- 	log_threshold	=> log_threshold + 1);
 
 		end build_zone;
 	
 
 	begin
-		-- CS log message
+		log (text => "draw keepout cutout zone", level => log_threshold);
+		log_indentation_up;
 		
 		-- Convert the contour to a keepout zone
 		-- and assign it to the module:
@@ -165,6 +170,8 @@ package body et_cp_board_keepout is
 			null;
 			-- CS error. only zone allowed here
 		end if;
+
+		log_indentation_down;
 	end draw_keepout_zone_cutout;
 
 	
@@ -182,10 +189,13 @@ package body et_cp_board_keepout is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 	begin
-		-- CS log message
+		log (text => "delete keepout zone", level => log_threshold);
+		log_indentation_up;
 
 		-- CS
 		null;
+
+		log_indentation_down;
 	end delete_keepout;
 
 	

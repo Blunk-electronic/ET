@@ -46,6 +46,8 @@ with et_route_restrict.boards;			use et_route_restrict.boards;
 
 with et_logging;						use et_logging;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+
 
 package et_board_ops_route_restrict is
 
@@ -60,6 +62,7 @@ package et_board_ops_route_restrict is
 	procedure draw_route_restrict_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		line			: in type_route_restrict_line;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -67,6 +70,7 @@ package et_board_ops_route_restrict is
 	procedure draw_route_restrict_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		arc				: in type_route_restrict_arc;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -74,6 +78,7 @@ package et_board_ops_route_restrict is
 	procedure draw_route_restrict_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		circle			: in type_route_restrict_circle;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);	
 
 	

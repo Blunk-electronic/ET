@@ -46,6 +46,8 @@ with et_via_restrict.boards;			use et_via_restrict.boards;
 
 with et_logging;						use et_logging;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+
 
 package et_board_ops_via_restrict is
 

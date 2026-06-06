@@ -40,6 +40,10 @@ with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_board_ops_signal_layers;	use et_board_ops_signal_layers;
 with et_module;						use et_module;
 
+with et_modes.board;
+with et_undo_redo;
+with et_commit;
+
 
 package body et_board_ops_route_restrict is
 
@@ -48,115 +52,212 @@ package body et_board_ops_route_restrict is
 	procedure draw_route_restrict_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		line			: in type_route_restrict_line;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use pac_route_restrict_lines;
 
+		
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) is
-		begin
+			module		: in out type_generic_module) 
+		is begin
 			append (
 				container	=> module.board.route_restrict.lines,
 				new_item	=> line);
 		end;
+
 		
 	begin 
-		log (text => "module " & to_string (module_name) &
-			" drawing route restrict line in layer(s) " & to_string (line.layers) &
-			to_string (line),
+		log (text => "module " & to_string (module_name) 
+			& " draw route restrict line in layer(s) " 
+			& to_string (line.layers) 
+			& to_string (line),
 			level => log_threshold);
 
+		log_indentation_up;
+		
 		-- locate module
 		module_cursor := locate_module (module_name);
 
-		-- make sure the desired layers are available according to current layer stack:
+		-- Make sure the targeted layers are available 
+		-- according to current layer stack:
 		test_layers (module_cursor, line.layers);
 
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> draw'access);
+
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end draw_route_restrict_line;
 
+
+
+	
+
+
+	
+
+	
 	
 	procedure draw_route_restrict_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		arc				: in type_route_restrict_arc;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use pac_route_restrict_arcs;
 
+		
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) is
-		begin
+			module		: in out type_generic_module) 
+		is begin
 			append (
 				container	=> module.board.route_restrict.arcs,
 				new_item	=> arc);
 		end;
+
 		
 	begin 
-		log (text => "module " & to_string (module_name) &
-			" drawing route restrict arc in layer(s) " & to_string (arc.layers) &
-			to_string (arc),
+		log (text => "module " & to_string (module_name) 
+			 & " draw route restrict arc in layer(s) " 
+			 & to_string (arc.layers) 
+			 & to_string (arc),
 			level => log_threshold);
 
+		log_indentation_up;
+		
 		-- locate module
 		module_cursor := locate_module (module_name);
 
 		-- make sure the desired layers are available according to current layer stack:
 		test_layers (module_cursor, arc.layers);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+		
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> draw'access);
+
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;		
 	end draw_route_restrict_arc;
+
+
+
+	
+
+
+
+	
 
 	
 	procedure draw_route_restrict_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		circle			: in type_route_restrict_circle;
-		log_threshold	: in type_log_level) is
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level)
+	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use pac_route_restrict_circles;
 
+		
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) is
-		begin
+			module		: in out type_generic_module) 
+		is begin
 			append (
 				container	=> module.board.route_restrict.circles,
 				new_item	=> circle);
 		end;
+
 		
 	begin 
-		log (text => "module " & to_string (module_name) &
-			" drawing route restrict circle in layer(s) " & to_string (circle.layers) &
-			to_string (circle),
+		log (text => "module " & to_string (module_name)
+			 & " draw route restrict circle in layer(s) " 
+			 & to_string (circle.layers) 
+			 & to_string (circle),
 			level => log_threshold);
 
+		log_indentation_up;
+		
 		-- locate module
 		module_cursor := locate_module (module_name);
 
-		-- make sure the desired layers are available according to current layer stack:
+		-- Make sure the targeted layers are
+		-- available according to current layer stack:
 		test_layers (module_cursor, circle.layers);
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> draw'access);
+
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end draw_route_restrict_circle;
+
+
+	
+
+
 
 
 	
