@@ -71,7 +71,7 @@ package et_board_ops_via_restrict is
 	-- 	accuracy		: in type_accuracy;
 	-- 	log_threshold	: in type_log_level);
 
-	procedure dummy;
+
 
 	-- Draws a via restrict zone.
 	-- The given zone can consist of a single segment or a
@@ -88,6 +88,7 @@ package et_board_ops_via_restrict is
 	procedure draw_zone (
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_via_restrict_contour;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	

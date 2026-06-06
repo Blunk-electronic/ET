@@ -285,6 +285,10 @@ package body et_cp_board_restrict is
 			draw_zone (
 				module_cursor	=> module,
 				zone			=> (c with l),
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 
 		end build_zone;

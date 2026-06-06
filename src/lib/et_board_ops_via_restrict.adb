@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -139,14 +139,17 @@ package body et_board_ops_via_restrict is
 -- 	end delete_via_restrict;
 
 
-	procedure dummy is begin null; end;
-
 	
 	procedure draw_zone (
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_via_restrict_contour;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is 
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		-- When searching among already existing zones then
 		-- this flag is used to abort the iteration prematurely:
 		proceed : boolean := true;
@@ -208,15 +211,31 @@ package body et_board_ops_via_restrict is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			 & "drawing via restrict zone"
+			 & "draw via restrict zone"
 			 & " layers " & to_string (zone.layers),
 			level => log_threshold);
 
+
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;		
 	end draw_zone;
 	
 	
