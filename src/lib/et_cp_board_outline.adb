@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -48,6 +48,7 @@ with et_board_geometry;					use et_board_geometry;
 with et_board_ops_outline;				use et_board_ops_outline;
 with et_keywords;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
 package body et_cp_board_outline is
@@ -80,9 +81,13 @@ package body et_cp_board_outline is
 			-- Convert the contour to a pcb outer edge type
 			-- and assign it to the module:
 			set_outline (
-				module,
-				(c with null record),
-				log_threshold + 1);
+				module_cursor	=> module,
+				outline			=> (c with null record),
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
+				log_threshold	=> log_threshold + 1);
 			
 		end extract_arguments;
 
@@ -99,6 +104,7 @@ package body et_cp_board_outline is
 
 
 
+	
 
 
 
@@ -120,16 +126,29 @@ package body et_cp_board_outline is
 		-- Build a basic contour from the arguments:
 		c : constant type_contour := type_contour (to_contour (arguments));
 	begin
-		-- CS log message
+		log (text => "draw board outline", level => log_threshold);
+		log_indentation_up;
 		
 		-- Convert the contour to an inner pcb edge type and add it to
 		-- the already existing holes:
-		set_hole (module, (c with null record), log_threshold + 1);
+		set_hole (
+			module_cursor	=> module, 
+			hole			=> (c with null record),
+
+			-- Depending on the origin of the command,
+			-- the design state is to be commited or not:
+			commit_design	=> to_commit_design (cmd),
+			log_threshold	=> log_threshold + 1);
+
+		log_indentation_down;
 	end draw_board_hole;
 
 
 
 
+
+
+	
 
 	
 	procedure delete_outline_segment (
@@ -156,8 +175,13 @@ package body et_cp_board_outline is
 				delete_outer_segment (
 					module_cursor 	=> module,
 					catch_zone		=> catch_zone,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 
+				
 			when 8 .. type_field_count'last => 
 				command_too_long (cmd, cmd_field_count - 1);
 				
@@ -169,6 +193,9 @@ package body et_cp_board_outline is
 
 	
 
+
+
+	
 
 	
 
@@ -195,9 +222,14 @@ package body et_cp_board_outline is
 
 				delete_hole_segment (
 					module_cursor 	=> module,
-					catch_zone		=> catch_zone,					
+					catch_zone		=> catch_zone,
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 
+				
 			when 8 .. type_field_count'last => 
 				command_too_long (cmd, cmd_field_count - 1);
 				

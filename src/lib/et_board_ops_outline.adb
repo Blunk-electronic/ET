@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -38,6 +38,11 @@
 
 with et_module;						use et_module;
 
+with et_modes.board;
+with et_undo_redo;
+with et_commit;
+
+
 
 package body et_board_ops_outline is
 
@@ -46,9 +51,14 @@ package body et_board_ops_outline is
 	procedure set_outline (
 		module_cursor	: in pac_generic_modules.cursor;
 		outline			: in type_outer_contour;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -61,15 +71,33 @@ package body et_board_ops_outline is
 			 & " set outline " & to_string (outline),
 			level => log_threshold);
 
+
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end set_outline;
 
 
 
+
+	
 
 
 	procedure add_outline (
@@ -112,6 +140,10 @@ package body et_board_ops_outline is
 			process		=> query_module'access);
 
 	end add_outline;
+
+
+
+
 
 	
 
@@ -161,6 +193,8 @@ package body et_board_ops_outline is
 
 
 
+
+	
 	
 
 
@@ -208,6 +242,10 @@ package body et_board_ops_outline is
 	end modify_status;
 
 
+
+
+
+	
 
 	
 
@@ -272,6 +310,9 @@ package body et_board_ops_outline is
 
 
 
+	
+
+
 	procedure reset_proposed_outer_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -329,6 +370,9 @@ package body et_board_ops_outline is
 
 	
 
+
+
+	
 	
 	function get_first_segment (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -395,6 +439,9 @@ package body et_board_ops_outline is
 	
 
 
+
+
+	
 
 
 	function get_first_outer_segment (
@@ -465,6 +512,11 @@ package body et_board_ops_outline is
 	end get_first_outer_segment;
 
 
+
+
+
+
+
 	
 	
 
@@ -525,6 +577,10 @@ package body et_board_ops_outline is
 	
 
 
+
+
+	
+
 	procedure move_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in pac_segments.cursor;
@@ -571,6 +627,10 @@ package body et_board_ops_outline is
 
 
 
+
+
+
+	
 	
 
 	procedure move_outer_segment (
@@ -623,6 +683,9 @@ package body et_board_ops_outline is
 
 	
 	
+
+
+
 	
 	
 
@@ -650,15 +713,24 @@ package body et_board_ops_outline is
 		return get_outer_contour (module_cursor);
 	end get_outer_contour;
 
+	
 
 
+
+
+	
 	
 
 	procedure delete_outer_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -716,15 +788,35 @@ package body et_board_ops_outline is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting outer contour segment in" & to_string (catch_zone),
+			& " delete outer contour segment in "
+			& to_string (catch_zone),
 			level => log_threshold);
 
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end delete_outer_segment;
+
+
+
+
 
 
 
@@ -766,6 +858,11 @@ package body et_board_ops_outline is
 
 
 
+
+
+
+	
+
 	
 
 	procedure delete_outer_segment (
@@ -802,6 +899,8 @@ package body et_board_ops_outline is
 		
 		log_indentation_down;
 	end delete_outer_segment;
+
+
 
 
 	
@@ -879,6 +978,10 @@ package body et_board_ops_outline is
 
 	
 
+
+
+
+	
 
 	procedure propose_hole_segments (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -968,6 +1071,10 @@ package body et_board_ops_outline is
 
 
 
+	
+
+
+
 	procedure reset_proposed_hole_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -1049,7 +1156,11 @@ package body et_board_ops_outline is
 	
 
 
+	
 
+
+
+	
 
 	function get_first_hole_segment (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1148,6 +1259,11 @@ package body et_board_ops_outline is
 	end get_first_hole_segment;
 
 
+
+
+
+
+
 	
 
 
@@ -1226,14 +1342,23 @@ package body et_board_ops_outline is
 
 
 
+
+
+	
+	
 	
 
 
 	procedure delete_hole_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_hole_segment;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		use pac_contours;
 		use pac_segments;
 		use pac_holes;
@@ -1272,15 +1397,27 @@ package body et_board_ops_outline is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting hole segment " 
+			& " delete hole segment " 
 			& to_string (segment.segment),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
 		
 		log_indentation_down;
 	end delete_hole_segment;
@@ -1292,12 +1429,19 @@ package body et_board_ops_outline is
 	
 	
 
+
+	
 	procedure set_hole (
 		module_cursor	: in pac_generic_modules.cursor;
 		hole			: in type_hole;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -1306,19 +1450,38 @@ package body et_board_ops_outline is
 		begin
 			append (module.board.board_contour.holes, hole);
 		end;
-							   
+
+		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			 & " setting hole " & to_string (hole),
+			 & " set hole " & to_string (hole),
 			level => log_threshold);
 
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end set_hole;
 
+
+
+	
 	
 	
 
@@ -1417,13 +1580,22 @@ package body et_board_ops_outline is
 	
 
 
+
+
+
+	
 	
 	procedure delete_hole_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -1437,14 +1609,30 @@ package body et_board_ops_outline is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting hole segment in" & to_string (catch_zone),
+			& " delete hole segment in"
+			& to_string (catch_zone),
 			level => log_threshold);
 
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;		
 	end delete_hole_segment;
 
 

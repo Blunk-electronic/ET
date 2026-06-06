@@ -53,6 +53,8 @@ with et_board_outline;					use et_board_outline;
 with et_object_status;					use et_object_status;
 with et_logging;						use et_logging;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+
 
 package et_board_ops_outline is
 
@@ -69,6 +71,7 @@ package et_board_ops_outline is
 	procedure set_outline (
 		module_cursor	: in pac_generic_modules.cursor;
 		outline			: in type_outer_contour;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -209,6 +212,7 @@ package et_board_ops_outline is
 	procedure delete_outer_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -293,6 +297,7 @@ package et_board_ops_outline is
 	procedure delete_hole_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_hole_segment;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -304,6 +309,7 @@ package et_board_ops_outline is
 	procedure set_hole (
 		module_cursor	: in pac_generic_modules.cursor;
 		hole			: in type_hole;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -339,6 +345,7 @@ package et_board_ops_outline is
 	procedure delete_hole_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
