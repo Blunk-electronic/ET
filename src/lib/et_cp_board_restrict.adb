@@ -339,6 +339,10 @@ package body et_cp_board_restrict is
 			delete_route_restrict (
 				module_name 	=> key (module),
 				catch_zone		=> catch_zone,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 
 		end do_it;
@@ -392,6 +396,11 @@ package body et_cp_board_restrict is
 			-- delete_via_restrict (
 			-- 	module_name 	=> key (module),
 			-- 	catch_zone		=> catch_zone,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				-- commit_design	=> to_commit_design (cmd),
+		
 			-- 	log_threshold	=> log_threshold + 1);
 
 		end do_it;

@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -265,8 +265,14 @@ package body et_board_ops_route_restrict is
 	procedure delete_route_restrict (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		catch_zone		: in type_catch_zone;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
@@ -324,20 +330,37 @@ package body et_board_ops_route_restrict is
 
 		
 	begin
-		log (text => "module " & to_string (module_name) &
-			" deleting route restrict segment" &
-			" in" & to_string (catch_zone),
+		log (text => "module " & to_string (module_name) 
+			 & " delete route restrict segment" 
+			 & " in" & to_string (catch_zone),
 			level => log_threshold);
 
+		log_indentation_up;
+		
 		-- locate module
 		module_cursor := locate_module (module_name);
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+		
 
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> delete'access);
-		
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end delete_route_restrict;
+
+
 
 
 

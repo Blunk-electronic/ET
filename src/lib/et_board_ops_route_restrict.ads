@@ -88,6 +88,7 @@ package et_board_ops_route_restrict is
 	procedure delete_route_restrict (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		catch_zone		: in type_catch_zone;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 	
 
