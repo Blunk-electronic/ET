@@ -40,6 +40,11 @@
 
 with et_module;						use et_module;
 
+with et_modes.board;
+with et_undo_redo;
+with et_commit;
+
+
 
 package body et_board_ops_keepout is
 
@@ -48,8 +53,13 @@ package body et_board_ops_keepout is
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_keepout_zone;
 		face			: in type_face;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		-- When searching among already existing zones then
 		-- this flag is used to abort the iteration prematurely:
 		proceed : boolean := true;
@@ -125,18 +135,30 @@ package body et_board_ops_keepout is
 
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			 & " drawing keepout zone" 
+			 & " add keepout zone " 
 			 & to_string (face)
 			 & " " & to_string (contour => zone, full => true),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+		
 		log_indentation_down;
 	end add_zone;
 

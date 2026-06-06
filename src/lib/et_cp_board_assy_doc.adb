@@ -54,6 +54,7 @@ with et_board_geometry;					use et_board_geometry;
 with et_board_ops_assy_doc;				use et_board_ops_assy_doc;
 with et_keywords;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
 package body et_cp_board_assy_doc is

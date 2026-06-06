@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -51,6 +51,8 @@ with et_keywords;						use et_keywords;
 with et_board_geometry;					use et_board_geometry;
 with et_board_ops_keepout;				use et_board_ops_keepout;
 with et_keywords;
+
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
 
@@ -88,13 +90,18 @@ package body et_cp_board_keepout is
 				module_cursor	=> module,
 				zone			=> (c with null record),
 				face			=> face,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 
 		end build_zone;
 	
 
 	begin
-		-- CS log message
+		log (text => "draw keepout zone", level => log_threshold);
+		log_indentation_up;
 		
 		-- Convert the contour to a keepout zone
 		-- and assign it to the module:
@@ -104,6 +111,8 @@ package body et_cp_board_keepout is
 			null;
 			-- CS error. only zone allowed here
 		end if;
+
+		log_indentation_down;
 	end draw_keepout_zone;
 
 

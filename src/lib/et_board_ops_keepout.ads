@@ -50,6 +50,7 @@ with et_pcb_sides;						use et_pcb_sides;
 with et_object_status;					use et_object_status;
 with et_logging;						use et_logging;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 package et_board_ops_keepout is
 
@@ -75,6 +76,7 @@ package et_board_ops_keepout is
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_keepout_zone;
 		face			: in type_face;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
