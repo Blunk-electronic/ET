@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -40,6 +40,10 @@ with et_string_processing;				use et_string_processing;
 with et_text_content;
 with et_pcb_placeholders;				use et_pcb_placeholders;
 with et_module;							use et_module;
+
+with et_modes.board;
+with et_undo_redo;
+with et_commit;
 
 
 package body et_board_ops_stopmask is
@@ -1705,12 +1709,19 @@ package body et_board_ops_stopmask is
 
 
 
+	
+
 	procedure add_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		text			: in type_text_fab_with_content;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is 
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -1727,19 +1738,36 @@ package body et_board_ops_stopmask is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " placing text in stopmask at"
+			& " place text in stopmask at "
 			& to_string (text.position)
-			& " face" & to_string (face),
+			& " face " & to_string (face),
 			level => log_threshold);
+
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end add_text;
 
 
+
+	
 
 
 

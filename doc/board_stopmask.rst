@@ -31,6 +31,13 @@ Stopmask
 		draw stopmask top zone line 52 0 line 60 0 line 60 4 line 52 4
 
 		
+
+#. Texts
+
+	.. code-block::
+		
+		place text stopmask top 0.5 3 33 33 0 "SILK 1"
+
 		
 
 #. Move
