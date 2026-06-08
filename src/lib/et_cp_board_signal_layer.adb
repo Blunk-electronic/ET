@@ -37,7 +37,7 @@
 --
 -- To Do:
 -- - rework
--- - add commit operations
+--
 --
 
 with ada.text_io;						use ada.text_io;
@@ -84,11 +84,19 @@ package body et_cp_board_signal_layer is
 			add_layer (
 				module_name 	=> key (module),
 				layer			=> layer,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 		end do_it;
 			
 
 	begin
+		log (text => "add signal layer", level => log_threshold);
+		log_indentation_up;
+
+		
 		case cmd_field_count is
 			when 6 =>
 				do_it;
@@ -98,10 +106,16 @@ package body et_cp_board_signal_layer is
 				
 			when others => command_incomplete (cmd);
 		end case;		
+
+
+		log_indentation_down;
 	end add_signal_layer;
 
 
 
+
+	
+	
 
 	
 
@@ -119,13 +133,19 @@ package body et_cp_board_signal_layer is
 			delete_layer (
 				module_name 	=> key (module),
 				layer			=> to_signal_layer (get_field (cmd, 5)),
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 
 		end do_it;
 
 		
 	begin
-		-- CS log message
+		log (text => "delete signal layer", level => log_threshold);
+		log_indentation_up;
+
 		
 		case cmd_field_count is
 			when 5 =>
@@ -136,6 +156,9 @@ package body et_cp_board_signal_layer is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end delete_signal_layer;
 
 

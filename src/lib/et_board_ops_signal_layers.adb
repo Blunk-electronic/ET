@@ -37,7 +37,7 @@
 --
 -- To Do:
 -- - rework
--- - add commit operations
+--
 
 
 
@@ -61,8 +61,13 @@ package body et_board_ops_signal_layers is
 	procedure add_layer (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		layer			: in et_pcb_stack.type_layer; -- incl. conductor and dieelectic thickness
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 
@@ -78,21 +83,41 @@ package body et_board_ops_signal_layers is
 		
 	begin -- add_layer
 		log (text => "module " & to_string (module_name) &
-			" adding layer conductor thickness" & to_string (layer.conductor.thickness) &
+			" add signal layer. thickness" & to_string (layer.conductor.thickness) &
 			" dielectic thickness" & to_string (layer.dielectric.thickness),
 			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
+
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
-		
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end add_layer;
 
 
+
+
+
+
+	
 	
 	
 	function get_layer_count (
@@ -105,6 +130,8 @@ package body et_board_ops_signal_layers is
 	end;
 
 
+
+	
 
 	
 	procedure test_layer (
@@ -122,13 +149,22 @@ package body et_board_ops_signal_layers is
 	end;
 
 
+
 	
+
+
 	
 	procedure delete_layer (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		layer			: in type_signal_layer;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		
@@ -168,17 +204,33 @@ package body et_board_ops_signal_layers is
 		
 	begin -- delete_layer
 		log (text => "module " & to_string (module_name) &
-			" deleting layer" & to_string (layer),
+			" delete signal layer" & to_string (layer),
 			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
+
+
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> delete'access);
-		
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end delete_layer;
 	
 
@@ -210,6 +262,7 @@ package body et_board_ops_signal_layers is
 
 	
 
+	
 	function get_deepest_conductor_layer (
 		module	: in pac_generic_modules.cursor)
 		return type_signal_layer 
