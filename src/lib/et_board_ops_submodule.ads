@@ -35,7 +35,10 @@
 --
 --   history of changes:
 --
---   ToDo: 
+-- To Do: 
+-- - rework subprograms so that a module cursor
+--   is taken instead of a module name.
+--
 
 with et_board_geometry;				use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
@@ -45,6 +48,8 @@ with et_module_instance;			use et_module_instance;
 with et_generic_modules;			use et_generic_modules;
 with et_logging;					use et_logging;
 with et_coordinates_abs_rel;		use et_coordinates_abs_rel;
+
+with et_cmd_origin_to_commit;		use et_cmd_origin_to_commit;
 
 
 package et_board_ops_submodule is
@@ -64,13 +69,15 @@ package et_board_ops_submodule is
 
 
 	
-	-- Moves a submodule instance within the parent module layout in x/y direction.
+	-- Moves a submodule instance within the parent module layout 
+	-- in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
 	procedure move_submodule (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 

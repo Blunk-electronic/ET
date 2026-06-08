@@ -46,7 +46,10 @@ with et_cmd_sts;				use et_cmd_sts;
 
 package et_cp_board_submodule is
 
-
+	-- This procedure parses a command that moves
+	-- a submodule instance:
+	-- example: board demo move submodule FLT1 relative 10 -34.3
+	-- example: board demo move submodule FLT1 absolute 10 85
 	procedure move_submodule (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;

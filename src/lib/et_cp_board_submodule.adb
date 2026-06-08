@@ -50,6 +50,8 @@ with et_module_instance;				use et_module_instance;
 with et_board_ops_submodule;			use et_board_ops_submodule;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+
 
 
 package body et_cp_board_submodule is
@@ -68,7 +70,9 @@ package body et_cp_board_submodule is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 		
 	begin
-		-- CS log message
+		log (text => "move submodule", level => log_threshold);
+		log_indentation_up;
+		
 
 		case cmd_field_count is
 			when 8 =>
@@ -79,8 +83,11 @@ package body et_cp_board_submodule is
 					point			=> type_vector_model (set (
 										x => to_distance (dd => get_field (cmd, 7)),
 										y => to_distance (dd => get_field (cmd, 8)))),
-					log_threshold	=> log_threshold + 1
-					);
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),					
+					log_threshold	=> log_threshold + 1);
 
 			when 9 .. type_field_count'last =>
 				command_too_long (cmd, cmd_field_count - 1);
@@ -88,7 +95,9 @@ package body et_cp_board_submodule is
 			when others =>
 				command_incomplete (cmd);
 		end case;
+
 		
+		log_indentation_down;
 	end move_submodule;
 
 

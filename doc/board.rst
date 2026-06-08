@@ -40,6 +40,8 @@ Board Layout Editor
 
 .. include:: board_modules.rst
 
+.. include:: board_submodules.rst
+
 .. include:: board_scripts.rst	
 	
 

@@ -45,6 +45,9 @@ with et_module;						use et_module;
 with et_submodules;					use et_submodules;
 with et_schematic_ops_submodules;	use et_schematic_ops_submodules;
 
+with et_modes.board;
+with et_undo_redo;
+with et_commit;
 
 
 package body et_board_ops_submodule is
@@ -91,15 +94,20 @@ package body et_board_ops_submodule is
 
 	
 
-	-- Moves a submodule instance within the parent module layout in x/y direction.
-	-- Leaves rotation and face (top/bottom) as it is.
+
+	
 	procedure move_submodule (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		
@@ -153,23 +161,41 @@ package body et_board_ops_submodule is
 		case coordinates is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_name) &
-					" moving submodule instance " & to_string (instance) &
+					" move submodule instance " & to_string (instance) &
 					" to" & to_string (point), level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
-					" moving submodule instance " & to_string (instance) &
+					" move submodule instance " & to_string (instance) &
 					" by" & to_string (point), level => log_threshold);
 		end case;
 
 		-- locate module
 		module_cursor := locate_module (module_name);
+
+		
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_submodules'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
+
+		
 		-- CS update_ratsnest (module_cursor, log_threshold + 1);
 		-- requires to move this procedure to a child package
 		-- for operations on submodules.
