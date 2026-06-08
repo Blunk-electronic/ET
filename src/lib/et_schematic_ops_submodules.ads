@@ -75,6 +75,8 @@ with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 with et_logging;						use et_logging;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+
 
 
 package et_schematic_ops_submodules is
@@ -161,7 +163,8 @@ package et_schematic_ops_submodules is
 		direction		: in type_netchanger_port_name; -- master/slave. 
 		-- NOTE: has nothing to do with direction of energy flow. It is relevant when 
 		-- a netlist is exported. See specification et_submodules.type_net_submodule_port.
-		
+
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -181,6 +184,7 @@ package et_schematic_ops_submodules is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		port_name		: in pac_net_name.bounded_string; -- clk_out
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -195,6 +199,7 @@ package et_schematic_ops_submodules is
 		port_name		: in pac_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -211,6 +216,7 @@ package et_schematic_ops_submodules is
 		port_name		: in pac_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -241,6 +247,7 @@ package et_schematic_ops_submodules is
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		position		: in type_object_position; -- sheet, lower left corner x/y 
 		size			: in et_submodules.type_submodule_size; -- the size of the box in x and y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -258,6 +265,7 @@ package et_schematic_ops_submodules is
 	procedure delete_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -270,6 +278,7 @@ package et_schematic_ops_submodules is
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
 		point			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -283,6 +292,7 @@ package et_schematic_ops_submodules is
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -292,6 +302,7 @@ package et_schematic_ops_submodules is
 		instance_origin	: in pac_module_instance_name.bounded_string; -- OSC1
 		instance_new	: in pac_module_instance_name.bounded_string; -- CLOCK_GENERATOR
 		destination		: in type_object_position; -- sheet/x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -300,6 +311,7 @@ package et_schematic_ops_submodules is
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance_old	: in pac_module_instance_name.bounded_string; -- OSC1
 		instance_new	: in pac_module_instance_name.bounded_string; -- CLOCK_GENERATOR
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -311,6 +323,7 @@ package et_schematic_ops_submodules is
 		variant_parent	: in pac_assembly_variant_name.bounded_string; -- low_cost								  
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		variant_submod	: in pac_assembly_variant_name.bounded_string; -- fixed_frequency
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	
@@ -320,6 +333,7 @@ package et_schematic_ops_submodules is
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		variant_parent	: in pac_assembly_variant_name.bounded_string; -- low_cost								   
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -368,6 +382,7 @@ package et_schematic_ops_submodules is
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		file			: in et_submodules.pac_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 

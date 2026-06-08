@@ -64,6 +64,8 @@ with et_module_instance;				use et_module_instance;
 with et_schematic_ops_submodules;		use et_schematic_ops_submodules;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+
 
 
 package body et_cp_schematic_submodule is
@@ -85,7 +87,9 @@ package body et_cp_schematic_submodule is
 		use et_sheets;
 		use et_submodules;
 	begin
-		-- CS log message 
+		log (text => "add submodule", level => log_threshold);
+		log_indentation_up;
+		
 		
 		case cmd_field_count is
 			when 11 =>
@@ -106,6 +110,10 @@ package body et_cp_schematic_submodule is
 						x => to_distance (get_field (cmd, 10)),
 						y => to_distance (get_field (cmd, 11))
 						),
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -114,9 +122,14 @@ package body et_cp_schematic_submodule is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end add_submodule;
 
 
+
+	
 
 	
 
@@ -133,7 +146,9 @@ package body et_cp_schematic_submodule is
 
 		use et_sheets;
 	begin
-		-- CS log message
+		log (text => "move submodule", level => log_threshold);
+		log_indentation_up;
+
 		
 		case cmd_field_count is
 			when 9 =>
@@ -145,6 +160,10 @@ package body et_cp_schematic_submodule is
 					point			=> type_vector_model (set (
 								x => to_distance (get_field (cmd, 8)),
 								y => to_distance (get_field (cmd, 9)))),
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -154,13 +173,17 @@ package body et_cp_schematic_submodule is
 			when others => command_incomplete (cmd);
 		end case;
 
+
+		log_indentation_down;
 	end move_submodule;
 
 
 
 	
+	
 
 
+	
 
 
 	procedure drag_submodule (
@@ -171,7 +194,8 @@ package body et_cp_schematic_submodule is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 	begin
-		-- CS log message
+		log (text => "drag submodule", level => log_threshold);
+		log_indentation_up;
 
 		
 		case cmd_field_count is
@@ -183,6 +207,10 @@ package body et_cp_schematic_submodule is
 					point			=> type_vector_model (set (
 								x => to_distance (get_field (cmd, 7)),
 								y => to_distance (get_field (cmd, 8)))),
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -192,6 +220,8 @@ package body et_cp_schematic_submodule is
 			when others => command_incomplete (cmd);
 		end case;
 
+
+		log_indentation_down;
 	end drag_submodule;
 
 
@@ -212,7 +242,9 @@ package body et_cp_schematic_submodule is
 
 		use et_sheets;
 	begin
-		-- CS log message
+		log (text => "copy submodule", level => log_threshold);
+		log_indentation_up;
+
 
 		case cmd_field_count is
 			when 9 =>
@@ -229,6 +261,10 @@ package body et_cp_schematic_submodule is
 									y => to_distance (get_field (cmd, 9))
 									))
 						),
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -237,10 +273,14 @@ package body et_cp_schematic_submodule is
 				
 			when others => command_incomplete (cmd);
 		end case;		
+
+
+		log_indentation_down;
 	end copy_submodule;
 
 
 
+	
 
 
 	
@@ -257,13 +297,19 @@ package body et_cp_schematic_submodule is
 
 		use et_sheets;
 	begin
-		-- CS log message
+		log (text => "delete submodule", level => log_threshold);
+		log_indentation_up;
+
 
 		case cmd_field_count is
 			when 5 =>
 				delete_submodule (
 					module_name 	=> key (module), -- parent module (where the submodule is to be deleted)
 					instance		=> to_instance_name (get_field (cmd, 5)), -- submodule instance name
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -272,6 +318,9 @@ package body et_cp_schematic_submodule is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end delete_submodule;
 
 	
@@ -291,7 +340,9 @@ package body et_cp_schematic_submodule is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
 	begin
-		-- CS log message
+		log (text => "rename submodule", level => log_threshold);
+		log_indentation_up;
+
 		
 		case cmd_field_count is
 			when 6 =>
@@ -299,6 +350,10 @@ package body et_cp_schematic_submodule is
 					module_name		=> key (module),
 					instance_old	=> to_instance_name (get_field (cmd, 5)), -- OSC1
 					instance_new	=> to_instance_name (get_field (cmd, 6)), -- OSC2
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 
 			when 7 .. type_field_count'last =>
@@ -306,6 +361,9 @@ package body et_cp_schematic_submodule is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end rename_submodule;
 
 
@@ -325,7 +383,9 @@ package body et_cp_schematic_submodule is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 	begin
-		-- CS log message
+		log (text => "mount submodule", level => log_threshold);
+		log_indentation_up;
+
 	
 		case cmd_field_count is
 			when 7 =>
@@ -334,6 +394,10 @@ package body et_cp_schematic_submodule is
 					variant_parent	=> to_variant (get_field (cmd, 5)), -- low_cost
 					instance		=> to_instance_name (get_field (cmd, 6)), -- OSC1
 					variant_submod	=> to_variant (get_field (cmd, 7)), -- fixed_frequency
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 
 			when 8 .. type_field_count'last =>
@@ -342,6 +406,8 @@ package body et_cp_schematic_submodule is
 			when others => command_incomplete (cmd);
 
 		end case;
+
+		log_indentation_down;		
 	end mount_submodule;
 
 	
@@ -361,7 +427,9 @@ package body et_cp_schematic_submodule is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);
 	begin
-		-- CS log message
+		log (text => "remove submodule", level => log_threshold);
+		log_indentation_up;
+
 
 		case cmd_field_count is
 			when 6 =>
@@ -369,6 +437,10 @@ package body et_cp_schematic_submodule is
 					module_name		=> key (module),
 					variant_parent	=> to_variant (get_field (cmd, 5)),
 					instance		=> to_instance_name (get_field (cmd, 6)), -- OSC1
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 
 			when 7 .. type_field_count'last =>
@@ -376,6 +448,9 @@ package body et_cp_schematic_submodule is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+		
+		log_indentation_down;
 	end remove_submodule;
 
 
@@ -396,7 +471,9 @@ package body et_cp_schematic_submodule is
 
 		use et_submodules;
 	begin
-		-- CS log message
+		log (text => "set submodule file", level => log_threshold);
+		log_indentation_up;
+
 		
 		case cmd_field_count is
 			when 6 =>
@@ -404,6 +481,10 @@ package body et_cp_schematic_submodule is
 					module_name 	=> key (module),
 					instance		=> to_instance_name (get_field (cmd, 5)),
 					file			=> to_submodule_path (get_field (cmd, 6)),
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -412,11 +493,15 @@ package body et_cp_schematic_submodule is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+		
+		log_indentation_down;		
 	end set_submodule_file;
 
 
 
 
+	
 
 
 
@@ -430,7 +515,9 @@ package body et_cp_schematic_submodule is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 	begin
-		-- CS log message
+		log (text => "build submodule tree", level => log_threshold);
+		log_indentation_up;
+
 		
 		case cmd_field_count is
 			when 4 =>
@@ -443,6 +530,9 @@ package body et_cp_schematic_submodule is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+		
+		log_indentation_down;
 	end build_submodules_tree;
 
 
@@ -463,7 +553,8 @@ package body et_cp_schematic_submodule is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 	begin
-		-- CS log message
+		log (text => "check submodules integrity", level => log_threshold);
+		log_indentation_up;
 
 
 		case cmd_field_count is
@@ -477,6 +568,9 @@ package body et_cp_schematic_submodule is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end check_submodules_integrity;
 
 
@@ -500,7 +594,10 @@ package body et_cp_schematic_submodule is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
 	begin
-		-- CS log message 
+		log (text => "add port to submodule", level => log_threshold);
+		log_indentation_up;
+
+		
 		case cmd_field_count is
 			when 9 =>
 				add_port (
@@ -513,6 +610,10 @@ package body et_cp_schematic_submodule is
 								y => to_distance (get_field (cmd, 8))
 								)),
 					direction		=> to_port_name (get_field (cmd, 9)),
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -521,6 +622,9 @@ package body et_cp_schematic_submodule is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end add_port_to_submodule;
 
 
@@ -529,6 +633,7 @@ package body et_cp_schematic_submodule is
 
 
 
+	
 
 	procedure drag_port_of_submodule (
 		module			: in pac_generic_modules.cursor;
@@ -539,7 +644,9 @@ package body et_cp_schematic_submodule is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
 	begin
-		-- CS log message 
+		log (text => "drag port of submodule", level => log_threshold);
+		log_indentation_up;
+
 		
 		case cmd_field_count is
 			when 9 =>
@@ -551,6 +658,10 @@ package body et_cp_schematic_submodule is
 					point			=> type_vector_model (set (
 								x => to_distance (get_field (cmd, 8)),
 								y => to_distance (get_field (cmd, 9)))),
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -559,6 +670,9 @@ package body et_cp_schematic_submodule is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end drag_port_of_submodule;
 
 	
@@ -580,7 +694,9 @@ package body et_cp_schematic_submodule is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
 	begin
-		-- CS log message 
+		log (text => "delete port of submodule", level => log_threshold);
+		log_indentation_up;
+
 		
 		case cmd_field_count is
 			when 6 =>
@@ -588,6 +704,10 @@ package body et_cp_schematic_submodule is
 					module_name 	=> key (module),
 					instance		=> to_instance_name (get_field (cmd, 5)),
 					port_name		=> to_net_name (get_field (cmd, 6)),
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1);
 
 			when 7 .. type_field_count'last => 
@@ -595,9 +715,13 @@ package body et_cp_schematic_submodule is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end delete_port_of_submodule;
 
 
+	
 
 
 
@@ -613,7 +737,10 @@ package body et_cp_schematic_submodule is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
 	begin
-		-- CS log message
+		log (text => "move port of submodule", level => log_threshold);
+		log_indentation_up;
+
+		
 		case cmd_field_count is
 			when 9 =>
 				move_port (
@@ -624,6 +751,10 @@ package body et_cp_schematic_submodule is
 					point			=> type_vector_model (set (
 								x => to_distance (get_field (cmd, 8)),
 								y => to_distance (get_field (cmd, 9)))),
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -632,6 +763,9 @@ package body et_cp_schematic_submodule is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end move_port_of_submodule;
 		
 

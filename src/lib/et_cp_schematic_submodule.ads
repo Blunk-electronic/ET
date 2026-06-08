@@ -47,6 +47,9 @@ with et_cmd_sts;				use et_cmd_sts;
 package et_cp_schematic_submodule is
 
 
+	-- This procedure parses a command that adds
+	-- the instance of a generic submodule:
+	-- example: schematic demo add submodule oscillator.mod OSC1 1 170 90 30 30
 	procedure add_submodule (
 		module			: in pac_generic_modules.cursor;
 		-- parent module (where the submodule is to be inserted)
@@ -55,7 +58,10 @@ package et_cp_schematic_submodule is
 		log_threshold	: in type_log_level);
 
 
-		
+	-- This procedure parses a command that moves
+	-- the instance of a generic submodule:
+	-- example 1: schematic demo move submodule OSC1 relative 2 0 0
+	-- example 2: schematic demo move submodule OSC1 absolute 4 150 100
 	procedure move_submodule (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;

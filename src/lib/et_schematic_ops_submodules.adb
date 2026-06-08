@@ -38,8 +38,8 @@
 -- To Do: 
 --
 -- - rework, clean up
---
---
+-- - remove the existence checks of submodules after these
+--   checks have been implemented in the package et_cp_schematic_submodule.
 
 with ada.containers;				use ada.containers;
 with ada.containers.doubly_linked_lists;
@@ -73,6 +73,10 @@ with et_schematic_ops_assembly_variant;	use et_schematic_ops_assembly_variant;
 with et_port_names;						use et_port_names;
 with et_material;
 with et_module;							use et_module;
+
+with et_modes.board;
+with et_undo_redo;
+with et_commit;
 
 
 package body et_schematic_ops_submodules is
@@ -244,6 +248,7 @@ package body et_schematic_ops_submodules is
 	
 
 
+
 	
 	
 	
@@ -326,6 +331,8 @@ package body et_schematic_ops_submodules is
 	
 
 
+
+	
 	
 
 	function submodule_port_exists (
@@ -495,6 +502,7 @@ package body et_schematic_ops_submodules is
 
 
 	
+
 	
 
 	procedure port_not_provided (port_name : in pac_net_name.bounded_string) is begin
@@ -502,6 +510,7 @@ package body et_schematic_ops_submodules is
 			 enclose_in_quotes (to_string (port_name)) & " with the desired direction (master/slave) !", console => true);
 		raise constraint_error;
 	end;
+
 
 
 	
@@ -639,6 +648,9 @@ package body et_schematic_ops_submodules is
 
 	
 
+	
+
+	
 
 	
 	procedure add_port (
@@ -651,8 +663,13 @@ package body et_schematic_ops_submodules is
 		-- NOTE: has nothing to do with direction of energy flow. It is relevant when 
 		-- a netlist is exported. See specification et_submodules.type_submodule_port.
 		
+		commit_design	: in type_commit_design := DO_COMMIT;		
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_submodules;
@@ -757,6 +774,14 @@ package body et_schematic_ops_submodules is
 		-- locate parent module
 		module_cursor := locate_module (module_name);
 
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		-- add the port to the box in the parent module
 		update_element (
 			container	=> generic_modules,
@@ -794,7 +819,14 @@ package body et_schematic_ops_submodules is
 			port			=> port_name,
 			position		=> port_position,
 			log_threshold	=> log_threshold + 1);
+
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;		
 	end add_port;
 
 
@@ -942,14 +974,20 @@ package body et_schematic_ops_submodules is
 
 
 
+
 	
 
 	procedure delete_port (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		port_name		: in pac_net_name.bounded_string; -- clk_out
+		commit_design	: in type_commit_design := DO_COMMIT;		
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_submodules;
@@ -1019,6 +1057,14 @@ package body et_schematic_ops_submodules is
 		-- locate parent module
 		module_cursor := locate_module (module_name);
 
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		-- remove the port from the box in the parent module
 		update_element (
 			container	=> generic_modules,
@@ -1031,8 +1077,18 @@ package body et_schematic_ops_submodules is
 			port			=> (instance, port_name), -- OSC1 / clock_output
 			position		=> submodule_position, -- the submodule position (only sheet matters)
 			log_threshold	=> log_threshold + 1);
+
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;		
 	end delete_port;
+
+
+
 
 	
 	
@@ -1046,8 +1102,13 @@ package body et_schematic_ops_submodules is
 		port_name		: in pac_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		use et_submodules;
 
 		-- The place where the box is in the parent module:
@@ -1190,6 +1251,15 @@ package body et_schematic_ops_submodules is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+
+		
 		-- move the port along the edge of the box:
 		update_element (
 			container	=> generic_modules,
@@ -1211,12 +1281,21 @@ package body et_schematic_ops_submodules is
 			port			=> port_name,
 			position		=> port_position,
 			log_threshold	=> log_threshold + 1);
+
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;		
 	end move_port;
 
 
 
 	
+
+
 
 	
 
@@ -1469,6 +1548,10 @@ package body et_schematic_ops_submodules is
 
 
 
+
+
+
+	
 	
 	
 	procedure drag_port (
@@ -1477,8 +1560,13 @@ package body et_schematic_ops_submodules is
 		port_name		: in pac_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		use et_submodules;
 
 		-- The place where the box is in the parent module:
@@ -1643,6 +1731,14 @@ package body et_schematic_ops_submodules is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+		
+		
 		-- move the port along the edge of the box:
 		update_element (
 			container	=> generic_modules,
@@ -1655,7 +1751,14 @@ package body et_schematic_ops_submodules is
 			pos_before		=> port_position_before,
 			pos_after		=> port_position_after,
 			log_threshold	=> log_threshold + 1);
+
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;		
 	end drag_port;
 
 	
@@ -1836,8 +1939,13 @@ package body et_schematic_ops_submodules is
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		position		: in type_object_position; -- sheet, lower left corner x/y 
 		size			: in et_submodules.type_submodule_size; -- the size of the box in x and y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_directory_and_file_ops;
@@ -1902,6 +2010,8 @@ package body et_schematic_ops_submodules is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
+		-- CS: Unclear how to add the commit operation.
+		
 		-- Make sure the submodule file exists. The file is 
 		-- identified by its full path and name. If the file exists
 		-- then a submodule is inserted in the targeted module.
@@ -1931,6 +2041,7 @@ package body et_schematic_ops_submodules is
 	
 
 
+	
 
 	
 	procedure delete_ports (
@@ -2044,13 +2155,21 @@ package body et_schematic_ops_submodules is
 	
 
 
+
+	
+	
 	
 	
 	procedure delete_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		use et_submodules;
 
 		-- The place where the box is in the parent module:
@@ -2090,6 +2209,8 @@ package body et_schematic_ops_submodules is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
+		-- CS: unlcear how to place the commit operations.
+		
 		-- load submodule_position and delete submodule
 		update_element (
 			container	=> generic_modules,
@@ -2110,6 +2231,8 @@ package body et_schematic_ops_submodules is
 
 	
 
+	
+
 
 	procedure move_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
@@ -2117,8 +2240,13 @@ package body et_schematic_ops_submodules is
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
 		point			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		use et_submodules;
 
 		-- The place where the box is in the parent module BEFORE and AFTER the move:
@@ -2243,13 +2371,13 @@ package body et_schematic_ops_submodules is
 		case coordinates is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_name) &
-					" moving submodule instance " & to_string (instance) &
+					" move submodule instance " & to_string (instance) &
 					" to sheet" & to_string (sheet) &
 					to_string (point), level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
-					" moving submodule instance " & to_string (instance) &
+					" move submodule instance " & to_string (instance) &
 					" by " & relative_to_string (sheet) & " sheet(s)" &
 					to_string (point), level => log_threshold);
 		end case;
@@ -2257,17 +2385,35 @@ package body et_schematic_ops_submodules is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_submodules'access);
-		
+
+
+				
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end move_submodule;
 
 	
 
 
 
+
+	
 	
 
 
@@ -2276,8 +2422,13 @@ package body et_schematic_ops_submodules is
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 		
 		use et_submodules;
@@ -2461,14 +2612,23 @@ package body et_schematic_ops_submodules is
 		case coordinates is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_name) &
-					" dragging submodule instance " & to_string (instance) &
+					" drag submodule instance " & to_string (instance) &
 					" to" & to_string (point), level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
-					" dragging submodule instance " & to_string (instance) &
+					" drag submodule instance " & to_string (instance) &
 					" by " & to_string (point), level => log_threshold);
 		end case;
+
+
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+		
 		
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -2483,6 +2643,14 @@ package body et_schematic_ops_submodules is
 		-- drag the connected net segments (by drag_list)
 		drag_segments;
 
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;		
 	end drag_submodule;
 
 
@@ -2490,14 +2658,22 @@ package body et_schematic_ops_submodules is
 
 
 	
+
+	
+	
 	
 	procedure copy_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance_origin	: in pac_module_instance_name.bounded_string; -- OSC1
 		instance_new	: in pac_module_instance_name.bounded_string; -- CLOCK_GENERATOR
 		destination		: in type_object_position; -- sheet/x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 		
 		use et_submodules;
@@ -2600,10 +2776,19 @@ package body et_schematic_ops_submodules is
 		
 	begin -- copy_submodule
 		log (text => "module " & to_string (module_name) &
-			 " copying submodule instance " & enclose_in_quotes (to_string (instance_origin)) &
+			 " copy submodule instance " & enclose_in_quotes (to_string (instance_origin)) &
 			 " to instance " & enclose_in_quotes (to_string (instance_new)) &
 			" at" & et_schematic_coordinates.to_string (position => destination), level => log_threshold);
 
+
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		-- locate module
 		module_cursor := locate_module (module_name);
 
@@ -2611,21 +2796,35 @@ package body et_schematic_ops_submodules is
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_submodules'access);
+
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;		
 	end copy_submodule;
+
 
 
 
 	
 
+	
 	
 	
 	procedure rename_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance_old	: in pac_module_instance_name.bounded_string; -- OSC1
 		instance_new	: in pac_module_instance_name.bounded_string; -- CLOCK_GENERATOR
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 		
 		use et_submodules;
@@ -2715,10 +2914,12 @@ package body et_schematic_ops_submodules is
 		
 	begin -- rename_submodule
 		log (text => "module " & to_string (module_name) &
-			 " renaming submodule instance " & enclose_in_quotes (to_string (instance_old)) &
+			 " rename submodule instance " & enclose_in_quotes (to_string (instance_old)) &
 			 " to " & to_string (instance_new),
 			 level => log_threshold);
 
+		log_indentation_up;
+		
 		-- locate module
 		module_cursor := locate_module (module_name);
 
@@ -2728,14 +2929,26 @@ package body et_schematic_ops_submodules is
 				 " already exists !", console => true);
 			raise constraint_error;
 		else
+			if commit_design = DO_COMMIT then
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold);
+			end if;
+
 			
 			update_element (
 				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> query_submodules'access);
 
+
+			if commit_design = DO_COMMIT then
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold);
+			end if;		
 		end if;
-		
+
+
+		log_indentation_down;
 	end rename_submodule;
 
 
@@ -2744,13 +2957,19 @@ package body et_schematic_ops_submodules is
 
 	
 	
+	
+	
 	procedure mount_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		variant_parent	: in pac_assembly_variant_name.bounded_string; -- low_cost								  
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		variant_submod	: in pac_assembly_variant_name.bounded_string; -- fixed_frequency
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
@@ -2813,9 +3032,12 @@ package body et_schematic_ops_submodules is
 		log (text => "module " & to_string (module_name) &
 			 " variant " & enclose_in_quotes (to_variant (variant_parent)) &
 			 " submodule instance " & enclose_in_quotes (to_string (instance)) &
-			 " mounting variant " & enclose_in_quotes (to_variant (variant_submod)),
+			 " mount variant " & enclose_in_quotes (to_variant (variant_submod)),
 			level => log_threshold);
 
+		log_indentation_up;
+		
+		
 		-- locate module
 		module_cursor := locate_module (module_name);
 
@@ -2823,11 +3045,25 @@ package body et_schematic_ops_submodules is
 		if submodule_instance_exists (module_cursor, instance) then
 
 			if assembly_variant_exists (module_cursor, instance, variant_submod) then
-			
+		
+				if commit_design = DO_COMMIT then
+					-- Commit the current state of the design:
+					commit (PRE, verb, noun, log_threshold);
+				end if;
+
+				
 				update_element (
 					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> query_variants'access);
+
+
+				if commit_design = DO_COMMIT then
+					-- Commit the new state of the design:
+					commit (POST, verb, noun, log_threshold);
+				end if;		
+
+
 			else
 				log (SEVERITY_ERROR, "submodule instance " &
 					 enclose_in_quotes (to_string (instance)) &
@@ -2840,7 +3076,9 @@ package body et_schematic_ops_submodules is
 		else
 			submodule_not_found (instance);
 		end if;
-		
+
+
+		log_indentation_down;
 	end mount_submodule;
 
 
@@ -2849,12 +3087,19 @@ package body et_schematic_ops_submodules is
 
 
 	
+	
+
+	
 	procedure remove_submodule (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		variant_parent	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
@@ -2913,28 +3158,50 @@ package body et_schematic_ops_submodules is
 	begin -- remove_submodule
 		log (text => "module " & to_string (module_name) &
 			" variant " & enclose_in_quotes (to_variant (variant_parent)) &
-			" removing variant of submodule instance " & enclose_in_quotes (to_string (instance)),
+			" remove variant of submodule instance " & enclose_in_quotes (to_string (instance)),
 			level => log_threshold);
 
+		log_indentation_up;
+
+		
 		-- locate module
 		module_cursor := locate_module (module_name);
 
 		-- Test whether the given parent module contains the given submodule instance (OSC1)
 		if submodule_instance_exists (module_cursor, instance) then
 
+			if commit_design = DO_COMMIT then
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold);
+			end if;
+
+			
 			update_element (
 				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> query_variants'access);
 
+
+			if commit_design = DO_COMMIT then
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold);
+			end if;		
+
+			
 		else
 			submodule_not_found (instance);
 		end if;
-		
+
+
+		log_indentation_down;
 	end remove_submodule;
 
 
 
+
+
+	
+	
 
 
 	
@@ -2970,6 +3237,8 @@ package body et_schematic_ops_submodules is
 
 
 
+
+	
 	
 
 
@@ -3043,6 +3312,7 @@ package body et_schematic_ops_submodules is
 
 
 
+
 	
 	
 
@@ -3100,6 +3370,7 @@ package body et_schematic_ops_submodules is
 
 
 	
+
 	
 	
 	
@@ -3107,8 +3378,13 @@ package body et_schematic_ops_submodules is
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		file			: in et_submodules.pac_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_directory_and_file_ops;
@@ -3214,10 +3490,12 @@ package body et_schematic_ops_submodules is
 		
 	begin -- set_submodule_file
 		log (text => "module " & to_string (module_name) &
-			" setting instance " & enclose_in_quotes (to_string (instance)) &
+			" set instance " & enclose_in_quotes (to_string (instance)) &
 			" file to " & to_string (file),
 			level => log_threshold);
 
+		log_indentation_up;
+		
 		-- locate module
 		module_cursor := locate_module (module_name);
 
@@ -3228,26 +3506,28 @@ package body et_schematic_ops_submodules is
 		-- represents the submodule:
 		if ada.directories.exists (full_file_name) then
 
+			-- CS Unclear how to add the commit operations
+			
 			-- THIS IS ABOUT THE ACTUAL SCHEMATIC AND LAYOUT STUFF OF THE SUBMODULE:
 			-- Read the submodule file and store its content in container et_project.modules:
 			et_module_read.read_module (to_string (file), log_threshold + 1);		
 			
-			log_indentation_up;
-
 			-- THIS IS ABOUT THE GRAPHICAL REPRESENTATION OF THE SUBMODULE:
 			update_element (
 				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> query_submodules'access);
 
-			log_indentation_down;
 		else
 			log (SEVERITY_ERROR, "submodule file " & to_string (file) & " not found !",
 				 console => true);
 			raise constraint_error;
 		end if;
-		
+
+		log_indentation_down;
 	end set_submodule_file;
+
+
 
 
 
@@ -3525,7 +3805,6 @@ package body et_schematic_ops_submodules is
 			iterate (module.nets, query_net'access);
 		end query_nets;
 
-
 		
 	begin
 		log (text => "module " & to_string (module_name) & " integrity check ...", level => log_threshold);
@@ -3563,6 +3842,8 @@ package body et_schematic_ops_submodules is
 
 		log_indentation_down;
 	end check_integrity;
+
+
 
 
 
@@ -3606,6 +3887,7 @@ package body et_schematic_ops_submodules is
 	end dump_tree;
 
 
+	
 
 
 	
@@ -4165,6 +4447,7 @@ package body et_schematic_ops_submodules is
 
 
 
+	
 
 
 	

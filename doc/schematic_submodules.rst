@@ -1,19 +1,14 @@
-.. _submodules:
+.. _schematic_submodules:
 
 .. include:: placeholders.rst
 
-**********
+
 Submodules
-**********
+----------
 
-
-
-++++++++++++++++
-Schematic Editor
-++++++++++++++++
 
 Designing a Submodule
----------------------
+^^^^^^^^^^^^^^^^^^^^^
 
 The design of a submodule is mainly the same
 as with any other generic module.
@@ -40,7 +35,7 @@ are visible from the parent module.
 
 
 Using a Submodule
------------------
+^^^^^^^^^^^^^^^^^
 
 
 
@@ -144,7 +139,7 @@ Using a Submodule
 
 
 Ports
------
+^^^^^
 
 	The port of a submodule is named after a net which must exist inside the submodule.
 	The net becomes visible to the outside world if it is connected with a netchanger.
