@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -54,6 +54,7 @@ with et_board_geometry;					use et_board_geometry;
 with et_board_ops_stopmask;				use et_board_ops_stopmask;
 with et_keywords;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
 package body et_cp_board_stopmask is
@@ -91,6 +92,10 @@ package body et_cp_board_stopmask is
 				module_cursor	=> module,
 				zone			=> (c with null record),
 				face			=> face,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 
 		end build_zone;
@@ -120,8 +125,11 @@ package body et_cp_board_stopmask is
 								module_name 	=> key (module),
 								face			=> to_face (get_field (cmd, 5)),
 								line			=> (line_tmp with width_tmp),
-								log_threshold	=> log_threshold + 1
-								);
+								
+								-- Depending on the origin of the command,
+								-- the design state is to be commited or not:
+								commit_design	=> to_commit_design (cmd),								
+								log_threshold	=> log_threshold + 1);
 
 						when 12 .. type_field_count'last =>
 							command_too_long (cmd, cmd_field_count - 1);
@@ -146,8 +154,13 @@ package body et_cp_board_stopmask is
 								module_name 	=> key (module),
 								face			=> to_face (get_field (cmd, 5)),
 								arc				=> (arc_tmp with width_tmp),
+
+								-- Depending on the origin of the command,
+								-- the design state is to be commited or not:
+								commit_design	=> to_commit_design (cmd),								
 								log_threshold	=> log_threshold + 1);
 
+							
 						when 15 .. type_field_count'last =>
 							command_too_long (cmd, cmd_field_count - 1);
 							
@@ -169,7 +182,12 @@ package body et_cp_board_stopmask is
 								module_name 	=> key (module),
 								face			=> to_face (get_field (cmd, 5)),
 								circle			=> (circle_tmp with width_tmp),
+
+								-- Depending on the origin of the command,
+								-- the design state is to be commited or not:
+								commit_design	=> to_commit_design (cmd),								
 								log_threshold	=> log_threshold + 1);
+
 							
 						when 11 .. type_field_count'last =>
 							command_too_long (cmd, cmd_field_count - 1);
@@ -184,19 +202,24 @@ package body et_cp_board_stopmask is
 
 
 	begin
-		-- CS log message
+		log (text => "draw stopmask", level => log_threshold);
+		log_indentation_up;
 
 		if get_field (cmd, 6) = keyword_zone then
 			build_zone;
 		else
 			shape := to_shape (get_field (cmd, 6));
-			draw_shape;
+			draw_shape;			
 		end if;	
+
+		log_indentation_down;
 	end draw_stopmask;
 
 
 
 
+
+	
 
 
 
@@ -226,6 +249,10 @@ package body et_cp_board_stopmask is
 		end do_it;
 		
 	begin
+		log (text => "delete stopmask", level => log_threshold);
+		log_indentation_up;
+
+		
 		-- board led_driver delete stop top 40 50 1
 		case cmd_field_count is
 			when 8 => do_it;
@@ -235,8 +262,12 @@ package body et_cp_board_stopmask is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end delete_stopmask;
 
+	
 
 	
 end et_cp_board_stopmask;

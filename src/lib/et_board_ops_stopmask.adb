@@ -60,8 +60,13 @@ package body et_board_ops_stopmask is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_stop_line;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -80,26 +85,42 @@ package body et_board_ops_stopmask is
 						new_item	=> line);
 			end case;
 		end;
-							   
+
+		
 	begin
 		log (text => "module " & to_string (module_name) &
-			" drawing stopmask line" &
+			" draw stopmask line" &
 			" face" & to_string (face) &
 			to_string (line),
 			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
+
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end add_line;
 
 
 
+
+	
 	
 
 	procedure modify_status (
@@ -167,6 +188,8 @@ package body et_board_ops_stopmask is
 
 	
 
+
+	
 
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -248,6 +271,8 @@ package body et_board_ops_stopmask is
 
 
 
+	
+
 
 	
 
@@ -316,6 +341,9 @@ package body et_board_ops_stopmask is
 	end reset_proposed_lines;
 
 
+
+
+	
 
 
 	
@@ -395,6 +423,9 @@ package body et_board_ops_stopmask is
 
 
 
+
+
+	
 	
 
 	
@@ -462,6 +493,8 @@ package body et_board_ops_stopmask is
 
 
 
+	
+
 
 	procedure delete_line (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -519,6 +552,8 @@ package body et_board_ops_stopmask is
 
 
 
+
+	
 	
 
 -- ARCS:
@@ -528,8 +563,13 @@ package body et_board_ops_stopmask is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_stop_arc;		
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		
@@ -553,7 +593,7 @@ package body et_board_ops_stopmask is
 		
 	begin
 		log (text => "module " & to_string (module_name) &
-			" drawing stopmask arc" &
+			" draw stopmask arc" &
 			" face" & to_string (face) &
 			to_string (arc) &
 			" width" & to_string (arc.width),
@@ -562,15 +602,33 @@ package body et_board_ops_stopmask is
 
 		-- locate module
 		module_cursor := locate_module (module_name);
+
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+		
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end add_arc;
 	
 
+
+
+	
 
 
 
@@ -635,6 +693,7 @@ package body et_board_ops_stopmask is
 
 		log_indentation_down;
 	end modify_status;
+
 
 
 
@@ -726,6 +785,8 @@ package body et_board_ops_stopmask is
 	
 
 
+	
+
 	procedure reset_proposed_arcs (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -791,6 +852,8 @@ package body et_board_ops_stopmask is
 	end reset_proposed_arcs;
 
 
+
+
 	
 
 
@@ -832,7 +895,6 @@ package body et_board_ops_stopmask is
 						null; -- CS
 				end case;
 			end query_arc;
-			
 
 			
 		begin
@@ -875,6 +937,7 @@ package body et_board_ops_stopmask is
 
 
 
+	
 	
 	procedure move_arc (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -939,6 +1002,7 @@ package body et_board_ops_stopmask is
 
 
 	
+	
 
 
 
@@ -1002,6 +1066,9 @@ package body et_board_ops_stopmask is
 
 
 
+
+	
+
 -- CIRCLES:
 	
 	
@@ -1009,10 +1076,16 @@ package body et_board_ops_stopmask is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_stop_circle;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
+		
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -1030,35 +1103,56 @@ package body et_board_ops_stopmask is
 
 			end case;
 		end;
-							   
+
+		
 	begin
 		log (text => "module " & to_string (module_name) &
-			" drawing stopmask circle" &
+			" draw stopmask circle" &
 			" face" & to_string (face) &
 			to_string (circle),
 			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
+
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end add_circle;
 
 
 	
 
 
+	
+
 
 	procedure add_zone (
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_stop_zone;
 		face			: in type_face;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		-- When searching among already existing zones then
 		-- this flag is used to abort the iteration prematurely:
 		proceed : boolean := true;
@@ -1134,22 +1228,35 @@ package body et_board_ops_stopmask is
 
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			 & " drawing stopmask zone" 
+			 & " draw stopmask zone" 
 			 & to_string (face)
 			 & " " & to_string (contour => zone, full => true),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+		
 		log_indentation_down;
 	end add_zone;
 	
 
+
+
+	
 
 
 
