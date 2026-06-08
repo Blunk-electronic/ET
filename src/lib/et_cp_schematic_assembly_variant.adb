@@ -38,7 +38,7 @@
 -- To Do:
 -- - rework
 -- - propose arguments if command incomplete
---
+-- - add commit operations
 
 with ada.text_io;						use ada.text_io;
 with ada.characters.handling;			use ada.characters.handling;
@@ -56,7 +56,7 @@ with et_device_value;
 with et_schematic_ops_units;
 with et_schematic_ops_assembly_variant;		use et_schematic_ops_assembly_variant;
 
-
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
 package body et_cp_schematic_assembly_variant is
@@ -74,7 +74,9 @@ package body et_cp_schematic_assembly_variant is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
 	begin
-		-- CS log message
+		log (text => "create assembly variant", level => log_threshold);
+		log_indentation_up;
+		
 		
 		case cmd_field_count is
 			when 5 =>
@@ -88,6 +90,9 @@ package body et_cp_schematic_assembly_variant is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end create_assembly_variant;
 
 
@@ -106,7 +111,9 @@ package body et_cp_schematic_assembly_variant is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
 	begin
-		-- CS log message
+		log (text => "delete assembly variant", level => log_threshold);
+		log_indentation_up;
+
 
 		case cmd_field_count is
 			when 5 =>
@@ -120,10 +127,14 @@ package body et_cp_schematic_assembly_variant is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end delete_assembly_variant;
 
 
 
+	
 
 
 
@@ -138,7 +149,9 @@ package body et_cp_schematic_assembly_variant is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
 	begin
-		-- CS log message
+		log (text => "describe assembly variant", level => log_threshold);
+		log_indentation_up;
+
 
 		case cmd_field_count is
 			when 6 =>
@@ -153,6 +166,9 @@ package body et_cp_schematic_assembly_variant is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+		
+		log_indentation_down;
 	end describe_assembly_variant;
 
 
@@ -183,7 +199,8 @@ package body et_cp_schematic_assembly_variant is
 		partcode : pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		purpose : pac_device_purpose.bounded_string; -- brightness_control
 	begin
-		-- CS log message
+		log (text => "mount device", level => log_threshold);
+		log_indentation_up;
 
 		
 		-- validate value
@@ -222,6 +239,8 @@ package body et_cp_schematic_assembly_variant is
 			when others => command_incomplete (cmd);
 		end case;
 
+
+		log_indentation_down;
 	end mount_device;
 	
 
@@ -242,7 +261,9 @@ package body et_cp_schematic_assembly_variant is
 		use et_device_name;
 		use et_schematic_ops_units;
 	begin
-		-- CS log message
+		log (text => "unmount device", level => log_threshold);
+		log_indentation_up;
+
 		
 		case cmd_field_count is
 			when 6 =>									
@@ -258,6 +279,9 @@ package body et_cp_schematic_assembly_variant is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end unmount_device;
 
 
@@ -278,7 +302,9 @@ package body et_cp_schematic_assembly_variant is
 		use et_device_name;
 		use et_schematic_ops_units;
 	begin
-		-- CS log message
+		log (text => "remove device", level => log_threshold);
+		log_indentation_up;
+
 
 		case cmd_field_count is
 			when 6 =>
@@ -293,6 +319,9 @@ package body et_cp_schematic_assembly_variant is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end remove_device;
 	
 	

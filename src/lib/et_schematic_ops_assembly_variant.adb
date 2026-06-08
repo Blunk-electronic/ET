@@ -37,7 +37,7 @@
 --
 -- To Do:
 -- - clean up, rework
---
+-- - add commit operations
 
 with ada.text_io;				use ada.text_io;
 
@@ -46,6 +46,11 @@ with et_module;					use et_module;
 
 with et_schematic_ops_device;	use et_schematic_ops_device;
 with et_exceptions;				use et_exceptions;
+
+with et_modes.board;
+with et_undo_redo;
+with et_commit;
+
 
 
 package body et_schematic_ops_assembly_variant is
@@ -145,7 +150,6 @@ package body et_schematic_ops_assembly_variant is
 
 
 	procedure create_assembly_variant (
-	-- Creates a new assembly variant.
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level) is
@@ -197,7 +201,6 @@ package body et_schematic_ops_assembly_variant is
 
 	
 	procedure delete_assembly_variant (
-	-- Deletes an assembly variant.
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level) is
@@ -245,11 +248,13 @@ package body et_schematic_ops_assembly_variant is
 
 
 
+
+
+
 	
 
 	
 	procedure describe_assembly_variant (
-	-- Describes an assembly variant. Overwrites the previous description.
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost											
 		description		: in et_assembly_variants.type_description; -- "this is the low budget variant"
@@ -307,6 +312,7 @@ package body et_schematic_ops_assembly_variant is
 			process		=> describe'access);
 		
 	end describe_assembly_variant;
+
 
 
 
@@ -544,6 +550,7 @@ package body et_schematic_ops_assembly_variant is
 
 
 
+	
 	
 
 	

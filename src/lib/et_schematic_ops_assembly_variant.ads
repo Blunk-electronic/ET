@@ -35,7 +35,8 @@
 --
 --   history of changes:
 --
---   ToDo: 
+-- To Do: 
+-- - add commit operations
 
 
 with ada.exceptions;			use ada.exceptions;
@@ -56,6 +57,8 @@ with et_device_name;			use et_device_name;
 with et_device_partcode;		use et_device_partcode;
 
 with et_logging;				use et_logging;
+
+with et_cmd_origin_to_commit;	use et_cmd_origin_to_commit;
 
 
 package et_schematic_ops_assembly_variant is

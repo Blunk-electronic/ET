@@ -47,13 +47,18 @@ with et_cmd_sts;				use et_cmd_sts;
 package et_cp_schematic_assembly_variant is
 
 
+	-- This procedure parses a command that creates
+	-- an assembly variant:
+	-- example: schematic demo create variant low_cost
 	procedure create_assembly_variant (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
-		
 
+	-- This procedure parses a command that deletes
+	-- an assembly variant:
+	-- example: schematic demo delete variant low_cost
 	procedure delete_assembly_variant (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
@@ -61,14 +66,17 @@ package et_cp_schematic_assembly_variant is
 
 				
 		
+	-- This procedure parses a command that adds a
+	-- description to an assembly variant:
+	-- example: schematic demo describe variant low_cost "This is for poor customers."
 	procedure describe_assembly_variant (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 
 
-
-	-- Sets the value, partcode and (optionally the purpose) 
+	-- This procedure parses a commad that
+	-- sets the value, partcode and (optionally the purpose) 
 	-- of a device in a given assembly variant:
 	procedure mount_device (
 		module			: in pac_generic_modules.cursor;
@@ -76,7 +84,9 @@ package et_cp_schematic_assembly_variant is
 		log_threshold	: in type_log_level);
 
 
-
+	-- This procedure parses a command that unmounts
+	-- a device in an assembly variant:
+	-- example: schematic demo unmount device low_cost R2
 	procedure unmount_device (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
@@ -84,6 +94,9 @@ package et_cp_schematic_assembly_variant is
 
 
 
+	-- This procedure parses a command that removes
+	-- a device from an assembly variant:
+	-- example: schematic demo remove device low_cost R2
 	procedure remove_device (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
