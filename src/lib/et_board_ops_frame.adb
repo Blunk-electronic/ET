@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -38,6 +38,10 @@
 
 with et_module;							use et_module;
 
+with et_modes.board;
+with et_undo_redo;
+with et_commit;
+
 
 package body et_board_ops_frame is
 
@@ -46,8 +50,13 @@ package body et_board_ops_frame is
 		module_cursor	: in pac_generic_modules.cursor;
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in et_drawing_frame.type_position; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		
 		procedure set_origin (
 			module_name	: in pac_module_name.bounded_string;
@@ -73,14 +82,22 @@ package body et_board_ops_frame is
 		case coordinates is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (key (module_cursor)) &
-					 " moving drawing frame origin to " & to_string (point),
+					 " move drawing frame origin to " & to_string (point),
 					 level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (key (module_cursor)) &
-					 " moving drawing frame origin by " & to_string (point), 
+					 " move drawing frame origin by " & to_string (point), 
 					 level => log_threshold);
 		end case;
+
+
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
 
 		
 		update_element (
@@ -88,9 +105,21 @@ package body et_board_ops_frame is
 			position	=> module_cursor,
 			process		=> set_origin'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end move_drawing_frame;
 
 
+
+
+
+
+	
 
 
 

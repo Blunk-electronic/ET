@@ -47,7 +47,10 @@ with et_cmd_sts;				use et_cmd_sts;
 
 package et_cp_board_frame is
 
-
+	-- This procedure parses a command that
+	-- moves the drawing frame.
+	-- example 1: board demo move frame absolute -150 -105
+	-- example 2: board demo move frame relative -10 -10
 	procedure move_drawing_frame (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;

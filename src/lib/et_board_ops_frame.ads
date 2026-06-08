@@ -48,6 +48,9 @@ with et_drawing_frame.board;			use et_drawing_frame.board;
 with et_logging;						use et_logging;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+
+
 
 package et_board_ops_frame is
 
@@ -61,6 +64,7 @@ package et_board_ops_frame is
 		module_cursor	: in pac_generic_modules.cursor;
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in et_drawing_frame.type_position; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 

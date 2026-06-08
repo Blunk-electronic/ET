@@ -50,6 +50,9 @@ with et_board_ops_frame;				use et_board_ops_frame;
 with et_canvas_board;					use et_canvas_board;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+
+
 
 package body et_cp_board_frame is
 
@@ -68,7 +71,9 @@ package body et_cp_board_frame is
 		p : et_drawing_frame.type_position;
 		c : type_coordinates;
 	begin
-		-- CS log message
+		log (text => "move drawing frame", level => log_threshold);
+		log_indentation_up;
+		
 		
 		case cmd_field_count is
 			when 7 => -- board led_driver move frame absolute -20 -50
@@ -81,8 +86,11 @@ package body et_cp_board_frame is
 					module_cursor 	=> module,
 					coordinates		=> c,
 					point			=> p,
-					log_threshold	=> log_threshold + 1
-					);
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),					
+					log_threshold	=> log_threshold + 1);
 
 				
 			when 8 .. type_field_count'last =>
@@ -91,6 +99,9 @@ package body et_cp_board_frame is
 			when others =>
 				command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end move_drawing_frame;
 
 
