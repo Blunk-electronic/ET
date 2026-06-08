@@ -92,6 +92,10 @@ package body et_cp_board_assy_doc is
 				module_cursor	=> module,
 				zone			=> (c with null record),
 				face			=> face,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 
 		end build_zone;
@@ -121,8 +125,11 @@ package body et_cp_board_assy_doc is
 								module_name 	=> key (module),
 								face			=> to_face (get_field (cmd, 5)),
 								line			=> (line_tmp with width_tmp),
-								log_threshold	=> log_threshold + 1
-								);
+
+								-- Depending on the origin of the command,
+								-- the design state is to be commited or not:
+								commit_design	=> to_commit_design (cmd),
+								log_threshold	=> log_threshold + 1);
 
 						when 12 .. type_field_count'last =>
 							command_too_long (cmd, cmd_field_count - 1);
@@ -147,6 +154,10 @@ package body et_cp_board_assy_doc is
 								module_name 	=> key (module),
 								face			=> to_face (get_field (cmd, 5)),
 								arc				=> (arc_tmp with width_tmp),
+
+								-- Depending on the origin of the command,
+								-- the design state is to be commited or not:
+								commit_design	=> to_commit_design (cmd),
 								log_threshold	=> log_threshold + 1);
 
 						when 15 .. type_field_count'last =>
@@ -170,6 +181,10 @@ package body et_cp_board_assy_doc is
 								module_name 	=> key (module),
 								face			=> to_face (get_field (cmd, 5)),
 								circle			=> (circle_tmp with width_tmp),
+
+								-- Depending on the origin of the command,
+								-- the design state is to be commited or not:
+								commit_design	=> to_commit_design (cmd),
 								log_threshold	=> log_threshold + 1);
 							
 						when 11 .. type_field_count'last =>
@@ -185,7 +200,8 @@ package body et_cp_board_assy_doc is
 
 
 	begin
-		-- CS log message
+		log (text => "draw assy doc", level => log_threshold);
+		log_indentation_up;
 
 		if get_field (cmd, 6) = keyword_zone then
 			build_zone;
@@ -193,11 +209,17 @@ package body et_cp_board_assy_doc is
 			shape := to_shape (get_field (cmd, 6));
 			draw_shape;
 		end if;	
+
+		log_indentation_down;
 	end draw_assy_doc;
 
 
 
 
+
+
+
+	
 
 	
 
@@ -222,12 +244,18 @@ package body et_cp_board_assy_doc is
 				module_name 	=> key (module),
 				face			=> to_face (get_field (cmd, 5)),
 				catch_zone		=> catch_zone,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 			
 		end do_it;
 					
 	begin
-		-- CS log message
+		log (text => "delete assy doc", level => log_threshold);
+		log_indentation_up;
+
 		
 		case cmd_field_count is			
 			when 8 => do_it;
@@ -237,7 +265,11 @@ package body et_cp_board_assy_doc is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end delete_assy_doc;
+
 	
 	
 end et_cp_board_assy_doc;

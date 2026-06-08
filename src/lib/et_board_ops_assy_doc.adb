@@ -59,8 +59,14 @@ package body et_board_ops_assy_doc is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_doc_line;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -79,14 +85,23 @@ package body et_board_ops_assy_doc is
 						new_item	=> line);
 			end case;
 		end;
-							   
+
+		
 	begin
 		log (text => "module " & to_string (module_name) &
-			" drawing assembly documentation line" &
+			" draw assembly documentation line" &
 			" face" & to_string (face) &
 			to_string (line),
 			level => log_threshold);
 
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		-- locate module
 		module_cursor := locate_module (module_name);
 		
@@ -95,10 +110,22 @@ package body et_board_ops_assy_doc is
 			position	=> module_cursor,
 			process		=> add'access);
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;		
 	end add_line;
 
 	
+	
 
+
+
+
+	
 
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -158,6 +185,8 @@ package body et_board_ops_assy_doc is
 	end get_lines;
 
 
+
+	
 
 
 	
@@ -225,6 +254,8 @@ package body et_board_ops_assy_doc is
 
 
 
+
+	
 	
 	
 
@@ -309,6 +340,8 @@ package body et_board_ops_assy_doc is
 
 
 
+
+	
 	
 	
 	procedure reset_status_lines (
@@ -375,6 +408,9 @@ package body et_board_ops_assy_doc is
 		log_indentation_down;
 	end reset_status_lines;
 
+
+
+	
 	
 
 
@@ -455,6 +491,9 @@ package body et_board_ops_assy_doc is
 
 
 
+
+
+	
 
 	
 	procedure next_proposed_line (
@@ -567,6 +606,8 @@ package body et_board_ops_assy_doc is
 		log_indentation_down;
 	end next_proposed_line;
 
+
+
 	
 
 
@@ -630,6 +671,8 @@ package body et_board_ops_assy_doc is
 		
 		log_indentation_down;
 	end move_line;
+
+
 
 
 
@@ -697,14 +740,21 @@ package body et_board_ops_assy_doc is
 
 	
 	
+	
 	procedure add_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_doc_arc;		
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
+		
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -721,16 +771,23 @@ package body et_board_ops_assy_doc is
 						new_item	=> arc);
 			end case;
 		end;
+
 		
 	begin
 		log (text => "module " & to_string (module_name) &
-			" drawing assembly documentation arc" &
+			" draw assembly documentation arc" &
 			" face" & to_string (face) &
 			to_string (arc) &
 			" width" & to_string (arc.width),
-
 			level => log_threshold);
 
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+		
 		-- locate module
 		module_cursor := locate_module (module_name);
 		
@@ -739,12 +796,22 @@ package body et_board_ops_assy_doc is
 			position	=> module_cursor,
 			process		=> add'access);
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end add_arc;
 
 
 
 	
 
+
+
+	
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -811,6 +878,7 @@ package body et_board_ops_assy_doc is
 
 
 
+	
 
 
 	procedure propose_arcs (
@@ -892,6 +960,8 @@ package body et_board_ops_assy_doc is
 	end propose_arcs;
 
 
+
+	
 	
 	
 
@@ -961,6 +1031,9 @@ package body et_board_ops_assy_doc is
 	end reset_status_arcs;
 
 
+
+
+	
 	
 
 
@@ -1041,6 +1114,7 @@ package body et_board_ops_assy_doc is
 
 
 
+	
 
 
 
@@ -1106,6 +1180,7 @@ package body et_board_ops_assy_doc is
 	end move_arc;
 
 
+	
 
 	
 
@@ -1169,21 +1244,27 @@ package body et_board_ops_assy_doc is
 	
 
 
+
+
 	
 
 
--- CIRCLES:
-
-	
+-- CIRCLES:	
 	
 	procedure add_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_doc_circle;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
+		
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -1201,14 +1282,23 @@ package body et_board_ops_assy_doc is
 
 			end case;
 		end;
-							   
+
+		
 	begin
 		log (text => "module " & to_string (module_name) &
-			" drawing assembly documentation circle" &
+			" draw assembly documentation circle" &
 			" face" & to_string (face) &
 			to_string (circle),
 			level => log_threshold);
 
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		-- locate module
 		module_cursor := locate_module (module_name);
 		
@@ -1217,11 +1307,25 @@ package body et_board_ops_assy_doc is
 			position	=> module_cursor,
 			process		=> add'access);
 
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end add_circle;
 
 
 
 
+	
+
+
+
+
+	
 
 -- ZONES:
 	
@@ -1230,8 +1334,13 @@ package body et_board_ops_assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_doc_zone;
 		face			: in type_face;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		-- When searching among already existing zones then
 		-- this flag is used to abort the iteration prematurely:
 		proceed : boolean := true;
@@ -1306,17 +1415,35 @@ package body et_board_ops_assy_doc is
 
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			 & "drawing assembly documentation zone"			 
+			 & "draw assembly documentation zone "			 
 			 & to_string (face)
 			 & " " & to_string (contour => zone, full => true),
 			level => log_threshold);
 
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end add_zone;
+
+
+
+
+
 
 	
 
@@ -3689,6 +3816,7 @@ package body et_board_ops_assy_doc is
 
 
 
+	
 
 	procedure delete_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3696,7 +3824,7 @@ package body et_board_ops_assy_doc is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting assy documentation object",
+			& " delete assy documentation object",
 			-- CS & to_string (object)
 			level => log_threshold);
 
@@ -3750,13 +3878,21 @@ package body et_board_ops_assy_doc is
 
 
 
+	
+
+	
 
 	procedure delete_object (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		catch_zone		: in type_catch_zone;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		
@@ -3847,17 +3983,32 @@ package body et_board_ops_assy_doc is
 		
 	begin
 		log (text => "module " & to_string (module_name) &
-			" deleting assembly documentation object. face" & to_string (face) &
+			" delete assembly documentation object. face" & to_string (face) &
 			" in" & to_string (catch_zone),
 			level => log_threshold);
 
 		module_cursor := locate_module (module_name);
 
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> delete'access);
+
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end delete_object;
 
 
