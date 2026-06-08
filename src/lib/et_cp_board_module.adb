@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -68,7 +68,9 @@ package body et_cp_board_module is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 		
 	begin
-		-- CS log message
+		log (text => "save module", level => log_threshold);
+		log_indentation_up;
+		
 		
 		-- Since we are already in the project directory,
 		-- we can call the write_module procedures right away.
@@ -92,10 +94,14 @@ package body et_cp_board_module is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+		log_indentation_down;
 	end save_module;
 
 
 
+
+	
 
 
 
@@ -151,8 +157,10 @@ package body et_cp_board_module is
 		
 	begin		
 		log (text => "show module (via board editor) " 
-			& enclose_in_quotes (to_string (module)),
-			level => log_threshold );
+			& to_string (module),
+			level => log_threshold);
+
+		log_indentation_up;
 
 		
 		case cmd_field_count is
@@ -164,7 +172,9 @@ package body et_cp_board_module is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
 		
+		log_indentation_down;
 	end show_module;
 
 
