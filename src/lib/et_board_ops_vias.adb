@@ -50,6 +50,11 @@ with et_pcb_signal_layers;			use et_pcb_signal_layers;
 with et_module;						use et_module;
 with et_keywords;					use et_keywords;
 
+with et_modes.board;
+with et_undo_redo;
+with et_commit;
+
+
 
 package body et_board_ops_vias is
 
@@ -91,6 +96,7 @@ package body et_board_ops_vias is
 		return to_string (v.position) & ". Cat " 
 			& to_string (v.category) & ". Net " & to_string (n);
 	end to_string;
+
 
 
 	
@@ -175,6 +181,8 @@ package body et_board_ops_vias is
 
 
 
+	
+
 	procedure propose_vias (
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
@@ -248,6 +256,9 @@ package body et_board_ops_vias is
 	end propose_vias;
 
 
+
+
+
 	
 
 
@@ -318,6 +329,8 @@ package body et_board_ops_vias is
 
 
 
+	
+
 
 	function get_net_name (
 		object : in pac_objects.cursor)
@@ -331,6 +344,9 @@ package body et_board_ops_vias is
 	end get_net_name;
 
 
+
+
+	
 	
 
 	function get_count (
@@ -345,6 +361,7 @@ package body et_board_ops_vias is
 
 
 
+	
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
@@ -431,6 +448,8 @@ package body et_board_ops_vias is
 
 	
 
+	
+
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
@@ -514,6 +533,8 @@ package body et_board_ops_vias is
 
 
 
+	
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -577,6 +598,10 @@ package body et_board_ops_vias is
 
 
 
+
+	
+
+
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		object_cursor	: in pac_objects.cursor;
@@ -593,6 +618,8 @@ package body et_board_ops_vias is
 	
 	
 
+	
+
 
 	
 	
@@ -600,10 +627,17 @@ package body et_board_ops_vias is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		via				: in type_via;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
+		
 		console : boolean := false; -- for test and debugging only
 
+		
 		procedure locate_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -640,8 +674,8 @@ package body et_board_ops_vias is
 		
 	begin -- place_via
 		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " placing via in net " & to_string (net_name) 
+			& to_string (module_cursor)
+			& " place via in net " & to_string (net_name) 
 			& " at" & to_string (via.position)
 			& " drill size " & to_string (via.diameter)
 			& " cat " & to_string (via.category),
@@ -708,13 +742,39 @@ package body et_board_ops_vias is
 
 		end case;
 
+
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> locate_module'access);
 
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+
 		update_ratsnest (module_cursor, log_threshold + 1);
+
+		log_indentation_down;
 	end place_via;
+
+
+
+
+
+	
+
+
 
 
 	

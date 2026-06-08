@@ -61,6 +61,7 @@ with et_drills;
 with et_design_rules_board;
 with et_vias;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
 
 
 package body et_cp_board_via is
@@ -153,7 +154,9 @@ package body et_cp_board_via is
 
 		
 	begin -- set_via_properties
-		-- CS log message
+		log (text => "set via properties", level => log_threshold);
+		log_indentation_up;
+
 		
 		case cmd_field_count is			
 			when 6 => 
@@ -216,6 +219,8 @@ package body et_cp_board_via is
 			when others => command_incomplete (cmd);
 		end case;
 
+
+		log_indentation_down;
 	end set_via_properties;
 
 
@@ -281,7 +286,15 @@ package body et_cp_board_via is
 				restring_inner	=> restring_inner,
 				restring_outer	=> restring_outer);
 					
-			et_board_ops_vias.place_via (module, net_name, via, log_threshold + 1);
+			et_board_ops_vias.place_via (
+				module_cursor	=> module, 
+				net_name		=> net_name, 
+				via				=> via, 
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
+				log_threshold	=> log_threshold + 1);
 		end through;
 
 		
@@ -294,7 +307,15 @@ package body et_cp_board_via is
 				restring_top	=> restring_top,
 				lower			=> lower_layer);
 					
-			et_board_ops_vias.place_via (module, net_name, via, log_threshold + 1);
+			et_board_ops_vias.place_via (
+				module_cursor	=> module, 
+				net_name		=> net_name, 
+				via				=> via, 
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
+				log_threshold	=> log_threshold + 1);
 		end blind_top;
 
 		
@@ -307,7 +328,15 @@ package body et_cp_board_via is
 				restring_bottom	=> restring_bottom,
 				upper			=> upper_layer);
 					
-			et_board_ops_vias.place_via (module, net_name, via, log_threshold + 1);
+			et_board_ops_vias.place_via (
+				module_cursor	=> module, 
+				net_name		=> net_name, 
+				via				=> via, 
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
+				log_threshold	=> log_threshold + 1);
 		end blind_bottom;
 
 		
@@ -319,7 +348,15 @@ package body et_cp_board_via is
 				restring_inner	=> restring_inner,
 				layers			=> buried_layers);
 					
-			et_board_ops_vias.place_via (module, net_name, via, log_threshold + 1);
+			et_board_ops_vias.place_via (
+				module_cursor	=> module, 
+				net_name		=> net_name, 
+				via				=> via, 
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
+				log_threshold	=> log_threshold + 1);
 		end buried;
 
 		
@@ -332,7 +369,8 @@ package body et_cp_board_via is
 
 		
 	begin -- place_via
-		-- CS log message
+		log (text => "place via", level => log_threshold);
+		log_indentation_up;
 
 		
 		-- Set the drill size and restring according to a user specific values:
@@ -427,9 +465,14 @@ package body et_cp_board_via is
 			when others => command_incomplete (cmd);
 		end case;
 
+		
+		log_indentation_down;
 	end place_via;
 
 
+
+
+	
 
 
 

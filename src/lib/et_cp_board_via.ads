@@ -44,6 +44,7 @@ with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_cmd_sts;				use et_cmd_sts;
 
+with et_cmd_origin_to_commit;	use et_cmd_origin_to_commit;
 
 
 package et_cp_board_via is
