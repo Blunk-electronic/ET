@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -38,7 +38,8 @@
 -- To Do:
 -- - rework
 -- - propose arguments if command incomplete
---
+-- - add commit operations ???
+
 
 with ada.text_io;						use ada.text_io;
 with ada.characters.handling;			use ada.characters.handling;
@@ -93,7 +94,9 @@ package body et_cp_schematic_module is
 		
 		
 	begin
-		-- CS log message
+		log (text => "create module", level => log_threshold);
+		log_indentation_up;
+
 		
 		case cmd_field_count is
 			when 5 => do_it (to_module_name (get_field (cmd, 5)));
@@ -103,7 +106,9 @@ package body et_cp_schematic_module is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
 		
+		log_indentation_down;
 	end create_module;
 
 	
@@ -270,7 +275,9 @@ package body et_cp_schematic_module is
 
 		
 	begin
-		-- CS log message
+		log (text => "delete module", level => log_threshold);
+		log_indentation_up;
+
 		
 		case cmd_field_count is
 			when 4 => delete_active;
@@ -284,6 +291,9 @@ package body et_cp_schematic_module is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+
+		log_indentation_down;
 	end delete_module;
 
 
