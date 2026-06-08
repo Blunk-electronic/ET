@@ -51,6 +51,8 @@ with et_pcb_sides;						use et_pcb_sides;
 with et_object_status;					use et_object_status;
 with et_logging;						use et_logging;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+
 
 package et_board_ops_stencil is
 
@@ -68,6 +70,7 @@ package et_board_ops_stencil is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_stencil_line;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -148,6 +151,7 @@ package et_board_ops_stencil is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_stencil_arc;		
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -213,6 +217,7 @@ package et_board_ops_stencil is
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		arc				: in type_stencil_arc;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -225,6 +230,7 @@ package et_board_ops_stencil is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_stencil_circle;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -246,6 +252,7 @@ package et_board_ops_stencil is
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_stencil_zone;
 		face			: in type_face;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -441,6 +448,7 @@ package et_board_ops_stencil is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		catch_zone		: in type_catch_zone;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	

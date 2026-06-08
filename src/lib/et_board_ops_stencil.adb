@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,6 +35,10 @@
 --
 --   history of changes:
 --
+
+with et_modes.board;
+with et_undo_redo;
+with et_commit;
 
 with et_module;							use et_module;
 
@@ -50,10 +54,16 @@ package body et_board_ops_stencil is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_stencil_line;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
+		
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -72,14 +82,23 @@ package body et_board_ops_stencil is
 						new_item	=> line);
 			end case;
 		end;
-							   
+
+		
 	begin
 		log (text => "module " & to_string (module_name) &
-			" drawing stencil line" &
+			" draw stencil line" &
 			" face" & to_string (face) &
 			to_string (line),
 			level => log_threshold);
 
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		-- locate module
 		module_cursor := locate_module (module_name);
 		
@@ -88,9 +107,18 @@ package body et_board_ops_stencil is
 			position	=> module_cursor,
 			process		=> add'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;		
 	end add_line;
 
 
+
+	
 
 
 
@@ -157,6 +185,8 @@ package body et_board_ops_stencil is
 
 
 
+	
+	
 	
 
 
@@ -240,7 +270,9 @@ package body et_board_ops_stencil is
 
 
 
+	
 
+	
 	
 
 	procedure reset_proposed_lines (
@@ -308,6 +340,8 @@ package body et_board_ops_stencil is
 	end reset_proposed_lines;
 
 
+
+	
 
 
 	
@@ -386,6 +420,8 @@ package body et_board_ops_stencil is
 	end get_first_line;
 
 
+	
+
 
 	
 
@@ -453,6 +489,8 @@ package body et_board_ops_stencil is
 
 
 
+	
+
 
 
 	procedure delete_line (
@@ -461,7 +499,11 @@ package body et_board_ops_stencil is
 		line			: in type_stencil_line;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -513,17 +555,25 @@ package body et_board_ops_stencil is
 
 
 
--- ARCS:
+
 	
+
+-- ARCS:	
 	
 	procedure add_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_stencil_arc;		
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
+		
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -542,7 +592,8 @@ package body et_board_ops_stencil is
 						new_item	=> arc);
 			end case;
 		end;
-							   
+
+		
 	begin
 		log (text => "module " & to_string (module_name) &
 			" drawing stencil arc" &
@@ -552,6 +603,13 @@ package body et_board_ops_stencil is
 
 			level => log_threshold);
 
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+		
 		-- locate module
 		module_cursor := locate_module (module_name);
 		
@@ -560,9 +618,18 @@ package body et_board_ops_stencil is
 			position	=> module_cursor,
 			process		=> add'access);
 
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end add_arc;
 
 
+
+
+	
 
 
 
@@ -714,6 +781,9 @@ package body et_board_ops_stencil is
 	end propose_arcs;
 
 
+
+
+	
 	
 	
 
@@ -785,6 +855,9 @@ package body et_board_ops_stencil is
 
 	
 
+
+
+	
 
 
 	function get_first_arc (
@@ -868,6 +941,8 @@ package body et_board_ops_stencil is
 
 
 	
+
+	
 	procedure move_arc (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -931,6 +1006,7 @@ package body et_board_ops_stencil is
 
 
 	
+	
 
 
 
@@ -938,9 +1014,14 @@ package body et_board_ops_stencil is
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		arc				: in type_stencil_arc;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -977,20 +1058,36 @@ package body et_board_ops_stencil is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (face) 
-			& " deleting stencil arc " & to_string (arc),
+			& " delete stencil arc " & to_string (arc),
 			level => log_threshold);
 		
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+		
 		
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+		
 		log_indentation_down;
 	end delete_arc;
 
 	
 
+
+
+
+	
 
 	
 	
@@ -1000,8 +1097,14 @@ package body et_board_ops_stencil is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_stencil_circle;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -1027,22 +1130,41 @@ package body et_board_ops_stencil is
 		
 	begin
 		log (text => "module " & to_string (module_name) &
-			" drawing stencil circle" &
+			" draw stencil circle" &
 			" face" & to_string (face) &
 			to_string (circle),
 			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
+
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end add_circle;
 	
 
+
+
+
+	
 	
 
 
@@ -1053,8 +1175,13 @@ package body et_board_ops_stencil is
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_stencil_zone;
 		face			: in type_face;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		-- When searching among already existing zones then
 		-- this flag is used to abort the iteration prematurely:
 		proceed : boolean := true;
@@ -1130,23 +1257,37 @@ package body et_board_ops_stencil is
 
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			 & " drawing stencil zone" 
+			 & " draw stencil zone" 
 			 & to_string (face)
 			 & " " & to_string (contour => zone, full => true),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+		
 		log_indentation_down;
 	end draw_zone;
 
 	
 
+
+	
 
 	
 	procedure modify_status (
@@ -1225,6 +1366,9 @@ package body et_board_ops_stencil is
 
 		log_indentation_down;
 	end modify_status;
+
+
+
 
 
 	
@@ -1427,6 +1571,7 @@ package body et_board_ops_stencil is
 	end reset_proposed_segments;
 
 
+
 	
 
 	
@@ -1545,6 +1690,8 @@ package body et_board_ops_stencil is
 
 
 
+	
+
 
 
 	procedure move_segment (
@@ -1634,6 +1781,8 @@ package body et_board_ops_stencil is
 
 
 
+	
+
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment;
@@ -1702,9 +1851,13 @@ package body et_board_ops_stencil is
 
 
 
--- OBJECTS:
+
+
+
 	
 
+-- OBJECTS:
+	
 
 	function get_count (
 		objects : in pac_objects.list)
@@ -2060,6 +2213,9 @@ package body et_board_ops_stencil is
 
 
 
+
+	
+
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
@@ -2230,12 +2386,18 @@ package body et_board_ops_stencil is
 	
 
 	
+	
 	procedure delete_object (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		catch_zone		: in type_catch_zone;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		
@@ -2322,21 +2484,38 @@ package body et_board_ops_stencil is
 			end if;
 			
 		end delete;
+
 		
 	begin
 		log (text => "module " & to_string (module_name) &
-			" deleting stencil object face" & to_string (face) &
+			" delete stencil object face" & to_string (face) &
 			" in" & to_string (catch_zone),
 			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
 
+
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> delete'access);
-		
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
+		log_indentation_down;
 	end delete_object;
 	
 	

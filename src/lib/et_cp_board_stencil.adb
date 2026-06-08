@@ -54,6 +54,8 @@ with et_board_geometry;					use et_board_geometry;
 with et_board_ops_stencil;				use et_board_ops_stencil;
 with et_keywords;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+
 
 
 package body et_cp_board_stencil is
@@ -91,6 +93,10 @@ package body et_cp_board_stencil is
 				module_cursor	=> module,
 				zone			=> (c with null record),
 				face			=> face,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 
 		end build_zone;
@@ -120,8 +126,11 @@ package body et_cp_board_stencil is
 								module_name 	=> key (module),
 								face			=> to_face (get_field (cmd, 5)),
 								line			=> (line_tmp with width_tmp),
-								log_threshold	=> log_threshold + 1
-								);
+
+								-- Depending on the origin of the command,
+								-- the design state is to be commited or not:
+								commit_design	=> to_commit_design (cmd),
+								log_threshold	=> log_threshold + 1);
 
 						when 12 .. type_field_count'last =>
 							command_too_long (cmd, cmd_field_count - 1);
@@ -146,6 +155,10 @@ package body et_cp_board_stencil is
 								module_name 	=> key (module),
 								face			=> to_face (get_field (cmd, 5)),
 								arc				=> (arc_tmp with width_tmp),
+
+								-- Depending on the origin of the command,
+								-- the design state is to be commited or not:
+								commit_design	=> to_commit_design (cmd),
 								log_threshold	=> log_threshold + 1);
 
 						when 15 .. type_field_count'last =>
@@ -169,6 +182,10 @@ package body et_cp_board_stencil is
 								module_name 	=> key (module),
 								face			=> to_face (get_field (cmd, 5)),
 								circle			=> (circle_tmp with width_tmp),
+
+								-- Depending on the origin of the command,
+								-- the design state is to be commited or not:
+								commit_design	=> to_commit_design (cmd),
 								log_threshold	=> log_threshold + 1);
 							
 						when 11 .. type_field_count'last =>
@@ -184,7 +201,8 @@ package body et_cp_board_stencil is
 
 
 	begin
-		-- CS log message
+		log (text => "draw stencil", level => log_threshold);
+		log_indentation_up;
 
 		if get_field (cmd, 6) = keyword_zone then
 			build_zone;
@@ -192,6 +210,8 @@ package body et_cp_board_stencil is
 			shape := to_shape (get_field (cmd, 6));
 			draw_shape;
 		end if;	
+
+		log_indentation_down;
 	end draw_stencil;
 
 
@@ -199,6 +219,7 @@ package body et_cp_board_stencil is
 
 	
 
+	
 
 
 
@@ -222,13 +243,19 @@ package body et_cp_board_stencil is
 				module_name 	=> key (module),
 				face			=> to_face (get_field (cmd, 5)),
 				catch_zone		=> catch_zone,
+
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
 				log_threshold	=> log_threshold + 1);
 
 		end do_it;
 		
 
 	begin
-		-- CS log message		
+		log (text => "delete stencil", level => log_threshold);
+		log_indentation_up;
+
 		
 		case cmd_field_count is
 			when 8 => do_it;
@@ -238,6 +265,9 @@ package body et_cp_board_stencil is
 				
 			when others => command_incomplete (cmd);
 		end case;
+
+		
+		log_indentation_down;
 	end delete_stencil;
 
 		
