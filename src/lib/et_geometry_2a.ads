@@ -650,7 +650,7 @@ package et_geometry_2a is
 	
 -- AREA (rectangular):
 	
-	type type_area is record
+	type type_area is record -- CS: make private
 		width		: type_distance_positive := 0.0;
 		height		: type_distance_positive := 0.0;
 		position	: type_vector_model; -- lower left corner
@@ -663,6 +663,24 @@ package et_geometry_2a is
 		return string;
 
 
+	-- Sets the position of the area:
+	procedure set_position (
+		area 		: in out type_area;
+		position	: in type_vector_model);
+		
+
+	-- Sets the width of the area:
+	procedure set_width (
+		area 	: in out type_area;
+		width	: in type_distance_positive);
+
+
+	-- Sets the height of the area:
+	procedure set_height (
+		area 	: in out type_area;
+		height	: in type_distance_positive);
+
+		
 	-- Swaps width and height of the given area:
 	procedure swap_edges (
 		area : in out type_area);

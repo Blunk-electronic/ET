@@ -1373,7 +1373,9 @@ package body et_geometry_2a is
 	end remove_redundant_points;
 
 
+
 	
+-- AREA:
 	
 	function to_string (
 		box : in type_area)
@@ -1387,6 +1389,35 @@ package body et_geometry_2a is
 	end to_string;
 
 
+	procedure set_position (
+		area 		: in out type_area;
+		position	: in type_vector_model)
+	is begin
+		area.position := position;
+	end;
+		
+
+
+	procedure set_width (
+		area 	: in out type_area;
+		width	: in type_distance_positive)
+	is begin
+		area.width := width;
+	end;
+
+
+
+
+	procedure set_height (
+		area 	: in out type_area;
+		height	: in type_distance_positive)
+	is begin
+		area.height := height;
+	end;
+
+
+
+	
 	procedure swap_edges (
 		area : in out type_area)
 	is
@@ -1396,6 +1427,8 @@ package body et_geometry_2a is
 		area.height := w;
 	end swap_edges;
 	
+
+
 	
 	function get_corners (
 		area	: in type_area)
@@ -1414,6 +1447,7 @@ package body et_geometry_2a is
 
 
 	
+	
 	function get_center (
 		area	: in type_area)
 		return type_vector_model
@@ -1425,6 +1459,8 @@ package body et_geometry_2a is
 		return result;
 	end get_center;
 
+
+	
 
 	function get_diagonal (
 		area : type_area)
@@ -1579,6 +1615,19 @@ package body et_geometry_2a is
 	end merge_areas;
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+	
 
 	
 	function get_opposide_end (
