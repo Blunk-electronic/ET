@@ -54,13 +54,20 @@ package et_cp_schematic_group is
 		log_threshold	: in type_log_level);
 
 
+	-- This procedure parses a command that clears a group:
+	-- example: schematic demo clear group
+	procedure clear_group (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
+
 	-- This procedure parses a command that deletes a group:
 	-- example: schematic demo delete group
 	procedure delete_group (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
-
 	
 	
 end et_cp_schematic_group;

@@ -51,6 +51,8 @@ with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_ops_groups;			use et_schematic_ops_groups;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+
 
 package body et_cp_schematic_group is
 
@@ -121,6 +123,41 @@ package body et_cp_schematic_group is
 	
 
 
+	
+
+	procedure clear_group (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+
+	begin
+		log (text => "clear group", level => log_threshold);
+		log_indentation_up;
+		
+
+		case cmd_field_count is
+			when 4 =>
+				reset_objects (module, log_threshold + 1);
+
+			when 5 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+
+		
+		log_indentation_down;
+	end clear_group;
+
+	
+
+
+	
+
+	
 
 	procedure delete_group (
 		module			: in pac_generic_modules.cursor;
@@ -136,8 +173,17 @@ package body et_cp_schematic_group is
 		
 
 		case cmd_field_count is
-			when 6 =>
-				null; -- CS
+			when 4 =>
+				delete_group (
+					module_cursor	=> module, 
+
+					-- Depending on the origin of the command,
+					-- the design state is to be commited or not:
+					commit_design	=> to_commit_design (cmd),
+					log_threshold	=> log_threshold + 1);
+
+			when 5 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1);
 				
 			when others => command_incomplete (cmd);
 		end case;

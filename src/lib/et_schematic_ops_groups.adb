@@ -42,6 +42,10 @@ with et_schematic_ops_nets;
 with et_schematic_ops_units;
 with et_schematic_ops_netchangers;
 
+with et_modes.schematic;
+with et_undo_redo;
+with et_commit;
+
 
 package body et_schematic_ops_groups is
 
@@ -141,6 +145,82 @@ package body et_schematic_ops_groups is
 	end define_group_rectangular;
 
 	
+	
+	
+	
+	
+
+	
+	
+	procedure delete_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level)
+	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+
+	
+	
+		procedure delete_nets is 
+			use et_schematic_ops_nets;
+		begin
+			log (text => "nets", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end;
+
+		
+		procedure delete_devices is 
+			use et_schematic_ops_units;
+		begin
+			log (text => "electrical devices and units", level => log_threshold + 1);
+			log_indentation_up;
+			delete_units_in_group (module_cursor, log_threshold + 2);
+			log_indentation_down;
+		end;
+
+
+		procedure delete_netchangers is 
+			use et_schematic_ops_netchangers;
+		begin
+			log (text => "netchangers", level => log_threshold + 1);
+			log_indentation_up;
+			-- CS
+			log_indentation_down;
+		end;
+
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " delete group (schematic)",
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
+		delete_nets;
+		delete_devices;
+		delete_netchangers;
+
+		-- CS reset texts, ... ?
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+		
+		log_indentation_down;
+	end delete_group;
+
 	
 end et_schematic_ops_groups;
 

@@ -3415,6 +3415,111 @@ package body et_schematic_ops_units is
 	
 	
 	
+	
+	procedure delete_units_in_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+		unit_found : boolean := false;
+		
+		-- Here we store the device and unit name
+		-- of a selected unit:
+		d_name : type_device_name;
+		u_name : pac_unit_name.bounded_string;
+	
+	
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			device_cursor : pac_devices_electrical.cursor := module.devices.first;
+
+			
+			procedure query_device (
+				device_name	: in type_device_name;
+				device 		: in type_device_electrical)
+			is
+				unit_cursor : pac_units.cursor := device.units.first;
+
+				
+				procedure query_unit (
+					unit_name	: in pac_unit_name.bounded_string;
+					unit		: in type_unit)
+				is begin
+					if is_selected (unit) then
+					
+						-- Backup the unit and device name:
+						u_name := unit_name;
+						d_name := device_name;
+						
+						-- Abort the iterators for
+						-- units and devices:
+						unit_found := true;
+					end if;
+				end query_unit;
+				
+				
+			begin
+				-- Iterate through the units:
+				while has_element (unit_cursor) and not unit_found loop
+					query_element (unit_cursor, query_unit'access);
+					next (unit_cursor);
+				end loop;
+			end query_device;
+
+			
+		begin
+			-- Iterate through the devices:
+			while has_element (device_cursor) 
+				and not unit_found loop
+				
+				query_element (
+					device_cursor, query_device'access);
+					
+				next (device_cursor);
+			end loop;
+		end query_module;
+	
+	
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " delete units in group",
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		-- Search for the first selected unit in the group:
+		query_element (module_cursor, query_module'access);
+
+		-- If a unit has been found, then the flag "unit_found"
+		-- is set. This starts the following loop where
+		-- the affected unit will be deleted.		
+		
+		-- This loop will be executed as long as selected
+		-- units exist:
+		while unit_found loop
+		-- CS: safety measure to avoid forever-loop
+		-- use total unit count of the design ?
+		
+			delete_unit (
+				module_cursor, d_name, u_name,
+				NO_COMMIT, log_threshold + 1);
+		
+			-- Restart the search for a selected unit:
+			unit_found := false;
+			query_element (module_cursor, query_module'access);
+		end loop;
+		
+		log_indentation_down;
+	end delete_units_in_group;
+		
+		
+	
+	
+	
+	
+	
+	
 
 	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;

@@ -205,6 +205,15 @@ package body et_cp_schematic is
 						when others => invalid_noun (to_string (noun));
 					end case;
 
+
+				when VERB_CLEAR =>
+					case noun is
+						when NOUN_GROUP =>
+							clear_group (module_cursor, cmd, log_threshold + 1);
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+
 					
 				when VERB_COPY =>
 					case noun is

@@ -581,6 +581,8 @@ package et_schematic_ops_units is
 
 
 
+-- GROUPS:
+
 	-- Sets "selected" flag of all units that 
 	-- are on the given sheet and in the given area:
 	procedure group_units_in_rectangular_area (
@@ -589,7 +591,17 @@ package et_schematic_ops_units is
 		area			: in type_area;
 		log_threshold	: in type_log_level);
 
-	
+
+	-- Deletes all units which are in the current
+	-- group. This affects all units which have the
+	-- "selected"-flag set:
+	procedure delete_units_in_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+		
+		
+		
 
 -- PLACEHOLDERS:
 

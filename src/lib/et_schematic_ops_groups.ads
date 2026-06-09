@@ -50,6 +50,8 @@ with et_object_status;					use et_object_status;
 
 with et_logging;						use et_logging;
 
+with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+
 
 
 package et_schematic_ops_groups is
@@ -63,13 +65,25 @@ package et_schematic_ops_groups is
 		log_threshold	: in type_log_level);
 
 
+	-- This procedure sets the "selected"-flag of all
+	-- objects which are inside the given zone on the
+	-- given sheet:
 	procedure define_group_rectangular (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;
 		area			: in type_area;
 		log_threshold	: in type_log_level);
 
-							   
+
+	-- This deletes all objects which are in the
+	-- current group. This affects all objects whose
+	-- "selected"-flag is set:
+	procedure delete_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level);
+
+		
 end et_schematic_ops_groups;
 
 -- Soli Deo Gloria

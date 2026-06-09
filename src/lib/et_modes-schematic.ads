@@ -47,6 +47,7 @@ package et_modes.schematic is
 		VERB_BUILD,
 		
 		VERB_CHECK,
+		VERB_CLEAR,
 		VERB_COPY,
 		VERB_CREATE,
 		
