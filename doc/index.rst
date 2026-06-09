@@ -22,9 +22,7 @@
    component_library_paths.rst
    schematic.rst
    board.rst
-   assembly_variants.rst
    netchangers.rst
-   submodules.rst
    symbol_models.rst
    package_models.rst
    device_models.rst

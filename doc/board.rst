@@ -36,6 +36,8 @@ Board Layout Editor
 
 .. include:: board_drawing_frame.rst	
 		
+.. include:: board_groups.rst
+
 .. include:: board_display.rst
 
 .. include:: board_modules.rst

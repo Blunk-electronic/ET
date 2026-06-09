@@ -10,9 +10,13 @@ Schematic Editor
 
 .. include:: schematic_nets.rst
 
+.. include:: schematic_groups.rst
+
 .. include:: schematic_display.rst
 
 .. include:: schematic_sheets.rst
+
+.. include:: schematic_submodules.rst
 
 .. include:: schematic_netlists.rst
 
