@@ -186,7 +186,18 @@ package et_units is
 		sheet	: in type_sheet)
 		return boolean;
 		
-	
+
+
+	-- Returns true if the given unit is
+	-- on the given sheet and in the given
+	-- rectangular area:
+	function on_sheet_and_in_area (
+		unit	: in type_unit;
+		sheet	: in type_sheet;
+		area	: in type_area)
+		return boolean;
+		
+		
 
 	procedure unit_not_found (
 		name : in pac_unit_name.bounded_string);

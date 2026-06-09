@@ -112,13 +112,29 @@ package body et_schematic_ops_groups is
 		log_threshold	: in type_log_level)
 	is
 
+		procedure group_units is
+			use et_schematic_ops_units;
+		begin
+			log (text => "units", level => log_threshold + 1);
+			log_indentation_up;
+			
+			group_units_in_rectangular_area (
+				module_cursor, sheet, area, log_threshold + 2);
+			
+			log_indentation_down;
+		end;
+		
+
 	begin
 		log (text => "module " & to_string (module_cursor) 
 			 & " define rectangular group (schematic)",
 			level => log_threshold);
 
 		log_indentation_up;
-		
+
+		group_units;
+		-- CS net segments, texts, 
+		-- Do not group placeholders of units !
 
 		
 		log_indentation_down;

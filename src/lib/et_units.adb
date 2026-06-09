@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.   
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -198,6 +198,42 @@ package body et_units is
 
 	
 
+
+
+	
+
+	function on_sheet_and_in_area (
+		unit	: in type_unit;
+		sheet	: in type_sheet;
+		area	: in type_area)
+		return boolean
+	is
+		result : boolean := false;
+		place : type_vector_model;
+	begin
+		-- The given unit must be on the given sheet:
+		if get_sheet (unit) = sheet then
+
+			-- Get the x/y position of the unit:
+			place := get_place (get_position (unit));
+
+			-- The unit must be in the given area:
+			if in_area (place, area) then
+				result := true;
+			else
+				result := false;
+			end if;
+			
+		else
+			result := false;
+		end if;
+
+		return result;
+	end on_sheet_and_in_area;
+	
+
+
+	
 	
 
 	procedure unit_not_found (

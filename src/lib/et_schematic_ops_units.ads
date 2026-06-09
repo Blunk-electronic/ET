@@ -581,7 +581,13 @@ package et_schematic_ops_units is
 
 
 
-
+	-- Sets "selected" flag of all units that 
+	-- are on the given sheet and in the given area:
+	procedure group_units_in_rectangular_area (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;							  
+		area			: in type_area;
+		log_threshold	: in type_log_level);
 
 	
 

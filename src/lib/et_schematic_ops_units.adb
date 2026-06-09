@@ -3337,6 +3337,80 @@ package body et_schematic_ops_units is
 
 
 
+
+	
+	
+	
+
+
+	procedure group_units_in_rectangular_area (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		area			: in type_area;
+		log_threshold	: in type_log_level)
+	is 
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			device_cursor : pac_devices_electrical.cursor := module.devices.first;
+
+			
+			procedure query_device (
+				device_name	: in type_device_name;
+				device 		: in out type_device_electrical)
+			is
+				unit_cursor : pac_units.cursor := device.units.first;
+
+				
+				procedure query_unit (
+					unit_name	: in pac_unit_name.bounded_string;
+					unit		: in out type_unit)
+				is begin
+					if on_sheet_and_in_area (unit, sheet, area) then
+						-- CS: log the full name like IC1.C
+						-- log (text =>  to_string (unit_name), level => log_threshold;
+						set_selected (unit);
+					end if;
+				end query_unit;
+				
+				
+			begin
+				-- Iterate through the units:
+				while has_element (unit_cursor) loop
+					device.units.update_element (unit_cursor, query_unit'access);
+					next (unit_cursor);
+				end loop;
+			end query_device;
+
+			
+		begin
+			-- Iterate through the devices:
+			while has_element (device_cursor) loop
+				module.devices.update_element (device_cursor, query_device'access);
+				next (device_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " group units on sheet " & to_string (sheet)
+			 & " in rectangular area " & to_string (area),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+	end group_units_in_rectangular_area;
+
+
+
+	
+	
 	
 	
 	
