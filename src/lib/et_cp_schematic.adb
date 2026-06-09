@@ -62,7 +62,7 @@ with et_cp_schematic_netchanger;		use et_cp_schematic_netchanger;
 with et_cp_schematic_sheet;				use et_cp_schematic_sheet;
 with et_cp_schematic_module;			use et_cp_schematic_module;
 with et_cp_schematic_libraries;			use et_cp_schematic_libraries;
-
+with et_cp_schematic_group;				use et_cp_schematic_group;
 
 package body et_cp_schematic is
 	
@@ -232,11 +232,23 @@ package body et_cp_schematic is
 						when others => invalid_noun (to_string (noun));
 					end case;
 
+
+				when VERB_DEFINE =>
+					case noun is
+						when NOUN_GROUP =>
+							define_group (module_cursor, cmd, log_threshold + 1);
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
 					
 				when VERB_DELETE =>
 					case noun is
 						when NOUN_DEVICE =>
 							delete_device (module_cursor, cmd, log_threshold + 1);
+
+						when NOUN_GROUP =>
+							delete_group (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_NET_CONNECTOR =>
 							delete_net_connector (module_cursor, cmd, log_threshold + 1);

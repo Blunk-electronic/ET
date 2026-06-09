@@ -52,6 +52,7 @@ package et_modes.schematic is
 		
 		VERB_DELETE,
 		VERB_DESCRIBE,
+		VERB_DEFINE,
 		VERB_DISPLAY,
 		VERB_DISSOLVE,
 		VERB_DRAG,
@@ -111,6 +112,7 @@ package et_modes.schematic is
 		--DEVICE_VALUE,
 
 		NOUN_GRID,
+		NOUN_GROUP,
 		
 		NOUN_INTEGRITY,
 		

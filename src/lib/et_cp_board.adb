@@ -209,12 +209,24 @@ package body et_cp_board is
 						when others => invalid_noun (to_string (noun));
 					end case;
 
+
+				when VERB_DEFINE =>
+					case noun is
+						when NOUN_GROUP =>
+							null; -- CS
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+
 					
 				when VERB_DELETE =>
 					case noun is
 						when NOUN_DEVICE =>
 							delete_device (module_cursor, cmd, log_threshold + 1);				
 
+						when NOUN_GROUP =>
+							null; -- CS
+							
 						when NOUN_LAYER =>
 							delete_signal_layer (module_cursor, cmd, log_threshold + 1);
 
@@ -257,7 +269,7 @@ package body et_cp_board is
 						when others => invalid_noun (to_string (noun));
 
 					end case;
-
+					
 					
 				when VERB_DISPLAY =>
 					case noun is

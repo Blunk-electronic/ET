@@ -48,6 +48,7 @@ package et_modes.board is
 		VERB_COPY,
 		
 		VERB_DELETE,
+		VERB_DEFINE,
 		VERB_DISPLAY,
 		--DRAG,
 		VERB_DRAW,	
@@ -110,6 +111,7 @@ package et_modes.board is
 		NOUN_FREETRACK,
 
 		NOUN_GRID,
+		NOUN_GROUP,
 
 		NOUN_HOLE,
 
