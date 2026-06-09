@@ -97,6 +97,33 @@ package body et_schematic_ops_groups is
 		
 		log_indentation_down;
 	end reset_objects;
+
+
+
+
+	
+
+
+
+	procedure define_group_rectangular (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		area			: in type_area;
+		log_threshold	: in type_log_level)
+	is
+
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " define rectangular group (schematic)",
+			level => log_threshold);
+
+		log_indentation_up;
+		
+
+		
+		log_indentation_down;
+	end define_group_rectangular;
+
 	
 	
 end et_schematic_ops_groups;

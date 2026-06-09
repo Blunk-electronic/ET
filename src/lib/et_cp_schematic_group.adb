@@ -49,7 +49,7 @@ with ada.strings; 						use ada.strings;
 with et_sheets;							use et_sheets;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
-
+with et_schematic_ops_groups;			use et_schematic_ops_groups;
 
 
 package body et_cp_schematic_group is
@@ -68,14 +68,46 @@ package body et_cp_schematic_group is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
+		
+		procedure rectangular_group is
+			sheet : type_sheet;
+			area : type_area;			
+		begin
+			-- Get the targeted sheet:
+			sheet := to_sheet (get_field (cmd, 5));
+
+			-- Set the position (lower-left corner) of
+			-- the rectangular area:
+			set_position (area, 
+				to_vector_model (get_field (cmd, 6), get_field (cmd, 7))); -- x y
+
+			-- Set the width of the area:
+			set_width (area,
+				to_distance (get_field (cmd, 8)));
+
+			-- Set the height of the area:
+			set_height (area,
+				to_distance (get_field (cmd, 9)));
+
+			define_group_rectangular (
+				module, sheet, area, log_threshold + 1);
+			
+		end rectangular_group;
+
+		
 	begin
 		log (text => "define group", level => log_threshold);
 		log_indentation_up;
 		
 
 		case cmd_field_count is
-			when 11 =>
-				null; -- CS
+			when 9 =>
+				rectangular_group;
+
+			-- CS circular group ?
+				
+			when 10 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1);
 				
 			when others => command_incomplete (cmd);
 		end case;
@@ -85,6 +117,8 @@ package body et_cp_schematic_group is
 	end define_group;
 
 
+
+	
 
 
 

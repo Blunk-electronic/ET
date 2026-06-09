@@ -35,8 +35,15 @@
 --
 --   history of changes:
 --
---   ToDo: 
+-- To Do: 
+--
+--
+--
 
+with et_schematic_geometry;				use et_schematic_geometry;
+use et_schematic_geometry.pac_geometry_2;
+
+with et_sheets;							use et_sheets;
 
 with et_generic_modules;				use et_generic_modules;
 with et_object_status;					use et_object_status;
@@ -55,8 +62,14 @@ package et_schematic_ops_groups is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
-	
+
+	procedure define_group_rectangular (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		area			: in type_area;
+		log_threshold	: in type_log_level);
+
+							   
 end et_schematic_ops_groups;
 
 -- Soli Deo Gloria
