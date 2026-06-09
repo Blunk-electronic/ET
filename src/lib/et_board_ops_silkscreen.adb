@@ -505,9 +505,14 @@ package body et_board_ops_silkscreen is
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -544,16 +549,28 @@ package body et_board_ops_silkscreen is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (face) 
-			& " moving silkscreen " & to_string (line)
+			& " move silkscreen " & to_string (line)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end move_line;
@@ -1010,9 +1027,14 @@ package body et_board_ops_silkscreen is
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -1049,16 +1071,28 @@ package body et_board_ops_silkscreen is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (face) 
-			& " moving silkscreen " & to_string (arc)
+			& " move silkscreen " & to_string (arc)
 			& " point of attack " & to_string (point_of_attack)
 			& " to " & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end move_arc;
@@ -1724,6 +1758,7 @@ package body et_board_ops_silkscreen is
 
 
 
+	
 
 
 	procedure move_segment (
@@ -1732,8 +1767,13 @@ package body et_board_ops_silkscreen is
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		use pac_contours;
 		use pac_segments;
 		use pac_silk_zones;
@@ -1791,12 +1831,18 @@ package body et_board_ops_silkscreen is
 				
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving silkscreen zone segment " & to_string (segment.segment)
+			& " move silkscreen zone segment " & to_string (segment.segment)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
@@ -1804,11 +1850,18 @@ package body et_board_ops_silkscreen is
 
 		-- log (text => "new outline:" & to_string (get_outline (module_cursor), true),
 		-- 	 level => log_threshold + 1);
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end move_segment;
 
 
+
+	
 	
 
 
@@ -2211,13 +2264,19 @@ package body et_board_ops_silkscreen is
 	
 	
 
+	
 	procedure move_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		text			: in type_object_text;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -2243,21 +2302,36 @@ package body et_board_ops_silkscreen is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (text.face) 
-			& " moving silkscreen text to "
+			& " move silkscreen text to "
 			& to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
 
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end move_text;
 
 
+
+
+	
 	
 
 
@@ -2570,6 +2644,8 @@ package body et_board_ops_silkscreen is
 
 
 
+	
+
 	procedure propose_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -2638,26 +2714,36 @@ package body et_board_ops_silkscreen is
 	
 
 
+
+
+
 	
 
 	procedure move_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_object_placeholder;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
 			use pac_placeholders_non_conductor;
+
 			
 			procedure query_placeholder (
 				ph : in out type_placeholder_non_conductor) 
 			is begin
 				move_text_to (ph, destination);
 			end query_placeholder;
+
 			
 		begin
 			case placeholder.face is
@@ -2674,23 +2760,38 @@ package body et_board_ops_silkscreen is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving text placeholder " 
+			& " move text placeholder " 
 			& to_string (placeholder.cursor)
 			& " " & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
 
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end move_placeholder;
 
 
 
+
+	
+	
 
 
 
@@ -3455,7 +3556,7 @@ package body et_board_ops_silkscreen is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving silkscreen object " 
+			& " move silkscreen object " 
 			-- CS & to_string (object)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
@@ -3468,30 +3569,35 @@ package body et_board_ops_silkscreen is
 				move_line (module_cursor, object.line.face, 
 					element (object.line.cursor),
 					point_of_attack, destination,
+					DO_COMMIT,
 					log_threshold + 1);
 
 			when CAT_ARC =>
 				move_arc (module_cursor, object.arc.face, 
 					element (object.arc.cursor),
 					point_of_attack, destination,
+					DO_COMMIT,
 					log_threshold + 1);
 				
 			when CAT_ZONE_SEGMENT =>
 				move_segment (module_cursor,
 					object.segment,
 					point_of_attack, destination,
+					DO_COMMIT,
 					log_threshold + 1);
 
 			when CAT_TEXT =>
 				move_text (module_cursor,
 					object.text,
 					destination,
+					DO_COMMIT,
 					log_threshold + 1);
 
 			when CAT_PLACEHOLDER =>
 				move_placeholder (module_cursor,
 					object.placeholder,
 					destination,
+					DO_COMMIT,
 					log_threshold + 1);
 							
 			when CAT_VOID =>
