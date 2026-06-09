@@ -43,6 +43,7 @@ with ada.containers.doubly_linked_lists;
 with et_module_instance;		use et_module_instance;
 with et_schematic_geometry;		use et_schematic_geometry;
 with et_schematic_coordinates;	use et_schematic_coordinates;
+with et_sheets;					use et_sheets;
 with et_logging;				use et_logging;
 with et_net_names;				use et_net_names;
 with et_net_labels;				use et_net_labels;
@@ -437,6 +438,17 @@ package et_net_segment is
 		return type_net_segment;
 	
 	
+
+	-- -- This function returns true if the given segment
+	-- -- in the given area.
+	-- -- In the area means: Either start or end of the
+	-- -- segment (or both) are in the area:
+	-- function in_area (
+	-- 	segment		: in type_net_segment;
+	-- 	area		: in type_area)
+	-- 	return boolean;
+
+	
 	
 	package pac_net_segments is new doubly_linked_lists (type_net_segment);
 	use pac_net_segments;
@@ -617,7 +629,8 @@ package et_net_segment is
 		return pac_points.list;
 
 	
-	
+		
+		
 end et_net_segment;
 
 -- Soli Deo Gloria

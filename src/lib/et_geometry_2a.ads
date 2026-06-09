@@ -1334,6 +1334,19 @@ package et_geometry_2a is
 		secondary		: in type_line)
 		return type_line'class;
 	
+
+	-- This function returns true if the given line
+	-- is in the given area.
+	-- "In the area" means: Either start or end of the
+	-- line (or both) are in the area:
+	function in_area (
+		line	: in type_line;
+		area	: in type_area)
+		return boolean;
+	-- CS: an additional parameter could be used
+	-- to test if the line crosses the area
+
+
 	
 -- ARC
 

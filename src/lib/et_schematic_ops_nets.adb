@@ -2094,6 +2094,209 @@ package body et_schematic_ops_nets is
 	
 
 
+	procedure group_segments_in_rectangular_area (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		area			: in type_area;
+		log_threshold	: in type_log_level)
+	is 
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net 		: in out type_net)
+			is
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (
+					strand	: in out type_strand)
+				is
+					segment_cursor : pac_net_segments.cursor := 
+						strand.segments.first;
+					
+					
+					procedure query_segment (
+						segment	: in out type_net_segment)
+					is begin
+						if in_area (segment, area) then
+							-- CS: log segment and net name ?
+							set_selected (segment);
+						end if;
+					end;
+					
+					
+				begin
+					-- We look only at strands which are on the
+					-- given sheet:
+					if get_sheet (strand) = sheet then
+					
+						-- Iterate through the segments
+						-- of the strand:
+						while has_element (segment_cursor) loop
+							strand.segments.update_element (
+								segment_cursor, query_segment'access);
+							
+							next (segment_cursor);
+						end loop;
+						
+					end if;
+				end query_strand;
+				
+
+			begin
+				-- Iterate through the strands:
+				while has_element (strand_cursor) loop
+					net.strands.update_element (strand_cursor, query_strand'access);
+					next (strand_cursor);
+				end loop;
+			end query_net;
+
+			
+		begin
+			-- Iterate through the nets:
+			while has_element (net_cursor) loop
+				module.nets.update_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " group segments on sheet " & to_string (sheet)
+			 & " in rectangular area " & to_string (area),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+	end group_segments_in_rectangular_area;
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	procedure delete_segments_in_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+-- 		unit_found : boolean := false;
+-- 		
+-- 		-- Here we store the device and unit name
+-- 		-- of a selected unit:
+-- 		d_name : type_device_name;
+-- 		u_name : pac_unit_name.bounded_string;
+	
+	
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+-- 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
+-- 
+-- 			
+-- 			procedure query_device (
+-- 				device_name	: in type_device_name;
+-- 				device 		: in type_device_electrical)
+-- 			is
+-- 				unit_cursor : pac_units.cursor := device.units.first;
+-- 
+-- 				
+-- 				procedure query_unit (
+-- 					unit_name	: in pac_unit_name.bounded_string;
+-- 					unit		: in type_unit)
+-- 				is begin
+-- 					if is_selected (unit) then
+-- 					
+-- 						-- Backup the unit and device name:
+-- 						u_name := unit_name;
+-- 						d_name := device_name;
+-- 						
+-- 						-- Abort the iterators for
+-- 						-- units and devices:
+-- 						unit_found := true;
+-- 					end if;
+-- 				end query_unit;
+-- 				
+-- 				
+-- 			begin
+-- 				-- Iterate through the units:
+-- 				while has_element (unit_cursor) and not unit_found loop
+-- 					query_element (unit_cursor, query_unit'access);
+-- 					next (unit_cursor);
+-- 				end loop;
+-- 			end query_device;
+-- 
+			
+		begin
+			null;
+			-- Iterate through the devices:
+-- 			while has_element (device_cursor) 
+-- 				and not unit_found loop
+-- 				
+-- 				query_element (
+-- 					device_cursor, query_device'access);
+-- 					
+-- 				next (device_cursor);
+-- 			end loop;
+		end query_module;
+	
+	
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " delete segments in group",
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		-- Search for the first selected net segment in the group:
+		query_element (module_cursor, query_module'access);
+
+-- 		-- If a unit has been found, then the flag "unit_found"
+-- 		-- is set. This starts the following loop where
+-- 		-- the affected unit will be deleted.		
+-- 		
+-- 		-- This loop will be executed as long as selected
+-- 		-- units exist:
+-- 		while unit_found loop
+-- 		-- CS: safety measure to avoid forever-loop
+-- 		-- use total unit count of the design ?
+-- 		
+-- 			delete_unit (
+-- 				module_cursor, d_name, u_name,
+-- 				NO_COMMIT, log_threshold + 1);
+-- 		
+-- 			-- Restart the search for a selected unit:
+-- 			unit_found := false;
+-- 			query_element (module_cursor, query_module'access);
+-- 		end loop;
+		
+		log_indentation_down;
+	end delete_segments_in_group;
+
+
+	
+
+
+	
+
+	
+
+
 
 	procedure add_strand (
 		module_cursor	: in pac_generic_modules.cursor;

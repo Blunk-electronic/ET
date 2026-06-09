@@ -129,6 +129,19 @@ package body et_schematic_ops_groups is
 		end;
 		
 
+		procedure group_net_segments is
+			use et_schematic_ops_nets;
+		begin
+			log (text => "net segments", level => log_threshold + 1);
+			log_indentation_up;
+			
+			group_segments_in_rectangular_area (
+				module_cursor, sheet, area, log_threshold + 2);
+			
+			log_indentation_down;
+		end;
+
+		
 	begin
 		log (text => "module " & to_string (module_cursor) 
 			 & " define rectangular group (schematic)",
@@ -137,7 +150,8 @@ package body et_schematic_ops_groups is
 		log_indentation_up;
 
 		group_units;
-		-- CS net segments, texts, 
+		group_net_segments;
+		-- CS texts, 
 		-- Do not group placeholders of units !
 
 		
@@ -168,7 +182,7 @@ package body et_schematic_ops_groups is
 		begin
 			log (text => "nets", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+			delete_segments_in_group (module_cursor, log_threshold + 2);
 			log_indentation_down;
 		end;
 

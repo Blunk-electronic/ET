@@ -1117,6 +1117,34 @@ package body et_net_segment is
 		return result;
 	end merge_overlapping_segments;
 
+
+
+
+
+
+-- 	function in_area (
+-- 		segment		: in type_net_segment;
+-- 		area		: in type_area)
+-- 		return boolean
+-- 	is
+-- 		result : boolean := false;
+-- 	begin
+-- 		-- We regard the segment as "in the area" if
+-- 		-- its start point or its end point lies in
+-- 		-- the given area:
+-- 		if in_area (get_A (segment), area)
+-- 		or in_area (get_B (segment), area) then
+-- 			result := true;
+-- 		else
+-- 			result := false;
+-- 		end if;
+-- 		
+-- 		return result;
+-- 	end in_area;
+
+
+	
+
 	
 
 

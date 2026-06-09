@@ -2834,6 +2834,30 @@ end;
 
 
 
+	function in_area (
+		line		: in type_line;
+		area		: in type_area)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		-- We regard the line as "in the area" if
+		-- its start point or its end point lies in
+		-- the given area:
+		if in_area (get_A (line), area)
+		or in_area (get_B (line), area) then
+			result := true;
+		else
+			result := false;
+		end if;
+		
+		return result;
+	end in_area;
+
+
+
+	
+
 	
 
 	function merge_lines (

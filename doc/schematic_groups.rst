@@ -8,7 +8,7 @@ Working with Groups of Objects
 
 Define a Group
 ^^^^^^^^^^^^^^
-	
+
 	This example command defines a group of
 	objects that are on sheet 2 in the specified rectangular zone.
 	The zone has its lower-left corner at x/y 5/10,
@@ -18,11 +18,29 @@ Define a Group
 	
 		define group 2  5 5  100 40
 
+	Objects inside a group are highlighted.
+
 .. Additional parameters to specify a layer ?
 .. define a circular group ?
 
+
+Clear a Group
+^^^^^^^^^^^^^
+
+	Clearing a group means to deselect all objects
+	that are in the current group.
+
+	.. code-block::
+	
+		clear group
+
+
+
 Delete a Group
 ^^^^^^^^^^^^^^
+
+	Deleting a group means to delete the objects which
+	are in the current group.
 
 	.. code-block::
 	

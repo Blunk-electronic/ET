@@ -315,6 +315,28 @@ package et_schematic_ops_nets is
 
 
 	
+-- GROUPS:
+
+	-- Sets "selected" flag of all segments that 
+	-- are on the given sheet and in the given area:
+	procedure group_segments_in_rectangular_area (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;							  
+		area			: in type_area;
+		log_threshold	: in type_log_level);
+
+
+	-- Deletes all segments which are in the current
+	-- group. This affects all segments which have the
+	-- "selected"-flag set:
+	procedure delete_segments_in_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+
+
+	
 	
 	
 -- STRANDS:
