@@ -363,6 +363,9 @@ package et_canvas is
 
 	-- This composite type provides the ingredients
 	-- required to do a zoom-to-area operation:
+	-- CS: rename to type_select_area because it
+	-- is used for define-group operations also.
+	-- Adjust the comments accordingly.
 	type type_zoom_area is record
 		-- This flag indicates that the operation is active.
 		-- As soon as the operator clicks the "Zoom Area" button,
@@ -408,7 +411,7 @@ package et_canvas is
 
 	-- This is the instance of the zoom-area:
 	zoom_area : type_zoom_area;
-
+	
 	
 	-- This is the linewidth of the rectangle that
 	-- marks the selected zoom area:
@@ -454,7 +457,26 @@ package et_canvas is
 	procedure draw_zoom_area;
 
 
+	
 
+-- GROUP:
+
+	-- This is the instance of the group-area:
+	group_area : type_zoom_area;
+
+	procedure reset_group_area;
+
+	
+	-- If a define-group operation has started, then
+	-- this procedure draws the rectangle around the
+	-- area to be grouped.
+	-- The rectangle is drawn directly on the cairo_context.
+	procedure draw_group_area;
+
+
+	
+
+	
 -- VISIBLE AREA:
 
 	-- Returns the currently visible area of the model.

@@ -180,6 +180,11 @@ is
 			when key_noun_group =>
 				noun := NOUN_GROUP;					
 				-- CS set_status
+				
+				-- This signals the subprograms
+				-- that handle mouse-button-press/release
+				-- events that a group is being defined:
+				group_area.active := true;
 
 			when others => null;							
 		end case;

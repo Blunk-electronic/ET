@@ -454,6 +454,7 @@ package body et_canvas_schematic is
 
 		draw_cursor;
 		draw_zoom_area;
+		draw_group_area;
 		
 		return event_handled;
 	end cb_draw;
@@ -524,7 +525,9 @@ package body et_canvas_schematic is
 
 			
 			-- Reset the status of objects in schematic
-			-- and board editor:
+			-- and board editor.
+			-- This has also the effect of clearing existing
+			-- groups:
 			et_schematic_ops_groups.reset_objects (
 				active_module, log_threshold + 1);
 			
@@ -558,6 +561,8 @@ package body et_canvas_schematic is
 			reset_verb_and_noun;
 			update_mode_display;
 
+			reset_group_area; -- abort a define-group operation
+			
 			reset_unit_add; -- after adding a device
 			reset_unit_fetch; -- after fetchung a unit
 			reset_netchanger_add; -- after adding or copying a netchanger
@@ -786,6 +791,10 @@ package body et_canvas_schematic is
 
 
 
+
+
+
+	
 -- MOUSE BUTTON PRESSED
 
 	procedure button_pressed (
@@ -814,6 +823,11 @@ package body et_canvas_schematic is
 	
 
 
+
+
+
+
+	
 -- MOUSE BUTTON RELEASED
 	
 	-- CS procedure button_released (
@@ -832,15 +846,52 @@ package body et_canvas_schematic is
 		mouse_event : type_mouse_event;
 		
 		debug : boolean := false;
+
+
+		-- This procedure is called if a define-group-operation
+		-- is in progress:
+		procedure handle_group_operation is
+			use et_modes;
+			use et_modes.schematic;
+			use et_schematic_ops_groups;
+		begin
+			-- If a group is being defined, then
+			-- the release of the button finishes the group
+			-- operation. The variable group_area provides
+			-- the selected area:
+			if verb = VERB_DEFINE and noun = NOUN_GROUP then
+
+				-- Define the group according to the
+				-- variable group_area:
+				define_group_rectangular (active_module, active_sheet,
+					group_area.area, log_threshold);
+
+				reset_group_area; -- clean up
+				
+				-- Once the group has been defined,
+				-- the verb-noun mechanism must be reset:
+				expect_entry := expect_entry_default; -- expect a verb
+				reset_verb_and_noun;
+				update_mode_display;			
+			end if;
+		end handle_group_operation;
+
+		
 	begin
 		-- put_line ("cb_canvas_button_released (schematic)");
 		
 		mouse_event := get_mouse_button_released_event (event);
 
-		 -- CS button_released (mouse_event);
-		
+		-- CS button_released (mouse_event);
+
+		handle_group_operation;
+				
 		return event_handled;
 	end cb_canvas_button_released;
+
+
+
+
 	
 
 

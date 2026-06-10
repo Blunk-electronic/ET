@@ -159,6 +159,9 @@ package body et_canvas is
 
 	
 
+
+
+	
 	function virtual_to_canvas (
 		V 			: in type_vector_model;
 		zf			: in type_zoom_factor;
@@ -182,6 +185,9 @@ package body et_canvas is
 		return Z;
 	end virtual_to_canvas;
 
+
+
+
 	
 	
 	function canvas_to_virtual (
@@ -200,6 +206,9 @@ package body et_canvas is
 
 		return result;
 	end canvas_to_virtual;
+
+
+
 
 	
 
@@ -223,6 +232,10 @@ package body et_canvas is
 	
 		return Z;
 	end real_to_canvas;
+
+
+
+
 
 	
 	function canvas_to_real (
@@ -259,6 +272,8 @@ package body et_canvas is
 
 
 
+	
+
 -- BOUNDING-BOX:
 	
 	
@@ -281,6 +296,8 @@ package body et_canvas is
 	end get_bounding_box_corners;
 
 
+
+	
 
 	
 	
@@ -323,6 +340,8 @@ package body et_canvas is
 			put_line ("base offset: " & to_string (F));
 		end if;
 	end set_base_offset;
+
+
 
 	
 	
@@ -367,6 +386,8 @@ package body et_canvas is
 	end set_translation_for_zoom;
 
 
+
+	
 	
 
 	procedure set_translation_for_zoom (
@@ -412,12 +433,18 @@ package body et_canvas is
 
 
 
+	
+
+
 	procedure reset_zoom_area is begin
 		-- put_line ("reset_zoom_area");
 		zoom_area := (others => <>);
 	end reset_zoom_area;
 
 
+
+
+	
 
 	procedure zoom_on_cursor (
 		direction : in type_zoom_direction)
@@ -472,6 +499,10 @@ package body et_canvas is
 	end zoom_on_cursor;
 
 
+
+
+
+	
 
 	procedure zoom_to (
 		target	: in type_vector_model;
@@ -559,6 +590,8 @@ package body et_canvas is
 
 		
 
+
+	
 	
 
 	procedure zoom_to_fit (
@@ -595,6 +628,12 @@ package body et_canvas is
 
 
 
+
+
+	
+
+
+	
 	procedure draw_zoom_area is
 		use cairo;
 		
@@ -641,6 +680,76 @@ package body et_canvas is
 			stroke;
 		end if;
 	end draw_zoom_area;
+
+
+
+
+
+	
+
+-- GROUP:
+
+
+	procedure reset_group_area is begin
+		-- put_line ("reset_group_area");
+		group_area := (others => <>);
+	end reset_group_area;
+
+
+
+	
+
+	procedure draw_group_area is
+		use cairo;
+		
+		x, y : type_logical_pixels;
+		w, h : type_logical_pixels;
+
+		l1 : type_logical_pixels_vector renames group_area.l1;
+		l2 : type_logical_pixels_vector renames group_area.l2;
+	begin
+		if group_area.started then
+
+			-- Set the color of the rectangle:
+			set_source_rgb (context, 0.5, 0.0, 0.0); -- red
+
+			-- Compute the position and dimensions of
+			-- the rectangle:
+
+			-- x-position:
+			if l1.x < l2.x then
+				x := l1.x;
+			else
+				x := l2.x;
+			end if;
+
+			-- y-position:
+			if l1.y < l2.y then
+				y := l1.y;
+			else
+				y := l2.y;
+			end if;
+
+			-- width and height:
+			w := abs (l1.x - l2.x);
+			h := abs (l1.y - l2.y);
+
+			set_line_width (context, to_gdouble (zoom_area_linewidth));
+			
+			rectangle (context, 
+				to_gdouble (x),
+				to_gdouble (y),
+				to_gdouble (w),
+				to_gdouble (h));
+				
+			stroke;
+		end if;
+	end draw_group_area;
+
+
+
+	
+
 
 	
 	
@@ -727,6 +836,11 @@ package body et_canvas is
 
 
 
+
+
+
+	
+
 	procedure center_to_visible_area (
 		area : in type_area)
 	is
@@ -790,6 +904,7 @@ package body et_canvas is
 
 
 	
+	
 	procedure backup_visible_area (
 		area : in type_area)
 	is begin
@@ -798,6 +913,9 @@ package body et_canvas is
 
 
 
+
+
+	
 	
 	
 -- MAIN WINDOW:
@@ -856,6 +974,9 @@ package body et_canvas is
 		-- particular situation it is filled with widgets.
 		
 	end create_window;
+
+
+
 
 
 
@@ -942,6 +1063,8 @@ package body et_canvas is
 	end backup_scrollbar_settings;
 	
 
+
+	
 	procedure restore_scrollbar_settings is begin
 		scrollbar_h_adj.set_lower (to_gdouble (scrollbar_h_backup.lower));
 		scrollbar_h_adj.set_value (to_gdouble (scrollbar_h_backup.value));
@@ -962,6 +1085,9 @@ package body et_canvas is
 
 
 
+
+
+	
 	procedure set_initial_scrollbar_settings is
 		debug : boolean := false;
 		-- debug : boolean := true;
@@ -1073,6 +1199,8 @@ package body et_canvas is
 	end set_initial_scrollbar_settings;
 
 	
+
+
 	
 
 	procedure show_adjustments_v is 
@@ -1095,7 +1223,9 @@ package body et_canvas is
 		put_line (" page " & to_string (v_page));
 		put_line (" upper" & to_string (v_upper));
 	end show_adjustments_v;
-				  
+
+
+	
 
 	procedure show_adjustments_h is 
 		h_lower : type_logical_pixels := to_lp (scrollbar_h_adj.get_lower);
@@ -1113,6 +1243,8 @@ package body et_canvas is
 	end show_adjustments_h;
 
 
+
+	
 
 	function get_ratio (
 		area : in type_area)
@@ -1159,6 +1291,9 @@ package body et_canvas is
 	end get_ratio;
 	
 
+
+
+	
 
 	procedure update_scrollbar_limits (
 		C1, C2 : in type_bounding_box_corners)
@@ -1291,6 +1426,9 @@ package body et_canvas is
 	
 
 
+
+	
+
 -- CANVAS:
 
 	
@@ -1300,6 +1438,8 @@ package body et_canvas is
 	end refresh;
 
 
+
+	
 	procedure compute_canvas_size is
 		debug : boolean := true;
 
@@ -1345,6 +1485,8 @@ package body et_canvas is
 
 
 	
+
+	
 	procedure show_canvas_size is 
 		use glib;
 		a : gtk_allocation;
@@ -1358,6 +1500,8 @@ package body et_canvas is
 		put_line ("canvas size minimum   (w/h):" 
 			& gint'image (width) & " /" & gint'image (height));
 	end show_canvas_size;
+
+
 
 	
 
@@ -1400,6 +1544,8 @@ package body et_canvas is
 	end create_canvas;
 
 
+	
+
 
 	procedure focus_canvas is
 		-- CS: For some reason the value of the scrollbars
@@ -1427,6 +1573,7 @@ package body et_canvas is
 		-- CS: restore_scrollbar_settings does not work for some reason.
 		-- put_line (to_string (v));
 	end focus_canvas;
+
 
 
 	
@@ -1508,6 +1655,8 @@ package body et_canvas is
 
 
 
+
+	
 	
 -- COORDINATES-DISPLAY:
 
@@ -2649,6 +2798,9 @@ package body et_canvas is
 
 
 
+
+	
+
 	
 -- BUTTONS:
 
@@ -2707,6 +2859,9 @@ package body et_canvas is
 
 
 
+
+
+	
 	
 -- CONSOLE AND STATUS:
 
@@ -2774,10 +2929,15 @@ package body et_canvas is
 
 	
 
+
+
+
+	
 -----------------------------------------------------------------------	
 -- INITIALISATION AND CALLBACKS:
 	
 
+	
 	procedure cb_add (
 		button : access gtk_button_record'class)
 	is begin
@@ -2787,6 +2947,7 @@ package body et_canvas is
 		-- Redraw the canvas:
 		refresh;
 	end cb_add;
+
 
 	
 	procedure cb_delete (
@@ -2799,6 +2960,7 @@ package body et_canvas is
 		refresh;
 	end cb_delete;
 
+
 	
 	procedure cb_move (
 		button : access gtk_button_record'class)
@@ -2806,6 +2968,7 @@ package body et_canvas is
 		put_line ("cb_move");
 		-- CS
 	end cb_move;
+
 	
 
 	procedure cb_export (
@@ -2817,6 +2980,10 @@ package body et_canvas is
 	end cb_export;
 
 
+
+
+
+	
 	
 	
 	
@@ -2830,11 +2997,17 @@ package body et_canvas is
 	end cb_terminate;
 
 
+
+	
+
 	procedure cb_window_focus (
 		window : access gtk_window_record'class) 
 	is begin
 		put_line ("cb_window_focus");
 	end cb_window_focus;
+
+
+
 
 	
 	function cb_window_button_pressed (
@@ -2928,6 +3101,7 @@ package body et_canvas is
 	
 	
 	
+	
 	function cb_main_window_configure (
 		window		: access gtk_widget_record'class;
 		event		: gdk.event.gdk_event_configure)
@@ -2940,6 +3114,9 @@ package body et_canvas is
 	end cb_main_window_configure;
 
 
+
+
+	
 	procedure cb_main_window_realize (
 		window	: access gtk_widget_record'class)
 	is begin
@@ -2948,6 +3125,9 @@ package body et_canvas is
 	end cb_main_window_realize;
 	
 
+
+
+	
 	function cb_main_window_state_change (
 		window		: access gtk_widget_record'class;
 		event		: gdk.event.gdk_event_window_state)
@@ -2960,6 +3140,9 @@ package body et_canvas is
 	end cb_main_window_state_change;
 
 
+
+
+	
 	procedure cb_main_window_activate (
 		window		: access gtk_window_record'class)
 	is begin
@@ -2968,6 +3151,9 @@ package body et_canvas is
 	end cb_main_window_activate;
 
 
+
+
+	
 	procedure set_up_command_buttons is
 	begin
 		put_line ("set_up_command_buttons (general)");
@@ -2991,6 +3177,10 @@ package body et_canvas is
 	end set_up_command_buttons;
 
 	
+
+
+
+
 	
 	procedure set_up_main_window is begin
 		-- put_line ("set_up_main_window (general)");
@@ -3032,6 +3222,9 @@ package body et_canvas is
 
 
 	
+
+
+
 	
 	procedure cb_swin_size_allocate (
 		swin		: access gtk_widget_record'class;
@@ -3192,6 +3385,9 @@ package body et_canvas is
 	end cb_swin_size_allocate;
 
 
+
+
+	
 	
 
 	procedure set_up_swin_and_scrollbars is	begin
@@ -3232,6 +3428,9 @@ package body et_canvas is
 	end set_up_swin_and_scrollbars;
 
 
+
+
+
 	
 	
 	procedure cb_horizontal_moved (
@@ -3241,6 +3440,8 @@ package body et_canvas is
 		-- show_adjustments_h;
 		refresh;
 	end cb_horizontal_moved;
+
+
 
 	
 	procedure cb_vertical_moved (
@@ -3252,6 +3453,9 @@ package body et_canvas is
 	end cb_vertical_moved;
 
 
+
+
+	
 	function cb_scrollbar_v_pressed (
 		bar		: access gtk_widget_record'class;
 		event	: gdk_event_button)
@@ -3262,6 +3466,8 @@ package body et_canvas is
 		-- put_line ("cb_scrollbar_v_pressed");
 		return event_handled;
 	end cb_scrollbar_v_pressed;
+
+
 
 	
 	function cb_scrollbar_v_released (
@@ -3280,6 +3486,8 @@ package body et_canvas is
 
 
 
+
+	
 	function cb_scrollbar_h_pressed (
 		bar		: access gtk_widget_record'class;
 		event	: gdk_event_button)
@@ -3291,6 +3499,8 @@ package body et_canvas is
 		return event_handled;
 	end cb_scrollbar_h_pressed;
 
+
+	
 	
 	function cb_scrollbar_h_released (
 		bar		: access gtk_widget_record'class;
@@ -3306,6 +3516,8 @@ package body et_canvas is
 		return event_handled;
 	end cb_scrollbar_h_released;
 
+
+	
 
 
 	
@@ -3364,6 +3576,9 @@ package body et_canvas is
 	
 	
 
+
+
+	
 -- CLARIFICATION:
 
 	procedure set_request_clarification is begin
@@ -3386,6 +3601,9 @@ package body et_canvas is
 	end clarification_pending;
 
 
+
+
+	
 	
 
 -- EDIT PROCESS RUNNNING:
@@ -3407,6 +3625,8 @@ package body et_canvas is
 		return editing_process.running;
 	end;
 
+
+	
 	
 
 
@@ -3427,7 +3647,10 @@ package body et_canvas is
 	function finalizing_granted return boolean is begin
 		return editing_process.finalizing_granted;
 	end;
-		
+
+
+
+	
 
 	
 
@@ -3448,6 +3671,7 @@ package body et_canvas is
 	end;
 
 	
+	
 	function get_escape_counter return type_escape_count is begin
 		return editing_process.escape_counter;
 	end;
@@ -3459,6 +3683,8 @@ package body et_canvas is
 		log (text => "editing_process.escape_counter RESET", level => log_threshold);
 		editing_process.escape_counter := 0;
 	end;
+
+
 
 	
 	
@@ -3613,11 +3839,17 @@ package body et_canvas is
 	end build_primary_tool_display;
 
 
+
+
+	
 	procedure update_primary_tool_display is begin
 		gtk_entry (cbox_primary_tool.get_child).set_text (to_string (primary_tool));
 	end update_primary_tool_display;
 
 	
+
+
+
 	
 	procedure change_primary_tool is begin
 		if primary_tool = MOUSE then
@@ -3633,6 +3865,8 @@ package body et_canvas is
 	
 
 
+	
+
 	function get_primary_tool_position
 		return type_vector_model 
 	is
@@ -3645,6 +3879,9 @@ package body et_canvas is
 
 		return point;
 	end get_primary_tool_position;
+
+
+
 
 
 	
@@ -3673,6 +3910,8 @@ package body et_canvas is
 	
 
 
+
+	
 
 -- PROPERTIES BOX:
 
@@ -3883,6 +4122,7 @@ package body et_canvas is
 	end draw_line;
 
 
+
 	
 	
 	
@@ -3988,6 +4228,8 @@ package body et_canvas is
 		end if;
 	end draw_circle;
 	
+
+
 
 
 	
@@ -4129,6 +4371,8 @@ package body et_canvas is
 
 
 
+
+	
 	
 
 	procedure draw_rectangle (
@@ -4172,6 +4416,7 @@ package body et_canvas is
 	end draw_rectangle;
 
 
+	
 
 
 
@@ -4199,6 +4444,7 @@ package body et_canvas is
 
 
 
+	
 	
 
 -- ORIGIN OF THE DRAWING:
@@ -4237,6 +4483,9 @@ package body et_canvas is
 	
 
 
+
+
+
 	
 
 	function to_string (
@@ -4248,6 +4497,11 @@ package body et_canvas is
 
 	
 
+
+
+
+	
+	
 	function get_mouse_button_pressed_event (
 		event	: gdk_event_button)
 		return type_mouse_event
@@ -4291,6 +4545,27 @@ package body et_canvas is
 			end if;
 		end handle_zoom_to_area_operation;
 
+
+
+		procedure handle_group_operation is begin			
+			-- If no define-group operation is active, then
+			-- nothing happens here.
+			-- If the operator has started a define-group operation, then
+			-- set the first corner of the area:
+			if group_area.active then
+				group_area.k1 := mp;
+				--put_line ("group area k1: " & to_string (group_area.k1));
+
+				-- For the routine that draws a rectangle around the
+				-- selected area: Indicate that a selection has started 
+				-- and a start point has been defined:
+				group_area.started := true;
+				group_area.l1 := cp;
+				--put_line ("group area l1: " & to_string (group_area.l1));
+			end if;
+		end handle_group_operation;
+
+
 		
 	begin
 		if debug then
@@ -4310,11 +4585,21 @@ package body et_canvas is
 		focus_canvas;
 
 		handle_zoom_to_area_operation;
+		-- Bust come first because it sets the
+		-- cursor at the mouse position!
+		-- Then handle the group operation.
+		
+		handle_group_operation;
 		
 		return (mp, button);
 	end get_mouse_button_pressed_event;
 
 
+
+
+
+
+	
 
 	
 	function get_mouse_button_released_event (
@@ -4415,7 +4700,65 @@ package body et_canvas is
 			end if;
 		end handle_zoom_to_area_operation;
 			
-			
+
+
+		-- If the operator is finishing a define-group operation,
+		-- then the actual area of interest is computed here.
+		-- If start and end point of the area are equal,
+		-- then nothing happens here.
+		procedure handle_group_operation is begin
+			if group_area.active then
+
+				-- Set the second corner of the group-area:
+				group_area.k2 := mp;
+
+				-- Compute the area from the corner points k1 and k2
+				-- if they are different. Otherwise nothing happens here:
+				if group_area.k1 /= group_area.k2 then
+					
+					if debug then
+						put_line ("group area c1: " & to_string (group_area.k1));
+						put_line ("group area c2: " & to_string (group_area.k2));
+					end if;
+
+
+					-- x-position:
+					if group_area.k1.x < group_area.k2.x then
+						group_area.area.position.x := group_area.k1.x;
+					else
+						group_area.area.position.x := group_area.k2.x;
+					end if;
+
+					-- y-position:
+					if group_area.k1.y < group_area.k2.y then
+						group_area.area.position.y := group_area.k1.y;
+					else
+						group_area.area.position.y := group_area.k2.y;
+					end if;
+
+					-- width and height:
+					group_area.area.width  := 
+						abs (group_area.k2.x - group_area.k1.x);
+					
+					group_area.area.height := 
+						abs (group_area.k2.y - group_area.k1.y);
+
+					if debug then
+						put_line ("group area " & to_string (group_area.area));
+					end if;
+
+					-- The operation comes to an end here:
+					group_area.active := false;
+
+					-- For the routine that draws a rectangle around the
+					-- selected area: Indicate that the rectangle shall
+					-- no longer be drawn:
+					group_area.started := false;
+				end if;
+			end if;
+		end handle_group_operation;
+	
+		
 		
 	begin
 		if debug then
@@ -4432,6 +4775,7 @@ package body et_canvas is
 		end if;
 
 		handle_zoom_to_area_operation;
+		handle_group_operation;
 
 		refresh;
 		
@@ -4440,7 +4784,10 @@ package body et_canvas is
 
 
 
+	
 
+
+	
 
 
 	function get_mouse_moved_event (
@@ -4495,6 +4842,26 @@ package body et_canvas is
 			end if;
 		end draw_selected_area;
 			
+
+		procedure draw_group_area is begin
+			-- While a define-group operation is active,
+			-- set the end point of the group area.
+			-- The routine that draws the rectangle uses this
+			-- point to compute the rectangle on the fly:
+			if group_area.active then
+				group_area.l2 := cp;
+
+				if debug then
+					put_line (" group area l2: " & to_string (group_area.l2));
+				end if;
+				
+				-- The canvas must be refreshed in order to
+				-- show the rectangle as the mouse is being moved:
+				refresh;
+			end if;
+		end draw_group_area;
+
+		
 		
 	begin
 		if debug then
@@ -4511,6 +4878,7 @@ package body et_canvas is
 		update_display;
 
 		draw_selected_area;
+		draw_group_area;
 		
 		return mp;
 	end get_mouse_moved_event;
