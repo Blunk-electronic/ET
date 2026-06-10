@@ -2194,66 +2194,81 @@ package body et_schematic_ops_nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
--- 		unit_found : boolean := false;
--- 		
--- 		-- Here we store the device and unit name
--- 		-- of a selected unit:
--- 		d_name : type_device_name;
--- 		u_name : pac_unit_name.bounded_string;
+ 		segment_found : boolean := false;
+		
+		-- Here we store the selected net segment:
+		object_segment : type_object_segment;
 	
 	
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
--- 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
--- 
--- 			
--- 			procedure query_device (
--- 				device_name	: in type_device_name;
--- 				device 		: in type_device_electrical)
--- 			is
--- 				unit_cursor : pac_units.cursor := device.units.first;
--- 
--- 				
--- 				procedure query_unit (
--- 					unit_name	: in pac_unit_name.bounded_string;
--- 					unit		: in type_unit)
--- 				is begin
--- 					if is_selected (unit) then
--- 					
--- 						-- Backup the unit and device name:
--- 						u_name := unit_name;
--- 						d_name := device_name;
--- 						
--- 						-- Abort the iterators for
--- 						-- units and devices:
--- 						unit_found := true;
--- 					end if;
--- 				end query_unit;
--- 				
--- 				
--- 			begin
--- 				-- Iterate through the units:
--- 				while has_element (unit_cursor) and not unit_found loop
--- 					query_element (unit_cursor, query_unit'access);
--- 					next (unit_cursor);
--- 				end loop;
--- 			end query_device;
--- 
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net 		: in type_net)
+			is
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (
+					strand	: in type_strand)
+				is
+					segment_cursor : pac_net_segments.cursor := 
+						strand.segments.first;
+					
+					
+					procedure query_segment (
+						segment	: in type_net_segment)
+					is begin
+						if is_selected (segment) then
+							-- CS: log segment and net name ?
+							object_segment := (
+								net_cursor, strand_cursor, segment_cursor);
+							
+							-- Abort the iterators for
+							-- segments, strands and nets:
+							segment_found := true;
+						end if;
+					end;
+					
+					
+				begin
+					-- Iterate through the segments
+					-- of the strand:
+					while has_element (segment_cursor) 
+					and not segment_found loop
+						query_element (
+							segment_cursor, query_segment'access);
+						
+						next (segment_cursor);
+					end loop;
+				end query_strand;
+				
+
+			begin
+				-- Iterate through the strands:
+				while has_element (strand_cursor) 
+				and not segment_found loop
+					query_element (strand_cursor, query_strand'access);
+					next (strand_cursor);
+				end loop;
+			end query_net;
+
 			
 		begin
-			null;
-			-- Iterate through the devices:
--- 			while has_element (device_cursor) 
--- 				and not unit_found loop
--- 				
--- 				query_element (
--- 					device_cursor, query_device'access);
--- 					
--- 				next (device_cursor);
--- 			end loop;
+			-- Iterate through the nets:
+			while has_element (net_cursor) 
+			and not segment_found loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
 		end query_module;
+
+	
 	
 	
 	begin
@@ -2266,24 +2281,25 @@ package body et_schematic_ops_nets is
 		-- Search for the first selected net segment in the group:
 		query_element (module_cursor, query_module'access);
 
--- 		-- If a unit has been found, then the flag "unit_found"
--- 		-- is set. This starts the following loop where
--- 		-- the affected unit will be deleted.		
--- 		
--- 		-- This loop will be executed as long as selected
--- 		-- units exist:
--- 		while unit_found loop
--- 		-- CS: safety measure to avoid forever-loop
--- 		-- use total unit count of the design ?
--- 		
--- 			delete_unit (
--- 				module_cursor, d_name, u_name,
--- 				NO_COMMIT, log_threshold + 1);
--- 		
--- 			-- Restart the search for a selected unit:
--- 			unit_found := false;
--- 			query_element (module_cursor, query_module'access);
--- 		end loop;
+		-- If a segment has been found, then the flag "segment_found"
+		-- is set. This starts the following loop where
+		-- the affected net segment will be deleted.		
+		
+		-- This loop will be executed as long as selected
+		-- net segments exist:
+		while segment_found loop
+		-- CS: safety measure to avoid forever-loop
+		-- use total segment count of the design ?
+		-- CS: log the nunmber of deleted segments.
+		
+			delete_segment (
+				module_cursor, object_segment,
+				NO_COMMIT, log_threshold + 1);
+		
+			-- Restart the search for a selected segment:
+			segment_found := false;
+			query_element (module_cursor, query_module'access);
+		end loop;
 		
 		log_indentation_down;
 	end delete_segments_in_group;

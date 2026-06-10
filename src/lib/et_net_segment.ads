@@ -437,20 +437,13 @@ package et_net_segment is
 		primary, secondary : in type_net_segment)
 		return type_net_segment;
 	
-	
 
-	-- -- This function returns true if the given segment
-	-- -- in the given area.
-	-- -- In the area means: Either start or end of the
-	-- -- segment (or both) are in the area:
-	-- function in_area (
-	-- 	segment		: in type_net_segment;
-	-- 	area		: in type_area)
-	-- 	return boolean;
 
 	
 	
-	package pac_net_segments is new doubly_linked_lists (type_net_segment);
+	package pac_net_segments is new 
+		doubly_linked_lists (type_net_segment);
+		
 	use pac_net_segments;
 
 

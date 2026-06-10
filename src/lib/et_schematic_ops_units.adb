@@ -3500,6 +3500,7 @@ package body et_schematic_ops_units is
 		while unit_found loop
 		-- CS: safety measure to avoid forever-loop
 		-- use total unit count of the design ?
+		-- CS: log the nunmber of deleted units and devices.
 		
 			delete_unit (
 				module_cursor, d_name, u_name,
