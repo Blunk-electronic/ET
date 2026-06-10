@@ -89,6 +89,9 @@ is
 			when key_noun_group =>
 				noun := NOUN_GROUP;					
 				-- CS set_status
+				et_schematic_ops_groups.delete_group (
+					module_cursor	=> active_module, 
+					log_threshold	=> log_threshold + 1);
 				
 			when key_noun_connector =>
 				noun := NOUN_NET_CONNECTOR;
