@@ -2908,6 +2908,154 @@ package body et_schematic_ops_netchangers is
 
 	
 	
+
+
+
+
+
+	
+
+
+	procedure group_netchangers_in_rectangular_area (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		area			: in type_area;
+		log_threshold	: in type_log_level)
+	is 
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
+
+			
+			procedure query_netchanger (
+				index		: in type_netchanger_id;
+				netchanger	: in out type_netchanger)
+			is begin
+				if on_sheet_and_in_area (netchanger, sheet, area) then
+					-- CS: log the full name like N2
+					-- log netchanger name
+					set_selected (netchanger);
+				end if;
+			end query_netchanger;
+
+			
+		begin
+			-- Iterate through the netchangers:
+			while has_element (netchanger_cursor) loop
+				module.netchangers.update_element (
+					netchanger_cursor, query_netchanger'access);
+				
+				next (netchanger_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " group netchangers on sheet " & to_string (sheet)
+			 & " in rectangular area " & to_string (area),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+	end group_netchangers_in_rectangular_area;
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	procedure delete_netchangers_in_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+		netchanger_found : boolean := false;
+		
+		-- Here we store the index of a
+		-- selected netchanger:
+		netchanger_id : type_netchanger_id;
+
+	
+	
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
+
+			
+			procedure query_netchanger (
+				index		: in type_netchanger_id;
+				netchanger 	: in type_netchanger)
+			is begin
+				if is_selected (netchanger) then
+				
+					-- Backup netchanger index:
+					netchanger_id := index;
+					
+					-- Abort the iterator for netchangers:
+					netchanger_found := true;
+				end if;
+			end query_netchanger;
+
+			
+		begin
+			-- Iterate through the netchangers:
+			while has_element (netchanger_cursor) 
+				and not netchanger_found loop
+				
+				query_element (
+					netchanger_cursor, query_netchanger'access);
+					
+				next (netchanger_cursor);
+			end loop;
+		end query_module;
+	
+	
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " delete netchangers in group",
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		-- Search for the first selected unit in the group:
+		query_element (module_cursor, query_module'access);
+
+		-- If a netchanger has been found, then the 
+		-- flag "netchanger_found" is set.
+		-- This starts the following loop where
+		-- the affected netchanger will be deleted.		
+		
+		-- This loop will be executed as long as selected
+		-- netchangers exist:
+		while netchanger_found loop
+		-- CS: safety measure to avoid forever-loop
+		-- use total netchanger count of the design ?
+		-- CS: log the nunmber of deleted netchangers.
+		
+			delete_netchanger (
+				module_cursor, netchanger_id,
+				NO_COMMIT, log_threshold + 1);
+		
+			-- Restart the search for a selected netchanger:
+			netchanger_found := false;
+			query_element (module_cursor, query_module'access);
+		end loop;
+		
+		log_indentation_down;
+	end delete_netchangers_in_group;
+
 	
 	
 ------------------------------------------------------------------------------------------

@@ -129,6 +129,19 @@ package body et_schematic_ops_groups is
 		end;
 		
 
+		procedure group_netchangers is
+			use et_schematic_ops_netchangers;
+		begin
+			log (text => "netchangers", level => log_threshold + 1);
+			log_indentation_up;
+			
+			group_netchangers_in_rectangular_area (
+				module_cursor, sheet, area, log_threshold + 2);
+			
+			log_indentation_down;
+		end;
+
+		
 		procedure group_net_segments is
 			use et_schematic_ops_nets;
 		begin
@@ -150,10 +163,11 @@ package body et_schematic_ops_groups is
 		log_indentation_up;
 
 		group_units;
+		group_netchangers;
 		group_net_segments;
+		
 		-- CS texts, 
 		-- Do not group placeholders of units !
-
 		
 		log_indentation_down;
 	end define_group_rectangular;
@@ -202,7 +216,7 @@ package body et_schematic_ops_groups is
 		begin
 			log (text => "netchangers", level => log_threshold + 1);
 			log_indentation_up;
-			-- CS
+			delete_netchangers_in_group (module_cursor, log_threshold + 2);
 			log_indentation_down;
 		end;
 

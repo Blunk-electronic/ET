@@ -471,7 +471,31 @@ package et_schematic_ops_netchangers is
 		return type_object_netchanger;
 
 		
-		
+
+
+-- GROUPS:
+
+	-- Sets "selected" flag of all netchangers that 
+	-- are on the given sheet and in the given area:
+	procedure group_netchangers_in_rectangular_area (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;							  
+		area			: in type_area;
+		log_threshold	: in type_log_level);
+
+
+	-- Deletes all netchangers which are in the current
+	-- group. This affects all netchangers which have the
+	-- "selected"-flag set.
+	-- This procedure does not do any commit operations,
+	-- because this is part of a group call.
+	-- It is up to the caller of this procedure to care for 
+	-- the commit actions:
+	procedure delete_netchangers_in_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+	
 ------------------------------------------------------------------------------------------
 
 -- OBJECTS:

@@ -295,7 +295,18 @@ package et_netchangers.schematic is
 		sheet		: in type_sheet)
 		return boolean;
 	
+
 	
+-- AREA:
+
+	-- Returns true if the given netchanger is
+	-- on the given sheet and in the given rectangular area:
+	function on_sheet_and_in_area (
+		netchanger	: in type_netchanger;
+		sheet		: in type_sheet;
+		area		: in type_area)
+		return boolean;
+
 	
 	
 -- STATUS:

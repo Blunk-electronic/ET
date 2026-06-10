@@ -2267,8 +2267,6 @@ package body et_schematic_ops_nets is
 				next (net_cursor);
 			end loop;
 		end query_module;
-
-	
 	
 	
 	begin
