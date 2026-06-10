@@ -35,7 +35,10 @@
 --
 --   history of changes:
 --
---   ToDo: 
+-- To Do: 
+-- - synchronize keys with those in the board domain
+-- - use a package for common keys (used in schematic and board)
+-- - update handbook accordingly
 
 
 with gdk.types;						use gdk.types;
@@ -47,8 +50,10 @@ package et_schematic_verb_noun_keys is
 -- VERBS:
 
 	key_verb_add		: constant gdk_key_type := GDK_LC_a;
+	key_verb_clear		: constant gdk_key_type := GDK_LC_l;
 	key_verb_copy		: constant gdk_key_type := GDK_LC_c;
 	key_verb_delete		: constant gdk_key_type := GDK_Delete;
+	key_verb_define		: constant gdk_key_type := GDK_LC_e;
 	key_verb_direction	: constant gdk_key_type := GDK_LC_t;
 	key_verb_drag		: constant gdk_key_type := GDK_LC_g;
 	key_verb_draw		: constant gdk_key_type := GDK_LC_d;
@@ -70,6 +75,7 @@ package et_schematic_verb_noun_keys is
 
 	key_noun_connector	: constant gdk_key_type := GDK_LC_c;
 	key_noun_device		: constant gdk_key_type := GDK_LC_d;
+	key_noun_group		: constant gdk_key_type := GDK_LC_g;
 	key_noun_label 		: constant gdk_key_type := GDK_LC_l;
 	key_noun_name		: constant gdk_key_type := GDK_LC_n;
 	key_noun_net 			: constant gdk_key_type := GDK_LC_n;

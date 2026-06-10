@@ -18,6 +18,8 @@ Define a Group
 	
 		define group 2  5 5  100 40
 
+	|VNS| e g
+
 	Objects inside a group are highlighted.
 
 .. Additional parameters to specify a layer ?
@@ -34,6 +36,7 @@ Clear a Group
 	
 		clear group
 
+	|VNS| l g
 
 
 Delete a Group
@@ -45,6 +48,8 @@ Delete a Group
 	.. code-block::
 	
 		delete group
+
+	|VNS| del g
 
 
 ..

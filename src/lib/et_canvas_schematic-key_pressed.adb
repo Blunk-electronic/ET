@@ -39,7 +39,7 @@
 with et_device_placeholders;			use et_device_placeholders;
 with et_schematic_verb_noun_keys;		use et_schematic_verb_noun_keys;
 with et_schematic_ops_nets;
-with et_schematic_ops_netchangers;
+with et_schematic_ops_groups;
 
 
 separate (et_canvas_schematic)
@@ -63,6 +63,22 @@ is
 	-- CS global variable for the tool KEYBOARD
 	
 	
+	procedure clear is 
+		use et_schematic_ops_groups;
+	begin
+		case key is
+			-- EVALUATE KEY FOR NOUN:
+			when key_noun_group =>
+				noun := NOUN_GROUP;					
+				-- CS set_status
+				reset_objects (active_module, log_threshold + 1);
+
+			when others => null;							
+		end case;
+	end clear;
+
+	
+	
 	procedure delete is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
@@ -70,6 +86,10 @@ is
 				noun := NOUN_DEVICE;					
 				set_status (et_canvas_schematic_units.status_delete_device);
 
+			when key_noun_group =>
+				noun := NOUN_GROUP;					
+				-- CS set_status
+				
 			when key_noun_connector =>
 				noun := NOUN_NET_CONNECTOR;
 				set_status (et_canvas_schematic_nets.status_delete_connector);
@@ -150,8 +170,20 @@ is
 	end delete;
 
 	
+	
+	procedure define is begin
+		case key is
+			-- EVALUATE KEY FOR NOUN:
+			when key_noun_group =>
+				noun := NOUN_GROUP;					
+				-- CS set_status
 
+			when others => null;							
+		end case;
+	end define;
+		
 
+		
 	procedure dissolve is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
@@ -1052,6 +1084,10 @@ begin -- key_pressed
 
 						-- EVALUATE KEY FOR VERB:
 						case key is
+							when key_verb_clear =>
+								verb := VERB_CLEAR;
+								status_enter_noun;
+
 							when key_verb_delete =>
 								verb := VERB_DELETE;
 								status_enter_noun;
@@ -1064,6 +1100,10 @@ begin -- key_pressed
 								verb := VERB_COPY;
 								status_enter_noun;
 
+							when key_verb_define =>
+								verb := VERB_DEFINE;
+								status_enter_noun;
+								
 							when key_verb_dissolve =>
 								verb := VERB_DISSOLVE;
 								status_enter_noun;
@@ -1124,7 +1164,9 @@ begin -- key_pressed
 						case verb is
 							when VERB_ADD		=> add;
 							when VERB_COPY		=> copy;
+							when VERB_CLEAR		=> clear;
 							when VERB_DELETE	=> delete;
+							when VERB_DEFINE	=> define;
 							when VERB_DISSOLVE	=> dissolve;
 							when VERB_DRAG		=> drag;
 							when VERB_DRAW		=> draw;
