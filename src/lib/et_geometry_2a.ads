@@ -732,6 +732,13 @@ package et_geometry_2a is
 		B : in type_area);
 
 
+	-- Computes from two corner points
+	-- an area:
+	procedure make_area_from_corners (
+		C1, C2	: in type_vector_model;
+		area	: in out type_area;
+		valid	: out boolean);
+										 
 
 -- BOUNDING-BOX:
 
