@@ -4634,6 +4634,7 @@ package body et_canvas is
 			-- and after zooming:
 			C1, C2 : type_bounding_box_corners;
 			
+			group_valid : boolean;
 		begin
 			if zoom_area.active then
 				C1 := get_bounding_box_corners;
@@ -4641,41 +4642,25 @@ package body et_canvas is
 				-- Set the second corner of the zoom-area:
 				zoom_area.k2 := mp;
 
+				if debug then
+					put_line ("zoom area c1: " & to_string (zoom_area.k1));
+					put_line ("zoom area c2: " & to_string (zoom_area.k2));
+				end if;
+
 				-- Compute the area from the corner points k1 and k2
-				-- if they are different. Otherwise nothing happens here:
-				if zoom_area.k1 /= zoom_area.k2 then
-					
-					if debug then
-						put_line ("zoom area c1: " & to_string (zoom_area.k1));
-						put_line ("zoom area c2: " & to_string (zoom_area.k2));
-					end if;
+				-- if they are different (in x and y).
+				-- Otherwise the area is regarded as invalid and 
+				-- nothing happens here:				
+				make_area_from_corners (
+					C1		=> zoom_area.k1,
+					C2		=> zoom_area.k2,
+					area	=> zoom_area.area,
+					valid	=> group_valid);
 
-
-					-- x-position:
-					if zoom_area.k1.x < zoom_area.k2.x then
-						zoom_area.area.position.x := zoom_area.k1.x;
-					else
-						zoom_area.area.position.x := zoom_area.k2.x;
-					end if;
-
-					-- y-position:
-					if zoom_area.k1.y < zoom_area.k2.y then
-						zoom_area.area.position.y := zoom_area.k1.y;
-					else
-						zoom_area.area.position.y := zoom_area.k2.y;
-					end if;
-
-					-- width and height:
-					zoom_area.area.width  := 
-						abs (zoom_area.k2.x - zoom_area.k1.x);
-					
-					zoom_area.area.height := 
-						abs (zoom_area.k2.y - zoom_area.k1.y);
-
+				if group_valid then
 					if debug then
 						put_line ("zoom " & to_string (zoom_area.area));
 					end if;
-
 
 					
 					-- Reset the translate-offset:
@@ -4694,7 +4679,6 @@ package body et_canvas is
 					-- no longer be drawn:
 					zoom_area.started := false;
 
-
 					backup_visible_area (zoom_area.area);
 				end if;
 			end if;
@@ -4706,43 +4690,31 @@ package body et_canvas is
 		-- then the actual area of interest is computed here.
 		-- If start and end point of the area are equal,
 		-- then nothing happens here.
-		procedure handle_group_operation is begin
+		procedure handle_group_operation is 
+			group_valid : boolean;
+		begin
 			if group_area_mouse.active then
 
 				-- Set the second corner of the group-area:
 				group_area_mouse.k2 := mp;
 
+				if debug then
+					put_line ("group area c1: " & to_string (group_area_mouse.k1));
+					put_line ("group area c2: " & to_string (group_area_mouse.k2));
+				end if;
+				
 				-- Compute the area from the corner points k1 and k2
-				-- if they are different. Otherwise nothing happens here:
-				if group_area_mouse.k1 /= group_area_mouse.k2 then
+				-- if they are different (in x and y).
+				-- Otherwise the area is regarded as invalid and 
+				-- nothing happens here:				
+				make_area_from_corners (
+					C1		=> group_area_mouse.k1,
+					C2		=> group_area_mouse.k2,
+					area	=> group_area_mouse.area,
+					valid	=> group_valid);
+
 					
-					if debug then
-						put_line ("group area c1: " & to_string (group_area_mouse.k1));
-						put_line ("group area c2: " & to_string (group_area_mouse.k2));
-					end if;
-
-
-					-- x-position:
-					if group_area_mouse.k1.x < group_area_mouse.k2.x then
-						group_area_mouse.area.position.x := group_area_mouse.k1.x;
-					else
-						group_area_mouse.area.position.x := group_area_mouse.k2.x;
-					end if;
-
-					-- y-position:
-					if group_area_mouse.k1.y < group_area_mouse.k2.y then
-						group_area_mouse.area.position.y := group_area_mouse.k1.y;
-					else
-						group_area_mouse.area.position.y := group_area_mouse.k2.y;
-					end if;
-
-					-- width and height:
-					group_area_mouse.area.width  := 
-						abs (group_area_mouse.k2.x - group_area_mouse.k1.x);
-					
-					group_area_mouse.area.height := 
-						abs (group_area_mouse.k2.y - group_area_mouse.k1.y);
-
+				if group_valid then
 					if debug then
 						put_line ("group area " & to_string (group_area_mouse.area));
 					end if;
@@ -4755,6 +4727,7 @@ package body et_canvas is
 					-- no longer be drawn:
 					group_area_mouse.started := false;
 				end if;
+
 			end if;
 		end handle_group_operation;
 	
