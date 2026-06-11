@@ -690,10 +690,10 @@ package body et_canvas is
 -- GROUP:
 
 
-	procedure reset_group_area is begin
+	procedure reset_group_area_mouse is begin
 		-- put_line ("reset_group_area");
-		group_area := (others => <>);
-	end reset_group_area;
+		group_area_mouse := (others => <>);
+	end reset_group_area_mouse;
 
 
 
@@ -705,10 +705,10 @@ package body et_canvas is
 		x, y : type_logical_pixels;
 		w, h : type_logical_pixels;
 
-		l1 : type_logical_pixels_vector renames group_area.l1;
-		l2 : type_logical_pixels_vector renames group_area.l2;
+		l1 : type_logical_pixels_vector renames group_area_mouse.l1;
+		l2 : type_logical_pixels_vector renames group_area_mouse.l2;
 	begin
-		if group_area.started then
+		if group_area_mouse.started then
 
 			-- Set the color of the rectangle:
 			set_source_rgb (context, 0.5, 0.0, 0.0); -- red
@@ -4552,16 +4552,16 @@ package body et_canvas is
 			-- nothing happens here.
 			-- If the operator has started a define-group operation, then
 			-- set the first corner of the area:
-			if group_area.active then
-				group_area.k1 := mp;
-				--put_line ("group area k1: " & to_string (group_area.k1));
+			if group_area_mouse.active then
+				group_area_mouse.k1 := mp;
+				--put_line ("group area k1: " & to_string (group_area_mouse.k1));
 
 				-- For the routine that draws a rectangle around the
 				-- selected area: Indicate that a selection has started 
 				-- and a start point has been defined:
-				group_area.started := true;
-				group_area.l1 := cp;
-				--put_line ("group area l1: " & to_string (group_area.l1));
+				group_area_mouse.started := true;
+				group_area_mouse.l1 := cp;
+				--put_line ("group area l1: " & to_string (group_area_mouse.l1));
 			end if;
 		end handle_group_operation;
 
@@ -4707,53 +4707,53 @@ package body et_canvas is
 		-- If start and end point of the area are equal,
 		-- then nothing happens here.
 		procedure handle_group_operation is begin
-			if group_area.active then
+			if group_area_mouse.active then
 
 				-- Set the second corner of the group-area:
-				group_area.k2 := mp;
+				group_area_mouse.k2 := mp;
 
 				-- Compute the area from the corner points k1 and k2
 				-- if they are different. Otherwise nothing happens here:
-				if group_area.k1 /= group_area.k2 then
+				if group_area_mouse.k1 /= group_area_mouse.k2 then
 					
 					if debug then
-						put_line ("group area c1: " & to_string (group_area.k1));
-						put_line ("group area c2: " & to_string (group_area.k2));
+						put_line ("group area c1: " & to_string (group_area_mouse.k1));
+						put_line ("group area c2: " & to_string (group_area_mouse.k2));
 					end if;
 
 
 					-- x-position:
-					if group_area.k1.x < group_area.k2.x then
-						group_area.area.position.x := group_area.k1.x;
+					if group_area_mouse.k1.x < group_area_mouse.k2.x then
+						group_area_mouse.area.position.x := group_area_mouse.k1.x;
 					else
-						group_area.area.position.x := group_area.k2.x;
+						group_area_mouse.area.position.x := group_area_mouse.k2.x;
 					end if;
 
 					-- y-position:
-					if group_area.k1.y < group_area.k2.y then
-						group_area.area.position.y := group_area.k1.y;
+					if group_area_mouse.k1.y < group_area_mouse.k2.y then
+						group_area_mouse.area.position.y := group_area_mouse.k1.y;
 					else
-						group_area.area.position.y := group_area.k2.y;
+						group_area_mouse.area.position.y := group_area_mouse.k2.y;
 					end if;
 
 					-- width and height:
-					group_area.area.width  := 
-						abs (group_area.k2.x - group_area.k1.x);
+					group_area_mouse.area.width  := 
+						abs (group_area_mouse.k2.x - group_area_mouse.k1.x);
 					
-					group_area.area.height := 
-						abs (group_area.k2.y - group_area.k1.y);
+					group_area_mouse.area.height := 
+						abs (group_area_mouse.k2.y - group_area_mouse.k1.y);
 
 					if debug then
-						put_line ("group area " & to_string (group_area.area));
+						put_line ("group area " & to_string (group_area_mouse.area));
 					end if;
 
 					-- The operation comes to an end here:
-					group_area.active := false;
+					group_area_mouse.active := false;
 
 					-- For the routine that draws a rectangle around the
 					-- selected area: Indicate that the rectangle shall
 					-- no longer be drawn:
-					group_area.started := false;
+					group_area_mouse.started := false;
 				end if;
 			end if;
 		end handle_group_operation;
@@ -4848,11 +4848,11 @@ package body et_canvas is
 			-- set the end point of the group area.
 			-- The routine that draws the rectangle uses this
 			-- point to compute the rectangle on the fly:
-			if group_area.active then
-				group_area.l2 := cp;
+			if group_area_mouse.active then
+				group_area_mouse.l2 := cp;
 
 				if debug then
-					put_line (" group area l2: " & to_string (group_area.l2));
+					put_line (" group area l2: " & to_string (group_area_mouse.l2));
 				end if;
 				
 				-- The canvas must be refreshed in order to

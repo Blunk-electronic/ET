@@ -363,8 +363,9 @@ package et_canvas is
 
 	-- This composite type provides the ingredients
 	-- required to do a zoom-to-area operation:
-	-- CS: rename to type_select_area because it
-	-- is used for define-group operations also.
+	-- CS: rename to type_select_area_mouse because it
+	-- is defined via mouse pointer and because it is
+	-- used for define-group operations also.
 	-- Adjust the comments accordingly.
 	type type_zoom_area is record
 		-- This flag indicates that the operation is active.
@@ -461,10 +462,11 @@ package et_canvas is
 
 -- GROUP:
 
-	-- This is the instance of the group-area:
-	group_area : type_zoom_area;
+	-- This is the instance of the group-area as
+	-- it is defined via mouse pointer:
+	group_area_mouse : type_zoom_area;
 
-	procedure reset_group_area;
+	procedure reset_group_area_mouse;
 
 	
 	-- If a define-group operation has started, then

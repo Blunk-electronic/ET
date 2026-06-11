@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                    SCHEMATIC OPERATIONS ON GROUPS                        --
+--                         CANVAS SCHEMATIC GROUP                           --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2026                                                --
+-- Copyright (C) 2017 - 2026                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.                                          --
+-- <http://www.gnu.org/licenses/>.   
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -35,77 +35,25 @@
 --
 --   history of changes:
 --
--- To Do: 
 --
+-- 
 --
---
 
-with et_schematic_geometry;				use et_schematic_geometry;
-use et_schematic_geometry.pac_geometry_2;
-
-with et_sheets;							use et_sheets;
-
-with et_generic_modules;				use et_generic_modules;
-with et_object_status;					use et_object_status;
-
-with et_logging;						use et_logging;
-
-with et_cmd_origin_to_commit;			use et_cmd_origin_to_commit;
+with ada.text_io;					use ada.text_io;
 
 
 
-package et_schematic_ops_groups is
+package body et_canvas_schematic_group is
 
-	use pac_generic_modules;
 
 	
 
-	type type_select_area_keyboard is record
-		key_counter : natural := 0; -- CS subtype
-		c1, c2 : type_vector_model;
-	end record;
-	
-	
-	group_area_keyboard : type_select_area_keyboard;
-	
-	
-	
-	procedure set_group_area (
-		point			: in type_vector_model;
-		area			: in out type_select_area_keyboard;
-		log_threshold	: in type_log_level);
-	
-	
-	
-	
 	
 
-	-- This procedure resets nets, devices and units:
-	procedure reset_objects (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level);
+	procedure dummy is begin null; end;
 
-
-	-- This procedure sets the "selected"-flag of all
-	-- objects which are inside the given zone on the
-	-- given sheet:
-	procedure define_group_rectangular (
-		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet;
-		area			: in type_area;
-		log_threshold	: in type_log_level);
-
-
-	-- This deletes all objects which are in the
-	-- current group. This affects all objects whose
-	-- "selected"-flag is set:
-	procedure delete_group (
-		module_cursor	: in pac_generic_modules.cursor;
-		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level);
-
-		
-end et_schematic_ops_groups;
+	
+end et_canvas_schematic_group;
 
 -- Soli Deo Gloria
 

@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         CANVAS SCHEMATIC NETS                            --
+--                         CANVAS SCHEMATIC GROUP                           --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -72,8 +72,7 @@ package et_canvas_schematic_group is
 
 	use pac_generic_modules;
 	
-
-
+	
 	-- status_draw_net : constant string := 
 	-- 	status_click_left 
 	-- 	& "or "
@@ -81,7 +80,7 @@ package et_canvas_schematic_group is
 	-- 	& status_set_A;
 		-- & status_hint_for_abort;
 
-
+	procedure dummy;
 	
 end et_canvas_schematic_group;
 

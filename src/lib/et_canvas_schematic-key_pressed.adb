@@ -174,7 +174,9 @@ is
 
 	
 	
-	procedure define is begin
+	procedure define is 
+		use et_schematic_ops_groups;
+	begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_group =>
@@ -184,8 +186,21 @@ is
 				-- This signals the subprograms
 				-- that handle mouse-button-press/release
 				-- events that a group is being defined:
-				group_area.active := true;
+				group_area_mouse.active := true;
 
+				
+			-- If space pressed, then the operator wishes 
+			-- to operate via keyboard:	
+			when key_space =>
+				case noun is
+					when NOUN_GROUP =>
+						set_group_area (
+							point, group_area_keyboard, log_threshold + 1);
+						
+					when others => null;							
+				end case;
+
+				
 			when others => null;							
 		end case;
 	end define;

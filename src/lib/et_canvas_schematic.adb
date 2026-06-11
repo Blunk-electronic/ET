@@ -561,7 +561,7 @@ package body et_canvas_schematic is
 			reset_verb_and_noun;
 			update_mode_display;
 
-			reset_group_area; -- abort a define-group operation
+			reset_group_area_mouse; -- abort a define-group operation
 			
 			reset_unit_add; -- after adding a device
 			reset_unit_fetch; -- after fetchung a unit
@@ -864,9 +864,9 @@ package body et_canvas_schematic is
 				-- Define the group according to the
 				-- variable group_area:
 				define_group_rectangular (active_module, active_sheet,
-					group_area.area, log_threshold);
+					group_area_mouse.area, log_threshold);
 
-				reset_group_area; -- clean up
+				reset_group_area_mouse; -- clean up
 				
 				-- Once the group has been defined,
 				-- the verb-noun mechanism must be reset:
