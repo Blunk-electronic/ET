@@ -49,52 +49,7 @@ with et_commit;
 
 package body et_schematic_ops_groups is
 
-	
-
-	procedure set_group_area (
-		point			: in type_vector_model;
-		area			: in out type_select_area_keyboard;
-		log_threshold	: in type_log_level)
-	is
-	
-		procedure compute_area is
-		begin
-			null;
-		end;
 		
-	
-	begin
-		log (text => "set group area", level => log_threshold);
-		log_indentation_up;
-		
-		area.key_counter := area.key_counter + 1;
-		
-		case area.key_counter is
-			when 1 =>
-				area.c1 := point;
-				log (text => "corner 1: " & to_string (area.c1),
-					level => log_threshold + 1);
-				
-			when 2 =>
-				area.c2 := point;
-				log (text => "corner 2: " & to_string (area.c2),
-					level => log_threshold + 1);
-					
-				area.key_counter := 0;
-				compute_area;
-				
-			when others =>
-				raise constraint_error;
-		end case;	
-
-		log_indentation_down;
-	end set_group_area;
-	
-	
-	
-	
-	
-	
 	
 	procedure reset_objects (
 		module_cursor	: in pac_generic_modules.cursor;

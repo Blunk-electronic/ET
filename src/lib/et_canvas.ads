@@ -458,6 +458,28 @@ package et_canvas is
 	procedure draw_zoom_area;
 
 
+
+
+
+	type type_select_area_keyboard is record
+		key_counter : natural := 0; -- CS subtype
+		k1, k2 : type_vector_model;
+		area : type_area;
+	end record;
+	
+	
+	group_area_keyboard : type_select_area_keyboard;
+	
+	
+	
+	procedure set_select_area_keyboard (
+		point			: in type_vector_model;
+		area			: in out type_select_area_keyboard;
+		ready			: out boolean;
+		log_threshold	: in type_log_level);
+
+
+	procedure reset_group_area_keyboard;
 	
 
 -- GROUP:

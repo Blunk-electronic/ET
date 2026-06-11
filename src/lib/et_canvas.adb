@@ -686,6 +686,72 @@ package body et_canvas is
 
 
 	
+	procedure set_select_area_keyboard (
+		point			: in type_vector_model;
+		area			: in out type_select_area_keyboard;
+		ready			: out boolean;
+		log_threshold	: in type_log_level)
+	is
+	
+		procedure compute_area is
+			group_valid : boolean;
+		begin
+			make_area_from_corners (
+				C1		=> area.k1,
+				C2		=> area.k2,
+				area	=> area.area,
+				valid	=> group_valid);
+
+			if group_valid then
+				log (text => "area " & to_string (area.area),
+					level => log_threshold + 1);
+				
+				ready := true;
+				null; -- CS
+			else
+				null; 
+				-- CS: area.key_counter := 1 ?
+				
+			end if;
+		end;
+		
+	
+	begin
+		log (text => "set select area keyboard", level => log_threshold);
+		log_indentation_up;
+		
+		area.key_counter := area.key_counter + 1;
+		
+		case area.key_counter is
+			when 1 =>
+				area.k1 := point;
+				log (text => "corner 1: " & to_string (area.k1),
+					level => log_threshold + 1);
+				
+			when 2 =>
+				area.k2 := point;
+				log (text => "corner 2: " & to_string (area.k2),
+					level => log_threshold + 1);
+					
+				area.key_counter := 0;
+				compute_area;
+				
+			when others =>
+				raise constraint_error;
+		end case;	
+
+		log_indentation_down;
+	end set_select_area_keyboard;
+
+	
+
+	
+	procedure reset_group_area_keyboard is begin
+		group_area_keyboard := (others => <>);
+	end;
+	
+	
+	
 
 -- GROUP:
 

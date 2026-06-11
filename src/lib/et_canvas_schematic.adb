@@ -542,8 +542,10 @@ package body et_canvas_schematic is
 			
 			reset_preliminary_segment; 
 			-- after move/drag/draw of a net segment
-			
-			reset_zoom_area; -- abort zoom-to-area operation
+
+			-- Abort area and group select operations:
+			reset_zoom_area;
+			reset_group_area_keyboard;
 
 			pac_device_ops.reset_window_open_flags;
 

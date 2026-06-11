@@ -174,8 +174,28 @@ is
 
 	
 	
+	
+	
 	procedure define is 
-		use et_schematic_ops_groups;
+	
+		procedure define_group_keyboard is
+			use et_schematic_ops_groups;
+			ready : boolean;
+		begin
+			set_select_area_keyboard (point, group_area_keyboard, 
+				ready, log_threshold + 1);
+				
+			if ready then
+				define_group_rectangular (
+					module_cursor	=> active_module, 
+					sheet			=> active_sheet, 
+					area			=> group_area_keyboard.area,
+					log_threshold	=> log_threshold + 1);
+					
+			end if;		
+		end define_group_keyboard;
+		
+		
 	begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
@@ -194,8 +214,7 @@ is
 			when key_space =>
 				case noun is
 					when NOUN_GROUP =>
-						set_group_area (
-							point, group_area_keyboard, log_threshold + 1);
+						define_group_keyboard;
 						
 					when others => null;							
 				end case;

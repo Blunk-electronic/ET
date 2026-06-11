@@ -59,25 +59,6 @@ package et_schematic_ops_groups is
 	use pac_generic_modules;
 
 	
-
-	type type_select_area_keyboard is record
-		key_counter : natural := 0; -- CS subtype
-		c1, c2 : type_vector_model;
-	end record;
-	
-	
-	group_area_keyboard : type_select_area_keyboard;
-	
-	
-	
-	procedure set_group_area (
-		point			: in type_vector_model;
-		area			: in out type_select_area_keyboard;
-		log_threshold	: in type_log_level);
-	
-	
-	
-	
 	
 
 	-- This procedure resets nets, devices and units:
