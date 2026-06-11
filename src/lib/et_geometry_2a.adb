@@ -1671,6 +1671,8 @@ package body et_geometry_2a is
 
 
 
+
+	
 	
 
 	
@@ -2898,6 +2900,22 @@ end;
 		return result;
 	end in_area;
 
+
+
+
+
+
+
+	function to_line_array (
+		area	: in type_area)
+		return type_line_array
+	is
+		result : type_line_array (1 .. 4);
+	begin
+		-- CS
+
+		return result;
+	end to_line_array;
 
 
 	

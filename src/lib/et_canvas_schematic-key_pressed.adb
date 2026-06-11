@@ -185,6 +185,9 @@ is
 			set_select_area_keyboard (point, group_area_keyboard, 
 				ready, log_threshold + 1);
 				
+			-- put_line ("define: draw group area " 
+				-- & to_string (group_area_keyboard.area));
+
 			if ready then
 				define_group_rectangular (
 					module_cursor	=> active_module, 

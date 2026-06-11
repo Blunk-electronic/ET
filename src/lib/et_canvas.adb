@@ -725,6 +725,11 @@ package body et_canvas is
 		case area.key_counter is
 			when 1 =>
 				area.k1 := point;
+				
+				-- initial default to start with a
+				-- group of zero area:
+				area.k2 := point;
+				
 				log (text => "corner 1: " & to_string (area.k1),
 					level => log_threshold + 1);
 				
@@ -746,6 +751,9 @@ package body et_canvas is
 	
 
 	
+	
+	
+	
 	procedure reset_group_area_keyboard is begin
 		group_area_keyboard := (others => <>);
 	end;
@@ -762,19 +770,80 @@ package body et_canvas is
 	end reset_group_area_mouse;
 
 
+	
 
 	
 
 	procedure draw_group_area is
 		use cairo;
 		
-		x, y : type_logical_pixels;
-		w, h : type_logical_pixels;
+		
+		procedure draw_mouse_area is
+			x, y : type_logical_pixels;
+			w, h : type_logical_pixels;
 
-		l1 : type_logical_pixels_vector renames group_area_mouse.l1;
-		l2 : type_logical_pixels_vector renames group_area_mouse.l2;
-	begin
-		if group_area_mouse.started then
+			l1 : type_logical_pixels_vector renames group_area_mouse.l1;
+			l2 : type_logical_pixels_vector renames group_area_mouse.l2;
+		begin
+			-- Set the color of the rectangle:
+			set_source_rgb (context, 0.5, 0.0, 0.0); -- red
+
+			-- Compute the position and dimensions of
+			-- the rectangle:
+
+			-- x-position:
+			if l1.x < l2.x then
+				x := l1.x;
+			else
+				x := l2.x;
+			end if;
+
+			-- y-position:
+			if l1.y < l2.y then
+				y := l1.y;
+			else
+				y := l2.y;
+			end if;
+
+			-- width and height:
+			w := abs (l1.x - l2.x);
+			h := abs (l1.y - l2.y);
+
+			set_line_width (context, to_gdouble (zoom_area_linewidth));
+			
+			rectangle (context, 
+				to_gdouble (x),
+				to_gdouble (y),
+				to_gdouble (w),
+				to_gdouble (h));
+				
+			stroke;
+		end draw_mouse_area;
+		
+		
+		
+		procedure draw_keyboard_area is
+			-- border : type_line_array := 
+			-- 	to_line_array (group_area_keyboard.area);
+			
+			x, y : type_logical_pixels;
+			w, h : type_logical_pixels;
+
+			l1 : type_logical_pixels_vector := 
+				real_to_canvas (group_area_keyboard.K1, S);
+				
+			l2 : type_logical_pixels_vector := 
+				real_to_canvas (group_area_keyboard.K2, S);
+
+		begin
+			-- put_line ("draw group area " & to_string (group_area_keyboard.area));
+			
+-- 			-- Set the color of the rectangle:
+-- 			set_source_rgb (context, 0.5, 0.0, 0.0); -- red
+-- 			
+-- 			draw_rectangle (
+-- 				rectangle	=> group_area_keyboard.area,
+-- 				width		=> 1.0);
 
 			-- Set the color of the rectangle:
 			set_source_rgb (context, 0.5, 0.0, 0.0); -- red
@@ -809,6 +878,17 @@ package body et_canvas is
 				to_gdouble (h));
 				
 			stroke;
+		end draw_keyboard_area;
+		
+		
+	begin
+		if group_area_mouse.started then
+			draw_mouse_area;
+		end if;
+		
+		
+		if group_area_keyboard.key_counter = 1 then
+			draw_keyboard_area;
 		end if;
 	end draw_group_area;
 
@@ -2490,6 +2570,9 @@ package body et_canvas is
 
 	
 	
+	
+	
+	
 
 -- CURSOR:
 
@@ -2504,6 +2587,8 @@ package body et_canvas is
 		-- put_line ("position " & to_string (cursor.position));
 	end move_cursor;
 
+	
+	
 
 
 	procedure move_cursor (
@@ -2568,7 +2653,14 @@ package body et_canvas is
 			end case;
 
 		end if;
-			
+		
+		
+		if group_area_keyboard.key_counter = 1 then
+			put_line ("update group area keyboard");
+			group_area_keyboard.K2 := cursor.position;
+		end if;
+		
+		
 		refresh;		
 		
 		update_cursor_coordinates;
@@ -2581,6 +2673,9 @@ package body et_canvas is
 	end move_cursor;
 	
 
+	
+	
+	
 
 	procedure move_cursor_by (
 		vector : type_vector_model)
@@ -2594,6 +2689,9 @@ package body et_canvas is
 
 	end move_cursor_by;
 
+	
+	
+	
 	
 
 	function get_cursor_position return

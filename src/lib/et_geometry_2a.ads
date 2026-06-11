@@ -738,7 +738,10 @@ package et_geometry_2a is
 		C1, C2	: in type_vector_model;
 		area	: in out type_area;
 		valid	: out boolean);
-										 
+							
+		
+		
+		
 
 -- BOUNDING-BOX:
 
@@ -1353,6 +1356,12 @@ package et_geometry_2a is
 	-- CS: an additional parameter could be used
 	-- to test if the line crosses the area
 
+	
+	-- Converts the borders of an area
+	-- to an array of 4 lines:
+	function to_line_array (
+		area	: in type_area)
+		return type_line_array;
 
 	
 -- ARC

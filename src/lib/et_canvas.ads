@@ -468,7 +468,6 @@ package et_canvas is
 	end record;
 	
 	
-	group_area_keyboard : type_select_area_keyboard;
 	
 	
 	
@@ -479,7 +478,11 @@ package et_canvas is
 		log_threshold	: in type_log_level);
 
 
+	
+	group_area_keyboard : type_select_area_keyboard;
+
 	procedure reset_group_area_keyboard;
+
 	
 
 -- GROUP:
