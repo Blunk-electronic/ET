@@ -809,25 +809,16 @@ package body et_canvas is
 	
 
 	procedure draw_group_area is		
-		-- The area to be visualized is computed solely based on
-		-- the corners K1 and K2 of the area.
-		use cairo;
+		-- The area to be visualized is computed 
+		-- solely based on the corners of the area.
 		
 		
-		
-		-- This procedure draws the group-area that is being
-		-- defined via the mouse pointer.
-		-- While the area is being defined by the operator 
-		-- the second corner (l2) is changing all the time
-		-- (See function get_mouse_moved_event).
-		-- l1 has been set at the begin of the define-group-process
-		-- (see function get_mouse_button_pressed_event).
-		procedure draw_mouse_area is
+		procedure draw (
+			l1, l2 : in type_logical_pixels_vector)
+		is
+			use cairo;
 			x, y : type_logical_pixels;
 			w, h : type_logical_pixels;
-
-			l1 : type_logical_pixels_vector renames group_area_mouse.l1;
-			l2 : type_logical_pixels_vector renames group_area_mouse.l2;
 		begin
 			-- Set the color of the rectangle:
 			set_source_rgb (context, 0.5, 0.0, 0.0); -- red
@@ -862,9 +853,23 @@ package body et_canvas is
 				to_gdouble (h));
 				
 			stroke;
+		end draw;
+		
+		
+		-- This procedure draws the group-area that is being
+		-- defined via the mouse pointer.
+		-- While the area is being defined by the operator 
+		-- the second corner (l2) is changing all the time
+		-- (See function get_mouse_moved_event).
+		-- l1 has been set at the begin of the define-group-process
+		-- (see function get_mouse_button_pressed_event).
+		procedure draw_mouse_area is
+			l1 : type_logical_pixels_vector renames group_area_mouse.l1;
+			l2 : type_logical_pixels_vector renames group_area_mouse.l2;
+		begin
+			draw (l1, l2);
 		end draw_mouse_area;
-		
-		
+				
 		
 		-- This procedure draws the group-area that is being
 		-- defined via the cursor-keys of the keyboard.
@@ -877,9 +882,6 @@ package body et_canvas is
 			-- We convert the corners (real coordinates CS1)
 			-- to canvas coordinates (CS2) and derive from them
 			-- the resulting rectangle to be drawn:
-			x, y : type_logical_pixels;
-			w, h : type_logical_pixels;
-
 			l1 : type_logical_pixels_vector := 
 				real_to_canvas (group_area_keyboard.K1, S);
 				
@@ -888,49 +890,20 @@ package body et_canvas is
 
 		begin
 			-- put_line ("draw group area " & to_string (group_area_keyboard.area));
-
-			-- Set the color of the rectangle:
-			set_source_rgb (context, 0.5, 0.0, 0.0); -- red
-
-			-- Compute the position and dimensions of
-			-- the rectangle:
-
-			-- x-position:
-			if l1.x < l2.x then
-				x := l1.x;
-			else
-				x := l2.x;
-			end if;
-
-			-- y-position:
-			if l1.y < l2.y then
-				y := l1.y;
-			else
-				y := l2.y;
-			end if;
-
-			-- width and height:
-			w := abs (l1.x - l2.x);
-			h := abs (l1.y - l2.y);
-
-			set_line_width (context, to_gdouble (zoom_area_linewidth));
-			
-			rectangle (context, 
-				to_gdouble (x),
-				to_gdouble (y),
-				to_gdouble (w),
-				to_gdouble (h));
-				
-			stroke;
+			draw (l1, l2);
 		end draw_keyboard_area;
 		
 		
 	begin
+		-- If a group is being defined via
+		-- mouse then draw the current area:
 		if group_area_mouse.started then
 			draw_mouse_area;
 		end if;
 		
 		
+		-- If a group is being defined via
+		-- keyboard then draw the current area:
 		if group_area_keyboard.key_counter = 1 then
 			draw_keyboard_area;
 		end if;
@@ -5067,6 +5040,7 @@ package body et_canvas is
 	
 
 
+	
 
 
 	function to_string (

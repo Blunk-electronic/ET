@@ -532,7 +532,8 @@ package et_canvas is
 	-- area to be grouped. The rectangle is computed based
 	-- on the current corners stored in the variables
 	-- group_area_keyboard or group_area_mouse. 
-	--  The rectangle is drawn directly on the cairo_context.
+	-- The rectangle is drawn directly on the cairo_context.
+	-- Here the color of the rectangle is set.
 	procedure draw_group_area;
 
 
