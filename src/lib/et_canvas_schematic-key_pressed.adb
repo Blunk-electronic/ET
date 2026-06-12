@@ -176,18 +176,26 @@ is
 	
 	
 	
-	procedure define is 
+	procedure define is 	
 	
+		-- This procedure is called each time the operator presses
+		-- the space-key. How often the key is pressed is counted
+		-- in variable group_area_keyboard.key_counter. After the
+		-- second key-press event, the group_area_keyboard should
+		-- be valid and will be passed to the actual define-group
+		-- operation for further actions down the chain:
 		procedure define_group_keyboard is
 			use et_schematic_ops_groups;
 			ready : boolean;
 		begin
+			-- Evaluate the cursor position (twice) and
+			-- store it in group_area_keyboard.
 			set_select_area_keyboard (point, group_area_keyboard, 
 				ready, log_threshold + 1);
 				
-			-- put_line ("define: draw group area " 
-				-- & to_string (group_area_keyboard.area));
-
+			-- If a useful area is the result, then the ready-flag
+			-- is set so that the group area can be passed on
+			-- to further operations down the chain:
 			if ready then
 				define_group_rectangular (
 					module_cursor	=> active_module, 
@@ -204,7 +212,8 @@ is
 			-- EVALUATE KEY FOR NOUN:
 			when key_noun_group =>
 				noun := NOUN_GROUP;					
-				-- CS set_status
+				-- CS set_status (hints on how to define the group
+				-- via mouse or keyboard)
 				
 				-- This signals the subprograms
 				-- that handle mouse-button-press/release
@@ -217,7 +226,19 @@ is
 			when key_space =>
 				case noun is
 					when NOUN_GROUP =>
+						-- When a group is defined via cursor and
+						-- keyboard, then the first corner
+						-- of the group area is set on pressing
+						-- the space-key 1st. Then the operator
+						-- moves the cursor to the second corner
+						-- of the area and presses space again.
+						-- So this call is executed twice:
 						define_group_keyboard;
+						-- NOTE: This is not about visualizing the
+						-- group-area while it is being set on the
+						-- canvas. The visualizing mechanism can be
+						-- found in the generic package et_canvas
+						-- procedures move_cursor and draw_group_area.
 						
 					when others => null;							
 				end case;
@@ -228,6 +249,7 @@ is
 	end define;
 		
 
+		
 		
 	procedure dissolve is begin
 		case key is

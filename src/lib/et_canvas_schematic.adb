@@ -453,6 +453,9 @@ package body et_canvas_schematic is
 	
 
 		draw_cursor;
+
+		-- In case a zoom-area or a group-area
+		-- is being defined, then draw it:
 		draw_zoom_area;
 		draw_group_area;
 		

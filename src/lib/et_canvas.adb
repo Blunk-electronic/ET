@@ -686,6 +686,7 @@ package body et_canvas is
 
 
 	
+	
 	procedure set_select_area_keyboard (
 		point			: in type_vector_model;
 		area			: in out type_select_area_keyboard;
@@ -693,6 +694,17 @@ package body et_canvas is
 		log_threshold	: in type_log_level)
 	is
 	
+		-- This procedure computes from K1 and K2 the
+		-- actual area and stores it in the in-out
+		-- variable "area".
+		-- K1 and K2 should provide coordinates to form
+		-- a rectangle having an area. However, the operator
+		-- could press the space-button twice so that no reasonable
+		-- area results:
+		-- 1. at the same cursor position
+		-- 2. K1 and K2 have the same x or the same y position
+		-- In such cases the whole select-area process will be
+		-- aborted and the given variable "area" reset:
 		procedure compute_area is
 			group_valid : boolean;
 		begin
@@ -703,11 +715,10 @@ package body et_canvas is
 				valid	=> group_valid);
 
 			if group_valid then
-				log (text => "area " & to_string (area.area),
+				log (text => "area selected: " & to_string (area.area),
 					level => log_threshold + 1);
 				
 				ready := true;
-				null; -- CS
 			else
 				null; 
 				-- CS: area.key_counter := 1 ?
@@ -720,25 +731,46 @@ package body et_canvas is
 		log (text => "set select area keyboard", level => log_threshold);
 		log_indentation_up;
 		
+		-- Count the number of key-press events
+		-- each time the procedure is called:
 		area.key_counter := area.key_counter + 1;
 		
+		-- Now, depending on the key_counter we decide
+		-- what to do:
 		case area.key_counter is
 			when 1 =>
+				-- On the first call of this procedure,
+				-- set the first corner of the area:
 				area.k1 := point;
 				
-				-- initial default to start with a
-				-- group of zero area:
+				-- This is for visuaization:
+				-- In order to show the operator an increasing
+				-- area (via a rectangle), the second corner assumes
+				-- the same value as the first corner. So this is 
+				-- an initial default to start with a zero area.
+				-- Afterward, when the operator moves the cursor
+				-- with the cursor-keys, the second corner will be
+				-- constantly overwritten (see procedure move_cursor):
 				area.k2 := point;
 				
 				log (text => "corner 1: " & to_string (area.k1),
 					level => log_threshold + 1);
 				
 			when 2 =>
+				-- On the second call of this procedure, the second
+				-- corner of the area will be set here according to the
+				-- current cursor position (provided via parameter point):
 				area.k2 := point;
+				
 				log (text => "corner 2: " & to_string (area.k2),
 					level => log_threshold + 1);
-					
+				
+				-- To signal the visuaization mechanism that the
+				-- area-select operation is complete, reset the key-press
+				-- counter:
 				area.key_counter := 0;
+				
+				-- Compute the final area from the corners K1 and K2:
 				compute_area;
 				
 			when others =>
@@ -774,10 +806,20 @@ package body et_canvas is
 
 	
 
-	procedure draw_group_area is
+	procedure draw_group_area is		
+		-- The area to be visualized is computed solely based on
+		-- the corners K1 and K2 of the area.
 		use cairo;
 		
 		
+		
+		-- This procedure draws the group-area that is being
+		-- defined via the mouse pointer.
+		-- While the area is being defined by the operator 
+		-- the second corner (l2) is changing all the time
+		-- (See function get_mouse_moved_event).
+		-- l1 has been set at the begin of the define-group-process
+		-- (see function get_mouse_button_pressed_event).
 		procedure draw_mouse_area is
 			x, y : type_logical_pixels;
 			w, h : type_logical_pixels;
@@ -822,10 +864,17 @@ package body et_canvas is
 		
 		
 		
+		-- This procedure draws the group-area that is being
+		-- defined via the cursor-keys of the keyboard.
+		-- While the area is being defined by the operator 
+		-- the second corner (K2) is changing all the time
+		-- (see procedure move_cursor for details).
+		-- K1 has been set at the begin of the define-group-process.
+		-- (see procedure set_select_area_keyboard).
 		procedure draw_keyboard_area is
-			-- border : type_line_array := 
-			-- 	to_line_array (group_area_keyboard.area);
-			
+			-- We convert the corners (real coordinates CS1)
+			-- to canvas coordinates (CS2) and derive from them
+			-- the resulting rectangle to be drawn:
 			x, y : type_logical_pixels;
 			w, h : type_logical_pixels;
 
@@ -837,13 +886,6 @@ package body et_canvas is
 
 		begin
 			-- put_line ("draw group area " & to_string (group_area_keyboard.area));
-			
--- 			-- Set the color of the rectangle:
--- 			set_source_rgb (context, 0.5, 0.0, 0.0); -- red
--- 			
--- 			draw_rectangle (
--- 				rectangle	=> group_area_keyboard.area,
--- 				width		=> 1.0);
 
 			-- Set the color of the rectangle:
 			set_source_rgb (context, 0.5, 0.0, 0.0); -- red

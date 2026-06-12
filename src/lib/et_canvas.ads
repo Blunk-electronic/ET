@@ -462,19 +462,44 @@ package et_canvas is
 
 
 	type type_select_area_keyboard is record
+		-- The counter that counts how many
+		-- times the operator has pressed the space-key:
 		key_counter : natural := 0; -- CS subtype
+
+		-- The corners of the area being selected:
 		k1, k2 : type_vector_model;
+
+		-- Once the corners have been set, the
+		-- final area is computed and stored here
+		-- for further processing:
 		area : type_area;
 	end record;
 	
 	
 	
 	
-	
+	-- This procedure is relevant if an area (either for
+	-- zooming or grouping) is defined via keyboard.
+	-- The operator presses a key (usually space) twice,
+	-- for the first corner and for the second corner of the
+	-- area of interest. On the first key-press event,
+	-- the first corner K1 of the area is set.
+	-- On the second key-press event the second corner K2 is
+	-- set and the actual area computed. 
+	-- The corners and the final area are elements of
+	-- the in-out variable "area":
 	procedure set_select_area_keyboard (
+		-- The position of the cursor on the canvas:
 		point			: in type_vector_model;
+
+		-- The area (incl. corners, final area, key-press counter)
+		-- to be defined:
 		area			: in out type_select_area_keyboard;
+		
+		-- If a useful area could be computed then, this
+		-- flag indicates that the computation was successful:
 		ready			: out boolean;
+		
 		log_threshold	: in type_log_level);
 
 
@@ -495,9 +520,12 @@ package et_canvas is
 
 	
 	-- If a define-group operation has started, then
-	-- this procedure draws the rectangle around the
-	-- area to be grouped.
-	-- The rectangle is drawn directly on the cairo_context.
+	-- this procedure is in charge of the visualization
+	-- of the area. It draws the rectangle around the
+	-- area to be grouped. The rectangle is computed based
+	-- on the current corners stored in the variables
+	-- group_area_keyboard or group_area_mouse. 
+	--  The rectangle is drawn directly on the cairo_context.
 	procedure draw_group_area;
 
 
