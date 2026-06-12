@@ -70,6 +70,24 @@ Delete a Group
 	|VNS| del g
 
 
+
+Move a Group
+^^^^^^^^^^^^
+
+	A group can be moved across the current sheet
+	or to another sheet:
+
+	.. code-block::
+	
+		move group relative 0 100 20
+
+
+	.. code-block::
+	
+		move group absolute 3 100 20
+
+
+
 ..
 	Add Objects to Group
 	^^^^^^^^^^^^^^^^^^^^

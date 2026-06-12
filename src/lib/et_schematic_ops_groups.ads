@@ -43,6 +43,7 @@
 with et_schematic_geometry;				use et_schematic_geometry;
 use et_schematic_geometry.pac_geometry_2;
 
+with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 with et_sheets;							use et_sheets;
 
 with et_generic_modules;				use et_generic_modules;
@@ -85,7 +86,17 @@ package et_schematic_ops_groups is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
-		
+
+	-- This procedure moves a group of objects:
+	procedure move_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		coordinates		: in type_coordinates; -- relative/absolute
+		sheet			: in type_sheet_relative; -- -3/0/2
+		destination		: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level);
+	
+	
 end et_schematic_ops_groups;
 
 -- Soli Deo Gloria

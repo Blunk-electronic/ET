@@ -69,6 +69,15 @@ package et_cp_schematic_group is
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);
 	
+
+	-- This procedure parses a command that moves a group:
+	-- example 1: schematic demo move group relative 0 100 20
+	-- example 2: schematic demo move group absolute 2 100 20
+	procedure move_group (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level);
+
 	
 end et_cp_schematic_group;
 

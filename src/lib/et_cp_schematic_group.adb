@@ -46,6 +46,7 @@ with ada.text_io;						use ada.text_io;
 with ada.characters.handling;			use ada.characters.handling;
 with ada.strings; 						use ada.strings;
 
+with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 with et_sheets;							use et_sheets;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
@@ -193,6 +194,69 @@ package body et_cp_schematic_group is
 	end delete_group;
 
 
+	
+
+
+
+
+
+
+	
+
+	procedure move_group (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+
+		
+		procedure do_it is
+			coordinates : type_coordinates;
+			sheet		: type_sheet_relative;		
+			destination	: type_vector_model;
+		begin
+			coordinates := to_coordinates (get_field (cmd, 5)); -- relative/absolute
+			sheet		:= to_sheet_relative (get_field (cmd, 6)); -- -1, 2
+		
+			destination	:= to_vector_model (
+							x => get_field (cmd, 7),
+							y => get_field (cmd, 8));
+
+			move_group (
+				module_cursor	=> module,
+				coordinates		=> coordinates,
+				sheet			=> sheet,
+				destination		=> destination,
+				
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
+
+				log_threshold	=> log_threshold + 1);
+		end do_it;
+
+		
+		
+	begin
+		log (text => "move group", level => log_threshold);
+		log_indentation_up;
+		
+
+		case cmd_field_count is
+			when 8 =>
+				do_it;
+
+			when 9 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+
+		
+		log_indentation_down;
+	end move_group;
 	
 	
 	

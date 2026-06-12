@@ -251,6 +251,54 @@ package body et_schematic_ops_groups is
 	end delete_group;
 
 		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	procedure move_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		coordinates		: in type_coordinates; -- relative/absolute
+		sheet			: in type_sheet_relative; -- -3/0/2
+		destination		: in type_vector_model; -- x/y
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level)
+	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " move group (schematic)",
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
+		-- CS
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+		
+		log_indentation_down;
+	end move_group;
+	
+
+
 	
 	
 end et_schematic_ops_groups;
