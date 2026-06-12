@@ -460,11 +460,18 @@ package et_canvas is
 
 
 
+	
+	subtype type_key_pressed_count is natural range 0 .. 2;
 
 	type type_select_area_keyboard is record
 		-- The counter that counts how many
-		-- times the operator has pressed the space-key:
-		key_counter : natural := 0; -- CS subtype
+		-- times the operator has pressed the space-key.
+		-- It is also used as indicator whether an
+		-- area-select operation via keyboard is in progress:
+		-- 0 - idle, nothing started
+		-- 1 - space-key once pressed, operation has started
+		-- 2 - space-key twice pressed
+		key_counter : type_key_pressed_count := 0;
 
 		-- The corners of the area being selected:
 		k1, k2 : type_vector_model;

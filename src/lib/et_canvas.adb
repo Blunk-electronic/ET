@@ -709,8 +709,8 @@ package body et_canvas is
 			group_valid : boolean;
 		begin
 			make_area_from_corners (
-				C1		=> area.k1,
-				C2		=> area.k2,
+				K1		=> area.k1,
+				K2		=> area.k2,
 				area	=> area.area,
 				valid	=> group_valid);
 
@@ -720,9 +720,11 @@ package body et_canvas is
 				
 				ready := true;
 			else
-				null; 
-				-- CS: area.key_counter := 1 ?
-				
+				-- Abort the process and reset "area":
+				log (text => "invalid area -> abort",
+					level => log_threshold + 1);
+					
+				area := (others => <>);				
 			end if;
 		end;
 		
@@ -773,8 +775,8 @@ package body et_canvas is
 				-- Compute the final area from the corners K1 and K2:
 				compute_area;
 				
-			when others =>
-				raise constraint_error;
+			when 0 =>
+				raise constraint_error; -- CS should never happen
 		end case;	
 
 		log_indentation_down;
@@ -4858,8 +4860,8 @@ package body et_canvas is
 				-- Otherwise the area is regarded as invalid and 
 				-- nothing happens here:				
 				make_area_from_corners (
-					C1		=> zoom_area.k1,
-					C2		=> zoom_area.k2,
+					K1		=> zoom_area.k1,
+					K2		=> zoom_area.k2,
 					area	=> zoom_area.area,
 					valid	=> group_valid);
 
@@ -4914,8 +4916,8 @@ package body et_canvas is
 				-- Otherwise the area is regarded as invalid and 
 				-- nothing happens here:				
 				make_area_from_corners (
-					C1		=> group_area_mouse.k1,
-					C2		=> group_area_mouse.k2,
+					K1		=> group_area_mouse.k1,
+					K2		=> group_area_mouse.k2,
 					area	=> group_area_mouse.area,
 					valid	=> group_valid);
 

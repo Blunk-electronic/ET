@@ -1622,42 +1622,42 @@ package body et_geometry_2a is
 
 
 	procedure make_area_from_corners (
-		C1, C2	: in type_vector_model;
+		K1, K2	: in type_vector_model;
 		area	: in out type_area;
 		valid	: out boolean)
 	is
 		debug : boolean := false;
 	begin
-		if C1 /= C2 then -- CS: better test if x1/=x2 and y1/=y2 ?
+		if K1.x /= K2.x and K1.y /= K2.y then
 
 			if debug then
-				put_line ("C1: " & to_string (C1));
-				put_line ("C2: " & to_string (C2));
+				put_line ("K1: " & to_string (K1));
+				put_line ("K2: " & to_string (K2));
 			end if;
 
 			-- x-position:
-			if C1.x < C2.x then
-				area.position.x := C1.x;
+			if K1.x < K2.x then
+				area.position.x := K1.x;
 			else
-				area.position.x := C2.x;
+				area.position.x := K2.x;
 			end if;
 
 			-- y-position:
-			if C1.y < C2.y then
-				area.position.y := C1.y;
+			if K1.y < K2.y then
+				area.position.y := K1.y;
 			else
-				area.position.y := C2.y;
+				area.position.y := K2.y;
 			end if;
 			
 			-- width and height:
-			area.width  := abs (C2.x - C1.x);
+			area.width  := abs (K2.x - K1.x);
 			
-			area.height := abs (C2.y - C1.y);
+			area.height := abs (K2.y - K1.y);
 
 
 			
 			if debug then
-				put_line ("group area " & to_string (area));
+				put_line ("area " & to_string (area));
 			end if;
 
 			valid := true;

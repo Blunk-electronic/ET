@@ -732,10 +732,16 @@ package et_geometry_2a is
 		B : in type_area);
 
 
-	-- Computes from two corner points
-	-- an area:
+	-- Computes from two corner points an area.
+	-- The two points must differ from each other
+	-- in their x and y value on order to compute
+	-- an area. In this case the flag "valid" will
+	-- be set to indicate that the conversion was
+	-- successful. Otherwise the flag "valid"
+	-- will be cleared so that the caller can act
+	-- accordingly:
 	procedure make_area_from_corners (
-		C1, C2	: in type_vector_model;
+		K1, K2	: in type_vector_model; -- the corners
 		area	: in out type_area;
 		valid	: out boolean);
 							
