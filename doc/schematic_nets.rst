@@ -6,7 +6,8 @@
 Nets and Net Labels
 -------------------
 
-#. Drawing Net Segments
+Drawing Net Segments
+^^^^^^^^^^^^^^^^^^^^
 
 	|VNS| d n
 
@@ -45,7 +46,8 @@ Nets and Net Labels
 
 
 
-#. Showing and Finding Nets
+Showing and Finding Nets
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 	- To show a net:
 
@@ -63,7 +65,8 @@ Nets and Net Labels
 	
 	
 	
-#. Renaming a Net
+Renaming a Net
+^^^^^^^^^^^^^^
 
 	A single particular strand on the current sheet:
 	
@@ -103,7 +106,9 @@ Nets and Net Labels
 
 	
 	
-#. Drag net segment
+
+Drag net segment
+^^^^^^^^^^^^^^^^
 
 	When a net segment is being dragged, then other connected segments are
 	dragged along. If the ends of the net are dragged to a port of a
@@ -132,7 +137,10 @@ Nets and Net Labels
 	
 	
 	
-#. Delete net segment
+
+
+Delete net segment
+^^^^^^^^^^^^^^^^^^
 
 	This example command searches for a net segment
 	on sheet 1 that crosses the position 80/100 in a zone of
@@ -148,8 +156,10 @@ Nets and Net Labels
 
 
 	
+
 	
-#. Delete a strand of a net
+Delete a strand of a net
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 	This example command searches for a strand
 	on sheet 1 that crosses the position 80/100 in a zone of
@@ -165,7 +175,9 @@ Nets and Net Labels
 
 	
 	
-#. Delete a net on a certain sheet
+
+Delete a net on a certain sheet
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -175,8 +187,10 @@ Nets and Net Labels
 	|VNS| del n
 	
 	
+
 	
-#. Delete a whole net on all sheets
+Delete a whole net on all sheets
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -187,7 +201,8 @@ Nets and Net Labels
 
 	
 	
-#. Placing Net Labels
+Placing Net Labels
+^^^^^^^^^^^^^^^^^^
 
 	A net label is just a text next
 	to a net segment to indicate the net name.
@@ -206,7 +221,8 @@ Nets and Net Labels
 
 	
 	
-#. Move Net Label
+Move Net Label
+^^^^^^^^^^^^^^
 
 	A net label can be moved along a net segment.
 	Independed of the the grid settings, the label will
@@ -217,14 +233,16 @@ Nets and Net Labels
 	
 	
 	
-#. Delete Net Label
+Delete Net Label
+^^^^^^^^^^^^^^^^
 
 	|VNS| del l
 
 
 
 	
-#. Placing Net Off-Page-Connectors
+Placing Net Off-Page-Connectors
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	An off-page-connector is a text inside a box that
 	is connected with a net segment. The box
@@ -241,15 +259,19 @@ Nets and Net Labels
 	
 		demo place net_connector  1  50 100  passive
 	
+
+
 	
-#. Delete Net Off-Page-Connectors
+Delete Net Off-Page-Connectors
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	|VNS| del c
 
 	
 
 
-#. Set Net Class
+Set Net Class
+^^^^^^^^^^^^^
 
 	By default a net is member of class 'default'.
 	These figures apply for the default class:
@@ -266,7 +288,8 @@ Nets and Net Labels
 
 
 
-#. Set Net Scope
+Set Net Scope
+^^^^^^^^^^^^^
 
 	This example sets the GND as global:
 

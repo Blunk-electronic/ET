@@ -7,7 +7,8 @@ Devices and Units
 -----------------
 
 
-#. Add Device
+Add Device
+^^^^^^^^^^
 
 	This example command adds a new electrical device to the module.
 	The destination is sheet 1 on 100/140 with rotation 0 degree.
@@ -39,7 +40,9 @@ Devices and Units
 
 
 
-#. Copy Device
+
+Copy Device
+^^^^^^^^^^^
 
 	When a device is copied, then all the properties of the original
 	device are also copied. Units are not copied. Instead the first
@@ -56,7 +59,8 @@ Devices and Units
 
 
 	
-#. Showing and Finding Devices and Units:
+Showing and Finding Devices and Units
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	To show a device:
 	
@@ -102,7 +106,8 @@ Devices and Units
 
 
 	
-#. Rename a Device
+Rename a Device
+^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -112,7 +117,8 @@ Devices and Units
 	
 
 
-#. Renumber Devices
+Renumber Devices
+^^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -122,10 +128,8 @@ Devices and Units
 
 
 
-
-
-
-#. Delete a Device
+Delete a Device
+^^^^^^^^^^^^^^^
 
 	Devices which have a representation in the schematic
 	and in the board drawing can be deleted only in the
@@ -143,7 +147,8 @@ Devices and Units
 
 
 
-#. Delete a Unit
+Delete a Unit
+^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -156,7 +161,8 @@ Devices and Units
 
 
 
-#. Drag a Unit
+Drag a Unit
+^^^^^^^^^^^
 
 	Dragging a unit means to move it about the sheet
 	along with the connected net segments.
@@ -184,7 +190,8 @@ Devices and Units
 
 
 
-#. Fetch a Unit
+Fetch a Unit
+^^^^^^^^^^^^
 
 	If a device is already used in the schematic and further units
 	of it are to be placed, then the fetch command should be used.
@@ -204,7 +211,8 @@ Devices and Units
 
 
 
-#. Move a Unit
+Move a Unit
+^^^^^^^^^^^
 
 	Moving a unit disconnects it from net segments and places it 
 	at the given position. If the ports of the unit end up where 
@@ -235,7 +243,8 @@ Devices and Units
 
 	
 
-#. Rotate a Unit
+Rotate a Unit
+^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -253,7 +262,8 @@ Devices and Units
 
 
 
-#. Mirror a Unit
+Mirror a Unit
+^^^^^^^^^^^^^
 
 	Mirroring is always along the y-axis of the unit.
 	The operation only mirrors the body and the ports.
@@ -274,7 +284,8 @@ Devices and Units
 
 
 
-#. Set Package Variant
+Set Package Variant
+^^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -285,7 +296,8 @@ Devices and Units
 	
 
 
-#. Set Value
+Set Value
+^^^^^^^^^
 
 	.. code-block::
 
@@ -296,7 +308,8 @@ Devices and Units
 	
 
 
-#. Set Partcode
+Set Partcode
+^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -307,7 +320,8 @@ Devices and Units
 	
 
 
-#. Set Purpose
+Set Purpose
+^^^^^^^^^^^
 
 	.. code-block::
 
@@ -328,7 +342,8 @@ and the purpose (like "Brightness") is displayed via a placeholder.
 The placeholder can be moved or rotated when the schematic drawing
 requires it. 
 	
-#. Move Name
+Move Name
++++++++++
 
 	.. code-block::
 
@@ -338,7 +353,8 @@ requires it.
 		
 
 
-#. Move Value
+Move Value
+++++++++++
 
 	.. code-block::
 
@@ -348,7 +364,8 @@ requires it.
 		
 
 
-#. Move Purpose
+Move Purpose
+++++++++++++
 
 	.. code-block::
 
@@ -359,7 +376,8 @@ requires it.
 
 
 	
-#. Rotate Name
+Rotate Name
++++++++++++
 
 	.. code-block::
 
@@ -369,7 +387,8 @@ requires it.
 		
 
 
-#. Rotate Value
+Rotate Value
+++++++++++++
 
 	.. code-block::
 
@@ -379,7 +398,8 @@ requires it.
 		
 
 
-#. Rotate Purpose
+Rotate Purpose
+++++++++++++++
 
 	.. code-block::
 

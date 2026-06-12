@@ -7,7 +7,8 @@ Displaying Objects
 ------------------
 
 
-#. Display nets
+Display nets
+^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -15,8 +16,10 @@ Displaying Objects
 
 	|VNS| |NI|
 
+
 	
-#. Display ports
+Display ports
+^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -24,8 +27,10 @@ Displaying Objects
 
 	|VNS| |NI|
 	
+
 	
-#. Display device names
+Display device names
+^^^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -33,8 +38,10 @@ Displaying Objects
 
 	|VNS| |NI|
 
+
 	
-#. Display device values
+Display device values
+^^^^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -43,7 +50,9 @@ Displaying Objects
 	|VNS| |NI|
 
 	
-#. Display device purposes
+
+Display device purposes
+^^^^^^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 

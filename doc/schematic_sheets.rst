@@ -6,7 +6,8 @@
 Sheets
 ------
 
-#. Show a sheet
+Show a sheet
+^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -16,7 +17,8 @@ Sheets
 
 
 	
-#. Set Sheet Category
+Set Sheet Category
+^^^^^^^^^^^^^^^^^^
 
 	.. code-block::
 
@@ -36,7 +38,8 @@ Sheets
 
 
 
-#. Delete a Sheet
+Delete a Sheet
+^^^^^^^^^^^^^^
 
 	This example command deletes a sheet incl. everything
 	on it:

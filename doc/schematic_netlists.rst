@@ -6,7 +6,9 @@
 Netlists
 --------
 
-#. Export netlists
+Export netlist
+^^^^^^^^^^^^^^
+
 
 	This example command exports a category 1 netlist
 	of the module in the default assembly variant:

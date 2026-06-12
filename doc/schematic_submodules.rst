@@ -16,7 +16,8 @@ An important thing is how to define which nets
 are visible from the parent module.
 
 
-#. The Scope of a Net
+The Scope of a Net
+++++++++++++++++++
 
 	.. code-block::
 
@@ -28,7 +29,8 @@ are visible from the parent module.
 		set scope AGND local
 
 
-#. Netchangers
+Netchangers
++++++++++++
 
 
 
@@ -38,8 +40,8 @@ Using a Submodule
 ^^^^^^^^^^^^^^^^^
 
 
-
-#. Add a Submodule
+Add a Submodule
++++++++++++++++
 
 	Submodules are always instantiated from a generic module. 
 	On instantiation the submodule is given an instance name.
@@ -60,7 +62,8 @@ Using a Submodule
 
 
 
-#. Assign the Generic File
+Assign the Generic File
++++++++++++++++++++++++
 
 	This example command assigns the generic module file:
 
@@ -72,7 +75,8 @@ Using a Submodule
 
 
 
-#. Move a Submodule
+Move a Submodule
+++++++++++++++++
 
 
 	.. code-block::
@@ -87,7 +91,8 @@ Using a Submodule
 
 
 
-#. Drag a Submodule
+Drag a Submodule
+++++++++++++++++
 
 	Dragging a submodule drags the connected nets segments along.
 	If a submodule port ends up where a net segment is, it becomes connected with the net.
@@ -107,7 +112,8 @@ Using a Submodule
 
 
 
-#. Rename a Submodule
+Rename a Submodule
+++++++++++++++++++
 
 
 	.. code-block::
@@ -117,7 +123,8 @@ Using a Submodule
 
 
 
-#. Copy a Submodule
+Copy a Submodule
+++++++++++++++++
 
 
 	.. code-block::
@@ -128,7 +135,8 @@ Using a Submodule
 
 
 
-#. Delete a Submodule
+Delete a Submodule
+++++++++++++++++++
 
 
 	.. code-block::
@@ -155,7 +163,8 @@ Ports
 	slave port propagates the name of the connected net into the submodule.
 
 
-#. Add a Port
+Add a Port
+++++++++++
 
 	.. code-block::
 
@@ -163,7 +172,8 @@ Ports
 
 
 
-#. Delete a Port
+Delete a Port
++++++++++++++
 
 	.. code-block::
 
@@ -171,7 +181,8 @@ Ports
 
 
 
-#. Move a Port
+Move a Port
++++++++++++
 
 	Moving a port disconnects it from net old segments and places it at the given position.
 	If the port ends up where a net segment is, it becomes connected with the net.
@@ -186,7 +197,8 @@ Ports
 
 
 
-#. Drag a Port
+Drag a Port
++++++++++++
 
 	Dragging a port drags the connected nets segments along.
 	If the port ends up where a net segment is, it becomes connected with the net.
