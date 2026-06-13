@@ -2344,7 +2344,8 @@ end;
 	is begin
 		reset_status (line.status);
 
-		clear_AB_moving (line.status_AB);
+		clear_AB_selected (line.status_AB);
+		clear_AB_moving (line.status_AB);		
 	end reset_status;
 
 	
