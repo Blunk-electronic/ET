@@ -217,16 +217,14 @@ package body et_cp_schematic_group is
 			sheet		: type_sheet_relative;		
 			destination	: type_vector_model;
 		begin
-			coordinates := to_coordinates (get_field (cmd, 5)); -- relative/absolute
-			sheet		:= to_sheet_relative (get_field (cmd, 6)); -- -1, 2
+			sheet		:= to_sheet_relative (get_field (cmd, 5)); -- -1, 2
 		
 			destination	:= to_vector_model (
-							x => get_field (cmd, 7),
-							y => get_field (cmd, 8));
+							x => get_field (cmd, 6),
+							y => get_field (cmd, 7));
 
 			move_group (
 				module_cursor	=> module,
-				coordinates		=> coordinates,
 				sheet			=> sheet,
 				destination		=> destination,
 				
@@ -236,7 +234,6 @@ package body et_cp_schematic_group is
 
 				log_threshold	=> log_threshold + 1);
 		end do_it;
-
 		
 		
 	begin
@@ -245,10 +242,10 @@ package body et_cp_schematic_group is
 		
 
 		case cmd_field_count is
-			when 8 =>
+			when 7 =>
 				do_it;
 
-			when 9 .. type_field_count'last => 
+			when 8 .. type_field_count'last => 
 				command_too_long (cmd, cmd_field_count - 1);
 				
 			when others => command_incomplete (cmd);

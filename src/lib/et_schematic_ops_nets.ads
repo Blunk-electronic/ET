@@ -353,10 +353,11 @@ package et_schematic_ops_nets is
 
 
 
-	-- Moves all selected net segments:
+	-- Moves all selected net segments by the 
+	-- given destination and sheet numbers.
+	-- This is a relative movement:
 	procedure move_selected_net_segments (
 		module_cursor	: in pac_generic_modules.cursor;
-		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
 		destination		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);

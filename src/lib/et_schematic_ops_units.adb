@@ -3525,7 +3525,6 @@ package body et_schematic_ops_units is
 
 	procedure move_selected_units (
 		module_cursor	: in pac_generic_modules.cursor;
-		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
 		destination		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level)
@@ -3558,7 +3557,7 @@ package body et_schematic_ops_units is
 							module_cursor	=> module_cursor,
 							device_name		=> device_name,
 							unit_name		=> unit_name,
-							coordinates		=> coordinates,
+							coordinates		=> RELATIVE,
 							sheet			=> sheet,
 							destination		=> destination,
 							commit_design	=> NO_COMMIT,
@@ -3588,20 +3587,11 @@ package body et_schematic_ops_units is
 
 
 	begin
-		case coordinates is
-			when ABSOLUTE =>
-				log (text => "module " & to_string (module_cursor)
-					& " move selected units to sheet " & to_string (sheet) 
-					& to_string (destination),
-					level => log_threshold);
-
-			when RELATIVE =>
-				log (text => "module " & to_string (module_cursor)
-					& " move selected units by "
-					& relative_to_string (sheet) & " sheet(s) " 
-					& to_string (destination),
-					level => log_threshold);
-		end case;
+		log (text => "module " & to_string (module_cursor)
+			& " move selected units by "
+			& relative_to_string (sheet) & " sheet(s) " 
+			& to_string (destination),
+			level => log_threshold);
 
 		
 		log_indentation_up;

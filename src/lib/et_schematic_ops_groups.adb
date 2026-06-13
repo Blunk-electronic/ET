@@ -264,7 +264,6 @@ package body et_schematic_ops_groups is
 		
 	procedure move_group (
 		module_cursor	: in pac_generic_modules.cursor;
-		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
 		destination		: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
@@ -282,7 +281,8 @@ package body et_schematic_ops_groups is
 			log_indentation_up;
 			
 			move_selected_units (module_cursor, 
-				coordinates, sheet, destination, log_threshold + 2);
+				sheet, destination, log_threshold + 2);
+			-- CS should be drag_selected_units
 			
 			log_indentation_down;
 		end;
@@ -295,7 +295,8 @@ package body et_schematic_ops_groups is
 			log_indentation_up;
 			
 			move_selected_netchangers (module_cursor, 
-				coordinates, sheet, destination, log_threshold + 2);
+				sheet, destination, log_threshold + 2);
+			-- CS should be drag_selected_netchangers
 			
 			log_indentation_down;
 		end;
@@ -308,7 +309,7 @@ package body et_schematic_ops_groups is
 			log_indentation_up;
 			
 			move_selected_net_segments (module_cursor, 
-				coordinates, sheet, destination, log_threshold + 2);
+				sheet, destination, log_threshold + 2);
 
 			log_indentation_down;
 		end;
@@ -327,8 +328,8 @@ package body et_schematic_ops_groups is
 		end if;
 
 		
-		move_units;
-		move_netchangers;
+		-- move_units;
+		-- move_netchangers;
 		move_net_segments;
 
 		-- CS reset texts, ... ?

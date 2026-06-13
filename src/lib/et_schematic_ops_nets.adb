@@ -2126,7 +2126,10 @@ package body et_schematic_ops_nets is
 						segment	: in out type_net_segment)
 					is begin
 						if in_area (segment, area) then
-							-- CS: log segment and net name ?
+						
+							log (text => "segment " & to_string (segment),
+								level => log_threshold + 3);
+								
 							set_selected (segment, area);
 						end if;
 					end;
@@ -2136,6 +2139,11 @@ package body et_schematic_ops_nets is
 					-- We look only at strands which are on the
 					-- given sheet:
 					if get_sheet (strand) = sheet then
+
+						log (text => "strand " & to_string (strand.position),
+							level => log_threshold + 2);
+					
+						log_indentation_up;
 					
 						-- Iterate through the segments
 						-- of the strand:
@@ -2146,16 +2154,24 @@ package body et_schematic_ops_nets is
 							next (segment_cursor);
 						end loop;
 						
+						log_indentation_down;
 					end if;
 				end query_strand;
 				
 
 			begin
+				log (text => "net " & to_string (net_name),
+					level => log_threshold + 1);
+					
+				log_indentation_up;
+				
 				-- Iterate through the strands:
 				while has_element (strand_cursor) loop
 					net.strands.update_element (strand_cursor, query_strand'access);
 					next (strand_cursor);
 				end loop;
+				
+				log_indentation_down;
 			end query_net;
 
 			
@@ -2312,7 +2328,6 @@ package body et_schematic_ops_nets is
 
 	procedure move_selected_net_segments (
 		module_cursor	: in pac_generic_modules.cursor;
-		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
 		destination		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level)
@@ -2341,25 +2356,48 @@ package body et_schematic_ops_nets is
 					
 					procedure query_segment (
 						segment	: in out type_net_segment)
-					is begin
+					is 
+						object_segment : type_object_segment := (
+							net_cursor, strand_cursor, segment_cursor);
+							
+						old_A : type_vector_model := get_A (segment);
+						old_B : type_vector_model := get_B (segment);
+						
+						offset : type_vector_model;
+					begin
+						-- CS: log segment and net name ?
+						
 						-- If the segment as a whole is selected,
 						-- then move the whole segment:
 						if is_selected (segment) then
-							-- CS: log segment and net name ?
-							null;
+							null; -- CS
 
 						-- If the A-end of the segment is selected,
 						-- then move the A-end only:
 						elsif is_A_selected (segment) then
-							null;
+							offset := old_A + destination;
+						
+							drag_segment (
+								module_cursor	=> module_cursor,
+								primary_segment	=> object_segment,
+								POA				=> get_A (segment),
+								destination		=> offset,
+								log_threshold	=> log_threshold + 1);
 
 						-- If the B-end of the segment is selected,
 						-- then move the B-end only:
 						elsif is_B_selected (segment) then
-							null;
+							offset := old_B + destination;
+							
+							drag_segment (
+								module_cursor	=> module_cursor,
+								primary_segment	=> object_segment,
+								POA				=> get_B (segment),
+								destination		=> offset,
+								log_threshold	=> log_threshold + 1);
 
 						end if;
-					end;
+					end query_segment;
 					
 					
 				begin
@@ -2393,20 +2431,11 @@ package body et_schematic_ops_nets is
 
 		
 	begin
-		case coordinates is
-			when ABSOLUTE =>
-				log (text => "module " & to_string (module_cursor)
-					& " move selected net segments to sheet " & to_string (sheet) 
-					& to_string (destination),
-					level => log_threshold);
-
-			when RELATIVE =>
-				log (text => "module " & to_string (module_cursor)
-					& " move selected net segments by "
-					& relative_to_string (sheet) & " sheet(s) " 
-					& to_string (destination),
-					level => log_threshold);
-		end case;
+		log (text => "module " & to_string (module_cursor)
+			& " move selected net segments by "
+			& relative_to_string (sheet) & " sheet(s) " 
+			& to_string (destination),
+			level => log_threshold);
 
 
 		log_indentation_up;
