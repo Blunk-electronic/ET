@@ -497,8 +497,11 @@ procedure draw_nets is
 				
 				
 			begin			
-				-- Increase brightness if segment is selected:
-				if is_selected (segment) then
+				-- Increase brightness if segment is selected
+				-- either as a whole, the A-end or the B-end:
+				if is_selected (segment) 
+				or is_A_selected (segment)
+				or is_B_selected (segment) then
 					set_color_nets (BRIGHT);
 				end if;				
 
@@ -513,7 +516,9 @@ procedure draw_nets is
 				draw_junctions;
 				draw_net_connectors;
 
-				if is_selected (segment) then
+				if is_selected (segment) 
+				or is_A_selected (segment)
+				or is_B_selected (segment) then
 					set_color_nets (NORMAL);
 				end if;
 			end query_segment;
