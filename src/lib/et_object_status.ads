@@ -165,40 +165,77 @@ package et_object_status is
 
 
 	-- This composite type is requred to 
-	-- indicate that the start or end point of a line
-	-- or an arc is set as "moving":
-	type type_AB_moving_status is private;
+	-- indicate the status of the A- and B-end
+	-- of a line or an arc:
+	type type_AB_status is private;
 
 
+
+	
+
+	
+	type type_AB_selected is private;
+
+	
+	procedure set_A_selected (
+		status : in out type_AB_status);
+
+
+	procedure set_B_selected (
+		status : in out type_AB_status);
+
+
+	procedure clear_A_selected (
+		status : in out type_AB_status);
+
+
+	procedure clear_B_selected (
+		status : in out type_AB_status);
+
+
+	procedure clear_AB_selected (
+		status : in out type_AB_status);
+	
+
+
+	
+	
+	type type_AB_moving is private;
+
+	
 	function is_A_moving (
-		status : in type_AB_moving_status)
+		status : in type_AB_status)
 		return boolean;
 
 	
 	function is_B_moving (
-		status : in type_AB_moving_status)
+		status : in type_AB_status)
 		return boolean;
 
 
 	
 	procedure set_A_moving (
-		status : in out type_AB_moving_status);
+		status : in out type_AB_status);
 
 
 	procedure set_B_moving (
-		status : in out type_AB_moving_status);
+		status : in out type_AB_status);
 	
 
 	procedure clear_A_moving (
-		status : in out type_AB_moving_status);
+		status : in out type_AB_status);
 
 
 	procedure clear_B_moving (
-		status : in out type_AB_moving_status);
+		status : in out type_AB_status);
 
 
 	procedure clear_AB_moving (
-		status : in out type_AB_moving_status);
+		status : in out type_AB_status);
+
+
+	procedure clear_AB (
+		status : in out type_AB_status);
 
 	
 	
@@ -220,12 +257,25 @@ private
 	end record;
 
 
-	
-	type type_AB_moving_status is record
+	type type_AB_moving is record
 		A : type_moving := false;
 		B : type_moving := false;
 	end record;
 
+	
+	type type_AB_selected is record
+		A : type_selected := false;
+		B : type_selected := false;
+	end record;
+
+	
+	type type_AB_status is record
+		selected	: type_AB_selected;
+		moving		: type_AB_moving;
+		
+		-- A : type_moving := false;
+		-- B : type_moving := false;
+	end record;
 	
 	
 end et_object_status;

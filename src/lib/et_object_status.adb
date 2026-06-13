@@ -271,19 +271,61 @@ package body et_object_status is
 
 
 
+
+	
+	procedure set_A_selected (
+		status : in out type_AB_status)
+	is begin
+		status.selected.A := true;
+	end;
+
+
+	procedure set_B_selected (
+		status : in out type_AB_status)
+	is begin
+		status.selected.B := true;
+	end;
+
+
+	procedure clear_A_selected (
+		status : in out type_AB_status)
+	is begin
+		status.selected.A := false;
+	end;
+
+
+	procedure clear_B_selected (
+		status : in out type_AB_status)
+	is begin
+		status.selected.B := false;
+	end;
+
+
+	procedure clear_AB_selected (
+		status : in out type_AB_status)
+	is begin
+		status.selected.A := false;
+		status.selected.B := false;
+	end;
+
+
+	
+	
+
+
 	function is_A_moving (
-		status : in type_AB_moving_status)
+		status : in type_AB_status)
 		return boolean
 	is begin
-		return boolean (status.A);
+		return boolean (status.moving.A);
 	end;
 
 	
 	function is_B_moving (
-		status : in type_AB_moving_status)
+		status : in type_AB_status)
 		return boolean
 	is begin
-		return boolean (status.B);
+		return boolean (status.moving.B);
 	end;
 
 
@@ -291,41 +333,51 @@ package body et_object_status is
 
 	
 	procedure set_A_moving (
-		status : in out type_AB_moving_status)
+		status : in out type_AB_status)
 	is begin
-		status.A := true;
+		status.moving.A := true;
 	end;
 
 
 	procedure set_B_moving (
-		status : in out type_AB_moving_status)
+		status : in out type_AB_status)
 	is begin
-		status.B := true;
+		status.moving.B := true;
 	end;
 
 
 	procedure clear_A_moving (
-		status : in out type_AB_moving_status)
+		status : in out type_AB_status)
 	is begin
-		status.A := false;
+		status.moving.A := false;
 	end;
 
 
 	procedure clear_B_moving (
-		status : in out type_AB_moving_status)
+		status : in out type_AB_status)
 	is begin
-		status.B := false;
+		status.moving.B := false;
 	end;
 
 
 	procedure clear_AB_moving (
-		status : in out type_AB_moving_status)
+		status : in out type_AB_status)
 	is begin
-		status.A := false;
-		status.B := false;
+		status.moving.A := false;
+		status.moving.B := false;
 	end;
 
+
+
+
+	procedure clear_AB (
+		status : in out type_AB_status)
+	is begin
+		clear_AB_selected (status);
+		clear_AB_moving (status);
+	end;
 	
+
 	
 end et_object_status;
 

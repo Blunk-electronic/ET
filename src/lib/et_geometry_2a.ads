@@ -835,7 +835,7 @@ package et_geometry_2a is
 	type type_line_base is abstract tagged record
 		A, B 		: type_vector_model; -- start and end point
 		status		: type_object_status;
-		status_AB	: type_AB_moving_status;
+		status_AB	: type_AB_status;
 	end record;
 
 	
@@ -1076,8 +1076,8 @@ package et_geometry_2a is
 	-- 2. If only the B-end of the line is
 	--    in the area, then the B-end is set as "selected".
 	-- 3. If both the A and the B end of the line are
-	--    in the area, then the whole segment is set as "selected".
-	--    The "selected"-flag of the A and the B end is cleared.	
+	--    in the area, then additionally the whole line
+	--    is set as "selected".
 	procedure set_selected (
 		line	: in out type_line;
 		area	: in type_area);
@@ -1396,7 +1396,7 @@ package et_geometry_2a is
 		A, B		: type_vector_model; -- start and end point
 		direction	: type_direction_of_rotation := CW;
 		status		: type_object_status;
-		-- CS status_AB	: type_AB_moving_status;
+		-- CS status_AB	: type_AB_status;
 	end record;
 
 	

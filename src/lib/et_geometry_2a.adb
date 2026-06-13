@@ -2169,16 +2169,14 @@ end;
 	procedure set_A_selected (
 		line : in out type_line)
 	is begin
-		null;
-		-- set_selected (line.status_AB.A);
+		set_A_selected (line.status_AB);
 	end;
 	
 	
 	procedure set_B_selected (
 		line : in out type_line)
 	is begin
-		null;
-		-- set_selected (line.status_AB.B);
+		set_B_selected (line.status_AB);
 	end;
 
 	
@@ -2289,12 +2287,38 @@ end;
 		line	: in out type_line;
 		area	: in type_area)
 	is 
-		a : type_area renames area;
+		A_in_area, B_in_area : boolean := false;
 	begin
-		-- if in_area (a, get_A (line)) then
-			null;
-		-- end if;
-	end;
+		-- Test if start point of line is
+		-- in the given area:
+		if in_area (
+			point	=> get_A (line),
+			area	=> area) 
+		then
+			set_A_selected (line);
+			A_in_area := true;
+		end if;
+
+
+		-- Test if end point of line is
+		-- in the given area:
+		if in_area (
+			point	=> get_B (line),
+			area	=> area) 
+		then
+			set_B_selected (line);
+			B_in_area := true;
+		end if;
+	
+	
+		-- If A and B are in the area
+		-- the set the whole line as selected:
+		if A_in_area and B_in_area then
+			set_selected (line);
+		end if;
+	end set_selected;
+	
+	
 
 	
 	
