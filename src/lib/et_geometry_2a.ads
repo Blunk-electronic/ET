@@ -1007,6 +1007,23 @@ package et_geometry_2a is
 	procedure clear_selected (
 		line : in out type_line);
 
+
+
+	
+	-- Returns true if the start point of the 
+	-- given line is set as "selected":
+	function is_A_selected (
+		line : in type_line)
+		return boolean;
+
+	
+	-- Returns true if the end point of the 
+	-- given line is set as "selected":
+	function is_B_selected (
+		line : in type_line)
+		return boolean;
+
+	
 	procedure set_A_selected (
 		line : in out type_line);
 	

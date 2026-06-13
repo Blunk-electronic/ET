@@ -2166,6 +2166,23 @@ end;
 
 
 
+
+	function is_A_selected (
+		line : in type_line)
+		return boolean
+	is begin
+		return is_A_selected (line.status_AB);
+	end;
+
+	
+	function is_B_selected (
+		line : in type_line)
+		return boolean
+	is begin
+		return is_B_selected (line.status_AB);
+	end;
+
+
 	procedure set_A_selected (
 		line : in out type_line)
 	is begin

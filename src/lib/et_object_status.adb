@@ -273,6 +273,23 @@ package body et_object_status is
 
 
 	
+	
+	function is_A_selected (
+		status : in type_AB_status)
+		return boolean
+	is begin
+		return boolean (status.selected.A);
+	end;
+
+	
+	function is_B_selected (
+		status : in type_AB_status)
+		return boolean
+	is begin
+		return boolean (status.selected.B);
+	end;
+
+	
 	procedure set_A_selected (
 		status : in out type_AB_status)
 	is begin

@@ -176,6 +176,16 @@ package et_object_status is
 	
 	type type_AB_selected is private;
 
+
+	function is_A_selected (
+		status : in type_AB_status)
+		return boolean;
+
+	
+	function is_B_selected (
+		status : in type_AB_status)
+		return boolean;
+
 	
 	procedure set_A_selected (
 		status : in out type_AB_status);
