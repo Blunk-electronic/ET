@@ -282,7 +282,7 @@ package et_schematic_ops_nets is
 	-- We call this segment "primary segment". Other segments which
 	-- might be connected with it are called "secondary segments".
 	-- The secondary segments will be dragged along with the primary segment.
-	-- 1. If the segment is connect with a port, then
+	-- 1. If the segment is connected with a port, then
 	--    the connected end of the segment is tied to the port
 	--    and will not be dragged.
 	-- 2. If the primary segment is dragged to a place where it meets a port
@@ -303,7 +303,7 @@ package et_schematic_ops_nets is
 
 
 	-- Drags a segment of a net.
-	-- 1. If the segment is connect with a port, then
+	-- 1. If the segment is connected with a port, then
 	--    the connected end of the segment is tied to the port
 	--    and will not be dragged.
 	-- 2. If the segment meets a port after the drag operation,
