@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -146,6 +146,8 @@ package et_net_strands is
 		place	: in type_vector_model);					
 
 
+	-- CS function get_place or get_position
+	-- CS return type_vector_model and string
 	
 	-- Returns true if the given strand has segments:
 	function has_segments (
