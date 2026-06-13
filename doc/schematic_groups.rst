@@ -75,16 +75,15 @@ Move a Group
 ^^^^^^^^^^^^
 
 	A group can be moved across the current sheet
-	or to another sheet:
+	or to another sheet. The coordinates to be provided
+	are relative. So in the example below, the group
+	will be moved by 0 sheets, x 100mm and y 20mm:
 
 	.. code-block::
 	
-		move group relative 0 100 20
+		move group 0 100 20
 
 
-	.. code-block::
-	
-		move group absolute 3 100 20
 
 
 
