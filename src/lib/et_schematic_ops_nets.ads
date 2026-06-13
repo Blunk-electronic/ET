@@ -282,13 +282,16 @@ package et_schematic_ops_nets is
 	-- We call this segment "primary segment". Other segments which
 	-- might be connected with it are called "secondary segments".
 	-- The secondary segments will be dragged along with the primary segment.
-	-- If the primary segment is dragged to a place where it meets a port
-	-- of a device, netchanger or submodule, then the segment will be 
-	-- connected with that port.
-	-- NOTE: If the segment meets another net, then these 
-	-- two nets will NOT be connected.
-	-- CS: The resulting overlapping segments should be detected by the ERC
-	-- or better the drag operation should be rejected.
+	-- 1. If the segment is connect with a port, then
+	--    the connected end of the segment is tied to the port
+	--    and will not be dragged.
+	-- 2. If the primary segment is dragged to a place where it meets a port
+	--    of a device, netchanger or submodule, then the segment will be 
+	--    connected with that port.
+	-- 3. If the segment meets another net, then these 
+	--    two nets will NOT be connected.
+	--    CS: The resulting overlapping segments should be detected by the ERC
+	--    or better the drag operation should be rejected.
 	procedure drag_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;
@@ -300,10 +303,15 @@ package et_schematic_ops_nets is
 
 
 	-- Drags a segment of a net.
-	-- If the segment meets a port, then the port will be connected with the net.
-	-- NOTE: If the segment meets another net, then these two nets will NOT be connected.
-	--       CS: The resulting overlapping segments should be detected by the ERC.
-	-- CS: This procedure is currently not used:
+	-- 1. If the segment is connect with a port, then
+	--    the connected end of the segment is tied to the port
+	--    and will not be dragged.
+	-- 2. If the segment meets a port after the drag operation,
+	--    then the port will be connected with the net.
+	-- 3. If the segment meets another net, then these
+	--    two nets will NOT be connected.
+	--    CS: The resulting overlapping segments should be 
+	--    detected by the ERC.
 	procedure drag_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		primary_segment	: in type_object_segment;
@@ -318,7 +326,13 @@ package et_schematic_ops_nets is
 -- GROUPS:
 
 	-- Sets "selected" flag of all segments that 
-	-- are on the given sheet and in the given area:
+	-- are on the given sheet and in the given area.
+	-- 1. If only the A or the B-end of a segment is
+	--    in the area, then the corresponding end is set as 
+	--    "selected".
+	-- 2. If a segment is completely inside the given area,
+	--    then both ends are set as "selected" and
+	--    the segment as a whole is set as "selected".
 	procedure group_segments_in_rectangular_area (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;							  

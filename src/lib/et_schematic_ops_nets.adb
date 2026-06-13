@@ -2342,9 +2342,22 @@ package body et_schematic_ops_nets is
 					procedure query_segment (
 						segment	: in out type_net_segment)
 					is begin
+						-- If the segment as a whole is selected,
+						-- then move the whole segment:
 						if is_selected (segment) then
 							-- CS: log segment and net name ?
 							null;
+
+						-- If the A-end of the segment is selected,
+						-- then move the A-end only:
+						elsif is_A_selected (segment) then
+							null;
+
+						-- If the B-end of the segment is selected,
+						-- then move the B-end only:
+						elsif is_B_selected (segment) then
+							null;
+
 						end if;
 					end;
 					
