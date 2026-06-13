@@ -495,6 +495,17 @@ package et_schematic_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
+
+
+
+	-- Moves all selected netchangers:
+	procedure move_selected_netchangers (
+		module_cursor	: in pac_generic_modules.cursor;
+		coordinates		: in type_coordinates; -- relative/absolute
+		sheet			: in type_sheet_relative; -- -3/0/2
+		destination		: in type_vector_model; -- x/y
+		log_threshold	: in type_log_level);
+
 	
 ------------------------------------------------------------------------------------------
 

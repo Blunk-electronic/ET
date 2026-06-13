@@ -163,6 +163,8 @@ package body et_schematic_ops_groups is
 
 		log_indentation_up;
 
+		-- CS: this should be depended on
+		-- the currently displayed layers:
 		group_units;
 		group_netchangers;
 		group_net_segments;
@@ -273,6 +275,45 @@ package body et_schematic_ops_groups is
 		use et_modes.schematic;
 
 		
+		procedure move_units is
+			use et_schematic_ops_units;
+		begin
+			log (text => "units", level => log_threshold + 1);
+			log_indentation_up;
+			
+			move_selected_units (module_cursor, 
+				coordinates, sheet, destination, log_threshold + 2);
+			
+			log_indentation_down;
+		end;
+		
+
+		procedure move_netchangers is
+			use et_schematic_ops_netchangers;
+		begin
+			log (text => "netchangers", level => log_threshold + 1);
+			log_indentation_up;
+			
+			move_selected_netchangers (module_cursor, 
+				coordinates, sheet, destination, log_threshold + 2);
+			
+			log_indentation_down;
+		end;
+
+		
+		procedure move_net_segments is
+			use et_schematic_ops_nets;
+		begin
+			log (text => "net segments", level => log_threshold + 1);
+			log_indentation_up;
+			
+			move_selected_net_segments (module_cursor, 
+				coordinates, sheet, destination, log_threshold + 2);
+
+			log_indentation_down;
+		end;
+
+		
 	begin
 		log (text => "module " & to_string (module_cursor) 
 			 & " move group (schematic)",
@@ -286,7 +327,11 @@ package body et_schematic_ops_groups is
 		end if;
 
 		
-		-- CS
+		move_units;
+		move_netchangers;
+		move_net_segments;
+
+		-- CS reset texts, ... ?
 
 		
 		if commit_design = DO_COMMIT then

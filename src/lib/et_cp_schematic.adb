@@ -398,6 +398,9 @@ package body et_cp_schematic is
 					case noun is
 						when NOUN_CURSOR =>
 							move_cursor (cmd, log_threshold + 1);
+
+						when NOUN_GROUP =>
+							move_group (module_cursor, cmd, log_threshold + 1);
 							
 						when NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE =>
 							move_unit_placeholder (module_cursor, cmd, log_threshold + 1);

@@ -87,7 +87,8 @@ package et_schematic_ops_groups is
 		log_threshold	: in type_log_level);
 
 
-	-- This procedure moves a group of objects:
+	-- This procedure moves a group of objects.
+	-- This affects all objects whose "selected"-flag is set:
 	procedure move_group (
 		module_cursor	: in pac_generic_modules.cursor;
 		coordinates		: in type_coordinates; -- relative/absolute

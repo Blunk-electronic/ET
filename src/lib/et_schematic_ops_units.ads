@@ -604,8 +604,18 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 		
-		
-		
+
+	-- Moves all selected units:
+	procedure move_selected_units (
+		module_cursor	: in pac_generic_modules.cursor;
+		coordinates		: in type_coordinates; -- relative/absolute
+		sheet			: in type_sheet_relative; -- -3/0/2
+		destination		: in type_vector_model; -- x/y
+		log_threshold	: in type_log_level);
+
+
+
+
 
 -- PLACEHOLDERS:
 

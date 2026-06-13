@@ -3058,6 +3058,90 @@ package body et_schematic_ops_netchangers is
 
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	procedure move_selected_netchangers (
+		module_cursor	: in pac_generic_modules.cursor;
+		coordinates		: in type_coordinates; -- relative/absolute
+		sheet			: in type_sheet_relative; -- -3/0/2
+		destination		: in type_vector_model; -- x/y
+		log_threshold	: in type_log_level)
+	is
+
+	
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
+
+			
+			procedure query_netchanger (
+				index		: in type_netchanger_id;
+				netchanger	: in out type_netchanger)
+			is begin
+				if is_selected (netchanger) then
+					-- CS: log the full name like N2
+					log_indentation_up;
+
+					move_netchanger (
+						module_cursor	=> module_cursor,
+						index			=> index,
+						coordinates		=> coordinates,
+						sheet			=> sheet,
+						point			=> destination,
+						commit_design	=> NO_COMMIT,
+						log_threshold	=> log_threshold + 1);
+						
+					log_indentation_down;
+				end if;
+			end query_netchanger;
+
+			
+		begin
+			-- Iterate through the netchangers:
+			while has_element (netchanger_cursor) loop
+				module.netchangers.update_element (
+					netchanger_cursor, query_netchanger'access);
+				
+				next (netchanger_cursor);
+			end loop;
+		end query_module;
+
+	
+	begin
+		case coordinates is
+			when ABSOLUTE =>
+				log (text => "module " & to_string (module_cursor)
+					& " move selected netchangers to sheet " & to_string (sheet) 
+					& to_string (destination),
+					level => log_threshold);
+
+			when RELATIVE =>
+				log (text => "module " & to_string (module_cursor)
+					& " move selected netchangers by "
+					& relative_to_string (sheet) & " sheet(s) " 
+					& to_string (destination),
+					level => log_threshold);
+		end case;
+
+
+		log_indentation_up;
+
+		generic_modules.update_element (module_cursor, query_module'access);
+	
+		log_indentation_down;
+	end move_selected_netchangers;
+	
+
+	
+	
+	
 ------------------------------------------------------------------------------------------
 
 -- OBJECTS:
