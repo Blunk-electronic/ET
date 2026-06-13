@@ -2164,6 +2164,23 @@ end;
 		clear_selected (line.status);
 	end clear_selected;
 
+
+
+	procedure set_A_selected (
+		line : in out type_line)
+	is begin
+		null;
+		-- set_selected (line.status_AB.A);
+	end;
+	
+	
+	procedure set_B_selected (
+		line : in out type_line)
+	is begin
+		null;
+		-- set_selected (line.status_AB.B);
+	end;
+
 	
 	
 
@@ -2265,6 +2282,19 @@ end;
 		set_B_moving (line.status_AB);
 	end;
 
+
+
+
+	procedure set_selected (
+		line	: in out type_line;
+		area	: in type_area)
+	is 
+		a : type_area renames area;
+	begin
+		-- if in_area (a, get_A (line)) then
+			null;
+		-- end if;
+	end;
 
 	
 	

@@ -1007,8 +1007,12 @@ package et_geometry_2a is
 	procedure clear_selected (
 		line : in out type_line);
 
-
+	procedure set_A_selected (
+		line : in out type_line);
 	
+	procedure set_B_selected (
+		line : in out type_line);
+
 	function is_proposed (
 		line : in type_line)
 		return boolean;
@@ -1064,7 +1068,21 @@ package et_geometry_2a is
 	procedure set_B_moving (
 		line	: in out type_line);
 
+
+	-- Sets the "selected"-flags of a line
+	-- depending on the area it is crossing.
+	-- 1. If only the A-end of the line is
+	--    in the area, then the A-end is set as "selected".
+	-- 2. If only the B-end of the line is
+	--    in the area, then the B-end is set as "selected".
+	-- 3. If both the A and the B end of the line are
+	--    in the area, then the whole segment is set as "selected".
+	--    The "selected"-flag of the A and the B end is cleared.	
+	procedure set_selected (
+		line	: in out type_line;
+		area	: in type_area);
 		
+	
 	-- Resets all status flags to default:
 	procedure reset_status (
 		line 	: in out type_line);

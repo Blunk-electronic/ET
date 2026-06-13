@@ -2127,7 +2127,7 @@ package body et_schematic_ops_nets is
 					is begin
 						if in_area (segment, area) then
 							-- CS: log segment and net name ?
-							set_selected (segment);
+							set_selected (segment, area);
 						end if;
 					end;
 					
