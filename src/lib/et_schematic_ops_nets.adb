@@ -2382,6 +2382,7 @@ package body et_schematic_ops_nets is
 								primary_segment	=> object_segment,
 								POA				=> get_A (segment),
 								destination		=> offset,
+								commit_design	=> NO_COMMIT,
 								log_threshold	=> log_threshold + 1);
 
 						-- If the B-end of the segment is selected,
@@ -2394,6 +2395,7 @@ package body et_schematic_ops_nets is
 								primary_segment	=> object_segment,
 								POA				=> get_B (segment),
 								destination		=> offset,
+								commit_design	=> NO_COMMIT,
 								log_threshold	=> log_threshold + 1);
 
 						end if;
