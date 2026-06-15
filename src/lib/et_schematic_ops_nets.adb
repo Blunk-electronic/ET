@@ -1969,12 +1969,13 @@ package body et_schematic_ops_nets is
 
 
 	procedure drag_segment (
-		module_cursor	: in pac_generic_modules.cursor;
-		primary_segment	: in type_object_segment;
-		POA				: in type_vector_model;
-		destination		: in type_vector_model;
-		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level)
+		module_cursor		: in pac_generic_modules.cursor;
+		primary_segment		: in type_object_segment;
+		POA					: in type_vector_model;
+		destination			: in type_vector_model; -- x/y
+		drag_secondaries	: in boolean := true;
+		commit_design		: in type_commit_design := DO_COMMIT;
+		log_threshold		: in type_log_level)
 	is	
 		use et_commit;
 		use et_undo_redo;
@@ -1995,6 +1996,70 @@ package body et_schematic_ops_nets is
 		-- The zone at which the segment is being attacked:
 		zone : type_line_zone;
 				
+			
+		-- This procedure drags connected secondary segments
+		-- if the displacement is non-zero:
+		procedure drag_secondary_segments is begin
+			log (text => "drag connected secondary segments",
+				level => log_threshold + 1);
+				
+			log_indentation_up;
+			
+			-- Move connected secondary segments if the primary
+			-- segment has been moved. In this case the 
+			-- displacement is non-zero:
+			if displacement /= origin then
+				case zone is
+					when START_POINT =>
+						move_secondary_segments (
+							module_cursor	=> module_cursor,
+							primary_segment	=> primary_segment,
+							original_segment=> segment_old,
+							AB_end			=> A,
+							displacement	=> displacement,
+							log_threshold	=> log_threshold + 2);
+							
+					when END_POINT =>
+						move_secondary_segments (
+							module_cursor	=> module_cursor,
+							primary_segment	=> primary_segment,
+							original_segment=> segment_old,
+							AB_end			=> B,
+							displacement	=> displacement,
+							log_threshold	=> log_threshold + 2);
+
+					when CENTER =>
+						move_secondary_segments (
+							module_cursor	=> module_cursor,
+							primary_segment	=> primary_segment,
+							original_segment=> segment_old,
+							AB_end			=> A,
+							displacement	=> displacement,
+							log_threshold	=> log_threshold + 2);
+
+						move_secondary_segments (
+							module_cursor	=> module_cursor,
+							primary_segment	=> primary_segment,
+							original_segment=> segment_old,
+							AB_end			=> B,
+							displacement	=> displacement,
+							log_threshold	=> log_threshold + 2);
+				end case;
+
+
+				-- Update the strand positions:
+				update_strand_positions (module_cursor, log_threshold + 2);
+				
+				-- In case new net-port connections are the 
+				-- outcome of the drag operation, then the ratsnest
+				-- in the board drawing must be updated:
+				update_ratsnest (module_cursor, log_threshold + 2);
+			end if;					
+
+			log_indentation_down;
+		end drag_secondary_segments;
+		
+		
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " drag net segment " & to_string (primary_segment)
@@ -2011,7 +2076,9 @@ package body et_schematic_ops_nets is
 		end if;
 
 		
-		-- Drag the given primary segment:
+		-- Drag the given primary segment.
+		-- If the primary segment has been moved,
+		-- then the displacement is set accordingly:
 		move_primary_segment (
 			module_cursor	=> module_cursor,
 			primary_segment	=> primary_segment,
@@ -2021,60 +2088,14 @@ package body et_schematic_ops_nets is
 			zone			=> zone,
 			displacement	=> displacement,
 			segment_old		=> segment_old,
-			log_threshold	=> log_threshold + 2);
+			log_threshold	=> log_threshold + 1);
 		
 
-		
-		-- Move connected secondary segments if the primary
-		-- segment has been moved. In this case the displacement is non-zero:
-		if displacement /= origin then
-			case zone is
-				when START_POINT =>
-					move_secondary_segments (
-						module_cursor	=> module_cursor,
-						primary_segment	=> primary_segment,
-						original_segment=> segment_old,
-						AB_end			=> A,
-						displacement	=> displacement,
-						log_threshold	=> log_threshold + 1);
-						
-				when END_POINT =>
-					move_secondary_segments (
-						module_cursor	=> module_cursor,
-						primary_segment	=> primary_segment,
-						original_segment=> segment_old,
-						AB_end			=> B,
-						displacement	=> displacement,
-						log_threshold	=> log_threshold + 1);
-
-				when CENTER =>
-					move_secondary_segments (
-						module_cursor	=> module_cursor,
-						primary_segment	=> primary_segment,
-						original_segment=> segment_old,
-						AB_end			=> A,
-						displacement	=> displacement,
-						log_threshold	=> log_threshold + 1);
-
-					move_secondary_segments (
-						module_cursor	=> module_cursor,
-						primary_segment	=> primary_segment,
-						original_segment=> segment_old,
-						AB_end			=> B,
-						displacement	=> displacement,
-						log_threshold	=> log_threshold + 1);
-			end case;
-
-
-			-- Update the strand positions:
-			update_strand_positions (module_cursor, log_threshold + 1);
-			
-			-- In case new net-port connections are the 
-			-- outcome of the drag operation, then the ratsnest
-			-- in the board drawing must be updated:
-			update_ratsnest (module_cursor, log_threshold + 1);
-		end if;					
-		
+		-- If the caller requests to drag connected
+		-- secondary segments, then do so:
+		if drag_secondaries then
+			drag_secondary_segments;
+		end if;
 
 		
 		if commit_design = DO_COMMIT then
@@ -2377,13 +2398,18 @@ package body et_schematic_ops_nets is
 						elsif is_A_selected (segment) then
 							offset := old_A + destination;
 						
+							-- Drag the segment candidate. Do not
+							-- drag connected segments along, because
+							-- each of them is dragged separately
+							-- in the course of this procedure:
 							drag_segment (
-								module_cursor	=> module_cursor,
-								primary_segment	=> object_segment,
-								POA				=> get_A (segment),
-								destination		=> offset,
-								commit_design	=> NO_COMMIT,
-								log_threshold	=> log_threshold + 1);
+								module_cursor		=> module_cursor,
+								primary_segment		=> object_segment,
+								POA					=> get_A (segment),
+								destination			=> offset,
+								drag_secondaries	=> false,
+								commit_design		=> NO_COMMIT,
+								log_threshold		=> log_threshold + 1);
 
 						-- If the B-end of the segment is selected,
 						-- then move the B-end only:
@@ -2391,12 +2417,13 @@ package body et_schematic_ops_nets is
 							offset := old_B + destination;
 							
 							drag_segment (
-								module_cursor	=> module_cursor,
-								primary_segment	=> object_segment,
-								POA				=> get_B (segment),
-								destination		=> offset,
-								commit_design	=> NO_COMMIT,
-								log_threshold	=> log_threshold + 1);
+								module_cursor		=> module_cursor,
+								primary_segment		=> object_segment,
+								POA					=> get_B (segment),
+								destination			=> offset,
+								drag_secondaries	=> false,
+								commit_design		=> NO_COMMIT,
+								log_threshold		=> log_threshold + 1);
 
 						end if;
 					end query_segment;

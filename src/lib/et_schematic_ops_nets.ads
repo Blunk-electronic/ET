@@ -312,13 +312,18 @@ package et_schematic_ops_nets is
 	--    two nets will NOT be connected.
 	--    CS: The resulting overlapping segments should be 
 	--    detected by the ERC.
+	-- 4. Other segments, which are connected with the given
+	--    primary segment, are called secondary segments.
+	--    By default they are dragged along with the primary segment.
+	--    This can be turned off if drag_secondaries is false:
 	procedure drag_segment (
-		module_cursor	: in pac_generic_modules.cursor;
-		primary_segment	: in type_object_segment;
-		POA				: in type_vector_model;
-		destination		: in type_vector_model; -- x/y
-		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level);
+		module_cursor		: in pac_generic_modules.cursor;
+		primary_segment		: in type_object_segment;
+		POA					: in type_vector_model;
+		destination			: in type_vector_model; -- x/y
+		drag_secondaries	: in boolean := true;
+		commit_design		: in type_commit_design := DO_COMMIT;
+		log_threshold		: in type_log_level);
 
 
 
