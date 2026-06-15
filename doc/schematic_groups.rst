@@ -71,17 +71,21 @@ Delete a Group
 
 
 
-Move a Group
+Drag a Group
 ^^^^^^^^^^^^
 
-	A group can be moved across the current sheet
-	or to another sheet. The coordinates to be provided
+	A group of objects can be dragged by a given offset
+	across the current sheet. Net segments which are 
+	connected with a unit are dragged along with the unit.
+	Dragging groups from one sheet
+	to another is not possible and not intended.
+	The coordinates to be provided
 	are relative. So in the example below, the group
-	will be moved by 0 sheets, x 100mm and y 20mm:
+	will be dragged by x 100mm and y 20mm:
 
 	.. code-block::
 	
-		move group 0 100 20
+		drag group 100 20
 
 
 
@@ -118,7 +122,4 @@ Move a Group
 		.. code-block::
 		
 			copy group 4  30 40
-
-
-	Move, Drag group
 

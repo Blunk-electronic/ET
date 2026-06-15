@@ -87,14 +87,14 @@ package et_schematic_ops_groups is
 		log_threshold	: in type_log_level);
 
 
-	-- This procedure moves a group of objects by the
-	-- given destination and sheet numbers.
+	-- This procedure drags a group of objects by the
+	-- given offset. Dragging from one sheet to another
+	-- is not possible.
 	-- This is a relative movement.
 	-- This affects all objects whose "selected"-flag is set:
-	procedure move_group (
+	procedure drag_group (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet_relative; -- -3/0/2
-		destination		: in type_vector_model; -- x/y
+		offset			: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 	

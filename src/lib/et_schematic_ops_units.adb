@@ -3523,10 +3523,9 @@ package body et_schematic_ops_units is
 	
 
 
-	procedure move_selected_units (
+	procedure drag_selected_units (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet_relative; -- -3/0/2
-		destination		: in type_vector_model; -- x/y
+		offset			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level)
 	is
 
@@ -3553,13 +3552,12 @@ package body et_schematic_ops_units is
 						
 						log_indentation_up;
 						
-						move_unit (
+						drag_unit (
 							module_cursor	=> module_cursor,
 							device_name		=> device_name,
 							unit_name		=> unit_name,
 							coordinates		=> RELATIVE,
-							sheet			=> sheet,
-							destination		=> destination,
+							destination		=> offset,
 							commit_design	=> NO_COMMIT,
 							log_threshold	=> log_threshold + 1);
 
@@ -3588,11 +3586,9 @@ package body et_schematic_ops_units is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " move selected units by "
-			& relative_to_string (sheet) & " sheet(s) " 
-			& to_string (destination),
+			& " drag selected units by "
+			& to_string (offset),
 			level => log_threshold);
-
 		
 		log_indentation_up;
 
@@ -3601,7 +3597,7 @@ package body et_schematic_ops_units is
 		update_ratsnest (module_cursor, log_threshold + 1);
 
 		log_indentation_down;
-	end move_selected_units;
+	end drag_selected_units;
 
 
 

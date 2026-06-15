@@ -70,10 +70,11 @@ package et_cp_schematic_group is
 		log_threshold	: in type_log_level);
 	
 
-	-- This procedure parses a command that moves a group:
-	-- example 1: schematic demo move group relative 0 100 20
-	-- example 2: schematic demo move group absolute 2 100 20
-	procedure move_group (
+	-- This procedure parses a command that drags a group
+	-- of objects by a given offset in x and y.
+	-- Dragging from one sheet to another is not possible.
+	-- example: schematic demo move group 100 20
+	procedure drag_group (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level);

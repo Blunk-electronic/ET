@@ -203,7 +203,7 @@ package body et_cp_schematic_group is
 
 	
 
-	procedure move_group (
+	procedure drag_group (
 		module			: in pac_generic_modules.cursor;
 		cmd 			: in out type_single_cmd;
 		log_threshold	: in type_log_level)
@@ -215,18 +215,15 @@ package body et_cp_schematic_group is
 		procedure do_it is
 			coordinates : type_coordinates;
 			sheet		: type_sheet_relative;		
-			destination	: type_vector_model;
+			offset		: type_vector_model;
 		begin
-			sheet		:= to_sheet_relative (get_field (cmd, 5)); -- -1, 2
-		
-			destination	:= to_vector_model (
-							x => get_field (cmd, 6),
-							y => get_field (cmd, 7));
+			offset := to_vector_model (
+							x => get_field (cmd, 5),
+							y => get_field (cmd, 6));
 
-			move_group (
+			drag_group (
 				module_cursor	=> module,
-				sheet			=> sheet,
-				destination		=> destination,
+				offset			=> offset,
 				
 				-- Depending on the origin of the command,
 				-- the design state is to be commited or not:
@@ -237,15 +234,15 @@ package body et_cp_schematic_group is
 		
 		
 	begin
-		log (text => "move group", level => log_threshold);
+		log (text => "drag group", level => log_threshold);
 		log_indentation_up;
 		
 
 		case cmd_field_count is
-			when 7 =>
+			when 6 =>
 				do_it;
 
-			when 8 .. type_field_count'last => 
+			when 7 .. type_field_count'last => 
 				command_too_long (cmd, cmd_field_count - 1);
 				
 			when others => command_incomplete (cmd);
@@ -253,7 +250,7 @@ package body et_cp_schematic_group is
 
 		
 		log_indentation_down;
-	end move_group;
+	end drag_group;
 	
 	
 	

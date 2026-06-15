@@ -279,7 +279,12 @@ package et_schematic_ops_nets is
 	-- is searched for in the given catch zone on the given sheet.
 	-- If more than one segment has been found in the given zone,
 	-- then the first of them will be selected.
-	-- We call this segment "primary segment". Other segments which
+	-- The point at which the segment is grabbed is called 
+	-- the "point-of-attack" (POA). If the segment is attacked
+	-- on the A or B end, then the end point is snapped to the
+	-- POA. If the segment is attacked at its center then, the segment
+	-- will be dragged from the POA to the given destination.	
+	-- We call the selected segment "primary segment". Other segments which
 	-- might be connected with it are called "secondary segments".
 	-- The secondary segments will be dragged along with the primary segment.
 	-- 1. If the segment is connected with a port, then
@@ -302,7 +307,12 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 
-	-- Drags a segment of a net.
+	-- Drags a segment of a net. It is attacked at the place
+	-- given by POA (point-of-attack). If the segment is attacked
+	-- on the A or B end, then the end point is snapped to the
+	-- POA. If the segment is attacked at its center then, the segment
+	-- will be dragged from the POA to the given destination. So
+	-- we have an absolute movement.
 	-- 1. If the segment is connected with a port, then
 	--    the connected end of the segment is tied to the port
 	--    and will not be dragged.
@@ -359,12 +369,11 @@ package et_schematic_ops_nets is
 
 
 	-- Moves all selected net segments by the 
-	-- given destination and sheet numbers.
-	-- This is a relative movement:
-	procedure move_selected_net_segments (
+	-- given offset.
+	-- This is a relative movement by the given offset:
+	procedure drag_selected_net_segments (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet_relative; -- -3/0/2
-		destination		: in type_vector_model; -- x/y
+		offset			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
 

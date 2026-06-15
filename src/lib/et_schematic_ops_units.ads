@@ -434,6 +434,8 @@ package et_schematic_ops_units is
 	-- Assumes that the specified device and unit exist.
 	-- Otherwise an exception will be raised.
 	-- Already existing connections with net segments are kept.
+	-- Connected net segments are dragged along with the unit.
+	-- Net segment positions are modified.	
 	-- This operation applies to a single sheet. Dragging from one sheet
 	-- to another is not possible.
 	-- CS: Reject unit if a port ends up by overlappin a port
@@ -605,13 +607,12 @@ package et_schematic_ops_units is
 
 		
 
-	-- This procedure moves selcted units by the
-	-- given destination and sheet numbers.
-	-- This is a relative movement.
-	procedure move_selected_units (
+	-- This procedure drags selected units by the
+	-- given offset.
+	-- This is a relative movement by the given offset:
+	procedure drag_selected_units (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet_relative; -- -3/0/2
-		destination		: in type_vector_model; -- x/y
+		offset			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
 

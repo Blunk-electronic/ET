@@ -262,10 +262,9 @@ package body et_schematic_ops_groups is
 		
 		
 		
-	procedure move_group (
+	procedure drag_group (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet_relative; -- -3/0/2
-		destination		: in type_vector_model; -- x/y
+		offset			: in type_vector_model; -- x/y
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
@@ -280,9 +279,8 @@ package body et_schematic_ops_groups is
 			log (text => "units", level => log_threshold + 1);
 			log_indentation_up;
 			
-			move_selected_units (module_cursor, 
-				sheet, destination, log_threshold + 2);
-			-- CS should be drag_selected_units
+			drag_selected_units (module_cursor, 
+				offset, log_threshold + 2);
 			
 			log_indentation_down;
 		end;
@@ -294,9 +292,8 @@ package body et_schematic_ops_groups is
 			log (text => "netchangers", level => log_threshold + 1);
 			log_indentation_up;
 			
-			move_selected_netchangers (module_cursor, 
-				sheet, destination, log_threshold + 2);
-			-- CS should be drag_selected_netchangers
+			drag_selected_netchangers (module_cursor, 
+				offset, log_threshold + 2);
 			
 			log_indentation_down;
 		end;
@@ -308,8 +305,8 @@ package body et_schematic_ops_groups is
 			log (text => "net segments", level => log_threshold + 1);
 			log_indentation_up;
 			
-			move_selected_net_segments (module_cursor, 
-				sheet, destination, log_threshold + 2);
+			drag_selected_net_segments (module_cursor, 
+				offset, log_threshold + 2);
 
 			log_indentation_down;
 		end;
@@ -317,7 +314,7 @@ package body et_schematic_ops_groups is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			 & " move group (schematic)",
+			 & " drag group (schematic)",
 			level => log_threshold);
 
 		log_indentation_up;
@@ -328,8 +325,8 @@ package body et_schematic_ops_groups is
 		end if;
 
 		
-		-- move_units;
-		-- move_netchangers;
+		move_units;
+		move_netchangers;
 		move_net_segments;
 
 		-- CS reset texts, ... ?
@@ -341,7 +338,7 @@ package body et_schematic_ops_groups is
 		end if;
 		
 		log_indentation_down;
-	end move_group;
+	end drag_group;
 	
 
 

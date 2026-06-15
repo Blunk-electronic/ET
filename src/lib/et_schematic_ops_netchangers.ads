@@ -498,13 +498,11 @@ package et_schematic_ops_netchangers is
 
 
 
-	-- This procedure moves selcted netchangers by the
-	-- given destination and sheet numbers.
-	-- This is a relative movement.
-	procedure move_selected_netchangers (
+	-- This procedure drags selected netchangers by the
+	-- given offset. This is a relative movement.
+	procedure drag_selected_netchangers (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet_relative; -- -3/0/2
-		destination		: in type_vector_model; -- x/y
+		offset			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
 	

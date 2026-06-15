@@ -3065,10 +3065,9 @@ package body et_schematic_ops_netchangers is
 	
 	
 	
-	procedure move_selected_netchangers (
+	procedure drag_selected_netchangers (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet_relative; -- -3/0/2
-		destination		: in type_vector_model; -- x/y
+		offset			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level)
 	is
 
@@ -3088,12 +3087,11 @@ package body et_schematic_ops_netchangers is
 					-- CS: log the full name like N2
 					log_indentation_up;
 
-					move_netchanger (
+					drag_netchanger (
 						module_cursor	=> module_cursor,
 						index			=> index,
 						coordinates		=> RELATIVE,
-						sheet			=> sheet,
-						point			=> destination,
+						point			=> offset,
 						commit_design	=> NO_COMMIT,
 						log_threshold	=> log_threshold + 1);
 						
@@ -3115,9 +3113,8 @@ package body et_schematic_ops_netchangers is
 	
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " move selected netchangers by "
-			& relative_to_string (sheet) & " sheet(s) " 
-			& to_string (destination),
+			& " drag selected netchangers by "
+			& to_string (offset),
 			level => log_threshold);
 
 
@@ -3126,7 +3123,7 @@ package body et_schematic_ops_netchangers is
 		generic_modules.update_element (module_cursor, query_module'access);
 	
 		log_indentation_down;
-	end move_selected_netchangers;
+	end drag_selected_netchangers;
 	
 
 	

@@ -2347,10 +2347,9 @@ package body et_schematic_ops_nets is
 
 
 
-	procedure move_selected_net_segments (
+	procedure drag_selected_net_segments (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet_relative; -- -3/0/2
-		destination		: in type_vector_model; -- x/y
+		offset			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level)
 	is
 
@@ -2384,7 +2383,7 @@ package body et_schematic_ops_nets is
 						old_A : type_vector_model := get_A (segment);
 						old_B : type_vector_model := get_B (segment);
 						
-						offset : type_vector_model;
+						destination : type_vector_model;
 					begin
 						-- CS: log segment and net name ?
 						
@@ -2396,7 +2395,7 @@ package body et_schematic_ops_nets is
 						-- If the A-end of the segment is selected,
 						-- then move the A-end only:
 						elsif is_A_selected (segment) then
-							offset := old_A + destination;
+							destination := old_A + offset;
 						
 							-- Drag the segment candidate. Do not
 							-- drag connected segments along, because
@@ -2406,7 +2405,7 @@ package body et_schematic_ops_nets is
 								module_cursor		=> module_cursor,
 								primary_segment		=> object_segment,
 								POA					=> get_A (segment),
-								destination			=> offset,
+								destination			=> destination,
 								drag_secondaries	=> false,
 								commit_design		=> NO_COMMIT,
 								log_threshold		=> log_threshold + 1);
@@ -2414,13 +2413,13 @@ package body et_schematic_ops_nets is
 						-- If the B-end of the segment is selected,
 						-- then move the B-end only:
 						elsif is_B_selected (segment) then
-							offset := old_B + destination;
+							destination := old_B + offset;
 							
 							drag_segment (
 								module_cursor		=> module_cursor,
 								primary_segment		=> object_segment,
 								POA					=> get_B (segment),
-								destination			=> offset,
+								destination			=> destination,
 								drag_secondaries	=> false,
 								commit_design		=> NO_COMMIT,
 								log_threshold		=> log_threshold + 1);
@@ -2461,9 +2460,8 @@ package body et_schematic_ops_nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " move selected net segments by "
-			& relative_to_string (sheet) & " sheet(s) " 
-			& to_string (destination),
+			& " drag selected net segments by "
+			& to_string (offset),
 			level => log_threshold);
 
 
@@ -2472,7 +2470,7 @@ package body et_schematic_ops_nets is
 		generic_modules.update_element (module_cursor, query_module'access);
 		
 		log_indentation_down;
-	end move_selected_net_segments;
+	end drag_selected_net_segments;
 
 
 
