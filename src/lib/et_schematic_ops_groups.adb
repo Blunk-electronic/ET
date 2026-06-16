@@ -273,7 +273,7 @@ package body et_schematic_ops_groups is
 		use et_modes.schematic;
 
 		
-		procedure move_units is
+		procedure drag_units is
 			use et_schematic_ops_units;
 		begin
 			log (text => "units", level => log_threshold + 1);
@@ -286,7 +286,7 @@ package body et_schematic_ops_groups is
 		end;
 		
 
-		procedure move_netchangers is
+		procedure drag_netchangers is
 			use et_schematic_ops_netchangers;
 		begin
 			log (text => "netchangers", level => log_threshold + 1);
@@ -299,7 +299,7 @@ package body et_schematic_ops_groups is
 		end;
 
 		
-		procedure move_net_segments is
+		procedure drag_net_segments is
 			use et_schematic_ops_nets;
 		begin
 			log (text => "net segments", level => log_threshold + 1);
@@ -324,10 +324,18 @@ package body et_schematic_ops_groups is
 			commit (PRE, verb, noun, log_threshold);
 		end if;
 
-		
-		move_units;
-		move_netchangers;
-		move_net_segments;
+
+		-- Drag first the selected units and
+		-- indirectly the connected net segments:
+		drag_units;
+
+		-- Drag the selected netchangers and
+		-- indirectly the connected net segments:
+		drag_netchangers;
+
+		-- Drag now the remaining net segments
+		-- which are not connected with units or netchangers:
+		drag_net_segments;
 
 		-- CS reset texts, ... ?
 

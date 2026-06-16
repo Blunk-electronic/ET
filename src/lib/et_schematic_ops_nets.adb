@@ -2382,6 +2382,7 @@ package body et_schematic_ops_nets is
 							
 						old_A : type_vector_model := get_A (segment);
 						old_B : type_vector_model := get_B (segment);
+						old_center : type_vector_model := get_center (segment);
 						
 						destination : type_vector_model;
 					begin
@@ -2390,7 +2391,21 @@ package body et_schematic_ops_nets is
 						-- If the segment as a whole is selected,
 						-- then move the whole segment:
 						if is_selected (segment) then
-							null; -- CS
+							destination := old_center + offset;
+						
+							-- Drag the segment candidate. Do not
+							-- drag connected segments along, because
+							-- each of them is dragged separately
+							-- in the course of this procedure:
+							drag_segment (
+								module_cursor		=> module_cursor,
+								primary_segment		=> object_segment,
+								POA					=> get_center (segment),
+								destination			=> destination,
+								drag_secondaries	=> false,
+								commit_design		=> NO_COMMIT,
+								log_threshold		=> log_threshold + 1);
+
 
 						-- If the A-end of the segment is selected,
 						-- then move the A-end only:
