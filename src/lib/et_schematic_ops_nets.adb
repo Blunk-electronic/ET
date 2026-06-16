@@ -6954,16 +6954,22 @@ package body et_schematic_ops_nets is
 									horizontal_text;
 
 									log (text => "Horizontal moved to "
-										& to_string (label.position), level => log_threshold + 1);
+										& to_string (label.position),
+										level => log_threshold + 1);
 
 								when ORIENT_VERTICAL =>
 									vertical_text;
 
 									log (text => "Vertical label moved to "
-										& to_string (label.position), level => log_threshold + 1);
+										& to_string (label.position),
+										level => log_threshold + 1);
 									
 								when ORIENT_SLOPING =>
-									raise constraint_error; -- CS should never happen
+									log (
+										importance	=> SEVERITY_ERROR,
+										text 		=> "Net segment is a slope."
+											& " No net label allowed here !",
+										level		=> log_threshold + 1);
 									
 							end case;
 						end query_label;
