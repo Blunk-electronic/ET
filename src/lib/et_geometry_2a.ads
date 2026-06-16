@@ -968,6 +968,8 @@ package et_geometry_2a is
 		return type_vector_model;
 
 
+	-- Returns the point that is exactly
+	-- between the A and B-end of a line:
 	function get_center (
 		line : in type_line)
 		return type_vector_model;
