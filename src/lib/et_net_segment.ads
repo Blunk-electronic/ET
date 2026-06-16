@@ -81,7 +81,29 @@ package et_net_segment is
 	procedure reset_net_segment (
 		segment	: in out type_net_segment);
 
+
+		
+	-- CS: If we some day try to implement a nice algorithm
+	-- that drags net labels along with the segment being moved,
+	-- then this could be a start.
+	-- 1. The procedure must move the label so that it stays
+	--    in the same distance away from the segment.
+	-- 2. The net label must automatically change its rotation
+	--    depending on whether the segment runs horizontally or
+	--    vertically.
+	-- 3. Unknown: How to move the label if the segment
+	--    is stretched or contracted ?
+	-- overriding procedure move_start_by (
+	-- 	segment	: in out type_net_segment;
+	-- 	offset	: in type_vector_model);
+		
+	-- overriding procedure move_end_by (
+	-- 	segment	: in out type_net_segment;
+	-- 	offset	: in type_vector_model);
+
 	
+	
+		
 	type type_segment_array is array (natural range <>) of type_net_segment;
 
 	-- Creates a bare net segment without labels, 

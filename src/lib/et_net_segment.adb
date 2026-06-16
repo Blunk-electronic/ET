@@ -53,6 +53,16 @@ package body et_net_segment is
 	end;
 
 
+
+	-- CS: See specification !
+	-- procedure move_start_by (
+	-- 	segment	: in out type_net_segment;
+	-- 	offset	: in type_vector_model)
+	-- is begin
+	-- 	null;
+	-- end;
+
+
 	
 
 	function to_net_segment (

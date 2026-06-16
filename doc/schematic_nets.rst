@@ -135,7 +135,9 @@ Drag net segment
 	|VNS| g s
 
 	
-	
+	If a net segment is dragged, then the net labels that
+	belong to that segment will not be dragged along. The operator
+	has to adjust their position manually.
 	
 
 

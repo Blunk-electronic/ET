@@ -1653,19 +1653,11 @@ package body et_schematic_ops_nets is
 							segment_old := segment;
 							
 							log_indentation_up;
-
-							
 							
 							case coordinates is
 								when ABSOLUTE	=> move_absolute;									
 								when RELATIVE	=> move_relative;							
 							end case;
-
-							-- CS ? move simple net labels along with net segment ?
-							-- move_net_labels (
-							-- 	segment_before	=> segment_before,
-							-- 	segment_after	=> segment,
-							-- 	zone			=> zone);
 							
 							log_indentation_down;
 						end move_primary_segment;

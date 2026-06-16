@@ -297,6 +297,8 @@ package et_schematic_ops_nets is
 	--    two nets will NOT be connected.
 	--    CS: The resulting overlapping segments should be detected by the ERC
 	--    or better the drag operation should be rejected.
+	-- 4. CS: Net labels are currently not dragged along automatically.
+	--    The operator must move the labels manually if required.
 	procedure drag_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;
