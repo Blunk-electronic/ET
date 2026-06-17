@@ -902,7 +902,7 @@ package et_canvas is
 	
 -- VERB AND NOUN DISPLAY:
 
-	type type_mode is record
+	type type_mode is record -- CS rename to type_mode_display
 		box_mode			: gtk_vbox;
 		box_mode_verb		: gtk_hbox;
 		box_mode_noun		: gtk_hbox;
@@ -1237,6 +1237,8 @@ package et_canvas is
 	-- Resets all components of the editing_process
 	-- to their default values:
 	procedure reset_editing_process;
+
+
 	
 
 
@@ -1251,6 +1253,7 @@ package et_canvas is
 
 
 
+	
 
 -- EDIT PROCESS RUNNNING:
 
@@ -1263,6 +1266,9 @@ package et_canvas is
 
 
 
+	
+
+
 -- FINALIZING GRANTED:
 	
 	procedure set_finalizing_granted;  -- CS rename to finalizing_granted_set
@@ -1270,6 +1276,9 @@ package et_canvas is
 	procedure reset_finalizing_granted;
 
 	function finalizing_granted return boolean;
+
+
+
 
 	
 
@@ -1284,6 +1293,10 @@ package et_canvas is
 	function get_escape_counter return type_escape_count;
 	
 	procedure reset_escape_counter;
+
+
+
+
 	
 
 -- OBJECT AND PATH:
@@ -1379,6 +1392,8 @@ package et_canvas is
 	function get_primary_tool_position
 		return type_vector_model;
 
+
+
 	
 
 -- CATCH ZONE:
@@ -1395,6 +1410,7 @@ package et_canvas is
 		return type_zone_radius;
 
 
+	
 
 	
 -- PROPERTIES BOX:
@@ -1543,6 +1559,7 @@ package et_canvas is
 
 
 	
+	
 -- ORIGIN OF TEXTS AND COMPLEX OBJECTS:
 
 	-- These origins have a size and linewidth given in the model-domain.
@@ -1556,6 +1573,8 @@ package et_canvas is
 	-- rotation, the origin can be rotated if required:
 	procedure draw_origin (
 		position	: in type_position);
+
+
 
 	
 
@@ -1622,6 +1641,7 @@ package et_canvas is
 	
 	
 	
+
 	
 	
 	
@@ -1671,6 +1691,10 @@ private
 
 	editing_process : type_editing_process;
 	
+
+
+
+
 	
 -- CALLBACKS:
 
@@ -1710,6 +1734,9 @@ private
 		button : access gtk_button_record'class);
 
 	access_cb_export : constant cb_gtk_button_void := cb_export'access;
+
+
+
 
 	
 
@@ -1796,6 +1823,8 @@ private
 	
 
 
+
+	
 -- SCROLLED WINDOW AND SCROLLBARS:
 			
 	-- This callback procedure is called each time the size_allocate signal
