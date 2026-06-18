@@ -583,6 +583,9 @@ package et_schematic_ops_units is
 
 
 
+
+
+	
 -- GROUPS:
 
 	-- Sets "selected" flag of all units that 
@@ -620,6 +623,9 @@ package et_schematic_ops_units is
 	procedure set_selected_units_as_moving (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
+
+
+
 
 
 	
