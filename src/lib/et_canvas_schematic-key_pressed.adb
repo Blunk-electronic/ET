@@ -56,6 +56,7 @@ is
 	use et_canvas_schematic_nets;
 	use et_canvas_schematic_units;
 	use et_canvas_schematic_netchangers;
+	use et_canvas_schematic_group;
 
 
 	point : type_vector_model renames get_cursor_position;
@@ -176,8 +177,7 @@ is
 	
 	
 	
-	procedure define is 	
-	
+	procedure define is	
 		-- This procedure is called each time the operator presses
 		-- the space-key. How often the key is pressed is counted
 		-- in variable group_area_keyboard.key_counter. After the
@@ -249,7 +249,9 @@ is
 	end define;
 		
 
-		
+
+
+	
 		
 	procedure dissolve is begin
 		case key is
@@ -287,12 +289,26 @@ is
 			when others => status_noun_invalid;
 		end case;
 	end dissolve;
-		
+
+
+
+
 	
 	
-	procedure drag is begin
+	
+	procedure drag is 
+	begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
+			when key_noun_group =>
+				noun := NOUN_GROUP;
+				set_status (et_canvas_schematic_group.status_drag_group);
+
+				-- When dragging groups, we enforce the default grid
+				-- and snap the cursor position to the default grid:
+				reset_grid_and_cursor;
+
+
 			when key_noun_segment =>
 				noun := NOUN_SEGMENT;
 				set_status (et_canvas_schematic_nets.status_drag);
@@ -324,6 +340,13 @@ is
 			-- by keyboard:
 			when key_space =>	
 				case noun is
+					when NOUN_GROUP =>
+						-- When dragging a group, we enforce the default grid
+						-- and snap the cursor position to the default grid:
+						reset_grid_and_cursor;
+						et_canvas_schematic_group.drag_group (
+							KEYBOARD, get_cursor_position);						
+
 					when NOUN_SEGMENT =>
 						-- When dragging net segments, we enforce the default grid
 						-- and snap the cursor position to the default grid:
@@ -372,6 +395,11 @@ is
 		end case;
 	end drag;
 
+
+
+
+
+	
 	
 	
 	procedure draw is 
@@ -422,6 +450,9 @@ is
 	end draw;
 
 
+
+
+
 	
 
 	procedure mirror is begin
@@ -457,6 +488,8 @@ is
 			when others => status_noun_invalid;
 		end case;
 	end mirror;
+
+
 
 
 	
@@ -548,6 +581,9 @@ is
 	end move;
 
 
+
+
+	
 	
 	procedure place is begin
 		case key is
@@ -605,6 +641,9 @@ is
 			when others => status_noun_invalid;
 		end case;
 	end place;
+
+
+
 
 
 	
@@ -667,6 +706,8 @@ is
 	end rotate;
 
 
+
+	
 
 	
 	procedure add is begin
@@ -771,6 +812,8 @@ is
 
 
 	
+
+	
 	procedure copy is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
@@ -841,6 +884,8 @@ is
 	end copy;
 
 
+
+	
 	
 	
 	procedure fetch is begin
@@ -888,6 +933,7 @@ is
 			when others => null;
 		end case;
 	end fetch;
+
 
 
 	
@@ -960,6 +1006,8 @@ is
 	end set;
 
 
+
+	
 	
 	procedure show is begin
 		case key is
@@ -1022,6 +1070,8 @@ is
 			when others => status_noun_invalid;
 		end case;
 	end show;
+
+
 
 
 	

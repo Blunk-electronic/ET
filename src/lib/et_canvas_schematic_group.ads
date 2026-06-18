@@ -50,37 +50,45 @@ with gtk.widget;					use gtk.widget;
 with gtk.gentry;
 
 with et_canvas_schematic;			use et_canvas_schematic;
-with et_net_names;					use et_net_names;
 with et_canvas_messages;			use et_canvas_messages;
 with et_canvas_tool;				use et_canvas_tool;
-with et_sheets;						use et_sheets;
 with et_schematic_geometry;			use et_schematic_geometry;
 with et_schematic_coordinates;		use et_schematic_coordinates;
 use et_schematic_geometry.pac_geometry_2;
--- use et_schematic_geometry.pac_path_and_bend;
 
--- with et_text;
 with et_generic_modules;			use et_generic_modules;
--- with et_net_labels;					use et_net_labels;
--- with et_nets;						use et_nets;
--- with et_net_segment;				use et_net_segment;
--- with et_net_strands;				use et_net_strands;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
+
 
 package et_canvas_schematic_group is
 
 	use pac_generic_modules;
 	
 	
-	-- status_draw_net : constant string := 
-	-- 	status_click_left 
-	-- 	& "or "
-	-- 	& status_press_space
-	-- 	& status_set_A;
-		-- & status_hint_for_abort;
+	status_drag_group : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to drag the group." 
+		& status_hint_for_abort;
 
-	procedure dummy;
+
+		
+	-- This procedure is to be called twice:
+	-- 1. When the operator sets that point at which
+	--    the group is being attacked.
+	-- 2. When the operator sets the point at 
+	--    which the group is to be dropped.
+	-- From the point-of-attack to the drop-point
+	-- we calculate the offset by which the group
+	-- is to be moved:
+	procedure drag_group (
+		tool	: in type_tool;
+		point	: in type_vector_model);
+
+
+
 	
 end et_canvas_schematic_group;
 

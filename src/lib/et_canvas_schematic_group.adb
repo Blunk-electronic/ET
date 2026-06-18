@@ -41,16 +41,82 @@
 
 with ada.text_io;					use ada.text_io;
 
+with et_schematic_ops_groups;		use et_schematic_ops_groups;
+with et_cmd_origin_to_commit;
 
 
 package body et_canvas_schematic_group is
 
+	use et_canvas_schematic.pac_canvas;
+
+	
+	
+	procedure drag_group (
+		tool	: in type_tool;
+		point	: in type_vector_model)
+	is
+
+		procedure finalize is
+			use et_cmd_origin_to_commit;
+			offset : type_vector_model;
+		begin
+			-- For the subprograms that draw objects
+			-- of a moving group:
+			set_group_not_moving;
+
+			-- Compute the final offset by which the
+			-- group is to be moved:
+			offset := point - object_point_of_attack;
+
+			-- Do the final drag with the group:
+			drag_group (active_module,
+				offset, DO_COMMIT, log_threshold);
+				
+			-- Now that the drag operation is done,
+			-- we can reset the status of all objects:
+			reset_objects (active_module, log_threshold);
+
+			-- Prepare for a new editing process;
+			reset_editing_process; 
+
+			-- Clear the status bar:
+			status_clear;
+		end finalize;
+			
+		
+	begin
+		-- Initially the editing process is not running:
+		if not edit_process_running then
+
+			-- So this branch is executed on the 
+			-- first call of this procedure:
+			
+			-- Set the tool being used:
+			object_tool := tool;
+
+			-- Set point where the group is
+			-- grabbed (or attacked):
+			object_point_of_attack := point;
+			
+			-- CS set selected objects as "moving"
+			set_group_as_moving (active_module, log_threshold);
+
+			-- For the subprograms that draw objects
+			-- of a moving group:
+			set_group_moving;
+			
+			set_edit_process_running;
+
+		else
+			-- On the second call of this procedure,
+			-- we finalize the drag-group operation:
+			finalize;
+		end if;
+	end drag_group;
 
 	
 
-	
 
-	procedure dummy is begin null; end;
 
 	
 end et_canvas_schematic_group;

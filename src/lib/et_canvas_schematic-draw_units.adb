@@ -1033,7 +1033,10 @@ procedure draw_units is
 
 
 				
-				procedure draw_on_active_sheet is begin
+				procedure draw_on_active_sheet is 
+					use et_modes.schematic;
+					offset : type_vector_model;
+				begin
 					-- CASE 1: We draw units which are on the active sheet:
 					if get_sheet (pos) = active_sheet then
 						
@@ -1047,9 +1050,20 @@ procedure draw_units is
 							-- The whole unit will be drawn highlighted:
 							brightness := BRIGHT;
 
-							-- overwrite position if unit is moving
+							-- Overwrite the position if the unit alone
+							-- is begin moved or if a whole group is being
+							-- moved:
 							if is_moving (unit) then
-								unit_place := get_object_tool_position;
+
+								-- If the unit is member of a group, then
+								-- the current unit position must be computed
+								-- based on the offset by which the group
+								-- is being moved:
+								if group_is_moving then
+									move_by (unit_place, get_group_offset);
+								else
+									unit_place := get_object_tool_position;
+								end if;
 							end if;
 						end if;
 

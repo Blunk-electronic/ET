@@ -577,6 +577,14 @@ package body et_netchangers.schematic is
 		end if;
 	end;
 
+
+	
+	procedure set_moving (
+		netchanger : in out type_netchanger)
+	is begin
+		set_moving (netchanger.status_sch);
+	end;
+
 	
 
 	procedure set_proposed (

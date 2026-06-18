@@ -153,6 +153,13 @@ is
 				
 			when VERB_DRAG =>
 				case noun is
+					when NOUN_GROUP =>
+						-- When dragging a group, we enforce the default grid
+						-- and snap the cursor position to the default grid:
+						reset_grid_and_cursor;
+						et_canvas_schematic_group.drag_group(
+							MOUSE, get_cursor_position);						
+					
 					when NOUN_UNIT =>
 						-- When dragging units, we enforce the default grid
 						-- and snap the cursor position to the default grid:

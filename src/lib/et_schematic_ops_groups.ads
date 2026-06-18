@@ -98,8 +98,15 @@ package et_schematic_ops_groups is
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 	
-	
-end et_schematic_ops_groups;
+
+	-- This procedure sets the "moving" flag of all
+	-- objects which are selected (which are in the group):
+	procedure set_group_as_moving (
+  		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+ end et_schematic_ops_groups;
 
 -- Soli Deo Gloria
 

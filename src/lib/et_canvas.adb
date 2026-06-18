@@ -784,10 +784,13 @@ package body et_canvas is
 
 	
 
+
+
 	
 	
+-- GROUP:
 	
-	
+		
 	procedure reset_group_area_keyboard is begin
 		group_area_keyboard := (others => <>);
 	end;
@@ -795,7 +798,6 @@ package body et_canvas is
 	
 	
 
--- GROUP:
 
 
 	procedure reset_group_area_mouse is begin
@@ -914,6 +916,31 @@ package body et_canvas is
 	
 
 
+	procedure set_group_moving is begin
+		group_is_moving := true;
+	end;
+
+
+
+	procedure set_group_not_moving is begin
+		group_is_moving := false;
+	end;
+
+
+
+	function get_group_offset 
+		return type_vector_model
+	is begin
+		return get_object_tool_position - object_point_of_attack;
+	end;
+
+	
+	
+
+
+
+
+	
 	
 	
 -- VISIBLE AREA:

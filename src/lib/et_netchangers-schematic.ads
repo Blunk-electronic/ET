@@ -329,7 +329,11 @@ package et_netchangers.schematic is
 		
 	procedure set_proposed (
 		netchanger : in out type_netchanger);
-		
+
+
+	procedure set_moving (
+		netchanger : in out type_netchanger);
+
 
 	-- Sets the selected flag in both schematic
 	-- and board symbol:

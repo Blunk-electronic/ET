@@ -350,6 +350,71 @@ package body et_schematic_ops_groups is
 	
 
 
+
+
+
+
+
+
+
+	procedure set_group_as_moving (
+  		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure set_units is
+			use et_schematic_ops_units;
+		begin
+			log (text => "units", level => log_threshold + 1);
+			log_indentation_up;
+			
+			set_selected_units_as_moving (module_cursor, 
+				log_threshold + 2);
+			
+			log_indentation_down;
+		end;
+		
+
+		procedure set_netchangers is
+			use et_schematic_ops_netchangers;
+		begin
+			log (text => "netchangers", level => log_threshold + 1);
+			log_indentation_up;
+			
+			-- drag_selected_netchangers (module_cursor, 
+			-- 	offset, log_threshold + 2);
+			
+			log_indentation_down;
+		end;
+
+		
+		procedure set_net_segments is
+			use et_schematic_ops_nets;
+		begin
+			log (text => "net segments", level => log_threshold + 1);
+			log_indentation_up;
+			
+			-- drag_selected_net_segments (module_cursor, 
+			-- 	offset, log_threshold + 2);
+
+			log_indentation_down;
+		end;
+		
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " set group as moving",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		set_units;
+		set_netchangers;
+		set_net_segments;
+		
+		log_indentation_down;
+	end set_group_as_moving;
+
 	
 	
 end et_schematic_ops_groups;

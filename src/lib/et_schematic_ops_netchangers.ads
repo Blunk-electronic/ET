@@ -470,7 +470,9 @@ package et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level)
 		return type_object_netchanger;
 
-		
+
+
+	
 
 
 -- GROUPS:
@@ -503,6 +505,14 @@ package et_schematic_ops_netchangers is
 	procedure drag_selected_netchangers (
 		module_cursor	: in pac_generic_modules.cursor;
 		offset			: in type_vector_model; -- x/y
+		log_threshold	: in type_log_level);
+
+
+
+
+	-- Sets the "moving" flag of all selected netchangers:
+	procedure set_selected_netchangers_as_moving (
+		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 	

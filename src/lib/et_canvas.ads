@@ -483,7 +483,11 @@ package et_canvas is
 	end record;
 	
 	
+
+
+
 	
+-- GROUP:
 	
 	-- This procedure is relevant if an area (either for
 	-- zooming or grouping) is defined via keyboard.
@@ -517,7 +521,6 @@ package et_canvas is
 
 	
 
--- GROUP:
 
 	-- This is the instance of the group-area as
 	-- it is defined via mouse pointer:
@@ -537,8 +540,31 @@ package et_canvas is
 	procedure draw_group_area;
 
 
+
+	
+	-- This flag indicates that a group is
+	-- being moved by the operator.
+	-- Procedures that draw objects read this
+	-- flag in order to draw objects of a group
+	-- as the operator is moving the group:
+	group_is_moving : boolean := false;
+
+	procedure set_group_moving;
+
+	procedure set_group_not_moving;
+
+	-- This function returns the offset by
+	-- which a group is being moved.
+	-- It returns the position of the current tool -
+	-- the value of object_point_of_attack:
+	function get_group_offset 
+		return type_vector_model;
+
 	
 
+
+	
+	
 	
 -- VISIBLE AREA:
 
@@ -1301,8 +1327,10 @@ package et_canvas is
 
 -- OBJECT AND PATH:
 	
-	-- When an object is to be moved or dragged, then
-	-- this global variable should be used:
+	-- When an object or a group is to be moved or dragged,
+	-- then this global variable should be used
+	-- to store the point at which the object or the group
+	-- has been attacked:
 	object_point_of_attack : type_vector_model;
 
 	-- When an object is being moved, then this can be done
