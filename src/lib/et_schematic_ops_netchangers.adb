@@ -3182,6 +3182,10 @@ package body et_schematic_ops_netchangers is
 
 		generic_modules.update_element (module_cursor, query_module'access);
 
+		-- Set segments which are connected with selected
+		-- netchangers as "moving":
+		set_segments_moving (module_cursor, log_threshold + 1);
+		
 		log_indentation_down;
 	end set_selected_netchangers_as_moving;
 	

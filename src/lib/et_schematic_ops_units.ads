@@ -620,6 +620,8 @@ package et_schematic_ops_units is
 
 
 	-- Sets the "moving" flag of all selected units:
+	-- Sets also the ends of net segments, which are connecetd
+	-- with the selected units, as "moving":
 	procedure set_selected_units_as_moving (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);

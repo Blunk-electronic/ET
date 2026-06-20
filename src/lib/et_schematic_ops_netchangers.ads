@@ -510,7 +510,9 @@ package et_schematic_ops_netchangers is
 
 
 
-	-- Sets the "moving" flag of all selected netchangers:
+	-- Sets the "moving" flag of all selected netchangers.
+	-- Sets also the ends of net segments, which are connecetd
+	-- with the selected netchangers, as "moving":
 	procedure set_selected_netchangers_as_moving (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
