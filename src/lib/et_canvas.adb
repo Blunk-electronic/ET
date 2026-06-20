@@ -4288,19 +4288,37 @@ package body et_canvas is
 		-- its position will be modified according to the
 		-- object_point_of_attack and the current tool position.
 		-- Otherwise, if the start/end point of the line is moving
-		-- then the line start/end points (A/B) will be moved
-		-- by the current object_displacement. If object_displacement 
-		-- is zero, then the line will be drawn as it is:
+		-- or begin dragged, then the line start/end points (A/B) will be moved
+		-- either by:
+		-- 1. current object_displacement. If object_displacement 
+		--    is zero, then the line will be drawn as it is:
+		-- 2. the offset by by which the group is being dragged. 
+		--
 		if is_moving (l) then
 			attack (l, object_point_of_attack, get_object_tool_position);
 		else
-			-- Move start/end point by global object_displacement:
-			if is_A_moving (l) then
-				move_A_by (l, object_displacement);
-			end if;
+			-- If a group is being moved (or dragged):
+			if group_is_moving then
+				-- Move start/end point by global group offset:
+				if is_A_moving (l) then
+					move_A_by (l, get_group_offset);
+				end if;
 
-			if is_B_moving (l) then
-				move_B_by (l, object_displacement);
+				if is_B_moving (l) then
+					move_B_by (l, get_group_offset);
+				end if;
+				
+			-- If the line is being dragged along with
+			-- another object:
+			else
+				-- Move start/end point by global object_displacement:
+				if is_A_moving (l) then
+					move_A_by (l, object_displacement);
+				end if;
+
+				if is_B_moving (l) then
+					move_B_by (l, object_displacement);
+				end if;
 			end if;
 		end if;
 		
