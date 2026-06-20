@@ -87,7 +87,7 @@ Drag a Group
 	
 		drag group 100 20
 
-
+	|VNS| g g
 
 
 

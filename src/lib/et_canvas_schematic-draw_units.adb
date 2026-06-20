@@ -1051,7 +1051,7 @@ procedure draw_units is
 							brightness := BRIGHT;
 
 							-- Overwrite the position if the unit alone
-							-- is begin moved or if a whole group is being
+							-- is being moved or if a whole group is being
 							-- moved:
 							if is_moving (unit) then
 

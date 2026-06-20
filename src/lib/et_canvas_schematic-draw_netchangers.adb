@@ -418,9 +418,20 @@ procedure draw_netchangers is
 
 					brightness := BRIGHT;
 
-					-- overwrite position if netchanger is moving:
+					-- Overwrite the position if the netchanger alone
+					-- is being moved or if a whole group is being
+					-- moved:
 					if is_moving (netchanger) then
-						set_place (position, get_object_tool_position);
+
+						-- If the netchanger is member of a group, then
+						-- the current netchanger position must be computed
+						-- based on the offset by which the group
+						-- is being moved:
+						if group_is_moving then
+							move_by (position.place, get_group_offset);
+						else
+							set_place (position, get_object_tool_position);
+						end if;
 					end if;
 				end if;
 

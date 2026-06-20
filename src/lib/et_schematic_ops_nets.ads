@@ -379,6 +379,11 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 
+	-- Sets the "moving" flag of all selected segments:
+	procedure set_selected_net_segments_as_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
 	
 	
 	

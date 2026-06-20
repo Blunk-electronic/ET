@@ -381,8 +381,8 @@ package body et_schematic_ops_groups is
 			log (text => "netchangers", level => log_threshold + 1);
 			log_indentation_up;
 			
-			-- drag_selected_netchangers (module_cursor, 
-			-- 	offset, log_threshold + 2);
+			set_selected_netchangers_as_moving (module_cursor, 
+				log_threshold + 2);
 			
 			log_indentation_down;
 		end;
@@ -394,8 +394,8 @@ package body et_schematic_ops_groups is
 			log (text => "net segments", level => log_threshold + 1);
 			log_indentation_up;
 			
-			-- drag_selected_net_segments (module_cursor, 
-			-- 	offset, log_threshold + 2);
+			set_selected_net_segments_as_moving (module_cursor, 
+				log_threshold + 2);
 
 			log_indentation_down;
 		end;
