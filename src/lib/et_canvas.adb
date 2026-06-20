@@ -4514,6 +4514,8 @@ package body et_canvas is
 		-- as it is:
 		if is_moving (c) then
 			attack (c, object_point_of_attack, get_object_tool_position);
+
+			-- CS: Handle group operations, as in draw_line
 		end if;
 
 		
