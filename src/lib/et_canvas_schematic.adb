@@ -527,16 +527,20 @@ package body et_canvas_schematic is
 
 			status_clear;
 
-			
-			-- Reset the status of objects in schematic
-			-- and board editor.
-			-- This has also the effect of clearing existing
-			-- groups:
-			et_schematic_ops_groups.reset_objects (
-				active_module, log_threshold + 1);
-			
-			et_board_ops_groups.reset_objects (
-				active_module, log_threshold + 1);
+			-- CS; It seems to be correct not to
+			-- clear existing groups here. This way a group
+			-- remains active so that further operations
+			-- like dragging are possible. This assumption
+			-- must be verified:
+-- 			-- Reset the status of objects in schematic
+-- 			-- and board editor.
+-- 			-- This has also the effect of clearing existing
+-- 			-- groups:
+-- 			et_schematic_ops_groups.reset_objects (
+-- 				active_module, log_threshold + 1);
+-- 			
+-- 			et_board_ops_groups.reset_objects (
+-- 				active_module, log_threshold + 1);
 
 
 			-- Mark preview data as invalid:
