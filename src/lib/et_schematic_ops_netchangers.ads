@@ -517,6 +517,18 @@ package et_schematic_ops_netchangers is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
+
+	procedure set_selected_netchangers_as_not_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+	
+	-- This procedure clears the "moving" flag of all
+	-- netchangers (regardless whether they are selcted or not):
+	procedure set_all_netchangers_as_not_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
 	
 ------------------------------------------------------------------------------------------
 

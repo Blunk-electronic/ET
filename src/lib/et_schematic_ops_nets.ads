@@ -385,6 +385,20 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 	
+	procedure set_selected_net_segments_as_not_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+	
+
+	-- This procedure clears the "moving" flag of all
+	-- net segments (regardless whether they are selcted or not):
+	procedure set_all_net_segments_as_not_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+
+
 	
 	
 -- STRANDS:

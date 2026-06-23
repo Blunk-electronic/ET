@@ -2289,14 +2289,29 @@ end;
 	is begin
 		set_A_moving (line.status_AB);
 	end;
-	
 
+	
+	procedure clear_A_moving (
+		line	: in out type_line)
+	is begin
+		clear_A_moving (line.status_AB);
+	end;
+
+
+	
 	procedure set_B_moving (
 		line	: in out type_line)
 	is begin
 		set_B_moving (line.status_AB);
 	end;
 
+
+
+	procedure clear_B_moving (
+		line	: in out type_line)
+	is begin
+		clear_B_moving (line.status_AB);
+	end;
 
 
 

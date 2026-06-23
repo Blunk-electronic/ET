@@ -106,6 +106,13 @@ package et_schematic_ops_groups is
 		log_threshold	: in type_log_level);
 
 
+	-- This procedure clears the "moving" flag of all
+	-- objects (regardless whether they are selcted or not):
+	procedure set_group_as_not_moving (
+  		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+		
  end et_schematic_ops_groups;
 
 -- Soli Deo Gloria

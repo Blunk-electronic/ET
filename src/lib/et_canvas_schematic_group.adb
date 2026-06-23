@@ -64,6 +64,9 @@ package body et_canvas_schematic_group is
 			-- of a moving group:
 			set_group_not_moving;
 
+			-- Clear all "moving"-flags:
+			set_group_as_not_moving (active_module, log_threshold);
+			
 			-- Compute the final offset by which the
 			-- group is to be moved:
 			offset := point - object_point_of_attack;
@@ -72,10 +75,6 @@ package body et_canvas_schematic_group is
 			drag_group (active_module,
 				offset, DO_COMMIT, log_threshold);
 				
-			-- Now that the drag operation is done,
-			-- we can reset the status of all objects:
-			reset_objects (active_module, log_threshold);
-
 			-- Prepare for a new editing process;
 			reset_editing_process; 
 

@@ -627,7 +627,16 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
+	procedure set_selected_units_as_not_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
 
+	
+	-- This procedure clears the "moving" flag of all
+	-- untis (regardless whether they are selcted or not):
+	procedure set_all_units_as_not_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
 
 
 	

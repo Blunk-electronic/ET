@@ -2566,6 +2566,187 @@ package body et_schematic_ops_nets is
 	
 	
 	
+	
+	
+	procedure set_selected_net_segments_as_not_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net 		: in out type_net)
+			is
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (
+					strand	: in out type_strand)
+				is
+					segment_cursor : pac_net_segments.cursor := 
+						strand.segments.first;
+					
+					
+					procedure query_segment (
+						segment	: in out type_net_segment)
+					is begin
+						-- CS: log segment and net name ?
+						
+						-- If the A-end of the segment is selected,
+						-- then set it as moving:
+						if is_A_selected (segment) then
+							clear_A_moving (segment);
+						end if;
+						
+						-- If the B-end of the segment is selected,
+						-- then set it as moving:
+						if is_B_selected (segment) then
+							clear_B_moving (segment);
+						end if;
+					end query_segment;
+					
+					
+				begin
+					-- Iterate through the segments
+					-- of the strand:
+					while has_element (segment_cursor) loop
+						strand.segments.update_element (
+							segment_cursor, query_segment'access);
+						
+						next (segment_cursor);
+					end loop;
+				end query_strand;
+				
+
+			begin
+				-- Iterate through the strands:
+				while has_element (strand_cursor) loop
+					net.strands.update_element (strand_cursor, query_strand'access);
+					next (strand_cursor);
+				end loop;
+			end query_net;
+
+			
+		begin
+			-- Iterate through the nets:
+			while has_element (net_cursor) loop
+				module.nets.update_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " set selected net segments as NOT moving",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (module_cursor, query_module'access);
+		
+		log_indentation_down;
+	end set_selected_net_segments_as_not_moving;
+
+	
+	
+
+	
+	
+	
+	
+	
+	procedure set_all_net_segments_as_not_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net 		: in out type_net)
+			is
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (
+					strand	: in out type_strand)
+				is
+					segment_cursor : pac_net_segments.cursor := 
+						strand.segments.first;
+					
+					
+					procedure query_segment (
+						segment	: in out type_net_segment)
+					is begin
+						-- CS: log segment and net name ?
+						
+						clear_A_moving (segment);
+						clear_B_moving (segment);
+						clear_moving (segment);						
+					end query_segment;
+					
+					
+				begin
+					-- Iterate through the segments
+					-- of the strand:
+					while has_element (segment_cursor) loop
+						strand.segments.update_element (
+							segment_cursor, query_segment'access);
+						
+						next (segment_cursor);
+					end loop;
+				end query_strand;
+				
+
+			begin
+				-- Iterate through the strands:
+				while has_element (strand_cursor) loop
+					net.strands.update_element (strand_cursor, query_strand'access);
+					next (strand_cursor);
+				end loop;
+			end query_net;
+
+			
+		begin
+			-- Iterate through the nets:
+			while has_element (net_cursor) loop
+				module.nets.update_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " set all net segments as NOT moving",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (module_cursor, query_module'access);
+		
+		log_indentation_down;
+	end set_all_net_segments_as_not_moving;
+
+	
+	
+	
+	
+	
 
 
 

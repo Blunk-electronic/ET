@@ -1081,13 +1081,21 @@ package et_geometry_2a is
 	procedure set_A_moving (
 		line	: in out type_line);
 	
+	procedure clear_A_moving (
+		line	: in out type_line);
 
+
+	
 	-- Sets the end point of the 
 	-- given line as "moving":
 	procedure set_B_moving (
 		line	: in out type_line);
 
+	procedure clear_B_moving (
+		line	: in out type_line);
 
+
+	
 	-- Sets the "selected"-flags of a line
 	-- depending on the area it is crossing.
 	-- 1. If only the A-end of the line is

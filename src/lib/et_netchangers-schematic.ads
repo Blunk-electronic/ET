@@ -335,6 +335,10 @@ package et_netchangers.schematic is
 		netchanger : in out type_netchanger);
 
 
+	procedure clear_moving (
+		netchanger : in out type_netchanger);
+
+	
 	-- Sets the selected flag in both schematic
 	-- and board symbol:
 	procedure set_selected (
