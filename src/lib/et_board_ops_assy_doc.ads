@@ -181,6 +181,9 @@ package et_board_ops_assy_doc is
 		log_threshold	: in type_log_level);
 
 
+
+
+
 	
 	
 -- ARCS:
@@ -247,6 +250,7 @@ package et_board_ops_assy_doc is
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
