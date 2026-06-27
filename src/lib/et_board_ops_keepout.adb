@@ -230,7 +230,7 @@ package body et_board_ops_keepout is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of "
+			& " modify status of "
 			& to_string (segment.segment)
 			& " face " & to_string (segment.face)
 			& " / " & to_string (operation),
@@ -244,6 +244,9 @@ package body et_board_ops_keepout is
 
 		log_indentation_down;
 	end modify_status;
+
+
+
 
 
 	
@@ -337,7 +340,7 @@ package body et_board_ops_keepout is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing segments in" & to_string (catch_zone)
+			 & " propose segments in" & to_string (catch_zone)
 			 & " face " & to_string (face),
 			 level => log_threshold);
 
@@ -353,6 +356,9 @@ package body et_board_ops_keepout is
 
 	
 
+
+
+	
 
 	
 	
@@ -433,7 +439,7 @@ package body et_board_ops_keepout is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " resetting proposed segments of zones in keepout",
+			& " reset proposed segments of zones in keepout",
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -447,6 +453,11 @@ package body et_board_ops_keepout is
 
 
 
+
+
+
+
+	
 
 	function get_first_segment (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -563,6 +574,10 @@ package body et_board_ops_keepout is
 
 
 
+	
+
+
+
 
 	procedure move_segment (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -570,8 +585,13 @@ package body et_board_ops_keepout is
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		use pac_contours;
 		use pac_segments;
 		use pac_keepout_zones;
@@ -629,12 +649,18 @@ package body et_board_ops_keepout is
 				
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving keepout zone segment " & to_string (segment.segment)
+			& " move keepout zone segment " & to_string (segment.segment)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
@@ -642,6 +668,11 @@ package body et_board_ops_keepout is
 
 		-- log (text => "new outline:" & to_string (get_outline (module_cursor), true),
 		-- 	 level => log_threshold + 1);
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end move_segment;
@@ -650,6 +681,10 @@ package body et_board_ops_keepout is
 	
 
 
+
+
+
+	
 
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -789,6 +824,11 @@ package body et_board_ops_keepout is
 
 
 
+
+
+
+	
+
 	
 	
 	function get_objects (
@@ -906,6 +946,9 @@ package body et_board_ops_keepout is
 
 
 
+
+	
+
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
@@ -913,7 +956,7 @@ package body et_board_ops_keepout is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of object"
+			& " modify status of object"
 			-- & to_string (segment.segment) CS output object category ?
 			& " / " & to_string (operation),
 			level => log_threshold);
@@ -933,6 +976,10 @@ package body et_board_ops_keepout is
 
 	
 
+
+
+
+
 	
 
 	procedure modify_status (
@@ -949,6 +996,10 @@ package body et_board_ops_keepout is
 
 
 
+
+
+	
+
 	
 
 	procedure move_object (
@@ -960,7 +1011,7 @@ package body et_board_ops_keepout is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving keepout object " 
+			& " move keepout object " 
 			-- CS & to_string (object)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
@@ -972,7 +1023,7 @@ package body et_board_ops_keepout is
 			when CAT_ZONE_SEGMENT =>
 				move_segment (module_cursor,
 					object.segment,
-					point_of_attack, destination,
+					point_of_attack, destination, DO_COMMIT,
 					log_threshold + 1);
 							
 			when CAT_VOID =>
@@ -984,6 +1035,10 @@ package body et_board_ops_keepout is
 	
 
 
+
+
+
+
 	
 
 	procedure reset_proposed_objects (
@@ -991,7 +1046,7 @@ package body et_board_ops_keepout is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor) &
-			" resetting proposed objects",
+			" reset proposed objects",
 			level => log_threshold);
 
 		log_indentation_up;
@@ -1001,6 +1056,10 @@ package body et_board_ops_keepout is
 
 
 	
+
+
+
+
 	
 
 
