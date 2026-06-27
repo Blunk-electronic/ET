@@ -2115,6 +2115,9 @@ package body et_board_ops_silkscreen is
 
 
 
+
+
+	
 	
 
 	procedure move_text (
@@ -2168,7 +2171,7 @@ package body et_board_ops_silkscreen is
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
 			& " face" & to_string (face) 
-			& " moving silkscreen text from" & to_string (old_position)
+			& " move silkscreen text from" & to_string (old_position)
 			& " to" & to_string (new_position), -- CS by offset
 			level => log_threshold);
 
@@ -2180,6 +2183,10 @@ package body et_board_ops_silkscreen is
 	end move_text;
 
 
+
+
+
+	
 
 
 
@@ -2215,7 +2222,7 @@ package body et_board_ops_silkscreen is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of text" -- CS log position and content ?
+			& " modify status of text" -- CS log position and content ?
 			& " / " & to_string (operation),
 			level => log_threshold);
 
@@ -2231,7 +2238,10 @@ package body et_board_ops_silkscreen is
 
 	
 
+	
 
+
+	
 	
 
 	procedure propose_texts (
@@ -2298,7 +2308,7 @@ package body et_board_ops_silkscreen is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing texts in" & to_string (catch_zone)
+			 & " propose texts in" & to_string (catch_zone)
 			 & " face " & to_string (face),
 			 level => log_threshold);
 
@@ -2535,6 +2545,10 @@ package body et_board_ops_silkscreen is
 
 
 
+
+
+	
+
 	
 
 	procedure reset_proposed_texts (
@@ -2589,7 +2603,7 @@ package body et_board_ops_silkscreen is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " resetting proposed texts",
+			 & " reset proposed texts",
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -2605,6 +2619,8 @@ package body et_board_ops_silkscreen is
 
 
 
+
+	
 	
 
 	
@@ -2705,7 +2721,7 @@ package body et_board_ops_silkscreen is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of text placeholder" -- CS log position and content ?
+			& " modify status of text placeholder" -- CS log position and content ?
 			& " / " & to_string (operation),
 			level => log_threshold);
 
@@ -2719,6 +2735,8 @@ package body et_board_ops_silkscreen is
 		log_indentation_down;
 	end modify_status;
 
+
+	
 
 
 
@@ -2796,6 +2814,8 @@ package body et_board_ops_silkscreen is
 
 
 
+
+	
 	
 
 	procedure move_placeholder (
@@ -2869,6 +2889,7 @@ package body et_board_ops_silkscreen is
 
 
 
+
 	
 	
 
@@ -2877,9 +2898,14 @@ package body et_board_ops_silkscreen is
 	procedure delete_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_object_placeholder;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -2898,19 +2924,37 @@ package body et_board_ops_silkscreen is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting text placeholder" & to_string (placeholder.cursor),
+			 & " delete text placeholder in silkscreen" 
+			 & to_string (placeholder.cursor),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end delete_placeholder;
 
+
+
+
+
+	
 
 	
 
@@ -2999,6 +3043,8 @@ package body et_board_ops_silkscreen is
 
 
 
+	
+
 
 	procedure reset_proposed_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3064,6 +3110,8 @@ package body et_board_ops_silkscreen is
 		return natural (objects.length);
 	end get_count;
 	
+
+
 	
 	
 	
@@ -3224,6 +3272,9 @@ package body et_board_ops_silkscreen is
 
 
 
+
+
+	
 	
 	
 	function get_objects (
@@ -3576,7 +3627,7 @@ package body et_board_ops_silkscreen is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of object"
+			& " modify status of object"
 			& type_object_category'image (object.cat)
 			& " / " & to_string (operation),
 			level => log_threshold);
@@ -3722,7 +3773,7 @@ package body et_board_ops_silkscreen is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting silkscreen object",
+			& " delete silkscreen object",
 			-- CS & to_string (object)
 			level => log_threshold);
 
