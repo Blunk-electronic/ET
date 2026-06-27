@@ -453,6 +453,7 @@ package et_board_ops_assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		text			: in type_object_text;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	

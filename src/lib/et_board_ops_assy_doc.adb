@@ -2295,6 +2295,9 @@ package body et_board_ops_assy_doc is
 	end add_text;
 
 
+
+
+
 	
 
 
@@ -2361,6 +2364,10 @@ package body et_board_ops_assy_doc is
 
 
 
+
+
+
+
 	
 
 	
@@ -2414,7 +2421,7 @@ package body et_board_ops_assy_doc is
 		
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (face) 
-			& " moving assembly documentation text from" & to_string (old_position)
+			& " move assembly documentation text from" & to_string (old_position)
 			& " to" & to_string (new_position), -- CS by offset
 			level => log_threshold);
 
@@ -2424,6 +2431,8 @@ package body et_board_ops_assy_doc is
 			process		=> query_module'access);
 
 	end move_text;
+
+
 
 
 	
@@ -2545,7 +2554,7 @@ package body et_board_ops_assy_doc is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing texts in" & to_string (catch_zone)
+			 & " propose texts in" & to_string (catch_zone)
 			 & " face " & to_string (face),
 			 level => log_threshold);
 
@@ -2560,6 +2569,9 @@ package body et_board_ops_assy_doc is
 
 
 
+
+
+
 	
 	
 
@@ -2567,9 +2579,14 @@ package body et_board_ops_assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		text			: in type_object_text;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -2595,16 +2612,28 @@ package body et_board_ops_assy_doc is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (text.face) 
-			& " moving assembly documentation text to "
+			& " move assembly documentation text to "
 			& to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
 
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end move_text;
@@ -2612,6 +2641,11 @@ package body et_board_ops_assy_doc is
 
 	
 
+
+
+
+
+	
 
 	procedure delete_text (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3847,7 +3881,7 @@ package body et_board_ops_assy_doc is
 			when CAT_TEXT =>
 				move_text (module_cursor,
 					object.text,
-					destination,
+					destination, DO_COMMIT,
 					log_threshold + 1);
 
 			when CAT_PLACEHOLDER =>
