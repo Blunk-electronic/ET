@@ -882,12 +882,19 @@ package body et_board_ops_outline is
 
 	
 
+	
+
 	procedure delete_outer_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_outer_contour_segment;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -901,10 +908,16 @@ package body et_board_ops_outline is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting outer contour segment " & to_string (segment.segment),
+			& " delete outer contour segment " & to_string (segment.segment),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		update_element (
 			container	=> generic_modules,
@@ -913,11 +926,20 @@ package body et_board_ops_outline is
 
 		log (text => "new outer contour:" & to_string (get_outer_contour (module_cursor), true),
 			 level => log_threshold + 1);
+
+
+	
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;	
 		
 		log_indentation_down;
 	end delete_outer_segment;
 
 
+
+	
 
 
 	
@@ -1516,6 +1538,7 @@ package body et_board_ops_outline is
 
 
 	
+
 	
 	
 
@@ -1684,6 +1707,8 @@ package body et_board_ops_outline is
 	
 	
 	
+
+
 	
 
 	function get_first_object (
@@ -1763,6 +1788,10 @@ package body et_board_ops_outline is
 
 
 
+
+
+
+	
 	
 	
 	function get_objects (
@@ -1914,6 +1943,10 @@ package body et_board_ops_outline is
 
 
 
+	
+
+	
+
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
@@ -1921,7 +1954,7 @@ package body et_board_ops_outline is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of object"
+			& " modify status of object"
 			-- & to_string (segment.segment) CS output object category ?
 			& " / " & to_string (operation),
 			level => log_threshold);
@@ -1945,6 +1978,7 @@ package body et_board_ops_outline is
 	
 
 
+	
 
 	
 	
@@ -2040,7 +2074,7 @@ package body et_board_ops_outline is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting board contour object",
+			& " delete board contour object",
 			-- CS & to_string (object)
 			level => log_threshold);
 

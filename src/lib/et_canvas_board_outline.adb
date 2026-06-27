@@ -70,8 +70,6 @@ with et_logging;						use et_logging;
 with et_string_processing;				use et_string_processing;
 with et_exceptions;						use et_exceptions;
 
-with et_undo_redo;
-with et_commit;
 with et_object_status;						use et_object_status;
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 
@@ -93,6 +91,8 @@ package body et_canvas_board_outline is
 
 
 
+	
+
 	procedure show_selected_hole_segment (
 		selected : in type_object_hole_segment)
 	is 
@@ -102,6 +102,8 @@ package body et_canvas_board_outline is
 		set_status (praeamble & to_string (selected.segment)
 			& ". " & status_next_object_clarification);
 	end show_selected_hole_segment;
+
+
 
 	
 	
@@ -122,6 +124,9 @@ package body et_canvas_board_outline is
 		end case;	
 	end show_selected_object;
 
+
+
+	
 
 
 	
@@ -191,6 +196,7 @@ package body et_canvas_board_outline is
 	
 
 
+	
 	
 
 
@@ -421,10 +427,6 @@ package body et_canvas_board_outline is
 		-- Deletes the selected object.
 		-- Resets variable preliminary_object:
 		procedure finalize is 
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
 		begin
@@ -437,16 +439,10 @@ package body et_canvas_board_outline is
 				
 				reset_proposed_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				delete_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 			else
 				log (text => "nothing to do", level => log_threshold);
@@ -454,8 +450,7 @@ package body et_canvas_board_outline is
 				
 			log_indentation_down;	
 			
-			set_status (status_delete_object);
-			-- CS clear ?
+			status_clear;
 			
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
