@@ -261,6 +261,7 @@ package et_board_ops_assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		arc				: in type_doc_arc;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
