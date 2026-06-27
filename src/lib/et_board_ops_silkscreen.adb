@@ -2314,6 +2314,8 @@ package body et_board_ops_silkscreen is
 
 
 	
+
+
 	
 
 	
@@ -2337,6 +2339,7 @@ package body et_board_ops_silkscreen is
 			procedure query_text (text : in out type_silk_text) is begin
 				move_text_to (text, destination);
 			end query_text;
+
 			
 		begin
 			case text.face is
@@ -2385,14 +2388,21 @@ package body et_board_ops_silkscreen is
 
 	
 	
+	
 
+	
 
 	procedure delete_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		text			: in type_object_text;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -2412,21 +2422,38 @@ package body et_board_ops_silkscreen is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (text.face) 
-			& " deleting silkscreen text",
+			& " delete silkscreen text",
 			level => log_threshold);
 
 		log_indentation_up;
 
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end delete_text;
 
 
 
+
+
+
+	
 	
 
 	function get_first_text (
