@@ -90,7 +90,7 @@ package body et_board_ops_silkscreen is
 		
 	begin
 		log (text => "module " & to_string (module_name) 
-			 & " drawing silkscreen line face " & to_string (face) 
+			 & " add silkscreen line face " & to_string (face) 
 			 & to_string (line),
 			level => log_threshold);
 
@@ -122,6 +122,7 @@ package body et_board_ops_silkscreen is
 
 
 
+	
 
 	
 
@@ -237,7 +238,7 @@ package body et_board_ops_silkscreen is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of "
+			& " modify status of "
 			& to_string (element (line.cursor)) -- CS: log top/bottom			
 			& " / " & to_string (operation),
 			level => log_threshold);
@@ -323,7 +324,7 @@ package body et_board_ops_silkscreen is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing lines in " & to_string (catch_zone)
+			 & " propose lines in " & to_string (catch_zone)
 			 & " face " & to_string (face),
 			 level => log_threshold);
 
@@ -396,7 +397,7 @@ package body et_board_ops_silkscreen is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " resetting proposed lines",
+			 & " reset proposed lines",
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -410,6 +411,7 @@ package body et_board_ops_silkscreen is
 
 
 
+	
 
 
 
@@ -780,7 +782,7 @@ package body et_board_ops_silkscreen is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of "
+			& " modify status of "
 			& to_string (element (arc.cursor)) -- CS: log top/bottom			
 			& " / " & to_string (operation),
 			level => log_threshold);
@@ -795,6 +797,8 @@ package body et_board_ops_silkscreen is
 	end modify_status;
 
 
+
+	
 	
 
 	
@@ -865,7 +869,7 @@ package body et_board_ops_silkscreen is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing arcs in " & to_string (catch_zone)
+			 & " propose arcs in " & to_string (catch_zone)
 			 & " face " & to_string (face),
 			 level => log_threshold);
 
@@ -938,7 +942,7 @@ package body et_board_ops_silkscreen is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " resetting proposed arcs",
+			 & " reset proposed arcs",
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -954,6 +958,7 @@ package body et_board_ops_silkscreen is
 
 
 
+	
 
 	
 
@@ -1459,7 +1464,7 @@ package body et_board_ops_silkscreen is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of "
+			& " modify status of "
 			& to_string (segment.segment)
 			& " face " & to_string (segment.face)
 			& " / " & to_string (operation),
@@ -1473,6 +1478,10 @@ package body et_board_ops_silkscreen is
 
 		log_indentation_down;
 	end modify_status;
+
+
+
+
 
 
 
@@ -1567,7 +1576,7 @@ package body et_board_ops_silkscreen is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing segments in " & to_string (catch_zone)
+			 & " propose segments in " & to_string (catch_zone)
 			 & " face " & to_string (face),
 			 level => log_threshold);
 
@@ -1583,6 +1592,9 @@ package body et_board_ops_silkscreen is
 
 	
 
+
+	
+	
 
 	
 	
@@ -1663,7 +1675,7 @@ package body et_board_ops_silkscreen is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " resetting proposed segments of zones in silkscreen",
+			& " reset proposed segments of zones in silkscreen",
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -1674,6 +1686,10 @@ package body et_board_ops_silkscreen is
 
 		log_indentation_down;
 	end reset_proposed_segments;
+
+
+
+
 
 
 	
