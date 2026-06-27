@@ -2943,7 +2943,7 @@ package body et_board_ops_assy_doc is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of text placeholder" -- CS log position and content ?
+			& " modify status of text placeholder" -- CS log position and content ?
 			& " / " & to_string (operation),
 			level => log_threshold);
 
@@ -2958,6 +2958,11 @@ package body et_board_ops_assy_doc is
 	end modify_status;
 
 
+
+
+
+
+	
 
 
 
@@ -3014,7 +3019,7 @@ package body et_board_ops_assy_doc is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing text placeholders in" & to_string (catch_zone)
+			 & " propose text placeholders in" & to_string (catch_zone)
 			 & " face " & to_string (face),
 			 level => log_threshold);
 
@@ -3026,6 +3031,10 @@ package body et_board_ops_assy_doc is
 
 		log_indentation_down;
 	end propose_placeholders;
+
+
+
+
 	
 
 
@@ -3035,9 +3044,14 @@ package body et_board_ops_assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_object_placeholder;
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -3065,22 +3079,36 @@ package body et_board_ops_assy_doc is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving text placeholder " 
+			& " move text placeholder " 
 			& to_string (placeholder.cursor)
 			& " " & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
 
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
 		log_indentation_down;
 	end move_placeholder;
 
 
+
+
+
+	
 
 
 
@@ -3887,7 +3915,7 @@ package body et_board_ops_assy_doc is
 			when CAT_PLACEHOLDER =>
 				move_placeholder (module_cursor,
 					object.placeholder,
-					destination,
+					destination, DO_COMMIT,
 					log_threshold + 1);
 							
 			when CAT_VOID =>
