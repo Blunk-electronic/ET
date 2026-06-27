@@ -639,9 +639,14 @@ package body et_board_ops_outline is
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -664,12 +669,18 @@ package body et_board_ops_outline is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving outer contour segment " & to_string (segment.segment)
+			& " move outer contour segment " & to_string (segment.segment)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
@@ -677,6 +688,12 @@ package body et_board_ops_outline is
 
 		log (text => "new outer contour:" & to_string (get_outer_contour (module_cursor), true),
 			 level => log_threshold + 1);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end move_outer_segment;
@@ -1273,8 +1290,13 @@ package body et_board_ops_outline is
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		use pac_contours;
 		use pac_segments;
 		use pac_holes;
@@ -1323,12 +1345,18 @@ package body et_board_ops_outline is
 				
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving hole segment " & to_string (segment.segment)
+			& " move hole segment " & to_string (segment.segment)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
@@ -1336,6 +1364,12 @@ package body et_board_ops_outline is
 
 		-- log (text => "new outline:" & to_string (get_outline (module_cursor), true),
 		-- 	 level => log_threshold + 1);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end move_hole_segment;
@@ -1910,6 +1944,9 @@ package body et_board_ops_outline is
 
 	
 
+
+
+	
 	
 
 	procedure modify_status (
@@ -1926,6 +1963,9 @@ package body et_board_ops_outline is
 
 
 
+
+
+	
 	
 
 	procedure move_object (
@@ -1937,7 +1977,7 @@ package body et_board_ops_outline is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving board contour object " 
+			& " move board contour object " 
 			-- CS & to_string (object)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
@@ -1949,13 +1989,13 @@ package body et_board_ops_outline is
 			when CAT_OUTER_CONTOUR_SEGMENT =>
 				move_outer_segment (module_cursor,
 					object.outer_segment,
-					point_of_attack, destination,
+					point_of_attack, destination, DO_COMMIT,
 					log_threshold + 1);
 
 			when CAT_HOLE_SEGMENT =>
 				move_hole_segment (module_cursor,
 					object.hole_segment,
-					point_of_attack, destination,
+					point_of_attack, destination, DO_COMMIT,
 					log_threshold + 1);
 							
 			when CAT_VOID =>
@@ -1966,6 +2006,9 @@ package body et_board_ops_outline is
 	end move_object;
 	
 
+
+
+	
 
 	
 
@@ -1984,6 +2027,7 @@ package body et_board_ops_outline is
 
 		log_indentation_down;
 	end reset_proposed_objects;
+
 
 
 	

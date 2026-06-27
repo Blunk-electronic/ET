@@ -397,8 +397,10 @@ package body et_undo_redo is
 					end case;
 					
 
-				when NOUN_SILKSCREEN | NOUN_ASSY | NOUN_STOPMASK | NOUN_ROUTE_RESTRICT |
-					NOUN_KEEPOUT | NOUN_VIA_RESTRICT | NOUN_LINE | NOUN_ARC | NOUN_TEXT => -- CS others ?
+				when NOUN_SILKSCREEN | NOUN_ASSY | NOUN_STOPMASK | NOUN_ROUTE_RESTRICT 
+					| NOUN_KEEPOUT | NOUN_VIA_RESTRICT | NOUN_LINE | NOUN_ARC | NOUN_TEXT 
+					| NOUN_OUTLINE =>
+					
 					case verb is
 						when VERB_DRAW | VERB_MOVE | VERB_DELETE | VERB_PLACE =>
 							commit_board;
