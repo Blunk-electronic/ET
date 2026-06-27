@@ -464,6 +464,7 @@ package et_board_ops_assy_doc is
 	procedure delete_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		text			: in type_object_text;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
@@ -543,6 +544,7 @@ package et_board_ops_assy_doc is
 	procedure delete_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_object_placeholder;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 	

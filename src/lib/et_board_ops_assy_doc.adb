@@ -2698,12 +2698,18 @@ package body et_board_ops_assy_doc is
 
 	
 
+	
 	procedure delete_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		text			: in type_object_text;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -2723,20 +2729,35 @@ package body et_board_ops_assy_doc is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (text.face) 
-			& " deleting assembly documentation text",
+			& " delete assembly documentation text",
 			level => log_threshold);
 
 		log_indentation_up;
 
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end delete_text;
 
 
+
+
+
+
+	
 
 	
 
@@ -2819,6 +2840,10 @@ package body et_board_ops_assy_doc is
 
 
 
+
+
+
+	
 	
 
 	procedure reset_status_texts (
@@ -2891,6 +2916,8 @@ package body et_board_ops_assy_doc is
 
 	
 
+
+	
 
 -- PLACEHOLDERS:
 	
@@ -3167,9 +3194,14 @@ package body et_board_ops_assy_doc is
 	procedure delete_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
 		placeholder		: in type_object_placeholder;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
@@ -3188,20 +3220,37 @@ package body et_board_ops_assy_doc is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting text placeholder" & to_string (placeholder.cursor),
+			& " delete text placeholder" & to_string (placeholder.cursor),
 			level => log_threshold);
 
 		log_indentation_up;
 
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end delete_placeholder;
 
 
+
+
+
+
+	
 	
 
 
@@ -3359,6 +3408,8 @@ package body et_board_ops_assy_doc is
 	
 	
 	
+
+
 	
 
 	function get_first_object (
@@ -3514,6 +3565,8 @@ package body et_board_ops_assy_doc is
 				
 		end case;
 	end get_first_object;
+
+
 
 
 
@@ -3861,6 +3914,11 @@ package body et_board_ops_assy_doc is
 
 
 
+	
+
+
+	
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3869,7 +3927,7 @@ package body et_board_ops_assy_doc is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of object "
+			& " modify status of object "
 			& type_object_category'image (object.cat)
 			& " / " & to_string (operation),
 			level => log_threshold);
@@ -3902,6 +3960,7 @@ package body et_board_ops_assy_doc is
 	
 
 	
+	
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3916,6 +3975,8 @@ package body et_board_ops_assy_doc is
 	end modify_status;
 
 
+
+	
 
 	
 
