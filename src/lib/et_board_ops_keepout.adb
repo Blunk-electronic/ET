@@ -689,8 +689,13 @@ package body et_board_ops_keepout is
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+		
 		use pac_contours;
 		use pac_segments;
 		use pac_keepout_zones;
@@ -738,15 +743,25 @@ package body et_board_ops_keepout is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting keepout zone segment " 
+			& " delete keepout zone segment " 
 			& to_string (segment.segment),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end delete_segment;
@@ -1069,7 +1084,7 @@ package body et_board_ops_keepout is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting keepout object",
+			& " delete keepout object",
 			-- CS & to_string (object)
 			level => log_threshold);
 
