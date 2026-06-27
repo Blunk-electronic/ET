@@ -491,10 +491,6 @@ package body et_canvas_board_assy_doc is
 		-- Deletes the selected object.
 		-- Resets variable preliminary_object:
 		procedure finalize is 
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
 		begin
@@ -507,16 +503,10 @@ package body et_canvas_board_assy_doc is
 
 				reset_status_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				delete_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 			else
 				log (text => "nothing to do", level => log_threshold);
@@ -524,8 +514,7 @@ package body et_canvas_board_assy_doc is
 				
 			log_indentation_down;			
 			
-			set_status (status_delete_object);
-			-- CS clear ?
+			status_clear;
 			
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;

@@ -706,9 +706,14 @@ package body et_board_ops_assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		line			: in type_doc_line;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -745,15 +750,25 @@ package body et_board_ops_assy_doc is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (face) 
-			& " deleting line in assy doc." & to_string (line),
+			& " delete line in assy doc." & to_string (line),
 			level => log_threshold);
 		
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
 		
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+		
 		log_indentation_down;
 	end delete_line;
 
