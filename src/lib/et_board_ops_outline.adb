@@ -1610,7 +1610,7 @@ package body et_board_ops_outline is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			 & " adding hole " & to_string (hole),
+			 & " add hole " & to_string (hole),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -1817,6 +1817,7 @@ package body et_board_ops_outline is
 			-- This procedure queries a segment of the outer contour:
 			procedure query_outer_segment (segment : in type_segment) is 
 
+				
 				procedure collect is begin
 					result.append ((
 						cat				=> CAT_OUTER_CONTOUR_SEGMENT,
@@ -1825,6 +1826,7 @@ package body et_board_ops_outline is
 					log (text => to_string (segment), level => log_threshold + 2);
 				end collect;
 
+				
 			begin
 				case flag is
 					when PROPOSED =>
@@ -1861,6 +1863,7 @@ package body et_board_ops_outline is
 						log (text => to_string (segment), level => log_threshold + 2);
 					end collect;
 
+					
 				begin
 					case flag is
 						when PROPOSED =>
@@ -1876,6 +1879,7 @@ package body et_board_ops_outline is
 						when others => null; -- CS
 					end case;
 				end query_segment;
+
 				
 			begin
 				if is_circular (hole) then
@@ -1890,8 +1894,7 @@ package body et_board_ops_outline is
 					end loop;
 				end if;
 			end query_hole;
-			
-
+		
 			
 		begin
 			-- OUTER CONTOUR:
@@ -2051,7 +2054,7 @@ package body et_board_ops_outline is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor) &
-			" resetting proposed objects",
+			" reset proposed objects",
 			level => log_threshold);
 
 		log_indentation_up;
