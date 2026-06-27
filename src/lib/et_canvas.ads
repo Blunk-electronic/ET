@@ -33,6 +33,12 @@
 --   info@blunk-electronic.de
 --   or visit <http://www.blunk-electronic.de> for more contact data
 --
+--   For details regarding the basic mechanisms, please read my book
+--   "Basics on Programming a Canvas for a CAD-System -
+--   Coordinate Systems, Canvas, Zoom, Scrollbars, Drawing to Scale"
+--   on <http://www.blunk-electronic.de>.
+--
+--
 --   history of changes:
 --
 
@@ -134,6 +140,8 @@ package et_canvas is
 	-- are translated when the operator zooms on the pointer or the cursor:
 	T : type_logical_pixels_vector := (0.0, 0.0);
 
+
+
 	
 	
 -- ZOOM:
@@ -186,6 +194,8 @@ package et_canvas is
 	-- There are two kinds of zoom-operations:
 	type type_zoom_direction is (ZOOM_IN, ZOOM_OUT);
 
+
+	
 
 	
 	
@@ -298,6 +308,7 @@ package et_canvas is
 
 
 
+	
 
 
 
@@ -313,6 +324,9 @@ package et_canvas is
 	-- Sets the global base-offset F according to the current
 	-- bounding-box and the maximal allowed zoom factor:
 	procedure set_base_offset;
+
+
+
 
 	
 	
@@ -482,9 +496,24 @@ package et_canvas is
 		area : type_area;
 	end record;
 	
+
+
+
 	
 
 
+-- POINT OF ATTACK:
+
+	-- When an object or a group is to be moved or dragged,
+	-- then this global variable should be used
+	-- to store the point at which the object or the group
+	-- has been attacked:
+	object_point_of_attack : type_vector_model;
+
+
+
+
+	
 
 	
 -- GROUP:
@@ -625,6 +654,9 @@ package et_canvas is
 		area : in type_area);
 
 	
+
+
+
 	
 
 -- MAIN WINDOW:
@@ -656,6 +688,8 @@ package et_canvas is
 	-- This procedure creates the main window and
 	-- the boxes box_h, box_v1 and the separator:
 	procedure create_window;
+
+
 
 
 
@@ -787,6 +821,8 @@ package et_canvas is
 	-- bounding-box on the canvas and C2 the new corners:
 	procedure update_scrollbar_limits (
 		C1, C2 : in type_bounding_box_corners);
+
+
 
 
 
@@ -925,6 +961,9 @@ package et_canvas is
 	procedure update_scale_display;
 
 
+
+
+
 	
 -- VERB AND NOUN DISPLAY:
 
@@ -946,6 +985,10 @@ package et_canvas is
 
 	
 	procedure build_mode_display;
+
+
+
+
 
 	
 	
@@ -1012,6 +1055,9 @@ package et_canvas is
 	procedure draw_grid;
 
 
+
+
+	
 	
 
 -- CURSOR:
@@ -1074,6 +1120,8 @@ package et_canvas is
 	procedure reset_grid_and_cursor;
 
 	
+
+
 	
 	
 -- MOUSE / POINTER POSITION:
@@ -1082,6 +1130,10 @@ package et_canvas is
 	-- position in model coordinates:
 	function get_mouse_position
 		return type_vector_model;
+
+
+
+
 
 	
 
@@ -1156,6 +1208,7 @@ package et_canvas is
 
 
 	
+	
 
 
 -- BUTTONS:
@@ -1174,6 +1227,8 @@ package et_canvas is
 
 
 
+
+	
 	
 -- CONSOLE AND STATUS:
 
@@ -1268,6 +1323,7 @@ package et_canvas is
 	
 
 
+	
 -- CLARIFICATION:
 	
 	procedure set_request_clarification;
@@ -1325,14 +1381,8 @@ package et_canvas is
 
 	
 
--- OBJECT AND PATH:
+-- OBJECT TOOL AND PATH:
 	
-	-- When an object or a group is to be moved or dragged,
-	-- then this global variable should be used
-	-- to store the point at which the object or the group
-	-- has been attacked:
-	object_point_of_attack : type_vector_model;
-
 	-- When an object is being moved, then this can be done
 	-- via mouse or keyboard. This global variable should be used:
 	object_tool : type_tool := MOUSE;

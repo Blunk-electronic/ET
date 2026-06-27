@@ -791,13 +791,18 @@ package et_geometry_2a is
 
 
 
--- OBJECT ORIGINAL POSITION AND DISPLACEMENT
+
+
+	
+
+-- OBJECT ORIGINAL POSITION AND DISPLACEMENT:
 
 
 	-- If an object being dragged, then we backup 
 	-- here its original position.
 	-- It is used in order to calculate 
-	-- the displacement of other attached objects:
+	-- the displacement of other attached objects
+	-- (like net segments, track segments):
 	object_original_position : type_vector_model := origin;
 
 
@@ -806,6 +811,12 @@ package et_geometry_2a is
 	-- These objects are subjected to a certain displacement:
 	object_displacement : type_vector_model := origin;
 
+
+
+
+
+
+	
 
 -- START AND END POINT OF LINES AND ARCS:	
 
