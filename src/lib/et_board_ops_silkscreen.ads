@@ -161,6 +161,7 @@ package et_board_ops_silkscreen is
 
 	
 
+	
 -- ARCS:
 	
 	
@@ -237,7 +238,12 @@ package et_board_ops_silkscreen is
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		arc				: in type_silk_arc;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
+
+
+
+
 
 	
 	
@@ -253,6 +259,9 @@ package et_board_ops_silkscreen is
 
 
 
+
+
+	
 -- ZONES:
 	
 	-- Adds a zone to the silkscreen layer.
