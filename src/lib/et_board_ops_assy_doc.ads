@@ -379,10 +379,12 @@ package et_board_ops_assy_doc is
 		log_threshold	: in type_log_level);
 
 
-	-- Deletes a line or arc segment of a zone:
+	-- Deletes a line or arc segment of the border
+	-- of a fill zone:
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);
 
 
