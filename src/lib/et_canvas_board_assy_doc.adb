@@ -50,8 +50,6 @@ with et_board_ops_assy_doc;				use et_board_ops_assy_doc;
 with et_logging;						use et_logging;
 with et_modes.board;
 with et_display.board;
-with et_undo_redo;
-with et_commit;
 with et_object_status;						use et_object_status;
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 with et_pcb_placeholders.non_conductor;	use et_pcb_placeholders.non_conductor;
