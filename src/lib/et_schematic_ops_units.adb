@@ -3757,6 +3757,8 @@ package body et_schematic_ops_units is
 
 
 
+	
+
 
 	procedure set_all_units_as_not_moving (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3817,12 +3819,56 @@ package body et_schematic_ops_units is
 	end set_all_units_as_not_moving;
 
 
+
+
+
+	
+
+
+
+
+	procedure copy_selected_units (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet_relative;		
+		offset			: in type_vector_model; -- x/y
+		coordinates		: in type_coordinates;
+		log_threshold	: in type_log_level)
+	is
+
+	begin
+		case coordinates is
+			when ABSOLUTE =>
+				log (text => "module " & to_string (module_cursor)
+					 & " copy selected units to " 
+					 & " sheet " & to_string (sheet)
+					 & " destination " & to_string (offset),
+					level => log_threshold);
+
+
+			when RELATIVE =>
+				log (text => "module " & to_string (module_cursor)
+					 & " copy selected units by " 
+					 & " sheet(s) " & to_string (sheet)
+					 & " offset " & to_string (offset),
+					level => log_threshold);
+		end case;
+
+		
+		log_indentation_up;
+
+		-- generic_modules.update_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+	end copy_selected_units;
+
+
 	
 
 
 
 
 	
+
 	
 
 	procedure move_placeholder (
@@ -4338,6 +4384,7 @@ package body et_schematic_ops_units is
 	end reset_status_placeholders;
 
 
+	
 
 
 	
@@ -4481,6 +4528,7 @@ package body et_schematic_ops_units is
 
 	
 
+	
 ------------------------------------------------------------------------------------------
 
 -- OBJECTS:
@@ -4572,6 +4620,9 @@ package body et_schematic_ops_units is
 				
 		end case;
 	end get_first_object;
+
+
+
 
 
 
@@ -4837,6 +4888,7 @@ package body et_schematic_ops_units is
 	end modify_status;
 
 
+	
 
 
 
@@ -5027,6 +5079,7 @@ package body et_schematic_ops_units is
 
 
 
+	
 
 	
 
@@ -5128,6 +5181,7 @@ package body et_schematic_ops_units is
 	
 	
 	
+	
 
 	procedure drag_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -5171,6 +5225,8 @@ package body et_schematic_ops_units is
 
 
 
+
+	
 	
 	
 
@@ -5229,6 +5285,8 @@ package body et_schematic_ops_units is
 	
 
 
+	
+
 	procedure show_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
@@ -5266,6 +5324,8 @@ package body et_schematic_ops_units is
 	
 	
 
+
+
 	
 	procedure rename_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -5300,6 +5360,7 @@ package body et_schematic_ops_units is
 	
 
 
+	
 	procedure copy_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
@@ -5414,6 +5475,8 @@ package body et_schematic_ops_units is
 
 	
 
+
+	
 
 
 	procedure set_partcode (

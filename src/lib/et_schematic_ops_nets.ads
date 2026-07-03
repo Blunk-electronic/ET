@@ -397,7 +397,16 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 
+	-- This procedure copies selected net segments:
+	procedure copy_selected_net_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet_relative;		
+		offset			: in type_vector_model; -- x/y
+		coordinates		: in type_coordinates;
+		log_threshold	: in type_log_level);
 
+
+	
 
 	
 	

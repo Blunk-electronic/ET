@@ -42,6 +42,8 @@ with et_schematic_ops_nets;
 with et_schematic_ops_units;
 with et_schematic_ops_netchangers;
 
+with et_board_ops_ratsnest;					use et_board_ops_ratsnest;
+
 with et_modes.schematic;
 with et_undo_redo;
 with et_commit;
@@ -489,6 +491,121 @@ package body et_schematic_ops_groups is
 		log_indentation_down;
 	end set_group_as_not_moving;
 	
+
+
+
+
+
+
+
+
+	procedure copy_group (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet_relative;
+		offset			: in type_vector_model; -- x/y
+		coordinates		: in type_coordinates;
+		commit_design	: in type_commit_design := DO_COMMIT;
+		log_threshold	: in type_log_level)
+	is
+		use et_commit;
+		use et_undo_redo;
+		use et_modes.schematic;
+
+		
+		procedure copy_units is
+			use et_schematic_ops_units;
+		begin
+			log (text => "units", level => log_threshold + 1);
+			log_indentation_up;
+			
+			copy_selected_units (module_cursor, 
+				sheet, offset, coordinates, log_threshold + 2);
+			
+			log_indentation_down;
+		end;
+		
+
+		procedure copy_netchangers is
+			use et_schematic_ops_netchangers;
+		begin
+			log (text => "netchangers", level => log_threshold + 1);
+			log_indentation_up;
+			
+			copy_selected_netchangers (module_cursor, 
+				sheet, offset, coordinates, log_threshold + 2);
+			
+			log_indentation_down;
+		end;
+
+		
+		procedure copy_net_segments is
+			use et_schematic_ops_nets;
+		begin
+			log (text => "net segments", level => log_threshold + 1);
+			log_indentation_up;
+			
+			copy_selected_net_segments (module_cursor, 
+				sheet, offset, coordinates, log_threshold + 2);
+
+			log_indentation_down;
+		end;
+
+
+		
+	begin
+		case coordinates is
+			when RELATIVE =>
+				log (text => "module " & to_string (module_cursor)
+					 & " copy group by sheet(s) " & to_string (sheet) 
+					 & " offset " & to_string (offset),
+					level => log_threshold);
+
+
+			when ABSOLUTE =>
+				log (text => "module " & to_string (module_cursor)
+					 & " copy group to sheet " & to_string (sheet) 
+					 & " " & to_string (offset),
+					level => log_threshold);
+		end case;
+				
+		log_indentation_up;
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
+
+		-- Copy first the selected units:
+		copy_units;
+
+		-- Copy the selected netchangers:
+		copy_netchangers;
+
+		-- Copy now the selected net segments:
+		copy_net_segments;
+
+		-- CS texts
+
+		
+		-- Previously to commiting the design,
+		-- the status of all objects must be reset:		
+		reset_objects (module_cursor, log_threshold + 1);
+
+		
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;
+
+
+		update_ratsnest (module_cursor, log_threshold + 1);
+		
+		log_indentation_down;
+	end copy_group;
+	
+
+
 	
 end et_schematic_ops_groups;
 

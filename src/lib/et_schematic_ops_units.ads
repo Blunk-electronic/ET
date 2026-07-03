@@ -639,7 +639,18 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
-	
+	-- This procedure copies selected units:
+	procedure copy_selected_units (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet_relative;		
+		offset			: in type_vector_model; -- x/y
+		coordinates		: in type_coordinates;
+		log_threshold	: in type_log_level);
+
+
+		
+		
+		
 
 -- PLACEHOLDERS:
 

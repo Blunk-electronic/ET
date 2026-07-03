@@ -3117,7 +3117,6 @@ package body et_schematic_ops_netchangers is
 			& to_string (offset),
 			level => log_threshold);
 
-
 		log_indentation_up;
 
 		generic_modules.update_element (module_cursor, query_module'access);
@@ -3306,6 +3305,50 @@ package body et_schematic_ops_netchangers is
 		log_indentation_down;
 	end set_all_netchangers_as_not_moving;
 
+
+
+
+
+
+	
+
+
+
+	procedure copy_selected_netchangers (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet_relative;		
+		offset			: in type_vector_model; -- x/y
+		coordinates		: in type_coordinates;
+		log_threshold	: in type_log_level)
+	is
+
+	begin
+		case coordinates is
+			when ABSOLUTE =>
+				log (text => "module " & to_string (module_cursor)
+					 & " copy selected netchangers to " 
+					 & " sheet " & to_string (sheet)
+					 & " destination " & to_string (offset),
+					level => log_threshold);
+
+
+			when RELATIVE =>
+				log (text => "module " & to_string (module_cursor)
+					 & " copy selected netchangers by " 
+					 & " sheet(s) " & to_string (sheet)
+					 & " offset " & to_string (offset),
+					level => log_threshold);
+		end case;
+
+		
+		log_indentation_up;
+
+		-- generic_modules.update_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+	end copy_selected_netchangers;
+
+	
 
 	
 ------------------------------------------------------------------------------------------

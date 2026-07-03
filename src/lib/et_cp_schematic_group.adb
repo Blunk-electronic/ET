@@ -213,13 +213,11 @@ package body et_cp_schematic_group is
 
 		
 		procedure do_it is
-			coordinates : type_coordinates;
-			sheet		: type_sheet_relative;		
-			offset		: type_vector_model;
+			offset : type_vector_model;
 		begin
 			offset := to_vector_model (
-							x => get_field (cmd, 5),
-							y => get_field (cmd, 6));
+				x => get_field (cmd, 5),
+				y => get_field (cmd, 6));
 
 			drag_group (
 				module_cursor	=> module,
@@ -253,6 +251,73 @@ package body et_cp_schematic_group is
 	end drag_group;
 	
 	
+
+
+
+
+
+
+
+
+
+	procedure copy_group (
+		module			: in pac_generic_modules.cursor;
+		cmd 			: in out type_single_cmd;
+		log_threshold	: in type_log_level)
+	is
+		-- Contains the number of fields given by the caller of this procedure:
+		cmd_field_count : constant type_field_count := get_field_count (cmd);		
+
+		
+		procedure do_it is
+			coordinates : type_coordinates;
+			sheet		: type_sheet_relative;		
+			offset		: type_vector_model;
+		begin
+			coordinates := to_coordinates (get_field (cmd, 5));
+
+			sheet := to_sheet (get_field (cmd, 6));
+			
+			offset := to_vector_model (
+				x => get_field (cmd, 7),
+				y => get_field (cmd, 8));
+
+				
+			copy_group (
+				module_cursor	=> module,
+				sheet			=> sheet,
+				offset			=> offset,
+				coordinates		=> coordinates,
+								
+				-- Depending on the origin of the command,
+				-- the design state is to be commited or not:
+				commit_design	=> to_commit_design (cmd),
+				log_threshold	=> log_threshold + 1);
+				
+		end do_it;
+		
+		
+	begin
+		log (text => "copy group", level => log_threshold);
+		log_indentation_up;
+		
+
+		case cmd_field_count is
+			when 8 =>
+				do_it;
+
+			when 9 .. type_field_count'last => 
+				command_too_long (cmd, cmd_field_count - 1);
+				
+			when others => command_incomplete (cmd);
+		end case;
+
+		
+		log_indentation_down;
+	end copy_group;
+	
+
+
 	
 end et_cp_schematic_group;
 
