@@ -50,8 +50,6 @@ with et_board_ops_stencil;				use et_board_ops_stencil;
 with et_logging;						use et_logging;
 with et_modes.board;
 with et_display.board;
-with et_undo_redo;
-with et_commit;
 with et_object_status;						use et_object_status;
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 with et_pcb_placeholders.non_conductor;		use et_pcb_placeholders.non_conductor;
@@ -134,6 +132,7 @@ package body et_canvas_board_stencil is
 
 	
 
+	
 
 	procedure clarify_object is 
 
@@ -199,6 +198,7 @@ package body et_canvas_board_stencil is
 	
 
 
+
 	
 
 
@@ -235,6 +235,7 @@ package body et_canvas_board_stencil is
 
 	
 
+	
 	
 
 	
@@ -426,6 +427,8 @@ package body et_canvas_board_stencil is
 			finalize;
 		end if;
 	end move_object;
+
+
 	
 
 
@@ -440,10 +443,6 @@ package body et_canvas_board_stencil is
 		-- Deletes the selected object.
 		-- Resets variable preliminary_object:
 		procedure finalize is 
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-
 			object : constant type_object := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
 		begin
@@ -456,16 +455,10 @@ package body et_canvas_board_stencil is
 				
 				reset_proposed_objects (active_module, log_threshold + 1);
 				
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
 				delete_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
 
 			else
 				log (text => "nothing to do", level => log_threshold);
@@ -473,8 +466,7 @@ package body et_canvas_board_stencil is
 				
 			log_indentation_down;	
 			
-			set_status (status_delete_object);
-			-- CS clear ?
+			status_clear;
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;
