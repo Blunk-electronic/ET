@@ -2796,15 +2796,8 @@ package body et_schematic_ops_nets is
 						   is_B_selected (segment) then
 
 							null;
-							-- drag_segment (
-							-- 	module_cursor		=> module_cursor,
-							-- 	primary_segment		=> object_segment,
-							-- 	POA					=> get_B (segment),
-							-- 	destination			=> destination,
-							-- 	drag_secondaries	=> false,
-							-- 	commit_design		=> NO_COMMIT,
-							-- 	log_threshold		=> log_threshold + 1);
 
+							-- CS
 						end if;
 					end query_segment;
 					

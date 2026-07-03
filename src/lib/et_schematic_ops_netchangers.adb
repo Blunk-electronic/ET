@@ -3365,6 +3365,8 @@ package body et_schematic_ops_netchangers is
 						when RELATIVE =>
 							-- compute the new destination:
 							null;
+							-- CS
+							
 					end case;
 							
 					log_indentation_down;

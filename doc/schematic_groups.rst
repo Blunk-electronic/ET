@@ -91,6 +91,39 @@ Drag a Group
 
 
 
+Copy Group
+^^^^^^^^^^
+
+	A group can be copied to a given place.
+
+	#. Absolute Coordinates
+
+	This example command copies the group
+	to the absolute position sheet 4 and x/y 
+	coordinates 30/40:
+
+	On copying to an absolute position, the
+	object that is at the lowest-left position (of the group)
+	will be placed at the specified coordinates.
+
+
+	.. code-block::
+	
+		copy group absolute 4  30 40
+
+
+	#. Relative Coordinates
+
+	This example command copies the group
+	relative by -1 sheet and by an x/y offset
+	of 10/20:
+
+	.. code-block::
+	
+		copy group relative -1  10 20
+
+
+
 ..
 	Add Objects to Group
 	^^^^^^^^^^^^^^^^^^^^
@@ -114,12 +147,4 @@ Drag a Group
 
 
 
-	Copy Group
-	^^^^^^^^^^
-
-		Copy group to sheet 4 x/y 30/40
-
-		.. code-block::
-		
-			copy group 4  30 40
 
