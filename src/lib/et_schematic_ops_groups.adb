@@ -352,6 +352,9 @@ package body et_schematic_ops_groups is
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold);
 		end if;
+
+		
+		update_ratsnest (module_cursor, log_threshold + 1);
 		
 		log_indentation_down;
 	end drag_group;

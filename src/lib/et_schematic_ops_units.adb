@@ -3594,8 +3594,6 @@ package body et_schematic_ops_units is
 
 		generic_modules.update_element (module_cursor, query_module'access);
 
-		update_ratsnest (module_cursor, log_threshold + 1);
-
 		log_indentation_down;
 	end drag_selected_units;
 
