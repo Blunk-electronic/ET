@@ -433,9 +433,14 @@ package body et_board_ops_stencil is
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -472,16 +477,28 @@ package body et_board_ops_stencil is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (face) 
-			& " moving stencil " & to_string (line)
+			& " move stencil " & to_string (line)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end move_line;
@@ -489,6 +506,8 @@ package body et_board_ops_stencil is
 
 
 
+
+	
 	
 
 
@@ -950,9 +969,14 @@ package body et_board_ops_stencil is
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -989,17 +1013,29 @@ package body et_board_ops_stencil is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (face) 
-			& " moving stencil " & to_string (arc)
+			& " move stencil " & to_string (arc)
 			& " point of attack " & to_string (point_of_attack)
 			& " to " & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
 		
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
+
 		log_indentation_down;
 	end move_arc;
 
@@ -1476,6 +1512,8 @@ package body et_board_ops_stencil is
 	end propose_segments;
 
 
+
+
 	
 
 
@@ -1569,6 +1607,7 @@ package body et_board_ops_stencil is
 
 		log_indentation_down;
 	end reset_proposed_segments;
+
 
 
 
@@ -1691,6 +1730,7 @@ package body et_board_ops_stencil is
 
 
 	
+	
 
 
 
@@ -1700,12 +1740,17 @@ package body et_board_ops_stencil is
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
+		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
 	is
 		use pac_contours;
 		use pac_segments;
 		use pac_stencil_zones;
 				
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -1759,12 +1804,18 @@ package body et_board_ops_stencil is
 				
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving stencil zone segment " & to_string (segment.segment)
+			& " move stencil zone segment " & to_string (segment.segment)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		if commit_design = DO_COMMIT then
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold);
+		end if;
+
 		
 		generic_modules.update_element (						
 			position	=> module_cursor,
@@ -1772,6 +1823,11 @@ package body et_board_ops_stencil is
 
 		-- log (text => "new outline:" & to_string (get_outline (module_cursor), true),
 		-- 	 level => log_threshold + 1);
+
+		if commit_design = DO_COMMIT then
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold);
+		end if;		
 		
 		log_indentation_down;
 	end move_segment;
@@ -1779,6 +1835,7 @@ package body et_board_ops_stencil is
 
 	
 
+	
 
 
 	
@@ -2247,6 +2304,10 @@ package body et_board_ops_stencil is
 		log_indentation_down;
 	end modify_status;
 
+
+
+
+
 	
 
 	
@@ -2265,6 +2326,11 @@ package body et_board_ops_stencil is
 
 
 
+
+
+	
+
+
 	
 
 	procedure move_object (
@@ -2276,7 +2342,7 @@ package body et_board_ops_stencil is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving stencil object " 
+			& " move stencil object " 
 			-- CS & to_string (object)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
@@ -2288,19 +2354,19 @@ package body et_board_ops_stencil is
 			when CAT_LINE =>
 				move_line (module_cursor, object.line.face, 
 					element (object.line.cursor),
-					point_of_attack, destination,
+					point_of_attack, destination, DO_COMMIT,
 					log_threshold + 1);
 
 			when CAT_ARC =>
 				move_arc (module_cursor, object.arc.face, 
 					element (object.arc.cursor),
-					point_of_attack, destination,
+					point_of_attack, destination, DO_COMMIT,
 					log_threshold + 1);
 				
 			when CAT_ZONE_SEGMENT =>
 				move_segment (module_cursor,
 					object.segment,
-					point_of_attack, destination,
+					point_of_attack, destination, DO_COMMIT,
 					log_threshold + 1);
 							
 			when CAT_VOID =>
@@ -2310,6 +2376,9 @@ package body et_board_ops_stencil is
 		log_indentation_down;
 	end move_object;
 	
+
+
+
 
 
 	
@@ -2335,6 +2404,9 @@ package body et_board_ops_stencil is
 
 
 	
+
+
+
 	
 
 
