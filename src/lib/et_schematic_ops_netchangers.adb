@@ -3322,6 +3322,45 @@ package body et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level)
 	is
 
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
+
+			
+			procedure query_netchanger (
+				index		: in type_netchanger_id;
+				netchanger	: in out type_netchanger)
+			is begin
+				if is_selected (netchanger) then
+					-- CS: log the full name like N2
+					log_indentation_up;
+
+					-- drag_netchanger (
+					-- 	module_cursor	=> module_cursor,
+					-- 	index			=> index,
+					-- 	coordinates		=> RELATIVE,
+					-- 	point			=> offset,
+					-- 	commit_design	=> NO_COMMIT,
+					-- 	log_threshold	=> log_threshold + 1);
+						
+					log_indentation_down;
+				end if;
+			end query_netchanger;
+
+			
+		begin
+			-- Iterate through the netchangers:
+			while has_element (netchanger_cursor) loop
+				module.netchangers.update_element (
+					netchanger_cursor, query_netchanger'access);
+				
+				next (netchanger_cursor);
+			end loop;
+		end query_module;
+
+		
 	begin
 		case coordinates is
 			when ABSOLUTE =>
@@ -3343,7 +3382,7 @@ package body et_schematic_ops_netchangers is
 		
 		log_indentation_up;
 
-		-- generic_modules.update_element (module_cursor, query_module'access);
+		generic_modules.update_element (module_cursor, query_module'access);
 
 		log_indentation_down;
 	end copy_selected_netchangers;

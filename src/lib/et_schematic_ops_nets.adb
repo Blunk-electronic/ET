@@ -2760,6 +2760,85 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 	is
 
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net 		: in out type_net)
+			is
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (
+					strand	: in out type_strand)
+				is
+					segment_cursor : pac_net_segments.cursor := 
+						strand.segments.first;
+					
+					
+					procedure query_segment (
+						segment	: in out type_net_segment)
+					is 
+						object_segment : type_object_segment := (
+							net_cursor, strand_cursor, segment_cursor);
+							
+					begin
+						-- CS: log segment and net name ?
+						
+						-- If the A-end of the segment is selected,
+						-- then move the A-end only:
+						if is_A_selected (segment) or
+						   is_B_selected (segment) then
+
+							null;
+							-- drag_segment (
+							-- 	module_cursor		=> module_cursor,
+							-- 	primary_segment		=> object_segment,
+							-- 	POA					=> get_B (segment),
+							-- 	destination			=> destination,
+							-- 	drag_secondaries	=> false,
+							-- 	commit_design		=> NO_COMMIT,
+							-- 	log_threshold		=> log_threshold + 1);
+
+						end if;
+					end query_segment;
+					
+					
+				begin
+					-- Iterate through the segments
+					-- of the strand:
+					while has_element (segment_cursor) loop
+						strand.segments.update_element (
+							segment_cursor, query_segment'access);
+						
+						next (segment_cursor);
+					end loop;
+				end query_strand;
+				
+
+			begin
+				-- Iterate through the strands:
+				while has_element (strand_cursor) loop
+					net.strands.update_element (strand_cursor, query_strand'access);
+					next (strand_cursor);
+				end loop;
+			end query_net;
+
+			
+		begin
+			-- Iterate through the nets:
+			while has_element (net_cursor) loop
+				module.nets.update_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
 	begin
 		case coordinates is
 			when ABSOLUTE =>
@@ -2781,7 +2860,7 @@ package body et_schematic_ops_nets is
 		
 		log_indentation_up;
 
-		-- generic_modules.update_element (module_cursor, query_module'access);
+		generic_modules.update_element (module_cursor, query_module'access);
 
 		log_indentation_down;
 	end copy_selected_net_segments;
