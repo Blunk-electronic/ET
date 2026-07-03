@@ -932,6 +932,21 @@ package body et_schematic_ops_units is
 
 
 
+
+
+
+	procedure copy_unit (
+		module_cursor 	: in pac_generic_modules.cursor;
+		device_cursor	: in pac_devices_electrical.cursor;
+		unit_cursor		: in pac_units.cursor;
+		sheet			: in type_sheet_relative;
+		destination		: in type_vector_model;
+		coordinates		: in type_coordinates;
+		log_threshold	: in type_log_level) is separate;
+	
+
+
+	
 		
 		
 	
@@ -3856,14 +3871,14 @@ package body et_schematic_ops_units is
 						
 						log_indentation_up;
 						
-						-- drag_unit (
-						-- 	module_cursor	=> module_cursor,
-						-- 	device_name		=> device_name,
-						-- 	unit_name		=> unit_name,
-						-- 	coordinates		=> RELATIVE,
-						-- 	destination		=> offset,
-						-- 	commit_design	=> NO_COMMIT,
-						-- 	log_threshold	=> log_threshold + 1);
+						copy_unit (
+							module_cursor	=> module_cursor,
+							device_cursor	=> device_cursor,
+							unit_cursor		=> unit_cursor,
+							sheet			=> sheet,
+							destination		=> offset,
+							coordinates		=> coordinates,
+							log_threshold	=> log_threshold + 1);
 
 						log_indentation_down;
 					end if;

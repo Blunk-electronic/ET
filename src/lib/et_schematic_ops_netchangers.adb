@@ -3332,19 +3332,41 @@ package body et_schematic_ops_netchangers is
 			procedure query_netchanger (
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger)
-			is begin
+			is 
+				position : type_netchanger_position_schematic;
+			begin
 				if is_selected (netchanger) then
 					-- CS: log the full name like N2
 					log_indentation_up;
 
-					-- drag_netchanger (
-					-- 	module_cursor	=> module_cursor,
-					-- 	index			=> index,
-					-- 	coordinates		=> RELATIVE,
-					-- 	point			=> offset,
-					-- 	commit_design	=> NO_COMMIT,
-					-- 	log_threshold	=> log_threshold + 1);
-						
+					case coordinates is
+						when ABSOLUTE =>
+
+							-- Set the destination of the new
+							-- netchanger. First we copy the coordinates
+							-- from the original netchanger. Then we
+							-- overwrite the sheet and the place as specified
+							-- by the caller.
+							-- The rotatation remains unchanged.
+							position := get_position (netchanger);
+							set_sheet (position, sheet);
+
+							-- Regard the given "offset"
+							-- as absolute destination position.
+							set_place (position, offset);
+							
+							copy_netchanger (
+								module_cursor	=> module_cursor,
+								index			=> index,
+								destination		=> position,
+								commit_design	=> NO_COMMIT,
+								log_threshold	=> log_threshold + 1);
+
+						when RELATIVE =>
+							-- compute the new destination:
+							null;
+					end case;
+							
 					log_indentation_down;
 				end if;
 			end query_netchanger;
