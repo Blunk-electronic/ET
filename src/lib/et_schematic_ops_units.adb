@@ -3848,6 +3848,16 @@ package body et_schematic_ops_units is
 		log_threshold	: in type_log_level)
 	is
 
+		-- In the course of this procedure selected
+		-- units are searched for. Once a unit
+		-- has been found, this flag is set:
+		unit_found : boolean := false;
+
+		-- Here we store the position of the new unit:
+		position_new : type_object_position;
+
+
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -3870,15 +3880,61 @@ package body et_schematic_ops_units is
 						-- CS log full name like IC1.D
 						
 						log_indentation_up;
+
+						-- We have a selected unit.
+						-- The search must be aborted by setting
+						-- this flag:
+						unit_found := true;
+
+						-- Deselect the original unit.
+						-- This has the important effect, that the
+						-- same unit is not found over and over
+						-- again (which would cause a forever-loop):
+						clear_selected (unit);					
+
+						-- Now we compute the new position
+						-- of the new unit.
+						-- First we copy the coordinates
+						-- from the original netchanger.
+						position_new := get_position (unit);
 						
-						copy_unit (
-							module_cursor	=> module_cursor,
-							device_cursor	=> device_cursor,
-							unit_cursor		=> unit_cursor,
-							sheet			=> sheet,
-							destination		=> offset,
-							coordinates		=> coordinates,
-							log_threshold	=> log_threshold + 1);
+						-- In the following, the rotatation remains unchanged
+						-- because we copy the rotation along with other
+						-- properties of the unit.
+
+						-- Now, depending on whether it is about relative
+						-- or absolute coordinates, we compute the
+						-- new sheet and place:
+						case coordinates is
+							when ABSOLUTE => 
+								-- Now we overwrite the sheet and the 
+								-- place with the parameters specified
+								-- by the caller.
+								set_sheet (position_new, sheet);
+
+								-- Regard the given "offset"
+								-- as absolute destination position.
+								set_place (position_new, offset);
+								-- CS unclear ?
+
+								
+							when RELATIVE =>
+								-- Add to the original unit
+								-- position the given number of
+								-- relative sheet offset:
+								-- add_sheet (position_new, sheet);
+
+								-- Move the original position by
+								-- the gtiven offset:
+								-- move_by (position_new, offset);
+								null;
+							
+						end case;
+
+						-- Now the absolute position of
+						-- the new unit is complete and
+						-- can be assigned to the new unit.
+
 
 						log_indentation_down;
 					end if;
@@ -3886,8 +3942,10 @@ package body et_schematic_ops_units is
 				
 				
 			begin
-				-- Iterate through the units:
-				while has_element (unit_cursor) loop
+				-- Iterate through the units and abort
+				-- as soon as a selected unit has been found:
+				while has_element (unit_cursor) 
+				and not unit_found loop
 					device.units.update_element (unit_cursor, query_unit'access);
 					next (unit_cursor);
 				end loop;
@@ -3895,8 +3953,10 @@ package body et_schematic_ops_units is
 
 			
 		begin
-			-- Iterate through the devices:
-			while has_element (device_cursor) loop
+			-- Iterate through the devices and abort
+			-- as soon as a selected unit has been found:
+			while has_element (device_cursor) 
+			and not unit_found loop
 				module.devices.update_element (device_cursor, query_device'access);
 				next (device_cursor);
 			end loop;
@@ -3925,8 +3985,41 @@ package body et_schematic_ops_units is
 		
 		log_indentation_up;
 
-		generic_modules.update_element (module_cursor, query_module'access);
+		
+		-- Search for the first selected unit in the group.
+		-- Each unit that has been found, will be deselected:
+		generic_modules.update_element (
+			module_cursor, query_module'access);
 
+		-- If a unit has been found, then the 
+		-- flag "unit_found" is set.
+		-- This starts the following loop where
+		-- the affected unit will be copied.		
+		
+		-- This loop will be executed as long as selected
+		-- units exist:
+		while unit_found loop
+		-- CS: safety measure to avoid forever-loop
+		-- use total unit count of the design ?
+		-- CS: log the nunmber of units copied
+		
+			-- copy_unit (
+			-- 	module_cursor	=> module_cursor,
+			-- 	device_cursor	=> device_cursor,
+			-- 	unit_cursor		=> unit_cursor,
+			-- 	sheet			=> sheet,
+			-- 	destination		=> offset,
+			-- 	coordinates		=> coordinates,
+			-- 	log_threshold	=> log_threshold + 1);
+      
+		
+			-- Restart the search for a selected unit:
+			unit_found := false;
+
+			generic_modules.update_element (
+				module_cursor, query_module'access);
+		end loop;
+		
 		log_indentation_down;
 	end copy_selected_units;
 

@@ -3371,7 +3371,7 @@ package body et_schematic_ops_netchangers is
 					clear_selected (netchanger);					
 
 					-- Now we compute the new position
-					-- of the copied netchanger.
+					-- of the new netchanger.
 					-- First we copy the coordinates
 					-- from the original netchanger.
 					position_new := get_position (netchanger);
