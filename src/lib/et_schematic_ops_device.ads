@@ -330,17 +330,22 @@ package et_schematic_ops_device is
 
 
 	
-	-- Copies the given device. Places the first unit of 
-	-- the device (according to add level)
+	-- Copies the given device and places a unit
 	-- at the given destination in the schematic.
-	-- It is assumed that the targeted device
-	-- exists in the module. If not, then an exception is raised.
+	-- 1. If unit_name_explicit is empty (unit_name_default), then
+	--    the first unit of the device (according to add level)
+	--    will be placed.
+	-- 2. If unit_name_explicit contains the name of an available
+	--    unit, then this unit will be placed.	
+	-- 3. It is assumed that the targeted device
+	--    exists in the module. If not, then an exception is raised.
 	procedure copy_device (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_device_name; -- IC45
-		destination		: in type_object_position; -- sheet/x/y
-		commit_design	: in type_commit_design := DO_COMMIT;
-		log_threshold	: in type_log_level);
+		module_cursor		: in pac_generic_modules.cursor;
+		device_name			: in type_device_name; -- IC45
+		unit_name_explicit	: in pac_unit_name.bounded_string; -- D
+		destination			: in type_object_position; -- sheet/x/y
+		commit_design		: in type_commit_design := DO_COMMIT;
+		log_threshold		: in type_log_level);
 
 
 

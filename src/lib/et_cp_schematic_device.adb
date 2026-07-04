@@ -50,6 +50,7 @@ with et_sheets;							use et_sheets;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_schematic_geometry;				use et_schematic_geometry;
 
+with et_unit_name;
 with et_device_name;					use et_device_name;
 with et_device_model_names;				use et_device_model_names;
 with et_package_variant_name;			use et_package_variant_name;
@@ -86,7 +87,6 @@ package body et_cp_schematic_device is
 	is
 		-- Contains the number of fields given by the caller of this procedure:
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
-
 	begin
 		log (text => "add device", level => log_threshold);
 		log_indentation_up;
@@ -270,6 +270,8 @@ package body et_cp_schematic_device is
 		cmd_field_count : constant type_field_count := get_field_count (cmd);		
 
 		name : type_device_name;
+
+		use et_unit_name;
 	begin
 		log (text => "copy device", level => log_threshold);
 		log_indentation_up;
@@ -284,6 +286,11 @@ package body et_cp_schematic_device is
 					copy_device (
 						module_cursor 	=> module,
 						device_name		=> name,
+
+						-- CS: In the future here could be
+						-- an explicit unit name requested by the caller:
+						unit_name_explicit	=> unit_name_default,
+						
 						destination		=> to_position (
 							sheet => to_sheet (get_field (cmd, 6)),
 							point => type_vector_model (set

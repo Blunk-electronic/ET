@@ -64,6 +64,8 @@ is
 		
 	begin -- query_module
 		-- CS
+		-- copy_device (
+		-- 	module_cursor	=> 
 		null;
 	end query_module;
 
@@ -75,7 +77,7 @@ begin
 		
 			log (text => "module " & to_string (module_cursor) 
 				& " device " & get_device_name (device_cursor) 
-				& " copy unit " & to_string (unit_cursor)
+				& " copy unit " & get_unit_name (unit_cursor)
 				& " to sheet " & to_string (sheet)
 				& " place " & to_string (destination),
 				level => log_threshold);
@@ -85,7 +87,7 @@ begin
 
 			log (text => "module " & to_string (module_cursor) 
 				& " device " & get_device_name (device_cursor) 
-				& " copy unit " & to_string (unit_cursor)
+				& " copy unit " & get_unit_name (unit_cursor)
 				& " by sheet(s) " & relative_to_string (sheet)
 				& " offset " & to_string (destination),
 				level => log_threshold);

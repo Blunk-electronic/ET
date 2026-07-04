@@ -653,7 +653,8 @@ package et_schematic_ops_units is
 		log_threshold	: in type_log_level);
 
 
-	-- This procedure copies selected units:
+	-- This procedure copies selected units.
+	-- For each copy a new device is created:
 	procedure copy_selected_units (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet_relative;		

@@ -5451,9 +5451,10 @@ package body et_schematic_ops_units is
 
 				
 				copy_device (
-					module_cursor	=> module_cursor,
-					device_name		=> get_device_name (object.unit.device_cursor),
-
+					module_cursor		=> module_cursor,
+					device_name			=> get_device_name (object.unit.device_cursor),
+					unit_name_explicit	=> unit_name_default,
+					
 					-- The copy operation takes place on the
 					-- active sheet only:
 					destination		=> object_position,

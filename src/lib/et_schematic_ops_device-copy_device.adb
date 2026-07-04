@@ -62,11 +62,12 @@ separate (et_schematic_ops_device)
 
 
 procedure copy_device (
-	module_cursor	: in pac_generic_modules.cursor;
-	device_name		: in type_device_name; -- IC45
-	destination		: in type_object_position; -- sheet/x/y/rotation
-	commit_design	: in type_commit_design := DO_COMMIT;
-	log_threshold	: in type_log_level)
+	module_cursor		: in pac_generic_modules.cursor;
+	device_name			: in type_device_name; -- IC45
+	unit_name_explicit	: in pac_unit_name.bounded_string; -- D
+	destination			: in type_object_position; -- sheet/x/y
+	commit_design		: in type_commit_design := DO_COMMIT;
+	log_threshold		: in type_log_level)
 is
 	use et_commit;
 	use et_undo_redo;
@@ -150,17 +151,19 @@ is
 		
 		-- When a device is added to the schematic, it is first
 		-- added as a bare device without any units (see procedures above).
-		--  The next step is to fetch the first available unit and add
-		-- it to the bare device. Since the available unit can 
-		-- be an external or inernal unit, the variable first_available_unit
+		--  The next step is to fetch either: 
+		-- 1. the first available unit
+		-- 2. or an explicit given unit
+		-- and add it to the bare device. Since the available unit can 
+		-- be an external or inernal unit, the variable selected_unit
 		-- is a record that contains a cursor to an internal or
 		-- external unit:
-		first_available_unit : type_device_units;
+		selected_unit : type_device_units;
 
 
 		
 		-- Add an internal unit to the schematic device.
-		-- The unit to be added is accessed by first_available_unit.int.
+		-- The unit to be added is accessed by selected_unit.int.
 		procedure add_unit_internal (
 			device_name	: in type_device_name;
 			device		: in out type_device_electrical) 
@@ -182,7 +185,7 @@ is
 				-- Add the unit to the schematic:
 				pac_units.insert (
 					container	=> device.units,
-					key			=> get_name_internal (first_available_unit), -- the unit name like A, B
+					key			=> get_name_internal (selected_unit), -- the unit name like A, B
 					new_item	=> unit);
 
 			end add_virtual;
@@ -198,7 +201,7 @@ is
 				log (text => "add_real", level => log_threshold + 3);
 
 				-- Get the default placeholders as they are defined in the device model:
-				placeholders := get_default_placeholders (first_available_unit.int, destination);
+				placeholders := get_default_placeholders (selected_unit.int, destination);
 				
 				-- Compose a real unit:
 				unit := (
@@ -210,7 +213,7 @@ is
 				-- Add the unit to the schematic:
 				pac_units.insert (
 					container	=> device.units,
-					key			=> get_name_internal (first_available_unit), -- the unit name like A, B, VCC_IO_BANK_1
+					key			=> get_name_internal (selected_unit), -- the unit name like A, B, VCC_IO_BANK_1
 					new_item	=> unit);
 
 			end add_real;
@@ -219,7 +222,7 @@ is
 		begin
 			log (text => "add internal unit " 
 				 & to_string (get_name_internal (
-					first_available_unit)),
+					selected_unit)),
 				 level => log_threshold + 2);
 			
 			log_indentation_up;
@@ -260,7 +263,7 @@ is
 				-- Add the unit to the schematic:
 				pac_units.insert (
 					container	=> device.units,
-					key			=> get_name_external (first_available_unit), -- the unit name like A, B
+					key			=> get_name_external (selected_unit), -- the unit name like A, B
 					new_item	=> unit);
 
 			end add_virtual;
@@ -279,7 +282,7 @@ is
 				log (text => "add_real", level => log_threshold + 3);
 				
 				-- Map from the unit back to the symbol in the library:
-				symbol_cursor := get_symbol (first_available_unit.ext);
+				symbol_cursor := get_symbol (selected_unit.ext);
 
 				-- Get the default placeholders as they are defined in the device model:
 				placeholders := get_default_placeholders (symbol_cursor, destination);
@@ -294,7 +297,7 @@ is
 				-- Add the unit to the schematic:
 				pac_units.insert (
 					container	=> device.units,
-					key			=> get_name_external (first_available_unit), -- the unit name like A, B, VCC_IO_BANK_1
+					key			=> get_name_external (selected_unit), -- the unit name like A, B, VCC_IO_BANK_1
 					new_item	=> unit);
 
 			end add_real;
@@ -302,7 +305,7 @@ is
 			
 		begin
 			log (text => "add external unit " 
-				 & to_string (get_name_external (first_available_unit)),
+				 & to_string (get_name_external (selected_unit)),
 				 level => log_threshold + 2);
 
 			log_indentation_up;
@@ -343,13 +346,18 @@ is
 			-- Now we add the first available unit to the device in schematic.
 			-- The order by which units are deployed is specified in 
 			-- function get_first_unit:
-			first_available_unit := get_first_unit (device_cursor_lib);
+			if unit_name_explicit = unit_name_default then
+				selected_unit := get_first_unit (device_cursor_lib);
+			else
+				selected_unit := get_unit (
+					device_cursor_lib, unit_name_explicit);
+			end if;
 
 			-- If an internal unit is available, then add it to device. 
 			-- If no internal unit is available but an external, then add it 
 			-- to the device. So the operator will not take notice
 			-- whether an internal or external unit is selected:
-			if has_internal_unit (first_available_unit) then
+			if has_internal_unit (selected_unit) then
 
 				-- Add the internal unit to the device.
 				-- NOTE: Cursor device_cursor_sch now points to the new
@@ -362,7 +370,7 @@ is
 				-- Fetch the ports of the unit and their default positions 
 				-- relative to the unit origin as they are defined in 
 				-- the device model:
-				unit_name := get_name_internal (first_available_unit);
+				unit_name := get_name_internal (selected_unit);
 				
 				log (text => "fetch default port positions of internal unit " 
 					 & to_string (unit_name), level => log_threshold + 2);
@@ -373,7 +381,7 @@ is
 
 
 			-- If no internal unit is available -> add external unit:
-			elsif has_external_unit (first_available_unit) then
+			elsif has_external_unit (selected_unit) then
 
 				-- Add the external unit to the device.
 				-- NOTE: Cursor device_cursor_sch now points to the new
@@ -386,7 +394,7 @@ is
 				-- Fetch the ports of the unit and their default positions 
 				-- relative to the unit origin as they are defined in 
 				-- the device model:
-				unit_name := get_name_external (first_available_unit);
+				unit_name := get_name_external (selected_unit);
 				
 				log (text => "fetch default port positions of external unit " 
 					 & to_string (unit_name), level => log_threshold + 2);
