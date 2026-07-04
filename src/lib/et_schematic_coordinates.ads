@@ -80,6 +80,10 @@ package et_schematic_coordinates is
 		offset		: in type_object_position_relative);
 
 
+	procedure move_by (
+		position	: in out type_object_position;
+		offset		: in type_vector_model);
+	
 	function to_position (
 		position	: in type_position;
 		sheet		: in type_sheet)

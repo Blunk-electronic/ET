@@ -73,6 +73,7 @@ is
 	use et_undo_redo;
 	use et_modes.schematic;
 
+	use pac_unit_name;
 	
 	-- The pointer to the device in the schematic:	
 	device_cursor_sch : pac_devices_electrical.cursor;
@@ -451,7 +452,7 @@ is
 		-- First we add a bare device to the module:
 		copy_bare_device;
 
-		-- Now we add the first available unit:
+		-- Now we add the selected unit:
 		add_unit;
 
 		-- Insert the ports of the unit in the net segments
@@ -469,7 +470,19 @@ begin
 
 	log_indentation_up;
 
+	
+	-- Log the selected unit name:
+	if unit_name_explicit = unit_name_default then
+		log (text => "select first available unit", 
+			 level => log_threshold);
+	else
+		log (text => "select explicitly requested unit " 
+			& to_string (unit_name_explicit),
+			level => log_threshold);
+	end if;
 
+	
+	
 	-- Locate the targeted device in the given module.
 	-- The device must exist. Otherwise an exception will be raised here:
 	device_cursor_sch := get_electrical_device (module_cursor, device_name);

@@ -109,6 +109,15 @@ package body et_schematic_coordinates is
 
 
 
+
+	procedure move_by (
+		position	: in out type_object_position;
+		offset		: in type_vector_model)
+	is begin
+		move_by (position.place, offset);
+	end;
+
+	
 	
 	function to_position (
 		position	: in type_position;

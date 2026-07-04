@@ -347,7 +347,8 @@ package et_schematic_ops_device is
 		commit_design		: in type_commit_design := DO_COMMIT;
 		log_threshold		: in type_log_level);
 
-
+	-- CS: procedure copy_device that takes a
+	-- cursor to the device and to the unit.
 
 
 

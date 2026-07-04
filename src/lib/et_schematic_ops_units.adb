@@ -3853,9 +3853,11 @@ package body et_schematic_ops_units is
 		-- has been found, this flag is set:
 		unit_found : boolean := false;
 
-		-- Here we store the position of the new unit:
-		position_new : type_object_position;
-
+		-- Once a selected unit has been found, we
+		-- store its cursor and the cursor to the parent
+		-- device here:
+		device_cursor_old : pac_devices_electrical.cursor;
+		unit_cursor_old : pac_units.cursor;
 
 		
 		procedure query_module (
@@ -3878,65 +3880,22 @@ package body et_schematic_ops_units is
 				is begin
 					if is_selected (unit) then
 						-- CS log full name like IC1.D
-						
-						log_indentation_up;
 
 						-- We have a selected unit.
 						-- The search must be aborted by setting
 						-- this flag:
 						unit_found := true;
 
+						-- Backup the cursor to the unit
+						-- and to the parent device:
+						device_cursor_old := device_cursor;
+						unit_cursor_old := unit_cursor;
+						
 						-- Deselect the original unit.
 						-- This has the important effect, that the
 						-- same unit is not found over and over
 						-- again (which would cause a forever-loop):
 						clear_selected (unit);					
-
-						-- Now we compute the new position
-						-- of the new unit.
-						-- First we copy the coordinates
-						-- from the original netchanger.
-						position_new := get_position (unit);
-						
-						-- In the following, the rotatation remains unchanged
-						-- because we copy the rotation along with other
-						-- properties of the unit.
-
-						-- Now, depending on whether it is about relative
-						-- or absolute coordinates, we compute the
-						-- new sheet and place:
-						case coordinates is
-							when ABSOLUTE => 
-								-- Now we overwrite the sheet and the 
-								-- place with the parameters specified
-								-- by the caller.
-								set_sheet (position_new, sheet);
-
-								-- Regard the given "offset"
-								-- as absolute destination position.
-								set_place (position_new, offset);
-								-- CS unclear ?
-
-								
-							when RELATIVE =>
-								-- Add to the original unit
-								-- position the given number of
-								-- relative sheet offset:
-								-- add_sheet (position_new, sheet);
-
-								-- Move the original position by
-								-- the gtiven offset:
-								-- move_by (position_new, offset);
-								null;
-							
-						end case;
-
-						-- Now the absolute position of
-						-- the new unit is complete and
-						-- can be assigned to the new unit.
-
-
-						log_indentation_down;
 					end if;
 				end query_unit;
 				
@@ -3984,7 +3943,6 @@ package body et_schematic_ops_units is
 
 		
 		log_indentation_up;
-
 		
 		-- Search for the first selected unit in the group.
 		-- Each unit that has been found, will be deselected:
@@ -4003,14 +3961,14 @@ package body et_schematic_ops_units is
 		-- use total unit count of the design ?
 		-- CS: log the nunmber of units copied
 		
-			-- copy_unit (
-			-- 	module_cursor	=> module_cursor,
-			-- 	device_cursor	=> device_cursor,
-			-- 	unit_cursor		=> unit_cursor,
-			-- 	sheet			=> sheet,
-			-- 	destination		=> offset,
-			-- 	coordinates		=> coordinates,
-			-- 	log_threshold	=> log_threshold + 1);
+			copy_unit (
+				module_cursor	=> module_cursor,
+				device_cursor	=> device_cursor_old,
+				unit_cursor		=> unit_cursor_old,
+				sheet			=> sheet,
+				destination		=> offset,
+				coordinates		=> coordinates,
+				log_threshold	=> log_threshold + 1);
       
 		
 			-- Restart the search for a selected unit:

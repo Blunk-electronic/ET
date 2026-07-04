@@ -36,13 +36,6 @@
 --   history of changes:
 --
 
-with et_symbol_library;
-with et_symbol_name;
-with et_device_appearance;				use et_device_appearance;
-with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
-with et_device_model_unit_internal;		use et_device_model_unit_internal;
-with et_device_model_unit_external;		use et_device_model_unit_external;
-
 
 separate (et_schematic_ops_units)
 
@@ -55,19 +48,55 @@ procedure copy_unit (
 	coordinates		: in type_coordinates;
 	log_threshold	: in type_log_level)
 is
+
+	-- Here we store the position of the new unit.
+	-- It is an absolute position:
+	position_new : type_object_position;
+
 	
-	procedure query_module (
-		module_name	: in pac_module_name.bounded_string;
-		module		: in out type_generic_module) 
-	is
-		
-		
-	begin -- query_module
-		-- CS
-		-- copy_device (
-		-- 	module_cursor	=> 
-		null;
-	end query_module;
+	procedure compute_final_position is begin
+		-- First we copy the coordinates
+		-- from the original unit:
+		position_new := get_position (unit_cursor);
+						
+		-- In the following, the rotatation remains unchanged
+		-- because we copy the rotation along with other
+		-- properties of the unit.
+
+		-- Now, depending on whether it is about relative
+		-- or absolute coordinates, we compute the
+		-- new sheet and place:
+		case coordinates is
+			when ABSOLUTE => 
+				-- Now we overwrite the sheet and the 
+				-- place with the parameters specified
+				-- by the caller.
+				set_sheet (position_new, sheet);
+
+				-- Regard the given destination
+				-- as absolute target position.
+				set_place (position_new, destination);
+
+
+				
+			when RELATIVE =>
+				-- Add to the original unit
+				-- position the given number of
+				-- relative sheet offset:
+				move_by_sheets (position_new, sheet);
+
+				-- Regard the given "destination" as offset.
+				-- Move the original position by
+				-- the given "destination":
+				move_by (position_new, destination);
+			
+		end case;
+
+		-- Now the absolute position of
+		-- the new unit is complete and
+		-- can be assigned to the new unit.
+
+	end compute_final_position;
 
 	
 	
@@ -94,12 +123,24 @@ begin
 
 	end case;
 
-		
 
 	log_indentation_up;
-		
-	generic_modules.update_element (module_cursor, query_module'access);
+
 	
+	-- Now we compute the new position
+	-- of the new unit.
+	compute_final_position;
+
+
+	copy_device (
+		module_cursor		=> module_cursor,
+		device_name			=> key (device_cursor),
+		unit_name_explicit	=> key (unit_cursor),
+		destination			=> position_new, -- absolute
+		commit_design		=> NO_COMMIT,
+		log_threshold		=> log_threshold + 1);
+		
+		
 	log_indentation_down;	
 end copy_unit;
 
