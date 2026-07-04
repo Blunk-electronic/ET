@@ -2759,7 +2759,17 @@ package body et_schematic_ops_nets is
 		coordinates		: in type_coordinates;
 		log_threshold	: in type_log_level)
 	is
+		-- In the course of this procedure selected
+		-- net segments are searched for. Once a segment
+		-- has been found, this flag is set:
+		segment_found : boolean := false;
 
+		-- Once a segment has been found, we store
+		-- the cursor to the parent net, strand 
+		-- and the segment itself here:
+		object_segment : type_object_segment;
+		
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -2783,11 +2793,7 @@ package body et_schematic_ops_nets is
 					
 					procedure query_segment (
 						segment	: in out type_net_segment)
-					is 
-						object_segment : type_object_segment := (
-							net_cursor, strand_cursor, segment_cursor);
-							
-					begin
+					is begin
 						-- CS: log segment and net name ?
 						
 						-- If the A-end of the segment is selected,
@@ -2795,17 +2801,32 @@ package body et_schematic_ops_nets is
 						if is_A_selected (segment) or
 						   is_B_selected (segment) then
 
-							null;
+							-- We have a selected net segment.
+							-- The search must be aborted by setting
+							-- this flag:
+							segment_found := true;
 
-							-- CS
+							-- Deselect the original net segment.
+							-- This has the important effect, that the
+							-- same segment is not found over and over
+							-- again (which would cause a forever-loop):
+							clear_selected (segment);					
+
+							-- Backup the cursor of the net,
+							-- strand and the segment itself:
+							object_segment := (net_cursor, 
+								strand_cursor, segment_cursor);
+
 						end if;
 					end query_segment;
 					
 					
 				begin
 					-- Iterate through the segments
-					-- of the strand:
-					while has_element (segment_cursor) loop
+					-- of the strand. Abort once a selected
+					-- segment has been found::
+					while has_element (segment_cursor) 
+					and not segment_found loop
 						strand.segments.update_element (
 							segment_cursor, query_segment'access);
 						
@@ -2815,8 +2836,10 @@ package body et_schematic_ops_nets is
 				
 
 			begin
-				-- Iterate through the strands:
-				while has_element (strand_cursor) loop
+				-- Iterate through the strands. Abort once
+				-- a selected net segment has been found:
+				while has_element (strand_cursor) 
+				and not segment_found loop
 					net.strands.update_element (strand_cursor, query_strand'access);
 					next (strand_cursor);
 				end loop;
@@ -2824,8 +2847,10 @@ package body et_schematic_ops_nets is
 
 			
 		begin
-			-- Iterate through the nets:
-			while has_element (net_cursor) loop
+			-- Iterate through the nets. Abort once
+			-- a selected net segment has been found:
+			while has_element (net_cursor)
+			and not segment_found loop
 				module.nets.update_element (net_cursor, query_net'access);
 				next (net_cursor);
 			end loop;
@@ -2853,7 +2878,38 @@ package body et_schematic_ops_nets is
 		
 		log_indentation_up;
 
-		generic_modules.update_element (module_cursor, query_module'access);
+		-- Search for the first selected net segment in the group.
+		-- Each segment that has been found, will be deselected:
+		generic_modules.update_element (
+			module_cursor, query_module'access);
+
+		-- If a segment has been found, then the 
+		-- flag "segment_found" is set.
+		-- This starts the following loop where
+		-- the affected segment will be copied.		
+		
+		-- This loop will be executed as long as selected
+		-- net segments exist:
+		while segment_found loop
+		-- CS: safety measure to avoid forever-loop
+		-- use total net segment count of the design ?
+		-- CS: log the number of segments copied
+		
+			copy_net_segment (
+				module_cursor	=> module_cursor,
+				object_segment	=> object_segment,
+				sheet			=> sheet,
+				destination		=> offset,
+				coordinates		=> coordinates,
+				log_threshold	=> log_threshold + 1);
+		
+			-- Restart the search for a selected segment:
+			segment_found := false;
+
+			generic_modules.update_element (
+				module_cursor, query_module'access);
+		end loop;
+
 
 		log_indentation_down;
 	end copy_selected_net_segments;
@@ -6233,7 +6289,77 @@ package body et_schematic_ops_nets is
 	
 
 
+	
+	
 
+	
+	
+	procedure copy_net_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_segment	: in type_object_segment;
+		sheet			: in type_sheet_relative;
+		destination		: in type_vector_model;
+		coordinates		: in type_coordinates;
+		log_threshold	: in type_log_level)
+	is
+	
+		net_name : pac_net_name.bounded_string;
+		
+		procedure compute_A_and_B is
+			-- Get the original segment:
+			segment : type_net_segment := 
+				element (object_segment.segment_cursor);
+				
+			A : type_vector_model;
+			B : type_vector_model;
+		begin
+			A := get_A (segment);
+			B := get_B (segment);
+			
+		end compute_A_and_B;
+		
+			
+		
+	begin
+		case coordinates is
+			when ABSOLUTE =>
+			
+				log (text => "module " & to_string (module_cursor) 
+					& " copy net segment"
+					-- CS net name, A and B ?
+					& " to sheet " & to_string (sheet)
+					& " place " & to_string (destination),
+					level => log_threshold);
+
+
+			when RELATIVE =>
+
+				log (text => "module " & to_string (module_cursor) 
+					& " copy net segment"
+					-- CS net name, A and B ?
+					& " by sheet(s) " & relative_to_string (sheet)
+					& " offset " & to_string (destination),
+					level => log_threshold);
+
+		end case;
+
+
+		log_indentation_up;
+	
+		net_name := get_net_name (object_segment);
+
+			
+			
+		log_indentation_down;
+	end copy_net_segment;
+
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	procedure set_scope (

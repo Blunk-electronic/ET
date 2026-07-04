@@ -864,6 +864,15 @@ package body et_nets is
 
 
 
+
+
+	function get_net_name (
+		object	: in type_object_segment)
+		return pac_net_name.bounded_string
+	is begin
+		return key (object.net_cursor);
+	end;
+
 	
 
 

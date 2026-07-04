@@ -403,6 +403,11 @@ package et_nets is
 	end record;
 
 
+	function get_net_name (
+		object	: in type_object_segment)
+		return pac_net_name.bounded_string;
+							  
+	
 	-- Returns the net name and segment of the given object
 	-- as string in the form like "GND segment start x/y end x/y":
 	function to_string (

@@ -888,8 +888,15 @@ package et_schematic_ops_nets is
 		log_threshold	: in type_log_level);
 
 	
-
-
+	procedure copy_net_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_segment	: in type_object_segment;
+		sheet			: in type_sheet_relative;
+		destination		: in type_vector_model;
+		coordinates		: in type_coordinates;
+		log_threshold	: in type_log_level);
+		
+		
 	
 	-- Sets the scope of a net.
 	-- Assumes that the given net exists. Otherwise
