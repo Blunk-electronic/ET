@@ -3393,6 +3393,7 @@ package body et_schematic_ops_netchangers is
 							-- Regard the given "offset"
 							-- as absolute destination position.
 							set_place (position_new, offset);
+							-- CS unclear ?
 
 							
 						when RELATIVE =>
