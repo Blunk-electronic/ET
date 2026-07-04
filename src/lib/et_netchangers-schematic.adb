@@ -161,6 +161,16 @@ package body et_netchangers.schematic is
 
 
 	
+	procedure move_by (
+		position	: in out type_netchanger_position_schematic;
+		offset		: in type_vector_model)
+	is begin
+		add (position.place, offset);
+	end;
+
+
+
+	
 	function get_place (
 		position	: in type_netchanger_position_schematic)
 		return type_vector_model
@@ -178,7 +188,15 @@ package body et_netchangers.schematic is
 		position.sheet := sheet;
 	end;
 
+
 	
+	procedure add_sheet (
+		position	: in out type_netchanger_position_schematic;
+		sheet		: in type_sheet_relative)
+	is begin
+		add (position.sheet, sheet);
+	end;
+
 	
 	
 	function get_sheet (
@@ -610,6 +628,14 @@ package body et_netchangers.schematic is
 	end;
 
 
+	procedure clear_selected (
+		netchanger : in out type_netchanger)
+	is begin
+		clear_selected (netchanger.status_sch);
+		clear_selected (netchanger.status_brd);
+	end;
+
+	
 	
 	procedure modify_status (
 		netchanger	: in out type_netchanger;

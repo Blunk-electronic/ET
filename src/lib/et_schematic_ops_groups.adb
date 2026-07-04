@@ -559,7 +559,7 @@ package body et_schematic_ops_groups is
 		case coordinates is
 			when RELATIVE =>
 				log (text => "module " & to_string (module_cursor)
-					 & " copy group by sheet(s) " & to_string (sheet) 
+					 & " copy group by sheet(s) " & relative_to_string (sheet) 
 					 & " offset " & to_string (offset),
 					level => log_threshold);
 

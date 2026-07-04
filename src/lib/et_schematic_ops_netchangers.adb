@@ -1906,6 +1906,9 @@ package body et_schematic_ops_netchangers is
 			-- (This operation copies the direction also.)
 			netchanger := element (netchanger_cursor);
 
+			-- The copy must have all status flags reset:
+			reset_status (netchanger);
+			
 			-- Backup the rotation of the original netchanger:
 			rotation := get_rotation (netchanger);
 			
@@ -3029,7 +3032,7 @@ package body et_schematic_ops_netchangers is
 
 		log_indentation_up;
 		
-		-- Search for the first selected unit in the group:
+		-- Search for the first selected netchanger in the group:
 		query_element (module_cursor, query_module'access);
 
 		-- If a netchanger has been found, then the 
@@ -3321,62 +3324,104 @@ package body et_schematic_ops_netchangers is
 		coordinates		: in type_coordinates;
 		log_threshold	: in type_log_level)
 	is
+		-- In the course of this procedure selected
+		-- netchangers are searched for. Once a netchanger
+		-- has been found, this flag is set:
+		netchanger_found : boolean := false;
 
+		-- Once a netchanger has been found, its
+		-- index is stored here:
+		index_old : type_netchanger_id;
+		
+		-- Here we store the position of the new netchanger:
+		position_new : type_netchanger_position_schematic;
+
+		
+
+		
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			netchanger_cursor : pac_netchangers.cursor := module.netchangers.first;
+			netchanger_cursor : pac_netchangers.cursor := 
+				module.netchangers.first;
 
 			
 			procedure query_netchanger (
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger)
-			is 
-				position : type_netchanger_position_schematic;
-			begin
+			is begin
 				if is_selected (netchanger) then
 					-- CS: log the full name like N2
 					log_indentation_up;
 
-					case coordinates is
-						when ABSOLUTE =>
+					-- We have a selected netchanger.
+					-- The search must be aborted by setting
+					-- this flag:
+					netchanger_found := true;
 
-							-- Set the destination of the new
-							-- netchanger. First we copy the coordinates
-							-- from the original netchanger. Then we
-							-- overwrite the sheet and the place as specified
+					-- Store the index of the original netchanger:
+					index_old := index;
+
+					-- Deselect the original netchanger.
+					-- This has the important effect, that the
+					-- same netchanger is not found over and over
+					-- again (which would cause a forever-loop):
+					clear_selected (netchanger);					
+
+					-- Now we compute the new position
+					-- of the copied netchanger.
+					-- First we copy the coordinates
+					-- from the original netchanger.
+					position_new := get_position (netchanger);
+					
+					-- In the following, the rotatation remains unchanged
+					-- because we copy the rotation along with other
+					-- properties of the netchanger.
+
+					-- Now, depending on whether it is about relative
+					-- or absolute coordinates, we compute the
+					-- new sheet and place:
+					case coordinates is
+						when ABSOLUTE => 
+							-- Now we overwrite the sheet and the 
+							-- place with the parameters specified
 							-- by the caller.
-							-- The rotatation remains unchanged.
-							position := get_position (netchanger);
-							set_sheet (position, sheet);
+							set_sheet (position_new, sheet);
 
 							-- Regard the given "offset"
 							-- as absolute destination position.
-							set_place (position, offset);
-							
-							copy_netchanger (
-								module_cursor	=> module_cursor,
-								index			=> index,
-								destination		=> position,
-								commit_design	=> NO_COMMIT,
-								log_threshold	=> log_threshold + 1);
+							set_place (position_new, offset);
 
+							
 						when RELATIVE =>
-							-- compute the new destination:
-							null;
-							-- CS
-							
+							-- Add to the original netchanger
+							-- position the given number of
+							-- relative sheet offset:
+							add_sheet (position_new, sheet);
+
+							-- Move the original position by
+							-- the gtiven offset:
+							move_by (position_new, offset);
+						
 					end case;
-							
+
+					-- Now the absolute position of
+					-- the new netchanger is complete and
+					-- can be assigned to the new netchanger.
+					
 					log_indentation_down;
 				end if;
 			end query_netchanger;
 
 			
 		begin
-			-- Iterate through the netchangers:
-			while has_element (netchanger_cursor) loop
+			-- Iterate through the netchangers.
+			-- Abort if a selected netchanger has been found:
+			while has_element (netchanger_cursor) 
+			and not netchanger_found loop
+				
 				module.netchangers.update_element (
 					netchanger_cursor, query_netchanger'access);
 				
@@ -3398,7 +3443,7 @@ package body et_schematic_ops_netchangers is
 			when RELATIVE =>
 				log (text => "module " & to_string (module_cursor)
 					 & " copy selected netchangers by " 
-					 & " sheet(s) " & to_string (sheet)
+					 & " sheet(s) " & relative_to_string (sheet)
 					 & " offset " & to_string (offset),
 					level => log_threshold);
 		end case;
@@ -3406,8 +3451,38 @@ package body et_schematic_ops_netchangers is
 		
 		log_indentation_up;
 
-		generic_modules.update_element (module_cursor, query_module'access);
+		
+		-- Search for the first selected netchanger in the group.
+		-- Each netchanger that has been found, will be deselected:
+		generic_modules.update_element (
+			module_cursor, query_module'access);
 
+		-- If a netchanger has been found, then the 
+		-- flag "netchanger_found" is set.
+		-- This starts the following loop where
+		-- the affected netchanger will be copied.		
+		
+		-- This loop will be executed as long as selected
+		-- netchangers exist:
+		while netchanger_found loop
+		-- CS: safety measure to avoid forever-loop
+		-- use total netchanger count of the design ?
+		-- CS: log the nunmber of netchangers copied
+		
+			copy_netchanger (
+				module_cursor	=> module_cursor,
+				index			=> index_old,
+				destination		=> position_new,
+				commit_design	=> NO_COMMIT,
+				log_threshold	=> log_threshold + 1);
+		
+			-- Restart the search for a selected netchanger:
+			netchanger_found := false;
+
+			generic_modules.update_element (
+				module_cursor, query_module'access);
+		end loop;
+		
 		log_indentation_down;
 	end copy_selected_netchangers;
 

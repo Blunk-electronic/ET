@@ -86,7 +86,7 @@ begin
 			log (text => "module " & to_string (module_cursor) 
 				& " device " & get_device_name (device_cursor) 
 				& " copy unit " & to_string (unit_cursor)
-				& " by sheet(s) " & to_string (sheet)
+				& " by sheet(s) " & relative_to_string (sheet)
 				& " offset " & to_string (destination),
 				level => log_threshold);
 

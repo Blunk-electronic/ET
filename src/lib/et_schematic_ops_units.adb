@@ -3917,7 +3917,7 @@ package body et_schematic_ops_units is
 			when RELATIVE =>
 				log (text => "module " & to_string (module_cursor)
 					 & " copy selected units by " 
-					 & " sheet(s) " & to_string (sheet)
+					 & " sheet(s) " & relative_to_string (sheet)
 					 & " offset " & to_string (offset),
 					level => log_threshold);
 		end case;

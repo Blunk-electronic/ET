@@ -220,6 +220,9 @@ package body et_cp_schematic is
 						when NOUN_DEVICE =>
 							copy_device (module_cursor, cmd, log_threshold + 1);
 							
+						when NOUN_GROUP =>
+							copy_group (module_cursor, cmd, log_threshold + 1);
+
 						when NOUN_SUBMODULE =>
 							copy_submodule (module_cursor, cmd, log_threshold + 1);
 							

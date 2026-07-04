@@ -530,7 +530,8 @@ package et_schematic_ops_netchangers is
 		log_threshold	: in type_log_level);
 
 
-	-- This procedure copies selected netchangers:
+	-- This procedure copies selected netchangers.
+	-- Each netchanger that has been found, will be deselected:
 	procedure copy_selected_netchangers (
 		module_cursor	: in pac_generic_modules.cursor;
 		sheet			: in type_sheet_relative;		

@@ -55,9 +55,15 @@ package et_sheets is
 	sheet_default : constant type_sheet := type_sheet'first;
 	
 	function to_string (sheet : in type_sheet) return string;
+	-- CS better:
+	-- function to_string (sheet : in type_sheet_relative) return string;
+	-- to cover the whole range of sheet numbers
+	
 	function to_sheet (sheet : in string) return type_sheet;
 
 	function relative_to_string (sheet : in type_sheet_relative) return string;
+	-- CS remove
+	
 	function to_sheet_relative (sheet : in string) return type_sheet_relative;
 	
 

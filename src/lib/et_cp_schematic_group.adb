@@ -276,7 +276,7 @@ package body et_cp_schematic_group is
 		begin
 			coordinates := to_coordinates (get_field (cmd, 5));
 
-			sheet := to_sheet (get_field (cmd, 6));
+			sheet := to_sheet_relative (get_field (cmd, 6));
 			
 			offset := to_vector_model (
 				x => get_field (cmd, 7),
