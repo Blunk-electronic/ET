@@ -76,7 +76,7 @@ is
 				-- Regard the given destination
 				-- as absolute target position.
 				set_place (position_new, destination);
-
+				-- CS unclear ?
 
 				
 			when RELATIVE =>
