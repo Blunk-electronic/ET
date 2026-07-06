@@ -2277,7 +2277,6 @@ package body et_canvas is
 		spacing : gint;
 	begin
 		spacing := 10;
-		-- CS use a table !
 		
 		-- The main box around all kinds of position readouts:
 		gtk_new_vbox (mode_display.box_mode);
@@ -2288,28 +2287,29 @@ package body et_canvas is
 		gtk_new (mode_display.label_mode, "MODE");
 		pack_start (mode_display.box_mode, mode_display.label_mode, expand => false);
 
-		
-		gtk_new_hbox (mode_display.box_mode_verb);
-		set_spacing (mode_display.box_mode_verb, spacing);
-		pack_start (mode_display.box_mode, mode_display.box_mode_verb, expand => false);
-		
+
 		gtk_new (mode_display.label_mode_verb, "VERB");
-		pack_start (mode_display.box_mode_verb, mode_display.label_mode_verb, expand => false);
+		set_halign (mode_display.label_mode_verb, align_start);
 
 		gtk_new_with_entry (mode_display.cbox_mode_verb);
-		pack_start (mode_display.box_mode_verb, mode_display.cbox_mode_verb, expand => false);
+		set_halign (mode_display.cbox_mode_verb, align_end);
 
 		
-		gtk_new_hbox (mode_display.box_mode_noun);
-		set_spacing (mode_display.box_mode_noun, spacing);
-		pack_start (mode_display.box_mode, mode_display.box_mode_noun, expand => false);
-
 		gtk_new (mode_display.label_mode_noun, "NOUN");
-		pack_start (mode_display.box_mode_noun, mode_display.label_mode_noun, expand => false);
+		set_halign (mode_display.label_mode_noun, align_start);
 		
 		gtk_new_with_entry (mode_display.cbox_mode_noun);
-		pack_start (mode_display.box_mode_noun, mode_display.cbox_mode_noun, expand => false);
-		
+		set_halign (mode_display.cbox_mode_noun, align_end);
+
+
+		gtk_new (mode_display.grid_mode);
+		attach (mode_display.grid_mode, mode_display.label_mode_verb, 1, 1);
+		attach (mode_display.grid_mode, mode_display.cbox_mode_verb,  2, 1);
+		attach (mode_display.grid_mode, mode_display.label_mode_noun, 1, 2);
+		attach (mode_display.grid_mode, mode_display.cbox_mode_noun,  2, 2);
+		set_column_spacing (mode_display.grid_mode, 10);
+		set_hexpand (mode_display.grid_mode, true);
+		pack_start (mode_display.box_mode, mode_display.grid_mode, expand => false);
 	end build_mode_display;
 
 

@@ -56,6 +56,7 @@ with gtk.window;				use gtk.window;
 with gtk.separator;				use gtk.separator;
 with gtk.box;					use gtk.box;
 with gtk.gentry;				use gtk.gentry;
+with gtk.grid;					use gtk.grid;
 with gtk.combo_box;				use gtk.combo_box;
 with gtk.combo_box_text;		use gtk.combo_box_text;
 with gtk.drawing_area;			use gtk.drawing_area;
@@ -969,8 +970,6 @@ package et_canvas is
 
 	type type_mode is record -- CS rename to type_mode_display
 		box_mode			: gtk_vbox;
-		box_mode_verb		: gtk_hbox;
-		box_mode_noun		: gtk_hbox;
 		label_mode			: gtk_label;
 		label_mode_verb		: gtk_label;
 		label_mode_noun		: gtk_label;
@@ -978,7 +977,7 @@ package et_canvas is
 		-- cbox_mode_noun		: gtk_combo_box_text;
 		cbox_mode_verb		: gtk_combo_box;
 		cbox_mode_noun		: gtk_combo_box;
-
+		grid_mode			: gtk_grid;
 	end record;
 
 	mode_display : type_mode;
