@@ -864,7 +864,9 @@ package et_schematic_ops_nets is
 	-- Inserts the given net segment in the given net
 	-- on the given sheet. If the segment runs across the
 	-- ends of other segments (of the same strand) then
-	-- it will be broken down into smaller segments:
+	-- it will be broken down into smaller segments.
+	-- Connects the segments with strands and ports of
+	-- devices, netchangers and submodules:
 	procedure insert_net_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in pac_nets.cursor;
@@ -874,10 +876,11 @@ package et_schematic_ops_nets is
 	
 	
 	
-	-- Inserts a net segment to a given net. If the given net does
+	-- Inserts a net segment to a given net. 
+	-- If the given net does
 	-- not exist, then the net will be created.
-	-- Find more details in description of procedure insert_net_segment
-	-- above.
+	-- Find more details in description of procedure 
+	-- insert_net_segment above.
 	-- Updates strand positions and the ratsnest:
 	procedure insert_net_segment (
 		module_cursor	: in pac_generic_modules.cursor;

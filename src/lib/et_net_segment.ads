@@ -43,7 +43,6 @@ with ada.containers.doubly_linked_lists;
 with et_module_instance;		use et_module_instance;
 with et_schematic_geometry;		use et_schematic_geometry;
 with et_schematic_coordinates;	use et_schematic_coordinates;
-with et_sheets;					use et_sheets;
 with et_logging;				use et_logging;
 with et_net_names;				use et_net_names;
 with et_net_labels;				use et_net_labels;
@@ -82,6 +81,10 @@ package et_net_segment is
 		segment	: in out type_net_segment);
 
 
+	procedure copy_net_segment (
+		segment_in	: in type_net_segment;
+		segment_out	: out type_net_segment);
+		
 		
 	-- CS: If we some day try to implement a nice algorithm
 	-- that drags net labels along with the segment being moved,
