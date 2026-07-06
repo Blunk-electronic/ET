@@ -63,6 +63,19 @@ package body et_net_segment is
 	-- end;
 
 
+
+	procedure copy_net_segment (
+		segment_in	: in type_net_segment;
+		segment_out	: out type_net_segment)
+	is begin
+		set_A (segment_out, get_A (segment_in));
+		set_B (segment_out, get_B (segment_in));
+
+		segment_out.labels := segment_in.labels;
+		segment_out.connectors := segment_in.connectors;
+	end;
+
+
 	
 
 	function to_net_segment (

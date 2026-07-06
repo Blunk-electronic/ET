@@ -2895,13 +2895,13 @@ package body et_schematic_ops_nets is
 		-- use total net segment count of the design ?
 		-- CS: log the number of segments copied
 		
-			copy_net_segment (
-				module_cursor	=> module_cursor,
-				object_segment	=> object_segment,
-				sheet			=> sheet,
-				destination		=> offset,
-				coordinates		=> coordinates,
-				log_threshold	=> log_threshold + 1);
+			-- copy_net_segment (
+			-- 	module_cursor	=> module_cursor,
+			-- 	object_segment	=> object_segment,
+			-- 	sheet			=> sheet,
+			-- 	destination		=> offset,
+			-- 	coordinates		=> coordinates,
+			-- 	log_threshold	=> log_threshold + 1);
 		
 			-- Restart the search for a selected segment:
 			segment_found := false;
@@ -6305,18 +6305,37 @@ package body et_schematic_ops_nets is
 	
 		net_name : pac_net_name.bounded_string;
 		
-		procedure compute_A_and_B is
+		procedure do_it is
 			-- Get the original segment:
-			segment : type_net_segment := 
+			segment : constant type_net_segment := 
 				element (object_segment.segment_cursor);
 				
-			A : type_vector_model;
-			B : type_vector_model;
-		begin
-			A := get_A (segment);
-			B := get_B (segment);
+			segment_new : type_net_segment;
 			
-		end compute_A_and_B;
+			sheet_new : type_sheet;
+		begin
+			copy_net_segment (
+				segment_in 	=> segment,
+				segment_out => segment_new);
+			
+			case coordinates is
+				when ABSOLUTE =>
+					insert_net_segment (module_cursor,
+						object_segment.net_cursor, sheet,
+						segment_new, log_threshold + 1);
+						
+				when RELATIVE =>
+					sheet_new := get_sheet (object_segment);
+					add (sheet_new, sheet);
+					
+					move_by (segment_new, destination);
+
+					insert_net_segment (module_cursor,
+						object_segment.net_cursor, sheet_new,
+						segment_new, log_threshold + 1);
+
+			end case;
+		end do_it;
 		
 			
 		
@@ -6348,7 +6367,7 @@ package body et_schematic_ops_nets is
 	
 		net_name := get_net_name (object_segment);
 
-			
+		do_it;
 			
 		log_indentation_down;
 	end copy_net_segment;
