@@ -4026,10 +4026,22 @@ package body et_canvas is
 	
 	
 -- PRIMARY TOOL:
-	
+
+	procedure on_primary_tool_change (self : access Gtk_Combo_Box_Record'Class) is -- gtk_combo_box_text) is
+	begin
+		primary_tool := type_tool'value (get_active_id (self));
+
+		if primary_tool = KEYBOARD then
+			focus_canvas;
+		end if;
+	end on_primary_tool_change;
+
+
+
 	procedure build_primary_tool_display is
 		use glib;
 		spacing : gint;
+		found : boolean;
 	begin
 		spacing := 10;
 		
@@ -4040,7 +4052,21 @@ package body et_canvas is
 		
 		gtk_new (label_primary_tool, "PRIMARY TOOL (F2)");
 		pack_start (box_primary_tool, label_primary_tool, expand => false);
-		gtk_new_with_entry (cbox_primary_tool);
+--		gtk_new_with_entry (cbox_primary_tool);
+		gtk_new (cbox_primary_tool);
+		for t in type_tool loop
+			append (cbox_primary_tool,
+					id   => type_tool'image (t),
+					text => type_tool'image (t));
+		end loop;
+--		found := set_active_id (cbox_primary_tool,
+--								active_id => type_tool'image (primary_tool));
+--		on_changed (cbox_primary_tool,
+--					call  => on_primary_tool_change'access,
+--					after => true);
+		-- 'access not allowed in generic body
+--		add_primary_tool_on_changed;
+
 		pack_start (box_primary_tool, cbox_primary_tool);
 
 		update_primary_tool_display;
@@ -4048,17 +4074,15 @@ package body et_canvas is
 
 
 
-
-	
-	procedure update_primary_tool_display is begin
-		gtk_entry (cbox_primary_tool.get_child).set_text (to_string (primary_tool));
+	procedure update_primary_tool_display is
+		found : boolean;
+	begin
+		found := set_active_id (cbox_primary_tool,
+								active_id => type_tool'image (primary_tool));
 	end update_primary_tool_display;
 
-	
 
 
-
-	
 	procedure change_primary_tool is begin
 		if primary_tool = MOUSE then
 			primary_tool := KEYBOARD;
