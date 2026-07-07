@@ -4046,8 +4046,8 @@ package body et_canvas is
 		for t in type_tool loop
 			append (
 				cbox_primary_tool,
-				id   => type_tool'image (t),
-				text => type_tool'image (t));
+				id   => to_string (t),
+				text => to_string (t));
 		end loop;
 
 		on_changed (
@@ -4064,7 +4064,7 @@ package body et_canvas is
 
 	procedure cb_primary_tool_change (self : access gtk_combo_box_record'class) is
 	begin
-		primary_tool := type_tool'value (get_active_id (self));
+		primary_tool := to_tool (get_active_id (self));
 
 		if primary_tool = KEYBOARD then
 			focus_canvas;
