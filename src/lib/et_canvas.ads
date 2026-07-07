@@ -1903,6 +1903,19 @@ private
 
 
 	
+-- PRIMARY TOOL:
+
+	-- This callback procedure is called when primary tool is changed in
+	-- combo box.
+	procedure cb_primary_tool_change (
+		self	: access gtk_combo_box_record'class);
+
+	access_cb_primary_tool_change : constant
+		cb_gtk_combo_box_void := cb_primary_tool_change'access;
+
+
+
+
 -- SCROLLED WINDOW AND SCROLLBARS:
 			
 	-- This callback procedure is called each time the size_allocate signal
