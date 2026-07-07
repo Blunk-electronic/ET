@@ -4030,7 +4030,6 @@ package body et_canvas is
 	procedure build_primary_tool_display is
 		use glib;
 		spacing : gint;
-		found : boolean;
 	begin
 		spacing := 10;
 		
@@ -4074,10 +4073,12 @@ package body et_canvas is
 
 
 	procedure update_primary_tool_display is
-		found : boolean;
+		unused_found : boolean;
 	begin
-		found := set_active_id (cbox_primary_tool,
-								active_id => type_tool'image (primary_tool));
+		unused_found :=
+			set_active_id (
+				cbox_primary_tool,
+				active_id => to_string (primary_tool));
 	end update_primary_tool_display;
 
 
