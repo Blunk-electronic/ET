@@ -2281,7 +2281,6 @@ package body et_canvas is
 		-- The main box around all kinds of position readouts:
 		gtk_new_vbox (mode_display.box_mode);
 		set_spacing (mode_display.box_mode, spacing);
-		set_border_width (mode_display.box_mode, 10);
 		pack_start (box_v1, mode_display.box_mode, expand => false);
 
 		gtk_new (mode_display.label_mode, "MODE");
@@ -2293,6 +2292,7 @@ package body et_canvas is
 
 		gtk_new_with_entry (mode_display.cbox_mode_verb);
 		set_halign (mode_display.cbox_mode_verb, align_end);
+		set_hexpand (mode_display.cbox_mode_verb, expand => true);
 
 		
 		gtk_new (mode_display.label_mode_noun, "NOUN");
@@ -2300,6 +2300,7 @@ package body et_canvas is
 		
 		gtk_new_with_entry (mode_display.cbox_mode_noun);
 		set_halign (mode_display.cbox_mode_noun, align_end);
+		set_hexpand (mode_display.cbox_mode_noun, expand => true);
 
 
 		gtk_new (mode_display.grid_mode);
@@ -2307,7 +2308,7 @@ package body et_canvas is
 		attach (mode_display.grid_mode, mode_display.cbox_mode_verb,  2, 1);
 		attach (mode_display.grid_mode, mode_display.label_mode_noun, 1, 2);
 		attach (mode_display.grid_mode, mode_display.cbox_mode_noun,  2, 2);
-		set_column_spacing (mode_display.grid_mode, 10);
+		set_column_spacing (mode_display.grid_mode, guint (spacing));
 		set_hexpand (mode_display.grid_mode, true);
 		pack_start (mode_display.box_mode, mode_display.grid_mode, expand => false);
 	end build_mode_display;
