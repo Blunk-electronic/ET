@@ -175,7 +175,15 @@ package body et_net_labels is
 	
 	
 
+	procedure move_by (
+		label	: in out type_net_label;
+		offset	: in type_vector_model)
+	is begin
+		move_by (label.position, offset);
+	end;
 
+
+	
 
 
 	procedure set_moving (
@@ -276,6 +284,31 @@ package body et_net_labels is
 		primary.splice (source => secondary, before => pos);
 	end;
 
+
+
+
+	procedure move_labels_by (
+		labels	: in out pac_net_labels.list;
+		offset	: in type_vector_model)
+	is
+		cursor : pac_net_labels.cursor := labels.first;
+
+		-- Moves a net label candidate by the given
+		-- offset:
+		procedure query_label (
+			label : in out type_net_label)
+		is begin		
+			move_by (label, offset);
+		end query_label;
+
+		
+	begin
+		-- Iterate through the given list of net labels:
+		while has_element (cursor) loop
+			labels.update_element (cursor, query_label'access);
+			next (cursor);
+		end loop;
+	end;
 	
 	
 end et_net_labels;

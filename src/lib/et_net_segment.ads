@@ -81,9 +81,14 @@ package et_net_segment is
 		segment	: in out type_net_segment);
 
 
+	-- Copies the given net segment_in to
+	-- segment_out. segment_out will be moved
+	-- away from segment_in by offset.
+	-- Copies also the net labels and connectors:
 	procedure copy_net_segment (
 		segment_in	: in type_net_segment;
-		segment_out	: out type_net_segment);
+		segment_out	: out type_net_segment;
+		offset		: in type_vector_model);
 		
 		
 	-- CS: If we some day try to implement a nice algorithm

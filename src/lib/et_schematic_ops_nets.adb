@@ -2810,7 +2810,9 @@ package body et_schematic_ops_nets is
 							-- This has the important effect, that the
 							-- same segment is not found over and over
 							-- again (which would cause a forever-loop):
-							clear_selected (segment);					
+							clear_selected (segment);
+							clear_A_selected (segment);
+							clear_B_selected (segment);
 
 							-- Backup the cursor of the net,
 							-- strand and the segment itself:
@@ -2895,13 +2897,13 @@ package body et_schematic_ops_nets is
 		-- use total net segment count of the design ?
 		-- CS: log the number of segments copied
 		
-			-- copy_net_segment (
-			-- 	module_cursor	=> module_cursor,
-			-- 	object_segment	=> object_segment,
-			-- 	sheet			=> sheet,
-			-- 	destination		=> offset,
-			-- 	coordinates		=> coordinates,
-			-- 	log_threshold	=> log_threshold + 1);
+			copy_net_segment (
+				module_cursor	=> module_cursor,
+				object_segment	=> object_segment,
+				sheet			=> sheet,
+				destination		=> offset,
+				coordinates		=> coordinates,
+				log_threshold	=> log_threshold + 1);
 		
 			-- Restart the search for a selected segment:
 			segment_found := false;
@@ -6303,7 +6305,6 @@ package body et_schematic_ops_nets is
 		log_threshold	: in type_log_level)
 	is
 	
-		net_name : pac_net_name.bounded_string;
 		
 		procedure do_it is
 			-- Get the original segment:
@@ -6316,7 +6317,8 @@ package body et_schematic_ops_nets is
 		begin
 			copy_net_segment (
 				segment_in 	=> segment,
-				segment_out => segment_new);
+				segment_out => segment_new,
+				offset		=> destination);
 			
 			case coordinates is
 				when ABSOLUTE =>
@@ -6328,7 +6330,7 @@ package body et_schematic_ops_nets is
 					sheet_new := get_sheet (object_segment);
 					add (sheet_new, sheet);
 					
-					move_by (segment_new, destination);
+					-- move_by (segment_new, destination);
 
 					insert_net_segment (module_cursor,
 						object_segment.net_cursor, sheet_new,
@@ -6364,8 +6366,6 @@ package body et_schematic_ops_nets is
 
 
 		log_indentation_up;
-	
-		net_name := get_net_name (object_segment);
 
 		do_it;
 			

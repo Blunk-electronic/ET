@@ -2197,6 +2197,21 @@ end;
 	end;
 
 	
+	procedure clear_A_selected (
+		line	: in out type_line)
+	is begin
+		clear_A_selected (line.status_AB);
+	end;
+	
+
+	procedure clear_B_selected (
+		line	: in out type_line)
+	is begin
+		clear_B_selected (line.status_AB);
+	end;
+
+
+
 	
 
 	function is_proposed (
