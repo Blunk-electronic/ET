@@ -43,6 +43,7 @@ with cairo;
 
 with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_coordinates;			use et_schematic_coordinates;
+with et_sheets;							use et_sheets;
 with et_rotation_docu;					use et_rotation_docu;
 with et_text;							use et_text;
 with et_schematic_text;					use et_schematic_text;
@@ -115,7 +116,13 @@ package et_net_labels is
 
 	
 	type type_net_label is new type_net_label_base with record
-		-- The position of the label is absolute (relative to drawing origin):
+		-- The position of the label is 
+		-- absolute (relative to drawing origin).
+		-- NOTE: If you ask why we do not use a relative position:
+		-- The simple answer is: There is no reference point on
+		-- the segment. It would be difficult to invent such a
+		-- point because a net segment has two positions, one
+		-- for the start point A and another for the end point B:
 		position	: type_vector_model;
 
 		-- The simple label can be read from the front or from the right.
@@ -158,7 +165,10 @@ package et_net_labels is
 		return string;
 
 	
-
+	procedure move_by (
+		label	: in out type_net_label;
+		offset	: in type_vector_model);
+						  
 
 	
 	procedure set_moving (
@@ -225,7 +235,13 @@ package et_net_labels is
 		secondary	: in out pac_net_labels.list);
 		
 
+	-- Moves a given list of net labels by the
+	-- given offset and the given sheets:
+	procedure move_labels_by (
+		labels	: in out pac_net_labels.list;
+		offset	: in type_vector_model);
 
+	
 
 	-- SPACING BETWEEN NET LABEL AND NET SEGMENT:
 

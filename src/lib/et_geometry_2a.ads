@@ -1043,6 +1043,14 @@ package et_geometry_2a is
 	procedure set_B_selected (
 		line : in out type_line);
 
+
+	procedure clear_A_selected (
+		line	: in out type_line);
+
+	procedure clear_B_selected (
+		line	: in out type_line);
+
+	
 	function is_proposed (
 		line : in type_line)
 		return boolean;

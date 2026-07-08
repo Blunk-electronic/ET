@@ -66,15 +66,28 @@ package body et_net_segment is
 
 	procedure copy_net_segment (
 		segment_in	: in type_net_segment;
-		segment_out	: out type_net_segment)
+		segment_out	: out type_net_segment;
+		offset		: in type_vector_model)
 	is begin
+		-- Copy start and end point:
 		set_A (segment_out, get_A (segment_in));
 		set_B (segment_out, get_B (segment_in));
 
-		segment_out.labels := segment_in.labels;
+		-- Copy the connectors:
 		segment_out.connectors := segment_in.connectors;
+		
+		-- Move the new segment by the given offset:
+		move_by (segment_out, offset);
+
+		-- Copy the net labels:
+		segment_out.labels := segment_in.labels;
+
+		-- Move the net labels of the new segment
+		-- by the given offset:
+		move_labels_by (segment_out.labels, offset);						
 	end;
 
+	
 
 	
 
