@@ -817,6 +817,15 @@ is
 	procedure copy is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
+			when key_noun_group =>
+				noun := NOUN_GROUP;
+				set_status (et_canvas_schematic_group.status_copy_group);
+
+				-- When copying groups, we enforce the default grid
+				-- and snap the cursor position to the default grid:
+				reset_grid_and_cursor;
+
+			
 			when key_noun_device =>
 				noun := NOUN_DEVICE;					
 				set_status (et_canvas_schematic_units.status_copy);
@@ -838,6 +847,13 @@ is
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when key_space =>
 				case noun is
+					when NOUN_GROUP =>
+						-- When copying a group, we enforce the default grid
+						-- and snap the cursor position to the default grid:
+						reset_grid_and_cursor;
+						et_canvas_schematic_group.copy_group (
+							KEYBOARD, get_cursor_position);						
+					
 					when NOUN_DEVICE =>
 						et_canvas_schematic_units.copy_object (KEYBOARD, point);
 						

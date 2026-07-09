@@ -41,6 +41,7 @@
 
 with ada.text_io;					use ada.text_io;
 
+with et_coordinates_abs_rel;
 with et_schematic_ops_groups;		use et_schematic_ops_groups;
 with et_cmd_origin_to_commit;
 
@@ -93,11 +94,11 @@ package body et_canvas_schematic_group is
 			-- Set the tool being used:
 			object_tool := tool;
 
-			-- Set point where the group is
+			-- Set the point where the group is
 			-- grabbed (or attacked):
 			object_point_of_attack := point;
 			
-			-- CS set selected objects as "moving"
+			-- Set selected objects as "moving":
 			set_group_as_moving (active_module, log_threshold);
 
 			-- For the subprograms that draw objects
@@ -115,6 +116,84 @@ package body et_canvas_schematic_group is
 
 	
 
+
+
+
+
+
+
+	
+
+
+	procedure copy_group (
+		tool	: in type_tool;
+		point	: in type_vector_model)
+	is
+
+		procedure finalize is
+			use et_coordinates_abs_rel;
+			use et_cmd_origin_to_commit;
+			offset : type_vector_model;
+		begin
+			-- CS
+			-- For the subprograms that draw objects
+			-- of a moving group:
+			-- set_group_not_moving;
+
+			-- Clear all "moving"-flags:
+			-- set_group_as_not_moving (active_module, log_threshold);
+			
+			-- Compute the final offset by which the
+			-- group is to be moved:
+			offset := point - object_point_of_attack;
+
+			-- Do the final copying with the group:
+			copy_group (
+				module_cursor	=> active_module, 
+				sheet			=> 0, -- we stay on the current sheet
+				offset			=> offset,
+				coordinates		=> RELATIVE,
+				commit_design	=> DO_COMMIT,
+				log_threshold	=> log_threshold);
+				
+			-- Prepare for a new editing process;
+			reset_editing_process; 
+
+			-- Clear the status bar:
+			status_clear;
+		end finalize;
+			
+		
+	begin
+		-- Initially the editing process is not running:
+		if not edit_process_running then
+
+			-- So this branch is executed on the 
+			-- first call of this procedure:
+			
+			-- Set the tool being used:
+			object_tool := tool;
+
+			-- Set the point where the group is
+			-- grabbed (or attacked):
+			object_point_of_attack := point;
+			
+			-- CS
+			-- set selected objects as "moving"
+			-- set_group_as_moving (active_module, log_threshold);
+
+			-- For the subprograms that draw objects
+			-- of a moving group:
+			-- set_group_moving;
+			
+			set_edit_process_running;
+
+		else
+			-- On the second call of this procedure,
+			-- we finalize the drag-group operation:
+			finalize;
+		end if;
+	end copy_group;
 
 
 	

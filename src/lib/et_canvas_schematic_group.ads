@@ -64,7 +64,9 @@ with et_logging;					use et_logging;
 package et_canvas_schematic_group is
 
 	use pac_generic_modules;
+
 	
+-- DRAG:	
 	
 	status_drag_group : constant string := 
 		status_click_left 
@@ -88,6 +90,32 @@ package et_canvas_schematic_group is
 		point	: in type_vector_model);
 
 
+
+
+
+
+-- COPY:
+	
+	status_copy_group : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to copy the group." 
+		& status_hint_for_abort;
+
+
+		
+	-- This procedure is to be called twice:
+	-- 1. When the operator sets that point at which
+	--    the group is being attacked.
+	-- 2. When the operator sets the point at 
+	--    which the copy of the group is to be dropped.
+	-- From the point-of-attack to the drop-point
+	-- we calculate the offset by which the copy 
+	-- of the group is to be dropped:
+	procedure copy_group (
+		tool	: in type_tool;
+		point	: in type_vector_model);
 
 	
 end et_canvas_schematic_group;
